@@ -1,0 +1,33 @@
+﻿body
+{
+	font-family: verdana, arial, helvetica, sans-serif;
+	font-size: 8pt;
+	color: Black;
+	background-color:White;
+}
+
+a
+{
+	text-decoration:none;
+	color: Black;
+}
+
+.ms-listviewtable
+{
+}
+
+.ms-viewheadertr
+{
+	background-color:#ccc;
+}
+
+.ms-vb
+{
+	padding:3px;
+	text-align:left;
+}
+
+.ms-vb2
+{
+	padding:3px;
+}

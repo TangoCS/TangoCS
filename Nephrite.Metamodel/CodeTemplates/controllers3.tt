@@ -1,0 +1,124 @@
+<#@ template language="C#v3.5" debug="True" #>
+<#@ assembly name="System.Core.dll" #>
+<#@ assembly name="System.Data.dll" #>
+<#@ assembly name="System.Data.Linq.dll" #>
+<#@ assembly name="System.Configuration.dll" #>
+<#@ assembly name="Nephrite.Web.dll" #>
+<#@ assembly name="Nephrite.Metamodel.dll" #>
+<#@ import namespace="Nephrite.Metamodel" #>
+<#@ import namespace="Nephrite.Metamodel.Model" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System" #>
+<#@ output extension="cs" #>
+<# 	var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate && o.IsSeparateTable).ToList(); #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using Nephrite.Web;
+using <#= AppMM.DBName() #>.Model;
+
+namespace <#= AppMM.DBName() #>.Controllers
+{
+<#	foreach (var cls in objectTypes.Where(o => o.MM_Methods.Any()))
+	{
+		bool ishstcls = cls.HistoryTypeCode == HistoryType.IdentifiersRetain || cls.HistoryTypeCode == HistoryType.IdentifiersMiss;
+		string clsname = (ishstcls ? "HST_" : "") + cls.SysName;
+		if (cls.IsMovable)
+        {
+			MM_ObjectProperty parentprop = cls.MM_ObjectProperties.Where(o => o.RefObjectPropertyID.HasValue &&
+				o.RefObjectProperty.IsAggregate).OrderBy(o => o.RefObjectTypeID == o.ObjectTypeID ? 0 : 1).FirstOrDefault();
+			MM_Method editMethod = cls.MM_Methods.SingleOrDefault(o => o.SysName == "Edit");
+			string predicateCheckEdit = "";
+			if (editMethod != null && !String.IsNullOrEmpty(editMethod.PredicateCode))
+			{
+				predicateCheckEdit = @"
+				if (!PredicateEdit(Get(id)))
+				{{
+				RenderMessage(""Недостаточно полномочий для выполнения операции"");
+				return;
+				}}";
+			}#>
+    partial class <#= cls.SysName #>Controller
+    {
+		[Nephrite.Web.SPM.SpmActionName("Edit")]
+		public void MoveDown(<#=cls.PrimaryKey.Single().ClrType#> id, string returnurl)
+        {
+            <#= predicateCheckEdit #>
+<#  		if (parentprop != null)
+            {#>
+			var obj = Get(id);
+			if (obj == null)
+            {
+                RenderMessage("Объект не существует или нет доступа");
+                return;
+            }
+<#  			string down = String.Format(@"Nephrite.Web.Controllers.SimpleClassMover<{0}>.Down(App.DataContext.{0}.Where(o => o.{2} == obj.{2}).AsQueryable(), id);",
+                    cls.SysName, cls.PrimaryKey.Single().ColumnName, parentprop.ColumnName);
+                if (parentprop.LowerBound == 0)
+				{#>
+            if (obj.<#= parentprop.SysName #> != null )
+            {
+            <#= down #>
+            }
+            else
+            {
+                Nephrite.Web.Controllers.SimpleClassMover<<#= cls.SysName #>>.Down(App.DataContext.<#= cls.SysName #>.Where(o => !o.<#= parentprop.ColumnName #>.HasValue).AsQueryable(), id);
+            }
+<# 				}
+				else
+				{#>
+            <#= down #>
+<#  			}
+			}
+           	else
+			{ #>
+			Nephrite.Web.Controllers.SimpleClassMover<<#= cls.SysName #>>.Down(App.DataContext.<#= cls.SysName #>, id);
+<# 			} #>
+            App.DataContext.SubmitChanges();
+            Url.Current.ReturnUrl.Go();
+        }
+
+		[Nephrite.Web.SPM.SpmActionName("Edit")]
+		public void MoveUp(<#=cls.PrimaryKey.Single().ClrType#> id, string returnurl)
+        {
+            <#= predicateCheckEdit #>
+<#  if (parentprop != null)
+    {#>
+			var obj = Get(id);
+			if (obj == null)
+            {
+                RenderMessage("Объект не существует или нет доступа");
+                return;
+            }
+<#  	string up = String.Format(@"Nephrite.Web.Controllers.SimpleClassMover<{0}>.Up(App.DataContext.{0}.Where(o => o.{2} == obj.{2}).AsQueryable(), id);",
+			cls.SysName, cls.PrimaryKey.Single().ColumnName, parentprop.ColumnName);
+		if (parentprop.LowerBound == 0)
+		{#>
+            if (obj.<#= parentprop.ColumnName #> != null )
+            {
+                <#= up #>
+            }
+            else
+            {
+                Nephrite.Web.Controllers.SimpleClassMover<<#= cls.SysName #>>.Up(App.DataContext.<#= cls.SysName #>.Where(o => !o.<#= parentprop.ColumnName #>.HasValue).AsQueryable(), id);
+            }
+<# 		}
+		else
+		{#>
+			<#= up #>
+<# 		}
+	}
+	else
+	{#>
+        	Nephrite.Web.Controllers.SimpleClassMover<<#= cls.SysName #>>.Up(App.DataContext.<#= cls.SysName #>, id);
+<# 	} #>
+            App.DataContext.SubmitChanges();
+			Url.Current.ReturnUrl.Go();
+        }
+	}
+		
+<# 		} 
+	} #>
+}

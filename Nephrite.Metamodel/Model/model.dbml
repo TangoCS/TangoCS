@@ -1,0 +1,436 @@
+﻿<?xml version="1.0" encoding="utf-8"?><Database Name="erms" Class="modelDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=(local);Initial Catalog=contextum2;Integrated Security=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="ConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.MM_FormFieldAttribute" Member="MM_FormFieldAttributes">
+    <Type Name="MM_FormFieldAttribute">
+      <Column Name="FormFieldAttributeID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="FormFieldID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="Value" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="IsEvent" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="MM_FormField_MM_FormFieldAttribute" Member="MM_FormField" ThisKey="FormFieldID" OtherKey="FormFieldID" Type="MM_FormField" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.C_Language" Member="C_Languages">
+    <Type Name="C_Language">
+      <Column Name="LanguageCode" Type="System.String" DbType="NChar(2) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="IsDefault" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_TaggedValueType" Member="MM_TaggedValueTypes">
+    <Type Name="MM_TaggedValueType">
+      <Column Name="TaggedValueTypeID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="TypeCode" Type="System.String" DbType="NVarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="ElementTypeCode" Type="System.String" DbType="NVarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="GroupID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Guid" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="ControlName" Type="System.Int32" DbType="int NOT NULL" CanBeNull="false" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_Package" Member="MM_Packages">
+    <Type Name="MM_Package">
+      <Column Name="PackageID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="ParentPackageID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Guid" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IsDataReplicated" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Version" Type="System.String" DbType="NVarChar(32) NULL" CanBeNull="true" />
+      <Association Name="MM_Package_MM_Package" Member="MM_Packages" ThisKey="PackageID" OtherKey="ParentPackageID" Type="MM_Package" />
+      <Association Name="MM_Package_MM_Codifier" Member="MM_Codifiers" ThisKey="PackageID" OtherKey="PackageID" Type="MM_Codifier" />
+      <Association Name="MM_Package_MM_ObjectType" Member="MM_ObjectTypes" ThisKey="PackageID" OtherKey="PackageID" Type="MM_ObjectType" />
+      <Association Name="MM_Package_MM_FormView" Member="MM_FormViews" ThisKey="PackageID" OtherKey="PackageID" Type="MM_FormView" />
+      <Association Name="MM_Package_HST_MM_FormView" Member="HST_MM_FormViews" ThisKey="PackageID" OtherKey="PackageID" Type="HST_MM_FormView" />
+      <Association Name="MM_Package_MM_Package" Member="MM_Package1" ThisKey="ParentPackageID" OtherKey="PackageID" Type="MM_Package" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_ObjectProperty" Member="MM_ObjectProperties">
+    <Type Name="MM_ObjectProperty">
+      <Column Name="ObjectPropertyID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ObjectTypeID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(1024) NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="TypeCode" Type="System.String" DbType="NVarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="Guid" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="IsMultilingual" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsPrimaryKey" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="RefObjectPropertyID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="RefObjectTypeID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IsNavigable" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsAggregate" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LowerBound" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="UpperBound" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CodifierID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Expression" Type="System.String" DbType="NVarChar(MAX) NULL" CanBeNull="true" />
+      <Column Name="IsSystem" Type="System.Boolean" DbType="bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsReferenceToVersion" Type="System.Boolean" DbType="bit NOT NULL" CanBeNull="false" />
+      <Column Name="ValueFilter" Type="System.String" DbType="NVarChar(MAX) NULL" CanBeNull="true" />
+      <Column Name="Precision" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Scale" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Length" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="DeleteRule" Type="System.String" DbType="NVarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="KindCode" Type="System.String" DbType="NVarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="DefaultDBValue" Type="System.String" DbType="NVarChar(255) NULL" CanBeNull="true" />
+      <Column Name="Description" Type="System.String" DbType="NVarChar(MAX) NULL" CanBeNull="true" />
+      <Association Name="MM_ObjectProperty_MM_ObjectProperty" Member="ReferencesObjectProperties" Storage="_MM_ObjectProperties" ThisKey="ObjectPropertyID" OtherKey="RefObjectPropertyID" Type="MM_ObjectProperty" />
+      <Association Name="MM_ObjectProperty_MM_FormField" Member="MM_FormField" Storage="_MM_FormFields" ThisKey="ObjectPropertyID" OtherKey="ObjectPropertyID" Type="MM_FormField" Cardinality="One" />
+      <Association Name="MM_ObjectProperty_MM_FormFieldGroup" Member="MM_FormFieldGroups" ThisKey="ObjectPropertyID" OtherKey="SelectObjectPropertyID" Type="MM_FormFieldGroup" />
+      <Association Name="MM_ObjectProperty_MM_ObjectProperty" Member="RefObjectProperty" Storage="_MM_ObjectProperty1" ThisKey="RefObjectPropertyID" OtherKey="ObjectPropertyID" Type="MM_ObjectProperty" IsForeignKey="true" />
+      <Association Name="MM_Codifier_MM_ObjectProperty" Member="MM_Codifier" ThisKey="CodifierID" OtherKey="CodifierID" Type="MM_Codifier" IsForeignKey="true" />
+      <Association Name="MM_ObjectType_MM_ObjectProperty" Member="MM_ObjectType" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+      <Association Name="MM_ObjectType_MM_ObjectProperty1" Member="RefObjectType" Storage="_MM_ObjectType1" ThisKey="RefObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.SPM_Action" Member="SPM_Actions">
+    <Type Name="SPM_Action">
+      <Column Name="ActionID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(1024) NOT NULL" CanBeNull="false" />
+      <Column Name="Type" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="SystemName" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Association Name="SPM_Action_SPM_ActionAsso" Member="ParentActionAssos" Storage="_SPM_ActionAssos" ThisKey="ActionID" OtherKey="ActionID" Type="SPM_ActionAsso" />
+      <Association Name="SPM_Action_SPM_ActionAsso1" Member="ChildActionAssos" Storage="_SPM_ActionAssos1" ThisKey="ActionID" OtherKey="ParentActionID" Type="SPM_ActionAsso" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_FormField" Member="MM_FormFields">
+    <Type Name="MM_FormField">
+      <Column Name="FormFieldID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ObjectPropertyID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ControlName" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(1024)" CanBeNull="true" />
+      <Column Name="DefaultValue" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="Comment" Type="System.String" DbType="NVarChar(1024)" CanBeNull="true" />
+      <Column Name="FormFieldGroupID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="ShowInList" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="ShowInEdit" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="ShowInView" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="ValueFunction" Type="System.String" DbType="NVarChar(1024)" CanBeNull="true" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ListColumnWidth" Type="System.String" DbType="NVarChar(1024)" CanBeNull="true" />
+      <Column Name="ValueFunctionExecType" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="SortExpression" Type="System.String" DbType="NVarChar(1024)" CanBeNull="true" />
+      <Association Name="MM_FormField_MM_FormFieldAttribute" Member="MM_FormFieldAttributes" ThisKey="FormFieldID" OtherKey="FormFieldID" Type="MM_FormFieldAttribute" />
+      <Association Name="MM_ObjectProperty_MM_FormField" Member="MM_ObjectProperty" ThisKey="ObjectPropertyID" OtherKey="ObjectPropertyID" Type="MM_ObjectProperty" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+      <Association Name="MM_FormFieldGroup_MM_FormField" Member="MM_FormFieldGroup" ThisKey="FormFieldGroupID" OtherKey="FormFieldGroupID" Type="MM_FormFieldGroup" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_CodifierValue" Member="MM_CodifierValues">
+    <Type Name="MM_CodifierValue">
+      <Column Name="CodifierValueID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="CodifierID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(1024) NOT NULL" CanBeNull="false" />
+      <Column Name="Code" Type="System.String" DbType="NVarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="MM_Codifier_MM_CodifierValue" Member="MM_Codifier" ThisKey="CodifierID" OtherKey="CodifierID" Type="MM_Codifier" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_Codifier" Member="MM_Codifiers">
+    <Type Name="MM_Codifier">
+      <Column Name="CodifierID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(1024) NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="PackageID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Guid" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Association Name="MM_Codifier_MM_ObjectProperty" Member="MM_ObjectProperties" ThisKey="CodifierID" OtherKey="CodifierID" Type="MM_ObjectProperty" />
+      <Association Name="MM_Codifier_MM_CodifierValue" Member="MM_CodifierValues" ThisKey="CodifierID" OtherKey="CodifierID" Type="MM_CodifierValue" />
+      <Association Name="MM_Package_MM_Codifier" Member="MM_Package" ThisKey="PackageID" OtherKey="PackageID" Type="MM_Package" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_MethodGroup" Member="MM_MethodGroups">
+    <Type Name="MM_MethodGroup">
+      <Column Name="MethodGroupID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ObjectTypeID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="VarChar(50) NOT NULL" CanBeNull="false" />
+      <Association Name="MM_MethodGroup_MM_MethodGroupItem" Member="MM_MethodGroupItems" ThisKey="MethodGroupID" OtherKey="MethodGroupID" Type="MM_MethodGroupItem" />
+      <Association Name="MM_ObjectType_MM_MethodGroup" Member="MM_ObjectType" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_MethodGroupItem" Member="MM_MethodGroupItems">
+    <Type Name="MM_MethodGroupItem">
+      <Column Name="MethodGroupItemID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="MethodGroupID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="MethodID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="IsSeparator" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="ParentMethodGroupItemID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="int NOT NULL" CanBeNull="false" />
+      <Association Name="MM_MethodGroupItem_MM_MethodGroupItem" Member="MM_MethodGroupItems" ThisKey="MethodGroupItemID" OtherKey="ParentMethodGroupItemID" Type="MM_MethodGroupItem" />
+      <Association Name="MM_MethodGroup_MM_MethodGroupItem" Member="MM_MethodGroup" ThisKey="MethodGroupID" OtherKey="MethodGroupID" Type="MM_MethodGroup" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+      <Association Name="MM_MethodGroupItem_MM_MethodGroupItem" Member="ParentMethodGroupItem" ThisKey="ParentMethodGroupItemID" OtherKey="MethodGroupItemID" Type="MM_MethodGroupItem" IsForeignKey="true" />
+      <Association Name="MM_Method_MM_MethodGroupItem" Member="MM_Method" ThisKey="MethodID" OtherKey="MethodID" Type="MM_Method" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_Method" Member="MM_Methods">
+    <Type Name="MM_Method">
+      <Column Name="MethodID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ObjectTypeID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Guid" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="FormViewID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IsDefault" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="Icon" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="Code" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="Parameters" Type="System.String" DbType="VarChar(MAX)" CanBeNull="true" />
+      <Column Name="ViewPath" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="PredicateCode" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="Comment" Type="System.String" DbType="VarChar(MAX)" CanBeNull="true" />
+      <Association Name="MM_Method_MM_MethodGroupItem" Member="MM_MethodGroupItems" ThisKey="MethodID" OtherKey="MethodID" Type="MM_MethodGroupItem" />
+      <Association Name="MM_ObjectType_MM_Method" Member="MM_ObjectType" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+      <Association Name="MM_FormView_MM_Method" Member="MM_FormView" ThisKey="FormViewID" OtherKey="FormViewID" Type="MM_FormView" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_FormFieldGroup" Member="MM_FormFieldGroups">
+    <Type Name="MM_FormFieldGroup">
+      <Column Name="FormFieldGroupID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="ObjectTypeID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="SelectObjectPropertyID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="SelectObjectPrefix" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="SelectObjectClass" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="ShowTitle" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="SelectObjectDataTextField" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="SelectObjectFilter" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="SelectObjectSearchExpression" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Association Name="MM_FormFieldGroup_MM_FormField" Member="MM_FormFields" ThisKey="FormFieldGroupID" OtherKey="FormFieldGroupID" Type="MM_FormField" />
+      <Association Name="MM_ObjectProperty_MM_FormFieldGroup" Member="MM_ObjectProperty" ThisKey="SelectObjectPropertyID" OtherKey="ObjectPropertyID" Type="MM_ObjectProperty" IsForeignKey="true" />
+      <Association Name="MM_ObjectType_MM_FormFieldGroup" Member="MM_ObjectType" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_ObjectType" Member="MM_ObjectTypes">
+    <Type Name="MM_ObjectType">
+      <Column Name="ObjectTypeID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(1024) NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="IsEnableSPM" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="PackageID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Guid" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="IsSeparateTable" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsTemplate" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="TitlePlural" Type="System.String" DbType="NVarChar(1024)" CanBeNull="true" />
+      <Column Name="BaseObjectTypeID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="DefaultOrderBy" Type="System.String" DbType="NVarChar(1024)" CanBeNull="true" />
+      <Column Name="LogicalDelete" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="IsEnableUserViews" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsReplicate" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="SecurityPackageSystemName" Type="System.String" DbType="NVarChar(255) NULL" CanBeNull="true" />
+      <Column Name="IsEnableObjectHistory" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="Interface" Type="System.String" DbType="NVarChar(1024)" CanBeNull="true" />
+      <Column Name="HistoryTypeCode" Type="System.String" DbType="NVarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="IsDataReplicated" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Description" Type="System.String" DbType="NVarChar(MAX) NULL" CanBeNull="true" />
+      <Column Name="LastModifiedDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="MM_ObjectType_MM_ObjectProperty" Member="MM_ObjectProperties" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectProperty" />
+      <Association Name="MM_ObjectType_MM_ObjectProperty1" Member="MM_ObjectProperties1" ThisKey="ObjectTypeID" OtherKey="RefObjectTypeID" Type="MM_ObjectProperty" />
+      <Association Name="MM_ObjectType_MM_MethodGroup" Member="MM_MethodGroups" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_MethodGroup" />
+      <Association Name="MM_ObjectType_MM_Method" Member="MM_Methods" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_Method" />
+      <Association Name="MM_ObjectType_MM_FormFieldGroup" Member="MM_FormFieldGroups" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_FormFieldGroup" />
+      <Association Name="MM_ObjectType_MM_ObjectType" Member="MM_ObjectTypes" ThisKey="ObjectTypeID" OtherKey="BaseObjectTypeID" Type="MM_ObjectType" />
+      <Association Name="MM_ObjectType_MM_DataValidation" Member="MM_DataValidations" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_DataValidation" />
+      <Association Name="MM_ObjectType_MM_FormView" Member="MM_FormViews" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_FormView" />
+      <Association Name="MM_ObjectType_HST_MM_FormView" Member="HST_MM_FormViews" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="HST_MM_FormView" />
+      <Association Name="MM_ObjectType_MMS_ClassStereotype" Member="MMA_ClassAspect" ThisKey="ObjectTypeID" OtherKey="ClassStereotypeID" Type="MMS_ClassStereotype" Cardinality="One" />
+      <Association Name="MM_ObjectType_MM_ObjectTypeStereotype" Member="MM_ObjectTypeStereotypes" Storage="_MM_ObjectTypeAspects" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectTypeStereotype" />
+      <Association Name="MM_ObjectType_WF_Workflow" Member="WF_Workflows" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="WF_Workflow" />
+      <Association Name="MM_ObjectType_MM_ObjectType" Member="BaseObjectType" Storage="_MM_ObjectType1" ThisKey="BaseObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" />
+      <Association Name="MM_Package_MM_ObjectType" Member="MM_Package" ThisKey="PackageID" OtherKey="PackageID" Type="MM_Package" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.N_ReplicationObject" Member="N_ReplicationObjects">
+    <Type Name="N_ReplicationObject">
+      <Column Name="ObjectTypeSysName" Type="System.String" DbType="NVarChar(255) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="ObjectID" Type="System.String" DbType="NVarChar(50) NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="ChangeDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="dbo.SPM_ActionAsso" Member="SPM_ActionAssos">
+    <Type Name="SPM_ActionAsso">
+      <Column Name="ActionID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="ParentActionID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Association Name="SPM_Action_SPM_ActionAsso" Member="SPM_Action" ThisKey="ActionID" OtherKey="ActionID" Type="SPM_Action" IsForeignKey="true" />
+      <Association Name="SPM_Action_SPM_ActionAsso1" Member="ParentAction" ThisKey="ParentActionID" OtherKey="ActionID" Type="SPM_Action" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_DataValidation" Member="MM_DataValidations">
+    <Type Name="MM_DataValidation">
+      <Column Name="DataValidationID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ObjectTypeID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Expression" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="DesignerData" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="Message" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Association Name="MM_ObjectType_MM_DataValidation" Member="MM_ObjectType" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.N_RssFeed" Member="N_RssFeeds">
+    <Type Name="N_RssFeed">
+      <Column Name="RssFeedID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Copyright" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="Description" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ObjectTypeSysName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="Predicate" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="PubDate" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="Ttl" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ViewFormSysName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="Author" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="WebMaster" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="LinkParams" Type="System.String" DbType="NVarChar(255) NULL" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_FormView" Member="MM_FormViews">
+    <Type Name="MM_FormView">
+      <Column Name="FormViewID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="ViewTemplate" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="true" />
+      <Column Name="TemplateTypeCode" Type="System.String" DbType="NVarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="ObjectTypeID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PackageID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="LastModifiedDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="Guid" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="IsCustom" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IsCaching" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="CacheKeyParams" Type="System.String" DbType="NVarChar(MAX) NULL" CanBeNull="true" />
+      <Column Name="CacheTimeout" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BaseClass" Type="System.String" DbType="NVarChar(100) NOT NULL" CanBeNull="false" />
+      <Association Name="MM_FormView_MM_Method" Member="MM_Methods" ThisKey="FormViewID" OtherKey="FormViewID" Type="MM_Method" />
+      <Association Name="MM_FormView_HST_MM_FormView" Member="HST_MM_FormViews" ThisKey="FormViewID" OtherKey="FormViewID" Type="HST_MM_FormView" />
+      <Association Name="MM_ObjectType_MM_FormView" Member="MM_ObjectType" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" DeleteRule="CASCADE" />
+      <Association Name="MM_Package_MM_FormView" Member="MM_Package" ThisKey="PackageID" OtherKey="PackageID" Type="MM_Package" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.N_Cache" Member="N_Caches">
+    <Type Name="N_Cache">
+      <Column Name="TimeStamp" Type="System.DateTime" DbType="DateTime NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+    </Type>
+  </Table>
+  <Table Name="dbo.HST_MM_FormView" Member="HST_MM_FormViews">
+    <Type Name="HST_MM_FormView">
+      <Column Name="FormViewVersionID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="FormViewID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="VersionNumber" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IsCurrentVersion" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="ViewTemplate" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="TemplateTypeCode" Type="System.String" DbType="NVarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="ObjectTypeID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="PackageID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Guid" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="IsCustom" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsCaching" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="CacheKeyParams" Type="System.String" DbType="NVarChar(MAX) NULL" CanBeNull="true" />
+      <Column Name="CacheTimeout" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="BaseClass" Type="System.String" DbType="NVarChar(100) NOT NULL" CanBeNull="false" />
+      <Association Name="MM_FormView_HST_MM_FormView" Member="MM_FormView" ThisKey="FormViewID" OtherKey="FormViewID" Type="MM_FormView" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+      <Association Name="MM_ObjectType_HST_MM_FormView" Member="MM_ObjectType" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" />
+      <Association Name="MM_Package_HST_MM_FormView" Member="MM_Package" ThisKey="PackageID" OtherKey="PackageID" Type="MM_Package" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MMS_ClassStereotype" Member="MMS_ClassStereotypes">
+    <Type Name="MMS_ClassStereotype">
+      <Column Name="ClassStereotypeID" Storage="_AspectID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Association Name="MM_ObjectType_MMS_ClassStereotype" Member="MM_ObjectType" ThisKey="ClassStereotypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_ObjectTypeStereotypes" Member="MM_ObjectTypeStereotypes">
+    <Type Name="MM_ObjectTypeStereotype">
+      <Column Name="ObjectTypeID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="StereotypesID" Storage="_AspectsID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Association Name="MM_ObjectType_MM_ObjectTypeStereotype" Member="MM_ObjectType" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.WF_Activity" Member="WF_Activities">
+    <Type Name="WF_Activity">
+      <Column Name="ActivityID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="WorkflowID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(100) NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(100) NOT NULL" CanBeNull="false" />
+      <Column Name="ParentActivityID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IsActive" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="WF_Activity_WF_Activity" Member="WF_Activities" ThisKey="ActivityID" OtherKey="ParentActivityID" Type="WF_Activity" />
+      <Association Name="WF_Activity_WF_Transition" Member="WF_Transitions" ThisKey="ActivityID" OtherKey="ParentID" Type="WF_Transition" />
+      <Association Name="WF_Activity_WF_Transition1" Member="WF_Transitions1" ThisKey="ActivityID" OtherKey="TargetActivityID" Type="WF_Transition" />
+      <Association Name="WF_Activity_WF_Activity" Member="WF_Activity1" ThisKey="ParentActivityID" OtherKey="ActivityID" Type="WF_Activity" IsForeignKey="true" />
+      <Association Name="WF_Workflow_WF_Activity" Member="WF_Workflow" ThisKey="WorkflowID" OtherKey="WorkflowID" Type="WF_Workflow" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.WF_Transition" Member="WF_Transitions">
+    <Type Name="WF_Transition">
+      <Column Name="TransitionID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="IsActive" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ParentID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="TargetActivityID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="WF_Activity_WF_Transition" Member="ParentActivity" Storage="_WF_Activity" ThisKey="ParentID" OtherKey="ActivityID" Type="WF_Activity" IsForeignKey="true" />
+      <Association Name="WF_Activity_WF_Transition1" Member="TargetActivity" Storage="_WF_Activity1" ThisKey="TargetActivityID" OtherKey="ActivityID" Type="WF_Activity" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.WF_Workflow" Member="WF_Workflows">
+    <Type Name="WF_Workflow">
+      <Column Name="WorkflowID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ObjectTypeID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(100) NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(100) NOT NULL" CanBeNull="false" />
+      <Column Name="IsActive" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Association Name="WF_Workflow_WF_Activity" Member="WF_Activities" ThisKey="WorkflowID" OtherKey="WorkflowID" Type="WF_Activity" />
+      <Association Name="MM_ObjectType_WF_Workflow" Member="MM_ObjectType" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Function Name="dbo.SearchInfoObjects" Method="SearchInfoObjects">
+    <Parameter Name="searchpattern" Type="System.String" DbType="VarChar(8000)" />
+    <Parameter Name="pageNo" Type="System.Int32" DbType="Int" />
+    <Parameter Name="pageSize" Type="System.Int32" DbType="Int" />
+    <ElementType Name="SearchInfoObjectsResult">
+      <Column Name="Title" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="Description" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="true" />
+      <Column Name="NodeID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ObjectID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ObjectTypeSysName" Type="System.String" DbType="VarChar(7) NOT NULL" CanBeNull="false" />
+    </ElementType>
+  </Function>
+  <Function Name="dbo.SearchInfoObjectsCnt" Method="SearchInfoObjectsCnt" IsComposable="true">
+    <Parameter Name="searchpattern" Type="System.String" DbType="VarChar(8000)" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.MM_FormView_CreateHistoryVersion" Method="MM_FormView_CreateHistoryVersion">
+    <Parameter Name="id" Type="System.Int32" DbType="Int" />
+    <Return Type="System.Int32" />
+  </Function>
+  <Function Name="dbo.usp_model" Method="usp_model">
+    <ElementType Name="usp_modelResult">
+      <Column Name="" Member="Column1" Type="System.Xml.Linq.XElement" DbType="Xml" CanBeNull="true" />
+    </ElementType>
+  </Function>
+</Database>

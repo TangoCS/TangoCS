@@ -1,0 +1,41 @@
+<#@ template language="C#v3.5" debug="True" #>
+<#@ assembly name="System.Core.dll" #>
+<#@ assembly name="System.Data.dll" #>
+<#@ assembly name="System.Data.Linq.dll" #>
+<#@ assembly name="System.Configuration.dll" #>
+<#@ assembly name="Nephrite.Web.dll" #>
+<#@ assembly name="Nephrite.Metamodel.dll" #>
+<#@ import namespace="Nephrite.Metamodel" #>
+<#@ import namespace="Nephrite.Metamodel.Model" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="Nephrite.Metamodel.TextTransform" #>
+<#@ output extension="cs" #>
+<# var ot = CodeGen.GetObjectType("PublishingParticipant"); #>
+Вы собираетесь сделать версию <%=chst.ClassVersionNumber%> справочника "<#= ot.TitlePlural #>" текущей.
+<br />
+Нажмите кнопку "Продолжить" для подтверждения операции.
+<br />
+<br />
+<asp:Button CssClass="ms-ButtonHeightWidth" Text="Продолжить" ID="bCreate" runat="server" OnClick="bCreate_Click" />
+<nw:BackButton runat="server" ID="bBackButton" />
+<script runat="server">
+protected CHST_<#= ot.SysName #> chst;
+protected void Page_Load(object sender, EventArgs e)
+{
+    SetTitle("<#= ot.TitlePlural #> - утверждение черновой версии справочника");
+    RenderMargin = true;
+    chst = App.DataContext.CHST_<#= ot.SysName #>.OrderByDescending(o => o.ClassVersionNumber).First();
+}
+
+protected void bCreate_Click(object sender, EventArgs e)
+{
+    chst.IsCurrent = true;
+    var oldchst = App.DataContext.CHST_<#= ot.SysName #>.FirstOrDefault(o => o.IsCurrent);
+    if (oldchst != null)
+        oldchst.IsCurrent = false;
+
+    App.DataContext.SubmitChanges();
+	Url.Current.ReturnUrl.Go();
+}
+</script>

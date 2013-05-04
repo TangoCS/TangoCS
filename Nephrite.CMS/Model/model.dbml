@@ -1,0 +1,173 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Database Name="Fund2" Class="modelDataContext" xmlns="http://schemas.microsoft.com/linqtosql/dbml/2007">
+  <Connection Mode="WebSettings" ConnectionString="Data Source=(local)\v2008;Initial Catalog=Fund2;Integrated Security=True" SettingsObjectName="System.Configuration.ConfigurationManager.ConnectionStrings" SettingsPropertyName="ConnectionString" Provider="System.Data.SqlClient" />
+  <Table Name="dbo.SiteItem" Member="SiteItems">
+    <Type Name="SiteItem">
+      <Column Name="SiteItemID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="ParentID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Content" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Association Name="SiteItemsFolder_SiteItem" Member="SiteItemsFolder" ThisKey="ParentID" OtherKey="SiteItemsFolderID" Type="SiteItemsFolder" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.SiteItemsFolder" Member="SiteItemsFolders">
+    <Type Name="SiteItemsFolder">
+      <Column Name="SiteItemsFolderID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(MAX) NOT NULL" CanBeNull="false" />
+      <Association Name="SiteItemsFolder_SiteItem" Member="SiteItems" ThisKey="SiteItemsFolderID" OtherKey="ParentID" Type="SiteItem" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_ObjectType" Member="MM_ObjectTypes">
+    <Type Name="MM_ObjectType">
+      <Column Name="ObjectTypeID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(1024) NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="IsEnableSPM" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="PackageID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Guid" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="IsSeparateTable" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsTemplate" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="TitlePlural" Type="System.String" DbType="NVarChar(1024)" CanBeNull="true" />
+      <Column Name="BaseObjectTypeID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="DefaultOrderBy" Type="System.String" DbType="NVarChar(1024)" CanBeNull="true" />
+      <Column Name="LogicalDelete" Storage="_IsLogicalDelete" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="IsReplicate" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsEnableUserViews" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="SecurityPackageSystemName" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="IsEnableObjectHistory" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="Interface" Type="System.String" DbType="NVarChar(1024)" CanBeNull="true" />
+      <Column Name="HistoryTypeCode" Type="System.String" DbType="NVarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="IsDataReplicated" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Association Name="MM_ObjectType_MM_ObjectType" Member="MM_ObjectTypes" ThisKey="ObjectTypeID" OtherKey="BaseObjectTypeID" Type="MM_ObjectType" />
+      <Association Name="MM_ObjectType_MM_ObjectProperty" Member="MM_ObjectProperties" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectProperty" />
+      <Association Name="MM_ObjectType_MM_ObjectProperty1" Member="MM_ObjectProperties1" ThisKey="ObjectTypeID" OtherKey="RefObjectTypeID" Type="MM_ObjectProperty" />
+      <Association Name="MM_ObjectType_SiteInfoobject" Member="SiteInfoobject" ThisKey="ObjectTypeID" OtherKey="SiteInfoobjectsID" Type="SiteInfoobject" Cardinality="One" />
+      <Association Name="MM_ObjectType_MM_ObjectType" Member="MM_ObjectType1" ThisKey="BaseObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.MM_ObjectProperty" Member="MM_ObjectProperties">
+    <Type Name="MM_ObjectProperty">
+      <Column Name="ObjectPropertyID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="ObjectTypeID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(1024) NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="TypeCode" Type="System.String" DbType="NVarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="Guid" Type="System.Guid" DbType="UniqueIdentifier NOT NULL" CanBeNull="false" />
+      <Column Name="IsMultilingual" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsPrimaryKey" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsSystem" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="RefObjectPropertyID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="RefObjectTypeID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="IsNavigable" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsAggregate" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LowerBound" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="UpperBound" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="CodifierID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Expression" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="IsReferenceToVersion" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="ValueFilter" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="Precision" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Scale" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="Length" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="DeleteRule" Type="System.String" DbType="NVarChar(1) NOT NULL" CanBeNull="false" />
+      <Column Name="KindCode" Type="System.String" DbType="NVarChar(1) NOT NULL" CanBeNull="false" />
+      <Association Name="MM_ObjectProperty_MM_ObjectProperty" Member="MM_ObjectProperties" ThisKey="ObjectPropertyID" OtherKey="RefObjectPropertyID" Type="MM_ObjectProperty" />
+      <Association Name="MM_ObjectType_MM_ObjectProperty" Member="MM_ObjectType" ThisKey="ObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+      <Association Name="MM_ObjectType_MM_ObjectProperty1" Member="RefObjectType" ThisKey="RefObjectTypeID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" />
+      <Association Name="MM_ObjectProperty_MM_ObjectProperty" Member="MM_ObjectProperty1" ThisKey="RefObjectPropertyID" OtherKey="ObjectPropertyID" Type="MM_ObjectProperty" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.SiteInfoobjects" Member="SiteInfoobjects">
+    <Type Name="SiteInfoobject">
+      <Column Name="SiteInfoobjectsID" Type="System.Int32" DbType="Int NOT NULL" IsPrimaryKey="true" CanBeNull="false" />
+      <Column Name="IsFolder" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Column Name="IsRoot" Type="System.Boolean" DbType="Bit" CanBeNull="true" />
+      <Association Name="MM_ObjectType_SiteInfoobject" Member="MM_ObjectType" ThisKey="SiteInfoobjectsID" OtherKey="ObjectTypeID" Type="MM_ObjectType" IsForeignKey="true" DeleteRule="CASCADE" DeleteOnNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.SiteSection" Member="SiteSections">
+    <Type Name="SiteSection">
+      <Column Name="SiteSectionID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ParentID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="CreateDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="PublishDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ShowInSiteMap" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="ShowInNavigation" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsPublished" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="ViewName" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="SiteObjectsClasses" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Association Name="SiteSection_SiteSection" Member="SiteSections" ThisKey="SiteSectionID" OtherKey="ParentID" Type="SiteSection" />
+      <Association Name="SiteSection_SiteObject" Member="SiteObjects" ThisKey="SiteSectionID" OtherKey="ParentID" Type="SiteObject" />
+      <Association Name="SiteSection_SiteSection" Member="SiteSection1" ThisKey="ParentID" OtherKey="SiteSectionID" Type="SiteSection" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.SiteObject" Member="SiteObjects">
+    <Type Name="SiteObject">
+      <Column Name="SiteObjectID" Type="System.Int32" DbType="Int NOT NULL IDENTITY" IsPrimaryKey="true" IsDbGenerated="true" CanBeNull="false" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ParentID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ClassName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="IsPublished" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="CreateDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="PublishDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Association Name="SiteSection_SiteObject" Member="SiteSection" ThisKey="ParentID" OtherKey="SiteSectionID" Type="SiteSection" IsForeignKey="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.V_SiteObject" Member="V_SiteObjects">
+    <Type Name="V_SiteObject">
+      <Column Name="SiteObjectID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ParentID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ClassName" Type="System.String" DbType="NVarChar(255) NOT NULL" CanBeNull="false" />
+      <Column Name="IsPublished" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="CreateDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="PublishDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="LanguageCode" Type="System.String" DbType="NChar(2) NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="SubTitle" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+    </Type>
+  </Table>
+  <Table Name="dbo.V_SiteSection" Member="V_SiteSections">
+    <Type Name="V_SiteSection">
+      <Column Name="SiteSectionID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="IsDeleted" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="LastModifiedUserID" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="ParentID" Type="System.Int32" DbType="Int" CanBeNull="true" />
+      <Column Name="CreateDate" Type="System.DateTime" DbType="DateTime NOT NULL" CanBeNull="false" />
+      <Column Name="SeqNo" Type="System.Int32" DbType="Int NOT NULL" CanBeNull="false" />
+      <Column Name="SysName" Type="System.String" DbType="NVarChar(255)" CanBeNull="true" />
+      <Column Name="PublishDate" Type="System.DateTime" DbType="DateTime" CanBeNull="true" />
+      <Column Name="ShowInSiteMap" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="ShowInNavigation" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="IsPublished" Type="System.Boolean" DbType="Bit NOT NULL" CanBeNull="false" />
+      <Column Name="SiteObjectsClasses" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="ViewName" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="Description" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="Keywords" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="PageTitle" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+      <Column Name="LanguageCode" Type="System.String" DbType="NChar(2) NOT NULL" CanBeNull="false" />
+      <Column Name="Title" Type="System.String" DbType="NVarChar(512)" CanBeNull="true" />
+      <Column Name="FullPath" Type="System.String" DbType="NVarChar(MAX)" CanBeNull="true" />
+    </Type>
+  </Table>
+</Database>

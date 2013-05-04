@@ -1,0 +1,121 @@
+<#@ template language="C#v3.5" debug="True" #>
+<#@ assembly name="System.Core.dll" #>
+<#@ assembly name="System.Data.dll" #>
+<#@ assembly name="System.Data.Linq.dll" #>
+<#@ assembly name="System.Configuration.dll" #>
+<#@ assembly name="Nephrite.Web.dll" #>
+<#@ assembly name="Nephrite.Metamodel.dll" #>
+<#@ import namespace="Nephrite.Metamodel" #>
+<#@ import namespace="Nephrite.Metamodel.Model" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System" #>
+<#@ output extension="cs" #>
+<# 	var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate && o.IsSeparateTable).ToList().Where(o => o.PrimaryKey.Length == 1); #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+
+namespace <#= AppMM.DBName() #>.Model
+{
+<# 	foreach (var cls in objectTypes.Where(o => o.IsMultiLingual))
+    {
+        var parent = cls.AllProperties.FirstOrDefault(o => o.SysName == "Parent" && o.RefObjectTypeID.HasValue && o.UpperBound == 1); #>
+    partial class V_<#= cls.SysName #> : Nephrite.Metamodel.IMMObjectMLView<#= cls.AllProperties.Any(o => o.SysName == "SeqNo") ? ", Nephrite.Web.IMovableObject" : "" #><#= parent != null ? ", Nephrite.Web.IChildObject" : "" #>
+    {
+		public event EventHandler OnSaveChanges;
+		public void RaiseSaveChanges()
+		{
+		}
+
+        public int ObjectID
+        {   
+            get { return <#= cls.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? "0" : cls.PrimaryKey.Single().ColumnName #>; }
+        }
+        public Guid ObjectGUID
+        {   
+            get { return <#= cls.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? cls.PrimaryKey.Single().ColumnName : "Guid.Empty" #>; }
+        }
+
+        public bool IsLogicalDelete
+        {
+            get { return false; }
+        }
+
+		public Nephrite.Meta.MetaClass MetaClass
+        {
+            get { return Meta.<#=cls.SysName#>; }
+        }
+
+        public string GetClassName()
+        {
+            return MetaClass.Caption;
+        }
+		
+<#	if (cls.AllProperties.Count(o => o.SysName == "IsDeleted") == 0) {#>
+		public bool IsDeleted
+		{
+			get { return false; }
+		}
+<#  }#>
+<#	if (cls.AllProperties.Count(o => o.SysName == "LastModifiedDate") == 0) {#>
+		public DateTime LastModifiedDate
+		{
+			get { return DateTime.MinValue; }
+			set { }
+		}
+<#  }#>
+<#	if (cls.AllProperties.Count(o => o.ColumnName == "LastModifiedUserID") == 0) {#>
+		public int LastModifiedUserID
+		{
+			get { return 0; }
+			set { }
+		}
+<#  }#>
+		
+<#  	if (parent != null)
+        {#>   
+        public System.Linq.Expressions.Expression<Func<T, bool>> FilterByParentID<T>(int id) where T : Nephrite.Web.IModelObject
+        {
+<#	if (cls.PrimaryKey.Single().TypeCode != ObjectPropertyType.Guid) { #>
+            if (id > 0)
+                return o => (o as V_<#= cls.SysName #>).ParentID == id;
+            else
+                return <#= parent.LowerBound == 1 ? "o => false" : ("o => !(o as V_" + cls.SysName + @").ParentID.HasValue") #>;
+<#	} else { #>
+			return null;
+<#	} #>
+        }
+		public System.Linq.Expressions.Expression<Func<T, bool>> FilterByParentGUID<T>(Guid guid) where T : Nephrite.Web.IModelObject
+        {
+<#	if (cls.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid) { #>
+            if (guid != Guid.Empty)
+                return o => (o as V_<#= cls.SysName #>).ParentGUID == guid;
+            else
+                return <#= parent.LowerBound == 1 ? "o => false" : ("o => !(o as V_" + cls.SysName + @").ParentGUID.HasValue") #>;
+<#	} else { #>
+			return null;
+<#	} #>
+        }
+        public void SetParent(int parentID) {}
+		public void SetParent(Guid parentGUID) {}
+        public Nephrite.Web.IModelObject ParentObject 
+        {
+            get {return null;}
+            set {}
+        }
+<# 		} #>
+<#  foreach (var prop in cls.AllProperties.Where(o => !String.IsNullOrEmpty(o.Expression) && o.KindCode != "D"))
+    {#>
+        public <#= prop.ClrType #> <#= prop.SysName #>
+        {
+            get
+            {
+                <#= prop.Expression #>
+            }
+        }
+<# 	} #>
+    }
+<# 	} #>
+}

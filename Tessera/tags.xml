@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<tags>
+	<tag id="img" allow="src,alt,title,border,style,class" />
+	<tag id="font" allow="color,size" />
+	<tag id="html" />
+	<tag id="body" />
+	<tag id="h1" />
+	<tag id="h2" />
+	<tag id="h3" />
+	<tag id="h4" />
+	<tag id="h5" />
+	<tag id="h6" />
+	<tag id="a" allow="href,title,style,class" />
+	<tag id="b" />
+	<tag id="i" />
+	<tag id="u" />
+	<tag id="s" />
+	<tag id="strong" />
+	<tag id="em" />
+	<tag id="strike" />
+	<tag id="br" />
+	<tag id="hr" />
+	<tag id="p" />
+	<tag id="blockquote" />
+	<tag id="ol" />
+	<tag id="ul" />
+	<tag id="li" />
+	<tag id="table" allow="cellspacing,cellpadding,class,style" />
+	<tag id="tbody" />
+	<tag id="thead" />
+	<tag id="td" deny="width,valign" />
+	<tag id="th" />
+	<tag id="tr" />
+	<tag id="nobr" />
+	<tag id="sup" />
+	<tag id="abbr" />
+	<tag id="acronym" />
+	<tag id="pre" />
+	<tag id="code" />
+	<tag id="center" />
+	<tag id="span" deny="lang" />
+	<style allow="
+		   white-space,
+		   float,
+		   background-color,
+		   text-align
+	" />
+	<style tag="img" allow="
+		   margin,
+		   margin-top,
+		   margin-bottom,
+		   margin-left,
+		   margin-right,
+		   padding,
+		   padding-top,
+		   padding-bottom,
+		   padding-left,
+		   padding-right,
+		   width,
+		   height
+	" />
+</tags>

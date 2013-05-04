@@ -1,0 +1,93 @@
+<#@ template language="C#v3.5" debug="True" #>
+<#@ assembly name="System.Core.dll" #>
+<#@ assembly name="System.Data.dll" #>
+<#@ assembly name="System.Data.Linq.dll" #>
+<#@ assembly name="System.Configuration.dll" #>
+<#@ assembly name="Nephrite.Web.dll" #>
+<#@ assembly name="Nephrite.Metamodel.dll" #>
+<#@ import namespace="Nephrite.Metamodel" #>
+<#@ import namespace="Nephrite.Metamodel.Model" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ output extension="cs" #>
+<# 	var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate && o.IsSeparateTable && o.HistoryTypeCode != HistoryType.None).ToList().Where(o => o.PrimaryKey.Length == 1); #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Serialization;
+
+namespace <#= AppMM.DBName() #>.Model
+{
+<#  
+foreach (var cls in objectTypes)
+{
+    foreach (var prop in cls.MM_ObjectProperties.Where(o => o.UpperBound == -1 && o.RefObjectTypeID.HasValue && o.TypeCode == ObjectPropertyType.Object && (!o.RefObjectPropertyID.HasValue || o.RefObjectProperty.UpperBound == -1)))
+    {
+#>
+    public class HST_<#= cls.SysName #><#= prop.SysName #>Collection : ICollection<<#= prop.RefObjectType.SysName #>>
+    {
+        HST_<#= cls.SysName #> obj;
+        internal HST_<#= cls.SysName #><#= prop.SysName #>Collection(HST_<#= cls.SysName #> obj)
+        {
+            this.obj = obj;
+        }
+
+        public void Add(<#= prop.RefObjectType.SysName #> item)
+        {
+            if (!Contains(item))
+            {
+                obj.HST_<#= cls.SysName #><#= prop.SysName #>.Add(new HST_<#= cls.SysName #><#= prop.SysName #> { HST_<#= cls.SysName #> = obj, <#= prop.SysName #> = item });
+            }
+        }
+
+        public void Clear()
+        {
+            App.DataContext.HST_<#= cls.SysName #><#= prop.SysName #>.DeleteAllOnSubmit(obj.HST_<#= cls.SysName #><#= prop.SysName #>);
+            obj.HST_<#= cls.SysName #><#= prop.SysName #>.Clear();
+        }
+
+        public bool Contains(<#= prop.RefObjectType.SysName #> item)
+        {
+            return obj.HST_<#= cls.SysName #><#= prop.SysName #>.Any(o => o.<#= prop.ColumnName ?? (prop.SysName + "ID") #> == item.<#= prop.RefObjectType.PrimaryKey.Single().ColumnName #>);
+        }
+
+        public void CopyTo(<#= prop.RefObjectType.SysName #>[] array, int arrayIndex)
+        {
+            obj.HST_<#= cls.SysName #><#= prop.SysName #>.Select(o => o.<#= prop.SysName #>).ToArray().CopyTo(array, arrayIndex);
+        }
+
+        public int Count
+        {
+            get { return obj.HST_<#= cls.SysName #><#= prop.SysName #>.Count; }
+        }
+
+        public bool IsReadOnly
+        {
+            get { return false; }
+        }
+
+        public bool Remove(<#= prop.RefObjectType.SysName #> item)
+        {
+            var o = obj.HST_<#= cls.SysName #><#= prop.SysName #>.SingleOrDefault(o1 => o1.<#= prop.ColumnName ?? (prop.SysName + "ID") #> == item.<#= prop.RefObjectType.PrimaryKey.Single().ColumnName #>);
+            if (o != null)
+            {
+                obj.HST_<#= cls.SysName #><#= prop.SysName #>.Remove(o);
+                App.DataContext.HST_<#= cls.SysName #><#= prop.SysName #>.DeleteOnSubmit(o);
+                return true;
+            }
+            return false;
+        }
+
+        public IEnumerator<<#= prop.RefObjectType.SysName #>> GetEnumerator()
+        {
+            return obj.HST_<#= cls.SysName #><#= prop.SysName #>.Select(o => o.<#= prop.SysName #>).GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return obj.HST_<#= cls.SysName #><#= prop.SysName #>.Select(o => o.<#= prop.SysName #>).GetEnumerator();
+        }
+    }
+<#  }
+}#>                
+}

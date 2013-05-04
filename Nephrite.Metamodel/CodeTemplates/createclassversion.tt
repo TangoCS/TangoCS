@@ -1,0 +1,35 @@
+<#@ template language="C#v3.5" debug="True" #>
+<#@ assembly name="System.Core.dll" #>
+<#@ assembly name="System.Data.dll" #>
+<#@ assembly name="System.Data.Linq.dll" #>
+<#@ assembly name="System.Configuration.dll" #>
+<#@ assembly name="Nephrite.Web.dll" #>
+<#@ assembly name="Nephrite.Metamodel.dll" #>
+<#@ import namespace="Nephrite.Metamodel" #>
+<#@ import namespace="Nephrite.Metamodel.Model" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="Nephrite.Metamodel.TextTransform" #>
+<#@ output extension="cs" #>
+<# var ot = CodeGen.GetObjectType("PublishingParticipant"); #>
+Выберите режим создания новой версии справочника:<br />
+<asp:RadioButton runat="server" ID="rbCopy" GroupName="Pit" Text="Создать новые версии всех не удаленных элементов справочника, скопировав их из последней версии" /><br />
+<asp:RadioButton runat="server" ID="rbNotCopy" GroupName="Pit" Text="Не создавать элементы справочника" /><br />
+<br /><br />
+<asp:Button CssClass="ms-ButtonHeightWidth" Text="Продолжить" ID="bContinue" runat="server" OnClick="bContinue_Click" />
+<nw:BackButton runat="server" ID="bBackButton" />
+<script runat="server">
+protected void Page_Load(object sender, EventArgs e)
+{
+    SetTitle("<#= ot.TitlePlural #> - создание новой версии справочника");
+    RenderMargin = true;
+	if (!IsPostBack)
+		rbCopy.Checked = true;
+}
+
+protected void bContinue_Click(object sender, EventArgs e)
+{
+    <#= ot.SysName #>Controller.CreateClassVersion(rbCopy.Checked);
+	Url.Current.ReturnUrl.RemoveParameter("versionid").Go();
+}
+</script>

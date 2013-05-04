@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="CompileConfig"
+    targetNamespace="http://nephritetech.com/tessera/compileconfig/1.0"
+    elementFormDefault="qualified"
+    xmlns="http://nephritetech.com/tessera/compileconfig/1.0"
+    xmlns:mstns="http://nephritetech.com/tessera/compileconfig/1.0"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+	<xs:complexType name="CompileConfig">
+		<xs:sequence>
+			<xs:element name="CompilerVersion" type="xs:string"/>
+			<xs:element name="PlaceAssemblyToGAC" type="xs:boolean"/>
+			<xs:element name="GacutilPath" type="xs:string" minOccurs="0" />
+			<xs:element name="ElevatedAccessAccountDomain" type="xs:string" minOccurs="0" />
+			<xs:element name="ElevatedAccessAccountUsername" type="xs:string" minOccurs="0" />
+			<xs:element name="ElevatedAccessAccountPassword" type="xs:string" minOccurs="0" />
+			<xs:element name="SqlMetalPath" type="xs:string" />
+			<xs:element name="ReferencedAssembly" type="xs:string" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

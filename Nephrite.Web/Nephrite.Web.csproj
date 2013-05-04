@@ -1,0 +1,539 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{26A68254-0902-4499-8B5F-6B4B6341BA21}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Nephrite.Web</RootNamespace>
+    <AssemblyName>Nephrite.Web</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Nephrite.Web.snk</AssemblyOriginatorKeyFile>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UseIISExpress>false</UseIISExpress>
+    <TargetFrameworkProfile />
+    <IISExpressSSLPort />
+    <IISExpressAnonymousAuthentication />
+    <IISExpressWindowsAuthentication />
+    <IISExpressUseClassicPipelineMode />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=c957c2ee7c0582f1, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ExternalDll\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Program Files (x86)\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.Smo, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.SqlServer.SmoExtended, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Program Files (x86)\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.SmoExtended.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.SqlServer.SqlEnum, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="NHibernate">
+      <HintPath>ExternalDll\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="SgmlReaderDll, Version=1.7.2.22216, Culture=neutral, PublicKeyToken=fbce82624870dc0e, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Mobile" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Controls\excel.ascx" />
+    <Content Include="Controls\word.ascx" />
+    <Content Include="ExternalDll\DocumentFormat.OpenXml.dll" />
+    <Content Include="ExternalDll\EPPlus.dll" />
+    <Content Include="ExternalDll\EPPlus.pdb" />
+    <Content Include="ExternalDll\Iesi.Collections.dll" />
+    <Content Include="ExternalDll\Iesi.Collections.pdb" />
+    <Content Include="ExternalDll\Iesi.Collections.xml" />
+    <Content Include="ExternalDll\NHibernate.dll" />
+    <Content Include="ExternalDll\NHibernate.pdb" />
+    <Content Include="ExternalDll\NHibernate.xml" />
+    <Content Include="js\knockout-2.2.1.js" />
+    <Content Include="js\modalwindow.js" />
+    <Content Include="MetaModel\CodeTemplates\Meta.xslt">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="View\Message\show.ascx" />
+    <Content Include="Web.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ADSearcher.cs" />
+    <Compile Include="AppWeb.cs" />
+    <Compile Include="App\AppSettings.cs" />
+    <Compile Include="Cache.cs" />
+    <Compile Include="Controls\ActionLink.cs" />
+    <Compile Include="Controls\AutoComplete.cs" />
+    <Compile Include="Controls\AutoComplete2.cs" />
+    <Compile Include="Controls\AutoNumeric.cs" />
+    <Compile Include="Controls\Button.cs" />
+    <Compile Include="Controls\ButtonsBar.cs" />
+    <Compile Include="Controls\Cart.cs" />
+    <Compile Include="Controls\CodeArea.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CodifierValue.cs" />
+    <Compile Include="ConnectionManager.cs" />
+    <Compile Include="Controllers\MaintanceController.cs" />
+    <Compile Include="Controls\CaptchaImage.cs" />
+    <Compile Include="Controllers\SimpleClassMover.cs" />
+    <Compile Include="Controls\BackButton.cs" />
+    <Compile Include="Controls\CodeMirror.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\DateLists.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\excel.ascx.cs">
+      <DependentUpon>excel.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\excel.ascx.designer.cs">
+      <DependentUpon>excel.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FileList.cs" />
+    <Compile Include="Controls\FileUpload.ascx.cs">
+      <DependentUpon>FileUpload.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\FileUpload.ascx.designer.cs">
+      <DependentUpon>FileUpload.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FileUploadSimple.ascx.cs">
+      <DependentUpon>FileUploadSimple.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\FileUploadSimple.ascx.designer.cs">
+      <DependentUpon>FileUploadSimple.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\FormCriteria.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\ICartItem.cs" />
+    <Compile Include="Controls\ImageUploadSimple.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\IMasterControl.cs" />
+    <Compile Include="Controls\InputMultiStrings.ascx.cs">
+      <DependentUpon>InputMultiStrings.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\InputMultiStrings.ascx.designer.cs">
+      <DependentUpon>InputMultiStrings.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\LinkedObjects.ascx.cs">
+      <DependentUpon>LinkedObjects.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\LinkedObjects.ascx.designer.cs">
+      <DependentUpon>LinkedObjects.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\HtmlDateLists.cs" />
+    <Compile Include="Controls\HtmlDropDownList.cs" />
+    <Compile Include="Controls\List.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\ModalDialogManager.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\MultilingualField.cs" />
+    <Compile Include="Controls\NavMenu.cs" />
+    <Compile Include="Controls\NumericBox.cs" />
+    <Compile Include="Controls\Paging.cs" />
+    <Compile Include="Controls\ParameterizedLinkManager.cs" />
+    <Compile Include="Controls\ListFilter.ascx.cs">
+      <DependentUpon>ListFilter.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\ListFilter.ascx.designer.cs">
+      <DependentUpon>ListFilter.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\MultiObject.ascx.cs">
+      <DependentUpon>MultiObject.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\MultiObject.ascx.designer.cs">
+      <DependentUpon>MultiObject.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\NavMenu.ascx.cs">
+      <DependentUpon>NavMenu.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\NavMenu.ascx.designer.cs">
+      <DependentUpon>NavMenu.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\NavMenuEx.ascx.cs">
+      <DependentUpon>NavMenuEx.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\NavMenuEx.ascx.designer.cs">
+      <DependentUpon>NavMenuEx.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ObjectListExEd.cs" />
+    <Compile Include="Controls\QuickListFilter.cs">
+    </Compile>
+    <Compile Include="Controls\SelectObjectHierarchic.ascx.cs">
+      <DependentUpon>SelectObjectHierarchic.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\SelectObjectHierarchic.ascx.designer.cs">
+      <DependentUpon>SelectObjectHierarchic.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\SingleObject.ascx.cs">
+      <DependentUpon>SingleObject.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\SingleObject.ascx.designer.cs">
+      <DependentUpon>SingleObject.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\Sorter.cs" />
+    <Compile Include="Controls\SubmitButton.cs" />
+    <Compile Include="Controls\TabControl.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\TableDnD.cs" />
+    <Compile Include="Controls\TabPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\TinyMCEEditor.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\TinyMCEFileManager.aspx.cs">
+      <DependentUpon>TinyMCEFileManager.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\TinyMCEFileManager.aspx.designer.cs">
+      <DependentUpon>TinyMCEFileManager.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\PopupMenu.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\Toolbar.cs" />
+    <Compile Include="Controls\ToolbarExtensions.cs" />
+    <Compile Include="Controls\ToolbarPopupMenuCompact.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\ToolbarPopupMenuLarge.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\Tree.cs" />
+    <Compile Include="Controls\TreeView.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\UpdatePanel.cs" />
+    <Compile Include="Controls\UpdatePanelEx.cs" />
+    <Compile Include="Controls\word.ascx.cs">
+      <DependentUpon>word.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\word.ascx.designer.cs">
+      <DependentUpon>word.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ZoneCalendar.cs" />
+    <Compile Include="Cramb.cs" />
+    <Compile Include="ExcelExport.cs" />
+    <Compile Include="Features\FileStorage2\DbFileData.cs" />
+    <Compile Include="Features\FileStorage2\DbItemType.cs" />
+    <Compile Include="Features\FileStorage2\FileStorageManager.cs" />
+    <Compile Include="Features\FileStorage2\IDbFile.cs" />
+    <Compile Include="Features\FileStorage2\IDbFolder.cs" />
+    <Compile Include="Features\FileStorage2\IDbItem.cs" />
+    <Compile Include="Features\FileStorage2\IFileRepository.cs" />
+    <Compile Include="Features\FileStorage2\Samples.cs" />
+    <Compile Include="Features\FileStorage2\StorageTypes.cs" />
+    <Compile Include="Features\Layout\Helper.cs" />
+    <Compile Include="Features\Layout\LayoutTessera.cs" />
+    <Compile Include="Features\Layout\SimpleTags.cs" />
+    <Compile Include="Features\Layout\WinModal.cs" />
+    <Compile Include="Features\Reporting\AggregateColumn.cs" />
+    <Compile Include="Features\Reporting\Grouping.cs" />
+    <Compile Include="Features\Reporting\Report.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Features\SPM2\ISPMContext.cs" />
+    <Compile Include="Features\SPM2\SPM2.cs" />
+    <Compile Include="Features\SPM2\SPMStereotype.cs" />
+    <Compile Include="Features\Validation\IValidatable.cs" />
+    <Compile Include="Features\Validation\ValidationMessage.cs" />
+    <Compile Include="FileStorage\DataHandler.cs" />
+    <Compile Include="DebuggerWriter.cs" />
+    <Compile Include="ErrorLog\ErrorLogger.cs" />
+    <Compile Include="FileStorage\FileHandler.cs" />
+    <Compile Include="FileStorage\FileProvider.cs" />
+    <Compile Include="FileStorage\FileTypeIcon.cs" />
+    <Compile Include="FileStorage\FolderPacker.cs" />
+    <Compile Include="ICalendarObject.cs" />
+    <Compile Include="FileStorage\ImageHandler.cs" />
+    <Compile Include="IModelObject.cs" />
+    <Compile Include="Impersonation.cs" />
+    <Compile Include="Internals\CalendarDayCache.cs" />
+    <Compile Include="IRouteHandler.cs" />
+    <Compile Include="JqTreeNode.cs" />
+    <Compile Include="MacroManager.cs" />
+    <Compile Include="MetaModel\Implementations\Core.cs" />
+    <Compile Include="Features\Layout\LayoutBootstrap.cs" />
+    <Compile Include="Features\Layout\LayoutEmpty.cs" />
+    <Compile Include="Features\Layout\LayoutWSS2007.cs" />
+    <Compile Include="MetaModel\Implementations\MetaLoad.cs" />
+    <Compile Include="MetaModel\Implementations\SystemLayout.cs" />
+    <Compile Include="MetaModel\Interfaces\CoreMetaModel.cs" />
+    <Compile Include="MetaModel\Interfaces\DBMetaModel.cs" />
+    <Compile Include="MetaModel\Implementations\PrimitiveTypes.cs" />
+    <Compile Include="MetaModel\Interfaces\LayoutMetaModel.cs" />
+    <Compile Include="MetaModel\Interfaces\UIMetaModel.cs" />
+    <Compile Include="Model\HCoreDataContext.cs" />
+    <Compile Include="Model\Hibernate.cs" />
+    <Compile Include="Model\HMapping.cs" />
+    <Compile Include="Model\HModel.cs" />
+    <Compile Include="MVC\PageParser.cs" />
+    <Compile Include="ObjectPropertyChange.cs" />
+    <Compile Include="Result.cs" />
+    <Compile Include="SPM\SpmActionNameAttribute.cs" />
+    <Compile Include="Store.cs" />
+    <Compile Include="TableInfo.cs" />
+    <Compile Include="TaskManager\MailerTask.cs" />
+    <Compile Include="MVC\MainMenu.cs" />
+    <Compile Include="Controls\MaskedInput.cs" />
+    <Compile Include="MVC\BaseController.cs" />
+    <Compile Include="MVC\ControlDataBinder.cs" />
+    <Compile Include="MVC\ControllerControlsPathAttribute.cs" />
+    <Compile Include="MVC\ControllerFactory.cs" />
+    <Compile Include="Controls\LetterFilter.ascx.cs">
+      <DependentUpon>LetterFilter.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\LetterFilter.ascx.designer.cs">
+      <DependentUpon>LetterFilter.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\ModalDialog.ascx.cs">
+      <DependentUpon>ModalDialog.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Controls\ModalDialog.ascx.designer.cs">
+      <DependentUpon>ModalDialog.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="HtmlHelperWSS.cs" />
+    <Compile Include="HtmlHelperBase.cs" />
+    <Compile Include="Controls\JSCalendar.cs" />
+    <Compile Include="Controls\MessageBox.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Features\Purifier\Purifier.cs" />
+    <Compile Include="Query.cs" />
+    <Compile Include="Resources\Common.Designer.cs">
+      <DependentUpon>Common.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="RouteTable.cs" />
+    <Compile Include="Features\RSS\RssFeed.cs" />
+    <Compile Include="Features\RSS\RssItem.cs" />
+    <Compile Include="RusNumber.cs" />
+    <Compile Include="Settings.cs" />
+    <Compile Include="SimpleTypeExtensions.cs" />
+    <Compile Include="SPM\SPM.cs" />
+    <Compile Include="MVC\ViewControl.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MVC\SqlLog.cs" />
+    <Compile Include="TaskManager\TaskManager.cs" />
+    <Compile Include="TaskManager\TaskManagerModule.cs" />
+    <Compile Include="TextResource.cs" />
+    <Compile Include="Transliteration.cs" />
+    <Compile Include="Url.cs" />
+    <Compile Include="UrlStack.cs" />
+    <Compile Include="Utils.cs" />
+    <Compile Include="View\Message\show.ascx.cs">
+      <DependentUpon>show.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="View\Message\show.ascx.designer.cs">
+      <DependentUpon>show.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="View\TinyMCEFileManager\list.ascx.cs">
+      <DependentUpon>list.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="View\TinyMCEFileManager\list.ascx.designer.cs">
+      <DependentUpon>list.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="View\Maintance\dbbackup.ascx.cs">
+      <DependentUpon>dbbackup.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="View\Maintance\dbbackup.ascx.designer.cs">
+      <DependentUpon>dbbackup.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="FileStorage\VirusChecker.cs" />
+    <Compile Include="View\TinyMCEFileManager\upload.ascx.cs">
+      <DependentUpon>upload.ascx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="View\TinyMCEFileManager\upload.ascx.designer.cs">
+      <DependentUpon>upload.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Word.cs" />
+    <Compile Include="MVC\Workspace.cs" />
+    <Compile Include="XMLSerializer.cs" />
+    <Compile Include="ZoneDateTime.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Fakes Include="Fakes\Microsoft.SqlServer.SmoExtended.fakes" />
+    <None Include="ExternalDll\nhibernate-mapping.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Nephrite.Web.snk" />
+    <Content Include="Controls\FileUpload.ascx" />
+    <Content Include="Controls\FileUploadSimple.ascx" />
+    <Content Include="Controls\InputMultiStrings.ascx" />
+    <Content Include="Controls\LetterFilter.ascx" />
+    <Content Include="Controls\LinkedObjects.ascx" />
+    <Content Include="Controls\ListFilter.ascx" />
+    <Content Include="Controls\ModalDialog.ascx" />
+    <Content Include="Controls\MultiObject.ascx" />
+    <Content Include="Controls\NavMenu.ascx" />
+    <Content Include="Controls\NavMenuEx.ascx" />
+    <Content Include="Controls\SelectObjectHierarchic.ascx" />
+    <Content Include="Controls\SingleObject.ascx" />
+    <Content Include="Controls\TinyMCEFileManager.aspx" />
+    <Content Include="ExternalDll\ICSharpCode.SharpZipLib.dll" />
+    <None Include="ExternalDll\SgmlReaderDll.dll" />
+    <Content Include="js\codearea.js" />
+    <Content Include="js\declension.js" />
+    <Content Include="js\homewindow.js" />
+    <Content Include="js\nt_listtoolbar_menu.js" />
+    <Content Include="js\popup.js" />
+    <Content Include="js\tiny_mce\plugins\advimage\image.htm" />
+    <Content Include="js\tiny_mce\plugins\advlink\link.htm" />
+    <Content Include="js\tiny_mce\plugins\media\media.htm" />
+    <Content Include="View\TinyMCEFileManager\list.ascx" />
+    <Content Include="View\Maintance\dbbackup.ascx" />
+    <Content Include="View\TinyMCEFileManager\upload.ascx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Common.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Common.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>24090</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <PropertyGroup>
+    <PostBuildEvent>%25systemroot%25\system32\xcopy "$(ProjectDir)Controls\*.ascx" "$(SolutionDir)Tessera\_controltemplates\Nephrite.Web\*.*" /E /R /Y
+%25systemroot%25\system32\xcopy "$(ProjectDir)Controls\*.ascx" "$(SolutionDir)Nephrite.Metamodel\_controltemplates\Nephrite.Web\*.*" /E /R /Y
+%25systemroot%25\system32\xcopy "$(ProjectDir)Controls\*.aspx" "$(SolutionDir)Tessera\_controltemplates\Nephrite.Web\*.*" /E /R /Y
+%25systemroot%25\system32\xcopy "$(ProjectDir)Controls\*.aspx" "$(SolutionDir)Nephrite.Metamodel\_controltemplates\Nephrite.Web\*.*" /E /R /Y
+
+%25systemroot%25\system32\xcopy "$(ProjectDir)LinkedObjects\*.ascx" "$(SolutionDir)Tessera\_controltemplates\Nephrite.Web\LinkedObjects\*.*" /E /R /Y
+%25systemroot%25\system32\xcopy "$(ProjectDir)LinkedObjects\*.ascx" "$(SolutionDir)Nephrite.Metamodel\_controltemplates\Nephrite.Web\LinkedObjects\*.*" /E /R /Y
+
+rem %25systemroot%25\system32\xcopy $(ProjectDir)js\*.* $(SolutionDir)Tessera\_controltemplates\Nephrite.Web\js\*.* /E /R /Y
+%25systemroot%25\system32\xcopy /S "$(ProjectDir)View\*.ascx" "$(SolutionDir)Tessera\_controltemplates\Nephrite.Web\" /E /R /Y</PostBuildEvent>
+  </PropertyGroup>
+</Project>

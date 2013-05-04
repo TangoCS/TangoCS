@@ -1,0 +1,1 @@
+﻿<%@ WebHandler Language="C#" Class="Nephrite.Web.DataHandler" %>

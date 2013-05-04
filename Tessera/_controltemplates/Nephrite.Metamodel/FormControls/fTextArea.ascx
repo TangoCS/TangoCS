@@ -1,0 +1,2 @@
+﻿<%@ Control Language="C#" AutoEventWireup="true" CodeBehind="fTextArea.ascx.cs" Inherits="Nephrite.Metamodel.FormControls.fTextArea" %>
+<asp:TextBox ID="tb" runat="server" TextMode="MultiLine"></asp:TextBox>

@@ -1,0 +1,95 @@
+<#@ template language="C#v3.5" debug="True" #>
+<#@ assembly name="System.Core.dll" #>
+<#@ assembly name="System.Data.dll" #>
+<#@ assembly name="System.Data.Linq.dll" #>
+<#@ assembly name="System.Configuration.dll" #>
+<#@ assembly name="Nephrite.Web.dll" #>
+<#@ assembly name="Nephrite.Metamodel.dll" #>
+<#@ import namespace="Nephrite.Metamodel" #>
+<#@ import namespace="Nephrite.Metamodel.Model" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System" #>
+<#@ output extension="cs" #>
+<# 	var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate && o.IsSeparateTable).ToList().Where(o => o.PrimaryKey.Length == 1); #>
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using Nephrite.Web;
+using <#= AppMM.DBName() #>.Model;
+
+namespace <#= AppMM.DBName() #>.Controllers
+{
+<#	foreach (var cls in objectTypes.Where(o => o.MM_Methods.Any()))
+	{
+		bool ishstcls = cls.HistoryTypeCode == HistoryType.IdentifiersRetain || cls.HistoryTypeCode == HistoryType.IdentifiersMiss;
+		string clsname = cls.SysName;#>
+    partial class <#= cls.SysName #>Controller
+    {
+		public override void Update(Nephrite.Web.IModelObject obj)
+        {
+			<#if (cls.HistoryTypeCode != HistoryType.None) {#>
+			base.Update(obj);
+			<#} else {#>
+			var tobj = obj as <#= clsname #>;
+            if (obj is IChildObject && tobj != null && tobj.IsNewObject && Url.Current.GetInt("parent", 0) > 0)
+            	(obj as IChildObject).SetParent(Url.Current.GetInt("parent", 0));
+			
+<# 		if (cls.IsMovable)
+		{
+			string where = "";
+			MM_ObjectProperty parentprop = cls.AllProperties.FirstOrDefault(o => o.RefObjectPropertyID.HasValue &&
+				o.RefObjectProperty.IsAggregate);
+			if (parentprop != null)
+			{
+				if (parentprop.LowerBound == 0)
+					where = String.Format(@".Where(o => tobj.{0}.HasValue ? o.{0} == tobj.{0} : !o.{0}.HasValue)", parentprop.ColumnName);
+				else
+					where = String.Format(@".Where(o => o.{0} == tobj.{0})", parentprop.ColumnName);
+			}
+			#>
+			if (tobj != null && tobj.SeqNo == 0)
+<# if (cls.BaseObjectTypeID.HasValue && cls.BaseObjectType.IsMovable) { #>
+                tobj.<#= cls.BaseObjectType.SysName #>.InitSeqNo(App.DataContext.<#= cls.BaseObjectType.SysName + where #>.Cast<IMovableObject>());
+<# } else { #>
+                tobj.InitSeqNo(App.DataContext.<#= clsname + where #>.Cast<IMovableObject>());
+<# } #>
+<# 		} #>
+
+            if (((<#=clsname#>)obj).IsNewObject && tobj != null)
+            {
+<#  	foreach (var op in cls.MM_ObjectProperties.Where(o => o.TypeCode == ObjectPropertyType.Object &&
+			o.UpperBound == -1 && String.IsNullOrEmpty(o.Expression) && o.RefObjectTypeID.HasValue &&
+			o.IsAggregate))
+        {#>
+                foreach(var childobj in tobj.<#= op.SysName #>)
+                {
+                    if (childobj.IsNewObject)
+                    {
+                        childobj.LastModifiedDate = DateTime.Now;
+                        childobj.LastModifiedUserID = Nephrite.Web.SPM.AppSPM.GetCurrentSubjectID();
+<#  		if (op.RefObjectType.IsMovable)
+            {#>
+						if (childobj.SeqNo == 0)
+							childobj.InitSeqNo(tobj.<#= op.SysName #>.Cast<IMovableObject>());
+<# 			} #>
+                    }
+                }
+<# 		} #>
+        	}
+<#  	if (false && ishstcls)
+    	{#>
+            if (CHST_<#= cls.SysName #>.CurrentVersion.IsDraft)
+                base.Update(obj);
+            else
+                base.Update(tobj.<#= cls.SysName #>);
+<# 		}
+		else
+		{#>
+		base.Update(obj);
+<# 		} }#>
+        }
+	}
+<# 	} #>
+}
