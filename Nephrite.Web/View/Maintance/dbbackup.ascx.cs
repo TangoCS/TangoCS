@@ -4,8 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Microsoft.SqlServer.Management.Smo;
-using Microsoft.SqlServer.Management.Common;
+//using Microsoft.SqlServer.Management.Smo;
+//using Microsoft.SqlServer.Management.Common;
 using System.Data.SqlClient;
 using System.Configuration;
 using System.IO;
@@ -30,35 +30,17 @@ namespace Nephrite.Web.View.Maintance
         protected void bCreateBackup_Click(object sender, EventArgs e)
         {
             SqlConnectionStringBuilder b = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString);
+			string filename = b.InitialCatalog + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".bak";
+			string fullpath = BackupDir + Path.DirectorySeparatorChar + filename;
 
-            ServerConnection sc = b.IntegratedSecurity ? new ServerConnection(b.DataSource) : new ServerConnection(b.DataSource, b.UserID, b.Password);
-            sc.Connect();
-            Server server = new Server(sc);
+			string dbserverpath = "";
+			if (!b.DataSource.ToUpper().StartsWith("(LOCAL)"))
+				dbserverpath = Path.Combine(ConfigurationManager.AppSettings["MssqlBackupPath"], filename);
+			else
+				dbserverpath = fullpath;
 
-            Backup sbackup = new Backup();
-
-            sbackup.Action = BackupActionType.Database;
-            sbackup.BackupSetDescription = "Full Backup";
-
-            sbackup.BackupSetName = "Database Backup";
-            sbackup.Database = b.InitialCatalog;
-
-            BackupDeviceItem dbi;
-            string filename = b.InitialCatalog + "_" + DateTime.Now.ToString("yyyyMMdd_HHmmss") + ".bak";
-
-            string fullpath = BackupDir + Path.DirectorySeparatorChar + filename;
-
-            if (!b.DataSource.ToUpper().StartsWith("(LOCAL)"))
-                dbi = new BackupDeviceItem(Path.Combine(ConfigurationManager.AppSettings["MssqlBackupPath"], filename), DeviceType.File);
-            else
-                dbi = new BackupDeviceItem(fullpath, DeviceType.File);
-            sbackup.Devices.Add(dbi);
-
-            sbackup.Incremental = false;
-            sbackup.LogTruncation = BackupTruncateLogType.Truncate;
-            sbackup.SqlBackup(server);
-            sbackup.Devices.Remove(dbi);
-
+			AppWeb.DataContext.Session.CreateSQLQuery("EXEC BackupDatabase :backupdir").SetString("backupdir", dbserverpath).UniqueResult();
+		
             if (!b.DataSource.ToUpper().StartsWith("(LOCAL)"))
             {
 				if (ConfigurationManager.AppSettings["BackupAccountUsername"].IsEmpty())

@@ -400,18 +400,6 @@
       <Generator>NephriteTextTransform</Generator>
       <LastGenOutput>pckcontrollers.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\createclassversion.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>createclassversion.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\deleteclassversion.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>deleteclassversion.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\setcurrentclassversion.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>setcurrentclassversion.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="CodeTemplates\controllers5.tt">
       <Generator>NephriteTextTransform</Generator>
       <LastGenOutput>controllers5.cs</LastGenOutput>
@@ -424,6 +412,18 @@
       <Generator>NephriteTextTransform</Generator>
       <LastGenOutput>folderpredicates.cs</LastGenOutput>
     </EmbeddedResource>
+    <Content Include="CodeTemplates\createclassversion.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>createclassversion.cs</LastGenOutput>
+    </Content>
+    <Content Include="CodeTemplates\deleteclassversion.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>deleteclassversion.cs</LastGenOutput>
+    </Content>
+    <Content Include="CodeTemplates\setcurrentclassversion.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>setcurrentclassversion.cs</LastGenOutput>
+    </Content>
     <None Include="Compilation\CompileConfig.xsd">
       <SubType>Designer</SubType>
     </None>

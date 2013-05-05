@@ -5,12 +5,16 @@ using System.Web;
 
 namespace Nephrite.Meta
 {
-	public class MetaPrimitiveType : MetaClassifier
+	public interface IMetaIdentifierType
 	{
-
 	}
 
-	public class MetaDecimalType : MetaClassifier
+	public class MetaPrimitiveType : MetaClassifier
+	{
+		public bool NotNullable { get; set; }
+	}
+
+	public class MetaDecimalType : MetaPrimitiveType
 	{
 		public int Precision { get; set; }
 		public int Scale { get; set; }
@@ -21,33 +25,80 @@ namespace Nephrite.Meta
 		public int Length { get; set; }
 	}
 
+	public class MetaDateTimeType : MetaPrimitiveType
+	{
 
+	}
+
+	public class MetaDateType : MetaPrimitiveType
+	{
+
+	}
+
+	public class MetaIntType : MetaPrimitiveType, IMetaIdentifierType
+	{
+
+	}
+
+	public class MetaLongType : MetaPrimitiveType
+	{
+
+	}
+
+	public class MetaByteArrayType : MetaClassifier
+	{
+
+	}
+
+	public class MetaBooleanType : MetaPrimitiveType
+	{
+
+	}
+
+	public class MetaGuidType : MetaPrimitiveType, IMetaIdentifierType
+	{
+
+	}
+
+	public class MetaFileType : MetaPrimitiveType
+	{
+		public IMetaIdentifierType IdentifierType { get; set; }
+	}
 
 	public static class TypeFactory
 	{
-		static MetaPrimitiveType _date = new MetaPrimitiveType { Name = "Date", CLRType = "DateTime" };
-		static MetaPrimitiveType _dateTime = new MetaPrimitiveType { Name = "DateTime", CLRType = "DateTime" };
-		static MetaPrimitiveType _int = new MetaPrimitiveType { Name = "Int", CLRType = "int" };
-		static MetaPrimitiveType _long = new MetaPrimitiveType { Name = "Long", CLRType = "long" };
-		static MetaPrimitiveType _data = new MetaPrimitiveType { Name = "Data", CLRType = "byte[]" };
-		static MetaPrimitiveType _boolean = new MetaPrimitiveType { Name = "Boolean", CLRType = "bool" };
-		static MetaPrimitiveType _guid = new MetaPrimitiveType { Name = "Guid", CLRType = "Guid" };
-		static MetaPrimitiveType _fileID = new MetaPrimitiveType { Name = "FileID", CLRType = "int" };
-		static MetaPrimitiveType _fileGUID = new MetaPrimitiveType { Name = "FileGUID", CLRType = "Guid" };
-		static MetaPrimitiveType _zoneDateTime = new MetaPrimitiveType { Name = "ZoneDateTime" };
+		static MetaByteArrayType _byteArray = new MetaByteArrayType { Name = "Data" };
+
+		static MetaDateType _date = new MetaDateType { Name = "Date", NotNullable = true };
+		static MetaDateTimeType _dateTime = new MetaDateTimeType { Name = "DateTime", NotNullable = true };
+		static MetaIntType _int = new MetaIntType { Name = "Int", NotNullable = true };
+		static MetaLongType _long = new MetaLongType { Name = "Long", NotNullable = true };
+		static MetaBooleanType _boolean = new MetaBooleanType { Name = "Boolean", NotNullable = true };
+		static MetaGuidType _guid = new MetaGuidType { Name = "Guid", NotNullable = true };
+		static MetaFileType _fileIDKey = new MetaFileType { Name = "FileID", IdentifierType = TypeFactory.Int(true), NotNullable = true };
+		static MetaFileType _fileGUIDKey = new MetaFileType { Name = "FileGUID", IdentifierType = TypeFactory.Guid(true), NotNullable = true };
+
+		static MetaDateType _date_n = new MetaDateType { Name = "Date", NotNullable = false };
+		static MetaDateTimeType _dateTime_n = new MetaDateTimeType { Name = "DateTime", NotNullable = false };
+		static MetaIntType _int_n = new MetaIntType { Name = "Int", NotNullable = false };
+		static MetaLongType _long_n = new MetaLongType { Name = "Long", NotNullable = false };
+		static MetaBooleanType _boolean_n = new MetaBooleanType { Name = "Boolean", NotNullable = false };
+		static MetaGuidType _guid_n = new MetaGuidType { Name = "Guid", NotNullable = false };
+		static MetaFileType _fileIDKey_n = new MetaFileType { Name = "FileID", IdentifierType = TypeFactory.Int(false), NotNullable = false };
+		static MetaFileType _fileGUIDKey_n = new MetaFileType { Name = "FileGUID", IdentifierType = TypeFactory.Guid(false), NotNullable = false };
 
 		public static MetaStringType String(int length) { return new MetaStringType { Length = length, Name = "String" }; }
-		public static MetaPrimitiveType Date { get { return _date; } }
-		public static MetaPrimitiveType DateTime { get { return _dateTime; } }
-		public static MetaPrimitiveType Int { get { return _int; } }
-		public static MetaPrimitiveType Long { get { return _long; } }
-		public static MetaPrimitiveType Data { get { return _data; } }
-		public static MetaPrimitiveType Boolean { get { return _boolean; } }
-		public static MetaPrimitiveType Guid { get { return _guid; } }
-		public static MetaDecimalType Decimal(int precision, int scale) { return new MetaDecimalType { Precision = precision, Scale = scale, Name = "Decimal" }; }
-		public static MetaPrimitiveType FileID { get { return _fileID; } }
-		public static MetaPrimitiveType FileGUID { get { return _fileGUID; } }
 		public static MetaStringType Char(int length) { return new MetaStringType { Length = length, Name = "Char" }; }
-		public static MetaPrimitiveType ZoneDateTime { get { return _zoneDateTime; } }
+		public static MetaByteArrayType ByteArray { get { return _byteArray; } }
+
+		public static MetaDateType Date(bool notNull) { return notNull ? _date : _date_n; }
+		public static MetaDateTimeType DateTime(bool notNull) { return notNull ? _dateTime : _dateTime_n; }
+		public static MetaIntType Int(bool notNull) { return notNull ? _int : _int_n; }
+		public static MetaLongType Long(bool notNull) { return notNull ? _long : _long_n; }
+		public static MetaBooleanType Boolean(bool notNull) { return notNull ? _boolean : _boolean_n; }
+		public static MetaGuidType Guid(bool notNull) { return notNull ? _guid : _guid_n; }
+		public static MetaDecimalType Decimal(int precision, int scale, bool notNull) { return new MetaDecimalType { Precision = precision, Scale = scale, Name = "Decimal", NotNullable = notNull }; }
+		public static MetaFileType FileID(bool notNull) { return notNull ? _fileIDKey : _fileIDKey_n; }
+		public static MetaFileType FileGUID(bool notNull) { return notNull ? _fileGUIDKey : _fileGUIDKey_n; }		
 	}
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Microsoft.SqlServer.Management.Smo;
+//using Microsoft.SqlServer.Management.Smo;
 
 namespace Nephrite.Meta
 {

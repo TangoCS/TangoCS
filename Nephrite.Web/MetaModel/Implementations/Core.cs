@@ -191,22 +191,22 @@ namespace Nephrite.Meta
 
 	public abstract class MetaClassifier : MetaElement
 	{
-		public virtual string CLRType { get; set; }
+		//public virtual Type CLRType { get; set; }
 	}
 
 	public class MetaClass : MetaClassifier, IMetaClass
 	{
-		public override string CLRType
+		/*public override Type CLRType
 		{
 			get
 			{
-				return Name;
+				return Type.GetType("Solution." + Name);
 			}
 			set
 			{
 				throw new Exception("Changing class CLR type is unsupported");
 			}
-		}
+		}*/
 
 		public MetaSolution Solution { get; internal set; }
 		public MetaPackage Parent { get; set; }
@@ -308,7 +308,7 @@ namespace Nephrite.Meta
 			get
 			{
 				if (_refClass == null) _refClass = Parent.Solution.GetClass(RefClassName);
-				return _refClass;
+				return _refClass.Key.Type;
 			}
 			set
 			{

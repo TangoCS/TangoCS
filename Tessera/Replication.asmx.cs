@@ -83,6 +83,7 @@ namespace Tessera
         {
 			CheckCredentials();
             // Получить список версий строк
+			
             var ot = ObjectTypeRepository.Get(objectType);
 			if (ot == null)
 				throw new Exception("Класс " + objectType + " не найден в метамодели");
