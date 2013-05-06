@@ -20,6 +20,7 @@ using Nephrite.Web;
 using Nephrite.Web.SPM;
 using System.Xml.Xsl;
 using Nephrite.Web.FileStorage;
+using Nephrite.Meta;
 
 namespace Nephrite.Metamodel
 {
@@ -573,12 +574,20 @@ namespace Nephrite.Metamodel
 			var xsltFiles = Directory.GetFiles(xsltPath);
 			if (xsltFiles.Length > 0)
 			{
+				XsltArgumentList xsltArguments = null;
+				XsltExtension xsltExtension = new XsltExtension();
+				xsltArguments = new XsltArgumentList();
+				xsltArguments.AddExtensionObject("urn:tessera-ext", xsltExtension);
+
 				foreach (var xsltFile in xsltFiles)
 				{
 					XslCompiledTransform tr = new XslCompiledTransform(true);
 					tr.Load(xsltFile);
 					var targetPath = TempDir + "\\" + Path.GetFileNameWithoutExtension(xsltFile) + ".cs";
-					tr.Transform(TempDir + "\\model.xml", targetPath);
+					XmlTextWriter writer = new XmlTextWriter(targetPath, null);
+					tr.Transform(TempDir + "\\model.xml", xsltArguments, writer);
+					writer.Close();
+
 					string errors = SaveFile(Path.GetFileNameWithoutExtension(xsltFile) + ".cs", File.ReadAllBytes(targetPath), "AutoGenerate");
 					if (errors != String.Empty)
 						return errors;
