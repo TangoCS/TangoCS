@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Nephrite.Web;
-using Nephrite.Core;
 using System.Configuration;
 using System.IO;
 using System.Diagnostics;

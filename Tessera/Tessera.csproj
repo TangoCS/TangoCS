@@ -217,10 +217,6 @@
     </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Nephrite.CMS\Nephrite.CMS.csproj">
-      <Project>{7E236561-500D-4943-A534-77F42C2D950B}</Project>
-      <Name>Nephrite.CMS</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Nephrite.Metamodel\Nephrite.Metamodel.csproj">
       <Project>{9F863D08-FD1F-4065-9F7D-F9DDBC469E81}</Project>
       <Name>Nephrite.Metamodel</Name>

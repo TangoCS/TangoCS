@@ -15,6 +15,7 @@ using System.Linq.Expressions;
 using Nephrite.Web.SPM;
 using Nephrite.Web.FileStorage;
 using System.Data.SqlClient;
+using Nephrite.Meta;
 
 namespace Tessera
 {
@@ -83,14 +84,14 @@ namespace Tessera
         {
 			CheckCredentials();
             // Получить список версий строк
-			
-            var ot = ObjectTypeRepository.Get(objectType);
+
+			MetaClass ot = Base.Meta.GetClass(objectType); //ObjectTypeRepository.Get(objectType);
 			if (ot == null)
 				throw new Exception("Класс " + objectType + " не найден в метамодели");
 
 			var instance = r.EmptyHst(ot);
 			
-			object id = ot.PrimaryKey[0].TypeCode == ObjectPropertyType.Guid ? (object)objectID.ToGuid() : objectID.ToInt32(0);
+			object id = ot.Key.Type is MetaGuidType ? (object)objectID.ToGuid() : objectID.ToInt32(0);
             var list = r.GetListHst(ot).Where(instance.FilterByObjectID(id)).Where(o => o.LastModifiedDate > startDate).
                 Select(instance.GetIdentifierSelector());
             return list.Select(o => o.ToString()).ToArray();
@@ -125,7 +126,7 @@ namespace Tessera
 		public string GetVersionRecord(string objectType, string versionid)
         {
 			CheckCredentials();
-			var ot = ObjectTypeRepository.Get(objectType);
+			MetaClass ot = Base.Meta.GetClass(objectType); //ObjectTypeRepository.Get(objectType);
 			var obj = r.ExportObjectVersion(ot, versionid.ToInt32(0) > 0 ? (object)versionid.ToInt32(0) : versionid.ToGuid());
 			if (obj == null)
 				throw new Exception("Версия объекта " + objectType + " " + versionid + " не найдена в БД");

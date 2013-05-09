@@ -227,6 +227,7 @@ namespace Nephrite.Meta
 
 		public MetaProperty Key { get; set; }
 		public Dictionary<string, MetaProperty>.ValueCollection Properties { get { return _properties.Values; } }
+		//public IEnumerable<T> Properties<T>() where T : MetaProperty { return _properties.Where(o => o is T).Select(o => o as T);  }
 		public Dictionary<string, MetaOperation>.ValueCollection Operations { get { return _operations.Values; } }
 		public MetaOperation DefaultOperation { get; set; }
 

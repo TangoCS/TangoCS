@@ -119,7 +119,6 @@
     </Compile>
     <Compile Include="CodifierValue.cs" />
     <Compile Include="ConnectionManager.cs" />
-    <Compile Include="Controllers\MaintanceController.cs" />
     <Compile Include="Controls\CaptchaImage.cs" />
     <Compile Include="Controllers\SimpleClassMover.cs" />
     <Compile Include="Controls\BackButton.cs" />
@@ -406,13 +405,6 @@
     <Compile Include="View\TinyMCEFileManager\list.ascx.designer.cs">
       <DependentUpon>list.ascx</DependentUpon>
     </Compile>
-    <Compile Include="View\Maintance\dbbackup.ascx.cs">
-      <DependentUpon>dbbackup.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="View\Maintance\dbbackup.ascx.designer.cs">
-      <DependentUpon>dbbackup.ascx</DependentUpon>
-    </Compile>
     <Compile Include="FileStorage\VirusChecker.cs" />
     <Compile Include="View\TinyMCEFileManager\upload.ascx.cs">
       <DependentUpon>upload.ascx</DependentUpon>
@@ -456,7 +448,6 @@
     <Content Include="js\tiny_mce\plugins\advlink\link.htm" />
     <Content Include="js\tiny_mce\plugins\media\media.htm" />
     <Content Include="View\TinyMCEFileManager\list.ascx" />
-    <Content Include="View\Maintance\dbbackup.ascx" />
     <Content Include="View\TinyMCEFileManager\upload.ascx" />
   </ItemGroup>
   <ItemGroup>

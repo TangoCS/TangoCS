@@ -6,7 +6,7 @@ using System.Security.Principal;
 using System.Security;
 using System.Runtime.InteropServices;
 
-namespace Nephrite.Core
+namespace Nephrite.Web
 {
     public class Impersonation : IDisposable
     {

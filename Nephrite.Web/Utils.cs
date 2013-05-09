@@ -194,7 +194,7 @@ namespace Nephrite.Web
 		public static string ReinstallToGac(string domain, string login, string password, string gacutilpath, string assembly)
 		{
 			string output = "";
-			using (new Nephrite.Core.Impersonation(domain, login, password))
+			using (new Impersonation(domain, login, password))
 			{
 				string args;
 				Process gu;
@@ -222,7 +222,7 @@ namespace Nephrite.Web
 		}
 		public static void IisReset(string domain, string login, string password)
 		{
-			using (new Nephrite.Core.Impersonation(domain, login, password))
+			using (new Impersonation(domain, login, password))
 			{
 				string args = String.Format("/noforce");
 				var p = new Process();

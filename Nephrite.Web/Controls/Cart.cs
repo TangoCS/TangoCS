@@ -71,7 +71,8 @@ namespace Nephrite.Web.Controls
 				transaction.Complete();
 			}
 
-			Page.Response.Redirect(String.Format("/Web.aspx?mode=Bill&action=view&oid={0}", billGUID));
+			string s = Url.Create("Bill", "View", new HtmlParms { { "oid", billGUID.ToString() } }, null);
+			Page.Response.Redirect(s);
 		}
 
 		protected override void OnLoad(EventArgs e)

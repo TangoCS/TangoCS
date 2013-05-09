@@ -30,6 +30,11 @@ namespace Nephrite.Meta
 
 	}
 
+	public class MetaZoneDateTimeType : MetaPrimitiveType
+	{
+
+	}
+
 	public class MetaDateType : MetaPrimitiveType
 	{
 
@@ -72,6 +77,7 @@ namespace Nephrite.Meta
 
 		static MetaDateType _date = new MetaDateType { Name = "Date", NotNullable = true };
 		static MetaDateTimeType _dateTime = new MetaDateTimeType { Name = "DateTime", NotNullable = true };
+		static MetaZoneDateTimeType _zoneDateTime = new MetaZoneDateTimeType { Name = "ZoneDateTime", NotNullable = true };
 		static MetaIntType _int = new MetaIntType { Name = "Int", NotNullable = true };
 		static MetaLongType _long = new MetaLongType { Name = "Long", NotNullable = true };
 		static MetaBooleanType _boolean = new MetaBooleanType { Name = "Boolean", NotNullable = true };
@@ -83,6 +89,7 @@ namespace Nephrite.Meta
 
 		static MetaDateType _date_n = new MetaDateType { Name = "Date", NotNullable = false };
 		static MetaDateTimeType _dateTime_n = new MetaDateTimeType { Name = "DateTime", NotNullable = false };
+		static MetaZoneDateTimeType _zoneDateTime_n = new MetaZoneDateTimeType { Name = "ZoneDateTime", NotNullable = false };
 		static MetaIntType _int_n = new MetaIntType { Name = "Int", NotNullable = false };
 		static MetaLongType _long_n = new MetaLongType { Name = "Long", NotNullable = false };
 		static MetaBooleanType _boolean_n = new MetaBooleanType { Name = "Boolean", NotNullable = false };
@@ -100,6 +107,7 @@ namespace Nephrite.Meta
 
 		public static MetaDateType Date(bool notNull) { return notNull ? _date : _date_n; }
 		public static MetaDateTimeType DateTime(bool notNull) { return notNull ? _dateTime : _dateTime_n; }
+		public static MetaZoneDateTimeType ZoneDateTime(bool notNull) { return notNull ? _zoneDateTime : _zoneDateTime_n; }
 		public static MetaIntType Int(bool notNull) { return notNull ? _int : _int_n; }
 		public static MetaLongType Long(bool notNull) { return notNull ? _long : _long_n; }
 		public static MetaBooleanType Boolean(bool notNull) { return notNull ? _boolean : _boolean_n; }

@@ -14,7 +14,7 @@ namespace Nephrite.CMS.Controllers
         public void View(int id, string className)
         {
             Repository r = new Repository();
-            var obj = r.Get(ObjectTypeRepository.Get(className), id);
+            var obj = r.Get(Base.Meta.GetClass(className), id);
             if (obj == null)
                 RenderMessage("Раздел не существует");
             RenderView("view", obj, false);
