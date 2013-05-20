@@ -10,8 +10,6 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Linq" #>
 <#@ output extension="cs" #>
-<# 	var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate && o.IsSeparateTable).ToList(); #>
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -82,14 +80,15 @@ namespace <#= AppMM.DBName() #>
 
 	public class AppModel
 	{
-<#		foreach (var cls in objectTypes.Where(o => o.MM_Methods.Any()))
+<#		foreach (var cls in Base.DynamicMeta.Classes.Where(o => o.IsPersistent && o.Operations.Count() > 0))
 		{
-			bool ishstcls = cls.HistoryTypeCode == HistoryType.IdentifiersRetain || cls.HistoryTypeCode == HistoryType.IdentifiersMiss;
+			var v = cls.S<SVersioning>();
+			bool ishstcls = v != null && (v.VersioningType == VersioningType.IdentifiersRetain || v.VersioningType == VersioningType.IdentifiersMiss);
 			var clsprefix = cls.IsMultiLingual ? (ishstcls ? "V_HST_" : "V_") : (ishstcls ? "HST_" :"");
 		#>
-		public IQueryable<<#= AppMM.DBName() #>.Model.<#=clsprefix + cls.SysName#>> <#=cls.SysName#> 
+		public IQueryable<<#= AppMM.DBName() #>.Model.<#=clsprefix + cls.Name#>> <#=cls.Name#> 
 		{
-			get { return (new <#= AppMM.DBName() #>.Controllers.<#=cls.SysName#>Controller()).GetList(); }
+			get { return (new <#= AppMM.DBName() #>.Controllers.<#=cls.Name#>Controller()).GetList(); }
 		}
 <#		}#>
 	}

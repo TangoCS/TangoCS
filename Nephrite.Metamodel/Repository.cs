@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Xml.Linq;
-using Nephrite.Metamodel.Model;
 using System.Reflection;
 using System.Data.SqlClient;
 using System.Configuration;
@@ -99,7 +98,7 @@ namespace Nephrite.Metamodel
 				// Преобразование IMMObject к нужному нам реальному типу объекта
 				UnaryExpression ue_c = UnaryExpression.Convert(pe_c, T);
 				// Получение у объекта свойства с именем, соответствующим первичному ключу
-				MemberExpression me_id = MemberExpression.Property(ue_c, objectType.Key.Name);
+				MemberExpression me_id = MemberExpression.Property(ue_c, objectType.Key.ColumnName);
 				// Константа, по которой будем искать объект
 				ConstantExpression ce_val = ConstantExpression.Constant(id, id.GetType());
 				// Сравнение первичного ключа с заданным идентификатором
@@ -123,7 +122,7 @@ namespace Nephrite.Metamodel
             // Преобразование IMMObject к нужному нам реальному типу объекта
             UnaryExpression ue_c = UnaryExpression.Convert(pe_c, T);
             // Получение у объекта свойства с именем, соответствующим первичному ключу
-			string pkname = objectType.Key.Name;
+			string pkname = objectType.Key.ColumnName;
 			if (pkname.EndsWith("GUID"))
 				pkname = pkname.Substring(0, pkname.Length - 4);
             else if (pkname.EndsWith("ID"))
@@ -148,7 +147,7 @@ namespace Nephrite.Metamodel
             // Преобразование Object к нужному нам реальному типу объекта
             UnaryExpression ue_c = UnaryExpression.Convert(pe_c, T);
             // Получение у объекта свойства с именем, соответствующим первичному ключу
-			MemberExpression me_id = MemberExpression.Property(ue_c, objectType.Key.Name);
+			MemberExpression me_id = MemberExpression.Property(ue_c, objectType.Key.ColumnName);
             // Константа, по которой будем искать объект
             ConstantExpression ce_val = ConstantExpression.Constant(id, typeof(Int32));
             // Сравнение первичного ключа с заданным идентификатором
@@ -280,7 +279,7 @@ namespace Nephrite.Metamodel
 							{
 								if (obj == null)
 									continue;
-								var itemname = r.RefClass.Key.Name;
+								var itemname = r.RefClass.Key.ColumnName;
 								if (r.RefClass.Key.Type is MetaGuidType)
 									xp.Add(new XElement(itemname, obj.ObjectGUID));
 								else
@@ -396,7 +395,7 @@ namespace Nephrite.Metamodel
 							var casted = val.Cast<IModelObject>();
 							foreach (var obj in casted)
 							{
-								var itemname = r.RefClass.Key.Name;
+								var itemname = r.RefClass.Key.ColumnName;
 								if (r.RefClass.Key.Type is MetaGuidType)
 									xp.Add(new XElement(itemname, obj.ObjectGUID));
 								else
@@ -408,16 +407,17 @@ namespace Nephrite.Metamodel
             }
             xe.Add(new XElement("VersionNumber", o.VersionNumber));
             xe.Add(new XElement("IsCurrentVersion", o.IsCurrentVersion));
-			
-			/*if (objectType.HistoryTypeCode == HistoryType.IdentifiersMiss ||
-				objectType.HistoryTypeCode == HistoryType.IdentifiersRetain)
+
+			var v = objectType.S<SVersioning>();
+			if (v.VersioningType == VersioningType.IdentifiersMiss ||
+				v.VersioningType == VersioningType.IdentifiersRetain)
 			{
 				IMMObjectVersion2 o2 = (IMMObjectVersion2)o;
 				xe.Add(new XElement("ClassVersionID", o2.ClassVersionID));
-			}*/
+			}
 
             // Экспорт первичного ключа
-			string pkname = objectType.Key.Name;
+			string pkname = objectType.Key.ColumnName;
             if (pkname.EndsWith("GUID"))
                 pkname = pkname.Substring(0, pkname.Length - 4);
 			else if (pkname.EndsWith("ID"))
@@ -425,7 +425,7 @@ namespace Nephrite.Metamodel
 			pkname += "Version" + (objectType.Key.Type is MetaGuidType ? "GUID" : "ID");
             PropertyInfo pi1 = GetPropertyInfo(o, pkname);
             xe.Add(new XElement(pkname, pi1.GetValue(o, null)));
-			xe.Add(new XElement(objectType.Key.Name, o.ObjectID));
+			xe.Add(new XElement(objectType.Key.ColumnName, o.ObjectID));
             return xe;
         }
 
@@ -442,15 +442,20 @@ namespace Nephrite.Metamodel
                 db.GetTable(T).InsertOnSubmit(o);
             }
 
-            foreach (var p in objectType.MM_ObjectProperties.Where(p1 => !p1.IsMultilingual && String.IsNullOrEmpty(p1.Expression)))
+            foreach (var p in objectType.Properties)
             {
-                XElement e = obj.Element(p.SysName);
+				MetaReference r = p as MetaReference;
+				MetaAttribute a = p as MetaAttribute;
+				if (a != null && a.IsMultilingual) continue;
+				if (a == null && r == null) continue;
+
+                XElement e = obj.Element(p.Name);
                 if (e == null)
                     continue;
-				if (p.UpperBound == 1 || p.TypeCode != ObjectPropertyType.Object)
+				if (p.UpperBound == 1 || r == null)
 				{
-					string pname = p.TypeCode == ObjectPropertyType.Object ? e.Name.LocalName.ToLower() + (p.RefObjectType != null && p.RefObjectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? "guid" : "id") : e.Name.LocalName.ToLower();
-					if (p.TypeCode == ObjectPropertyType.FileEx)
+					string pname = r != null ? e.Name.LocalName.ToLower() + (r.RefClass != null && r.RefClass.Key.Type is MetaGuidType ? "guid" : "id") : e.Name.LocalName.ToLower();
+					if (p.Type is MetaFileType && (p.Type as MetaFileType).IdentifierType is MetaGuidType)
 					{
 						pname = pname + "FileGUID";
 						PropertyInfo pi1 = GetPropertyInfo(o, pname);
@@ -467,7 +472,7 @@ namespace Nephrite.Metamodel
 						}
 						continue;
 					}
-					if (p.TypeCode == ObjectPropertyType.File)
+					if (p.Type is MetaFileType && (p.Type as MetaFileType).IdentifierType is MetaIntType)
 					{
 						pname = pname + "FileID";
 						PropertyInfo pi1 = GetPropertyInfo(o, pname);
@@ -484,7 +489,7 @@ namespace Nephrite.Metamodel
 						}
 						continue;
 					}
-					if (p.TypeCode == ObjectPropertyType.ZoneDateTime)
+					if (p.Type is MetaZoneDateTimeType)
 					{
 						PropertyInfo pi1 = GetPropertyInfo(o, pname);
 						if (pi1 != null)
@@ -498,7 +503,7 @@ namespace Nephrite.Metamodel
 								pi1.SetValue(o, TypeDescriptor.GetConverter(typeof(DateTime)).ConvertFromInvariantString(e.Value), null);
 							}
 						}
-						e = obj.Element(p.SysName + "TimeZoneID");
+						e = obj.Element(p.Name + "TimeZoneID");
 						if (e != null)
 						{
 							pi1 = GetPropertyInfo(o, pname + "TimeZoneID");
@@ -519,9 +524,9 @@ namespace Nephrite.Metamodel
 					PropertyInfo pi = GetPropertyInfo(o, pname);
 					if (pi != null)
 					{
-						if (p.TypeCode == ObjectPropertyType.Data)
+						if (p.Type is MetaByteArrayType)
 						{
-							var xe = obj.Element(p.SysName);
+							var xe = obj.Element(p.Name);
 							if (xe == null)
 							{
 								pi.SetValue(o, null, null);
@@ -535,34 +540,34 @@ namespace Nephrite.Metamodel
 					
 						try
 						{
-							if (p.RefObjectTypeID.HasValue && p.RefObjectType.SysName == "SPM_Subject")
+							if (r.RefClass != null && r.RefClass.Name == "SPM_Subject") // @Sad
 								pi.SetValue(o, 1, null);
 							else
 								pi.SetValue(o, TypeDescriptor.GetConverter(pi.PropertyType).ConvertFromInvariantString(e.Value), null);
 						}
 						catch (Exception ex)
 						{
-							throw new Exception("Ошибка установки свойства " + objectType.SysName + "." + pname + " [" + pi.PropertyType.ToString() + "]: {" + e.Value + "}", ex);
+							throw new Exception("Ошибка установки свойства " + objectType.Name + "." + pname + " [" + pi.PropertyType.ToString() + "]: {" + e.Value + "}", ex);
 						}
 					}
 				}
-				if (p.UpperBound != 1 && p.TypeCode == ObjectPropertyType.Object)
+				if (p.UpperBound != 1 && r != null)
 				{
-					PropertyInfo pi = GetPropertyInfo(o, p.SysName);
+					PropertyInfo pi = GetPropertyInfo(o, p.Name);
 					if (pi != null)
 					{
 						object coll = pi.GetValue(o, null);
-						if (coll != null && coll.GetType().Name == objectType.SysName + p.SysName + "Collection")
+						if (coll != null && coll.GetType().Name == objectType.Name + p.Name + "Collection")
 						{
 							coll.GetType().InvokeMember("Clear", BindingFlags.InvokeMethod, null, coll, new object[] { DataContext });
 							foreach (var xi in e.Elements())
 							{
-								object objid = p.RefObjectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? (object)xi.Value.ToGuid() : (object)xi.Value.ToInt32(0);
-								var refobj = Get(p.RefObjectType, objid);
+								object objid = r.RefClass.Key.Type is MetaGuidType ? (object)xi.Value.ToGuid() : (object)xi.Value.ToInt32(0);
+								var refobj = Get(r.RefClass, objid);
 								if (refobj == null)
 								{
 									SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(ConnectionManager.ConnectionString);
-									throw new Exception("В базе данных " + csb.InitialCatalog + " не найден объект " + p.RefObjectType.SysName + " с идентификатором " + objid.ToString() +
+									throw new Exception("В базе данных " + csb.InitialCatalog + " не найден объект " + r.RefClass.Name + " с идентификатором " + objid.ToString() +
 									", необходимый для импорта объекта " + o.MetaClass.Name + "," + (o.ObjectID > 0 ? o.ObjectID.ToString() : o.ObjectGUID.ToString()));
 								}
 								coll.GetType().InvokeMember("Add", BindingFlags.InvokeMethod, null, coll, new object[] { refobj });
@@ -578,17 +583,22 @@ namespace Nephrite.Metamodel
 			Type T = assembly.GetType(ns + "." + objectType.Name, true, true);
 
 			// Определить ид
-			XElement xeid = obj.Element(objectType.Key.Name);
+			XElement xeid = obj.Element(objectType.Key.ColumnName);
 			int id = xeid != null ? xeid.Value.ToInt32(0) : 0;
 			IMMObject o = (IMMObject)Activator.CreateInstance(T);
 
-			foreach (var p in objectType.MM_ObjectProperties.Where(p1 => !p1.IsMultilingual && p1.UpperBound == 1 && String.IsNullOrEmpty(p1.Expression)))
+			foreach (var p in objectType.Properties.Where(p1 => p1.UpperBound == 1))
 			{
-				XElement e = obj.Element(p.SysName);
+				MetaReference r = p as MetaReference;
+				MetaAttribute a = p as MetaAttribute;
+				if (a != null && a.IsMultilingual) continue;
+				if (a == null && r == null) continue;
+
+				XElement e = obj.Element(p.Name);
 				if (e == null)
 					continue;
-				string pname = p.TypeCode == ObjectPropertyType.Object ? e.Name.LocalName.ToLower() + (p.RefObjectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? "guid" : "id") : e.Name.LocalName.ToLower();
-				if (p.TypeCode == ObjectPropertyType.File)
+				string pname = r != null ? e.Name.LocalName.ToLower() + (r.RefClass.Key.Type is MetaGuidType ? "guid" : "id") : e.Name.LocalName.ToLower();
+				if (p.Type is MetaFileType && (p.Type as MetaFileType).IdentifierType is MetaIntType)
 				{
 					pname = pname + "FileID";
 					PropertyInfo pi1 = GetPropertyInfo(o, pname);
@@ -608,12 +618,12 @@ namespace Nephrite.Metamodel
 						}
 						catch (Exception x)
 						{
-							throw new Exception("Ошибка установки свойства " + pname + " для класса " + objectType.SysName + ", значение [" + e.Value + "]", x);
+							throw new Exception("Ошибка установки свойства " + pname + " для класса " + objectType.Name + ", значение [" + e.Value + "]", x);
 						}
 					}
 					continue;
 				}
-				if (p.TypeCode == ObjectPropertyType.FileEx)
+				if (p.Type is MetaFileType && (p.Type as MetaFileType).IdentifierType is MetaIntType)
 				{
 					PropertyInfo pi1 = GetPropertyInfo(o, pname);
 					if (e.Elements().Count() == 0)
@@ -626,7 +636,7 @@ namespace Nephrite.Metamodel
 					}
 					continue;
 				}
-				if (p.TypeCode == ObjectPropertyType.ZoneDateTime)
+				if (p.Type is MetaZoneDateTimeType)
 				{
 					PropertyInfo pi1 = GetPropertyInfo(o, pname);
 					if (e.Value == "")
@@ -637,7 +647,7 @@ namespace Nephrite.Metamodel
 					{
 						pi1.SetValue(o, TypeDescriptor.GetConverter(typeof(DateTime)).ConvertFromInvariantString(e.Value), null);
 					}
-					e = obj.Element(p.SysName + "TimeZoneID");
+					e = obj.Element(p.Name + "TimeZoneID");
 					if (e != null)
 					{
 						pi1 = GetPropertyInfo(o, pname + "TimeZoneID");
@@ -662,7 +672,7 @@ namespace Nephrite.Metamodel
 				}
 				catch (Exception ex)
 				{
-					throw new Exception("Ошибка установки свойства " + objectType.SysName + "." + pname + " [" + pi.PropertyType.ToString() + "]: {" + e.Value + "}" + Environment.NewLine +
+					throw new Exception("Ошибка установки свойства " + objectType.Name + "." + pname + " [" + pi.PropertyType.ToString() + "]: {" + e.Value + "}" + Environment.NewLine +
 					obj.ToString(), ex);
 				}
 			}
@@ -673,7 +683,7 @@ namespace Nephrite.Metamodel
 		{
 			Type T = assembly.GetType(ns + ".HST_" + objectType.Name, true, true);
 
-			string pkname = objectType.Key.Name;
+			string pkname = objectType.Key.ColumnName;
 			if (pkname.EndsWith("GUID"))
 				pkname = pkname.Substring(0, pkname.Length - 4);
 			else if (pkname.EndsWith("ID"))
@@ -682,13 +692,18 @@ namespace Nephrite.Metamodel
 			
 			IMMObject o = (IMMObject)Activator.CreateInstance(T);
 
-			foreach (var p in objectType.MM_ObjectProperties.Where(p1 => !p1.IsMultilingual && p1.UpperBound == 1 && String.IsNullOrEmpty(p1.Expression)))
+			foreach (var p in objectType.Properties.Where(p1 => p1.UpperBound == 1))
 			{
-				XElement e = obj.Element(p.SysName);
+				MetaReference r = p as MetaReference;
+				MetaAttribute a = p as MetaAttribute;
+				if (a != null && a.IsMultilingual) continue;
+				if (a == null && r == null) continue;
+
+				XElement e = obj.Element(p.Name);
 				if (e == null)
 					continue;
-				string pname = p.TypeCode == ObjectPropertyType.Object ? e.Name.LocalName.ToLower() + (p.RefObjectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? "guid" : "id") : e.Name.LocalName.ToLower();
-				if (p.TypeCode == ObjectPropertyType.File)
+				string pname = r != null ? e.Name.LocalName.ToLower() + (r.RefClass.Key.Type is MetaGuidType ? "guid" : "id") : e.Name.LocalName.ToLower();
+				if (p.Type is MetaFileType && (p.Type as MetaFileType).IdentifierType is MetaIntType)
 				{
 					pname = pname + "FileID";
 					PropertyInfo pi1 = GetPropertyInfo(o, pname);
@@ -708,12 +723,12 @@ namespace Nephrite.Metamodel
 						}
 						catch (Exception x)
 						{
-							throw new Exception("Ошибка установки свойства " + pname + " для класса " + objectType.SysName + ", значение [" + e.Value + "]", x);
+							throw new Exception("Ошибка установки свойства " + pname + " для класса " + objectType.Name + ", значение [" + e.Value + "]", x);
 						}
 					}
 					continue;
 				}
-				if (p.TypeCode == ObjectPropertyType.ZoneDateTime)
+				if (p.Type is MetaZoneDateTimeType)
 				{
 					PropertyInfo pi1 = GetPropertyInfo(o, pname);
 					if (e.Value == "")
@@ -724,7 +739,7 @@ namespace Nephrite.Metamodel
 					{
 						pi1.SetValue(o, TypeDescriptor.GetConverter(typeof(DateTime)).ConvertFromInvariantString(e.Value), null);
 					}
-					e = obj.Element(p.SysName + "TimeZoneID");
+					e = obj.Element(p.Name + "TimeZoneID");
 					if (e != null)
 					{
 						pi1 = GetPropertyInfo(o, pname + "TimeZoneID");
@@ -742,27 +757,27 @@ namespace Nephrite.Metamodel
 				PropertyInfo pi = GetPropertyInfo(o, pname);
 				try
 				{
-					if (pname == "LastModifiedUserID")
+					if (pname == "LastModifiedUserID") // @Sad
 						pi.SetValue(o, 1, null);
 					else if (e.Elements().Count() == 0)
 						pi.SetValue(o, TypeDescriptor.GetConverter(pi.PropertyType).ConvertFromInvariantString(e.Value), null);
 				}
 				catch (Exception ex)
 				{
-					throw new Exception("Ошибка установки свойства " + objectType.SysName + "." + pname + " [" + pi.PropertyType.ToString() + "]: {" + e.Value + "}", ex);
+					throw new Exception("Ошибка установки свойства " + objectType.Name + "." + pname + " [" + pi.PropertyType.ToString() + "]: {" + e.Value + "}", ex);
 				}
 			}
 
 			// Определить ид
 			XElement xeid = obj.Element(pkname);
 			PropertyInfo pi3 = GetPropertyInfo(o, pkname);
-			if (objectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid)
+			if (objectType.Key.Type is MetaGuidType)
 				pi3.SetValue(o, xeid.Value.ToGuid(), null);
 			else
 				pi3.SetValue(o, xeid.Value.ToInt32(0), null);
 
-			pi3 = GetPropertyInfo(o, objectType.PrimaryKey.Single().ColumnName);
-			pi3.SetValue(o, TypeDescriptor.GetConverter(pi3.PropertyType).ConvertFromInvariantString(obj.Element(objectType.PrimaryKey.Single().ColumnName).Value), null);
+			pi3 = GetPropertyInfo(o, objectType.Key.ColumnName);
+			pi3.SetValue(o, TypeDescriptor.GetConverter(pi3.PropertyType).ConvertFromInvariantString(obj.Element(objectType.Key.ColumnName).Value), null);
 
 			pi3 = GetPropertyInfo(o, "VersionNumber");
 			pi3.SetValue(o, TypeDescriptor.GetConverter(pi3.PropertyType).ConvertFromInvariantString(obj.Element("VersionNumber").Value), null);
@@ -770,8 +785,9 @@ namespace Nephrite.Metamodel
 			pi3 = GetPropertyInfo(o, "IsCurrentVersion");
 			pi3.SetValue(o, TypeDescriptor.GetConverter(pi3.PropertyType).ConvertFromInvariantString(obj.Element("IsCurrentVersion").Value), null);
 
-			if (objectType.HistoryTypeCode == HistoryType.IdentifiersMiss ||
-				objectType.HistoryTypeCode == HistoryType.IdentifiersRetain)
+			var v = objectType.S<SVersioning>();
+			if (v.VersioningType == VersioningType.IdentifiersMiss ||
+				v.VersioningType == VersioningType.IdentifiersRetain)
 			{
 				pi3 = GetPropertyInfo(o, "ClassVersionID");
 				pi3.SetValue(o, TypeDescriptor.GetConverter(pi3.PropertyType).ConvertFromInvariantString(obj.Element("ClassVersionID").Value), null);
@@ -802,17 +818,17 @@ namespace Nephrite.Metamodel
 			}
 		}
 
-        public void ImportObjectVersion(MM_ObjectType objectType, XElement obj)
+        public void ImportObjectVersion(MetaClass objectType, XElement obj)
         {
-            Type T = assembly.GetType(ns + ".HST_" + objectType.SysName, true, true);
+            Type T = assembly.GetType(ns + ".HST_" + objectType.Name, true, true);
 
             // Определить ид
-			string pkname = objectType.PrimaryKey.Single().ColumnName;
+			string pkname = objectType.Key.ColumnName;
 			if (pkname.EndsWith("GUID"))
 				pkname = pkname.Substring(0, pkname.Length - 4);
 			else if (pkname.EndsWith("ID"))
 				pkname = pkname.Substring(0, pkname.Length - 2);
-			pkname += "Version" + (objectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? "GUID" : "ID");
+			pkname += "Version" + (objectType.Key.Type is MetaGuidType ? "GUID" : "ID");
 			
             XElement xeid = obj.Element(pkname);
 			object id = xeid != null ? (xeid.Value.ToInt32(0) > 0 ? (object)xeid.Value.ToInt32(0) : xeid.Value.ToGuid()) : 0;
@@ -823,36 +839,41 @@ namespace Nephrite.Metamodel
                 db.GetTable(T).InsertOnSubmit(o);
             }
 
-            foreach (var p in objectType.MM_ObjectProperties.Where(p1 => !p1.IsMultilingual && String.IsNullOrEmpty(p1.Expression)))
+            foreach (var p in objectType.Properties)
             {
-                XElement e = obj.Element(p.SysName);
+				MetaReference r = p as MetaReference;
+				MetaAttribute a = p as MetaAttribute;
+				if (a != null && a.IsMultilingual) continue;
+				if (a == null && r == null) continue;
+
+                XElement e = obj.Element(p.Name);
                 if (e == null)
                     continue;
-				if (p.UpperBound == 1 || p.TypeCode != ObjectPropertyType.Object)
+				if (p.UpperBound == 1 || r == null)
 				{
-					string pname = p.TypeCode == ObjectPropertyType.Object ? e.Name.LocalName.ToLower() + (p.RefObjectType != null && p.RefObjectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? "guid" : "id") : e.Name.LocalName.ToLower();
+					string pname = r != null ? e.Name.LocalName.ToLower() + (r.RefClass != null && r.RefClass.Key.Type is MetaGuidType ? "guid" : "id") : e.Name.LocalName.ToLower();
 					PropertyInfo pi = GetPropertyInfo(o, pname);
 					if (pi != null)
 					{
-						if (pi.Name == "LastModifiedUserID")
+						if (pi.Name == "LastModifiedUserID") //@Sad
 							pi.SetValue(o, 1, null);
 						else
 							pi.SetValue(o, TypeDescriptor.GetConverter(pi.PropertyType).ConvertFromInvariantString(e.Value), null);
 					}
 				}
-				if (p.UpperBound != 1 && p.TypeCode == ObjectPropertyType.Object)
+				if (p.UpperBound != 1 && r != null)
 				{
-					PropertyInfo pi = GetPropertyInfo(o, p.SysName);
+					PropertyInfo pi = GetPropertyInfo(o, p.Name);
 					if (pi != null)
 					{
 						object coll = pi.GetValue(o, null);
-						if (coll != null && coll.GetType().Name == objectType.SysName + p.SysName + "Collection")
+						if (coll != null && coll.GetType().Name == objectType.Name + p.Name + "Collection")
 						{
 							coll.GetType().InvokeMember("Clear", BindingFlags.InvokeMethod, null, coll, null);
 							foreach (var xi in e.Elements())
 							{
-								object objid = p.RefObjectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? (object)xi.Value.ToGuid() : (object)xi.Value.ToInt32(0);
-								var refobj = Get(p.RefObjectType, objid);
+								object objid = r.RefClass.Key.Type is MetaGuidType ? (object)xi.Value.ToGuid() : (object)xi.Value.ToInt32(0);
+								var refobj = Get(r.RefClass, objid);
 								coll.GetType().InvokeMember("Add", BindingFlags.InvokeMethod, null, coll, new object[] { refobj });
 							}
 						}
@@ -864,8 +885,8 @@ namespace Nephrite.Metamodel
 			if (pi1 != null)
 			{
 				pi1.SetValue(o, id, null);
-				pi1 = GetPropertyInfo(o, objectType.PrimaryKey.Single().ColumnName);
-				pi1.SetValue(o, TypeDescriptor.GetConverter(pi1.PropertyType).ConvertFromInvariantString(obj.Element(objectType.PrimaryKey.Single().ColumnName).Value), null);
+				pi1 = GetPropertyInfo(o, objectType.Key.ColumnName);
+				pi1.SetValue(o, TypeDescriptor.GetConverter(pi1.PropertyType).ConvertFromInvariantString(obj.Element(objectType.Key.ColumnName).Value), null);
 			}
 
             pi1 = GetPropertyInfo(o, "VersionNumber");
@@ -877,8 +898,9 @@ namespace Nephrite.Metamodel
 				pi1.SetValue(o, TypeDescriptor.GetConverter(pi1.PropertyType).ConvertFromInvariantString(obj.Element("IsCurrentVersion").Value), null);
 			}
 
-			if (objectType.HistoryTypeCode == HistoryType.IdentifiersMiss ||
-				objectType.HistoryTypeCode == HistoryType.IdentifiersRetain)
+			var v = objectType.S<SVersioning>();
+			if (v.VersioningType == VersioningType.IdentifiersMiss ||
+				v.VersioningType == VersioningType.IdentifiersRetain)
 			{
 				pi1 = GetPropertyInfo(o, "ClassVersionID");
 				if (pi1 != null)
@@ -899,9 +921,9 @@ namespace Nephrite.Metamodel
         public void SaveObject(XElement obj, string languageCode)
         {
             Type T = assembly.GetType(ns + "." + obj.Name.LocalName, true, true);
-            var objectType = AppMM.DataContext.MM_ObjectTypes.SingleOrDefault(m => m.SysName == T.Name);
+			var objectType = Base.Meta.GetClass(T.Name);
             // Определить ид
-			XElement xeid = obj.Element(objectType.PrimaryKey.Single().ColumnName);
+			XElement xeid = obj.Element(objectType.Key.ColumnName);
             int id = xeid != null ? xeid.Value.ToInt32(0) : 0;
             object o = Get(objectType, id);
             if (o == null)
@@ -910,9 +932,12 @@ namespace Nephrite.Metamodel
                 db.GetTable(T).InsertOnSubmit(o);
             }
             
-            foreach (var p in objectType.MM_ObjectProperties.Where(p1=>!p1.IsMultilingual))
+            foreach (var p in objectType.Properties)
             {
-                XElement e = obj.Element(p.SysName);
+				MetaAttribute a = p as MetaAttribute;
+				if (a != null && a.IsMultilingual) continue;
+
+                XElement e = obj.Element(p.Name);
                 if (e == null)
                     continue;
                 PropertyInfo pi = T.GetProperties().Single(p1 => p1.Name.ToLower() == e.Name.LocalName.ToLower());
@@ -921,9 +946,9 @@ namespace Nephrite.Metamodel
 
             object odata = null;
             Type Tdata = null;
-            foreach (var p in objectType.MM_ObjectProperties.Where(p1 => p1.IsMultilingual))
+            foreach (var p in objectType.Properties.Where(p1 => p1 is MetaAttribute && (p1 as MetaAttribute).IsMultilingual))
             {
-                XElement e = obj.Element(p.SysName);
+                XElement e = obj.Element(p.Name);
                 if (e == null)
                     continue;
 
@@ -937,7 +962,7 @@ namespace Nephrite.Metamodel
                     {
                         odata = Activator.CreateInstance(Tdata);
                         Tdata.GetProperty("LanguageCode").SetValue(odata, languageCode ?? defaultLanguage, null);
-                        Tdata.GetProperties().Single(p1 => p1.Name.ToLower() == objectType.SysName.ToLower()).SetValue(odata, o, null);
+                        Tdata.GetProperties().Single(p1 => p1.Name.ToLower() == objectType.Name.ToLower()).SetValue(odata, o, null);
                         db.GetTable(Tdata).InsertOnSubmit(odata);
                     }
                 }
@@ -960,7 +985,7 @@ namespace Nephrite.Metamodel
 		public IQueryable<IMMObject> GetList(MetaClass objectType)
         {
             string sn;
-			if (objectType.Properties<MetaAttribute>().Any(o => o.IsMultilingual))
+			if (objectType.Properties.Any(o => o is MetaAttribute && (o as MetaAttribute).IsMultilingual))
             {
                 sn = ns + ".V_" + objectType.Name;
                 Type T = assembly.GetType(sn);
@@ -1001,7 +1026,7 @@ namespace Nephrite.Metamodel
 
 		public IMMObject Empty(MetaClass objectType)
         {
-            if (objectType.Properties<MetaAttribute>().Any(o => o.IsMultilingual))
+			if (objectType.Properties.Any(o => o is MetaAttribute && (o as MetaAttribute).IsMultilingual))
             {
                 Type T = assembly.GetType(ns + ".V_" + objectType.Name);
                 object obj = Activator.CreateInstance(T);

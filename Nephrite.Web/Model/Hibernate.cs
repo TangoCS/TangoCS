@@ -14,6 +14,7 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Mapping.ByCode;
 using System.Text;
+using System.Data.Linq;
 
 namespace Nephrite.Web.Model
 {
@@ -56,7 +57,7 @@ namespace Nephrite.Web.Model
 
 
 			_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" } });
-			_cfg.SetInterceptor(new HDataContextSqlStatementInterceptor());
+			_cfg.SetInterceptor(new HDataContextSqlStatementInterceptor(this));
 
 			var mapper = new ModelMapper();
 			mapper.AddMappings(GetEntitiesTypes());
@@ -139,7 +140,7 @@ namespace Nephrite.Web.Model
 		}
 	}
 
-	public class HTable<T> : IQueryable<T>
+	public class HTable<T> : IQueryable<T>, ITable
 	{
 		HDataContext _dataContext;
 		IQueryable<T> _query;
@@ -154,52 +155,92 @@ namespace Nephrite.Web.Model
 		{
 			return _query.GetEnumerator();
 		}
-
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
 			return _query.GetEnumerator();
 		}
-
 		public Type ElementType
 		{
 			get { return _query.ElementType; }
 		}
-
 		public System.Linq.Expressions.Expression Expression
 		{
 			get { return _query.Expression; }
 		}
-
 		public IQueryProvider Provider
 		{
 			get { return _query.Provider; }
 		}
 
-		public void InsertOnSubmit(T obj)
+		public void InsertOnSubmit(object obj)
 		{
 			_dataContext.ToInsert.Add(obj);
-			//_session.Persist(obj);
 		}
-
-		public void DeleteOnSubmit(T obj)
-		{
-			_dataContext.ToDelete.Add(obj);
-			//_session.Delete(obj);
-		}
-
-		public void DeleteAllOnSubmit(IQueryable<T> objs)
+		public void InsertAllOnSubmit(IEnumerable objs)
 		{
 			_dataContext.ToDelete.AddRange(objs.Cast<object>());
-			//	_session.Delete(obj);
+		}
+		public void DeleteOnSubmit(object obj)
+		{
+			_dataContext.ToDelete.Add(obj);
+		}
+		public void DeleteAllOnSubmit(IEnumerable objs)
+		{
+			_dataContext.ToDelete.AddRange(objs.Cast<object>());
+		}
+
+		public void Attach(object entity, object original)
+		{
+			throw new NotImplementedException();
+		}
+		public void Attach(object entity, bool asModified)
+		{
+			throw new NotImplementedException();
+		}
+		public void Attach(object entity)
+		{
+			throw new NotImplementedException();
+		}
+		public void AttachAll(IEnumerable entities, bool asModified)
+		{
+			throw new NotImplementedException();
+		}
+		public void AttachAll(IEnumerable entities)
+		{
+			throw new NotImplementedException();
+		}
+		public DataContext Context
+		{
+			get { throw new NotImplementedException(); }
+		}
+		public ModifiedMemberInfo[] GetModifiedMembers(object entity)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object GetOriginalEntityState(object entity)
+		{
+			throw new NotImplementedException();
+		}
+		public bool IsReadOnly
+		{
+			get { return false; }
 		}
 	}
 
 	public class HDataContextSqlStatementInterceptor : EmptyInterceptor
 	{
+		HDataContext _dataContext;
+
+		public HDataContextSqlStatementInterceptor(HDataContext dc)
+		{
+			_dataContext = dc;
+		}
+
 		public override SqlString OnPrepareStatement(SqlString sql)
 		{
-			AppWeb.DataContext.Log.WriteLine(sql.ToString());
-			AppWeb.DataContext.Log.WriteLine();
+			_dataContext.Log.WriteLine(sql.ToString());
+			_dataContext.Log.WriteLine();
 			return sql;
 		}
 	}

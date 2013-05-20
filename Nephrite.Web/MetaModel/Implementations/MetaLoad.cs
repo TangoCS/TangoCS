@@ -53,6 +53,30 @@ namespace Nephrite.Meta
 			c.Caption = xc.GetAttributeValue("Caption");
 			c.Description = xc.GetAttributeValue("Description");
 
+			c.IsPersistent = xc.GetAttributeValue("IsPersistent") == "true";
+
+			foreach (XElement xe in xc.Element("Properties").Nodes())
+			{
+				if (xe.Name == "Attribute") LoadAttribute(c, xe);
+				if (xe.Name == "Reference") LoadReference(c, xe);
+				if (xe.Name == "ComputedAttribute") LoadComputedAttribute(c, xe);
+				if (xe.Name == "PersistentComputedAttribute") LoadPersistentComputedAttribute(c, xe);
+			}
+
+			foreach (XElement xe in xc.Element("Operations").Nodes())
+			{
+				LoadOperation(c, xe);
+			}
+
+			foreach (XElement xe in xc.Element("Stereotypes").Nodes())
+			{
+				if (xe.Name == "Versioning") // @Sad переделать потом на универсальный загрузчик
+				{
+					SVersioning s = new SVersioning(xe.GetAttributeValue("VersioningType"));
+					c.AddStereotype(s);
+				}
+			}
+
 			p.AddClass(c);
 		}
 
@@ -63,43 +87,75 @@ namespace Nephrite.Meta
 			a.Name = xp.GetAttributeValue("Name");
 			a.Caption = xp.GetAttributeValue("Caption");
 			a.Description = xp.GetAttributeValue("Description");
-			//a.IsKey = xp.GetAttributeValue("IsKey") == "1";
 
-			a.IsMultilingual = xp.GetAttributeValue("IsMultilingual") == "1";
-			a.IsIdentity = xp.GetAttributeValue("IsIdentity") == "1";
+			a.IsRequired = xp.GetAttributeValue("IsRequired") == "true";
+			a.UpperBound = xp.GetAttributeValue("UpperBound").ToInt32(0);
 
-			/*switch (xp.GetAttributeValue("DataType"))
+			a.IsMultilingual = xp.GetAttributeValue("IsMultilingual") == "true";
+			a.IsIdentity = xp.GetAttributeValue("IsIdentity") == "true";
+
+			switch (xp.GetAttributeValue("DataType"))
 			{
 				case "S": a.Type = TypeFactory.String(xp.GetAttributeValue("Length").ToInt32(-1)); break;
-				case "D": a.Type = TypeFactory.Date; break;
-				case "T": a.Type = TypeFactory.DateTime; break;
-				case "N": a.Type = TypeFactory.Int; break;
+				case "D": a.Type = TypeFactory.Date(a.IsRequired); break;
+				case "T": a.Type = TypeFactory.DateTime(a.IsRequired); break;
+				case "N": a.Type = TypeFactory.Int(a.IsRequired); break;
 				case "O": break;
-				case "U": a.Type = TypeFactory.Long; break;
-				case "X": a.Type = TypeFactory.Data; break;
-				case "B": a.Type = TypeFactory.Boolean; break;
-				case "G": a.Type = TypeFactory.Guid; break;
-				case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6)); break;
-				case "C": a.Type = TypeFactory.Char(xp.GetAttributeValue("Length").ToInt32(1)); break;
-				case "F": a.Type = TypeFactory.FileID; break;
-				case "E": a.Type = TypeFactory.FileGUID; break;
-				case "Z": a.Type = TypeFactory.ZoneDateTime; break;
-			}*/
+				case "U": a.Type = TypeFactory.Long(a.IsRequired); break;
+				case "X": a.Type = TypeFactory.ByteArray(); break;
+				case "B": a.Type = TypeFactory.Boolean(a.IsRequired); break;
+				case "G": a.Type = TypeFactory.Guid(a.IsRequired); break;
+				case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6), a.IsRequired); break;
+				case "C": a.Type = TypeFactory.Char(xp.GetAttributeValue("Length").ToInt32(1), a.IsRequired); break;
+				case "F": a.Type = TypeFactory.FileIntKey(a.IsRequired); break;
+				case "E": a.Type = TypeFactory.FileGuidKey(a.IsRequired); break;
+				case "Z": a.Type = TypeFactory.ZoneDateTime(a.IsRequired); break;
+			}
+
+			if (xp.GetAttributeValue("IsKey") == "true") c.Key = a;
+			c.AddProperty(a);
+		}
+
+		static void LoadComputedAttribute(MetaClass c, XElement xp)
+		{
+			MetaComputedAttribute a = new MetaComputedAttribute();
+			a.ID = xp.GetAttributeValue("ID").ToGuid();
+			a.Name = xp.GetAttributeValue("Name");
+			a.Caption = xp.GetAttributeValue("Caption");
+			a.Description = xp.GetAttributeValue("Description");
+
+			c.AddProperty(a);
+		}
+
+		static void LoadPersistentComputedAttribute(MetaClass c, XElement xp)
+		{
+			MetaPersistentComputedAttribute a = new MetaPersistentComputedAttribute();
+			a.ID = xp.GetAttributeValue("ID").ToGuid();
+			a.Name = xp.GetAttributeValue("Name");
+			a.Caption = xp.GetAttributeValue("Caption");
+			a.Description = xp.GetAttributeValue("Description");
 
 			c.AddProperty(a);
 		}
 
 		static void LoadReference(MetaClass c, XElement xp)
 		{
-			MetaReference a = new MetaReference();
+			MetaReference a = null;
+			if (xp.GetAttributeValue("IsReferenceToVersion") == "true")
+				a = new MetaReferenceToVersion();
+			else
+				a = new MetaReference();
 			a.ID = xp.GetAttributeValue("ID").ToGuid();
 			a.Name = xp.GetAttributeValue("Name");
 			a.Caption = xp.GetAttributeValue("Caption");
 			a.Description = xp.GetAttributeValue("Description");
-			//a.IsKey = xp.GetAttributeValue("IsKey") == "1";
+
+			a.IsRequired = xp.GetAttributeValue("IsRequired") == "true";
+			a.UpperBound = xp.GetAttributeValue("UpperBound").ToInt32(0);
 
 			a.RefClassName = xp.GetAttributeValue("RefClass");
 			a.InversePropertyName = xp.GetAttributeValue("InverseProperty");
+			a.AssociationType = (AssociationType)xp.GetAttributeValue("AssociationType").ToInt32(0);
 
 			c.AddProperty(a);
 		}
@@ -113,9 +169,7 @@ namespace Nephrite.Meta
 			o.Description = xo.GetAttributeValue("Description");
 
 			c.AddOperation(o);
-		}
-
-		
+		}		
 	}
 
 	public class XsltExtension

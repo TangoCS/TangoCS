@@ -5,6 +5,7 @@ using System.Web;
 using Nephrite.Metamodel.Model;
 using System.Text;
 using Nephrite.Web;
+using Nephrite.Meta;
 
 namespace Nephrite.Metamodel
 {
@@ -14,16 +15,16 @@ namespace Nephrite.Metamodel
         {
             if (objectType.IsMultiLingual)
             {
-                if (objectType.HistoryTypeCode == HistoryType.IdentifiersMiss ||
-                    objectType.HistoryTypeCode == HistoryType.IdentifiersRetain)
+                if (objectType.HistoryTypeCode == VersioningType.IdentifiersMiss ||
+                    objectType.HistoryTypeCode == VersioningType.IdentifiersRetain)
                     return "V_HST_" + objectType.SysName;
                 else
                     return "V_" + objectType.SysName;
             }
             else
             {
-                if (objectType.HistoryTypeCode == HistoryType.IdentifiersMiss ||
-                    objectType.HistoryTypeCode == HistoryType.IdentifiersRetain)
+                if (objectType.HistoryTypeCode == VersioningType.IdentifiersMiss ||
+                    objectType.HistoryTypeCode == VersioningType.IdentifiersRetain)
                     return "HST_" + objectType.SysName;
                 else
                     return objectType.SysName;

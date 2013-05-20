@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Nephrite.Web.Internals;
 using System.Configuration;
 using System.Web.UI.HtmlControls;
+using Nephrite.Web.CalendarDays;
+using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Web.Controls
 {

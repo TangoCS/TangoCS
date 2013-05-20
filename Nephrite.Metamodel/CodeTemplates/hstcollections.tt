@@ -10,7 +10,7 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Linq" #>
 <#@ output extension="cs" #>
-<# 	var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate && o.IsSeparateTable && o.HistoryTypeCode != HistoryType.None).ToList().Where(o => o.PrimaryKey.Length == 1); #>
+<# 	var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate && o.IsSeparateTable && o.HistoryTypeCode != VersioningType.None).ToList().Where(o => o.PrimaryKey.Length == 1); #>
 using System;
 using System.Collections.Generic;
 using System.Linq;

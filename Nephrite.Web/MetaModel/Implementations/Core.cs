@@ -4,18 +4,10 @@ using System.Linq;
 using System.Web;
 using System.Web.UI.HtmlControls;
 using Nephrite.Web;
+using Nephrite.Web.TextResources;
 
 namespace Nephrite.Meta
 {
-	public interface IMetaClass 
-	{
-		Guid ID { get; set; }
-		string Name { get; set; }
-		string Caption { get; set; }
-		//Dictionary<string, MetaOperation> Operations { get; set; }
-	}
-	public interface IMetaProperty { string Caption { get; set; } }
-
 	public abstract class MetaElement
 	{
 		public MetaElement()
@@ -192,9 +184,13 @@ namespace Nephrite.Meta
 	public abstract class MetaClassifier : MetaElement
 	{
 		//public virtual Type CLRType { get; set; }
+		public virtual string ColumnName(string propName)
+		{
+			return propName;
+		}
 	}
 
-	public class MetaClass : MetaClassifier, IMetaClass
+	public class MetaClass : MetaClassifier
 	{
 		/*public override Type CLRType
 		{
@@ -225,7 +221,28 @@ namespace Nephrite.Meta
 			}
 		}
 
-		public MetaProperty Key { get; set; }
+		public bool IsPersistent { get; set; }
+
+		bool _isMultilingual = false;
+		public bool IsMultilingual { get { return _isMultilingual; } }
+
+		List<MetaProperty> _compositeKey = new List<MetaProperty>();
+		public MetaProperty Key 
+		{
+			get 
+			{ 
+				if (_compositeKey.Count != 1)
+					throw new Exception(String.Format("Error while getting single key property for class {0}. Length of the key properties array: {1}", Name, _compositeKey.Count())); 
+				else 
+					return _compositeKey.First(); 
+			}
+			set { _compositeKey.Add(value); }
+		}
+		public List<MetaProperty> CompositeKey
+		{
+			get { return _compositeKey; }
+		}
+
 		public Dictionary<string, MetaProperty>.ValueCollection Properties { get { return _properties.Values; } }
 		//public IEnumerable<T> Properties<T>() where T : MetaProperty { return _properties.Where(o => o is T).Select(o => o as T);  }
 		public Dictionary<string, MetaOperation>.ValueCollection Operations { get { return _operations.Values; } }
@@ -235,6 +252,7 @@ namespace Nephrite.Meta
 		{
 			metaProperty.Parent = this;
 			_properties.Add(metaProperty.Name.ToLower(), metaProperty);
+			if (metaProperty is MetaAttribute && (metaProperty as MetaAttribute).IsMultilingual) _isMultilingual = true;
 		}
 		public void AddOperation(MetaOperation metaOperation)
 		{
@@ -257,9 +275,14 @@ namespace Nephrite.Meta
 		{
 			return Name;
 		}
+
+		public override string ColumnName(string propName)
+		{
+			return propName + (Key.Type as IMetaIdentifierType).ColumnSuffix;
+		}
 	}
 
-	public abstract class MetaProperty : MetaElement, IMetaProperty
+	public abstract class MetaProperty : MetaElement
 	{
 		public MetaClass Parent { get; set; }
 		public virtual MetaClassifier Type { get; set; }
@@ -270,6 +293,12 @@ namespace Nephrite.Meta
 		{
 			return Parent.Name + ".P." + Name;
 		}
+
+		public virtual string ColumnName
+		{
+			get { return Type == null ? Name : Type.ColumnName(Name); }
+		}
+		
 	}
 
 	public class MetaAttribute : MetaProperty
@@ -287,6 +316,13 @@ namespace Nephrite.Meta
 	public class MetaPersistentComputedAttribute : MetaProperty
 	{
 		public string Expression { get; set; }
+	}
+
+	public enum AssociationType
+	{
+		Aggregation = 1,
+		Composition = 2,
+		Default = 0
 	}
 
 	public class MetaReference : MetaProperty
@@ -328,6 +364,13 @@ namespace Nephrite.Meta
 			}
 		}
 
+		public override string ColumnName
+		{
+			get
+			{
+				return RefClass.ColumnName(Name);
+			}
+		}
 	}
 
 	public class MetaOperationParameter : MetaElement

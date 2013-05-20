@@ -105,10 +105,10 @@ namespace {0}.ViewControls
 					text.AppendFormat(@"		public override void SetViewData(object viewData)
 		{{
 			base.SetViewData(((IQueryable)viewData).Cast<{0}>());
-		}}", (objectType.IsMultiLingual ? (objectType.HistoryTypeCode == HistoryType.IdentifiersMiss ||
-		   objectType.HistoryTypeCode == HistoryType.IdentifiersRetain ? "V_HST_" : "V_") :
-		   (objectType.HistoryTypeCode == HistoryType.IdentifiersMiss ||
-		   objectType.HistoryTypeCode == HistoryType.IdentifiersRetain ? "HST_" : "")) + objectType.SysName);
+		}}", (objectType.IsMultiLingual ? (objectType.HistoryTypeCode == VersioningType.IdentifiersMiss ||
+		   objectType.HistoryTypeCode == VersioningType.IdentifiersRetain ? "V_HST_" : "V_") :
+		   (objectType.HistoryTypeCode == VersioningType.IdentifiersMiss ||
+		   objectType.HistoryTypeCode == VersioningType.IdentifiersRetain ? "HST_" : "")) + objectType.SysName);
 				}
 				text.AppendFormat(@"		public override void RenderControl(HtmlTextWriter writer)
 		{{

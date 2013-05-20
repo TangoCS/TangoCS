@@ -8,6 +8,7 @@ using System.Transactions;
 using System.Web;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
+using Nephrite.Meta;
 using Nephrite.Metamodel.Model;
 using Nephrite.Web;
 
@@ -294,9 +295,9 @@ namespace Nephrite.Metamodel
                 DbSync.Table hstTable = null;
                 DbSync.Table chstTable = null;
 
-                if (objectType.HistoryTypeCode != HistoryType.None)
+                if (objectType.HistoryTypeCode != VersioningType.None)
                 {
-                    if (objectType.HistoryTypeCode != HistoryType.Object)
+                    if (objectType.HistoryTypeCode != VersioningType.Object)
                     {
                         chstTable = model.AddTable();
                         chstTable.Name = "CHST_" + table.Name;
@@ -387,7 +388,7 @@ namespace Nephrite.Metamodel
                         Type = DataType.Bit
                     });
 
-                    if (objectType.HistoryTypeCode != HistoryType.Object)
+                    if (objectType.HistoryTypeCode != VersioningType.Object)
                     {
                         var classVersionColumn = new Nephrite.Metamodel.DbSync.Column
                         {
@@ -467,7 +468,7 @@ namespace Nephrite.Metamodel
                         Name = "@" + inParam,
 						Type = hstTable.PkType
                     });
-                    if (objectType.HistoryTypeCode != HistoryType.Object)
+                    if (objectType.HistoryTypeCode != VersioningType.Object)
                     {
                         proc.Parameters.Add(new Nephrite.Metamodel.DbSync.Parameter
                         {
@@ -488,7 +489,7 @@ BEGIN
      WHERE {1} = @{2}
        and IsCurrentVersion = 1", hstTable.Name, table.PkName, inParam);
 
-                    if (objectType.HistoryTypeCode != HistoryType.Object)
+                    if (objectType.HistoryTypeCode != VersioningType.Object)
                     {
                         proc.Text += @"
       and ClassVersionID = @classversionid";
@@ -502,7 +503,7 @@ BEGIN
            and IsCurrentVersion = 1
            ", hstTable.Name, table.PkName, inParam);
 
-           if (objectType.HistoryTypeCode != HistoryType.Object)
+           if (objectType.HistoryTypeCode != VersioningType.Object)
            {
                proc.Text += String.Format(@"
       and ClassVersionID = @classversionid", hstTable.Name, table.PkName);
@@ -513,7 +514,7 @@ BEGIN
     INSERT INTO [{0}]
            ([VersionNumber]
            ,[IsCurrentVersion]", hstTable.Name, table.PkName);
-                    if (objectType.HistoryTypeCode != HistoryType.Object)
+                    if (objectType.HistoryTypeCode != VersioningType.Object)
                     {
                         proc.Text += String.Format(@"
            ,[ClassVersionID]");
@@ -533,7 +534,7 @@ BEGIN
                     proc.Text += @")
      SELECT @ver
            ,1";
-                    if (objectType.HistoryTypeCode != HistoryType.Object)
+                    if (objectType.HistoryTypeCode != VersioningType.Object)
                     {
                         proc.Text += String.Format(@"
            ,@classversionid");
@@ -590,8 +591,8 @@ BEGIN
                     proc.Text += @"
 END";
 
-                    if (objectType.HistoryTypeCode == HistoryType.IdentifiersMiss ||
-                        objectType.HistoryTypeCode == HistoryType.IdentifiersRetain)
+                    if (objectType.HistoryTypeCode == VersioningType.IdentifiersMiss ||
+                        objectType.HistoryTypeCode == VersioningType.IdentifiersRetain)
                     {
                         proc = model.AddProcedure();
                         proc.Name = table.Name + "_CreateClassVersion";
@@ -642,7 +643,7 @@ BEGIN
 
     WHILE @@FETCH_STATUS = 0
     BEGIN", objectType.SysName, objectType.PrimaryKey.Single().ColumnName);
-                        if (objectType.HistoryTypeCode == HistoryType.IdentifiersMiss)
+                        if (objectType.HistoryTypeCode == VersioningType.IdentifiersMiss)
                         {
                             string columns = String.Join(", ", objectType.MM_ObjectProperties.Where(o => !String.IsNullOrEmpty(o.ColumnName) &&
                             !o.IsPrimaryKey && o.KindCode != "C" && (o.UpperBound == 1 || o.TypeCode == ObjectPropertyType.String)).Select(o => o.ColumnName).ToArray());

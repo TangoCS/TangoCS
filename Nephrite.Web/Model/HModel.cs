@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Linq;
 using System.Linq;
 using System.Web;
 using System.Xml.Linq;
 
 namespace Nephrite.Web.Model
 {
+	/*
 	public partial class MailMessage
 	{
 		public virtual int MailMessageID { get; set; }
@@ -23,10 +25,6 @@ namespace Nephrite.Web.Model
 
 	public partial class N_TimeZone
 	{
-		public N_TimeZone()
-		{
-			HST_N_TimeZones = new List<HST_N_TimeZone>();
-		}
 		public virtual int TimeZoneID { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
 		public virtual bool IsDeleted { get; set; }
@@ -34,33 +32,8 @@ namespace Nephrite.Web.Model
 		public virtual string Title { get; set; }
 		public virtual int GMTOffset { get; set; }
 		public virtual string Comment { get; set; }
-		public virtual IList<HST_N_TimeZone> HST_N_TimeZones { get; set; }
 	}
 
-	public partial class HST_N_TimeZone
-	{
-		public virtual int TimeZoneVersionID { get; set; }
-		public virtual N_TimeZone N_TimeZone { get; set; }
-		public virtual int TimeZoneID { get; set; }
-		public virtual int LastModifiedUserID { get; set; }
-		public virtual int VersionNumber { get; set; }
-		public virtual bool IsCurrentVersion { get; set; }
-		public virtual bool IsDeleted { get; set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
-		public virtual string Title { get; set; }
-		public virtual int GMTOffset { get; set; }
-		public virtual string Comment { get; set; }
-	}
-
-	public partial class MailTemplate
-	{
-		public virtual int MailTemplateID { get; set; }
-		public virtual string Title { get; set; }
-		public virtual string TemplateSubject { get; set; }
-		public virtual string TemplateBody { get; set; }
-		public virtual string Comment { get; set; }
-		public virtual bool IsSystem { get; set; }
-	}
 
 	public partial class C_Language
 	{
@@ -240,8 +213,6 @@ namespace Nephrite.Web.Model
 		public virtual System.DateTime LastDataModify { get; set; }
 	}
 
-
-
 	public partial class N_Setting
 	{
 		public virtual System.Guid SettingsGUID { get; set; }
@@ -274,4 +245,24 @@ namespace Nephrite.Web.Model
 		public virtual string IP { get; set; }
 	}
 
+	public partial class N_RssFeed
+	{
+		public virtual int RssFeedID { get; set; }
+		public virtual string Copyright { get; set; }
+		public virtual string Description { get; set; }
+		public virtual bool IsDeleted { get; set; }
+		public virtual System.DateTime LastModifiedDate { get; set; }
+		public virtual int LastModifiedUserID { get; set; }
+		public virtual string ObjectTypeSysName { get; set; }
+		public virtual string Predicate { get; set; }
+		public virtual string PubDate { get; set; }
+		public virtual string SysName { get; set; }
+		public virtual string Title { get; set; }
+		public virtual int Ttl { get; set; }
+		public virtual string ViewFormSysName { get; set; }
+		public virtual string Author { get; set; }
+		public virtual string WebMaster { get; set; }
+		public virtual string LinkParams { get; set; }
+	}
+	*/
 }

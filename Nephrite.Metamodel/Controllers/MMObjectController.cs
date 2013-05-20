@@ -34,7 +34,7 @@ namespace Nephrite.Metamodel.Controllers
             }
 			HttpContext.Current.Items["FormViewID"] = fv.FormViewID;
 			HttpContext.Current.Items["ObjectTypeID"] = fv.ObjectTypeID;
-			HttpContext.Current.Items["helpdata"] = "mode=c_help&view=view&form=" + fv.Guid;
+			HttpContext.Current.Items["helpdata"] = "mode=c_help&view=view&form=" + fv.Guid; //@Sad
 			Control ctl = null;
             try
             {
@@ -58,43 +58,19 @@ namespace Nephrite.Metamodel.Controllers
                         col = hce.Results.Errors[0].Column;
                     }
                 }
-                string text = "";
+                string text1 = "";
+				string text2 = "";
                 if (ctl != null)
-                    text = "Класс представления: " + ctl.GetType().FullName + ", " + objectTypeSysName + ", FormViewID=" + fv.FormViewID.ToString() + "<br />";
+                    text1 = "<div>Класс представления: " + ctl.GetType().FullName + ", " + objectTypeSysName + ", FormViewID=" + fv.FormViewID.ToString() + "</div>";
 
                 while (e != null)
                 {
-                    text += "<b>" + HttpUtility.HtmlEncode(e.Message) + "</b>\r\n" + e.StackTrace + "\r\n\r\n";
+                    text2 += "<b>" + HttpUtility.HtmlEncode(e.Message) + "</b>\r\n" + e.StackTrace + "\r\n\r\n";
                     e = e.InnerException;
                 }
-                LiteralControl lc = new LiteralControl("<pre>" + text + "</pre>");
+                LiteralControl lc = new LiteralControl(text1 + "<pre>" + text2 + "</pre>");
 				container.Controls.Add(lc);
-                if (line > 0)
-                {
-                    string text2 = "";
-
-                    string[] lines = AppMM.DataContext.MM_FormViews.Single(o => o.FormViewID == fv.FormViewID).ViewTemplate.Split(new string[] { "\r\n" }, StringSplitOptions.None);
-                    for (int i = 0; i < lines.Length; i++)
-                    {
-                        if (i + 1 == line)
-                            text2 += "<span style=\"color:Red; font-size:13px; font-weight:bold\">" + HttpUtility.HtmlEncode(lines[i]).Replace(" ", "&nbsp;").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;") + "</span";
-                        else
-                            text2 += HttpUtility.HtmlEncode(lines[i]).Replace(" ", "&nbsp;").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
-                        text2 += "<br />";
-                    }
-                    LiteralControl lc2 = new LiteralControl("<br /><br />" + text2);// + "<br /><br />" + HtmlHelperBase.Instance.ActionLink<MM_FormViewController>(c => c.Edit(fv.FormViewID, Query.CreateReturnUrl()), "Редактировать представление"));
-					container.Controls.Add(lc2);
-                }
             }
-			if (!container.Page.IsPostBack)
-			{
-				if (viewData is IMMObject && viewData.GetType().Name != "MM_FormView" && ((IMMObject)viewData).LastModifiedDate.Year > 2000)
-				{
-					IMMObject obj = viewData as IMMObject;
-					container.Controls.Add(new LiteralControl(String.Format("<input name='TESS_ObjectLastModifiedInfo' type='hidden' value='{0}' />",
-						objectTypeSysName.ToLower() + " " + (obj.ObjectID > 0 ? obj.ObjectID.ToString() : obj.ObjectGUID.ToString()) + " " + obj.LastModifiedDate.Ticks.ToString())));
-				}
-			}
         }
 
 		public void RenderMMView(string viewname, string className, object viewData)
@@ -112,28 +88,6 @@ namespace Nephrite.Metamodel.Controllers
 
 		public virtual void Update(IModelObject obj)
         {
-			//@Sad
-			if (obj.GetType().Assembly.GetName().Name == "erms")
-			{
-				if (obj is IMMObject && ((IMMObject)obj).LastModifiedDate.Year > 2000)
-				{
-					string olmd = HttpContext.Current.Request.Form["TESS_ObjectLastModifiedInfo"];
-					var mmobj = obj as IMMObject;
-					if (!olmd.IsEmpty() && mmobj != null && (mmobj.ObjectID > 0 || mmobj.ObjectGUID != Guid.Empty))
-					{
-						string[] olmd_info = olmd.Split(' ');
-						if (olmd_info.Length == 3 &&
-							olmd_info[0].ToLower() == mmobj.GetType().Name.ToLower() &&
-							olmd_info[1] == (mmobj.ObjectID > 0 ? mmobj.ObjectID.ToString() : mmobj.ObjectGUID.ToString()) &&
-							olmd_info[2].ToInt64(0) < mmobj.LastModifiedDate.Ticks)
-						{
-							// возникают ложные срабатывания
-							Response.Write(TextResource.Get("Common.Warning.AccessConflict", "Вы или другой пользователь изменили информацию по объекту."));
-							Response.End();
-						}
-					}
-				}
-			}
             obj.SetPropertyValue("LastModifiedDate", DateTime.Now);
             obj.SetPropertyValue("LastModifiedUserID", AppSPM.GetCurrentSubjectID());
 			Base.Model.SubmitChanges();

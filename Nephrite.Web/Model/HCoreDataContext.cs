@@ -10,6 +10,7 @@ using NHibernate.SqlCommand;
 
 namespace Nephrite.Web.Model
 {
+	/*
 	public class HCoreDataContext : HDataContext
 	{
 		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig)
@@ -20,8 +21,6 @@ namespace Nephrite.Web.Model
 		public override IEnumerable<Type> GetEntitiesTypes()
 		{
 			List<Type> l = new List<Type>();
-			l.Add(typeof(MailTemplateMap));
-			l.Add(typeof(HST_N_TimeZoneMap));
 			l.Add(typeof(N_TimeZoneMap));
 			l.Add(typeof(N_VirusScanLogMap));
 			l.Add(typeof(N_FolderMap));
@@ -40,23 +39,10 @@ namespace Nephrite.Web.Model
 			l.Add(typeof(N_SettingMap));
 			l.Add(typeof(N_CacheMap));
 			l.Add(typeof(UserActivityMap));
+			l.Add(typeof(N_RssFeed));
 			return l;
 		}
 
-		public HTable<MailTemplate> MailTemplates
-		{
-			get
-			{
-				return new HTable<MailTemplate>(this, Session.Query<MailTemplate>());
-			}
-		}
-		public HTable<HST_N_TimeZone> HST_N_TimeZones
-		{
-			get
-			{
-				return new HTable<HST_N_TimeZone>(this, Session.Query<HST_N_TimeZone>());
-			}
-		}
 		public HTable<N_TimeZone> N_TimeZones
 		{
 			get
@@ -183,5 +169,13 @@ namespace Nephrite.Web.Model
 				return new HTable<UserActivity>(this, Session.Query<UserActivity>());
 			}
 		}
+		public HTable<N_RssFeed> N_RssFeeds
+		{
+			get
+			{
+				return new HTable<N_RssFeed>(this, Session.Query<N_RssFeed>());
+			}
+		}
 	}
+	 */
 }

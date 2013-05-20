@@ -2,6 +2,7 @@
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.ComponentModel;
+using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Web.Controls
 {

@@ -27,9 +27,9 @@ namespace <#= AppMM.DBName() #>.Model
 {
 <#  foreach (var cls in objectTypes)
     { 
-		if (cls.HistoryTypeCode != HistoryType.None)
+		if (cls.HistoryTypeCode != VersioningType.None)
         {#>
-	partial class HST_<#= cls.SysName #> : Nephrite.Metamodel.IMMObjectVersion<#= cls.HistoryTypeCode == HistoryType.IdentifiersMiss || cls.HistoryTypeCode == HistoryType.IdentifiersRetain ? "2" : "" #>, I<#= cls.SysName #>
+	partial class HST_<#= cls.SysName #> : Nephrite.Metamodel.IMMObjectVersion<#= cls.HistoryTypeCode == VersioningType.IdentifiersMiss || cls.HistoryTypeCode == VersioningType.IdentifiersRetain ? "2" : "" #>, I<#= cls.SysName #>
     {
 		public event EventHandler OnSaveChanges;
 		public void RaiseSaveChanges()

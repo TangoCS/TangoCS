@@ -23,13 +23,13 @@ namespace <#= AppMM.DBName() #>.Controllers
 {
 <#	foreach (var cls in objectTypes.Where(o => o.MM_Methods.Any()))
 	{
-		bool ishstcls = cls.HistoryTypeCode == HistoryType.IdentifiersRetain || cls.HistoryTypeCode == HistoryType.IdentifiersMiss;
+		bool ishstcls = cls.HistoryTypeCode == VersioningType.IdentifiersRetain || cls.HistoryTypeCode == VersioningType.IdentifiersMiss;
 		string clsname = cls.SysName;#>
     partial class <#= cls.SysName #>Controller
     {
 		public override void Update(Nephrite.Web.IModelObject obj)
         {
-			<#if (cls.HistoryTypeCode != HistoryType.None) {#>
+			<#if (cls.HistoryTypeCode != VersioningType.None) {#>
 			base.Update(obj);
 			<#} else {#>
 			var tobj = obj as <#= clsname #>;

@@ -56,22 +56,6 @@ namespace Nephrite.Metamodel.Controllers
                 }
                 LiteralControl lc = new LiteralControl("<pre>" + text + "</pre>");
                 WebPart.Controls.Add(lc);
-                if (line > 0)
-                {
-                    string text2 = "";
-
-                    string[] lines = fv.ViewTemplate.Split(new string[] { "\r\n" }, StringSplitOptions.None);
-                    for (int i = 0; i < lines.Length; i++)
-                    {
-                        if (i + 1 == line)
-                            text2 += "<span style=\"color:Red; font-size:13px; font-weight:bold\">" + HttpUtility.HtmlEncode(lines[i]).Replace(" ", "&nbsp;").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;") + "</span";
-                        else
-                            text2 += HttpUtility.HtmlEncode(lines[i]).Replace(" ", "&nbsp;").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
-                        text2 += "<br />";
-                    }
-                    LiteralControl lc2 = new LiteralControl("<br /><br />" + text2); // + "<br /><br />" + HtmlHelperBase.Instance.ActionLink<MM_FormViewController>(c => c.Edit(fv.FormViewID, Query.CreateReturnUrl()), "Редактировать представление"));
-                    WebPart.Controls.Add(lc2);
-                }
             }
         }
 

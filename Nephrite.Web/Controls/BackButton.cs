@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web.UI;
 using Nephrite.Meta;
+using Nephrite.Web.TextResources;
 
 namespace Nephrite.Web.Controls
 {

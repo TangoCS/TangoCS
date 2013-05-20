@@ -15,6 +15,8 @@ using System.Web.Script.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using System.IO;
+using Nephrite.Web.ErrorLog;
+using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Metamodel
 {
@@ -166,8 +168,8 @@ namespace Nephrite.Metamodel
 		{
 			var i = formView.CacheKeyParams.IsEmpty() ? new FormViewCacheKeyInfo() : j.Deserialize<FormViewCacheKeyInfo>(formView.CacheKeyParams);
 			string key = "";
-			if (i.Tables.Length > 0)
-				key += "&t=" + TableInfo.GetMaxLastModifyDate(i.Tables);
+			//if (i.Tables.Length > 0)
+			//	key += "&t=" + TableInfo.GetMaxLastModifyDate(i.Tables);
 			for (int n = 0; n < i.QueryParams.Length; n++)
 				key += "&q" + n.ToString() + "=" + Query.GetString(i.QueryParams[n]);
 			for (int n = 0; n < i.Macro.Length; n++)

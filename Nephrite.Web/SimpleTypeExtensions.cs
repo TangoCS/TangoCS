@@ -20,6 +20,7 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Collections;
+using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Web
 {

@@ -12,6 +12,8 @@ using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using System.ComponentModel;
 using Nephrite.Meta;
+using Nephrite.Web.SettingsManager;
+using Nephrite.Web.TextResources;
 
 
 namespace Nephrite.Web.Controls

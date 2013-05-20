@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Globalization;
 
-namespace Nephrite.Web.Features.Reporting
+namespace Nephrite.Web.Reporting
 {
 	public class Report : System.Web.UI.UserControl
 	{

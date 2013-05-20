@@ -7,6 +7,7 @@ using System.Web.UI.WebControls;
 
 using Nephrite.Web.Controllers;
 using System.Linq.Expressions;
+using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Web.Controls
 {

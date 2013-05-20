@@ -185,7 +185,6 @@
     <Content Include="_controltemplates\Tessera\Common\title.ascx" />
     <Content Include="_controltemplates\Tessera\Default\default.ascx" />
     <Content Include="Data.ashx" />
-    <Content Include="Image.ashx" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

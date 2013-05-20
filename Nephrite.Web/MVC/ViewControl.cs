@@ -12,7 +12,7 @@ using Nephrite.Web.Controls;
 using System.Web.UI.WebControls;
 using Nephrite.Web.Layout;
 using System.Text.RegularExpressions;
-using Nephrite.Web.App;
+using Nephrite.Web.SettingsManager;
 using Nephrite.Meta;
 
 namespace Nephrite.Web

@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using System.Collections.Generic;
 using Nephrite.Web.Model;
 using Nephrite.Web.SPM;
+using Nephrite.Web.TextResources;
 
 namespace Nephrite.Web.Controls
 {
@@ -35,8 +36,8 @@ namespace Nephrite.Web.Controls
 			int currentViewID = Query.GetInt("filterid", 0);
 
 
-			List<N_Filter> views = filter.GetViews();
-			N_Filter defaultf = views.Where(o => o.IsDefault).OrderByDescending(o => o.SubjectID ?? 0).FirstOrDefault();
+			List<IN_Filter> views = filter.GetViews();
+			IN_Filter defaultf = views.Where(o => o.IsDefault).OrderByDescending(o => o.SubjectID ?? 0).FirstOrDefault();
 			if (defaultf != null)
 			{
 				mc.AddItem(defaultf.FilterName, Url.Current.RemoveParameter("filter").SetParameter("filterid", defaultf.FilterID.ToString()));
@@ -45,7 +46,7 @@ namespace Nephrite.Web.Controls
 			}
 			mc.AddItem(TextResource.Get("Common.Toolbar.AllItems", "Все записи"), Url.Current.SetParameter("filter", "all").RemoveParameter("filterid"));
 			bool isPersonal = false;
-			foreach (N_Filter f in views.Where(o => !o.IsDefault || (o.IsDefault && o.SubjectID == null && defaultf != null)).OrderBy(o => o.FilterName))
+			foreach (IN_Filter f in views.Where(o => !o.IsDefault || (o.IsDefault && o.SubjectID == null && defaultf != null)).OrderBy(o => o.FilterName))
 			{
 				if (f.FilterID == currentViewID)
 				{

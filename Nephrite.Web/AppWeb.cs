@@ -17,15 +17,17 @@ using System.Xml.Linq;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Cfg;
 using NHibernate.Dialect;
+using System.Collections;
+using Nephrite.Web.Multilanguage;
 
 namespace Nephrite.Web
 {
 	public class AppWeb
 	{
-		[ThreadStatic]
-		static HCoreDataContext context = null;
+		//[ThreadStatic]
+		//static HCoreDataContext context = null;
 
-		public static HCoreDataContext DataContext
+		/*public static HCoreDataContext DataContext
 		{
 			get
 			{
@@ -52,6 +54,7 @@ namespace Nephrite.Web
 				}
 			}
 		}
+		 */
 
 		static ISystemLayout _layout = null;
 
@@ -134,18 +137,18 @@ namespace Nephrite.Web
 			set { HttpContext.Current.Items["IsRouting"] = value; }
 		}
 
-		static List<C_Language> _langs;
-		public static List<C_Language> Languages
+		static List<IC_Language> _langs;
+		public static List<IC_Language> Languages
 		{
 			get
 			{
 				if (_langs == null)
-					_langs = DataContext.C_Languages.OrderByDescending(o => o.IsDefault).ToList();
+					_langs = ((IDC_Multilanguage)Base.Model).C_Language.OrderByDescending(o => o.IsDefault).ToList();
 				return _langs;
 			}
 		}
 
-		public static C_Language CurrentLanguage
+		public static IC_Language CurrentLanguage
 		{
 			get
 			{
@@ -198,14 +201,14 @@ namespace Nephrite.Web
 	public class Base
 	{
 		[ThreadStatic]
-		static DataContext model = null;
-		public static DataContext Model 
+		static IDataContext model = null;
+		public static IDataContext Model 
 		{
 			get 
 			{
 				if (HttpContext.Current != null)
 				{
-					return HttpContext.Current.Items["Base.Model"] as DataContext;
+					return HttpContext.Current.Items["Base.Model"] as IDataContext;
 				}
 				else
 				{
@@ -236,7 +239,19 @@ namespace Nephrite.Web
 				return _metaXml;
 			}
 		}
+
+		static MetaSolution _meta = null;
+		public static MetaSolution DynamicMeta
+		{
+			get
+			{
+				if (_meta == null) _meta = MetaSolution.Load();
+				return _meta;
+			}
+		}
 	}
+
+	
 
 	public class DataContextLogWriter : StringWriter
 	{

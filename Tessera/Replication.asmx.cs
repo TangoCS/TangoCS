@@ -85,7 +85,7 @@ namespace Tessera
 			CheckCredentials();
             // Получить список версий строк
 
-			MetaClass ot = Base.Meta.GetClass(objectType); //ObjectTypeRepository.Get(objectType);
+			MetaClass ot = Base.Meta.GetClass(objectType);
 			if (ot == null)
 				throw new Exception("Класс " + objectType + " не найден в метамодели");
 
@@ -112,7 +112,7 @@ namespace Tessera
 			}
 			else
 			{
-				var ot = ObjectTypeRepository.Get(objectType);
+				var ot = Base.Meta.GetClass(objectType);
 				var xe = r.ExportObject(ot, id.ToInt32(0) > 0 ? (object)id.ToInt32(0) : id.ToGuid());
 				if (xe == null)
 					return "";
@@ -126,7 +126,7 @@ namespace Tessera
 		public string GetVersionRecord(string objectType, string versionid)
         {
 			CheckCredentials();
-			MetaClass ot = Base.Meta.GetClass(objectType); //ObjectTypeRepository.Get(objectType);
+			MetaClass ot = Base.Meta.GetClass(objectType);
 			var obj = r.ExportObjectVersion(ot, versionid.ToInt32(0) > 0 ? (object)versionid.ToInt32(0) : versionid.ToGuid());
 			if (obj == null)
 				throw new Exception("Версия объекта " + objectType + " " + versionid + " не найдена в БД");
@@ -206,7 +206,7 @@ namespace Tessera
 					File.AppendAllText(ConfigurationManager.AppSettings["LogImportObjects"], DateTime.Now.ToString() + "\tImportObject" + Environment.NewLine + XElement.Parse(xmlData).ToString(SaveOptions.None) + Environment.NewLine + Environment.NewLine);
 				XElement xe = XElement.Parse(xmlData);
 
-				var ot = ObjectTypeRepository.Get(xe.Name.LocalName);
+				var ot = Base.Meta.GetClass(xe.Name.LocalName);
 
 				if (ot == null)
 					throw new Exception("Класс " + xe.Name.LocalName + " не найден в метамодели");
@@ -229,7 +229,7 @@ namespace Tessera
 		public string[] GetObjectsByPropertyValue(string objectType, string propertyName, string id)
         {
 			CheckCredentials();
-			MM_ObjectType ot = ObjectTypeRepository.Get(objectType);
+			var ot = Base.Meta.GetClass(objectType);
             var instance = r.Empty(ot);
             return r.GetList(ot).Where(instance.FilterByProperty(propertyName, id)).
                 Select(instance.GetIdentifierSelector()).Select(o => o.ToString()).ToArray();
@@ -241,7 +241,7 @@ namespace Tessera
 		public string[] GetObjectsList(string objectType, string controllerMethod, string[] parameters)
 		{
 			CheckCredentials();
-			MM_ObjectType ot = ObjectTypeRepository.Get(objectType);
+			var ot = Base.Meta.GetClass(objectType);
             var instance = r.Empty(ot);
 			Type c = ControllerFactory.GetControllerType(objectType);
 			var m = c.GetMethod(controllerMethod);
@@ -287,11 +287,11 @@ namespace Tessera
 		public ObjectTransition[] GetObjectTransitions(string objectType, string id)
 		{
 			CheckCredentials();
-			MM_ObjectType ot = ObjectTypeRepository.Get(objectType);
+			var ot = Base.Meta.GetClass(objectType);
 			var instance = r.Empty(ot);
 			Type c = ControllerFactory.GetControllerType(objectType);
 			var m = c.GetMethod("GetTransitions");
-			var tlist = (m.Invoke(null, new object[] {ot.PrimaryKey[0].TypeCode == ObjectPropertyType.Guid ? (object)id.ToGuid() : id.ToInt32(0) }) as IQueryable<IMMObjectTransition>).ToList();
+			var tlist = (m.Invoke(null, new object[] {ot.Key.Type is MetaGuidType ? (object)id.ToGuid() : id.ToInt32(0) }) as IQueryable<IMMObjectTransition>).ToList();
 			List<ObjectTransition> otlist = new List<ObjectTransition>();
 			foreach (var t in tlist)
 			{
@@ -312,13 +312,13 @@ namespace Tessera
 			return otlist.ToArray();
 		}
 
-        void ImportObjectVersion(MM_ObjectType objectType, string verid)
+        void ImportObjectVersion(MetaClass objectType, string verid)
         {
-			string versionData = ReplicationSourceServer.GetVersionRecord(objectType.SysName, verid);
+			string versionData = ReplicationSourceServer.GetVersionRecord(objectType.Name, verid);
             XElement xeVer = XElement.Parse(versionData);
             // Получить сам объект
-            string id = (string)xeVer.Element(objectType.PrimaryKey[0].SysName);
-			string data = ReplicationSourceServer.GetRecord(objectType.SysName, id);
+            string id = (string)xeVer.Element(objectType.Key.Name);
+			string data = ReplicationSourceServer.GetRecord(objectType.Name, id);
             r.ImportObject(objectType, XElement.Parse(data));
             r.SubmitChanges();
             r.ImportObjectVersion(objectType, xeVer);
@@ -333,11 +333,11 @@ namespace Tessera
 			AppSPM.RunWithElevatedPrivileges(() => Nephrite.Web.TaskManager.TaskManager.Run());
 		}
 
-		public bool ImportObject(MM_ObjectType objectType, string data)
+		public bool ImportObject(MetaClass objectType, string data)
         {
 			XElement xe = XElement.Parse(data);
 			
-			if (objectType.SysName == "N_Folder")
+			if (objectType.Name == "N_Folder")
 			{
 				var folder = FileStorageManager.GetFolder(xe.Element("Guid").Value.ToGuid());
 				if (folder == null)
@@ -351,7 +351,7 @@ namespace Tessera
 				return true;
 			}
 
-			if (objectType.SysName == "N_File")
+			if (objectType.Name == "N_File")
 			{
 				IDbFolder folder = null;
 				string path = "";
@@ -383,33 +383,35 @@ namespace Tessera
 			}
 
             // Проверка наличия объектов, на который ссылается данный объект
-            foreach (var prop in objectType.MM_ObjectProperties.Where(o => o.RefObjectTypeID.HasValue && !o.IsAggregate && o.UpperBound == 1))
+            foreach (var prop in objectType.Properties.Where(o => o is MetaReference && o.UpperBound == 1))
             {
-                if (prop.RefObjectType.SysName == "SPM_Subject")
+				MetaReference prop_r = prop as MetaReference;
+
+				if (prop_r.RefClass.Name == "SPM_Subject")
                     continue;
 
-                XElement xep = xe.Element(prop.SysName);
+                XElement xep = xe.Element(prop.Name);
                 if (xep != null)
                 {
                     string propID = xep.Value;
                     if (propID.ToInt32(0) > 0 || propID.ToGuid() != Guid.Empty)
                     {
-                        var ref_ot = ObjectTypeRepository.Get(prop.RefObjectType.SysName);
+						var ref_ot = Base.Meta.GetClass(prop_r.RefClass.Name);
 						object propIDobj = propID.ToInt32(0) > 0 ? (object)propID.ToInt32(0) : (object)propID.ToGuid();
-						if ((prop.IsReferenceToVersion ? r.GetVersion(ref_ot, propIDobj) : r.Get(ref_ot, propIDobj)) == null)
+						if ((prop_r is MetaReferenceToVersion ? r.GetVersion(ref_ot, propIDobj) : r.Get(ref_ot, propIDobj)) == null)
                         {
                             // Импорт версии или объекта
-                            if (prop.IsReferenceToVersion)
+							if (prop_r is MetaReferenceToVersion)
                             {
 								ImportObjectVersion(ref_ot, propID);
                             }
                             else
                             {
-								string refdata = ReplicationSourceServer.GetRecord(ref_ot.SysName, propID);
+								string refdata = ReplicationSourceServer.GetRecord(ref_ot.Name, propID);
                                 if (refdata == "")
                                 {
-                                    ErrorLogger.Log(new Exception("Передача не удалась, т.к. сервер не вернул объект " + ref_ot.SysName + ", ID=" +
-                                        propID.ToString() + ", необходимый для импорта свойства " + prop.SysName + " объекта " + data));
+                                    ErrorLogger.Log(new Exception("Передача не удалась, т.к. сервер не вернул объект " + ref_ot.Name + ", ID=" +
+                                        propID.ToString() + ", необходимый для импорта свойства " + prop.Name + " объекта " + data));
                                     return false;
                                 }
 								ImportObject(ref_ot, refdata);
@@ -420,10 +422,9 @@ namespace Tessera
             }
             
             // Если имеются ссылки на файлы, то сначала загрузить файлы
-            foreach (var fileProp in objectType.MM_ObjectProperties.Where(o => o.TypeCode == ObjectPropertyType.File &&
-                o.UpperBound == 1))
+            foreach (var fileProp in objectType.Properties.Where(o => o.Type is MetaFileType && o.UpperBound == 1))
             {
-                var guid = xe.Element(fileProp.SysName).Value;
+                var guid = xe.Element(fileProp.Name).Value;
                 if (guid != "")
                 {
                     var g = new Guid(guid);
@@ -457,7 +458,7 @@ namespace Tessera
 							cmd.Connection.Open();
 						try
 						{
-							xe.SetElementValue(fileProp.SysName, cmd.ExecuteScalar());
+							xe.SetElementValue(fileProp.Name, cmd.ExecuteScalar());
 						}
 						finally
 						{
@@ -470,23 +471,25 @@ namespace Tessera
             r.ImportObject(objectType, xe);
             r.SubmitChanges();
 
-            XElement xepk = xe.Element(objectType.PrimaryKey[0].SysName);
+            XElement xepk = xe.Element(objectType.Key.Name);
             // Импорт агрегируемых объектов
-            foreach (var prop in objectType.MM_ObjectProperties.Where(o => o.RefObjectPropertyID.HasValue && o.IsAggregate && o.UpperBound == -1))
+            foreach (var prop in objectType.Properties.Where(o => o is MetaReference && (o as MetaReference).InverseProperty != null && 
+				(o as MetaReference).AssociationType == AssociationType.Aggregation && o.UpperBound == -1))
             {
-                var ref_ot = ObjectTypeRepository.Get(prop.RefObjectType.SysName);
+				MetaReference prop_r = prop as MetaReference;
+                var ref_ot = Base.Meta.GetClass(prop_r.RefClass.Name);
 
-				string[] ids = ReplicationSourceServer.GetObjectsByPropertyValue(ref_ot.SysName, prop.RefObjectProperty.ColumnName, xepk.Value);
+				string[] ids = ReplicationSourceServer.GetObjectsByPropertyValue(ref_ot.Name, prop_r.InverseProperty.ColumnName, xepk.Value);
                 foreach (var objid in ids)
                 {
-					string refdata = ReplicationSourceServer.GetRecord(ref_ot.SysName, objid);
+					string refdata = ReplicationSourceServer.GetRecord(ref_ot.Name, objid);
 					if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["LogImportObjects"]))
 						File.AppendAllText(ConfigurationManager.AppSettings["LogImportObjects"], DateTime.Now.ToString() + "\tGetRecord" + Environment.NewLine + XElement.Parse(refdata).ToString(SaveOptions.None) + Environment.NewLine + Environment.NewLine);
             
                     if (refdata == "")
                     {
-                        ErrorLogger.Log(new Exception("Передача не удалась, т.к. сервер не вернул агрегируемый объект " + ref_ot.SysName + ", ID=" +
-                            objid.ToString() + ", необходимый для импорта свойства " + prop.SysName + " объекта " + data));
+                        ErrorLogger.Log(new Exception("Передача не удалась, т.к. сервер не вернул агрегируемый объект " + ref_ot.Name + ", ID=" +
+                            objid.ToString() + ", необходимый для импорта свойства " + prop.Name + " объекта " + data));
 
                         return false;
                     }

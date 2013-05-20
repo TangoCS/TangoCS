@@ -8,6 +8,7 @@ using System.Data.Linq;
 
 namespace Nephrite.Web
 {
+	/*
 	public static class TableInfo
 	{
 		static DateTime tableInfoDate = new DateTime(2010, 1, 1);
@@ -82,4 +83,5 @@ namespace Nephrite.Web
 			return d;
 		}
 	}
+	*/
 }

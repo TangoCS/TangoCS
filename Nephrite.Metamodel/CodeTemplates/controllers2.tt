@@ -32,7 +32,7 @@ namespace <#= AppMM.DBName() #>.Controllers
 				orderby = ".OrderBy(" + cls.DefaultOrderBy + ")";
 		}
 		
-		bool ishstcls = cls.HistoryTypeCode == HistoryType.IdentifiersRetain || cls.HistoryTypeCode == HistoryType.IdentifiersMiss;
+		bool ishstcls = cls.HistoryTypeCode == VersioningType.IdentifiersRetain || cls.HistoryTypeCode == VersioningType.IdentifiersMiss;
 		string clsname = (ishstcls ? "HST_" : "") + cls.SysName;#>
     partial class <#= cls.SysName #>Controller
     {

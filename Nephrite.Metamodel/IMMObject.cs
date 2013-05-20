@@ -14,7 +14,7 @@ namespace Nephrite.Metamodel
         DateTime LastModifiedDate { get; }
         int LastModifiedUserID { get; }
         //MM_ObjectType MMType { get; }
-		MetaClass MetaClass { get; }
+		
         bool IsLogicalDelete { get; }
 		event EventHandler OnSaveChanges;
 		void RaiseSaveChanges();

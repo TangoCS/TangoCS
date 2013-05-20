@@ -12,7 +12,6 @@
 <#@ import namespace="System" #>
 <#@ output extension="cs" #>
 <# 	var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate && o.IsSeparateTable).ToList(); #>
-<# 	var objectTypesWithWorkflow = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate && o.IsSeparateTable && o.MM_ObjectProperties.Any(o1 => o1.SysName == "Activity" && o1.RefObjectType != null && o1.RefObjectType.SysName == "WF_Activity")).ToList(); #>
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -262,9 +261,9 @@ namespace <#= AppMM.DBName() #>.Model
 
         public override void WriteUpdateObjectHistory()
         {
-<#  		if (cls.HistoryTypeCode != HistoryType.None && !cls.MM_Package.IsDataReplicated && !cls.IsDataReplicated)
+<#  		if (cls.HistoryTypeCode != VersioningType.None && !cls.MM_Package.IsDataReplicated && !cls.IsDataReplicated)
             {
-                if (cls.HistoryTypeCode != HistoryType.Object)
+                if (cls.HistoryTypeCode != VersioningType.Object)
 				{#>
             if (CHST_<#= cls.SysName #>.CurrentVersion.IsCurrent)
                 App.DataContext.<#= cls.SysName #>_CreateHistoryVersion(<#= cls.PrimaryKey.Single().ColumnName #>, CHST_<#= cls.SysName #>.CurrentVersionID);
@@ -336,14 +335,14 @@ namespace <#= AppMM.DBName() #>.Model
 			<#}#>
 			<#}#>
         }
-<# 			if (cls.HistoryTypeCode == HistoryType.Object && !cls.MM_Package.IsDataReplicated && !cls.IsDataReplicated)
+<# 			if (cls.HistoryTypeCode == VersioningType.Object && !cls.MM_Package.IsDataReplicated && !cls.IsDataReplicated)
 			{ #>
 		public bool SkipCreateHistoryVersion;
 <# 			}#>
 
         public override void WriteInsertObjectHistory()
         {
-<# 			if (cls.HistoryTypeCode == HistoryType.Object && !cls.MM_Package.IsDataReplicated && !cls.IsDataReplicated)
+<# 			if (cls.HistoryTypeCode == VersioningType.Object && !cls.MM_Package.IsDataReplicated && !cls.IsDataReplicated)
 			{ #>
 			if (!SkipCreateHistoryVersion)
 				App.DataContext.<#= cls.SysName #>_CreateHistoryVersion(<#= cls.PrimaryKey.Single().ColumnName #>);

@@ -23,7 +23,7 @@ namespace <#= AppMM.DBName() #>.Controllers
 {
 <#	foreach (var cls in objectTypes.Where(o => o.MM_Methods.Any()))
 	{
-		bool ishstcls = cls.HistoryTypeCode == HistoryType.IdentifiersRetain || cls.HistoryTypeCode == HistoryType.IdentifiersMiss;
+		bool ishstcls = cls.HistoryTypeCode == VersioningType.IdentifiersRetain || cls.HistoryTypeCode == VersioningType.IdentifiersMiss;
 		string clsname = (ishstcls ? "HST_" : "") + cls.SysName;#>
     public partial class <#= cls.SysName #>Controller : Nephrite.Metamodel.Controllers.MMObjectController
     {
@@ -117,7 +117,7 @@ namespace <#= AppMM.DBName() #>.Controllers
             {#>
 		public void <#= method.SysName #>(<#= String.IsNullOrEmpty(method.Parameters) ? cls.PrimaryKey.Single().ClrType + " id, string returnurl" : method.Parameters #>)
         {
-            var obj = <#=cls.HistoryTypeCode == HistoryType.IdentifiersRetain || cls.HistoryTypeCode == HistoryType.IdentifiersMiss ? "Get(id)" : "GetVersion(id)"#>;
+            var obj = <#=cls.HistoryTypeCode == VersioningType.IdentifiersRetain || cls.HistoryTypeCode == VersioningType.IdentifiersMiss ? "Get(id)" : "GetVersion(id)"#>;
             if (obj == null)
             {
                 RenderMessage("Объект не существует");

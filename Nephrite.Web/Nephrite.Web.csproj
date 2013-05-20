@@ -105,7 +105,12 @@
   <ItemGroup>
     <Compile Include="ADSearcher.cs" />
     <Compile Include="AppWeb.cs" />
-    <Compile Include="App\AppSettings.cs" />
+    <Compile Include="CustomControlBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Features\FileStorage\FileStorageModel.cs" />
+    <Compile Include="Features\RSS\RssModel.cs" />
+    <Compile Include="Features\SettingsManager\AppSettings.cs" />
     <Compile Include="Cache.cs" />
     <Compile Include="Controls\ActionLink.cs" />
     <Compile Include="Controls\AutoComplete.cs" />
@@ -275,16 +280,26 @@
     </Compile>
     <Compile Include="Controls\ZoneCalendar.cs" />
     <Compile Include="Cramb.cs" />
+    <Compile Include="CustomControlManager.cs" />
     <Compile Include="ExcelExport.cs" />
-    <Compile Include="Features\FileStorage2\DbFileData.cs" />
-    <Compile Include="Features\FileStorage2\DbItemType.cs" />
-    <Compile Include="Features\FileStorage2\FileStorageManager.cs" />
-    <Compile Include="Features\FileStorage2\IDbFile.cs" />
-    <Compile Include="Features\FileStorage2\IDbFolder.cs" />
-    <Compile Include="Features\FileStorage2\IDbItem.cs" />
-    <Compile Include="Features\FileStorage2\IFileRepository.cs" />
-    <Compile Include="Features\FileStorage2\Samples.cs" />
-    <Compile Include="Features\FileStorage2\StorageTypes.cs" />
+    <Compile Include="Features\SettingsManager\AppSettingsModel.cs" />
+    <Compile Include="Features\LinkedObjects\ILinkedObjectsProvider.cs" />
+    <Compile Include="Features\LinkedObjects\LinkedObjectsView.cs" />
+    <Compile Include="Features\LinkedObjects\ObjectLink.cs" />
+    <Compile Include="Features\Mailer\MailerModel.cs" />
+    <Compile Include="Features\Mailer\MailManager.cs" />
+    <Compile Include="Features\TaskManager\TaskManagerModel.cs" />
+    <Compile Include="Features\UserActivity\UserActivityModel.cs" />
+    <Compile Include="Features\Versioning\ClassVersion.cs" />
+    <Compile Include="Features\Versioning\IClassVersion.cs" />
+    <Compile Include="Features\FileStorage\DbFileData.cs" />
+    <Compile Include="Features\FileStorage\DbItemType.cs" />
+    <Compile Include="Features\FileStorage\FileStorageManager.cs" />
+    <Compile Include="Features\FileStorage\IDbFile.cs" />
+    <Compile Include="Features\FileStorage\IDbFolder.cs" />
+    <Compile Include="Features\FileStorage\IDbItem.cs" />
+    <Compile Include="Features\FileStorage\Samples.cs" />
+    <Compile Include="Features\FileStorage\StorageTypes.cs" />
     <Compile Include="Features\Layout\Helper.cs" />
     <Compile Include="Features\Layout\LayoutTessera.cs" />
     <Compile Include="Features\Layout\SimpleTags.cs" />
@@ -294,23 +309,25 @@
     <Compile Include="Features\Reporting\Report.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Features\RSS\RssLinker.cs" />
     <Compile Include="Features\SPM2\ISPMContext.cs" />
     <Compile Include="Features\SPM2\SPM2.cs" />
     <Compile Include="Features\SPM2\SPMStereotype.cs" />
     <Compile Include="Features\Validation\IValidatable.cs" />
     <Compile Include="Features\Validation\ValidationMessage.cs" />
-    <Compile Include="FileStorage\DataHandler.cs" />
+    <Compile Include="Features\Multilanguage\MultilanguageModel.cs" />
+    <Compile Include="Features\FileStorage\DataHandler.cs" />
     <Compile Include="DebuggerWriter.cs" />
-    <Compile Include="ErrorLog\ErrorLogger.cs" />
-    <Compile Include="FileStorage\FileHandler.cs" />
-    <Compile Include="FileStorage\FileProvider.cs" />
-    <Compile Include="FileStorage\FileTypeIcon.cs" />
-    <Compile Include="FileStorage\FolderPacker.cs" />
+    <Compile Include="Features\ErrorLog\ErrorLogger.cs" />
+    <Compile Include="Features\FileStorage\FileHandler.cs" />
+    <Compile Include="Features\FileStorage\FileProvider.cs" />
+    <Compile Include="Features\FileStorage\FileTypeIcon.cs" />
+    <Compile Include="Features\FileStorage\FolderPacker.cs" />
     <Compile Include="ICalendarObject.cs" />
-    <Compile Include="FileStorage\ImageHandler.cs" />
+    <Compile Include="Features\FileStorage\ImageHandler.cs" />
     <Compile Include="IModelObject.cs" />
     <Compile Include="Impersonation.cs" />
-    <Compile Include="Internals\CalendarDayCache.cs" />
+    <Compile Include="Features\CalendarDays\CalendarDayCache.cs" />
     <Compile Include="IRouteHandler.cs" />
     <Compile Include="JqTreeNode.cs" />
     <Compile Include="MacroManager.cs" />
@@ -320,6 +337,7 @@
     <Compile Include="Features\Layout\LayoutWSS2007.cs" />
     <Compile Include="MetaModel\Implementations\MetaLoad.cs" />
     <Compile Include="MetaModel\Implementations\SystemLayout.cs" />
+    <Compile Include="MetaModel\Implementations\Versioning.cs" />
     <Compile Include="MetaModel\Interfaces\CoreMetaModel.cs" />
     <Compile Include="MetaModel\Interfaces\DBMetaModel.cs" />
     <Compile Include="MetaModel\Implementations\PrimitiveTypes.cs" />
@@ -329,13 +347,16 @@
     <Compile Include="Model\Hibernate.cs" />
     <Compile Include="Model\HMapping.cs" />
     <Compile Include="Model\HModel.cs" />
+    <Compile Include="Model\DCInterfaces.cs" />
+    <Compile Include="IDataContext.cs" />
+    <Compile Include="Model\ModelInterfaces.cs" />
     <Compile Include="MVC\PageParser.cs" />
     <Compile Include="ObjectPropertyChange.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="SPM\SpmActionNameAttribute.cs" />
     <Compile Include="Store.cs" />
     <Compile Include="TableInfo.cs" />
-    <Compile Include="TaskManager\MailerTask.cs" />
+    <Compile Include="Features\Mailer\MailerTask.cs" />
     <Compile Include="MVC\MainMenu.cs" />
     <Compile Include="Controls\MaskedInput.cs" />
     <Compile Include="MVC\BaseController.cs" />
@@ -377,16 +398,16 @@
     <Compile Include="Features\RSS\RssFeed.cs" />
     <Compile Include="Features\RSS\RssItem.cs" />
     <Compile Include="RusNumber.cs" />
-    <Compile Include="Settings.cs" />
+    <Compile Include="Features\SettingsManager\Settings.cs" />
     <Compile Include="SimpleTypeExtensions.cs" />
     <Compile Include="SPM\SPM.cs" />
     <Compile Include="MVC\ViewControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MVC\SqlLog.cs" />
-    <Compile Include="TaskManager\TaskManager.cs" />
-    <Compile Include="TaskManager\TaskManagerModule.cs" />
-    <Compile Include="TextResource.cs" />
+    <Compile Include="Features\TaskManager\TaskManager.cs" />
+    <Compile Include="Features\TaskManager\TaskManagerModule.cs" />
+    <Compile Include="Features\TextResources\TextResource.cs" />
     <Compile Include="Transliteration.cs" />
     <Compile Include="Url.cs" />
     <Compile Include="UrlStack.cs" />
@@ -405,7 +426,7 @@
     <Compile Include="View\TinyMCEFileManager\list.ascx.designer.cs">
       <DependentUpon>list.ascx</DependentUpon>
     </Compile>
-    <Compile Include="FileStorage\VirusChecker.cs" />
+    <Compile Include="Features\FileStorage\VirusChecker.cs" />
     <Compile Include="View\TinyMCEFileManager\upload.ascx.cs">
       <DependentUpon>upload.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -416,10 +437,8 @@
     <Compile Include="Word.cs" />
     <Compile Include="MVC\Workspace.cs" />
     <Compile Include="XMLSerializer.cs" />
-    <Compile Include="ZoneDateTime.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Fakes Include="Fakes\Microsoft.SqlServer.SmoExtended.fakes" />
     <None Include="ExternalDll\nhibernate-mapping.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -467,6 +486,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Features\FileStorage\DataBase\" />
+    <Folder Include="Features\FileStorage\FileSystem\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

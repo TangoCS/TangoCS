@@ -8,7 +8,7 @@ using System.Reflection;
 using System.Configuration;
 using Nephrite.Web.SPM;
 using Nephrite.Web.Controls;
-using Nephrite.Web.App;
+using Nephrite.Web.SettingsManager;
 using Nephrite.Meta;
 
 namespace Nephrite.Web

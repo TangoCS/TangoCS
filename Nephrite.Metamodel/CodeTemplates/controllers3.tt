@@ -23,7 +23,7 @@ namespace <#= AppMM.DBName() #>.Controllers
 {
 <#	foreach (var cls in objectTypes.Where(o => o.MM_Methods.Any()))
 	{
-		bool ishstcls = cls.HistoryTypeCode == HistoryType.IdentifiersRetain || cls.HistoryTypeCode == HistoryType.IdentifiersMiss;
+		bool ishstcls = cls.HistoryTypeCode == VersioningType.IdentifiersRetain || cls.HistoryTypeCode == VersioningType.IdentifiersMiss;
 		string clsname = (ishstcls ? "HST_" : "") + cls.SysName;
 		if (cls.IsMovable)
         {

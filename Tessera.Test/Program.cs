@@ -85,10 +85,14 @@ namespace Tessera.Test
 		{
 			get
 			{
-				return new HTable<SPM_Subject>(this, Session.Query<SPM_Subject>());
+				return new HTable<SPM_Subject>(this, Session.Query<SPM_Subject>());				
 			}
 		}
 	}
+
+
+	
+
 
 
 }

@@ -6,9 +6,8 @@ using System.Web.UI.WebControls.WebParts;
 using System.Web.UI;
 using System.Drawing;
 using Nephrite.Web;
-
-using Nephrite.Web.App;
 using System.Threading;
+using Nephrite.Web.ErrorLog;
 
 namespace Nephrite.Web
 {

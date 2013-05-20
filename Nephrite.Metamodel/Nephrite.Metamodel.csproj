@@ -67,6 +67,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Nephrite.Web\ExternalDll\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
+    <Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Nephrite.Web\ExternalDll\Iesi.Collections.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\Program Files (x86)\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
@@ -79,6 +83,10 @@
     <Reference Include="Microsoft.SqlServer.SqlEnum, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.TextTemplating">
       <HintPath>..\Microsoft.VisualStudio.TextTemplating.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate, Version=3.3.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Nephrite.Web\ExternalDll\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -101,13 +109,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Controls\ListExport.ascx" />
-    <Content Include="FormControls\fCalendar.ascx" />
-    <Content Include="FormControls\fCheckBox.ascx" />
-    <Content Include="FormControls\fDate.ascx" />
-    <Content Include="FormControls\fLabel.ascx" />
-    <Content Include="FormControls\fRichEditor.ascx" />
-    <Content Include="FormControls\fTextArea.ascx" />
-    <Content Include="FormControls\fTextBox.ascx" />
     <Content Include="View\Theme\view.ascx" />
     <Content Include="View\Triggers\delete.ascx" />
     <Content Include="View\Triggers\edit.ascx" />
@@ -151,10 +152,6 @@
     <Compile Include="Controls\ListExport.ascx.designer.cs">
       <DependentUpon>ListExport.ascx</DependentUpon>
     </Compile>
-    <Compile Include="CustomControlBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="CustomControlManager.cs" />
     <Compile Include="DbGenerator.cs" />
     <Compile Include="DbSync\Column.cs" />
     <Compile Include="DbSync\DbStruct.designer.cs" />
@@ -167,62 +164,11 @@
     <Compile Include="DbSync\View.cs" />
     <Compile Include="DynamicClassActivator.cs" />
     <Compile Include="DynamicClassAttribute.cs" />
-    <Compile Include="FormControls\fCalendar.ascx.cs">
-      <DependentUpon>fCalendar.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="FormControls\fCalendar.ascx.designer.cs">
-      <DependentUpon>fCalendar.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="FormControls\fCheckBox.ascx.cs">
-      <DependentUpon>fCheckBox.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="FormControls\fCheckBox.ascx.designer.cs">
-      <DependentUpon>fCheckBox.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="FormControls\fDate.ascx.cs">
-      <DependentUpon>fDate.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="FormControls\fDate.ascx.designer.cs">
-      <DependentUpon>fDate.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="FormControls\fLabel.ascx.cs">
-      <DependentUpon>fLabel.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="FormControls\fLabel.ascx.designer.cs">
-      <DependentUpon>fLabel.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="FormControls\fRichEditor.ascx.cs">
-      <DependentUpon>fRichEditor.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="FormControls\fRichEditor.ascx.designer.cs">
-      <DependentUpon>fRichEditor.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="FormControls\fTextArea.ascx.cs">
-      <DependentUpon>fTextArea.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="FormControls\fTextArea.ascx.designer.cs">
-      <DependentUpon>fTextArea.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="FormControls\fTextBox.ascx.cs">
-      <DependentUpon>fTextBox.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="FormControls\fTextBox.ascx.designer.cs">
-      <DependentUpon>fTextBox.ascx</DependentUpon>
-    </Compile>
     <Compile Include="FormsVirtualFile.cs" />
     <Compile Include="FormsVirtualPathProvider.cs" />
     <Compile Include="FormViewControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="HistoryType.cs" />
-    <Compile Include="IClassVersion.cs" />
     <Compile Include="IFormControl.cs" />
     <Compile Include="IMMObject.cs" />
     <Compile Include="IMMObjectMLView.cs" />
@@ -237,6 +183,9 @@
     <Compile Include="MMSettings.cs" />
     <Compile Include="ModelAssemblyGenerator.cs" />
     <Compile Include="Model\FormViewCacheKeyInfo.cs" />
+    <Compile Include="Model\HMapping.cs" />
+    <Compile Include="Model\HMMDataContext.cs" />
+    <Compile Include="Model\HModel.cs" />
     <Compile Include="Model\MM_FormView.cs" />
     <Compile Include="Model\MM_ModelElement.cs" />
     <Compile Include="Model\MM_ObjectProperty.cs" />
@@ -250,12 +199,10 @@
       <DependentUpon>model.dbml</DependentUpon>
     </Compile>
     <Compile Include="Model\modelDataContextPartial.cs" />
-    <Compile Include="Model\ObjectTypeRepository.cs" />
     <Compile Include="Model\Theme.cs" />
     <Compile Include="Model\_ModelObjectsTitles.cs" />
     <Compile Include="ObjectPropertyType.cs" />
     <Compile Include="Repository.cs" />
-    <Compile Include="RssLinker.cs" />
     <Compile Include="TemplateType.cs" />
     <Compile Include="MView.cs" />
     <Compile Include="TextTransform\CodeGen.cs" />
@@ -331,10 +278,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CodeTemplates\ModelInterfaces.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>ModelInterfaces.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="CodeTemplates\app.tt">
       <Generator>NephriteTextTransform</Generator>
       <LastGenOutput>app.cs</LastGenOutput>

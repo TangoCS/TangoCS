@@ -8,6 +8,7 @@ using NHibernate.Type;
 
 namespace Nephrite.Web.Model
 {
+	/*
 	public class MailMessageMap : ClassMapping<MailMessage>
 	{
 		public MailMessageMap()
@@ -28,21 +29,6 @@ namespace Nephrite.Web.Model
 		}
 	}
 
-	public class MailTemplateMap : ClassMapping<MailTemplate>
-	{
-		public MailTemplateMap()
-		{
-			Table("MailTemplate");
-			Lazy(true);
-			Id(x => x.MailTemplateID, map => map.Generator(Generators.Identity));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.TemplateSubject, map => map.NotNullable(true));
-			Property(x => x.TemplateBody, map => map.NotNullable(true));
-			Property(x => x.Comment);
-			Property(x => x.IsSystem, map => map.NotNullable(true));
-		}
-	}
-
 	public class N_TimeZoneMap : ClassMapping<N_TimeZone>
 	{
 		public N_TimeZoneMap()
@@ -55,33 +41,6 @@ namespace Nephrite.Web.Model
 			Property(x => x.Title, map => map.NotNullable(true));
 			Property(x => x.GMTOffset, map => map.NotNullable(true));
 			Property(x => x.Comment);
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-			Bag(x => x.HST_N_TimeZones, colmap => { colmap.Key(x => x.Column("TimeZoneID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
-		}
-	}
-
-	public class HST_N_TimeZoneMap : ClassMapping<HST_N_TimeZone>
-	{
-		public HST_N_TimeZoneMap()
-		{
-			Table("HST_N_TimeZone");
-
-			Lazy(true);
-			Id(x => x.TimeZoneVersionID, map => map.Generator(Generators.Assigned));
-			Property(x => x.VersionNumber, map => map.NotNullable(true));
-			Property(x => x.IsCurrentVersion, map => map.NotNullable(true));
-			Property(x => x.IsDeleted, map => map.NotNullable(true));
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.GMTOffset, map => map.NotNullable(true));
-			Property(x => x.Comment);
-			ManyToOne(x => x.N_TimeZone, map =>
-			{
-				map.Column("TimeZoneID");
-				map.Cascade(Cascade.None);
-				map.ForeignKey("FK_HST_N_TimeZone_N_TimeZone");
-			});
-
 			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
 		}
 	}
@@ -377,4 +336,30 @@ namespace Nephrite.Web.Model
 			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
 		}
 	}
+
+	public class N_RssFeedMap : ClassMapping<N_RssFeed>
+	{
+		public N_RssFeedMap()
+		{
+			Schema("dbo");
+			Lazy(true);
+			Id(x => x.RssFeedID, map => map.Generator(Generators.Identity));
+			Property(x => x.Copyright, map => map.NotNullable(true));
+			Property(x => x.Description, map => map.NotNullable(true));
+			Property(x => x.IsDeleted, map => map.NotNullable(true));
+			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
+			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
+			Property(x => x.ObjectTypeSysName, map => map.NotNullable(true));
+			Property(x => x.Predicate, map => map.NotNullable(true));
+			Property(x => x.PubDate, map => map.NotNullable(true));
+			Property(x => x.SysName, map => map.NotNullable(true));
+			Property(x => x.Title, map => map.NotNullable(true));
+			Property(x => x.Ttl, map => map.NotNullable(true));
+			Property(x => x.ViewFormSysName, map => map.NotNullable(true));
+			Property(x => x.Author, map => map.NotNullable(true));
+			Property(x => x.WebMaster, map => map.NotNullable(true));
+			Property(x => x.LinkParams);
+		}
+	}
+	 */
 }

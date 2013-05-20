@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Linq.Expressions;
+using Nephrite.Meta;
 
 namespace Nephrite.Web
 {
@@ -11,7 +12,7 @@ namespace Nephrite.Web
 		string Title { get; }
         int ObjectID { get; }
 		Guid ObjectGUID { get; }
-        string GetClassName();
+		MetaClass MetaClass { get; }
     }
 
 	public interface IMovableObject

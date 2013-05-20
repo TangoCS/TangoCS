@@ -11,6 +11,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using System.ComponentModel;
+using Nephrite.Web.SettingsManager;
 
 
 

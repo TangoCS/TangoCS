@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.UI;
+using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Web.Controls
 {

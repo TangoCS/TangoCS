@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using Nephrite.Web.FileStorage;
 using System.IO;
+using Nephrite.Web.TextResources;
 
 namespace Nephrite.Web.Controls
 {

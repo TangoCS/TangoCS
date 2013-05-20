@@ -4,7 +4,8 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
-using Nephrite.Web.App;
+using Nephrite.Web.ErrorLog;
+using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Web
 {

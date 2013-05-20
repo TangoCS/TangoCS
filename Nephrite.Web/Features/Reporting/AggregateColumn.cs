@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Nephrite.Web.Features.Reporting
+namespace Nephrite.Web.Reporting
 {
 	/// <summary>
 	/// Агрегируемый столбец
@@ -34,6 +34,6 @@ namespace Nephrite.Web.Features.Reporting
 		}
 
 		// Функция получения значения
-		public Func<Nephrite.Web.Features.Reporting.Report.ReportItem, decimal> ValueFunc { get; set; }
+		public Func<Report.ReportItem, decimal> ValueFunc { get; set; }
 	}
 }

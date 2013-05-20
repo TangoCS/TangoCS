@@ -1,1 +1,1 @@
-﻿<%@ WebHandler Language="C#" Class="Nephrite.Web.DataHandler" %>
+﻿<%@ WebHandler Language="C#" Class="Nephrite.Web.FileStorage.DataHandler" %>

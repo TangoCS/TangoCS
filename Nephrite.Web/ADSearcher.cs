@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.DirectoryServices;
 using System.Linq;
 using System.Security.Principal;
+using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Web
 {

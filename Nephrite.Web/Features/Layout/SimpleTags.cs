@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Text;
 using Nephrite.Meta;
+using Nephrite.Web.FileStorage;
+using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Web.Layout
 {
@@ -42,10 +44,11 @@ namespace Nephrite.Web.Layout
 
 		public string Image(string src, string alt, object attributes)
 		{
-			if (src.ToLower().Contains("data.ashx"))
-				return String.Format("<img src='{0}' class='middle' alt='{1}' title='{1}' />", DataHandler.GetDataUrl(src.GetQueryParameter("oid").ToInt32(0)), alt);
-			if (src.IndexOf('/', 1) > 0 && !src.StartsWith(".."))
-				return String.Format("<img src='{0}' class='middle' alt='{1}' title='{1}' />", DataHandler.GetDataUrl(src), alt);
+			// при необходимости сделать метод DBImage
+			//if (src.ToLower().Contains("data.ashx"))
+			//	return String.Format("<img src='{0}' class='middle' alt='{1}' title='{1}' />", DataHandler.GetDataUrl(src.GetQueryParameter("oid").ToInt32(0)), alt);
+			//if (src.IndexOf('/', 1) > 0 && !src.StartsWith(".."))
+			//	return String.Format("<img src='{0}' class='middle' alt='{1}' title='{1}' />", DataHandler.GetDataUrl(src), alt);
 			return String.Format("<img src='{0}' class='middle' alt='{1}' title='{1}' />", Settings.ImagesPath + src, alt);
 		}
 	}

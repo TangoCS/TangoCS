@@ -10,6 +10,9 @@ using System.Web.Caching;
 using Nephrite.Web.SPM;
 using System.Configuration;
 using Nephrite.Meta;
+using Nephrite.Web.SettingsManager;
+using Nephrite.Web.FileStorage;
+using Nephrite.Web.TextResources;
 
 namespace Nephrite.Web
 {
@@ -360,19 +363,20 @@ namespace Nephrite.Web
 
 		public string Image(string src, string alt)
 		{
-			if (src.ToLower().Contains("data.ashx"))
-				return String.Format("<img src='{0}' class='middle' alt='{1}' title='{1}' />", DataHandler.GetDataUrl(src.GetQueryParameter("oid").ToInt32(0)), alt);
-			if (src.IndexOf('/', 1) > 0 && !src.StartsWith(".."))
-				return String.Format("<img src='{0}' class='middle' alt='{1}' title='{1}' />", DataHandler.GetDataUrl(src), alt);
+			// при необходимости сделать метод DBImage
+			//if (src.ToLower().Contains("data.ashx"))
+			//	return String.Format("<img src='{0}' class='middle' alt='{1}' title='{1}' />", DataHandler.GetDataUrl(src.GetQueryParameter("oid").ToInt32(0)), alt);
+			//if (src.IndexOf('/', 1) > 0 && !src.StartsWith(".."))
+			//	return String.Format("<img src='{0}' class='middle' alt='{1}' title='{1}' />", DataHandler.GetDataUrl(src), alt);
             return String.Format("<img src='{0}' class='middle' alt='{1}' title='{1}' />", Settings.ImagesPath + src, alt);
 		}
 
         public string InternalImageLink(string onClick, string text, string image)
         {
-			if (image.ToLower().Contains("data.ashx"))
-				return String.Format(@"<a href=""#"" onclick=""javascript:{0}""><img src=""{2}"" alt=""{1}"" title=""{1}"" border=""0"" style=""border:0; vertical-align:middle;""/></a>", onClick, text, DataHandler.GetDataUrl(image.GetQueryParameter("oid").ToInt32(0)));
-			if (image.IndexOf('/', 1) > 0 && !image.StartsWith(".."))
-				return String.Format(@"<a href=""#"" onclick=""javascript:{0}""><img src=""{2}"" alt=""{1}"" title=""{1}"" border=""0"" style=""border:0; vertical-align:middle;""/></a>", onClick, text, DataHandler.GetDataUrl(image));
+			//if (image.ToLower().Contains("data.ashx"))
+			//	return String.Format(@"<a href=""#"" onclick=""javascript:{0}""><img src=""{2}"" alt=""{1}"" title=""{1}"" border=""0"" style=""border:0; vertical-align:middle;""/></a>", onClick, text, DataHandler.GetDataUrl(image.GetQueryParameter("oid").ToInt32(0)));
+			//if (image.IndexOf('/', 1) > 0 && !image.StartsWith(".."))
+			//	return String.Format(@"<a href=""#"" onclick=""javascript:{0}""><img src=""{2}"" alt=""{1}"" title=""{1}"" border=""0"" style=""border:0; vertical-align:middle;""/></a>", onClick, text, DataHandler.GetDataUrl(image));
             return String.Format(@"<a href=""#"" onclick=""javascript:{0}""><img src=""" + Settings.ImagesPath + @"{2}"" alt=""{1}"" title=""{1}"" border=""0"" style=""border:0; vertical-align:middle;""/></a>", onClick, text, image);
         }
 
