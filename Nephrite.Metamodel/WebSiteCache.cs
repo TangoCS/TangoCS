@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Nephrite.Web.App;
 using Nephrite.Metamodel.Model;
 using Nephrite.Web.SPM;
 using Nephrite.Web;
 using System.Data.Linq;
 using System.IO;
 using Nephrite.Web.FileStorage;
+using Nephrite.Web.SettingsManager;
+using Nephrite.Web.TextResources;
 
 namespace Nephrite.Metamodel
 {

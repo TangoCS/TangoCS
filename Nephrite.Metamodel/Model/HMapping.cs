@@ -5,9 +5,9 @@ using System.Web;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 
-namespace Nephrite.Metamodel.Model2
+namespace Nephrite.Metamodel.Model
 {
-	public class MM_FormFieldAttributeMap : ClassMapping<MM_FormFieldAttribute>
+	/*public class MM_FormFieldAttributeMap : ClassMapping<MM_FormFieldAttribute>
 	{
 
 		public MM_FormFieldAttributeMap()
@@ -29,7 +29,7 @@ namespace Nephrite.Metamodel.Model2
 			});
 
 		}
-	}
+	}*/
 
 	public class MM_PackageMap : ClassMapping<MM_Package>
 	{
@@ -127,13 +127,13 @@ namespace Nephrite.Metamodel.Model2
 				map.Cascade(Cascade.None);
 			});
 
-			Bag(x => x.MM_FormFields, colmap => { colmap.Key(x => x.Column("ObjectPropertyID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
-			Bag(x => x.MM_FormFieldGroups, colmap => { colmap.Key(x => x.Column("SelectObjectPropertyID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
+			//Bag(x => x.MM_FormFields, colmap => { colmap.Key(x => x.Column("ObjectPropertyID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
+			//Bag(x => x.MM_FormFieldGroups, colmap => { colmap.Key(x => x.Column("SelectObjectPropertyID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 			Bag(x => x.MM_ObjectProperties, colmap => { colmap.Key(x => x.Column("RefObjectPropertyID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 		}
 	}
 
-	public class MM_FormFieldMap : ClassMapping<MM_FormField>
+	/*public class MM_FormFieldMap : ClassMapping<MM_FormField>
 	{
 
 		public MM_FormFieldMap()
@@ -173,7 +173,7 @@ namespace Nephrite.Metamodel.Model2
 
 			Bag(x => x.MM_FormFieldAttributes, colmap => { colmap.Key(x => x.Column("FormFieldID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 		}
-	}
+	}*/
 
 	public class MM_CodifierValueMap : ClassMapping<MM_CodifierValue>
 	{
@@ -218,6 +218,7 @@ namespace Nephrite.Metamodel.Model2
 		}
 	}
 
+	/*
 	public class MM_MethodGroupMap : ClassMapping<MM_MethodGroup>
 	{
 		public MM_MethodGroupMap()
@@ -273,6 +274,7 @@ namespace Nephrite.Metamodel.Model2
 			Bag(x => x.MM_MethodGroupItems, colmap => { colmap.Key(x => x.Column("ParentMethodGroupItemID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 		}
 	}
+	*/
 
 	public class MM_MethodMap : ClassMapping<MM_Method>
 	{
@@ -307,10 +309,11 @@ namespace Nephrite.Metamodel.Model2
 				map.Cascade(Cascade.None);
 			});
 
-			Bag(x => x.MM_MethodGroupItems, colmap => { colmap.Key(x => x.Column("MethodID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
+			//Bag(x => x.MM_MethodGroupItems, colmap => { colmap.Key(x => x.Column("MethodID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 		}
 	}
 
+	/*
 	public class MM_FormFieldGroupMap : ClassMapping<MM_FormFieldGroup>
 	{
 		public MM_FormFieldGroupMap()
@@ -347,6 +350,7 @@ namespace Nephrite.Metamodel.Model2
 			Bag(x => x.MM_FormFields, colmap => { colmap.Key(x => x.Column("FormFieldGroupID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 		}
 	}
+	 * */
 
 	public class MM_ObjectTypeMap : ClassMapping<MM_ObjectType>
 	{
@@ -387,10 +391,10 @@ namespace Nephrite.Metamodel.Model2
 				map.Cascade(Cascade.None);
 			});
 
-			Bag(x => x.MM_FormFieldGroups, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
+			//Bag(x => x.MM_FormFieldGroups, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 			Bag(x => x.MM_FormViews, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 			Bag(x => x.MM_Methods, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
-			Bag(x => x.MM_MethodGroups, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
+			//Bag(x => x.MM_MethodGroups, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 			Bag(x => x.MM_ObjectProperties, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 			Bag(x => x.MM_ObjectTypes, colmap => { colmap.Key(x => x.Column("BaseObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 		}

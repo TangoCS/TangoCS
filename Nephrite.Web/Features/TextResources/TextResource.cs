@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Nephrite.Web.Model;
+using Nephrite.Web.Multilanguage;
 
 namespace Nephrite.Web.TextResources
 {
@@ -30,13 +30,13 @@ namespace Nephrite.Web.TextResources
 		/// <returns></returns>
 		public static string Get(string sysName, string defaultText)
 		{
-			string res = sysName + "-" + AppWeb.CurrentLanguage.LanguageCode;
+			string res = sysName + "-" + Language.Current.Code;
 
 			if (!loaded)
 			{
 				lock (locker)
 				{
-					var nrs = ((IDC_TextResource)Base.Model).V_N_TextResource.Select(o => new { Res = o.SysName + "-" + o.LanguageCode, ID = o.TextResourceID, Text = o.Text });
+					var nrs = ((IDC_TextResources)A.Model).V_N_TextResource.Select(o => new { Res = o.SysName + "-" + o.LanguageCode, ID = o.TextResourceID, Text = o.Text });
 					foreach (var nr in nrs)
 					{
 						resources[nr.Res] = nr.Text;
@@ -94,7 +94,7 @@ namespace Nephrite.Web.TextResources
 		string LanguageCode { get; set; }
 	}
 
-	public interface IDC_TextResource
+	public interface IDC_TextResources
 	{
 		IQueryable<IV_N_TextResource> V_N_TextResource { get; }
 	}

@@ -86,7 +86,7 @@ namespace Nephrite.Metamodel.View.Utils
 						}
 						else
 						{
-							Nephrite.Web.Base.Model.SubmitChanges();
+							Nephrite.Web.A.Model.SubmitChanges();
 							lMsg.Text += "<br /><br />Файл " + file.Title + " обновлен.";
 						}
                     }
@@ -100,7 +100,7 @@ namespace Nephrite.Metamodel.View.Utils
 						}
 						else
 						{
-							Nephrite.Web.Base.Model.SubmitChanges();
+							Nephrite.Web.A.Model.SubmitChanges();
 							lMsg.Text += "<br /><br />Файл " + file.Title + " создан.";
 						}
                     }

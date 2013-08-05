@@ -6,7 +6,7 @@ using Nephrite.Web;
 
 namespace Nephrite.Metamodel.Model
 {
-    partial class MM_Package : IMM_ModelElement, IMovableObject
+    partial class MM_Package : IMM_ModelElement, IWithSeqNo
     {
         public string Icon
         {

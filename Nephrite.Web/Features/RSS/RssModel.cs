@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Nephrite.Web.RSS
 {
-	public interface IDC_N_RssFeed : IDataContext
+	public interface IDC_RSS : IDataContext
 	{
 		IQueryable<IN_RssFeed> N_RssFeed { get; } 
 	}

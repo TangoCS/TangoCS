@@ -14,10 +14,10 @@ namespace Nephrite.Metamodel
 {
 	public class AppMM
 	{
-		[ThreadStatic]
-		static modelDataContext context = null;
+		//[ThreadStatic]
+		//static modelDataContext context = null;
 
-		public static modelDataContext DataContext
+		/*public static modelDataContext DataContext
 		{
 			get
 			{
@@ -48,7 +48,7 @@ namespace Nephrite.Metamodel
 					return context;
 				}
 			}
-		}
+		}*/
 
 		internal static HiddenField TotalFilesSize
 		{
@@ -68,67 +68,5 @@ namespace Nephrite.Metamodel
             SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(ConnectionManager.Connection.ConnectionString);
 			return csb.InitialCatalog;
 		}
-
-        static List<C_Language> _langs;
-        public static List<C_Language> Languages
-        {
-            get
-            {
-                if (_langs == null)
-                    _langs = DataContext.C_Languages.ToList();
-                return _langs;
-            }
-        }
-
-        static string defaultLanguage = null;
-        public static string DefaultLanguage
-        {
-            get
-            {
-                if (defaultLanguage == null)
-                    defaultLanguage = Languages.Single(o => o.IsDefault).LanguageCode;
-                return defaultLanguage;
-            }
-        }
-
-        public static C_Language CurrentLanguage
-        {
-            get
-            {
-                string lang = Query.GetString("lang");
-				if (HttpContext.Current.Request.Cookies["lcid"] != null)
-					lang = HttpContext.Current.Request.Cookies["lcid"].Value == "1033" ? "en" : "ru";
-				if (HttpContext.Current.Items["Lang"] != null)
-					lang = (string)HttpContext.Current.Items["Lang"];
-                var l = Languages.SingleOrDefault(o => o.LanguageCode == lang);
-                if (l == null)
-                    l = Languages.Single(o => o.IsDefault);
-                return l;
-            }
-        }
-
-		public static void WithLang(string lang, Action action)
-		{
-			string prevLang = (string)HttpContext.Current.Items["Lang"];
-			HttpContext.Current.Items["Lang"] = lang;
-			action();
-			HttpContext.Current.Items["Lang"] = prevLang;
-		}
-
-        public static CultureInfo CurrentCulture
-        {
-            get
-            {
-                switch (CurrentLanguage.LanguageCode.ToLower())
-                {
-                    case "en":
-                        return CultureInfo.GetCultureInfo("en-US");
-                    case "ru":
-                        return CultureInfo.GetCultureInfo("ru-RU");
-                    default:
-                        return CultureInfo.InvariantCulture;
-                }
-            }
-        }
 	}
 }

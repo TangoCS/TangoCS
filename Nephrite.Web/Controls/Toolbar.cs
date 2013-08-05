@@ -30,7 +30,7 @@ namespace Nephrite.Web.Controls
 		protected override void OnInit(EventArgs e)
 		{
 			base.OnInit(e);
-			Layout = AppWeb.Layout.Toolbar;
+			Layout = AppLayout.Current.Toolbar;
 			ItemsAlign = ToolbarItemsAlign.Left;
 		}
 

@@ -85,7 +85,7 @@ namespace Tessera
 			CheckCredentials();
             // Получить список версий строк
 
-			MetaClass ot = Base.Meta.GetClass(objectType);
+			MetaClass ot = A.Meta.GetClass(objectType);
 			if (ot == null)
 				throw new Exception("Класс " + objectType + " не найден в метамодели");
 
@@ -112,7 +112,7 @@ namespace Tessera
 			}
 			else
 			{
-				var ot = Base.Meta.GetClass(objectType);
+				var ot = A.Meta.GetClass(objectType);
 				var xe = r.ExportObject(ot, id.ToInt32(0) > 0 ? (object)id.ToInt32(0) : id.ToGuid());
 				if (xe == null)
 					return "";
@@ -126,7 +126,7 @@ namespace Tessera
 		public string GetVersionRecord(string objectType, string versionid)
         {
 			CheckCredentials();
-			MetaClass ot = Base.Meta.GetClass(objectType);
+			MetaClass ot = A.Meta.GetClass(objectType);
 			var obj = r.ExportObjectVersion(ot, versionid.ToInt32(0) > 0 ? (object)versionid.ToInt32(0) : versionid.ToGuid());
 			if (obj == null)
 				throw new Exception("Версия объекта " + objectType + " " + versionid + " не найдена в БД");
@@ -206,7 +206,7 @@ namespace Tessera
 					File.AppendAllText(ConfigurationManager.AppSettings["LogImportObjects"], DateTime.Now.ToString() + "\tImportObject" + Environment.NewLine + XElement.Parse(xmlData).ToString(SaveOptions.None) + Environment.NewLine + Environment.NewLine);
 				XElement xe = XElement.Parse(xmlData);
 
-				var ot = Base.Meta.GetClass(xe.Name.LocalName);
+				var ot = A.Meta.GetClass(xe.Name.LocalName);
 
 				if (ot == null)
 					throw new Exception("Класс " + xe.Name.LocalName + " не найден в метамодели");
@@ -229,7 +229,7 @@ namespace Tessera
 		public string[] GetObjectsByPropertyValue(string objectType, string propertyName, string id)
         {
 			CheckCredentials();
-			var ot = Base.Meta.GetClass(objectType);
+			var ot = A.Meta.GetClass(objectType);
             var instance = r.Empty(ot);
             return r.GetList(ot).Where(instance.FilterByProperty(propertyName, id)).
                 Select(instance.GetIdentifierSelector()).Select(o => o.ToString()).ToArray();
@@ -241,7 +241,7 @@ namespace Tessera
 		public string[] GetObjectsList(string objectType, string controllerMethod, string[] parameters)
 		{
 			CheckCredentials();
-			var ot = Base.Meta.GetClass(objectType);
+			var ot = A.Meta.GetClass(objectType);
             var instance = r.Empty(ot);
 			Type c = ControllerFactory.GetControllerType(objectType);
 			var m = c.GetMethod(controllerMethod);
@@ -287,7 +287,7 @@ namespace Tessera
 		public ObjectTransition[] GetObjectTransitions(string objectType, string id)
 		{
 			CheckCredentials();
-			var ot = Base.Meta.GetClass(objectType);
+			var ot = A.Meta.GetClass(objectType);
 			var instance = r.Empty(ot);
 			Type c = ControllerFactory.GetControllerType(objectType);
 			var m = c.GetMethod("GetTransitions");
@@ -347,7 +347,7 @@ namespace Tessera
 				}
 				folder.Title = xe.Element("Title").Value;
 				folder.CheckValid();
-				Base.Model.SubmitChanges();
+				A.Model.SubmitChanges();
 				return true;
 			}
 
@@ -378,7 +378,7 @@ namespace Tessera
 				}
 				file.Write(Convert.FromBase64String(xe.Element("Data").Value));
 				file.CheckValid();
-				Base.Model.SubmitChanges();
+				A.Model.SubmitChanges();
 				return true;
 			}
 
@@ -396,7 +396,7 @@ namespace Tessera
                     string propID = xep.Value;
                     if (propID.ToInt32(0) > 0 || propID.ToGuid() != Guid.Empty)
                     {
-						var ref_ot = Base.Meta.GetClass(prop_r.RefClass.Name);
+						var ref_ot = A.Meta.GetClass(prop_r.RefClass.Name);
 						object propIDobj = propID.ToInt32(0) > 0 ? (object)propID.ToInt32(0) : (object)propID.ToGuid();
 						if ((prop_r is MetaReferenceToVersion ? r.GetVersion(ref_ot, propIDobj) : r.Get(ref_ot, propIDobj)) == null)
                         {
@@ -442,13 +442,13 @@ namespace Tessera
 							file = FileStorageManager.CreateFile(fx.Element("Name").Value, fx.Element("Path").Value);
 							file.Write(filedata);
 							file.CheckValid();
-							Base.Model.SubmitChanges();
+							A.Model.SubmitChanges();
                         }
                         else
                         {
 							file.Write(filedata);
 							file.CheckValid();
-							Base.Model.SubmitChanges();
+							A.Model.SubmitChanges();
                         }
 						var cmd = ConnectionManager.Connection.CreateCommand();
 						cmd.CommandText = "select FileID from N_File where Guid = @Guid";
@@ -477,7 +477,7 @@ namespace Tessera
 				(o as MetaReference).AssociationType == AssociationType.Aggregation && o.UpperBound == -1))
             {
 				MetaReference prop_r = prop as MetaReference;
-                var ref_ot = Base.Meta.GetClass(prop_r.RefClass.Name);
+                var ref_ot = A.Meta.GetClass(prop_r.RefClass.Name);
 
 				string[] ids = ReplicationSourceServer.GetObjectsByPropertyValue(ref_ot.Name, prop_r.InverseProperty.ColumnName, xepk.Value);
                 foreach (var objid in ids)

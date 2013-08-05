@@ -262,7 +262,7 @@ namespace Nephrite.Web.FileStorage
 		#endregion
 
 		#region Работа с данными
-		static IDC_FileStorage dc { get { return (IDC_FileStorage)Base.Model; } }
+		static IDC_FileStorage dc { get { return (IDC_FileStorage)A.Model; } }
 
 		public static void StoreData(IDbFile file, byte[] bytes)
 		{
@@ -299,7 +299,7 @@ namespace Nephrite.Web.FileStorage
 
 		static void StoreInRemoteDatabase(Guid fileGuid, string extension, byte[] bytes, string connectionString)
 		{
-			using (var remoteDC = (IDC_FileStorage)Base.Model.NewDataContext(connectionString))
+			using (var remoteDC = (IDC_FileStorage)A.Model.NewDataContext(connectionString))
 			{
 				var fileData = remoteDC.DbFileData.SingleOrDefault(o => o.FileGUID == fileGuid);
 				if (fileData == null)
@@ -355,7 +355,7 @@ namespace Nephrite.Web.FileStorage
 				case FileStorageType.LocalDatabase:
 					return GetBytesFromDC(dc, file.ID);
 				case FileStorageType.RemoteDatabase:
-					using (var rdc = (IDC_FileStorage)Base.Model.NewDataContext(file.GetStorageParameter())) return GetBytesFromDC(rdc, file.ID);
+					using (var rdc = (IDC_FileStorage)A.Model.NewDataContext(file.GetStorageParameter())) return GetBytesFromDC(rdc, file.ID);
 				case FileStorageType.FileSystem:
 					return GetBytesFromFileSystem(file);
 				case FileStorageType.External:
@@ -389,7 +389,7 @@ namespace Nephrite.Web.FileStorage
 					dc.DbFileData.DeleteAllOnSubmit(dc.DbFileData.Where(o => o.FileGUID == file.ID));
 					break;
 				case FileStorageType.RemoteDatabase:
-					using (var rdc = (IDC_FileStorage)Base.Model.NewDataContext(file.GetStorageParameter()))
+					using (var rdc = (IDC_FileStorage)A.Model.NewDataContext(file.GetStorageParameter()))
 					{
 						rdc.DbFileData.DeleteAllOnSubmit(dc.DbFileData.Where(o => o.FileGUID == file.ID));
 						rdc.SubmitChanges();

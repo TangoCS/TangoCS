@@ -9,6 +9,7 @@ namespace Nephrite.Metamodel.Model
 {
     partial class MM_ObjectType : IMM_ModelElement
     {
+		/*
         bool? isSpmEnabled;
 
         public bool IsSPMEnabled
@@ -34,7 +35,7 @@ namespace Nephrite.Metamodel.Model
                                select asso.SPM_Action).ToArray();
                 return actions;
             }
-        }
+        }*/
 
         public string Icon
         {

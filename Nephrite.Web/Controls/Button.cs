@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Nephrite.Meta;
 using System.Web.UI.WebControls;
+using Nephrite.Web.Layout;
 
 namespace Nephrite.Web.Controls
 {
@@ -15,7 +15,7 @@ namespace Nephrite.Web.Controls
 
 		public SimpleButton()
 		{
-			Layout = AppWeb.Layout.Button;
+			Layout = AppLayout.Current.Button;
 		}
 
 		protected override void Render(System.Web.UI.HtmlTextWriter writer)

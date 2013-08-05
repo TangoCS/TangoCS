@@ -608,7 +608,7 @@ namespace Nephrite.Metamodel
 				{
 					AutoGenerateFolder = FileStorageManager.CreateFolder(subFolder, SourceFolder);
 					AutoGenerateFolder.CheckValid();
-					Base.Model.SubmitChanges();
+					A.Model.SubmitChanges();
 				}
 
 				var file = FileStorageManager.GetFile(SourceFolder + "/" + subFolder + "/" + name);
@@ -620,7 +620,7 @@ namespace Nephrite.Metamodel
 				file.Write(data);
 				if (!file.CheckValid())
 					return file.GetValidationMessages().Select(o => o.Message).Join("; ");
-				Base.Model.SubmitChanges();
+				A.Model.SubmitChanges();
 			}
 			return String.Empty;
 		}

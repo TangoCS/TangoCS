@@ -8,7 +8,6 @@ using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading;
-using Nephrite.Web.Model;
 
 namespace Nephrite.Web.Mailer
 {
@@ -17,7 +16,7 @@ namespace Nephrite.Web.Mailer
 		public static void Run(string server, int port, string login, string password, int timeout, bool enablessl,
 			string fromEmail, string fromName, int pause, string testRecipient, int encoding)
 		{
-			using (var dc = Base.Model.NewDataContext() as IDC_Mailer)
+			using (var dc = A.Model.NewDataContext() as IDC_Mailer)
 			{
 				var list = dc.MailMessage.Where(mm => !mm.IsSent && mm.AttemptsToSendCount < 5 &&
 					(mm.LastSendAttemptDate == null ||	mm.LastSendAttemptDate.Value.AddHours(2 * mm.AttemptsToSendCount) < DateTime.Now)).ToList();

@@ -7,7 +7,7 @@ using Nephrite.Web;
 
 namespace Nephrite.Metamodel.Model
 {
-	public partial class MM_FormField : IModelObject, IChildObject
+	/*public partial class MM_FormField : IModelObject, IChildObject
 	{
 		public int ObjectID
 		{
@@ -105,7 +105,7 @@ namespace Nephrite.Metamodel.Model
 		{
 			return o => (o as MM_FormFieldGroup).MM_ObjectType.Guid == guid;
 		}
-    }
+    }*/
 
 
 	public partial class MM_FormView : IModelObject, IChildObject
@@ -153,7 +153,7 @@ namespace Nephrite.Metamodel.Model
 		}
     }
 
-    public partial class MM_Method : IModelObject, IMovableObject
+    public partial class MM_Method : IModelObject, IWithSeqNo
 	{
 		public int ObjectID
 		{
@@ -176,7 +176,7 @@ namespace Nephrite.Metamodel.Model
         }
     }
 
-	public partial class MM_ObjectProperty : IModelObject, IMovableObject
+	public partial class MM_ObjectProperty : IModelObject, IWithSeqNo
 	{
 		public int ObjectID
 		{
@@ -278,24 +278,8 @@ namespace Nephrite.Metamodel.Model
 		#endregion
 	}
 	
-	public partial class MM_TaggedValueType : IModelObject, IMovableObject
-	{
-		public int ObjectID
-		{
-            get { return TaggedValueTypeID; }
-		}
 
-		public Guid ObjectGUID
-		{
-			get { return Guid; }
-		}
-		
-        public string GetClassName()
-		{
-			return "";
-		}
-	}
-
+	/*
     public partial class MM_MethodGroup : IModelObject
     {
         public string Title
@@ -319,7 +303,7 @@ namespace Nephrite.Metamodel.Model
         }
     }
 
-    public partial class MM_MethodGroupItem : IModelObject, IMovableObject
+    public partial class MM_MethodGroupItem : IModelObject, IWithSeqNo
     {
         public int ObjectID
         {
@@ -399,4 +383,5 @@ namespace Nephrite.Metamodel.Model
 			return o => (o as MM_DataValidation).MM_ObjectType.Guid == guid;
 		}
 	}
+	*/
 }

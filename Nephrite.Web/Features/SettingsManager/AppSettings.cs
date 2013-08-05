@@ -18,14 +18,14 @@ namespace Nephrite.Web.SettingsManager
 		{
 			get
 			{
-				return ((IDC_Settings)Base.Model);
+				return ((IDC_Settings)A.Model);
 			}
 		}
 		static IDC_UserActivity _dcUserActivity
 		{
 			get
 			{
-				return ((IDC_UserActivity)Base.Model);
+				return ((IDC_UserActivity)A.Model);
 			}
 		}
 
@@ -81,7 +81,7 @@ namespace Nephrite.Web.SettingsManager
 				s.Value = value;
 				_dc.N_Setting.InsertOnSubmit(s);
 
-				var ua = _dcUserActivity.NewUserActivity(Base.Meta.GetOperation("N_Settings", "Edit"), name, name + " = " + value);
+				var ua = _dcUserActivity.NewUserActivity(A.Meta.GetOperation("N_Settings", "Edit"), name, name + " = " + value);
 				_dcUserActivity.UserActivity.InsertOnSubmit(ua);
             }
             else
@@ -89,7 +89,7 @@ namespace Nephrite.Web.SettingsManager
 				if (s.Value != value)
 				{
 					s.Value = value;
-					var ua = _dcUserActivity.NewUserActivity(Base.Meta.GetOperation("N_Settings", "Edit"), name, name + " = " + value);
+					var ua = _dcUserActivity.NewUserActivity(A.Meta.GetOperation("N_Settings", "Edit"), name, name + " = " + value);
 					_dcUserActivity.UserActivity.InsertOnSubmit(ua);
 				}
             }

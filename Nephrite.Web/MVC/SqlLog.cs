@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Nephrite.Web.Controls;
 using System.Collections.Generic;
-using Nephrite.Web.Model;
+using Nephrite.Web.Hibernate;
 
 namespace Nephrite.Web
 {

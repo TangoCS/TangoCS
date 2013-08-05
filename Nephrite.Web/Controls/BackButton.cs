@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.UI;
-using Nephrite.Meta;
 using Nephrite.Web.TextResources;
+using Nephrite.Web.Layout;
 
 namespace Nephrite.Web.Controls
 {
@@ -16,7 +16,7 @@ namespace Nephrite.Web.Controls
 
 		public BackButton()
 		{
-			Layout = AppWeb.Layout.Button;
+			Layout = AppLayout.Current.Button;
 		}
 
         protected override void OnInit(EventArgs e)

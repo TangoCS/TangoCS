@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Threading;
-using Nephrite.Web.Model;
 using System.Data.Linq;
 
 namespace Nephrite.Web

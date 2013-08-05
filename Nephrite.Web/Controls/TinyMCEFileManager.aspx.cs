@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Nephrite.Web.Model;
 using System.Data.Linq.SqlClient;
 using Nephrite.Web.View;
 using Nephrite.Web.SettingsManager;

@@ -103,13 +103,13 @@ namespace Nephrite.Web.Controls
 				if (cartItemsAll.Count > 0)
 				{
 					writer.Write("Для удобства, выбранные вами произведения сведены в таблицу:<br/><br/>");
-					writer.Write(AppWeb.Layout.ListTableBegin(new { width = "100%" }));
-					writer.Write(AppWeb.Layout.ListHeaderBegin(new { style = "background-color:#D9D9D9" }));
-					writer.Write(AppWeb.Layout.TH("№", new { width = "2%" }));
-					writer.Write(AppWeb.Layout.TH("", new { width = "2%" }));
-					writer.Write(AppWeb.Layout.TH("Наименование", new { width = "84%", style = "text-align:left;" }));
-					writer.Write(AppWeb.Layout.TH("Стоимость", new { width = "12%" }));
-					writer.Write(AppWeb.Layout.ListHeaderEnd());
+					writer.Write(AppLayout.Current.ListTableBegin(new { width = "100%" }));
+					writer.Write(AppLayout.Current.ListHeaderBegin(new { style = "background-color:#D9D9D9" }));
+					writer.Write(AppLayout.Current.TH("№", new { width = "2%" }));
+					writer.Write(AppLayout.Current.TH("", new { width = "2%" }));
+					writer.Write(AppLayout.Current.TH("Наименование", new { width = "84%", style = "text-align:left;" }));
+					writer.Write(AppLayout.Current.TH("Стоимость", new { width = "12%" }));
+					writer.Write(AppLayout.Current.ListHeaderEnd());
 
 					var cartItems = new List<T>();
 					cartItems.AddRange(cartItemsAll);
@@ -132,24 +132,24 @@ namespace Nephrite.Web.Controls
 					{
 						i++;
 						var childItems = cartItemsLevel2.Where(o => o.ParentObjectID == cartItem.ObjectID).ToList();
-						writer.Write(AppWeb.Layout.ListRowBegin(""));
-						writer.Write(AppWeb.Layout.TD(i.ToString() + ".", new { style = "text-align:center;" }));
-						writer.Write(AppWeb.Layout.TDBegin());
+						writer.Write(AppLayout.Current.ListRowBegin(""));
+						writer.Write(AppLayout.Current.TD(i.ToString() + ".", new { style = "text-align:center;" }));
+						writer.Write(AppLayout.Current.TDBegin());
 
 						if (childItems.Count == 0)
 							writer.Write("<a href=\"javascript:void(0)\" onclick=\"if (confirm('Удалить ЭПД из корзины?')) {document.getElementById('" + hfItemToDelete.ClientID + "').value = '" + cartItem.ObjectID.ToString() + "'; " + Page.ClientScript.GetPostBackEventReference(lbDelete, "") + ";}\"><img src=\"/i/n/delete.gif\" alt=\"\" /></a>");
 
-						writer.Write(AppWeb.Layout.TDEnd());
-						writer.Write(AppWeb.Layout.TD(cartItem.Title));
-						writer.Write(AppWeb.Layout.TDBegin(new { style = "text-align:right; font-weight:bold" }));
+						writer.Write(AppLayout.Current.TDEnd());
+						writer.Write(AppLayout.Current.TD(cartItem.Title));
+						writer.Write(AppLayout.Current.TDBegin(new { style = "text-align:right; font-weight:bold" }));
 
 						if (childItems.Count == 0)
 							writer.Write(cartItem.Price.HasValue ? cartItem.Price.Value.ToString("C", cultureInfo.NumberFormat) : "");
 						else
 							writer.Write(childItems.Where(o => o.Price.HasValue).Select(o => o.Price.Value).Sum().ToString("C", cultureInfo.NumberFormat));
 
-						writer.Write(AppWeb.Layout.TDEnd());
-						writer.Write(AppWeb.Layout.ListRowEnd());
+						writer.Write(AppLayout.Current.TDEnd());
+						writer.Write(AppLayout.Current.ListRowEnd());
 
 						if (childItems.Count > 0)
 						{
@@ -157,20 +157,20 @@ namespace Nephrite.Web.Controls
 							foreach (var efdL2Item in childItems)
 							{
 								i2++;
-								writer.Write(AppWeb.Layout.ListRowBegin(""));
-								writer.Write(AppWeb.Layout.TD(""));
-								writer.Write(AppWeb.Layout.TD(i.ToString() + "." + i2.ToString()));
-								writer.Write(AppWeb.Layout.TDBegin());
+								writer.Write(AppLayout.Current.ListRowBegin(""));
+								writer.Write(AppLayout.Current.TD(""));
+								writer.Write(AppLayout.Current.TD(i.ToString() + "." + i2.ToString()));
+								writer.Write(AppLayout.Current.TDBegin());
 								writer.Write("<a href=\"javascript:void(0)\" onclick=\"if (confirm('Удалить ЭПД из корзины?')) {document.getElementById('" + hfItemToDelete.ClientID + "').value = '" + efdL2Item.ObjectID.ToString() + "'; " + Page.ClientScript.GetPostBackEventReference(lbDelete, "") + ";}\"><img src=\"/i/n/delete.gif\" alt=\"\" /></a>");
 								writer.Write("&nbsp;&nbsp;&nbsp;" + efdL2Item.Title);
-								writer.Write(AppWeb.Layout.TDEnd());
-								writer.Write(AppWeb.Layout.TD(efdL2Item.Price.HasValue ? efdL2Item.Price.Value.ToString("C", cultureInfo.NumberFormat) : "", new { style = "text-align:left;" }));
-								writer.Write(AppWeb.Layout.ListRowEnd());
+								writer.Write(AppLayout.Current.TDEnd());
+								writer.Write(AppLayout.Current.TD(efdL2Item.Price.HasValue ? efdL2Item.Price.Value.ToString("C", cultureInfo.NumberFormat) : "", new { style = "text-align:left;" }));
+								writer.Write(AppLayout.Current.ListRowEnd());
 							}
 						}
 					}
 
-					writer.Write(AppWeb.Layout.ListTableEnd());
+					writer.Write(AppLayout.Current.ListTableEnd());
 					writer.Write("<div style=\"background-color:#C6D8F0; padding:6px; padding-bottom:6px;\">");
 					writer.Write("<span style=\"text-align:right; display:block;font-weight:bold; font-size:15pt; padding-top:10px; padding-bottom:20px;\">Итого с вас: ");
 					writer.Write("<span style=\"padding-left:50px\">");

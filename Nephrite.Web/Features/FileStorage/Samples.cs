@@ -24,11 +24,11 @@ var myFolder = FileStorageManager.GetFolder(folder_id);
 var newFolder = FileStorageManager.CreateFolder("temp", "SolutionSources/Autogenerate");
 if (!newFolder.CheckValid())
 	throw new Exception(String.Join(Environment.NewLine, newFolder.GetValidationMessages().Select(o => o.Message).ToArray()));
-Base.Model.SubmitChanges();
+A.Model.SubmitChanges();
 
 // Удаление папки
 FileStorageManager.DeleteFolder(ss.ID);
-Base.Model.SubmitChanges();
+A.Model.SubmitChanges();
 
 // Получение списка файлов
 var allCs3 = FileStorageManager.DbFiles.Where(o => o.ParentFolderID == ss.ID && o.Extension == ".cs");
@@ -45,10 +45,10 @@ var file = FileStorageManager.CreateFile("my.xml", "Xml/Income");
 file.Write(data);
 if (!file.CheckValid())
 	throw new Exception(String.Join(Environment.NewLine, file.GetValidationMessages().Select(o => o.Message).ToArray()));
-Base.Model.SubmitChanges();
+A.Model.SubmitChanges();
 
 FileStorageManager.DeleteFile(file.ID);
-Base.Model.SubmitChanges();
+A.Model.SubmitChanges();
 
 		}
 	}

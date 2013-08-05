@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Globalization;
+using Nephrite.Web.Layout;
 
 namespace Nephrite.Web.Reporting
 {
@@ -45,7 +46,7 @@ namespace Nephrite.Web.Reporting
 							query += ", ";
 						query += AggregateColumns[i].Selector + " as AC" + i.ToString();
 					}
-					var cmd = Base.Model.GetCommand(DataSource);
+					var cmd = A.Model.GetCommand(DataSource);
 					query += cmd.CommandText.Substring(cmd.CommandText.IndexOf("\nFROM "));
 					query = query.Substring(0, query.LastIndexOf("\nORDER BY "));
 					if (!groupings.IsEmpty())
@@ -89,22 +90,19 @@ namespace Nephrite.Web.Reporting
 					{
 						using (var dr = cmd.ExecuteReader())
 						{
-							if (dr.HasRows)
+							var ac = AggregateColumns.Count;
+							while (dr.Read())
 							{
-								var ac = AggregateColumns.Count;
-								while (dr.Read())
-								{
-									var item = new ReportItem(ac, gnum, gnum == 0 ? null : Groupings[gnum - 1]);
-									for (int i = 0; i < gnum; i++)
-										item.GroupKeys[i] = dr.IsDBNull(i) ? null : dr.GetValue(i).ToString();
-									for (int i = 0; i < ac; i++)
-										item.Values[i] = dr.IsDBNull(i + gnum) ? 0 : Convert.ToDecimal(dr.GetValue(i + gnum));
+								var item = new ReportItem(ac, gnum, gnum == 0 ? null : Groupings[gnum - 1]);
+								for (int i = 0; i < gnum; i++)
+									item.GroupKeys[i] = dr.IsDBNull(i) ? null : dr.GetValue(i).ToString();
+								for (int i = 0; i < ac; i++)
+									item.Values[i] = dr.IsDBNull(i + gnum) ? 0 : Convert.ToDecimal(dr.GetValue(i + gnum));
 
-									list.Add(item);
-									rowCount++;
-									if (rowCount > MaxRows)
-										throw new MaxRowsException();
-								}
+								list.Add(item);
+								rowCount++;
+								if (rowCount > MaxRows)
+									throw new MaxRowsException();
 							}
 						}
 					}
@@ -120,8 +118,8 @@ namespace Nephrite.Web.Reporting
 				return;
 			}
 
-			writer.Write(AppWeb.Layout.List.ListTableBegin(TableAttributes));
-			writer.Write(AppWeb.Layout.List.ListHeaderBegin(null));
+			writer.Write(AppLayout.Current.List.ListTableBegin(TableAttributes));
+			writer.Write(AppLayout.Current.List.ListHeaderBegin(null));
 			
 			RenderColumnHeader(writer, "№");
 			RenderColumnHeader(writer, "");
@@ -132,14 +130,14 @@ namespace Nephrite.Web.Reporting
 					continue;
 				RenderColumnHeader(writer, col.Caption);
 			}
-			writer.Write(AppWeb.Layout.List.ListHeaderEnd());
+			writer.Write(AppLayout.Current.List.ListHeaderEnd());
 
 			if (Groupings.Count > 0)
 				RenderGroup(writer, 0, "", Data[1], Data[0][0]);
 			// Рендер итогов
 			RenderRow(writer, "Итого", "", Data[0][0], "font-weight:bold", 0);
 
-			writer.Write(AppWeb.Layout.List.ListTableEnd());
+			writer.Write(AppLayout.Current.List.ListTableEnd());
 		}
 
 		/// <summary>
@@ -149,9 +147,9 @@ namespace Nephrite.Web.Reporting
 		/// <param name="html">Разметка</param>
 		void RenderColumnHeader(System.Web.UI.HtmlTextWriter writer, string html)
 		{
-			writer.Write(AppWeb.Layout.List.THBegin(null));
+			writer.Write(AppLayout.Current.List.THBegin(null));
 			writer.Write(html);
-			writer.Write(AppWeb.Layout.List.THEnd());
+			writer.Write(AppLayout.Current.List.THEnd());
 		}
 
 		/// <summary>

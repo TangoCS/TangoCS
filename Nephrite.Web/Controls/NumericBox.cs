@@ -6,6 +6,7 @@ using System.Web.UI.WebControls;
 using System.Globalization;
 using System.Web.UI;
 using Nephrite.Web.SettingsManager;
+using Nephrite.Web.Multilanguage;
 
 namespace Nephrite.Web.Controls
 {
@@ -70,7 +71,7 @@ namespace Nephrite.Web.Controls
 			base.OnPreRender(e);
 		
 			Page.ClientScript.RegisterClientScriptInclude("jquery-autonumeric", Settings.JSPath + "autoNumeric-1.7.4.js");
-			var options = String.Format("aSep: '', aDec: '{0}'", AppWeb.CurrentCulture.NumberFormat.NumberDecimalSeparator);
+			var options = String.Format("aSep: '', aDec: '{0}'", Language.CurrentCulture.NumberFormat.NumberDecimalSeparator);
 			if (MinValue.HasValue)
 				options += String.Format(", vMin: '{0}'", MinValue.Value.ToString(CultureInfo.InvariantCulture));
 			if (MaxValue.HasValue)
@@ -93,9 +94,9 @@ namespace Nephrite.Web.Controls
 				if (value.HasValue)
 				{
 					if (Decimals.HasValue)
-						Text = value.Value.ToString("#####################0." + "".PadRight(Decimals.Value, '0'), AppWeb.CurrentCulture);
+						Text = value.Value.ToString("#####################0." + "".PadRight(Decimals.Value, '0'), Language.CurrentCulture);
 					else
-						Text = value.Value.ToString(AppWeb.CurrentCulture);
+						Text = value.Value.ToString(Language.CurrentCulture);
 				}
 				else
 					Text = "";

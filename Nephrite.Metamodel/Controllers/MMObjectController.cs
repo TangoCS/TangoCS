@@ -90,7 +90,7 @@ namespace Nephrite.Metamodel.Controllers
         {
             obj.SetPropertyValue("LastModifiedDate", DateTime.Now);
             obj.SetPropertyValue("LastModifiedUserID", AppSPM.GetCurrentSubjectID());
-			Base.Model.SubmitChanges();
+			A.Model.SubmitChanges();
             //repository.SubmitChanges();
         }
 

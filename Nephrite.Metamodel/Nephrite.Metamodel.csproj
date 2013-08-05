@@ -71,16 +71,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Nephrite.Web\ExternalDll\Iesi.Collections.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files (x86)\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.ConnectionInfo.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Management.Sdk.Sfc, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Program Files (x86)\Microsoft SQL Server\100\SDK\Assemblies\Microsoft.SqlServer.Management.Sdk.Sfc.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.SqlServer.Smo, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
-    <Reference Include="Microsoft.SqlServer.SqlEnum, Version=10.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.VisualStudio.TextTemplating">
       <HintPath>..\Microsoft.VisualStudio.TextTemplating.dll</HintPath>
     </Reference>
@@ -110,27 +100,14 @@
   <ItemGroup>
     <Content Include="Controls\ListExport.ascx" />
     <Content Include="View\Theme\view.ascx" />
-    <Content Include="View\Triggers\delete.ascx" />
-    <Content Include="View\Triggers\edit.ascx" />
-    <Content Include="View\Triggers\list.ascx" />
     <Content Include="View\Utils\generatedb.ascx" />
     <Content Include="View\Utils\generatewsdl.ascx" />
     <Content Include="View\Utils\runup.ascx" />
-    <Content Include="View\Utils\tabledesc.ascx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppMM.cs" />
     <Compile Include="BaseModelObject.cs" />
-    <Compile Include="CodeGenerator\BaseControlsCode.cs" />
-    <Compile Include="CodeGenerator\DeleteCode.cs" />
-    <Compile Include="CodeGenerator\EditCode.cs" />
-    <Compile Include="CodeGenerator\Helper.cs" />
-    <Compile Include="CodeGenerator\ListCode.cs" />
-    <Compile Include="CodeGenerator\MultiSelectObjectCode.cs" />
-    <Compile Include="CodeGenerator\SelectObjectCode.cs" />
-    <Compile Include="CodeGenerator\UploadControlsCode.cs" />
-    <Compile Include="CodeGenerator\ViewCode.cs" />
     <EmbeddedResource Include="CodeTemplates\class1.tt">
       <Generator>NephriteTextTransform</Generator>
       <LastGenOutput>class1.cs</LastGenOutput>
@@ -143,7 +120,6 @@
     <Compile Include="Controllers\MMObjectController.cs" />
     <Compile Include="Controllers\PackageFormViewController.cs" />
     <Compile Include="Controllers\ThemeController.cs" />
-    <Compile Include="Controllers\TriggersController.cs" />
     <Compile Include="Controllers\UtilsController.cs" />
     <Compile Include="Controls\ListExport.ascx.cs">
       <DependentUpon>ListExport.ascx</DependentUpon>
@@ -152,16 +128,6 @@
     <Compile Include="Controls\ListExport.ascx.designer.cs">
       <DependentUpon>ListExport.ascx</DependentUpon>
     </Compile>
-    <Compile Include="DbGenerator.cs" />
-    <Compile Include="DbSync\Column.cs" />
-    <Compile Include="DbSync\DbStruct.designer.cs" />
-    <Compile Include="DbSync\DbStructHelpers.cs" />
-    <Compile Include="DbSync\ForeignKey.cs" />
-    <Compile Include="DbSync\Model.cs" />
-    <Compile Include="DbSync\Procedure.cs" />
-    <Compile Include="DbSync\Table.cs" />
-    <Compile Include="DbSync\Trigger.cs" />
-    <Compile Include="DbSync\View.cs" />
     <Compile Include="DynamicClassActivator.cs" />
     <Compile Include="DynamicClassAttribute.cs" />
     <Compile Include="FormsVirtualFile.cs" />
@@ -175,7 +141,6 @@
     <Compile Include="IMMObjectTransition.cs" />
     <Compile Include="IMMObjectVersion.cs" />
     <Compile Include="ISiteMapProvider.cs" />
-    <Compile Include="Lang.cs" />
     <Compile Include="MasterControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -192,7 +157,6 @@
     <Compile Include="Model\MM_ObjectType.cs" />
     <Compile Include="Model\MM_Package.cs" />
     <Compile Include="ElementType.cs" />
-    <Compile Include="Model\MM_TaggedValueType.cs" />
     <Compile Include="Model\model.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -207,7 +171,6 @@
     <Compile Include="MView.cs" />
     <Compile Include="TextTransform\CodeGen.cs" />
     <Compile Include="TextTransform\Host.cs" />
-    <Compile Include="UpdateScriptBuilder.cs" />
     <Compile Include="Model\_ModelObjects.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MenuItemType.cs" />
@@ -217,27 +180,6 @@
     </Compile>
     <Compile Include="View\Theme\view.ascx.designer.cs">
       <DependentUpon>view.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="View\Triggers\delete.ascx.cs">
-      <DependentUpon>delete.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="View\Triggers\delete.ascx.designer.cs">
-      <DependentUpon>delete.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="View\Triggers\edit.ascx.cs">
-      <DependentUpon>edit.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="View\Triggers\edit.ascx.designer.cs">
-      <DependentUpon>edit.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="View\Triggers\list.ascx.cs">
-      <DependentUpon>list.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="View\Triggers\list.ascx.designer.cs">
-      <DependentUpon>list.ascx</DependentUpon>
     </Compile>
     <Compile Include="View\Utils\generatedb.ascx.cs">
       <DependentUpon>generatedb.ascx</DependentUpon>
@@ -260,13 +202,6 @@
     <Compile Include="View\Utils\runup.ascx.designer.cs">
       <DependentUpon>runup.ascx</DependentUpon>
     </Compile>
-    <Compile Include="View\Utils\tabledesc.ascx.cs">
-      <DependentUpon>tabledesc.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="View\Utils\tabledesc.ascx.designer.cs">
-      <DependentUpon>tabledesc.ascx</DependentUpon>
-    </Compile>
     <Compile Include="VPPRegisterHandler.cs" />
     <Compile Include="WebSiteCache.cs" />
   </ItemGroup>
@@ -281,10 +216,6 @@
     <EmbeddedResource Include="CodeTemplates\app.tt">
       <Generator>NephriteTextTransform</Generator>
       <LastGenOutput>app.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\chst.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>chst.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="CodeTemplates\codifiers.tt">
       <Generator>NephriteTextTransform</Generator>
@@ -306,10 +237,6 @@
       <Generator>NephriteTextTransform</Generator>
       <LastGenOutput>classes.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\hstclasses.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>hstclasses.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="CodeTemplates\controllers.tt">
       <Generator>NephriteTextTransform</Generator>
       <LastGenOutput>controllers.cs</LastGenOutput>
@@ -317,10 +244,6 @@
     <EmbeddedResource Include="CodeTemplates\controllers1.tt">
       <Generator>NephriteTextTransform</Generator>
       <LastGenOutput>controllers1.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\controllers2.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>controllers2.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="CodeTemplates\controllers3.tt">
       <Generator>NephriteTextTransform</Generator>
@@ -330,17 +253,9 @@
       <Generator>NephriteTextTransform</Generator>
       <LastGenOutput>controllers4.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\hstcollections.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>hstcollections.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\undelete.tt">
+    <EmbeddedResource Include="ViewTemplates\undelete.tt">
       <Generator>NephriteTextTransform</Generator>
       <LastGenOutput>undelete.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\classes_inhprops.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>classes_inhprops.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="CodeTemplates\pckcontrollers.tt">
       <Generator>NephriteTextTransform</Generator>
@@ -354,26 +269,19 @@
       <Generator>NephriteTextTransform</Generator>
       <LastGenOutput>controllersredirect.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\folderpredicates.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>folderpredicates.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Content Include="CodeTemplates\createclassversion.tt">
+    <Content Include="ViewTemplates\createclassversion.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>createclassversion.cs</LastGenOutput>
     </Content>
-    <Content Include="CodeTemplates\deleteclassversion.tt">
+    <Content Include="ViewTemplates\deleteclassversion.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>deleteclassversion.cs</LastGenOutput>
     </Content>
-    <Content Include="CodeTemplates\setcurrentclassversion.tt">
+    <Content Include="ViewTemplates\setcurrentclassversion.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>setcurrentclassversion.cs</LastGenOutput>
     </Content>
     <None Include="Compilation\CompileConfig.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="DbSync\DbStruct.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="Model\model.dbml.layout">

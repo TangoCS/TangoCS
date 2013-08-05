@@ -45,7 +45,7 @@ namespace Nephrite.Web.Versioning
 				string clsName = typeof(T).Name;
 				if (System.Web.HttpContext.Current.Items["CHST_" + clsName] == null)
                 {
-					System.Web.HttpContext.Current.Items["CHST_" + clsName] = Base.Model.GetTable(typeof(T)).Cast<IClassVersion>().OrderByDescending(o => o.ClassVersionNumber).ToList();
+					System.Web.HttpContext.Current.Items["CHST_" + clsName] = A.Model.GetTable<T>().OrderByDescending(o => o.ClassVersionNumber).ToList();
                 }
 				return (List<T>)System.Web.HttpContext.Current.Items["CHST_" + clsName];
             }

@@ -25,7 +25,7 @@ namespace Nephrite.Web.SPM
 		public static List<Role> GetList()
 		{
 			if (_allRoles != null) return _allRoles;
-			_allRoles = Base.Model.ExecuteQuery<Role>("select RoleID, Title, lower(SysName) as SysName from SPM_Role").ToList();
+			_allRoles = A.Model.ExecuteQuery<Role>("select RoleID, Title, lower(SysName) as SysName from SPM_Role").ToList();
 			return _allRoles;
 		}
 
@@ -52,7 +52,7 @@ namespace Nephrite.Web.SPM
 		static List<RoleAsso> AllRoleAsso()
 		{
 			if (_allRoleAsso != null) return _allRoleAsso;
-			_allRoleAsso = Base.Model.ExecuteQuery<RoleAsso>("select ParentRoleID, RoleID from V_SPM_AllRoleAsso").ToList();
+			_allRoleAsso = A.Model.ExecuteQuery<RoleAsso>("select ParentRoleID, RoleID from V_SPM_AllRoleAsso").ToList();
 			return _allRoleAsso;
 		}
 
@@ -123,10 +123,10 @@ namespace Nephrite.Web.SPM
 					{
 						//IEnumerable<string> groups = ADUser.Current.GetGroups(5);
 						string groupNames = wi.Groups.Select(x => "'" + x.Value + "'").Join(",");
-						r = Base.Model.ExecuteQuery<int>("select RoleID from V_SPM_AllSubjectRole where SubjectID = {0} union select RoleID from SPM_Role where SID in (" + groupNames  + ")", sid).ToList();
+						r = A.Model.ExecuteQuery<int>("select RoleID from V_SPM_AllSubjectRole where SubjectID = {0} union select RoleID from SPM_Role where SID in (" + groupNames  + ")", sid).ToList();
 					}
 					else
-						r = Base.Model.ExecuteQuery<int>("select RoleID from V_SPM_AllSubjectRole where SubjectID = {0}", sid).ToList();
+						r = A.Model.ExecuteQuery<int>("select RoleID from V_SPM_AllSubjectRole where SubjectID = {0}", sid).ToList();
 
 					roles = Role.GetList().Where(o => r.Contains(o.RoleID));
 					Items["SubjectRoles2_" + sid.ToString()] = roles;
@@ -204,19 +204,19 @@ namespace Nephrite.Web.SPM
 		}
 		public static Subject FromLogin(string login)
 		{
-			return Base.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as Login, Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email as Email from SPM_Subject where lower(SystemName) = {0}", login.ToLower()).SingleOrDefault();
+			return A.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as Login, Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email as Email from SPM_Subject where lower(SystemName) = {0}", login.ToLower()).SingleOrDefault();
 		}
 		public static Subject FromSID(string sid, string login)
 		{
-			return Base.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as Login, Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email as Email from SPM_Subject where SID = {0} or lower(SystemName) = {1}", sid, login).SingleOrDefault();
+			return A.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as Login, Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email as Email from SPM_Subject where SID = {0} or lower(SystemName) = {1}", sid, login).SingleOrDefault();
 		}
 		public static Subject FromID(int id)
 		{
-			return Base.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as Login, Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email as Email from SPM_Subject where SubjectID = {0}", id).SingleOrDefault();
+			return A.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as Login, Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email as Email from SPM_Subject where SubjectID = {0}", id).SingleOrDefault();
 		}
 		public static Subject FromEmail(string email)
 		{
-			return Base.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as Login, Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email as Email from SPM_Subject where lower(Email) = {0}", email.ToLower()).SingleOrDefault();
+			return A.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as Login, Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email as Email from SPM_Subject where lower(Email) = {0}", email.ToLower()).SingleOrDefault();
 		}
 		public static Subject System
 		{
@@ -239,12 +239,12 @@ namespace Nephrite.Web.SPM
 	{
 		public static void DeleteAction(int id)
 		{
-			Base.Model.ExecuteCommand("delete from SPM_Action where ActionID = {0}", id);
+			A.Model.ExecuteCommand("delete from SPM_Action where ActionID = {0}", id);
 		}
 
 		public static int CreateAction(MetaClass cls, int actionTypeID, Guid itemGUID)
 		{
-			return Base.Model.ExecuteQuery<int>("insert into SPM_Action (ClassGUID, ActionTypeID, ItemGUID) values ({0},{1},{2}); select scope_identity()", cls.ID, actionTypeID, itemGUID).First();
+			return A.Model.ExecuteQuery<int>("insert into SPM_Action (ClassGUID, ActionTypeID, ItemGUID) values ({0},{1},{2}); select scope_identity()", cls.ID, actionTypeID, itemGUID).First();
 		}
 
 		static HashSet<string> _accessCache = null;
@@ -288,8 +288,8 @@ namespace Nephrite.Web.SPM
 				WHERE Type = 2 and ItemGUID is not null
 				ORDER BY Value";
 
-						_accessCache = new HashSet<string>(Base.Model.ExecuteQuery<string>(allAccessQuery));
-						_itemsCache = new HashSet<string>(Base.Model.ExecuteQuery<string>(allActionsQuery));
+						_accessCache = new HashSet<string>(A.Model.ExecuteQuery<string>(allAccessQuery));
+						_itemsCache = new HashSet<string>(A.Model.ExecuteQuery<string>(allActionsQuery));
 					}
 				}
 			}

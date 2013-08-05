@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.Threading;
 using System.Configuration;
 using System.Data.Linq;
-using Nephrite.Web.Model;
 using Nephrite.Web.SPM;
 using Nephrite.Web.SettingsManager;
 
@@ -101,7 +100,7 @@ namespace Nephrite.Web.FileStorage
 
         static void Log(int code, string fileName)
         {
-			var dc = (IDC_FileStorage)Base.Model;
+			var dc = (IDC_FileStorage)A.Model;
 			var l = dc.NewN_VirusScanLog();
 			l.LastModifiedDate = DateTime.Now;
             l.LastModifiedUserID = Subject.Current.ID;

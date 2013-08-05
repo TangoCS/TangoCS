@@ -15,10 +15,7 @@ namespace Nephrite.Web
 		MetaClass MetaClass { get; }
     }
 
-	public interface IMovableObject
-	{
-		int SeqNo { get; set; }
-	}
+
 
     public interface IChildObject : IModelObject
     {

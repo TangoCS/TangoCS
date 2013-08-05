@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Hosting;
-using Nephrite.Web.App;
 using Nephrite.Web;
+using Nephrite.Web.ErrorLog;
 using Nephrite.Web.SPM;
 
 namespace Nephrite.Metamodel

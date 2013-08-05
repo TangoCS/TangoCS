@@ -6,7 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using Nephrite.Web;
 using Nephrite.Metamodel.Model;
-using Nephrite.Web.App;
+using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Metamodel.View
 {

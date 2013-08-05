@@ -6,7 +6,6 @@ using System.Reflection;
 using System.Threading;
 using Nephrite.Web.SettingsManager;
 using Nephrite.Web.SPM;
-using Nephrite.Web.Model;
 using System.IO;
 using System.Text;
 using Nephrite.Web.ErrorLog;
@@ -19,7 +18,7 @@ namespace Nephrite.Web.TaskManager
 
 		public static void Run()
 		{
-			using (var dc = (IDC_TaskManager)Base.Model.NewDataContext())
+			using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
 			{
 				// Задачи, которые не успели завершиться, пометить как завершенные
 				foreach (var t in from o in dc.TM_TaskExecution
@@ -64,7 +63,7 @@ namespace Nephrite.Web.TaskManager
 		{
 			ConnectionManager.SetConnectionString(connectionString);
 			List<ITM_Task> tasks;
-			using (var dc = (IDC_TaskManager)Base.Model.NewDataContext())
+			using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
 			{
 				// Задачи, которые не успели завершиться, пометить как завершенные
 				foreach (var t in
@@ -112,7 +111,7 @@ namespace Nephrite.Web.TaskManager
 
 		public static void Log(string text)
 		{
-			using (var dc = (IDC_TaskManager)Base.Model.NewDataContext())
+			using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
 			{
 				var te = dc.TM_TaskExecution.SingleOrDefault(o => o.TaskExecutionID == taskexecid);
 				te.ExecutionLog += text += Environment.NewLine;
@@ -129,7 +128,7 @@ namespace Nephrite.Web.TaskManager
 			{
 				List<ITM_TaskParameter> taskparms = new List<ITM_TaskParameter>();
 
-				using (var dc = (IDC_TaskManager)Base.Model.NewDataContext())
+				using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
 				{
 					dc.Log = new StringWriter();
 					task = dc.TM_Task.Single(o => o.TaskID == taskID);
@@ -187,7 +186,7 @@ namespace Nephrite.Web.TaskManager
 					}
 					AppSPM.RunWithElevatedPrivileges(() => mi.Invoke(null, p));
 
-					using (var dc = (IDC_TaskManager)Base.Model.NewDataContext())
+					using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
 					{
 						try
 						{
@@ -213,7 +212,7 @@ namespace Nephrite.Web.TaskManager
 				catch (Exception e)
 				{
 					int errid = ErrorLogger.Log(e);
-					using (var dc = (IDC_TaskManager)Base.Model.NewDataContext())
+					using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
 					{
 						dc.Log = new StringWriter();
 						var t = dc.TM_Task.Single(o => o.TaskID == taskID);

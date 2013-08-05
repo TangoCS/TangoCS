@@ -479,7 +479,7 @@ namespace Nephrite.Web.Layout
 		public void ToolbarItem(HtmlTextWriter writer, IBarItem content)
 		{
 			writer.Write(@"<td class=""ms-toolbar"" style=""border: none;"">");
-			content.Layout = AppWeb.Layout.ToolbarButton;
+			content.Layout = AppLayout.Current.ToolbarButton;
 			content.RenderControl(writer);
 			writer.Write("</td>");
 		}
@@ -508,7 +508,7 @@ namespace Nephrite.Web.Layout
 			sb.Append(@"<table cellspacing=""0"" cellpadding=""2"" border=""0""");
 			sb.AppendAttributes(attributes, "ms-informationbar");
 			sb.Append(@"><tr><td width=""10"" valign=""center"" style=""padding: 4px; vertical-align:middle;"">");
-			sb.Append(AppWeb.Layout.Image(image, ""));
+			sb.Append(AppLayout.Current.Image(image, ""));
 			sb.AppendFormat(@"</td><td style=""vertical-align:middle;"">{0}</td></tr></table>", message);
 			return sb.ToString();
 		}
@@ -766,7 +766,7 @@ namespace Nephrite.Web.Layout
 		public void ToolbarItem(HtmlTextWriter writer, IBarItem content)
 		{
 			writer.Write(@"<td style=""vertical-align:middle"">");
-			content.Layout = AppWeb.Layout.Button;
+			content.Layout = AppLayout.Current.Button;
 			content.RenderControl(writer);
 			writer.Write("</td>");
 		}

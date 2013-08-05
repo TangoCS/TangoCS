@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Nephrite.Web.Model;
 using System.IO;
 using Nephrite.Web.FileStorage;
 using Nephrite.Web.SettingsManager;
@@ -59,7 +58,7 @@ namespace Nephrite.Web.View
 			if (!Upload(fuFile4)) return;
 			if (!Upload(fuFile5)) return;
 			if (!Upload(fuFile6)) return;
-			Nephrite.Web.Base.Model.SubmitChanges();
+			Nephrite.Web.A.Model.SubmitChanges();
 			
 			Response.Redirect(Settings.BaseControlsPath + "TinyMCEFileManager.aspx" + Query.RemoveParameter("op"));
 		}

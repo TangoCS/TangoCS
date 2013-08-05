@@ -9,6 +9,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+/*
 namespace Nephrite.Metamodel.Model
 {
 	using System.Data.Linq;
@@ -9528,3 +9529,4 @@ namespace Nephrite.Metamodel.Model
 	}
 }
 #pragma warning restore 1591
+*/

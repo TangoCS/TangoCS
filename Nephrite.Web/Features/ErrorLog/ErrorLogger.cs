@@ -53,7 +53,7 @@ namespace Nephrite.Web.ErrorLog
                         errortext += Environment.NewLine + Environment.NewLine;
                 }
 				errorInfo += errortext;
-				using (var dc = (IDC_ErrorLog)Base.Model.NewDataContext())
+				using (var dc = (IDC_ErrorLog)A.Model.NewDataContext())
                 {
 					//dc.CommandTimeout = 300;
                     IErrorLog l = dc.NewErrorLog();

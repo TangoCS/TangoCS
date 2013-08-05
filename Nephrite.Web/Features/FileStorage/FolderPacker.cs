@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.IO;
-using Nephrite.Web.Model;
 using ICSharpCode.SharpZipLib.Zip;
 
 namespace Nephrite.Web.FileStorage

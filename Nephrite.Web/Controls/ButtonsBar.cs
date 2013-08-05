@@ -4,8 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.ComponentModel;
-using Nephrite.Meta;
 using System.Web.UI.WebControls;
+using Nephrite.Web.Layout;
 
 namespace Nephrite.Web.Controls
 {
@@ -21,7 +21,7 @@ namespace Nephrite.Web.Controls
 
 		public ButtonBar()
 		{
-			Layout = AppWeb.Layout.ButtonBar;
+			Layout = AppLayout.Current.ButtonBar;
 			//ItemsAlign = ToolbarItemsAlign.Right;
 		}
 

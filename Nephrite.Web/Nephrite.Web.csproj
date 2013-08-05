@@ -105,14 +105,21 @@
   <ItemGroup>
     <Compile Include="ADSearcher.cs" />
     <Compile Include="AppWeb.cs" />
+    <Compile Include="Controllers\EntityController.cs" />
     <Compile Include="CustomControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Features\CoreDataContext\FileStorage\DbFile.I.cs" />
+    <Compile Include="Features\CoreDataContext\FileStorage\DbFolder.I.cs" />
     <Compile Include="Features\FileStorage\FileStorageModel.cs" />
+    <Compile Include="Features\Multilanguage\Language.cs" />
+    <Compile Include="Features\Reporting\Reporting.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Features\RSS\RssModel.cs" />
     <Compile Include="Features\SettingsManager\AppSettings.cs" />
     <Compile Include="Cache.cs" />
-    <Compile Include="Controls\ActionLink.cs" />
+    <Compile Include="Controls.Html\ActionLink.cs" />
     <Compile Include="Controls\AutoComplete.cs" />
     <Compile Include="Controls\AutoComplete2.cs" />
     <Compile Include="Controls\AutoNumeric.cs" />
@@ -124,7 +131,7 @@
     </Compile>
     <Compile Include="CodifierValue.cs" />
     <Compile Include="ConnectionManager.cs" />
-    <Compile Include="Controls\CaptchaImage.cs" />
+    <Compile Include="Controls.Html\CaptchaImage.cs" />
     <Compile Include="Controllers\SimpleClassMover.cs" />
     <Compile Include="Controls\BackButton.cs" />
     <Compile Include="Controls\CodeMirror.cs">
@@ -177,8 +184,8 @@
     <Compile Include="Controls\LinkedObjects.ascx.designer.cs">
       <DependentUpon>LinkedObjects.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Controls\HtmlDateLists.cs" />
-    <Compile Include="Controls\HtmlDropDownList.cs" />
+    <Compile Include="Controls.Html\HtmlDateLists.cs" />
+    <Compile Include="Controls.Html\HtmlDropDownList.cs" />
     <Compile Include="Controls\List.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -281,7 +288,7 @@
     <Compile Include="Controls\ZoneCalendar.cs" />
     <Compile Include="Cramb.cs" />
     <Compile Include="CustomControlManager.cs" />
-    <Compile Include="ExcelExport.cs" />
+    <Compile Include="Features\Office\ExcelExport.cs" />
     <Compile Include="Features\SettingsManager\AppSettingsModel.cs" />
     <Compile Include="Features\LinkedObjects\ILinkedObjectsProvider.cs" />
     <Compile Include="Features\LinkedObjects\LinkedObjectsView.cs" />
@@ -289,10 +296,10 @@
     <Compile Include="Features\Mailer\MailerModel.cs" />
     <Compile Include="Features\Mailer\MailManager.cs" />
     <Compile Include="Features\TaskManager\TaskManagerModel.cs" />
+    <Compile Include="Features\TrackChanges\TrackChanges.cs" />
     <Compile Include="Features\UserActivity\UserActivityModel.cs" />
     <Compile Include="Features\Versioning\ClassVersion.cs" />
     <Compile Include="Features\Versioning\IClassVersion.cs" />
-    <Compile Include="Features\FileStorage\DbFileData.cs" />
     <Compile Include="Features\FileStorage\DbItemType.cs" />
     <Compile Include="Features\FileStorage\FileStorageManager.cs" />
     <Compile Include="Features\FileStorage\IDbFile.cs" />
@@ -331,30 +338,27 @@
     <Compile Include="IRouteHandler.cs" />
     <Compile Include="JqTreeNode.cs" />
     <Compile Include="MacroManager.cs" />
-    <Compile Include="MetaModel\Implementations\Core.cs" />
+    <Compile Include="Features\Meta\Core.cs" />
     <Compile Include="Features\Layout\LayoutBootstrap.cs" />
     <Compile Include="Features\Layout\LayoutEmpty.cs" />
     <Compile Include="Features\Layout\LayoutWSS2007.cs" />
-    <Compile Include="MetaModel\Implementations\MetaLoad.cs" />
-    <Compile Include="MetaModel\Implementations\SystemLayout.cs" />
-    <Compile Include="MetaModel\Implementations\Versioning.cs" />
-    <Compile Include="MetaModel\Interfaces\CoreMetaModel.cs" />
-    <Compile Include="MetaModel\Interfaces\DBMetaModel.cs" />
-    <Compile Include="MetaModel\Implementations\PrimitiveTypes.cs" />
-    <Compile Include="MetaModel\Interfaces\LayoutMetaModel.cs" />
-    <Compile Include="MetaModel\Interfaces\UIMetaModel.cs" />
-    <Compile Include="Model\HCoreDataContext.cs" />
-    <Compile Include="Model\Hibernate.cs" />
-    <Compile Include="Model\HMapping.cs" />
-    <Compile Include="Model\HModel.cs" />
-    <Compile Include="Model\DCInterfaces.cs" />
-    <Compile Include="IDataContext.cs" />
-    <Compile Include="Model\ModelInterfaces.cs" />
+    <Compile Include="Features\Meta\MetaLoad.cs" />
+    <Compile Include="Features\Layout\SystemLayout.cs" />
+    <Compile Include="Features\Meta\Versioning.cs" />
+    <Compile Include="Features\Meta\CoreMetaModel.cs" />
+    <Compile Include="Features\Meta\DBMetaModel.cs" />
+    <Compile Include="Features\Meta\PrimitiveTypes.cs" />
+    <Compile Include="Features\Layout\Interfaces.cs" />
+    <Compile Include="Features\Meta\UIMetaModel.cs" />
+    <Compile Include="Features\CoreDataContext\HCoreDataContext.cs" />
+    <Compile Include="Features\Hibernate\Hibernate.cs" />
+    <Compile Include="Features\CoreDataContext\HMapping.cs" />
+    <Compile Include="Features\CoreDataContext\HModel.cs" />
+    <Compile Include="Model\IDataContext.cs" />
     <Compile Include="MVC\PageParser.cs" />
     <Compile Include="ObjectPropertyChange.cs" />
     <Compile Include="Result.cs" />
-    <Compile Include="SPM\SpmActionNameAttribute.cs" />
-    <Compile Include="Store.cs" />
+    <Compile Include="Features\SPM2\SpmActionNameAttribute.cs" />
     <Compile Include="TableInfo.cs" />
     <Compile Include="Features\Mailer\MailerTask.cs" />
     <Compile Include="MVC\MainMenu.cs" />
@@ -400,7 +404,7 @@
     <Compile Include="RusNumber.cs" />
     <Compile Include="Features\SettingsManager\Settings.cs" />
     <Compile Include="SimpleTypeExtensions.cs" />
-    <Compile Include="SPM\SPM.cs" />
+    <Compile Include="Features\SPM2\SPM.cs" />
     <Compile Include="MVC\ViewControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -434,7 +438,7 @@
     <Compile Include="View\TinyMCEFileManager\upload.ascx.designer.cs">
       <DependentUpon>upload.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Word.cs" />
+    <Compile Include="Features\Office\Word.cs" />
     <Compile Include="MVC\Workspace.cs" />
     <Compile Include="XMLSerializer.cs" />
   </ItemGroup>
@@ -488,6 +492,10 @@
     <Folder Include="App_Data\" />
     <Folder Include="Features\FileStorage\DataBase\" />
     <Folder Include="Features\FileStorage\FileSystem\" />
+    <Folder Include="Features\Workflow\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -7,6 +7,7 @@ using System.Web.UI.WebControls;
 using System.Linq.Expressions;
 using Nephrite.Meta;
 using Nephrite.Web.SettingsManager;
+using Nephrite.Web.Layout;
 
 namespace Nephrite.Web.Controls
 {
@@ -123,16 +124,16 @@ namespace Nephrite.Web.Controls
 
 		public void Render(HtmlTextWriter writer)
 		{
-			writer.Write(AppWeb.Layout.FormTableBegin(_form.TableStyle));
+			writer.Write(AppLayout.Current.FormTableBegin(_form.TableStyle));
 			foreach (Criteria<T> c in _criteries.Values)
 			{
 				if (!c.Visible()) continue;
 
-				writer.Write(AppWeb.Layout.FormRowBegin(c.Caption, c.Comment, c.IsRequired));
+				writer.Write(AppLayout.Current.FormRowBegin(c.Caption, c.Comment, c.IsRequired));
 				c.Render(writer);
-				writer.Write(AppWeb.Layout.FormRowEnd());
+				writer.Write(AppLayout.Current.FormRowEnd());
 			}
-			writer.Write(AppWeb.Layout.FormTableEnd());
+			writer.Write(AppLayout.Current.FormTableEnd());
 		}
 
 		public Dictionary<string, string> Prepare()

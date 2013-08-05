@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Microsoft.SqlServer.Management.Smo;
 
 namespace Nephrite.Metamodel.Model
 {
@@ -20,52 +19,6 @@ namespace Nephrite.Metamodel.Model
 				return eName;
 			}
 		}
-
-        public DataType DataType
-        {
-            get
-            {
-                switch (TypeCode)
-                {
-                    case ObjectPropertyType.Boolean:
-                        return DataType.Bit;
-                    case ObjectPropertyType.Date:
-                        return DataType.DateTime;
-                    case ObjectPropertyType.DateTime:
-                        return DataType.DateTime;
-                    case ObjectPropertyType.ZoneDateTime:
-                        return DataType.DateTime;
-                    case ObjectPropertyType.Number:
-                        return DataType.Int;
-					case ObjectPropertyType.BigNumber:
-						return DataType.BigInt;
-					case ObjectPropertyType.String:
-                        if (Length.HasValue)
-                            return DataType.NVarChar(Length.Value);
-                        else
-                            return DataType.NVarCharMax;
-                    case ObjectPropertyType.Guid:
-                        return DataType.UniqueIdentifier;
-                    case ObjectPropertyType.Code:
-                        return DataType.NVarChar(1);
-                    case ObjectPropertyType.Object:
-						return RefObjectTypeID.HasValue ? RefObjectType.PrimaryKey.First().DataType : DataType.Int;
-                    case ObjectPropertyType.File:
-                        return DataType.Int;
-					case ObjectPropertyType.FileEx:
-						return DataType.UniqueIdentifier;
-					case ObjectPropertyType.Data:
-                        return DataType.VarBinaryMax;
-                    case ObjectPropertyType.Decimal:
-                        if (Precision.HasValue && Scale.HasValue)
-                            return DataType.Decimal(Scale.Value, Precision.Value);
-                        else
-                            return DataType.Decimal(5, 18);
-                    default:
-                        return DataType.Int;
-                }
-            }
-        }
 
         public string ClrType
         {
@@ -131,9 +84,9 @@ namespace Nephrite.Metamodel.Model
 				{
 					if (!RefObjectTypeID.HasValue)
 						return SysName + "ID";
-					if (RefObjectType.PrimaryKey.First().DataType.SqlDataType == SqlDataType.Int)
+					if (RefObjectType.PrimaryKey.First().ClrType == "int")
 						return SysName + "ID";
-					if (RefObjectType.PrimaryKey.First().DataType.SqlDataType == SqlDataType.UniqueIdentifier)
+					if (RefObjectType.PrimaryKey.First().ClrType == "Guid")
 						return SysName + "GUID";
 				}
                 if (TypeCode == ObjectPropertyType.File)

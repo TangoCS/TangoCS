@@ -12,8 +12,13 @@ namespace Nephrite.Web.Multilanguage
 
 	public interface IC_Language
 	{
-		string LanguageCode { get; set; }
+		string Code { get; set; }
 		string Title { get; set; }
 		bool IsDefault { get; set; }
+	}
+
+	public interface IMultilanguage
+	{
+		string LanguageCode { get; set; }
 	}
 }

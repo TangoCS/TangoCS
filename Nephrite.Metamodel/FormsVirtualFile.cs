@@ -28,7 +28,7 @@ namespace Nephrite.Metamodel
 			if (VirtualPath.ToLower().EndsWith(".rss.ascx"))
 			{
 				N_RssFeed rf = AppMM.DataContext.N_RssFeeds.Single(o => o.SysName.ToLower() == VirtualPath.ToLower().Replace("/", "").Replace(".rss.ascx", ""));
-				MetaClass mc = Base.Meta.GetClass(rf.ObjectTypeSysName);
+				MetaClass mc = A.Meta.GetClass(rf.ObjectTypeSysName);
 				text.AppendFormat(@"<%@ Control Language=""C#"" Inherits=""System.Web.UI.UserControl"" %>
 					<%@ Import Namespace=""{0}""%>
 					<%@ Import Namespace=""{0}.Controllers""%>

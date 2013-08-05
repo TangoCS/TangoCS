@@ -19,7 +19,7 @@ namespace Nephrite.Web.Mailer
 		string Subject { get; set; }
 		string Body { get; set; }
 		bool IsSent { get; set; }
-		global::System.Data.Linq.Binary Attachment { get; set; }
+		byte[] Attachment { get; set; }
 		string AttachmentName { get; set; }
 		string Error { get; set; }
 		string CopyRecipients { get; set; }

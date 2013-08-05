@@ -250,19 +250,19 @@ namespace Nephrite.Web
         {
             if (RenderMargin)
             {
-				writer.Write(AppWeb.Layout.AutoMargin.MarginBegin());
+				writer.Write(AppLayout.Current.AutoMargin.MarginBegin());
             }
             base.RenderControl(writer);
 			
             if (RenderMargin)
             {
-				writer.Write(AppWeb.Layout.AutoMargin.MarginEnd());
+				writer.Write(AppLayout.Current.AutoMargin.MarginEnd());
             }
         }
 
-		public ISystemLayout Layout
+		public AppLayout Layout
 		{
-			get { return AppWeb.Layout; }
+			get { return AppLayout.Current; }
 		}
     }
 

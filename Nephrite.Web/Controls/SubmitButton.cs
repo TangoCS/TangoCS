@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
-using Nephrite.Meta;
+using Nephrite.Web.Layout;
 
 namespace Nephrite.Web.Controls
 {
@@ -15,7 +15,7 @@ namespace Nephrite.Web.Controls
 
 		public SubmitButton()
 		{
-			Layout = AppWeb.Layout.Button;
+			Layout = AppLayout.Current.Button;
 		}
 
 		protected override void Render(System.Web.UI.HtmlTextWriter writer)

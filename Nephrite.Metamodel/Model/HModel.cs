@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Nephrite.Metamodel.Model2
+namespace Nephrite.Metamodel.Model
 {
-	public class MM_FormFieldAttribute
+	/*public class MM_FormFieldAttribute
 	{
 		public virtual int FormFieldAttributeID { get; set; }
 		public virtual MM_FormField MM_FormField { get; set; }
@@ -15,9 +15,9 @@ namespace Nephrite.Metamodel.Model2
 		public virtual bool IsDeleted { get; set; }
 		public virtual System.DateTime LastModifiedDate { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
-	}
+	}*/
 
-	public class MM_Package
+	public partial class MM_Package
 	{
 		public MM_Package()
 		{
@@ -43,12 +43,12 @@ namespace Nephrite.Metamodel.Model2
 		public virtual IList<MM_Package> MM_Packages { get; set; }
 	}
 
-	public class MM_ObjectProperty
+	public partial class MM_ObjectProperty
 	{
 		public MM_ObjectProperty()
 		{
-			MM_FormFields = new List<MM_FormField>();
-			MM_FormFieldGroups = new List<MM_FormFieldGroup>();
+			//MM_FormFields = new List<MM_FormField>();
+			//MM_FormFieldGroups = new List<MM_FormFieldGroup>();
 			MM_ObjectProperties = new List<MM_ObjectProperty>();
 		}
 		public virtual int ObjectPropertyID { get; set; }
@@ -82,12 +82,12 @@ namespace Nephrite.Metamodel.Model2
 		public virtual System.DateTime LastModifiedDate { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
 		public virtual bool IsIdentity { get; set; }
-		public virtual IList<MM_FormField> MM_FormFields { get; set; }
-		public virtual IList<MM_FormFieldGroup> MM_FormFieldGroups { get; set; }
+		//public virtual IList<MM_FormField> MM_FormFields { get; set; }
+		//public virtual IList<MM_FormFieldGroup> MM_FormFieldGroups { get; set; }
 		public virtual IList<MM_ObjectProperty> MM_ObjectProperties { get; set; }
 	}
 
-	public class MM_FormField
+	/*public partial class MM_FormField
 	{
 		public MM_FormField()
 		{
@@ -112,7 +112,7 @@ namespace Nephrite.Metamodel.Model2
 		public virtual System.DateTime LastModifiedDate { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
 		public virtual IList<MM_FormFieldAttribute> MM_FormFieldAttributes { get; set; }
-	}
+	}*/
 
 	public class MM_CodifierValue
 	{
@@ -146,7 +146,7 @@ namespace Nephrite.Metamodel.Model2
 		public virtual IList<MM_ObjectProperty> MM_ObjectProperties { get; set; }
 	}
 
-	public class MM_MethodGroup
+	/*public partial class MM_MethodGroup
 	{
 		public MM_MethodGroup()
 		{
@@ -158,7 +158,7 @@ namespace Nephrite.Metamodel.Model2
 		public virtual IList<MM_MethodGroupItem> MM_MethodGroupItems { get; set; }
 	}
 
-	public class MM_MethodGroupItem
+	public partial class MM_MethodGroupItem
 	{
 		public MM_MethodGroupItem()
 		{
@@ -172,13 +172,13 @@ namespace Nephrite.Metamodel.Model2
 		public virtual bool IsSeparator { get; set; }
 		public virtual int SeqNo { get; set; }
 		public virtual IList<MM_MethodGroupItem> MM_MethodGroupItems { get; set; }
-	}
+	}*/
 
-	public class MM_Method
+	public partial class MM_Method
 	{
 		public MM_Method()
 		{
-			MM_MethodGroupItems = new List<MM_MethodGroupItem>();
+			//MM_MethodGroupItems = new List<MM_MethodGroupItem>();
 		}
 		public virtual int MethodID { get; set; }
 		public virtual MM_ObjectType MM_ObjectType { get; set; }
@@ -194,10 +194,14 @@ namespace Nephrite.Metamodel.Model2
 		public virtual string ViewPath { get; set; }
 		public virtual string PredicateCode { get; set; }
 		public virtual string Comment { get; set; }
-		public virtual IList<MM_MethodGroupItem> MM_MethodGroupItems { get; set; }
+		//public virtual IList<MM_MethodGroupItem> MM_MethodGroupItems { get; set; }
+
+		//
+		public virtual int ObjectTypeID { get; set; }
+		public virtual int FormViewID { get; set; }
 	}
 
-	public class MM_FormFieldGroup
+	/*public partial class MM_FormFieldGroup
 	{
 		public MM_FormFieldGroup()
 		{
@@ -218,16 +222,20 @@ namespace Nephrite.Metamodel.Model2
 		public virtual bool IsDeleted { get; set; }
 		public virtual System.DateTime LastModifiedDate { get; set; }
 		public virtual IList<MM_FormField> MM_FormFields { get; set; }
-	}
 
-	public class MM_ObjectType
+		//
+		public virtual int? ObjectTypeID { get; set; }
+		public virtual int ObjectPropertyID { get; set; }
+	}*/
+
+	public partial class MM_ObjectType
 	{
 		public MM_ObjectType()
 		{
-			MM_FormFieldGroups = new List<MM_FormFieldGroup>();
+			//MM_FormFieldGroups = new List<MM_FormFieldGroup>();
 			MM_FormViews = new List<MM_FormView>();
 			MM_Methods = new List<MM_Method>();
-			MM_MethodGroups = new List<MM_MethodGroup>();
+			//MM_MethodGroups = new List<MM_MethodGroup>();
 			MM_ObjectProperties = new List<MM_ObjectProperty>();
 			MM_ObjectTypes = new List<MM_ObjectType>();
 		}
@@ -255,15 +263,19 @@ namespace Nephrite.Metamodel.Model2
 		public virtual int LastModifiedUserID { get; set; }
 		public virtual int SeqNo { get; set; }
 		public virtual string Description { get; set; }
-		public virtual IList<MM_FormFieldGroup> MM_FormFieldGroups { get; set; }
+		//public virtual IList<MM_FormFieldGroup> MM_FormFieldGroups { get; set; }
 		public virtual IList<MM_FormView> MM_FormViews { get; set; }
 		public virtual IList<MM_Method> MM_Methods { get; set; }
-		public virtual IList<MM_MethodGroup> MM_MethodGroups { get; set; }
+		//public virtual IList<MM_MethodGroup> MM_MethodGroups { get; set; }
 		public virtual IList<MM_ObjectProperty> MM_ObjectProperties { get; set; }
 		public virtual IList<MM_ObjectType> MM_ObjectTypes { get; set; }
+
+		//
+		public virtual int PackageID { get; set; }
+		public virtual int? BaseObjectTypeID { get; set; }
 	}
 
-	public class MM_FormView
+	public partial class MM_FormView
 	{
 		public MM_FormView()
 		{
@@ -286,6 +298,10 @@ namespace Nephrite.Metamodel.Model2
 		public virtual int CacheTimeout { get; set; }
 		public virtual string BaseClass { get; set; }
 		public virtual IList<MM_Method> MM_Methods { get; set; }
+
+		//
+		public virtual int? ObjectTypeID { get; set; }
+		public virtual int? PackageID { get; set; }
 
 	}
 
@@ -314,6 +330,11 @@ namespace Nephrite.Metamodel.Model2
 			return hash;
 		}
 		#endregion
+	}
+
+	public partial class N_Cache
+	{
+		public virtual System.DateTime TimeStamp { get; set; }
 	}
 
 

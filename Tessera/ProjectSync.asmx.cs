@@ -105,7 +105,7 @@ namespace Tessera
 			var file = FileStorageManager.GetFile(fileguid);
 			file.Write(data);
 			file.CheckValid();
-            Base.Model.SubmitChanges();
+            A.Model.SubmitChanges();
             return DateTime.Now;
         }
 

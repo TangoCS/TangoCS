@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Nephrite.Web.Model;
 using System.IO;
 using System.Web.UI.WebControls;
 using System.Data.Linq;
@@ -49,7 +48,7 @@ namespace Nephrite.Web.FileStorage
 
 				if (logDownload)
 				{
-					IDC_FileStorage dc = (IDC_FileStorage)Base.Model;
+					IDC_FileStorage dc = (IDC_FileStorage)A.Model;
 					IN_DownloadLog l = dc.NewN_DownloadLog();
 					dc.N_DownloadLog.InsertOnSubmit(l);
 					l.LastModifiedDate = DateTime.Now;

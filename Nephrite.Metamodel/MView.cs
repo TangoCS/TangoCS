@@ -9,7 +9,6 @@ using Nephrite.Web.SPM;
 using System.Configuration;
 using System.Web.UI.WebControls.WebParts;
 using System.Threading;
-using Nephrite.Web.App;
 using Nephrite.Web.Controllers;
 using System.Web.Script.Serialization;
 using System.Security.Cryptography;

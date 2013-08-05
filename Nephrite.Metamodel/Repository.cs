@@ -4,9 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Xml.Linq;
 using System.Reflection;
-using System.Data.SqlClient;
 using System.Configuration;
-using System.Data.Linq;
 using Nephrite.Web;
 using System.Linq.Expressions;
 using System.ComponentModel;
@@ -14,13 +12,15 @@ using System.IO;
 using System.Collections;
 using Nephrite.Web.FileStorage;
 using Nephrite.Meta;
+using System.Data.SqlClient;
+using Nephrite.Web.Versioning;
 
 namespace Nephrite.Metamodel
 { 
     public class Repository
     {
         Assembly assembly;
-        DataContext db;
+        IDataContext db;
         string ns;
         string defaultLanguage = "ru";
 
@@ -83,7 +83,7 @@ namespace Nephrite.Metamodel
             }
             db = (DataContext)HttpContext.Current.Items[AppMM.DBName() + "DataContext"];
 			db.CommandTimeout = 300;*/
-			db = Base.Model;
+			db = A.Model;
 
             defaultLanguage = AppMM.DefaultLanguage;
         }
@@ -921,7 +921,7 @@ namespace Nephrite.Metamodel
         public void SaveObject(XElement obj, string languageCode)
         {
             Type T = assembly.GetType(ns + "." + obj.Name.LocalName, true, true);
-			var objectType = Base.Meta.GetClass(T.Name);
+			var objectType = A.Meta.GetClass(T.Name);
             // Определить ид
 			XElement xeid = obj.Element(objectType.Key.ColumnName);
             int id = xeid != null ? xeid.Value.ToInt32(0) : 0;
@@ -973,11 +973,11 @@ namespace Nephrite.Metamodel
 
         public void SubmitChanges()
         {
-			db.CommandTimeout = 300;
+			//db.CommandTimeout = 300;
             db.SubmitChanges();
         }
 
-        public DataContext DataContext
+        public IDataContext DataContext
         {
             get { return db; }
         }

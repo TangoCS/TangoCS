@@ -121,7 +121,7 @@ namespace Nephrite.Web.SPM
 			if (s.DisallowItems.Contains(key)) return false;
 
 			string accessQuery = String.Format(query(), securableObject, actionTypeID);
-			List<int> _access = Base.Model.ExecuteQuery<int>(accessQuery).ToList();
+			List<int> _access = A.Model.ExecuteQuery<int>(accessQuery).ToList();
 
 			if (_access.Count == 0)
 			{
@@ -218,7 +218,7 @@ namespace Nephrite.Web.SPM
 			{
 				lock (_lock)
 				{
-					_access = new HashSet<string>(Base.Model.ExecuteQuery<string>(GetRolesAccessByIdQuery()));
+					_access = new HashSet<string>(A.Model.ExecuteQuery<string>(GetRolesAccessByIdQuery()));
 					if (!_accessCache.ContainsKey(cacheName)) _accessCache.Add(cacheName, _access);
 				}
 			}
@@ -257,8 +257,8 @@ namespace Nephrite.Web.SPM
 			{
 				lock (_lock)
 				{
-					_access = new HashSet<string>(Base.Model.ExecuteQuery<string>(rolesAccessQuery()));
-					_items = new HashSet<string>(Base.Model.ExecuteQuery<string>(itemsQuery()));
+					_access = new HashSet<string>(A.Model.ExecuteQuery<string>(rolesAccessQuery()));
+					_items = new HashSet<string>(A.Model.ExecuteQuery<string>(itemsQuery()));
 
 					if (!_accessCache.ContainsKey(cacheName)) _accessCache.Add(cacheName, _access);
 					if (!_itemsCache.ContainsKey(cacheName)) _itemsCache.Add(cacheName, _items);

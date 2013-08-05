@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data.Linq;
 using System.Linq;
 using System.Web;
-using Nephrite.Web.Model;
+using Nephrite.Web.Hibernate;
 
 namespace Nephrite.Metamodel.Model
 {
@@ -17,9 +17,5 @@ namespace Nephrite.Metamodel.Model
 		T MM_ObjectProperty { get; }
 	}
 
-	public interface IBaseDataContext : 
-		IDC_MM_ObjectType<HTable<MM_ObjectType>>,
-		IDC_MM_ObjectProperty<HTable<MM_ObjectProperty>>
-	{
-	}
+
 }

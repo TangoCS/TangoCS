@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Text;
-using Nephrite.Web;
-using Nephrite.Web.Model;
 using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Web.RSS
@@ -19,7 +17,7 @@ namespace Nephrite.Web.RSS
         {
             if (DateTime.Now.Subtract(listLoadDate).TotalMinutes > 1)
             {
-				feeds = ((IDC_N_RssFeed)Base.Model).N_RssFeed.OrderBy(o => o.Title).ToList();
+				feeds = ((IDC_RSS)A.Model).N_RssFeed.OrderBy(o => o.Title).ToList();
                 listLoadDate = DateTime.Now;
 
                 sb = new StringBuilder(1000);
@@ -36,7 +34,7 @@ namespace Nephrite.Web.RSS
         {
             if (DateTime.Now.Subtract(listLoadDate).TotalMinutes > 1)
             {
-				feeds = ((IDC_N_RssFeed)Base.Model).N_RssFeed.OrderBy(o => o.Title).ToList();
+				feeds = ((IDC_RSS)A.Model).N_RssFeed.OrderBy(o => o.Title).ToList();
                 listLoadDate = DateTime.Now;
             }
 

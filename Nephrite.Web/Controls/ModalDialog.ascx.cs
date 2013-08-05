@@ -11,9 +11,9 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using System.ComponentModel;
-using Nephrite.Meta;
 using Nephrite.Web.SettingsManager;
 using Nephrite.Web.TextResources;
+using Nephrite.Web.Layout;
 
 
 namespace Nephrite.Web.Controls
@@ -68,7 +68,7 @@ namespace Nephrite.Web.Controls
 
 		protected void Page_Init(object sender, EventArgs e)
 		{
-			Layout = AppWeb.Layout.Modal;
+			Layout = AppLayout.Current.Modal;
 			mgr = Page.Items["ModalDialogManager"] as ModalDialogManager;
 			if (mgr == null)
 				return;

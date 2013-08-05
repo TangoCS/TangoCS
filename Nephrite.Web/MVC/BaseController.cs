@@ -10,6 +10,7 @@ using Nephrite.Web.SPM;
 using Nephrite.Web.Controls;
 using Nephrite.Web.SettingsManager;
 using Nephrite.Meta;
+using Nephrite.Web.Office;
 
 namespace Nephrite.Web
 {

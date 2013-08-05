@@ -23,7 +23,7 @@ namespace Nephrite.Web.Controls
 		{
 			get
 			{
-				return (IDC_ListFilter)Base.Model;
+				return (IDC_ListFilter)A.Model;
 			}
 		}
 
@@ -1443,7 +1443,7 @@ namespace Nephrite.Web.Controls
 		{
 			get
 			{
-				return (IDC_ListFilter)Base.Model;
+				return (IDC_ListFilter)A.Model;
 			}
 		}
 

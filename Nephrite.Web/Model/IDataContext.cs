@@ -1,0 +1,78 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
+using System.Data.Linq;
+using System.IO;
+using System.Linq;
+using System.Linq.Expressions;
+using System.Web;
+
+namespace Nephrite.Web
+{
+	public interface IDataContext : IDisposable
+	{
+		IDataContext NewDataContext();
+		IDataContext NewDataContext(string connectionString);
+
+		int ExecuteCommand(string command, params object[] parameters);
+		IEnumerable<TResult> ExecuteQuery<TResult>(string query, params object[] parameters);
+		//IEnumerable ExecuteQuery(Type elementType, string query, params object[] parameters);
+		IDbCommand GetCommand(IQueryable query);
+		IQueryable<T> GetTable<T>();
+		T Get<T>(object id);
+		void SubmitChanges();
+
+		TextWriter Log { get; set; }
+
+		List<Action> AfterSaveActions { get; }
+		List<Action> BeforeSaveActions { get; }
+	}
+
+	public interface IEntity
+	{
+	}
+
+	public interface IChildEntity : IEntity
+	{
+		string GetPath();
+	}
+
+	public interface IWithTitle<T> where T : IEntity
+	{
+		string GetTitle();
+		Func<T, string> OrderByTitle();
+	}
+
+	public interface IWithKey<T, TKey> where T : IEntity
+	{
+		Expression<Func<T, bool>> KeySelector(TKey id);
+	}
+
+	public interface IWithSeqNo
+	{
+		int SeqNo { get; set; }
+	}
+
+	public static class IQueryableExtension
+	{
+		public static void InsertOnSubmit<T>(this IQueryable<T> q, T obj)
+			where T : IEntity
+		{
+			((ITable)q).InsertOnSubmit(obj);
+		}
+
+		public static void DeleteOnSubmit<T>(this IQueryable<T> q, T obj)
+			where T : IEntity
+		{
+			((ITable)q).DeleteOnSubmit(obj);
+		}
+
+		public static void DeleteAllOnSubmit<T>(this IQueryable<T> q, IEnumerable<T> obj)
+			where T : IEntity
+		{
+			((ITable)q).DeleteAllOnSubmit(obj);
+		}
+	}
+}

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using Nephrite.Web.Controls;
+using Nephrite.Web.Layout;
 
 namespace Nephrite.Web.LinkedObjects
 {
@@ -12,7 +13,7 @@ namespace Nephrite.Web.LinkedObjects
 		public static string RenderLinkedObjects(ILinkedObjectsProvider obj)
 		{
 			StringBuilder sb = new StringBuilder();
-			var l = AppWeb.Layout;
+			var l = AppLayout.Current;
 			sb.Append(l.ListTableBegin(new { style = "width:100%" }));
 			sb.Append(l.ListHeaderBegin(null));
 			sb.Append(l.THBegin(new { style = "width:150px" }));

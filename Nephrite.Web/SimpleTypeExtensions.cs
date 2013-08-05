@@ -21,6 +21,7 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Collections;
 using Nephrite.Web.SettingsManager;
+using Nephrite.Web.Multilanguage;
 
 namespace Nephrite.Web
 {
@@ -254,14 +255,14 @@ namespace Nephrite.Web
 
 		public static string MoneyToString(this decimal money)
 		{
-			return money.ToString("###,###,###,###,##0.00", AppWeb.CurrentCulture);
+			return money.ToString("###,###,###,###,##0.00", Language.CurrentCulture);
 		}
 
 		public static string MoneyToString(this decimal? money)
 		{
 			if (money == null)
 				return "";
-			return money.Value.ToString("###,###,###,###,##0.00", AppWeb.CurrentCulture);
+			return money.Value.ToString("###,###,###,###,##0.00", Language.CurrentCulture);
 		}
 		
         public static DateTime ToDate(this string src, DateTime defaultValue)
@@ -843,7 +844,7 @@ namespace Nephrite.Web
 			throw new Exception("В классе " + obj.GetType().FullName + " не определён первичный ключ");
 		}
 
-        public static void InitSeqNo(this IMovableObject obj, IEnumerable<IMovableObject> sequenceContext)
+        public static void InitSeqNo(this IWithSeqNo obj, IEnumerable<IWithSeqNo> sequenceContext)
         {
             if (sequenceContext == null)
                 obj.SeqNo = 1;

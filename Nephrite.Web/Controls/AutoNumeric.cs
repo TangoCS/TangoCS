@@ -6,6 +6,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI;
 using System.Globalization;
 using Nephrite.Web.SettingsManager;
+using Nephrite.Web.Multilanguage;
 
 namespace Nephrite.Web.Controls
 {
@@ -15,7 +16,7 @@ namespace Nephrite.Web.Controls
         {
             textBox.Page.ClientScript.RegisterClientScriptInclude("jquery-autonumeric", Settings.JSPath + "autoNumeric-1.7.4.js");
 			var options = String.Format("{{aSep: '', aDec: '{0}', vMin: '{1}', vMax: '{2}', mDec: '{3}'}}",
-				AppWeb.CurrentCulture.NumberFormat.NumberDecimalSeparator, min.ToString(CultureInfo.InvariantCulture),
+				Language.CurrentCulture.NumberFormat.NumberDecimalSeparator, min.ToString(CultureInfo.InvariantCulture),
 				max.ToString(CultureInfo.InvariantCulture), decCount);
             string script = "$('#" + textBox.ClientID + "').autoNumeric(" + options + ");";
             ScriptManager.RegisterStartupScript(textBox, textBox.GetType(), textBox.ClientID + "_autonumeric", script, true);
@@ -24,7 +25,7 @@ namespace Nephrite.Web.Controls
 		public static string GetApplyScript(string selector, decimal min, decimal max, int decCount)
 		{
 			var options = String.Format("{{aSep: '', aDec: '{0}', vMin: '{1}', vMax: '{2}', mDec: '{3}'}}",
-				AppWeb.CurrentCulture.NumberFormat.NumberDecimalSeparator, min.ToString(CultureInfo.InvariantCulture),
+				Language.CurrentCulture.NumberFormat.NumberDecimalSeparator, min.ToString(CultureInfo.InvariantCulture),
 				max.ToString(CultureInfo.InvariantCulture), decCount);
 			return "$('" + selector + "').autoNumeric(" + options + ");";
 		}
