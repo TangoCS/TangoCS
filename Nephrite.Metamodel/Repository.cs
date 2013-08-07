@@ -14,18 +14,17 @@ using System.ComponentModel;
 using System.IO;
 using System.Collections;
 using Nephrite.Web.FileStorage;
-using Nephrite.Meta;
 
 namespace Nephrite.Metamodel
-{ 
-    public class Repository
-    {
-        Assembly assembly;
-        DataContext db;
-        string ns;
-        string defaultLanguage = "ru";
+{
+	public class Repository
+	{
+		Assembly assembly;
+		DataContext db;
+		string ns;
+		string defaultLanguage = "ru";
 
-        /*public Repository(string assemblyFileName)
+		public Repository(string assemblyFileName)
 		{
 			try
 			{
@@ -37,69 +36,68 @@ namespace Nephrite.Metamodel
 					assembly = Assembly.LoadFile(assemblyFileName);
 				}
 			}
-			catch(FileNotFoundException)
+			catch (FileNotFoundException)
 			{
 				throw new FileNotFoundException("Файл не найден: " + assemblyFileName);
 			}
 			var mdc = assembly.GetTypes().Single(o => o.Name == "modelDataContext");
-            ns = mdc.Namespace;
+			ns = mdc.Namespace;
 			db = Activator.CreateInstance(mdc, ConnectionManager.Connection) as DataContext;
 			db.Log = new StringWriter();
 			db.CommandTimeout = 300;
-        }
-		
+		}
+
 		public Repository(Assembly a, DataContext d, string n)
 		{
 			assembly = a;
 			db = d;
 			ns = n;
 			defaultLanguage = AppMM.DefaultLanguage;
-		}*/
+		}
 
-        public Repository()
-        {
-            if (String.IsNullOrEmpty(ConfigurationManager.AppSettings["ModelAssembly"]))
-            {
-                SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(ConnectionManager.ConnectionString);
+		public Repository()
+		{
+			if (String.IsNullOrEmpty(ConfigurationManager.AppSettings["ModelAssembly"]))
+			{
+				SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(ConnectionManager.ConnectionString);
 
-                assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(o => o.GetName().Name.ToUpper() == csb.InitialCatalog.ToUpper() + ".MODEL");
-            }
-            else
-            {
-                assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(o => o.GetName().Name.ToUpper() == ConfigurationManager.AppSettings["ModelAssembly"].ToUpper());
+				assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(o => o.GetName().Name.ToUpper() == csb.InitialCatalog.ToUpper() + ".MODEL");
+			}
+			else
+			{
+				assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(o => o.GetName().Name.ToUpper() == ConfigurationManager.AppSettings["ModelAssembly"].ToUpper());
 				if (assembly == null)
 					throw new Exception("Сборка не найдена в текущем домене: " + ConfigurationManager.AppSettings["ModelAssembly"]);
-            }
+			}
 			if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["ModelNamespace"]))
 				ns = ConfigurationManager.AppSettings["ModelNamespace"] + ".Model";
 			else
 				ns = assembly.GetName().Name;
 
 
-            /*if (HttpContext.Current.Items[AppMM.DBName() + "DataContext"] == null)
-            {
+			if (HttpContext.Current.Items[AppMM.DBName() + "DataContext"] == null)
+			{
 				db = Activator.CreateInstance(assembly.GetTypes().Single(o => o.Name == "modelDataContext"), ConnectionManager.Connection) as DataContext;
-                HttpContext.Current.Items[AppMM.DBName() + "DataContext"] = db;
-                db.Log = new StringWriter();
-            }
-            db = (DataContext)HttpContext.Current.Items[AppMM.DBName() + "DataContext"];
-			db.CommandTimeout = 300;*/
-			db = Base.Model;
+				HttpContext.Current.Items[AppMM.DBName() + "DataContext"] = db;
+				db.Log = new StringWriter();
+			}
+			db = (DataContext)HttpContext.Current.Items[AppMM.DBName() + "DataContext"];
+			db.CommandTimeout = 300;
 
-            defaultLanguage = AppMM.DefaultLanguage;
-        }
+			defaultLanguage = AppMM.DefaultLanguage;
+		}
 
-        public IMMObject Get(MetaClass objectType, object id)
-        {
+		public IMMObject Get(MM_ObjectType objectType, object id)
+		{
 			try
 			{
-				Type T = assembly.GetType(ns + "." + objectType.Name, true, true);
+				Type T = assembly.GetType(ns + "." + objectType.SysName, true, true);
 				// Параметр лямбда-выражения типа T
 				ParameterExpression pe_c = ParameterExpression.Parameter(typeof(IMMObject), "c");
 				// Преобразование IMMObject к нужному нам реальному типу объекта
 				UnaryExpression ue_c = UnaryExpression.Convert(pe_c, T);
 				// Получение у объекта свойства с именем, соответствующим первичному ключу
-				MemberExpression me_id = MemberExpression.Property(ue_c, objectType.Key.Name);
+				MemberExpression me_id = MemberExpression.Property(ue_c, objectType.PrimaryKey.Single().ColumnName);
 				// Константа, по которой будем искать объект
 				ConstantExpression ce_val = ConstantExpression.Constant(id, id.GetType());
 				// Сравнение первичного ключа с заданным идентификатором
@@ -111,163 +109,157 @@ namespace Nephrite.Metamodel
 			}
 			catch (Exception e)
 			{
-				throw new Exception("Не удалось загрузить объект " + objectType.Name + ", " + id.ToString(), e);
+				throw new Exception("Не удалось загрузить объект " + objectType.FullSysName + ", " + id.ToString(), e);
 			}
-        }
+		}
 
-        public IMMObjectVersion GetVersion(MetaClass objectType, object id)
-        {
-            Type T = assembly.GetType(ns + ".HST_" + objectType.Name, true, true);
-            // Параметр лямбда-выражения типа T
-            ParameterExpression pe_c = ParameterExpression.Parameter(typeof(IMMObjectVersion), "c");
-            // Преобразование IMMObject к нужному нам реальному типу объекта
-            UnaryExpression ue_c = UnaryExpression.Convert(pe_c, T);
-            // Получение у объекта свойства с именем, соответствующим первичному ключу
-			string pkname = objectType.Key.Name;
+		public IMMObjectVersion GetVersion(MM_ObjectType objectType, object id)
+		{
+			Type T = assembly.GetType(ns + ".HST_" + objectType.SysName, true, true);
+			// Параметр лямбда-выражения типа T
+			ParameterExpression pe_c = ParameterExpression.Parameter(typeof(IMMObjectVersion), "c");
+			// Преобразование IMMObject к нужному нам реальному типу объекта
+			UnaryExpression ue_c = UnaryExpression.Convert(pe_c, T);
+			// Получение у объекта свойства с именем, соответствующим первичному ключу
+			string pkname = objectType.PrimaryKey.Single().ColumnName;
 			if (pkname.EndsWith("GUID"))
 				pkname = pkname.Substring(0, pkname.Length - 4);
-            else if (pkname.EndsWith("ID"))
-                pkname = pkname.Substring(0, pkname.Length - 2);
-			pkname += "Version" + (objectType.Key.Type is MetaGuidType ? "GUID" : "ID");
-            MemberExpression me_id = MemberExpression.Property(ue_c, pkname);
-            // Константа, по которой будем искать объект
-            ConstantExpression ce_val = ConstantExpression.Constant(id, id.GetType());
-            // Сравнение первичного ключа с заданным идентификатором
-            BinaryExpression be_eq = BinaryExpression.Equal(me_id, ce_val);
-            // Само лямбда-выражение
-            Expression<Func<IMMObjectVersion, bool>> expr2 = Expression.Lambda<Func<IMMObjectVersion, bool>>(be_eq, pe_c);
-            // Загрузить нужный объект
-            return db.GetTable(T).OfType<IMMObjectVersion>().SingleOrDefault(expr2);
-        }
+			else if (pkname.EndsWith("ID"))
+				pkname = pkname.Substring(0, pkname.Length - 2);
+			pkname += "Version" + (objectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? "GUID" : "ID");
+			MemberExpression me_id = MemberExpression.Property(ue_c, pkname);
+			// Константа, по которой будем искать объект
+			ConstantExpression ce_val = ConstantExpression.Constant(id, id.GetType());
+			// Сравнение первичного ключа с заданным идентификатором
+			BinaryExpression be_eq = BinaryExpression.Equal(me_id, ce_val);
+			// Само лямбда-выражение
+			Expression<Func<IMMObjectVersion, bool>> expr2 = Expression.Lambda<Func<IMMObjectVersion, bool>>(be_eq, pe_c);
+			// Загрузить нужный объект
+			return db.GetTable(T).OfType<IMMObjectVersion>().SingleOrDefault(expr2);
+		}
 
-        public IMMObject GetData(MetaClass objectType, int id, string languageCode)
-        {
-            Type T = assembly.GetType(ns + "." + objectType.Name + "Data", true, true);
-            // Параметр лямбда-выражения типа Object
-            ParameterExpression pe_c = ParameterExpression.Parameter(typeof(IMMObject), "c");
-            // Преобразование Object к нужному нам реальному типу объекта
-            UnaryExpression ue_c = UnaryExpression.Convert(pe_c, T);
-            // Получение у объекта свойства с именем, соответствующим первичному ключу
-			MemberExpression me_id = MemberExpression.Property(ue_c, objectType.Key.Name);
-            // Константа, по которой будем искать объект
-            ConstantExpression ce_val = ConstantExpression.Constant(id, typeof(Int32));
-            // Сравнение первичного ключа с заданным идентификатором
-            BinaryExpression be_eq = BinaryExpression.Equal(me_id, ce_val);
-            // Получение свойства с именем LanguageCode
-            MemberExpression me_lc = MemberExpression.Property(ue_c, "LanguageCode");
-            // Константа, по которой будем искать объект
-            ConstantExpression ce_vallc = ConstantExpression.Constant(languageCode, typeof(string));
-            // Сравнение первичного ключа с заданным идентификатором
-            BinaryExpression be_eqlc = BinaryExpression.Equal(me_lc, ce_vallc);
-            // Логическое И
-            BinaryExpression be_and = BinaryExpression.And(be_eq, be_eqlc);
-            // Само лямбда-выражение
-            Expression<Func<IMMObject, bool>> expr2 = Expression.Lambda<Func<IMMObject, bool>>(be_and, pe_c);
-            // Загрузить нужный объект
-            return db.GetTable(T).OfType<IMMObject>().SingleOrDefault<IMMObject>(expr2);
-        }
+		public IMMObject GetData(MM_ObjectType objectType, int id, string languageCode)
+		{
+			Type T = assembly.GetType(ns + "." + objectType.SysName + "Data", true, true);
+			// Параметр лямбда-выражения типа Object
+			ParameterExpression pe_c = ParameterExpression.Parameter(typeof(IMMObject), "c");
+			// Преобразование Object к нужному нам реальному типу объекта
+			UnaryExpression ue_c = UnaryExpression.Convert(pe_c, T);
+			// Получение у объекта свойства с именем, соответствующим первичному ключу
+			MemberExpression me_id = MemberExpression.Property(ue_c, objectType.PrimaryKey.Single().ColumnName);
+			// Константа, по которой будем искать объект
+			ConstantExpression ce_val = ConstantExpression.Constant(id, typeof(Int32));
+			// Сравнение первичного ключа с заданным идентификатором
+			BinaryExpression be_eq = BinaryExpression.Equal(me_id, ce_val);
+			// Получение свойства с именем LanguageCode
+			MemberExpression me_lc = MemberExpression.Property(ue_c, "LanguageCode");
+			// Константа, по которой будем искать объект
+			ConstantExpression ce_vallc = ConstantExpression.Constant(languageCode, typeof(string));
+			// Сравнение первичного ключа с заданным идентификатором
+			BinaryExpression be_eqlc = BinaryExpression.Equal(me_lc, ce_vallc);
+			// Логическое И
+			BinaryExpression be_and = BinaryExpression.And(be_eq, be_eqlc);
+			// Само лямбда-выражение
+			Expression<Func<IMMObject, bool>> expr2 = Expression.Lambda<Func<IMMObject, bool>>(be_and, pe_c);
+			// Загрузить нужный объект
+			return db.GetTable(T).OfType<IMMObject>().SingleOrDefault<IMMObject>(expr2);
+		}
 
-        public XElement LoadObject(MetaClass objectType, int id, string languageCode)
-        {
-            // Загрузить нужный объект
-            object o = Get(objectType, id);
-            if (o == null)
-                return null;
-            // Преобразовать объект в XElement
-            XElement xe = new XElement(objectType.Name);
-            foreach (var p in objectType.Properties)
-            {
-				if (p is MetaAttribute && (p as MetaAttribute).IsMultilingual) continue;
-                PropertyInfo pi = o.GetType().GetProperties().Single(p1 => p1.Name.ToLower() == p.Name.ToLower());
-                xe.Add(new XElement(p.Name, TypeDescriptor.GetConverter(pi.PropertyType).ConvertToInvariantString(pi.GetValue(o, null))));
-            }
+		public XElement LoadObject(MM_ObjectType objectType, int id, string languageCode)
+		{
+			// Загрузить нужный объект
+			object o = Get(objectType, id);
+			if (o == null)
+				return null;
+			// Преобразовать объект в XElement
+			XElement xe = new XElement(objectType.SysName);
+			foreach (var p in objectType.MM_ObjectProperties.Where(p1 => !p1.IsMultilingual))
+			{
+				PropertyInfo pi = o.GetType().GetProperties().Single(p1 => p1.Name.ToLower() == p.SysName.ToLower());
+				xe.Add(new XElement(p.SysName, TypeDescriptor.GetConverter(pi.PropertyType).ConvertToInvariantString(pi.GetValue(o, null))));
+			}
 
-            object odata = null;
-			foreach (var p in objectType.Properties)
-            {
-				if (p is MetaAttribute && (p as MetaAttribute).IsMultilingual) continue;
-                if (odata == null)
-                {
-                    odata = GetData(objectType, id, languageCode ?? defaultLanguage);
-                    if (odata == null)
-                        break;
-                }
-                PropertyInfo pi = odata.GetType().GetProperties().Single(p1 => p1.Name.ToLower() == p.Name.ToLower());
-                xe.Add(new XElement(p.Name, TypeDescriptor.GetConverter(pi.PropertyType).ConvertToInvariantString(pi.GetValue(odata, null))));
-            }
+			object odata = null;
+			foreach (var p in objectType.MM_ObjectProperties.Where(p1 => p1.IsMultilingual))
+			{
+				if (odata == null)
+				{
+					odata = GetData(objectType, id, languageCode ?? defaultLanguage);
+					if (odata == null)
+						break;
+				}
+				PropertyInfo pi = odata.GetType().GetProperties().Single(p1 => p1.Name.ToLower() == p.SysName.ToLower());
+				xe.Add(new XElement(p.SysName, TypeDescriptor.GetConverter(pi.PropertyType).ConvertToInvariantString(pi.GetValue(odata, null))));
+			}
 
-            return xe;
-        }
+			return xe;
+		}
 
-        public XElement ExportObject(MetaClass objectType, object id)
-        {
-			if (objectType.Name == "DbFile")
+		public XElement ExportObject(MM_ObjectType objectType, object id)
+		{
+			if (objectType.SysName == "DbFile")
 			{
 				var f = FileStorageManager.GetFile((Guid)id);
 				return f == null ? null : f.SerializeToXml();
 			}
-            // Загрузить нужный объект
-            IMMObject o = Get(objectType, id);
-            if (o == null)
-                return null;
-            // Преобразовать объект в XElement
-            XElement xe = new XElement(objectType.Name);
-			foreach (var p in objectType.Properties)
-            {
-				MetaAttribute a = p as MetaAttribute;
-				MetaReference r = p as MetaReference;
-				if (a != null && a.IsMultilingual) continue;
-
-                string pname = p.Name.ToLower();
-				if (p.UpperBound == 1 || r == null)
+			// Загрузить нужный объект
+			IMMObject o = Get(objectType, id);
+			if (o == null)
+				return null;
+			// Преобразовать объект в XElement
+			XElement xe = new XElement(objectType.SysName);
+			foreach (var p in objectType.MM_ObjectProperties.Where(p1 => !p1.IsMultilingual && String.IsNullOrEmpty(p1.Expression)))
+			{
+				string pname = p.SysName.ToLower();
+				if (p.UpperBound == 1 || p.TypeCode != ObjectPropertyType.Object)
 				{
-					if (r != null)
-						pname = pname + (r.RefClass != null && r.RefClass.Key.Type is MetaGuidType ? "guid" : "id");
+					if (p.TypeCode == ObjectPropertyType.Object)
+						pname = pname + (p.RefObjectType != null && p.RefObjectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? "guid" : "id");
 					PropertyInfo pi = GetPropertyInfo(o, pname);
 					if (pi != null)
 					{
 						object val = pi.GetValue(o, null);
-						if (p.Type is MetaFileType)
+						if (p.TypeCode == ObjectPropertyType.File)
 						{
 							if (val != null)
 							{
 								PropertyInfo pi_g = val.GetType().GetProperty("Guid");
 								val = pi_g.GetValue(val, null);
-								xe.Add(new XElement(p.Name, val.ToString()));
+								xe.Add(new XElement(p.SysName, val.ToString()));
 							}
 							else
 							{
-								xe.Add(new XElement(p.Name, ""));
+								xe.Add(new XElement(p.SysName, ""));
 							}
 						}
-						else if (p.Type is MetaZoneDateTimeType)
+						else if (p.TypeCode == ObjectPropertyType.ZoneDateTime)
 						{
 							if (val != null)
-								xe.Add(new XElement(p.Name, TypeDescriptor.GetConverter(pi.PropertyType).ConvertToInvariantString(val)));
+								xe.Add(new XElement(p.SysName, TypeDescriptor.GetConverter(pi.PropertyType).ConvertToInvariantString(val)));
 							else
-								xe.Add(new XElement(p.Name, ""));
+								xe.Add(new XElement(p.SysName, ""));
 
 							pi = GetPropertyInfo(o, pname + "TimeZoneID");
 							val = pi.GetValue(o, null);
 							if (val != null)
-								xe.Add(new XElement(p.Name + "TimeZoneID", TypeDescriptor.GetConverter(pi.PropertyType).ConvertToInvariantString(val)));
+								xe.Add(new XElement(p.SysName + "TimeZoneID", TypeDescriptor.GetConverter(pi.PropertyType).ConvertToInvariantString(val)));
 							else
-								xe.Add(new XElement(p.Name + "TimeZoneID", ""));
+								xe.Add(new XElement(p.SysName + "TimeZoneID", ""));
 						}
-						else if (p.Type is MetaByteArrayType)
+						else if (p.TypeCode == ObjectPropertyType.Data)
 						{
 							if (val != null)
 							{
-								xe.Add(new XElement(p.Name, Convert.ToBase64String(((Binary)val).ToArray())));
+								xe.Add(new XElement(p.SysName, Convert.ToBase64String(((Binary)val).ToArray())));
 							}
 						}
 						else
-							xe.Add(new XElement(p.Name, SanitizeXmlString(TypeDescriptor.GetConverter(pi.PropertyType).ConvertToInvariantString(val))));
+							xe.Add(new XElement(p.SysName, SanitizeXmlString(TypeDescriptor.GetConverter(pi.PropertyType).ConvertToInvariantString(val))));
 					}
 				}
-				if (p.UpperBound != 1 && r != null && !(r.InverseProperty != null && r.InverseProperty.UpperBound == 1))
+				if (p.UpperBound != 1 && p.TypeCode == ObjectPropertyType.Object && !(p.RefObjectPropertyID.HasValue && p.RefObjectProperty.UpperBound == 1))
 				{
-					XElement xp = new XElement(p.Name);
+					XElement xp = new XElement(p.SysName);
 					xe.Add(xp);
 					PropertyInfo pi = GetPropertyInfo(o, pname);
 					if (pi != null)
@@ -280,8 +272,8 @@ namespace Nephrite.Metamodel
 							{
 								if (obj == null)
 									continue;
-								var itemname = r.RefClass.Key.Name;
-								if (r.RefClass.Key.Type is MetaGuidType)
+								var itemname = p.RefObjectType.PrimaryKey.Single().ColumnName;
+								if (p.RefObjectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid)
 									xp.Add(new XElement(itemname, obj.ObjectGUID));
 								else
 									xp.Add(new XElement(itemname, obj.ObjectID));
@@ -289,10 +281,10 @@ namespace Nephrite.Metamodel
 						}
 					}
 				}
-            }
+			}
 
-            return xe;
-        }
+			return xe;
+		}
 
 		/// <summary>
 		/// Remove illegal XML characters from a string.
@@ -359,34 +351,31 @@ namespace Nephrite.Metamodel
 			return db.GetTable(T).OfType<IClassVersion>().SingleOrDefault(expr2);
 		}
 
-        public XElement ExportObjectVersion(MetaClass objectType, object id)
-        {
-            // Загрузить нужный объект
-            IMMObjectVersion o = GetVersion(objectType, id);
-            if (o == null)
-                return null;
-            // Преобразовать объект в XElement
-            XElement xe = new XElement(objectType.Name);
-			foreach (var p in objectType.Properties)
-            {
-				if (p is MetaAttribute && (p as MetaAttribute).IsMultilingual) continue;
-				MetaReference r = p as MetaReference;
-
-                string pname = p.Name.ToLower();
-				if (p.UpperBound == 1 || r == null)
+		public XElement ExportObjectVersion(MM_ObjectType objectType, object id)
+		{
+			// Загрузить нужный объект
+			IMMObjectVersion o = GetVersion(objectType, id);
+			if (o == null)
+				return null;
+			// Преобразовать объект в XElement
+			XElement xe = new XElement(objectType.SysName);
+			foreach (var p in objectType.MM_ObjectProperties.Where(p1 => !p1.IsMultilingual && String.IsNullOrEmpty(p1.Expression)))
+			{
+				string pname = p.SysName.ToLower();
+				if (p.UpperBound == 1 || p.TypeCode != ObjectPropertyType.Object)
 				{
-					if (r != null)
-						pname = pname + (r.RefClass != null && r.RefClass.Key.Type is MetaGuidType ? "guid" : "id");
+					if (p.TypeCode == ObjectPropertyType.Object)
+						pname = pname + (p.RefObjectTypeID.HasValue && p.RefObjectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? "guid" : "id");
 					PropertyInfo pi = GetPropertyInfo(o, pname);
 					if (pi != null)
 					{
 						object val = pi.GetValue(o, null);
-						xe.Add(new XElement(p.Name, SanitizeXmlString(TypeDescriptor.GetConverter(pi.PropertyType).ConvertToInvariantString(val))));
+						xe.Add(new XElement(p.SysName, SanitizeXmlString(TypeDescriptor.GetConverter(pi.PropertyType).ConvertToInvariantString(val))));
 					}
 				}
-				if (p.UpperBound != 1 && r != null && !(r.InverseProperty != null && r.InverseProperty.UpperBound == 1))
+				if (p.UpperBound != 1 && p.TypeCode == ObjectPropertyType.Object && !(p.RefObjectPropertyID.HasValue && p.RefObjectProperty.UpperBound == 1))
 				{
-					XElement xp = new XElement(p.Name);
+					XElement xp = new XElement(p.SysName);
 					PropertyInfo pi = GetPropertyInfo(o, pname);
 					if (pi != null)
 					{
@@ -396,8 +385,8 @@ namespace Nephrite.Metamodel
 							var casted = val.Cast<IModelObject>();
 							foreach (var obj in casted)
 							{
-								var itemname = r.RefClass.Key.Name;
-								if (r.RefClass.Key.Type is MetaGuidType)
+								var itemname = p.RefObjectType.PrimaryKey.Single().ColumnName;
+								if (p.RefObjectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid)
 									xp.Add(new XElement(itemname, obj.ObjectGUID));
 								else
 									xp.Add(new XElement(itemname, obj.ObjectID));
@@ -405,48 +394,46 @@ namespace Nephrite.Metamodel
 						}
 					}
 				}
-            }
-            xe.Add(new XElement("VersionNumber", o.VersionNumber));
-            xe.Add(new XElement("IsCurrentVersion", o.IsCurrentVersion));
-			
-			/*if (objectType.HistoryTypeCode == HistoryType.IdentifiersMiss ||
+			}
+			xe.Add(new XElement("VersionNumber", o.VersionNumber));
+			xe.Add(new XElement("IsCurrentVersion", o.IsCurrentVersion));
+			if (objectType.HistoryTypeCode == HistoryType.IdentifiersMiss ||
 				objectType.HistoryTypeCode == HistoryType.IdentifiersRetain)
 			{
 				IMMObjectVersion2 o2 = (IMMObjectVersion2)o;
 				xe.Add(new XElement("ClassVersionID", o2.ClassVersionID));
-			}*/
-
-            // Экспорт первичного ключа
-			string pkname = objectType.Key.Name;
-            if (pkname.EndsWith("GUID"))
-                pkname = pkname.Substring(0, pkname.Length - 4);
+			}
+			// Экспорт первичного ключа
+			string pkname = objectType.PrimaryKey.Single().ColumnName;
+			if (pkname.EndsWith("GUID"))
+				pkname = pkname.Substring(0, pkname.Length - 4);
 			else if (pkname.EndsWith("ID"))
 				pkname = pkname.Substring(0, pkname.Length - 2);
-			pkname += "Version" + (objectType.Key.Type is MetaGuidType ? "GUID" : "ID");
-            PropertyInfo pi1 = GetPropertyInfo(o, pkname);
-            xe.Add(new XElement(pkname, pi1.GetValue(o, null)));
-			xe.Add(new XElement(objectType.Key.Name, o.ObjectID));
-            return xe;
-        }
+			pkname += "Version" + (objectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? "GUID" : "ID");
+			PropertyInfo pi1 = GetPropertyInfo(o, pkname);
+			xe.Add(new XElement(pkname, pi1.GetValue(o, null)));
+			xe.Add(new XElement(objectType.PrimaryKey.Single().ColumnName, o.ObjectID));
+			return xe;
+		}
 
-        public void ImportObject(MetaClass objectType, XElement obj)
-        {
-            Type T = assembly.GetType(ns + "." + objectType.Name, true, true);
+		public void ImportObject(MM_ObjectType objectType, XElement obj)
+		{
+			Type T = assembly.GetType(ns + "." + objectType.SysName, true, true);
 			// Определить ид
-			XElement xeid = obj.Element(objectType.Key.Name);
+			XElement xeid = obj.Element(objectType.PrimaryKey.Single().SysName);
 			object id = xeid != null ? (xeid.Value.ToInt32(0) > 0 ? (object)xeid.Value.ToInt32(0) : xeid.Value.ToGuid()) : 0;
-            IMMObject o = Get(objectType, id);
-            if (o == null)
-            {
-                o = (IMMObject)Activator.CreateInstance(T);
-                db.GetTable(T).InsertOnSubmit(o);
-            }
+			IMMObject o = Get(objectType, id);
+			if (o == null)
+			{
+				o = (IMMObject)Activator.CreateInstance(T);
+				db.GetTable(T).InsertOnSubmit(o);
+			}
 
-            foreach (var p in objectType.MM_ObjectProperties.Where(p1 => !p1.IsMultilingual && String.IsNullOrEmpty(p1.Expression)))
-            {
-                XElement e = obj.Element(p.SysName);
-                if (e == null)
-                    continue;
+			foreach (var p in objectType.MM_ObjectProperties.Where(p1 => !p1.IsMultilingual && String.IsNullOrEmpty(p1.Expression)))
+			{
+				XElement e = obj.Element(p.SysName);
+				if (e == null)
+					continue;
 				if (p.UpperBound == 1 || p.TypeCode != ObjectPropertyType.Object)
 				{
 					string pname = p.TypeCode == ObjectPropertyType.Object ? e.Name.LocalName.ToLower() + (p.RefObjectType != null && p.RefObjectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? "guid" : "id") : e.Name.LocalName.ToLower();
@@ -532,7 +519,7 @@ namespace Nephrite.Metamodel
 							}
 							continue;
 						}
-					
+
 						try
 						{
 							if (p.RefObjectTypeID.HasValue && p.RefObjectType.SysName == "SPM_Subject")
@@ -570,15 +557,15 @@ namespace Nephrite.Metamodel
 						}
 					}
 				}
-            }
-        }
+			}
+		}
 
-		public IMMObject DeserializeObject(MetaClass objectType, XElement obj)
+		public IMMObject DeserializeObject(MM_ObjectType objectType, XElement obj)
 		{
-			Type T = assembly.GetType(ns + "." + objectType.Name, true, true);
+			Type T = assembly.GetType(ns + "." + objectType.SysName, true, true);
 
 			// Определить ид
-			XElement xeid = obj.Element(objectType.Key.Name);
+			XElement xeid = obj.Element(objectType.PrimaryKey.Single().ColumnName);
 			int id = xeid != null ? xeid.Value.ToInt32(0) : 0;
 			IMMObject o = (IMMObject)Activator.CreateInstance(T);
 
@@ -669,17 +656,17 @@ namespace Nephrite.Metamodel
 			return o;
 		}
 
-		public IMMObject DeserializeObjectVersion(MetaClass objectType, XElement obj)
+		public IMMObject DeserializeObjectVersion(MM_ObjectType objectType, XElement obj)
 		{
-			Type T = assembly.GetType(ns + ".HST_" + objectType.Name, true, true);
+			Type T = assembly.GetType(ns + ".HST_" + objectType.SysName, true, true);
 
-			string pkname = objectType.Key.Name;
+			string pkname = objectType.PrimaryKey.Single().ColumnName;
 			if (pkname.EndsWith("GUID"))
 				pkname = pkname.Substring(0, pkname.Length - 4);
 			else if (pkname.EndsWith("ID"))
 				pkname = pkname.Substring(0, pkname.Length - 2);
-			pkname += "Version" + (objectType.Key.Type is MetaGuidType ? "GUID" : "ID");
-			
+			pkname += "Version" + (objectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? "GUID" : "ID");
+
 			IMMObject o = (IMMObject)Activator.CreateInstance(T);
 
 			foreach (var p in objectType.MM_ObjectProperties.Where(p1 => !p1.IsMultilingual && p1.UpperBound == 1 && String.IsNullOrEmpty(p1.Expression)))
@@ -802,32 +789,32 @@ namespace Nephrite.Metamodel
 			}
 		}
 
-        public void ImportObjectVersion(MM_ObjectType objectType, XElement obj)
-        {
-            Type T = assembly.GetType(ns + ".HST_" + objectType.SysName, true, true);
+		public void ImportObjectVersion(MM_ObjectType objectType, XElement obj)
+		{
+			Type T = assembly.GetType(ns + ".HST_" + objectType.SysName, true, true);
 
-            // Определить ид
+			// Определить ид
 			string pkname = objectType.PrimaryKey.Single().ColumnName;
 			if (pkname.EndsWith("GUID"))
 				pkname = pkname.Substring(0, pkname.Length - 4);
 			else if (pkname.EndsWith("ID"))
 				pkname = pkname.Substring(0, pkname.Length - 2);
 			pkname += "Version" + (objectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? "GUID" : "ID");
-			
-            XElement xeid = obj.Element(pkname);
-			object id = xeid != null ? (xeid.Value.ToInt32(0) > 0 ? (object)xeid.Value.ToInt32(0) : xeid.Value.ToGuid()) : 0;
-            IMMObjectVersion o = GetVersion(objectType, id);
-            if (o == null)
-            {
-                o = (IMMObjectVersion)Activator.CreateInstance(T);
-                db.GetTable(T).InsertOnSubmit(o);
-            }
 
-            foreach (var p in objectType.MM_ObjectProperties.Where(p1 => !p1.IsMultilingual && String.IsNullOrEmpty(p1.Expression)))
-            {
-                XElement e = obj.Element(p.SysName);
-                if (e == null)
-                    continue;
+			XElement xeid = obj.Element(pkname);
+			object id = xeid != null ? (xeid.Value.ToInt32(0) > 0 ? (object)xeid.Value.ToInt32(0) : xeid.Value.ToGuid()) : 0;
+			IMMObjectVersion o = GetVersion(objectType, id);
+			if (o == null)
+			{
+				o = (IMMObjectVersion)Activator.CreateInstance(T);
+				db.GetTable(T).InsertOnSubmit(o);
+			}
+
+			foreach (var p in objectType.MM_ObjectProperties.Where(p1 => !p1.IsMultilingual && String.IsNullOrEmpty(p1.Expression)))
+			{
+				XElement e = obj.Element(p.SysName);
+				if (e == null)
+					continue;
 				if (p.UpperBound == 1 || p.TypeCode != ObjectPropertyType.Object)
 				{
 					string pname = p.TypeCode == ObjectPropertyType.Object ? e.Name.LocalName.ToLower() + (p.RefObjectType != null && p.RefObjectType.PrimaryKey.Single().TypeCode == ObjectPropertyType.Guid ? "guid" : "id") : e.Name.LocalName.ToLower();
@@ -858,9 +845,9 @@ namespace Nephrite.Metamodel
 						}
 					}
 				}
-            }
-			
-            PropertyInfo pi1 = GetPropertyInfo(o, pkname);
+			}
+
+			PropertyInfo pi1 = GetPropertyInfo(o, pkname);
 			if (pi1 != null)
 			{
 				pi1.SetValue(o, id, null);
@@ -868,7 +855,7 @@ namespace Nephrite.Metamodel
 				pi1.SetValue(o, TypeDescriptor.GetConverter(pi1.PropertyType).ConvertFromInvariantString(obj.Element(objectType.PrimaryKey.Single().ColumnName).Value), null);
 			}
 
-            pi1 = GetPropertyInfo(o, "VersionNumber");
+			pi1 = GetPropertyInfo(o, "VersionNumber");
 			if (pi1 != null)
 			{
 				pi1.SetValue(o, TypeDescriptor.GetConverter(pi1.PropertyType).ConvertFromInvariantString(obj.Element("VersionNumber").Value), null);
@@ -886,99 +873,99 @@ namespace Nephrite.Metamodel
 					pi1.SetValue(o, TypeDescriptor.GetConverter(pi1.PropertyType).ConvertFromInvariantString(obj.Element("ClassVersionID").Value), null);
 				}
 			}
-        }
+		}
 
-        public static PropertyInfo GetPropertyInfo(IMMObject o, string propertyName)
-        {
-            PropertyInfo pi = o.GetType().GetProperties().SingleOrDefault(p1 => p1.Name.ToLower() == propertyName.ToLower());
-            //if (pi == null)
-            //    throw new Exception("У объекта " + o.Title + " (" + o.GetType().FullName + ") не найдено свойство " + propertyName);
-            return pi;
-        }
+		public static PropertyInfo GetPropertyInfo(IMMObject o, string propertyName)
+		{
+			PropertyInfo pi = o.GetType().GetProperties().SingleOrDefault(p1 => p1.Name.ToLower() == propertyName.ToLower());
+			//if (pi == null)
+			//    throw new Exception("У объекта " + o.Title + " (" + o.GetType().FullName + ") не найдено свойство " + propertyName);
+			return pi;
+		}
 
-        public void SaveObject(XElement obj, string languageCode)
-        {
-            Type T = assembly.GetType(ns + "." + obj.Name.LocalName, true, true);
-            var objectType = AppMM.DataContext.MM_ObjectTypes.SingleOrDefault(m => m.SysName == T.Name);
-            // Определить ид
+		public void SaveObject(XElement obj, string languageCode)
+		{
+			Type T = assembly.GetType(ns + "." + obj.Name.LocalName, true, true);
+			var objectType = AppMM.DataContext.MM_ObjectTypes.SingleOrDefault(m => m.SysName == T.Name);
+			// Определить ид
 			XElement xeid = obj.Element(objectType.PrimaryKey.Single().ColumnName);
-            int id = xeid != null ? xeid.Value.ToInt32(0) : 0;
-            object o = Get(objectType, id);
-            if (o == null)
-            {
-                o = Activator.CreateInstance(T);
-                db.GetTable(T).InsertOnSubmit(o);
-            }
-            
-            foreach (var p in objectType.MM_ObjectProperties.Where(p1=>!p1.IsMultilingual))
-            {
-                XElement e = obj.Element(p.SysName);
-                if (e == null)
-                    continue;
-                PropertyInfo pi = T.GetProperties().Single(p1 => p1.Name.ToLower() == e.Name.LocalName.ToLower());
-                pi.SetValue(o, TypeDescriptor.GetConverter(pi.PropertyType).ConvertFromInvariantString(e.Value), null);
-            }
+			int id = xeid != null ? xeid.Value.ToInt32(0) : 0;
+			object o = Get(objectType, id);
+			if (o == null)
+			{
+				o = Activator.CreateInstance(T);
+				db.GetTable(T).InsertOnSubmit(o);
+			}
 
-            object odata = null;
-            Type Tdata = null;
-            foreach (var p in objectType.MM_ObjectProperties.Where(p1 => p1.IsMultilingual))
-            {
-                XElement e = obj.Element(p.SysName);
-                if (e == null)
-                    continue;
+			foreach (var p in objectType.MM_ObjectProperties.Where(p1 => !p1.IsMultilingual))
+			{
+				XElement e = obj.Element(p.SysName);
+				if (e == null)
+					continue;
+				PropertyInfo pi = T.GetProperties().Single(p1 => p1.Name.ToLower() == e.Name.LocalName.ToLower());
+				pi.SetValue(o, TypeDescriptor.GetConverter(pi.PropertyType).ConvertFromInvariantString(e.Value), null);
+			}
 
-                if (Tdata == null)
-                    Tdata = assembly.GetType(ns + "." + obj.Name.LocalName + "Data", true, true);
-                        
-                if (odata == null)
-                {
-                    odata = GetData(objectType, id, languageCode ?? defaultLanguage);
-                    if (odata == null)
-                    {
-                        odata = Activator.CreateInstance(Tdata);
-                        Tdata.GetProperty("LanguageCode").SetValue(odata, languageCode ?? defaultLanguage, null);
-                        Tdata.GetProperties().Single(p1 => p1.Name.ToLower() == objectType.SysName.ToLower()).SetValue(odata, o, null);
-                        db.GetTable(Tdata).InsertOnSubmit(odata);
-                    }
-                }
-                PropertyInfo pi = Tdata.GetProperties().Single(p1 => p1.Name.ToLower() == e.Name.LocalName.ToLower());
-                pi.SetValue(odata, TypeDescriptor.GetConverter(pi.PropertyType).ConvertFromInvariantString(e.Value), null);
-            }
-        }
+			object odata = null;
+			Type Tdata = null;
+			foreach (var p in objectType.MM_ObjectProperties.Where(p1 => p1.IsMultilingual))
+			{
+				XElement e = obj.Element(p.SysName);
+				if (e == null)
+					continue;
 
-        public void SubmitChanges()
-        {
+				if (Tdata == null)
+					Tdata = assembly.GetType(ns + "." + obj.Name.LocalName + "Data", true, true);
+
+				if (odata == null)
+				{
+					odata = GetData(objectType, id, languageCode ?? defaultLanguage);
+					if (odata == null)
+					{
+						odata = Activator.CreateInstance(Tdata);
+						Tdata.GetProperty("LanguageCode").SetValue(odata, languageCode ?? defaultLanguage, null);
+						Tdata.GetProperties().Single(p1 => p1.Name.ToLower() == objectType.SysName.ToLower()).SetValue(odata, o, null);
+						db.GetTable(Tdata).InsertOnSubmit(odata);
+					}
+				}
+				PropertyInfo pi = Tdata.GetProperties().Single(p1 => p1.Name.ToLower() == e.Name.LocalName.ToLower());
+				pi.SetValue(odata, TypeDescriptor.GetConverter(pi.PropertyType).ConvertFromInvariantString(e.Value), null);
+			}
+		}
+
+		public void SubmitChanges()
+		{
 			db.CommandTimeout = 300;
-            db.SubmitChanges();
-        }
+			db.SubmitChanges();
+		}
 
-        public DataContext DataContext
-        {
-            get { return db; }
-        }
+		public DataContext DataContext
+		{
+			get { return db; }
+		}
 
-		public IQueryable<IMMObject> GetList(MetaClass objectType)
-        {
-            string sn;
-			if (objectType.Properties<MetaAttribute>().Any(o => o.IsMultilingual))
-            {
-                sn = ns + ".V_" + objectType.Name;
-                Type T = assembly.GetType(sn);
-                return Repository.GetCurrentLang(db.GetTable(T).OfType<IMMObjectMLView>());
-            }
-            else
-            {
-                sn = ns + "." + objectType.Name;
-                Type T = assembly.GetType(sn);
-                return db.GetTable(T).OfType<IMMObject>();
-            }
-        }
+		public IQueryable<IMMObject> GetList(MM_ObjectType objectType)
+		{
+			string sn;
+			if (objectType.MM_ObjectProperties.Any(o => o.IsMultilingual))
+			{
+				sn = ns + ".V_" + objectType.SysName;
+				Type T = assembly.GetType(sn);
+				return Repository.GetCurrentLang(db.GetTable(T).OfType<IMMObjectMLView>());
+			}
+			else
+			{
+				sn = ns + "." + objectType.SysName;
+				Type T = assembly.GetType(sn);
+				return db.GetTable(T).OfType<IMMObject>();
+			}
+		}
 
-		public IQueryable<IMMObjectVersion> GetListHst(MetaClass objectType)
-        {
-            Type T = assembly.GetType(ns + ".HST_" + objectType.Name);
-            return db.GetTable(T).OfType<IMMObjectVersion>();
-        }
+		public IQueryable<IMMObjectVersion> GetListHst(MM_ObjectType objectType)
+		{
+			Type T = assembly.GetType(ns + ".HST_" + objectType.SysName);
+			return db.GetTable(T).OfType<IMMObjectVersion>();
+		}
 
 		public static IQueryable<IMMObject> GetCurrentLang(IQueryable<IMMObjectMLView> data)
 		{
@@ -986,40 +973,40 @@ namespace Nephrite.Metamodel
 			return data.Where(o => o.LanguageCode == langCode).OfType<IMMObject>();
 		}
 
-        public void Delete(object obj)
-        {
-            db.GetTable(obj.GetType()).DeleteOnSubmit(obj);
-        }
+		public void Delete(object obj)
+		{
+			db.GetTable(obj.GetType()).DeleteOnSubmit(obj);
+		}
 
-		public IMMObject Create(MetaClass objectType)
-        {
-            Type T = assembly.GetType(ns + "." + objectType.Name);
-            object obj = Activator.CreateInstance(T);
-            db.GetTable(T).InsertOnSubmit(obj);
-            return (IMMObject)obj;
-        }
+		public IMMObject Create(MM_ObjectType objectType)
+		{
+			Type T = assembly.GetType(ns + "." + objectType.SysName);
+			object obj = Activator.CreateInstance(T);
+			db.GetTable(T).InsertOnSubmit(obj);
+			return (IMMObject)obj;
+		}
 
-		public IMMObject Empty(MetaClass objectType)
-        {
-            if (objectType.Properties<MetaAttribute>().Any(o => o.IsMultilingual))
-            {
-                Type T = assembly.GetType(ns + ".V_" + objectType.Name);
-                object obj = Activator.CreateInstance(T);
-                return (IMMObject)obj;
-            }
-            else
-            {
-                Type T = assembly.GetType(ns + "." + objectType.Name);
-                object obj = Activator.CreateInstance(T);
-                return (IMMObject)obj;
-            }
-        }
+		public IMMObject Empty(MM_ObjectType objectType)
+		{
+			if (objectType.MM_ObjectProperties.Any(o => o.IsMultilingual))
+			{
+				Type T = assembly.GetType(ns + ".V_" + objectType.SysName);
+				object obj = Activator.CreateInstance(T);
+				return (IMMObject)obj;
+			}
+			else
+			{
+				Type T = assembly.GetType(ns + "." + objectType.SysName);
+				object obj = Activator.CreateInstance(T);
+				return (IMMObject)obj;
+			}
+		}
 
-        public IMMObjectVersion EmptyHst(MetaClass objectType)
-        {
-            Type T = assembly.GetType(ns + ".HST_" + objectType.Name);
-            object obj = Activator.CreateInstance(T);
-            return (IMMObjectVersion)obj;
-        }
-    }
+		public IMMObjectVersion EmptyHst(MM_ObjectType objectType)
+		{
+			Type T = assembly.GetType(ns + ".HST_" + objectType.SysName);
+			object obj = Activator.CreateInstance(T);
+			return (IMMObjectVersion)obj;
+		}
+	}
 }

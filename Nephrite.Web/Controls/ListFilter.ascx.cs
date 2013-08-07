@@ -1103,9 +1103,9 @@ namespace Nephrite.Web.Controls
 						else
 						{
 							if (!DateTime.TryParseExact(item.Value, "d.MM.yyyy", null, DateTimeStyles.None, out dt))
-								dt = DateTime.Today;
-
-							val = dt;
+							{ DateTime? dtn = null; val = dtn; } // dt = DateTime.Today;
+							else
+								val = dt;
 						}
 					}
 
@@ -1124,8 +1124,9 @@ namespace Nephrite.Web.Controls
 						else
 						{
 							if (!DateTime.TryParseExact(item.Value, "d.MM.yyyy HH:mm", null, DateTimeStyles.None, out dt))
-								dt = DateTime.Now;
-							val = dt;
+							{ DateTime? dtn = null; val = dtn; } // dt = DateTime.Today;
+							else
+								val = dt;
 						}
 					}
 
