@@ -27,7 +27,7 @@ namespace Nephrite.Metamodel.Model
             get
             {
                 if (ParentPackageID.HasValue)
-                    return MM_Package1.FullSysName + "." + SysName;
+                    return ParentPackage.FullSysName + "." + SysName;
                 return SysName;
             }
         }
@@ -36,7 +36,7 @@ namespace Nephrite.Metamodel.Model
         {
             get
             {
-                return (ParentPackageID.HasValue ? MM_Package1.ControlPath + "/" : "") + SysName;
+				return (ParentPackageID.HasValue ? ParentPackage.ControlPath + "/" : "") + SysName;
             }
         }
 

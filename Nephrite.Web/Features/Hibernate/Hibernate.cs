@@ -23,6 +23,7 @@ using System.Data.SqlClient;
 using NHibernate.Transform;
 using NHibernate.Event;
 using Nephrite.Web.TrackChanges;
+using System.Reflection;
 
 namespace Nephrite.Web.Hibernate
 {
@@ -223,6 +224,14 @@ namespace Nephrite.Web.Hibernate
 			return Session.Query<T>();
 		}
 
+		public ITable GetTable(Type t)
+		{
+			MethodInfo mi = Session.GetType().GetMethod("Query").MakeGenericMethod(new Type[] { t });
+			var q = mi.Invoke(Session, null) as IQueryable;
+			return new HTable(this, q);
+		}
+
+
 
 		public T Get<T>(object id)
 		{
@@ -232,18 +241,18 @@ namespace Nephrite.Web.Hibernate
 
 
 
-	public class HTable<T> : IQueryable<T>, ITable
+	public class HTable : IQueryable, ITable
 	{
-		HDataContext _dataContext;
-		IQueryable<T> _query;
+		protected HDataContext _dataContext;
+		protected IQueryable _query;
 
-		public HTable(HDataContext dataContext, IQueryable<T> query)
+		public HTable(HDataContext dataContext, IQueryable query)
 		{
 			_dataContext = dataContext;
 			_query = query;
 		}
 
-		public IEnumerator<T> GetEnumerator()
+		public IEnumerator GetEnumerator()
 		{
 			return _query.GetEnumerator();
 		}
@@ -317,6 +326,22 @@ namespace Nephrite.Web.Hibernate
 		public bool IsReadOnly
 		{
 			get { return false; }
+		}
+	}
+
+	public class HTable<T> : HTable, IQueryable<T>
+	{
+		protected IQueryable<T> _query2;
+
+		public HTable(HDataContext dataContext, IQueryable<T> query) : base(dataContext, query)
+		{
+			_query2 = query;
+		}
+
+
+		public new IEnumerator<T> GetEnumerator()
+		{
+			return _query2.GetEnumerator();
 		}
 	}
 

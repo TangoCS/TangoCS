@@ -16,7 +16,7 @@ namespace Nephrite.Web
 		static Dictionary<string, string> dict = new Dictionary<string,string>();
 		static Dictionary<string, DateTime> dictcache = new Dictionary<string, DateTime>();
 		static Dictionary<string, Type> viewDatas = new Dictionary<string, Type>();
-		internal static string GetText(string key)
+		public static string GetText(string key)
 		{
 			lock (dict)
 			{
@@ -26,7 +26,7 @@ namespace Nephrite.Web
 			}
 		}
 
-		internal static string GetCacheKey(string key)
+		public static string GetCacheKey(string key)
 		{
 			lock (dictcache)
 			{
@@ -36,7 +36,7 @@ namespace Nephrite.Web
 			}
 		}
 
-		internal static Type GetViewDataType(string key)
+		public static Type GetViewDataType(string key)
 		{
 			lock (viewDatas)
 			{

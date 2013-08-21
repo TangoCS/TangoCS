@@ -9,6 +9,8 @@ using System.Text;
 using Nephrite.Metamodel.Model;
 using System.Text.RegularExpressions;
 using Nephrite.Meta;
+using Nephrite.Web.CoreDataContext;
+using Nephrite.Web.RSS;
 
 namespace Nephrite.Metamodel
 {
@@ -27,7 +29,7 @@ namespace Nephrite.Metamodel
 
 			if (VirtualPath.ToLower().EndsWith(".rss.ascx"))
 			{
-				N_RssFeed rf = AppMM.DataContext.N_RssFeeds.Single(o => o.SysName.ToLower() == VirtualPath.ToLower().Replace("/", "").Replace(".rss.ascx", ""));
+				IN_RssFeed rf = (A.Model as IDC_RSS).N_RssFeed.Single(o => o.SysName.ToLower() == VirtualPath.ToLower().Replace("/", "").Replace(".rss.ascx", ""));
 				MetaClass mc = A.Meta.GetClass(rf.ObjectTypeSysName);
 				text.AppendFormat(@"<%@ Control Language=""C#"" Inherits=""System.Web.UI.UserControl"" %>
 					<%@ Import Namespace=""{0}""%>

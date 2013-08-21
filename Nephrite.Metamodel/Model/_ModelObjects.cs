@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Linq.Expressions;
 using Nephrite.Web;
+using Nephrite.Meta;
 
 namespace Nephrite.Metamodel.Model
 {
@@ -115,9 +116,12 @@ namespace Nephrite.Metamodel.Model
             get { return FormViewID; }
 		}
 
-		public string GetClassName()
+		public MetaClass MetaClass
 		{
-			return "";
+			get
+			{
+				return A.Meta.GetClass("MM_FormView");
+			}
 		}
 
 		public IModelObject ParentObject
@@ -165,9 +169,12 @@ namespace Nephrite.Metamodel.Model
 			get { return Guid; }
 		}
 
-		public string GetClassName()
+		public MetaClass MetaClass
 		{
-			return "";
+			get
+			{
+				return A.Meta.GetClass("MM_Method");
+			}
 		}
 
         public string FullSysName
@@ -188,9 +195,12 @@ namespace Nephrite.Metamodel.Model
 			get { return Guid; }
 		}
 
-		public string GetClassName()
+		public MetaClass MetaClass
 		{
-			return "";
+			get
+			{
+				return A.Meta.GetClass("MM_ObjectProperty");
+			}
 		}
 	}
 
@@ -206,9 +216,12 @@ namespace Nephrite.Metamodel.Model
 			get { return Guid; }
 		}
 
-		public string GetClassName()
+		public MetaClass MetaClass
 		{
-			return "";
+			get
+			{
+				return A.Meta.GetClass("MM_ObjectType");
+			}
 		}
 	}
 
@@ -224,9 +237,12 @@ namespace Nephrite.Metamodel.Model
 			get { return Guid; }
 		}
 
-		public string GetClassName()
+		public MetaClass MetaClass
 		{
-			return "";
+			get
+			{
+				return A.Meta.GetClass("MM_Package");
+			}
 		}
 
 		#region IChildObject Members
@@ -235,11 +251,11 @@ namespace Nephrite.Metamodel.Model
 		{
 			get
 			{
-				return MM_Package1;
+				return ParentPackage;
 			}
 			set
 			{
-				MM_Package1 = (MM_Package)value;
+				ParentPackage = (MM_Package)value;
 			}
 		}
 
@@ -264,13 +280,13 @@ namespace Nephrite.Metamodel.Model
 			if (parentGUID == Guid.Empty)
 				ParentPackageID = null;
 			else
-				MM_Package1 = AppMM.DataContext.MM_Packages.SingleOrDefault(o => o.Guid == parentGUID);
+				ParentPackage = AppMM.DataContext.MM_Packages.SingleOrDefault(o => o.Guid == parentGUID);
 		}
 
 		public Expression<Func<T, bool>> FilterByParentGUID<T>(Guid guid) where T : IModelObject
 		{
 			if (guid != Guid.Empty)
-				return o => (o as MM_Package).MM_Package1.Guid == guid;
+				return o => (o as MM_Package).ParentPackage.Guid == guid;
 			else
 				return o => (o as MM_Package).ParentPackageID == null;
 		}

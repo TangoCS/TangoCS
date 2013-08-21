@@ -48,6 +48,8 @@ namespace Nephrite.Metamodel.Model
 			Property(x => x.IsDataReplicated, map => map.NotNullable(true));
 			Property(x => x.Version);
 			Property(x => x.SeqNo, map => map.NotNullable(true));
+
+			Property(x => x.ParentPackageID);
 			ManyToOne(x => x.ParentPackage, map =>
 			{
 				map.Column("ParentPackageID");
@@ -96,26 +98,28 @@ namespace Nephrite.Metamodel.Model
 			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
 			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
 			Property(x => x.IsIdentity, map => map.NotNullable(true));
-			ManyToOne(x => x.ObjectTypeID, map =>
+
+			Property(x => x.ObjectTypeID, map => map.NotNullable(true));
+			ManyToOne(x => x.ObjectType, map =>
 			{
 				map.Column("ObjectTypeID");
 				map.PropertyRef("ObjectTypeID");
 				map.Cascade(Cascade.None);
 			});
 
+			Property(x => x.RefObjectPropertyID);
 			ManyToOne(x => x.RefObjectProperty, map =>
 			{
 				map.Column("RefObjectPropertyID");
 				map.PropertyRef("ObjectPropertyID");
-				map.NotNullable(true);
 				map.Cascade(Cascade.None);
 			});
 
-			ManyToOne(x => x.RefObjectTypeID, map =>
+			Property(x => x.RefObjectTypeID);
+			ManyToOne(x => x.RefObjectType, map =>
 			{
 				map.Column("RefObjectTypeID");
 				map.PropertyRef("ObjectTypeID");
-				map.NotNullable(true);
 				map.Cascade(Cascade.None);
 			});
 
@@ -123,8 +127,12 @@ namespace Nephrite.Metamodel.Model
 			{
 				map.Column("CodifierID");
 				map.PropertyRef("CodifierID");
-				map.NotNullable(true);
 				map.Cascade(Cascade.None);
+			});
+
+			OneToOne(x => x.MM_FormField, map =>
+			{
+				
 			});
 
 			//Bag(x => x.MM_FormFields, colmap => { colmap.Key(x => x.Column("ObjectPropertyID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
@@ -133,7 +141,7 @@ namespace Nephrite.Metamodel.Model
 		}
 	}
 
-	/*public class MM_FormFieldMap : ClassMapping<MM_FormField>
+	public class MM_FormFieldMap : ClassMapping<MM_FormField>
 	{
 
 		public MM_FormFieldMap()
@@ -163,17 +171,19 @@ namespace Nephrite.Metamodel.Model
 				map.Cascade(Cascade.None);
 			});
 
-			ManyToOne(x => x.MM_FormFieldGroup, map =>
-			{
-				map.Column("FormFieldGroupID");
-				map.PropertyRef("FormFieldGroupID");
-				map.NotNullable(true);
-				map.Cascade(Cascade.None);
-			});
+			
 
-			Bag(x => x.MM_FormFieldAttributes, colmap => { colmap.Key(x => x.Column("FormFieldID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
+			//ManyToOne(x => x.MM_FormFieldGroup, map =>
+			//{
+			//	map.Column("FormFieldGroupID");
+			//	map.PropertyRef("FormFieldGroupID");
+			//	map.NotNullable(true);
+			//	map.Cascade(Cascade.None);
+			//});
+
+			//Bag(x => x.MM_FormFieldAttributes, colmap => { colmap.Key(x => x.Column("FormFieldID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 		}
-	}*/
+	}
 
 	public class MM_CodifierValueMap : ClassMapping<MM_CodifierValue>
 	{
@@ -454,5 +464,14 @@ namespace Nephrite.Metamodel.Model
 		}
 	}
 
+	public class N_CacheMap : ClassMapping<N_Cache>
+	{
+		public N_CacheMap()
+		{
+			Schema("dbo");
+			Lazy(true);
+			Property(x => x.TimeStamp, map => map.NotNullable(true));
+		}
+	}
 	
 }

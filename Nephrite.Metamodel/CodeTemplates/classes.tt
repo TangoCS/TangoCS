@@ -257,50 +257,6 @@ namespace <#= AppMM.DBName() #>.Model
             }
         }
 <# 	} #>
-<#  foreach (var prop in cls.MM_ObjectProperties.Where(o => o.TypeCode == ObjectPropertyType.ZoneDateTime))
-	{
-		if (prop.LowerBound == 0)
-		{#>
-        public Nephrite.Web.ZoneDateTime? <#= prop.SysName #>ZoneDateTime
-        {
-            get
-            {
-                if (<#= prop.SysName #> == null || <#= prop.SysName #>TimeZoneID == null)
-                    return null;
-                else
-                    return new Nephrite.Web.ZoneDateTime(<#= prop.SysName #>.Value, <#= prop.SysName #>TimeZoneID.Value, true);
-            }
-            set
-            {
-                if (value == null)
-                {
-                    <#= prop.SysName #> = null;
-                    <#= prop.SysName #>TimeZoneID = null;
-                }
-                else
-                {
-                    <#= prop.SysName #> = value.Value.UniversalDateTime;
-                    <#= prop.SysName #>TimeZoneID = value.Value.TimeZoneVersionID;
-                }
-            }
-        }
-<# 		}
-		else
-		{#>
-        public Nephrite.Web.ZoneDateTime <#= prop.SysName #>ZoneDateTime
-        {
-            get
-            {
-                return new Nephrite.Web.ZoneDateTime(<#= prop.SysName #>, <#= prop.SysName #>TimeZoneID, true);
-            }
-            set
-            {
-                <#= prop.SysName #> = value.UniversalDateTime;
-                <#= prop.SysName #>TimeZoneID = value.TimeZoneVersionID;
-            }
-        }
-	<# 	}
-	}#>
 
 		public Nephrite.Meta.MetaClass MetaClass
         {

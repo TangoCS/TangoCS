@@ -7,7 +7,7 @@ using System.Data.Linq;
 
 namespace Nephrite.Metamodel.Model
 {
-	partial class modelDataContext
+	/*partial class modelDataContext
 	{
 		public override void SubmitChanges(ConflictMode failureMode)
 		{
@@ -38,5 +38,5 @@ namespace Nephrite.Metamodel.Model
 				ts.Complete();
 			}
 		}
-	}
+	}*/
 }

@@ -13,7 +13,8 @@ using Nephrite.Web.SPM;
 using System.Configuration;
 using Nephrite.Web.TaskManager;
 using Nephrite.Web.FileStorage;
-using Nephrite.Web.Model;
+using Nephrite.Web.CoreDataContext;
+using Nephrite.Web.SettingsManager;
 
 namespace Tessera
 {
@@ -28,12 +29,12 @@ namespace Tessera
 			svc.PreAuthenticate = true;
 			svc.Timeout = 1000 * 60 * 30; // 30 минут
 
-			using (var sdc = new HCoreDataContext(AppWeb.DBConfig))
+			using (var sdc = (IDC_Settings)A.Model.NewDataContext())
 			{
-				var sl = sdc.N_Settings.FirstOrDefault(o => o.SystemName == "ReplicationLogin");
+				var sl = sdc.N_Setting.FirstOrDefault(o => o.SystemName == "ReplicationLogin");
 				if (sl == null)
 					throw new Exception("Системный параметр ReplicationLogin отсутствует в БД");
-				var sp = sdc.N_Settings.FirstOrDefault(o => o.SystemName == "ReplicationPassword");
+				var sp = sdc.N_Setting.FirstOrDefault(o => o.SystemName == "ReplicationPassword");
 				if (sp == null)
 					throw new Exception("Системный параметр ReplicationPassword отсутствует в БД");
 				svc.UserCredentialsValue = new Tessera.ReplicationService.UserCredentials { Login = sl.Value, Password = sp.Value };

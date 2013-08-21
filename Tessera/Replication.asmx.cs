@@ -16,6 +16,8 @@ using Nephrite.Web.SPM;
 using Nephrite.Web.FileStorage;
 using System.Data.SqlClient;
 using Nephrite.Meta;
+using Nephrite.Web.ErrorLog;
+using Nephrite.Web.SettingsManager;
 
 namespace Tessera
 {
@@ -61,9 +63,9 @@ namespace Tessera
 		{
 			if (user == null)
 				throw new Exception("Аутентификация не пройдена");
-			if (user.Login != Nephrite.Web.App.AppSettings.Get("ReplicationLogin"))
+			if (user.Login != AppSettings.Get("ReplicationLogin"))
 				throw new Exception("Неправильный логин или пароль");
-			if (user.Password != Nephrite.Web.App.AppSettings.Get("ReplicationPassword"))
+			if (user.Password != AppSettings.Get("ReplicationPassword"))
 				throw new Exception("Неправильный логин или пароль");
 		}
 
@@ -181,7 +183,7 @@ namespace Tessera
         [WebMethod]
 		[SoapDocumentMethod(Binding = "Replication")]
 		[SoapHeader("user")]
-		public void ConfirmReplication(string objectType, string id, long ticks)
+		public void ConfirmReplication(string objectType, int id, long ticks)
         {
 			CheckCredentials();
 			DateTime dt = new DateTime(ticks);
@@ -281,6 +283,7 @@ namespace Tessera
 			return r.GetList(ot).Where(exp).Select(instance.GetIdentifierSelector()).Select(o => o.ToString()).ToArray();
 		}
 
+		/*
 		[WebMethod]
 		[SoapDocumentMethod(Binding = "Replication")]
 		[SoapHeader("user")]
@@ -311,6 +314,7 @@ namespace Tessera
 			
 			return otlist.ToArray();
 		}
+		*/
 
         void ImportObjectVersion(MetaClass objectType, string verid)
         {
@@ -505,7 +509,7 @@ namespace Tessera
     public class ReplicationObject
     {
         public string ObjectType { get; set; }
-        public string ObjectID { get; set; }
+        public int ObjectID { get; set; }
         public long Ticks { get; set; }
     }
 

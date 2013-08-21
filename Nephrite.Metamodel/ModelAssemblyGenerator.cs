@@ -289,224 +289,224 @@ namespace Nephrite.Metamodel
 			return String.Empty;
 		}
 
-		public static string CreateLinq2SqlFiles()
-		{
-			var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => o.IsSeparateTable && !o.IsTemplate).OrderBy(o => o.SysName).ToList();
+		//public static string CreateLinq2SqlFiles()
+		//{
+		//	var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => o.IsSeparateTable && !o.IsTemplate).OrderBy(o => o.SysName).ToList();
 
-			// Создать временный каталог
-			if (Directory.Exists(TempDir))
-				Array.ForEach((new DirectoryInfo(TempDir)).GetFiles(), o => { o.Delete(); });
+		//	// Создать временный каталог
+		//	if (Directory.Exists(TempDir))
+		//		Array.ForEach((new DirectoryInfo(TempDir)).GetFiles(), o => { o.Delete(); });
 
-			Output = "";
+		//	Output = "";
 
-			// Сгенерировать DML и CS
-			string smname = Config.SqlMetalPath;
-			string smargs = String.Format("/conn:\"{0}\" /sprocs /functions /views /dbml:\"{1}\\model.dbml\" /namespace:{2}.Model /context:modelDataContext",
-				ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString, TempDir, AppMM.DBName());
-			Process sqlmetal = new Process();
-			sqlmetal.StartInfo = new ProcessStartInfo(smname, smargs);
-			sqlmetal.Start();
-			sqlmetal.WaitForExit();
-			Output += String.Format("{0} {1}\r\n", smname, smargs);
+		//	// Сгенерировать DML и CS
+		//	string smname = Config.SqlMetalPath;
+		//	string smargs = String.Format("/conn:\"{0}\" /sprocs /functions /views /dbml:\"{1}\\model.dbml\" /namespace:{2}.Model /context:modelDataContext",
+		//		ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString, TempDir, AppMM.DBName());
+		//	Process sqlmetal = new Process();
+		//	sqlmetal.StartInfo = new ProcessStartInfo(smname, smargs);
+		//	sqlmetal.Start();
+		//	sqlmetal.WaitForExit();
+		//	Output += String.Format("{0} {1}\r\n", smname, smargs);
 
-			// Отредактировать dbml-файл
-			XmlDocument doc = new XmlDocument();
-			doc.Load(TempDir + "\\model.dbml");
-			var mgrt = new XmlNamespaceManager(doc.NameTable);
-			mgrt.AddNamespace("w", doc.DocumentElement.NamespaceURI);
+		//	// Отредактировать dbml-файл
+		//	XmlDocument doc = new XmlDocument();
+		//	doc.Load(TempDir + "\\model.dbml");
+		//	var mgrt = new XmlNamespaceManager(doc.NameTable);
+		//	mgrt.AddNamespace("w", doc.DocumentElement.NamespaceURI);
 
-			foreach (XmlElement column in doc.DocumentElement.SelectNodes("//w:Column[(@DbType='Char(1) NOT NULL' or @DbType='Char(1)')and @Type='System.String']", mgrt))
-			{
-				column.SetAttribute("Type", "System.Char");
-			}
-			foreach (XmlElement column in doc.DocumentElement.SelectNodes("//w:Column", mgrt))
-			{
-				if (column.Attributes.GetNamedItem("IsPrimaryKey") == null && column.GetAttribute("Name") != "LastModifiedDate")
-					column.SetAttribute("UpdateCheck", "Never");
-			}
-			foreach (var prop in objectTypes.SelectMany(o => o.MM_ObjectProperties).Where(o => o.TypeCode == ObjectPropertyType.FileEx))
-			{
-				XmlElement type = (XmlElement)doc.DocumentElement.SelectSingleNode("//w:Type[@Name='" + prop.MM_ObjectType.SysName + (prop.IsMultilingual ? "Data" : "") + "']", mgrt);
+		//	foreach (XmlElement column in doc.DocumentElement.SelectNodes("//w:Column[(@DbType='Char(1) NOT NULL' or @DbType='Char(1)')and @Type='System.String']", mgrt))
+		//	{
+		//		column.SetAttribute("Type", "System.Char");
+		//	}
+		//	foreach (XmlElement column in doc.DocumentElement.SelectNodes("//w:Column", mgrt))
+		//	{
+		//		if (column.Attributes.GetNamedItem("IsPrimaryKey") == null && column.GetAttribute("Name") != "LastModifiedDate")
+		//			column.SetAttribute("UpdateCheck", "Never");
+		//	}
+		//	foreach (var prop in objectTypes.SelectMany(o => o.MM_ObjectProperties).Where(o => o.TypeCode == ObjectPropertyType.FileEx))
+		//	{
+		//		XmlElement type = (XmlElement)doc.DocumentElement.SelectSingleNode("//w:Type[@Name='" + prop.ObjectType.SysName + (prop.IsMultilingual ? "Data" : "") + "']", mgrt);
 
-				XmlElement asso = doc.CreateElement("Association", doc.DocumentElement.NamespaceURI);
-				asso.SetAttribute("Name", "FK_" + prop.MM_ObjectType.SysName + (prop.IsMultilingual ? "Data" : "") + "_" + prop.SysName);
-				asso.SetAttribute("Member", prop.SysName);
-				asso.SetAttribute("IsForeignKey", "true");
-				asso.SetAttribute("Type", "DbFile");
-				asso.SetAttribute("ThisKey", prop.ColumnName);
-				asso.SetAttribute("OtherKey", "ID");
-				type.AppendChild(asso);
-			}
-			foreach (XmlElement association in doc.DocumentElement.SelectNodes("//w:Association[@IsForeignKey='true']", mgrt))
-			{
-				string typeName = ((XmlElement)association.ParentNode).GetAttribute("Name");
-				association.SetAttribute("Member", association.GetAttribute("Name").Replace("FK_" + typeName + "_", ""));
-			}
-			foreach (XmlElement association in doc.DocumentElement.SelectNodes("//w:Association", mgrt).Cast<XmlElement>().ToList())
-			{
-				if (association.GetAttribute("IsForeignKey") == "true")
-				{
-					//if (association.GetAttribute("Type") == "N_File" && association.GetAttribute("OtherKey") == "Guid")
-					//	association.ParentNode.RemoveChild(association);
-					continue;
-				}
-				// Найти ассоциацию с таким же именем, являющуюся внешним ключом
-				var otherAsso = doc.DocumentElement.SelectSingleNode("//w:Association[@IsForeignKey='true' and @Name='" + association.GetAttribute("Name") + "']", mgrt) as XmlElement;
-				if (otherAsso != null)
-				{
-					string typeName = ((XmlElement)otherAsso.ParentNode).GetAttribute("Name");
-					string property = otherAsso.GetAttribute("Member");
-					// Найти свойство
-					var t1 = objectTypes.SingleOrDefault(o => o.SysName == typeName);
-					if (t1 != null)
-					{
-						var p = t1.MM_ObjectProperties.SingleOrDefault(o => o.SysName == property);
-						if (p != null)
-						{
-							var otherProp = objectTypes.SelectMany(o => o.MM_ObjectProperties.Where(o1 => o1.RefObjectPropertyID.HasValue)).FirstOrDefault(o => o.RefObjectPropertyID == p.ObjectPropertyID);
-							if (otherProp != null)
-							{
-								association.SetAttribute("Member", otherProp.SysName);
-								if (otherProp.UpperBound == 1)
-									association.SetAttribute("Cardinality", "One");
-								else
-									association.RemoveAttribute("Cardinality");
-							}
-						}
-					}
-				}
-			}
-			// Для представлений надо создать ассоциации
-			foreach (XmlElement type in doc.DocumentElement.SelectNodes("//w:Type", mgrt))
-			{
-				MM_ObjectType t = objectTypes.SingleOrDefault(o => "V_" + o.SysName == type.GetAttribute("Name"));
-				if (t != null)
-				{
-					foreach (var tpk in t.PrimaryKey)
-					{
-						XmlElement pk = (XmlElement)type.SelectSingleNode("w:Column[@Name='" + tpk.SysName + "']", mgrt);
-						if (pk == null)
-							throw new Exception("В таблице " + type.GetAttribute("Name") + " нет столбца " + tpk.SysName + "!");
-						pk.SetAttribute("IsPrimaryKey", "true");
-						pk = (XmlElement)type.SelectSingleNode("w:Column[@Name='LanguageCode']", mgrt);
-						pk.SetAttribute("IsPrimaryKey", "true");
-					}
-					foreach (var p in t.MM_ObjectProperties.Where(o => o.TypeCode == ObjectPropertyType.Object && o.UpperBound == 1))
-					{
-						XmlElement asso = doc.CreateElement("Association", doc.DocumentElement.NamespaceURI);
-						asso.SetAttribute("Name", "FK_V_" + t.SysName + "_" + p.SysName);
-						asso.SetAttribute("Member", p.SysName);
-						asso.SetAttribute("IsForeignKey", "true");
-						if (p.RefObjectType.MM_ObjectProperties.Any(o => o.IsMultilingual))
-						{
-							asso.SetAttribute("Type", "V_" + p.RefObjectType.SysName);
-							asso.SetAttribute("ThisKey", p.ColumnName + ",LanguageCode");
-							asso.SetAttribute("OtherKey", p.RefObjectType.PrimaryKey.Single().ColumnName + ",LanguageCode");
-						}
-						else
-						{
-							asso.SetAttribute("Type", p.RefObjectType.SysName);
-							asso.SetAttribute("ThisKey", p.ColumnName);
-							asso.SetAttribute("OtherKey", p.RefObjectType.PrimaryKey.Single().ColumnName);
-						}
-						type.AppendChild(asso);
-					}
-					foreach (var p in t.MM_ObjectProperties.Where(o => o.TypeCode == ObjectPropertyType.Object && o.UpperBound == -1 && o.RefObjectPropertyID.HasValue))
-					{
-						XmlElement asso = doc.CreateElement("Association", doc.DocumentElement.NamespaceURI);
-						asso.SetAttribute("Name", "FK_V_" + t.SysName + "_" + p.SysName);
-						asso.SetAttribute("Member", p.SysName);
-						asso.SetAttribute("IsForeignKey", "false");
-						if (p.RefObjectType.MM_ObjectProperties.Any(o => o.IsMultilingual))
-						{
-							asso.SetAttribute("Type", "V_" + p.RefObjectType.SysName);
-							asso.SetAttribute("ThisKey", t.PrimaryKey[0].ColumnName + ",LanguageCode");
-							asso.SetAttribute("OtherKey", p.RefObjectProperty.ColumnName + ",LanguageCode");
-						}
-						else
-						{
-							asso.SetAttribute("Type", p.RefObjectType.SysName);
-							asso.SetAttribute("ThisKey", t.PrimaryKey[0].ColumnName);
-							asso.SetAttribute("OtherKey", p.RefObjectProperty.ColumnName);
-						}
-						type.AppendChild(asso);
-					}
-					// Ссылка на материнский объект
-					if (t.PrimaryKey.Length == 1)
-					{
-						XmlElement assoM = doc.CreateElement("Association", doc.DocumentElement.NamespaceURI);
-						assoM.SetAttribute("Name", "FK_V_" + t.SysName + "_MainObject");
-						assoM.SetAttribute("Member", "MainObject");
-						assoM.SetAttribute("IsForeignKey", "true");
-						assoM.SetAttribute("Type", t.SysName);
-						assoM.SetAttribute("ThisKey", t.PrimaryKey[0].SysName);
-						assoM.SetAttribute("OtherKey", t.PrimaryKey[0].SysName);
-						type.AppendChild(assoM);
-					}
-				}
+		//		XmlElement asso = doc.CreateElement("Association", doc.DocumentElement.NamespaceURI);
+		//		asso.SetAttribute("Name", "FK_" + prop.ObjectType.SysName + (prop.IsMultilingual ? "Data" : "") + "_" + prop.SysName);
+		//		asso.SetAttribute("Member", prop.SysName);
+		//		asso.SetAttribute("IsForeignKey", "true");
+		//		asso.SetAttribute("Type", "DbFile");
+		//		asso.SetAttribute("ThisKey", prop.ColumnName);
+		//		asso.SetAttribute("OtherKey", "ID");
+		//		type.AppendChild(asso);
+		//	}
+		//	foreach (XmlElement association in doc.DocumentElement.SelectNodes("//w:Association[@IsForeignKey='true']", mgrt))
+		//	{
+		//		string typeName = ((XmlElement)association.ParentNode).GetAttribute("Name");
+		//		association.SetAttribute("Member", association.GetAttribute("Name").Replace("FK_" + typeName + "_", ""));
+		//	}
+		//	foreach (XmlElement association in doc.DocumentElement.SelectNodes("//w:Association", mgrt).Cast<XmlElement>().ToList())
+		//	{
+		//		if (association.GetAttribute("IsForeignKey") == "true")
+		//		{
+		//			//if (association.GetAttribute("Type") == "N_File" && association.GetAttribute("OtherKey") == "Guid")
+		//			//	association.ParentNode.RemoveChild(association);
+		//			continue;
+		//		}
+		//		// Найти ассоциацию с таким же именем, являющуюся внешним ключом
+		//		var otherAsso = doc.DocumentElement.SelectSingleNode("//w:Association[@IsForeignKey='true' and @Name='" + association.GetAttribute("Name") + "']", mgrt) as XmlElement;
+		//		if (otherAsso != null)
+		//		{
+		//			string typeName = ((XmlElement)otherAsso.ParentNode).GetAttribute("Name");
+		//			string property = otherAsso.GetAttribute("Member");
+		//			// Найти свойство
+		//			var t1 = objectTypes.SingleOrDefault(o => o.SysName == typeName);
+		//			if (t1 != null)
+		//			{
+		//				var p = t1.MM_ObjectProperties.SingleOrDefault(o => o.SysName == property);
+		//				if (p != null)
+		//				{
+		//					var otherProp = objectTypes.SelectMany(o => o.MM_ObjectProperties.Where(o1 => o1.RefObjectPropertyID.HasValue)).FirstOrDefault(o => o.RefObjectPropertyID == p.ObjectPropertyID);
+		//					if (otherProp != null)
+		//					{
+		//						association.SetAttribute("Member", otherProp.SysName);
+		//						if (otherProp.UpperBound == 1)
+		//							association.SetAttribute("Cardinality", "One");
+		//						else
+		//							association.RemoveAttribute("Cardinality");
+		//					}
+		//				}
+		//			}
+		//		}
+		//	}
+		//	// Для представлений надо создать ассоциации
+		//	foreach (XmlElement type in doc.DocumentElement.SelectNodes("//w:Type", mgrt))
+		//	{
+		//		MM_ObjectType t = objectTypes.SingleOrDefault(o => "V_" + o.SysName == type.GetAttribute("Name"));
+		//		if (t != null)
+		//		{
+		//			foreach (var tpk in t.PrimaryKey)
+		//			{
+		//				XmlElement pk = (XmlElement)type.SelectSingleNode("w:Column[@Name='" + tpk.SysName + "']", mgrt);
+		//				if (pk == null)
+		//					throw new Exception("В таблице " + type.GetAttribute("Name") + " нет столбца " + tpk.SysName + "!");
+		//				pk.SetAttribute("IsPrimaryKey", "true");
+		//				pk = (XmlElement)type.SelectSingleNode("w:Column[@Name='LanguageCode']", mgrt);
+		//				pk.SetAttribute("IsPrimaryKey", "true");
+		//			}
+		//			foreach (var p in t.MM_ObjectProperties.Where(o => o.TypeCode == ObjectPropertyType.Object && o.UpperBound == 1))
+		//			{
+		//				XmlElement asso = doc.CreateElement("Association", doc.DocumentElement.NamespaceURI);
+		//				asso.SetAttribute("Name", "FK_V_" + t.SysName + "_" + p.SysName);
+		//				asso.SetAttribute("Member", p.SysName);
+		//				asso.SetAttribute("IsForeignKey", "true");
+		//				if (p.RefObjectType.MM_ObjectProperties.Any(o => o.IsMultilingual))
+		//				{
+		//					asso.SetAttribute("Type", "V_" + p.RefObjectType.SysName);
+		//					asso.SetAttribute("ThisKey", p.ColumnName + ",LanguageCode");
+		//					asso.SetAttribute("OtherKey", p.RefObjectType.PrimaryKey.Single().ColumnName + ",LanguageCode");
+		//				}
+		//				else
+		//				{
+		//					asso.SetAttribute("Type", p.RefObjectType.SysName);
+		//					asso.SetAttribute("ThisKey", p.ColumnName);
+		//					asso.SetAttribute("OtherKey", p.RefObjectType.PrimaryKey.Single().ColumnName);
+		//				}
+		//				type.AppendChild(asso);
+		//			}
+		//			foreach (var p in t.MM_ObjectProperties.Where(o => o.TypeCode == ObjectPropertyType.Object && o.UpperBound == -1 && o.RefObjectPropertyID.HasValue))
+		//			{
+		//				XmlElement asso = doc.CreateElement("Association", doc.DocumentElement.NamespaceURI);
+		//				asso.SetAttribute("Name", "FK_V_" + t.SysName + "_" + p.SysName);
+		//				asso.SetAttribute("Member", p.SysName);
+		//				asso.SetAttribute("IsForeignKey", "false");
+		//				if (p.RefObjectType.MM_ObjectProperties.Any(o => o.IsMultilingual))
+		//				{
+		//					asso.SetAttribute("Type", "V_" + p.RefObjectType.SysName);
+		//					asso.SetAttribute("ThisKey", t.PrimaryKey[0].ColumnName + ",LanguageCode");
+		//					asso.SetAttribute("OtherKey", p.RefObjectProperty.ColumnName + ",LanguageCode");
+		//				}
+		//				else
+		//				{
+		//					asso.SetAttribute("Type", p.RefObjectType.SysName);
+		//					asso.SetAttribute("ThisKey", t.PrimaryKey[0].ColumnName);
+		//					asso.SetAttribute("OtherKey", p.RefObjectProperty.ColumnName);
+		//				}
+		//				type.AppendChild(asso);
+		//			}
+		//			// Ссылка на материнский объект
+		//			if (t.PrimaryKey.Length == 1)
+		//			{
+		//				XmlElement assoM = doc.CreateElement("Association", doc.DocumentElement.NamespaceURI);
+		//				assoM.SetAttribute("Name", "FK_V_" + t.SysName + "_MainObject");
+		//				assoM.SetAttribute("Member", "MainObject");
+		//				assoM.SetAttribute("IsForeignKey", "true");
+		//				assoM.SetAttribute("Type", t.SysName);
+		//				assoM.SetAttribute("ThisKey", t.PrimaryKey[0].SysName);
+		//				assoM.SetAttribute("OtherKey", t.PrimaryKey[0].SysName);
+		//				type.AppendChild(assoM);
+		//			}
+		//		}
 
-				t = objectTypes.SingleOrDefault(o => "V_HST_" + o.SysName == type.GetAttribute("Name"));
-				if (t != null)
-				{
-					XmlElement pk = (XmlElement)type.SelectSingleNode("w:Column[@Name='" + t.PrimaryKey.Single().ColumnName.Replace("ID", "VersionID") + "']", mgrt);
-					pk.SetAttribute("IsPrimaryKey", "true");
-					pk = (XmlElement)type.SelectSingleNode("w:Column[@Name='LanguageCode']", mgrt);
-					pk.SetAttribute("IsPrimaryKey", "true");
-					foreach (var p in t.MM_ObjectProperties.Where(o => o.TypeCode == ObjectPropertyType.Object && o.UpperBound == 1))
-					{
-						XmlElement asso = doc.CreateElement("Association", doc.DocumentElement.NamespaceURI);
-						asso.SetAttribute("Name", "FK_V_" + t.SysName + "_" + p.SysName);
-						asso.SetAttribute("Member", p.SysName);
-						asso.SetAttribute("IsForeignKey", "true");
-						if (p.RefObjectType.MM_ObjectProperties.Any(o => o.IsMultilingual))
-						{
-							asso.SetAttribute("Type", "V_" + p.RefObjectType.SysName);
-							asso.SetAttribute("ThisKey", p.ColumnName + ",LanguageCode");
-							asso.SetAttribute("OtherKey", p.RefObjectType.PrimaryKey.Single().ColumnName + ",LanguageCode");
-						}
-						else
-						{
-							asso.SetAttribute("Type", p.RefObjectType.SysName);
-							asso.SetAttribute("ThisKey", p.ColumnName);
-							asso.SetAttribute("OtherKey", p.RefObjectType.PrimaryKey.Single().ColumnName);
-						}
-						type.AppendChild(asso);
-					}
-					XmlElement asso1 = doc.CreateElement("Association", doc.DocumentElement.NamespaceURI);
-					asso1.SetAttribute("Name", "FK_V_HST_" + t.SysName + "_CHST_" + t.SysName);
-					asso1.SetAttribute("Member", "CHST_" + t.SysName);
-					asso1.SetAttribute("IsForeignKey", "true");
-					asso1.SetAttribute("Type", "CHST_" + t.SysName);
-					asso1.SetAttribute("ThisKey", "ClassVersionID");
-					asso1.SetAttribute("OtherKey", "ClassVersionID");
-					type.AppendChild(asso1);
-				}
-			}
-			doc.Save(TempDir + "\\model.dbml");
+		//		t = objectTypes.SingleOrDefault(o => "V_HST_" + o.SysName == type.GetAttribute("Name"));
+		//		if (t != null)
+		//		{
+		//			XmlElement pk = (XmlElement)type.SelectSingleNode("w:Column[@Name='" + t.PrimaryKey.Single().ColumnName.Replace("ID", "VersionID") + "']", mgrt);
+		//			pk.SetAttribute("IsPrimaryKey", "true");
+		//			pk = (XmlElement)type.SelectSingleNode("w:Column[@Name='LanguageCode']", mgrt);
+		//			pk.SetAttribute("IsPrimaryKey", "true");
+		//			foreach (var p in t.MM_ObjectProperties.Where(o => o.TypeCode == ObjectPropertyType.Object && o.UpperBound == 1))
+		//			{
+		//				XmlElement asso = doc.CreateElement("Association", doc.DocumentElement.NamespaceURI);
+		//				asso.SetAttribute("Name", "FK_V_" + t.SysName + "_" + p.SysName);
+		//				asso.SetAttribute("Member", p.SysName);
+		//				asso.SetAttribute("IsForeignKey", "true");
+		//				if (p.RefObjectType.MM_ObjectProperties.Any(o => o.IsMultilingual))
+		//				{
+		//					asso.SetAttribute("Type", "V_" + p.RefObjectType.SysName);
+		//					asso.SetAttribute("ThisKey", p.ColumnName + ",LanguageCode");
+		//					asso.SetAttribute("OtherKey", p.RefObjectType.PrimaryKey.Single().ColumnName + ",LanguageCode");
+		//				}
+		//				else
+		//				{
+		//					asso.SetAttribute("Type", p.RefObjectType.SysName);
+		//					asso.SetAttribute("ThisKey", p.ColumnName);
+		//					asso.SetAttribute("OtherKey", p.RefObjectType.PrimaryKey.Single().ColumnName);
+		//				}
+		//				type.AppendChild(asso);
+		//			}
+		//			XmlElement asso1 = doc.CreateElement("Association", doc.DocumentElement.NamespaceURI);
+		//			asso1.SetAttribute("Name", "FK_V_HST_" + t.SysName + "_CHST_" + t.SysName);
+		//			asso1.SetAttribute("Member", "CHST_" + t.SysName);
+		//			asso1.SetAttribute("IsForeignKey", "true");
+		//			asso1.SetAttribute("Type", "CHST_" + t.SysName);
+		//			asso1.SetAttribute("ThisKey", "ClassVersionID");
+		//			asso1.SetAttribute("OtherKey", "ClassVersionID");
+		//			type.AppendChild(asso1);
+		//		}
+		//	}
+		//	doc.Save(TempDir + "\\model.dbml");
 
-			smargs = String.Format("/code:\"{0}\\model.cs\" /namespace:{1}.Model /context:modelDataContext \"{0}\\model.dbml\"",
-				TempDir, AppMM.DBName());
+		//	smargs = String.Format("/code:\"{0}\\model.cs\" /namespace:{1}.Model /context:modelDataContext \"{0}\\model.dbml\"",
+		//		TempDir, AppMM.DBName());
 
-			sqlmetal = new Process();
-			sqlmetal.StartInfo = new ProcessStartInfo(smname, smargs);
-			sqlmetal.StartInfo.UseShellExecute = false;
-			sqlmetal.StartInfo.RedirectStandardOutput = true;
-			sqlmetal.Start();
-			sqlmetal.WaitForExit();
+		//	sqlmetal = new Process();
+		//	sqlmetal.StartInfo = new ProcessStartInfo(smname, smargs);
+		//	sqlmetal.StartInfo.UseShellExecute = false;
+		//	sqlmetal.StartInfo.RedirectStandardOutput = true;
+		//	sqlmetal.Start();
+		//	sqlmetal.WaitForExit();
 
-			Output += "\r\n\r\n";
-			Output += sqlmetal.StandardOutput.ReadToEnd();
+		//	Output += "\r\n\r\n";
+		//	Output += sqlmetal.StandardOutput.ReadToEnd();
 
-			// Полученные файлы надо залить в БД
-			string res = SaveFile("model.dbml", File.ReadAllBytes(TempDir + "\\model.dbml"), "AutoGenerate");
-			if (!String.IsNullOrEmpty(res))
-				return res;
-			res = SaveFile("model.cs", File.ReadAllBytes(TempDir + "\\model.cs"), "AutoGenerate");
-			if (!String.IsNullOrEmpty(res))
-				return res;
+		//	// Полученные файлы надо залить в БД
+		//	string res = SaveFile("model.dbml", File.ReadAllBytes(TempDir + "\\model.dbml"), "AutoGenerate");
+		//	if (!String.IsNullOrEmpty(res))
+		//		return res;
+		//	res = SaveFile("model.cs", File.ReadAllBytes(TempDir + "\\model.cs"), "AutoGenerate");
+		//	if (!String.IsNullOrEmpty(res))
+		//		return res;
 
-			return string.Empty;
-		}
+		//	return string.Empty;
+		//}
 
 		public static string CreateTemplateCodeFiles()
 		{
@@ -514,31 +514,31 @@ namespace Nephrite.Metamodel
 			if (Directory.Exists(TempDir))
 				Array.ForEach((new DirectoryInfo(TempDir)).GetFiles(), o => { o.Delete(); });
 			
-			var res = AppMM.DataContext.usp_model();
-			var res1 = res.FirstOrDefault();
-			var xe = res1.Column1;
+			var xe = AppMM.DataContext.usp_model();
+			//var res1 = res.FirstOrDefault();
+			//var xe = res1.Column1;
 			xe.Save(TempDir + "\\model.xml");
 
 			string[] templates = new string[] 
                 {
                     "datacontextPartial",
-                    "ModelInterfaces", 
+                    //"ModelInterfaces", 
                     "codifiers", 
                     "collections",
-                    "hstcollections",
+                    //"hstcollections",
                     "app",
-                    "chst",
+                    //"chst",
                     "mlview",
                     "classes",
                     "class1",
-                    "hstclasses",
+                    //"hstclasses",
                     "controllers",
                     "controllers1",
-                    "controllers2",
+                    //"controllers2",
                     "controllers3",
                     "controllers4",
                     "controllers5",
-                    "classes_inhprops",
+                    //"classes_inhprops",
                     "pckcontrollers",
 					"controllersredirect",
 					"folderpredicates",
@@ -560,9 +560,11 @@ namespace Nephrite.Metamodel
 
 		public static string CreateXsltTemplateCodeFiles()
 		{
-			var res = AppMM.DataContext.usp_model();
-			var res1 = res.FirstOrDefault();
-			var xe = res1.Column1;
+			//var res = AppMM.DataContext.usp_model();
+			//var res1 = res.FirstOrDefault();
+			//var xe = res1.Column1;
+
+			var xe = AppMM.DataContext.usp_model();
 			xe.Save(TempDir + "\\model.xml");
 
 			// Генерация по шаблонам XSLT

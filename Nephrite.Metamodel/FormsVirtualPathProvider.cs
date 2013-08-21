@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using Nephrite.Web;
+using Nephrite.Web.RSS;
+using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Metamodel
 {
@@ -71,7 +73,7 @@ namespace Nephrite.Metamodel
             if (virtualPath.ToLower().EndsWith(".rss.ascx"))
             {
                 string sysName = virtualPath.ToLower().Replace(".rss.ascx", "").Replace("/", "");
-                var r = (from rf in AppMM.DataContext.N_RssFeeds
+                var r = (from rf in (A.Model as IDC_RSS).N_RssFeed
                      where rf.SysName.ToLower() == sysName
                      select (DateTime?)rf.LastModifiedDate).SingleOrDefault();
                 if (r != null)

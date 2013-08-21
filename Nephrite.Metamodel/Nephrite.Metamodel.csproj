@@ -338,7 +338,6 @@
   </ProjectExtensions>
   <PropertyGroup>
     <PostBuildEvent>%25systemroot%25\system32\xcopy /S "$(ProjectDir)View\*.ascx" "$(SolutionDir)Tessera\_controltemplates\Nephrite.Metamodel\" /E /R /Y
-%25systemroot%25\system32\xcopy /S "$(ProjectDir)FormControls\*.ascx" "$(SolutionDir)Tessera\_controltemplates\Nephrite.Metamodel\FormControls\" /E /R /Y
 
 </PostBuildEvent>
   </PropertyGroup>

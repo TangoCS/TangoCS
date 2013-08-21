@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Nephrite.Web;
 
 namespace Nephrite.Metamodel.Model
 {
@@ -27,6 +28,7 @@ namespace Nephrite.Metamodel.Model
 			MM_Packages = new List<MM_Package>();
 		}
 		public virtual int PackageID { get; set; }
+		public virtual int? ParentPackageID { get; set; }
 		public virtual MM_Package ParentPackage { get; set; }
 		public virtual string Title { get; set; }
 		public virtual string SysName { get; set; }
@@ -52,9 +54,9 @@ namespace Nephrite.Metamodel.Model
 			MM_ObjectProperties = new List<MM_ObjectProperty>();
 		}
 		public virtual int ObjectPropertyID { get; set; }
-		public virtual MM_ObjectType ObjectTypeID { get; set; }
+		public virtual MM_ObjectType ObjectType { get; set; }
 		public virtual MM_ObjectProperty RefObjectProperty { get; set; }
-		public virtual MM_ObjectType RefObjectTypeID { get; set; }
+		public virtual MM_ObjectType RefObjectType { get; set; }
 		public virtual MM_Codifier MM_Codifier { get; set; }
 		public virtual string Title { get; set; }
 		public virtual string SysName { get; set; }
@@ -85,17 +87,23 @@ namespace Nephrite.Metamodel.Model
 		//public virtual IList<MM_FormField> MM_FormFields { get; set; }
 		//public virtual IList<MM_FormFieldGroup> MM_FormFieldGroups { get; set; }
 		public virtual IList<MM_ObjectProperty> MM_ObjectProperties { get; set; }
+
+		public virtual int? RefObjectPropertyID { get; set; }
+		public virtual int ObjectTypeID { get; set; }
+		public virtual int? RefObjectTypeID { get; set; }
+
+		public virtual MM_FormField MM_FormField { get; set; }
 	}
 
-	/*public partial class MM_FormField
+	public partial class MM_FormField
 	{
 		public MM_FormField()
 		{
-			MM_FormFieldAttributes = new List<MM_FormFieldAttribute>();
+			//MM_FormFieldAttributes = new List<MM_FormFieldAttribute>();
 		}
 		public virtual int FormFieldID { get; set; }
 		public virtual MM_ObjectProperty MM_ObjectProperty { get; set; }
-		public virtual MM_FormFieldGroup MM_FormFieldGroup { get; set; }
+		//public virtual MM_FormFieldGroup MM_FormFieldGroup { get; set; }
 		public virtual System.Nullable<int> ControlName { get; set; }
 		public virtual string Title { get; set; }
 		public virtual string DefaultValue { get; set; }
@@ -111,8 +119,8 @@ namespace Nephrite.Metamodel.Model
 		public virtual bool IsDeleted { get; set; }
 		public virtual System.DateTime LastModifiedDate { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
-		public virtual IList<MM_FormFieldAttribute> MM_FormFieldAttributes { get; set; }
-	}*/
+		//public virtual IList<MM_FormFieldAttribute> MM_FormFieldAttributes { get; set; }
+	}
 
 	public class MM_CodifierValue
 	{
@@ -305,7 +313,7 @@ namespace Nephrite.Metamodel.Model
 
 	}
 
-	public class N_ReplicationObject
+	public class N_ReplicationObject : IEntity
 	{
 		public virtual string ObjectTypeSysName { get; set; }
 		public virtual int ObjectID { get; set; }
@@ -332,7 +340,7 @@ namespace Nephrite.Metamodel.Model
 		#endregion
 	}
 
-	public partial class N_Cache
+	public partial class N_Cache : IEntity
 	{
 		public virtual System.DateTime TimeStamp { get; set; }
 	}

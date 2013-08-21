@@ -14,6 +14,7 @@ using Nephrite.Web.FileStorage;
 using Nephrite.Meta;
 using System.Data.SqlClient;
 using Nephrite.Web.Versioning;
+using Nephrite.Web.Multilanguage;
 
 namespace Nephrite.Metamodel
 { 
@@ -85,7 +86,7 @@ namespace Nephrite.Metamodel
 			db.CommandTimeout = 300;*/
 			db = A.Model;
 
-            defaultLanguage = AppMM.DefaultLanguage;
+            defaultLanguage = Language.DefaultLanguage.Code;
         }
 
         public IMMObject Get(MetaClass objectType, object id)
@@ -257,7 +258,7 @@ namespace Nephrite.Metamodel
 						{
 							if (val != null)
 							{
-								xe.Add(new XElement(p.Name, Convert.ToBase64String(((Binary)val).ToArray())));
+								xe.Add(new XElement(p.Name, Convert.ToBase64String(((byte[])val).ToArray())));
 							}
 						}
 						else
@@ -533,7 +534,7 @@ namespace Nephrite.Metamodel
 							}
 							else
 							{
-								pi.SetValue(o, new Binary(Convert.FromBase64String(xe.Value)), null);
+								pi.SetValue(o, Convert.FromBase64String(xe.Value), null);
 							}
 							continue;
 						}
@@ -1007,7 +1008,7 @@ namespace Nephrite.Metamodel
 
 		public static IQueryable<IMMObject> GetCurrentLang(IQueryable<IMMObjectMLView> data)
 		{
-			string langCode = AppMM.CurrentLanguage.LanguageCode.ToLower();
+			string langCode = Language.Current.Code.ToLower();
 			return data.Where(o => o.LanguageCode == langCode).OfType<IMMObject>();
 		}
 

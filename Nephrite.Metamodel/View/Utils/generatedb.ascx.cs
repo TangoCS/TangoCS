@@ -31,8 +31,10 @@ namespace Nephrite.Metamodel.View.Utils
         }
 
 
+		
         protected void bGenerate_Click(object sender, EventArgs e)
         {
+			/*
             script.Visible = true;
             DbGenerator gen = new DbGenerator(scriptOnly.Checked, identity.Checked);
             lMsg.Text = "";
@@ -50,6 +52,7 @@ namespace Nephrite.Metamodel.View.Utils
             script.Text = "";
             foreach (var s in gen.ResultScript)
                 script.Text += s + "\r\n";
-        }
+			*/
+		}
     }
 }

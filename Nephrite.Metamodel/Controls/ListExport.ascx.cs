@@ -15,6 +15,7 @@ using OfficeOpenXml.Style;
 using System.IO;
 using System.Drawing;
 using OfficeOpenXml.Style.XmlAccess;
+using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Metamodel.Controls
 {

@@ -43,15 +43,15 @@ namespace Nephrite.Metamodel
             }
         }
 
-		static Func<modelDataContext, Nephrite.Metamodel.Model.N_Cache> getN_Caches;
+		//static Func<MMDataContext, Nephrite.Metamodel.Model.N_Cache> getN_Caches;
 
         public static void CheckValid()
         {
-			if (getN_Caches == null)
-				getN_Caches = CompiledQuery.Compile<modelDataContext, Nephrite.Metamodel.Model.N_Cache>(db =>
-						db.N_Caches.FirstOrDefault());
+			//if (getN_Caches == null)
+			//	getN_Caches = CompiledQuery.Compile<MMDataContext, Nephrite.Metamodel.Model.N_Cache>(db =>
+			//			db.N_Caches.FirstOrDefault());
 
-			var stamp = getN_Caches(AppMM.DataContext);
+			var stamp = AppMM.DataContext.N_Caches.FirstOrDefault();
             if (stamp != null)
             {
                 if (timeStamp < stamp.TimeStamp)

@@ -11,6 +11,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using Nephrite.Web;
+using Nephrite.Web.SettingsManager;
 
 public partial class View_Common_title : System.Web.UI.UserControl
 {

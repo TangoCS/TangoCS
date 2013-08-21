@@ -115,7 +115,7 @@ namespace Nephrite.Metamodel.Model
         /// </summary>
         public string AssoTableName
         {
-            get { return UpperBound == -1 && TypeCode == ObjectPropertyType.Object ? MM_ObjectType.SysName + SysName : String.Empty; }
+            get { return UpperBound == -1 && TypeCode == ObjectPropertyType.Object ? ObjectType.SysName + SysName : String.Empty; }
         }
     }
 }

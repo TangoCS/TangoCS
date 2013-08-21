@@ -9,15 +9,16 @@ using Nephrite.Web;
 using System.Data.SqlClient;
 using System.Configuration;
 using System.Globalization;
+using Nephrite.Web.Hibernate;
 
 namespace Nephrite.Metamodel
 {
 	public class AppMM
 	{
-		//[ThreadStatic]
-		//static modelDataContext context = null;
+		[ThreadStatic]
+		static MMDataContext context = null;
 
-		/*public static modelDataContext DataContext
+		public static MMDataContext DataContext
 		{
 			get
 			{
@@ -27,28 +28,28 @@ namespace Nephrite.Metamodel
 					{
 						if (HttpContext.Current.Items["MMmodelDataContext"] == null)
 						{
-							modelDataContext dc = new modelDataContext(ConnectionManager.Connection);
-							dc.CommandTimeout = 300;
+							MMDataContext dc = new MMDataContext(HDataContext.DBConfig(ConnectionManager.ConnectionString));
+							//dc.CommandTimeout = 300;
 							HttpContext.Current.Items["MMmodelDataContext"] = dc;
 							dc.Log = new DataContextLogWriter();
 						}
-						return (modelDataContext)HttpContext.Current.Items["MMmodelDataContext"];
+						return (MMDataContext)HttpContext.Current.Items["MMmodelDataContext"];
 					}
 					else
-						return new modelDataContext(ConnectionManager.Connection);
+						return new MMDataContext(HDataContext.DBConfig(ConnectionManager.ConnectionString));
 				}
 				else
 				{
 					if (context == null)
 					{
-						context = new modelDataContext(ConnectionManager.Connection);
+						context = new MMDataContext(HDataContext.DBConfig(ConnectionManager.ConnectionString));
 						context.Log = new DataContextLogWriter();
-						context.CommandTimeout = 300;
+						//context.CommandTimeout = 300;
 					}
 					return context;
 				}
 			}
-		}*/
+		}
 
 		internal static HiddenField TotalFilesSize
 		{
