@@ -364,7 +364,7 @@ namespace Nephrite.Web
         public static string DateToRussianString(this DateTime src, bool dayInQuotes)
         {
             string res = DateToRussianDayMonth(src, dayInQuotes);
-            res += " " + src.ToString("yyyy") + " года";
+            res += " " + src.ToString("yyyy") + " г.";
             return res;
         }
 
