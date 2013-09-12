@@ -18,8 +18,15 @@ namespace Tessera.Test
 		{
 			var vd = new ViewData { UserName = "admin" };
 			//var s = App.DataContext.SPM_Subject.Where(o => o.SystemName == vd.UserName).FirstOrDefault();
-			var s = Find(App.DataContext.SPM_Subject, vd.UserName);
-			Console.Write(s.Title);
+			//var c = App.DataContext.SPM_Subject.Count();
+			//var s = Find(App.DataContext.SPM_Subject, vd.UserName);
+			var s = App.DataContext.SPM_Subject.Where(o => o.LastModifiedUserID == 45 && o.SystemName == "admin").FirstOrDefault();
+			Console.WriteLine(s.LastModifiedUser.Title);
+			s.LastModifiedUserID = 2;
+			//s.LastModifiedUser = new SPM_Subject { SubjectID = 45 };
+			App.DataContext.SubmitChanges();
+			Console.WriteLine(App.DataContext.Log.ToString());
+			Console.ReadKey();
 		}
 
 		public static T Find<T>(IQueryable<T> collection, string name) 
@@ -42,9 +49,18 @@ namespace Tessera.Test
 
 	public class SPM_Subject : IWithTitle
 	{
-		public virtual int SubjectID { get; protected set; }
+		public virtual int SubjectID { get; set; }
 		public virtual string SystemName { get; set; }
 		public virtual string Title { get; set; }
+		//public virtual int LastModifiedUserID { get; set; }
+
+		int _LastModifiedUserID = 0;
+		public virtual int LastModifiedUserID 
+		{ 
+			get { return _LastModifiedUserID; } 
+			set { LastModifiedUser = new SPM_Subject { SubjectID = value }; }
+		}
+		public virtual SPM_Subject LastModifiedUser { get; set; }
 	}
 
 	public class SPM_SubjectMap : ClassMapping<SPM_Subject>
@@ -54,6 +70,9 @@ namespace Tessera.Test
 			Id(x => x.SubjectID, map => map.Generator(Generators.Identity));
 			Property(x => x.SystemName);
 			Property(x => x.Title);
+
+			Property(x => x.LastModifiedUserID, map => map.Formula("LastModifiedUserID"));
+			ManyToOne(x => x.LastModifiedUser, map => { map.Column("LastModifiedUserID"); map.Cascade(Cascade.None); });
 		}
 	}
 
@@ -77,7 +96,7 @@ namespace Tessera.Test
 		public override IEnumerable<Type> GetEntitiesTypes()
 		{
 			List<Type> l = new List<Type>();
-			l.Add(typeof(SPM_Subject));
+			l.Add(typeof(SPM_SubjectMap));
 			return l;
 		}
 
