@@ -236,7 +236,6 @@ namespace Nephrite.Meta
 				else 
 					return _compositeKey.First(); 
 			}
-			set { _compositeKey.Add(value); }
 		}
 		public List<MetaProperty> CompositeKey
 		{

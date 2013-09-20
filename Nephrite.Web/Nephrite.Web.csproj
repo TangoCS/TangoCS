@@ -112,6 +112,8 @@
     <Compile Include="Features\CoreDataContext\FileStorage\DbFile.I.cs" />
     <Compile Include="Features\CoreDataContext\FileStorage\DbFolder.I.cs" />
     <Compile Include="Features\FileStorage\FileStorageModel.cs" />
+    <Compile Include="Features\Meta.Database\SchemaGenerator.cs" />
+    <Compile Include="Features\Meta.Database\SchemaLoader.cs" />
     <Compile Include="Features\Multilanguage\Language.cs" />
     <Compile Include="Features\Reporting\Reporting.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -346,7 +348,7 @@
     <Compile Include="Features\Layout\SystemLayout.cs" />
     <Compile Include="Features\Meta\Versioning.cs" />
     <Compile Include="Features\Meta\CoreMetaModel.cs" />
-    <Compile Include="Features\Meta\DBMetaModel.cs" />
+    <Compile Include="Features\Meta.Database\DBMetaModel.cs" />
     <Compile Include="Features\Meta\PrimitiveTypes.cs" />
     <Compile Include="Features\Layout\Interfaces.cs" />
     <Compile Include="Features\Meta\UIMetaModel.cs" />

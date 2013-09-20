@@ -16,22 +16,21 @@ namespace Tessera.Test
 	{
 		static void Main(string[] args)
 		{
-			//var l = App.DataContext.ExecuteQuery<SPM_Subject>("select Title from spm_subject");
-			//var r = App.DataContext.ExecuteCommand("delete from spm_subject where systemname = ?", "ttt");
-			//var l = App.DataContext.GetCommand(App.DataContext.GetTable<SPM_Subject>());
-			//var l2 = App.DataContext.SPM_Subject.ToList();
-			//var vd = new ViewData { UserName = "admin" };
+			var vd = new ViewData { UserName = "admin" };
 			//var s = App.DataContext.SPM_Subject.Where(o => o.SystemName == vd.UserName).FirstOrDefault();
+			//var c = App.DataContext.SPM_Subject.Count();
 			//var s = Find(App.DataContext.SPM_Subject, vd.UserName);
-			//Console.Write(s.Title);
-			var s = App.DataContext.SPM_Subject.FirstOrDefault(o => o.SystemName.ToLower() == "admin");
-			s.Title = "Администратор 2";
+			var s = App.DataContext.SPM_Subject.Where(o => o.LastModifiedUserID == 45 && o.SystemName == "admin").FirstOrDefault();
+			Console.WriteLine(s.LastModifiedUser.Title);
+			s.LastModifiedUserID = 2;
+			//s.LastModifiedUser = new SPM_Subject { SubjectID = 45 };
 			App.DataContext.SubmitChanges();
-			Console.Write(App.DataContext.Log.ToString());
+			Console.WriteLine(App.DataContext.Log.ToString());
+			Console.ReadKey();
 		}
 
-		public static T Find<T>(IQueryable<T> collection, string name) 
-			where T : IWithTitle 
+		public static T Find<T>(IQueryable<T> collection, string name)
+			where T : IWithTitle
 		{
 			return collection.FirstOrDefault(o => o.SystemName == name);
 		}
@@ -48,23 +47,37 @@ namespace Tessera.Test
 		string Title { get; set; }
 	}
 
-	public class SPM_Subject : IWithTitle
+	public class SPM_Subject : IEntity, IWithTitle, IWithKey<SPM_Subject, int>
 	{
-		public virtual int SubjectID { get; protected set; }
+		public virtual int SubjectID { get; set; }
 		public virtual string SystemName { get; set; }
 		public virtual string Title { get; set; }
+		//public virtual int LastModifiedUserID { get; set; }
+
+		int _LastModifiedUserID = 0;
+		public virtual int LastModifiedUserID
+		{
+			get { return _LastModifiedUserID; }
+			set { LastModifiedUser = new SPM_Subject { SubjectID = value }; }
+		}
+		public virtual SPM_Subject LastModifiedUser { get; set; }
+
+		public System.Linq.Expressions.Expression<Func<SPM_Subject, bool>> KeySelector(int id)
+		{
+			return o => o.SubjectID == id;
+		}
 	}
 
 	public class SPM_SubjectMap : ClassMapping<SPM_Subject>
 	{
 		public SPM_SubjectMap()
 		{
-			Table("SPM_Subject");
-			Lazy(true);
-
 			Id(x => x.SubjectID, map => map.Generator(Generators.Identity));
 			Property(x => x.SystemName);
 			Property(x => x.Title);
+
+			Property(x => x.LastModifiedUserID, map => map.Formula("LastModifiedUserID"));
+			ManyToOne(x => x.LastModifiedUser, map => { map.Column("LastModifiedUserID"); map.Cascade(Cascade.None); });
 		}
 	}
 
@@ -96,24 +109,20 @@ namespace Tessera.Test
 		{
 			get
 			{
-				return new HTable<SPM_Subject>(this, Session.Query<SPM_Subject>());				
+				return new HTable<SPM_Subject>(this, Session.Query<SPM_Subject>());
 			}
 		}
 
 		public override IDataContext NewDataContext()
 		{
-			throw new NotImplementedException();
+			return new HibernateDataContext(DBConfig(ConnectionManager.ConnectionString));
 		}
 
 		public override IDataContext NewDataContext(string connectionString)
 		{
-			throw new NotImplementedException();
+			return new HibernateDataContext(DBConfig(connectionString));
 		}
 	}
-
-
-	
-
 
 
 }

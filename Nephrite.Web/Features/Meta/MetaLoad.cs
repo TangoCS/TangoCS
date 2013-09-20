@@ -112,7 +112,7 @@ namespace Nephrite.Meta
 				case "Z": a.Type = TypeFactory.ZoneDateTime(a.IsRequired); break;
 			}
 
-			if (xp.GetAttributeValue("IsKey") == "true") c.Key = a;
+			if (xp.GetAttributeValue("IsKey") == "true") c.CompositeKey.Add(a);
 			c.AddProperty(a);
 		}
 
