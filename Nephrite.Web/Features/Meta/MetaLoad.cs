@@ -31,7 +31,7 @@ namespace Nephrite.Meta
 			np.Description = xp.GetAttributeValue("Description");
 
 			string parent = xp.GetAttributeValue("ParentID");
-			if (!parent.IsEmpty()) 
+			if (!parent.IsEmpty())
 			{
 				MetaPackage parentPck = s.GetPackage(parent.ToGuid());
 				parentPck.AddPackage(np);
@@ -39,10 +39,12 @@ namespace Nephrite.Meta
 			else
 				s.AddPackage(np);
 
-			foreach (XElement xe in xp.Element("Classes").Nodes())
-			{
-				LoadClass(np, xe);
-			}
+			var classes = xp.Elements("Classes");
+			if (classes != null)
+				foreach (XElement xe in classes.Nodes())
+				{
+					LoadClass(np, xe);
+				}
 		}
 
 		static void LoadClass(MetaPackage p, XElement xc)
@@ -55,27 +57,33 @@ namespace Nephrite.Meta
 
 			c.IsPersistent = xc.GetAttributeValue("IsPersistent") == "true";
 
-			foreach (XElement xe in xc.Element("Properties").Nodes())
-			{
-				if (xe.Name == "Attribute") LoadAttribute(c, xe);
-				if (xe.Name == "Reference") LoadReference(c, xe);
-				if (xe.Name == "ComputedAttribute") LoadComputedAttribute(c, xe);
-				if (xe.Name == "PersistentComputedAttribute") LoadPersistentComputedAttribute(c, xe);
-			}
-
-			foreach (XElement xe in xc.Element("Operations").Nodes())
-			{
-				LoadOperation(c, xe);
-			}
-
-			foreach (XElement xe in xc.Element("Stereotypes").Nodes())
-			{
-				if (xe.Name == "Versioning") // @Sad переделать потом на универсальный загрузчик
+			var properties = xc.Elements("Properties");
+			if (properties != null)
+				foreach (XElement xe in properties.Nodes())
 				{
-					SVersioning s = new SVersioning(xe.GetAttributeValue("VersioningType"));
-					c.AddStereotype(s);
+					if (xe.Name == "Attribute") LoadAttribute(c, xe);
+					if (xe.Name == "Reference") LoadReference(c, xe);
+					if (xe.Name == "ComputedAttribute") LoadComputedAttribute(c, xe);
+					if (xe.Name == "PersistentComputedAttribute") LoadPersistentComputedAttribute(c, xe);
 				}
-			}
+
+			var operations = xc.Elements("Operations");
+			if (operations != null)
+				foreach (XElement xe in operations.Nodes())
+				{
+					LoadOperation(c, xe);
+				}
+
+			var stereotypes = xc.Elements("Stereotypes");
+			if (stereotypes != null)
+				foreach (XElement xe in stereotypes.Nodes())
+				{
+					if (xe.Name == "Versioning") // @Sad переделать потом на универсальный загрузчик
+					{
+						SVersioning s = new SVersioning(xe.GetAttributeValue("VersioningType"));
+						c.AddStereotype(s);
+					}
+				}
 
 			p.AddClass(c);
 		}
@@ -169,7 +177,7 @@ namespace Nephrite.Meta
 			o.Description = xo.GetAttributeValue("Description");
 
 			c.AddOperation(o);
-		}		
+		}
 	}
 
 	public class XsltExtension

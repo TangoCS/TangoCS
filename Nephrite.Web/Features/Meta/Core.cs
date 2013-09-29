@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI.HtmlControls;
-using Nephrite.Web;
 using Nephrite.Web.TextResources;
 
 namespace Nephrite.Meta
