@@ -318,10 +318,14 @@
     <Compile Include="Features\Layout\LayoutBootstrap.cs" />
     <Compile Include="Features\Layout\LayoutEmpty.cs" />
     <Compile Include="Features\Layout\LayoutWSS2007.cs" />
+    <Compile Include="MetaModel\Implementations\DataTypeMapper.cs" />
+    <Compile Include="MetaModel\Implementations\DBMetaModel.cs" />
     <Compile Include="MetaModel\Implementations\MetaLoad.cs" />
+    <Compile Include="MetaModel\Implementations\SchemaGenerator.cs" />
+    <Compile Include="MetaModel\Implementations\SchemaLoader.cs" />
     <Compile Include="MetaModel\Implementations\SystemLayout.cs" />
+    <Compile Include="MetaModel\Implementations\Versioning.cs" />
     <Compile Include="MetaModel\Interfaces\CoreMetaModel.cs" />
-    <Compile Include="MetaModel\Interfaces\DBMetaModel.cs" />
     <Compile Include="MetaModel\Implementations\PrimitiveTypes.cs" />
     <Compile Include="MetaModel\Interfaces\LayoutMetaModel.cs" />
     <Compile Include="MetaModel\Interfaces\UIMetaModel.cs" />

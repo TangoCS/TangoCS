@@ -7,15 +7,6 @@ using Nephrite.Web;
 
 namespace Nephrite.Meta
 {
-	public interface IMetaClass 
-	{
-		Guid ID { get; set; }
-		string Name { get; set; }
-		string Caption { get; set; }
-		//Dictionary<string, MetaOperation> Operations { get; set; }
-	}
-	public interface IMetaProperty { string Caption { get; set; } }
-
 	public abstract class MetaElement
 	{
 		public MetaElement()
@@ -48,7 +39,7 @@ namespace Nephrite.Meta
 			throw new InvalidOperationException("Элемент " + Name + " не имеет ключа ресурса");
 		}
 		string _caption;
-		public string Caption 
+		public string Caption
 		{
 			get
 			{
@@ -76,7 +67,7 @@ namespace Nephrite.Meta
 
 		public T S<T>() where T : MetaStereotype
 		{
-	
+
 			return (T)_stereotypes[typeof(T)];
 		}
 	}
@@ -142,8 +133,8 @@ namespace Nephrite.Meta
 		protected Guid? ParentID { get; set; }
 		MetaPackage _parent = null;
 		public MetaPackage Parent
-		{ 
-			get 
+		{
+			get
 			{
 				if (_parent == null && ParentID != null) _parent = Solution.GetPackage(ParentID.Value);
 				return _parent;
@@ -160,14 +151,14 @@ namespace Nephrite.Meta
 		public void AddClass(MetaClass metaClass)
 		{
 			Solution.AddClass(metaClass);
-			metaClass.Parent = this;	
+			metaClass.Parent = this;
 			_classes.Add(metaClass.Name.ToLower(), metaClass);
 		}
 
 		public void AddPackage(MetaPackage metaPackage)
 		{
 			Solution.AddPackage(metaPackage);
-			metaPackage.ParentID = this.ID;	
+			metaPackage.ParentID = this.ID;
 			_packages.Add(metaPackage.Name.ToLower(), metaPackage);
 		}
 
@@ -192,9 +183,13 @@ namespace Nephrite.Meta
 	public abstract class MetaClassifier : MetaElement
 	{
 		//public virtual Type CLRType { get; set; }
+		public virtual string ColumnName(string propName)
+		{
+			return propName;
+		}
 	}
 
-	public class MetaClass : MetaClassifier, IMetaClass
+	public class MetaClass : MetaClassifier
 	{
 		/*public override Type CLRType
 		{
@@ -225,7 +220,27 @@ namespace Nephrite.Meta
 			}
 		}
 
-		public MetaProperty Key { get; set; }
+		public bool IsPersistent { get; set; }
+
+		bool _isMultilingual = false;
+		public bool IsMultilingual { get { return _isMultilingual; } }
+
+		List<MetaProperty> _compositeKey = new List<MetaProperty>();
+		public MetaProperty Key
+		{
+			get
+			{
+				if (_compositeKey.Count != 1)
+					throw new Exception(String.Format("Error while getting single key property for class {0}. Length of the key properties array: {1}", Name, _compositeKey.Count()));
+				else
+					return _compositeKey.First();
+			}
+		}
+		public List<MetaProperty> CompositeKey
+		{
+			get { return _compositeKey; }
+		}
+
 		public Dictionary<string, MetaProperty>.ValueCollection Properties { get { return _properties.Values; } }
 		//public IEnumerable<T> Properties<T>() where T : MetaProperty { return _properties.Where(o => o is T).Select(o => o as T);  }
 		public Dictionary<string, MetaOperation>.ValueCollection Operations { get { return _operations.Values; } }
@@ -235,6 +250,7 @@ namespace Nephrite.Meta
 		{
 			metaProperty.Parent = this;
 			_properties.Add(metaProperty.Name.ToLower(), metaProperty);
+			if (metaProperty is MetaAttribute && (metaProperty as MetaAttribute).IsMultilingual) _isMultilingual = true;
 		}
 		public void AddOperation(MetaOperation metaOperation)
 		{
@@ -257,9 +273,14 @@ namespace Nephrite.Meta
 		{
 			return Name;
 		}
+
+		public override string ColumnName(string propName)
+		{
+			return propName + (Key.Type as IMetaIdentifierType).ColumnSuffix;
+		}
 	}
 
-	public abstract class MetaProperty : MetaElement, IMetaProperty
+	public abstract class MetaProperty : MetaElement
 	{
 		public MetaClass Parent { get; set; }
 		public virtual MetaClassifier Type { get; set; }
@@ -270,6 +291,12 @@ namespace Nephrite.Meta
 		{
 			return Parent.Name + ".P." + Name;
 		}
+
+		public virtual string ColumnName
+		{
+			get { return Type == null ? Name : Type.ColumnName(Name); }
+		}
+
 	}
 
 	public class MetaAttribute : MetaProperty
@@ -287,6 +314,13 @@ namespace Nephrite.Meta
 	public class MetaPersistentComputedAttribute : MetaProperty
 	{
 		public string Expression { get; set; }
+	}
+
+	public enum AssociationType
+	{
+		Aggregation = 1,
+		Composition = 2,
+		Default = 0
 	}
 
 	public class MetaReference : MetaProperty
@@ -328,6 +362,13 @@ namespace Nephrite.Meta
 			}
 		}
 
+		public override string ColumnName
+		{
+			get
+			{
+				return RefClass.ColumnName(Name);
+			}
+		}
 	}
 
 	public class MetaOperationParameter : MetaElement
@@ -374,10 +415,10 @@ namespace Nephrite.Meta
 			else
 				elements = _selements[stereotype];
 
-			elements.Add(element.Name, element);	
+			elements.Add(element.Name, element);
 		}
 
-		public static Dictionary<string, MetaElement> GetElements<T>() 
+		public static Dictionary<string, MetaElement> GetElements<T>()
 			where T : MetaStereotype
 		{
 			Type t = typeof(T);

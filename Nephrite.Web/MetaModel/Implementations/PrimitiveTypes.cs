@@ -7,6 +7,7 @@ namespace Nephrite.Meta
 {
 	public interface IMetaIdentifierType
 	{
+		string ColumnSuffix { get; }
 	}
 
 	public class MetaPrimitiveType : MetaClassifier
@@ -43,6 +44,10 @@ namespace Nephrite.Meta
 	public class MetaIntType : MetaPrimitiveType, IMetaIdentifierType
 	{
 
+		public string ColumnSuffix
+		{
+			get { return "ID"; }
+		}
 	}
 
 	public class MetaLongType : MetaPrimitiveType
@@ -62,12 +67,20 @@ namespace Nephrite.Meta
 
 	public class MetaGuidType : MetaPrimitiveType, IMetaIdentifierType
 	{
-
+		public string ColumnSuffix
+		{
+			get { return "GUID"; }
+		}
 	}
 
 	public class MetaFileType : MetaPrimitiveType
 	{
 		public IMetaIdentifierType IdentifierType { get; set; }
+
+		public override string ColumnName(string propName)
+		{
+			return propName + IdentifierType.ColumnSuffix;
+		}
 	}
 
 	public static class TypeFactory
@@ -102,7 +115,7 @@ namespace Nephrite.Meta
 		public static MetaStringType String(int length) { return new MetaStringType { Length = length, Name = "String" }; }
 		public static MetaStringType String() { return _string; }
 		public static MetaStringType Char(bool notNull) { return notNull ? _char : _char_n; }
-		public static MetaStringType Char(bool notNull, int length) { return new MetaStringType { Length = length, Name = "Char", NotNullable = notNull }; }
+		public static MetaStringType Char(int length, bool notNull) { return new MetaStringType { Length = length, Name = "Char", NotNullable = notNull }; }
 		public static MetaByteArrayType ByteArray() { return _byteArray; }
 
 		public static MetaDateType Date(bool notNull) { return notNull ? _date : _date_n; }
@@ -115,6 +128,6 @@ namespace Nephrite.Meta
 		public static MetaDecimalType Decimal(bool notNull) { return notNull ? _decimal : _decimal_n; }
 		public static MetaDecimalType Decimal(int precision, int scale, bool notNull) { return new MetaDecimalType { Precision = precision, Scale = scale, Name = "Decimal", NotNullable = notNull }; }
 		public static MetaFileType FileIntKey(bool notNull) { return notNull ? _fileIntKey : _fileIntKey_n; }
-		public static MetaFileType FileGuidKey(bool notNull) { return notNull ? _fileGuidKey : _fileGuidKey_n; }		
+		public static MetaFileType FileGuidKey(bool notNull) { return notNull ? _fileGuidKey : _fileGuidKey_n; }
 	}
 }

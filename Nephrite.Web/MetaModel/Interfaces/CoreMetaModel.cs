@@ -5,17 +5,6 @@ using System.Web;
 
 namespace Nephrite.Meta
 {
-
-	
-
-
-
-	public enum AssociationType
-	{
-		Aggregation,
-		Composition
-	}
-
 	public interface IFeatureInfo
 	{
 		Guid ID { get; }
