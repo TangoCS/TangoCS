@@ -112,6 +112,7 @@
     <Compile Include="Features\CoreDataContext\FileStorage\DbFile.I.cs" />
     <Compile Include="Features\CoreDataContext\FileStorage\DbFolder.I.cs" />
     <Compile Include="Features\FileStorage\FileStorageModel.cs" />
+    <Compile Include="Features\Meta.Database\DataTypeMapper.cs" />
     <Compile Include="Features\Meta.Database\SchemaGenerator.cs" />
     <Compile Include="Features\Meta.Database\SchemaLoader.cs" />
     <Compile Include="Features\Multilanguage\Language.cs" />

@@ -98,10 +98,11 @@ namespace Nephrite.Meta.Database
 		public string Name { get; set; }
 		public string Text { get; set; }
 		public Dictionary<string, Trigger> Triggers { get; private set; }
-
+		public Dictionary<string, Column> Columns { get; private set; }
 		public View()
 		{
 			Triggers = new Dictionary<string, Trigger>();
+			Columns = new Dictionary<string, Column>();
 		}
 	}
 
