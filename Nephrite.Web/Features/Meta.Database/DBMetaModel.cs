@@ -11,12 +11,13 @@ namespace Nephrite.Meta.Database
 		public Dictionary<string, Table> Tables { get; private set; }
 		public Dictionary<string, View> Views { get; private set; }
 		public Dictionary<string, Procedure> Procedures { get; private set; }
-
+		public Dictionary<string, Function> Functions { get; private set; }
 		public Schema()
 		{
 			Tables = new Dictionary<string, Table>();
 			Views = new Dictionary<string, View>();
 			Procedures = new Dictionary<string, Procedure>();
+			Functions = new Dictionary<string, Function>();
 		}
 	}
 
@@ -37,8 +38,8 @@ namespace Nephrite.Meta.Database
 			Columns = new Dictionary<string, Column>();
 			ForeignKeys = new Dictionary<string, ForeignKey>();
 			Triggers = new Dictionary<string, Trigger>();
-			Owner = "dbo";
-		}	
+			Identity = true;
+		}
 	}
 
 	[Serializable]
@@ -89,20 +90,34 @@ namespace Nephrite.Meta.Database
 		public Procedure()
 		{
 			Parameters = new Dictionary<string, Parameter>();
+
 		}
 	}
 
+	[Serializable]
+	public class Function
+	{
+		public string Name { get; set; }
+		public string Text { get; set; }
+		public Dictionary<string, Parameter> Parameters { get; private set; }
+
+		public Function()
+		{
+			Parameters = new Dictionary<string, Parameter>();
+		}
+	}
 	[Serializable]
 	public class View
 	{
 		public string Name { get; set; }
 		public string Text { get; set; }
-		public Dictionary<string, Trigger> Triggers { get; private set; }
 		public Dictionary<string, Column> Columns { get; private set; }
+		public Dictionary<string, Trigger> Triggers { get; private set; }
+
 		public View()
 		{
-			Triggers = new Dictionary<string, Trigger>();
 			Columns = new Dictionary<string, Column>();
+			Triggers = new Dictionary<string, Trigger>();
 		}
 	}
 
@@ -118,5 +133,13 @@ namespace Nephrite.Meta.Database
 	{
 		public string Name { get; set; }
 		public string Type { get; set; }
+	}
+
+
+	public class ProcedureDetails
+	{
+		public string ProcedureName { get; set; }
+		public string ReturnType { get; set; }
+		public Dictionary<string, string> Columns { get; set; }
 	}
 }

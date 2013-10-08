@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml.Linq;
 
 
 namespace Nephrite.Meta.Database
@@ -51,8 +52,12 @@ namespace Nephrite.Meta.Database
 
         private Type MapFromDBType(string dataType, int? dataLength, int? dataPrecision, int? dataScale)
         {
+			dataType = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(", System.StringComparison.Ordinal)) : dataType;
+            
             switch (dataType.ToUpperInvariant())
             {
+				case "XML": 
+					return typeof(XDocument);
                 case "DATE":
                 case "DATETIME":
                 case "DATETIME2":

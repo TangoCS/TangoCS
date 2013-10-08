@@ -13,6 +13,7 @@ namespace Nephrite.Meta.Database
 	public interface IDatabaseMetadataReader
 	{
 		Schema ReadSchema(string name);
+		List<ProcedureDetails> ReadProceduresDetails();
 	}
 
 	public class SqlServerMetadataReader : IDatabaseMetadataReader
@@ -133,7 +134,7 @@ namespace Nephrite.Meta.Database
 							{
 								var procedure = new Procedure();
 								procedure.Name = p.GetAttributeValue("Name");
-								var xParametrsElement = p.Element("Parametrs");
+								var xParametrsElement = p.Element("Parameters");
 								if (xParametrsElement != null)
 									xParametrsElement.Descendants("Parameter").ToList().ForEach(c =>
 									{
@@ -147,6 +148,24 @@ namespace Nephrite.Meta.Database
 
 							});
 
+							doc.Descendants("Function").ToList().ForEach(p =>
+							{
+								var function = new Function();
+								function.Name = p.GetAttributeValue("Name");
+								var xParametrsElement = p.Element("Parameters");
+								if (xParametrsElement != null)
+									xParametrsElement.Descendants("Parameter").ToList().ForEach(c =>
+									{
+										var Parameter = new Parameter();
+										Parameter.Name = c.GetAttributeValue("Name");
+										Parameter.Type = c.GetAttributeValue("Type");
+										function.Parameters.Add(Parameter.Name, Parameter);
+									});
+
+								returnSchema.Functions.Add(function.Name, function);
+
+							});
+
 
 						}
 					}
@@ -154,11 +173,59 @@ namespace Nephrite.Meta.Database
 			}
 			return returnSchema;
 		}
+
+		public List<ProcedureDetails> ReadProceduresDetails()
+		{
+			var mapType = new DataTypeMapper();
+			var listProcedureDetails = new List<ProcedureDetails>();
+			using (SqlConnection con = new SqlConnection(ConnectionManager.ConnectionString))
+			{
+				using (SqlCommand cmd = new SqlCommand("select * from [dbo].[MM_DBProgrammability]", con))
+				{
+					cmd.CommandType = CommandType.Text;
+
+					con.Open();
+					using (var reader = cmd.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							var procedureDetails = new ProcedureDetails();
+							procedureDetails.ProcedureName = reader["Name"].ToString();
+							XDocument doc = XDocument.Parse(reader["Returns"].ToString());
+
+							if (doc.Descendants("Column").Any())
+							{
+								procedureDetails.ReturnType = procedureDetails.ProcedureName + "Result";
+								procedureDetails.Columns = new Dictionary<string, string>();
+								doc.Descendants("Column").ToList().ForEach(c => procedureDetails.Columns.Add(c.GetAttributeValue("Name"), mapType.MapFromSqlServerDBType(c.GetAttributeValue("Type"), null, null, null).ToString()));
+							}
+							else if (doc.Descendants("SingleResult").Any())
+							{
+								procedureDetails.ReturnType = mapType.MapFromSqlServerDBType(doc.Descendants("SingleResult").FirstOrDefault().GetAttributeValue("Type"), null, null, null).ToString();
+							}
+							else
+							{
+								procedureDetails.ReturnType = "void";
+							}
+							listProcedureDetails.Add(procedureDetails);
+
+						}
+					}
+				}
+			}
+			return listProcedureDetails;
+		}
 	}
 
 	public class DB2MetadataReader : IDatabaseMetadataReader
 	{
 		public Schema ReadSchema(string name)
+		{
+			throw new NotImplementedException();
+		}
+
+
+		public List<ProcedureDetails> ReadProceduresDetails()
 		{
 			throw new NotImplementedException();
 		}
