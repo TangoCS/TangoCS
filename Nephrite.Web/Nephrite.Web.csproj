@@ -324,7 +324,7 @@
     <Compile Include="Features\Meta.Database\SchemaGenerator.cs" />
     <Compile Include="Features\Meta.Database\SchemaLoader.cs" />
     <Compile Include="Features\Layout\SystemLayout.cs" />
-    <Compile Include="Features\Versioning\Versioning.cs" />
+    <Compile Include="Features\Meta\Versioning.cs" />
     <Compile Include="Features\Meta\PrimitiveTypes.cs" />
     <Compile Include="Features\Layout\LayoutMetaModel.cs" />
     <Compile Include="Model\HCoreDataContext.cs" />
