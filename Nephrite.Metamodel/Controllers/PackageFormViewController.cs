@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using Nephrite.Web;
 using System.Web.UI;
+using System.Web.Hosting;
+using System.IO;
 
 namespace Nephrite.Metamodel.Controllers
 {
@@ -17,19 +19,13 @@ namespace Nephrite.Metamodel.Controllers
 
         public void RenderMMView(string viewname)
         {
-            var fv = WebSiteCache.GetPackageView(viewname);
-
-            if (fv == null)
-            {
-                RenderMessage("Для пакета " + packageSysName + " не создано представление " + viewname);
-                return;
-            }
-			HttpContext.Current.Items["FormViewID"] = fv.FormViewID;
+			string path = Settings.ControlsPath + "/" + packageSysName + "Pck/" + viewname + ".ascx";
+			HttpContext.Current.Items["FormView"] = packageSysName + "Pck." + viewname;
 			HttpContext.Current.Items["helpdata"] = "mode=c_help&view=view&form=" + packageSysName + "." + viewname;
             Control ctl = null;
             try
             {
-                ctl = WebPart.Page.LoadControl("" + fv.ControlPath);
+                ctl = WebPart.Page.LoadControl(path);
                 WebPart.Controls.Add(ctl);
             }
             catch (Exception e)
@@ -60,7 +56,7 @@ namespace Nephrite.Metamodel.Controllers
                 {
                     string text2 = "";
 
-                    string[] lines = fv.ViewTemplate.Split(new string[] { "\r\n" }, StringSplitOptions.None);
+					string[] lines = (new StreamReader(VirtualPathProvider.OpenFile(path))).ReadToEnd().Split(new string[] { "\r\n" }, StringSplitOptions.None);
                     for (int i = 0; i < lines.Length; i++)
                     {
                         if (i + 1 == line)
@@ -69,7 +65,7 @@ namespace Nephrite.Metamodel.Controllers
                             text2 += HttpUtility.HtmlEncode(lines[i]).Replace(" ", "&nbsp;").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
                         text2 += "<br />";
                     }
-                    LiteralControl lc2 = new LiteralControl("<br /><br />" + text2); // + "<br /><br />" + HtmlHelperBase.Instance.ActionLink<MM_FormViewController>(c => c.Edit(fv.FormViewID, Query.CreateReturnUrl()), "Редактировать представление"));
+                    LiteralControl lc2 = new LiteralControl("<br /><br />" + text2);
                     WebPart.Controls.Add(lc2);
                 }
             }
