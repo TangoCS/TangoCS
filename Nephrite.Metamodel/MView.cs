@@ -25,25 +25,55 @@ namespace Nephrite.Metamodel
         public string ViewFormSysName { get; set; }
         public string PackageViewFormSysName { get; set; }
 		public string ObjectTypeSysName { get; set; }
+		public string PackageSysName { get; set; }
 		ViewControl ctl;
-		MM_FormView formView;
-		string contentToRender = null;
-		
+
 		public static void ResetCache()
 		{
-			cache = new Dictionary<int, Dictionary<string, CachedData>>();
-			if (Directory.Exists(Settings.ViewCachePath))
-				Directory.Delete(Settings.ViewCachePath, true);
 		}
 
-		void addToUtils(MM_FormView fv)
+		static Dictionary<string, string> packageViewLocation = new Dictionary<string, string>();
+		string GetPath(object viewData)
+		{
+			if (!PackageViewFormSysName.IsEmpty())
+			{
+				if (PackageSysName.IsEmpty())
+				{
+					if (packageViewLocation.ContainsKey(PackageViewFormSysName))
+						PackageSysName = packageViewLocation[PackageViewFormSysName];
+					else
+					{
+						lock (packageViewLocation)
+						{
+							if (packageViewLocation.ContainsKey(PackageViewFormSysName))
+								PackageSysName = packageViewLocation[PackageViewFormSysName];
+							else
+							{
+								PackageSysName = AppMM.DataContext.MM_FormViews.Where(o => o.ObjectTypeID == null && o.SysName == PackageViewFormSysName).Select(o => o.MM_Package.SysName).FirstOrDefault() ?? "";
+								packageViewLocation[PackageViewFormSysName] = PackageSysName;
+							}
+						}
+					}
+				}
+				addToUtils(PackageSysName + "Pck." + PackageViewFormSysName);
+				return Settings.ControlsPath + "/" + PackageSysName + "Pck/" + PackageViewFormSysName + ".ascx";
+			}
+			else
+			{
+				string cls = ObjectTypeSysName.IsEmpty() ? (viewData as IMMObject).MetaClass.Name : ObjectTypeSysName;
+				addToUtils(cls + "." + ViewFormSysName);
+				return Settings.ControlsPath + "/" + cls + "/" + ViewFormSysName + ".ascx";
+			}
+		}
+
+		void addToUtils(string fv)
 		{
 			if (AppSPM.IsCurrentUserHasRole(ConfigurationManager.AppSettings["AdministratorsRole"]))
 			{
 				if (HttpContext.Current.Items["MViewList"] == null)
-					HttpContext.Current.Items["MViewList"] = new List<MM_FormView>();
-				var list = (List<MM_FormView>)HttpContext.Current.Items["MViewList"];
-				if (!list.Any(o => o.FormViewID == fv.FormViewID))
+					HttpContext.Current.Items["MViewList"] = new List<string>();
+				var list = (List<string>)HttpContext.Current.Items["MViewList"];
+				if (!list.Any(o => o == fv))
 					list.Add(fv);
 			}
 		}
@@ -55,13 +85,7 @@ namespace Nephrite.Metamodel
 				if (!loaded)
 				{
 					Page pg = new Page();
-					formView = viewData is IMMObject ? WebSiteCache.GetView((viewData as IMMObject).MetaClass.Name, ViewFormSysName) :
-						(PackageViewFormSysName.IsEmpty() ? WebSiteCache.GetView(ObjectTypeSysName, ViewFormSysName) :
-						WebSiteCache.GetPackageView(PackageViewFormSysName));
-					addToUtils(formView);
-					if (CheckCache())
-						return;
-					ctl = pg.LoadControl("~" + formView.ControlPath) as ViewControl;
+					ctl = pg.LoadControl(GetPath(viewData)) as ViewControl;
 					Controls.Add(ctl);
 					loaded = true;
 				}
@@ -80,14 +104,9 @@ namespace Nephrite.Metamodel
 			{
 				if (!loaded)
 				{
-					formView = WebSiteCache.GetView(className, ViewFormSysName);
-					if (formView == null)
-						throw new Exception("В классе " + className + " не найдено представление " + ViewFormSysName);
-					addToUtils(formView);
-					if (CheckCache())
-						return;
+					ObjectTypeSysName = className;
 					Page pg = new Page();
-					ctl = pg.LoadControl("~" + formView.ControlPath) as ViewControl;
+					ctl = pg.LoadControl(GetPath(viewData)) as ViewControl;
 					Controls.Add(ctl);
 					loaded = true;
 				}
@@ -107,13 +126,9 @@ namespace Nephrite.Metamodel
 			{
 				if (!loaded && !String.IsNullOrEmpty(PackageViewFormSysName))
 				{
-					formView = WebSiteCache.GetPackageView(PackageViewFormSysName);
-					if (formView != null)
+					if (!PackageViewFormSysName.IsEmpty())
 					{
-						addToUtils(formView);
-						if (CheckCache())
-							return;
-						ctl = Page.LoadControl("" + formView.ControlPath) as ViewControl;
+						ctl = Page.LoadControl(GetPath(null)) as ViewControl;
 						Controls.Add(ctl);
 					}
 					loaded = true;
@@ -137,15 +152,8 @@ namespace Nephrite.Metamodel
 			{
 				if (!loaded && Controls.Count == 0 && !String.IsNullOrEmpty(PackageViewFormSysName))
 				{
-					formView = WebSiteCache.GetPackageView(PackageViewFormSysName);
-					if (formView != null)
-					{
-						addToUtils(formView);
-						if (CheckCache())
-							return;
-						ctl = Page.LoadControl("" + formView.ControlPath) as ViewControl;
-						Controls.Add(ctl);
-					}
+					ctl = Page.LoadControl(GetPath(null)) as ViewControl;
+					Controls.Add(ctl);
 					loaded = true;
 				}
 			}
@@ -160,68 +168,6 @@ namespace Nephrite.Metamodel
 			}
 		}
 
-		static JavaScriptSerializer j = new JavaScriptSerializer();
-		static HashAlgorithm ha = HashAlgorithm.Create();
-		string getCacheFileName(MM_FormView formView)
-		{
-			var i = formView.CacheKeyParams.IsEmpty() ? new FormViewCacheKeyInfo() : j.Deserialize<FormViewCacheKeyInfo>(formView.CacheKeyParams);
-			string key = "";
-			if (i.Tables.Length > 0)
-				key += "&t=" + TableInfo.GetMaxLastModifyDate(i.Tables);
-			for (int n = 0; n < i.QueryParams.Length; n++)
-				key += "&q" + n.ToString() + "=" + Query.GetString(i.QueryParams[n]);
-			for (int n = 0; n < i.Macro.Length; n++)
-				key += "&m" + n.ToString() + "=" + MacroManager.Evaluate(i.Macro[n]);
-			byte[] b;
-			lock(ha)
-				b = ha.ComputeHash(Encoding.UTF8.GetBytes(key));
-			var fn = "";
-			for (int n = 0; n < b.Length; n++)
-				fn += b[n].ToString("X");
-			//return fn;
-			string path = Settings.ViewCachePath + "/" + formView.FormViewID.ToString();
-			Directory.CreateDirectory(path);
-			return Path.Combine(path, fn);
-		}
-
-		class CachedData
-		{
-			public DateTime Date { get; set; }
-			public string Data { get; set; }
-		}
-
-		static Dictionary<int, Dictionary<string, CachedData>> cache = new Dictionary<int, Dictionary<string, CachedData>>();
-
-		bool CheckCache()
-		{
-			if (Settings.EnableViewCache && formView.IsCaching && HttpContext.Current.Request.HttpMethod == "GET")
-			{
-				string fullPath = getCacheFileName(formView);
-				/*if (cache.ContainsKey(formView.FormViewID))
-				{
-					var c1 = cache[formView.FormViewID];
-					if (c1.ContainsKey(fullPath) && (formView.CacheTimeout == 0 || DateTime.Now.Subtract(c1[fullPath].Date).TotalSeconds < formView.CacheTimeout))
-					{
-						contentToRender = c1[fullPath].Data;
-						return true;
-					}
-				}*/
-				
-				if (File.Exists(fullPath))
-				{
-					if (formView.CacheTimeout == 0 || DateTime.Now.Subtract(File.GetLastWriteTime(fullPath)).TotalSeconds < formView.CacheTimeout)
-					{
-						lock (writeLocker)
-						{
-							contentToRender = File.ReadAllText(fullPath);
-						}
-						return true;
-					}
-				}
-			}
-			return false;
-		}
-		static object writeLocker = new object();
 		public override void RenderControl(HtmlTextWriter writer)
 		{
 			if (error != null)
@@ -232,22 +178,7 @@ namespace Nephrite.Metamodel
 			{
 				try
 				{
-					if (Settings.EnableViewCache && formView != null && formView.IsCaching && HttpContext.Current.Request.HttpMethod == "GET" && Controls.Count > 0 && Controls[0] is ViewControl)
-					{
-						string str = Controls[0].RenderControl();
-						//if (!cache.ContainsKey(formView.FormViewID))
-						//	cache[formView.FormViewID] = new Dictionary<string, CachedData>();
-						//cache[formView.FormViewID][getCacheFileName(formView)] = new CachedData { Data = str, Date = DateTime.Now };
-						lock (writeLocker)
-						{
-							File.WriteAllText(getCacheFileName(formView), str);
-						}
-						writer.Write(str);
-					}
-					else
-						base.RenderControl(writer);
-					if (contentToRender != null)
-						writer.Write(contentToRender);
+					base.RenderControl(writer);
 				}
 				catch (ThreadAbortException)
 				{

@@ -10,39 +10,34 @@ using System.Data.Linq;
 using System.Reflection;
 using System.Web.UI.WebControls;
 using System.Web.UI.HtmlControls;
-using Nephrite.Meta;
+using System.IO;
+using System.Web.Hosting;
 
 namespace Nephrite.Metamodel.Controllers
 {
     public abstract class MMObjectController : BaseController
     {
-		string _className = "";
+        protected string ObjectTypeSysName;
 
-		public MMObjectController(string className)
+		public MMObjectController(string objectTypeSysName)
 	    {
-			_className = className;
-	    }
+			ObjectTypeSysName = objectTypeSysName;
+		}
 
 		public static void RenderMMView(Control container, string objectTypeSysName, string viewname, object viewData)
         {
-            var fv = WebSiteCache.GetView(objectTypeSysName, viewname);
-            if (fv == null)
-            {
-				LiteralControl lc2 = new LiteralControl("Для класса " + objectTypeSysName + " не создано представление " + viewname);
-				container.Controls.Add(lc2);
-                return;
-            }
-			HttpContext.Current.Items["FormViewID"] = fv.FormViewID;
-			HttpContext.Current.Items["ObjectTypeID"] = fv.ObjectTypeID;
-			HttpContext.Current.Items["helpdata"] = "mode=c_help&view=view&form=" + fv.Guid;
+			string path = Settings.ControlsPath + "/" + objectTypeSysName + "/" + viewname + ".ascx";
+			HttpContext.Current.Items["FormView"] = objectTypeSysName + "." + viewname;
+			HttpContext.Current.Items["ObjectType"] = objectTypeSysName;
+			HttpContext.Current.Items["helpdata"] = "mode=c_help&view=view&form=" + objectTypeSysName + "." + viewname;
 			Control ctl = null;
             try
             {
-                //ctl = WebPart.Page.LoadControl("~/nmf" + fv.FormViewID.ToString() + ".ascx");
-				ctl = container.Page.LoadControl("" + fv.ControlPath);
+                ctl = container.Page.LoadControl(path);
                 if (viewData != null)
                     ((ViewControl)ctl).SetViewData(viewData);
-                ((ViewControl)ctl).RenderMargin = fv.IsSingleObjectView;
+				var t = ctl.GetType();
+                ((ViewControl)ctl).RenderMargin = t.BaseType.BaseType.GetGenericArguments().Length == 1 && t.BaseType.BaseType.GetGenericArguments()[0].GetInterfaces().Contains(typeof(IMMObject));
 				container.Controls.Add(ctl);
             }
             catch (Exception e)
@@ -60,7 +55,7 @@ namespace Nephrite.Metamodel.Controllers
                 }
                 string text = "";
                 if (ctl != null)
-                    text = "Класс представления: " + ctl.GetType().FullName + ", " + objectTypeSysName + ", FormViewID=" + fv.FormViewID.ToString() + "<br />";
+                    text = "Класс представления: " + ctl.GetType().FullName + ", " + objectTypeSysName + ", FormView=" + viewname + "<br />";
 
                 while (e != null)
                 {
@@ -73,7 +68,7 @@ namespace Nephrite.Metamodel.Controllers
                 {
                     string text2 = "";
 
-                    string[] lines = AppMM.DataContext.MM_FormViews.Single(o => o.FormViewID == fv.FormViewID).ViewTemplate.Split(new string[] { "\r\n" }, StringSplitOptions.None);
+					string[] lines = (new StreamReader(VirtualPathProvider.OpenFile(path))).ReadToEnd().Split(new string[] { "\r\n" }, StringSplitOptions.None);
                     for (int i = 0; i < lines.Length; i++)
                     {
                         if (i + 1 == line)
@@ -82,7 +77,7 @@ namespace Nephrite.Metamodel.Controllers
                             text2 += HttpUtility.HtmlEncode(lines[i]).Replace(" ", "&nbsp;").Replace("\t", "&nbsp;&nbsp;&nbsp;&nbsp;");
                         text2 += "<br />";
                     }
-                    LiteralControl lc2 = new LiteralControl("<br /><br />" + text2);// + "<br /><br />" + HtmlHelperBase.Instance.ActionLink<MM_FormViewController>(c => c.Edit(fv.FormViewID, Query.CreateReturnUrl()), "Редактировать представление"));
+                    LiteralControl lc2 = new LiteralControl("<br /><br />" + text2);
 					container.Controls.Add(lc2);
                 }
             }
@@ -97,17 +92,17 @@ namespace Nephrite.Metamodel.Controllers
 			}
         }
 
-		public void RenderMMView(string viewname, string className, object viewData)
+		public void RenderMMView(string viewname, MM_ObjectType objectType, object viewData)
 		{
-			MMObjectController.RenderMMView(WebPart, className, viewname, viewData);
+			MMObjectController.RenderMMView(WebPart, objectType.SysName, viewname, viewData);
 		}
 		public void RenderMMView(string viewname)
         {
-			MMObjectController.RenderMMView(WebPart, _className, viewname, null);
+			MMObjectController.RenderMMView(WebPart, ObjectTypeSysName, viewname, null);
         }
 		public void RenderMMView(string viewname, object viewData)
         {
-			MMObjectController.RenderMMView(WebPart, _className, viewname, viewData);
+			MMObjectController.RenderMMView(WebPart, ObjectTypeSysName, viewname, viewData);
         }
 
 		public virtual void Update(IModelObject obj)
@@ -137,7 +132,6 @@ namespace Nephrite.Metamodel.Controllers
             obj.SetPropertyValue("LastModifiedDate", DateTime.Now);
             obj.SetPropertyValue("LastModifiedUserID", AppSPM.GetCurrentSubjectID());
 			Base.Model.SubmitChanges();
-            //repository.SubmitChanges();
         }
 
 		new public static Result Run(Control control, string mode, string action, bool disableScriptManager, bool skipCreateMdm)

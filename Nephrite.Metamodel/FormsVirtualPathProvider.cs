@@ -11,14 +11,14 @@ namespace Nephrite.Metamodel
     {
         string controlsPathRoot = Settings.ControlsPath.ToLower() + "/";
 
-        public override System.Web.Caching.CacheDependency GetCacheDependency(string virtualPath, System.Collections.IEnumerable virtualPathDependencies, DateTime utcStart)
-        {
-            if (virtualPath.ToLower().StartsWith(controlsPathRoot))
-                return null;
+		public override System.Web.Caching.CacheDependency GetCacheDependency(string virtualPath, System.Collections.IEnumerable virtualPathDependencies, DateTime utcStart)
+		{
+			if (virtualPath.ToLower().StartsWith(controlsPathRoot))
+				return null;
 			if (virtualPath.StartsWith(CustomControlManager.Path))
 				return null;
-            return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
-        }
+			return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
+		}
 
         private bool IsPathVirtual(string virtualPath)
         {
@@ -46,7 +46,7 @@ namespace Nephrite.Metamodel
                 return new FormsVirtualDirectory(virtualDir);
 			if (virtualDir.StartsWith(CustomControlManager.Path))
 				return new FormsVirtualDirectory(virtualDir);
-            return base.GetDirectory(virtualDir);
+			return Previous.GetDirectory(virtualDir);
         }
 
         public override bool DirectoryExists(string virtualDir)
@@ -55,7 +55,7 @@ namespace Nephrite.Metamodel
                 return true;
 			if (virtualDir.StartsWith(CustomControlManager.Path))
 				return true;
-            return base.DirectoryExists(virtualDir);
+			return Previous.DirectoryExists(virtualDir);
         }
 
         public override VirtualFile GetFile(string virtualPath)
@@ -89,7 +89,7 @@ namespace Nephrite.Metamodel
 			if (virtualPath.StartsWith(controlsPathRoot + "DynamicMainMenu"))
 				return "DynamicMainMenu" + WebSiteCache.TimeStamp.Ticks.ToString();
             if (!virtualPath.ToLower().StartsWith(controlsPathRoot))
-                return base.GetCacheKey(virtualPath);
+				return Previous.GetCacheKey(virtualPath);
             return WebSiteCache.GetViewCacheKey(virtualPath.ToLower());
         }
     }
