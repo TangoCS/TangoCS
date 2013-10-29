@@ -7,6 +7,15 @@ using Nephrite.Meta;
 
 namespace Nephrite.Meta
 {
+
+	public abstract partial class MetaClassifier : MetaElement
+	{
+
+		public virtual string GetDBType(IDBScript script)
+		{
+			return "";
+		}
+	}
 	public partial class MetaDecimalType
 	{
 		public override string GetDBType(IDBScript script)
@@ -15,6 +24,14 @@ namespace Nephrite.Meta
 		}
 	}
 
+	public partial class MetaBooleanType
+	{
+		public override string GetDBType(IDBScript script)
+		{
+			return script.GetBooleanType();
+		}
+
+	}
 	public partial class MetaStringType
 	{
 		public override string GetDBType(IDBScript script)

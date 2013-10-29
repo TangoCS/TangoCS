@@ -273,6 +273,11 @@ namespace Nephrite.Meta.Database
 			return "date";
 		}
 
+		public string GetBooleanType()
+		{
+			return "bit";
+		}
+
 		public string GetZoneDateTimeType()
 		{
 			return "datetimeoffset(7)";

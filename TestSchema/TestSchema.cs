@@ -4,6 +4,8 @@ using Nephrite.Meta;
 using Nephrite.Meta.Database;
 using Nephrite.Web;
 using System.Data.Linq;
+using System.Linq;
+using Nephrite.Meta.Database;
 
 namespace TestSchema
 {
@@ -16,15 +18,23 @@ namespace TestSchema
 			string cs = "Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=servants;Data Source=TOSHIBA-TOSH\\SQL2008";
 			Base.Model = new DataContext(cs);
 			var s = MetaSolution.Load();
-			var schema = new Schema();
+			var srcSchema = new Schema();
 			foreach (var d in s.Classes)
 			{
-				schema.Generate(d);
+				srcSchema.Generate(d);
 			}
-			foreach (var table in schema.Tables)
+			var ownSchema =  new SqlServerMetadataReader().ReadSchema("dbo");
+			var dbScript = new DBScript();
+			foreach (var table in ownSchema.Tables)
 			{
- 				table.
+				var srcTable = srcSchema.Tables.Values.SingleOrDefault(t=>t.Name==table.Key);
+				 table.Value.Sync(dbScript , srcTable);
+				
 			}
+			//foreach (var table in schema.Tables)
+			//{
+			//	table.
+			//}
 		}
 	}
 }

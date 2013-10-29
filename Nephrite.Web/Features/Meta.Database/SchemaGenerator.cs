@@ -13,7 +13,10 @@ namespace Nephrite.Meta.Database
 			var tempListJoinTables = new List<string>();
 			var dbScript = new DBScript();
 			//if (!cls.IsPersistent) return;
-
+			if (cls.Name == "Appendix")
+			{
+			
+			}
 			Table t = new Table();
 			t.Name = cls.Name;
 			t.Description = cls.Caption;
@@ -139,7 +142,7 @@ namespace Nephrite.Meta.Database
 
 				var languageColumn = new Column();// Ссылка на таблицу C_Language
 				languageColumn.Name = "LanguageCode";
-				languageColumn.Type = "nvarhar(2)";
+				languageColumn.Type = dbScript.GetStringType(2);
 				languageColumn.ForeignKeyName = "FK_" + tdata.Name + "_C_Language";
 				tdata.Columns.Add("LanguageCode", languageColumn);
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI.HtmlControls;
 using Nephrite.Web;
-using Nephrite.Meta.Database;
+
 
 namespace Nephrite.Meta
 {
@@ -219,17 +219,14 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public abstract class MetaClassifier : MetaElement
+	public abstract partial class MetaClassifier : MetaElement
 	{
 		//public virtual Type CLRType { get; set; }
 		public virtual string ColumnName(string propName)
 		{
 			return propName;
 		}
-		public virtual string GetDBType(IDBScript script)
-		{
-			return "";
-		}
+	
 	}
 
 	public class MetaClass : MetaClassifier
