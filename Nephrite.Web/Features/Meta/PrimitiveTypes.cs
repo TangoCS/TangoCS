@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nephrite.Meta.Database;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -15,33 +16,34 @@ namespace Nephrite.Meta
 		public bool NotNullable { get; set; }
 	}
 
-	public class MetaDecimalType : MetaPrimitiveType
+	public partial class MetaDecimalType : MetaPrimitiveType
 	{
 		public int Precision { get; set; }
 		public int Scale { get; set; }
+
 	}
 
-	public class MetaStringType : MetaPrimitiveType
+	public partial class MetaStringType : MetaPrimitiveType
 	{
 		public int Length { get; set; }
 	}
 
-	public class MetaDateTimeType : MetaPrimitiveType
+	public partial class MetaDateTimeType : MetaPrimitiveType
 	{
 
 	}
 
-	public class MetaZoneDateTimeType : MetaPrimitiveType
+	public partial class MetaZoneDateTimeType : MetaPrimitiveType
 	{
 
 	}
 
-	public class MetaDateType : MetaPrimitiveType
+	public partial class MetaDateType : MetaPrimitiveType
 	{
 
 	}
 
-	public class MetaIntType : MetaPrimitiveType, IMetaIdentifierType
+	public partial class MetaIntType : MetaPrimitiveType, IMetaIdentifierType
 	{
 
 		public string ColumnSuffix
@@ -50,22 +52,22 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public class MetaLongType : MetaPrimitiveType
+	public partial class MetaLongType : MetaPrimitiveType
 	{
 
 	}
 
-	public class MetaByteArrayType : MetaClassifier
+	public partial class MetaByteArrayType : MetaClassifier
 	{
 
 	}
 
-	public class MetaBooleanType : MetaPrimitiveType
+	public partial class MetaBooleanType : MetaPrimitiveType
 	{
 
 	}
 
-	public class MetaGuidType : MetaPrimitiveType, IMetaIdentifierType
+	public partial class MetaGuidType : MetaPrimitiveType, IMetaIdentifierType
 	{
 		public string ColumnSuffix
 		{

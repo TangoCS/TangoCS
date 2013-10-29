@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
+
 namespace Nephrite.Meta.Database
 {
 	[Serializable]
@@ -22,7 +23,7 @@ namespace Nephrite.Meta.Database
 	}
 
 	[Serializable]
-	public class Table
+	public partial class Table
 	{
 		public string Name { get; set; }
 		public string Owner { get; set; }
@@ -43,7 +44,7 @@ namespace Nephrite.Meta.Database
 	}
 
 	[Serializable]
-	public class Column
+	public partial class Column
 	{
 		public string Name { get; set; }
 		public string Type { get; set; }
@@ -57,7 +58,7 @@ namespace Nephrite.Meta.Database
 	}
 
 	[Serializable]
-	public class PrimaryKey
+	public partial class PrimaryKey
 	{
 		public string Name { get; set; }
 		public string[] Columns { get; set; }
@@ -81,7 +82,7 @@ namespace Nephrite.Meta.Database
 	}
 
 	[Serializable]
-	public class Procedure
+	public partial class Procedure
 	{
 		public string Name { get; set; }
 		public string Text { get; set; }
@@ -95,7 +96,7 @@ namespace Nephrite.Meta.Database
 	}
 
 	[Serializable]
-	public class Function
+	public partial class Function
 	{
 		public string Name { get; set; }
 		public string Text { get; set; }
@@ -107,7 +108,7 @@ namespace Nephrite.Meta.Database
 		}
 	}
 	[Serializable]
-	public class View
+	public partial class View
 	{
 		public string Name { get; set; }
 		public string Text { get; set; }
@@ -122,7 +123,7 @@ namespace Nephrite.Meta.Database
 	}
 
 	[Serializable]
-	public class Trigger
+	public partial class Trigger
 	{
 		public string Name { get; set; }
 		public string Text { get; set; }

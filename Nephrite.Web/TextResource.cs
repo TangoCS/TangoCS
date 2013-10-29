@@ -117,6 +117,7 @@ namespace Nephrite.Web
 		{
 			get
 			{
+				if (HttpContext.Current == null) return "ru";
 				string lang = Query.GetString("lang");
 				if (HttpContext.Current.Request.Cookies["lcid"] != null)
 					lang = HttpContext.Current.Request.Cookies["lcid"].Value == "1033" ? "en" : "ru";

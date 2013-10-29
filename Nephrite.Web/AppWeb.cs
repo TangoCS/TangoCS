@@ -232,7 +232,8 @@ namespace Nephrite.Web
 		{
 			get
 			{
-				if (_metaXml == null) _metaXml = Model.ExecuteQuery<XElement>("EXEC [dbo].[usp_model]").FirstOrDefault();
+				if (_metaXml == null) _metaXml = XElement.Parse(Model.ExecuteQuery<string>("EXEC [dbo].[usp_model]").FirstOrDefault());
+				
 				return _metaXml;
 			}
 		}

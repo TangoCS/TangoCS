@@ -29,6 +29,17 @@ namespace Nephrite.Meta.Database
         void DeleteFunction(Function currentFunction);
         void CreateFunction(Function srcFunction);
 
+		string GetIntType();
+		string GetGuidType();
+		string GetStringType(int length);
+		string GetDecimalType(int precision, int scale);
+		string GetDateTimeType();
+		string GetDateType();
+		string GetZoneDateTimeType();
+		string GetLongType();
+		string GetByteArrayType();
+		
+		
 
     }
  

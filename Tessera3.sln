@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tessera", "Tessera\Tessera.csproj", "{F29F0A9D-BC89-4C6D-8FDE-82B9525F6584}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nephrite.Web", "Nephrite.Web\Nephrite.Web.csproj", "{26A68254-0902-4499-8B5F-6B4B6341BA21}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nephrite.Metamodel", "Nephrite.Metamodel\Nephrite.Metamodel.csproj", "{9F863D08-FD1F-4065-9F7D-F9DDBC469E81}"
@@ -10,6 +8,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nephrite.MSOffice", "Nephrite.MSOffice\Nephrite.MSOffice.csproj", "{E2D47815-7733-487F-BF95-8E288691F57B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tessera.Test", "Tessera.Test\Tessera.Test.csproj", "{DF9C511F-DA3D-43F6-9A15-89E35C8D7E76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "TestSchema\Test.csproj", "{D4B55011-2645-4136-AD84-F7291F64891F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,16 +21,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F29F0A9D-BC89-4C6D-8FDE-82B9525F6584}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F29F0A9D-BC89-4C6D-8FDE-82B9525F6584}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F29F0A9D-BC89-4C6D-8FDE-82B9525F6584}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{F29F0A9D-BC89-4C6D-8FDE-82B9525F6584}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{F29F0A9D-BC89-4C6D-8FDE-82B9525F6584}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{F29F0A9D-BC89-4C6D-8FDE-82B9525F6584}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F29F0A9D-BC89-4C6D-8FDE-82B9525F6584}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F29F0A9D-BC89-4C6D-8FDE-82B9525F6584}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{F29F0A9D-BC89-4C6D-8FDE-82B9525F6584}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{F29F0A9D-BC89-4C6D-8FDE-82B9525F6584}.Release|x86.ActiveCfg = Release|Any CPU
 		{26A68254-0902-4499-8B5F-6B4B6341BA21}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{26A68254-0902-4499-8B5F-6B4B6341BA21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26A68254-0902-4499-8B5F-6B4B6341BA21}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -71,6 +61,16 @@ Global
 		{DF9C511F-DA3D-43F6-9A15-89E35C8D7E76}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{DF9C511F-DA3D-43F6-9A15-89E35C8D7E76}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DF9C511F-DA3D-43F6-9A15-89E35C8D7E76}.Release|x86.ActiveCfg = Release|Any CPU
+		{D4B55011-2645-4136-AD84-F7291F64891F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4B55011-2645-4136-AD84-F7291F64891F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4B55011-2645-4136-AD84-F7291F64891F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D4B55011-2645-4136-AD84-F7291F64891F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D4B55011-2645-4136-AD84-F7291F64891F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D4B55011-2645-4136-AD84-F7291F64891F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4B55011-2645-4136-AD84-F7291F64891F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4B55011-2645-4136-AD84-F7291F64891F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D4B55011-2645-4136-AD84-F7291F64891F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D4B55011-2645-4136-AD84-F7291F64891F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
