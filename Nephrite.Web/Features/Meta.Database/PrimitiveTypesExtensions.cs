@@ -85,4 +85,11 @@ namespace Nephrite.Meta
 			return script.GetGuidType();
 		}
 	}
+	public partial class MetaByteArrayType
+	{
+		public override string GetDBType(IDBScript script)
+		{
+			return script.GetByteArrayType(Length);
+		}
+	}
 }

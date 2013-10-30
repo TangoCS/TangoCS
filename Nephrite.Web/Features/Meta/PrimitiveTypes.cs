@@ -59,7 +59,7 @@ namespace Nephrite.Meta
 
 	public partial class MetaByteArrayType : MetaClassifier
 	{
-
+		public int Length { get; set; }
 	}
 
 	public partial class MetaBooleanType : MetaPrimitiveType
@@ -119,6 +119,7 @@ namespace Nephrite.Meta
 		public static MetaStringType Char(bool notNull) { return notNull ? _char : _char_n; }
 		public static MetaStringType Char(int length, bool notNull) { return new MetaStringType { Length = length, Name = "Char", NotNullable = notNull }; }
 		public static MetaByteArrayType ByteArray() { return _byteArray; }
+		public static MetaByteArrayType ByteArray(int length) { return new MetaByteArrayType() { Name = "ByteArray", Length = length }; }
 
 		public static MetaDateType Date(bool notNull) { return notNull ? _date : _date_n; }
 		public static MetaDateTimeType DateTime(bool notNull) { return notNull ? _dateTime : _dateTime_n; }

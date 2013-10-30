@@ -46,7 +46,7 @@ namespace Nephrite.Web.Model
 
 		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig)
 		{
-			
+
 			Log = new StringWriter();
 
 			ToInsert = new List<object>();

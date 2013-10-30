@@ -37,7 +37,7 @@ namespace Nephrite.Meta.Database
 		string GetDateType();
 		string GetZoneDateTimeType();
 		string GetLongType();
-		string GetByteArrayType();
+		string GetByteArrayType(int length);
 		string GetBooleanType();
 		
 		

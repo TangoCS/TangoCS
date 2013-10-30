@@ -110,7 +110,7 @@ namespace Nephrite.Meta
 				case "N": a.Type = TypeFactory.Int(a.IsRequired); break;
 				case "O": break;
 				case "U": a.Type = TypeFactory.Long(a.IsRequired); break;
-				case "X": a.Type = TypeFactory.ByteArray(); break;
+				case "X": a.Type = TypeFactory.ByteArray(xp.GetAttributeValue("Length").ToInt32(-1)); break;
 				case "B": a.Type = TypeFactory.Boolean(a.IsRequired); break;
 				case "G": a.Type = TypeFactory.Guid(a.IsRequired); break;
 				case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6), a.IsRequired); break;

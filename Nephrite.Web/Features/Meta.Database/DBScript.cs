@@ -22,7 +22,7 @@ namespace Nephrite.Meta.Database
 		public void CreateTable(Table srcTable)
 		{
 
-			var tableScript = string.Format("CREATE TABLE {0} ({1}) ", srcTable.Name, "{0}");// {0}- Название таблицы, {1}- Список колонок, {2} - ON [PRIMARY]
+			var tableScript = string.Format("CREATE TABLE {0} ({1}) ;", srcTable.Name, "{0}");// {0}- Название таблицы, {1}- Список колонок, {2} - ON [PRIMARY]
 			var columnsScript =
 				srcTable.Columns.Aggregate(string.Empty,
 										   (current, srcColumn) =>
@@ -37,9 +37,9 @@ namespace Nephrite.Meta.Database
 			{
 				tableScript = srcTable.ForeignKeys.Aggregate(tableScript, (current, foreignKey) => current + string.Format(@"
                                     ALTER TABLE {0}  WITH NOCHECK ADD  CONSTRAINT {1} FOREIGN KEY({2})
-                                    REFERENCES {3} ({4}) 
+                                    REFERENCES {3} ({4}) ;
                                     
-                                    ALTER TABLE {0} CHECK CONSTRAINT {1} 
+                                    ALTER TABLE {0} CHECK CONSTRAINT {1} ;
                                     ", srcTable.Name, foreignKey.Value.Name, string.Join(",", foreignKey.Value.Columns), foreignKey.Value.RefTable, string.Join(",", foreignKey.Value.RefTableColumns)));
 			}
 
@@ -48,7 +48,7 @@ namespace Nephrite.Meta.Database
 
 				tableScript += string.Format(@" 
                                    ALTER TABLE {0}
-                                   ADD CONSTRAINT {1} PRIMARY KEY ({2}) ", srcTable.Name,
+                                   ADD CONSTRAINT {1} PRIMARY KEY ({2}) ;", srcTable.Name,
 													  srcTable.PrimaryKey.Name,
 													  string.Join(",", srcTable.PrimaryKey.Columns));// {0)- TableName  {1} - Constraint Name, {2} - Columns,{3} - Ref Table ,{4} - Ref Columns
 			}
@@ -64,9 +64,9 @@ namespace Nephrite.Meta.Database
 		public void CreateForeignKey(ForeignKey srcforeignKey, Table currentTable)
 		{
 			Scripts.Add(string.Format(@" ALTER TABLE {0}  WITH NOCHECK ADD  CONSTRAINT {1} FOREIGN KEY({2})
-                                            REFERENCES {3} ({4})
+                                            REFERENCES {3} ({4});
                                             
-                                            ALTER TABLE {0} CHECK CONSTRAINT {1}
+                                            ALTER TABLE {0} CHECK CONSTRAINT {1};
                                              ", currentTable.Name,
 													srcforeignKey.Name,
 													string.Join(",", srcforeignKey.Columns),
@@ -76,7 +76,7 @@ namespace Nephrite.Meta.Database
 
 		public void DeleteForeignKey(ForeignKey currentForeignKey, Table currentTable)
 		{
-			Scripts.Add(string.Format(@" ALTER TABLE {0} DROP CONSTRAINT {1}  ", currentTable.Name,
+			Scripts.Add(string.Format(@" ALTER TABLE {0} DROP CONSTRAINT {1} ; ", currentTable.Name,
 										  currentForeignKey.Name));
 		}
 
@@ -98,24 +98,23 @@ namespace Nephrite.Meta.Database
 				currentTable.ForeignKeys.Remove(key);
 			}
 
-			Scripts.Add(string.Format(@"  ALTER TABLE {0} DROP COLUMN {1}  ", currentTable.Name,
+			Scripts.Add(string.Format(@"  ALTER TABLE [{0}] DROP COLUMN [{1}]  ;", currentTable.Name,
 										  currentColumn.Name));
 		}
 		public void AddColumn(Column srcColumn, Table currentTable, Table srcTable)
 		{
-			Scripts.Add(string.Format(@" ALTER TABLE {5} ADD {0} {1} {2} {3} {4}  ",
+			Scripts.Add(string.Format(@" ALTER TABLE [{5}] ADD [{0}] {1} {2} {3} {4} ; ",
 									srcColumn.Name,
 									srcColumn.Type,
-									srcTable.Identity ? "IDENTITY(1,1)" : "",
+									srcColumn.IsPrimaryKey && srcTable.Identity ? "IDENTITY(1,1)" : "",
 									srcColumn.Nullable ? "NULL" : "NOT NULL",
 									(!string.IsNullOrEmpty(srcColumn.DefaultValue) ? string.Format("DEFAULT({0})", srcColumn.DefaultValue) : ""),
 									currentTable.Name));//    // {0}- Название колонки, {1} - Тип колонки, {2} - IDENTITY, {3}- NULL
 		}
 		public void ChangeColumn(Column srcColumn, Table currentTable)
 		{
-			Scripts.Add(string.Format(@" ALTER TABLE {0}
-                                          ALTER COLUMN {1} {2} {3} {4}
-                                           ",
+			Scripts.Add(string.Format(@" ALTER TABLE [{0}]
+                                          ALTER COLUMN [{1}] {2} {3} {4};",
 										  currentTable.Name,
 										  srcColumn.Name,
 										  srcColumn.Type,
@@ -125,15 +124,15 @@ namespace Nephrite.Meta.Database
 
 		public void DeletePrimaryKey(PrimaryKey currentPrimaryKey, Table currentTable)
 		{
-			Scripts.Add(string.Format(@" ALTER TABLE {0} DROP CONSTRAINT {1}  ", currentTable.Name,
+			Scripts.Add(string.Format(@" ALTER TABLE [{0}] DROP CONSTRAINT {1}  ;", currentTable.Name,
 										  currentPrimaryKey.Name));
 		}
 
 		public void CreatePrimaryKey(PrimaryKey srcPrimaryKey, Table curentTable)
 		{
 			Scripts.Add(string.Format(@" 
-                                   ALTER TABLE {0}
-                                   ADD CONSTRAINT {1} PRIMARY KEY ({2}) ", curentTable.Name,
+                                   ALTER TABLE [{0}]
+                                   ADD CONSTRAINT {1} PRIMARY KEY ({2}) ;", curentTable.Name,
 													   srcPrimaryKey.Name,
 													   string.Join(",", srcPrimaryKey.Columns)));
 		}
@@ -185,7 +184,7 @@ namespace Nephrite.Meta.Database
 											   current +
 											   string.Format("{0} {1} {2} {3},", srcColumn.Value.Name,
 															 srcColumn.Value.Type,
-															 "IDENTITY(1,1)",
+															 srcTable.Identity && srcColumn.Value.IsPrimaryKey ? "IDENTITY(1,1)" : "",
 															 srcColumn.Value.Nullable ? "NULL" : "NOT NULL")).TrimEnd(',');
 
 				tableScript = string.Format(tableScript, columnsScript);
@@ -195,7 +194,7 @@ namespace Nephrite.Meta.Database
 				Scripts.Add(string.Format(@"IF EXISTS(SELECT * FROM {0})
                                                 EXEC('INSERT INTO Tmp_{0}
                                                 SELECT * FROM {0} WITH (HOLDLOCK TABLOCKX)');", srcTable.Name));
-				Scripts.Add(string.Format(@"SET IDENTITY_INSERT Tmp_{0} OFF;DROP TABLE {0}; EXECUTE sp_rename N'Tmp_{0}', N'{0}', 'OBJECT' ", srcTable.Name));
+				Scripts.Add(string.Format(@"SET IDENTITY_INSERT Tmp_{0} OFF;DROP TABLE {0}; EXECUTE sp_rename N'Tmp_{0}', N'{0}', 'OBJECT' ;", srcTable.Name));
 			}
 			else
 			{
@@ -216,7 +215,7 @@ namespace Nephrite.Meta.Database
 				Scripts.Add(string.Format(@"IF EXISTS(SELECT * FROM {0})
                                                 EXEC('INSERT INTO Tmp_{0}
                                                 SELECT * FROM {0} WITH (HOLDLOCK TABLOCKX)');", srcTable.Name));
-				Scripts.Add(string.Format(@"DROP TABLE {0}; EXECUTE sp_rename N'Tmp_{0}', N'{0}', 'OBJECT' ", srcTable.Name));
+				Scripts.Add(string.Format(@"DROP TABLE {0}; EXECUTE sp_rename N'Tmp_{0}', N'{0}', 'OBJECT' ;", srcTable.Name));
 			}
 
 
@@ -226,7 +225,7 @@ namespace Nephrite.Meta.Database
 		{
 			Scripts.Add(
 				string.Format(
-					@"IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = '{0}') DROP PROCEDURE {0}",
+					@"IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = '{0}') DROP PROCEDURE {0};",
 					currentProcedure.Name));
 		}
 
@@ -239,7 +238,7 @@ namespace Nephrite.Meta.Database
 		{
 			Scripts.Add(
 				string.Format(
-					@"IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = '{0}') DROP PROCEDURE {0}",
+					@"IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = '{0}') DROP PROCEDURE {0};",
 					currentFunction.Name));
 		}
 
@@ -254,7 +253,7 @@ namespace Nephrite.Meta.Database
 		}
 		public string GetStringType(int length)
 		{
-			return string.Format("nvarchar({0})", length);
+			return string.Format("nvarchar({0})", length == -1 ? "max" : length.ToString());
 		}
 		public string GetDecimalType(int precision, int scale)
 		{
@@ -266,11 +265,11 @@ namespace Nephrite.Meta.Database
 		}
 		public string GetDateTimeType()
 		{
-			return "timestamp";
+			return "datetime";
 		}
 		public string GetDateType()
 		{
-			return "date";
+			return "datetime";
 		}
 
 		public string GetBooleanType()
@@ -287,12 +286,9 @@ namespace Nephrite.Meta.Database
 		{
 			return "bigint";
 		}
-		public string GetByteArrayType()
+		public string GetByteArrayType(int length)
 		{
-			return "image";
+			return string.Format("varbinnary({0})", length == -1 ? "max" : length.ToString());
 		}
-
-	
-		
 	}
 }

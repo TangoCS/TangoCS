@@ -6,6 +6,7 @@ using Nephrite.Web;
 using System.Data.Linq;
 using System.Linq;
 using Nephrite.Meta.Database;
+using System.Data.SqlClient;
 
 namespace TestSchema
 {
@@ -28,13 +29,25 @@ namespace TestSchema
 			foreach (var table in ownSchema.Tables)
 			{
 				var srcTable = srcSchema.Tables.Values.SingleOrDefault(t=>t.Name==table.Key);
+				if (table.Key == "EmployeeData")
+				{
+
+				}
 				 table.Value.Sync(dbScript , srcTable);
 				
 			}
-			//foreach (var table in schema.Tables)
-			//{
-			//	table.
-			//}
+
+			var strSql = string.Join(" ", dbScript.Scripts.ToArray());
+
+			using (SqlConnection con = new SqlConnection(ConnectionManager.ConnectionString))
+			{
+				con.Open();
+				using (SqlCommand cmd = new SqlCommand(strSql, con))
+				{
+					cmd.CommandType = System.Data.CommandType.Text;
+					cmd.ExecuteNonQuery();
+				}
+			}
 		}
 	}
 }

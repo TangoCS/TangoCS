@@ -13,7 +13,7 @@ namespace Nephrite.Meta.Database
 			var tempListJoinTables = new List<string>();
 			var dbScript = new DBScript();
 			//if (!cls.IsPersistent) return;
-			if (cls.Name == "Appendix")
+			if (cls.Name == "ErrorLog")
 			{
 			
 			}
@@ -22,10 +22,11 @@ namespace Nephrite.Meta.Database
 			t.Description = cls.Caption;
 			t.Identity = cls.CompositeKey.Count > 0 ? cls.CompositeKey.Count > 1 ? cls.CompositeKey.Where(c => c is MetaAttribute).Any(a => (a as MetaAttribute).IsIdentity) : cls.Key is MetaAttribute && (cls.Key as MetaAttribute).IsIdentity : false;
 
+	
 			if (cls.CompositeKey.Count > 0)
 			{
 				PrimaryKey pk = new PrimaryKey();
-				pk.Name = "PK_" + cls.Name;
+				pk.Name = "PK_" + cls.Name.Trim();
 				pk.Columns = cls.CompositeKey.Select(o => o.Name).ToArray();
 				t.PrimaryKey = pk;
 			}
@@ -59,7 +60,13 @@ namespace Nephrite.Meta.Database
 					}
 
 				}
-
+				if (prop.Type is MetaFileType)
+				{
+					column.Name = prop.Name + "GUID"; 
+					column.Type = dbScript.GetGuidType();
+					column.ForeignKeyName = "FK_" + cls.Name + "_" + prop.Name;
+					t.ForeignKeys.Add(column.ForeignKeyName, new ForeignKey() { Name = column.ForeignKeyName, RefTable = "N_File", Columns = new[] { column.Name}, RefTableColumns = new[] { "Guid" } });
+				}
 
 
 
@@ -118,6 +125,11 @@ namespace Nephrite.Meta.Database
 					}
 
 					column.Type = prop.Type.GetDBType(dbScript);
+					if (prop.Type is MetaFileType)
+					{
+						column.Name = prop.Name + "GUID";
+						column.Type = dbScript.GetGuidType();
+					}
 					column.Nullable = !prop.IsRequired;
 					//column.IsPrimaryKey = cls.CompositeKey.Any(p => p.Name == prop.Name);
 

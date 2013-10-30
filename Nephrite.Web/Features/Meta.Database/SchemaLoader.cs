@@ -39,6 +39,11 @@ namespace Nephrite.Meta.Database
 							{
 								var table = new Table();
 								table.Name = t.GetAttributeValue("Name");
+								if (table.Name == "C_DocType")
+								{
+									
+
+								}
 								table.Owner = t.GetAttributeValue("Owner");
 								table.Description = t.GetAttributeValue("Description");
 								table.Identity = !string.IsNullOrEmpty(t.GetAttributeValue("Identity")) && t.GetAttributeValue("Identity") == "1";
@@ -87,6 +92,7 @@ namespace Nephrite.Meta.Database
 
 								table.Description = t.GetAttributeValue("Description");
 
+								
 								var xPrimaryKeyElement = t.Element("PrimaryKey");
 								if (xPrimaryKeyElement != null)
 									table.PrimaryKey = new PrimaryKey()
