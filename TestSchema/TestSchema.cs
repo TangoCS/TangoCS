@@ -29,25 +29,35 @@ namespace TestSchema
 			foreach (var table in ownSchema.Tables)
 			{
 				var srcTable = srcSchema.Tables.Values.SingleOrDefault(t=>t.Name==table.Key);
-				if (table.Key == "EmployeeData")
-				{
-
+				if (table.Key == "ErrorLog")
+				{ 
+					// Тестирование импорта
+					using (SqlConnection con = new SqlConnection(ConnectionManager.ConnectionString))
+					{
+						con.Open();
+						var strSql = new DBScriptDB2().ImportData(table.Value, true, con);
+						//using (SqlCommand cmd = new SqlCommand(strSql, con))
+						//{
+						//	cmd.CommandType = System.Data.CommandType.Text;
+						//	cmd.ExecuteNonQuery();
+						//}
+					}
 				}
 				 table.Value.Sync(dbScript , srcTable);
 				
 			}
 
-			var strSql = string.Join(" ", dbScript.Scripts.ToArray());
+			//var strSql = string.Join(" ", dbScript.Scripts.ToArray());
 
-			using (SqlConnection con = new SqlConnection(ConnectionManager.ConnectionString))
-			{
-				con.Open();
-				using (SqlCommand cmd = new SqlCommand(strSql, con))
-				{
-					cmd.CommandType = System.Data.CommandType.Text;
-					cmd.ExecuteNonQuery();
-				}
-			}
+			//using (SqlConnection con = new SqlConnection(ConnectionManager.ConnectionString))
+			//{
+			//	con.Open();
+			//	using (SqlCommand cmd = new SqlCommand(strSql, con))
+			//	{
+			//		cmd.CommandType = System.Data.CommandType.Text;
+			//		cmd.ExecuteNonQuery();
+			//	}
+			//}
 		}
 	}
 }

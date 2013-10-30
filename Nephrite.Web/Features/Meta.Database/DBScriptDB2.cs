@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Data;
+using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Web;
 
 namespace Nephrite.Meta.Database
@@ -144,7 +149,7 @@ namespace Nephrite.Meta.Database
 			throw new NotImplementedException();
 		}
 
-		public string GetByteArrayType()
+		public string GetByteArrayType(int length)
 		{
 			throw new NotImplementedException();
 		}
@@ -154,9 +159,95 @@ namespace Nephrite.Meta.Database
 			throw new NotImplementedException();
 		}
 
-		public string ImportData(Table t, bool identityInsert)
+		string GetStringValue(SqlDataReader reader, int index)
 		{
-			throw new NotImplementedException();
+			if (reader.IsDBNull(index))
+				return "null";
+			else
+			{
+				switch (reader.GetDataTypeName(index))
+				{
+					case "money":
+						return reader.GetSqlMoney(index).Value.ToString(CultureInfo.InvariantCulture);
+					case "float":
+						return reader.GetSqlDouble(index).Value.ToString(CultureInfo.InvariantCulture);
+					case "int":
+						return reader.GetInt32(index).ToString();
+					case "smallint":
+						return reader.GetInt16(index).ToString();
+					case "tinyint":
+						return reader.GetByte(index).ToString();
+					case "bigint":
+						return reader.GetInt64(index).ToString();
+					case "nvarchar":
+						return "N'" + reader.GetString(index).Replace("'", "''") + "'";
+					case "varchar":
+						return "N'" + reader.GetString(index).Replace("'", "''") + "'";
+					case "bit":
+						return reader.GetBoolean(index) ? "1" : "0";
+					case "uniqueidentifier":
+						return "N'" + reader.GetGuid(index).ToString() + "'";
+					case "char":
+						return "N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'";
+					case "nchar":
+						return "N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'";
+					case "text":
+						return "N'" + reader.GetString(index).Replace("'", "''") + "'";
+					case "decimal":
+						return reader.GetDecimal(index).ToString(CultureInfo.InvariantCulture);
+					case "date":
+						return String.Format("CAST('{0}' AS Date)", reader.GetDateTime(index).ToString("yyyy-MM-dd"));
+					case "datetime":
+						return String.Format("CAST(0x{0}{1} AS DateTime)", reader.GetSqlDateTime(index).DayTicks.ToString("X8"), reader.GetSqlDateTime(index).TimeTicks.ToString("X8"));
+					case "image":
+						StringBuilder result = new StringBuilder("0x");
+						byte[] data = reader.GetSqlBytes(index).Value;
+						for (int x = 0; x < data.Length; x++)
+							result.Append(data[x].ToString("X2"));
+						return result.ToString();
+					case "xml":
+						return String.Format("N'{0}'", reader.GetSqlXml(index).Value.Replace("'", "''"));
+					case "varbinary":
+						StringBuilder result1 = new StringBuilder("0x");
+						byte[] data1 = reader.GetSqlBytes(index).Value;
+						for (int x = 0; x < data1.Length; x++)
+							result1.Append(data1[x].ToString("X2"));
+						return result1.ToString();
+					default:
+						throw new Exception("unknown data type: " + reader.GetDataTypeName(index));
+				}
+			}
+		}
+		public string ImportData(Table t, bool identityInsert, SqlConnection DbConnection)
+		{
+			if (DbConnection.State == System.Data.ConnectionState.Closed)
+				DbConnection.Open();
+
+			var columns = string.Join(", ", t.Columns.Values.Where(c => identityInsert || !t.PrimaryKey.Columns.Any(p => p == c.Name)).Select(c => string.Format("[{0}]", c.Name)).ToArray());
+			SqlCommand cmd = DbConnection.CreateCommand();
+			cmd.CommandType = System.Data.CommandType.Text;
+			cmd.CommandText = string.Format("select {0} from [{1}] ", columns, t.Name);
+
+			var sqlInsert = string.Empty;
+			using (var reader = cmd.ExecuteReader())
+			{
+				while (reader.Read())
+				{
+					StringCollection sc = new StringCollection();
+					for (int i = 0; i < reader.FieldCount; i++)
+					{
+						sc.Add(GetStringValue(reader, i));
+					}
+					sqlInsert += string.Format("INSERT INTO {0} ({1})  VALUES ({2})", t.Name, columns, string.Join(",", sc.Cast<string>().ToArray<string>()));
+				}
+			}
+	
+
+			if (identityInsert)
+			{
+				sqlInsert = string.Format("SET IDENTITY_INSERT [{0}] ON {1}  SET IDENTITY_INSERT [{0}] OFF", t.Name, sqlInsert);
+			}
+			return sqlInsert;
 		}
 	}
 }

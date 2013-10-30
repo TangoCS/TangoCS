@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 
@@ -293,7 +294,7 @@ namespace Nephrite.Meta.Database
 			return string.Format("varbinnary({0})", length == -1 ? "max" : length.ToString());
 		}
 
-		public string ImportData(Table t, bool identityInsert)
+		public string ImportData(Table t, bool identityInsert, SqlConnection DbConnection)
 		{
 			throw new NotImplementedException();
 		}

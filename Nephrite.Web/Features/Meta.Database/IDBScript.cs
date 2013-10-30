@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 
@@ -40,7 +41,7 @@ namespace Nephrite.Meta.Database
 		string GetByteArrayType(int length);
 		string GetBooleanType();
 
-		string ImportData(Table t, bool identityInsert);
+		string ImportData(Table t, bool identityInsert, SqlConnection DbConnection);
 
     }
  
