@@ -200,7 +200,7 @@ namespace Nephrite.Meta.Database
 					case "datetime":
 						return String.Format("CAST('{0}' AS timestamp)", reader.GetSqlDateTime(index).Value.ToString("yyyy-MM-dd HH:mm:ss"), reader.GetSqlDateTime(index).TimeTicks.ToString("X8"));
 					case "image":
-						StringBuilder result = new StringBuilder("0x");
+						StringBuilder result = new StringBuilder();
 						byte[] data = reader.GetSqlBytes(index).Value;
 						for (int x = 0; x < data.Length; x++)
 							result.Append(data[x].ToString("X2"));
@@ -208,7 +208,7 @@ namespace Nephrite.Meta.Database
 					case "xml":
 						return String.Format("N'{0}'", reader.GetSqlXml(index).Value.Replace("'", "''"));
 					case "varbinary":
-						StringBuilder result1 = new StringBuilder("0x");
+						StringBuilder result1 = new StringBuilder();
 						byte[] data1 = reader.GetSqlBytes(index).Value;
 						for (int x = 0; x < data1.Length; x++)
 							result1.Append(data1[x].ToString("X2"));
