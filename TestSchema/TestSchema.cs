@@ -29,7 +29,7 @@ namespace TestSchema
 			foreach (var table in ownSchema.Tables)
 			{
 				var srcTable = srcSchema.Tables.Values.SingleOrDefault(t=>t.Name==table.Key);
-				if (table.Key == "ErrorLog")
+				if (table.Key == "SPM_Subject")
 				{ 
 					// Тестирование импорта
 					using (SqlConnection con = new SqlConnection(ConnectionManager.ConnectionString))
