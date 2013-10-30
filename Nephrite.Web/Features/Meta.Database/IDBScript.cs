@@ -39,8 +39,8 @@ namespace Nephrite.Meta.Database
 		string GetLongType();
 		string GetByteArrayType();
 		string GetBooleanType();
-		
-		
+
+		string ImportData(Table t, bool identityInsert);
 
     }
  

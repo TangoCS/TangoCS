@@ -24,7 +24,7 @@ namespace TestSchema
 				srcSchema.Generate(d);
 			}
 			var ownSchema =  new SqlServerMetadataReader().ReadSchema("dbo");
-			var dbScript = new DBScript();
+			var dbScript = new DBScriptMSSQL();
 			foreach (var table in ownSchema.Tables)
 			{
 				var srcTable = srcSchema.Tables.Values.SingleOrDefault(t=>t.Name==table.Key);

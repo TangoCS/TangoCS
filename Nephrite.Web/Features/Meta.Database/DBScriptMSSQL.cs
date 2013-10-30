@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Nephrite.Meta.Database
 {
-	public class DBScript : IDBScript
+	public class DBScriptMSSQL : IDBScript
 	{
-		public DBScript()
+		public DBScriptMSSQL()
 		{
 			Scripts = new List<string>();
 		}
@@ -292,7 +292,13 @@ namespace Nephrite.Meta.Database
 			return "image";
 		}
 
-	
-		
+
+
+
+
+		public string ImportData(Table t, bool identityInsert)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
