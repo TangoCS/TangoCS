@@ -223,7 +223,7 @@ namespace Nephrite.Meta.Database
 			if (DbConnection.State == System.Data.ConnectionState.Closed)
 				DbConnection.Open();
 
-			var columns = string.Join(", ", t.Columns.Values.Where(c => identityInsert || !t.PrimaryKey.Columns.Any(p => p == c.Name)).Select(c => string.Format("[{0}]", c.Name)).ToArray());
+			var columns = string.Join(", ", t.Columns.Values.Select(c => string.Format("[{0}]", c.Name)).ToArray());
 			SqlCommand cmd = DbConnection.CreateCommand();
 			cmd.CommandType = System.Data.CommandType.Text;
 			cmd.CommandText = string.Format("select {0} from [{1}] ", columns, t.Name);
