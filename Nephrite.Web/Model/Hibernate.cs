@@ -46,7 +46,7 @@ namespace Nephrite.Web.Model
 
 		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig)
 		{
-			ConnectionManager.SetConnectionString("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=servants;Data Source=TOSHIBA-TOSH\\SQL2008");
+
 			Log = new StringWriter();
 
 			ToInsert = new List<object>();
