@@ -13,21 +13,24 @@ namespace Nephrite.Meta.Database
 			var tempListJoinTables = new List<string>();
 			var dbScript = new DBScriptMSSQL();
 			//if (!cls.IsPersistent) return;
-			if (cls.Name == "ErrorLog")
+			if (cls.Name == "C_DocType")
 			{
-			
+
 			}
 			Table t = new Table();
 			t.Name = cls.Name;
 			t.Description = cls.Caption;
 			t.Identity = cls.CompositeKey.Count > 0 ? cls.CompositeKey.Count > 1 ? cls.CompositeKey.Where(c => c is MetaAttribute).Any(a => (a as MetaAttribute).IsIdentity) : cls.Key is MetaAttribute && (cls.Key as MetaAttribute).IsIdentity : false;
 
-	
+			if (t.Identity && cls.CompositeKey.Any(c => c.Type is MetaGuidType))
+				throw new Exception(string.Format("Class -{0}. Поле не может быть Identity с типом uniqueidentifier", t.Name));
+
 			if (cls.CompositeKey.Count > 0)
 			{
 				PrimaryKey pk = new PrimaryKey();
 				pk.Name = "PK_" + cls.Name.Trim();
 				pk.Columns = cls.CompositeKey.Select(o => o.Name).ToArray();
+				pk.CurrentTable = t;
 				t.PrimaryKey = pk;
 			}
 			Tables.Add(t.Name, t);
@@ -37,11 +40,16 @@ namespace Nephrite.Meta.Database
 
 			foreach (var prop in cls.Properties)
 			{
+				if (prop.Type == null)
+					throw new Exception(string.Format("Тип не может быть null. Проверьте атрибут {0} на Type = O", prop.Name));
+
+
 				if (prop is MetaComputedAttribute)
 					continue;
 				var column = new Column();
 				column.Name = prop.Name;
-				column.Type = prop.Type != null ? prop.Type.GetDBType(dbScript) : "";
+				column.CurrentTable = t;
+				column.Type = prop.Type.GetDBType(dbScript);
 				if (prop is MetaReference)
 				{
 					if (prop.UpperBound == 1) //Если у свойства мощность 0..1 или 1..1
@@ -62,10 +70,10 @@ namespace Nephrite.Meta.Database
 				}
 				if (prop.Type is MetaFileType)
 				{
-					column.Name = prop.Name + "GUID"; 
+					column.Name = prop.Name + "GUID";
 					column.Type = dbScript.GetGuidType();
 					column.ForeignKeyName = "FK_" + cls.Name + "_" + prop.Name;
-					t.ForeignKeys.Add(column.ForeignKeyName, new ForeignKey() { Name = column.ForeignKeyName, RefTable = "N_File", Columns = new[] { column.Name}, RefTableColumns = new[] { "Guid" } });
+					t.ForeignKeys.Add(column.ForeignKeyName, new ForeignKey() { CurrentTable = t, Name = column.ForeignKeyName, RefTable = "N_File", Columns = new[] { column.Name }, RefTableColumns = new[] { "Guid" } });
 				}
 
 
@@ -86,7 +94,7 @@ namespace Nephrite.Meta.Database
 				if (f.UpperBound == 1) //Если у свойства мощность 0..1 или 1..1 Создаём FK
 				{
 					var metaReference = f as MetaReference;
-					t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaReference.RefClassName, Columns = new[] { metaReference.RefClass.ColumnName(metaReference.Name) }, RefTableColumns = new[] { metaReference.RefClass.ColumnName(metaReference.Name) } });
+					t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { CurrentTable = t, Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaReference.RefClassName, Columns = new[] { metaReference.RefClass.ColumnName(metaReference.Name) }, RefTableColumns = new[] { metaReference.RefClass.ColumnName(metaReference.Name) } });
 				}
 
 				if (f.UpperBound == -1 && (f as MetaReference).RefClass.Key.UpperBound == -1)//Если у свойства мощность 0..* или 1..* Кроме случая, когда есть обратное свойство с мощностью 0..1 Создаём третью таблицу с двумя колонками
@@ -97,11 +105,11 @@ namespace Nephrite.Meta.Database
 						joinTable.Name = t.Name + f.Name;
 						var columnNameLeft = primaryColumn.Name;
 						var columnNameRight = (f as MetaReference).RefClass.ColumnName((f as MetaReference).RefClass.Key.Name);
-						joinTable.Columns.Add(columnNameLeft, new Column() { Name = columnNameLeft, Nullable = false, Type = f.Type.GetDBType(dbScript) });
-						joinTable.Columns.Add(columnNameRight, new Column() { Name = columnNameRight, Nullable = false, Type = (f as MetaReference).RefClass.Key.Type.GetDBType(dbScript) });
+						joinTable.Columns.Add(columnNameLeft, new Column() { CurrentTable = t, Name = columnNameLeft, Nullable = false, Type = f.Type.GetDBType(dbScript) });
+						joinTable.Columns.Add(columnNameRight, new Column() { CurrentTable = t, Name = columnNameRight, Nullable = false, Type = (f as MetaReference).RefClass.Key.Type.GetDBType(dbScript) });
 
-						t.ForeignKeys.Add("FK_" + joinTable.Name + "_" + t.Name, new ForeignKey() { Name = "FK_" + joinTable.Name + "_" + t.Name, RefTable = t.Name, Columns = new[] { columnNameLeft }, RefTableColumns = new[] { primaryColumn.Name } });
-						t.ForeignKeys.Add("FK_" + joinTable.Name + "_" + (f as MetaReference).RefClass.Name, new ForeignKey() { Name = "FK_" + joinTable.Name + "_" + (f as MetaReference).RefClass.Name, RefTable = (f as MetaReference).RefClass.Name, Columns = new[] { columnNameRight }, RefTableColumns = new[] { (f as MetaReference).RefClass.Key.Name } });
+						t.ForeignKeys.Add("FK_" + joinTable.Name + "_" + t.Name, new ForeignKey() { CurrentTable = t, Name = "FK_" + joinTable.Name + "_" + t.Name, RefTable = t.Name, Columns = new[] { columnNameLeft }, RefTableColumns = new[] { primaryColumn.Name } });
+						t.ForeignKeys.Add("FK_" + joinTable.Name + "_" + (f as MetaReference).RefClass.Name, new ForeignKey() { CurrentTable = t, Name = "FK_" + joinTable.Name + "_" + (f as MetaReference).RefClass.Name, RefTable = (f as MetaReference).RefClass.Name, Columns = new[] { columnNameRight }, RefTableColumns = new[] { (f as MetaReference).RefClass.Key.Name } });
 
 						tempListJoinTables.Add(joinTable.Name);
 					}
@@ -118,7 +126,7 @@ namespace Nephrite.Meta.Database
 				{
 					var column = new Column();
 					column.Name = prop.Name;
-
+					column.CurrentTable = tdata;
 					if (prop is MetaComputedAttribute)
 					{
 						column.ComputedText = (prop as MetaComputedAttribute).GetExpression;
@@ -143,12 +151,12 @@ namespace Nephrite.Meta.Database
 				columnPk.Name = tdata.Name + "ID";
 				columnPk.IsPrimaryKey = true;
 				columnPk.Nullable = false;
-
+				columnPk.CurrentTable = tdata;
 
 
 
 				primaryColumn.ForeignKeyName = "FK_" + tdata.Name + "_" + t.Name; // Ссылка на базовую таблицу
-				tdata.ForeignKeys.Add(primaryColumn.ForeignKeyName, new ForeignKey() { Name = primaryColumn.ForeignKeyName, RefTable = "C_Language", Columns = new[] { "LanguageCode" }, RefTableColumns = new[] { "LanguageCode" } });
+				tdata.ForeignKeys.Add(primaryColumn.ForeignKeyName, new ForeignKey() { CurrentTable=tdata,  Name = primaryColumn.ForeignKeyName, RefTable = "C_Language", Columns = new[] { "LanguageCode" }, RefTableColumns = new[] { "LanguageCode" } });
 
 
 
@@ -156,9 +164,10 @@ namespace Nephrite.Meta.Database
 				languageColumn.Name = "LanguageCode";
 				languageColumn.Type = dbScript.GetStringType(2);
 				languageColumn.ForeignKeyName = "FK_" + tdata.Name + "_C_Language";
+				languageColumn.CurrentTable = tdata;
 				tdata.Columns.Add("LanguageCode", languageColumn);
 
-				tdata.ForeignKeys.Add(languageColumn.ForeignKeyName, new ForeignKey() { Name = languageColumn.ForeignKeyName, RefTable = "C_Language", Columns = new[] { "LanguageCode" }, RefTableColumns = new[] { "LanguageCode" } });
+				tdata.ForeignKeys.Add(languageColumn.ForeignKeyName, new ForeignKey() {	CurrentTable = tdata ,  Name = languageColumn.ForeignKeyName, RefTable = "C_Language", Columns = new[] { "LanguageCode" }, RefTableColumns = new[] { "LanguageCode" } });
 
 				Tables.Add(tdata.Name, tdata);
 

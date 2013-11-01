@@ -92,10 +92,7 @@ namespace Nephrite.Meta.Database
 			}
 			else
 			{
-				if (srcTable.Name == "ErrorLog")
-				{
 
-				}
 				//1 Обновляем колонки 
 				var curentColumns = this.Columns;
 				var srcColumns = srcTable.Columns;
@@ -103,7 +100,6 @@ namespace Nephrite.Meta.Database
 				foreach (var column in curentColumns)
 				{
 					var srcColumn = srcColumns.Values.SingleOrDefault(t => t.Name == column.Value.Name);
-					column.Value.currentTable = this;
 					column.Value.srcTable = srcTable;
 					column.Value.Sync(script, srcColumn);
 
@@ -111,7 +107,7 @@ namespace Nephrite.Meta.Database
 				//1.2. Добавляем колонки 
 				foreach (var srcColumn in srcColumns.Where(srcColumn => curentColumns.All(t => t.Value.Name != srcColumn.Value.Name)))
 				{
-					script.AddColumn(srcColumn.Value, this, srcTable);
+					script.AddColumn(srcColumn.Value);
 				}
 
 
@@ -123,23 +119,23 @@ namespace Nephrite.Meta.Database
 				//2.1. Удаляем foreignKey
 				foreach (var curentforeignKey in currentForeignKeys.Where(curentforeignKey => srcForeignKeys.All(t => t.Key != curentforeignKey.Key)))
 				{
-					script.DeleteForeignKey(curentforeignKey.Value, this);
+					script.DeleteForeignKey(curentforeignKey.Value);
 				}
 				//2.2. Добаляем foreignKey
 				foreach (var srcforeignKey in srcForeignKeys.Where(srcforeignKey => currentForeignKeys.All(t => t.Key != srcforeignKey.Key)))
 				{
-					script.CreateForeignKey(srcforeignKey.Value, this);
+					script.CreateForeignKey(srcforeignKey.Value);
 				}
 
 
 
 				//3 Обновляем primaryKey
 				if (PrimaryKey == null && srcTable.PrimaryKey != null)
-					script.CreatePrimaryKey(srcTable.PrimaryKey, this);
+					script.CreatePrimaryKey(srcTable.PrimaryKey);
 				else
 				{
 					if (PrimaryKey != null)
-					{ PrimaryKey.Table = this; PrimaryKey.Sync(script, srcTable.PrimaryKey); }
+						PrimaryKey.Sync(script, srcTable.PrimaryKey);
 				}
 
 
@@ -165,23 +161,61 @@ namespace Nephrite.Meta.Database
 
 	public partial class Column
 	{
-		public Table currentTable { get; set; }
+
 		public Table srcTable { get; set; }
 		public void Sync(IDBScript script, Column srcColumn)
 		{
 			if (srcColumn == null)
 			{
-				script.DeleteColumn(this, currentTable);
+				script.DeleteColumn(this);
 			}
 			else
 			{
 				// Обновляем Type, значение Default и Nullable
 				if (Type != srcColumn.Type || DefaultValue != srcColumn.DefaultValue || Nullable != srcColumn.Nullable)
 				{
-					script.ChangeColumn(srcColumn, currentTable);
+					script.ChangeColumn(srcColumn);
 				}
-				if (IsPrimaryKey && currentTable.Identity != srcTable.Identity)
-					script.SyncIdentity(this, currentTable, srcTable);
+				if (IsPrimaryKey && CurrentTable.Identity != srcTable.Identity)
+				{
+					if (CurrentTable.Name == "C_DocType")
+					{
+
+					}
+					//Перед удалением PK удаляем все ссылки и сразе генерим их создание
+					//Находим таблицы ссылающиеся на текущую и у даляем их
+					var childrenForeignKeys = CurrentTable.Schema.Tables.Where(t => t.Value.ForeignKeys.Any(f => f.Value.RefTable == CurrentTable.Name)).SelectMany(t => t.Value.ForeignKeys).ToList();
+					if (CurrentTable.PrimaryKey != null)
+					{
+						foreach (var foreignKey in childrenForeignKeys)
+						{ script.DeleteForeignKey(foreignKey.Value); }
+					}
+					// Удаляем ссылки pk fk так же обнуляем их обьекты и таблицы для создания их в дальнейшем
+					if (CurrentTable.PrimaryKey.Columns.Any(t => t == this.Name))
+					{
+						script.DeletePrimaryKey(CurrentTable.PrimaryKey);
+					}
+					var toRemove = CurrentTable.ForeignKeys.Select(t => t.Key).ToArray();
+					foreach (var key in toRemove)
+					{
+
+						script.DeleteForeignKey(CurrentTable.ForeignKeys[key]);
+						CurrentTable.ForeignKeys.Remove(key);
+					}
+
+					script.SyncIdentity(srcTable);
+					//Возвращаем PK 
+					if (CurrentTable.PrimaryKey != null)
+					{
+						script.CreatePrimaryKey(CurrentTable.PrimaryKey);
+					}
+					//Возвращаем FK Children
+					if (CurrentTable.PrimaryKey != null)
+					{
+						foreach (var foreignKey in childrenForeignKeys)
+						{ script.CreateForeignKey(foreignKey.Value); }
+					}
+				}
 
 			}
 		}
@@ -210,19 +244,19 @@ namespace Nephrite.Meta.Database
 	}
 	public partial class PrimaryKey
 	{
-		public Table Table { get; set; }
+
 		public void Sync(IDBScript script, PrimaryKey srcPrimaryKey)
 		{
 			if (srcPrimaryKey == null)
 			{
-				script.DeletePrimaryKey(this, Table);
+				script.DeletePrimaryKey(this);
 			}
 			else
 			{
 				if (Name != srcPrimaryKey.Name)
 				{
-					script.DeletePrimaryKey(this, Table);
-					script.CreatePrimaryKey(srcPrimaryKey, Table);
+					script.DeletePrimaryKey(this);
+					script.CreatePrimaryKey(srcPrimaryKey);
 				}
 			}
 		}

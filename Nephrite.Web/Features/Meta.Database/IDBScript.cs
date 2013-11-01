@@ -11,16 +11,16 @@ namespace Nephrite.Meta.Database
         List<string> Scripts { get; set; }
         void CreateTable(Table srcTable);
         void DeleteTable(Table currentTable);
-        void CreateForeignKey(ForeignKey srcforeignKey, Table currentTable);
-        void DeleteForeignKey(ForeignKey currentForeignKey, Table currentTable);
-        void DeletePrimaryKey(PrimaryKey currentPrimaryKey, Table currentTable);
-        void CreatePrimaryKey(PrimaryKey srcPrimaryKey, Table curentTable);
-        void DeleteColumn(Column currentColumn, Table currentTable);
-        void AddColumn(Column srcColumn, Table currentTable , Table srcTable);
-        void ChangeColumn(Column srcColumn, Table currentTable);
+        void CreateForeignKey(ForeignKey srcforeignKey );
+        void DeleteForeignKey(ForeignKey currentForeignKey );
+        void DeletePrimaryKey(PrimaryKey currentPrimaryKey );
+        void CreatePrimaryKey(PrimaryKey srcPrimaryKey);
+        void DeleteColumn(Column currentColumn);
+        void AddColumn(Column srcColumn);
+        void ChangeColumn(Column srcColumn );
         void DeleteTrigger(Trigger currentTrigger);
         void CreateTrigger(Trigger srcTrigger);
-        void SyncIdentity(Column currentColumn, Table currentTable, Table srcTable);
+		void SyncIdentity(Table srcTable);
 
         void DeleteView(View currentView);
         void CreateView(View srcView);

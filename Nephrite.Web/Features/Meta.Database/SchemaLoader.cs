@@ -41,7 +41,7 @@ namespace Nephrite.Meta.Database
 								table.Name = t.GetAttributeValue("Name");
 								if (table.Name == "C_DocType")
 								{
-									
+
 
 								}
 								table.Owner = t.GetAttributeValue("Owner");
@@ -60,6 +60,7 @@ namespace Nephrite.Meta.Database
 										column.ForeignKeyName = c.GetAttributeValue("ForeignKeyName");
 										column.Description = c.GetAttributeValue("Description");
 										column.IsPrimaryKey = !string.IsNullOrEmpty(c.GetAttributeValue("IsPrimaryKey")) && c.GetAttributeValue("IsPrimaryKey") == "1";
+										column.CurrentTable = table;
 										table.Columns.Add(column.Name, column);
 									});
 
@@ -77,6 +78,7 @@ namespace Nephrite.Meta.Database
 										if (xDeleteOptionElement != null)
 											foreignKey.DeleteOption = (DeleteOption)Int32.Parse(xDeleteOptionElement.Value);
 
+										foreignKey.CurrentTable = table;
 										table.ForeignKeys.Add(foreignKey.Name, foreignKey);
 									});
 
@@ -92,7 +94,7 @@ namespace Nephrite.Meta.Database
 
 								table.Description = t.GetAttributeValue("Description");
 
-								
+
 								var xPrimaryKeyElement = t.Element("PrimaryKey");
 								if (xPrimaryKeyElement != null)
 									table.PrimaryKey = new PrimaryKey()
@@ -101,8 +103,10 @@ namespace Nephrite.Meta.Database
 										Columns =
 											xPrimaryKeyElement.Descendants("Column")
 															  .Select(pc => pc.GetAttributeValue("Name"))
-															  .ToArray()
+															  .ToArray(),
+										CurrentTable = table
 									};
+								table.Schema = returnSchema;
 								returnSchema.Tables.Add(table.Name, table);
 							});
 

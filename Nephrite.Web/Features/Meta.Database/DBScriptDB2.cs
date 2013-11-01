@@ -19,6 +19,10 @@ namespace Nephrite.Meta.Database
 
 		public List<string> Scripts { get; set; }
 
+
+
+
+
 		public void CreateTable(Table srcTable)
 		{
 			throw new NotImplementedException();
@@ -29,37 +33,37 @@ namespace Nephrite.Meta.Database
 			throw new NotImplementedException();
 		}
 
-		public void CreateForeignKey(ForeignKey srcforeignKey, Table currentTable)
+		public void CreateForeignKey(ForeignKey srcforeignKey)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void DeleteForeignKey(ForeignKey currentForeignKey, Table currentTable)
+		public void DeleteForeignKey(ForeignKey currentForeignKey)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void DeletePrimaryKey(PrimaryKey currentPrimaryKey, Table currentTable)
+		public void DeletePrimaryKey(PrimaryKey currentPrimaryKey)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void CreatePrimaryKey(PrimaryKey srcPrimaryKey, Table curentTable)
+		public void CreatePrimaryKey(PrimaryKey srcPrimaryKey)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void DeleteColumn(Column currentColumn, Table currentTable)
+		public void DeleteColumn(Column currentColumn)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void AddColumn(Column srcColumn, Table currentTable, Table srcTable)
+		public void AddColumn(Column srcColumn)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void ChangeColumn(Column srcColumn, Table currentTable)
+		public void ChangeColumn(Column srcColumn)
 		{
 			throw new NotImplementedException();
 		}
@@ -74,7 +78,7 @@ namespace Nephrite.Meta.Database
 			throw new NotImplementedException();
 		}
 
-		public void SyncIdentity(Column currentColumn, Table currentTable, Table srcTable)
+		public void SyncIdentity(Table srcTable)
 		{
 			throw new NotImplementedException();
 		}
@@ -220,7 +224,7 @@ namespace Nephrite.Meta.Database
 		}
 		public string ImportData(Table t, bool identityInsert, SqlConnection DbConnection)
 		{
-			
+
 			if (DbConnection.State == System.Data.ConnectionState.Closed)
 				DbConnection.Open();
 
@@ -239,7 +243,7 @@ namespace Nephrite.Meta.Database
 					{
 						sc.Add(GetStringValue(reader, i));
 					}
-					sqlInsert += string.Format("INSERT INTO {0} ({1})  VALUES ({2}); \r\n", t.Name, columns,  string.Join(",", sc.Cast<string>().ToArray<string>()));
+					sqlInsert += string.Format("INSERT INTO {0} ({1})  VALUES ({2}); \r\n", t.Name, columns, string.Join(",", sc.Cast<string>().ToArray<string>()));
 				}
 			}
 
@@ -249,5 +253,6 @@ namespace Nephrite.Meta.Database
 			}
 			return sqlInsert;
 		}
+
 	}
 }

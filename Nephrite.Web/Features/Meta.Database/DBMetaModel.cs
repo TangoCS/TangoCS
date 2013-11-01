@@ -33,6 +33,7 @@ namespace Nephrite.Meta.Database
 		public Dictionary<string, ForeignKey> ForeignKeys { get; private set; }
 		public Dictionary<string, Trigger> Triggers { get; private set; }
 		public PrimaryKey PrimaryKey { get; set; }
+		public Schema Schema { get; set; }
 
 		public Table()
 		{
@@ -55,6 +56,7 @@ namespace Nephrite.Meta.Database
 
 		public string ForeignKeyName { get; set; }
 		public bool IsPrimaryKey { get; set; }
+		public Table CurrentTable { get; set; }
 	}
 
 	[Serializable]
@@ -62,6 +64,7 @@ namespace Nephrite.Meta.Database
 	{
 		public string Name { get; set; }
 		public string[] Columns { get; set; }
+		public Table CurrentTable { get; set; }
 	}
 
 	[Serializable]
@@ -72,6 +75,7 @@ namespace Nephrite.Meta.Database
 		public string[] Columns { get; set; }
 		public string[] RefTableColumns { get; set; }
 		public DeleteOption DeleteOption { get; set; }
+		public Table CurrentTable { get; set; }
 	}
 
 	public enum DeleteOption
