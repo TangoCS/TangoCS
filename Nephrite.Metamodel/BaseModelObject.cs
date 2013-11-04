@@ -11,8 +11,8 @@ namespace Nephrite.Metamodel
         public abstract void WriteDeleteObjectHistory();
         public abstract void WriteInsertObjectHistory();
         public abstract void WriteUpdateObjectHistory();
-        
-        public object Clone()
+
+		public virtual object Clone()
         {
             return MemberwiseClone();
         }

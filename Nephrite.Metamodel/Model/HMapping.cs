@@ -49,11 +49,11 @@ namespace Nephrite.Metamodel.Model
 			Property(x => x.Version);
 			Property(x => x.SeqNo, map => map.NotNullable(true));
 
-			Property(x => x.ParentPackageID);
+			//Property(x => x.ParentPackageID);
 			ManyToOne(x => x.ParentPackage, map =>
 			{
 				map.Column("ParentPackageID");
-				map.NotNullable(true);
+				//map.NotNullable(true);
 				map.Cascade(Cascade.None);
 			});
 
@@ -99,34 +99,34 @@ namespace Nephrite.Metamodel.Model
 			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
 			Property(x => x.IsIdentity, map => map.NotNullable(true));
 
-			Property(x => x.ObjectTypeID, map => map.NotNullable(true));
+			//Property(x => x.ObjectTypeID, map => { map.NotNullable(true); map.Formula("ObjectTypeID"); });
 			ManyToOne(x => x.ObjectType, map =>
 			{
 				map.Column("ObjectTypeID");
-				map.PropertyRef("ObjectTypeID");
+				//map.PropertyRef("ObjectTypeID");
 				map.Cascade(Cascade.None);
 			});
 
-			Property(x => x.RefObjectPropertyID);
+			//Property(x => x.RefObjectPropertyID, map => map.Formula("RefObjectPropertyID"));
 			ManyToOne(x => x.RefObjectProperty, map =>
 			{
 				map.Column("RefObjectPropertyID");
-				map.PropertyRef("ObjectPropertyID");
+				//map.PropertyRef("ObjectPropertyID");
 				map.Cascade(Cascade.None);
 			});
 
-			Property(x => x.RefObjectTypeID);
+			//Property(x => x.RefObjectTypeID, map => map.Formula("RefObjectTypeID"));
 			ManyToOne(x => x.RefObjectType, map =>
 			{
 				map.Column("RefObjectTypeID");
-				map.PropertyRef("ObjectTypeID");
+				//map.PropertyRef("ObjectTypeID");
 				map.Cascade(Cascade.None);
 			});
 
 			ManyToOne(x => x.MM_Codifier, map =>
 			{
 				map.Column("CodifierID");
-				map.PropertyRef("CodifierID");
+				//map.PropertyRef("CodifierID");
 				map.Cascade(Cascade.None);
 			});
 
@@ -167,7 +167,7 @@ namespace Nephrite.Metamodel.Model
 			ManyToOne(x => x.MM_ObjectProperty, map =>
 			{
 				map.Column("ObjectPropertyID");
-				map.PropertyRef("ObjectPropertyID");
+				//map.PropertyRef("ObjectPropertyID");
 				map.Cascade(Cascade.None);
 			});
 
@@ -202,7 +202,7 @@ namespace Nephrite.Metamodel.Model
 			ManyToOne(x => x.MM_Codifier, map =>
 			{
 				map.Column("CodifierID");
-				map.PropertyRef("CodifierID");
+				//map.PropertyRef("CodifierID");
 				map.Cascade(Cascade.None);
 			});
 		}
@@ -307,15 +307,15 @@ namespace Nephrite.Metamodel.Model
 			ManyToOne(x => x.MM_ObjectType, map =>
 			{
 				map.Column("ObjectTypeID");
-				map.PropertyRef("ObjectTypeID");
+				//map.PropertyRef("ObjectTypeID");
 				map.Cascade(Cascade.None);
 			});
 
 			ManyToOne(x => x.MM_FormView, map =>
 			{
 				map.Column("FormViewID");
-				map.PropertyRef("FormViewID");
-				map.NotNullable(true);
+				//map.PropertyRef("FormViewID");
+				//map.NotNullable(true);
 				map.Cascade(Cascade.None);
 			});
 
@@ -391,13 +391,18 @@ namespace Nephrite.Metamodel.Model
 			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
 			Property(x => x.SeqNo, map => map.NotNullable(true));
 			Property(x => x.Description);
-			ManyToOne(x => x.MM_Package, map => { map.Column("PackageID"); map.Cascade(Cascade.None); });
 
+			//Property(x => x.PackageID, map => map.Formula("PackageID"));
+			ManyToOne(x => x.MM_Package, map => 
+			{ 
+				map.Column("PackageID"); 
+				map.Cascade(Cascade.None); 
+			});
+
+			//Property(x => x.BaseObjectTypeID, map => map.Formula("BaseObjectTypeID"));
 			ManyToOne(x => x.BaseObjectType, map =>
 			{
 				map.Column("BaseObjectTypeID");
-				map.PropertyRef("ObjectTypeID");
-				map.NotNullable(true);
 				map.Cascade(Cascade.None);
 			});
 
@@ -430,18 +435,18 @@ namespace Nephrite.Metamodel.Model
 			Property(x => x.CacheKeyParams);
 			Property(x => x.CacheTimeout, map => map.NotNullable(true));
 			Property(x => x.BaseClass, map => map.NotNullable(true));
+
+			//Property(x => x.ObjectTypeID, map => map.Formula("ObjectTypeID"));
 			ManyToOne(x => x.MM_ObjectType, map =>
 			{
 				map.Column("ObjectTypeID");
-				map.PropertyRef("ObjectTypeID");
-				map.NotNullable(true);
 				map.Cascade(Cascade.None);
 			});
 
+			//Property(x => x.PackageID, map => map.Formula("PackageID"));
 			ManyToOne(x => x.MM_Package, map =>
 			{
 				map.Column("PackageID");
-				map.NotNullable(true);
 				map.Cascade(Cascade.None);
 			});
 

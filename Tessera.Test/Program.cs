@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Nephrite.Metamodel;
 using Nephrite.Web;
 using Nephrite.Web.Hibernate;
 using NHibernate;
@@ -16,15 +17,22 @@ namespace Tessera.Test
 	{
 		static void Main(string[] args)
 		{
+			//var fv = AppMM.DataContext.MM_FormViews.Count();
+			//var fv1 = AppMM.DataContext.MM_FormViews.Where(o => o.FormViewID == 21).FirstOrDefault();
+			//var ot = fv1.MM_ObjectType.SysName;
+			A.Model = new Nephrite.Web.CoreDataContext.HCoreDataContext(Nephrite.Web.Hibernate.HDataContext.DBConfig(ConnectionManager.ConnectionString));//Solution.App.DataContext;
+		
+			var a = A.Model.ExecuteQuery<SPM_Subject>("select SubjectID, SystemName, Title from SPM_Subject where lower(SystemName) = ?", "Admin").SingleOrDefault();
 			var vd = new ViewData { UserName = "admin" };
 			//var s = App.DataContext.SPM_Subject.Where(o => o.SystemName == vd.UserName).FirstOrDefault();
 			//var c = App.DataContext.SPM_Subject.Count();
 			//var s = Find(App.DataContext.SPM_Subject, vd.UserName);
-			var s = App.DataContext.SPM_Subject.Where(o => o.LastModifiedUserID == 45 && o.SystemName == "admin").FirstOrDefault();
-			Console.WriteLine(s.LastModifiedUser.Title);
-			s.LastModifiedUserID = 2;
+			var c = App.DataContext.SPM_Subject.Count();
+			var s = App.DataContext.SPM_Subject.Where(o => o.SystemName == "Admin").FirstOrDefault();
+			Console.WriteLine(s.Title);
+			//s.LastModifiedUserID = 2;
 			//s.LastModifiedUser = new SPM_Subject { SubjectID = 45 };
-			App.DataContext.SubmitChanges();
+			//App.DataContext.SubmitChanges();
 			Console.WriteLine(App.DataContext.Log.ToString());
 			Console.ReadKey();
 		}
@@ -62,7 +70,7 @@ namespace Tessera.Test
 		}
 		public virtual SPM_Subject LastModifiedUser { get; set; }
 
-		public System.Linq.Expressions.Expression<Func<SPM_Subject, bool>> KeySelector(int id)
+		public virtual System.Linq.Expressions.Expression<Func<SPM_Subject, bool>> KeySelector(int id)
 		{
 			return o => o.SubjectID == id;
 		}

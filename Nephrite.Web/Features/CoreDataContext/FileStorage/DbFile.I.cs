@@ -17,7 +17,7 @@ namespace Nephrite.Web.CoreDataContext
 		List<ValidationMessage> _validationMessages;
 		string writeErrorMessage;
 
-		public bool CheckValid()
+		public virtual bool CheckValid()
 		{
 			if (_validationMessages == null)
 			{
@@ -39,12 +39,12 @@ namespace Nephrite.Web.CoreDataContext
 			return _validationMessages.Count == 0;
 		}
 
-		public void OnLoaded()
+		public virtual void OnLoaded()
 		{
 			IsNew = false;
 		}
 
-		public List<ValidationMessage> GetValidationMessages()
+		public virtual List<ValidationMessage> GetValidationMessages()
 		{
 			CheckValid();
 			return _validationMessages;
@@ -54,7 +54,7 @@ namespace Nephrite.Web.CoreDataContext
 		byte[] bytes;
 		bool dataChanged = false;
 
-		public byte[] GetBytes()
+		public virtual byte[] GetBytes()
 		{
 			if (!IsNew)
 			{
@@ -65,7 +65,7 @@ namespace Nephrite.Web.CoreDataContext
 			return bytes;
 		}
 
-		public FileStorageType GetStorageType()
+		public virtual FileStorageType GetStorageType()
 		{
 			var f = GetParentFolder();
 			if (f != null)
@@ -73,7 +73,7 @@ namespace Nephrite.Web.CoreDataContext
 			return FileStorageType.LocalDatabase;
 		}
 
-		public string GetStorageParameter()
+		public virtual string GetStorageParameter()
 		{
 			var f = GetParentFolder();
 			if (f != null)
@@ -81,7 +81,7 @@ namespace Nephrite.Web.CoreDataContext
 			return null;
 		}
 
-		public void Write(byte[] bytes)
+		public virtual void Write(byte[] bytes)
 		{
 			SaveFileResult vc = VirusChecker.Check(Title, bytes);
 			if (vc != SaveFileResult.OK)
@@ -100,12 +100,12 @@ namespace Nephrite.Web.CoreDataContext
 			dataChanged = true;
 		}
 
-		public void WriteText(string text)
+		public virtual void WriteText(string text)
 		{
 			WriteText(text, Encoding.UTF8);
 		}
 
-		public void WriteText(string text, Encoding encoding)
+		public virtual void WriteText(string text, Encoding encoding)
 		{
 			MemoryStream ms = new MemoryStream();
 			BinaryWriter br = new BinaryWriter(ms);
@@ -115,7 +115,7 @@ namespace Nephrite.Web.CoreDataContext
 			Write(ms.ToArray());
 		}
 
-		public string GetText()
+		public virtual string GetText()
 		{
 			var bytes = FileStorageManager.GetBytes(this);
 			if (bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF)
@@ -130,11 +130,11 @@ namespace Nephrite.Web.CoreDataContext
 			return Encoding.UTF8.GetString(bytes);
 		}
 
-		public IDbFolder GetParentFolder()
+		public virtual IDbFolder GetParentFolder()
 		{
 			return FileStorageManager.DbFolders.Where(o => o.ID == ParentFolderID).FirstOrDefault();
 		}
-		public void SetParentFolder(IDbFolder parent)
+		public virtual void SetParentFolder(IDbFolder parent)
 		{
 			if (parent != null)
 			{
@@ -148,7 +148,7 @@ namespace Nephrite.Web.CoreDataContext
 			}
 		}
 
-		public bool CheckOut()
+		public virtual bool CheckOut()
 		{
 			if (CheckedOutByID.HasValue)
 				return false;
@@ -156,7 +156,7 @@ namespace Nephrite.Web.CoreDataContext
 			return true;
 		}
 
-		public bool CheckIn()
+		public virtual bool CheckIn()
 		{
 			if (!CheckedOutByID.HasValue || CheckedOutByID.Value != Subject.Current.ID)
 				return false;
@@ -164,14 +164,14 @@ namespace Nephrite.Web.CoreDataContext
 			return true;
 		}
 
-		public void WriteXML(XDocument document)
+		public virtual void WriteXML(XDocument document)
 		{
 			StringWriter sw = new StringWriter();
 			document.Save(sw);
 			WriteText(sw.ToString());
 		}
 
-		public XDocument GetXML()
+		public virtual XDocument GetXML()
 		{
 			return XDocument.Parse(GetText());
 		}

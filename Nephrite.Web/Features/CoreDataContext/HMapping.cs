@@ -160,7 +160,7 @@ namespace Nephrite.Web.CoreDataContext
 			Property(x => x.SysName, map => map.NotNullable(true));
 			Property(x => x.Value);
 			Property(x => x.SeqNo, map => map.NotNullable(true));
-			Property(x => x.TaskID, map => map.NotNullable(true));
+			Property(x => x.ParentID, map => map.NotNullable(true));
 		}
 	}
 

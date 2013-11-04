@@ -47,7 +47,7 @@ namespace Nephrite.Web.TaskManager
 	public interface ITM_TaskParameter : IEntity
 	{
 		int TaskParameterID { get; set; }
-		int TaskID { get; set; }
+		int ParentID { get; set; }
 		string Title { get; set; }
 		string SysName { get; set; }
 		string Value { get; set; }

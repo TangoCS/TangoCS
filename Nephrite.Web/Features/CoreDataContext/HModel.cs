@@ -37,7 +37,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual byte[] Hash { get; set; }
 		public virtual System.Nullable<int> SimilarErrorID { get; set; }
 
-		public Expression<Func<ErrorLog, bool>> KeySelector(int id)
+		public virtual Expression<Func<ErrorLog, bool>> KeySelector(int id)
 		{
 			return o => o.ErrorLogID == id;
 		}
@@ -73,12 +73,12 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string Comment { get; set; }
 		public virtual bool IsSystem { get; set; }
 
-		public string GetTitle()
+		public virtual string GetTitle()
 		{
 			return Title;
 		}
 
-		public Func<MailTemplate, string> OrderByTitle()
+		public virtual Func<MailTemplate, string> OrderByTitle()
 		{
 			return o => o.Title;
 		}
@@ -164,13 +164,13 @@ namespace Nephrite.Web.CoreDataContext
 	public partial class TM_TaskParameter : ITM_TaskParameter, IWithSeqNo, IWithKey<TM_TaskParameter, int>
 	{
 		public virtual int TaskParameterID { get; set; }
-		public virtual int TaskID { get; set; }
+		public virtual int ParentID { get; set; }
 		public virtual string Title { get; set; }
 		public virtual string SysName { get; set; }
 		public virtual string Value { get; set; }
 		public virtual int SeqNo { get; set; }
 
-		public Expression<Func<TM_TaskParameter, bool>> KeySelector(int id)
+		public virtual Expression<Func<TM_TaskParameter, bool>> KeySelector(int id)
 		{
 			return o => o.TaskParameterID == id;
 		}
@@ -192,7 +192,7 @@ namespace Nephrite.Web.CoreDataContext
 		public V_DbFile()
 		{
 			ID = Guid.NewGuid();
-			CreatorID = Subject.Current.ID;
+			CreatorID = 2;
 		}
 
 		public virtual string CheckedOutBy { get; set; }
@@ -224,7 +224,7 @@ namespace Nephrite.Web.CoreDataContext
 		public V_DbFolder()
 		{
 			ID = Guid.NewGuid();
-			CreatorID = AppSPM.GetCurrentSubjectID();
+			CreatorID = 2;
 		}
 
 		public virtual string Title { get; set; }
@@ -242,7 +242,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string LastModifiedUserName { get; set; }
 		public virtual string Creator { get; set; }
 		public virtual System.Guid ID { get; set; }
-		public virtual System.Guid SPMActionItemGUID { get; private set; }
+		public virtual System.Guid SPMActionItemGUID { get; set; }
 		public virtual string Path { get; set; }
 		public virtual string FullPath { get; set; }
 		public virtual System.Nullable<System.Guid> ParentFolderID { get; set; }

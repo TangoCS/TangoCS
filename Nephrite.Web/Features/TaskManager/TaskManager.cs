@@ -146,7 +146,7 @@ namespace Nephrite.Web.TaskManager
 					dc.SubmitChanges();
 					taskexecid = taskexec.TaskExecutionID;
 
-					taskparms = dc.TM_TaskParameter.Where(o => o.TaskID == taskID).ToList();
+					taskparms = dc.TM_TaskParameter.Where(o => o.ParentID == taskID).ToList();
 				}
 
 				isServiceRun = task.StartFromService;
