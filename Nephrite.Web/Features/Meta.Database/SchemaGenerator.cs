@@ -7,16 +7,13 @@ namespace Nephrite.Meta.Database
 {
 	public partial class Schema
 	{
-		public void Generate(MetaClass cls)
+		public void Generate(MetaClass cls, Dictionary<Guid, MetaClass>.ValueCollection classes)
 		{
 
 			var tempListJoinTables = new List<string>();
 			var dbScript = new DBScriptMSSQL();
 			//if (!cls.IsPersistent) return;
-			if (cls.Name == "C_DocType")
-			{
 
-			}
 			Table t = new Table();
 			t.Name = cls.Name;
 			t.Description = cls.Caption;
@@ -50,6 +47,10 @@ namespace Nephrite.Meta.Database
 				column.Name = prop.Name;
 				column.CurrentTable = t;
 				column.Type = prop.Type.GetDBType(dbScript);
+				if (prop is MetaPersistentComputedAttribute)
+				{
+					column.ComputedText = (prop as MetaPersistentComputedAttribute).Expression;
+				}
 				if (prop is MetaReference)
 				{
 					if (prop.UpperBound == 1) //Если у свойства мощность 0..1 или 1..1
@@ -93,8 +94,10 @@ namespace Nephrite.Meta.Database
 			{
 				if (f.UpperBound == 1) //Если у свойства мощность 0..1 или 1..1 Создаём FK
 				{
+
 					var metaReference = f as MetaReference;
-					t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { CurrentTable = t, Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaReference.RefClassName, Columns = new[] { metaReference.RefClass.ColumnName(metaReference.Name) }, RefTableColumns = new[] { metaReference.RefClass.ColumnName(metaReference.Name) } });
+					var fkcolumnname = classes.FirstOrDefault(c => c.Name == metaReference.RefClassName).CompositeKey.Select(o => o.Name).First();
+					t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { CurrentTable = t, Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaReference.RefClassName, Columns = new[] { metaReference.RefClass.ColumnName(metaReference.Name) }, RefTableColumns = new[] { fkcolumnname } });
 				}
 
 				if (f.UpperBound == -1 && (f as MetaReference).RefClass.Key.UpperBound == -1)//Если у свойства мощность 0..* или 1..* Кроме случая, когда есть обратное свойство с мощностью 0..1 Создаём третью таблицу с двумя колонками
@@ -127,9 +130,9 @@ namespace Nephrite.Meta.Database
 					var column = new Column();
 					column.Name = prop.Name;
 					column.CurrentTable = tdata;
-					if (prop is MetaComputedAttribute)
+					if (prop is MetaPersistentComputedAttribute)
 					{
-						column.ComputedText = (prop as MetaComputedAttribute).GetExpression;
+						column.ComputedText = (prop as MetaPersistentComputedAttribute).Expression;
 					}
 
 					column.Type = prop.Type.GetDBType(dbScript);
@@ -156,7 +159,7 @@ namespace Nephrite.Meta.Database
 
 
 				primaryColumn.ForeignKeyName = "FK_" + tdata.Name + "_" + t.Name; // Ссылка на базовую таблицу
-				tdata.ForeignKeys.Add(primaryColumn.ForeignKeyName, new ForeignKey() { CurrentTable=tdata,  Name = primaryColumn.ForeignKeyName, RefTable = "C_Language", Columns = new[] { "LanguageCode" }, RefTableColumns = new[] { "LanguageCode" } });
+				tdata.ForeignKeys.Add(primaryColumn.ForeignKeyName, new ForeignKey() { CurrentTable = tdata, Name = primaryColumn.ForeignKeyName, RefTable = "C_Language", Columns = new[] { "LanguageCode" }, RefTableColumns = new[] { "LanguageCode" } });
 
 
 
@@ -167,7 +170,7 @@ namespace Nephrite.Meta.Database
 				languageColumn.CurrentTable = tdata;
 				tdata.Columns.Add("LanguageCode", languageColumn);
 
-				tdata.ForeignKeys.Add(languageColumn.ForeignKeyName, new ForeignKey() {	CurrentTable = tdata ,  Name = languageColumn.ForeignKeyName, RefTable = "C_Language", Columns = new[] { "LanguageCode" }, RefTableColumns = new[] { "LanguageCode" } });
+				tdata.ForeignKeys.Add(languageColumn.ForeignKeyName, new ForeignKey() { CurrentTable = tdata, Name = languageColumn.ForeignKeyName, RefTable = "C_Language", Columns = new[] { "LanguageCode" }, RefTableColumns = new[] { "LanguageCode" } });
 
 				Tables.Add(tdata.Name, tdata);
 

@@ -17,6 +17,7 @@ namespace Nephrite.Meta.Database
         void CreatePrimaryKey(PrimaryKey srcPrimaryKey);
         void DeleteColumn(Column currentColumn);
         void AddColumn(Column srcColumn);
+		void AddComputedColumn(Column srcColumn);
         void ChangeColumn(Column srcColumn );
         void DeleteTrigger(Trigger currentTrigger);
         void CreateTrigger(Trigger srcTrigger);

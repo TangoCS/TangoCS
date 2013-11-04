@@ -25,12 +25,13 @@ namespace TestSchema
 				.Select(t => string.Join(";", t.CompositeKey.Select(cm => "update MM_ObjectProperty  set IsIdentity = 0  where GUID ='" + cm.ID + "' \r\n").ToList().ToArray())).ToArray());
 			foreach (var d in s.Classes)
 			{
-				srcSchema.Generate(d);
+				srcSchema.Generate(d, s.Classes);
 			}
 			var ownSchema = new SqlServerMetadataReader().ReadSchema("dbo");
 			var dbScript = new DBScriptMSSQL();
 			foreach (var table in ownSchema.Tables)
 			{
+
 				var srcTable = srcSchema.Tables.Values.SingleOrDefault(t => t.Name == table.Key);
 				//if (table.Key == "SPM_Subject")
 				//{ 
@@ -46,6 +47,10 @@ namespace TestSchema
 				//		//}
 				//	}
 				//}
+				if (table.Value.Name == "C_DocType")
+				{
+
+				}
 				table.Value.Sync(dbScript, srcTable);
 
 			}
