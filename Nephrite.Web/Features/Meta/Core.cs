@@ -500,6 +500,7 @@ namespace Nephrite.Meta
 		{
 			get
 			{
+				if (InversePropertyName.IsEmpty()) return null;
 				if (_refInverseProperty == null && RefClass != null) _refInverseProperty = RefClass.GetProperty(InversePropertyName) as MetaReference;
 				return _refInverseProperty;
 			}
