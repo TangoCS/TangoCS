@@ -214,6 +214,28 @@ namespace Nephrite.Web
 		{
 			return HttpUtility.UrlEncode(Url.Current);
 		}
+
+		public static string CreateReturnUrl(string url)
+		{
+			var returnurl = HttpUtility.UrlEncode(url);
+			if (returnurl.Length > MaxReturnUrlLength)
+			{
+				Stack<string> urlStack = new Stack<string>();
+
+				while (url.GetQueryParameter("returnurl") != "")
+				{
+					urlStack.Push(url.RemoveQueryParameter("returnurl"));
+					url = HttpUtility.UrlDecode(url.GetQueryParameter("returnurl"));
+				}
+				url = urlStack.Pop();
+				while (urlStack.Count > 0)
+					url = urlStack.Pop().AddQueryParameter("returnurl", HttpUtility.UrlEncode(url));
+				returnurl = HttpUtility.UrlEncode(url);
+			}
+			return returnurl;
+		}
+
+		public static int MaxReturnUrlLength = 1800;
 	}
 
 	public class HtmlParms : Dictionary<string, string>

@@ -244,7 +244,7 @@ namespace Nephrite.Web.FileStorage
 			return file;
 		}
 
-		public static void WriteAllText(string fullpath, string text)
+		static IDbFile WriteAll(string fullpath, bool submitChanges, Action<IDbFile> a)
 		{
 			var f = GetFile(fullpath);
 			if (f == null)
@@ -254,10 +254,30 @@ namespace Nephrite.Web.FileStorage
 				string path = i > 0 ? fullpath.Substring(0, i) : "";
 				f = CreateFile(name, path);
 			}
-			f.WriteText(text);
+			a(f);
 			if (!f.CheckValid())
 				throw new Exception(f.GetValidationMessages().Select(o => o.Message).Join("\r\n"));
-			dc.SubmitChanges();
+			if (submitChanges)
+				dc.SubmitChanges();
+			return f;
+		}
+		public static IDbFile WriteAllText(string fullpath, string text)
+		{
+			return WriteAll(fullpath, true, f => { f.WriteText(text); });
+		}
+		public static IDbFile WriteAllText(string fullpath, string text, bool submitChanges)
+		{
+			return WriteAll(fullpath, submitChanges, f => { f.WriteText(text); });
+		}
+
+		public static IDbFile WriteAllBytes(string fullpath, byte[] data)
+		{
+			return WriteAll(fullpath, true, f => { f.Write(data); });
+		}
+
+		public static IDbFile WriteAllBytes(string fullpath, byte[] data, bool submitChanges)
+		{
+			return WriteAll(fullpath, submitChanges, f => { f.Write(data); });
 		}
 		#endregion
 

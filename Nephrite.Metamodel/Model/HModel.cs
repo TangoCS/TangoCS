@@ -279,8 +279,36 @@ namespace Nephrite.Metamodel.Model
 		public virtual IList<MM_ObjectType> MM_ObjectTypes { get; set; }
 
 		//
-		public virtual int PackageID { get; set; }
-		public virtual int? BaseObjectTypeID { get; set; }
+		public virtual Nullable<System.Int32> PackageID
+		{
+			get
+			{
+
+				if (MM_Package == null) return null;
+
+				return MM_Package.PackageID;
+			}
+			set
+			{
+				if (value == null) return;
+				MM_Package = new MM_Package { PackageID = value.Value };
+			}
+		}
+		public virtual Nullable<System.Int32> BaseObjectTypeID
+		{
+			get
+			{
+
+				if (BaseObjectType == null) return null;
+
+				return BaseObjectType.ObjectTypeID;
+			}
+			set
+			{
+				if (value == null) return;
+				BaseObjectType = new MM_ObjectType { ObjectTypeID = value.Value };
+			}
+		}
 	}
 
 	public partial class MM_FormView
@@ -308,8 +336,36 @@ namespace Nephrite.Metamodel.Model
 		public virtual IList<MM_Method> MM_Methods { get; set; }
 
 		//
-		public virtual int? ObjectTypeID { get; set; }
-		public virtual int? PackageID { get; set; }
+		public virtual Nullable<System.Int32> ObjectTypeID
+		{
+			get
+			{
+
+				if (MM_ObjectType == null) return null;
+
+				return MM_ObjectType.ObjectTypeID;
+			}
+			set
+			{
+				if (value == null) return;
+				MM_ObjectType = new MM_ObjectType { ObjectTypeID = value.Value };
+			}
+		}
+		public virtual Nullable<System.Int32> PackageID
+		{
+			get
+			{
+
+				if (MM_Package == null) return null;
+
+				return MM_Package.PackageID;
+			}
+			set
+			{
+				if (value == null) return;
+				MM_Package = new MM_Package { PackageID = value.Value };
+			}
+		}
 
 	}
 

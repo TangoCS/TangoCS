@@ -9,15 +9,15 @@ namespace Nephrite.Web.CoreDataContext
 	partial class V_DbFolder : IDbFolder
 	{
 		#region Validation
-		internal bool IsNew = true;
+		bool IsNew = true;
 		List<ValidationMessage> _validationMessages;
 
-		public void OnLoaded()
+		public virtual void OnLoaded()
 		{
 			IsNew = false;
 		}
 
-		public bool CheckValid()
+		public virtual bool CheckValid()
 		{
 			if (_validationMessages == null)
 			{
@@ -35,24 +35,24 @@ namespace Nephrite.Web.CoreDataContext
 			return _validationMessages.Count == 0;
 		}
 
-		public List<ValidationMessage> GetValidationMessages()
+		public virtual List<ValidationMessage> GetValidationMessages()
 		{
 			CheckValid();
 			return _validationMessages;
 		}
 		#endregion
 
-		public IDbFolder GetParentFolder()
+		public virtual IDbFolder GetParentFolder()
 		{
 			return FileStorageManager.DbFolders.Where(o => o.ID == ParentFolderID).FirstOrDefault();
 		}
 
-		public void SetParentFolder(IDbFolder parent)
+		public virtual void SetParentFolder(IDbFolder parent)
 		{
 			ParentFolderID = parent.ID;
 		}
 
-		public FileStorageType GetStorageType()
+		public virtual FileStorageType GetStorageType()
 		{
 			switch (StorageType)
 			{
@@ -69,12 +69,12 @@ namespace Nephrite.Web.CoreDataContext
 			}
 		}
 
-		public string GetStorageParameter()
+		public virtual string GetStorageParameter()
 		{
 			return StorageParameter;
 		}
 
-		public void SetStorageInfo(FileStorageType fileStorageType, string fileStorageParameter)
+		public virtual void SetStorageInfo(FileStorageType fileStorageType, string fileStorageParameter)
 		{
 			if (StorageParameter == fileStorageParameter && StorageType == GetStorageType(fileStorageType))
 				return;
@@ -83,7 +83,7 @@ namespace Nephrite.Web.CoreDataContext
 			StorageType = GetStorageType(fileStorageType);
 		}
 
-		string GetStorageType(FileStorageType fileStorageType)
+		protected virtual string GetStorageType(FileStorageType fileStorageType)
 		{
 			switch (fileStorageType)
 			{

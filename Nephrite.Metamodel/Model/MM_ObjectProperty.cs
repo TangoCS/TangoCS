@@ -7,7 +7,7 @@ namespace Nephrite.Metamodel.Model
 {
 	public partial class MM_ObjectProperty
 	{
-		public string ElementName
+		public virtual string ElementName
 		{
 			get
 			{
@@ -20,7 +20,7 @@ namespace Nephrite.Metamodel.Model
 			}
 		}
 
-        public string ClrType
+		public virtual string ClrType
         {
             get
             {
@@ -60,7 +60,7 @@ namespace Nephrite.Metamodel.Model
             }
         }
 
-        public string Bounds
+		public virtual string Bounds
         {
             get
             {
@@ -68,7 +68,7 @@ namespace Nephrite.Metamodel.Model
             }
         }
 
-        public string FullSysName
+		public virtual string FullSysName
         {
             get { return SysName + " (" + Title + ")"; }
         }
@@ -76,7 +76,7 @@ namespace Nephrite.Metamodel.Model
         /// <summary>
         /// Имя столбца в базе данных
         /// </summary>
-        public string ColumnName
+		public virtual string ColumnName
         {
             get
             {
@@ -113,7 +113,7 @@ namespace Nephrite.Metamodel.Model
         /// <summary>
         /// Имя таблицы-ассоциатора
         /// </summary>
-        public string AssoTableName
+		public virtual string AssoTableName
         {
             get { return UpperBound == -1 && TypeCode == ObjectPropertyType.Object ? ObjectType.SysName + SysName : String.Empty; }
         }

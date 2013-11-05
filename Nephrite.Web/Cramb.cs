@@ -55,5 +55,10 @@ namespace Nephrite.Web
             instance.titles.Add(title);
             instance.url.Add("");
         }
+
+		public static string CreateReturnUrl()
+		{
+			return Url.CreateReturnUrl(instance.url.Last());
+		}
     }
 }

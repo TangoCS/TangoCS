@@ -8,21 +8,21 @@ namespace Nephrite.Metamodel.Model
 {
     partial class MM_Package : IMM_ModelElement, IWithSeqNo
     {
-        public string Icon
+		public virtual string Icon
         {
             get { return "icon_package.gif"; }
         }
 
-        public int ID
+		public virtual int ID
         {
             get { return PackageID; }
         }
 
-        public int Level { get; set; }
+		public virtual int Level { get; set; }
 
-        public string ClassName { get { return "Пакет"; } }
+		public virtual string ClassName { get { return "Пакет"; } }
 
-        public string FullSysName
+		public virtual string FullSysName
         {
             get
             {
@@ -32,7 +32,7 @@ namespace Nephrite.Metamodel.Model
             }
         }
 
-        public string ControlPath
+		public virtual string ControlPath
         {
             get
             {
@@ -40,7 +40,7 @@ namespace Nephrite.Metamodel.Model
             }
         }
 
-		public string ElementSysName
+		public virtual string ElementSysName
 		{
 			get { return SysName; }
 		}

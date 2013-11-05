@@ -9,29 +9,29 @@ namespace Nephrite.Metamodel.Model
 {
     partial class MM_FormView : BaseModelObject, IMM_ModelElement
     {
-        public string Icon
+		public virtual string Icon
         {
             get { return "icon_formview.gif"; }
         }
-		public string ElementSysName
+		public virtual string ElementSysName
 		{
 			get { return SysName + " : " + BaseClass; }
 		}
-        public int ID
+		public virtual int ID
         {
             get { return FormViewID; }
         }
 
-		public Guid ObjectGUID
+		public virtual Guid ObjectGUID
 		{
 			get { return Guid; }
 		}
 
-        public int Level { get; set; }
+		public virtual int Level { get; set; }
 
-        public string ClassName { get { return "Форма"; } }
+		public virtual string ClassName { get { return "Форма"; } }
 
-        public string FullSysName
+		public virtual string FullSysName
         {
             get
             {
@@ -42,7 +42,7 @@ namespace Nephrite.Metamodel.Model
             }
         }
 
-		public string FullTitle
+		public virtual string FullTitle
 		{
 			get
 			{
@@ -54,7 +54,7 @@ namespace Nephrite.Metamodel.Model
 		}
 
 		string _controlPath = null;
-        public string ControlPath
+		public virtual string ControlPath
         {
             get
             {
@@ -91,12 +91,12 @@ namespace Nephrite.Metamodel.Model
 			
 		}
 
-		public string BC
+		public virtual string BC
 		{
 			get { return BaseClass.Replace("Nephrite.Web.", ""); }
 		}
 
-		public bool IsSingleObjectView
+		public virtual bool IsSingleObjectView
 		{
 			get { return BC == "ViewControl<{0}>" || BC == "ViewControl<V_{0}>" || BC == "ViewControl<HST_{0}>"; }
 		}

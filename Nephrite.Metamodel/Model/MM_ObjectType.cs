@@ -37,36 +37,36 @@ namespace Nephrite.Metamodel.Model
             }
         }*/
 
-        public string Icon
+		public virtual string Icon
         {
             get { return IsTemplate ? "icon_templateobjecttype.gif" : "icon_objecttype.gif"; }
         }
 
-        public int ID
+		public virtual int ID
         {
             get { return ObjectTypeID; }
         }
 
-        public int Level { get; set; }
+		public virtual int Level { get; set; }
 
-        public string ClassName { get { return "Тип объекта"; } }
+		public virtual string ClassName { get { return "Тип объекта"; } }
 
-        public MM_ObjectProperty[] PrimaryKey
+		public virtual MM_ObjectProperty[] PrimaryKey
         {
             get { return MM_ObjectProperties.Where(o => o.IsPrimaryKey).OrderBy(o => o.SeqNo).ToArray(); }
         }
 
-        public string FullSysName
+		public virtual string FullSysName
         {
             get { return MM_Package.FullSysName + "." + SysName + " (" + Title + ")"; }
         }
 
-		public string FullTitle
+		public virtual string FullTitle
 		{
 			get { return Title + " [" + SysName + "]"; }
 		}
 
-		public string ElementSysName
+		public virtual string ElementSysName
 		{
 			get { return SysName; }
 		}
@@ -75,7 +75,7 @@ namespace Nephrite.Metamodel.Model
         /// Отслеживается ли история изменений объекта
         /// </summary>
         bool? trackHistory;
-        public bool TrackHistory
+		public virtual bool TrackHistory
         {
             get
             {
@@ -102,7 +102,7 @@ namespace Nephrite.Metamodel.Model
         }
 
         MM_ObjectType historyParentClass;
-        public MM_ObjectType HistoryParentClass
+		public virtual MM_ObjectType HistoryParentClass
         {
             get
             {
@@ -120,27 +120,27 @@ namespace Nephrite.Metamodel.Model
             }
         }
 
-        public bool IsMultiLingual
+		public virtual bool IsMultiLingual
         {
             get { return MM_ObjectProperties.Any(o => o.IsMultilingual); }
         }
 
-        public MM_ObjectProperty ParentProperty
+		public virtual MM_ObjectProperty ParentProperty
         {
             get { return AllProperties.FirstOrDefault(o => o.SysName == "Parent" && o.RefObjectTypeID.HasValue && o.UpperBound == 1); }
         }
 
-        public bool IsMovable
+		public virtual bool IsMovable
         {
             get { return AllProperties.Any(o => o.SysName == "SeqNo" && o.LowerBound == 1 && o.UpperBound == 1 && o.TypeCode == ObjectPropertyType.Number); }
         }
 
-        public IEnumerable<MM_ObjectProperty> AllProperties
+		public virtual IEnumerable<MM_ObjectProperty> AllProperties
         {
             get { return BaseObjectTypeID.HasValue ? BaseObjectType.MM_ObjectProperties.Union(MM_ObjectProperties) : MM_ObjectProperties; }
         }
 
-        public string ControlPath
+		public virtual string ControlPath
         {
             get
             {
@@ -148,7 +148,7 @@ namespace Nephrite.Metamodel.Model
             }
         }
 
-		public bool HasTableFilter
+		public virtual bool HasTableFilter
 		{
 			get
 			{
