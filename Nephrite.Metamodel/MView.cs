@@ -44,7 +44,7 @@ namespace Nephrite.Metamodel
 								PackageSysName = packageViewLocation[PackageViewFormSysName];
 							else
 							{
-								PackageSysName = AppMM.DataContext.MM_FormViews.Where(o => o.ObjectTypeID == null && o.SysName == PackageViewFormSysName).Select(o => o.MM_Package.SysName).FirstOrDefault() ?? "";
+								PackageSysName = AppMM.DataContext.MM_FormViews.Where(o => o.MM_ObjectType == null && o.SysName == PackageViewFormSysName).Select(o => o.MM_Package.SysName).FirstOrDefault() ?? "";
 								packageViewLocation[PackageViewFormSysName] = PackageSysName;
 							}
 						}
