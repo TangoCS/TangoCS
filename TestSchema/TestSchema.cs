@@ -47,10 +47,10 @@ namespace TestSchema
 				//		//}
 				//	}
 				//}
-				if (table.Value.Name == "CMSFormView")
-				{
+				//if (table.Value.Name == "HST_N_TimeZone")
+				//{
 
-				}
+				//}
 				table.Value.Sync(dbScript, srcTable);
 
 			}

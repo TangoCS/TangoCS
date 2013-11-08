@@ -18,13 +18,18 @@ namespace Nephrite.Meta.Database
 			t.Name = cls.Name;
 			t.Description = cls.Caption;
 			t.Identity = cls.CompositeKey.Count > 0 ? cls.CompositeKey.Count > 1 ? cls.CompositeKey.Where(c => c is MetaAttribute).Any(a => (a as MetaAttribute).IsIdentity) : cls.Key is MetaAttribute && (cls.Key as MetaAttribute).IsIdentity : false;
-
+			t.Schema = this;
 			if (t.Identity && cls.CompositeKey.Any(c => c.Type is MetaGuidType))
 				throw new Exception(string.Format("Class -{0}. Поле не может быть Identity с типом uniqueidentifier", t.Name));
+
+			if (t.Name == "N_FileLibrary")
+			{ 
+			
+			}
 			if (cls.BaseClass != null)
 			{
 				var column = new Column();
-				column.Name = cls.Name + (cls.BaseClass.Key.Type as IMetaIdentifierType).ColumnSuffix;
+				column.Name = (cls.Name.Contains("_") ? cls.Name.Substring(cls.Name.IndexOf('_') + 1, cls.Name.Length - cls.Name.IndexOf('_') - 1) : cls.Name) + (cls.BaseClass.Key.Type as IMetaIdentifierType).ColumnSuffix;
 				column.Type = cls.BaseClass.Key.Type.GetDBType(dbScript); ;
 				column.CurrentTable = t;
 				column.Nullable = false;
@@ -45,6 +50,7 @@ namespace Nephrite.Meta.Database
 					RefTableColumns = new[] { cls.BaseClass.Key.ColumnName }
 				});
 
+				t.Columns.Add(column.Name, column);
 
 			}
 			else if (cls.CompositeKey.Count > 0)
@@ -150,6 +156,7 @@ namespace Nephrite.Meta.Database
 			if (cls.IsMultilingual)
 			{
 				tdata = new Table();
+				tdata.Schema = this;
 				tdata.Name = cls.Name + "Data";
 				foreach (var prop in cls.Properties)
 				{

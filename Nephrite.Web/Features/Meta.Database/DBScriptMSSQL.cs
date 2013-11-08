@@ -38,7 +38,30 @@ namespace Nephrite.Meta.Database
 			{
 				DeletePrimaryKey(currentTable.PrimaryKey);
 			}
+			// Удаляем все ссылки на текущую таблицу в обьекте 
 
+
+			currentTable.Schema.Tables.ToList().ForEach(t =>
+			{
+				if (t.Value.ForeignKeys != null && t.Value.ForeignKeys.Count > 0)
+				{
+					var removeForeignKeys = t.Value.ForeignKeys.Where(f => f.Value.RefTable == currentTable.Name).Select(f => f.Value.Name).ToList();
+					removeForeignKeys.ForEach(r =>
+					{
+						t.Value.ForeignKeys.Remove(r);
+					});
+				}
+
+
+			});
+
+
+			// Удаляем все ссылки текущей таблицы в обьекте 
+
+			if (currentTable.ForeignKeys != null && currentTable.ForeignKeys.Count > 0)
+			{
+				currentTable.ForeignKeys.Clear();
+			}
 			Scripts.Add(string.Format("if exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}') drop table {0}  \r\n GO \r\n", currentTable.Name));
 		}
 
@@ -87,6 +110,7 @@ namespace Nephrite.Meta.Database
 
 		public void CreateForeignKey(ForeignKey srcforeignKey)
 		{
+		
 			var currentTable = srcforeignKey.CurrentTable;
 			Scripts.Add(string.Format("ALTER TABLE {0}  WITH NOCHECK ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" +
 									  "REFERENCES {3} ({4}); \r\n" +
@@ -125,8 +149,8 @@ namespace Nephrite.Meta.Database
 				currentTable.ForeignKeys.Remove(key);
 			}
 			if (currentColumn.CurrentTable.Name == "CMSFormView")
-			{ 
-			
+			{
+
 			}
 			if (!string.IsNullOrEmpty(currentColumn.DefaultValue))
 			{
@@ -148,13 +172,16 @@ namespace Nephrite.Meta.Database
 		}
 		public void DeleteDefaultValue(Column currentColumn)
 		{
-			Scripts.Add(string.Format("if  exists (select column_name from INFORMATION_SCHEMA.columns where table_name = '{0}' and column_name = '{2}')" +
-											  "ALTER TABLE {0} DROP CONSTRAINT {1}  \r\n GO \r\n", currentColumn.CurrentTable.Name,
-											  "DF_" + currentColumn.CurrentTable.Name + "_" + currentColumn.Name, currentColumn.Name));
+			Scripts.Add(string.Format("IF (OBJECT_ID('{1}') IS NOT NULL)\r\n" +
+										"BEGIN\r\n" +
+											"ALTER TABLE {0}\r\n" +
+											"DROP {1}\r\n" +
+										"END\r\n GO \r\n", currentColumn.CurrentTable.Name, "DF_" + currentColumn.CurrentTable.Name + "_" + currentColumn.Name, currentColumn.Name));
 		}
+
 		public void AddDefaultValue(Column srcColumn)
 		{
-			Scripts.Add(string.Format("if  exists (select column_name from INFORMATION_SCHEMA.columns where table_name = '{0}' and column_name = '{3}')" +
+			Scripts.Add(string.Format("IF EXISTS (SELECT column_name FROM INFORMATION_SCHEMA.columns WHERE table_name = '{0}' and column_name = '{3}') \r\n" +
 											  "ALTER TABLE {0} ADD CONSTRAINT" +
 											  " {1} DEFAULT ({2}) FOR {3}  \r\n GO \r\n", srcColumn.CurrentTable.Name,
 											  "DF_" + srcColumn.CurrentTable.Name + "_" + srcColumn.Name, srcColumn.DefaultValue, srcColumn.Name));
@@ -188,7 +215,7 @@ namespace Nephrite.Meta.Database
 		{
 			Scripts.Add(string.Format("DROP INDEX {0} ON {1} \r\n GO \r\n", currentIndex.Name, currentIndex.CurrentTable.Name));
 		}
-	
+
 		public void AddComputedColumn(Column srcColumn)
 		{
 			var currentTable = srcColumn.CurrentTable;
@@ -209,7 +236,7 @@ namespace Nephrite.Meta.Database
 			}
 			else
 			{
-
+			
 				Scripts.Add(string.Format("ALTER TABLE [{0}] \r\n" +
 										  "ALTER COLUMN [{1}] {2} {3} {4} \r\n GO \r\n",
 											  currentTable.Name,
@@ -283,7 +310,7 @@ namespace Nephrite.Meta.Database
 				Scripts.Add(string.Format("ALTER TABLE Tmp_{0} SET (LOCK_ESCALATION = TABLE)  \r\n GO \r\n", srcTable.Name));
 				Scripts.Add(string.Format("SET IDENTITY_INSERT Tmp_{0} ON \r\n GO \r\n", srcTable.Name));
 				Scripts.Add(string.Format("IF EXISTS(SELECT * FROM {0})  \r\n" +
-												"EXEC('INSERT INTO Tmp_{0} ({1})  \r\n GO \r\n" +
+												"EXEC('INSERT INTO Tmp_{0} ({1})  \r\n" +
 												"SELECT {1} FROM {0} WITH (HOLDLOCK TABLOCKX)')  \r\n GO \r\n", srcTable.Name, string.Join("\r\n,", srcTable.Columns.Select(t => t.Value.Name).ToArray())));
 				Scripts.Add(string.Format("SET IDENTITY_INSERT Tmp_{0} OFF DROP TABLE {0}; EXECUTE sp_rename N'Tmp_{0}', N'{0}', 'OBJECT'  \r\n GO \r\n", srcTable.Name));
 			}

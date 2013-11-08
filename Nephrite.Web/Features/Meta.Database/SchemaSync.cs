@@ -109,8 +109,16 @@ namespace Nephrite.Meta.Database
 					column.Value.Sync(script, srcColumn);
 
 				}
-			
 
+
+				//3 Обновляем primaryKey
+				if (PrimaryKey == null && srcTable.PrimaryKey != null)
+					script.CreatePrimaryKey(srcTable.PrimaryKey);
+				else
+				{
+					if (PrimaryKey != null)
+						PrimaryKey.Sync(script, srcTable.PrimaryKey);
+				}
 
 
 
@@ -125,19 +133,13 @@ namespace Nephrite.Meta.Database
 				//2.2. Добаляем foreignKey
 				foreach (var srcforeignKey in srcForeignKeys.Where(srcforeignKey => currentForeignKeys.All(t => t.Key != srcforeignKey.Key)))
 				{
-					script.CreateForeignKey(srcforeignKey.Value);
+					// Проверяем есть ли таблица в методанных
+					if (srcTable.Schema.Tables.Values.Any(t => srcforeignKey.Value.RefTable == t.Name))
+						script.CreateForeignKey(srcforeignKey.Value);
 				}
 
 
 
-				//3 Обновляем primaryKey
-				if (PrimaryKey == null && srcTable.PrimaryKey != null)
-					script.CreatePrimaryKey(srcTable.PrimaryKey);
-				else
-				{
-					if (PrimaryKey != null)
-						PrimaryKey.Sync(script, srcTable.PrimaryKey);
-				}
 
 
 				//4 Обновляем trigger
@@ -175,10 +177,7 @@ namespace Nephrite.Meta.Database
 				// Обновляем Type, значение Default и Nullable
 				if (Type != srcColumn.Type || DefaultValue != srcColumn.DefaultValue || Nullable != srcColumn.Nullable || ComputedText != srcColumn.ComputedText)
 				{
-					if (CurrentTable.Name == "C_PostSalaryIndexing")
-					{
 
-					}
 					var computedColumns = CurrentTable.Columns.Values.Where(t => !string.IsNullOrEmpty(t.ComputedText));
 					if (string.IsNullOrEmpty(ComputedText))
 					{
@@ -187,7 +186,17 @@ namespace Nephrite.Meta.Database
 							script.DeleteColumn(column);
 						}
 					}
+
+					if (!string.IsNullOrEmpty(DefaultValue))
+					{
+						script.DeleteDefaultValue(this);
+					}
 					script.ChangeColumn(srcColumn);
+
+					if (!string.IsNullOrEmpty(srcColumn.DefaultValue))
+					{
+						script.AddDefaultValue(srcColumn);
+					}
 
 					if (string.IsNullOrEmpty(ComputedText))
 					{
