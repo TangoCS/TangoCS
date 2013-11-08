@@ -22,7 +22,7 @@ namespace Tessera.Test
 			//var s = Find(App.DataContext.SPM_Subject, vd.UserName);
 			var s = App.DataContext.SPM_Subject.Where(o => o.LastModifiedUserID == 45 && o.SystemName == "admin").FirstOrDefault();
 			Console.WriteLine(s.LastModifiedUser.Title);
-			s.LastModifiedUserID = 2;
+			 s.LastModifiedUserID = 2;
 			//s.LastModifiedUser = new SPM_Subject { SubjectID = 45 };
 			App.DataContext.SubmitChanges();
 			Console.WriteLine(App.DataContext.Log.ToString());
