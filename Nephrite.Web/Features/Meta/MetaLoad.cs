@@ -56,6 +56,7 @@ namespace Nephrite.Meta
 			c.Description = xc.GetAttributeValue("Description");
 
 			c.IsPersistent = xc.GetAttributeValue("IsPersistent") == "true";
+			c.BaseClassName = xc.GetAttributeValue("BaseClass");
 
 			var properties = xc.Elements("Properties");
 			if (properties != null)

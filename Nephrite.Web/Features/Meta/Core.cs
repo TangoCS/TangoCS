@@ -255,7 +255,7 @@ namespace Nephrite.Meta
 		Dictionary<string, MetaProperty> _properties = new Dictionary<string, MetaProperty>();
 		Dictionary<string, MetaOperation> _operations = new Dictionary<string, MetaOperation>();
 
-		internal Guid? BaseClassID { get; set; }
+		internal string BaseClassName { get; set; }
 		MetaClass _baseClass = null;
 
 		/// <summary>
@@ -265,7 +265,7 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				if (_baseClass == null && BaseClassID != null) _baseClass = Solution.GetClass(BaseClassID.Value);
+				if (_baseClass == null && !BaseClassName.IsEmpty()) _baseClass = Solution.GetClass(BaseClassName);
 				return _baseClass;
 			}
 		}
