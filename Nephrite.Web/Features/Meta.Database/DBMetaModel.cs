@@ -30,6 +30,7 @@ namespace Nephrite.Meta.Database
 		public string Description { get; set; }
 		public bool Identity { get; set; }
 		public Dictionary<string, Column> Columns { get; private set; }
+		public Dictionary<string, Index> Indexes { get; private set; }
 		public Dictionary<string, ForeignKey> ForeignKeys { get; private set; }
 		public Dictionary<string, Trigger> Triggers { get; private set; }
 		public PrimaryKey PrimaryKey { get; set; }
@@ -40,10 +41,18 @@ namespace Nephrite.Meta.Database
 			Columns = new Dictionary<string, Column>();
 			ForeignKeys = new Dictionary<string, ForeignKey>();
 			Triggers = new Dictionary<string, Trigger>();
+			Indexes = new Dictionary<string, Index>();
 			Identity = true;
 		}
 	}
 
+	[Serializable]
+	public partial class Index
+	{
+		public string Name { get; set; }
+		public string[] Columns { get; set; }
+		public Table CurrentTable { get; set; }
+	}
 	[Serializable]
 	public partial class Column
 	{

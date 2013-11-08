@@ -175,7 +175,7 @@ namespace Nephrite.Meta.Database
 				// Обновляем Type, значение Default и Nullable
 				if (Type != srcColumn.Type || DefaultValue != srcColumn.DefaultValue || Nullable != srcColumn.Nullable || ComputedText != srcColumn.ComputedText)
 				{
-					if (CurrentTable.Name == "C_FIAS_AddressObject")
+					if (CurrentTable.Name == "C_PostSalaryIndexing")
 					{
 
 					}

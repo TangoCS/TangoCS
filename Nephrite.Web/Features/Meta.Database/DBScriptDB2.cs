@@ -260,5 +260,25 @@ namespace Nephrite.Meta.Database
 			throw new NotImplementedException();
 		}
 
+
+
+		public void DeleteDefaultValue(Column currentColumn)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void AddDefaultValue(Column srcColumn)
+		{
+			throw new NotImplementedException();
+		}
+
+
+
+		public void DeleteIndex(Index currentIndex)
+		{
+			throw new NotImplementedException();
+		}
+
+	
 	}
 }

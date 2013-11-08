@@ -47,7 +47,7 @@ namespace TestSchema
 				//		//}
 				//	}
 				//}
-				if (table.Value.Name == "C_DocType")
+				if (table.Value.Name == "CMSFormView")
 				{
 
 				}

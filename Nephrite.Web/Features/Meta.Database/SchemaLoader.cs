@@ -39,12 +39,7 @@ namespace Nephrite.Meta.Database
 							{
 								var table = new Table();
 								table.Name = t.GetAttributeValue("Name");
-								if (table.Name == "C_DocType")
-								{
-
-
-								}
-								table.Owner = t.GetAttributeValue("Owner");
+									table.Owner = t.GetAttributeValue("Owner");
 								table.Description = t.GetAttributeValue("Description");
 								table.Identity = !string.IsNullOrEmpty(t.GetAttributeValue("Identity")) && t.GetAttributeValue("Identity") == "1";
 								var xColumnsElement = t.Element("Columns");
@@ -57,6 +52,7 @@ namespace Nephrite.Meta.Database
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("Nullable")) && c.GetAttributeValue("Nullable") == "1";
 										column.ComputedText = c.GetAttributeValue("ComputedText");
 										column.Description = c.GetAttributeValue("Description");
+										column.DefaultValue = c.GetAttributeValue("DefaultValue");
 										column.ForeignKeyName = c.GetAttributeValue("ForeignKeyName");
 										column.Description = c.GetAttributeValue("Description");
 										column.IsPrimaryKey = !string.IsNullOrEmpty(c.GetAttributeValue("IsPrimaryKey")) && c.GetAttributeValue("IsPrimaryKey") == "1";
@@ -106,6 +102,19 @@ namespace Nephrite.Meta.Database
 															  .ToArray(),
 										CurrentTable = table
 									};
+
+
+								var xIndexesElement = t.Element("Indexes");
+								if (xIndexesElement != null)
+									xIndexesElement.Descendants("Index").ToList().ForEach(c =>
+									{
+										var index = new Index();
+										index.Name = c.GetAttributeValue("Name");
+										index.Columns = c.Descendants("Column").Select(fc => fc.GetAttributeValue("Name")).ToArray();
+										index.CurrentTable = table;
+										table.Indexes.Add(index.Name, index);
+									});
+
 								table.Schema = returnSchema;
 								returnSchema.Tables.Add(table.Name, table);
 							});

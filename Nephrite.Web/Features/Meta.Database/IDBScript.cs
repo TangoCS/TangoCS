@@ -16,13 +16,12 @@ namespace Nephrite.Meta.Database
         void DeletePrimaryKey(PrimaryKey currentPrimaryKey );
         void CreatePrimaryKey(PrimaryKey srcPrimaryKey);
         void DeleteColumn(Column currentColumn);
-        void AddColumn(Column srcColumn);
 		void AddComputedColumn(Column srcColumn);
         void ChangeColumn(Column srcColumn );
         void DeleteTrigger(Trigger currentTrigger);
         void CreateTrigger(Trigger srcTrigger);
 		void SyncIdentity(Table srcTable);
-
+		void AddColumn(Column srcColumn);
         void DeleteView(View currentView);
         void CreateView(View srcView);
 
@@ -30,7 +29,9 @@ namespace Nephrite.Meta.Database
         void CreateProcedure(Procedure srcProcedure);
         void DeleteFunction(Function currentFunction);
         void CreateFunction(Function srcFunction);
-
+		void DeleteDefaultValue(Column currentColumn);
+		void AddDefaultValue(Column srcColumn);
+		void DeleteIndex(Index currentIndex);
 		string GetIntType();
 		string GetGuidType();
 		string GetStringType(int length);
@@ -41,7 +42,7 @@ namespace Nephrite.Meta.Database
 		string GetLongType();
 		string GetByteArrayType(int length);
 		string GetBooleanType();
-
+		
 		string ImportData(Table t, bool identityInsert, SqlConnection DbConnection);
 
     }

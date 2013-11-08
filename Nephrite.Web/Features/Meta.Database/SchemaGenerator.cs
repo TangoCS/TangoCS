@@ -21,14 +21,40 @@ namespace Nephrite.Meta.Database
 
 			if (t.Identity && cls.CompositeKey.Any(c => c.Type is MetaGuidType))
 				throw new Exception(string.Format("Class -{0}. Поле не может быть Identity с типом uniqueidentifier", t.Name));
+			if (cls.BaseClass != null)
+			{
+				var column = new Column();
+				column.Name = cls.Name + (cls.BaseClass.Key.Type as IMetaIdentifierType).ColumnSuffix;
+				column.Type = cls.BaseClass.Key.Type.GetDBType(dbScript); ;
+				column.CurrentTable = t;
+				column.Nullable = false;
 
-			if (cls.CompositeKey.Count > 0)
+				PrimaryKey pk = new PrimaryKey();
+				pk.Name = "PK_" + cls.Name.Trim();
+				pk.Columns = new string[] { column.Name };
+				pk.CurrentTable = t;
+				t.PrimaryKey = pk;
+
+				column.ForeignKeyName = "FK_" + cls.Name + "_" + cls.BaseClass.Name;
+				t.ForeignKeys.Add(column.ForeignKeyName, new ForeignKey()
+				{
+					CurrentTable = t,
+					Name = column.ForeignKeyName,
+					RefTable = cls.BaseClass.Name,
+					Columns = new[] { column.Name },
+					RefTableColumns = new[] { cls.BaseClass.Key.ColumnName }
+				});
+
+
+			}
+			else if (cls.CompositeKey.Count > 0)
 			{
 				PrimaryKey pk = new PrimaryKey();
 				pk.Name = "PK_" + cls.Name.Trim();
 				pk.Columns = cls.CompositeKey.Select(o => o.Name).ToArray();
 				pk.CurrentTable = t;
 				t.PrimaryKey = pk;
+
 			}
 			Tables.Add(t.Name, t);
 
