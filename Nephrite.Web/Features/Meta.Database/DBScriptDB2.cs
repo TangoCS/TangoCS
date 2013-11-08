@@ -254,5 +254,11 @@ namespace Nephrite.Meta.Database
 			return sqlInsert;
 		}
 
+
+		public void AddComputedColumn(Column srcColumn)
+		{
+			throw new NotImplementedException();
+		}
+
 	}
 }

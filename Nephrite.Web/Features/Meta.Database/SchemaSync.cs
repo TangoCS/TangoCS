@@ -96,7 +96,12 @@ namespace Nephrite.Meta.Database
 				//1 Обновляем колонки 
 				var curentColumns = this.Columns;
 				var srcColumns = srcTable.Columns;
-				//1.1. Удаляем колонки и синхронизируем 
+				//1.1. Добавляем колонки 
+				foreach (var srcColumn in srcColumns.Where(srcColumn => curentColumns.All(t => t.Value.Name != srcColumn.Value.Name)))
+				{
+					script.AddColumn(srcColumn.Value);
+				}
+				//1.2. Удаляем колонки и синхронизируем 
 				foreach (var column in curentColumns)
 				{
 					var srcColumn = srcColumns.Values.SingleOrDefault(t => t.Name == column.Value.Name);
@@ -104,11 +109,7 @@ namespace Nephrite.Meta.Database
 					column.Value.Sync(script, srcColumn);
 
 				}
-				//1.2. Добавляем колонки 
-				foreach (var srcColumn in srcColumns.Where(srcColumn => curentColumns.All(t => t.Value.Name != srcColumn.Value.Name)))
-				{
-					script.AddColumn(srcColumn.Value);
-				}
+			
 
 
 
@@ -172,17 +173,34 @@ namespace Nephrite.Meta.Database
 			else
 			{
 				// Обновляем Type, значение Default и Nullable
-				if (Type != srcColumn.Type || DefaultValue != srcColumn.DefaultValue || Nullable != srcColumn.Nullable)
+				if (Type != srcColumn.Type || DefaultValue != srcColumn.DefaultValue || Nullable != srcColumn.Nullable || ComputedText != srcColumn.ComputedText)
 				{
-					script.ChangeColumn(srcColumn);
-				}
-				if (IsPrimaryKey && CurrentTable.Identity != srcTable.Identity)
-				{
-					if (CurrentTable.Name == "C_DocType")
+					if (CurrentTable.Name == "C_FIAS_AddressObject")
 					{
 
 					}
-					//Перед удалением PK удаляем все ссылки и сразе генерим их создание
+					var computedColumns = CurrentTable.Columns.Values.Where(t => !string.IsNullOrEmpty(t.ComputedText));
+					if (string.IsNullOrEmpty(ComputedText))
+					{
+						foreach (var column in computedColumns)
+						{
+							script.DeleteColumn(column);
+						}
+					}
+					script.ChangeColumn(srcColumn);
+
+					if (string.IsNullOrEmpty(ComputedText))
+					{
+						foreach (var column in computedColumns)
+						{
+							script.AddColumn(column);
+						}
+					}
+				}
+				if (IsPrimaryKey && CurrentTable.Identity != srcTable.Identity)
+				{
+
+
 					//Находим таблицы ссылающиеся на текущую и у даляем их
 					var childrenForeignKeys = CurrentTable.Schema.Tables.Where(t => t.Value.ForeignKeys.Any(f => f.Value.RefTable == CurrentTable.Name)).SelectMany(t => t.Value.ForeignKeys).ToList();
 					if (CurrentTable.PrimaryKey != null)
