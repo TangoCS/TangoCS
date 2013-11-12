@@ -55,16 +55,15 @@ namespace Nephrite.Metamodel.Controls
 			customProps.Add(name, func);
 
 
-			ot.MM_ObjectProperties.Add(new MM_ObjectProperty
+			/*ot.MM_ObjectProperties.Add(new MM_ObjectProperty
 			{
 				Title = title,
 				SysName = name,
 				SeqNo = seqNo,
 				MM_FormField = new MM_FormField { ShowInView = true },
 				UpperBound = 1,
-				ObjectPropertyID =
-					ot.MM_ObjectProperties.Max(o => o.ObjectPropertyID) + 1
-			});
+				ObjectPropertyID = ot.MM_ObjectProperties.Max(o => o.ObjectPropertyID) + 1
+			});*/
 
 		}
 

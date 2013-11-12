@@ -368,7 +368,7 @@ namespace Nephrite.Metamodel.Model
 		public MM_ObjectTypeMap()
 		{
 			Schema("dbo");
-			Lazy(true);
+			//Lazy(true);
 			Id(x => x.ObjectTypeID, map => map.Generator(Generators.Identity));
 			Property(x => x.Title, map => map.NotNullable(true));
 			Property(x => x.SysName, map => map.NotNullable(true));
@@ -407,11 +407,11 @@ namespace Nephrite.Metamodel.Model
 			});
 
 			//Bag(x => x.MM_FormFieldGroups, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
-			Bag(x => x.MM_FormViews, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
-			Bag(x => x.MM_Methods, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
+			//Bag(x => x.MM_FormViews, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
+			//Bag(x => x.MM_Methods, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 			//Bag(x => x.MM_MethodGroups, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
-			Bag(x => x.MM_ObjectProperties, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
-			Bag(x => x.MM_ObjectTypes, colmap => { colmap.Key(x => x.Column("BaseObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
+			//Bag(x => x.MM_ObjectProperties, colmap => { colmap.Key(x => x.Column("ObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
+			//Bag(x => x.MM_ObjectTypes, colmap => { colmap.Key(x => x.Column("BaseObjectTypeID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 		}
 	}
 
@@ -420,7 +420,7 @@ namespace Nephrite.Metamodel.Model
 		public MM_FormViewMap()
 		{
 			Schema("dbo");
-			Lazy(true);
+			//Lazy(true);
 			Id(x => x.FormViewID, map => map.Generator(Generators.Identity));
 			Property(x => x.Title, map => map.NotNullable(true));
 			Property(x => x.SysName, map => map.NotNullable(true));
@@ -436,21 +436,21 @@ namespace Nephrite.Metamodel.Model
 			Property(x => x.CacheTimeout, map => map.NotNullable(true));
 			Property(x => x.BaseClass, map => map.NotNullable(true));
 
-			//Property(x => x.ObjectTypeID, map => map.Formula("ObjectTypeID"));
+			Property(x => x.ObjectTypeID, map => map.Formula("ObjectTypeID"));
 			ManyToOne(x => x.MM_ObjectType, map =>
 			{
 				map.Column("ObjectTypeID");
 				map.Cascade(Cascade.None);
 			});
 
-			//Property(x => x.PackageID, map => map.Formula("PackageID"));
+			Property(x => x.PackageID, map => map.Formula("PackageID"));
 			ManyToOne(x => x.MM_Package, map =>
 			{
 				map.Column("PackageID");
 				map.Cascade(Cascade.None);
 			});
 
-			Bag(x => x.MM_Methods, colmap => { colmap.Key(x => x.Column("FormViewID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
+			//Bag(x => x.MM_Methods, colmap => { colmap.Key(x => x.Column("FormViewID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 		}
 	}
 

@@ -241,11 +241,11 @@ namespace Nephrite.Metamodel.Model
 		public MM_ObjectType()
 		{
 			//MM_FormFieldGroups = new List<MM_FormFieldGroup>();
-			MM_FormViews = new List<MM_FormView>();
-			MM_Methods = new List<MM_Method>();
+			//MM_FormViews = new List<MM_FormView>();
+			//MM_Methods = new List<MM_Method>();
 			//MM_MethodGroups = new List<MM_MethodGroup>();
-			MM_ObjectProperties = new List<MM_ObjectProperty>();
-			MM_ObjectTypes = new List<MM_ObjectType>();
+			//MM_ObjectProperties = new List<MM_ObjectProperty>();
+			//MM_ObjectTypes = new List<MM_ObjectType>();
 		}
 		public virtual int ObjectTypeID { get; set; }
 		public virtual MM_Package MM_Package { get; set; }
@@ -271,12 +271,35 @@ namespace Nephrite.Metamodel.Model
 		public virtual int LastModifiedUserID { get; set; }
 		public virtual int SeqNo { get; set; }
 		public virtual string Description { get; set; }
+
+
+		public virtual IQueryable<MM_FormView> MM_FormViews
+		{
+			get
+			{
+				return AppMM.DataContext.MM_FormViews.Where(o => o.MM_ObjectType == this);
+			}
+		}
+		public virtual IQueryable<MM_Method> MM_Methods
+		{
+			get
+			{
+				return AppMM.DataContext.MM_Methods.Where(o => o.MM_ObjectType == this);
+			}
+		}
+		public virtual IQueryable<MM_ObjectProperty> MM_ObjectProperties
+		{
+			get
+			{
+				return AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectType == this);
+			}
+		}
 		//public virtual IList<MM_FormFieldGroup> MM_FormFieldGroups { get; set; }
-		public virtual IList<MM_FormView> MM_FormViews { get; set; }
-		public virtual IList<MM_Method> MM_Methods { get; set; }
+		//public virtual IList<MM_FormView> MM_FormViews { get; set; }
+		//public virtual IList<MM_Method> MM_Methods { get; set; }
 		//public virtual IList<MM_MethodGroup> MM_MethodGroups { get; set; }
-		public virtual IList<MM_ObjectProperty> MM_ObjectProperties { get; set; }
-		public virtual IList<MM_ObjectType> MM_ObjectTypes { get; set; }
+		//public virtual IList<MM_ObjectProperty> MM_ObjectProperties { get; set; }
+		//public virtual IList<MM_ObjectType> MM_ObjectTypes { get; set; }
 
 		//
 		public virtual Nullable<System.Int32> PackageID
@@ -315,11 +338,10 @@ namespace Nephrite.Metamodel.Model
 	{
 		public MM_FormView()
 		{
-			MM_Methods = new List<MM_Method>();
+			//MM_Methods = new List<MM_Method>();
 		}
 		public virtual int FormViewID { get; set; }
-		public virtual MM_ObjectType MM_ObjectType { get; set; }
-		public virtual MM_Package MM_Package { get; set; }
+		
 		public virtual string Title { get; set; }
 		public virtual string SysName { get; set; }
 		public virtual string ViewTemplate { get; set; }
@@ -333,7 +355,7 @@ namespace Nephrite.Metamodel.Model
 		public virtual string CacheKeyParams { get; set; }
 		public virtual int CacheTimeout { get; set; }
 		public virtual string BaseClass { get; set; }
-		public virtual IList<MM_Method> MM_Methods { get; set; }
+		//public virtual IList<MM_Method> MM_Methods { get; set; }
 
 		//
 		public virtual Nullable<System.Int32> ObjectTypeID
@@ -366,6 +388,9 @@ namespace Nephrite.Metamodel.Model
 				MM_Package = new MM_Package { PackageID = value.Value };
 			}
 		}
+
+		public virtual MM_ObjectType MM_ObjectType { get; set; }
+		public virtual MM_Package MM_Package { get; set; }
 
 	}
 
