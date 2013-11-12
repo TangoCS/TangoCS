@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -413,7 +414,65 @@ namespace Nephrite.Meta.Database
 		{
 			throw new NotImplementedException();
 		}
-
+		public string GetStringValue(SqlDataReader reader, int index)
+		{
+			if (reader.IsDBNull(index))
+				return "null";
+			else
+			{
+				switch (reader.GetDataTypeName(index))
+				{
+					case "money":
+						return reader.GetSqlMoney(index).Value.ToString(CultureInfo.InvariantCulture);
+					case "float":
+						return reader.GetSqlDouble(index).Value.ToString(CultureInfo.InvariantCulture);
+					case "int":
+						return reader.GetInt32(index).ToString();
+					case "smallint":
+						return reader.GetInt16(index).ToString();
+					case "tinyint":
+						return reader.GetByte(index).ToString();
+					case "bigint":
+						return reader.GetInt64(index).ToString();
+					case "nvarchar":
+						return "N'" + reader.GetString(index).Replace("'", "''") + "'";
+					case "varchar":
+						return "N'" + reader.GetString(index).Replace("'", "''") + "'";
+					case "bit":
+						return reader.GetBoolean(index) ? "1" : "0";
+					case "uniqueidentifier":
+						return "N'" + reader.GetGuid(index).ToString() + "'";
+					case "char":
+						return "N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'";
+					case "nchar":
+						return "N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'";
+					case "text":
+						return "N'" + reader.GetString(index).Replace("'", "''") + "'";
+					case "decimal":
+						return reader.GetDecimal(index).ToString(CultureInfo.InvariantCulture);
+					case "date":
+						return String.Format("CAST('{0}' AS Date)", reader.GetDateTime(index).ToString("yyyy-MM-dd"));
+					case "datetime":
+						return String.Format("CAST(0x{0}{1} AS DateTime)", reader.GetSqlDateTime(index).DayTicks.ToString("X8"), reader.GetSqlDateTime(index).TimeTicks.ToString("X8"));
+					case "image":
+						StringBuilder result = new StringBuilder("0x");
+						byte[] data = reader.GetSqlBytes(index).Value;
+						for (int x = 0; x < data.Length; x++)
+							result.Append(data[x].ToString("X2"));
+						return result.ToString();
+					case "xml":
+						return String.Format("N'{0}'", reader.GetSqlXml(index).Value.Replace("'", "''"));
+					case "varbinary":
+						StringBuilder result1 = new StringBuilder("0x");
+						byte[] data1 = reader.GetSqlBytes(index).Value;
+						for (int x = 0; x < data1.Length; x++)
+							result1.Append(data1[x].ToString("X2"));
+						return result1.ToString();
+					default:
+						throw new Exception("unknown data type: " + reader.GetDataTypeName(index));
+				}
+			}
+		}
 
 	}
 }

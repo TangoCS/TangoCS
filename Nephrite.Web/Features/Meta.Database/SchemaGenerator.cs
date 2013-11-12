@@ -22,10 +22,7 @@ namespace Nephrite.Meta.Database
 			if (t.Identity && cls.CompositeKey.Any(c => c.Type is MetaGuidType))
 				throw new Exception(string.Format("Class -{0}. Поле не может быть Identity с типом uniqueidentifier", t.Name));
 
-			if (t.Name == "N_FileLibrary")
-			{ 
-			
-			}
+
 			if (cls.BaseClass != null)
 			{
 				var column = new Column();

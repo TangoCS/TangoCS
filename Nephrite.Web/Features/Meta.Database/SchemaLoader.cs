@@ -67,6 +67,7 @@ namespace Nephrite.Meta.Database
 										var foreignKey = new ForeignKey();
 										foreignKey.Name = c.GetAttributeValue("Name");
 										foreignKey.RefTable = c.GetAttributeValue("RefTable");
+										foreignKey.IsEnabled = !string.IsNullOrEmpty(c.GetAttributeValue("IsEnabled")) && c.GetAttributeValue("IsEnabled") == "1";
 										foreignKey.Columns = c.Descendants("Column").Select(fc => fc.GetAttributeValue("Name")).ToArray();
 										foreignKey.RefTableColumns = c.Descendants("RefTableColumn").Select(fc => fc.GetAttributeValue("Name")).ToArray();
 										var xDeleteOptionElement = t.Element("DeleteOption");
@@ -112,6 +113,12 @@ namespace Nephrite.Meta.Database
 										index.Name = c.GetAttributeValue("Name");
 										index.Columns = c.Descendants("Column").Select(fc => fc.GetAttributeValue("Name")).ToArray();
 										index.CurrentTable = table;
+										index.Cluster = c.GetAttributeValue("Cluster");
+										index.AllowPageLocks = !string.IsNullOrEmpty(c.GetAttributeValue("AllowPageLocks")) && c.GetAttributeValue("AllowPageLocks") == "1";
+										index.AllowRowLocks = !string.IsNullOrEmpty(c.GetAttributeValue("AllowRowLocks")) && c.GetAttributeValue("AllowRowLocks") == "1";
+										index.IgnoreDupKey = !string.IsNullOrEmpty(c.GetAttributeValue("IgnoreDupKey")) && c.GetAttributeValue("IgnoreDupKey") == "1";
+										index.IsUnique = !string.IsNullOrEmpty(c.GetAttributeValue("IsUnique")) && c.GetAttributeValue("IsUnique") == "1";
+
 										table.Indexes.Add(index.Name, index);
 									});
 
@@ -190,6 +197,7 @@ namespace Nephrite.Meta.Database
 					}
 				}
 			}
+			returnSchema.Name = name;
 			return returnSchema;
 		}
 

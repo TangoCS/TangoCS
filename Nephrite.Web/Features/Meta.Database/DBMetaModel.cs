@@ -13,6 +13,7 @@ namespace Nephrite.Meta.Database
 		public Dictionary<string, View> Views { get; private set; }
 		public Dictionary<string, Procedure> Procedures { get; private set; }
 		public Dictionary<string, Function> Functions { get; private set; }
+		public string Name { get; set; }
 		public Schema()
 		{
 			Tables = new Dictionary<string, Table>();
@@ -52,6 +53,13 @@ namespace Nephrite.Meta.Database
 		public string Name { get; set; }
 		public string[] Columns { get; set; }
 		public Table CurrentTable { get; set; }
+
+		public string Cluster { get; set; }
+		public bool AllowPageLocks { get; set; }
+		public bool AllowRowLocks { get; set; }
+		public bool IgnoreDupKey { get; set; }
+		public bool IsUnique { get; set; }
+
 	}
 	[Serializable]
 	public partial class Column
@@ -81,6 +89,7 @@ namespace Nephrite.Meta.Database
 	{
 		public string Name { get; set; }
 		public string RefTable { get; set; }
+		public bool IsEnabled { get; set; }
 		public string[] Columns { get; set; }
 		public string[] RefTableColumns { get; set; }
 		public DeleteOption DeleteOption { get; set; }
