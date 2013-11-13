@@ -18,18 +18,19 @@ namespace Tessera.Test
 		static void Main(string[] args)
 		{
 			//var fv = AppMM.DataContext.MM_FormViews.Count();
-			var fv1 = App.DataContext.MM_FormView.Where(o => o.FormViewID == 21).FirstOrDefault();
-			var ot = fv1.MM_ObjectType.SysName;
+			//var fv1 = App.DataContext.MM_FormView.Where(o => o.FormViewID == 21).FirstOrDefault();
+			//var ot = fv1.MM_ObjectType.SysName;
+			//var fvs = AppMM.DataContext.MM_FormViews.Where(o => o.MM_ObjectType == null && o.SysName == "gpo_ReportRecipients").Select(o => o.MM_Package.SysName).FirstOrDefault() ?? "";
 			//var ot = fv1.MM_ObjectType.SysName;
 			//A.Model = new Nephrite.Web.CoreDataContext.HCoreDataContext(Nephrite.Web.Hibernate.HDataContext.DBConfig(ConnectionManager.ConnectionString));//Solution.App.DataContext;
-		
+			var r = App.DataContext.ExecuteQuery<int>("select RoleID from V_SPM_AllSubjectRole where SubjectID = ?", 2).ToList();
 			//var a = A.Model.ExecuteQuery<SPM_Subject>("select SubjectID, SystemName, Title from SPM_Subject where lower(SystemName) = ?", "Admin").SingleOrDefault();
 			//var vd = new ViewData { UserName = "admin" };
 			//var s = App.DataContext.SPM_Subject.Where(o => o.SystemName == vd.UserName).FirstOrDefault();
 			//var c = App.DataContext.SPM_Subject.Count(); 
 			//var s = Find(App.DataContext.SPM_Subject, vd.UserName);
 			//var c = App.DataContext.SPM_Subject.Count();
-			var s = App.DataContext.SPM_Subject.Where(o => o.SystemName == "Admin").FirstOrDefault();
+			//var s = App.DataContext.SPM_Subject.Where(o => o.SystemName == "Admin").FirstOrDefault();
 			//Console.WriteLine(s.Title);
 			//s.LastModifiedUserID = 2;
 			//s.LastModifiedUser = new SPM_Subject { SubjectID = 45 };

@@ -200,7 +200,19 @@ namespace Nephrite.Web.Hibernate
 				i++;
 			}
 
-			s.SetResultTransformer(Transformers.AliasToBean<TResult>());
+			Type type = typeof(TResult);
+			bool isSimple = type.IsValueType || type.IsPrimitive ||
+			new Type[] { 
+				typeof(String),
+				typeof(Decimal),
+				typeof(DateTime),
+				typeof(DateTimeOffset),
+				typeof(TimeSpan),
+				typeof(Guid)
+			}.Contains(type) || Convert.GetTypeCode(type) != TypeCode.Object;
+
+			if (!isSimple)
+				s.SetResultTransformer(Transformers.AliasToBean<TResult>());
 			return s.List<TResult>();
 		}
 
