@@ -28,7 +28,7 @@ namespace TestSchema
 				srcSchema.Generate(d, s.Classes);
 			}
 			var ownSchema = new SqlServerMetadataReader().ReadSchema("dbo");
-			var dbScript = new DBScriptMSSQL();
+			var dbScript = new DBScriptMSSQL("dbo");
 			foreach (var table in ownSchema.Tables)
 			{
 

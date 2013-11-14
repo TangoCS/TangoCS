@@ -10,13 +10,26 @@ namespace Nephrite.Meta.Database
 
 	public class DBScriptMSSQL : IDBScript
 	{
-		public DBScriptMSSQL()
+		private List<string> _MainScripts { get; set; }
+		private List<string> _FkScripts { get; set; }
+		private string _SchemaName { get; set; }
+
+		public DBScriptMSSQL(string schemaName)
 		{
 			Scripts = new List<string>();
+			_SchemaName = schemaName;
 		}
 
 
-		public List<string> Scripts { get; set; }
+		public List<string> Scripts
+		{
+			get
+			{
+				_MainScripts.AddRange(_FkScripts);
+				return _MainScripts;
+			}
+			set { } 
+		}
 
 		public void DeleteTable(Table currentTable)
 		{
@@ -47,10 +60,7 @@ namespace Nephrite.Meta.Database
 				if (t.Value.ForeignKeys != null && t.Value.ForeignKeys.Count > 0)
 				{
 					var removeForeignKeys = t.Value.ForeignKeys.Where(f => f.Value.RefTable == currentTable.Name).Select(f => f.Value.Name).ToList();
-					removeForeignKeys.ForEach(r =>
-					{
-						t.Value.ForeignKeys.Remove(r);
-					});
+					removeForeignKeys.ForEach(r => t.Value.ForeignKeys.Remove(r));
 				}
 
 
@@ -63,13 +73,13 @@ namespace Nephrite.Meta.Database
 			{
 				currentTable.ForeignKeys.Clear();
 			}
-			Scripts.Add(string.Format("if exists (select * from INFORMATION_SCHEMA.TABLES where TABLE_NAME = '{0}') drop table {0}  \r\n GO \r\n", currentTable.Name));
+			_MainScripts.Add(string.Format("if  OBJECT_ID('{1}.{0}') is not null drop table {1}.{0}  \r\n GO \r\n", currentTable.Name, _SchemaName));
 		}
 
 		public void CreateTable(Table srcTable)
 		{
 
-			var tableScript = string.Format("CREATE TABLE {0} ({1}) ", srcTable.Name, "{0}  \r\n GO \r\n");// {0}- Название таблицы, {1}- Список колонок, {2} - ON [PRIMARY]
+			var tableScript = string.Format("CREATE TABLE {2}.{0} ({1}) ", srcTable.Name, "{0}  \r\n GO \r\n", _SchemaName);// {0}- Название таблицы, {1}- Список колонок, {2} - ON [PRIMARY]
 			var columnsScript =
 				srcTable.Columns.Aggregate(string.Empty,
 										   (current, srcColumn) =>
@@ -84,25 +94,33 @@ namespace Nephrite.Meta.Database
 			tableScript = string.Format(tableScript, columnsScript);
 			if (srcTable.ForeignKeys.Count > 0)
 			{
-				tableScript = srcTable.ForeignKeys.Aggregate(tableScript, (current, foreignKey) => current + string.Format(
-									"ALTER TABLE {0}  WITH NOCHECK ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" +
-									"REFERENCES {3} ({4}) \r\n" +
-									"ALTER TABLE {0} CHECK CONSTRAINT {1}  \r\n GO \r\n"
-									, srcTable.Name, foreignKey.Value.Name, string.Join(",", foreignKey.Value.Columns), foreignKey.Value.RefTable, string.Join(",", foreignKey.Value.RefTableColumns)));
+
+				_FkScripts.Add(srcTable.ForeignKeys.Aggregate(tableScript, (current, foreignKey) => current + string.Format(
+									"ALTER TABLE {5}.{0}  WITH NOCHECK ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" +
+									"REFERENCES {5}.{3} ({4}) \r\n" +
+									"ALTER TABLE {5}.{0} CHECK CONSTRAINT {1}  \r\n GO \r\n"
+									, srcTable.Name, foreignKey.Value.Name, string.Join(",", foreignKey.Value.Columns), foreignKey.Value.RefTable, string.Join(",", foreignKey.Value.RefTableColumns), _SchemaName)));
 			}
 
 			if (srcTable.PrimaryKey != null)
 			{
 
 				tableScript += string.Format(
-								   "ALTER TABLE {0}\r\n" +
+								   "ALTER TABLE {3}.{0}\r\n" +
 								   "ADD CONSTRAINT {1} PRIMARY KEY ({2})  \r\n GO \r\n", srcTable.Name,
 													  srcTable.PrimaryKey.Name,
-													  string.Join(",", srcTable.PrimaryKey.Columns));// {0)- TableName  {1} - Constraint Name, {2} - Columns,{3} - Ref Table ,{4} - Ref Columns
+													  string.Join(",", srcTable.PrimaryKey.Columns), _SchemaName);// {0)- TableName  {1} - Constraint Name, {2} - Columns,{3} - Ref Table ,{4} - Ref Columns
 			}
 
-
-			Scripts.Add(tableScript);
+			var defaultColumns = srcTable.Columns.Where(t => !string.IsNullOrEmpty(t.Value.DefaultValue));
+			if (defaultColumns.Any())
+			{
+				foreach (var defaultColumn in defaultColumns)
+				{
+					AddDefaultValue(defaultColumn.Value);
+				}
+			}
+			_MainScripts.Add(tableScript);
 
 		}
 
@@ -111,23 +129,24 @@ namespace Nephrite.Meta.Database
 
 		public void CreateForeignKey(ForeignKey srcforeignKey)
 		{
-		
+
 			var currentTable = srcforeignKey.CurrentTable;
-			Scripts.Add(string.Format("ALTER TABLE {0}  WITH NOCHECK ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" +
-									  "REFERENCES {3} ({4}); \r\n" +
-									  "ALTER TABLE {0} CHECK CONSTRAINT {1};  \r\n GO \r\n", currentTable.Name,
+			_FkScripts.Add(string.Format("ALTER TABLE {5}.{0}  WITH NOCHECK ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" +
+									  "REFERENCES {5}.{3} ({4}); \r\n" +
+									  "ALTER TABLE {5}.{0} CHECK CONSTRAINT {1};  \r\n GO \r\n", currentTable.Name,
 													srcforeignKey.Name,
 													string.Join(",", srcforeignKey.Columns),
 													srcforeignKey.RefTable,
-													string.Join(",", srcforeignKey.RefTableColumns)));
+													string.Join(",", srcforeignKey.RefTableColumns),
+													_SchemaName));
 		}
 
 		public void DeleteForeignKey(ForeignKey currentForeignKey)
 		{
 			var currentTable = currentForeignKey.CurrentTable;
-			Scripts.Add(string.Format("IF (OBJECT_ID('{1}', 'F') IS NOT NULL)" +
-										"BEGIN \r\n ALTER TABLE {0} DROP CONSTRAINT {1} \r\n END \r\n GO \r\n", currentTable.Name,
-										  currentForeignKey.Name));
+			_FkScripts.Add(string.Format("IF (OBJECT_ID('{1}', 'F') IS NOT NULL)" +
+										"BEGIN \r\n ALTER TABLE {2}.{0} DROP CONSTRAINT {1} \r\n END \r\n GO \r\n", currentTable.Name,
+										  currentForeignKey.Name, _SchemaName));
 		}
 
 		public void DeleteColumn(Column currentColumn)
@@ -168,24 +187,24 @@ namespace Nephrite.Meta.Database
 				}
 
 			}
-			Scripts.Add(string.Format("ALTER TABLE [{0}] DROP COLUMN [{1}]   \r\n GO \r\n", currentTable.Name,
-										  currentColumn.Name));
+			_MainScripts.Add(string.Format("ALTER TABLE [{2}.{0}] DROP COLUMN [{1}]   \r\n GO \r\n", currentTable.Name,
+										  currentColumn.Name, _SchemaName));
 		}
 		public void DeleteDefaultValue(Column currentColumn)
 		{
-			Scripts.Add(string.Format("IF (OBJECT_ID('{1}') IS NOT NULL)\r\n" +
+			_MainScripts.Add(string.Format("IF (OBJECT_ID('{2}.{1}') IS NOT NULL)\r\n" +
 										"BEGIN\r\n" +
-											"ALTER TABLE {0}\r\n" +
+											"ALTER TABLE {2}.{0}\r\n" +
 											"DROP {1}\r\n" +
-										"END\r\n GO \r\n", currentColumn.CurrentTable.Name, "DF_" + currentColumn.CurrentTable.Name + "_" + currentColumn.Name, currentColumn.Name));
+										"END\r\n GO \r\n", currentColumn.CurrentTable.Name, "DF_" + currentColumn.CurrentTable.Name + "_" + currentColumn.Name, _SchemaName));
 		}
 
 		public void AddDefaultValue(Column srcColumn)
 		{
-			Scripts.Add(string.Format("IF EXISTS (SELECT column_name FROM INFORMATION_SCHEMA.columns WHERE table_name = '{0}' and column_name = '{3}') \r\n" +
-											  "ALTER TABLE {0} ADD CONSTRAINT" +
+			_MainScripts.Add(string.Format("IF EXISTS ( select * from sys.columns   where Name = N'{3}' and Object_ID = Object_ID(N'{4}.{0}')) \r\n" +
+											  "ALTER TABLE {4}.{0} ADD CONSTRAINT" +
 											  " {1} DEFAULT ({2}) FOR {3}  \r\n GO \r\n", srcColumn.CurrentTable.Name,
-											  "DF_" + srcColumn.CurrentTable.Name + "_" + srcColumn.Name, srcColumn.DefaultValue, srcColumn.Name));
+											  "DF_" + srcColumn.CurrentTable.Name + "_" + srcColumn.Name, srcColumn.DefaultValue, srcColumn.Name, _SchemaName));
 		}
 		public void AddColumn(Column srcColumn)
 		{
@@ -197,14 +216,14 @@ namespace Nephrite.Meta.Database
 			}
 			else
 			{
-				Scripts.Add(string.Format("if not exists (select column_name from INFORMATION_SCHEMA.columns where table_name = '{5}' and column_name = '{0}') \r\n" +
-											  "ALTER TABLE [{5}] ADD [{0}] {1} {2} {3} {4}   \r\n GO \r\n",
+				_MainScripts.Add(string.Format("if not exists ( select * from sys.columns   where Name = N'{0}' and Object_ID = Object_ID(N'{6}.{5}')) \r\n" +
+											  "ALTER TABLE [{6}.{5}] ADD [{0}] {1} {2} {3} {4}   \r\n GO \r\n",
 										srcColumn.Name,
 										srcColumn.Type,
 										srcColumn.IsPrimaryKey && currentTable.Identity ? "IDENTITY(1,1)" : "",
 										srcColumn.Nullable ? "NULL" : "NOT NULL",
 										(!string.IsNullOrEmpty(srcColumn.DefaultValue) ? string.Format("DEFAULT({0})", srcColumn.DefaultValue) : ""),
-										currentTable.Name));//    // {0}- Название колонки, {1} - Тип колонки, {2} - IDENTITY, {3}- NULL
+										currentTable.Name, _SchemaName));//    // {0}- Название колонки, {1} - Тип колонки, {2} - IDENTITY, {3}- NULL
 				if (!string.IsNullOrEmpty(srcColumn.DefaultValue))
 				{
 					AddDefaultValue(srcColumn);
@@ -214,17 +233,20 @@ namespace Nephrite.Meta.Database
 		}
 		public void DeleteIndex(Index currentIndex)
 		{
-			Scripts.Add(string.Format("DROP INDEX {0} ON {1} \r\n GO \r\n", currentIndex.Name, currentIndex.CurrentTable.Name));
+			_MainScripts.Add(string.Format("IF EXISTS(SELECT * FROM sys.indexes WHERE object_id = object_id('{0}.{1}') AND NAME ='{2}') \r\n" +
+											"DROP INDEX {2} ON {0}.{1}; \r\n GO \r\n", _SchemaName, currentIndex.CurrentTable.Name, currentIndex.Name));
 		}
 
 		public void AddComputedColumn(Column srcColumn)
 		{
 			var currentTable = srcColumn.CurrentTable;
 
-			Scripts.Add(string.Format("if not exists (select column_name from INFORMATION_SCHEMA.columns where table_name = '{0}' and column_name = '{1}') \r\n" +
-									   "ALTER TABLE {0} ADD {1}  AS ({2}) \r\n GO \r\n",
+			_MainScripts.Add(string.Format("if not exists (  select * from sys.columns   where Name = N'{1}' and Object_ID = Object_ID(N'{3}.{0}')) \r\n" +
+									     "ALTER TABLE {3}.{0} ADD {1}  AS ({2}) \r\n GO \r\n",
 									currentTable.Name,
-									srcColumn.Name, srcColumn.ComputedText));//    // {0}- Название таблицы, {1} - Название колонки, {2} - ComputedText
+									srcColumn.Name,
+									srcColumn.ComputedText,
+									_SchemaName));//    // {0}- Название таблицы, {1} - Название колонки, {2} - ComputedText
 		}
 		public void ChangeColumn(Column srcColumn)
 		{
@@ -237,52 +259,55 @@ namespace Nephrite.Meta.Database
 			}
 			else
 			{
-			
-				Scripts.Add(string.Format("ALTER TABLE [{0}] \r\n" +
+
+				_MainScripts.Add(string.Format("ALTER TABLE [{5}.{0}] \r\n" +
 										  "ALTER COLUMN [{1}] {2} {3} {4} \r\n GO \r\n",
 											  currentTable.Name,
 											  srcColumn.Name,
 											  srcColumn.Type,
 											  (!string.IsNullOrEmpty(srcColumn.DefaultValue) ? string.Format("DEFAULT({0})", srcColumn.DefaultValue) : ""),
-											  srcColumn.Nullable ? "NULL" : "NOT NULL"));
+											  srcColumn.Nullable ? "NULL" : "NOT NULL",
+											  _SchemaName));
 			}
 		}
 
 		public void DeletePrimaryKey(PrimaryKey currentPrimaryKey)
 		{
 			var currentTable = currentPrimaryKey.CurrentTable;
-			Scripts.Add(string.Format("ALTER TABLE [{0}] DROP CONSTRAINT {1}   \r\n GO \r\n", currentTable.Name,
-										  currentPrimaryKey.Name));
+			_MainScripts.Add(string.Format("ALTER TABLE [{2}.{0}] DROP CONSTRAINT {1}   \r\n GO \r\n", currentTable.Name,
+										  currentPrimaryKey.Name,
+										  _SchemaName));
 		}
 
 		public void CreatePrimaryKey(PrimaryKey srcPrimaryKey)
 		{
 			var curentTable = srcPrimaryKey.CurrentTable;
 			var currentTable = srcPrimaryKey.CurrentTable;
-			Scripts.Add(string.Format("ALTER TABLE [{0}]\r\n" +
+			_MainScripts.Add(string.Format("ALTER TABLE [{3}.{0}]\r\n" +
 									  "ADD CONSTRAINT {1} PRIMARY KEY ({2})  \r\n GO \r\n", curentTable.Name,
 													   srcPrimaryKey.Name,
-													   string.Join(",", srcPrimaryKey.Columns)));
+													   string.Join(",", srcPrimaryKey.Columns),
+													   _SchemaName));
 		}
 
 		public void DeleteTrigger(Trigger currentTrigger)
 		{
-			Scripts.Add(string.Format(" DROP TRIGGER {0}  \r\n GO \r\n ", currentTrigger.Name));
+			_MainScripts.Add(string.Format("IF OBJECT_ID ('{1}.{0}', 'TR') IS NOT NULL DROP TRIGGER {1}.{0}  \r\n GO \r\n ", currentTrigger.Name, _SchemaName));
 		}
 
 		public void CreateTrigger(Trigger srcTrigger)
 		{
-			Scripts.Add(srcTrigger.Text);
+			_MainScripts.Add(srcTrigger.Text);
 		}
 
 		public void DeleteView(View currentView)
 		{
-			Scripts.Add(string.Format("IF OBJECT_ID ('{0}', 'V') IS NOT NULL DROP VIEW {0}  \r\n GO \r\n", currentView.Name));
+			_MainScripts.Add(string.Format("IF OBJECT_ID ('{1}.{0}', 'V') IS NOT NULL DROP VIEW {0}  \r\n GO \r\n", currentView.Name, _SchemaName));
 		}
 
 		public void CreateView(View srcView)
 		{
-			Scripts.Add(srcView.Text);
+			_MainScripts.Add(srcView.Text);
 		}
 
 		public void SyncIdentity(Table srcTable)
@@ -296,7 +321,7 @@ namespace Nephrite.Meta.Database
 			{
 
 
-				var tableScript = string.Format("CREATE TABLE Tmp_{0} ({1}) \r\n GO \r\n", srcTable.Name, "{0} ");// {0}- Название таблицы, {1}- Список колонок, {2} - ON [PRIMARY]
+				var tableScript = string.Format("CREATE TABLE {2}.Tmp_{0} ({1}) \r\n GO \r\n", srcTable.Name, "{0} ", _SchemaName);// {0}- Название таблицы, {1}- Список колонок, {2} - ON [PRIMARY]
 				var columnsScript =
 					srcTable.Columns.Aggregate(string.Empty,
 											   (current, srcColumn) =>
@@ -307,18 +332,18 @@ namespace Nephrite.Meta.Database
 															 srcColumn.Value.Nullable ? "NULL" : "NOT NULL")).TrimEnd(',');
 
 				tableScript = string.Format(tableScript, columnsScript);
-				Scripts.Add(tableScript);
-				Scripts.Add(string.Format("ALTER TABLE Tmp_{0} SET (LOCK_ESCALATION = TABLE)  \r\n GO \r\n", srcTable.Name));
-				Scripts.Add(string.Format("SET IDENTITY_INSERT Tmp_{0} ON \r\n GO \r\n", srcTable.Name));
-				Scripts.Add(string.Format("IF EXISTS(SELECT * FROM {0})  \r\n" +
-												"EXEC('INSERT INTO Tmp_{0} ({1})  \r\n" +
-												"SELECT {1} FROM {0} WITH (HOLDLOCK TABLOCKX)')  \r\n GO \r\n", srcTable.Name, string.Join("\r\n,", srcTable.Columns.Select(t => t.Value.Name).ToArray())));
-				Scripts.Add(string.Format("SET IDENTITY_INSERT Tmp_{0} OFF DROP TABLE {0}; EXECUTE sp_rename N'Tmp_{0}', N'{0}', 'OBJECT'  \r\n GO \r\n", srcTable.Name));
+				_MainScripts.Add(tableScript);
+				_MainScripts.Add(string.Format("ALTER TABLE {1}.Tmp_{0} SET (LOCK_ESCALATION = TABLE)  \r\n GO \r\n", srcTable.Name, _SchemaName));
+				_MainScripts.Add(string.Format("SET IDENTITY_INSERT {1}.Tmp_{0} ON \r\n GO \r\n", srcTable.Name, _SchemaName));
+				_MainScripts.Add(string.Format("IF EXISTS(SELECT * FROM {2}.{0})  \r\n" +
+												"EXEC('INSERT INTO {2}.Tmp_{0} ({1})  \r\n" +
+												"SELECT {1} FROM {2}.{0} WITH (HOLDLOCK TABLOCKX)')  \r\n GO \r\n", srcTable.Name, string.Join("\r\n,", srcTable.Columns.Select(t => t.Value.Name).ToArray()), _SchemaName));
+				_MainScripts.Add(string.Format("SET IDENTITY_INSERT {1}.Tmp_{0} OFF DROP TABLE {1}.{0}; EXECUTE sp_rename N'{1}.Tmp_{0}', N'{1}.{0}', 'OBJECT'  \r\n GO \r\n", srcTable.Name));
 			}
 			else
 			{
 
-				var tableScript = string.Format("CREATE TABLE Tmp_{0} ({1})  ", srcTable.Name, "{0}");// {0}- Название таблицы, {1}- Список колонок, {2} - ON [PRIMARY]
+				var tableScript = string.Format("CREATE TABLE {2}.Tmp_{0} ({1})  ", srcTable.Name, "{0}", _SchemaName);// {0}- Название таблицы, {1}- Список колонок, {2} - ON [PRIMARY]
 				var columnsScript =
 					srcTable.Columns.Aggregate(string.Empty,
 											   (current, srcColumn) =>
@@ -329,12 +354,12 @@ namespace Nephrite.Meta.Database
 															 srcColumn.Value.Nullable ? "NULL" : "NOT NULL")).TrimEnd(',');
 
 				tableScript = string.Format(tableScript, columnsScript);
-				Scripts.Add(tableScript);
-				Scripts.Add(string.Format("ALTER TABLE Tmp_{0} SET (LOCK_ESCALATION = TABLE)\r\n", srcTable.Name));
-				Scripts.Add(string.Format("IF EXISTS(SELECT * FROM {0})\r\n" +
-												"EXEC('INSERT INTO Tmp_{0} ({1})\r\n" +
-												"SELECT {1} FROM {0} WITH (HOLDLOCK TABLOCKX)')\r\n", srcTable.Name, string.Join("\r\n,", srcTable.Columns.Select(t => t.Value.Name).ToArray())));
-				Scripts.Add(string.Format("DROP TABLE {0}; EXECUTE sp_rename N'Tmp_{0}', N'{0}', 'OBJECT'  \r\n GO \r\n", srcTable.Name));
+				_MainScripts.Add(tableScript);
+				_MainScripts.Add(string.Format("ALTER TABLE {1}.Tmp_{0} SET (LOCK_ESCALATION = TABLE)\r\n", srcTable.Name, _SchemaName));
+				_MainScripts.Add(string.Format("IF EXISTS(SELECT * FROM {2}.{0})\r\n" +
+												"EXEC('INSERT INTO {2}.Tmp_{0} ({1})\r\n" +
+												"SELECT {1} FROM {2}.{0} WITH (HOLDLOCK TABLOCKX)')\r\n", srcTable.Name, string.Join("\r\n,", srcTable.Columns.Select(t => t.Value.Name).ToArray()), _SchemaName));
+				_MainScripts.Add(string.Format("DROP TABLE {1}.{0}; EXECUTE sp_rename N'{1}.Tmp_{0}', N'{1}.{0}', 'OBJECT'  \r\n GO \r\n", srcTable.Name, _SchemaName));
 			}
 
 
@@ -342,28 +367,29 @@ namespace Nephrite.Meta.Database
 
 		public void DeleteProcedure(Procedure currentProcedure)
 		{
-			Scripts.Add(
+			_MainScripts.Add(
 				string.Format(
-					"IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = '{0}') DROP PROCEDURE {0}  \r\n GO \r\n",
-					currentProcedure.Name));
+					"IF OBJECT_ID ('{1}.{0}', 'P') IS NOT NULL DROP PROCEDURE {1}.{0}  \r\n GO \r\n",
+					currentProcedure.Name, _SchemaName));
 		}
 
 		public void CreateProcedure(Procedure srcProcedure)
 		{
-			Scripts.Add(srcProcedure.Text);
+			_MainScripts.Add(srcProcedure.Text);
 		}
 
 		public void DeleteFunction(Function currentFunction)
 		{
-			Scripts.Add(
+			_MainScripts.Add(
 				string.Format(
-					"IF EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND name = '{0}') DROP PROCEDURE {0}  \r\n GO \r\n",
-					currentFunction.Name));
+					"IF OBJECT_ID ('{1}.{0}', 'P') IS NOT NULL DROP PROCEDURE {1}.{0}  \r\n GO \r\n",
+					currentFunction.Name,
+					_SchemaName));
 		}
 
 		public void CreateFunction(Function srcFunction)
 		{
-			Scripts.Add(srcFunction.Text);
+			_MainScripts.Add(srcFunction.Text);
 		}
 
 		public string GetIntType()

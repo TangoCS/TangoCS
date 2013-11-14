@@ -419,7 +419,7 @@ namespace Nephrite.Meta.Database
 
 			public string GetStringValue(SqlDataReader reader, int index)
 			{
-				return new DBScriptMSSQL().GetStringValue(reader, index);
+				return new DBScriptMSSQL("dbo").GetStringValue(reader, index);
 			}
 
 			public string ExportTableBinary(string tableName)

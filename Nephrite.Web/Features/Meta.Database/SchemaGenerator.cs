@@ -11,7 +11,7 @@ namespace Nephrite.Meta.Database
 		{
 
 			var tempListJoinTables = new List<string>();
-			var dbScript = new DBScriptMSSQL();
+			var dbScript = new DBScriptMSSQL("dbo");
 			//if (!cls.IsPersistent) return;
 
 			Table t = new Table();
