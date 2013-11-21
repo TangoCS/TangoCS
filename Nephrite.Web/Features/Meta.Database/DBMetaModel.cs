@@ -73,6 +73,7 @@ namespace Nephrite.Meta.Database
 
 		public string ForeignKeyName { get; set; }
 		public bool IsPrimaryKey { get; set; }
+		public bool Identity { get; set; }
 		public Table CurrentTable { get; set; }
 	}
 

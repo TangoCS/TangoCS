@@ -86,7 +86,7 @@ namespace Nephrite.Meta.Database
 										   current +
 										   (string.IsNullOrEmpty(srcColumn.Value.ComputedText) ? string.Format("{0} {1} {2} {3},", srcColumn.Value.Name,
 														 srcColumn.Value.Type,
-														srcColumn.Value.IsPrimaryKey && srcTable.Identity ? " IDENTITY(1,1)" : "",
+														 srcColumn.Value.IsPrimaryKey && srcTable.Identity ? " IDENTITY(1,1)" : "",
 														 srcColumn.Value.Nullable ? "NULL" : "NOT NULL") :
 														 string.Format(" {0} as {1} ", srcColumn.Value.Name, srcColumn.Value.ComputedText)
 														 )).TrimEnd(',');
@@ -94,12 +94,8 @@ namespace Nephrite.Meta.Database
 			tableScript = string.Format(tableScript, columnsScript);
 			if (srcTable.ForeignKeys.Count > 0)
 			{
-
-				_FkScripts.Add(srcTable.ForeignKeys.Aggregate(tableScript, (current, foreignKey) => current + string.Format(
-									"ALTER TABLE {5}.{0}  WITH NOCHECK ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" +
-									"REFERENCES {5}.{3} ({4}) \r\n" +
-									"ALTER TABLE {5}.{0} CHECK CONSTRAINT {1}  \r\n GO \r\n"
-									, srcTable.Name, foreignKey.Value.Name, string.Join(",", foreignKey.Value.Columns), foreignKey.Value.RefTable, string.Join(",", foreignKey.Value.RefTableColumns), _SchemaName)));
+				var result = srcTable.ForeignKeys.Aggregate("", (current, key) => current + string.Format("ALTER TABLE {5}.{0}  WITH NOCHECK ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" + "REFERENCES {5}.{3} ({4}) \r\n" + "ALTER TABLE {5}.{0} CHECK CONSTRAINT {1}  \r\n GO \r\n", srcTable.Name, key.Value.Name, string.Join(",", key.Value.Columns), key.Value.RefTable, string.Join(",", key.Value.RefTableColumns), _SchemaName));
+				_FkScripts.Add(result);
 			}
 
 			if (srcTable.PrimaryKey != null)
@@ -282,7 +278,6 @@ namespace Nephrite.Meta.Database
 		public void CreatePrimaryKey(PrimaryKey srcPrimaryKey)
 		{
 			var curentTable = srcPrimaryKey.CurrentTable;
-			var currentTable = srcPrimaryKey.CurrentTable;
 			_MainScripts.Add(string.Format("ALTER TABLE [{3}.{0}]\r\n" +
 									  "ADD CONSTRAINT {1} PRIMARY KEY ({2})  \r\n GO \r\n", curentTable.Name,
 													   srcPrimaryKey.Name,
@@ -308,6 +303,10 @@ namespace Nephrite.Meta.Database
 		public void CreateView(View srcView)
 		{
 			_MainScripts.Add(srcView.Text);
+		}
+
+		public void SyncIdentityColumn(Column srcColumn)
+		{
 		}
 
 		public void SyncIdentity(Table srcTable)

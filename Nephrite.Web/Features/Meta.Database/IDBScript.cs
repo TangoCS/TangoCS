@@ -32,6 +32,7 @@ namespace Nephrite.Meta.Database
 		void DeleteDefaultValue(Column currentColumn);
 		void AddDefaultValue(Column srcColumn);
 		void DeleteIndex(Index currentIndex);
+		void SyncIdentityColumn(Column srcColumn);
 		string GetIntType();
 		string GetGuidType();
 		string GetStringType(int length);

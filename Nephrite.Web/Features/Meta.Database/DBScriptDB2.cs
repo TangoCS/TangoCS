@@ -42,11 +42,12 @@ namespace Nephrite.Meta.Database
 				srcTable.Columns.Aggregate(string.Empty,
 										   (current, srcColumn) =>
 										   current +
-										   (string.IsNullOrEmpty(srcColumn.Value.ComputedText) ? string.Format("\"{0}\" {1} {2} {3},",
+										   (string.IsNullOrEmpty(srcColumn.Value.ComputedText) ? string.Format("\"{0}\" {1} {2} {3} {4},",
 														 srcColumn.Value.Name,
 														 srcColumn.Value.Type,
 														 srcColumn.Value.Nullable ? "NULL" : "NOT NULL",
-														 srcColumn.Value.IsPrimaryKey && srcTable.Identity ? "  GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 )" : ""
+														 srcColumn.Value.IsPrimaryKey && srcTable.Identity ? "  GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 )" : "",
+														 (!string.IsNullOrEmpty(srcColumn.Value.DefaultValue) ? string.Format(" WITH DEFAULT {0}", srcColumn.Value.DefaultValue) : "")
 														) :
 														 string.Format(" {0} as {1} ", srcColumn.Value.Name, srcColumn.Value.ComputedText)
 														 )).TrimEnd(',');
@@ -54,17 +55,8 @@ namespace Nephrite.Meta.Database
 			tableScript = string.Format(tableScript, columnsScript);
 			if (srcTable.ForeignKeys.Count > 0)
 			{
-
-				_FkScripts.Add(srcTable.ForeignKeys.Aggregate(tableScript, (current, foreignKey) => current + string.Format(
-									"ALTER TABLE \"{6}\".\"{0}\"  ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" +
-									"REFERENCES \"{6}\".\"{3}\" ({4}) {5} ;\r\n",
-									srcTable.Name,
-									foreignKey.Value.Name,
-									string.Join(",", foreignKey.Value.Columns),
-									foreignKey.Value.RefTable,
-									string.Join(",", foreignKey.Value.RefTableColumns),
-									"ON DELETE " + foreignKey.Value.DeleteOption.ToString(),
-									_SchemaName)));
+				var result = srcTable.ForeignKeys.Aggregate("", (current, key) => current + string.Format("ALTER TABLE \"{6}\".\"{0}\"  ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" + "REFERENCES \"{6}\".\"{3}\" ({4}) {5} ;\r\n", srcTable.Name, key.Value.Name, string.Join(",", key.Value.Columns), key.Value.RefTable, string.Join(",", key.Value.RefTableColumns), "ON DELETE " + key.Value.DeleteOption.ToString(), _SchemaName));
+				_FkScripts.Add(result);
 			}
 
 			if (srcTable.PrimaryKey != null)
@@ -124,87 +116,209 @@ namespace Nephrite.Meta.Database
 			{
 				currentTable.ForeignKeys.Clear();
 			}
-			_MainScripts.Add(string.Format("if  OBJECT_ID('{1}.{0}') is not null drop table {1}.{0}  \r\n GO \r\n", currentTable.Name, _SchemaName));
+			_MainScripts.Add(string.Format("if  (ExistTable('{0}','{1}') is not null) THEN  \r\n drop table \"{1}\".{0} END IF; \r\n", currentTable.Name, _SchemaName));
 		}
 
 		public void CreateForeignKey(ForeignKey srcforeignKey)
 		{
-			throw new NotImplementedException();
+			var srcTable = srcforeignKey.CurrentTable;
+			_FkScripts.Add(
+				string.Format(
+					"ALTER TABLE \"{6}\".\"{0}\"  ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" +
+					"REFERENCES \"{6}\".\"{3}\" ({4}) {5} ;\r\n", srcTable.Name, srcforeignKey.Name, string.Join(",", srcforeignKey.Columns),
+					srcforeignKey.RefTable, string.Join(",", srcforeignKey.RefTableColumns), "ON DELETE " + srcforeignKey.DeleteOption.ToString(),
+					_SchemaName));
+
 		}
 
 		public void DeleteForeignKey(ForeignKey currentForeignKey)
 		{
-			throw new NotImplementedException();
+			var currentTable = currentForeignKey.CurrentTable;
+			_FkScripts.Add(string.Format("IF   (ExistConstraint('{1}','{2}') is not null) THEN" +
+										" \r\n ALTER TABLE {2}.{0} DROP CONSTRAINT {2}.{1};", currentTable.Name,
+										  currentForeignKey.Name, _SchemaName));
 		}
 
 		public void DeletePrimaryKey(PrimaryKey currentPrimaryKey)
 		{
-			throw new NotImplementedException();
+
+			var currentTable = currentPrimaryKey.CurrentTable;
+			_MainScripts.Add(string.Format("ALTER TABLE {1}.{0} DROP PRIMARY KEY ;   \r\n", currentTable.Name, _SchemaName));
+
 		}
 
 		public void CreatePrimaryKey(PrimaryKey srcPrimaryKey)
 		{
-			throw new NotImplementedException();
+			var curentTable = srcPrimaryKey.CurrentTable;
+			_MainScripts.Add(string.Format("ALTER TABLE {2}.{0}\r\n" +
+										   "ADD  PRIMARY KEY ({1}) ; \r\n ", curentTable.Name,
+													   string.Join(",", srcPrimaryKey.Columns),
+													   _SchemaName));
+
 		}
 
 		public void DeleteColumn(Column currentColumn)
 		{
-			throw new NotImplementedException();
+			var currentTable = currentColumn.CurrentTable;
+			// При удалении колонки  удаляем  и её pk и fk 
+			if (currentTable.PrimaryKey != null && currentTable.PrimaryKey.Columns.Any(t => t == currentColumn.Name))
+			{
+				DeletePrimaryKey(currentTable.PrimaryKey);
+				currentTable.PrimaryKey = null;
+			}
+
+
+			var toRemove = currentTable.ForeignKeys.Where(t => t.Value.Columns.Any(c => c == currentColumn.Name)).Select(t => t.Key).ToArray();
+			foreach (var key in toRemove)
+			{
+
+				DeleteForeignKey(currentTable.ForeignKeys[key]);
+				currentTable.ForeignKeys.Remove(key);
+			}
+
+			if (!string.IsNullOrEmpty(currentColumn.DefaultValue))
+			{
+				DeleteDefaultValue(currentColumn);
+			}
+			if (currentColumn.CurrentTable.Indexes != null && currentColumn.CurrentTable.Indexes.Values.Any(t => t.Columns.Any(c => c == currentColumn.Name)))
+			{
+				foreach (var index in currentColumn.CurrentTable.Indexes)
+				{
+					if (index.Value.Columns.Any(c => c == currentColumn.Name))
+					{
+						DeleteIndex(index.Value);
+					}
+				}
+
+			}
+			_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP COLUMN {1} ; \r\n ", currentTable.Name,
+										  currentColumn.Name, _SchemaName));
+
 		}
 
 		public void AddColumn(Column srcColumn)
 		{
-			throw new NotImplementedException();
+			var currentTable = srcColumn.CurrentTable;
+			if (!string.IsNullOrEmpty(srcColumn.ComputedText))
+			{
+				AddComputedColumn(srcColumn);
+			}
+			else
+			{
+
+
+				_MainScripts.Add(string.Format("if (ExistColumn('{5}','{0}','{6}') is null) then \r\n" +
+											  "ALTER TABLE {6}.{5} ADD {0} {1} {2} {3} {4} ; end if;  \r\n ",
+										srcColumn.Name,
+										srcColumn.Type,
+										srcColumn.Nullable ? "NULL" : "NOT NULL",
+										srcColumn.IsPrimaryKey && currentTable.Identity ? "  GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 )" : "",
+									   (!string.IsNullOrEmpty(srcColumn.DefaultValue) ? string.Format(" WITH DEFAULT {0}", srcColumn.DefaultValue) : ""),
+										currentTable.Name, _SchemaName));
+				if (!string.IsNullOrEmpty(srcColumn.DefaultValue))
+				{
+					AddDefaultValue(srcColumn);
+				}
+
+			}
 		}
 
 		public void ChangeColumn(Column srcColumn)
 		{
-			throw new NotImplementedException();
+			var currentTable = srcColumn.CurrentTable;
+			if (!string.IsNullOrEmpty(srcColumn.ComputedText))
+			{
+				DeleteColumn(srcColumn);
+				AddComputedColumn(srcColumn);
+			}
+			else
+			{
+				_MainScripts.Add(string.Format("  ALTER TABLE {3}.{0} ALTER COLUMN {1} SET DATA TYPE {2};",
+											  currentTable.Name,
+											  srcColumn.Name,
+											  srcColumn.Type,
+											  _SchemaName));
+				if (srcColumn.Nullable)
+				{
+					_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1} DROP NOT  NULL;",
+												   currentTable.Name,
+												   srcColumn.Name,
+												   _SchemaName));
+				}
+				else
+				{
+					_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1} SET NOT  NULL;",
+													  currentTable.Name,
+													  srcColumn.Name,
+													  _SchemaName));
+
+				}
+				if (!string.IsNullOrEmpty(srcColumn.DefaultValue))
+				{
+					_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1}  SET DEFAULT '{3}';",
+													  currentTable.Name,
+													  srcColumn.Name,
+													  _SchemaName,
+													  srcColumn.DefaultValue));
+				}
+
+			}
 		}
 
 		public void DeleteTrigger(Trigger currentTrigger)
 		{
-			throw new NotImplementedException();
+			_MainScripts.Add(string.Format("IF (ExistTriger('{0}','{1}') IS NOT NULL) THEN DROP TRIGGER {1}.{0};  \r\n end if;", currentTrigger.Name, _SchemaName));
 		}
 
 		public void CreateTrigger(Trigger srcTrigger)
 		{
-			throw new NotImplementedException();
+			_MainScripts.Add(srcTrigger.Text);
 		}
 
-		public void SyncIdentity(Table srcTable)
+		public void SyncIdentityColumn(Column srcColumn)
 		{
-			throw new NotImplementedException();
+			var srcTable = srcColumn.CurrentTable;
+			if (srcColumn.Identity)
+			{
+				_MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1} DROP IDENTITY;", srcTable.Name, srcColumn.Identity, _SchemaName));
+				_MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1}  SET GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 );", srcTable.Name, srcColumn.Identity, _SchemaName));
+
+
+			}
+			else
+			{
+				_MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1} DROP IDENTITY;", srcTable.Name, srcColumn.Identity, _SchemaName));
+			}
 		}
 
 		public void DeleteView(View currentView)
 		{
-			throw new NotImplementedException();
+			_MainScripts.Add(string.Format("IF (ExistView('{0}','{1}') IS NOT NULL) THEN DROP VIEW  {1}.{0};  \r\n end if;", currentView.Name, _SchemaName));
 		}
 
 		public void CreateView(View srcView)
 		{
-			throw new NotImplementedException();
+			_MainScripts.Add(srcView.Text);
 		}
 
 		public void DeleteProcedure(Procedure currentProcedure)
 		{
-			throw new NotImplementedException();
+			_MainScripts.Add(string.Format("IF (ExistFunc('{0}','{1}') IS NOT NULL) THEN DROP PROCEDURE  {1}.{0};  \r\n end if;", currentProcedure.Name, _SchemaName));
 		}
 
 		public void CreateProcedure(Procedure srcProcedure)
 		{
-			throw new NotImplementedException();
+			_MainScripts.Add(srcProcedure.Text);
 		}
 
 		public void DeleteFunction(Function currentFunction)
 		{
-			throw new NotImplementedException();
+			_MainScripts.Add(string.Format("IF (ExistFunc('{0}','{1}') IS NOT NULL) THEN DROP FUNCTION   {1}.{0};  \r\n end if;", currentFunction.Name, _SchemaName));
 		}
 
 		public void CreateFunction(Function srcFunction)
 		{
-			throw new NotImplementedException();
+			_MainScripts.Add(srcFunction.Text);
 		}
 
 		public string GetIntType()
@@ -343,7 +457,7 @@ namespace Nephrite.Meta.Database
 
 			if (identityInsert && t.Identity)
 			{
-				sqlInsert = string.Format("ALTER TABLE {0} ALTER COLUMN {1} SET GENERATED BY DEFAULT;\r\n {2} ALTER TABLE {0} ALTER COLUMN {1} SET GENERATED ALWAYS;", t.Name, t.Columns.Values.FirstOrDefault(c => c.IsPrimaryKey).Name, sqlInsert);
+				sqlInsert = string.Format("ALTER TABLE {0} ALTER COLUMN {1} SET GENERATED BY DEFAULT;\r\n {2} ALTER TABLE {0} ALTER COLUMN {1} SET GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 );", t.Name, t.Columns.Values.FirstOrDefault(c => c.IsPrimaryKey).Name, sqlInsert);
 			}
 			return sqlInsert;
 		}
@@ -351,14 +465,21 @@ namespace Nephrite.Meta.Database
 
 		public void AddComputedColumn(Column srcColumn)
 		{
-			throw new NotImplementedException();
+			var currentTable = srcColumn.CurrentTable;
+
+			_MainScripts.Add(string.Format("if  (ExistColumn('{0}','{1}','{3}') is null) then \r\n" +
+										 "ALTER TABLE {3}.{0} ADD {1}  AS ({2}) \r\n end if; \r\n",
+									currentTable.Name,
+									srcColumn.Name,
+									srcColumn.ComputedText,
+									_SchemaName));//    // {0}- Название таблицы, {1} - Название колонки, {2} - ComputedText
 		}
 
 
 
 		public void DeleteDefaultValue(Column currentColumn)
 		{
-			throw new NotImplementedException();
+			_MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER  {0} DROP DEFAULT", currentColumn.Name, currentColumn.CurrentTable.Name, _SchemaName));
 		}
 
 		public void AddDefaultValue(Column srcColumn)
@@ -373,6 +494,11 @@ namespace Nephrite.Meta.Database
 			throw new NotImplementedException();
 		}
 
+
+		public void SyncIdentity(Table srcTable)
+		{
+			throw new NotImplementedException();
+		}
 
 	}
 }
