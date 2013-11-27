@@ -55,6 +55,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="IBM.Data.DB2, Version=9.0.0.2, Culture=neutral, PublicKeyToken=7c307b91aa13d208, processorArchitecture=AMD64" />
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=c957c2ee7c0582f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExternalDll\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -289,6 +290,7 @@
     <Compile Include="Features\Layout\LayoutTessera.cs" />
     <Compile Include="Features\Layout\SimpleTags.cs" />
     <Compile Include="Features\Layout\WinModal.cs" />
+    <Compile Include="Features\Meta.Database\SchemaLoaderDB2.cs" />
     <Compile Include="Features\Meta.Database\DBScriptDB2.cs" />
     <Compile Include="Features\Meta.Database\DBScriptMSSQL.cs" />
     <Compile Include="Features\Meta.Database\IDBScript.cs" />

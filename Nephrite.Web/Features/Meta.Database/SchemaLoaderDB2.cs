@@ -6,24 +6,21 @@ using System.Linq;
 using System.Web;
 using System.Xml;
 using System.Xml.Linq;
+using IBM.Data.DB2;
 using Nephrite.Web;
 
 namespace Nephrite.Meta.Database
 {
-	public interface IDatabaseMetadataReader
-	{
-		Schema ReadSchema(string name);
-		List<ProcedureDetails> ReadProceduresDetails();
-	}
 
-	public class SqlServerMetadataReader : IDatabaseMetadataReader
+
+	public partial class DB2ServerMetadataReader : IDatabaseMetadataReader
 	{
 		public Schema ReadSchema(string name)
 		{
 			var returnSchema = new Schema(); ;
-			using (SqlConnection con = new SqlConnection(ConnectionManager.ConnectionString))
+			using (DB2Connection con = new DB2Connection(ConnectionManager.ConnectionString))
 			{
-				using (SqlCommand cmd = new SqlCommand("usp_dbschema", con))
+				using (DB2Command cmd = new DB2Command("DBO.USP_DBSCHEMA", con))
 				{
 					cmd.CommandType = CommandType.StoredProcedure;
 
@@ -244,5 +241,17 @@ namespace Nephrite.Meta.Database
 		}
 	}
 
+	public class DB2MetadataReader : IDatabaseMetadataReader
+	{
+		public Schema ReadSchema(string name)
+		{
+			throw new NotImplementedException();
+		}
 
+
+		public List<ProcedureDetails> ReadProceduresDetails()
+		{
+			throw new NotImplementedException();
+		}
+	}
 }

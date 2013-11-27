@@ -30,7 +30,7 @@ namespace Nephrite.Metamodel
 		{
 			conn = connection;
 			export = new TableExport(connection);
-			SqlConnectionStringBuilder b = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString);
+			SqlConnectionStringBuilder b = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["c"].ConnectionString);
 
 			ServerConnection sc = b.IntegratedSecurity ? new ServerConnection(b.DataSource) : new ServerConnection(b.DataSource, b.UserID, b.Password);
 			sc.Connect();
