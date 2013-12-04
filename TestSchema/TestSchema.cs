@@ -82,11 +82,15 @@ namespace TestSchema
 			var db2Script = new DBScriptDB2("dbo");
 			foreach (var table in db2Schema.Tables)
 			{
+				if (table.Key == "APPENDIX")
+				{
+
+				}
 				var srcTable = sqlSchema.Tables.Values.SingleOrDefault(t => t.Name.ToUpper() == table.Key.ToUpper());
 
 				table.Value.Sync(db2Script, srcTable);
 			}
-
+			var strSql = string.Join(" ", db2Script.Scripts.ToArray());
 		}
 	}
 }

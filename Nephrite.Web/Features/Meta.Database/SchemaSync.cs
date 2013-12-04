@@ -97,14 +97,14 @@ namespace Nephrite.Meta.Database
 				var curentColumns = this.Columns;
 				var srcColumns = srcTable.Columns;
 				//1.1. Добавляем колонки 
-				foreach (var srcColumn in srcColumns.Where(srcColumn => curentColumns.All(t => t.Value.Name != srcColumn.Value.Name)))
+				foreach (var srcColumn in srcColumns.Where(srcColumn => curentColumns.All(t => t.Value.Name.ToLower() != srcColumn.Value.Name.ToLower())))
 				{
 					script.AddColumn(srcColumn.Value);
 				}
 				//1.2. Удаляем колонки и синхронизируем 
 				foreach (var column in curentColumns)
 				{
-					var srcColumn = srcColumns.Values.SingleOrDefault(t => t.Name == column.Value.Name);
+					var srcColumn = srcColumns.Values.SingleOrDefault(t => t.Name.ToLower() == column.Value.Name.ToLower());
 					column.Value.srcTable = srcTable;
 					column.Value.Sync(script, srcColumn);
 
