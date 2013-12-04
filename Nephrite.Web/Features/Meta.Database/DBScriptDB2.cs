@@ -535,7 +535,7 @@ namespace Nephrite.Meta.Database
 
 		public MetaPrimitiveType GetType(string dataType)
 		{
-			dataType = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(", System.StringComparison.Ordinal)) : dataType;
+			var type = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(", System.StringComparison.Ordinal)) : dataType;
 			var precision = string.Empty;
 			var scale = string.Empty;
 			var match = Regex.Match(dataType, @"\((.*?)\)");
@@ -551,7 +551,7 @@ namespace Nephrite.Meta.Database
 					scale = arrayVal[1];
 				}
 			}
-			switch (dataType)
+			switch (type)
 			{
 				case "INTEGER":
 					return new MetaIntType();

@@ -515,7 +515,11 @@ namespace Nephrite.Meta.Database
 
 		public MetaPrimitiveType GetType(string dataType)
 		{
-			dataType = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(", System.StringComparison.Ordinal)) : dataType;
+			if (dataType == "decimal")
+			{
+
+			}
+			var type = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(", System.StringComparison.Ordinal)) : dataType;
 			var precision = string.Empty;
 			var scale = string.Empty;
 			var match = Regex.Match(dataType, @"\((.*?)\)");
@@ -531,12 +535,12 @@ namespace Nephrite.Meta.Database
 					scale = arrayVal[1];
 				}
 			}
-			switch (dataType)
+			switch (type)
 			{
 				case "int":
 					return new MetaIntType();
 				case "nvarchar":
-					return new MetaStringType() { Length = Int32.Parse(precision) };
+					return string.IsNullOrEmpty(precision) ? new MetaStringType() : new MetaStringType() { Length = Int32.Parse(precision == "max" ? "-1" : precision) };
 				case "decimal":
 					return new MetaDecimalType() { Precision = Int32.Parse(precision), Scale = Int32.Parse(scale) };
 				case "uniqueidentifier":
@@ -550,7 +554,7 @@ namespace Nephrite.Meta.Database
 				case "bigint":
 					return new MetaLongType();
 				case "varbinary":
-					return new MetaByteArrayType() { Length = Int32.Parse(precision) };
+					return new MetaByteArrayType() { Length = Int32.Parse(precision == "max" ? "-1" : precision) };
 				default:
 					return new MetaStringType();
 			}
