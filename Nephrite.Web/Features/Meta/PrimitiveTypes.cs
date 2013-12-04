@@ -57,7 +57,7 @@ namespace Nephrite.Meta
 
 	}
 
-	public partial class MetaByteArrayType : MetaClassifier
+	public partial class MetaByteArrayType : MetaPrimitiveType
 	{
 		public int Length { get; set; }
 	}

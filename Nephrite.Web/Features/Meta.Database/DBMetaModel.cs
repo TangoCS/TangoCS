@@ -65,7 +65,7 @@ namespace Nephrite.Meta.Database
 	public partial class Column
 	{
 		public string Name { get; set; }
-		public string Type { get; set; }
+		public MetaClassifier Type { get; set; }
 		public bool Nullable { get; set; }
 		public string DefaultValue { get; set; }
 		public string ComputedText { get; set; }
@@ -156,7 +156,7 @@ namespace Nephrite.Meta.Database
 	public class Parameter
 	{
 		public string Name { get; set; }
-		public string Type { get; set; }
+		public MetaClassifier Type { get; set; }
 	}
 
 

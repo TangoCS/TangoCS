@@ -126,15 +126,15 @@ namespace Nephrite.Meta.Database
 				var currentForeignKeys = this.ForeignKeys;
 				var srcForeignKeys = srcTable.ForeignKeys;
 				//2.1. Удаляем foreignKey
-				foreach (var curentforeignKey in currentForeignKeys.Where(curentforeignKey => srcForeignKeys.All(t => t.Key != curentforeignKey.Key)))
+				foreach (var curentforeignKey in currentForeignKeys.Where(curentforeignKey => srcForeignKeys.All(t => t.Key.ToLower() != curentforeignKey.Key.ToLower())))
 				{
 					script.DeleteForeignKey(curentforeignKey.Value);
 				}
 				//2.2. Добаляем foreignKey
-				foreach (var srcforeignKey in srcForeignKeys.Where(srcforeignKey => currentForeignKeys.All(t => t.Key != srcforeignKey.Key)))
+				foreach (var srcforeignKey in srcForeignKeys.Where(srcforeignKey => currentForeignKeys.All(t => t.Key.ToLower() != srcforeignKey.Key.ToLower())))
 				{
 					// Проверяем есть ли таблица в методанных
-					if (srcTable.Schema.Tables.Values.Any(t => srcforeignKey.Value.RefTable == t.Name))
+					if (srcTable.Schema.Tables.Values.Any(t => srcforeignKey.Value.RefTable.ToLower() == t.Name.ToLower()))
 						script.CreateForeignKey(srcforeignKey.Value);
 				}
 
@@ -148,12 +148,12 @@ namespace Nephrite.Meta.Database
 				//4.1. Удаляем trigger и синхронизируем
 				foreach (var currentTrigger in currentTriggers)
 				{
-					var srcTrigger = srcTriggers.Values.SingleOrDefault(t => t.Name == currentTrigger.Value.Name);
+					var srcTrigger = srcTriggers.Values.SingleOrDefault(t => t.Name.ToLower() == currentTrigger.Value.Name.ToLower());
 					currentTrigger.Value.Sync(script, srcTrigger);
 				}
 
 				//4.2. Добавляем trigger 
-				foreach (var srcTrigger in srcTriggers.Where(srcTrigger => currentTriggers.All(t => t.Value.Name != srcTrigger.Value.Name)))
+				foreach (var srcTrigger in srcTriggers.Where(srcTrigger => currentTriggers.All(t => t.Value.Name.ToLower() != srcTrigger.Value.Name.ToLower())))
 				{
 					script.CreateTrigger(srcTrigger.Value);
 				}
@@ -175,7 +175,7 @@ namespace Nephrite.Meta.Database
 			else
 			{
 				// Обновляем Type, значение Default и Nullable
-				if (Type != srcColumn.Type || DefaultValue != srcColumn.DefaultValue || Nullable != srcColumn.Nullable || ComputedText != srcColumn.ComputedText)
+				if (Type != srcColumn.Type || DefaultValue.ToLower() != srcColumn.DefaultValue.ToLower() || Nullable != srcColumn.Nullable || ComputedText.ToLower() != srcColumn.ComputedText.ToLower())
 				{
 
 					var computedColumns = CurrentTable.Columns.Values.Where(t => !string.IsNullOrEmpty(t.ComputedText));
@@ -211,23 +211,26 @@ namespace Nephrite.Meta.Database
 
 
 					//Находим таблицы ссылающиеся на текущую и у даляем их
-					var childrenForeignKeys = CurrentTable.Schema.Tables.Where(t => t.Value.ForeignKeys.Any(f => f.Value.RefTable == CurrentTable.Name)).SelectMany(t => t.Value.ForeignKeys).ToList();
+					var childrenForeignKeys = CurrentTable.Schema.Tables.Where(t => t.Value.ForeignKeys.Any(f => f.Value.RefTable.ToLower() == CurrentTable.Name.ToLower())).SelectMany(t => t.Value.ForeignKeys).ToList();
 					if (CurrentTable.PrimaryKey != null)
 					{
 						foreach (var foreignKey in childrenForeignKeys)
 						{ script.DeleteForeignKey(foreignKey.Value); }
 					}
 					// Удаляем ссылки pk fk так же обнуляем их обьекты и таблицы для создания их в дальнейшем
-					if (CurrentTable.PrimaryKey.Columns.Any(t => t == this.Name))
+					if (CurrentTable.PrimaryKey.Columns.Any(t => t == this.Name.ToLower()))
 					{
 						script.DeletePrimaryKey(CurrentTable.PrimaryKey);
 					}
 					var toRemove = CurrentTable.ForeignKeys.Select(t => t.Key).ToArray();
+					var listUpperFk = CurrentTable.ForeignKeys;
+					listUpperFk.ToList().ForEach(t=>t.Key.ToUpper());
 					foreach (var key in toRemove)
 					{
-
-						script.DeleteForeignKey(CurrentTable.ForeignKeys[key]);
-						CurrentTable.ForeignKeys.Remove(key);
+						var fk = listUpperFk[key.ToUpper()];
+						script.DeleteForeignKey(fk);
+						var rFk = listUpperFk.FirstOrDefault(t => t.Key == key.ToUpper());
+						CurrentTable.ForeignKeys.ToList().Remove(rFk);
 					}
 
 					script.SyncIdentity(srcTable);
@@ -259,7 +262,7 @@ namespace Nephrite.Meta.Database
 			else
 			{
 				// Обновляем Type, значение Default и Nullable
-				if (Text != srcTrigger.Text)
+				if (Text.ToLower() != srcTrigger.Text.ToLower())
 				{
 					script.DeleteTrigger(this);
 					script.CreateTrigger(srcTrigger);
@@ -280,7 +283,7 @@ namespace Nephrite.Meta.Database
 			}
 			else
 			{
-				if (Name != srcPrimaryKey.Name)
+				if (Name.ToLower() != srcPrimaryKey.Name.ToLower())
 				{
 					script.DeletePrimaryKey(this);
 					script.CreatePrimaryKey(srcPrimaryKey);

@@ -15,6 +15,7 @@ namespace Nephrite.Meta
 		{
 			return "";
 		}
+		public bool NotNullable { get; set; }
 	}
 	public partial class MetaDecimalType
 	{

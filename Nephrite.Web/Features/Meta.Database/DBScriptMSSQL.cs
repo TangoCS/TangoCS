@@ -4,6 +4,9 @@ using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace Nephrite.Meta.Database
 {
@@ -16,6 +19,8 @@ namespace Nephrite.Meta.Database
 
 		public DBScriptMSSQL(string schemaName)
 		{
+			_MainScripts = new List<string>();
+			_FkScripts = new List<string>();
 			Scripts = new List<string>();
 			_SchemaName = schemaName;
 		}
@@ -28,7 +33,7 @@ namespace Nephrite.Meta.Database
 				_MainScripts.AddRange(_FkScripts);
 				return _MainScripts;
 			}
-			set { } 
+			set { }
 		}
 
 		public void DeleteTable(Table currentTable)
@@ -85,7 +90,7 @@ namespace Nephrite.Meta.Database
 										   (current, srcColumn) =>
 										   current +
 										   (string.IsNullOrEmpty(srcColumn.Value.ComputedText) ? string.Format("{0} {1} {2} {3},", srcColumn.Value.Name,
-														 srcColumn.Value.Type,
+														 srcColumn.Value.Type.GetDBType(this),
 														 srcColumn.Value.IsPrimaryKey && srcTable.Identity ? " IDENTITY(1,1)" : "",
 														 srcColumn.Value.Nullable ? "NULL" : "NOT NULL") :
 														 string.Format(" {0} as {1} ", srcColumn.Value.Name, srcColumn.Value.ComputedText)
@@ -215,7 +220,7 @@ namespace Nephrite.Meta.Database
 				_MainScripts.Add(string.Format("if not exists ( select * from sys.columns   where Name = N'{0}' and Object_ID = Object_ID(N'{6}.{5}')) \r\n" +
 											  "ALTER TABLE [{6}.{5}] ADD [{0}] {1} {2} {3} {4}   \r\n GO \r\n",
 										srcColumn.Name,
-										srcColumn.Type,
+										srcColumn.Type.GetDBType(this),
 										srcColumn.IsPrimaryKey && currentTable.Identity ? "IDENTITY(1,1)" : "",
 										srcColumn.Nullable ? "NULL" : "NOT NULL",
 										(!string.IsNullOrEmpty(srcColumn.DefaultValue) ? string.Format("DEFAULT({0})", srcColumn.DefaultValue) : ""),
@@ -238,7 +243,7 @@ namespace Nephrite.Meta.Database
 			var currentTable = srcColumn.CurrentTable;
 
 			_MainScripts.Add(string.Format("if not exists (  select * from sys.columns   where Name = N'{1}' and Object_ID = Object_ID(N'{3}.{0}')) \r\n" +
-									     "ALTER TABLE {3}.{0} ADD {1}  AS ({2}) \r\n GO \r\n",
+										 "ALTER TABLE {3}.{0} ADD {1}  AS ({2}) \r\n GO \r\n",
 									currentTable.Name,
 									srcColumn.Name,
 									srcColumn.ComputedText,
@@ -260,7 +265,7 @@ namespace Nephrite.Meta.Database
 										  "ALTER COLUMN [{1}] {2} {3} {4} \r\n GO \r\n",
 											  currentTable.Name,
 											  srcColumn.Name,
-											  srcColumn.Type,
+											  srcColumn.Type.GetDBType(this),
 											  (!string.IsNullOrEmpty(srcColumn.DefaultValue) ? string.Format("DEFAULT({0})", srcColumn.DefaultValue) : ""),
 											  srcColumn.Nullable ? "NULL" : "NOT NULL",
 											  _SchemaName));
@@ -326,7 +331,7 @@ namespace Nephrite.Meta.Database
 											   (current, srcColumn) =>
 											   current +
 											   string.Format("{0} {1} {2} {3},", srcColumn.Value.Name,
-															 srcColumn.Value.Type,
+															 srcColumn.Value.Type.GetDBType(this),
 															 srcTable.Identity && srcColumn.Value.IsPrimaryKey ? "IDENTITY(1,1)" : "",
 															 srcColumn.Value.Nullable ? "NULL" : "NOT NULL")).TrimEnd(',');
 
@@ -499,5 +504,59 @@ namespace Nephrite.Meta.Database
 			}
 		}
 
+		public XElement GetMeta()
+		{
+			throw new NotImplementedException();
+		}
+
+
+		#region IDBScript Members
+
+
+		public MetaPrimitiveType GetType(string dataType)
+		{
+			dataType = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(", System.StringComparison.Ordinal)) : dataType;
+			var precision = string.Empty;
+			var scale = string.Empty;
+			var match = Regex.Match(dataType, @"\((.*?)\)");
+
+			if (match.Groups.Count > 1)
+			{
+
+				var value = match.Groups[1].Value;
+				string[] arrayVal = value.Split(',');
+				precision = arrayVal[0];
+				if (arrayVal.Length > 1)
+				{
+					scale = arrayVal[1];
+				}
+			}
+			switch (dataType)
+			{
+				case "int":
+					return new MetaIntType();
+				case "nvarchar":
+					return new MetaStringType() { Length = Int32.Parse(precision) };
+				case "decimal":
+					return new MetaDecimalType() { Precision = Int32.Parse(precision), Scale = Int32.Parse(scale) };
+				case "uniqueidentifier":
+					return new MetaGuidType();
+				case "datetime":
+					return new MetaDateTimeType();
+				case "bit":
+					return new MetaBooleanType();
+				case "datetimeoffset":
+					return new MetaZoneDateTimeType();
+				case "bigint":
+					return new MetaLongType();
+				case "varbinary":
+					return new MetaByteArrayType() { Length = Int32.Parse(precision) };
+				default:
+					return new MetaStringType();
+			}
+
+		}
+
+		#endregion
 	}
 }

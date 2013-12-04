@@ -14,13 +14,15 @@ namespace Nephrite.Meta.Database
 	{
 		Schema ReadSchema(string name);
 		List<ProcedureDetails> ReadProceduresDetails();
+	
 	}
 
 	public class SqlServerMetadataReader : IDatabaseMetadataReader
 	{
 		public Schema ReadSchema(string name)
 		{
-			var returnSchema = new Schema(); ;
+			var returnSchema = new Schema();
+			var DbScript = new DBScriptMSSQL(name);
 			using (SqlConnection con = new SqlConnection(ConnectionManager.ConnectionString))
 			{
 				using (SqlCommand cmd = new SqlCommand("usp_dbschema", con))
@@ -48,7 +50,7 @@ namespace Nephrite.Meta.Database
 									{
 										var column = new Column();
 										column.Name = c.GetAttributeValue("Name");
-										column.Type = c.GetAttributeValue("Type");
+										column.Type =  DbScript.GetType(c.GetAttributeValue("Type"));
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("Nullable")) && c.GetAttributeValue("Nullable") == "1";
 										column.ComputedText = c.GetAttributeValue("ComputedText");
 										column.Description = c.GetAttributeValue("Description");
@@ -137,7 +139,7 @@ namespace Nephrite.Meta.Database
 									{
 										var column = new Column();
 										column.Name = c.GetAttributeValue("Name");
-										column.Type = c.GetAttributeValue("Type");
+										column.Type = DbScript.GetType(c.GetAttributeValue("Type"));
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("Nullable")) && c.GetAttributeValue("Nullable") == "1";
 										view.Columns.Add(column.Name, column);
 									});
@@ -166,7 +168,7 @@ namespace Nephrite.Meta.Database
 									{
 										var Parameter = new Parameter();
 										Parameter.Name = c.GetAttributeValue("Name");
-										Parameter.Type = c.GetAttributeValue("Type");
+										Parameter.Type = DbScript.GetType(c.GetAttributeValue("Type"));
 										procedure.Parameters.Add(Parameter.Name, Parameter);
 									});
 
@@ -184,7 +186,7 @@ namespace Nephrite.Meta.Database
 									{
 										var Parameter = new Parameter();
 										Parameter.Name = c.GetAttributeValue("Name");
-										Parameter.Type = c.GetAttributeValue("Type");
+										Parameter.Type = DbScript.GetType(c.GetAttributeValue("Type"));
 										function.Parameters.Add(Parameter.Name, Parameter);
 									});
 

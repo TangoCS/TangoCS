@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace Nephrite.Meta.Database
 {
@@ -24,7 +26,7 @@ namespace Nephrite.Meta.Database
 		void AddColumn(Column srcColumn);
         void DeleteView(View currentView);
         void CreateView(View srcView);
-
+		XElement GetMeta();
         void DeleteProcedure(Procedure currentProcedure);
         void CreateProcedure(Procedure srcProcedure);
         void DeleteFunction(Function currentFunction);
@@ -45,7 +47,7 @@ namespace Nephrite.Meta.Database
 		string GetBooleanType();
 		
 		string ImportData(Table t, bool identityInsert, SqlConnection DbConnection);
-
+		MetaPrimitiveType GetType(string dataType);
     }
  
 }

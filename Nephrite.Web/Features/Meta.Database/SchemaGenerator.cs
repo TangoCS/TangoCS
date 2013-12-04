@@ -27,7 +27,7 @@ namespace Nephrite.Meta.Database
 			{
 				var column = new Column();
 				column.Name = (cls.Name.Contains("_") ? cls.Name.Substring(cls.Name.IndexOf('_') + 1, cls.Name.Length - cls.Name.IndexOf('_') - 1) : cls.Name) + (cls.BaseClass.Key.Type as IMetaIdentifierType).ColumnSuffix;
-				column.Type = cls.BaseClass.Key.Type.GetDBType(dbScript); ;
+				column.Type = cls.BaseClass.Key.Type;
 				column.CurrentTable = t;
 				column.Nullable = false;
 
@@ -75,7 +75,7 @@ namespace Nephrite.Meta.Database
 				var column = new Column();
 				column.Name = prop.Name;
 				column.CurrentTable = t;
-				column.Type = prop.Type.GetDBType(dbScript);
+				column.Type = prop.Type;
 				if (prop is MetaPersistentComputedAttribute)
 				{
 					column.ComputedText = (prop as MetaPersistentComputedAttribute).Expression;
@@ -92,7 +92,7 @@ namespace Nephrite.Meta.Database
 						{
 							column.Name = "FileGUID";
 						}
-						column.Type = (prop as MetaReference).RefClass.Key.Type.GetDBType(dbScript);
+						column.Type = (prop as MetaReference).RefClass.Key.Type;
 
 						column.ForeignKeyName = "FK_" + cls.Name + "_" + (prop as MetaReference).RefClassName;
 					}
@@ -101,7 +101,7 @@ namespace Nephrite.Meta.Database
 				if (prop.Type is MetaFileType)
 				{
 					column.Name = prop.Name + "GUID";
-					column.Type = dbScript.GetGuidType();
+					column.Type = new MetaGuidType();
 					column.ForeignKeyName = "FK_" + cls.Name + "_" + prop.Name;
 					t.ForeignKeys.Add(column.ForeignKeyName, new ForeignKey() { CurrentTable = t, Name = column.ForeignKeyName, RefTable = "N_File", Columns = new[] { column.Name }, RefTableColumns = new[] { "Guid" } });
 				}
@@ -137,8 +137,8 @@ namespace Nephrite.Meta.Database
 						joinTable.Name = t.Name + f.Name;
 						var columnNameLeft = primaryColumn.Name;
 						var columnNameRight = (f as MetaReference).RefClass.ColumnName((f as MetaReference).RefClass.Key.Name);
-						joinTable.Columns.Add(columnNameLeft, new Column() { CurrentTable = t, Name = columnNameLeft, Nullable = false, Type = f.Type.GetDBType(dbScript) });
-						joinTable.Columns.Add(columnNameRight, new Column() { CurrentTable = t, Name = columnNameRight, Nullable = false, Type = (f as MetaReference).RefClass.Key.Type.GetDBType(dbScript) });
+						joinTable.Columns.Add(columnNameLeft, new Column() { CurrentTable = t, Name = columnNameLeft, Nullable = false, Type = f.Type });
+						joinTable.Columns.Add(columnNameRight, new Column() { CurrentTable = t, Name = columnNameRight, Nullable = false, Type = (f as MetaReference).RefClass.Key.Type });
 
 						t.ForeignKeys.Add("FK_" + joinTable.Name + "_" + t.Name, new ForeignKey() { CurrentTable = t, Name = "FK_" + joinTable.Name + "_" + t.Name, RefTable = t.Name, Columns = new[] { columnNameLeft }, RefTableColumns = new[] { primaryColumn.Name } });
 						t.ForeignKeys.Add("FK_" + joinTable.Name + "_" + (f as MetaReference).RefClass.Name, new ForeignKey() { CurrentTable = t, Name = "FK_" + joinTable.Name + "_" + (f as MetaReference).RefClass.Name, RefTable = (f as MetaReference).RefClass.Name, Columns = new[] { columnNameRight }, RefTableColumns = new[] { (f as MetaReference).RefClass.Key.Name } });
@@ -165,11 +165,11 @@ namespace Nephrite.Meta.Database
 						column.ComputedText = (prop as MetaPersistentComputedAttribute).Expression;
 					}
 
-					column.Type = prop.Type.GetDBType(dbScript);
+					column.Type = prop.Type;
 					if (prop.Type is MetaFileType)
 					{
 						column.Name = prop.Name + "GUID";
-						column.Type = dbScript.GetGuidType();
+						column.Type = new MetaGuidType();
 					}
 					column.Nullable = !prop.IsRequired;
 					//column.IsPrimaryKey = cls.CompositeKey.Any(p => p.Name == prop.Name);
@@ -195,7 +195,7 @@ namespace Nephrite.Meta.Database
 
 				var languageColumn = new Column();// Ссылка на таблицу C_Language
 				languageColumn.Name = "LanguageCode";
-				languageColumn.Type = dbScript.GetStringType(2);
+				languageColumn.Type = new MetaStringType() { Length = 2 };
 				languageColumn.ForeignKeyName = "FK_" + tdata.Name + "_C_Language";
 				languageColumn.CurrentTable = tdata;
 				tdata.Columns.Add("LanguageCode", languageColumn);
