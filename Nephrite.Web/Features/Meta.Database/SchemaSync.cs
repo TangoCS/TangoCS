@@ -104,7 +104,7 @@ namespace Nephrite.Meta.Database
 				//1.2. Удаляем колонки и синхронизируем 
 				foreach (var column in curentColumns)
 				{
-					if (column.Value.CurrentTable.Name.ToLower() == "Citizen".ToLower() && column.Key.ToLower()=="fulltitle")
+					if (column.Value.CurrentTable.Name.ToLower() == "APPENDIX".ToLower() && column.Key.ToLower() == "FILEGUID".ToLower())
 					{
 
 					}
@@ -179,7 +179,7 @@ namespace Nephrite.Meta.Database
 			else
 			{
 				// Обновляем Type, значение Default и Nullable
-				if (Type != srcColumn.Type || DefaultValue.ToLower() != srcColumn.DefaultValue.ToLower() || Nullable != srcColumn.Nullable || ComputedText.ToLower() != srcColumn.ComputedText.ToLower())
+				if (srcColumn.Type.GetType() != Type.GetType() || ((DefaultValue == null ? "" : DefaultValue.ToLower()) != (srcColumn.DefaultValue == null ? "" : srcColumn.DefaultValue.ToLower())) || Nullable != srcColumn.Nullable || ((ComputedText == null ? "" : ComputedText.ToLower()) != (srcColumn.ComputedText == null ? "" : srcColumn.ComputedText.ToLower())))
 				{
 
 					var computedColumns = CurrentTable.Columns.Values.Where(t => !string.IsNullOrEmpty(t.ComputedText));
@@ -228,7 +228,7 @@ namespace Nephrite.Meta.Database
 					}
 					var toRemove = CurrentTable.ForeignKeys.Select(t => t.Key).ToArray();
 					var listUpperFk = CurrentTable.ForeignKeys;
-					listUpperFk.ToList().ForEach(t=>t.Key.ToUpper());
+					listUpperFk.ToList().ForEach(t => t.Key.ToUpper());
 					foreach (var key in toRemove)
 					{
 						var fk = listUpperFk[key.ToUpper()];

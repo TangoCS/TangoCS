@@ -333,7 +333,7 @@ namespace Nephrite.Meta.Database
 
 		public string GetGuidType()
 		{
-			return string.Format("VARCHAR");
+			return string.Format("VARCHAR(100)");
 		}
 
 		public string GetStringType(int length)
@@ -353,7 +353,7 @@ namespace Nephrite.Meta.Database
 
 		public string GetDateType()
 		{
-			return "TIMESTAMP";
+			return "DATE";
 		}
 
 		public string GetZoneDateTimeType()
@@ -555,6 +555,8 @@ namespace Nephrite.Meta.Database
 				case "DECIMAL":
 					return new MetaDecimalType() { Precision = Int32.Parse(precision), Scale = Int32.Parse(scale) };
 				case "TIMESTAMP":
+					return new MetaDateTimeType();
+				case "DATE":
 					return new MetaDateTimeType();
 				case "BIGINT":
 					return new MetaLongType();
