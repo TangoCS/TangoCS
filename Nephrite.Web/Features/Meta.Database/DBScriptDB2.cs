@@ -576,6 +576,11 @@ namespace Nephrite.Meta.Database
 
 			var match = Regex.Match(Value, @"(?<=\(').*(?='\))");
 			var defValue = match.Groups[0].Value;
+			if (string.IsNullOrEmpty(defValue))
+			{
+				var match1 = Regex.Match(Value, @"\((.*)\)");
+				defValue = match1.Groups[1].Value;
+			}
 			return Value == "(getdate())" ? "current_date" : "'" + defValue + "'";
 
 		}

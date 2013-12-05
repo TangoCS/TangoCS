@@ -104,7 +104,7 @@ namespace Nephrite.Meta.Database
 				//1.2. Удаляем колонки и синхронизируем 
 				foreach (var column in curentColumns)
 				{
-					if (column.Value.CurrentTable.Name.ToLower() == "APPENDIX".ToLower() && column.Key.ToLower() == "FILEGUID".ToLower())
+					if (column.Value.CurrentTable.Name.ToLower() == "C_FIAS_HOUSEINTERVAL".ToLower() && column.Key.ToLower() == "HOUSEINTID".ToLower())
 					{
 
 					}
@@ -197,10 +197,6 @@ namespace Nephrite.Meta.Database
 					}
 					script.ChangeColumn(srcColumn);
 
-					if (!string.IsNullOrEmpty(srcColumn.DefaultValue))
-					{
-						script.AddDefaultValue(srcColumn);
-					}
 
 					if (string.IsNullOrEmpty(ComputedText))
 					{
