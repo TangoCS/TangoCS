@@ -104,6 +104,10 @@ namespace Nephrite.Meta.Database
 				//1.2. Удаляем колонки и синхронизируем 
 				foreach (var column in curentColumns)
 				{
+					if (column.Value.CurrentTable.Name.ToLower() == "Citizen".ToLower() && column.Key.ToLower()=="fulltitle")
+					{
+
+					}
 					var srcColumn = srcColumns.Values.SingleOrDefault(t => t.Name.ToLower() == column.Value.Name.ToLower());
 					column.Value.srcTable = srcTable;
 					column.Value.Sync(script, srcColumn);

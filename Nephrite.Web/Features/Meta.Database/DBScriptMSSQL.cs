@@ -515,7 +515,7 @@ namespace Nephrite.Meta.Database
 
 		public MetaPrimitiveType GetType(string dataType)
 		{
-			if (dataType == "decimal")
+			if (dataType == "decimal(18,5)")
 			{
 
 			}

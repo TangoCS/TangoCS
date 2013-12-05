@@ -18,7 +18,7 @@ namespace Nephrite.Meta.Database
 		public Schema ReadSchema(string name)
 		{
 			var returnSchema = new Schema();
-			var DbScript = new DBScriptMSSQL(name);
+			var DbScript = new DBScriptDB2(name);
 			using (DB2Connection con = new DB2Connection(ConnectionManager.ConnectionString))
 			{
 				using (DB2Command cmd = new DB2Command("CALL DBO.USP_DBSCHEMA('DBO')", con))
@@ -35,6 +35,10 @@ namespace Nephrite.Meta.Database
 							{
 								var table = new Table();
 								table.Name = t.GetAttributeValue("NAME");
+								if (table.Name == "CITIZEN")
+								{
+
+								}
 								table.Owner = t.GetAttributeValue("OWNER");
 								table.Description = t.GetAttributeValue("DESCRIPTION");
 								table.Identity = !string.IsNullOrEmpty(t.GetAttributeValue("IDENTITY")) && t.GetAttributeValue("IDENTITY") == "1";
