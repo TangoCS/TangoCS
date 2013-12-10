@@ -182,7 +182,7 @@ namespace Nephrite.Meta.Database
 				// Обновляем Type, значение Default и Nullable
 				if (srcColumn.Type.GetType() != Type.GetType() || ((DefaultValue == null ? "" : DefaultValue.ToLower()) != (srcColumn.DefaultValue == null ? "" : srcColumn.DefaultValue.ToLower())) || Nullable != srcColumn.Nullable || ((ComputedText == null ? "" : ComputedText.ToLower()) != (srcColumn.ComputedText == null ? "" : srcColumn.ComputedText.ToLower())))
 				{
-
+					var table = CurrentTable.Name;
 					var computedColumns = CurrentTable.Columns.Values.Where(t => !string.IsNullOrEmpty(t.ComputedText));
 					if (string.IsNullOrEmpty(ComputedText))
 					{

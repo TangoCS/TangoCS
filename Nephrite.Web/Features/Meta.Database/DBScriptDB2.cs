@@ -476,24 +476,63 @@ namespace Nephrite.Meta.Database
 			{
 				case "(isnull(([Surname]+isnull((' '+substring([Firstname],(1),(1)))+'.',''))+isnull((' '+substring([Patronymic],(1),(1)))+'.',''),''))":
 					computedText =
-						"(COALESCE((SURNAME+COALESCE((' '+substring(FIRSTNAME,1,1, OCTETS))+'.',''))+COALESCE((' '+substring(PATRONYMIC,1,1, OCTETS))+'.',''),''))";
+						"AS (COALESCE((SURNAME+COALESCE((' '+substring(FIRSTNAME,1,1, OCTETS))+'.',''))+COALESCE((' '+substring(PATRONYMIC,1,1, OCTETS))+'.',''),''))";
 					break;
 				case "(([Surname]+isnull(' '+[Firstname],''))+isnull(' '+[Patronymic],''))":
 					computedText =
-						"(SURNAME+COALESCE(' '+FIRSTNAME,''))+COALESCE(' '+PATRONYMIC,'')";
+						"AS (SURNAME+COALESCE(' '+FIRSTNAME,''))+COALESCE(' '+PATRONYMIC,'')";
 					break;
 				case "((((([Surname]+isnull(' '+[Firstname],''))+isnull(' '+[Patronymic],''))+' ')+CONVERT([nvarchar],[Birthdate],(104)))+isnull(', '+[RFSubjectText],''))":
-					computedText = "(((((SURNAME+COALESCE(' '+FIRSTNAME,''))+COALESCE(' '+PATRONYMIC,''))+' ')+VARCHAR_FORMAT(BIRTHDATE, 'YYYY-MM-DD')  )+COALESCE(', '+RFSUBJECTTEXT,''))";
+					computedText = "AS (((((SURNAME+COALESCE(' '+FIRSTNAME,''))+COALESCE(' '+PATRONYMIC,''))+' ')+VARCHAR_FORMAT(BIRTHDATE, 'YYYY-MM-DD')  )+COALESCE(', '+RFSUBJECTTEXT,''))";
+					break;
+				case "('от '+isnull(CONVERT([nvarchar],[ComplaintDate],(120)),'<дата не задана>'))":
+					computedText = "AS ('от '+COALESCE(VARCHAR_FORMAT(COMPLAINTDATE, 'YYYY-MM-DD'),'<дата не задана>'))";
+					break;
+				case "(([HouseNum]+isnull(nullif(', корп. '+[BuildNum],', корп. '),''))+isnull(nullif(', стр. '+[StrucNum],', стр. '),''))":
+					computedText = "AS ((HOUSENUM + COALESCE(nullif(', корп. '+BUILDNUM,', корп. '),''))+COALESCE(nullif(', стр. '+STRUCNUM,', стр. '),''))";
+					break;
+				case "(((([Part]+'-')+[Subpart])+'-')+[Chapter])":
+					computedText = "AS ((((PART+'-')+SUBPURT)+'-')+CHAPTER)";
+					break;
+				case "(((((([Part]+'-')+[Subpart])+'-')+[Chapter])+' ')+isnull([ShortDescription],''))":
+					computedText = "AS ((((((PART+'-')+SUBPURT)+'-')+CHAPTER)+' ')+COALESCE(SHORTDESCRIPTION,''))";
+					break;
+				case "(((CONVERT([nvarchar],[Value],0)+' (')+TITLE)+')')":
+					computedText = "AS (((CHAR(VALUE)+' (')+TITLE)+')')";
+					break;
+				case "(((CONVERT([nvarchar],[Value],0)+' ')+[Title])+isnull((' (дата окончания действия '+CONVERT([nvarchar],[EndDate],(104)))+')',''))":
+					computedText = "AS (((CHAR(VALUE)+' ')+TITLE)+COALESCE((' (дата окончания действия '+VARCHAR_FORMAT(ENDDATE, 'YYYY-MM-DD') )+')',''))";
+					break;
+				case "((CONVERT([nvarchar],[Value],0)+' ')+[ATE])":
+					computedText = "AS ((CHAR(VALUE)+' ')+ATE)";
+					break;
+				case "(CONVERT([nvarchar],[Value],0)+isnull(' '+[Title],''))":
+					computedText = "AS (CHAR(VALUE)+COALESCE(' '+TITLE,''))";
+					break;
+				case "(isnull(CONVERT([bit],case when [EndDate]>getdate() AND [BeginDate]<getdate() then (0) else (1) end,(0)),(1)))":
+					computedText = "AS (COALESCE(case when ENDDATE> current_date AND BEGINDATE< current_date then 0 else 1 end))";
+					break;
+				case "(((([CitizenSurname]+' ')+[CitizenFirstname])+' ')+[CitizenPatronymic])":
+					computedText = "AS ((((CITIZENSURNAME+' ')+CITIZENFIRSTNAME)+' ')+CITIZENPATRONYMIC)";
+					break;
+				case "(case when [AssignmentDate] IS NULL then 'Создано' else case when [CompleteDate] IS NULL then isnull([State],'Создано') else case when [OnCheckDate] IS NULL then isnull([State],'Выполнено') else case when [CloseDate] IS NOT NULL then 'Завершено' when [AnnulmentDate] IS NOT NULL then 'Аннулировано' when [SuspendDate] IS NOT NULL then 'Отложено' else 'На проверке' end end end end)":
+					computedText = "AS (case when ASSIGMENTDATE IS NULL then 'Создано' else case when COMPLETEDATE IS NULL then COALESCE(STATE,'Создано') else case when ONCHECKDATE IS NULL then COALESCE(STATE,'Выполнено') else case when CLOSEDATE IS NOT NULL then 'Завершено' when ANNULMENTDATE IS NOT NULL then 'Аннулировано' when SUSPENDDATE IS NOT NULL then 'Отложено' else 'На проверке' end end end end)";
+					break;
+				case "(right('000'+CONVERT([nvarchar],[opNo],0),(3))+case [IsTracking] when (1) then '-к' else '' end)":
+					computedText = "AS (right('000'+CHAR(OPNO),(3))+case ISTRACKING when 1 then '-к' else '' end)";
+					break;
+				case "((isnull([Surname]+' ','')+isnull(substring([Firstname],(1),(1))+'. ',''))+isnull(substring([Patronymic],(1),(1))+'.',''))":
+					computedText = "AS ((COALESCE(SURNAME+' ','')+COALESCE(substring(FIRSTNAME,1,1)+'. ',''))+COALESCE(substring(Patronymic,1,1)+'.',''))";
 					break;
 				default:
-					computedText = srcColumn.ComputedText;
+					computedText = srcColumn.ComputedText.Replace("[", "").Replace("]", "").ToUpper();
 					break;
 
 			}
-			_MainScripts.Add(string.Format("SET INTEGRITY FOR {3}.{0} OFF CASCADE DEFERRED;\r\n ALTER TABLE {3}.{0} ADD {1} VARCHAR(32000)  GENERATED ALWAYS AS ({2}) ; \r\n SET INTEGRITY FOR {3}.{0}  IMMEDIATE CHECKED; CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {3}.{0}' ); \r\n",
+			_MainScripts.Add(string.Format("SET INTEGRITY FOR {3}.{0} OFF CASCADE DEFERRED;\r\n ALTER TABLE {3}.{0} ADD {1} VARCHAR(32000)  GENERATED ALWAYS ({2}) ; \r\n SET INTEGRITY FOR {3}.{0}  IMMEDIATE CHECKED; CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {3}.{0}' ); \r\n",
 									currentTable.Name.ToUpper(),
 									srcColumn.Name.ToUpper(),
-									srcColumn.ComputedText.Replace("\"", ""),
+									computedText.Replace("\"", ""),
 									_SchemaName));//    // {0}- Название таблицы, {1} - Название колонки, {2} - ComputedText
 		}
 
