@@ -48,7 +48,7 @@ namespace Nephrite.Meta.Database
 									{
 										var column = new Column();
 										column.Name = c.GetAttributeValue("NAME");
-										column.Type = DbScript.GetType(c.GetAttributeValue("TYPE"));
+										column.Type = column.Name.EndsWith("GUID")? new MetaGuidType() : DbScript.GetType(c.GetAttributeValue("TYPE"));
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
 										column.ComputedText = c.GetAttributeValue("COMPUTEDTEXT");
 										column.Description = c.GetAttributeValue("DESCRIPTION");
@@ -137,7 +137,7 @@ namespace Nephrite.Meta.Database
 									{
 										var column = new Column();
 										column.Name = c.GetAttributeValue("NAME");
-										column.Type = DbScript.GetType(c.GetAttributeValue("TYPE"));
+										column.Type = column.Name.EndsWith("GUID") ? new MetaGuidType() : DbScript.GetType(c.GetAttributeValue("TYPE"));
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
 										view.Columns.Add(column.Name, column);
 									});

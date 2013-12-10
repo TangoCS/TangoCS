@@ -104,7 +104,7 @@ namespace Nephrite.Meta.Database
 				//1.2. Удаляем колонки и синхронизируем 
 				foreach (var column in curentColumns)
 				{
-					if (column.Value.CurrentTable.Name.ToLower() == "C_FIAS_HOUSEINTERVAL".ToLower() && column.Key.ToLower() == "HOUSEINTID".ToLower())
+					if (column.Value.CurrentTable.Name.ToLower() == "CITIZEN".ToLower() && column.Key.ToLower() == "CREATEDATE".ToLower())
 					{
 
 					}
@@ -145,7 +145,8 @@ namespace Nephrite.Meta.Database
 
 
 
-
+				if(script is DBScriptDB2)
+					return;
 				//4 Обновляем trigger
 				var currentTriggers = this.Triggers;
 				var srcTriggers = srcTable.Triggers;
