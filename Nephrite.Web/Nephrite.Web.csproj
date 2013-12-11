@@ -297,6 +297,7 @@
     <Compile Include="Features\Meta.Database\PrimitiveTypesExtensions.cs" />
     <Compile Include="Features\Meta.Database\SchemaSync.cs" />
     <Compile Include="Features\Meta.Database\UpdateScriptBuilder2.cs" />
+    <Compile Include="Features\Meta.Database\UpdateScriptBuilderDB2.cs" />
     <Compile Include="Features\Reporting\AggregateColumn.cs" />
     <Compile Include="Features\Reporting\Grouping.cs" />
     <Compile Include="Features\Reporting\Report.cs">

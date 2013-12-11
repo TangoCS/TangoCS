@@ -104,7 +104,7 @@ namespace Nephrite.Meta.Database
 				//1.2. Удаляем колонки и синхронизируем 
 				foreach (var column in curentColumns)
 				{
-					if (column.Value.CurrentTable.Name.ToLower() == "CITIZEN".ToLower() && column.Key.ToLower() == "CREATEDATE".ToLower())
+					if (column.Value.CurrentTable.Name.ToLower() == "IMP_EMPLOYEE".ToLower())
 					{
 
 					}
@@ -116,11 +116,11 @@ namespace Nephrite.Meta.Database
 
 
 				//3 Обновляем primaryKey
-				if (PrimaryKey == null && srcTable.PrimaryKey != null)
+				if ((PrimaryKey == null || PrimaryKey.Columns.Count()==0) && srcTable.PrimaryKey != null)
 					script.CreatePrimaryKey(srcTable.PrimaryKey);
 				else
 				{
-					if (PrimaryKey != null)
+					if (PrimaryKey != null && PrimaryKey.Columns.Any())
 						PrimaryKey.Sync(script, srcTable.PrimaryKey);
 				}
 
@@ -145,7 +145,7 @@ namespace Nephrite.Meta.Database
 
 
 
-				if(script is DBScriptDB2)
+				if (script is DBScriptDB2)
 					return;
 				//4 Обновляем trigger
 				var currentTriggers = this.Triggers;

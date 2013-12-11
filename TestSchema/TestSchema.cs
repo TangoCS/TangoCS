@@ -79,15 +79,17 @@ namespace TestSchema
 			ConnectionManager.SetConnectionString("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000");
 			var db2Schema = new DB2ServerMetadataReader().ReadSchema("dbo");
 
-			var db2Script = new DBScriptDB2("dbo");
-			foreach (var table in db2Schema.Tables)
-			{
-				
-				var srcTable = sqlSchema.Tables.Values.SingleOrDefault(t => t.Name.ToUpper() == table.Key.ToUpper());
+		
+			var d = new UpdateScriptBuilderDB2(sqlSchema, new SqlConnection("Password=q121212;Persist Security Info=True;User ID=servantsuser;Initial Catalog=servants;Data Source=srvsql.refactorx.ru\\mssqlserver2008")).Generate(false, false);
+			//var db2Script = new DBScriptDB2("dbo");
+			//foreach (var table in db2Schema.Tables)
+			//{
 
-				table.Value.Sync(db2Script, srcTable);
-			}
-			var strSql = string.Join(" ", db2Script.Scripts.ToArray());
+			//	var srcTable = sqlSchema.Tables.Values.SingleOrDefault(t => t.Name.ToUpper() == table.Key.ToUpper());
+
+			//	table.Value.Sync(db2Script, srcTable);
+			//}
+			//var strSql = string.Join(" ", db2Script.Scripts.ToArray());
 		}
 	}
 }

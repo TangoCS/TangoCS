@@ -185,7 +185,8 @@ namespace Nephrite.Meta.Database
 										var Parameter = new Parameter();
 										Parameter.Name = c.GetAttributeValue("NAME");
 										Parameter.Type = DbScript.GetType(c.GetAttributeValue("TYPE"));
-										function.Parameters.Add(Parameter.Name, Parameter);
+										if (!string.IsNullOrEmpty(Parameter.Name))
+											function.Parameters.Add(Parameter.Name, Parameter);
 									});
 
 								returnSchema.Functions.Add(function.Name, function);

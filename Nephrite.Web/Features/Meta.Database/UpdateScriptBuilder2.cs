@@ -24,13 +24,14 @@ namespace Nephrite.Meta.Database
 		public string DbName { get { return _dbname; } }
 		public bool RecreateIndexes = true;
 
-		public UpdateScriptBuilder2(Schema schema)
+		public UpdateScriptBuilder2(Schema schema, SqlConnection connection)
 		{
 			SqlConnectionStringBuilder b = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString);
 			_servername = b.DataSource;
 			_dbname = b.InitialCatalog;
 			_schema = schema;
-		
+			export = new TableExport(connection);
+
 		}
 
 		public string Generate(bool includeSPM, bool includeFiles)
@@ -271,7 +272,7 @@ namespace Nephrite.Meta.Database
 					foreach (var indx in t.Indexes.Values)
 					{
 						var createIndex = "CREATE {6} INDEX {0} ON {1}" +
-	"({2}) WITH(IGNORE_DUP_KEY = {3}, ALLOW_ROW_LOCKS = {4}, ALLOW_PAGE_LOCKS = {5}) ";
+											"({2}) WITH(IGNORE_DUP_KEY = {3}, ALLOW_ROW_LOCKS = {4}, ALLOW_PAGE_LOCKS = {5}) ";
 						result.AppendLine("print 'Index " + indx.Name + "'");
 						result.AppendFormat("IF EXISTS (select * from sys.objects where type_desc = 'USER_TABLE' and OBJECT_NAME(OBJECT_ID) = '{0}' and SCHEMA_NAME(schema_id) = '{1}') BEGIN\r\n", t.Name, t.Owner);
 						result.AppendFormat("	IF EXISTS (select * from sys.indexes where name = '{1}') DROP INDEX [{1}] ON [{0}].[{2}]\r\n", _schema.Name, indx.Name, t.Name);
@@ -281,7 +282,9 @@ namespace Nephrite.Meta.Database
 							string.Join(", ", indx.Columns.ToArray()),
 							indx.IgnoreDupKey ? "ON" : "OFF",
 							indx.AllowRowLocks ? "ON" : "OFF",
-							indx.AllowPageLocks ? "ON" : "OFF"));
+							indx.AllowPageLocks ? "ON" : "OFF",
+							indx.IsUnique ? "UNIQUE" : ""
+							));
 						result.AppendFormat("END\r\n");
 					}
 				}
@@ -314,7 +317,7 @@ namespace Nephrite.Meta.Database
 			if (!_schema.Tables.Values.Any(t => t.Name == table))
 				return;
 
-			
+
 			var currentTable = _schema.Tables[table];
 			bool hasIdentity = currentTable.Identity;
 
