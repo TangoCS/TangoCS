@@ -173,6 +173,10 @@ namespace Nephrite.Meta.Database
 			//result.AppendLine("SELECT 'Error at line: ' + convert(varchar(50), ERROR_LINE())");
 			//result.AppendLine("print ERROR_MESSAGE()");
 			//result.AppendLine("END CATCH");
+			result.AppendLine("DECLARE CONTINUE HANDLER FOR SQLEXCEPTION");
+			result.AppendLine("BEGIN");
+			result.AppendLine("ROLLBACK TO SAVEPOINT STARTSCRIPT;");
+			result.AppendLine("END;");
 			result.AppendLine("-- Generate time: " + DateTime.Now.Subtract(startDate).ToString());
 			return result.ToString();
 		}
@@ -189,6 +193,8 @@ namespace Nephrite.Meta.Database
 			//result.AppendLine("use [" + _dbname + "]");
 			//result.AppendLine("go");
 			//result.AppendLine("BEGIN TRY");
+
+
 			result.AppendLine("SAVEPOINT STARTFILESCRIPT ON ROLLBACK RETAIN CURSORS;");
 
 			result.AppendFormat("DELETE FROM N_FILE WHERE FOLDERID IN (SELECT FOLDERID FROM N_FOLDER WHERE FULLPATH LIKE 'SolutionSources%');\r\n");
@@ -219,6 +225,11 @@ namespace Nephrite.Meta.Database
 			//result.AppendLine("print 'Error at line: ' + convert(varchar(50), ERROR_LINE())");
 			//result.AppendLine("print ERROR_MESSAGE()");
 			//result.AppendLine("END CATCH");
+
+			result.AppendLine("DECLARE CONTINUE HANDLER FOR SQLEXCEPTION");
+			result.AppendLine("BEGIN");
+			result.AppendLine(" ROLLBACK TO SAVEPOINT STARTFILESCRIPT;");
+			result.AppendLine("END;");
 			result.AppendLine("-- Generate time: " + DateTime.Now.Subtract(startDate).ToString());
 			return result.ToString();
 		}
@@ -235,19 +246,29 @@ namespace Nephrite.Meta.Database
 			{
 
 				result.AppendLine("SELECT 'View " + v.Name + "' FROM SYSIBM.SYSDUMMY1;");
-
+				result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", v.Name);
+				result.AppendFormat("DECLARE {0} STATEMENT; \r\n", v.Name);
 				result.AppendFormat(" IF EXISTVIEW('{0}','{1}') IS NOT NULL THEN \r\n", v.Name.ToUpper(), _schema.Name.ToUpper());
 				result.AppendFormat(" DROP FUNCTION {1}.{0};\r\n", v.Name.ToUpper(), _schema.Name.ToUpper());
-				result.AppendFormat(" EXECUTE IMMEDIATE '{0}';\r\n", v.Text);
+				result.AppendFormat(" SET {0}_text = {1};\r\n", v.Name, v.Text);
+				result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", v.Name);
+				result.AppendFormat(" EXECUTE {0};\r\n", v.Name);
 				result.AppendFormat("END IF; \r\n");
+
 
 				foreach (var tr in v.Triggers.Values)
 				{
 
 					result.AppendLine("SELECT 'TRIGGER " + tr.Name + "' FROM SYSIBM.SYSDUMMY1;");
+
+
+					result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", tr.Name);
+					result.AppendFormat("DECLARE {0} STATEMENT; \r\n", tr.Name);
 					result.AppendFormat(" IF EXISTTRIGER('{0}','{1}') IS NOT NULL THEN \r\n", tr.Name.ToUpper(), _schema.Name.ToUpper());
 					result.AppendFormat(" DROP TRIGGER {1}.{0};\r\n", tr.Name.ToUpper(), _schema.Name.ToUpper());
-					result.AppendFormat(" EXECUTE IMMEDIATE '{0}';\r\n", tr.Text);
+					result.AppendFormat(" SET {0}_text = {1};\r\n", tr.Name, tr.Text);
+					result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", tr.Name);
+					result.AppendFormat(" EXECUTE {0};\r\n", tr.Name);
 					result.AppendFormat("END IF; \r\n");
 				}
 			}
@@ -255,19 +276,27 @@ namespace Nephrite.Meta.Database
 			{
 
 				result.AppendLine("SELECT 'PROCEDURE " + p.Name + "' FROM SYSIBM.SYSDUMMY1;");
-
+				result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", p.Name);
+				result.AppendFormat("DECLARE {0} STATEMENT; \r\n", p.Name);
 				result.AppendFormat(" IF EXISTFUNC('{0}','{1}') IS NOT NULL THEN \r\n", p.Name.ToUpper(), _schema.Name.ToUpper());
 				result.AppendFormat(" DROP FUNCTION {1}.{0};\r\n", p.Name.ToUpper(), _schema.Name.ToUpper());
-				result.AppendFormat(" EXECUTE IMMEDIATE '{0}';\r\n", p.Text);
+				result.AppendFormat(" SET {0}_text = {1};\r\n", p.Name, p.Text);
+				result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", p.Name);
+				result.AppendFormat(" EXECUTE {0};\r\n", p.Name);
 				result.AppendFormat("END IF; \r\n");
+
 			}
 			foreach (var f in _schema.Functions.Values)
 			{
 				result.AppendLine("SELECT 'FUNCTION " + f.Name + "' FROM SYSIBM.SYSDUMMY1;");
 
+				result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", f.Name);
+				result.AppendFormat("DECLARE {0} STATEMENT; \r\n", f.Name);
 				result.AppendFormat(" IF EXISTFUNC('{0}','{1}') IS NOT NULL THEN \r\n", f.Name.ToUpper(), _schema.Name.ToUpper());
 				result.AppendFormat(" DROP FUNCTION {1}.{0};\r\n", f.Name.ToUpper(), _schema.Name.ToUpper());
-				result.AppendFormat(" EXECUTE IMMEDIATE '{0}';\r\n", f.Text);
+				result.AppendFormat(" SET {0}_text = {1};\r\n", f.Name, f.Text);
+				result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", f.Name);
+				result.AppendFormat(" EXECUTE {0};\r\n", f.Name);
 				result.AppendFormat("END IF; \r\n");
 			}
 			foreach (Table t in _schema.Tables.Values)
@@ -276,9 +305,15 @@ namespace Nephrite.Meta.Database
 				foreach (var tr in t.Triggers.Values)
 				{
 					result.AppendLine("SELECT 'TRIGGER " + tr.Name + "' FROM SYSIBM.SYSDUMMY1;");
-					result.AppendFormat(" IF EXISTTRIGER('{0}','{1}') IS NOT NULL THEN \r\n", tr.Name.ToUpper(), t.Schema.Name.ToUpper());
-					result.AppendFormat(" DROP TRIGGER {1}.{0};\r\n", tr.Name.ToUpper(), t.Schema.Name.ToUpper());
-					result.AppendFormat(" EXECUTE IMMEDIATE '{0}';\r\n", tr.Text);
+
+
+					result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", tr.Name);
+					result.AppendFormat("DECLARE {0} STATEMENT; \r\n", tr.Name);
+					result.AppendFormat(" IF EXISTTRIGER('{0}','{1}') IS NOT NULL THEN \r\n", tr.Name.ToUpper(), _schema.Name.ToUpper());
+					result.AppendFormat(" DROP TRIGGER {1}.{0};\r\n", tr.Name.ToUpper(), _schema.Name.ToUpper());
+					result.AppendFormat(" SET {0}_text = {1};\r\n", tr.Name, tr.Text);
+					result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", tr.Name);
+					result.AppendFormat(" EXECUTE {0};\r\n", tr.Name);
 					result.AppendFormat("END IF; \r\n");
 				}
 			}
@@ -340,7 +375,7 @@ namespace Nephrite.Meta.Database
 				return;
 
 
-			var currentTable = _schema.Tables[table];
+			var currentTable = _schema.Tables[table.ToUpper()];
 			bool hasIdentity = currentTable.Identity;
 
 			if (hasIdentity)

@@ -71,16 +71,16 @@ namespace TestSchema
 		[TestMethod]
 		public void TestDB2()
 		{
-			ConnectionManager.SetConnectionString(
-				"Password=q121212;Persist Security Info=True;User ID=servantsuser;Initial Catalog=servants;Data Source=srvsql.refactorx.ru\\mssqlserver2008");
-			var sqlSchema = new SqlServerMetadataReader().ReadSchema("dbo");
+			//ConnectionManager.SetConnectionString(
+			//	"Password=q121212;Persist Security Info=True;User ID=servantsuser;Initial Catalog=servants;Data Source=srvsql.refactorx.ru\\mssqlserver2008");
+			//var sqlSchema = new SqlServerMetadataReader().ReadSchema("dbo");
 
 
 			ConnectionManager.SetConnectionString("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000");
 			var db2Schema = new DB2ServerMetadataReader().ReadSchema("dbo");
 
-		
-			var d = new UpdateScriptBuilderDB2(sqlSchema, new SqlConnection("Password=q121212;Persist Security Info=True;User ID=servantsuser;Initial Catalog=servants;Data Source=srvsql.refactorx.ru\\mssqlserver2008")).Generate(false, false);
+
+			var d = new UpdateScriptBuilderDB2(db2Schema, new SqlConnection("Password=q121212;Persist Security Info=True;User ID=servantsuser;Initial Catalog=servants;Data Source=srvsql.refactorx.ru\\mssqlserver2008")).Generate(false, false);
 			//var db2Script = new DBScriptDB2("dbo");
 			//foreach (var table in db2Schema.Tables)
 			//{
