@@ -21,11 +21,12 @@ namespace Nephrite.Meta.Database
 		StringBuilder result;
 		string _dbname;
 		string _servername;
+		bool _isdb2;
 		Schema _schema;
 		public string DbName { get { return _dbname; } }
 		public bool RecreateIndexes = true;
 
-		public UpdateScriptBuilderDB2(Schema schema, SqlConnection connection)
+		public UpdateScriptBuilderDB2(Schema schema, SqlConnection connection, bool isdb2)
 		{
 
 			DB2ConnectionStringBuilder b = new DB2ConnectionStringBuilder("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000");
@@ -33,7 +34,8 @@ namespace Nephrite.Meta.Database
 			_dbname = b.Database;
 			_schema = schema;
 			conn = connection;
-			export = new TableExport(connection);
+			export = new TableExport(connection, schema);
+			_isdb2 = isdb2;
 		}
 
 		public string Generate(bool includeSPM, bool includeFiles)
@@ -52,6 +54,8 @@ namespace Nephrite.Meta.Database
 			//result.AppendLine("use [" + _dbname + "]");
 			//result.AppendLine("go");
 			//result.AppendLine("BEGIN TRY");
+
+			result.AppendFormat("CALL DBO.DROPOBJECTS('{0}'); \r\n", _schema.Name);
 			result.AppendLine(" SAVEPOINT STARTSCRIPT ON ROLLBACK RETAIN CURSORS;");
 
 			// Добавить содержимое всех *.sql файлов, найденных в папке Scripts
@@ -101,7 +105,8 @@ namespace Nephrite.Meta.Database
 			}
 			//foreach (var t in additionalTables)
 			//	Delete(t);
-			result.AppendLine("print 'Заливка метаданных'");
+			result.AppendLine("SELECT 'Заливка метаданных' from SYSIBM.SYSDUMMY1;");
+			
 			//foreach (var t in additionalTables)
 			//InsertMain(t);
 
@@ -242,80 +247,89 @@ namespace Nephrite.Meta.Database
 
 			/*Пока исключаем так как скрипты не подходют*/
 
-			foreach (var v in _schema.Views.Values)
+			if (_isdb2)
 			{
-
-				result.AppendLine("SELECT 'View " + v.Name + "' FROM SYSIBM.SYSDUMMY1;");
-				result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", v.Name);
-				result.AppendFormat("DECLARE {0} STATEMENT; \r\n", v.Name);
-				result.AppendFormat(" IF EXISTVIEW('{0}','{1}') IS NOT NULL THEN \r\n", v.Name.ToUpper(), _schema.Name.ToUpper());
-				result.AppendFormat(" DROP FUNCTION {1}.{0};\r\n", v.Name.ToUpper(), _schema.Name.ToUpper());
-				result.AppendFormat(" SET {0}_text = {1};\r\n", v.Name, v.Text);
-				result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", v.Name);
-				result.AppendFormat(" EXECUTE {0};\r\n", v.Name);
-				result.AppendFormat("END IF; \r\n");
-
-
-				foreach (var tr in v.Triggers.Values)
+				foreach (var v in _schema.Views.Values)
 				{
 
-					result.AppendLine("SELECT 'TRIGGER " + tr.Name + "' FROM SYSIBM.SYSDUMMY1;");
+					result.AppendLine("SELECT 'View " + v.Name + "' FROM SYSIBM.SYSDUMMY1;");
+					result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", v.Name);
+					result.AppendFormat("DECLARE {0} STATEMENT; \r\n", v.Name);
+					//result.AppendFormat(" IF EXISTVIEW('{0}','{1}') IS NOT NULL THEN \r\n", v.Name.ToUpper(), _schema.Name.ToUpper());
+					result.AppendFormat(" DROP FUNCTION {1}.{0};\r\n", v.Name.ToUpper(), _schema.Name.ToUpper());
+					//result.AppendFormat("END IF; \r\n");
+					result.AppendFormat(" SET {0}_text = {1};\r\n", v.Name, v.Text);
+					result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", v.Name);
+					result.AppendFormat(" EXECUTE {0};\r\n", v.Name);
 
 
-					result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", tr.Name);
-					result.AppendFormat("DECLARE {0} STATEMENT; \r\n", tr.Name);
-					result.AppendFormat(" IF EXISTTRIGER('{0}','{1}') IS NOT NULL THEN \r\n", tr.Name.ToUpper(), _schema.Name.ToUpper());
-					result.AppendFormat(" DROP TRIGGER {1}.{0};\r\n", tr.Name.ToUpper(), _schema.Name.ToUpper());
-					result.AppendFormat(" SET {0}_text = {1};\r\n", tr.Name, tr.Text);
-					result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", tr.Name);
-					result.AppendFormat(" EXECUTE {0};\r\n", tr.Name);
-					result.AppendFormat("END IF; \r\n");
+
+					foreach (var tr in v.Triggers.Values)
+					{
+
+						result.AppendLine("SELECT 'TRIGGER " + tr.Name + "' FROM SYSIBM.SYSDUMMY1;");
+
+
+						result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", tr.Name);
+						result.AppendFormat("DECLARE {0} STATEMENT; \r\n", tr.Name);
+						//result.AppendFormat(" IF EXISTTRIGER('{0}','{1}') IS NOT NULL THEN \r\n", tr.Name.ToUpper(), _schema.Name.ToUpper());
+						result.AppendFormat(" DROP TRIGGER {1}.{0};\r\n", tr.Name.ToUpper(), _schema.Name.ToUpper());
+						//result.AppendFormat("END IF; \r\n");
+						result.AppendFormat(" SET {0}_text = {1};\r\n", tr.Name, tr.Text);
+						result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", tr.Name);
+						result.AppendFormat(" EXECUTE {0};\r\n", tr.Name);
+
+					}
 				}
-			}
-			foreach (var p in _schema.Procedures.Values)
-			{
-
-				result.AppendLine("SELECT 'PROCEDURE " + p.Name + "' FROM SYSIBM.SYSDUMMY1;");
-				result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", p.Name);
-				result.AppendFormat("DECLARE {0} STATEMENT; \r\n", p.Name);
-				result.AppendFormat(" IF EXISTFUNC('{0}','{1}') IS NOT NULL THEN \r\n", p.Name.ToUpper(), _schema.Name.ToUpper());
-				result.AppendFormat(" DROP FUNCTION {1}.{0};\r\n", p.Name.ToUpper(), _schema.Name.ToUpper());
-				result.AppendFormat(" SET {0}_text = {1};\r\n", p.Name, p.Text);
-				result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", p.Name);
-				result.AppendFormat(" EXECUTE {0};\r\n", p.Name);
-				result.AppendFormat("END IF; \r\n");
-
-			}
-			foreach (var f in _schema.Functions.Values)
-			{
-				result.AppendLine("SELECT 'FUNCTION " + f.Name + "' FROM SYSIBM.SYSDUMMY1;");
-
-				result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", f.Name);
-				result.AppendFormat("DECLARE {0} STATEMENT; \r\n", f.Name);
-				result.AppendFormat(" IF EXISTFUNC('{0}','{1}') IS NOT NULL THEN \r\n", f.Name.ToUpper(), _schema.Name.ToUpper());
-				result.AppendFormat(" DROP FUNCTION {1}.{0};\r\n", f.Name.ToUpper(), _schema.Name.ToUpper());
-				result.AppendFormat(" SET {0}_text = {1};\r\n", f.Name, f.Text);
-				result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", f.Name);
-				result.AppendFormat(" EXECUTE {0};\r\n", f.Name);
-				result.AppendFormat("END IF; \r\n");
-			}
-			foreach (Table t in _schema.Tables.Values)
-			{
-
-				foreach (var tr in t.Triggers.Values)
+				foreach (var p in _schema.Procedures.Values)
 				{
-					result.AppendLine("SELECT 'TRIGGER " + tr.Name + "' FROM SYSIBM.SYSDUMMY1;");
+
+					result.AppendLine("SELECT 'PROCEDURE " + p.Name + "' FROM SYSIBM.SYSDUMMY1;");
+					result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", p.Name);
+					result.AppendFormat("DECLARE {0} STATEMENT; \r\n", p.Name);
+					//result.AppendFormat(" IF EXISTFUNC('{0}','{1}') IS NOT NULL THEN \r\n", p.Name.ToUpper(), _schema.Name.ToUpper());
+					result.AppendFormat(" DROP FUNCTION {1}.{0};\r\n", p.Name.ToUpper(), _schema.Name.ToUpper());
+					//result.AppendFormat("END IF; \r\n");
+					result.AppendFormat(" SET {0}_text = {1};\r\n", p.Name, p.Text);
+					result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", p.Name);
+					result.AppendFormat(" EXECUTE {0};\r\n", p.Name);
 
 
-					result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", tr.Name);
-					result.AppendFormat("DECLARE {0} STATEMENT; \r\n", tr.Name);
-					result.AppendFormat(" IF EXISTTRIGER('{0}','{1}') IS NOT NULL THEN \r\n", tr.Name.ToUpper(), _schema.Name.ToUpper());
-					result.AppendFormat(" DROP TRIGGER {1}.{0};\r\n", tr.Name.ToUpper(), _schema.Name.ToUpper());
-					result.AppendFormat(" SET {0}_text = {1};\r\n", tr.Name, tr.Text);
-					result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", tr.Name);
-					result.AppendFormat(" EXECUTE {0};\r\n", tr.Name);
-					result.AppendFormat("END IF; \r\n");
 				}
+				foreach (var f in _schema.Functions.Values)
+				{
+					result.AppendLine("SELECT 'FUNCTION " + f.Name + "' FROM SYSIBM.SYSDUMMY1;");
+
+					result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", f.Name);
+					result.AppendFormat("DECLARE {0} STATEMENT; \r\n", f.Name);
+					//result.AppendFormat(" IF EXISTFUNC('{0}','{1}') IS NOT NULL THEN \r\n", f.Name.ToUpper(), _schema.Name.ToUpper());
+					result.AppendFormat(" DROP FUNCTION {1}.{0};\r\n", f.Name.ToUpper(), _schema.Name.ToUpper());
+					//result.AppendFormat("END IF; \r\n");
+					result.AppendFormat(" SET {0}_text = {1};\r\n", f.Name, f.Text);
+					result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", f.Name);
+					result.AppendFormat(" EXECUTE {0};\r\n", f.Name);
+
+				}
+				foreach (Table t in _schema.Tables.Values)
+				{
+
+					foreach (var tr in t.Triggers.Values)
+					{
+						result.AppendLine("SELECT 'TRIGGER " + tr.Name + "' FROM SYSIBM.SYSDUMMY1;");
+
+
+						result.AppendFormat("DECLARE {0}_text CLOB(2M); \r\n", tr.Name);
+						result.AppendFormat("DECLARE {0} STATEMENT; \r\n", tr.Name);
+						//result.AppendFormat(" IF EXISTTRIGER('{0}','{1}') IS NOT NULL THEN \r\n", tr.Name.ToUpper(), _schema.Name.ToUpper());
+						result.AppendFormat(" DROP TRIGGER {1}.{0};\r\n", tr.Name.ToUpper(), _schema.Name.ToUpper());
+						//result.AppendFormat("END IF; \r\n");
+						result.AppendFormat(" SET {0}_text = {1};\r\n", tr.Name, tr.Text);
+						result.AppendFormat(" PREPARE {0} FROM {0}_text;\r\n", tr.Name);
+						result.AppendFormat(" EXECUTE {0};\r\n", tr.Name);
+
+					}
+				}
+
 			}
 
 
@@ -331,15 +345,16 @@ namespace Nephrite.Meta.Database
 						result.AppendLine("SELECT 'Index " + indx.Name + "' FROM SYSIBM.SYSDUMMY1;");
 
 
-						result.AppendFormat(" IF EXISTINDEX('{0}','{1}') IS NOT NULL THEN \r\n", indx.Name.ToUpper(), t.Schema.Name.ToUpper());
+						//result.AppendFormat(" IF EXISTINDEX('{0}','{1}') IS NOT NULL THEN \r\n", indx.Name.ToUpper(), t.Schema.Name.ToUpper());
 						result.AppendFormat(" DROP INDEX {1}.{0};\r\n", indx.Name.ToUpper(), t.Schema.Name.ToUpper());
+						//result.AppendFormat("END IF; \r\n");
 						result.AppendFormat(" CREATE {0} INDEX {1}.{2} ON {1}.{3} ({4}) ;\r\n",
 							(indx.IsUnique ? "UNIQUE " : ""),
 							t.Schema.Name.ToUpper(),
 							indx.Name.ToUpper(),
-							indx.Name.ToUpper(),
-							string.Join(", ", indx.Columns.ToArray()).ToUpper());
-						result.AppendFormat("END IF; \r\n");
+							indx.CurrentTable.Name.ToUpper(),
+							string.Join(", ", indx.Columns.ToArray()).ToUpper().Replace("+",""));
+
 
 
 					}
@@ -355,9 +370,11 @@ namespace Nephrite.Meta.Database
 				{
 					if (fk.IsEnabled)
 					{
-						result.AppendFormat(" IF EXISTCONSTRAINT('{0}','{2}') IS NOT NULL THEN \r\n" +
-												   "ALTER TABLE {2}.{1} ALTER FOREIGN KEY {0} NOT ENFORCED \r\n;" +
-											"END IF; \r\n", fk.Name.ToUpper(), t.Name.ToUpper(), t.Schema.Name.ToUpper());
+						result.AppendFormat("ALTER TABLE {2}.{1} ALTER FOREIGN KEY {0} {3} ;\r\n", fk.Name.ToUpper(), t.Name.ToUpper(), t.Schema.Name.ToUpper(), enable ? "ENFORCED" : "NOT ENFORCED");
+
+						//result.AppendFormat(" IF EXISTCONSTRAINT('{0}','{2}') IS NOT NULL THEN \r\n" +
+						//						   "ALTER TABLE {2}.{1} ALTER FOREIGN KEY {0} NOT ENFORCED \r\n;" +
+						//					"END IF; \r\n", fk.Name.ToUpper(), t.Name.ToUpper(), t.Schema.Name.ToUpper());
 					}
 				}
 			}
@@ -365,31 +382,37 @@ namespace Nephrite.Meta.Database
 
 		void Delete(string table)
 		{
-			if (_schema.Tables.Values.Any(t => t.Name == table.ToUpper()))
-				result.AppendFormat("TRUNCATE TABLE DBO.{0} IMMEDIATE;\r\n", table.ToUpper());
+			if (_schema.Tables.Values.Any(t => t.Name.ToUpper() == table.ToUpper()))
+
+
+
+
+			result.AppendFormat("SET INTEGRITY FOR  {1}.{0} ALL IMMEDIATE UNCHECKED; ;\r\n", table.ToUpper(), _schema.Name);
+			result.AppendFormat("CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {1}.{0}' ); ;\r\n", table.ToUpper(), _schema.Name);
+			result.AppendFormat("DELETE FROM  {1}.{0} ;\r\n", table.ToUpper(), _schema.Name);
 		}
 
 		void InsertMain(string table)
 		{
-			if (!_schema.Tables.Values.Any(t => t.Name == table.ToUpper()))
+			if (!_schema.Tables.Values.Any(t => t.Name.ToUpper() == table.ToUpper()))
 				return;
 
 
-			var currentTable = _schema.Tables[table.ToUpper()];
+			var currentTable = _schema.Tables.SingleOrDefault(t => t.Key.ToUpper() == table.ToUpper()).Value;
 			bool hasIdentity = currentTable.Identity;
 
 			if (hasIdentity)
-				result.AppendFormat("ALTER TABLE {0} ALTER COLUMN {1} SET GENERATED BY DEFAULT;\r\n ", table, currentTable.Columns.Values.FirstOrDefault(c => c.IsPrimaryKey).Name);
+				result.AppendFormat("ALTER TABLE {2}.{0} ALTER COLUMN {1} SET GENERATED BY DEFAULT;\r\n ", table, currentTable.Columns.Values.FirstOrDefault(c => c.IsPrimaryKey).Name,_schema.Name);
 
 			result.Append(export.ExportTableData(table));
 
 			if (hasIdentity)
-				result.AppendFormat(" ALTER TABLE {0} ALTER COLUMN {1} SET GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 );\r\n", table, currentTable.Columns.Values.FirstOrDefault(c => c.IsPrimaryKey).Name);
+				result.AppendFormat(" ALTER TABLE {2}.{0} ALTER COLUMN {1} SET GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 );\r\n", table, currentTable.Columns.Values.FirstOrDefault(c => c.IsPrimaryKey).Name, _schema.Name);
 		}
 
 		void Insert(string table)
 		{
-			if (!_schema.Tables.Values.Any(t => t.Name == table.ToUpper()))
+			if (!_schema.Tables.Values.Any(t => t.Name.ToUpper() == table.ToUpper()))
 				return;
 
 			result.Append(export.ExportTableData(table));
@@ -398,15 +421,18 @@ namespace Nephrite.Meta.Database
 		public class TableExport
 		{
 			int top = 0;
+			Schema _schema;
 			SqlConnection conn;
-			public TableExport(SqlConnection connection)
+			public TableExport(SqlConnection connection, Schema schema)
 			{
 				conn = connection;
+				_schema = schema;
 			}
 
-			public TableExport(SqlConnection connection, int top)
+			public TableExport(SqlConnection connection, int top, Schema schema)
 			{
 				conn = connection;
+				_schema = schema;
 				this.top = top;
 			}
 
@@ -432,7 +458,7 @@ namespace Nephrite.Meta.Database
 				{
 					while (reader.Read())
 					{
-						result.AppendFormat("INSERT INTO {0}(", tableName.ToUpper());
+						result.AppendFormat("INSERT INTO {1}.{0}(", tableName.ToUpper(), _schema.Name.ToUpper());
 						bool first = true;
 						for (int i = 0; i < reader.FieldCount; i++)
 						{

@@ -338,7 +338,10 @@ namespace Nephrite.Meta.Database
 
 		public string GetStringType(int length)
 		{
-			return string.Format("VARCHAR({0})", length == -1 ? "32000" : length.ToString());
+			if (length == -1)
+				return string.Format("CLOB({0})", length == -1 ? "32000" : length.ToString());
+			else
+				return string.Format("VARCHAR({0})", length == -1 ? "32000" : length.ToString());
 		}
 
 		public string GetDecimalType(int precision, int scale)

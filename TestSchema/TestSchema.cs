@@ -80,7 +80,7 @@ namespace TestSchema
 			var db2Schema = new DB2ServerMetadataReader().ReadSchema("dbo");
 
 
-			var d = new UpdateScriptBuilderDB2(db2Schema, new SqlConnection("Password=q121212;Persist Security Info=True;User ID=servantsuser;Initial Catalog=servants;Data Source=srvsql.refactorx.ru\\mssqlserver2008")).Generate(false, false);
+			var d = new UpdateScriptBuilderDB2(db2Schema, new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=servantsnew;Data Source=TOSHIBA-TOSH\\SQL2008"), false).Generate(false, false);
 			//var db2Script = new DBScriptDB2("dbo");
 			//foreach (var table in db2Schema.Tables)
 			//{
