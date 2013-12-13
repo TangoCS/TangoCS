@@ -11,6 +11,7 @@ using Nephrite.Web.Controls;
 using Nephrite.Web.SettingsManager;
 using Nephrite.Meta;
 using Nephrite.Web.Office;
+using Nephrite.Web.Layout;
 
 namespace Nephrite.Web
 {

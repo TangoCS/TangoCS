@@ -15,10 +15,7 @@ namespace Nephrite.Metamodel
             return (T)obj.GetType().GetProperty(propertyName).GetValue(obj, null);
         }
 
-        public static void SetPropertyValue(this object obj, string propertyName, object value)
-        {
-            obj.GetType().GetProperty(propertyName).SetValue(obj, value, null);
-        }
+        
 
         /*public static string GetMethodUrl(this IMMObject obj, string method)
         {

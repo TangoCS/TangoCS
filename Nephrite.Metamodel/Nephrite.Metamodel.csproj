@@ -117,8 +117,6 @@
       <LastGenOutput>predicates.cs</LastGenOutput>
     </EmbeddedResource>
     <Compile Include="Compilation\CompileConfig.designer.cs" />
-    <Compile Include="Controllers\MMObjectController.cs" />
-    <Compile Include="Controllers\PackageFormViewController.cs" />
     <Compile Include="Controllers\ThemeController.cs" />
     <Compile Include="Controllers\UtilsController.cs" />
     <Compile Include="Controls\ListExport.ascx.cs">
@@ -136,14 +134,10 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="IFormControl.cs" />
-    <Compile Include="IMMObject.cs" />
     <Compile Include="IMMObjectMLView.cs" />
     <Compile Include="IMMObjectTransition.cs" />
     <Compile Include="IMMObjectVersion.cs" />
     <Compile Include="ISiteMapProvider.cs" />
-    <Compile Include="MasterControl.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="MMObjectExtensions.cs" />
     <Compile Include="MMSettings.cs" />
     <Compile Include="ModelAssemblyGenerator.cs" />
@@ -165,10 +159,10 @@
     <Compile Include="Model\modelDataContextPartial.cs" />
     <Compile Include="Model\Theme.cs" />
     <Compile Include="Model\_ModelObjectsTitles.cs" />
+    <Compile Include="MView.cs" />
     <Compile Include="ObjectPropertyType.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="TemplateType.cs" />
-    <Compile Include="MView.cs" />
     <Compile Include="TextTransform\CodeGen.cs" />
     <Compile Include="TextTransform\Host.cs" />
     <Compile Include="Model\_ModelObjects.cs" />

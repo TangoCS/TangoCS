@@ -55,9 +55,17 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DotNetOpenAuth, Version=3.4.7.11121, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ExternalDll\DotNetOpenAuth.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=c957c2ee7c0582f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExternalDll\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ExternalDll\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NHibernate">
       <HintPath>ExternalDll\NHibernate.dll</HintPath>
@@ -89,11 +97,15 @@
     <Content Include="Controls\excel.ascx" />
     <Content Include="Controls\word.ascx" />
     <Content Include="ExternalDll\DocumentFormat.OpenXml.dll" />
+    <Content Include="ExternalDll\DotNetOpenAuth.dll" />
     <Content Include="ExternalDll\EPPlus.dll" />
     <Content Include="ExternalDll\EPPlus.pdb" />
     <Content Include="ExternalDll\Iesi.Collections.dll" />
     <Content Include="ExternalDll\Iesi.Collections.pdb" />
     <Content Include="ExternalDll\Iesi.Collections.xml" />
+    <Content Include="ExternalDll\Newtonsoft.Json.dll" />
+    <Content Include="ExternalDll\Newtonsoft.Json.pdb" />
+    <Content Include="ExternalDll\Newtonsoft.Json.xml" />
     <Content Include="ExternalDll\NHibernate.dll" />
     <Content Include="ExternalDll\NHibernate.pdb" />
     <Content Include="ExternalDll\NHibernate.xml" />
@@ -103,25 +115,35 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ADSearcher.cs" />
-    <Compile Include="AppWeb.cs" />
+    <Compile Include="ActiveDirectory\ADSearcher.cs" />
+    <Compile Include="Controllers\MMObjectController.cs" />
+    <Compile Include="Model\IMMObject.cs" />
+    <Compile Include="MVC\AppWeb.cs" />
     <Compile Include="Controllers\EntityController.cs" />
-    <Compile Include="CustomControlBase.cs">
+    <Compile Include="Model\A.cs" />
+    <Compile Include="MVC\MasterControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Features\CoreDataContext\FileStorage\DbFile.I.cs" />
-    <Compile Include="Features\CoreDataContext\FileStorage\DbFolder.I.cs" />
-    <Compile Include="Features\FileStorage\FileStorageModel.cs" />
-    <Compile Include="Features\Meta.Database\DataTypeMapper.cs" />
-    <Compile Include="Features\Meta.Database\SchemaGenerator.cs" />
-    <Compile Include="Features\Meta.Database\SchemaLoader.cs" />
-    <Compile Include="Features\Multilanguage\Language.cs" />
-    <Compile Include="Features\Reporting\Reporting.cs">
+    <Compile Include="Controllers\PackageFormViewController.cs" />
+    <Compile Include="RussianStrings\RussianDate.cs" />
+    <Compile Include="RussianStrings\RussianNumber.cs" />
+    <Compile Include="Web\CustomControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Features\RSS\RssModel.cs" />
-    <Compile Include="Features\SettingsManager\AppSettings.cs" />
-    <Compile Include="Cache.cs" />
+    <Compile Include="CoreDataContext\FileStorage\DbFile.I.cs" />
+    <Compile Include="CoreDataContext\FileStorage\DbFolder.I.cs" />
+    <Compile Include="FileStorage\FileStorageModel.cs" />
+    <Compile Include="Meta.Database\DataTypeMapper.cs" />
+    <Compile Include="Meta.Database\SchemaGenerator.cs" />
+    <Compile Include="Meta.Database\SchemaLoader.cs" />
+    <Compile Include="Multilanguage\Language.cs" />
+    <Compile Include="OAuth\OAuth.cs" />
+    <Compile Include="Reporting\Reporting.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RSS\RssModel.cs" />
+    <Compile Include="SettingsManager\AppSettings.cs" />
+    <Compile Include="Web\Cache.cs" />
     <Compile Include="Controls.Html\ActionLink.cs" />
     <Compile Include="Controls\AutoComplete.cs" />
     <Compile Include="Controls\AutoComplete2.cs" />
@@ -132,8 +154,8 @@
     <Compile Include="Controls\CodeArea.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="CodifierValue.cs" />
-    <Compile Include="ConnectionManager.cs" />
+    <Compile Include="Web\CodifierValue.cs" />
+    <Compile Include="Web\ConnectionManager.cs" />
     <Compile Include="Controls.Html\CaptchaImage.cs" />
     <Compile Include="Controllers\SimpleClassMover.cs" />
     <Compile Include="Controls\BackButton.cs" />
@@ -289,81 +311,81 @@
       <DependentUpon>word.ascx</DependentUpon>
     </Compile>
     <Compile Include="Controls\ZoneCalendar.cs" />
-    <Compile Include="Cramb.cs" />
-    <Compile Include="CustomControlManager.cs" />
-    <Compile Include="Features\Office\ExcelExport.cs" />
-    <Compile Include="Features\SettingsManager\AppSettingsModel.cs" />
-    <Compile Include="Features\LinkedObjects\ILinkedObjectsProvider.cs" />
-    <Compile Include="Features\LinkedObjects\LinkedObjectsView.cs" />
-    <Compile Include="Features\LinkedObjects\ObjectLink.cs" />
-    <Compile Include="Features\Mailer\MailerModel.cs" />
-    <Compile Include="Features\Mailer\MailManager.cs" />
-    <Compile Include="Features\TaskManager\TaskManagerModel.cs" />
-    <Compile Include="Features\TrackChanges\TrackChanges.cs" />
-    <Compile Include="Features\UserActivity\UserActivityModel.cs" />
-    <Compile Include="Features\Versioning\ClassVersion.cs" />
-    <Compile Include="Features\Versioning\IClassVersion.cs" />
-    <Compile Include="Features\FileStorage\DbItemType.cs" />
-    <Compile Include="Features\FileStorage\FileStorageManager.cs" />
-    <Compile Include="Features\FileStorage\IDbFile.cs" />
-    <Compile Include="Features\FileStorage\IDbFolder.cs" />
-    <Compile Include="Features\FileStorage\IDbItem.cs" />
-    <Compile Include="Features\FileStorage\Samples.cs" />
-    <Compile Include="Features\FileStorage\StorageTypes.cs" />
-    <Compile Include="Features\Layout\Helper.cs" />
-    <Compile Include="Features\Layout\LayoutTessera.cs" />
-    <Compile Include="Features\Layout\SimpleTags.cs" />
-    <Compile Include="Features\Layout\WinModal.cs" />
-    <Compile Include="Features\Reporting\AggregateColumn.cs" />
-    <Compile Include="Features\Reporting\Grouping.cs" />
-    <Compile Include="Features\Reporting\Report.cs">
+    <Compile Include="Web\Cramb.cs" />
+    <Compile Include="Web\CustomControlManager.cs" />
+    <Compile Include="Office\ExcelExport.cs" />
+    <Compile Include="SettingsManager\AppSettingsModel.cs" />
+    <Compile Include="LinkedObjects\ILinkedObjectsProvider.cs" />
+    <Compile Include="LinkedObjects\LinkedObjectsView.cs" />
+    <Compile Include="LinkedObjects\ObjectLink.cs" />
+    <Compile Include="Mailer\MailerModel.cs" />
+    <Compile Include="Mailer\MailManager.cs" />
+    <Compile Include="TaskManager\TaskManagerModel.cs" />
+    <Compile Include="TrackChanges\TrackChanges.cs" />
+    <Compile Include="UserActivity\UserActivityModel.cs" />
+    <Compile Include="Versioning\ClassVersion.cs" />
+    <Compile Include="Versioning\IClassVersion.cs" />
+    <Compile Include="FileStorage\DbItemType.cs" />
+    <Compile Include="FileStorage\FileStorageManager.cs" />
+    <Compile Include="FileStorage\IDbFile.cs" />
+    <Compile Include="FileStorage\IDbFolder.cs" />
+    <Compile Include="FileStorage\IDbItem.cs" />
+    <Compile Include="FileStorage\Samples.cs" />
+    <Compile Include="FileStorage\StorageTypes.cs" />
+    <Compile Include="Layout\Helper.cs" />
+    <Compile Include="Layout\LayoutTessera.cs" />
+    <Compile Include="Layout\SimpleTags.cs" />
+    <Compile Include="Layout\WinModal.cs" />
+    <Compile Include="Reporting\AggregateColumn.cs" />
+    <Compile Include="Reporting\Grouping.cs" />
+    <Compile Include="Reporting\Report.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Features\RSS\RssLinker.cs" />
-    <Compile Include="Features\SPM2\ISPMContext.cs" />
-    <Compile Include="Features\SPM2\SPM2.cs" />
-    <Compile Include="Features\SPM2\SPMStereotype.cs" />
-    <Compile Include="Features\Validation\IValidatable.cs" />
-    <Compile Include="Features\Validation\ValidationMessage.cs" />
-    <Compile Include="Features\Multilanguage\MultilanguageModel.cs" />
-    <Compile Include="Features\FileStorage\DataHandler.cs" />
-    <Compile Include="DebuggerWriter.cs" />
-    <Compile Include="Features\ErrorLog\ErrorLogger.cs" />
-    <Compile Include="Features\FileStorage\FileHandler.cs" />
-    <Compile Include="Features\FileStorage\FileProvider.cs" />
-    <Compile Include="Features\FileStorage\FileTypeIcon.cs" />
-    <Compile Include="Features\FileStorage\FolderPacker.cs" />
-    <Compile Include="ICalendarObject.cs" />
-    <Compile Include="Features\FileStorage\ImageHandler.cs" />
-    <Compile Include="IModelObject.cs" />
-    <Compile Include="Impersonation.cs" />
-    <Compile Include="Features\CalendarDays\CalendarDayCache.cs" />
-    <Compile Include="IRouteHandler.cs" />
-    <Compile Include="JqTreeNode.cs" />
-    <Compile Include="MacroManager.cs" />
-    <Compile Include="Features\Meta\Core.cs" />
-    <Compile Include="Features\Layout\LayoutBootstrap.cs" />
-    <Compile Include="Features\Layout\LayoutEmpty.cs" />
-    <Compile Include="Features\Layout\LayoutWSS2007.cs" />
-    <Compile Include="Features\Meta\MetaLoad.cs" />
-    <Compile Include="Features\Layout\SystemLayout.cs" />
-    <Compile Include="Features\Meta\Versioning.cs" />
-    <Compile Include="Features\Meta\CoreMetaModel.cs" />
-    <Compile Include="Features\Meta.Database\DBMetaModel.cs" />
-    <Compile Include="Features\Meta\PrimitiveTypes.cs" />
-    <Compile Include="Features\Layout\Interfaces.cs" />
-    <Compile Include="Features\Meta\UIMetaModel.cs" />
-    <Compile Include="Features\CoreDataContext\HCoreDataContext.cs" />
-    <Compile Include="Features\Hibernate\Hibernate.cs" />
-    <Compile Include="Features\CoreDataContext\HMapping.cs" />
-    <Compile Include="Features\CoreDataContext\HModel.cs" />
+    <Compile Include="RSS\RssLinker.cs" />
+    <Compile Include="SPM2\ISPMContext.cs" />
+    <Compile Include="SPM2\SPM2.cs" />
+    <Compile Include="SPM2\SPMStereotype.cs" />
+    <Compile Include="Validation\IValidatable.cs" />
+    <Compile Include="Validation\ValidationMessage.cs" />
+    <Compile Include="Multilanguage\MultilanguageModel.cs" />
+    <Compile Include="FileStorage\DataHandler.cs" />
+    <Compile Include="Web\DebuggerWriter.cs" />
+    <Compile Include="ErrorLog\ErrorLogger.cs" />
+    <Compile Include="FileStorage\FileHandler.cs" />
+    <Compile Include="FileStorage\FileProvider.cs" />
+    <Compile Include="FileStorage\FileTypeIcon.cs" />
+    <Compile Include="FileStorage\FolderPacker.cs" />
+    <Compile Include="Web\SimpleTypeExtensions.cs" />
+    <Compile Include="Model\ICalendarObject.cs" />
+    <Compile Include="FileStorage\ImageHandler.cs" />
+    <Compile Include="Model\IModelObject.cs" />
+    <Compile Include="Web\Impersonation.cs" />
+    <Compile Include="CalendarDays\CalendarDayCache.cs" />
+    <Compile Include="Web\IRouteHandler.cs" />
+    <Compile Include="Web\JqTreeNode.cs" />
+    <Compile Include="Web\MacroManager.cs" />
+    <Compile Include="Meta\Core.cs" />
+    <Compile Include="Layout\LayoutBootstrap.cs" />
+    <Compile Include="Layout\LayoutEmpty.cs" />
+    <Compile Include="Layout\LayoutWSS2007.cs" />
+    <Compile Include="Meta\MetaLoad.cs" />
+    <Compile Include="Layout\SystemLayout.cs" />
+    <Compile Include="Meta\Versioning.cs" />
+    <Compile Include="Meta\CoreMetaModel.cs" />
+    <Compile Include="Meta.Database\DBMetaModel.cs" />
+    <Compile Include="Meta\PrimitiveTypes.cs" />
+    <Compile Include="Layout\Interfaces.cs" />
+    <Compile Include="Meta\UIMetaModel.cs" />
+    <Compile Include="CoreDataContext\HCoreDataContext.cs" />
+    <Compile Include="Hibernate\Hibernate.cs" />
+    <Compile Include="CoreDataContext\HMapping.cs" />
+    <Compile Include="CoreDataContext\HModel.cs" />
     <Compile Include="Model\IDataContext.cs" />
     <Compile Include="MVC\PageParser.cs" />
-    <Compile Include="ObjectPropertyChange.cs" />
-    <Compile Include="Result.cs" />
-    <Compile Include="Features\SPM2\SpmActionNameAttribute.cs" />
-    <Compile Include="TableInfo.cs" />
-    <Compile Include="Features\Mailer\MailerTask.cs" />
+    <Compile Include="Web\ObjectPropertyChange.cs" />
+    <Compile Include="Web\Result.cs" />
+    <Compile Include="SPM2\SpmActionNameAttribute.cs" />
+    <Compile Include="Mailer\MailerTask.cs" />
     <Compile Include="MVC\MainMenu.cs" />
     <Compile Include="Controls\MaskedInput.cs" />
     <Compile Include="MVC\BaseController.cs" />
@@ -384,8 +406,8 @@
     <Compile Include="Controls\ModalDialog.ascx.designer.cs">
       <DependentUpon>ModalDialog.ascx</DependentUpon>
     </Compile>
-    <Compile Include="HtmlHelperWSS.cs" />
-    <Compile Include="HtmlHelperBase.cs" />
+    <Compile Include="Obsolete\HtmlHelperWSS.cs" />
+    <Compile Include="Layout\HtmlHelperBase.cs" />
     <Compile Include="Controls\JSCalendar.cs" />
     <Compile Include="Controls\MessageBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -394,31 +416,31 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Features\Purifier\Purifier.cs" />
-    <Compile Include="Query.cs" />
+    <Compile Include="Purifier\Purifier.cs" />
+    <Compile Include="Obsolete\Query.cs" />
     <Compile Include="Resources\Common.Designer.cs">
       <DependentUpon>Common.resx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="RouteTable.cs" />
-    <Compile Include="Features\RSS\RssFeed.cs" />
-    <Compile Include="Features\RSS\RssItem.cs" />
-    <Compile Include="RusNumber.cs" />
-    <Compile Include="Features\SettingsManager\Settings.cs" />
-    <Compile Include="SimpleTypeExtensions.cs" />
-    <Compile Include="Features\SPM2\SPM.cs" />
+    <Compile Include="Web\RouteTable.cs" />
+    <Compile Include="RSS\RssFeed.cs" />
+    <Compile Include="RSS\RssItem.cs" />
+    <Compile Include="Web\RusNumber.cs" />
+    <Compile Include="SettingsManager\Settings.cs" />
+    <Compile Include="Model\Extensions.cs" />
+    <Compile Include="SPM2\SPM.cs" />
     <Compile Include="MVC\ViewControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MVC\SqlLog.cs" />
-    <Compile Include="Features\TaskManager\TaskManager.cs" />
-    <Compile Include="Features\TaskManager\TaskManagerModule.cs" />
-    <Compile Include="Features\TextResources\TextResource.cs" />
-    <Compile Include="Transliteration.cs" />
-    <Compile Include="Url.cs" />
-    <Compile Include="UrlStack.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="TaskManager\TaskManager.cs" />
+    <Compile Include="TaskManager\TaskManagerModule.cs" />
+    <Compile Include="TextResources\TextResource.cs" />
+    <Compile Include="Web\Transliteration.cs" />
+    <Compile Include="MVC\Url.cs" />
+    <Compile Include="Web\UrlStack.cs" />
+    <Compile Include="Web\Utils.cs" />
     <Compile Include="View\Message\show.ascx.cs">
       <DependentUpon>show.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -433,7 +455,7 @@
     <Compile Include="View\TinyMCEFileManager\list.ascx.designer.cs">
       <DependentUpon>list.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Features\FileStorage\VirusChecker.cs" />
+    <Compile Include="FileStorage\VirusChecker.cs" />
     <Compile Include="View\TinyMCEFileManager\upload.ascx.cs">
       <DependentUpon>upload.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -441,9 +463,9 @@
     <Compile Include="View\TinyMCEFileManager\upload.ascx.designer.cs">
       <DependentUpon>upload.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Features\Office\Word.cs" />
+    <Compile Include="Office\Word.cs" />
     <Compile Include="MVC\Workspace.cs" />
-    <Compile Include="XMLSerializer.cs" />
+    <Compile Include="Web\XMLSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ExternalDll\nhibernate-mapping.xsd">
@@ -493,9 +515,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Features\FileStorage\DataBase\" />
-    <Folder Include="Features\FileStorage\FileSystem\" />
-    <Folder Include="Features\Workflow\" />
+    <Folder Include="FileStorage\DataBase\" />
+    <Folder Include="FileStorage\FileSystem\" />
+    <Folder Include="Workflow\" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
