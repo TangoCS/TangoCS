@@ -52,7 +52,7 @@ namespace Nephrite.Web.SettingsManager
 		static List<IN_Setting> _settings = null;
 		public static string Get(string name)
 		{
-			if (_settings == null) _settings = _dc.N_Setting.ToList();
+			if (_settings == null) _settings = _dc.IN_Setting.ToList();
 			IN_Setting s = _settings.Where(o => o.SystemName == name).SingleOrDefault();
 			if (s == null)
 				return "";
@@ -73,14 +73,14 @@ namespace Nephrite.Web.SettingsManager
 
         public static void Set(string name, string value)
         {
-			IN_Setting s = _dc.N_Setting.Where(o => o.SystemName == name).SingleOrDefault();
+			IN_Setting s = _dc.IN_Setting.Where(o => o.SystemName == name).SingleOrDefault();
             if (s == null)
             {
-				s = _dc.NewN_Setting();
+				s = _dc.NewIN_Setting();
 				s.SystemName = name;
                 s.Title = name;
 				s.Value = value;
-				_dc.N_Setting.InsertOnSubmit(s);
+				_dc.IN_Setting.InsertOnSubmit(s);
 
 				var ua = _dcUserActivity.NewUserActivity(A.Meta.GetOperation("N_Settings", "Edit"), name, name + " = " + value);
 				_dcUserActivity.UserActivity.InsertOnSubmit(ua);

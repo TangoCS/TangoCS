@@ -22,7 +22,7 @@ namespace Nephrite.Web
 		IDbCommand GetCommand(IQueryable query);
 		IQueryable<T> GetTable<T>();
 		ITable GetTable(Type t);
-		T Get<T>(object id);
+		T Get<T, TKey>(TKey id) where T : IEntity, IWithKey<T,TKey>, new();
 		void SubmitChanges();
 
 		TextWriter Log { get; set; }
@@ -30,6 +30,7 @@ namespace Nephrite.Web
 		List<Action> AfterSaveActions { get; }
 		List<Action> BeforeSaveActions { get; }
 	}
+
 
 	public interface IEntity
 	{

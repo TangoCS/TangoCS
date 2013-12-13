@@ -16,7 +16,7 @@ namespace Nephrite.Web.FileStorage
 	{
 		public static IQueryable<IDbItem> DbItems
 		{
-			get { return dc.DbItem; }
+			get { return dc.IDbItem; }
 		}
 
 		public static event EventHandler<FileEventArgs> OnFileCreated;
@@ -41,12 +41,12 @@ namespace Nephrite.Web.FileStorage
 		#region Работа с папками
 		public static IQueryable<IDbFolder> DbFolders
 		{
-			get { return dc.DbFolder; }
+			get { return dc.IDbFolder; }
 		}
 
 		public static IDbFolder GetFolder(Guid folderID)
 		{
-			return dc.DbFolder.FirstOrDefault(o => o.ID == folderID);
+			return dc.IDbFolder.FirstOrDefault(o => o.ID == folderID);
 		}
 
 		public static IDbFolder GetFolder(string path)
@@ -59,7 +59,7 @@ namespace Nephrite.Web.FileStorage
 				folderPath = path.Substring(0, index);
 				folderTitle = path.Substring(index + 1);
 			}
-			return dc.DbFolder.FirstOrDefault(o => ((o.Path == folderPath && folderPath != null) || !o.ParentFolderID.HasValue) && o.Title == folderTitle);
+			return dc.IDbFolder.FirstOrDefault(o => ((o.Path == folderPath && folderPath != null) || !o.ParentFolderID.HasValue) && o.Title == folderTitle);
 		}
 
 		public static IDbFolder CreateFolder(string fullpath)
@@ -67,12 +67,12 @@ namespace Nephrite.Web.FileStorage
 			if (folderCache.ContainsKey(fullpath.ToLower()))
 				return folderCache[fullpath.ToLower()];
 			//var items = App.DataContext.GetTable<Solution.Model.DbFolder>();
-			var item = dc.DbFolder.FirstOrDefault(o => o.FullPath == fullpath);
+			var item = dc.IDbFolder.FirstOrDefault(o => o.FullPath == fullpath);
 			if (item != null)
 				return item;
 
 			string title = fullpath.IndexOf('/') >= 0 ? fullpath.Substring(fullpath.LastIndexOf('/') + 1) : fullpath;
-			item = dc.NewDbFolder();
+			item = dc.NewIDbFolder();
 			folderCache.Add(fullpath.ToLower(), item);
 			item.Title = title.IsEmpty() ? "new folder" : title;
 			if (title != fullpath && fullpath.Substring(0, fullpath.LastIndexOf('/')) != "")
@@ -90,7 +90,7 @@ namespace Nephrite.Web.FileStorage
 			{
 				item.SetStorageInfo(FileStorageType.LocalDatabase, "");
 			}
-			dc.DbFolder.InsertOnSubmit(item);
+			dc.IDbFolder.InsertOnSubmit(item);
 			item.CheckValid();
 
 			if (OnFolderCreated != null)
@@ -114,7 +114,7 @@ namespace Nephrite.Web.FileStorage
 			foreach (var file in files)
 				DeleteFile(file);
 
-			dc.DbFolder.DeleteOnSubmit(folder);
+			dc.IDbFolder.DeleteOnSubmit(folder);
 			if(OnFolderDeleted != null)
 				OnFolderDeleted(null, new FolderEventArgs { Folder = folder });
 		}
@@ -139,12 +139,12 @@ namespace Nephrite.Web.FileStorage
 		#region Работа с файлами
 		public static IQueryable<IDbFile> DbFiles
 		{
-			get { return dc.DbFile; }
+			get { return dc.IDbFile; }
 		}
 
 		public static IDbFile GetFile(Guid fileID)
 		{
-			return dc.DbFile.FirstOrDefault(o => o.ID == fileID);
+			return dc.IDbFile.FirstOrDefault(o => o.ID == fileID);
 		}
 
 		public static IDbFile GetFile(string fullPath)
@@ -152,12 +152,12 @@ namespace Nephrite.Web.FileStorage
 			var index = fullPath.LastIndexOfAny(new char[] { '/', '\\' });
 			var path = index > 0 ? fullPath.Substring(0, index) : null;
 			var title = fullPath.Substring(index + 1);
-			return dc.DbFile.FirstOrDefault(o => ((o.Path == path && !path.IsEmpty()) || (o.ParentFolderID == null && path.IsEmpty())) && o.Title == title);
+			return dc.IDbFile.FirstOrDefault(o => ((o.Path == path && !path.IsEmpty()) || (o.ParentFolderID == null && path.IsEmpty())) && o.Title == title);
 		}
 
 		public static IDbFile CreateFile(string title, string path)
 		{
-			var item = dc.NewDbFile();
+			var item = dc.NewIDbFile();
 			item.Title = title;
 
 			if (!path.IsEmpty())
@@ -166,7 +166,7 @@ namespace Nephrite.Web.FileStorage
 				item.SetParentFolder(pfolder);
 			}
 
-			dc.DbFile.InsertOnSubmit(item);
+			dc.IDbFile.InsertOnSubmit(item);
 
 			if (OnFileCreated != null)
 				OnFileCreated(null, new FileEventArgs { File = item });
@@ -179,7 +179,7 @@ namespace Nephrite.Web.FileStorage
 		public static void DeleteFile(IDbFile file)
 		{
 			DeleteFileData(file);
-			dc.DbFile.DeleteOnSubmit(file);
+			dc.IDbFile.DeleteOnSubmit(file);
 			if (OnFileDeleted != null)
 				OnFileDeleted(null, new FileEventArgs { File = file });
 		}
@@ -305,12 +305,12 @@ namespace Nephrite.Web.FileStorage
 
 		static void StoreInLocalDatabase(Guid fileGuid, byte[] bytes, string extension)
 		{
-			var fileData = dc.DbFileData.SingleOrDefault(o => o.FileGUID == fileGuid);
+			var fileData = dc.IDbFileData.SingleOrDefault(o => o.FileGUID == fileGuid);
 			if (fileData == null)
 			{
-				fileData = dc.NewDbFileData();
+				fileData = dc.NewIDbFileData();
 				fileData.FileGUID = fileGuid;	
-				dc.DbFileData.InsertOnSubmit(fileData);
+				dc.IDbFileData.InsertOnSubmit(fileData);
 			}
 
 			fileData.Data = bytes;
@@ -321,12 +321,12 @@ namespace Nephrite.Web.FileStorage
 		{
 			using (var remoteDC = (IDC_FileStorage)A.Model.NewDataContext(connectionString))
 			{
-				var fileData = remoteDC.DbFileData.SingleOrDefault(o => o.FileGUID == fileGuid);
+				var fileData = remoteDC.IDbFileData.SingleOrDefault(o => o.FileGUID == fileGuid);
 				if (fileData == null)
 				{
-					fileData = remoteDC.NewDbFileData();
+					fileData = remoteDC.NewIDbFileData();
 					fileData.FileGUID = fileGuid;
-					remoteDC.DbFileData.InsertOnSubmit(fileData);
+					remoteDC.IDbFileData.InsertOnSubmit(fileData);
 				}
 
 				fileData.Data = bytes;
@@ -337,7 +337,7 @@ namespace Nephrite.Web.FileStorage
 
 		static void StoreInFileSystem(IDbFile file, byte[] bytes)
 		{
-			var origin = ((ITable)dc.DbFile).GetOriginalEntityState(file) as IDbFile;
+			var origin = ((ITable)dc.IDbFile).GetOriginalEntityState(file) as IDbFile;
 			string fullFilePath = GetFsFullPath(file);
 			//if (origin != null)
 			//{
@@ -387,7 +387,7 @@ namespace Nephrite.Web.FileStorage
 
 		static byte[] GetBytesFromDC(IDC_FileStorage dc, Guid fileGuid)
 		{
-			var fd = dc.DbFileData.FirstOrDefault(o => o.FileGUID == fileGuid);
+			var fd = dc.IDbFileData.FirstOrDefault(o => o.FileGUID == fileGuid);
 			if (fd == null || fd.Data == null)
 				return new byte[0];
 			return fd.Data;
@@ -406,12 +406,12 @@ namespace Nephrite.Web.FileStorage
 			switch (file.GetStorageType())
 			{
 				case FileStorageType.LocalDatabase:
-					dc.DbFileData.DeleteAllOnSubmit(dc.DbFileData.Where(o => o.FileGUID == file.ID));
+					dc.IDbFileData.DeleteAllOnSubmit(dc.IDbFileData.Where(o => o.FileGUID == file.ID));
 					break;
 				case FileStorageType.RemoteDatabase:
 					using (var rdc = (IDC_FileStorage)A.Model.NewDataContext(file.GetStorageParameter()))
 					{
-						rdc.DbFileData.DeleteAllOnSubmit(dc.DbFileData.Where(o => o.FileGUID == file.ID));
+						rdc.IDbFileData.DeleteAllOnSubmit(dc.IDbFileData.Where(o => o.FileGUID == file.ID));
 						rdc.SubmitChanges();
 					}
 					break;

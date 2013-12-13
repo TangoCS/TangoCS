@@ -18,7 +18,7 @@ namespace Nephrite.Web.RSS
         {
             if (DateTime.Now.Subtract(listLoadDate).TotalMinutes > 1)
             {
-				feeds = ((IDC_RSS)A.Model).N_RssFeed.OrderBy(o => o.Title).ToList();
+				feeds = ((IDC_RSS)A.Model).IN_RssFeed.OrderBy(o => o.Title).ToList();
                 listLoadDate = DateTime.Now;
 
                 sb = new StringBuilder(1000);
@@ -35,7 +35,7 @@ namespace Nephrite.Web.RSS
         {
             if (DateTime.Now.Subtract(listLoadDate).TotalMinutes > 1)
             {
-				feeds = ((IDC_RSS)A.Model).N_RssFeed.OrderBy(o => o.Title).ToList();
+				feeds = ((IDC_RSS)A.Model).IN_RssFeed.OrderBy(o => o.Title).ToList();
                 listLoadDate = DateTime.Now;
             }
 

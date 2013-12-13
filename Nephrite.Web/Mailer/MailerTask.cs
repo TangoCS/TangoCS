@@ -19,7 +19,7 @@ namespace Nephrite.Web.Mailer
 		{
 			using (var dc = A.Model.NewDataContext() as IDC_Mailer)
 			{
-				var list = dc.MailMessage.Where(mm => !mm.IsSent && mm.AttemptsToSendCount < 5 &&
+				var list = dc.IMailMessage.Where(mm => !mm.IsSent && mm.AttemptsToSendCount < 5 &&
 					(mm.LastSendAttemptDate == null ||	mm.LastSendAttemptDate.Value.AddHours(2 * mm.AttemptsToSendCount) < DateTime.Now)).ToList();
 				if (list.Count == 0)
 					return;

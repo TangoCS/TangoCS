@@ -7,7 +7,7 @@ namespace Nephrite.Web.Multilanguage
 {
 	public interface IDC_Multilanguage
 	{
-		IQueryable<IC_Language> C_Language { get; }
+		IQueryable<IC_Language> IC_Language { get; }
 	}
 
 	public interface IC_Language

@@ -15,7 +15,7 @@ namespace Nephrite.Web.Multilanguage
 			get
 			{
 				if (_langs == null)
-					_langs = ((IDC_Multilanguage)A.Model).C_Language.OrderByDescending(o => o.IsDefault).ToList();
+					_langs = ((IDC_Multilanguage)A.Model).IC_Language.OrderByDescending(o => o.IsDefault).ToList();
 				return _langs;
 			}
 		}

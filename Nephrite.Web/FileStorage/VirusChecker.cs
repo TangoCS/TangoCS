@@ -101,12 +101,12 @@ namespace Nephrite.Web.FileStorage
         static void Log(int code, string fileName)
         {
 			var dc = (IDC_FileStorage)A.Model;
-			var l = dc.NewN_VirusScanLog();
+			var l = dc.NewIN_VirusScanLog();
 			l.LastModifiedDate = DateTime.Now;
             l.LastModifiedUserID = Subject.Current.ID;
             l.ResultCode = code;
 			l.Title = fileName;
-			dc.N_VirusScanLog.InsertOnSubmit(l);
+			dc.IN_VirusScanLog.InsertOnSubmit(l);
         }
     }
 }

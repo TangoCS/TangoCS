@@ -32,7 +32,7 @@ namespace Nephrite.Web.Versioning
 	}
 
 	public abstract class EntityControllerWithVersioning<T, TKey> : EntityController<T, TKey>
-		where T : IEntity, IWithKey<T, TKey>, IWithVersioning<T, TKey>
+		where T : IEntity, IWithKey<T, TKey>, IWithVersioning<T, TKey>, new()
 	{
 		protected override IQueryable<T> GetTable()
 		{
@@ -48,7 +48,7 @@ namespace Nephrite.Web.Versioning
 	}
 
 	public abstract class EntityControllerWithClassVersioning<T, TKey, TClassVersion> : EntityControllerWithVersioning<T, TKey>
-		where T : IEntity, IWithKey<T, TKey>, IWithClassVersioning<T, TKey>
+		where T : IEntity, IWithKey<T, TKey>, IWithClassVersioning<T, TKey>, new()
 		where TClassVersion : IClassVersion
 	{
 		protected override IQueryable<T> GetTable()

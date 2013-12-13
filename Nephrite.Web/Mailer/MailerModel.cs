@@ -8,9 +8,9 @@ namespace Nephrite.Web.Mailer
 {
 	public interface IDC_Mailer : IDataContext
 	{
-		IQueryable<IMailMessage> MailMessage { get; }
-		IQueryable<IMailTemplate> MailTemplate { get; }
-		IMailMessage NewMailMessage();
+		IQueryable<IMailMessage> IMailMessage { get; }
+		IQueryable<IMailTemplate> IMailTemplate { get; }
+		IMailMessage NewIMailMessage();
 	}
 
 	public interface IMailMessage : IEntity

@@ -7,7 +7,7 @@ using Nephrite.Web.Multilanguage;
 
 namespace Nephrite.Web
 {
-	public abstract class EntityController<T, TKey> where T : IEntity, IWithKey<T, TKey>
+	public abstract class EntityController<T, TKey> where T : IEntity, IWithKey<T, TKey>, new()
 	{
 		public abstract void FilterTable(ref IQueryable<T> table);
 
@@ -20,7 +20,7 @@ namespace Nephrite.Web
 			if (_tobj is IMultilanguage) table = table.Where(o => (o as IMultilanguage).LanguageCode == Language.Current.Code);
 			return table;
 		}
-		protected T _tobj = default(T);
+		protected T _tobj = new T();
 
 		public T Get(TKey id)
         {

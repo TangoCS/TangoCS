@@ -20,7 +20,7 @@ namespace Nephrite.Web.CalendarDays
 				{
 					if (DateTime.Now.Subtract(lastLoad).TotalSeconds > 60)
 					{
-						var days = ((IDC_CalendarDays)A.Model).CalendarDay.ToArray();
+						var days = ((IDC_CalendarDays)A.Model).ICalendarDay.ToArray();
 						workingDays = days.Where(o => o.IsWorkingDay).Select(o => o.Date).ToArray();
 						holidays = days.Where(o => !o.IsWorkingDay).Select(o => o.Date).ToArray();
 						lastLoad = DateTime.Now;
@@ -64,7 +64,7 @@ namespace Nephrite.Web.CalendarDays
 
 	public interface IDC_CalendarDays : IDataContext
 	{
-		IQueryable<ICalendarDay> CalendarDay { get; }
+		IQueryable<ICalendarDay> ICalendarDay { get; }
 	}
 
 	public interface ICalendarDay : IEntity

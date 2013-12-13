@@ -73,7 +73,7 @@ namespace Nephrite.Metamodel
             if (virtualPath.ToLower().EndsWith(".rss.ascx"))
             {
                 string sysName = virtualPath.ToLower().Replace(".rss.ascx", "").Replace("/", "");
-                var r = (from rf in (A.Model as IDC_RSS).N_RssFeed
+                var r = (from rf in (A.Model as IDC_RSS).IN_RssFeed
                      where rf.SysName.ToLower() == sysName
                      select (DateTime?)rf.LastModifiedDate).SingleOrDefault();
                 if (r != null)

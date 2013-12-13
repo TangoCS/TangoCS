@@ -78,7 +78,7 @@ namespace Nephrite.Web.Controls
 		public List<IN_Filter> GetViews()
 		{
 			int subjectID = AppSPM.GetCurrentSubjectID();
-			var flist = (from f in dc.N_Filter
+			var flist = (from f in dc.IN_Filter
 						 where f.ListName == Url.Current.Mode + "_" + actionName &&
 									(!f.SubjectID.HasValue || f.SubjectID.Value == subjectID) && f.FilterName != null
 						 select f).ToList();
@@ -518,7 +518,7 @@ namespace Nephrite.Web.Controls
 
 			if (filterObject.IsDefault)
 			{
-				foreach (var ff in dc.N_Filter.Where(o => o.IsDefault && o.ListName.ToLower() == filterObject.ListName.ToLower() &&
+				foreach (var ff in dc.IN_Filter.Where(o => o.IsDefault && o.ListName.ToLower() == filterObject.ListName.ToLower() &&
 					o.FilterID != id))
 					ff.IsDefault = false;
 			}
@@ -858,7 +858,7 @@ namespace Nephrite.Web.Controls
 		protected void del_Click(object sender, EventArgs e)
 		{
 			int id = filter.Argument.ToInt32(0);
-			dc.N_Filter.DeleteOnSubmit(dc.N_Filter.Single(o => o.FilterID == id));
+			dc.IN_Filter.DeleteOnSubmit(dc.IN_Filter.Single(o => o.FilterID == id));
 			dc.SubmitChanges();
 			Response.Redirect(Query.RemoveParameter("filter", "filterid", "group1", "group2"));
 		}
@@ -1454,13 +1454,13 @@ namespace Nephrite.Web.Controls
 
 		public PersistentFilter(string action)
 		{
-			_filter = dc.N_Filter.SingleOrDefault(o => o.FilterID == Query.GetInt("filterid", 0) && o.ListName.ToLower() == Url.Current.Mode.ToLower() + "_" + action.ToLower());
+			_filter = dc.IN_Filter.SingleOrDefault(o => o.FilterID == Query.GetInt("filterid", 0) && o.ListName.ToLower() == Url.Current.Mode.ToLower() + "_" + action.ToLower());
 			_items = _filter != null && _filter.FilterValue != null ? XMLSerializer.Deserialize<List<FilterItem>>(_filter.FilterValue.Root) : new List<FilterItem>();
 		}
 
 		public PersistentFilter(int filterID)
 		{
-			_filter = dc.N_Filter.SingleOrDefault(o => o.FilterID == filterID);
+			_filter = dc.IN_Filter.SingleOrDefault(o => o.FilterID == filterID);
 			_items = _filter != null && _filter.FilterValue != null ? XMLSerializer.Deserialize<List<FilterItem>>(_filter.FilterValue.Root) : new List<FilterItem>();
 		}
 
@@ -1471,10 +1471,10 @@ namespace Nephrite.Web.Controls
 
 		public void NewFilter()
 		{
-			_filter = dc.NewN_Filter();
+			_filter = dc.NewIN_Filter();
 			_filter.FilterValue = _filter != null ? _filter.FilterValue :
 					new XDocument(XMLSerializer.Serialize<List<FilterItem>>(new List<FilterItem>()));
-			dc.N_Filter.InsertOnSubmit(_filter);
+			dc.IN_Filter.InsertOnSubmit(_filter);
 		}
 
 		IN_Filter Filter
@@ -1483,8 +1483,8 @@ namespace Nephrite.Web.Controls
 			{
 				if (_filter == null)
 				{
-					_filter = dc.NewN_Filter();
-					dc.N_Filter.InsertOnSubmit(_filter);
+					_filter = dc.NewIN_Filter();
+					dc.IN_Filter.InsertOnSubmit(_filter);
 				}
 				return _filter;
 			}
@@ -1596,7 +1596,7 @@ namespace Nephrite.Web.Controls
 
 	public interface IDC_ListFilter : IDataContext
 	{
-		IQueryable<IN_Filter> N_Filter { get; }
-		IN_Filter NewN_Filter();
+		IQueryable<IN_Filter> IN_Filter { get; }
+		IN_Filter NewIN_Filter();
 	}
 }

@@ -59,18 +59,26 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExternalDll\DotNetOpenAuth.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=c957c2ee7c0582f1, processorArchitecture=MSIL">
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>ExternalDll\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <HintPath>..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net35\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate, Version=3.3.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <HintPath>..\packages\NHibernate.3.3.3.4001\lib\Net35\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.104.4.0\lib\net35\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="SgmlReaderDll, Version=1.8.11.0, Culture=neutral, PublicKeyToken=46b2db9ca481831b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>ExternalDll\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\SgmlReader.1.8.11\lib\2.0\SgmlReaderDll.dll</HintPath>
     </Reference>
-    <Reference Include="NHibernate">
-      <HintPath>ExternalDll\NHibernate.dll</HintPath>
-    </Reference>
-    <Reference Include="SgmlReaderDll, Version=1.7.2.22216, Culture=neutral, PublicKeyToken=fbce82624870dc0e, processorArchitecture=MSIL" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -96,19 +104,7 @@
   <ItemGroup>
     <Content Include="Controls\excel.ascx" />
     <Content Include="Controls\word.ascx" />
-    <Content Include="ExternalDll\DocumentFormat.OpenXml.dll" />
     <Content Include="ExternalDll\DotNetOpenAuth.dll" />
-    <Content Include="ExternalDll\EPPlus.dll" />
-    <Content Include="ExternalDll\EPPlus.pdb" />
-    <Content Include="ExternalDll\Iesi.Collections.dll" />
-    <Content Include="ExternalDll\Iesi.Collections.pdb" />
-    <Content Include="ExternalDll\Iesi.Collections.xml" />
-    <Content Include="ExternalDll\Newtonsoft.Json.dll" />
-    <Content Include="ExternalDll\Newtonsoft.Json.pdb" />
-    <Content Include="ExternalDll\Newtonsoft.Json.xml" />
-    <Content Include="ExternalDll\NHibernate.dll" />
-    <Content Include="ExternalDll\NHibernate.pdb" />
-    <Content Include="ExternalDll\NHibernate.xml" />
     <Content Include="js\knockout-2.2.1.js" />
     <Content Include="js\modalwindow.js" />
     <Content Include="View\Message\show.ascx" />
@@ -468,9 +464,6 @@
     <Compile Include="Web\XMLSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ExternalDll\nhibernate-mapping.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Nephrite.Web.snk" />
     <Content Include="Controls\FileUpload.ascx" />
     <Content Include="Controls\FileUploadSimple.ascx" />
@@ -485,8 +478,6 @@
     <Content Include="Controls\SelectObjectHierarchic.ascx" />
     <Content Include="Controls\SingleObject.ascx" />
     <Content Include="Controls\TinyMCEFileManager.aspx" />
-    <Content Include="ExternalDll\ICSharpCode.SharpZipLib.dll" />
-    <None Include="ExternalDll\SgmlReaderDll.dll" />
     <Content Include="js\codearea.js" />
     <Content Include="js\declension.js" />
     <Content Include="js\homewindow.js" />
@@ -497,6 +488,7 @@
     <Content Include="js\tiny_mce\plugins\media\media.htm" />
     <Content Include="View\TinyMCEFileManager\list.ascx" />
     <Content Include="View\TinyMCEFileManager\upload.ascx" />
+    <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">

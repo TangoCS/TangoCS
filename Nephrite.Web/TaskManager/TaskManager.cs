@@ -21,12 +21,12 @@ namespace Nephrite.Web.TaskManager
 			using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
 			{
 				// Задачи, которые не успели завершиться, пометить как завершенные
-				foreach (var t in from o in dc.TM_TaskExecution
-					from t in dc.TM_Task
+				foreach (var t in from o in dc.ITM_TaskExecution
+					from t in dc.ITM_Task
 					where o.FinishDate == null && o.TaskID == t.TaskID && t.StartFromService == (HttpContext.Current == null)
 					select o)
 				{
-					if (t.StartDate.AddMinutes(dc.TM_Task.Single(o => o.TaskID == t.TaskID).ExecutionTimeout) < DateTime.Now)
+					if (t.StartDate.AddMinutes(dc.ITM_Task.Single(o => o.TaskID == t.TaskID).ExecutionTimeout) < DateTime.Now)
 					{
 						t.ExecutionLog += "\nExecution timed out";
 						t.FinishDate = DateTime.Now;
@@ -35,7 +35,7 @@ namespace Nephrite.Web.TaskManager
 				dc.SubmitChanges();
 
 
-				var tasks = dc.TM_Task.Where(o => o.IsActive && o.StartFromService == (HttpContext.Current == null) && !dc.TM_TaskExecution.Any(o1 => o1.TaskID == o.TaskID && o1.FinishDate == null)).ToList();
+				var tasks = dc.ITM_Task.Where(o => o.IsActive && o.StartFromService == (HttpContext.Current == null) && !dc.ITM_TaskExecution.Any(o1 => o1.TaskID == o.TaskID && o1.FinishDate == null)).ToList();
 				foreach (var task in tasks)
 				{
 					if (task.LastStartDate.HasValue)
@@ -67,19 +67,19 @@ namespace Nephrite.Web.TaskManager
 			{
 				// Задачи, которые не успели завершиться, пометить как завершенные
 				foreach (var t in
-					from o in dc.TM_TaskExecution
-					from t in dc.TM_Task
+					from o in dc.ITM_TaskExecution
+					from t in dc.ITM_Task
 					where o.FinishDate == null && o.TaskID == t.TaskID && t.StartFromService
 					select o)
 				{
-					if (t.StartDate.AddMinutes(dc.TM_Task.Single(o => o.TaskID == t.TaskID).ExecutionTimeout) < DateTime.Now)
+					if (t.StartDate.AddMinutes(dc.ITM_Task.Single(o => o.TaskID == t.TaskID).ExecutionTimeout) < DateTime.Now)
 					{
 						t.ExecutionLog += "\nExecution timed out";
 						t.FinishDate = DateTime.Now;
 					}
 				}
 				dc.SubmitChanges();
-				tasks = dc.TM_Task.Where(o => o.IsActive && o.StartFromService && !!dc.TM_TaskExecution.Any(o1 => o1.TaskID == o.TaskID && o1.FinishDate == null)).ToList();
+				tasks = dc.ITM_Task.Where(o => o.IsActive && o.StartFromService && !!dc.ITM_TaskExecution.Any(o1 => o1.TaskID == o.TaskID && o1.FinishDate == null)).ToList();
 			}
 			foreach (var task in tasks)
 			{
@@ -113,7 +113,7 @@ namespace Nephrite.Web.TaskManager
 		{
 			using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
 			{
-				var te = dc.TM_TaskExecution.SingleOrDefault(o => o.TaskExecutionID == taskexecid);
+				var te = dc.ITM_TaskExecution.SingleOrDefault(o => o.TaskExecutionID == taskexecid);
 				te.ExecutionLog += text += Environment.NewLine;
 				te.LastModifiedDate = DateTime.Now;
 				dc.SubmitChanges();
@@ -131,10 +131,10 @@ namespace Nephrite.Web.TaskManager
 				using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
 				{
 					dc.Log = new StringWriter();
-					task = dc.TM_Task.Single(o => o.TaskID == taskID);
+					task = dc.ITM_Task.Single(o => o.TaskID == taskID);
 					//task.TM_TaskParameters.Count();
 
-					ITM_TaskExecution taskexec = dc.NewTM_TaskExecution();
+					ITM_TaskExecution taskexec = dc.NewITM_TaskExecution();
 					
 					taskexec.LastModifiedDate = DateTime.Now;
 					taskexec.StartDate = DateTime.Now;
@@ -142,11 +142,11 @@ namespace Nephrite.Web.TaskManager
 					taskexec.TaskID = taskID;
 					taskexec.LastModifiedUserID = Subject.Current.ID;
 					
-					dc.TM_TaskExecution.InsertOnSubmit(taskexec);
+					dc.ITM_TaskExecution.InsertOnSubmit(taskexec);
 					dc.SubmitChanges();
 					taskexecid = taskexec.TaskExecutionID;
 
-					taskparms = dc.TM_TaskParameter.Where(o => o.ParentID == taskID).ToList();
+					taskparms = dc.ITM_TaskParameter.Where(o => o.ParentID == taskID).ToList();
 				}
 
 				isServiceRun = task.StartFromService;
@@ -191,10 +191,10 @@ namespace Nephrite.Web.TaskManager
 						try
 						{
 							dc.Log = new StringWriter();
-							var t = dc.TM_Task.Single(o => o.TaskID == taskID);
+							var t = dc.ITM_Task.Single(o => o.TaskID == taskID);
 							t.LastStartDate = DateTime.Now;
 							t.IsSuccessfull = true;
-							var te = dc.TM_TaskExecution.SingleOrDefault(o => o.TaskExecutionID == taskexecid);
+							var te = dc.ITM_TaskExecution.SingleOrDefault(o => o.TaskExecutionID == taskexecid);
 							te.LastModifiedDate = DateTime.Now;
 							te.FinishDate = DateTime.Now;
 							te.IsSuccessfull = true;
@@ -215,7 +215,7 @@ namespace Nephrite.Web.TaskManager
 					using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
 					{
 						dc.Log = new StringWriter();
-						var t = dc.TM_Task.Single(o => o.TaskID == taskID);
+						var t = dc.ITM_Task.Single(o => o.TaskID == taskID);
 						if (isServiceRun)
 							LogError(e, taskName, dc.Log.ToString());
 						else
@@ -223,7 +223,7 @@ namespace Nephrite.Web.TaskManager
 						t.IsSuccessfull = false;
 						t.LastStartDate = DateTime.Now;
 						t.ErrorLogID = errid;
-						var te = dc.TM_TaskExecution.SingleOrDefault(o => o.TaskExecutionID == taskexecid);
+						var te = dc.ITM_TaskExecution.SingleOrDefault(o => o.TaskExecutionID == taskexecid);
 						te.LastModifiedDate = DateTime.Now;
 						te.FinishDate = DateTime.Now;
 						te.IsSuccessfull = false;

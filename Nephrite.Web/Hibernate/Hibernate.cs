@@ -245,7 +245,7 @@ namespace Nephrite.Web.Hibernate
 			return command;
 		}
 
-		public IQueryable<T> GetTable<T>()
+		public IQueryable<T> GetTable<T>() //where T : class
 		{  
 			return Session.Query<T>();
 		}
@@ -257,15 +257,13 @@ namespace Nephrite.Web.Hibernate
 			return new HTable(this, q);
 		}
 
-
-
-		public T Get<T>(object id)
+		public T Get<T, TKey>(TKey id) where T : IEntity, IWithKey<T, TKey>, new()
 		{
 			return Session.Get<T>(id);
 		}
 	}
 
-
+	
 
 	public class HTable : IQueryable, ITable
 	{

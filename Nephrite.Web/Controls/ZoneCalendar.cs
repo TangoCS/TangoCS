@@ -39,7 +39,7 @@ namespace Nephrite.Web.Controls
             ddlZone = new DropDownList { ToolTip = "Часовой пояс", EnableViewState = false, Width = Unit.Pixel(300) };
             ddlZone.Style.Add(HtmlTextWriterStyle.Padding, "2px");
 
-            zones = ((IDC_TimeZone)A.Model).N_TimeZone.Where(o => !o.IsDeleted).OrderBy(o => o.GMTOffset).ToList();
+            zones = ((IDC_TimeZone)A.Model).IN_TimeZone.Where(o => !o.IsDeleted).OrderBy(o => o.GMTOffset).ToList();
             ddlZone.DataTextField = "Title";
             ddlZone.DataValueField = "TimeZoneID";
             ddlZone.DataBindOnce(zones.Select(o => new
@@ -145,7 +145,7 @@ namespace Nephrite.Web.Controls
 		/// <param name="isUtc">Признак "универсальное"</param>
 		public ZoneDateTime(DateTime dateTime, int timeZoneID, bool isUtc)
 		{
-			timeZone = ((IDC_TimeZone)A.Model).N_TimeZone.Single(o => o.TimeZoneID == timeZoneID);
+			timeZone = ((IDC_TimeZone)A.Model).IN_TimeZone.Single(o => o.TimeZoneID == timeZoneID);
 			GMTOffset = timeZone.GMTOffset;
 			if (isUtc)
 			{
@@ -159,7 +159,7 @@ namespace Nephrite.Web.Controls
 
 		public ZoneDateTime(DateTime dateTime, int timeZoneID)
 		{
-			timeZone = ((IDC_TimeZone)A.Model).N_TimeZone.Single(o => o.TimeZoneID == timeZoneID);
+			timeZone = ((IDC_TimeZone)A.Model).IN_TimeZone.Single(o => o.TimeZoneID == timeZoneID);
 			GMTOffset = timeZone.GMTOffset;
 			LocalDateTime = dateTime;
 		}
@@ -192,7 +192,7 @@ namespace Nephrite.Web.Controls
 
 	public interface IDC_TimeZone : IDataContext
 	{
-		IQueryable<IN_TimeZone> N_TimeZone { get; }
+		IQueryable<IN_TimeZone> IN_TimeZone { get; }
 	}
 
 	public interface IN_TimeZone

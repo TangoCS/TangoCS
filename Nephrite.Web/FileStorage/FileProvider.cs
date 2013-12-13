@@ -49,8 +49,8 @@ namespace Nephrite.Web.FileStorage
 				if (logDownload)
 				{
 					IDC_FileStorage dc = (IDC_FileStorage)A.Model;
-					IN_DownloadLog l = dc.NewN_DownloadLog();
-					dc.N_DownloadLog.InsertOnSubmit(l);
+					IN_DownloadLog l = dc.NewIN_DownloadLog();
+					dc.IN_DownloadLog.InsertOnSubmit(l);
 					l.LastModifiedDate = DateTime.Now;
 					l.LastModifiedUserID = Subject.Current.ID;
 					l.FileGUID = dbFile.ID;

@@ -37,7 +37,7 @@ namespace Nephrite.Web.TextResources
 			{
 				lock (locker)
 				{
-					var nrs = ((IDC_TextResources)A.Model).V_N_TextResource.Select(o => new { Res = o.SysName + "-" + o.LanguageCode, ID = o.TextResourceID, Text = o.Text });
+					var nrs = ((IDC_TextResources)A.Model).IV_N_TextResource.Select(o => new { Res = o.SysName + "-" + o.LanguageCode, ID = o.TextResourceID, Text = o.Text });
 					foreach (var nr in nrs)
 					{
 						resources[nr.Res] = nr.Text;
@@ -97,6 +97,6 @@ namespace Nephrite.Web.TextResources
 
 	public interface IDC_TextResources
 	{
-		IQueryable<IV_N_TextResource> V_N_TextResource { get; }
+		IQueryable<IV_N_TextResource> IV_N_TextResource { get; }
 	}
 }
