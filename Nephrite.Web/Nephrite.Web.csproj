@@ -427,7 +427,6 @@
     <Compile Include="ZoneDateTime.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Fakes Include="Fakes\Microsoft.SqlServer.SmoExtended.fakes" />
     <None Include="ExternalDll\nhibernate-mapping.xsd">
       <SubType>Designer</SubType>
     </None>

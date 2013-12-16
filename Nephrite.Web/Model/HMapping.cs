@@ -178,7 +178,7 @@ namespace Nephrite.Web.Model
 			Property(x => x.SysName, map => map.NotNullable(true));
 			Property(x => x.Value);
 			Property(x => x.SeqNo, map => map.NotNullable(true));
-			ManyToOne(x => x.TM_Task, map => { map.Column("ParentID"); map.Cascade(Cascade.None); map.ForeignKey("FK_TM_TaskParameter_Parent"); });
+			Property(x => x.ParentID, map => map.NotNullable(true));
 		}
 	}
 
@@ -197,7 +197,7 @@ namespace Nephrite.Web.Model
 			Property(x => x.ExecutionLog);
 			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
 			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-			ManyToOne(x => x.TM_Task, map => { map.Column("TaskID"); map.Cascade(Cascade.None); map.ForeignKey("FK_TM_TaskExecution_Task"); });
+			Property(x => x.TaskID, map => map.NotNullable(true));
 		}
 	}
 
@@ -219,8 +219,6 @@ namespace Nephrite.Web.Model
 			Property(x => x.StartFromService, map => map.NotNullable(true));
 			Property(x => x.ErrorLogID);
 			Property(x => x.ExecutionTimeout, map => map.NotNullable(true));
-			Bag(x => x.TM_TaskExecutions, colmap => { colmap.Key(x => x.Column("TaskID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
-			Bag(x => x.TM_TaskParameters, colmap => { colmap.Key(x => x.Column("ParentID")); colmap.Inverse(true); }, map => { map.OneToMany(); });
 		}
 	}
 

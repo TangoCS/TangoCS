@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
 using System.Xml.Linq;
 
@@ -117,13 +118,8 @@ namespace Nephrite.Web.Model
 		public virtual bool IsWorkingDay { get; set; }
 	}
 
-	public partial class TM_Task
+	public partial class TM_Task 
 	{
-		public TM_Task()
-		{
-			TM_TaskExecutions = new List<TM_TaskExecution>();
-			TM_TaskParameters = new List<TM_TaskParameter>();
-		}
 		public virtual int TaskID { get; set; }
 		public virtual string Title { get; set; }
 		public virtual string Class { get; set; }
@@ -136,14 +132,11 @@ namespace Nephrite.Web.Model
 		public virtual bool StartFromService { get; set; }
 		public virtual System.Nullable<int> ErrorLogID { get; set; }
 		public virtual int ExecutionTimeout { get; set; }
-		public virtual IList<TM_TaskExecution> TM_TaskExecutions { get; set; }
-		public virtual IList<TM_TaskParameter> TM_TaskParameters { get; set; }
 	}
 
-	public partial class TM_TaskExecution
+	public partial class TM_TaskExecution 
 	{
 		public virtual int TaskExecutionID { get; set; }
-		public virtual TM_Task TM_Task { get; set; }
 		public virtual int TaskID { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
 		public virtual System.DateTime StartDate { get; set; }
@@ -155,14 +148,19 @@ namespace Nephrite.Web.Model
 		public virtual System.DateTime LastModifiedDate { get; set; }
 	}
 
-	public partial class TM_TaskParameter
+	public partial class TM_TaskParameter 
 	{
 		public virtual int TaskParameterID { get; set; }
-		public virtual TM_Task TM_Task { get; set; }
+		public virtual int ParentID { get; set; }
 		public virtual string Title { get; set; }
 		public virtual string SysName { get; set; }
 		public virtual string Value { get; set; }
 		public virtual int SeqNo { get; set; }
+
+		public virtual Expression<Func<TM_TaskParameter, bool>> KeySelector(int id)
+		{
+			return o => o.TaskParameterID == id;
+		}
 	}
 
 	public partial class N_DownloadLog

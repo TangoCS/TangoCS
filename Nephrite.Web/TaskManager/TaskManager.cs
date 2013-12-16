@@ -20,9 +20,12 @@ namespace Nephrite.Web.TaskManager
 			using (var dc = new HCoreDataContext(AppWeb.DBConfig))
 			{
 				// Задачи, которые не успели завершиться, пометить как завершенные
-				foreach (var t in dc.TM_TaskExecutions.Where(o => o.FinishDate == null && o.TM_Task.StartFromService == (HttpContext.Current == null)).ToList())
+				foreach (var t in from o in dc.TM_TaskExecutions
+								  from t in dc.TM_Tasks
+								  where o.FinishDate == null && o.TaskID == t.TaskID && t.StartFromService == (HttpContext.Current == null)
+								  select o)
 				{
-					if (t.StartDate.AddMinutes(t.TM_Task.ExecutionTimeout) < DateTime.Now)
+					if (t.StartDate.AddMinutes(dc.TM_Tasks.Single(o => o.TaskID == t.TaskID).ExecutionTimeout) < DateTime.Now)
 					{
 						t.ExecutionLog += "\nExecution timed out";
 						t.FinishDate = DateTime.Now;
@@ -31,7 +34,7 @@ namespace Nephrite.Web.TaskManager
 				dc.SubmitChanges();
 
 
-				var tasks = dc.TM_Tasks.Where(o => o.IsActive && o.StartFromService == (HttpContext.Current == null) && !o.TM_TaskExecutions.Any(o1 => o1.FinishDate == null)).ToList();
+				var tasks = dc.TM_Tasks.Where(o => o.IsActive && o.StartFromService == (HttpContext.Current == null) && !dc.TM_TaskExecutions.Any(o1 => o1.TaskID == o.TaskID && o1.FinishDate == null)).ToList();
 				foreach (var task in tasks)
 				{
 					if (task.LastStartDate.HasValue)
@@ -62,16 +65,20 @@ namespace Nephrite.Web.TaskManager
 			using (var dc = new HCoreDataContext(AppWeb.DBConfig))
 			{
 				// Задачи, которые не успели завершиться, пометить как завершенные
-				foreach (var t in dc.TM_TaskExecutions.Where(o => o.FinishDate == null && o.TM_Task.StartFromService).ToList())
+				foreach (var t in
+					from o in dc.TM_TaskExecutions
+					from t in dc.TM_Tasks
+					where o.FinishDate == null && o.TaskID == t.TaskID && t.StartFromService
+					select o)
 				{
-					if (t.StartDate.AddMinutes(t.TM_Task.ExecutionTimeout) < DateTime.Now)
+					if (t.StartDate.AddMinutes(dc.TM_Tasks.Single(o => o.TaskID == t.TaskID).ExecutionTimeout) < DateTime.Now)
 					{
 						t.ExecutionLog += "\nExecution timed out";
 						t.FinishDate = DateTime.Now;
 					}
 				}
 				dc.SubmitChanges();
-				tasks = dc.TM_Tasks.Where(o => o.IsActive && o.StartFromService && !o.TM_TaskExecutions.Any(o1 => o1.FinishDate == null)).ToList();
+				tasks = dc.TM_Tasks.Where(o => o.IsActive && o.StartFromService && !!dc.TM_TaskExecutions.Any(o1 => o1.TaskID == o.TaskID && o1.FinishDate == null)).ToList();
 			}
 			foreach (var task in tasks)
 			{
@@ -118,11 +125,13 @@ namespace Nephrite.Web.TaskManager
 			string taskName = "";
 			try
 			{
+				List<TM_TaskParameter> taskparms = new List<TM_TaskParameter>();
+
 				using (var dc = new HCoreDataContext(AppWeb.DBConfig))
 				{
 					dc.Log = new StringWriter();
 					task = dc.TM_Tasks.Single(o => o.TaskID == taskID);
-					task.TM_TaskParameters.Count();
+					//task.TM_TaskParameters.Count();
 
 					var taskexec = new TM_TaskExecution
 					{
@@ -135,6 +144,8 @@ namespace Nephrite.Web.TaskManager
 					dc.TM_TaskExecutions.InsertOnSubmit(taskexec);
 					dc.SubmitChanges();
 					taskexecid = taskexec.TaskExecutionID;
+
+					taskparms = dc.TM_TaskParameters.Where(o => o.ParentID == taskID).ToList();
 				}
 
 				isServiceRun = task.StartFromService;
@@ -151,7 +162,7 @@ namespace Nephrite.Web.TaskManager
 					{
 						try
 						{
-							string val = task.TM_TaskParameters.Single(o => o.SysName.ToLower() == mp[i].Name.ToLower()).Value;
+							string val = taskparms.Single(o => o.SysName.ToLower() == mp[i].Name.ToLower()).Value;
 							p[i] = Convert.ChangeType(val, mp[i].ParameterType);
 						}
 						catch
