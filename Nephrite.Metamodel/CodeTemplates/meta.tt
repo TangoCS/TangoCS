@@ -221,7 +221,7 @@ namespace Solution {
 			{
 				if (_instance == null)
 				{
-					_instance = new MetaAssemblyGen(); 
+					_instance = new Meta<#=_package.Name#>(); 
 				}
 				return _instance; 
 			} 
