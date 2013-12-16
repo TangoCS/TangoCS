@@ -1,0 +1,243 @@
+<#@ template language="C#v3.5" debug="True" #>
+<#@ assembly name="System.Core.dll" #>
+<#@ assembly name="System.Data.dll" #>
+<#@ assembly name="System.Data.Linq.dll" #>
+<#@ assembly name="System.Configuration.dll" #>
+<#@ assembly name="System.Xml.Linq.dll" #>
+<#@ assembly name="System.Xml.dll" #>
+    
+<#@ assembly name="Nephrite.Web.dll" #>
+<#@ assembly name="Nephrite.Metamodel.dll" #>
+<#@ import namespace="Nephrite.Meta" #>
+<#@ import namespace="Nephrite.Metamodel" #>
+<#@ import namespace="Nephrite.Metamodel.Model" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Xml"#>
+<#@ import namespace="System.Xml.Linq" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System" #>
+<#@ output extension="cs" #>
+<# 	var metaSolution = MetaSolution.Load();
+	var xsltExtension = new XsltExtension(); #>
+using System; 
+using System.Collections.Generic; 
+using System.Linq; 
+using Nephrite.Meta; 
+using Nephrite.Web; 
+using Nephrite.Web.Controls; 
+
+namespace Solution { 
+    public sealed class Meta : MetaSolution {
+	   <#
+		foreach (var _class in metaSolution.Classes)
+		{
+		#>public static Meta<#=_class.Name#> <#=_class.Name#> { get { return Meta<#=_class.Name#>.__Instance; } }
+		<#}
+		foreach (var _package in metaSolution.Packages)
+		{
+		#>public static Meta<#=_package.Name#> <#=_package.Name#>Package { get { return Metamm.Instance; } }
+	  <#}#>
+
+	  static Meta _system;
+		public static Meta System 
+		{ 
+			get 
+			{
+				if (_system == null)
+				{
+					_system = new Meta(); 
+				}
+				return _system; 
+			} 
+		}		
+		
+		public Meta()
+		{
+	    <#
+		foreach (var _package in metaSolution.Packages)
+		{
+	    #>AddPackage(Meta.<#=_package.Name#>Package);
+		<#}
+		foreach (var _class in metaSolution.Classes)
+		{
+		#>AddPackage(Meta.<#=_class.Name#>);
+		<# } #>
+		}
+	 }
+
+	 <#
+	foreach (var _class in metaSolution.Classes)
+	{
+	#>public sealed class Meta<#=_class.Name#> : MetaClass
+		{
+	      <#
+		  foreach (var attribute in _class.Properties.Where(t=> t is MetaAttribute))
+			{
+			var metaAttribute = attribute as MetaAttribute;
+			#>MetaAttribute _p_<#=metaAttribute.Name#> = new MetaAttribute { ID = new Guid("<#=metaAttribute.ID#>"), Name = "<#=metaAttribute.Name#>", Caption = "<#=metaAttribute.Caption#>",  IsRequired = <#=metaAttribute.IsRequired.ToString().ToLower()#>, UpperBound =  <#=metaAttribute.UpperBound#>, Type = <#=xsltExtension.getType(metaAttribute.DataType,metaAttribute.IsRequired.ToString().ToLower())#>};<#	
+			}
+		 foreach (var attribute in _class.Properties.Where(t=> t is MetaComputedAttribute))
+			{
+			var metaComputedAttribute = attribute as MetaComputedAttribute;
+			#>MetaComputedAttribute _p_<#=metaComputedAttribute.Name#> = new MetaComputedAttribute { ID = new Guid("<#=metaComputedAttribute.ID#>"), Name = "<#=metaComputedAttribute.Name#>", Caption = "<#=metaComputedAttribute.Caption#>", IsRequired = <#=metaComputedAttribute.IsRequired.ToString().ToLower()#>, UpperBound =  <#=metaComputedAttribute.UpperBound#>, Type = <#=xsltExtension.getType(metaComputedAttribute.DataType,metaComputedAttribute.IsRequired.ToString().ToLower())#>};<#
+			}
+		 foreach (var attribute in _class.Properties.Where(t=> t is MetaPersistentComputedAttribute))
+			{
+			var metaPersistentComputedAttribute = attribute as MetaPersistentComputedAttribute;
+			#>MetaPersistentComputedAttribute _p_<#=metaPersistentComputedAttribute.Name#> = new MetaPersistentComputedAttribute { ID = new Guid("<#=metaPersistentComputedAttribute.ID#>"), Name = "<#=metaPersistentComputedAttribute.Name#>", Caption = "<#=metaPersistentComputedAttribute.Caption#>", IsRequired = <#=metaPersistentComputedAttribute.IsRequired.ToString().ToLower()#>, UpperBound = <#=metaPersistentComputedAttribute.UpperBound#>, Type = <#=xsltExtension.getType(metaPersistentComputedAttribute.DataType,metaPersistentComputedAttribute.IsRequired.ToString().ToLower())#>};<#
+			}
+		 foreach (var attribute in _class.Properties.Where(t=> t is MetaReference))
+			{
+			var metaReference = attribute as MetaReference;
+			
+			#>MetaReference _p_<#=metaReference.Name#> = new MetaReference { ID = new Guid("<#=metaReference.ID#>"), Name = "<#=metaReference.Name#>", Caption = "<#=metaReference.Caption#>", IsRequired = <#=metaReference.IsRequired.ToString().ToLower()#>, UpperBound = <#=metaReference.UpperBound#>};<#
+			}		
+			 
+		 foreach (var metaOperation in _class.Operations)
+		  {
+			#>MetaOperation _o_<#=metaOperation.Name#> = new MetaOperation { ID = new Guid("<#=metaOperation.ID#>"), Name = "<#=metaOperation.Name#>", Caption = "<#=metaOperation.Caption#>", Image = "<#=metaOperation.Image#>"};<#
+		  }	
+				
+		  #>
+		  static Meta<#=_class.Name#> _instance;
+		
+		 public static Meta<#=_class.Name#> __Instance 
+			{ 
+				get 
+				{
+					if (_instance == null)
+					{
+						_instance = new Meta<#=_class.Name#>(); 
+					}
+					return _instance; 
+				} 
+			}
+
+			public Meta<#=_class.Name#>()
+		{
+			ID = new Guid("<#=_class.ID#>");
+			Name = "<#=_class.Name#>";
+			Caption = "<#=_class.Caption#>";
+			Description = "<#=_class.Description#>";
+
+			<#
+			foreach (var attribute in _class.Properties.Where(t => t is MetaAttribute && (t as MetaAttribute).IsKey == "false"))
+			{
+				var metaAttribute = attribute as MetaAttribute;
+				#>AddProperty(_p_<#=metaAttribute.Name#>);<#
+			}
+			foreach (var attribute in _class.Properties.Where(t=> t is MetaComputedAttribute))
+			{
+				var metaComputedAttribute = attribute as MetaComputedAttribute;
+				#>AddProperty(_p_<#=metaComputedAttribute.Name#>);<#
+			}
+			foreach (var attribute in _class.Properties.Where(t=> t is MetaPersistentComputedAttribute))
+			{
+			var metaPersistentComputedAttribute = attribute as MetaPersistentComputedAttribute;
+			#>AddProperty(_p_<#=metaPersistentComputedAttribute.Name#>);<#
+			}
+			 foreach (var attribute in _class.Properties.Where(t => t is MetaReference && (t as MetaReference).IsKey == "false"))
+			{
+			var metaReference = attribute as MetaReference;
+			#>AddProperty(_p_<#=metaReference.Name#>);<#
+			}	
+			foreach (var attribute in _class.Properties.Where(t => t is MetaAttribute && (t as MetaAttribute).IsKey == "true"))
+			{
+				var metaAttribute = attribute as MetaAttribute;
+				#>AddProperty(_p_<#=metaAttribute.Name#>);<#
+				#>CompositeKey.Add((_p_<#=metaAttribute.Name#>);<#
+			}
+			foreach (var attribute in _class.Properties.Where(t => t is MetaReference && (t as MetaReference).IsKey == "true"))
+			{
+			var metaReference = attribute as MetaReference;
+			#>AddProperty(_p_<#=metaReference.Name#>);<#
+			#>CompositeKey.Add((_p_<#=metaReference.Name#>);<#
+			}
+			foreach (var metaOperation in _class.Operations.Where(t => t.IsDefault  == "false"))
+			{
+			#>AddOperation(_o_<#=metaOperation.Name#>);<#
+	  	    }	
+			foreach (var metaOperation in _class.Operations.Where(t => t.IsDefault  == "true"))
+			{
+			#>AddOperation(_o_<#=metaOperation.Name#>);<#
+			#>DefaultOperation = _o_<#=metaOperation.Name#>;<#
+	  	    }		
+			#>
+		}
+		public static class P
+		{
+		<#
+			foreach (var attribute in _class.Properties.Where(t=> t is MetaAttribute))
+			{
+			var metaAttribute = attribute as MetaAttribute;
+			#>public static MetaAttribute <#=metaAttribute.Name#> { get { return __Instance._p_<#=metaAttribute.Name#>; } }<#	
+			}
+			foreach (var attribute in _class.Properties.Where(t=> t is MetaReference))
+			{
+			var metaReference = attribute as MetaReference;
+			
+			#>public static MetaReference  <#=metaReference.Name#> { get { return __Instance._p_<#=metaReference.Name#>; } }<#	
+			}
+			
+		#>
+		}
+		public static class O
+		{
+		<#
+			foreach (var metaOperation in _class.Operations)
+			{
+			#>public static MetaOperation  <#=metaOperation.Name#> { get { return __Instance._o_<#=metaOperation.Name#>; } }<#	
+			}			
+		#>
+		}
+		public static class L
+		{
+		<#
+			foreach (var metaOperation in _class.Operations)
+			{
+			#>static ActionLink _<#=metaOperation.Name#> = ActionLink.To(Meta<#=_class.Name#>.O.<#=metaOperation.Name#>);<#	
+			#>public static ActionLink <#=metaOperation.Name#>()
+			{
+				HtmlParms p = new HtmlParms();
+					<#
+				foreach (var param in metaOperation.Parameters)
+				{
+					#>p.Add("<#=param.Value.Name#>", <#=param.Value.Name#>.ToString());<#
+				}
+					#>return _<#=metaOperation.Name#>.With(p, false); 
+			}<#
+			}			
+		#>
+		}
+	<#
+	}
+	foreach (var _package in metaSolution.Packages)
+	{#>public sealed class Meta<#=_package.Name#> : MetaPackage
+	{
+		static Meta<#=_package.Name#> _instance;
+		public static Meta<#=_package.Name#> Instance 
+		{ 
+			get 
+			{
+				if (_instance == null)
+				{
+					_instance = new MetaAssemblyGen(); 
+				}
+				return _instance; 
+			} 
+		}
+
+		public Meta<#=_package.Name#>()
+		{
+			ID = new Guid("<#=_package.ID#>");
+			Name = "<#=_package.Name#>";
+			Caption = "<#=_package.Caption#>";
+			<#if (_package.Parent != null)
+			{#>ParentID = new Guid(<#=_package.Parent.ID#>)<#
+			} #>
+		}
+	}
+	<#}
+	#>
+
+	}

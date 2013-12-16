@@ -71,16 +71,36 @@ namespace TestSchema
 		[TestMethod]
 		public void TestDB2()
 		{
+			//var dd = TypeFactory.TypeFactory.Char(true).ToString();
+
+			var metaSolution = MetaSolution.Load();
+
+			foreach (var _class in metaSolution.Classes)
+			{
+				foreach (var attribute in _class.Operations)
+				{
+					foreach (var param in attribute.Parameters)
+					{
+						//param.Value.
+					}
+					//attribute.Parameters
+					//var metaReference = attribute.IsDefault
+					//metaReference.Type
+					//metaReference.DataType
+				}
+				//_class.Name
+
+			}
 			//ConnectionManager.SetConnectionString(
 			//	"Password=q121212;Persist Security Info=True;User ID=servantsuser;Initial Catalog=servants;Data Source=srvsql.refactorx.ru\\mssqlserver2008");
 			//var sqlSchema = new SqlServerMetadataReader().ReadSchema("dbo");
 
 
-			ConnectionManager.SetConnectionString("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000");
-			var db2Schema = new DB2ServerMetadataReader().ReadSchema("dbo");
+			//ConnectionManager.SetConnectionString("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000");
+			//var db2Schema = new DB2ServerMetadataReader().ReadSchema("dbo");
 
 
-			var d = new UpdateScriptBuilderDB2(db2Schema, new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=servantsnew;Data Source=TOSHIBA-TOSH\\SQL2008"), false).Generate(false, false);
+			//var d = new UpdateScriptBuilderDB2(db2Schema, new SqlConnection("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=servantsnew;Data Source=TOSHIBA-TOSH\\SQL2008"), false).Generate(false, false);
 			//var db2Script = new DBScriptDB2("dbo");
 			//foreach (var table in db2Schema.Tables)
 			//{

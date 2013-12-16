@@ -427,6 +427,10 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>setcurrentclassversion.cs</LastGenOutput>
     </Content>
+    <EmbeddedResource Include="CodeTemplates\meta.tt">
+      <Generator>NephriteTextTransform</Generator>
+      <LastGenOutput>classes.cs</LastGenOutput>
+    </EmbeddedResource>
     <None Include="Compilation\CompileConfig.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -472,7 +476,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>29163</DevelopmentServerPort>
+          <DevelopmentServerPort>14402</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

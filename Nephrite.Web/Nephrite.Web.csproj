@@ -290,11 +290,11 @@
     <Compile Include="Features\Layout\LayoutTessera.cs" />
     <Compile Include="Features\Layout\SimpleTags.cs" />
     <Compile Include="Features\Layout\WinModal.cs" />
-    <Compile Include="Features\Meta.Database\SchemaLoaderDB2.cs" />
     <Compile Include="Features\Meta.Database\DBScriptDB2.cs" />
     <Compile Include="Features\Meta.Database\DBScriptMSSQL.cs" />
     <Compile Include="Features\Meta.Database\IDBScript.cs" />
     <Compile Include="Features\Meta.Database\PrimitiveTypesExtensions.cs" />
+    <Compile Include="Features\Meta.Database\SchemaLoaderDB2.cs" />
     <Compile Include="Features\Meta.Database\SchemaSync.cs" />
     <Compile Include="Features\Meta.Database\UpdateScriptBuilder2.cs" />
     <Compile Include="Features\Meta.Database\UpdateScriptBuilderDB2.cs" />

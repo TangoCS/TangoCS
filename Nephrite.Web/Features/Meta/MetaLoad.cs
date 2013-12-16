@@ -102,7 +102,7 @@ namespace Nephrite.Meta
 
 			a.IsMultilingual = xp.GetAttributeValue("IsMultilingual") == "true";
 			a.IsIdentity = xp.GetAttributeValue("IsIdentity") == "true";
-
+			a.IsKey = xp.GetAttributeValue("IsKey");
 			switch (xp.GetAttributeValue("DataType"))
 			{
 				case "S": a.Type = TypeFactory.String(xp.GetAttributeValue("Length").ToInt32(-1)); break;
@@ -161,6 +161,7 @@ namespace Nephrite.Meta
 			a.Caption = xp.GetAttributeValue("Caption");
 			a.Description = xp.GetAttributeValue("Description");
 			a.Expression = xp.GetAttributeValue("Expression");
+			a.DataType = xp.GetAttributeValue("DataType");
 			switch (xp.GetAttributeValue("DataType"))
 			{
 				case "S": a.Type = TypeFactory.String(xp.GetAttributeValue("Length").ToInt32(-1)); break;
@@ -200,6 +201,7 @@ namespace Nephrite.Meta
 			a.RefClassName = xp.GetAttributeValue("RefClass");
 			a.InversePropertyName = xp.GetAttributeValue("InverseProperty");
 			a.AssociationType = (AssociationType)xp.GetAttributeValue("AssociationType").ToInt32(0);
+			a.IsKey = xp.GetAttributeValue("IsKey");
 			if (xp.GetAttributeValue("IsKey") == "true") c.CompositeKey.Add(a);
 			c.AddProperty(a);
 		}
@@ -211,7 +213,7 @@ namespace Nephrite.Meta
 			o.Name = xo.GetAttributeValue("Name");
 			o.Caption = xo.GetAttributeValue("Caption");
 			o.Description = xo.GetAttributeValue("Description");
-
+			o.IsDefault = xo.GetAttributeValue("IsDefault");
 			c.AddOperation(o);
 		}
 	}

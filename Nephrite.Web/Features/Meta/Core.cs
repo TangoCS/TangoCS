@@ -366,6 +366,10 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// “ип данных
 		/// </summary>
+		public virtual string DataType { get; set; }
+		/// <summary>
+		/// “ип данных
+		/// </summary>
 		public virtual MetaClassifier Type { get; set; }
 		/// <summary>
 		/// явл€етс€ ли свойство об€зательным дл€ заполнени€
@@ -404,6 +408,10 @@ namespace Nephrite.Meta
 		/// явл€етс€ автоинкрементным
 		/// </summary>
 		public bool IsIdentity { get; set; }
+		/// <summary>
+		/// явл€етс€ первичным
+		/// </summary>
+		public string IsKey { get; set; }
 	}
 
 	/// <summary>
@@ -430,6 +438,7 @@ namespace Nephrite.Meta
 		/// ¬ыражение
 		/// </summary>
 		public string Expression { get; set; }
+
 	}
 
 	/// <summary>
@@ -516,6 +525,10 @@ namespace Nephrite.Meta
 				return RefClass.ColumnName(Name);
 			}
 		}
+		/// <summary>
+		/// явл€етс€ первичным
+		/// </summary>
+		public string IsKey { get; set; }
 	}
 
 	/// <summary>
@@ -554,6 +567,10 @@ namespace Nephrite.Meta
 		{
 			return Parent.Name + ".O." + Name;
 		}
+		/// <summary>
+		/// ѕо умолчанию
+		/// </summary>
+		public string IsDefault { get; set; }
 	}
 
 	public class MetaStereotype : MetaElement
