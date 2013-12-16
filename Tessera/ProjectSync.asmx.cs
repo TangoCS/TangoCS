@@ -10,6 +10,7 @@ using System.IO;
 using Nephrite.Web;
 using Nephrite.Web.FileStorage;
 using Nephrite.Web.SettingsManager;
+using Nephrite.Web.FormsEngine;
 
 namespace Tessera
 {
@@ -75,7 +76,7 @@ namespace Tessera
         [WebMethod]
         public FormViewInfo[] GetViews(string path)
         {
-            path = Settings.ControlsPath + "/" + AppMM.DBName() + "/" + path;
+			path = Settings.ControlsPath + "/" + AppWeb.AppNamespace + "/" + path;
             var views = AppMM.DataContext.MM_FormViews.ToList();
             return views.Where(o => o.ControlPath.Substring(0, o.ControlPath.LastIndexOf('/')) == path && o.TemplateTypeCode == "A").
                 Select(o => new FormViewInfo { Guid = o.Guid, LastModifiedDate = o.LastModifiedDate, Title = o.SysName }).ToArray();
@@ -113,7 +114,7 @@ namespace Tessera
         [WebMethod]
         public string GetNamespace()
         {
-            return AppMM.DBName();
+			return AppWeb.AppNamespace;
         }
 
         [Serializable]

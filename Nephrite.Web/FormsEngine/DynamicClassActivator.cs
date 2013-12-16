@@ -9,7 +9,7 @@ using System.CodeDom.Compiler;
 using System.Text;
 using Nephrite.Web.FileStorage;
 
-namespace Nephrite.Metamodel
+namespace Nephrite.Web.FormsEngine
 {
 	public static class DynamicClassActivator
 	{

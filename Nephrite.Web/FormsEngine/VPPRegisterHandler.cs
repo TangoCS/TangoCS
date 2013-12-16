@@ -7,7 +7,7 @@ using Nephrite.Web;
 using Nephrite.Web.ErrorLog;
 using Nephrite.Web.SPM;
 
-namespace Nephrite.Metamodel
+namespace Nephrite.Web.FormsEngine
 {
     public class VPPRegisterHandler : IHttpModule
     {

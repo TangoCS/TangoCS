@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Nephrite.Metamodel
+namespace Nephrite.Web.FormsEngine
 {
 	[AttributeUsage(AttributeTargets.Interface)]
 	public class DynamicClassAttribute : Attribute

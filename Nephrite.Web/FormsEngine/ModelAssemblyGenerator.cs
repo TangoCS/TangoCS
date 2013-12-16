@@ -10,7 +10,6 @@ using System.Data.SqlClient;
 using System.Security;
 using Microsoft.CSharp;
 using System.CodeDom.Compiler;
-using Nephrite.Metamodel.Model;
 using System.Xml;
 using System.Text;
 using Microsoft.VisualStudio.TextTemplating;
@@ -20,8 +19,9 @@ using Nephrite.Web.SPM;
 using System.Xml.Xsl;
 using Nephrite.Web.FileStorage;
 using Nephrite.Meta;
+using Nephrite.Web.MetaStorage;
 
-namespace Nephrite.Metamodel
+namespace Nephrite.Web.FormsEngine
 {
 	public class ModelAssemblyGenerator
 	{
@@ -36,7 +36,7 @@ namespace Nephrite.Metamodel
 					return ConfigurationManager.AppSettings["ModelNamespace"] + ".Model.dll";
 				if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["ModelAssembly"]))
 					return ConfigurationManager.AppSettings["ModelNamespace"] + ".dll";
-				return AppMM.DBName() + ".Model.dll";
+				return AppWeb.AppNamespace + ".Model.dll";
 			}
 		}
 
@@ -46,7 +46,7 @@ namespace Nephrite.Metamodel
 			{
 				if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["ModelAssembly"]))
 					return ConfigurationManager.AppSettings["ModelAssembly"] + ".dll";
-				return AppMM.DBName() + ".Model.dll";
+				return AppWeb.AppNamespace + ".Model.dll";
 			}
 		}
 
@@ -68,7 +68,7 @@ namespace Nephrite.Metamodel
 
 		public static string CreateModelDll(bool debug)
 		{
-			var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => o.IsSeparateTable && !o.IsTemplate).OrderBy(o => o.SysName).ToList();
+			var objectTypes = ((IDC_MetaStorage)A.Model).IMM_ObjectType.Where(o => o.IsSeparateTable && !o.IsTemplate).OrderBy(o => o.SysName).ToList();
 			var otherfiles = FileStorageManager.DbFiles.Where(o => o.Path.StartsWith(SourceFolder) && !o.IsDeleted).ToList();
 			
 			// Создать временный каталог
@@ -112,10 +112,10 @@ namespace Nephrite.Metamodel
 			
 			cp.CompilerOptions = "/target:library /optimize";
 
-			string res = " /resource:\"" + TempDir + "\\model.dbml\"," + AppMM.DBName() + ".Model.model.dbml";
+			string res = " /resource:\"" + TempDir + "\\model.dbml\"," + AppWeb.AppNamespace + ".Model.model.dbml";
 			cp.CompilerOptions += res;
-			if (File.Exists(TempDir + "\\..\\" + AppMM.DBName() + ".snk"))
-				cp.CompilerOptions += " /keyfile:\"" + TempDir + "\\..\\..\\" + AppMM.DBName() + ".snk\"";
+			if (File.Exists(TempDir + "\\..\\" + AppWeb.AppNamespace + ".snk"))
+				cp.CompilerOptions += " /keyfile:\"" + TempDir + "\\..\\..\\" + AppWeb.AppNamespace + ".snk\"";
 			cp.IncludeDebugInformation = debug;
 
 			if (Url.Current.GetString("platform") != "")
@@ -202,7 +202,7 @@ namespace Nephrite.Metamodel
 					Config.ElevatedAccessAccountPassword))
 				{
 
-					string args = String.Format("/u \"{0}\"", String.IsNullOrEmpty(ConfigurationManager.AppSettings["ModelAssembly"]) ? AppMM.DBName() + ".Model" : ConfigurationManager.AppSettings["ModelAssembly"]);
+					string args = String.Format("/u \"{0}\"", String.IsNullOrEmpty(ConfigurationManager.AppSettings["ModelAssembly"]) ? AppWeb.AppNamespace + ".Model" : ConfigurationManager.AppSettings["ModelAssembly"]);
 					Process gu = new Process();
 					gu.StartInfo = new ProcessStartInfo(gacutilpath, args);
 					gu.StartInfo.UseShellExecute = false;
@@ -247,7 +247,7 @@ namespace Nephrite.Metamodel
 		static string GenerateFromTemplate(string tempdir, string templateName)
 		{
 			Engine eng = new Engine();
-			Nephrite.Metamodel.TextTransform.Host host = new Nephrite.Metamodel.TextTransform.Host();
+			Host host = new Host();
 			host.CompilerVersion = "v4.0";// Config.CompilerVersion;
 			host.TemplateFile = templateName + ".tt";
 			File.WriteAllText(tempdir + "\\" + templateName + ".cs",
@@ -302,7 +302,7 @@ namespace Nephrite.Metamodel
 		//	// Сгенерировать DML и CS
 		//	string smname = Config.SqlMetalPath;
 		//	string smargs = String.Format("/conn:\"{0}\" /sprocs /functions /views /dbml:\"{1}\\model.dbml\" /namespace:{2}.Model /context:modelDataContext",
-		//		ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString, TempDir, AppMM.DBName());
+		//		ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString, TempDir, AppWeb.AppNamespace);
 		//	Process sqlmetal = new Process();
 		//	sqlmetal.StartInfo = new ProcessStartInfo(smname, smargs);
 		//	sqlmetal.Start();
@@ -485,7 +485,7 @@ namespace Nephrite.Metamodel
 		//	doc.Save(TempDir + "\\model.dbml");
 
 		//	smargs = String.Format("/code:\"{0}\\model.cs\" /namespace:{1}.Model /context:modelDataContext \"{0}\\model.dbml\"",
-		//		TempDir, AppMM.DBName());
+		//		TempDir, AppWeb.AppNamespace);
 
 		//	sqlmetal = new Process();
 		//	sqlmetal.StartInfo = new ProcessStartInfo(smname, smargs);
@@ -514,7 +514,7 @@ namespace Nephrite.Metamodel
 			if (Directory.Exists(TempDir))
 				Array.ForEach((new DirectoryInfo(TempDir)).GetFiles(), o => { o.Delete(); });
 			
-			var xe = AppMM.DataContext.usp_model();
+			var xe = A.MetaXml;
 			//var res1 = res.FirstOrDefault();
 			//var xe = res1.Column1;
 			xe.Save(TempDir + "\\model.xml");
@@ -564,7 +564,7 @@ namespace Nephrite.Metamodel
 			//var res1 = res.FirstOrDefault();
 			//var xe = res1.Column1;
 
-			var xe = AppMM.DataContext.usp_model();
+			var xe = A.MetaXml;
 			xe.Save(TempDir + "\\model.xml");
 
 			// Генерация по шаблонам XSLT

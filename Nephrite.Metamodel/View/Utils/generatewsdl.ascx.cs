@@ -22,7 +22,7 @@ namespace Nephrite.Metamodel.View.Utils
             SetTitle("Генерация Web Service Reference");
 
             if (!IsPostBack)
-                tbNamespace.Text = AppMM.DBName() + "Service";
+                tbNamespace.Text = AppWeb.AppNamespace + "Service";
 
             //BackButton.Url = Html.ActionUrl<UtilsController>(c => c.Utils());
         }

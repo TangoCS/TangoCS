@@ -8,7 +8,7 @@ using System.IO;
 using Nephrite.Web;
 using System.Configuration;
 
-namespace Nephrite.Metamodel.TextTransform
+namespace Nephrite.Web.FormsEngine
 {
     public class Host : ITextTemplatingEngineHost
     {
@@ -43,7 +43,7 @@ namespace Nephrite.Metamodel.TextTransform
             var d = AppDomain.CreateDomain("Nephrite.Metamodel Generation App Domain");
             d.SetData("ConnectionString", ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString);
             d.SetData("ObjectTypeSysName", ObjectTypeSysName);
-            d.SetData("DbName", AppMM.DBName());
+			d.SetData("DbName", AppWeb.AppNamespace);
 			d.SetData("ModelPath", Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "_temp\\model.xml"));
             return d;
         }

@@ -10,8 +10,9 @@ using Nephrite.Web;
 using Nephrite.Web.ErrorLog;
 using Nephrite.Web.SettingsManager;
 using Nephrite.Web.SPM;
+using Nephrite.Web.MetaStorage;
 
-namespace Nephrite.Metamodel
+namespace Nephrite.Web.FormsEngine
 {
     public class MView : Control
     {
@@ -44,7 +45,12 @@ namespace Nephrite.Metamodel
 								PackageSysName = packageViewLocation[PackageViewFormSysName];
 							else
 							{
-								PackageSysName = AppMM.DataContext.MM_FormViews.Where(o => o.MM_ObjectType == null && o.SysName == PackageViewFormSysName).Select(o => o.MM_Package.SysName).FirstOrDefault() ?? "";
+								var dc = ((IDC_MetaStorage)A.Model);
+								PackageSysName = (from fv in dc.IMM_FormView
+												 from p in dc.IMM_Package
+													where fv.ObjectTypeID == null && fv.SysName == PackageViewFormSysName
+													 && fv.PackageID == p.PackageID
+												select p.SysName).FirstOrDefault() ?? "";
 								packageViewLocation[PackageViewFormSysName] = PackageSysName;
 							}
 						}

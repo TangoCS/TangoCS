@@ -24,7 +24,7 @@ using Nephrite.Web;
 using Nephrite.Web.SPM;
 using Nephrite.Metamodel;
 
-namespace <#= AppMM.DBName() #>.Model
+namespace <#= AppWeb.AppNamespace #>.Model
 {
 <#  foreach (var cls in objectTypesWithWorkflow)
     {#>
@@ -76,7 +76,7 @@ namespace <#= AppMM.DBName() #>.Model
         {
             get 
             {
-                return <#= AppMM.DBName() #>.<#= prop.MM_Codifier.SysName #>.Title(<#= prop.SysName #>);
+                return <#= AppWeb.AppNamespace #>.<#= prop.MM_Codifier.SysName #>.Title(<#= prop.SysName #>);
             }
         }
 <#		}

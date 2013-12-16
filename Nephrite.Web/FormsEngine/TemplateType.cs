@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using Nephrite.Web;
 
-namespace Nephrite.Metamodel
+namespace Nephrite.Web.FormsEngine
 {
     public class TemplateType
     {

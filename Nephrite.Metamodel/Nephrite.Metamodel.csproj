@@ -101,7 +101,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Controls\ListExport.ascx" />
-    <Content Include="View\Theme\view.ascx" />
     <Content Include="View\Utils\generatedb.ascx" />
     <Content Include="View\Utils\generatewsdl.ascx" />
     <Content Include="View\Utils\runup.ascx" />
@@ -118,8 +117,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>predicates.cs</LastGenOutput>
     </EmbeddedResource>
-    <Compile Include="Compilation\CompileConfig.designer.cs" />
-    <Compile Include="Controllers\ThemeController.cs" />
     <Compile Include="Controllers\UtilsController.cs" />
     <Compile Include="Controls\ListExport.ascx.cs">
       <DependentUpon>ListExport.ascx</DependentUpon>
@@ -128,10 +125,6 @@
     <Compile Include="Controls\ListExport.ascx.designer.cs">
       <DependentUpon>ListExport.ascx</DependentUpon>
     </Compile>
-    <Compile Include="DynamicClassActivator.cs" />
-    <Compile Include="DynamicClassAttribute.cs" />
-    <Compile Include="FormsVirtualFile.cs" />
-    <Compile Include="FormsVirtualPathProvider.cs" />
     <Compile Include="FormViewControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -142,7 +135,6 @@
     <Compile Include="ISiteMapProvider.cs" />
     <Compile Include="MMObjectExtensions.cs" />
     <Compile Include="MMSettings.cs" />
-    <Compile Include="ModelAssemblyGenerator.cs" />
     <Compile Include="Model\FormViewCacheKeyInfo.cs" />
     <Compile Include="Model\HMapping.cs" />
     <Compile Include="Model\HMMDataContext.cs" />
@@ -159,24 +151,12 @@
       <DependentUpon>model.dbml</DependentUpon>
     </Compile>
     <Compile Include="Model\modelDataContextPartial.cs" />
-    <Compile Include="Model\Theme.cs" />
     <Compile Include="Model\_ModelObjectsTitles.cs" />
-    <Compile Include="MView.cs" />
     <Compile Include="ObjectPropertyType.cs" />
     <Compile Include="Repository.cs" />
-    <Compile Include="TemplateType.cs" />
-    <Compile Include="TextTransform\CodeGen.cs" />
-    <Compile Include="TextTransform\Host.cs" />
     <Compile Include="Model\_ModelObjects.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MenuItemType.cs" />
-    <Compile Include="View\Theme\view.ascx.cs">
-      <DependentUpon>view.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="View\Theme\view.ascx.designer.cs">
-      <DependentUpon>view.ascx</DependentUpon>
-    </Compile>
     <Compile Include="View\Utils\generatedb.ascx.cs">
       <DependentUpon>generatedb.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -198,8 +178,6 @@
     <Compile Include="View\Utils\runup.ascx.designer.cs">
       <DependentUpon>runup.ascx</DependentUpon>
     </Compile>
-    <Compile Include="VPPRegisterHandler.cs" />
-    <Compile Include="WebSiteCache.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Model\model.dbml">
@@ -277,9 +255,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>setcurrentclassversion.cs</LastGenOutput>
     </Content>
-    <None Include="Compilation\CompileConfig.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Model\model.dbml.layout">
       <DependentUpon>model.dbml</DependentUpon>
     </None>

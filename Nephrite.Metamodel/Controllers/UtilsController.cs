@@ -36,7 +36,7 @@ namespace Nephrite.Metamodel.Controllers
 
 		//public void DbReportWord()
 		//{
-		//    RenderWordDoc("dbreport", AppMM.DBName() + "_dbreport.doc");
+		//    RenderWordDoc("dbreport", AppWeb.AppNamespace + "_dbreport.doc");
 		//}
 
 		//public void SpmTable()

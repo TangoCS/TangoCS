@@ -17,9 +17,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Nephrite.Web;
-using <#= AppMM.DBName() #>.Model;
+using <#= AppWeb.AppNamespace #>.Model;
 
-namespace <#= AppMM.DBName() #>.Controllers
+namespace <#= AppWeb.AppNamespace #>.Controllers
 {
 <#	foreach (var cls in objectTypes.Where(o => o.MM_Methods.Any()))
 	{
@@ -156,13 +156,13 @@ namespace <#= AppMM.DBName() #>.Controllers
     {
 		string pc = String.IsNullOrEmpty(method.PredicateCode) ? "return true;" : method.PredicateCode;
 #>
-        public static bool Predicate<#= method.SysName #>(<#= AppMM.DBName() #>.Model.<#= clsname #> obj)
+        public static bool Predicate<#= method.SysName #>(<#= AppWeb.AppNamespace #>.Model.<#= clsname #> obj)
         {
 			if (!Nephrite.Web.SPM.SPM2.Enabled) return true;
             <#= pc #>
         }
 <# 	if(ishstcls){ #>
-        public static bool Predicate<#= method.SysName #>(<#= AppMM.DBName() #>.Model.<#= cls.SysName #> obj)
+        public static bool Predicate<#= method.SysName #>(<#= AppWeb.AppNamespace #>.Model.<#= cls.SysName #> obj)
         {
 			if (!Nephrite.Web.SPM.SPM2.Enabled) return true;
             <#= pc #>

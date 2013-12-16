@@ -13,6 +13,7 @@ using System.Reflection;
 using System.Xml.Linq;
 using System.Collections;
 using Nephrite.Web.Controls;
+using System.Configuration;
 
 
 namespace Nephrite.Web
@@ -66,6 +67,14 @@ namespace Nephrite.Web
 		{
 			get { return Convert.ToBoolean(HttpContext.Current.Items["IsRouting"]); }
 			set { HttpContext.Current.Items["IsRouting"] = value; }
+		}
+
+		public static string AppNamespace
+		{
+			get
+			{
+				return ConfigurationManager.AppSettings["ModelNamespace"];
+			}
 		}
 	}
 

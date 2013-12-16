@@ -17,9 +17,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Nephrite.Web;
-using <#= AppMM.DBName() #>.Model;
+using <#= AppWeb.AppNamespace #>.Model;
 
-namespace <#= AppMM.DBName() #>.Controllers
+namespace <#= AppWeb.AppNamespace #>.Controllers
 {
 <#	foreach (var cls in objectTypes.Where(o => o.MM_Methods.Any() && o.MM_ObjectProperties.Any(o1 => o1.SysName == "Activity" && o1.RefObjectType.SysName == "WF_Activity")))
 	{#>

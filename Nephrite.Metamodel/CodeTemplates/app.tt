@@ -18,35 +18,35 @@ using System.Web;
 using Nephrite.Metamodel;
 using Nephrite.Web;
 using Nephrite.Web.SPM;
-using <#= AppMM.DBName() #>.Model;
+using <#= AppWeb.AppNamespace #>.Model;
 
-namespace <#= AppMM.DBName() #>
+namespace <#= AppWeb.AppNamespace #>
 {
     public static partial class App
     {
         [ThreadStatic]
-		static <#= AppMM.DBName() #>.Model.modelDataContext context = null;
+		static <#= AppWeb.AppNamespace #>.Model.modelDataContext context = null;
 
-		public static <#= AppMM.DBName() #>.Model.modelDataContext DataContext
+		public static <#= AppWeb.AppNamespace #>.Model.modelDataContext DataContext
         {
             get
             {
                 if (HttpContext.Current != null)
 				{
-					if (System.Web.HttpContext.Current.Items["<#= AppMM.DBName() #>DataContext"] == null)
+					if (System.Web.HttpContext.Current.Items["<#= AppWeb.AppNamespace #>DataContext"] == null)
 					{
-						var dc = new <#= AppMM.DBName() #>.Model.modelDataContext(Nephrite.Web.ConnectionManager.Connection);
+						var dc = new <#= AppWeb.AppNamespace #>.Model.modelDataContext(Nephrite.Web.ConnectionManager.Connection);
 						dc.CommandTimeout = 300;
-						System.Web.HttpContext.Current.Items["<#= AppMM.DBName() #>DataContext"] = dc;
+						System.Web.HttpContext.Current.Items["<#= AppWeb.AppNamespace #>DataContext"] = dc;
 						dc.Log = new DataContextLogWriter();
 					}
-					return (<#= AppMM.DBName() #>.Model.modelDataContext)System.Web.HttpContext.Current.Items["<#= AppMM.DBName() #>DataContext"];
+					return (<#= AppWeb.AppNamespace #>.Model.modelDataContext)System.Web.HttpContext.Current.Items["<#= AppWeb.AppNamespace #>DataContext"];
 				}
 				else
 				{
 					if (context == null)
 					{
-						context = new <#= AppMM.DBName() #>.Model.modelDataContext(Nephrite.Web.ConnectionManager.Connection);
+						context = new <#= AppWeb.AppNamespace #>.Model.modelDataContext(Nephrite.Web.ConnectionManager.Connection);
 						context.Log = new DataContextLogWriter();
 						context.CommandTimeout = 300;
 					}
@@ -86,9 +86,9 @@ namespace <#= AppMM.DBName() #>
 			bool ishstcls = v != null && (v.VersioningType == VersioningType.IdentifiersRetain || v.VersioningType == VersioningType.IdentifiersMiss);
 			var clsprefix = cls.IsMultiLingual ? (ishstcls ? "V_HST_" : "V_") : (ishstcls ? "HST_" :"");
 		#>
-		public IQueryable<<#= AppMM.DBName() #>.Model.<#=clsprefix + cls.Name#>> <#=cls.Name#> 
+		public IQueryable<<#= AppWeb.AppNamespace #>.Model.<#=clsprefix + cls.Name#>> <#=cls.Name#> 
 		{
-			get { return (new <#= AppMM.DBName() #>.Controllers.<#=cls.Name#>Controller()).GetList(); }
+			get { return (new <#= AppWeb.AppNamespace #>.Controllers.<#=cls.Name#>Controller()).GetList(); }
 		}
 <#		}#>
 	}

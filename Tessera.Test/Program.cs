@@ -11,12 +11,15 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 
+
 namespace Tessera.Test
 {
 	class Program
 	{
 		static void Main(string[] args)
 		{
+
+
 			//var fv = AppMM.DataContext.MM_FormViews.Count();
 			//var fv1 = App.DataContext.MM_FormView.Where(o => o.FormViewID == 21).FirstOrDefault();
 			//var ot = fv1.MM_ObjectType.SysName;

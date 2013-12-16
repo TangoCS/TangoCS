@@ -15,7 +15,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Nephrite.Web;
-namespace <#= AppMM.DBName() #>
+namespace <#= AppWeb.AppNamespace #>
 {
 <# 	foreach (var codifier in AppMM.DataContext.MM_Codifiers.ToList()) 
 	{

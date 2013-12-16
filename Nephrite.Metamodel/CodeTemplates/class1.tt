@@ -24,7 +24,7 @@ using Nephrite.Web;
 using Nephrite.Web.SPM;
 using Nephrite.Metamodel;
 
-namespace <#= AppMM.DBName() #>.Model
+namespace <#= AppWeb.AppNamespace #>.Model
 {
 <#  foreach (var cls in objectTypes)
     {#>

@@ -7,7 +7,7 @@ using Nephrite.Web;
 using Nephrite.Web.RSS;
 using Nephrite.Web.SettingsManager;
 
-namespace Nephrite.Metamodel
+namespace Nephrite.Web.FormsEngine
 {
     public class FormsVirtualPathProvider : VirtualPathProvider
     {

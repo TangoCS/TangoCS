@@ -76,13 +76,13 @@ namespace Nephrite.Metamodel
 				ns = assembly.GetName().Name;
 
 
-            /*if (HttpContext.Current.Items[AppMM.DBName() + "DataContext"] == null)
+            /*if (HttpContext.Current.Items[AppWeb.AppNamespace + "DataContext"] == null)
             {
 				db = Activator.CreateInstance(assembly.GetTypes().Single(o => o.Name == "modelDataContext"), ConnectionManager.Connection) as DataContext;
-                HttpContext.Current.Items[AppMM.DBName() + "DataContext"] = db;
+                HttpContext.Current.Items[AppWeb.AppNamespace + "DataContext"] = db;
                 db.Log = new StringWriter();
             }
-            db = (DataContext)HttpContext.Current.Items[AppMM.DBName() + "DataContext"];
+            db = (DataContext)HttpContext.Current.Items[AppWeb.AppNamespace + "DataContext"];
 			db.CommandTimeout = 300;*/
 			db = A.Model;
 

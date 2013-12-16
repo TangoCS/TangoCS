@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Nephrite.Metamodel.Model;
 using Nephrite.Web.SPM;
 using Nephrite.Web;
 using System.Data.Linq;
@@ -10,17 +9,19 @@ using System.IO;
 using Nephrite.Web.FileStorage;
 using Nephrite.Web.SettingsManager;
 using Nephrite.Web.TextResources;
+using Nephrite.Web.MetaStorage;
 
-namespace Nephrite.Metamodel
+namespace Nephrite.Web.FormsEngine
 {
     public static class WebSiteCache
     {
         static Dictionary<string, string> viewKeys = null;
-        static Dictionary<string, MM_FormView> formViews = null;
+        static Dictionary<string, IMM_FormView> formViews = null;
         static Dictionary<string, string> viewPaths = null;
         static object locker = new object();
 		static bool resetKeys;
         static DateTime timeStamp = DateTime.Now;
+		static IDC_MetaStorage dc = (IDC_MetaStorage)A.Model;
 
         public static DateTime TimeStamp { get { return timeStamp; } }
 
@@ -33,10 +34,10 @@ namespace Nephrite.Metamodel
                 formViews = null;
                 HttpContext.Current.Cache.Remove("menuitems");
                 AppSettings.ResetCache();
-                
-                AppMM.DataContext.N_Caches.DeleteAllOnSubmit(AppMM.DataContext.N_Caches);
+
+				dc.IN_Cache.DeleteAllOnSubmit(dc.IN_Cache);
                 AppMM.DataContext.N_Caches.InsertOnSubmit(new Nephrite.Metamodel.Model.N_Cache { TimeStamp = DateTime.Now });
-                AppMM.DataContext.SubmitChanges();
+                A.Model.SubmitChanges();
 				TextResource.ResetCache();
 				MView.ResetCache();
 				DynamicClassActivator.Clear();
@@ -51,7 +52,7 @@ namespace Nephrite.Metamodel
 			//	getN_Caches = CompiledQuery.Compile<MMDataContext, Nephrite.Metamodel.Model.N_Cache>(db =>
 			//			db.N_Caches.FirstOrDefault());
 
-			var stamp = AppMM.DataContext.N_Caches.FirstOrDefault();
+			var stamp = dc.IN_Cache.FirstOrDefault();
             if (stamp != null)
             {
                 if (timeStamp < stamp.TimeStamp)
@@ -88,8 +89,8 @@ namespace Nephrite.Metamodel
                 {
                     if (stamp == null)
                     {
-                        AppMM.DataContext.N_Caches.InsertOnSubmit(new Nephrite.Metamodel.Model.N_Cache { TimeStamp = DateTime.Now });
-                        AppMM.DataContext.SubmitChanges();
+						dc.IN_Cache.InsertOnSubmit(new Nephrite.Metamodel.Model.N_Cache { TimeStamp = DateTime.Now });
+                        A.Model.SubmitChanges();
                     }
                 }
             }
@@ -103,7 +104,7 @@ namespace Nephrite.Metamodel
 
 			return formViews.ContainsKey(controlPath.ToLower());
 		}
-        public static MM_FormView GetView(string controlPath)
+        public static IMM_FormView GetView(string controlPath)
         {
 			if (formViews == null)
 				GetViewCacheKey("");
@@ -118,12 +119,12 @@ namespace Nephrite.Metamodel
             return formViews[controlPath.ToLower()];
         }
 
-		public static MM_FormView GetView(string className, string sysName)
+		public static IMM_FormView GetView(string className, string sysName)
 		{
 			return GetView(GetViewPath(className, sysName));
 		}
 
-		public static MM_FormView GetPackageView(string sysName)
+		public static IMM_FormView GetPackageView(string sysName)
 		{
 			return GetView(GetViewPath(sysName));
 		}
@@ -146,8 +147,8 @@ namespace Nephrite.Metamodel
 							DateTime dllCreateDate = File.GetLastWriteTime(dllName);
 							
 							var viewKeys1 = new Dictionary<string, string>();
-							var formViews1 = new Dictionary<string, MM_FormView>();
-							foreach (var v in AppMM.DataContext.MM_FormViews.ToList())
+							var formViews1 = new Dictionary<string, IMM_FormView>();
+							foreach (var v in ((IDC_MetaStorage)A.Model).IMM_FormView.ToList())
 							{
 								viewKeys1.Add(v.ControlPath.ToLower(), v.FormViewID.ToString() + "_" + dllCreateDate.Ticks.ToString() + "_" + v.LastModifiedDate.Ticks.ToString());
 								formViews1.Add(v.ControlPath.ToLower(), v);

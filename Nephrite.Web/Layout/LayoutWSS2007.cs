@@ -544,7 +544,16 @@ namespace Nephrite.Web.Layout
 					baseUrl = baseUrl.SetParameter("page", (pageIndex - 1).ToString());
 					sb.AppendFormat(s, baseUrl, Settings.ImagesPath, "prev", pageIndex - 1);
 				}
-				sb.AppendFormat(@"{0}&nbsp;<input name=""page"" type=""text"" value=""{1}"" style=""width:40px;"" onkeydown=""javascript:if(event.keyCode==13){{ document.location='{2}&page='+document.forms[0].page.value; return false;}}""/>&nbsp;{4}&nbsp;{3}&nbsp;", TextResource.Get("Common.Paging.Page", Properties.Resources.PagerPage), pageIndex, baseUrl.RemoveParameter("page"), pageCount, TextResource.Get("Common.Paging.From", "из"));
+				string bu = baseUrl.RemoveParameter("page");
+				if (!bu.EndsWith("&") && !bu.EndsWith("?"))
+				{
+					if (bu.Contains('?'))
+						bu += "&";
+					else
+						bu += "?";
+				}
+				bu += "page=";
+				sb.AppendFormat(@"{0}&nbsp;<input name=""page"" type=""text"" value=""{1}"" style=""width:40px;"" onkeydown=""javascript:if(event.keyCode==13){{ document.location='{2}'+document.forms[0].page.value; return false;}}""/>&nbsp;{4}&nbsp;{3}&nbsp;", TextResource.Get("Common.Paging.Page", Properties.Resources.PagerPage), pageIndex, bu, pageCount, TextResource.Get("Common.Paging.From", "из"));
 				if (pageIndex < pageCount)
 				{
 					baseUrl = baseUrl.SetParameter("page", (pageIndex + 1).ToString());

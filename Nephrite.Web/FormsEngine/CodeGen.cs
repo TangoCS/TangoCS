@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Nephrite.Metamodel.Model;
+using Nephrite.Web.MetaStorage;
 
-namespace Nephrite.Metamodel.TextTransform
+namespace Nephrite.Web.FormsEngine
 {
     public static class CodeGen
     {
-        public static MM_ObjectType GetObjectType(string defaultSysName)
+        public static IMM_ObjectType GetObjectType(string defaultSysName)
         {
             string sysName = (string)AppDomain.CurrentDomain.GetData("ObjectTypeSysName") ?? defaultSysName;
-            return AppMM.DataContext.MM_ObjectTypes.Single(o => o.SysName.ToUpper() == sysName.ToUpper());
+			return ((IDC_MetaStorage)A.Model).IMM_ObjectType.Single(o => o.SysName.ToUpper() == sysName.ToUpper());
         }
     }
 }

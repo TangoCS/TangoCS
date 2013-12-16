@@ -18,9 +18,9 @@ using System.Linq;
 using System.Web;
 using Nephrite.Web;
 using Nephrite.Metamodel.Controllers;
-using <#= AppMM.DBName() #>.Model;
+using <#= AppWeb.AppNamespace #>.Model;
 
-namespace <#= AppMM.DBName() #>.Controllers
+namespace <#= AppWeb.AppNamespace #>.Controllers
 {
 <#	foreach (var pck in pcks)
 	{	#>
