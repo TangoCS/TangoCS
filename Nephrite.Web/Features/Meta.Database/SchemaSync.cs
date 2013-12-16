@@ -116,7 +116,7 @@ namespace Nephrite.Meta.Database
 
 
 				//3 Обновляем primaryKey
-				if ((PrimaryKey == null || PrimaryKey.Columns.Count()==0) && srcTable.PrimaryKey != null)
+				if ((PrimaryKey == null || PrimaryKey.Columns.Count() == 0) && srcTable.PrimaryKey != null)
 					script.CreatePrimaryKey(srcTable.PrimaryKey);
 				else
 				{
@@ -145,7 +145,7 @@ namespace Nephrite.Meta.Database
 
 
 
-				if (script is DBScriptDB2)
+				if (script.GetType().ToString() == "Nephrite.Meta.Database.DBScriptDB2")
 					return;
 				//4 Обновляем trigger
 				var currentTriggers = this.Triggers;

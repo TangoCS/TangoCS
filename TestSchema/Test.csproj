@@ -58,6 +58,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Nephrite.Meta.Database.DB2\Nephrite.Meta.Database.DB2.csproj">
+      <Project>{b54dba5f-cde1-4e9a-b4fc-ac9e14b667fa}</Project>
+      <Name>Nephrite.Meta.Database.DB2</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
       <Project>{26a68254-0902-4499-8b5f-6b4b6341ba21}</Project>
       <Name>Nephrite.Web</Name>
