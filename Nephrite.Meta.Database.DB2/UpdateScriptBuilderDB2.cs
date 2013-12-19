@@ -392,12 +392,17 @@ namespace Nephrite.Meta.Database
 			result.AppendFormat("DELETE FROM  {1}.{0} ;\r\n", table.ToUpper(), _schema.Name);
 		}
 
+		public List<string> dd {
+			get { return _dd; }
+		}
+		private List<string> _dd  = new List<string>();
 		void InsertMain(string table)
 		{
+			
 			if (!_schema.Tables.Values.Any(t => t.Name.ToUpper() == table.ToUpper()))
 				return;
 
-
+			_dd.Add(table);
 			var currentTable = _schema.Tables.SingleOrDefault(t => t.Key.ToUpper() == table.ToUpper()).Value;
 			bool hasIdentity = currentTable.Identity;
 

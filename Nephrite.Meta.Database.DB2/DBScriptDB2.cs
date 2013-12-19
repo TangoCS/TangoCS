@@ -44,25 +44,25 @@ namespace Nephrite.Meta.Database
 		public void CreateTable(Table srcTable)
 		{
 
-			var tableScript = string.Format("CREATE TABLE \"{2}\".\"{0}\" ({1})  ;\r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {2}.{0}' ); \r\n  ", srcTable.Name.ToUpper(), "{0} ;", _SchemaName);// {0}- Название таблицы, {1}- Список колонок, {2} - ON [PRIMARY]
+			var tableScript = string.Format("CREATE TABLE {2}.{0} ({1})  ;\r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {2}.{0}' ); \r\n  ", srcTable.Name.ToUpper(), "{0}", _SchemaName);// {0}- Название таблицы, {1}- Список колонок, {2} - ON [PRIMARY]
 			var columnsScript =
 				srcTable.Columns.Aggregate(string.Empty,
 										   (current, srcColumn) =>
 										   current +
-										   (string.IsNullOrEmpty(srcColumn.Value.ComputedText) ? string.Format("\"{0}\" {1} {2} {3} {4},  \r\n ",
+										   (string.IsNullOrEmpty(srcColumn.Value.ComputedText) ? string.Format("{0} {1} {2} {3} {4},\r\n ",
 														 srcColumn.Value.Name.ToUpper(),
 														 srcColumn.Value.Type.GetDBType(this),
 														 srcColumn.Value.Nullable ? "NULL" : "NOT NULL",
 														 srcColumn.Value.IsPrimaryKey && srcTable.Identity ? "  GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 )" : "",
-														 (!string.IsNullOrEmpty(srcColumn.Value.DefaultValue) ? string.Format(" WITH DEFAULT {0}", srcColumn.Value.DefaultValue) : "")
+														 (!string.IsNullOrEmpty(srcColumn.Value.DefaultValue) ? string.Format(" WITH DEFAULT {0}",GetDefaultValue(srcColumn.Value.DefaultValue)) : "")
 														) :
 														 string.Format(" {0}  GENERATED ALWAYS AS  (\"{1}\") ", srcColumn.Value.Name.ToUpper(), srcColumn.Value.ComputedText)
-														 )).TrimEnd(',');
+														 )).Trim().TrimEnd(',');
 
 			tableScript = string.Format(tableScript, columnsScript);
 			if (srcTable.ForeignKeys.Count > 0)
 			{
-				var result = srcTable.ForeignKeys.Aggregate("", (current, key) => current + string.Format("ALTER TABLE \"{6}\".\"{0}\"  ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" + "REFERENCES \"{6}\".\"{3}\" ({4}) {5} ;\r\n", srcTable.Name.ToUpper(), key.Value.Name.ToUpper(), string.Join(",", key.Value.Columns).ToUpper(), key.Value.RefTable.ToUpper(), string.Join(",", key.Value.RefTableColumns).ToUpper(), "ON DELETE " + key.Value.DeleteOption.ToString().ToUpper(), _SchemaName));
+				var result = srcTable.ForeignKeys.Aggregate("", (current, key) => current + string.Format("ALTER TABLE {6}.{0}  ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" + "REFERENCES {6}.{3} ({4}) {5} ;\r\n", srcTable.Name.ToUpper(), key.Value.Name.ToUpper(), string.Join(",", key.Value.Columns).ToUpper(), key.Value.RefTable.ToUpper(), string.Join(",", key.Value.RefTableColumns).ToUpper(), "ON DELETE " + key.Value.DeleteOption.ToString().ToUpper(), _SchemaName));
 				_FkScripts.Add(result);
 			}
 
@@ -70,7 +70,7 @@ namespace Nephrite.Meta.Database
 			{
 
 				tableScript += string.Format(
-								   "ALTER TABLE \"{3}\".\"{0}\"\r\n" +
+								   "ALTER TABLE {3}.{0}\r\n" +
 								   "ADD CONSTRAINT {1} PRIMARY KEY ({2})  ;\r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {3}.{0}' ); \r\n", srcTable.Name.ToUpper(),
 													  srcTable.PrimaryKey.Name.ToUpper(),
 													  string.Join(",", srcTable.PrimaryKey.Columns),
@@ -123,7 +123,7 @@ namespace Nephrite.Meta.Database
 			{
 				currentTable.ForeignKeys.Clear();
 			}
-			_MainScripts.Add(string.Format("DROP TABLE \"{1}\".{0}; \r\n ", currentTable.Name.ToUpper(), _SchemaName));
+			_MainScripts.Add(string.Format("DROP TABLE {1}.{0}; \r\n ", currentTable.Name.ToUpper(), _SchemaName));
 		}
 
 		public void CreateForeignKey(ForeignKey srcforeignKey)
@@ -131,8 +131,8 @@ namespace Nephrite.Meta.Database
 			var srcTable = srcforeignKey.CurrentTable;
 			_FkScripts.Add(
 				string.Format(
-					"ALTER TABLE \"{6}\".\"{0}\"  ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" +
-					"REFERENCES \"{6}\".\"{3}\" ({4}) {5} ;\r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {6}.{0}' ); \r\n", srcTable.Name.ToUpper(), srcforeignKey.Name.ToUpper(), string.Join(",", srcforeignKey.Columns).ToUpper(),
+					"ALTER TABLE {6}.{0}  ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" +
+					"REFERENCES {6}.{3} ({4}) {5} ;\r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {6}.{0}' ); \r\n", srcTable.Name.ToUpper(), srcforeignKey.Name.ToUpper(), string.Join(",", srcforeignKey.Columns).ToUpper(),
 					srcforeignKey.RefTable.ToUpper(), string.Join(",", srcforeignKey.RefTableColumns).ToUpper(), "ON DELETE " + srcforeignKey.DeleteOption.ToString().ToUpper(),
 					_SchemaName));
 
@@ -338,10 +338,7 @@ namespace Nephrite.Meta.Database
 
 		public string GetStringType(int length)
 		{
-			if (length == -1)
-				return string.Format("CLOB({0})", length == -1 ? "32000" : length.ToString());
-			else
-				return string.Format("VARCHAR({0})", length == -1 ? "32000" : length.ToString());
+	         return string.Format("VARCHAR({0})", length == -1 ? "32000" : length.ToString());
 		}
 
 		public string GetDecimalType(int precision, int scale)
@@ -473,62 +470,68 @@ namespace Nephrite.Meta.Database
 
 		public void AddComputedColumn(Column srcColumn)
 		{
+			
 			var currentTable = srcColumn.CurrentTable;
+
+			if (currentTable.Name.ToUpper() == "C_POSTPART")
+			{
+
+			}
 			var computedText = "";
 			switch (srcColumn.ComputedText)
 			{
 				case "(isnull(([Surname]+isnull((' '+substring([Firstname],(1),(1)))+'.',''))+isnull((' '+substring([Patronymic],(1),(1)))+'.',''),''))":
 					computedText =
-						"AS ((COALESCE((SURNAME+COALESCE((' '+substring(FIRSTNAME,1,1, OCTETS))+'.',''))+COALESCE((' '+substring(PATRONYMIC,1,1, OCTETS))+'.',''),'')))";
+						"AS ((COALESCE((SURNAME || COALESCE((' ' ||substring(FIRSTNAME,1,1, OCTETS)) || '.','')) || COALESCE((' ' || substring(PATRONYMIC,1,1, OCTETS)) || '.',''),'')))";
 					break;
 				case "(([Surname]+isnull(' '+[Firstname],''))+isnull(' '+[Patronymic],''))":
 					computedText =
-						"AS ((SURNAME+COALESCE(' '+FIRSTNAME,''))+COALESCE(' '+PATRONYMIC,''))";
+						"AS ((SURNAME || COALESCE(' ' || FIRSTNAME,'')) || COALESCE(' ' || PATRONYMIC,''))";
 					break;
 				case "((((([Surname]+isnull(' '+[Firstname],''))+isnull(' '+[Patronymic],''))+' ')+CONVERT([nvarchar],[Birthdate],(104)))+isnull(', '+[RFSubjectText],''))":
-					computedText = "AS (((((SURNAME+COALESCE(' '+FIRSTNAME,''))+COALESCE(' '+PATRONYMIC,''))+' ')+VARCHAR_FORMAT(BIRTHDATE, 'YYYY-MM-DD')  )+COALESCE(', '+RFSUBJECTTEXT,''))";
+					computedText = "AS (((((SURNAME || COALESCE(' ' || FIRSTNAME,'')) || COALESCE(' ' || PATRONYMIC,'')) || ' ') || VARCHAR_FORMAT(BIRTHDATE, 'YYYY-MM-DD')  ) || COALESCE(', ' || RFSUBJECTTEXT,''))";
 					break;
 				case "('от '+isnull(CONVERT([nvarchar],[ComplaintDate],(120)),'<дата не задана>'))":
-					computedText = "AS ('от '+COALESCE(VARCHAR_FORMAT(COMPLAINTDATE, 'YYYY-MM-DD'),'<дата не задана>'))";
+					computedText = "AS ('от ' || COALESCE(VARCHAR_FORMAT(COMPLAINTDATE, 'YYYY-MM-DD'),'<дата не задана>'))";
 					break;
-				case "(([HouseNum]+isnull(nullif(', корп. '+[BuildNum],', корп. '),''))+isnull(nullif(', стр. '+[StrucNum],', стр. '),''))":
-					computedText = "AS ((HOUSENUM + COALESCE(nullif(', корп. '+BUILDNUM,', корп. '),''))+COALESCE(nullif(', стр. '+STRUCNUM,', стр. '),''))";
+				case "(([HouseNum]+isnull(nullif(', CONVERT(NVARCHAR,VALUE,корп. '+[BuildNum],', корп. '),''))+isnull(nullif(', стр. '+[StrucNum],', стр. '),''))":
+					computedText = "AS ((HOUSENUM  ||  COALESCE(nullif(', корп. '+BUILDNUM,', корп. '),'')) || COALESCE(nullif(', стр. ' || STRUCNUM,', стр. '),''))";
 					break;
 				case "(((([Part]+'-')+[Subpart])+'-')+[Chapter])":
-					computedText = "AS ((((PART+'-')+SUBPART)+'-')+CHAPTER)";
+					computedText = "AS ((((PART||'-') || SUBPART) || '-') || CHAPTER)";
 					break;
 				case "(((((([Part]+'-')+[Subpart])+'-')+[Chapter])+' ')+isnull([ShortDescription],''))":
-					computedText = "AS ((((((PART+'-')+SUBPART)+'-')+CHAPTER)+' ')+COALESCE(SHORTDESCRIPTION,''))";
+					computedText = "AS ((((((PART || '-') || SUBPART) || '-') || CHAPTER) || ' ') || COALESCE(SHORTDESCRIPTION,''))";
 					break;
 				case "(((CONVERT([nvarchar],[Value],0)+' (')+TITLE)+')')":
-					computedText = "AS (((CHAR(VALUE)+' (')+TITLE)+')')";
+					computedText = "AS (((CHAR(VALUE) || ' (') || TITLE) || ')')";
 					break;
 				case "(((CONVERT([nvarchar],[Value],0)+' ')+[Title])+isnull((' (дата окончания действия '+CONVERT([nvarchar],[EndDate],(104)))+')',''))":
-					computedText = "AS (((CHAR(VALUE)+' ')+TITLE)+COALESCE((' (дата окончания действия '+VARCHAR_FORMAT(ENDDATE, 'YYYY-MM-DD') )+')',''))";
+					computedText = "AS (((CHAR(VALUE) || ' ') || TITLE) || COALESCE((' (дата окончания действия ' || VARCHAR_FORMAT(ENDDATE, 'YYYY-MM-DD') ) || ')',''))";
 					break;
 				case "((CONVERT([nvarchar],[Value],0)+' ')+[ATE])":
-					computedText = "AS ((CHAR(VALUE)+' ')+ATE)";
+					computedText = "AS ((CHAR(VALUE) || ' ') || ATE)";
 					break;
 				case "(CONVERT([nvarchar],[Value],0)+isnull(' '+[Title],''))":
-					computedText = "AS (CHAR(VALUE)+COALESCE(' '+TITLE,''))";
+					computedText = "AS (CHAR(VALUE) || COALESCE(' ' || TITLE,''))";
 					break;
 				case "(isnull(CONVERT([bit],case when [EndDate]>getdate() AND [BeginDate]<getdate() then (0) else (1) end,(0)),(1)))":
 					computedText = "AS (COALESCE(case when ENDDATE> current_date AND BEGINDATE< current_date then 0 else 1 end))";
 					break;
 				case "(((([CitizenSurname]+' ')+[CitizenFirstname])+' ')+[CitizenPatronymic])":
-					computedText = "AS ((((CITIZENSURNAME+' ')+CITIZENFIRSTNAME)+' ')+CITIZENPATRONYMIC)";
+					computedText = "AS ((((CITIZENSURNAME || ' ') || CITIZENFIRSTNAME) || ' ') || CITIZENPATRONYMIC)";
 					break;
 				case "(case when [AssignmentDate] IS NULL then 'Создано' else case when [CompleteDate] IS NULL then isnull([State],'Создано') else case when [OnCheckDate] IS NULL then isnull([State],'Выполнено') else case when [CloseDate] IS NOT NULL then 'Завершено' when [AnnulmentDate] IS NOT NULL then 'Аннулировано' when [SuspendDate] IS NOT NULL then 'Отложено' else 'На проверке' end end end end)":
 					computedText = "AS ((case when ASSIGNMENTDATE IS NULL then 'Создано' else case when COMPLETEDATE IS NULL then COALESCE(STATE,'Создано') else case when ONCHECKDATE IS NULL then COALESCE(STATE,'Выполнено') else case when CLOSEDATE IS NOT NULL then 'Завершено' when ANNULMENTDATE IS NOT NULL then 'Аннулировано' when SUSPENDDATE IS NOT NULL then 'Отложено' else 'На проверке' end end end end))";
 					break;
 				case "(right('000'+CONVERT([nvarchar],[opNo],0),(3))+case [IsTracking] when (1) then '-к' else '' end)":
-					computedText = "AS ((right('000'+CHAR(OPNO),(3))+case ISTRACKING when 1 then '-к' else '' end))";
+					computedText = "AS ((right('000' || CHAR(OPNO),(3)) || case ISTRACKING when 1 then '-к' else '' end))";
 					break;
 				case "((isnull([Surname]+' ','')+isnull(substring([Firstname],(1),(1))+'. ',''))+isnull(substring([Patronymic],(1),(1))+'.',''))":
-					computedText = "AS (((COALESCE(SURNAME+' ','')+COALESCE(substring(FIRSTNAME,1,1,OCTETS)+'. ',''))+COALESCE(substring(Patronymic,1,1,OCTETS)+'.','')))";
+					computedText = "AS (((COALESCE(SURNAME || ' ','') || COALESCE(substring(FIRSTNAME,1,1,OCTETS) || '. ','')) || COALESCE(substring(Patronymic,1,1,OCTETS) || '.','')))";
 					break;
 				case "(([ShortName]+' ')+[OffName])":
-					computedText = "AS ((SHORTNAME+' ')+OFFNAME)";
+					computedText = "AS ((SHORTNAME || ' ') || OFFNAME)";
 					break;
 				default:
 					computedText = srcColumn.ComputedText.Replace("[", "").Replace("]", "").ToUpper();
@@ -538,7 +541,7 @@ namespace Nephrite.Meta.Database
 			_MainScripts.Add(string.Format("SET INTEGRITY FOR {3}.{0} OFF CASCADE DEFERRED;\r\n ALTER TABLE {3}.{0} ADD {1} {4}  GENERATED ALWAYS {2} ; \r\n SET INTEGRITY FOR {3}.{0}  IMMEDIATE CHECKED; CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {3}.{0}' ); \r\n",
 									currentTable.Name.ToUpper(),
 									srcColumn.Name.ToUpper(),
-									computedText.Replace("\"", ""),
+									computedText.Replace("\"", "").Replace("+","||"),
 									_SchemaName,
 									srcColumn.Type.GetDBType(this)
 									));//    // {0}- Название таблицы, {1} - Название колонки, {2} - ComputedText
