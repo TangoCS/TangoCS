@@ -9,6 +9,7 @@ using Nephrite.Web.CalendarDays;
 using Nephrite.Web.Controls;
 using Nephrite.Web.ErrorLog;
 using Nephrite.Web.FileStorage;
+using Nephrite.Web.FormsEngine;
 using Nephrite.Web.Mailer;
 using Nephrite.Web.MetaStorage;
 using Nephrite.Web.Multilanguage;
@@ -396,8 +397,43 @@ namespace Nephrite.Web.CoreDataContext
 
 		public virtual bool IsMultiLingual
 		{
-			get { throw new NotImplementedException(); }
+			get { return ((IDC_MetaStorage)A.Model).IMM_ObjectProperty.Where(o => o.ObjectTypeID == ObjectTypeID).Any(o => o.IsMultilingual); }
 		}
+	}
+
+	public partial class MM_ObjectProperty
+	{
+		public virtual int ObjectPropertyID { get; set; }
+		public virtual string Title { get; set; }
+		public virtual string SysName { get; set; }
+		public virtual int SeqNo { get; set; }
+		public virtual string TypeCode { get; set; }
+		public virtual System.Guid Guid { get; set; }
+		public virtual bool IsMultilingual { get; set; }
+		public virtual bool IsPrimaryKey { get; set; }
+		public virtual bool IsSystem { get; set; }
+		public virtual bool IsNavigable { get; set; }
+		public virtual bool IsAggregate { get; set; }
+		public virtual int LowerBound { get; set; }
+		public virtual int UpperBound { get; set; }
+		public virtual string Expression { get; set; }
+		public virtual bool IsReferenceToVersion { get; set; }
+		public virtual string ValueFilter { get; set; }
+		public virtual System.Nullable<int> Precision { get; set; }
+		public virtual System.Nullable<int> Scale { get; set; }
+		public virtual System.Nullable<int> Length { get; set; }
+		public virtual string DeleteRule { get; set; }
+		public virtual string KindCode { get; set; }
+		public virtual string DefaultDBValue { get; set; }
+		public virtual string Description { get; set; }
+		public virtual bool IsDeleted { get; set; }
+		public virtual System.DateTime LastModifiedDate { get; set; }
+		public virtual int LastModifiedUserID { get; set; }
+		public virtual bool IsIdentity { get; set; }
+
+		public virtual int? RefObjectPropertyID { get; set; }
+		public virtual int ObjectTypeID { get; set; }
+		public virtual int? RefObjectTypeID { get; set; }
 	}
 
 	public partial class MM_FormView : IMM_FormView
@@ -419,15 +455,15 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual Nullable<System.Int32> ObjectTypeID { get; set; }
 		public virtual Nullable<System.Int32> PackageID { get; set; }
 
-
-		public virtual string ControlPath
-		{
-			get { throw new NotImplementedException(); }
-		}
-
 		public virtual string FullTitle
 		{
-			get { throw new NotImplementedException(); }
+			get
+			{
+				if (PackageID.HasValue)
+					return ((IDC_MetaStorage)A.Model).IMM_Package.Where(o => o.PackageID == PackageID).Select(o => o.Title) + "." + Title;
+				else
+					return ((IDC_MetaStorage)A.Model).IMM_ObjectType.Where(o => o.ObjectTypeID == ObjectTypeID).Select(o => o.Title) + "." + Title;
+			}
 		}
 	}
 

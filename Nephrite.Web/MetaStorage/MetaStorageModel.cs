@@ -8,6 +8,7 @@ namespace Nephrite.Web.MetaStorage
 	public interface IDC_MetaStorage
 	{
 		IQueryable<IMM_ObjectType> IMM_ObjectType { get; }
+		IQueryable<IMM_ObjectProperty> IMM_ObjectProperty { get; }
 		IQueryable<IMM_FormView> IMM_FormView { get; }
 		IQueryable<IMM_Package> IMM_Package { get; }
 		IQueryable<IN_Cache> IN_Cache { get; }
@@ -45,6 +46,41 @@ namespace Nephrite.Web.MetaStorage
 		bool IsMultiLingual { get; }
 	}
 
+	public interface IMM_ObjectProperty : IEntity
+	{
+		int ObjectPropertyID { get; set; }
+		string Title { get; set; }
+		string SysName { get; set; }
+		int SeqNo { get; set; }
+		string TypeCode { get; set; }
+		System.Guid Guid { get; set; }
+		bool IsMultilingual { get; set; }
+		bool IsPrimaryKey { get; set; }
+		bool IsSystem { get; set; }
+		bool IsNavigable { get; set; }
+		bool IsAggregate { get; set; }
+		int LowerBound { get; set; }
+		int UpperBound { get; set; }
+		string Expression { get; set; }
+		bool IsReferenceToVersion { get; set; }
+		string ValueFilter { get; set; }
+		System.Nullable<int> Precision { get; set; }
+		System.Nullable<int> Scale { get; set; }
+		System.Nullable<int> Length { get; set; }
+		string DeleteRule { get; set; }
+		string KindCode { get; set; }
+		string DefaultDBValue { get; set; }
+		string Description { get; set; }
+		bool IsDeleted { get; set; }
+		System.DateTime LastModifiedDate { get; set; }
+		int LastModifiedUserID { get; set; }
+		bool IsIdentity { get; set; }
+
+		int? RefObjectPropertyID { get; set; }
+		int ObjectTypeID { get; set; }
+		int? RefObjectTypeID { get; set; }
+	}
+
 	public interface IMM_FormView : IEntity
 	{
 		int FormViewID { get; set; }
@@ -64,7 +100,6 @@ namespace Nephrite.Web.MetaStorage
 		Nullable<System.Int32> ObjectTypeID { get; set; }
 		Nullable<System.Int32> PackageID { get; set; }
 
-		string ControlPath { get; }
 		string FullTitle { get; }
 	}
 

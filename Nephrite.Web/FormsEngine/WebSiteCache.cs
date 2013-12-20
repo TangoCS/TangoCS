@@ -99,7 +99,8 @@ namespace Nephrite.Web.FormsEngine
                 }
             }
         }
-		public static bool IsViewExists(string controlPath)
+
+		/*public static bool IsViewExists(string controlPath)
 		{
 			if (controlPath.EndsWith(".ascx.cs"))
 				controlPath = controlPath.Substring(0, controlPath.Length - 3);
@@ -108,8 +109,9 @@ namespace Nephrite.Web.FormsEngine
 
 			return formViews.ContainsKey(controlPath.ToLower());
 		}
-        public static IMM_FormView GetView(string controlPath)
-        {
+        
+		public static IMM_FormView GetView(string controlPath)
+		{
 			if (formViews == null)
 				GetViewCacheKey("");
 
@@ -118,10 +120,10 @@ namespace Nephrite.Web.FormsEngine
 			if (formViews == null)
 				throw new Exception("formViews не задан");
 
-            if (!formViews.ContainsKey(controlPath.ToLower()))
-                throw new Exception("Представление не существует: " + controlPath);
-            return formViews[controlPath.ToLower()];
-        }
+			if (!formViews.ContainsKey(controlPath.ToLower()))
+				throw new Exception("Представление не существует: " + controlPath);
+			return formViews[controlPath.ToLower()];
+		}
 
 		public static IMM_FormView GetView(string className, string sysName)
 		{
@@ -133,17 +135,17 @@ namespace Nephrite.Web.FormsEngine
 			return GetView(GetViewPath(sysName));
 		}
 
-        public static string GetViewCacheKey(string viewkey)
-        {
+		public static string GetViewCacheKey(string viewkey)
+		{
 			if (viewkey.EndsWith(".cs"))
 				viewkey = viewkey.Substring(0, viewkey.Length - 3);
 			var vk = viewKeys;
 			if (vk == null || resetKeys)
-            {
-                lock (locker)
-                {
-                    if (viewKeys == null || resetKeys)
-                    {
+			{
+				lock (locker)
+				{
+					if (viewKeys == null || resetKeys)
+					{
 						resetKeys = false;
 						try
 						{
@@ -166,20 +168,20 @@ namespace Nephrite.Web.FormsEngine
 							formViews = null;
 							throw e;
 						}
-                    }
+					}
 					vk = viewKeys;
-                }
-            }
+				}
+			}
 
-            if (vk.ContainsKey(viewkey))
-                return vk[viewkey];
+			if (vk.ContainsKey(viewkey))
+				return vk[viewkey];
 
-            return null;
-        }
+			return null;
+		}
 
-        static void initPaths()
-        {
-            GetViewCacheKey("");
+		static void initPaths()
+		{
+			GetViewCacheKey("");
 			lock (locker)
 			{
 				if (viewPaths != null)
@@ -198,34 +200,35 @@ namespace Nephrite.Web.FormsEngine
 					throw e;
 				}
 			}
-        }
+		}
 
-        public static string GetViewPath(string sysName)
-        {
+		public static string GetViewPath(string sysName)
+		{
 			var vp = viewPaths;
 			if (vp == null)
 			{
 				initPaths();
 				vp = viewPaths;
 			}
-            sysName = sysName.ToLower();
+			sysName = sysName.ToLower();
 			if (vp.ContainsKey(sysName))
 				return vp[sysName];
 			throw new Exception("Не найдено представление пакета " + sysName);
-        }
+		}
 
-        public static string GetViewPath(string className, string sysName)
-        {
+		public static string GetViewPath(string className, string sysName)
+		{
 			var vp = viewPaths;
 			if (vp == null)
 			{
 				initPaths();
 				vp = viewPaths;
 			}
-            sysName = className.ToLower() + "_" + sysName.ToLower();
-            if (vp.ContainsKey(sysName))
-                return vp[sysName];
+			sysName = className.ToLower() + "_" + sysName.ToLower();
+			if (vp.ContainsKey(sysName))
+				return vp[sysName];
 			throw new Exception("Не найдено представление " + className + "." + sysName);
-        }
+		}
+		*/
     }
 }

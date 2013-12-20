@@ -22,7 +22,7 @@ namespace Nephrite.Web.FormsEngine
             return base.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
         }
 
-        private bool IsPathVirtual(string virtualPath)
+        /*private bool IsPathVirtual(string virtualPath)
         {
             if (virtualPath.ToLower().StartsWith(controlsPathRoot) && WebSiteCache.IsViewExists(virtualPath))
                 return true;
@@ -40,7 +40,7 @@ namespace Nephrite.Web.FormsEngine
             }
             else
                 return Previous.FileExists(virtualPath);
-        }
+        }*/
 
         public override VirtualDirectory GetDirectory(string virtualDir)
         {
@@ -60,25 +60,25 @@ namespace Nephrite.Web.FormsEngine
             return base.DirectoryExists(virtualDir);
         }
 
-        public override VirtualFile GetFile(string virtualPath)
-        {
-            if (IsPathVirtual(virtualPath))
-                return new FormsVirtualFile(virtualPath);
-            else
-                return Previous.GetFile(virtualPath);
-        }
+		/*public override VirtualFile GetFile(string virtualPath)
+		{
+			if (IsPathVirtual(virtualPath))
+				return new FormsVirtualFile(virtualPath);
+			else
+				return Previous.GetFile(virtualPath);
+		}
         
-        public override string GetCacheKey(string virtualPath)
-        {
-            if (virtualPath.ToLower().EndsWith(".rss.ascx"))
-            {
-                string sysName = virtualPath.ToLower().Replace(".rss.ascx", "").Replace("/", "");
-                var r = (from rf in (A.Model as IDC_RSS).IN_RssFeed
-                     where rf.SysName.ToLower() == sysName
-                     select (DateTime?)rf.LastModifiedDate).SingleOrDefault();
-                if (r != null)
-                    return sysName + "_" + r.Value.Ticks.ToString();
-            }
+		public override string GetCacheKey(string virtualPath)
+		{
+			if (virtualPath.ToLower().EndsWith(".rss.ascx"))
+			{
+				string sysName = virtualPath.ToLower().Replace(".rss.ascx", "").Replace("/", "");
+				var r = (from rf in (A.Model as IDC_RSS).IN_RssFeed
+					 where rf.SysName.ToLower() == sysName
+					 select (DateTime?)rf.LastModifiedDate).SingleOrDefault();
+				if (r != null)
+					return sysName + "_" + r.Value.Ticks.ToString();
+			}
 
 			if (virtualPath.StartsWith(CustomControlManager.Path))
 			{
@@ -90,10 +90,10 @@ namespace Nephrite.Web.FormsEngine
 
 			if (virtualPath.StartsWith(controlsPathRoot + "DynamicMainMenu"))
 				return "DynamicMainMenu" + WebSiteCache.TimeStamp.Ticks.ToString();
-            if (!virtualPath.ToLower().StartsWith(controlsPathRoot))
-                return base.GetCacheKey(virtualPath);
-            return WebSiteCache.GetViewCacheKey(virtualPath.ToLower());
-        }
+			if (!virtualPath.ToLower().StartsWith(controlsPathRoot))
+				return base.GetCacheKey(virtualPath);
+			return WebSiteCache.GetViewCacheKey(virtualPath.ToLower());
+		}*/
     }
 
     public class RssDir : VirtualDirectory

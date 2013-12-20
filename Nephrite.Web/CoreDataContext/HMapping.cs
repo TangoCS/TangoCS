@@ -406,4 +406,136 @@ namespace Nephrite.Web.CoreDataContext
 			Property(x => x.LinkParams);
 		}
 	}
+
+	public class MM_PackageMap : ClassMapping<MM_Package>
+	{
+		public MM_PackageMap()
+		{
+			Schema("dbo");
+			Lazy(true);
+			Id(x => x.PackageID, map => map.Generator(Generators.Identity));
+			Property(x => x.Title, map => map.NotNullable(true));
+			Property(x => x.SysName, map => map.NotNullable(true));
+			Property(x => x.IsDeleted, map => map.NotNullable(true));
+			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
+			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
+			Property(x => x.Guid, map => map.NotNullable(true));
+			Property(x => x.IsDataReplicated, map => map.NotNullable(true));
+			Property(x => x.Version);
+			Property(x => x.SeqNo, map => map.NotNullable(true));
+			Property(x => x.ParentPackageID);
+		}
+	}
+
+	public class MM_ObjectTypeMap : ClassMapping<MM_ObjectType>
+	{
+		public MM_ObjectTypeMap()
+		{
+			Schema("dbo");
+			Lazy(true);
+			Id(x => x.ObjectTypeID, map => map.Generator(Generators.Identity));
+			Property(x => x.Title, map => map.NotNullable(true));
+			Property(x => x.SysName, map => map.NotNullable(true));
+			Property(x => x.IsEnableSPM, map => map.NotNullable(true));
+			Property(x => x.Guid, map => map.NotNullable(true));
+			Property(x => x.IsSeparateTable, map => map.NotNullable(true));
+			Property(x => x.IsTemplate, map => map.NotNullable(true));
+			Property(x => x.TitlePlural);
+			Property(x => x.DefaultOrderBy);
+			Property(x => x.LogicalDelete);
+			Property(x => x.IsReplicate, map => map.NotNullable(true));
+			Property(x => x.IsEnableUserViews, map => map.NotNullable(true));
+			Property(x => x.SecurityPackageSystemName);
+			Property(x => x.IsEnableObjectHistory, map => map.NotNullable(true));
+			Property(x => x.Interface);
+			Property(x => x.HistoryTypeCode, map => map.NotNullable(true));
+			Property(x => x.IsDataReplicated, map => map.NotNullable(true));
+			Property(x => x.IsDeleted, map => map.NotNullable(true));
+			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
+			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
+			Property(x => x.SeqNo, map => map.NotNullable(true));
+			Property(x => x.Description);
+
+			Property(x => x.PackageID);
+			Property(x => x.BaseObjectTypeID);
+		}
+	}
+
+	public class MM_ObjectPropertyMap : ClassMapping<MM_ObjectProperty>
+	{
+
+		public MM_ObjectPropertyMap()
+		{
+			Schema("dbo");
+			Lazy(true);
+			Id(x => x.ObjectPropertyID, map => map.Generator(Generators.Identity));
+			Property(x => x.Title, map => map.NotNullable(true));
+			Property(x => x.SysName, map => map.NotNullable(true));
+			Property(x => x.SeqNo, map => map.NotNullable(true));
+			Property(x => x.TypeCode, map => map.NotNullable(true));
+			Property(x => x.Guid, map => map.NotNullable(true));
+			Property(x => x.IsMultilingual, map => map.NotNullable(true));
+			Property(x => x.IsPrimaryKey, map => map.NotNullable(true));
+			Property(x => x.IsSystem, map => map.NotNullable(true));
+			Property(x => x.IsNavigable, map => map.NotNullable(true));
+			Property(x => x.IsAggregate, map => map.NotNullable(true));
+			Property(x => x.LowerBound, map => map.NotNullable(true));
+			Property(x => x.UpperBound, map => map.NotNullable(true));
+			Property(x => x.Expression);
+			Property(x => x.IsReferenceToVersion, map => map.NotNullable(true));
+			Property(x => x.ValueFilter);
+			Property(x => x.Precision);
+			Property(x => x.Scale);
+			Property(x => x.Length);
+			Property(x => x.DeleteRule, map => map.NotNullable(true));
+			Property(x => x.KindCode, map => map.NotNullable(true));
+			Property(x => x.DefaultDBValue);
+			Property(x => x.Description);
+			Property(x => x.IsDeleted, map => map.NotNullable(true));
+			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
+			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
+			Property(x => x.IsIdentity, map => map.NotNullable(true));
+
+			Property(x => x.ObjectTypeID, map => { map.NotNullable(true);});
+			Property(x => x.RefObjectPropertyID);
+			Property(x => x.RefObjectTypeID);
+
+		}
+	}
+
+	public class MM_FormViewMap : ClassMapping<MM_FormView>
+	{
+		public MM_FormViewMap()
+		{
+			Schema("dbo");
+			Lazy(true);
+			Id(x => x.FormViewID, map => map.Generator(Generators.Identity));
+			Property(x => x.Title, map => map.NotNullable(true));
+			Property(x => x.SysName, map => map.NotNullable(true));
+			Property(x => x.ViewTemplate);
+			Property(x => x.TemplateTypeCode);
+			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
+			Property(x => x.Guid, map => map.NotNullable(true));
+			Property(x => x.IsCustom, map => map.NotNullable(true));
+			Property(x => x.IsDeleted, map => map.NotNullable(true));
+			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
+			Property(x => x.IsCaching, map => map.NotNullable(true));
+			Property(x => x.CacheKeyParams);
+			Property(x => x.CacheTimeout, map => map.NotNullable(true));
+			Property(x => x.BaseClass, map => map.NotNullable(true));
+
+			Property(x => x.ObjectTypeID);
+			Property(x => x.PackageID);
+		}
+	}
+
+	public class N_CacheMap : ClassMapping<N_Cache>
+	{
+		public N_CacheMap()
+		{
+			Schema("dbo");
+			Lazy(true);
+			Property(x => x.TimeStamp, map => map.NotNullable(true));
+		}
+	}
 }

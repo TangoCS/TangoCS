@@ -51,7 +51,13 @@ namespace Nephrite.Web.CoreDataContext
 			l.Add(typeof(N_FilterMap));
 			l.Add(typeof(N_SettingMap));
 			//l.Add(typeof(UserActivityMap));
-			l.Add(typeof(N_RssFeed));
+			l.Add(typeof(N_RssFeedMap));
+
+			l.Add(typeof(MM_FormViewMap));
+			l.Add(typeof(MM_ObjectTypeMap));
+			l.Add(typeof(MM_ObjectPropertyMap));
+			l.Add(typeof(MM_PackageMap));
+			l.Add(typeof(N_CacheMap));
 			return l;
 		}
 
@@ -214,27 +220,33 @@ namespace Nephrite.Web.CoreDataContext
 
 		public IQueryable<IMM_ObjectType> IMM_ObjectType
 		{
-			get { throw new NotImplementedException(); }
+			get { return new HTable<IMM_ObjectType>(this, Session.Query<MM_ObjectType>().Cast<IMM_ObjectType>()); }
 		}
 
 		public IQueryable<IMM_FormView> IMM_FormView
 		{
-			get { throw new NotImplementedException(); }
+			get { return new HTable<IMM_FormView>(this, Session.Query<MM_FormView>().Cast<IMM_FormView>()); }
 		}
 
 		public IQueryable<IMM_Package> IMM_Package
 		{
-			get { throw new NotImplementedException(); }
+			get { return new HTable<IMM_Package>(this, Session.Query<MM_Package>().Cast<IMM_Package>()); }
 		}
 
 		public IQueryable<IN_Cache> IN_Cache
 		{
-			get { throw new NotImplementedException(); }
+			get { return new HTable<IN_Cache>(this, Session.Query<N_Cache>().Cast<IN_Cache>()); }
 		}
 
 		public IN_Cache NewIN_Cache()
 		{
-			throw new NotImplementedException();
+			return new N_Cache();
+		}
+
+
+		public IQueryable<IMM_ObjectProperty> IMM_ObjectProperty
+		{
+			get { return new HTable<IMM_ObjectProperty>(this, Session.Query<MM_ObjectProperty>().Cast<IMM_ObjectProperty>()); }
 		}
 	}
 
