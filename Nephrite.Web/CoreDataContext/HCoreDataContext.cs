@@ -18,13 +18,14 @@ using Nephrite.Web.SettingsManager;
 using Nephrite.Web.UserActivity;
 using Nephrite.Web.RSS;
 using Nephrite.Web.Hibernate;
+using Nephrite.Web.MetaStorage;
 
 namespace Nephrite.Web.CoreDataContext
 {
 
 	public class HCoreDataContext : HDataContext, 
 		IDC_TimeZone, IDC_ListFilter, IDC_FileStorage, IDC_CalendarDays, IDC_Mailer,
-		IDC_TextResources, IDC_Multilanguage, IDC_TaskManager, IDC_Settings, IDC_RSS
+		IDC_TextResources, IDC_Multilanguage, IDC_TaskManager, IDC_Settings, IDC_RSS, IDC_MetaStorage
 	{
 		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig)
 			: base(dbConfig)
@@ -207,6 +208,33 @@ namespace Nephrite.Web.CoreDataContext
 		public override IDataContext NewDataContext(string connectionString)
 		{
 			return new HCoreDataContext(DBConfig(connectionString));
+		}
+
+
+
+		public IQueryable<IMM_ObjectType> IMM_ObjectType
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public IQueryable<IMM_FormView> IMM_FormView
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public IQueryable<IMM_Package> IMM_Package
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public IQueryable<IN_Cache> IN_Cache
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public IN_Cache NewIN_Cache()
+		{
+			throw new NotImplementedException();
 		}
 	}
 

@@ -11,6 +11,8 @@ namespace Nephrite.Web.MetaStorage
 		IQueryable<IMM_FormView> IMM_FormView { get; }
 		IQueryable<IMM_Package> IMM_Package { get; }
 		IQueryable<IN_Cache> IN_Cache { get; }
+
+		IN_Cache NewIN_Cache();
 	}
 
 	public interface IMM_ObjectType : IEntity
@@ -38,7 +40,9 @@ namespace Nephrite.Web.MetaStorage
 		int SeqNo { get; set; }
 		string Description { get; set; }
 		Nullable<System.Int32> PackageID { get; set; }
-		Nullable<System.Int32> BaseObjectTypeID { get; set; }		
+		Nullable<System.Int32> BaseObjectTypeID { get; set; }
+
+		bool IsMultiLingual { get; }
 	}
 
 	public interface IMM_FormView : IEntity
@@ -59,6 +63,9 @@ namespace Nephrite.Web.MetaStorage
 		string BaseClass { get; set; }
 		Nullable<System.Int32> ObjectTypeID { get; set; }
 		Nullable<System.Int32> PackageID { get; set; }
+
+		string ControlPath { get; }
+		string FullTitle { get; }
 	}
 
 	public interface IMM_Package : IEntity

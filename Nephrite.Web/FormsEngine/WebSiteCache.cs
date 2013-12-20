@@ -36,7 +36,9 @@ namespace Nephrite.Web.FormsEngine
                 AppSettings.ResetCache();
 
 				dc.IN_Cache.DeleteAllOnSubmit(dc.IN_Cache);
-                AppMM.DataContext.N_Caches.InsertOnSubmit(new Nephrite.Metamodel.Model.N_Cache { TimeStamp = DateTime.Now });
+				var c = dc.NewIN_Cache();
+				c.TimeStamp = DateTime.Now;
+                dc.IN_Cache.InsertOnSubmit(c);
                 A.Model.SubmitChanges();
 				TextResource.ResetCache();
 				MView.ResetCache();
@@ -89,7 +91,9 @@ namespace Nephrite.Web.FormsEngine
                 {
                     if (stamp == null)
                     {
-						dc.IN_Cache.InsertOnSubmit(new Nephrite.Metamodel.Model.N_Cache { TimeStamp = DateTime.Now });
+						var c = dc.NewIN_Cache();
+						c.TimeStamp = DateTime.Now;
+						dc.IN_Cache.InsertOnSubmit(c);
                         A.Model.SubmitChanges();
                     }
                 }
@@ -183,9 +187,9 @@ namespace Nephrite.Web.FormsEngine
 				try
 				{
 					viewPaths = new Dictionary<string, string>();
-					foreach (var v in formViews.Values.Select(o => new { o.FormViewID, o.SysName, ClassName = o.ObjectTypeID.HasValue ? o.MM_ObjectType.SysName : "", o.ControlPath }))
+					foreach (var v in formViews.Values.Select(o => new { o.FormViewID, o.SysName, ClassName = o.ObjectTypeID.HasValue ? ((IDC_MetaStorage)A.Model).IMM_ObjectType.Where(o2 => o2.ObjectTypeID == o.ObjectTypeID).Select(o2 => o2.SysName).FirstOrDefault() : "", o.ControlPath }))
 						viewPaths.Add(v.ClassName == String.Empty ? v.SysName.ToLower() : (v.ClassName.ToLower() + "_" + v.SysName.ToLower()), v.ControlPath);
-					foreach (var v in formViews.Values.Where(o => o.PackageID.HasValue).Select(o => new { o.FormViewID, o.SysName, ClassName = o.MM_Package.SysName, o.ControlPath }))
+					foreach (var v in formViews.Values.Where(o => o.PackageID.HasValue).Select(o => new { o.FormViewID, o.SysName, ClassName = ((IDC_MetaStorage)A.Model).IMM_Package.Where(o2 => o2.PackageID == o.PackageID).Select(o2 => o2.SysName).FirstOrDefault(), o.ControlPath }))
 						viewPaths.Add(v.ClassName.ToLower() + "_" + v.SysName.ToLower(), v.ControlPath);
 				}
 				catch (Exception e)

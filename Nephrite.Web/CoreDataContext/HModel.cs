@@ -10,6 +10,7 @@ using Nephrite.Web.Controls;
 using Nephrite.Web.ErrorLog;
 using Nephrite.Web.FileStorage;
 using Nephrite.Web.Mailer;
+using Nephrite.Web.MetaStorage;
 using Nephrite.Web.Multilanguage;
 using Nephrite.Web.RSS;
 using Nephrite.Web.SettingsManager;
@@ -310,10 +311,10 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string AcceptableValues { get; set; }
 	}
 
-	/*public partial class N_Cache
+	public partial class N_Cache : IN_Cache
 	{
 		public virtual System.DateTime TimeStamp { get; set; }
-	}*/
+	}
 
 	/*public partial class UserActivity : IUserActivity
 	{
@@ -347,6 +348,87 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string Author { get; set; }
 		public virtual string WebMaster { get; set; }
 		public virtual string LinkParams { get; set; }
+	}
+
+
+	public partial class MM_Package : IMM_Package
+	{
+		public virtual int PackageID { get; set; }
+		public virtual int? ParentPackageID { get; set; }
+		public virtual string Title { get; set; }
+		public virtual string SysName { get; set; }
+		public virtual bool IsDeleted { get; set; }
+		public virtual System.DateTime LastModifiedDate { get; set; }
+		public virtual int LastModifiedUserID { get; set; }
+		public virtual System.Guid Guid { get; set; }
+		public virtual bool IsDataReplicated { get; set; }
+		public virtual string Version { get; set; }
+		public virtual int SeqNo { get; set; }
+	}
+
+	public partial class MM_ObjectType : IMM_ObjectType
+	{
+		public virtual int ObjectTypeID { get; set; }
+		public virtual string Title { get; set; }
+		public virtual string SysName { get; set; }
+		public virtual bool IsEnableSPM { get; set; }
+		public virtual System.Guid Guid { get; set; }
+		public virtual bool IsSeparateTable { get; set; }
+		public virtual bool IsTemplate { get; set; }
+		public virtual string TitlePlural { get; set; }
+		public virtual string DefaultOrderBy { get; set; }
+		public virtual string LogicalDelete { get; set; }
+		public virtual bool IsReplicate { get; set; }
+		public virtual bool IsEnableUserViews { get; set; }
+		public virtual string SecurityPackageSystemName { get; set; }
+		public virtual bool IsEnableObjectHistory { get; set; }
+		public virtual string Interface { get; set; }
+		public virtual string HistoryTypeCode { get; set; }
+		public virtual bool IsDataReplicated { get; set; }
+		public virtual bool IsDeleted { get; set; }
+		public virtual System.DateTime LastModifiedDate { get; set; }
+		public virtual int LastModifiedUserID { get; set; }
+		public virtual int SeqNo { get; set; }
+		public virtual string Description { get; set; }
+
+		public virtual Nullable<System.Int32> PackageID { get; set; }
+		public virtual Nullable<System.Int32> BaseObjectTypeID { get; set; }
+
+		public virtual bool IsMultiLingual
+		{
+			get { throw new NotImplementedException(); }
+		}
+	}
+
+	public partial class MM_FormView : IMM_FormView
+	{
+		public virtual int FormViewID { get; set; }
+		public virtual string Title { get; set; }
+		public virtual string SysName { get; set; }
+		public virtual string ViewTemplate { get; set; }
+		public virtual string TemplateTypeCode { get; set; }
+		public virtual System.DateTime LastModifiedDate { get; set; }
+		public virtual System.Guid Guid { get; set; }
+		public virtual bool IsCustom { get; set; }
+		public virtual bool IsDeleted { get; set; }
+		public virtual int LastModifiedUserID { get; set; }
+		public virtual bool IsCaching { get; set; }
+		public virtual string CacheKeyParams { get; set; }
+		public virtual int CacheTimeout { get; set; }
+		public virtual string BaseClass { get; set; }
+		public virtual Nullable<System.Int32> ObjectTypeID { get; set; }
+		public virtual Nullable<System.Int32> PackageID { get; set; }
+
+
+		public virtual string ControlPath
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public virtual string FullTitle
+		{
+			get { throw new NotImplementedException(); }
+		}
 	}
 
 }
