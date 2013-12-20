@@ -55,7 +55,7 @@ namespace Nephrite.Web.CoreDataContext
 
 			l.Add(typeof(MM_FormViewMap));
 			l.Add(typeof(MM_ObjectTypeMap));
-			l.Add(typeof(MM_ObjectPropertyMap));
+			//l.Add(typeof(MM_ObjectPropertyMap));
 			l.Add(typeof(MM_PackageMap));
 			l.Add(typeof(N_CacheMap));
 			return l;
@@ -244,10 +244,10 @@ namespace Nephrite.Web.CoreDataContext
 		}
 
 
-		public IQueryable<IMM_ObjectProperty> IMM_ObjectProperty
+		/*public IQueryable<IMM_ObjectProperty> IMM_ObjectProperty
 		{
 			get { return new HTable<IMM_ObjectProperty>(this, Session.Query<MM_ObjectProperty>().Cast<IMM_ObjectProperty>()); }
-		}
+		}*/
 	}
 
 }

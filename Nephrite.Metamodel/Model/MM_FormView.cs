@@ -54,29 +54,6 @@ namespace Nephrite.Metamodel.Model
 			}
 		}
 
-		string _controlPath = null;
-		public virtual string ControlPath
-        {
-            get
-            {
-				if (_controlPath == null)
-				{
-					string type = "ascx";
-					if (TemplateTypeCode == TemplateType.Aspx)
-						type = "aspx";
-					else if (TemplateTypeCode == TemplateType.Ashx)
-						type = "ashx";
-					else if (TemplateTypeCode == TemplateType.Asmx)
-						type = "asmx";
-					else if (TemplateTypeCode == TemplateType.Svc)
-						type = "svc";
-					
-					_controlPath = Settings.ControlsPath + "/" + (ObjectTypeID.HasValue ? MM_ObjectType.ControlPath : MM_Package.ControlPath) + "/" + SysName + "." + type;
-				}
-				return _controlPath;
-            }
-        }
-
 		public override void WriteDeleteObjectHistory()
 		{
 			

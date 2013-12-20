@@ -8,7 +8,7 @@ namespace Nephrite.Web.MetaStorage
 	public interface IDC_MetaStorage
 	{
 		IQueryable<IMM_ObjectType> IMM_ObjectType { get; }
-		IQueryable<IMM_ObjectProperty> IMM_ObjectProperty { get; }
+		//IQueryable<IMM_ObjectProperty> IMM_ObjectProperty { get; }
 		IQueryable<IMM_FormView> IMM_FormView { get; }
 		IQueryable<IMM_Package> IMM_Package { get; }
 		IQueryable<IN_Cache> IN_Cache { get; }
@@ -42,11 +42,9 @@ namespace Nephrite.Web.MetaStorage
 		string Description { get; set; }
 		Nullable<System.Int32> PackageID { get; set; }
 		Nullable<System.Int32> BaseObjectTypeID { get; set; }
-
-		bool IsMultiLingual { get; }
 	}
 
-	public interface IMM_ObjectProperty : IEntity
+	/*public interface IMM_ObjectProperty : IEntity
 	{
 		int ObjectPropertyID { get; set; }
 		string Title { get; set; }
@@ -79,7 +77,7 @@ namespace Nephrite.Web.MetaStorage
 		int? RefObjectPropertyID { get; set; }
 		int ObjectTypeID { get; set; }
 		int? RefObjectTypeID { get; set; }
-	}
+	}*/
 
 	public interface IMM_FormView : IEntity
 	{
@@ -99,8 +97,6 @@ namespace Nephrite.Web.MetaStorage
 		string BaseClass { get; set; }
 		Nullable<System.Int32> ObjectTypeID { get; set; }
 		Nullable<System.Int32> PackageID { get; set; }
-
-		string FullTitle { get; }
 	}
 
 	public interface IMM_Package : IEntity

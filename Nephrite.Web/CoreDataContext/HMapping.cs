@@ -461,7 +461,7 @@ namespace Nephrite.Web.CoreDataContext
 		}
 	}
 
-	public class MM_ObjectPropertyMap : ClassMapping<MM_ObjectProperty>
+	/*public class MM_ObjectPropertyMap : ClassMapping<MM_ObjectProperty>
 	{
 
 		public MM_ObjectPropertyMap()
@@ -501,7 +501,7 @@ namespace Nephrite.Web.CoreDataContext
 			Property(x => x.RefObjectTypeID);
 
 		}
-	}
+	}*/
 
 	public class MM_FormViewMap : ClassMapping<MM_FormView>
 	{

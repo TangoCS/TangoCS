@@ -394,14 +394,9 @@ namespace Nephrite.Web.CoreDataContext
 
 		public virtual Nullable<System.Int32> PackageID { get; set; }
 		public virtual Nullable<System.Int32> BaseObjectTypeID { get; set; }
-
-		public virtual bool IsMultiLingual
-		{
-			get { return ((IDC_MetaStorage)A.Model).IMM_ObjectProperty.Where(o => o.ObjectTypeID == ObjectTypeID).Any(o => o.IsMultilingual); }
-		}
 	}
 
-	public partial class MM_ObjectProperty
+	/*public partial class MM_ObjectProperty
 	{
 		public virtual int ObjectPropertyID { get; set; }
 		public virtual string Title { get; set; }
@@ -434,7 +429,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual int? RefObjectPropertyID { get; set; }
 		public virtual int ObjectTypeID { get; set; }
 		public virtual int? RefObjectTypeID { get; set; }
-	}
+	}*/
 
 	public partial class MM_FormView : IMM_FormView
 	{
@@ -454,17 +449,6 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string BaseClass { get; set; }
 		public virtual Nullable<System.Int32> ObjectTypeID { get; set; }
 		public virtual Nullable<System.Int32> PackageID { get; set; }
-
-		public virtual string FullTitle
-		{
-			get
-			{
-				if (PackageID.HasValue)
-					return ((IDC_MetaStorage)A.Model).IMM_Package.Where(o => o.PackageID == PackageID).Select(o => o.Title) + "." + Title;
-				else
-					return ((IDC_MetaStorage)A.Model).IMM_ObjectType.Where(o => o.ObjectTypeID == ObjectTypeID).Select(o => o.Title) + "." + Title;
-			}
-		}
 	}
 
 }
