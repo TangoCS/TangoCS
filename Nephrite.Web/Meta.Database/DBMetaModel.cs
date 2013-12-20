@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
+
 namespace Nephrite.Meta.Database
 {
 	[Serializable]
@@ -12,6 +13,7 @@ namespace Nephrite.Meta.Database
 		public Dictionary<string, View> Views { get; private set; }
 		public Dictionary<string, Procedure> Procedures { get; private set; }
 		public Dictionary<string, Function> Functions { get; private set; }
+		public string Name { get; set; }
 		public Schema()
 		{
 			Tables = new Dictionary<string, Table>();
@@ -22,31 +24,48 @@ namespace Nephrite.Meta.Database
 	}
 
 	[Serializable]
-	public class Table
+	public partial class Table
 	{
 		public string Name { get; set; }
 		public string Owner { get; set; }
 		public string Description { get; set; }
 		public bool Identity { get; set; }
 		public Dictionary<string, Column> Columns { get; private set; }
+		public Dictionary<string, Index> Indexes { get; private set; }
 		public Dictionary<string, ForeignKey> ForeignKeys { get; private set; }
 		public Dictionary<string, Trigger> Triggers { get; private set; }
 		public PrimaryKey PrimaryKey { get; set; }
+		public Schema Schema { get; set; }
 
 		public Table()
 		{
 			Columns = new Dictionary<string, Column>();
 			ForeignKeys = new Dictionary<string, ForeignKey>();
 			Triggers = new Dictionary<string, Trigger>();
+			Indexes = new Dictionary<string, Index>();
 			Identity = true;
 		}
 	}
 
 	[Serializable]
-	public class Column
+	public partial class Index
 	{
 		public string Name { get; set; }
-		public string Type { get; set; }
+		public string[] Columns { get; set; }
+		public Table CurrentTable { get; set; }
+
+		public string Cluster { get; set; }
+		public bool AllowPageLocks { get; set; }
+		public bool AllowRowLocks { get; set; }
+		public bool IgnoreDupKey { get; set; }
+		public bool IsUnique { get; set; }
+
+	}
+	[Serializable]
+	public partial class Column
+	{
+		public string Name { get; set; }
+		public MetaClassifier Type { get; set; }
 		public bool Nullable { get; set; }
 		public string DefaultValue { get; set; }
 		public string ComputedText { get; set; }
@@ -54,13 +73,16 @@ namespace Nephrite.Meta.Database
 
 		public string ForeignKeyName { get; set; }
 		public bool IsPrimaryKey { get; set; }
+		public bool Identity { get; set; }
+		public Table CurrentTable { get; set; }
 	}
 
 	[Serializable]
-	public class PrimaryKey
+	public partial class PrimaryKey
 	{
 		public string Name { get; set; }
 		public string[] Columns { get; set; }
+		public Table CurrentTable { get; set; }
 	}
 
 	[Serializable]
@@ -68,9 +90,11 @@ namespace Nephrite.Meta.Database
 	{
 		public string Name { get; set; }
 		public string RefTable { get; set; }
+		public bool IsEnabled { get; set; }
 		public string[] Columns { get; set; }
 		public string[] RefTableColumns { get; set; }
 		public DeleteOption DeleteOption { get; set; }
+		public Table CurrentTable { get; set; }
 	}
 
 	public enum DeleteOption
@@ -81,7 +105,7 @@ namespace Nephrite.Meta.Database
 	}
 
 	[Serializable]
-	public class Procedure
+	public partial class Procedure
 	{
 		public string Name { get; set; }
 		public string Text { get; set; }
@@ -95,7 +119,7 @@ namespace Nephrite.Meta.Database
 	}
 
 	[Serializable]
-	public class Function
+	public partial class Function
 	{
 		public string Name { get; set; }
 		public string Text { get; set; }
@@ -107,7 +131,7 @@ namespace Nephrite.Meta.Database
 		}
 	}
 	[Serializable]
-	public class View
+	public partial class View
 	{
 		public string Name { get; set; }
 		public string Text { get; set; }
@@ -122,7 +146,7 @@ namespace Nephrite.Meta.Database
 	}
 
 	[Serializable]
-	public class Trigger
+	public partial class Trigger
 	{
 		public string Name { get; set; }
 		public string Text { get; set; }
@@ -132,7 +156,7 @@ namespace Nephrite.Meta.Database
 	public class Parameter
 	{
 		public string Name { get; set; }
-		public string Type { get; set; }
+		public MetaClassifier Type { get; set; }
 	}
 
 

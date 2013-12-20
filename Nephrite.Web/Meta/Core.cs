@@ -1,12 +1,17 @@
-п»їusing System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI.HtmlControls;
+using Nephrite.Web;
 using Nephrite.Web.TextResources;
+
 
 namespace Nephrite.Meta
 {
+	/// <summary>
+	/// Абстрактный класс для всех сущностей модели
+	/// </summary>
 	public abstract class MetaElement
 	{
 		public MetaElement()
@@ -30,16 +35,26 @@ namespace Nephrite.Meta
 			Caption = caption;
 			Description = description;
 		}
+
+		/// <summary>
+		/// Уникальный идентификатор
+		/// </summary>
 		public Guid ID { get; set; }
+		/// <summary>
+		/// Системное имя
+		/// </summary>
 		public string Name { get; set; }
 
-		#region Caption - СЂР°Р±РѕС‚Р° СЃ РјРЅРѕРіРѕСЏР·С‹С‡РЅРѕСЃС‚СЊСЋ
+		#region Caption - работа с многоязычностью
 		public virtual string GetCaptionResourceKey()
 		{
-			throw new InvalidOperationException("Р­Р»РµРјРµРЅС‚ " + Name + " РЅРµ РёРјРµРµС‚ РєР»СЋС‡Р° СЂРµСЃСѓСЂСЃР°");
+			throw new InvalidOperationException("Элемент " + Name + " не имеет ключа ресурса");
 		}
 		string _caption;
-		public string Caption 
+		/// <summary>
+		/// Название на локальном языке
+		/// </summary>
+		public string Caption
 		{
 			get
 			{
@@ -52,6 +67,9 @@ namespace Nephrite.Meta
 		}
 		#endregion
 
+		/// <summary>
+		/// Описание
+		/// </summary>
 		public string Description { get; set; }
 		//public Dictionary<string, MetaTaggedValue> TaggedValues { get; set; }
 
@@ -67,11 +85,14 @@ namespace Nephrite.Meta
 
 		public T S<T>() where T : MetaStereotype
 		{
-	
+
 			return (T)_stereotypes[typeof(T)];
 		}
 	}
 
+	/// <summary>
+	/// Модель предметной области
+	/// </summary>
 	public partial class MetaSolution : MetaElement
 	{
 		Dictionary<string, MetaClass> _classesbyname = new Dictionary<string, MetaClass>(255);
@@ -80,7 +101,13 @@ namespace Nephrite.Meta
 		Dictionary<string, MetaPackage> _packagesbyname = new Dictionary<string, MetaPackage>(32);
 		Dictionary<Guid, MetaPackage> _packagesbyid = new Dictionary<Guid, MetaPackage>(32);
 
+		/// <summary>
+		/// Пакеты модели
+		/// </summary>
 		public Dictionary<Guid, MetaPackage>.ValueCollection Packages { get { return _packagesbyid.Values; } }
+		/// <summary>
+		/// Классы модели
+		/// </summary>
 		public Dictionary<Guid, MetaClass>.ValueCollection Classes { get { return _classesbyid.Values; } }
 
 		//public string EntryPoint { get; }
@@ -132,33 +159,46 @@ namespace Nephrite.Meta
 	{
 		protected Guid? ParentID { get; set; }
 		MetaPackage _parent = null;
+
+		/// <summary>
+		/// Родительский пакет
+		/// </summary>
 		public MetaPackage Parent
-		{ 
-			get 
+		{
+			get
 			{
 				if (_parent == null && ParentID != null) _parent = Solution.GetPackage(ParentID.Value);
 				return _parent;
 			}
 		}
 
+		/// <summary>
+		/// Модель, которой принадлежит пакет
+		/// </summary>
 		public MetaSolution Solution { get; internal set; }
 		Dictionary<string, MetaPackage> _packages = new Dictionary<string, MetaPackage>(16);
 		Dictionary<string, MetaClass> _classes = new Dictionary<string, MetaClass>(64);
 
+		/// <summary>
+		/// Вложенные пакеты
+		/// </summary>
 		public Dictionary<string, MetaPackage>.ValueCollection Packages { get { return _packages.Values; } }
+		/// <summary>
+		/// Классы пакета
+		/// </summary>
 		public Dictionary<string, MetaClass>.ValueCollection Classes { get { return _classes.Values; } }
 
 		public void AddClass(MetaClass metaClass)
 		{
 			Solution.AddClass(metaClass);
-			metaClass.Parent = this;	
+			metaClass.Parent = this;
 			_classes.Add(metaClass.Name.ToLower(), metaClass);
 		}
 
 		public void AddPackage(MetaPackage metaPackage)
 		{
 			Solution.AddPackage(metaPackage);
-			metaPackage.ParentID = this.ID;	
+			metaPackage.ParentID = this.ID;
 			_packages.Add(metaPackage.Name.ToLower(), metaPackage);
 		}
 
@@ -180,13 +220,14 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public abstract class MetaClassifier : MetaElement
+	public abstract partial class MetaClassifier : MetaElement
 	{
 		//public virtual Type CLRType { get; set; }
 		public virtual string ColumnName(string propName)
 		{
 			return propName;
 		}
+	
 	}
 
 	public class MetaClass : MetaClassifier
@@ -203,47 +244,81 @@ namespace Nephrite.Meta
 			}
 		}*/
 
+		/// <summary>
+		/// Модель, которой принадлежит класс
+		/// </summary>
 		public MetaSolution Solution { get; internal set; }
+		/// <summary>
+		/// Пакет, в котором располагается класс
+		/// </summary>
 		public MetaPackage Parent { get; set; }
 
 		Dictionary<string, MetaProperty> _properties = new Dictionary<string, MetaProperty>();
 		Dictionary<string, MetaOperation> _operations = new Dictionary<string, MetaOperation>();
 
-		internal Guid? BaseClassID { get; set; }
+		internal string BaseClassName { get; set; }
 		MetaClass _baseClass = null;
+
+		/// <summary>
+		/// От какого класса унаследован
+		/// </summary>
 		public MetaClass BaseClass
 		{
 			get
 			{
-				if (_baseClass == null && BaseClassID != null) _baseClass = Solution.GetClass(BaseClassID.Value);
+				if (_baseClass == null && !BaseClassName.IsEmpty()) _baseClass = Solution.GetClass(BaseClassName);
 				return _baseClass;
 			}
 		}
 
+		/// <summary>
+		/// Сохраняются ли объекты класса в базе данных
+		/// </summary>
 		public bool IsPersistent { get; set; }
 
 		bool _isMultilingual = false;
+
+		/// <summary>
+		/// Есть ли у класса мультиязычные свойства
+		/// </summary>
 		public bool IsMultilingual { get { return _isMultilingual; } }
 
 		List<MetaProperty> _compositeKey = new List<MetaProperty>();
-		public MetaProperty Key 
+		/// <summary>
+		/// Свойство класса, являющееся первичным ключом (если оно одно)
+		/// </summary>
+		public MetaProperty Key
 		{
-			get 
-			{ 
+			get
+			{
 				if (_compositeKey.Count != 1)
-					throw new Exception(String.Format("Error while getting single key property for class {0}. Length of the key properties array: {1}", Name, _compositeKey.Count())); 
-				else 
-					return _compositeKey.First(); 
+					throw new Exception(String.Format("Error while getting single key property for class {0}. Length of the key properties array: {1}", Name, _compositeKey.Count()));
+				else
+					return _compositeKey.First();
 			}
 		}
+
+		/// <summary>
+		/// Все свойства класса, входящие в первичный ключ
+		/// </summary>
 		public List<MetaProperty> CompositeKey
 		{
 			get { return _compositeKey; }
 		}
 
+		/// <summary>
+		/// Свойства класса
+		/// </summary>
 		public Dictionary<string, MetaProperty>.ValueCollection Properties { get { return _properties.Values; } }
 		//public IEnumerable<T> Properties<T>() where T : MetaProperty { return _properties.Where(o => o is T).Select(o => o as T);  }
+		/// <summary>
+		/// Методы класса
+		/// </summary>
 		public Dictionary<string, MetaOperation>.ValueCollection Operations { get { return _operations.Values; } }
+
+		/// <summary>
+		/// Метод класса по умолчанию
+		/// </summary>
 		public MetaOperation DefaultOperation { get; set; }
 
 		public void AddProperty(MetaProperty metaProperty)
@@ -274,6 +349,9 @@ namespace Nephrite.Meta
 			return Name;
 		}
 
+		/// <summary>
+		/// Имя столбца для свойств, которые ссылаются на данный класс
+		/// </summary>
 		public override string ColumnName(string propName)
 		{
 			return propName + (Key.Type as IMetaIdentifierType).ColumnSuffix;
@@ -282,9 +360,25 @@ namespace Nephrite.Meta
 
 	public abstract class MetaProperty : MetaElement
 	{
+		/// <summary>
+		/// Класс, к которому принадлежит свойство
+		/// </summary>
 		public MetaClass Parent { get; set; }
+		/// <summary>
+		/// Тип данных
+		/// </summary>
+		public virtual string DataType { get; set; }
+		/// <summary>
+		/// Тип данных
+		/// </summary>
 		public virtual MetaClassifier Type { get; set; }
+		/// <summary>
+		/// Является ли свойство обязательным для заполнения
+		/// </summary>
 		public bool IsRequired { get; set; }
+		/// <summary>
+		/// Верхняя граница: 1 - максимум одно значение, -1 - значений может быть сколько угодно
+		/// </summary>
 		public int UpperBound { get; set; }
 
 		public override string GetCaptionResourceKey()
@@ -292,43 +386,96 @@ namespace Nephrite.Meta
 			return Parent.Name + ".P." + Name;
 		}
 
+		/// <summary>
+		/// Имя столбца в базе данных
+		/// </summary>
 		public virtual string ColumnName
 		{
 			get { return Type == null ? Name : Type.ColumnName(Name); }
 		}
-		
+
 	}
 
+	/// <summary>
+	/// Атрибут класса
+	/// </summary>
 	public class MetaAttribute : MetaProperty
 	{
+		/// <summary>
+		/// Является мультиязычным
+		/// </summary>
 		public bool IsMultilingual { get; set; }
+		/// <summary>
+		/// Является автоинкрементным
+		/// </summary>
 		public bool IsIdentity { get; set; }
+		/// <summary>
+		/// Является первичным
+		/// </summary>
+		public string IsKey { get; set; }
 	}
 
+	/// <summary>
+	/// Вычислимое свойство класса
+	/// </summary>
 	public class MetaComputedAttribute : MetaProperty
 	{
+		/// <summary>
+		/// Код для get
+		/// </summary>
 		public string GetExpression { get; set; }
+		/// <summary>
+		/// Код для set
+		/// </summary>
 		public string SetExpression { get; set; }
 	}
 
+	/// <summary>
+	/// Вычислимое на уровне базы данных свойство класса
+	/// </summary>
 	public class MetaPersistentComputedAttribute : MetaProperty
 	{
+		/// <summary>
+		/// Выражение
+		/// </summary>
 		public string Expression { get; set; }
+
 	}
 
+	/// <summary>
+	/// Тип ассоциации
+	/// </summary>
 	public enum AssociationType
 	{
+		/// <summary>
+		/// Агрегация
+		/// </summary>
 		Aggregation = 1,
+		/// <summary>
+		/// Композиция
+		/// </summary>
 		Composition = 2,
+		/// <summary>
+		/// Нет ни агрегации, ни композиции
+		/// </summary>
 		Default = 0
 	}
 
+	/// <summary>
+	/// Свойство класса - ссылка 
+	/// </summary>
 	public class MetaReference : MetaProperty
 	{
+		/// <summary>
+		/// Тип ассоциации
+		/// </summary>
 		public AssociationType AssociationType { get; set; }
 
 		internal string RefClassName { get; set; }
 		MetaClass _refClass = null;
+		/// <summary>
+		/// На какой класс ссылается
+		/// </summary>
 		public MetaClass RefClass
 		{
 			get
@@ -338,6 +485,9 @@ namespace Nephrite.Meta
 			}
 		}
 
+		/// <summary>
+		/// Тип данных
+		/// </summary>
 		public override MetaClassifier Type
 		{
 			get
@@ -353,15 +503,22 @@ namespace Nephrite.Meta
 
 		internal string InversePropertyName { get; set; }
 		MetaReference _refInverseProperty = null;
+		/// <summary>
+		/// Является ли ссылка обратной (т.е. у класса, на который ссылается свойство есть тоже ссылка на данный класс)
+		/// </summary>
 		public MetaReference InverseProperty
 		{
 			get
 			{
+				if (InversePropertyName.IsEmpty()) return null;
 				if (_refInverseProperty == null && RefClass != null) _refInverseProperty = RefClass.GetProperty(InversePropertyName) as MetaReference;
 				return _refInverseProperty;
 			}
 		}
 
+		/// <summary>
+		/// Имя столбца в базе данных
+		/// </summary>
 		public override string ColumnName
 		{
 			get
@@ -369,19 +526,41 @@ namespace Nephrite.Meta
 				return RefClass.ColumnName(Name);
 			}
 		}
+		/// <summary>
+		/// Является первичным
+		/// </summary>
+		public string IsKey { get; set; }
 	}
 
+	/// <summary>
+	/// Параметр метода
+	/// </summary>
 	public class MetaOperationParameter : MetaElement
 	{
+		/// <summary>
+		/// Тип данных
+		/// </summary>
 		public MetaClassifier Type { get; set; }
 	}
 
+	/// <summary>
+	/// Метод класса
+	/// </summary>
 	public class MetaOperation : MetaElement
 	{
 		Dictionary<string, MetaOperationParameter> _parameters = new Dictionary<string, MetaOperationParameter>();
 
+		/// <summary>
+		/// Класс, которому принадлежит метод
+		/// </summary>
 		public MetaClass Parent { get; set; }
+		/// <summary>
+		/// Параметры метода
+		/// </summary>
 		public Dictionary<string, MetaOperationParameter> Parameters { get { return _parameters; } }
+		/// <summary>
+		/// Иконка
+		/// </summary>
 		public string Image { get; set; }
 		//public bool IsDefault { get; set; }
 
@@ -389,6 +568,10 @@ namespace Nephrite.Meta
 		{
 			return Parent.Name + ".O." + Name;
 		}
+		/// <summary>
+		/// По умолчанию
+		/// </summary>
+		public string IsDefault { get; set; }
 	}
 
 	public class MetaStereotype : MetaElement
@@ -415,10 +598,10 @@ namespace Nephrite.Meta
 			else
 				elements = _selements[stereotype];
 
-			elements.Add(element.Name, element);	
+			elements.Add(element.Name, element);
 		}
 
-		public static Dictionary<string, MetaElement> GetElements<T>() 
+		public static Dictionary<string, MetaElement> GetElements<T>()
 			where T : MetaStereotype
 		{
 			Type t = typeof(T);

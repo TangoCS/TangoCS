@@ -14,13 +14,15 @@ namespace Nephrite.Meta.Database
 	{
 		Schema ReadSchema(string name);
 		List<ProcedureDetails> ReadProceduresDetails();
+	
 	}
 
 	public class SqlServerMetadataReader : IDatabaseMetadataReader
 	{
 		public Schema ReadSchema(string name)
 		{
-			var returnSchema = new Schema(); ;
+			var returnSchema = new Schema();
+			var DbScript = new DBScriptMSSQL(name);
 			using (SqlConnection con = new SqlConnection(ConnectionManager.ConnectionString))
 			{
 				using (SqlCommand cmd = new SqlCommand("usp_dbschema", con))
@@ -39,7 +41,7 @@ namespace Nephrite.Meta.Database
 							{
 								var table = new Table();
 								table.Name = t.GetAttributeValue("Name");
-								table.Owner = t.GetAttributeValue("Owner");
+									table.Owner = t.GetAttributeValue("Owner");
 								table.Description = t.GetAttributeValue("Description");
 								table.Identity = !string.IsNullOrEmpty(t.GetAttributeValue("Identity")) && t.GetAttributeValue("Identity") == "1";
 								var xColumnsElement = t.Element("Columns");
@@ -48,13 +50,15 @@ namespace Nephrite.Meta.Database
 									{
 										var column = new Column();
 										column.Name = c.GetAttributeValue("Name");
-										column.Type = c.GetAttributeValue("Type");
-										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("Nullable")) && c.GetAttributeValue("Nullable") == "YES";
+										column.Type =  DbScript.GetType(c.GetAttributeValue("Type"));
+										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("Nullable")) && c.GetAttributeValue("Nullable") == "1";
 										column.ComputedText = c.GetAttributeValue("ComputedText");
 										column.Description = c.GetAttributeValue("Description");
+										column.DefaultValue = c.GetAttributeValue("DefaultValue");
 										column.ForeignKeyName = c.GetAttributeValue("ForeignKeyName");
 										column.Description = c.GetAttributeValue("Description");
 										column.IsPrimaryKey = !string.IsNullOrEmpty(c.GetAttributeValue("IsPrimaryKey")) && c.GetAttributeValue("IsPrimaryKey") == "1";
+										column.CurrentTable = table;
 										table.Columns.Add(column.Name, column);
 									});
 
@@ -65,6 +69,7 @@ namespace Nephrite.Meta.Database
 										var foreignKey = new ForeignKey();
 										foreignKey.Name = c.GetAttributeValue("Name");
 										foreignKey.RefTable = c.GetAttributeValue("RefTable");
+										foreignKey.IsEnabled = !string.IsNullOrEmpty(c.GetAttributeValue("IsEnabled")) && c.GetAttributeValue("IsEnabled") == "1";
 										foreignKey.Columns = c.Descendants("Column").Select(fc => fc.GetAttributeValue("Name")).ToArray();
 										foreignKey.RefTableColumns = c.Descendants("RefTableColumn").Select(fc => fc.GetAttributeValue("Name")).ToArray();
 										var xDeleteOptionElement = t.Element("DeleteOption");
@@ -72,6 +77,7 @@ namespace Nephrite.Meta.Database
 										if (xDeleteOptionElement != null)
 											foreignKey.DeleteOption = (DeleteOption)Int32.Parse(xDeleteOptionElement.Value);
 
+										foreignKey.CurrentTable = table;
 										table.ForeignKeys.Add(foreignKey.Name, foreignKey);
 									});
 
@@ -87,6 +93,7 @@ namespace Nephrite.Meta.Database
 
 								table.Description = t.GetAttributeValue("Description");
 
+
 								var xPrimaryKeyElement = t.Element("PrimaryKey");
 								if (xPrimaryKeyElement != null)
 									table.PrimaryKey = new PrimaryKey()
@@ -95,8 +102,29 @@ namespace Nephrite.Meta.Database
 										Columns =
 											xPrimaryKeyElement.Descendants("Column")
 															  .Select(pc => pc.GetAttributeValue("Name"))
-															  .ToArray()
+															  .ToArray(),
+										CurrentTable = table
 									};
+
+
+								var xIndexesElement = t.Element("Indexes");
+								if (xIndexesElement != null)
+									xIndexesElement.Descendants("Index").ToList().ForEach(c =>
+									{
+										var index = new Index();
+										index.Name = c.GetAttributeValue("Name");
+										index.Columns = c.Descendants("Column").Select(fc => fc.GetAttributeValue("Name")).ToArray();
+										index.CurrentTable = table;
+										index.Cluster = c.GetAttributeValue("Cluster");
+										index.AllowPageLocks = !string.IsNullOrEmpty(c.GetAttributeValue("AllowPageLocks")) && c.GetAttributeValue("AllowPageLocks") == "1";
+										index.AllowRowLocks = !string.IsNullOrEmpty(c.GetAttributeValue("AllowRowLocks")) && c.GetAttributeValue("AllowRowLocks") == "1";
+										index.IgnoreDupKey = !string.IsNullOrEmpty(c.GetAttributeValue("IgnoreDupKey")) && c.GetAttributeValue("IgnoreDupKey") == "1";
+										index.IsUnique = !string.IsNullOrEmpty(c.GetAttributeValue("IsUnique")) && c.GetAttributeValue("IsUnique") == "1";
+
+										table.Indexes.Add(index.Name, index);
+									});
+
+								table.Schema = returnSchema;
 								returnSchema.Tables.Add(table.Name, table);
 							});
 
@@ -111,8 +139,8 @@ namespace Nephrite.Meta.Database
 									{
 										var column = new Column();
 										column.Name = c.GetAttributeValue("Name");
-										column.Type = c.GetAttributeValue("Type");
-										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("Nullable")) && c.GetAttributeValue("Nullable") == "YES";
+										column.Type = DbScript.GetType(c.GetAttributeValue("Type"));
+										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("Nullable")) && c.GetAttributeValue("Nullable") == "1";
 										view.Columns.Add(column.Name, column);
 									});
 
@@ -140,7 +168,7 @@ namespace Nephrite.Meta.Database
 									{
 										var Parameter = new Parameter();
 										Parameter.Name = c.GetAttributeValue("Name");
-										Parameter.Type = c.GetAttributeValue("Type");
+										Parameter.Type = DbScript.GetType(c.GetAttributeValue("Type"));
 										procedure.Parameters.Add(Parameter.Name, Parameter);
 									});
 
@@ -158,7 +186,7 @@ namespace Nephrite.Meta.Database
 									{
 										var Parameter = new Parameter();
 										Parameter.Name = c.GetAttributeValue("Name");
-										Parameter.Type = c.GetAttributeValue("Type");
+										Parameter.Type = DbScript.GetType(c.GetAttributeValue("Type"));
 										function.Parameters.Add(Parameter.Name, Parameter);
 									});
 
@@ -171,6 +199,7 @@ namespace Nephrite.Meta.Database
 					}
 				}
 			}
+			returnSchema.Name = name;
 			return returnSchema;
 		}
 
@@ -217,17 +246,5 @@ namespace Nephrite.Meta.Database
 		}
 	}
 
-	public class DB2MetadataReader : IDatabaseMetadataReader
-	{
-		public Schema ReadSchema(string name)
-		{
-			throw new NotImplementedException();
-		}
 
-
-		public List<ProcedureDetails> ReadProceduresDetails()
-		{
-			throw new NotImplementedException();
-		}
-	}
 }

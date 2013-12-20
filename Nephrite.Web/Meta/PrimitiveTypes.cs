@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nephrite.Meta.Database;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -15,33 +16,34 @@ namespace Nephrite.Meta
 		public bool NotNullable { get; set; }
 	}
 
-	public class MetaDecimalType : MetaPrimitiveType
+	public partial class MetaDecimalType : MetaPrimitiveType
 	{
 		public int Precision { get; set; }
 		public int Scale { get; set; }
+
 	}
 
-	public class MetaStringType : MetaPrimitiveType
+	public partial class MetaStringType : MetaPrimitiveType
 	{
 		public int Length { get; set; }
 	}
 
-	public class MetaDateTimeType : MetaPrimitiveType
+	public partial class MetaDateTimeType : MetaPrimitiveType
 	{
 
 	}
 
-	public class MetaZoneDateTimeType : MetaPrimitiveType
+	public partial class MetaZoneDateTimeType : MetaPrimitiveType
 	{
 
 	}
 
-	public class MetaDateType : MetaPrimitiveType
+	public partial class MetaDateType : MetaPrimitiveType
 	{
 
 	}
 
-	public class MetaIntType : MetaPrimitiveType, IMetaIdentifierType
+	public partial class MetaIntType : MetaPrimitiveType, IMetaIdentifierType
 	{
 
 		public string ColumnSuffix
@@ -50,22 +52,22 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public class MetaLongType : MetaPrimitiveType
+	public partial class MetaLongType : MetaPrimitiveType
 	{
 
 	}
 
-	public class MetaByteArrayType : MetaClassifier
+	public partial class MetaByteArrayType : MetaPrimitiveType
+	{
+		public int Length { get; set; }
+	}
+
+	public partial class MetaBooleanType : MetaPrimitiveType
 	{
 
 	}
 
-	public class MetaBooleanType : MetaPrimitiveType
-	{
-
-	}
-
-	public class MetaGuidType : MetaPrimitiveType, IMetaIdentifierType
+	public partial class MetaGuidType : MetaPrimitiveType, IMetaIdentifierType
 	{
 		public string ColumnSuffix
 		{
@@ -117,6 +119,7 @@ namespace Nephrite.Meta
 		public static MetaStringType Char(bool notNull) { return notNull ? _char : _char_n; }
 		public static MetaStringType Char(int length, bool notNull) { return new MetaStringType { Length = length, Name = "Char", NotNullable = notNull }; }
 		public static MetaByteArrayType ByteArray() { return _byteArray; }
+		public static MetaByteArrayType ByteArray(int length) { return new MetaByteArrayType() { Name = "ByteArray", Length = length }; }
 
 		public static MetaDateType Date(bool notNull) { return notNull ? _date : _date_n; }
 		public static MetaDateTimeType DateTime(bool notNull) { return notNull ? _dateTime : _dateTime_n; }
@@ -128,6 +131,6 @@ namespace Nephrite.Meta
 		public static MetaDecimalType Decimal(bool notNull) { return notNull ? _decimal : _decimal_n; }
 		public static MetaDecimalType Decimal(int precision, int scale, bool notNull) { return new MetaDecimalType { Precision = precision, Scale = scale, Name = "Decimal", NotNullable = notNull }; }
 		public static MetaFileType FileIntKey(bool notNull) { return notNull ? _fileIntKey : _fileIntKey_n; }
-		public static MetaFileType FileGuidKey(bool notNull) { return notNull ? _fileGuidKey : _fileGuidKey_n; }		
+		public static MetaFileType FileGuidKey(bool notNull) { return notNull ? _fileGuidKey : _fileGuidKey_n; }
 	}
 }
