@@ -150,7 +150,6 @@
     <Compile Include="Meta.Database\SchemaGenerator.cs" />
     <Compile Include="Meta.Database\SchemaLoader.cs" />
     <Compile Include="Multilanguage\Language.cs" />
-    <Compile Include="OAuth\OAuth.cs" />
     <Compile Include="Reporting\Reporting.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -368,7 +367,6 @@
     <Compile Include="FileStorage\FileProvider.cs" />
     <Compile Include="FileStorage\FileTypeIcon.cs" />
     <Compile Include="FileStorage\FolderPacker.cs" />
-    <Compile Include="Web\SimpleTypeExtensions.cs" />
     <Compile Include="Model\ICalendarObject.cs" />
     <Compile Include="FileStorage\ImageHandler.cs" />
     <Compile Include="Model\IModelObject.cs" />
@@ -388,7 +386,6 @@
     <Compile Include="Meta.Database\DBMetaModel.cs" />
     <Compile Include="Meta\PrimitiveTypes.cs" />
     <Compile Include="Layout\Interfaces.cs" />
-    <Compile Include="Meta\UIMetaModel.cs" />
     <Compile Include="CoreDataContext\HCoreDataContext.cs" />
     <Compile Include="Hibernate\Hibernate.cs" />
     <Compile Include="CoreDataContext\HMapping.cs" />
@@ -450,6 +447,9 @@
     <Compile Include="TaskManager\TaskManager.cs" />
     <Compile Include="TaskManager\TaskManagerModule.cs" />
     <Compile Include="TextResources\TextResource.cs" />
+    <Compile Include="Web\SimpleTypeExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Web\Transliteration.cs" />
     <Compile Include="MVC\Url.cs" />
     <Compile Include="Web\UrlStack.cs" />
