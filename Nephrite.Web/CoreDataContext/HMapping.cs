@@ -12,7 +12,7 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public ErrorLogMap()
 		{
-			Table("ErrorLog");
+			Schema("DBO"); Table("ErrorLog");
 			Lazy(true);
 			Id(x => x.ErrorLogID, map => map.Generator(Generators.Identity));
 			Property(x => x.ErrorDate, map => map.NotNullable(true));
@@ -30,24 +30,24 @@ namespace Nephrite.Web.CoreDataContext
 			Property(x => x.SimilarErrorID);
 		}
 	}
-	
+
 	public class CalendarDayMap : ClassMapping<CalendarDay>
 	{
 		public CalendarDayMap()
 		{
-			Table("CalendarDay");
+			Schema("DBO"); Table("CalendarDay");
 			Lazy(true);
 			Id(x => x.CalendarDayID, map => map.Generator(Generators.Identity));
 			Property(x => x.Date, map => map.NotNullable(true));
 			Property(x => x.IsWorkingDay, map => map.NotNullable(true));
 		}
 	}
-	 
+
 	public class MailMessageMap : ClassMapping<MailMessage>
 	{
 		public MailMessageMap()
 		{
-			Table("MailMessage");
+			Schema("DBO"); Table("MailMessage");
 			Lazy(true);
 			Id(x => x.MailMessageID, map => map.Generator(Generators.Identity));
 			Property(x => x.Recipients);
@@ -81,7 +81,7 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public N_TimeZoneMap()
 		{
-			Table("N_TimeZone");
+			Schema("DBO"); Table("N_TimeZone");
 			Lazy(true);
 			Id(x => x.TimeZoneID, map => map.Generator(Generators.Identity));
 			Property(x => x.IsDeleted, map => map.NotNullable(true));
@@ -97,7 +97,8 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public C_LanguageMap()
 		{
-			Table("C_Language");
+			Schema("DBO");
+			Schema("DBO"); Table("C_Language");
 			Lazy(true);
 			Id(x => x.Code, map => { map.Generator(Generators.Assigned); map.Length(2); map.Column("LanguageCode"); });
 			Property(x => x.Title, map => map.NotNullable(true));
@@ -109,7 +110,8 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public V_N_TextResourceMap()
 		{
-			Table("V_N_TextResource");
+
+			Schema("DBO"); Table("V_N_TextResource");
 
 			Lazy(true);
 			Id(x => x.TextResourceID, map => map.Generator(Generators.Identity));
@@ -125,7 +127,7 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public N_FilterMap()
 		{
-			Table("N_Filter");
+			Schema("DBO"); Table("N_Filter");
 			Lazy(true);
 			Id(x => x.FilterID, map => map.Generator(Generators.Identity));
 			Property(x => x.ListName);
@@ -147,13 +149,13 @@ namespace Nephrite.Web.CoreDataContext
 		}
 	}
 
-	
+
 
 	public class TM_TaskParameterMap : ClassMapping<TM_TaskParameter>
 	{
 		public TM_TaskParameterMap()
 		{
-			Table("TM_TaskParameter");
+			Schema("DBO"); Table("TM_TaskParameter");
 			Lazy(true);
 			Id(x => x.TaskParameterID, map => map.Generator(Generators.Identity));
 			Property(x => x.Title, map => map.NotNullable(true));
@@ -168,7 +170,7 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public TM_TaskExecutionMap()
 		{
-			Table("TM_TaskExecution");
+			Schema("DBO"); Table("TM_TaskExecution");
 			Lazy(true);
 			Id(x => x.TaskExecutionID, map => map.Generator(Generators.Identity));
 			Property(x => x.StartDate, map => map.NotNullable(true));
@@ -187,7 +189,7 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public TM_TaskMap()
 		{
-			Table("TM_Task");
+			Schema("DBO"); Table("TM_Task");
 			Lazy(true);
 			Id(x => x.TaskID, map => map.Generator(Generators.Identity));
 			Property(x => x.Title, map => map.NotNullable(true));
@@ -208,7 +210,7 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public N_DownloadLogMap()
 		{
-			Table("N_DownloadLog");
+			Schema("DBO"); Table("N_DownloadLog");
 			Lazy(true);
 			Id(x => x.DownloadLogID, map => map.Generator(Generators.Identity));
 			Property(x => x.IsDeleted, map => map.NotNullable(true));
@@ -223,7 +225,7 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public V_DbFileMap()
 		{
-			Table("V_DbFile");
+			Schema("DBO"); Table("V_DbFile");
 			Lazy(true);
 			Id(x => x.ID, map => map.Generator(Generators.Guid));
 			Property(x => x.Size, map => map.NotNullable(true));
@@ -247,7 +249,7 @@ namespace Nephrite.Web.CoreDataContext
 			Property(x => x.CheckedOutBy);
 
 			Property(x => x.IsDeleted, map => { map.Insert(false); map.Update(false); });
-			
+
 			Property(x => x.SPMActionItemGUID, map => { map.Insert(false); map.Update(false); });
 			Property(x => x.IsValid);
 			Property(x => x.ParentFolderID);
@@ -258,7 +260,7 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public V_DbFolderMap()
 		{
-			Table("V_DbFolder");
+			Schema("DBO"); Table("V_DbFolder");
 			Lazy(true);
 			Id(x => x.ID, map => map.Generator(Generators.Guid));
 			Property(x => x.Title, map => map.NotNullable(true));
@@ -276,7 +278,7 @@ namespace Nephrite.Web.CoreDataContext
 			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
 
 			Property(x => x.Size, map => map.NotNullable(true));
-			Property(x => x.LastModifiedUserName, map => map.NotNullable(true)); 
+			Property(x => x.LastModifiedUserName, map => map.NotNullable(true));
 			Property(x => x.FullPath);
 			Property(x => x.Creator);
 			Property(x => x.ParentFolderID);
@@ -288,7 +290,7 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public V_DbItemMap()
 		{
-			Table("V_DbItem");
+			Schema("DBO"); Table("V_DbItem");
 			Lazy(true);
 			Id(x => x.ID, map => map.Generator(Generators.Guid));
 			Property(x => x.Size, map => map.NotNullable(true));
@@ -300,7 +302,7 @@ namespace Nephrite.Web.CoreDataContext
 			Property(x => x.FullPath, map => { map.Insert(false); map.Update(false); });
 			Property(x => x.Tag);
 			Property(x => x.PublishDate);
-			
+
 			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
 			Property(x => x.LastModifiedUserName, map => map.NotNullable(true));
 			Property(x => x.CheckedOutByID, map => { map.Insert(false); map.Update(false); });
@@ -320,7 +322,7 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public N_FileDataMap()
 		{
-			Table("N_FileData");
+			Schema("DBO"); Table("N_FileData");
 			Lazy(true);
 			Id(x => x.FileGUID, map => map.Generator(Generators.Guid));
 			Property(x => x.Data);
@@ -332,7 +334,7 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public N_VirusScanLogMap()
 		{
-			Table("N_VirusScanLog");
+			Schema("DBO"); Table("N_VirusScanLog");
 
 			Lazy(true);
 			Id(x => x.VirusScanLogID, map => map.Generator(Generators.Identity));
@@ -349,7 +351,7 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public N_SettingMap()
 		{
-			Table("N_Settings");
+			Schema("DBO"); Table("N_Settings");
 			Lazy(true);
 			Id(x => x.SettingsGUID, map => map.Generator(Generators.Assigned));
 			Property(x => x.SystemName, map => map.NotNullable(true));
