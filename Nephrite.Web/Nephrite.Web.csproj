@@ -286,6 +286,9 @@
     <Compile Include="Features\FileStorage2\IFileRepository.cs" />
     <Compile Include="Features\FileStorage2\Samples.cs" />
     <Compile Include="Features\FileStorage2\StorageTypes.cs" />
+    <Compile Include="Features\FileStorage2\TesseraVirtualDirectory.cs" />
+    <Compile Include="Features\FileStorage2\TesseraVirtualFile.cs" />
+    <Compile Include="Features\FileStorage2\TesseraVirtualPathProvider.cs" />
     <Compile Include="Features\Layout\Helper.cs" />
     <Compile Include="Features\Layout\LayoutTessera.cs" />
     <Compile Include="Features\Layout\SimpleTags.cs" />
