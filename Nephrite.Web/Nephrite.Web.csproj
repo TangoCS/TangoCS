@@ -129,12 +129,16 @@
     <Compile Include="FormsEngine\TemplateType.cs" />
     <Compile Include="FormsEngine\VPPRegisterHandler.cs" />
     <Compile Include="FormsEngine\WebSiteCache.cs" />
+    <Compile Include="FormsGenerator\BaseControlsCode.cs" />
+    <Compile Include="FormsGenerator\ControlCode.cs" />
+    <Compile Include="FormsGenerator\SelectObjectCode.cs" />
     <Compile Include="Meta.Database\DBScriptMSSQL.cs" />
     <Compile Include="Meta.Database\IDBScript.cs" />
     <Compile Include="Meta.Database\PrimitiveTypesExtensions.cs" />
     <Compile Include="Meta.Database\SchemaSync.cs" />
     <Compile Include="Meta.Database\UpdateScriptBuilder2.cs" />
     <Compile Include="MetaStorage\MetaStorageModel.cs" />
+    <Compile Include="Meta.Forms\UIMetaModel.cs" />
     <Compile Include="Model\IMMObject.cs" />
     <Compile Include="MVC\AppWeb.cs" />
     <Compile Include="Controllers\EntityController.cs" />

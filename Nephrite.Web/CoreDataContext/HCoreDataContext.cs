@@ -151,9 +151,9 @@ namespace Nephrite.Web.CoreDataContext
 			return new MailMessage();
 		}
 
-		public IQueryable<IV_N_TextResource> IV_N_TextResource
+		public IQueryable<IN_TextResource> IN_TextResource
 		{
-			get { return new HTable<IV_N_TextResource>(this, Session.Query<V_N_TextResource>().Cast<IV_N_TextResource>()); }
+			get { return new HTable<IN_TextResource>(this, Session.Query<V_N_TextResource>().Cast<IN_TextResource>()); }
 		}
 
 		public IQueryable<IC_Language> IC_Language

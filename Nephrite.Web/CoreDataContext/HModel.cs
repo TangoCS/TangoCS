@@ -105,7 +105,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual bool IsDefault { get; set; }
 	}
 
-	public partial class V_N_TextResource : IV_N_TextResource
+	public partial class V_N_TextResource : IN_TextResource
 	{
 		public virtual int TextResourceID { get; set; }
 		public virtual string Title { get; set; }

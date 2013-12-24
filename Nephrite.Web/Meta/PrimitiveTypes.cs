@@ -11,12 +11,14 @@ namespace Nephrite.Meta
 		string ColumnSuffix { get; }
 	}
 
+	public interface IMetaNumericType { }
+
 	public class MetaPrimitiveType : MetaClassifier
 	{
 		public bool NotNullable { get; set; }
 	}
 
-	public partial class MetaDecimalType : MetaPrimitiveType
+	public partial class MetaDecimalType : MetaPrimitiveType, IMetaNumericType
 	{
 		public int Precision { get; set; }
 		public int Scale { get; set; }
@@ -43,7 +45,7 @@ namespace Nephrite.Meta
 
 	}
 
-	public partial class MetaIntType : MetaPrimitiveType, IMetaIdentifierType
+	public partial class MetaIntType : MetaPrimitiveType, IMetaIdentifierType, IMetaNumericType
 	{
 
 		public string ColumnSuffix
@@ -52,7 +54,7 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public partial class MetaLongType : MetaPrimitiveType
+	public partial class MetaLongType : MetaPrimitiveType, IMetaNumericType
 	{
 
 	}

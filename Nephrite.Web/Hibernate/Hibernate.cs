@@ -44,7 +44,7 @@ namespace Nephrite.Web.Hibernate
 		{
 			return c =>
 			{
-				switch (AppSettings.Get("DBType").ToUpper())
+				switch (System.Configuration.ConfigurationManager.AppSettings["DBType"].ToUpper())
 				{
 					case "MSSQL": c.Dialect<MsSql2008Dialect>(); break;
 					case "DB2": c.Dialect<DB2Dialect>(); break;
@@ -57,7 +57,8 @@ namespace Nephrite.Web.Hibernate
 				c.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
 				c.IsolationLevel = System.Data.IsolationLevel.ReadUncommitted;
 				//c.LogFormattedSql = true;
-				c.SchemaAction = SchemaAutoAction.Validate;
+				if (!System.Configuration.ConfigurationManager.AppSettings["ValidateSchema"].IsEmpty())
+					c.SchemaAction = SchemaAutoAction.Validate;
 			};
 		}
 
