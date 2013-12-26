@@ -272,4 +272,36 @@ namespace Nephrite.Web.Model
 		public virtual string IP { get; set; }
 	}
 
+	[Serializable]
+	public partial class N_TaskType
+	{
+		public virtual int TaskTypeID { get; set; }
+		public virtual string Title { get; set; }
+		public virtual string SysName { get; set; }
+		public virtual string Class { get; set; }
+		public virtual string Method { get; set; }
+		public virtual bool IsActive { get; set; }
+		public virtual string ArgumentClass { get; set; }
+		public virtual string ResultClass { get; set; }
+	}
+
+	[Serializable]
+	public partial class N_Task
+	{
+		public virtual System.Guid GUID { get; set; }
+		public virtual System.DateTime CreateDate { get; set; }
+		public virtual int CreatorID { get; set; }
+		public virtual int TaskTypeID { get; set; }
+		public virtual System.Nullable<System.DateTime> StartTime { get; set; }
+		public virtual System.Nullable<System.DateTime> FinishTime { get; set; }
+		public virtual bool Notify { get; set; }
+		public virtual System.Nullable<int> ErrorLogID { get; set; }
+		public virtual string ErrorLogMessage { get; set; }
+		public virtual System.Nullable<System.DateTime> AbortRequestDate { get; set; }
+		public virtual int Status { get; set; }
+		public virtual decimal PercentDone { get; set; }
+		public virtual System.Nullable<System.DateTime> PercentDoneDate { get; set; }
+		public virtual string Argument { get; set; }
+		public virtual string Result { get; set; }
+	}
 }

@@ -375,4 +375,45 @@ namespace Nephrite.Web.Model
 			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
 		}
 	}
+
+	public class N_TaskTypeMap : ClassMapping<N_TaskType>
+	{
+		public N_TaskTypeMap()
+		{
+			Table("N_TaskType");
+			Lazy(true);
+			Id(x => x.TaskTypeID, map => map.Generator(Generators.Identity));
+			Property(x => x.SysName, map => map.NotNullable(true));
+			Property(x => x.Title, map => map.NotNullable(true));
+			Property(x => x.Class, map => map.NotNullable(true));
+			Property(x => x.Method, map => map.NotNullable(true));
+			Property(x => x.IsActive, map => map.NotNullable(true));
+			Property(x => x.ArgumentClass);
+			Property(x => x.ResultClass);
+		}
+	}
+
+	public class N_TaskMap : ClassMapping<N_Task>
+	{
+		public N_TaskMap()
+		{
+			Table("N_Task");
+			Lazy(true);
+			Id(x => x.GUID, map => map.Generator(Generators.Assigned));
+			Property(x => x.CreateDate, map => map.NotNullable(true));
+			Property(x => x.CreatorID, map => map.NotNullable(true));
+			Property(x => x.TaskTypeID, map => map.NotNullable(true));
+			Property(x => x.StartTime);
+			Property(x => x.FinishTime);
+			Property(x => x.Notify, map => map.NotNullable(true));
+			Property(x => x.ErrorLogID);
+			Property(x => x.ErrorLogMessage);
+			Property(x => x.AbortRequestDate);
+			Property(x => x.Status, map => map.NotNullable(true));
+			Property(x => x.PercentDone, map => map.NotNullable(true));
+			Property(x => x.PercentDoneDate);
+			Property(x => x.Argument);
+			Property(x => x.Result);
+		}	
+	}
 }
