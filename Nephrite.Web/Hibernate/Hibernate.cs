@@ -28,7 +28,7 @@ using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Web.Hibernate
 {
-	public abstract class HDataContext : IDisposable, IDataContext
+	public  abstract partial class HDataContext : IDisposable, IDataContext
 	{
 		static Dictionary<string, ISessionFactory> _sessionFactories = new Dictionary<string, ISessionFactory>();
 		//ISessionFactory _sessionFactory;
