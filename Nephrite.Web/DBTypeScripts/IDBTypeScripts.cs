@@ -11,5 +11,6 @@ namespace Nephrite.DBTypeScripts
 		string FromSID { get; }
 		string FromID { get; }
 		string FromEmail { get; }
+		string Menu { get; }
 	}
 }
