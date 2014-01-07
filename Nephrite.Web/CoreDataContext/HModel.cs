@@ -448,7 +448,21 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual int CacheTimeout { get; set; }
 		public virtual string BaseClass { get; set; }
 		public virtual Nullable<System.Int32> ObjectTypeID { get; set; }
-		public virtual Nullable<System.Int32> PackageID { get; set; }
+		public virtual Nullable<System.Int32> PackageID
+		{
+			get
+			{
+
+				if (Package == null) return null;
+				return Package.PackageID;
+			}
+			set
+			{
+				if (value == null) return;
+				Package = new MM_Package { PackageID = value.Value };
+			}
+		}
+		public virtual MM_Package Package { get; set; }
 	}
 
 }

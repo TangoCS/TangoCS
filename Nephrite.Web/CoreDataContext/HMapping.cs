@@ -5,6 +5,8 @@ using System.Web;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 using NHibernate.Type;
+using NHibernate;
+using Nephrite.Web.MetaStorage;
 
 namespace Nephrite.Web.CoreDataContext
 {
@@ -504,7 +506,7 @@ namespace Nephrite.Web.CoreDataContext
 
 		}
 	}*/
-
+	
 	public class MM_FormViewMap : ClassMapping<MM_FormView>
 	{
 		public MM_FormViewMap()
@@ -528,6 +530,13 @@ namespace Nephrite.Web.CoreDataContext
 
 			Property(x => x.ObjectTypeID);
 			Property(x => x.PackageID);
+
+			ManyToOne(x => x.Package, map =>
+			{
+				map.Fetch(FetchKind.Join);
+				map.Column("PackageID");
+				map.Cascade(Cascade.None);
+			});
 		}
 	}
 

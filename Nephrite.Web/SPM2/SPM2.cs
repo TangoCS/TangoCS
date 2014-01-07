@@ -5,10 +5,12 @@ using System.Web;
 using System.Configuration;
 using System.Security.Principal;
 using System.Collections;
+using Nephrite.DBTypeScripts;
 using Nephrite.Meta;
 using System.DirectoryServices.AccountManagement;
 using System.IO;
 using System.Threading;
+using Nephrite.Web.DBTypeScripts;
 
 namespace Nephrite.Web.SPM
 {
@@ -21,6 +23,7 @@ namespace Nephrite.Web.SPM
 
 		static List<Role> _allRoles = null;
 		static List<RoleAsso> _allRoleAsso = null;
+	
 
 		public static List<Role> GetList()
 		{
@@ -66,7 +69,14 @@ namespace Nephrite.Web.SPM
 	public class Subject
 	{
 		private Subject() { }
+		private static IDBTypeScripts idbTypeScripts
+		{
+			get
+			{
+				return Activator.CreateInstance(Type.GetType(string.Format("Nephrite.Web.DBTypeScripts.{0}", ConfigurationManager.AppSettings["DBType"].ToUpper()))) as IDBTypeScripts;
 
+			}
+		}
 		static IDictionary Items
 		{
 			get
@@ -217,19 +227,19 @@ namespace Nephrite.Web.SPM
 		}
 		public static Subject FromLogin(string login)
 		{
-			return A.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as \"Login\", Title as \"Title\", PasswordHash as \"PasswordHash\",  IsActive as \"_IsActive\", IsDeleted as \"_IsDeleted\", SID , MustChangePassword  as \"_MustChangePassword\", Email as  \"Email\" from SPM_Subject where lower(SystemName) = ?", login.ToLower()).SingleOrDefault();
+			return A.Model.ExecuteQuery<Subject>(idbTypeScripts.FromLogin, login.ToLower()).SingleOrDefault();
 		}
 		public static Subject FromSID(string sid, string login)
 		{
-			return A.Model.ExecuteQuery<Subject>("select SubjectID  as ID, SystemName as \"Login\", Title as \"Title\", PasswordHash as \"PasswordHash\", IsActive as \"_IsActive\", IsDeleted  as \"_IsDeleted\", SID, MustChangePassword  as \"_MustChangePassword\", Email as \"Email\" from SPM_Subject where SID = ? or lower(SystemName) = ?", sid, login).SingleOrDefault();
+			return A.Model.ExecuteQuery<Subject>(idbTypeScripts.FromSID, sid, login).SingleOrDefault();
 		}
 		public static Subject FromID(int id)
 		{
-			return A.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as \"Login\", Title as \"Title\", PasswordHash as \"PasswordHash\", IsActive as \"_IsActive\", IsDeleted as \"_IsDeleted\", SID, MustChangePassword as \"_MustChangePassword\", Email as  \"Email\" from SPM_Subject where SubjectID = ?", id).SingleOrDefault();
+			return A.Model.ExecuteQuery<Subject>(idbTypeScripts.FromID, id).SingleOrDefault();
 		}
 		public static Subject FromEmail(string email)
 		{
-			return A.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as \"Login\", Title as \"Title\", PasswordHash as \"PasswordHash\", IsActive as \"_IsActive\", IsDeleted as \"IsDeleted\", SID, MustChangePassword as \"MustChangePassword\", Email as \"Email\" from SPM_Subject where lower(Email) = ?", email.ToLower()).SingleOrDefault();
+			return A.Model.ExecuteQuery<Subject>(idbTypeScripts.FromEmail, email.ToLower()).SingleOrDefault();
 		}
 		public static Subject System
 		{

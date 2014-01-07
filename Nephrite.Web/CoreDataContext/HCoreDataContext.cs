@@ -225,12 +225,12 @@ namespace Nephrite.Web.CoreDataContext
 
 		public IQueryable<IMM_FormView> IMM_FormView
 		{
-			get { return new HTable<IMM_FormView>(this, Session.Query<MM_FormView>().Cast<IMM_FormView>()); }
+			get { return new HTable<IMM_FormView>(this, Session.Query<IMM_FormView>()); }
 		}
 
 		public IQueryable<IMM_Package> IMM_Package
 		{
-			get { return new HTable<IMM_Package>(this, Session.Query<MM_Package>().Cast<IMM_Package>()); }
+			get { return new HTable<IMM_Package>(this, Session.Query<IMM_Package>()); }
 		}
 
 		public IQueryable<IN_Cache> IN_Cache
