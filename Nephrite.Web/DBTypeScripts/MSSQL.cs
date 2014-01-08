@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Nephrite.DBTypeScripts;
 
 namespace Nephrite.Web.DBTypeScripts
 {
@@ -30,7 +29,9 @@ namespace Nephrite.Web.DBTypeScripts
 
 		public string Menu
 		{
-			get { return @"SELECT [t0].[Title], [t0].[URL] AS [Url], [t0].[Type] AS [MenuItemType], [t0].[ImageURL] AS [ImageUrl], 
+			get
+			{
+				return @"SELECT [t0].[Title], [t0].[URL] AS [Url], [t0].[Type] AS [MenuItemType], [t0].[ImageURL] AS [ImageUrl], 
 							(CASE 
 								WHEN [t2].[test] IS NOT NULL THEN CONVERT(NVarChar(MAX),[t6].[SysName])
 								WHEN [t4].[test] IS NOT NULL THEN [t7].[SysName] + 'Pck'
@@ -61,8 +62,64 @@ namespace Nephrite.Web.DBTypeScripts
 						INNER JOIN [dbo].[N_Navig] AS [t5] ON [t5].[NavigGUID] = [t0].[NavigGUID]
 						LEFT OUTER JOIN [dbo].[MM_ObjectType] AS [t6] ON [t6].[ObjectTypeID] = [t2].[ObjectTypeID]
 						LEFT OUTER JOIN [dbo].[MM_Package] AS [t7] ON [t7].[PackageID] = [t4].[PackageID]
-						WHERE (NOT ([t0].[IsDeleted] = 1)) AND ([t5].[SysName] = 'MainMenu') AND ([t0].[LanguageCode] = 'ru')"; }
+						WHERE (NOT ([t0].[IsDeleted] = 1)) AND ([t5].[SysName] = 'MainMenu') AND ([t0].[LanguageCode] = 'ru')";
+			}
+
 		}
+		public string GetRolesAccessByNameQuery
+		{
+			get
+			{
+				return @"select upper(pa.SystemName + '.' + a.SystemName) + '-1-' + convert(varchar, ra.RoleID)
+				from SPM_Action a, 
+				SPM_ActionAsso asso,
+				SPM_Action pa,
+				SPM_ActionAsso asso2,
+				SPM_Action roota,
+				SPM_RoleAccess ra
+				where a.ActionID = asso.ActionID and pa.ActionID = asso.ParentActionID and
+				pa.ActionID = asso2.ActionID and roota.ActionID = asso2.ParentActionID and
+				ra.ActionID = a.ActionID
+				order by pa.SystemName + '.' + a.SystemName";
+			}
+		}
+
+		public string GetRolesAccessByIdQuery
+		{
+			get
+			{
+				return @"select convert(varchar(36), a.ItemGUID) + '-1-' + convert(varchar, ra.RoleID)
+				from SPM_Action a, SPM_RoleAccess ra
+				where ra.ActionID = a.ActionID and a.ItemGUID is not null";
+			}
+		}
+
+		public string GetItemsIdsQuery
+		{
+			get
+			{
+				return @"select convert(varchar(36), a.ItemGUID) + '-1'
+				from SPM_Action a
+				where a.ItemGUID is not null";
+			}
+		}
+
+		public string GetItemsNamesQuery
+		{
+			get
+			{
+				return @"select upper(pa.SystemName + '.' + a.SystemName) + '-1'
+				from SPM_Action a, 
+				SPM_ActionAsso asso,
+				SPM_Action pa,
+				SPM_ActionAsso asso2,
+				SPM_Action roota
+				where a.ActionID = asso.ActionID and pa.ActionID = asso.ParentActionID and
+				pa.ActionID = asso2.ActionID and roota.ActionID = asso2.ParentActionID 
+				order by pa.SystemName + '.' + a.SystemName";
+			}
+		}
+		
 		#endregion
 	}
 }

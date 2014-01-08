@@ -5,7 +5,6 @@ using System.Web;
 using System.Configuration;
 using System.Security.Principal;
 using System.Collections;
-using Nephrite.DBTypeScripts;
 using Nephrite.Meta;
 using System.DirectoryServices.AccountManagement;
 using System.IO;

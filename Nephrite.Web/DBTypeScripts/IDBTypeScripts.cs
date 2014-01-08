@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Nephrite.DBTypeScripts
+namespace Nephrite.Web.DBTypeScripts
 {
 	public interface IDBTypeScripts
 	{
@@ -12,5 +12,10 @@ namespace Nephrite.DBTypeScripts
 		string FromID { get; }
 		string FromEmail { get; }
 		string Menu { get; }
+		string GetRolesAccessByIdQuery { get; }
+		string GetRolesAccessByNameQuery { get; }
+		string GetItemsIdsQuery { get; }
+		string GetItemsNamesQuery { get; }
+
 	}
 }

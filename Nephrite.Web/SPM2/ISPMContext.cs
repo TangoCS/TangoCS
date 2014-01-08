@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Configuration;
+using Nephrite.Web.DBTypeScripts;
 
 namespace Nephrite.Web.SPM
 {
@@ -319,7 +320,14 @@ namespace Nephrite.Web.SPM
 		{
 			_className = "Action";
 		}
+		private static IDBTypeScripts idbTypeScripts
+		{
+			get
+			{
+				return Activator.CreateInstance(Type.GetType(string.Format("Nephrite.Web.DBTypeScripts.{0}", ConfigurationManager.AppSettings["DBType"].ToUpper()))) as IDBTypeScripts;
 
+			}
+		}
 		static ActionSPMContext _current = new ActionSPMContext();
 		public static ActionSPMContext Current
 		{
@@ -328,44 +336,22 @@ namespace Nephrite.Web.SPM
 
 		protected override string GetRolesAccessByIdQuery()
 		{
-			return @"select convert(varchar(36), a.ItemGUID) + '-1-' + convert(varchar, ra.RoleID)
-				from SPM_Action a, SPM_RoleAccess ra
-				where ra.ActionID = a.ActionID and a.ItemGUID is not null";
+			return idbTypeScripts.GetRolesAccessByIdQuery;
 		}
 
 		protected override string GetRolesAccessByNameQuery()
 		{
-			return @"select upper(pa.SystemName + '.' + a.SystemName) + '-1-' + convert(varchar, ra.RoleID)
-				from SPM_Action a, 
-				SPM_ActionAsso asso,
-				SPM_Action pa,
-				SPM_ActionAsso asso2,
-				SPM_Action roota,
-				SPM_RoleAccess ra
-				where a.ActionID = asso.ActionID and pa.ActionID = asso.ParentActionID and
-				pa.ActionID = asso2.ActionID and roota.ActionID = asso2.ParentActionID and
-				ra.ActionID = a.ActionID
-				order by pa.SystemName + '.' + a.SystemName";
+			return idbTypeScripts.GetRolesAccessByNameQuery;
 		}
 
 		protected override string GetItemsIdsQuery()
 		{
-			return @"select convert(varchar(36), a.ItemGUID) + '-1'
-				from SPM_Action a
-				where a.ItemGUID is not null";
+			return idbTypeScripts.GetItemsIdsQuery;
 		}
 
 		protected override string GetItemsNamesQuery()
 		{
-			return @"select upper(pa.SystemName + '.' + a.SystemName) + '-1'
-				from SPM_Action a, 
-				SPM_ActionAsso asso,
-				SPM_Action pa,
-				SPM_ActionAsso asso2,
-				SPM_Action roota
-				where a.ActionID = asso.ActionID and pa.ActionID = asso.ParentActionID and
-				pa.ActionID = asso2.ActionID and roota.ActionID = asso2.ParentActionID 
-				order by pa.SystemName + '.' + a.SystemName";
+			return idbTypeScripts.GetItemsNamesQuery;
 		}
 	}
 
@@ -385,9 +371,12 @@ namespace Nephrite.Web.SPM
 		protected override string GetRolesAccessByIdQuery()
 		{
 			return @"select ra.RoleID
-				from SPM_Action a, SPM_RoleAccess ra, MM_ObjectType t
+				from DBO.SPM_Action a, DBO.SPM_RoleAccess ra, DBO.MM_ObjectType t
 				where ra.ActionID = a.ActionID and a.ItemGUID is not null and a.ClassGUID = t.Guid and t.SysName = 'N_Folder'
 				and a.ActionTypeID = {1} and a.ItemGUID = '{0}'";
+
+
+
 		}
 
 		protected override string GetRolesAccessByNameQuery()
