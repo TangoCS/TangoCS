@@ -67,16 +67,15 @@ namespace Nephrite.Web.DBTypeScripts
 		{
 			get
 			{
-				return @"select (pa.SystemName || '.' || a.SystemName) || '-1-' || convert(varchar, ra.RoleID)
+				return @"select substr(pa.SystemName || '.' || a.SystemName,1,255) || '-1'
 				from DBO.SPM_Action a, 
 				DBO.SPM_ActionAsso asso,
 				DBO.SPM_Action pa,
 				DBO.SPM_ActionAsso asso2,
-				DBO.SPM_Action roota,
-				DBO.SPM_RoleAccess ra
+				DBO.SPM_Action roota
 				where a.ActionID = asso.ActionID and pa.ActionID = asso.ParentActionID and
-				pa.ActionID = asso2.ActionID and roota.ActionID = asso2.ParentActionID and
-				ra.ActionID = a.ActionID";// order by pa.SystemName + '.' + a.SystemName
+				pa.ActionID = asso2.ActionID and roota.ActionID = asso2.ParentActionID 
+				order by substr(pa.SystemName || '.' || a.SystemName,1,255) || '-1'";// order by pa.SystemName + '.' + a.SystemName
 			}
 		}
 

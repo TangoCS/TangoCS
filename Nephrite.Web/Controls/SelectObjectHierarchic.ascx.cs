@@ -190,15 +190,11 @@ namespace Nephrite.Web.Controls
 			Type idType = null;
 			if (IDField.IsEmpty())
 			{
-				foreach (PropertyInfo pi in Type.GetProperties())
-				{
-					object[] attr = pi.GetCustomAttributes(typeof(ColumnAttribute), true);
-					if (attr.Length == 1 && ((ColumnAttribute)attr[0]).IsPrimaryKey == true && pi.Name != "LanguageCode")
-					{
-						IDField = pi.Name;
-						idType = pi.PropertyType;
-					}
-				}
+
+				var dynamicobject = Type.GetConstructor(new Type[] { }).Invoke(new object[] { });
+				var modelObject = dynamicobject as IModelObject;
+				if (modelObject != null) IDField = modelObject.MetaClass.Key.Name;
+
 				if (IDField.IsEmpty())
 					throw new Exception(ClientID + ": Не задано свойство IDField");
 			}
