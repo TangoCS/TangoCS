@@ -28,7 +28,7 @@ using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Web.Hibernate
 {
-	public  abstract partial class HDataContext : IDisposable, IDataContext
+	public abstract partial class HDataContext : IDisposable, IDataContext
 	{
 		static Dictionary<string, ISessionFactory> _sessionFactories = new Dictionary<string, ISessionFactory>();
 		//ISessionFactory _sessionFactory;
@@ -52,7 +52,7 @@ namespace Nephrite.Web.Hibernate
 					case "POSTGRESQL": c.Dialect<PostgreSQLDialect>(); break;
 					default: c.Dialect<MsSql2008Dialect>(); break;
 				}
-				
+
 				c.ConnectionString = connectionString;
 				c.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
 				c.IsolationLevel = System.Data.IsolationLevel.ReadUncommitted;
@@ -74,7 +74,7 @@ namespace Nephrite.Web.Hibernate
 
 		public ISessionFactory SessionFactory
 		{
-			get 
+			get
 			{
 				string t = this.GetType().Name;
 				ISessionFactory f = null;
@@ -86,7 +86,7 @@ namespace Nephrite.Web.Hibernate
 					f = _cfg.BuildSessionFactory();
 					_sessionFactories.Add(t, f);
 				}
-				return f; 
+				return f;
 			}
 		}
 
@@ -117,7 +117,7 @@ namespace Nephrite.Web.Hibernate
 			HbmMapping domainMapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			_cfg.AddMapping(domainMapping);
 
-			
+
 
 			_session = SessionFactory.OpenSession();
 			_session.FlushMode = FlushMode.Never;
@@ -128,6 +128,22 @@ namespace Nephrite.Web.Hibernate
 			Dispose();
 		}
 
+		public void ChangeTypesProperties(object obj)
+		{
+			if (obj == null) return;
+			Type objType = obj.GetType();
+			PropertyInfo[] properties = objType.GetProperties();
+			foreach (PropertyInfo property in properties)
+			{
+				var propValue = property.GetValue(obj, null);
+				if (propValue is Guid)
+				{
+					propValue = Convert.ChangeType(propValue, typeof(String));
+
+				}
+				ChangeTypesProperties(propValue);
+			}
+		}
 		public void SubmitChanges()
 		{
 			using (var transaction = _session.BeginTransaction())
@@ -136,7 +152,13 @@ namespace Nephrite.Web.Hibernate
 					action();
 
 				foreach (object obj in ToInsert)
+				{
+					if (System.Configuration.ConfigurationManager.AppSettings["DBType"].ToUpper() == "DB2")
+					{
+						ChangeTypesProperties(obj);
+					}
 					_session.SaveOrUpdate(obj);
+				}
 
 				foreach (object obj in ToDelete)
 					_session.Delete(obj);
@@ -256,7 +278,7 @@ namespace Nephrite.Web.Hibernate
 		}
 
 		public IQueryable<T> GetTable<T>() //where T : class
-		{  
+		{
 			return Session.Query<T>();
 		}
 
@@ -273,7 +295,7 @@ namespace Nephrite.Web.Hibernate
 		}
 	}
 
-	
+
 
 	public class HTable : IQueryable, ITable
 	{
@@ -367,7 +389,8 @@ namespace Nephrite.Web.Hibernate
 	{
 		protected IQueryable<T> _query2;
 
-		public HTable(HDataContext dataContext, IQueryable<T> query) : base(dataContext, query)
+		public HTable(HDataContext dataContext, IQueryable<T> query)
+			: base(dataContext, query)
 		{
 			_query2 = query;
 		}
