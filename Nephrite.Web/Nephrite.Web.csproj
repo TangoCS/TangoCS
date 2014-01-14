@@ -55,7 +55,6 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IBM.Data.DB2, Version=9.0.0.2, Culture=neutral, PublicKeyToken=7c307b91aa13d208, processorArchitecture=AMD64" />
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=c957c2ee7c0582f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExternalDll\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -286,6 +285,9 @@
     <Compile Include="Features\FileStorage2\IFileRepository.cs" />
     <Compile Include="Features\FileStorage2\Samples.cs" />
     <Compile Include="Features\FileStorage2\StorageTypes.cs" />
+    <Compile Include="Features\FileStorage2\TesseraVirtualDirectory.cs" />
+    <Compile Include="Features\FileStorage2\TesseraVirtualFile.cs" />
+    <Compile Include="Features\FileStorage2\TesseraVirtualPathProvider.cs" />
     <Compile Include="Features\Layout\Helper.cs" />
     <Compile Include="Features\Layout\LayoutTessera.cs" />
     <Compile Include="Features\Layout\SimpleTags.cs" />

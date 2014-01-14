@@ -40,6 +40,8 @@ namespace Nephrite.Web.Model
 			l.Add(typeof(N_SettingMap));
 			l.Add(typeof(N_CacheMap));
 			l.Add(typeof(UserActivityMap));
+			l.Add(typeof(N_TaskTypeMap));
+			l.Add(typeof(N_TaskMap));
 			return l;
 		}
 
@@ -181,6 +183,20 @@ namespace Nephrite.Web.Model
 			get
 			{
 				return new HTable<UserActivity>(this, Session.Query<UserActivity>());
+			}
+		}
+		public HTable<N_TaskType> N_TaskType
+		{
+			get
+			{
+				return new HTable<N_TaskType>(this, Session.Query<N_TaskType>());
+			}
+		}
+		public HTable<N_Task> N_Task
+		{
+			get
+			{
+				return new HTable<N_Task>(this, Session.Query<N_Task>());
 			}
 		}
 	}

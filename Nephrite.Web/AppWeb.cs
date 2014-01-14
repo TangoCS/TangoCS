@@ -193,6 +193,14 @@ namespace Nephrite.Web
 			}
 		}
 		public static Assembly Assembly { get; set; }
+		/// <summary>
+		/// Дата кэширования
+		/// </summary>
+		public static DateTime CacheTimeStamp
+		{
+			get;
+			set;
+		}
 	}
 
 	public class Base
