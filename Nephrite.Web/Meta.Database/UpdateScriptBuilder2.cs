@@ -26,7 +26,7 @@ namespace Nephrite.Meta.Database
 
 		public UpdateScriptBuilder2(Schema schema, SqlConnection connection)
 		{
-			SqlConnectionStringBuilder b = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionString"].ConnectionString);
+			SqlConnectionStringBuilder b = new SqlConnectionStringBuilder(connection.ConnectionString);
 			_servername = b.DataSource;
 			_dbname = b.InitialCatalog;
 			_schema = schema;
