@@ -75,16 +75,16 @@ namespace Nephrite.Meta
 					LoadOperation(c, xe);
 				}
 
-			var stereotypes = xc.Elements("Stereotypes");
-			if (stereotypes != null)
-				foreach (XElement xe in stereotypes.Nodes())
-				{
-					if (xe.Name == "Versioning") // @Sad переделать потом на универсальный загрузчик
-					{
-						SVersioning s = new SVersioning(xe.GetAttributeValue("VersioningType"));
-						c.AddStereotype(s);
-					}
-				}
+			//var stereotypes = xc.Elements("Stereotypes");
+			//if (stereotypes != null)
+			//	foreach (XElement xe in stereotypes.Nodes())
+			//	{
+			//		if (xe.Name == "Versioning") // @Sad переделать потом на универсальный загрузчик
+			//		{
+			//			SVersioning s = new SVersioning(xe.GetAttributeValue("Type"));
+			//			c.AddStereotype(s);
+			//		}
+			//	}
 
 			p.AddClass(c);
 		}

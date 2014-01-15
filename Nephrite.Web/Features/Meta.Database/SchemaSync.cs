@@ -224,8 +224,8 @@ namespace Nephrite.Meta.Database
 						script.DeletePrimaryKey(CurrentTable.PrimaryKey);
 					}
 					var toRemove = CurrentTable.ForeignKeys.Select(t => t.Key).ToArray();
-					var listUpperFk = CurrentTable.ForeignKeys;
-					listUpperFk.ToList().ForEach(t => t.Key.ToUpper());
+					var listUpperFk = new Dictionary<string, ForeignKey>();
+					CurrentTable.ForeignKeys.ToList().ForEach(t => listUpperFk.Add(t.Key.ToUpper(), t.Value));
 					foreach (var key in toRemove)
 					{
 						var fk = listUpperFk[key.ToUpper()];
