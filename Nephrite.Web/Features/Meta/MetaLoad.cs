@@ -51,6 +51,7 @@ namespace Nephrite.Meta
 		{
 			MetaClass c = new MetaClass();
 			c.ID = xc.GetAttributeValue("ID").ToGuid();
+			c.ObjectTypeID = xc.GetAttributeValue("ObjectTypeID").ToInt32();
 			c.Name = xc.GetAttributeValue("Name");
 			c.Caption = xc.GetAttributeValue("Caption");
 			c.Description = xc.GetAttributeValue("Description");

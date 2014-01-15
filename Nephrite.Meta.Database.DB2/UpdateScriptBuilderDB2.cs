@@ -29,7 +29,7 @@ namespace Nephrite.Meta.Database
 		public UpdateScriptBuilderDB2(Schema schema, SqlConnection connection, bool isdb2)
 		{
 
-			DB2ConnectionStringBuilder b = new DB2ConnectionStringBuilder("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000");
+			DB2ConnectionStringBuilder b = new DB2ConnectionStringBuilder(connection.ConnectionString);
 			_servername = b.Server;
 			_dbname = b.Database;
 			_schema = schema;

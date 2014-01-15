@@ -251,7 +251,10 @@ namespace Nephrite.Meta
 		/// Пакет, в котором располагается класс
 		/// </summary>
 		public MetaPackage Parent { get; set; }
-
+		/// <summary>
+		/// ID обьекта
+		/// </summary>
+		public int? ObjectTypeID { get; set; }
 		Dictionary<string, MetaProperty> _properties = new Dictionary<string, MetaProperty>();
 		Dictionary<string, MetaOperation> _operations = new Dictionary<string, MetaOperation>();
 
