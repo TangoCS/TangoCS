@@ -94,7 +94,7 @@ namespace Nephrite.Meta.Database
 														 srcColumn.Value.IsPrimaryKey && srcTable.Identity ? " IDENTITY(1,1)" : "",
 														 srcColumn.Value.Nullable ? "NULL" : "NOT NULL") :
 														 string.Format(" {0} as {1} ", srcColumn.Value.Name, srcColumn.Value.ComputedText)
-														 )).TrimEnd(',');
+														 )).Trim().TrimEnd(',');
 
 			tableScript = string.Format(tableScript, columnsScript);
 			if (srcTable.ForeignKeys.Count > 0)
@@ -333,7 +333,7 @@ namespace Nephrite.Meta.Database
 											   string.Format("{0} {1} {2} {3},", srcColumn.Value.Name,
 															 srcColumn.Value.Type.GetDBType(this),
 															 srcTable.Identity && srcColumn.Value.IsPrimaryKey ? "IDENTITY(1,1)" : "",
-															 srcColumn.Value.Nullable ? "NULL" : "NOT NULL")).TrimEnd(',');
+															 srcColumn.Value.Nullable ? "NULL" : "NOT NULL")).Trim().TrimEnd(',');
 
 				tableScript = string.Format(tableScript, columnsScript);
 				_MainScripts.Add(tableScript);
@@ -355,7 +355,7 @@ namespace Nephrite.Meta.Database
 											   string.Format("{0} {1} {2} {3}, \r\n", srcColumn.Value.Name,
 															 srcColumn.Value.Type,
 															 "",
-															 srcColumn.Value.Nullable ? "NULL" : "NOT NULL")).TrimEnd(',');
+															 srcColumn.Value.Nullable ? "NULL" : "NOT NULL")).Trim().TrimEnd(',');
 
 				tableScript = string.Format(tableScript, columnsScript);
 				_MainScripts.Add(tableScript);
