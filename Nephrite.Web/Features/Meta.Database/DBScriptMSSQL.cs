@@ -546,7 +546,7 @@ namespace Nephrite.Meta.Database
 				case "uniqueidentifier":
 					return new MetaGuidType();
 				case "datetime":
-					return new MetaDateType();
+					return new MetaDateTimeType();
 				case "date":
 					return new MetaDateType();
 				case "bit":
