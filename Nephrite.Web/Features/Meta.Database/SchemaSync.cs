@@ -104,12 +104,13 @@ namespace Nephrite.Meta.Database
 				//1.2. Удаляем колонки и синхронизируем 
 				foreach (var column in curentColumns)
 				{
-					if (column.Value.CurrentTable.Name.ToLower() == "IMP_EMPLOYEE".ToLower())
+
+					var srcColumn = srcColumns.Values.SingleOrDefault(t => t.Name.ToLower() == column.Value.Name.ToLower());
+					column.Value.srcTable = srcTable;
+					if (column.Value.Name.ToLower() == "IsCheckDeadline".ToLower())
 					{
 
 					}
-					var srcColumn = srcColumns.Values.SingleOrDefault(t => t.Name.ToLower() == column.Value.Name.ToLower());
-					column.Value.srcTable = srcTable;
 					column.Value.Sync(script, srcColumn);
 
 				}
@@ -180,11 +181,11 @@ namespace Nephrite.Meta.Database
 			else
 			{
 				// Обновляем Type, значение Default и Nullable
-				if (srcColumn.Type.GetType() != Type.GetType() || ((DefaultValue == null ? "" : DefaultValue.ToLower()) != (srcColumn.DefaultValue == null ? "" : srcColumn.DefaultValue.ToLower())) || Nullable != srcColumn.Nullable || ((ComputedText == null ? "" : ComputedText.ToLower()) != (srcColumn.ComputedText == null ? "" : srcColumn.ComputedText.ToLower())))
+				if (srcColumn.Type.GetType() != Type.GetType() || Nullable != srcColumn.Nullable || ((ComputedText == null ? "" : ComputedText.ToLower()) != (srcColumn.ComputedText == null ? "" : srcColumn.ComputedText.ToLower())))
 				{
 					var table = CurrentTable.Name;
 					var computedColumns = CurrentTable.Columns.Values.Where(t => !string.IsNullOrEmpty(t.ComputedText));
-					if (string.IsNullOrEmpty(ComputedText))
+					if (string.IsNullOrEmpty(ComputedText) && computedColumns.Any(t => t.ComputedText.ToLower().Contains(Name.ToLower())))
 					{
 						foreach (var column in computedColumns)
 						{
@@ -198,13 +199,24 @@ namespace Nephrite.Meta.Database
 					}
 					script.ChangeColumn(srcColumn);
 
-
-					if (string.IsNullOrEmpty(ComputedText))
+					if (!string.IsNullOrEmpty(DefaultValue))
+					{
+						script.AddDefaultValue(this);
+					}
+					if (string.IsNullOrEmpty(ComputedText) && computedColumns.Any(t => t.ComputedText.ToLower().Contains(Name.ToLower())))
 					{
 						foreach (var column in computedColumns)
 						{
 							script.AddColumn(column);
 						}
+					}
+				}
+				if (((DefaultValue == null ? "" : DefaultValue.ToLower()) != (srcColumn.DefaultValue == null ? "" : srcColumn.DefaultValue.ToLower())))
+				{
+					if (!string.IsNullOrEmpty(DefaultValue))
+					{
+						script.DeleteDefaultValue(this);
+						script.AddDefaultValue(this);
 					}
 				}
 				if (IsPrimaryKey && CurrentTable.Identity != srcTable.Identity)

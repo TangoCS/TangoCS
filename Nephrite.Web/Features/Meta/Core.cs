@@ -367,6 +367,14 @@ namespace Nephrite.Meta
 		/// Тип данных
 		/// </summary>
 		public virtual string DataType { get; set; }
+
+		/// <summary>
+		/// Значение по умалчанию
+		/// </summary>
+		public virtual string DefaultDBValue { get; set; }
+
+		
+
 		/// <summary>
 		/// Тип данных
 		/// </summary>

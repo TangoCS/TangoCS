@@ -66,6 +66,11 @@ namespace Nephrite.Meta.Database
 
 			foreach (var prop in cls.Properties)
 			{
+				if (prop.Name.ToLower() == "appendix")
+				{
+
+				}
+			
 				if (prop.Type == null)
 					throw new Exception(string.Format("Тип не может быть null. Проверьте атрибут {0} на Type = O", prop.Name));
 
@@ -76,6 +81,12 @@ namespace Nephrite.Meta.Database
 				column.Name = prop.Name;
 				column.CurrentTable = t;
 				column.Type = prop.Type;
+					if (!string.IsNullOrEmpty(prop.DefaultDBValue))
+					{
+						column.DefaultValue = prop.DefaultDBValue;
+
+					}
+
 				if (prop is MetaPersistentComputedAttribute)
 				{
 					column.ComputedText = (prop as MetaPersistentComputedAttribute).Expression;
@@ -94,11 +105,11 @@ namespace Nephrite.Meta.Database
 						}
 						column.Type = (prop as MetaReference).RefClass.Key.Type;
 
-						column.ForeignKeyName = "FK_" + cls.Name + "_" + (prop as MetaReference).RefClassName;
+						//column.ForeignKeyName = "FK_" + cls.Name + "_" + (prop as MetaReference).RefClassName;
 					}
 
 				}
-				if (prop.Type is MetaFileType)
+				else if (prop.Type is MetaFileType)
 				{
 					column.Name = prop.Name + "GUID";
 					column.Type = new MetaGuidType();
@@ -115,7 +126,8 @@ namespace Nephrite.Meta.Database
 				{
 					primaryColumn = column;
 				}
-
+				if (prop.UpperBound == -1) continue;
+				
 				t.Columns.Add(column.Name, column);
 			}
 

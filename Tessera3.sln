@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nephrite.Meta.Database.DB2"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nephrite.ImportData", "Nephrite.ImportData\Nephrite.ImportData.csproj", "{EBF4131B-F23F-40C4-ABF5-75BD6E60FC11}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenerateDB2Model", "GenerateDB2Model\GenerateDB2Model.csproj", "{FB1798F0-E4B0-4544-B16A-69BE855F389C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +97,16 @@ Global
 		{EBF4131B-F23F-40C4-ABF5-75BD6E60FC11}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{EBF4131B-F23F-40C4-ABF5-75BD6E60FC11}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EBF4131B-F23F-40C4-ABF5-75BD6E60FC11}.Release|x86.ActiveCfg = Release|Any CPU
+		{FB1798F0-E4B0-4544-B16A-69BE855F389C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB1798F0-E4B0-4544-B16A-69BE855F389C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB1798F0-E4B0-4544-B16A-69BE855F389C}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{FB1798F0-E4B0-4544-B16A-69BE855F389C}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{FB1798F0-E4B0-4544-B16A-69BE855F389C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FB1798F0-E4B0-4544-B16A-69BE855F389C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB1798F0-E4B0-4544-B16A-69BE855F389C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB1798F0-E4B0-4544-B16A-69BE855F389C}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{FB1798F0-E4B0-4544-B16A-69BE855F389C}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{FB1798F0-E4B0-4544-B16A-69BE855F389C}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

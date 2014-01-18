@@ -266,7 +266,7 @@ namespace Nephrite.Meta.Database
 											  currentTable.Name,
 											  srcColumn.Name,
 											  srcColumn.Type.GetDBType(this),
-											  (!string.IsNullOrEmpty(srcColumn.DefaultValue) ? string.Format("DEFAULT({0})", srcColumn.DefaultValue) : ""),
+											  "",
 											  srcColumn.Nullable ? "NULL" : "NOT NULL",
 											  _SchemaName));
 			}
@@ -418,7 +418,7 @@ namespace Nephrite.Meta.Database
 		}
 		public string GetDateType()
 		{
-			return "datetime";
+			return "date";
 		}
 
 		public string GetBooleanType()
