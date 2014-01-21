@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Web;
 using System.Web.UI;
+using System.Xml;
+using IBM.Data.DB2;
 using Nephrite.Meta;
 using Nephrite.Web.Layout;
 using Nephrite.Web.Model;
@@ -240,6 +242,27 @@ namespace Nephrite.Web
 		{
 			get
 			{
+				//XDocument doc = new XDocument();
+				//if (_metaXml == null)
+				//{
+				//	using (DB2Connection con = new DB2Connection(ConnectionManager.ConnectionString))
+				//	{
+				//		using (DB2Command cmd = new DB2Command("CALL DBO.USP_MODEL()", con))
+				//		{
+				//			con.Open();
+
+				//			using (XmlReader reader = cmd.ExecuteXmlReader())
+				//			{
+				//				while (reader.Read())
+				//				{
+				//					string s = reader.ReadOuterXml();
+				//					doc = XDocument.Parse(s);
+				//				}
+				//			}
+				//		}
+				//	}
+				//}
+				//_metaXml = XElement.Parse(doc.ToString());
 				if (_metaXml == null) _metaXml = XElement.Parse(Model.ExecuteQuery<string>("EXEC [dbo].[usp_model]").FirstOrDefault());
 				
 				return _metaXml;

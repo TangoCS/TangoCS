@@ -243,6 +243,48 @@ namespace Nephrite.Meta.Database
 			}
 			return listProcedureDetails;
 		}
+
+		//public List<ProcedureDetails> ReadProceduresDetails()
+		//{
+		//	var mapType = new DataTypeMapper();
+		//	var listProcedureDetails = new List<ProcedureDetails>();
+		//	using (DB2Connection con = new DB2Connection("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000"))
+		//	{
+		//		using (DB2Command cmd = new DB2Command("select * from DBO.MM_DBProgrammability", con))
+		//		{
+		//			cmd.CommandType = CommandType.Text;
+
+		//			con.Open();
+		//			using (var reader = cmd.ExecuteReader())
+		//			{
+		//				while (reader.Read())
+		//				{
+		//					var procedureDetails = new ProcedureDetails();
+		//					procedureDetails.ProcedureName = reader["NAME"].ToString();
+		//					XDocument doc = XDocument.Parse(reader["RETURNS"].ToString());
+
+		//					if (doc.Descendants("Column").Any())
+		//					{
+		//						procedureDetails.ReturnType = procedureDetails.ProcedureName + "Result";
+		//						procedureDetails.Columns = new Dictionary<string, string>();
+		//						doc.Descendants("Column").ToList().ForEach(c => procedureDetails.Columns.Add(c.GetAttributeValue("Name"), mapType.MapFromSqlServerDBType(c.GetAttributeValue("Type"), null, null, null).ToString()));
+		//					}
+		//					else if (doc.Descendants("SingleResult").Any())
+		//					{
+		//						procedureDetails.ReturnType = mapType.MapFromSqlServerDBType(doc.Descendants("SingleResult").FirstOrDefault().GetAttributeValue("Type"), null, null, null).ToString();
+		//					}
+		//					else
+		//					{
+		//						procedureDetails.ReturnType = "void";
+		//					}
+		//					listProcedureDetails.Add(procedureDetails);
+
+		//				}
+		//			}
+		//		}
+		//	}
+		//	return listProcedureDetails;
+		//}
 	}
 
 	public class DB2MetadataReader : IDatabaseMetadataReader

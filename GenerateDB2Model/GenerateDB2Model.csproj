@@ -44,9 +44,18 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextTemplate1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>TextTemplate1.tt</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="TextTemplate1.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>TextTemplate1.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nephrite.ImportData\Nephrite.ImportData.csproj">
@@ -57,10 +66,17 @@
       <Project>{b54dba5f-cde1-4e9a-b4fc-ac9e14b667fa}</Project>
       <Name>Nephrite.Meta.Database.DB2</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Nephrite.Metamodel\Nephrite.Metamodel.csproj">
+      <Project>{9f863d08-fd1f-4065-9f7d-f9ddbc469e81}</Project>
+      <Name>Nephrite.Metamodel</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
       <Project>{26a68254-0902-4499-8b5f-6b4b6341ba21}</Project>
       <Name>Nephrite.Web</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
