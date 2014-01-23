@@ -111,7 +111,7 @@ namespace Nephrite.Web
 		{
 			try
 			{
-				return new Guid(src);
+				return string.IsNullOrEmpty(src) ? Guid.Empty : new Guid(src);
 			}
 			catch
 			{
@@ -155,7 +155,7 @@ namespace Nephrite.Web
 			return null;
 		}
 
-		
+
 
 		public static DateTime ToDate(this string src, DateTime defaultValue)
 		{

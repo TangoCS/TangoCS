@@ -128,24 +128,9 @@ namespace Nephrite.Web.Hibernate
 			Dispose();
 		}
 
-		public void ChangeTypesProperties(object obj)
-		{
-			if (obj == null) return;
-			Type objType = obj.GetType();
-			PropertyInfo[] properties = objType.GetProperties();
-			foreach (PropertyInfo property in properties)
-			{
-				var propValue = property.GetValue(obj, null);
-				if (propValue is Guid)
-				{
-					propValue = Convert.ChangeType(propValue, typeof(String));
-
-				}
-				ChangeTypesProperties(propValue);
-			}
-		}
 		public void SubmitChanges()
 		{
+		
 			using (var transaction = _session.BeginTransaction())
 			{
 				foreach (var action in BeforeSaveActions)
@@ -153,10 +138,6 @@ namespace Nephrite.Web.Hibernate
 
 				foreach (object obj in ToInsert)
 				{
-					if (System.Configuration.ConfigurationManager.AppSettings["DBType"].ToUpper() == "DB2")
-					{
-						ChangeTypesProperties(obj);
-					}
 					_session.SaveOrUpdate(obj);
 				}
 
