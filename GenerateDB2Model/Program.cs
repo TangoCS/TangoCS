@@ -15,22 +15,36 @@ namespace GenerateDB2Model
 	{
 		static void Main(string[] args)
 		{
-			var ss = new DB2ServerMetadataReader();
+			StringBuilder stringB = new StringBuilder();
+			var db2 = new DB2ServerMetadataReader();
 			ConnectionManager.SetConnectionString("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000");
 			//Base.Model = new DataContext(ConnectionManager.ConnectionString);
-			var s = ss.ReadSchema("DBO");
-			StringBuilder stringB = new StringBuilder();
+			var d2schema = db2.ReadSchema("DBO");
 
-			foreach (var s1 in s.Tables)
-			{
-				foreach (var value in s1.Value.Columns.Values)
-				{
-					if (value.Type is MetaGuidType)
-						stringB.AppendLine("Class - " + value.CurrentTable.Name + "      Column - " + value.Name);
-				}
-			}
+			var sql = new SqlServerMetadataReader();
+			ConnectionManager.SetConnectionString("Password=q121212;Persist Security Info=True;User ID=servantsuser;Initial Catalog=servants;Data Source=srvsql.refactorx.ru\\mssqlserver2008");
+			//Base.Model = new DataContext(ConnectionManager.ConnectionString);
+			var sqlschema = sql.ReadSchema("DBO");
 
-			var result = stringB.ToString();
+
+			//foreach (var sT in sqlschema.Tables)
+			//{
+			//	if (d2schema.Tables.Values.Any(t => t.Name.ToLower() == sT.Value.Name.ToLower()))
+			//	{
+			//		var dbTable = d2schema.Tables.Values.SingleOrDefault(t => t.Name.ToLower() == sT.Value.Name.ToLower());
+			//		if (dbTable!=null)
+			//			stringB.AppendFormat("COMMENT ON TABLE DBO.{0} IS '{1}'; \r\n", dbTable.Name, string.IsNullOrEmpty(dbTable.Description) ? sT.Value.Name : dbTable.Description + "|" + sT.Value.Name);
+			//		foreach (var sColumn in sT.Value.Columns.Values)
+			//		{
+			//			var dbColumn = dbTable.Columns.Values.SingleOrDefault(t => t.Name.ToLower() == sColumn.Name.ToLower());
+
+			//			if (dbColumn != null)
+			//			stringB.AppendFormat("COMMENT ON COLUMN DBO.{0}.{1} IS '{2}'; \r\n", dbTable.Name, dbColumn.Name, string.IsNullOrEmpty(dbColumn.Description) ? sColumn.Name : dbColumn.Description + "|" + sColumn.Name);
+			//		}
+			//	}
+			//}
+
+			//var result = stringB.ToString();
 			//string cs = "Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000";
 			////new HCoreDataContext(AppWeb.DBConfig);//Solution.App.DataContext;
 			//var d = new HCoreDataContext(AppWeb.DBConfig);

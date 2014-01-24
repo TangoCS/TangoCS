@@ -13,6 +13,7 @@
 <#@ import namespace="Nephrite.Meta.Database" #>
 <#@ import namespace="System.Linq" #>
 
+
 using System;
 using System.Collections.Generic;
 using System.Data.Linq;
@@ -64,6 +65,20 @@ foreach (var table in schema.Tables)
 				else
 				{ #>
 			Property(x => x.<#=column.Key #>, map =>  map.Type<StringBackedGuidUserType>());
+		<# }
+			}
+		}
+		else if (column.Value.Type is Nephrite.Meta.MetaBooleanType)
+		{
+		if (!column.Value.IsPrimaryKey)
+			{
+				if (column.Value.Nullable)
+				{ #>
+			Property(x => x.<#=column.Key #>,map => {map.NotNullable(false);  map.Type<IntBackedBoolUserType>();});
+		<# }
+				else
+				{ #>
+			Property(x => x.<#=column.Key #>, map =>  map.Type<IntBackedBoolUserType>());
 		<# }
 			}
 		}

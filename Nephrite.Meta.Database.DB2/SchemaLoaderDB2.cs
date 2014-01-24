@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml;
 using System.Xml.Linq;
@@ -33,25 +34,42 @@ namespace Nephrite.Meta.Database
 							XDocument doc = XDocument.Parse(s);
 							doc.Descendants("Table").ToList().ForEach(t =>
 							{
-								var table = new Table();
-								table.Name = t.GetAttributeValue("NAME");
-								if (table.Name == "CITIZEN")
+								if (t.GetAttributeValue("NAME") == "C_POSTPART2")
 								{
 
 								}
+								var tabArray = !string.IsNullOrEmpty(t.GetAttributeValue("DESCRIPTION")) ? t.GetAttributeValue("DESCRIPTION").Split('|') : new string[] { };
+								var tableName = tabArray.Length == 0 ? "" : tabArray[tabArray.Length-1];
+								var tableDescription = tabArray.Length == 2 ? tabArray[0] : "";
+								// Проверяем наличие описания и отсутствие мени в нижнем регистре( происходит когда коментарий не записалса с др бд а старый остался написанный кирилицей)
+								Regex regexTable = new Regex("[а-яА-ЯёЁъЪ]{1,32}");
+								Match matchTable = regexTable.Match(tableName);
+								tableName = matchTable.Success ? string.Empty : tableName;// Если найден кирилический символ то название удаляем
+								var table = new Table();
+								table.Name = string.IsNullOrEmpty(tableName) ? t.GetAttributeValue("NAME") : tableName;
 								table.Owner = t.GetAttributeValue("OWNER");
-								table.Description = t.GetAttributeValue("DESCRIPTION");
+								table.Description = tableDescription;
 								table.Identity = !string.IsNullOrEmpty(t.GetAttributeValue("IDENTITY")) && t.GetAttributeValue("IDENTITY") == "1";
 								var xColumnsElement = t.Element("Columns");
 								if (xColumnsElement != null)
 									xColumnsElement.Descendants("Column").ToList().ForEach(c =>
 									{
+										var columnArray = !string.IsNullOrEmpty(c.GetAttributeValue("DESCRIPTION")) ? c.GetAttributeValue("DESCRIPTION").Split('|') : new string[] { };
+										var columnName = columnArray.Length == 0 ? "" : columnArray[columnArray.Length - 1];
+										var columnDescription = columnArray.Length == 2 ? columnArray[0] : "";
+
+
+										// Проверяем наличие описания и отсутствие мени в нижнем регистре( происходит когда коментарий не записалса с др бд а старый остался написанный кирилицей)
+										Regex regexColumn = new Regex("[а-яА-ЯёЁъЪ]{1,32}");
+										Match matchColumn = regexColumn.Match(columnName);
+										columnName = matchColumn.Success ? string.Empty : columnName;// Если найден кирилический символ то название удаляем
+
 										var column = new Column();
-										column.Name = c.GetAttributeValue("NAME");
-										column.Type = column.Name.EndsWith("GUID")? new MetaGuidType() : DbScript.GetType(c.GetAttributeValue("TYPE"));
+										column.Name =  string.IsNullOrEmpty(columnName) ? c.GetAttributeValue("NAME") : columnName;;
+										column.Type = column.Name.EndsWith("GUID") ? new MetaGuidType() : DbScript.GetType(c.GetAttributeValue("TYPE"));
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
 										column.ComputedText = c.GetAttributeValue("COMPUTEDTEXT");
-										column.Description = c.GetAttributeValue("DESCRIPTION");
+										column.Description = columnDescription;
 										column.DefaultValue = c.GetAttributeValue("DEFAULTVALUE");
 										column.ForeignKeyName = c.GetAttributeValue("FOREIGNKEYNAME");
 										column.IsPrimaryKey = !string.IsNullOrEmpty(c.GetAttributeValue("ISPRIMARYKEY")) && c.GetAttributeValue("ISPRIMARYKEY") == "1";
@@ -202,55 +220,13 @@ namespace Nephrite.Meta.Database
 			return returnSchema;
 		}
 
-		public List<ProcedureDetails> ReadProceduresDetails()
-		{
-			var mapType = new DataTypeMapper();
-			var listProcedureDetails = new List<ProcedureDetails>();
-			using (SqlConnection con = new SqlConnection(ConnectionManager.ConnectionString))
-			{
-				using (SqlCommand cmd = new SqlCommand("select * from [dbo].[MM_DBProgrammability]", con))
-				{
-					cmd.CommandType = CommandType.Text;
-
-					con.Open();
-					using (var reader = cmd.ExecuteReader())
-					{
-						while (reader.Read())
-						{
-							var procedureDetails = new ProcedureDetails();
-							procedureDetails.ProcedureName = reader["Name"].ToString();
-							XDocument doc = XDocument.Parse(reader["Returns"].ToString());
-
-							if (doc.Descendants("Column").Any())
-							{
-								procedureDetails.ReturnType = procedureDetails.ProcedureName + "Result";
-								procedureDetails.Columns = new Dictionary<string, string>();
-								doc.Descendants("Column").ToList().ForEach(c => procedureDetails.Columns.Add(c.GetAttributeValue("Name"), mapType.MapFromSqlServerDBType(c.GetAttributeValue("Type"), null, null, null).ToString()));
-							}
-							else if (doc.Descendants("SingleResult").Any())
-							{
-								procedureDetails.ReturnType = mapType.MapFromSqlServerDBType(doc.Descendants("SingleResult").FirstOrDefault().GetAttributeValue("Type"), null, null, null).ToString();
-							}
-							else
-							{
-								procedureDetails.ReturnType = "void";
-							}
-							listProcedureDetails.Add(procedureDetails);
-
-						}
-					}
-				}
-			}
-			return listProcedureDetails;
-		}
-
 		//public List<ProcedureDetails> ReadProceduresDetails()
 		//{
 		//	var mapType = new DataTypeMapper();
 		//	var listProcedureDetails = new List<ProcedureDetails>();
-		//	using (DB2Connection con = new DB2Connection("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000"))
+		//	using (SqlConnection con = new SqlConnection(ConnectionManager.ConnectionString))
 		//	{
-		//		using (DB2Command cmd = new DB2Command("select * from DBO.MM_DBProgrammability", con))
+		//		using (SqlCommand cmd = new SqlCommand("select * from [dbo].[MM_DBProgrammability]", con))
 		//		{
 		//			cmd.CommandType = CommandType.Text;
 
@@ -260,8 +236,8 @@ namespace Nephrite.Meta.Database
 		//				while (reader.Read())
 		//				{
 		//					var procedureDetails = new ProcedureDetails();
-		//					procedureDetails.ProcedureName = reader["NAME"].ToString();
-		//					XDocument doc = XDocument.Parse(reader["RETURNS"].ToString());
+		//					procedureDetails.ProcedureName = reader["Name"].ToString();
+		//					XDocument doc = XDocument.Parse(reader["Returns"].ToString());
 
 		//					if (doc.Descendants("Column").Any())
 		//					{
@@ -285,6 +261,48 @@ namespace Nephrite.Meta.Database
 		//	}
 		//	return listProcedureDetails;
 		//}
+
+		public List<ProcedureDetails> ReadProceduresDetails()
+		{
+			var mapType = new DataTypeMapper();
+			var listProcedureDetails = new List<ProcedureDetails>();
+			using (DB2Connection con = new DB2Connection(ConnectionManager.ConnectionString))
+			{
+				using (DB2Command cmd = new DB2Command("select * from DBO.MM_DBProgrammability", con))
+				{
+					cmd.CommandType = CommandType.Text;
+
+					con.Open();
+					using (var reader = cmd.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							var procedureDetails = new ProcedureDetails();
+							procedureDetails.ProcedureName = reader["NAME"].ToString();
+							XDocument doc = XDocument.Parse(reader["RETURNS"].ToString());
+
+							if (doc.Descendants("Column").Any())
+							{
+								procedureDetails.ReturnType = procedureDetails.ProcedureName + "Result";
+								procedureDetails.Columns = new Dictionary<string, string>();
+								doc.Descendants("Column").ToList().ForEach(c => procedureDetails.Columns.Add(c.GetAttributeValue("Name"), mapType.MapFromSqlServerDBType(c.GetAttributeValue("Type"), null, null, null).ToString()));
+							}
+							else if (doc.Descendants("SingleResult").Any())
+							{
+								procedureDetails.ReturnType = mapType.MapFromSqlServerDBType(doc.Descendants("SingleResult").FirstOrDefault().GetAttributeValue("Type"), null, null, null).ToString();
+							}
+							else
+							{
+								procedureDetails.ReturnType = "void";
+							}
+							listProcedureDetails.Add(procedureDetails);
+
+						}
+					}
+				}
+			}
+			return listProcedureDetails;
+		}
 	}
 
 	public class DB2MetadataReader : IDatabaseMetadataReader
