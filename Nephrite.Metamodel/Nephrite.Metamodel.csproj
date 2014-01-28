@@ -12,7 +12,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nephrite.Metamodel</RootNamespace>
     <AssemblyName>Nephrite.Metamodel</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>
@@ -69,16 +69,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.VisualStudio.TextTemplating">
       <HintPath>..\Microsoft.VisualStudio.TextTemplating.dll</HintPath>
-    </Reference>
-    <Reference Include="NHibernate, Version=3.3.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\NHibernate.3.3.3.4001\lib\Net35\NHibernate.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -87,6 +79,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Drawing" />
@@ -117,6 +110,11 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>predicates.cs</LastGenOutput>
     </EmbeddedResource>
+    <Compile Include="CodeTemplates\predicates.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>predicates.tt</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\UtilsController.cs" />
     <Compile Include="Controls\ListExport.ascx.cs">
       <DependentUpon>ListExport.ascx</DependentUpon>
@@ -145,11 +143,6 @@
     <Compile Include="Model\MM_ObjectType.cs" />
     <Compile Include="Model\MM_Package.cs" />
     <Compile Include="ElementType.cs" />
-    <Compile Include="Model\model.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>model.dbml</DependentUpon>
-    </Compile>
     <Compile Include="Model\modelDataContextPartial.cs" />
     <Compile Include="Model\_ModelObjectsTitles.cs" />
     <Compile Include="ObjectPropertyType.cs" />
@@ -178,13 +171,6 @@
     <Compile Include="View\Utils\runup.ascx.designer.cs">
       <DependentUpon>runup.ascx</DependentUpon>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Model\model.dbml">
-      <Generator>MSLinqToSQLGenerator</Generator>
-      <SubType>Designer</SubType>
-      <LastGenOutput>model.designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CodeTemplates\app.tt">
@@ -255,9 +241,6 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>setcurrentclassversion.cs</LastGenOutput>
     </Content>
-    <None Include="Model\model.dbml.layout">
-      <DependentUpon>model.dbml</DependentUpon>
-    </None>
     <None Include="Nephrite.Metamodel.snk" />
     <Content Include="packages.config" />
   </ItemGroup>
@@ -273,6 +256,10 @@
     <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
       <Project>{26A68254-0902-4499-8B5F-6B4B6341BA21}</Project>
       <Name>Nephrite.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
+      <Project>{5909bfe7-93cf-4e5f-be22-6293368af01d}</Project>
+      <Name>NHibernate</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
@@ -295,7 +282,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>29163</DevelopmentServerPort>
+          <DevelopmentServerPort>31920</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

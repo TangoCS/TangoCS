@@ -122,7 +122,7 @@ namespace Nephrite.Metamodel.Model
 		//public virtual IList<MM_FormFieldAttribute> MM_FormFieldAttributes { get; set; }
 	}
 
-	public class MM_CodifierValue
+	public partial class MM_CodifierValue
 	{
 		public virtual int CodifierValueID { get; set; }
 		public virtual MM_Codifier MM_Codifier { get; set; }
@@ -135,7 +135,7 @@ namespace Nephrite.Metamodel.Model
 		public virtual int SeqNo { get; set; }
 	}
 
-	public class MM_Codifier
+	public partial class MM_Codifier
 	{
 		public MM_Codifier()
 		{

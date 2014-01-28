@@ -28,9 +28,14 @@ using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Web.Hibernate
 {
+	public static class SessionFactories
+	{
+		public static Dictionary<string, ISessionFactory> List = new Dictionary<string, ISessionFactory>();
+	}
+
 	public abstract class HDataContext : IDisposable, IDataContext
 	{
-		static Dictionary<string, ISessionFactory> _sessionFactories = new Dictionary<string, ISessionFactory>();
+		//static Dictionary<string, ISessionFactory> _sessionFactories = null;
 		//ISessionFactory _sessionFactory;
 		ISession _session;
 		Configuration _cfg = null;
@@ -78,6 +83,8 @@ namespace Nephrite.Web.Hibernate
 			{
 				string t = this.GetType().Name;
 				ISessionFactory f = null;
+
+				var _sessionFactories = SessionFactories.List;
 
 				if (_sessionFactories.ContainsKey(t))
 					f = _sessionFactories[t];
@@ -245,7 +252,7 @@ namespace Nephrite.Web.Hibernate
 			var sessionImp = (ISessionImplementor)Session;
 			var nhLinqExpression = new NhLinqExpression(query.Expression, sessionImp.Factory);
 			var translatorFactory = new ASTQueryTranslatorFactory();
-			var translators = translatorFactory.CreateQueryTranslators(nhLinqExpression.Key, nhLinqExpression, null, false, sessionImp.EnabledFilters, sessionImp.Factory);
+			var translators = translatorFactory.CreateQueryTranslators(nhLinqExpression, null, false, sessionImp.EnabledFilters, sessionImp.Factory);
 
 			string sql = translators[0].SQLString;
 
