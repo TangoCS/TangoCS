@@ -130,7 +130,7 @@ namespace Nephrite.Web.Hibernate
 
 		public void SubmitChanges()
 		{
-		
+
 			using (var transaction = _session.BeginTransaction())
 			{
 				foreach (var action in BeforeSaveActions)
@@ -265,9 +265,11 @@ namespace Nephrite.Web.Hibernate
 
 		public ITable GetTable(Type t)
 		{
-			MethodInfo mi = Session.GetType().GetMethod("Query").MakeGenericMethod(new Type[] { t });
-			var q = mi.Invoke(Session, null) as IQueryable;
-			return new HTable(this, q);
+
+			MethodInfo mi = typeof(LinqExtensionMethods).GetMethods().FirstOrDefault(tp => tp.GetParameters().Any(p => p.ParameterType == typeof(ISession))).MakeGenericMethod(new Type[] { t }); ;
+			var q = mi.Invoke(Session, new object[] { Session }) as IQueryable;
+				return new HTable(this, q);
+		
 		}
 
 		public T Get<T, TKey>(TKey id) where T : IEntity, IWithKey<T, TKey>, new()
