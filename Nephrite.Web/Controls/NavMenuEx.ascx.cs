@@ -47,7 +47,7 @@ namespace Nephrite.Web.Controls
 			string res = "";
 			for (int i = 0; i < menuItem.Items.Count; i++)
 			{
-				res += RenderMenuItem(menuItem.Items[i]) + "<br />";
+				res += RenderMenuItem(menuItem.Items[i]);
 			}
 			return res;
 		}
@@ -58,8 +58,8 @@ namespace Nephrite.Web.Controls
 				return menuItem.Control.RenderControl();
 			string img = "";
 			if (!String.IsNullOrEmpty(menuItem.Icon))
-				img = HtmlHelperBase.Instance.Image(menuItem.Icon, menuItem.Title) + " ";
-			return img + String.Format(@"<a href=""{0}"">{1}</a>", menuItem.Url, menuItem.Title + (menuItem.Expression.IsEmpty() ? "" : (" " + menuItem.EvaluateExpression())));
+				img = HtmlHelperBase.Instance.Image(menuItem.Icon, menuItem.Title);
+			return String.Format(@"<div class='ms-vb2'><a href='{0}'>{1}{2}</a></div>", menuItem.Url, img, menuItem.Title + (menuItem.Expression.IsEmpty() ? "" : (" " + menuItem.EvaluateExpression())));
 		}
     }
 
