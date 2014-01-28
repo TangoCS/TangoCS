@@ -2,11 +2,12 @@
 using System.Data;
 using NHibernate;
 using NHibernate.SqlTypes;
+using NHibernate.Type;
 using NHibernate.UserTypes;
 
 namespace Nephrite.Web.Hibernate
 {
-	public class IntBackedBoolUserType : IUserType
+	public class IntBackedBoolUserType : BooleanType, IUserType
 	{
 		public new bool Equals(object x, object y)
 		{
@@ -66,6 +67,12 @@ namespace Nephrite.Web.Hibernate
 		public object NullSafeGet(IDataReader rs, string[] names, object owner)
 		{
 			return NHibernateUtil.Boolean.NullSafeGet(rs, names[0]);
+		}
+
+		public override void Set(IDbCommand cmd, object value, int index)
+		{
+			var val = !((bool)value) ? 0 : 1;
+			((IDataParameter)cmd.Parameters[index]).Value = val;
 		}
 	}
 }

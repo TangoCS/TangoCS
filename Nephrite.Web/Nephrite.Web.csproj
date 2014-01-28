@@ -134,6 +134,8 @@
     <Compile Include="FormsGenerator\ListCode.cs" />
     <Compile Include="FormsGenerator\SelectObjectCode.cs" />
     <Compile Include="FormsGenerator\UploadControlsCode.cs" />
+    <Compile Include="Hibernate\IntBackedBoolUserType.cs" />
+    <Compile Include="Hibernate\StringBackedGuidUserType.cs" />
     <Compile Include="Meta.Database\DBScriptMSSQL.cs" />
     <Compile Include="Meta.Database\IDBScript.cs" />
     <Compile Include="Meta.Database\PrimitiveTypesExtensions.cs" />
@@ -540,7 +542,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="FileStorage\DataBase\" />
     <Folder Include="FileStorage\FileSystem\" />
-    <Folder Include="UserType\" />
     <Folder Include="Workflow\" />
   </ItemGroup>
   <ItemGroup>

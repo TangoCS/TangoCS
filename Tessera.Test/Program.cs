@@ -19,8 +19,8 @@ namespace Tessera.Test
 		static void Main(string[] args)
 		{
 			App.DataContext.ExecuteCommand("SET SCHEMA = 'DBO';");
-			var r = App.DataContext.SPM_Subject.Where(o => o.SubjectID == 416).FirstOrDefault();
-			r.IsActive = true;
+			var r = App.DataContext.SPM_Subject.Where(o => o.SubjectID == 416 /*&& !o.IsActive*/).FirstOrDefault();
+			r.IsActive = false;
 			App.DataContext.SubmitChanges();
 			Console.WriteLine(App.DataContext.Log.ToString());
 			Console.ReadKey();
@@ -75,8 +75,7 @@ namespace Tessera.Test
 			Id(x => x.SubjectID, map => map.Generator(Generators.Identity));
 			Property(x => x.SystemName);
 			Property(x => x.Title);
-			//Property(x => x.IsActive, map => map.Type<NHibernate.Type.Int16Type>());
-			Property(x => x.IsActive);
+			Property(x => x.IsActive, map => map.Type<IntBackedBoolUserType>());
 
 			Property(x => x.LastModifiedUserID, map => map.Formula("LastModifiedUserID"));
 			ManyToOne(x => x.LastModifiedUser, map => { map.Column("LastModifiedUserID"); map.Cascade(Cascade.None); });
