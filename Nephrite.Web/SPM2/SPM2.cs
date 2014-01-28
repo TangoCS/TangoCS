@@ -9,6 +9,7 @@ using Nephrite.Meta;
 using System.DirectoryServices.AccountManagement;
 using System.IO;
 using System.Threading;
+using Nephrite.Web.DBTypeScripts;
 
 namespace Nephrite.Web.SPM
 {
@@ -21,11 +22,12 @@ namespace Nephrite.Web.SPM
 
 		static List<Role> _allRoles = null;
 		static List<RoleAsso> _allRoleAsso = null;
+	
 
 		public static List<Role> GetList()
 		{
 			if (_allRoles != null) return _allRoles;
-			_allRoles = A.Model.ExecuteQuery<Role>("select RoleID, Title, lower(SysName) as SysName from SPM_Role").ToList();
+			_allRoles = A.Model.ExecuteQuery<Role>("select RoleID as \"RoleID\", Title as \"Title\", lower(SysName) as \"SysName\" from SPM_Role").ToList();
 			return _allRoles;
 		}
 
@@ -52,7 +54,7 @@ namespace Nephrite.Web.SPM
 		static List<RoleAsso> AllRoleAsso()
 		{
 			if (_allRoleAsso != null) return _allRoleAsso;
-			_allRoleAsso = A.Model.ExecuteQuery<RoleAsso>("select ParentRoleID, RoleID from V_SPM_AllRoleAsso").ToList();
+			_allRoleAsso = A.Model.ExecuteQuery<RoleAsso>("select ParentRoleID as \"ParentRoleID\", RoleID as \"RoleID\" from V_SPM_AllRoleAsso").ToList();
 			return _allRoleAsso;
 		}
 
@@ -66,7 +68,14 @@ namespace Nephrite.Web.SPM
 	public class Subject
 	{
 		private Subject() { }
+		private static IDBTypeScripts idbTypeScripts
+		{
+			get
+			{
+				return Activator.CreateInstance(Type.GetType(string.Format("Nephrite.Web.DBTypeScripts.{0}", ConfigurationManager.AppSettings["DBType"].ToUpper()))) as IDBTypeScripts;
 
+			}
+		}
 		static IDictionary Items
 		{
 			get
@@ -91,24 +100,35 @@ namespace Nephrite.Web.SPM
 		public string Title { get; private set; }
 		public string Email { get; private set; }
 		public byte[] PasswordHash { get; private set; }
-		public bool IsActive { get; private set; }
-		public bool IsDeleted { get; private set; }
+		public int _IsActive { get; private set; }
+		public bool IsActive
+		{
+			get { return _IsActive == 1; }
+		}
+		public int _IsDeleted { get; private set; }
+		public bool IsDeleted
+		{
+			get { return _IsDeleted == 1; }
+		}
 		public string SID { get; set; }
-		public bool MustChangePassword { get; set; }
-
+		public int _MustChangePassword { get; private set; }
+		public bool MustChangePassword
+		{
+			get { return _MustChangePassword == 1; }
+		}
 		bool? isAdministrator = null;
-		public bool IsAdministrator 
-		{ 
-			get 
-			{ 
-				if (!isAdministrator.HasValue) 
+		public bool IsAdministrator
+		{
+			get
+			{
+				if (!isAdministrator.HasValue)
 					isAdministrator = Roles.Any(o => o.SysName == ConfigurationManager.AppSettings["AdministratorsRole"].ToLower());
 				return isAdministrator.Value;
 			}
 			private set { ;}
 		}
 
-		public IEnumerable<Role> Roles 
+		public IEnumerable<Role> Roles
 		{
 			get
 			{
@@ -123,10 +143,10 @@ namespace Nephrite.Web.SPM
 					{
 						//IEnumerable<string> groups = ADUser.Current.GetGroups(5);
 						string groupNames = wi.Groups.Select(x => "'" + x.Value + "'").Join(",");
-						r = A.Model.ExecuteQuery<int>("select RoleID from V_SPM_AllSubjectRole where SubjectID = ? union select RoleID from SPM_Role where SID in (" + groupNames  + ")", sid).ToList();
+						r = A.Model.ExecuteQuery<int>("select RoleID as \"RoleID\" from V_SPM_AllSubjectRole where SubjectID = ? union select RoleID from SPM_Role where SID in (" + groupNames + ")", sid).ToList();
 					}
 					else
-						r = A.Model.ExecuteQuery<int>("select RoleID from V_SPM_AllSubjectRole where SubjectID = ?", sid).ToList();
+						r = A.Model.ExecuteQuery<int>("select RoleID as \"RoleID\" from V_SPM_AllSubjectRole where SubjectID = ?", sid).ToList();
 
 					roles = Role.GetList().Where(o => r.Contains(o.RoleID));
 					Items["SubjectRoles2_" + sid.ToString()] = roles;
@@ -136,20 +156,20 @@ namespace Nephrite.Web.SPM
 			private set { ;}
 		}
 		HashSet<string> _allowItems = new HashSet<string>();
-		public HashSet<string> AllowItems 
-		{ 
-			get 
-			{ 
-				if (_allowItems == null) _allowItems = new HashSet<string>(); 
-				return _allowItems; 
+		public HashSet<string> AllowItems
+		{
+			get
+			{
+				if (_allowItems == null) _allowItems = new HashSet<string>();
+				return _allowItems;
 			}
-			private set { ;} 
+			private set { ;}
 		}
 		HashSet<string> _disallowItems = new HashSet<string>();
-		public HashSet<string> DisallowItems 
-		{ 
-			get 
-			{ 
+		public HashSet<string> DisallowItems
+		{
+			get
+			{
 				if (_disallowItems == null) _disallowItems = new HashSet<string>();
 				return _disallowItems;
 			}
@@ -168,7 +188,7 @@ namespace Nephrite.Web.SPM
 			action();
 			Items["CurrentSubject2"] = oldSubject;
 		}
-		
+
 		public static Subject Current
 		{
 			get
@@ -206,19 +226,19 @@ namespace Nephrite.Web.SPM
 		}
 		public static Subject FromLogin(string login)
 		{
-			return A.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as Login, Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email as Email from SPM_Subject where lower(SystemName) = ?", login.ToLower()).SingleOrDefault();
+			return A.Model.ExecuteQuery<Subject>(idbTypeScripts.FromLogin, login.ToLower()).SingleOrDefault();
 		}
 		public static Subject FromSID(string sid, string login)
 		{
-			return A.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as Login, Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email as Email from SPM_Subject where SID = ? or lower(SystemName) = ?", sid, login).SingleOrDefault();
+			return A.Model.ExecuteQuery<Subject>(idbTypeScripts.FromSID, sid, login).SingleOrDefault();
 		}
 		public static Subject FromID(int id)
 		{
-			return A.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as Login, Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email as Email from SPM_Subject where SubjectID = ?", id).SingleOrDefault();
+			return A.Model.ExecuteQuery<Subject>(idbTypeScripts.FromID, id).SingleOrDefault();
 		}
 		public static Subject FromEmail(string email)
 		{
-			return A.Model.ExecuteQuery<Subject>("select SubjectID as ID, SystemName as Login, Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email as Email from SPM_Subject where lower(Email) = ?", email.ToLower()).SingleOrDefault();
+			return A.Model.ExecuteQuery<Subject>(idbTypeScripts.FromEmail, email.ToLower()).SingleOrDefault();
 		}
 		public static Subject System
 		{
@@ -278,17 +298,15 @@ namespace Nephrite.Web.SPM
 				{
 					if (_accessCache == null)
 					{
-						string allAccessQuery = @"
-				select DISTINCT convert(varchar(36),ItemGUID) + '-' + convert(varchar(14),ActionTypeID) + '-' + convert(varchar, RoleID) as Value
-				  from SPM_RoleAccess ra, SPM_Action a
-				  where a.Type = 2 and a.ItemGUID is not null and a.ActionID = ra.ActionID
-				  order by Value";
+						string allAccessQuery = "select DISTINCT convert(varchar(36),ItemGUID) + '-' + convert(varchar(14),ActionTypeID) + '-' + convert(varchar, RoleID) as \"Value\" "+
+				  "from SPM_RoleAccess ra, SPM_Action a "+
+				  "where a.Type = 2 and a.ItemGUID is not null and a.ActionID = ra.ActionID "+
+				  "order by Value";
 
-						string allActionsQuery = @"
-				SELECT convert(varchar(36),ItemGUID) + '-' + convert(varchar(14),ActionTypeID) as Value
-				FROM SPM_Action 
-				WHERE Type = 2 and ItemGUID is not null
-				ORDER BY Value";
+						string allActionsQuery = "SELECT convert(varchar(36),ItemGUID) + '-' + convert(varchar(14),ActionTypeID) as \"Value\" "+
+				"FROM SPM_Action "+
+				"WHERE Type = 2 and ItemGUID is not null "+
+				"ORDER BY Value";
 
 						_accessCache = new HashSet<string>(A.Model.ExecuteQuery<string>(allAccessQuery));
 						_itemsCache = new HashSet<string>(A.Model.ExecuteQuery<string>(allActionsQuery));

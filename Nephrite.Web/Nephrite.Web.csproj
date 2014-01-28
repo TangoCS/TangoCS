@@ -113,6 +113,10 @@
   <ItemGroup>
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
     <Compile Include="Controllers\MMObjectController.cs" />
+    <Compile Include="CoreDataContext\HIMapping.cs" />
+    <Compile Include="DBTypeScripts\DB2.cs" />
+    <Compile Include="DBTypeScripts\IDBTypeScripts.cs" />
+    <Compile Include="DBTypeScripts\MSSQL.cs" />
     <Compile Include="FormsEngine\CodeGen.cs" />
     <Compile Include="FormsEngine\CompileConfig.designer.cs" />
     <Compile Include="FormsEngine\DynamicClassActivator.cs" />
@@ -536,6 +540,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="FileStorage\DataBase\" />
     <Folder Include="FileStorage\FileSystem\" />
+    <Folder Include="UserType\" />
     <Folder Include="Workflow\" />
   </ItemGroup>
   <ItemGroup>

@@ -47,9 +47,8 @@ namespace Nephrite.Web.FormsEngine
 							{
 								var dc = ((IDC_MetaStorage)A.Model);
 								PackageSysName = (from fv in dc.IMM_FormView
-												 from p in dc.IMM_Package
+												  join p in dc.IMM_Package on fv.PackageID equals p.PackageID
 													where fv.ObjectTypeID == null && fv.SysName == PackageViewFormSysName
-													 && fv.PackageID == p.PackageID
 												select p.SysName).FirstOrDefault() ?? "";
 								packageViewLocation[PackageViewFormSysName] = PackageSysName;
 							}

@@ -28,14 +28,9 @@ using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Web.Hibernate
 {
-	public static class SessionFactories
-	{
-		public static Dictionary<string, ISessionFactory> List = new Dictionary<string, ISessionFactory>();
-	}
-
 	public abstract class HDataContext : IDisposable, IDataContext
 	{
-		//static Dictionary<string, ISessionFactory> _sessionFactories = null;
+		static Dictionary<string, ISessionFactory> _sessionFactories = new Dictionary<string, ISessionFactory>();
 		//ISessionFactory _sessionFactory;
 		ISession _session;
 		Configuration _cfg = null;
@@ -83,8 +78,6 @@ namespace Nephrite.Web.Hibernate
 			{
 				string t = this.GetType().Name;
 				ISessionFactory f = null;
-
-				var _sessionFactories = SessionFactories.List;
 
 				if (_sessionFactories.ContainsKey(t))
 					f = _sessionFactories[t];
@@ -137,13 +130,16 @@ namespace Nephrite.Web.Hibernate
 
 		public void SubmitChanges()
 		{
+
 			using (var transaction = _session.BeginTransaction())
 			{
 				foreach (var action in BeforeSaveActions)
 					action();
 
 				foreach (object obj in ToInsert)
+				{
 					_session.SaveOrUpdate(obj);
+				}
 
 				foreach (object obj in ToDelete)
 					_session.Delete(obj);
@@ -269,9 +265,11 @@ namespace Nephrite.Web.Hibernate
 
 		public ITable GetTable(Type t)
 		{
-			MethodInfo mi = Session.GetType().GetMethod("Query").MakeGenericMethod(new Type[] { t });
-			var q = mi.Invoke(Session, null) as IQueryable;
+
+			MethodInfo mi = typeof(LinqExtensionMethods).GetMethods().FirstOrDefault(tp => tp.GetParameters().Any(p => p.ParameterType == typeof(ISession))).MakeGenericMethod(new Type[] { t }); ;
+			var q = mi.Invoke(Session, new object[] { Session }) as IQueryable;
 			return new HTable(this, q);
+		
 		}
 
 		public T Get<T, TKey>(TKey id) where T : IEntity, IWithKey<T, TKey>, new()
@@ -374,7 +372,8 @@ namespace Nephrite.Web.Hibernate
 	{
 		protected IQueryable<T> _query2;
 
-		public HTable(HDataContext dataContext, IQueryable<T> query) : base(dataContext, query)
+		public HTable(HDataContext dataContext, IQueryable<T> query)
+			: base(dataContext, query)
 		{
 			_query2 = query;
 		}
