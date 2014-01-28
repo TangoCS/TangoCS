@@ -422,7 +422,7 @@ namespace NHibernate.Dialect
 
 		public virtual IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
-			throw new NotSupportedException();
+			return new SybaseAnywhereDataBaseMetaData(connection);
 		}
 
 		#endregion
