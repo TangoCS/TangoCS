@@ -975,6 +975,7 @@ namespace Nephrite.Metamodel
         public void SubmitChanges()
         {
 			//db.CommandTimeout = 300;
+			db = (IDataContext)System.Web.HttpContext.Current.Items["SolutionDataContext"];
             db.SubmitChanges();
         }
 

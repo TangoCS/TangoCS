@@ -72,6 +72,10 @@
     <Reference Include="Microsoft.VisualStudio.TextTemplating">
       <HintPath>..\Microsoft.VisualStudio.TextTemplating.dll</HintPath>
     </Reference>
+    <Reference Include="NHibernate, Version=0.0.0.0, Culture=neutral, PublicKeyToken=cbf60b25e941e583, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\NHibernate\bin\Debug-2.0\NHibernate.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -256,10 +260,6 @@
     <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
       <Project>{26A68254-0902-4499-8B5F-6B4B6341BA21}</Project>
       <Name>Nephrite.Web</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
-      <Project>{5909bfe7-93cf-4e5f-be22-6293368af01d}</Project>
-      <Name>NHibernate</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
