@@ -40,11 +40,19 @@ namespace Nephrite.Web.Hibernate
 		public List<Action> AfterSaveActions { get; private set; }
 		public List<Action> BeforeSaveActions { get; private set; }
 
+		public static string DBType
+		{
+			get
+			{
+				return System.Configuration.ConfigurationManager.AppSettings["DBType"].ToUpper();
+			}
+		}
+
 		public static Action<IDbIntegrationConfigurationProperties> DBConfig(string connectionString)
 		{
 			return c =>
 			{
-				switch (System.Configuration.ConfigurationManager.AppSettings["DBType"].ToUpper())
+				switch (DBType)
 				{
 					case "MSSQL": c.Dialect<MsSql2008Dialect>(); break;
 					case "DB2": c.Dialect<DB2Dialect>(); break;
