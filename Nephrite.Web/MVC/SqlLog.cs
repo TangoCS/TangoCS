@@ -24,6 +24,7 @@ namespace Nephrite.Web
 				List<DataContext> dcl = new List<DataContext>(); 
 				foreach (var key in HttpContext.Current.Items.Keys)
 				{
+					if (!(key is string)) continue;
 					if ((string)key == "BaseDataContext")
 						continue;
 

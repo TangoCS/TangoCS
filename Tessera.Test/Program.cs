@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using Nephrite.Metamodel;
 using Nephrite.Web;
+using Nephrite.Web.Controls;
 using Nephrite.Web.Hibernate;
 using NHibernate;
 using NHibernate.Cfg.Loquacious;
@@ -19,11 +21,24 @@ namespace Tessera.Test
 		static void Main(string[] args)
 		{
 			App.DataContext.ExecuteCommand("SET SCHEMA = 'DBO';");
-			var r = App.DataContext.SPM_Subject.Where(o => o.SubjectID == 416 /*&& !o.IsActive*/).FirstOrDefault();
-			r.IsActive = false;
-			App.DataContext.SubmitChanges();
+			Func<string, Expression<Func<SPM_Subject, bool>>> SearchExpression = s => (o => SqlMethods.Like(o.SystemName, "%" + s + "%"));
+
+			bool? val = false;
+			Expression<Func<SPM_Subject, bool?>> column = o => o.IsActive;
+			var expr = Expression.Lambda<Func<SPM_Subject, bool>>(Expression.Equal(column.Body, Expression.Constant(val)), column.Parameters);
+
+			IQueryable<SPM_Subject> r = App.DataContext.SPM_Subject.Where(expr);
+			//r = ApplyFilter(r, SearchExpression, "anonymous");
+			var r2 = r.ToList();
+
 			Console.WriteLine(App.DataContext.Log.ToString());
 			Console.ReadKey();
+		}
+
+		public static IQueryable<T> ApplyFilter<T>(IQueryable<T> query, Func<string, Expression<Func<T, bool>>> SearchExpression, string val)
+			where T : class
+		{
+			return query.Where(SearchExpression(val));
 		}
 
 		public static T Find<T>(IQueryable<T> collection, string name)
