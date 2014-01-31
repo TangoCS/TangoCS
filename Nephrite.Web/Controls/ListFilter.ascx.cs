@@ -936,11 +936,11 @@ namespace Nephrite.Web.Controls
 			((List<object>)f.Column).Add(column);
 			f.Operator.Add(opname);
 		}
-		public void AddFieldBoolean<T>(string title, Expression<Func<T, object>> column)
+		public void AddFieldBoolean<T>(string title, Expression<Func<T, bool>> column)
 		{
 			AddFieldBoolean<T>(title, column, null);
 		}
-		public void AddFieldBoolean<T>(string title, Expression<Func<T, object>> column, bool? defaultFilter)
+		public void AddFieldBoolean<T>(string title, Expression<Func<T, bool>> column, bool? defaultFilter)
 		{
 			fieldList.Add(new Field
 			{
@@ -1152,9 +1152,14 @@ namespace Nephrite.Web.Controls
 						if (!bool.TryParse(item.Value, out b))
 							b = false;
 						val = b;
-					}
 
-					if (f.FieldType == FieldType.String || f.FieldType == FieldType.DDL)
+						if (item.Condition == "=")
+							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(column.Body, Expression.Constant(val)), column.Parameters);
+						if (item.Condition == "<>")
+							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(column.Body, Expression.Constant(val)), column.Parameters);
+
+					}
+					else if (f.FieldType == FieldType.String || f.FieldType == FieldType.DDL)
 					{
 						if (valType == typeof(Char) && val is string)
 							val = ((string)val)[0];
