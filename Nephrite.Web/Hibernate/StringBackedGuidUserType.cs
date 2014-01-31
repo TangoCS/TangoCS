@@ -56,7 +56,11 @@ namespace Nephrite.Web.Hibernate
 		public void NullSafeSet(IDbCommand cmd, object value, int index)
 		{
 
-			NHibernateUtil.String.NullSafeSet(cmd, value == null ? null : value.ToString(), index);
+			//NHibernateUtil.String.NullSafeSet(cmd, value == null ? null : value.ToString(), index);
+
+			var val = value == null ? (object) DBNull.Value : value.ToString();
+			((IDataParameter)cmd.Parameters[index]).Value = val;
+
 		}
 
 		public object NullSafeGet(IDataReader rs, string[] names, object owner)
