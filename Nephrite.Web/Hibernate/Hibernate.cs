@@ -6,6 +6,7 @@ using System.Linq;
 using System.Web;
 using NHibernate;
 using NHibernate.Cfg;
+using NHibernate.Linq.Functions;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 using NHibernate.Linq;
@@ -25,9 +26,12 @@ using NHibernate.Event;
 using Nephrite.Web.TrackChanges;
 using System.Reflection;
 using Nephrite.Web.SettingsManager;
+using Nhibernate.Extensions;
+
 
 namespace Nephrite.Web.Hibernate
 {
+	
 	public abstract class HDataContext : IDisposable, IDataContext
 	{
 		static Dictionary<string, ISessionFactory> _sessionFactories = new Dictionary<string, ISessionFactory>();
@@ -112,20 +116,23 @@ namespace Nephrite.Web.Hibernate
 
 			_cfg = new Configuration();
 			_cfg.DataBaseIntegration(dbConfig);
+	
 
-
-			_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" } });
+			_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" }});
 			_cfg.SetInterceptor(new HDataContextSqlStatementInterceptor(this));
 			_cfg.EventListeners.PreDeleteEventListeners = new IPreDeleteEventListener[] { new TrackChangesListener() };
 			_cfg.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { new TrackChangesListener() };
 			_cfg.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { new TrackChangesListener() };
+			//_cfg.SetProperty("linqtohql.generatorsregistry", "Nhibernate.Extensions.ExtendedLinqtoHqlGeneratorsRegistry, Nephrite.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e90f56a89b463b77");
+
+
 
 			var mapper = new ModelMapper();
 			mapper.AddMappings(GetEntitiesTypes());
 			HbmMapping domainMapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			_cfg.AddMapping(domainMapping);
 
-			
+			_cfg.LinqToHqlGeneratorsRegistry<GuidToHqlGeneratorsRegistry>();
 
 			_session = SessionFactory.OpenSession();
 			_session.FlushMode = FlushMode.Never;

@@ -134,6 +134,7 @@
     <Compile Include="FormsGenerator\ListCode.cs" />
     <Compile Include="FormsGenerator\SelectObjectCode.cs" />
     <Compile Include="FormsGenerator\UploadControlsCode.cs" />
+    <Compile Include="Hibernate\ExtendedEqualsGenerator.cs" />
     <Compile Include="Hibernate\IntBackedBoolUserType.cs" />
     <Compile Include="Hibernate\MappingConfig.cs" />
     <Compile Include="Hibernate\StringBackedGuidUserType.cs" />
