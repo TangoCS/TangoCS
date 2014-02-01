@@ -53,11 +53,6 @@ namespace Nephrite.Web.Hibernate
 			get { return typeof(bool); }
 		}
 
-		public bool IsMutable
-		{
-			get { return false; }
-		}
-
 		public void NullSafeSet(IDbCommand cmd, object value, int index)
 		{
 			var val = !((bool)value) ? 0 : 1;

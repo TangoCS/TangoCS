@@ -45,7 +45,7 @@ namespace Nephrite.Web.Hibernate
 
 		public Type ReturnedType
 		{
-			get { return typeof(Guid?); }
+			get { return typeof(Guid); }
 		}
 
 		public bool IsMutable

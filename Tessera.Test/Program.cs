@@ -23,13 +23,14 @@ namespace Tessera.Test
 			App.DataContext.ExecuteCommand("SET SCHEMA = 'DBO';");
 			Func<string, Expression<Func<SPM_Subject, bool>>> SearchExpression = s => (o => SqlMethods.Like(o.SystemName, "%" + s + "%"));
 
-			bool? val = false;
-			Expression<Func<SPM_Subject, bool?>> column = o => o.IsActive;
-			var expr = Expression.Lambda<Func<SPM_Subject, bool>>(Expression.Equal(column.Body, Expression.Constant(val)), column.Parameters);
+			//bool? val = false;
+			//Expression<Func<SPM_Subject, bool?>> column = o => o.IsActive;
+			//var expr = Expression.Lambda<Func<SPM_Subject, bool>>(Expression.Equal(column.Body, Expression.Constant(val)), column.Parameters);
 
-			IQueryable<SPM_Subject> r = App.DataContext.SPM_Subject.Where(expr);
+			//IQueryable<SPM_Subject> r = App.DataContext.SPM_Subject.Where(expr);
 			//r = ApplyFilter(r, SearchExpression, "anonymous");
-			var r2 = r.ToList();
+			//var r2 = r.ToList();
+			var r = App.DataContext.V_OrgUnit.Where(o => (o.ParentOrgUnitGUID ?? Guid.Empty) == new Guid("00000000-0000-0000-0000-000000000000")).ToList();
 
 			Console.WriteLine(App.DataContext.Log.ToString());
 			Console.ReadKey();
@@ -81,6 +82,49 @@ namespace Tessera.Test
 		}
 	}
 
+	public class Employee
+	{
+		public virtual Guid EmployeeGUID { get; set; }
+		public virtual Guid OrgUnitGUID { get; set; }
+
+		public override bool Equals(object obj)
+		{
+			if (obj == null)
+				return false;
+			return true;
+		}
+		public override int GetHashCode()
+		{
+			return EmployeeGUID.GetHashCode();
+		} 
+
+
+	}
+
+	public class Appendix
+	{
+		public virtual int AppendixID { get; set; }
+		public virtual Guid? FileGUID { get; set; }
+	}
+
+	public class V_OrgUnit
+	{
+		public virtual Guid OrgUnitGUID { get; set; }
+		public virtual Guid? ParentOrgUnitGUID { get; set; }
+
+		public override bool Equals(object obj)
+		{
+			if (obj == null)
+				return false;
+			return true;
+		}
+		public override int GetHashCode()
+		{
+			return OrgUnitGUID.GetHashCode();
+		} 
+	}
+
+
 
 
 	public class SPM_SubjectMap : ClassMapping<SPM_Subject>
@@ -97,6 +141,40 @@ namespace Tessera.Test
 		}
 	}
 
+	public class AppendixMap : ClassMapping<Appendix>
+	{
+		public AppendixMap()
+		{
+			Id(x => x.AppendixID, map => map.Generator(Generators.Identity));
+			Property(x => x.FileGUID, map => map.Type<StringBackedGuidUserType>());
+		}
+	}
+
+	public class V_OrgUnitMap : ClassMapping<V_OrgUnit>
+	{
+		public V_OrgUnitMap()
+		{
+			ComposedId(i => i.Property(p => p.OrgUnitGUID, map =>
+			{
+				map.Column("OrgUnitGUID");
+				map.Type<StringBackedGuidUserType>();
+			}));
+
+			Property(x => x.ParentOrgUnitGUID, map => { map.Type<StringBackedGuidUserType>(); });
+		}
+	}
+	public class EmployeeMap : ClassMapping<Employee>
+	{
+		public EmployeeMap()
+		{
+			ComposedId(i => i.Property(p => p.EmployeeGUID, map =>
+			{
+				map.Column("EmployeeGUID");
+				map.Type<StringBackedGuidUserType>();
+			}));
+			Property(x => x.OrgUnitGUID, map => map.Type<StringBackedGuidUserType>());
+		}
+	}
 
 	public class App
 	{
@@ -119,6 +197,9 @@ namespace Tessera.Test
 		{
 			List<Type> l = new List<Type>();
 			l.Add(typeof(SPM_SubjectMap));
+			l.Add(typeof(EmployeeMap));
+			l.Add(typeof(V_OrgUnitMap));
+			l.Add(typeof(AppendixMap));
 
 			return l;
 		}
@@ -130,6 +211,28 @@ namespace Tessera.Test
 				return new HTable<SPM_Subject>(this, Session.Query<SPM_Subject>());
 			}
 		}
+		public HTable<Employee> Employee
+		{
+			get
+			{
+				return new HTable<Employee>(this, Session.Query<Employee>());
+			}
+		}
+		public HTable<V_OrgUnit> V_OrgUnit
+		{
+			get
+			{
+				return new HTable<V_OrgUnit>(this, Session.Query<V_OrgUnit>());
+			}
+		}
+		public HTable<Appendix> Appendix
+		{
+			get
+			{
+				return new HTable<Appendix>(this, Session.Query<Appendix>());
+			}
+		}
+
 
 		public override IDataContext NewDataContext()
 		{

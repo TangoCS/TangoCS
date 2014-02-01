@@ -197,6 +197,17 @@ namespace Nephrite.Web.CoreDataContext
 			CreatorID = 2;
 		}
 
+		public override bool Equals(object obj)
+		{
+			if (obj == null)
+				return false;
+			return true;
+		}
+		public override int GetHashCode()
+		{
+			return ID.GetHashCode();
+		} 
+
 		public virtual string CheckedOutBy { get; set; }
 		public virtual string Creator { get; set; }
 		public virtual int CreatorID { get; set; }
@@ -229,6 +240,17 @@ namespace Nephrite.Web.CoreDataContext
 			CreatorID = 2;
 		}
 
+		public override bool Equals(object obj)
+		{
+			if (obj == null)
+				return false;
+			return true;
+		}
+		public override int GetHashCode()
+		{
+			return ID.GetHashCode();
+		} 
+
 		public virtual string Title { get; set; }
 		public virtual string Tag { get; set; }
 		public virtual DateTime? PublishDate { get; set; }
@@ -253,6 +275,17 @@ namespace Nephrite.Web.CoreDataContext
 
 	public partial class V_DbItem : IDbItem
 	{
+		public override bool Equals(object obj)
+		{
+			if (obj == null)
+				return false;
+			return true;
+		}
+		public override int GetHashCode()
+		{
+			return ID.GetHashCode();
+		} 
+
 		public virtual string Title { get; set; }
 		public virtual System.DateTime LastModifiedDate { get; set; }
 		public virtual System.DateTime? PublishDate { get; set; }

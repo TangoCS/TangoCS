@@ -230,7 +230,13 @@ namespace Nephrite.Web.CoreDataContext
 		{
 			Table("V_DbFile");
 			Lazy(true);
-			Id(x => x.ID, map => map.Generator(Generators.Guid));
+
+			ComposedId(i => i.Property(p => p.ID, map =>
+			{
+				map.Column("ID");
+				MappingConfig.GuidPropertyConfig(map);
+			}));
+
 			Property(x => x.Size, map => map.NotNullable(true));
 			Property(x => x.Title, map => map.NotNullable(true));
 			Property(x => x.Extension, map => map.NotNullable(true));
@@ -238,9 +244,9 @@ namespace Nephrite.Web.CoreDataContext
 			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
 			Property(x => x.Path);
 			Property(x => x.FullPath);
-			Property(x => x.FeatureGUID);
+			Property(x => x.FeatureGUID, map => MappingConfig.GuidPropertyConfig(map));
 			Property(x => x.VersionNumber, map => { map.NotNullable(true); map.Insert(false); map.Update(false); });
-			Property(x => x.MainID, map => { map.Insert(false); map.Update(false); });
+			Property(x => x.MainID, map => { map.Insert(false); map.Update(false); MappingConfig.GuidPropertyConfig(map); });
 			Property(x => x.Tag);
 			Property(x => x.PublishDate);
 
@@ -253,9 +259,9 @@ namespace Nephrite.Web.CoreDataContext
 
 			Property(x => x.IsDeleted, map => { map.Insert(false); map.Update(false); });
 
-			Property(x => x.SPMActionItemGUID, map => { map.Insert(false); map.Update(false); });
+			Property(x => x.SPMActionItemGUID, map => { map.Insert(false); map.Update(false); MappingConfig.GuidPropertyConfig(map); });
 			Property(x => x.IsValid);
-			Property(x => x.ParentFolderID);
+			Property(x => x.ParentFolderID, map => MappingConfig.GuidPropertyConfig(map));
 		}
 	}
 
@@ -265,7 +271,13 @@ namespace Nephrite.Web.CoreDataContext
 		{
 			Table("V_DbFolder");
 			Lazy(true);
-			Id(x => x.ID, map => map.Generator(Generators.Guid));
+
+			ComposedId(i => i.Property(p => p.ID, map =>
+			{
+				map.Column("ID");
+				MappingConfig.GuidPropertyConfig(map);
+			}));
+
 			Property(x => x.Title, map => map.NotNullable(true));
 			Property(x => x.IsDeleted, map => map.NotNullable(true));
 			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
@@ -273,7 +285,7 @@ namespace Nephrite.Web.CoreDataContext
 			Property(x => x.StorageType, map => map.NotNullable(true));
 			Property(x => x.StorageParameter);
 			Property(x => x.Path);
-			Property(x => x.SPMActionItemGUID, map => { map.NotNullable(true); map.Insert(false); map.Update(false); });
+			Property(x => x.SPMActionItemGUID, map => { map.NotNullable(true); map.Insert(false); map.Update(false); MappingConfig.GuidPropertyConfig(map); });
 			Property(x => x.EnableVersioning, map => map.NotNullable(true));
 			Property(x => x.Tag);
 			Property(x => x.PublishDate);
@@ -284,7 +296,7 @@ namespace Nephrite.Web.CoreDataContext
 			Property(x => x.LastModifiedUserName, map => map.NotNullable(true));
 			Property(x => x.FullPath);
 			Property(x => x.Creator);
-			Property(x => x.ParentFolderID);
+			Property(x => x.ParentFolderID, map => MappingConfig.GuidPropertyConfig(map));
 			Property(x => x.IsDeleted, map => map.NotNullable(true));
 		}
 	}
@@ -295,7 +307,13 @@ namespace Nephrite.Web.CoreDataContext
 		{
 			Table("V_DbItem");
 			Lazy(true);
-			Id(x => x.ID, map => map.Generator(Generators.Guid));
+
+			ComposedId(i => i.Property(p => p.ID, map =>
+			{
+				map.Column("ID");
+				MappingConfig.GuidPropertyConfig(map);
+			}));
+
 			Property(x => x.Size, map => map.NotNullable(true));
 			Property(x => x.Title, map => map.NotNullable(true));
 			Property(x => x.Extension, map => map.NotNullable(true));
@@ -315,7 +333,7 @@ namespace Nephrite.Web.CoreDataContext
 
 			Property(x => x.IsDeleted, map => { map.Insert(false); map.Update(false); });
 			Property(x => x.EnableVersioning, map => { map.NotNullable(true); map.Insert(false); map.Update(false); });
-			Property(x => x.SPMActionItemGUID, map => { map.Insert(false); map.Update(false); });
+			Property(x => x.SPMActionItemGUID, map => { map.Insert(false); map.Update(false); MappingConfig.GuidPropertyConfig(map); });
 
 			Property(x => x.Type, map => { map.NotNullable(true); map.Type<int>(); });
 		}
