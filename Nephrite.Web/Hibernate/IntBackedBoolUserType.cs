@@ -43,9 +43,17 @@ namespace Nephrite.Web.Hibernate
 			return value;
 		}
 
-		public SqlType[] SqlTypes
+		public override SqlType SqlType
 		{
-			get { return new[] { new SqlType(DbType.Int32) }; }
+			get
+			{
+				return new SqlType(DbType.Int32);
+			}
+		}
+
+		public new SqlType[] SqlTypes
+		{
+			get { return new SqlType[] { SqlType }; }
 		}
 
 		public Type ReturnedType
@@ -53,7 +61,7 @@ namespace Nephrite.Web.Hibernate
 			get { return typeof(bool); }
 		}
 
-		public void NullSafeSet(IDbCommand cmd, object value, int index)
+		public new void NullSafeSet(IDbCommand cmd, object value, int index)
 		{
 			var val = !((bool)value) ? 0 : 1;
 			NHibernateUtil.Int32.NullSafeSet(cmd, val, index);
