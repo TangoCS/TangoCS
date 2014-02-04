@@ -268,6 +268,7 @@ namespace Nephrite.Meta.Database
 				}
 
 			}
+			_MainScripts.Add(Checked(currentTable.Name.ToUpper()));
 		}
 
 		public void DeleteTrigger(Trigger currentTrigger)
@@ -475,11 +476,14 @@ namespace Nephrite.Meta.Database
 
 			if (currentTable.Name.ToUpper() == "C_POSTSALARYINDEXING")
 			{
-
+			
 			}
 			var computedText = "";
 			switch (srcColumn.ComputedText)
 			{
+				case "(((CONVERT([nvarchar],[Value],0)+' (')+[Title])+')')":
+					computedText = "AS (((CHAR(VALUE)||' (')||TITLE)||')')";
+					break;
 				case "(isnull(([Surname]+isnull((' '+substring([Firstname],(1),(1)))+'.',''))+isnull((' '+substring([Patronymic],(1),(1)))+'.',''),''))":
 					computedText =
 						"AS ((COALESCE((SURNAME || COALESCE((' ' ||substring(FIRSTNAME,1,1, OCTETS)) || '.','')) || COALESCE((' ' || substring(PATRONYMIC,1,1, OCTETS)) || '.',''),'')))";
@@ -516,7 +520,7 @@ namespace Nephrite.Meta.Database
 					computedText = "AS (CHAR(VALUE) || COALESCE(' ' || TITLE,''))";
 					break;
 				case "(isnull(CONVERT([bit],case when [EndDate]>getdate() AND [BeginDate]<getdate() then (0) else (1) end,(0)),(1)))":
-					computedText = "AS (COALESCE(case when ENDDATE> current_date AND BEGINDATE< current_date then 0 else 1 end))";
+					computedText = "AS (COALESCE(case when ENDDATE> dbo.getdate() AND BEGINDATE< dbo.getdate() then 0 else 1 end,))";
 					break;
 				case "(((([CitizenSurname]+' ')+[CitizenFirstname])+' ')+[CitizenPatronymic])":
 					computedText = "AS ((((CITIZENSURNAME || ' ') || CITIZENFIRSTNAME) || ' ') || CITIZENPATRONYMIC)";
@@ -534,7 +538,7 @@ namespace Nephrite.Meta.Database
 					computedText = "AS ((SHORTNAME || ' ') || OFFNAME)";
 					break;
 				default:
-					computedText = " AS " + srcColumn.ComputedText.Replace("AS", "").Replace("[", "").Replace("]", "").ToUpper();
+					computedText = " AS " + srcColumn.ComputedText.ToUpper().Replace("AS", "").Replace("[", "").Replace("]", "").Replace("NVARCHAR", "VARCHAR").ToUpper();
 					break;
 
 			}
@@ -553,11 +557,13 @@ namespace Nephrite.Meta.Database
 		public void DeleteDefaultValue(Column currentColumn)
 		{
 			_MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} DROP DEFAULT;  \r\n", currentColumn.Name.ToUpper(), currentColumn.CurrentTable.Name.ToUpper(), _SchemaName));
+			_MainScripts.Add(Checked(currentColumn.CurrentTable.Name.ToUpper()));
 		}
 
 		public void AddDefaultValue(Column srcColumn)
 		{
 			_MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} SET DEFAULT {3}; \r\n", srcColumn.Name.ToUpper(), srcColumn.CurrentTable.Name.ToUpper(), _SchemaName, GetDefaultValue(srcColumn.DefaultValue, srcColumn.Type.GetDBType(this))));
+			_MainScripts.Add(Checked(srcColumn.CurrentTable.Name.ToUpper()));
 		}
 
 
@@ -657,7 +663,8 @@ namespace Nephrite.Meta.Database
 		private string Checked(string tableName)
 		{
 			return @"
-				 SET INTEGRITY FOR DBO." + tableName + @"ALL IMMEDIATE UNCHECKED;
+				 CALL SYSPROC.ADMIN_CMD( 'REORG TABLE DBO." + tableName + @"' );
+				 SET INTEGRITY FOR DBO." + tableName + @" ALL IMMEDIATE UNCHECKED;
 				 SET INTEGRITY FOR DBO." + tableName + @" OFF CASCADE DEFERRED;
 				 SET INTEGRITY FOR  DBO." + tableName + @"  IMMEDIATE CHECKED; 
 					";

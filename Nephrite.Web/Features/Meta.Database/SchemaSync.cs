@@ -99,6 +99,10 @@ namespace Nephrite.Meta.Database
 				//1.1. Добавляем колонки 
 				foreach (var srcColumn in srcColumns.Where(srcColumn => curentColumns.All(t => t.Value.Name.ToLower() != srcColumn.Value.Name.ToLower())))
 				{
+					if (srcTable.Name.ToUpper() == "C_POSTSALARYINDEXING" && srcColumn.Value.Name.ToLower() == "DISPLAYTITLE".ToLower())
+					{
+
+					}
 					script.AddColumn(srcColumn.Value);
 				}
 				//1.2. Удаляем колонки и синхронизируем 
@@ -107,10 +111,7 @@ namespace Nephrite.Meta.Database
 
 					var srcColumn = srcColumns.Values.SingleOrDefault(t => t.Name.ToLower() == column.Value.Name.ToLower());
 					column.Value.srcTable = srcTable;
-					if (srcTable.Name.ToUpper() == "C_FIAS_HOUSE" && column.Value.Name.ToLower() == "TITLE".ToLower())
-					{
-
-					}
+				
 					column.Value.Sync(script, srcColumn);
 
 				}
