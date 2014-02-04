@@ -107,7 +107,7 @@ namespace Nephrite.Meta.Database
 
 					var srcColumn = srcColumns.Values.SingleOrDefault(t => t.Name.ToLower() == column.Value.Name.ToLower());
 					column.Value.srcTable = srcTable;
-					if (column.Value.Name.ToLower() == "IsCheckDeadline".ToLower())
+					if (srcTable.Name.ToUpper() == "C_FIAS_HOUSE" && column.Value.Name.ToLower() == "TITLE".ToLower())
 					{
 
 					}
@@ -198,7 +198,15 @@ namespace Nephrite.Meta.Database
 						script.DeleteDefaultValue(this);
 					}
 					script.ChangeColumn(srcColumn);
+					if (CurrentTable.Name.ToUpper() == "C_EXTRAPAYPOST")
+					{
 
+					}
+
+					if (CurrentTable.Name.ToUpper() == "C_EXTRAPAYPOST" && Name.ToUpper() == "LASTMODIFIEDDATE")
+					{
+
+					}
 					if (!string.IsNullOrEmpty(DefaultValue))
 					{
 						script.AddDefaultValue(this);
@@ -216,7 +224,7 @@ namespace Nephrite.Meta.Database
 					if (!string.IsNullOrEmpty(DefaultValue))
 					{
 						script.DeleteDefaultValue(this);
-						script.AddDefaultValue(this);
+						script.AddDefaultValue(srcColumn);
 					}
 				}
 				if (IsPrimaryKey && CurrentTable.Identity != srcTable.Identity)
@@ -231,7 +239,7 @@ namespace Nephrite.Meta.Database
 						{ script.DeleteForeignKey(foreignKey.Value); }
 					}
 					// Удаляем ссылки pk fk так же обнуляем их обьекты и таблицы для создания их в дальнейшем
-					if (CurrentTable.PrimaryKey.Columns.Any(t => t == this.Name.ToLower()))
+					if (CurrentTable.PrimaryKey.Columns.Any(t => t == this.Name.ToUpper()))
 					{
 						script.DeletePrimaryKey(CurrentTable.PrimaryKey);
 					}

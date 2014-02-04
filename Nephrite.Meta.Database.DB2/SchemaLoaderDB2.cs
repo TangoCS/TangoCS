@@ -39,12 +39,10 @@ namespace Nephrite.Meta.Database
 
 								}
 								var tabArray = !string.IsNullOrEmpty(t.GetAttributeValue("DESCRIPTION")) ? t.GetAttributeValue("DESCRIPTION").Split('|') : new string[] { };
-								var tableName = tabArray.Length == 0 ? "" : tabArray[tabArray.Length-1];
-								var tableDescription = tabArray.Length == 2 ? tabArray[0] : "";
+								var tableName = tabArray.Length > 1 ? tabArray[1] : "";
+								var tableDescription = tabArray.Length > 0 ? tabArray[0] : "";
 								// Проверяем наличие описания и отсутствие мени в нижнем регистре( происходит когда коментарий не записалса с др бд а старый остался написанный кирилицей)
-								Regex regexTable = new Regex("[а-яА-ЯёЁъЪ]{1,32}");
-								Match matchTable = regexTable.Match(tableName);
-								tableName = matchTable.Success ? string.Empty : tableName;// Если найден кирилический символ то название удаляем
+
 								var table = new Table();
 								table.Name = string.IsNullOrEmpty(tableName) ? t.GetAttributeValue("NAME") : tableName;
 								table.Owner = t.GetAttributeValue("OWNER");
@@ -55,17 +53,15 @@ namespace Nephrite.Meta.Database
 									xColumnsElement.Descendants("Column").ToList().ForEach(c =>
 									{
 										var columnArray = !string.IsNullOrEmpty(c.GetAttributeValue("DESCRIPTION")) ? c.GetAttributeValue("DESCRIPTION").Split('|') : new string[] { };
-										var columnName = columnArray.Length == 0 ? "" : columnArray[columnArray.Length - 1];
-										var columnDescription = columnArray.Length == 2 ? columnArray[0] : "";
+										var columnName = columnArray.Length > 1 ? columnArray[1] : "";
+										var columnDescription = columnArray.Length > 0 ? columnArray[0] : "";
 
 
 										// Проверяем наличие описания и отсутствие мени в нижнем регистре( происходит когда коментарий не записалса с др бд а старый остался написанный кирилицей)
-										Regex regexColumn = new Regex("[а-яА-ЯёЁъЪ]{1,32}");
-										Match matchColumn = regexColumn.Match(columnName);
-										columnName = matchColumn.Success ? string.Empty : columnName;// Если найден кирилический символ то название удаляем
+
 
 										var column = new Column();
-										column.Name =  string.IsNullOrEmpty(columnName) ? c.GetAttributeValue("NAME") : columnName;;
+										column.Name = string.IsNullOrEmpty(columnName) ? c.GetAttributeValue("NAME") : columnName; ;
 										column.Type = column.Name.EndsWith("GUID") ? new MetaGuidType() : DbScript.GetType(c.GetAttributeValue("TYPE"));
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
 										column.ComputedText = c.GetAttributeValue("COMPUTEDTEXT");

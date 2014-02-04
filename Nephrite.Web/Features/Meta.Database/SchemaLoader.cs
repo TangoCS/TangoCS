@@ -42,6 +42,10 @@ namespace Nephrite.Meta.Database
 								var table = new Table();
 								table.Name = t.GetAttributeValue("Name");
 									table.Owner = t.GetAttributeValue("Owner");
+								if (table.Name.ToUpper() == "APPENDIX")
+								{
+
+								}
 								table.Description = t.GetAttributeValue("Description");
 								table.Identity = !string.IsNullOrEmpty(t.GetAttributeValue("Identity")) && t.GetAttributeValue("Identity") == "1";
 								var xColumnsElement = t.Element("Columns");

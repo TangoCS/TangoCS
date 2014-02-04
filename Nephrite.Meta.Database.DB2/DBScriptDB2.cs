@@ -44,7 +44,7 @@ namespace Nephrite.Meta.Database
 		public void CreateTable(Table srcTable)
 		{
 
-			var tableScript = string.Format("CREATE TABLE {2}.{0} ({1})  ;\r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {2}.{0}' ); \r\n  ", srcTable.Name.ToUpper(), "{0}", _SchemaName);// {0}- Название таблицы, {1}- Список колонок, {2} - ON [PRIMARY]
+			var tableScript = string.Format("CREATE TABLE {2}.{0} ({1})  ;\r\n    ", srcTable.Name.ToUpper(), "{0}", _SchemaName);// {0}- Название таблицы, {1}- Список колонок, {2} - ON [PRIMARY]
 			var columnsScript =
 				srcTable.Columns.Aggregate(string.Empty,
 										   (current, srcColumn) =>
@@ -54,7 +54,7 @@ namespace Nephrite.Meta.Database
 														 srcColumn.Value.Type.GetDBType(this),
 														 srcColumn.Value.Nullable ? "NULL" : "NOT NULL",
 														 srcColumn.Value.IsPrimaryKey && srcTable.Identity ? "  GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 )" : "",
-														 (!string.IsNullOrEmpty(srcColumn.Value.DefaultValue) ? string.Format(" WITH DEFAULT {0}",GetDefaultValue(srcColumn.Value.DefaultValue)) : "")
+														 (!string.IsNullOrEmpty(srcColumn.Value.DefaultValue) ? string.Format(" WITH DEFAULT {0}", GetDefaultValue(srcColumn.Value.DefaultValue, srcColumn.Value.Type.GetDBType(this))) : "")
 														) :
 														 string.Format(" {0}  GENERATED ALWAYS AS  (\"{1}\") ", srcColumn.Value.Name.ToUpper(), srcColumn.Value.ComputedText)
 														 )).Trim().TrimEnd(',');
@@ -71,7 +71,7 @@ namespace Nephrite.Meta.Database
 
 				tableScript += string.Format(
 								   "ALTER TABLE {3}.{0}\r\n" +
-								   "ADD CONSTRAINT {1} PRIMARY KEY ({2})  ;\r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {3}.{0}' ); \r\n", srcTable.Name.ToUpper(),
+								   "ADD CONSTRAINT {1} PRIMARY KEY ({2})  ;\r\n  ", srcTable.Name.ToUpper(),
 													  srcTable.PrimaryKey.Name.ToUpper(),
 													  string.Join(",", srcTable.PrimaryKey.Columns),
 													  _SchemaName);// {0)- TableName  {1} - Constraint Name, {2} - Columns,{3} - Ref Table ,{4} - Ref Columns
@@ -132,7 +132,7 @@ namespace Nephrite.Meta.Database
 			_FkScripts.Add(
 				string.Format(
 					"ALTER TABLE {6}.{0}  ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" +
-					"REFERENCES {6}.{3} ({4}) {5} ;\r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {6}.{0}' ); \r\n", srcTable.Name.ToUpper(), srcforeignKey.Name.ToUpper(), string.Join(",", srcforeignKey.Columns).ToUpper(),
+					"REFERENCES {6}.{3} ({4}) {5} ;\r\n   ", srcTable.Name.ToUpper(), srcforeignKey.Name.ToUpper(), string.Join(",", srcforeignKey.Columns).ToUpper(),
 					srcforeignKey.RefTable.ToUpper(), string.Join(",", srcforeignKey.RefTableColumns).ToUpper(), "ON DELETE " + srcforeignKey.DeleteOption.ToString().ToUpper(),
 					_SchemaName));
 
@@ -149,7 +149,7 @@ namespace Nephrite.Meta.Database
 		{
 
 			var currentTable = currentPrimaryKey.CurrentTable;
-			_MainScripts.Add(string.Format("ALTER TABLE {1}.{0} DROP PRIMARY KEY ;  \r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {1}.{0}' ); \r\n", currentTable.Name.ToUpper(), _SchemaName));
+			_MainScripts.Add(string.Format("ALTER TABLE {1}.{0} DROP PRIMARY KEY ;  \r\n", currentTable.Name.ToUpper(), _SchemaName));
 
 		}
 
@@ -157,7 +157,7 @@ namespace Nephrite.Meta.Database
 		{
 			var curentTable = srcPrimaryKey.CurrentTable;
 			_MainScripts.Add(string.Format("ALTER TABLE {2}.{0}\r\n" +
-										   "ADD  PRIMARY KEY ({1}) ; \r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {2}.{0}' ); \r\n", curentTable.Name.ToUpper(),
+										   "ADD  PRIMARY KEY ({1}) ; \r\n", curentTable.Name.ToUpper(),
 													   string.Join(",", srcPrimaryKey.Columns),
 													   _SchemaName));
 
@@ -197,7 +197,7 @@ namespace Nephrite.Meta.Database
 				}
 
 			}
-			_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP COLUMN {1} ; \r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {2}.{0}' ); \r\n ", currentTable.Name.ToUpper(),
+			_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP COLUMN {1} ; \r\n   ", currentTable.Name.ToUpper(),
 										  currentColumn.Name.ToUpper(), _SchemaName));
 
 		}
@@ -213,12 +213,12 @@ namespace Nephrite.Meta.Database
 			{
 
 
-				_MainScripts.Add(string.Format("ALTER TABLE {6}.{5} ADD {0} {1} {2} {3} {4} ; \r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {6}.{5}' ); \r\n ",
+				_MainScripts.Add(string.Format("ALTER TABLE {6}.{5} ADD {0} {1} {2} {3} {4} ; \r\n   ",
 										srcColumn.Name.ToUpper(),
 										srcColumn.Type.GetDBType(this),
 										srcColumn.Nullable ? "NULL" : "NOT NULL",
 										srcColumn.IsPrimaryKey && currentTable.Identity ? "  GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 )" : "",
-									   (!string.IsNullOrEmpty(srcColumn.DefaultValue) ? string.Format(" WITH DEFAULT {0}", GetDefaultValue(srcColumn.DefaultValue)) : ""),
+									   (!string.IsNullOrEmpty(srcColumn.DefaultValue) ? string.Format(" WITH DEFAULT {0}", GetDefaultValue(srcColumn.DefaultValue, srcColumn.Type.GetDBType(this))) : ""),
 										currentTable.Name.ToUpper(), _SchemaName));
 				if (!string.IsNullOrEmpty(srcColumn.DefaultValue))
 				{
@@ -238,21 +238,21 @@ namespace Nephrite.Meta.Database
 			}
 			else
 			{
-				_MainScripts.Add(string.Format("  ALTER TABLE {3}.{0} ALTER COLUMN {1} SET DATA TYPE {2}; \r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {3}.{0}' ); \r\n ",
+				_MainScripts.Add(string.Format("  ALTER TABLE {3}.{0} ALTER COLUMN {1} SET DATA TYPE {2}; \r\n  ",
 											  currentTable.Name.ToUpper(),
 											  srcColumn.Name.ToUpper(),
 											  srcColumn.Type.GetDBType(this),
 											  _SchemaName));
 				if (srcColumn.Nullable)
 				{
-					_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1} DROP NOT  NULL; \r\n     CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {2}.{0}' ); \r\n",
+					_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1} DROP NOT  NULL; \r\n  ",
 												   currentTable.Name.ToUpper(),
 												   srcColumn.Name.ToUpper(),
 												   _SchemaName));
 				}
 				else
 				{
-					_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1} SET NOT  NULL;  \r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {2}.{0}' ); \r\n ",
+					_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1} SET NOT  NULL;  \r\n ",
 													  currentTable.Name.ToUpper(),
 													  srcColumn.Name.ToUpper(),
 													  _SchemaName));
@@ -260,11 +260,11 @@ namespace Nephrite.Meta.Database
 				}
 				if (!string.IsNullOrEmpty(srcColumn.DefaultValue))
 				{
-					_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1}  SET DEFAULT {3}; \r\n    CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {2}.{0}' ); \r\n",
+					_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1}  SET DEFAULT {3}; \r\n ",
 													  currentTable.Name.ToUpper(),
 													  srcColumn.Name.ToUpper(),
 													  _SchemaName,
-													  GetDefaultValue(srcColumn.DefaultValue)));
+													  GetDefaultValue(srcColumn.DefaultValue, srcColumn.Type.GetDBType(this))));
 				}
 
 			}
@@ -285,14 +285,14 @@ namespace Nephrite.Meta.Database
 			var srcTable = srcColumn.CurrentTable;
 			if (srcColumn.Identity)
 			{
-				_MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1} DROP IDENTITY; \r\n CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {2}.{0}' ); \r\n", srcTable.Name.ToUpper(), srcColumn.Name.ToUpper(), _SchemaName));
-				_MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1}  SET GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 ); \r\n CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {2}.{0}' ); \r\n", srcTable.Name.ToUpper(), srcColumn.Name.ToUpper(), _SchemaName));
+				_MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1} DROP IDENTITY;  \r\n", srcTable.Name.ToUpper(), srcColumn.Name.ToUpper(), _SchemaName));
+				_MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1}  SET GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 ); \r\n", srcTable.Name.ToUpper(), srcColumn.Name.ToUpper(), _SchemaName));
 
 
 			}
 			else
 			{
-				_MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1} DROP IDENTITY; \r\n CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {2}.{0}' ); \r\n ", srcTable.Name, srcColumn.Name.ToUpper(), _SchemaName));
+				_MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1} DROP IDENTITY; \r\n ", srcTable.Name, srcColumn.Name.ToUpper(), _SchemaName));
 			}
 		}
 
@@ -338,7 +338,7 @@ namespace Nephrite.Meta.Database
 
 		public string GetStringType(int length)
 		{
-	         return string.Format("VARCHAR({0})", length == -1 ? "32000" : length.ToString());
+			return string.Format("VARCHAR({0})", length == -1 ? "32000" : length.ToString());
 		}
 
 		public string GetDecimalType(int precision, int scale)
@@ -470,10 +470,10 @@ namespace Nephrite.Meta.Database
 
 		public void AddComputedColumn(Column srcColumn)
 		{
-			
+
 			var currentTable = srcColumn.CurrentTable;
 
-			if (currentTable.Name.ToUpper() == "C_POSTPART")
+			if (currentTable.Name.ToUpper() == "C_POSTSALARYINDEXING")
 			{
 
 			}
@@ -534,14 +534,15 @@ namespace Nephrite.Meta.Database
 					computedText = "AS ((SHORTNAME || ' ') || OFFNAME)";
 					break;
 				default:
-					computedText = srcColumn.ComputedText.Replace("[", "").Replace("]", "").ToUpper();
+					computedText = " AS " + srcColumn.ComputedText.Replace("AS", "").Replace("[", "").Replace("]", "").ToUpper();
 					break;
 
 			}
-			_MainScripts.Add(string.Format("SET INTEGRITY FOR {3}.{0} OFF CASCADE DEFERRED;\r\n ALTER TABLE {3}.{0} ADD {1} {4}  GENERATED ALWAYS {2} ; \r\n SET INTEGRITY FOR {3}.{0}  IMMEDIATE CHECKED; CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {3}.{0}' ); \r\n",
+			_MainScripts.Add(Checked(currentTable.Name.ToUpper()));
+			_MainScripts.Add(string.Format(" CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {3}.{0}' ); \r\n SET INTEGRITY FOR {3}.{0} OFF CASCADE DEFERRED;\r\n ALTER TABLE {3}.{0} ADD {1} {4}  GENERATED ALWAYS {2} ; \r\n",
 									currentTable.Name.ToUpper(),
 									srcColumn.Name.ToUpper(),
-									computedText.Replace("\"", "").Replace("+","||"),
+									computedText.Replace("\"", "").Replace("+", "||").Replace("ISNULL", "COALESCE"),
 									_SchemaName,
 									srcColumn.Type.GetDBType(this)
 									));//    // {0}- Название таблицы, {1} - Название колонки, {2} - ComputedText
@@ -551,12 +552,12 @@ namespace Nephrite.Meta.Database
 
 		public void DeleteDefaultValue(Column currentColumn)
 		{
-			_MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} DROP DEFAULT; \r\n CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {2}.{1}' ); \r\n", currentColumn.Name.ToUpper(), currentColumn.CurrentTable.Name.ToUpper(), _SchemaName));
+			_MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} DROP DEFAULT;  \r\n", currentColumn.Name.ToUpper(), currentColumn.CurrentTable.Name.ToUpper(), _SchemaName));
 		}
 
 		public void AddDefaultValue(Column srcColumn)
 		{
-			_MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} SET DEFAULT {3}; \r\n CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {2}.{1}' ); \r\n", srcColumn.Name.ToUpper(), srcColumn.CurrentTable.Name.ToUpper(), _SchemaName, GetDefaultValue(srcColumn.DefaultValue)));
+			_MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} SET DEFAULT {3}; \r\n", srcColumn.Name.ToUpper(), srcColumn.CurrentTable.Name.ToUpper(), _SchemaName, GetDefaultValue(srcColumn.DefaultValue, srcColumn.Type.GetDBType(this))));
 		}
 
 
@@ -569,7 +570,7 @@ namespace Nephrite.Meta.Database
 
 		public void SyncIdentity(Table srcTable)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 
 
@@ -638,7 +639,7 @@ namespace Nephrite.Meta.Database
 
 		}
 
-		private string GetDefaultValue(string Value)
+		private string GetDefaultValue(string Value, string Type)
 		{
 
 
@@ -649,8 +650,17 @@ namespace Nephrite.Meta.Database
 				var match1 = Regex.Match(Value, @"\((.*)\)");
 				defValue = match1.Groups[1].Value;
 			}
-			return Value == "(getdate())" ? "current_date" : "'" + defValue.Replace("'", "").Replace("(", "").Replace(")", "").Replace("\"", "") + "'";
+			return Value == "(getdate())" ? (Type.ToUpper() == "TIMESTAMP" ? "CURRENT_TIMESTAMP" : "CURRENT_DATE") : "'" + defValue.Replace("'", "").Replace("(", "").Replace(")", "").Replace("\"", "") + "'";
 
+		}
+
+		private string Checked(string tableName)
+		{
+			return @"
+				 SET INTEGRITY FOR DBO." + tableName + @"ALL IMMEDIATE UNCHECKED;
+				 SET INTEGRITY FOR DBO." + tableName + @" OFF CASCADE DEFERRED;
+				 SET INTEGRITY FOR  DBO." + tableName + @"  IMMEDIATE CHECKED; 
+					";
 		}
 	}
 }
