@@ -520,7 +520,7 @@ namespace Nephrite.Meta.Database
 					computedText = "AS (CHAR(VALUE) || COALESCE(' ' || TITLE,''))";
 					break;
 				case "(isnull(CONVERT([bit],case when [EndDate]>getdate() AND [BeginDate]<getdate() then (0) else (1) end,(0)),(1)))":
-					computedText = "AS (COALESCE(case when ENDDATE> dbo.getdate() AND BEGINDATE< dbo.getdate() then 0 else 1 end,))";
+					computedText = "AS (COALESCE(case when ENDDATE> dbo.getdate() AND BEGINDATE< dbo.getdate() then 0 else 1 end,0))";
 					break;
 				case "(((([CitizenSurname]+' ')+[CitizenFirstname])+' ')+[CitizenPatronymic])":
 					computedText = "AS ((((CITIZENSURNAME || ' ') || CITIZENFIRSTNAME) || ' ') || CITIZENPATRONYMIC)";
@@ -576,7 +576,7 @@ namespace Nephrite.Meta.Database
 
 		public void SyncIdentity(Table srcTable)
 		{
-			//throw new NotImplementedException();
+	
 		}
 
 

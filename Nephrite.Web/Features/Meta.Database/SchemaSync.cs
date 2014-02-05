@@ -99,19 +99,20 @@ namespace Nephrite.Meta.Database
 				//1.1. Добавляем колонки 
 				foreach (var srcColumn in srcColumns.Where(srcColumn => curentColumns.All(t => t.Value.Name.ToLower() != srcColumn.Value.Name.ToLower())))
 				{
-					if (srcTable.Name.ToUpper() == "C_POSTSALARYINDEXING" && srcColumn.Value.Name.ToLower() == "DISPLAYTITLE".ToLower())
-					{
 
-					}
 					script.AddColumn(srcColumn.Value);
 				}
 				//1.2. Удаляем колонки и синхронизируем 
 				foreach (var column in curentColumns)
 				{
+					if (srcTable.Name.ToUpper() == "C_FIAS_ADDRESSOBJECT" && column.Value.Name.ToLower() == "DISPLAYTITLE".ToLower())
+					{
+
+					}
 
 					var srcColumn = srcColumns.Values.SingleOrDefault(t => t.Name.ToLower() == column.Value.Name.ToLower());
 					column.Value.srcTable = srcTable;
-				
+
 					column.Value.Sync(script, srcColumn);
 
 				}
@@ -125,6 +126,8 @@ namespace Nephrite.Meta.Database
 					if (PrimaryKey != null && PrimaryKey.Columns.Any())
 						PrimaryKey.Sync(script, srcTable.PrimaryKey);
 				}
+
+
 
 
 
@@ -230,8 +233,16 @@ namespace Nephrite.Meta.Database
 				}
 				if (IsPrimaryKey && CurrentTable.Identity != srcTable.Identity)
 				{
+					if (srcTable.Name.ToUpper() == "MASSOPERATIONQUEUE")
+					{
 
+					}
 
+					if (script.GetType().ToString() == "Nephrite.Meta.Database.DBScriptDB2")
+					{
+						script.SyncIdentityColumn(srcColumn);
+						return;
+					}
 					//Находим таблицы ссылающиеся на текущую и у даляем их
 					var childrenForeignKeys = CurrentTable.Schema.Tables.Where(t => t.Value.ForeignKeys.Any(f => f.Value.RefTable.ToLower() == CurrentTable.Name.ToLower())).SelectMany(t => t.Value.ForeignKeys).ToList();
 					if (CurrentTable.PrimaryKey != null)
