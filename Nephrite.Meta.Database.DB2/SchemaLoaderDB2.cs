@@ -61,6 +61,7 @@ namespace Nephrite.Meta.Database
 
 
 										var column = new Column();
+										column.Identity = !string.IsNullOrEmpty(c.GetAttributeValue("IDENTITY")) && c.GetAttributeValue("IDENTITY") == "Y";
 										column.Name = string.IsNullOrEmpty(columnName) ? c.GetAttributeValue("NAME") : columnName; ;
 										column.Type = column.Name.EndsWith("GUID") ? new MetaGuidType() : DbScript.GetType(c.GetAttributeValue("TYPE"));
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
