@@ -68,6 +68,14 @@ namespace Nephrite.Web.Model
 		public virtual string LanguageCode { get; set; }
 		public virtual string Title { get; set; }
 		public virtual bool IsDefault { get; set; }
+
+		public virtual string Code
+		{
+			get
+			{
+				return LanguageCode;
+			}
+		}
 	}
 
 	public partial class N_TextResource
