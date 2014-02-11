@@ -387,23 +387,25 @@ namespace Nephrite.Web.CoreDataContext
 	}
 
 
-	/*public class UserActivityMap : ClassMapping<UserActivity>
+	public class N_ObjectChangeMap : ClassMapping<N_ObjectChange>
 	{
-		public UserActivityMap()
+		public N_ObjectChangeMap()
 		{
 			Lazy(true);
-			Id(x => x.UserActivityID, map => map.Generator(Generators.Identity));
+			Id(x => x.ObjectChangeID, map => map.Generator(Generators.Identity));
 			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
 			Property(x => x.Title);
 			Property(x => x.ObjectKey, map => map.NotNullable(true));
 			Property(x => x.ObjectTypeSysName);
-			Property(x => x.Action, map => map.NotNullable(true));
+			Property(x => x.ObjectTitle, map => map.NotNullable(true));
 			Property(x => x.UserTitle, map => map.NotNullable(true));
+			Property(x => x.UserLogin, map => map.NotNullable(true));
 			Property(x => x.ObjectTypeTitle, map => map.NotNullable(true));
 			Property(x => x.IP, map => map.NotNullable(true));
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
+			Property(x => x.SubjectID, map => map.NotNullable(true));
+			Property(x => x.Details, map => map.NotNullable(true));
 		}
-	}*/
+	}
 
 	public class N_RssFeedMap : ClassMapping<N_RssFeed>
 	{

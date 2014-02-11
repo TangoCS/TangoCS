@@ -15,7 +15,6 @@ using Nephrite.Web.TextResources;
 using Nephrite.Web.Multilanguage;
 using Nephrite.Web.TaskManager;
 using Nephrite.Web.SettingsManager;
-using Nephrite.Web.UserActivity;
 using Nephrite.Web.RSS;
 using Nephrite.Web.Hibernate;
 using Nephrite.Web.MetaStorage;
@@ -25,7 +24,7 @@ namespace Nephrite.Web.CoreDataContext
 
 	public class HCoreDataContext : HDataContext, 
 		IDC_TimeZone, IDC_ListFilter, IDC_FileStorage, IDC_CalendarDays, IDC_Mailer,
-		IDC_TextResources, IDC_Multilanguage, IDC_TaskManager, IDC_Settings, IDC_RSS, IDC_MetaStorage
+		IDC_TextResources, IDC_Multilanguage, IDC_TaskManager, IDC_Settings, IDC_RSS, IDC_MetaStorage, IDC_EntityAudit
 	{
 		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig)
 			: base(dbConfig)
@@ -50,7 +49,7 @@ namespace Nephrite.Web.CoreDataContext
 			l.Add(typeof(TM_TaskParameterMap));
 			l.Add(typeof(N_FilterMap));
 			l.Add(typeof(N_SettingMap));
-			//l.Add(typeof(UserActivityMap));
+			l.Add(typeof(N_ObjectChangeMap));
 			l.Add(typeof(N_RssFeedMap));
 
 			l.Add(typeof(MM_FormViewMap));
@@ -191,15 +190,15 @@ namespace Nephrite.Web.CoreDataContext
 			return new N_Setting();
 		}
 
-		/*public IQueryable<IUserActivity> UserActivity
+		public IQueryable<IN_ObjectChange> IN_ObjectChange
 		{
-			get { return new HTable<IUserActivity>(this, Session.Query<UserActivity>().Cast<IUserActivity>()); }
+			get { return new HTable<IN_ObjectChange>(this, Session.Query<N_ObjectChange>().Cast<IN_ObjectChange>()); }
 		}
 
-		public IUserActivity NewUserActivity()
+		public IN_ObjectChange NewIN_ObjectChange()
 		{
-			return new UserActivity();
-		}*/
+			return new N_ObjectChange();
+		}
 
 		public IQueryable<IN_RssFeed> IN_RssFeed
 		{

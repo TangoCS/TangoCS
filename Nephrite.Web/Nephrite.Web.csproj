@@ -59,7 +59,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExternalDll\DotNetOpenAuth.dll</HintPath>
     </Reference>
-    <Reference Include="IBM.Data.DB2, Version=9.0.0.2, Culture=neutral, PublicKeyToken=7c307b91aa13d208, processorArchitecture=AMD64" />
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -136,6 +135,7 @@
     <Compile Include="FormsGenerator\UploadControlsCode.cs" />
     <Compile Include="Hibernate\ExtendedEqualsGenerator.cs" />
     <Compile Include="Hibernate\IntBackedBoolUserType.cs" />
+    <Compile Include="Hibernate\Interceptor.cs" />
     <Compile Include="Hibernate\MappingConfig.cs" />
     <Compile Include="Hibernate\StringBackedGuidUserType.cs" />
     <Compile Include="Meta.Database\DBScriptMSSQL.cs" />
@@ -145,6 +145,9 @@
     <Compile Include="Meta.Database\UpdateScriptBuilder2.cs" />
     <Compile Include="MetaStorage\MetaStorageModel.cs" />
     <Compile Include="Meta.Forms\UIMetaModel.cs" />
+    <Compile Include="Model\IEntity.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Model\IMMObject.cs" />
     <Compile Include="MVC\AppWeb.cs" />
     <Compile Include="Controllers\EntityController.cs" />
@@ -348,8 +351,7 @@
     <Compile Include="Mailer\MailerModel.cs" />
     <Compile Include="Mailer\MailManager.cs" />
     <Compile Include="TaskManager\TaskManagerModel.cs" />
-    <Compile Include="TrackChanges\TrackChanges.cs" />
-    <Compile Include="UserActivity\UserActivityModel.cs" />
+    <Compile Include="Model\EntityAudit.cs" />
     <Compile Include="Versioning\ClassVersion.cs" />
     <Compile Include="Versioning\IClassVersion.cs" />
     <Compile Include="FileStorage\DbItemType.cs" />
@@ -544,6 +546,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="FileStorage\DataBase\" />
     <Folder Include="FileStorage\FileSystem\" />
+    <Folder Include="UserActivity\" />
     <Folder Include="Workflow\" />
   </ItemGroup>
   <ItemGroup>

@@ -23,10 +23,10 @@ using System.Data;
 using System.Data.SqlClient;
 using NHibernate.Transform;
 using NHibernate.Event;
-using Nephrite.Web.TrackChanges;
 using System.Reflection;
 using Nephrite.Web.SettingsManager;
 using Nhibernate.Extensions;
+using Nephrite.Web.SPM;
 
 
 namespace Nephrite.Web.Hibernate
@@ -120,22 +120,18 @@ namespace Nephrite.Web.Hibernate
 
 			_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" }});
 			_cfg.SetInterceptor(new HDataContextSqlStatementInterceptor(this));
-			_cfg.EventListeners.PreDeleteEventListeners = new IPreDeleteEventListener[] { new TrackChangesListener() };
-			_cfg.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { new TrackChangesListener() };
-			_cfg.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { new TrackChangesListener() };
-			//_cfg.SetProperty("linqtohql.generatorsregistry", "Nhibernate.Extensions.ExtendedLinqtoHqlGeneratorsRegistry, Nephrite.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=e90f56a89b463b77");
-
-
+			//_cfg.EventListeners.PreDeleteEventListeners = new IPreDeleteEventListener[] { new TrackChangesListener() };
+			//_cfg.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { new TrackChangesListener() };
+			//_cfg.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { new TrackChangesListener() };
 
 			var mapper = new ModelMapper();
 			mapper.AddMappings(GetEntitiesTypes());
 			HbmMapping domainMapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			_cfg.AddMapping(domainMapping);
 
-			_cfg.LinqToHqlGeneratorsRegistry<GuidToHqlGeneratorsRegistry>();
 
 			_session = SessionFactory.OpenSession();
-			_session.FlushMode = FlushMode.Never;
+			_session.FlushMode = FlushMode.Commit;
 		}
 
 		~HDataContext()
@@ -163,7 +159,7 @@ namespace Nephrite.Web.Hibernate
 					action();
 
 				transaction.Commit();
-				_session.Flush();
+				//_session.Flush();
 			}
 		}
 
@@ -400,22 +396,7 @@ namespace Nephrite.Web.Hibernate
 		}
 	}
 
-	public class HDataContextSqlStatementInterceptor : EmptyInterceptor
-	{
-		HDataContext _dataContext;
-
-		public HDataContextSqlStatementInterceptor(HDataContext dc)
-		{
-			_dataContext = dc;
-		}
-
-		public override SqlString OnPrepareStatement(SqlString sql)
-		{
-			_dataContext.Log.WriteLine(sql.ToString());
-			_dataContext.Log.WriteLine();
-			return sql;
-		}
-	}
+	
 
 	public class NoUpdateInterceptor : EmptyInterceptor
 	{

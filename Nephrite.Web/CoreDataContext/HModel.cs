@@ -10,6 +10,7 @@ using Nephrite.Web.Controls;
 using Nephrite.Web.ErrorLog;
 using Nephrite.Web.FileStorage;
 using Nephrite.Web.FormsEngine;
+using Nephrite.Web.Hibernate;
 using Nephrite.Web.Mailer;
 using Nephrite.Web.MetaStorage;
 using Nephrite.Web.Multilanguage;
@@ -18,11 +19,10 @@ using Nephrite.Web.SettingsManager;
 using Nephrite.Web.SPM;
 using Nephrite.Web.TaskManager;
 using Nephrite.Web.TextResources;
-using Nephrite.Web.UserActivity;
 
 namespace Nephrite.Web.CoreDataContext
 {
-	public class ErrorLog : IErrorLog, IWithKey<ErrorLog, int>
+	public class ErrorLog : IErrorLog, IWithKey<ErrorLog, int>, IWithoutEntityAudit
 	{
 		public virtual int ErrorLogID { get; set; }
 		public virtual System.DateTime ErrorDate { get; set; }
@@ -66,7 +66,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual int AttemptsToSendCount { get; set; }
 	}
 
-	public class MailTemplate : IMailTemplate, IWithTitle<MailTemplate>
+	public class MailTemplate : IMailTemplate, IWithTitle
 	{
 		public virtual int MailTemplateID { get; set; }
 		public virtual string Title { get; set; }
@@ -115,7 +115,7 @@ namespace Nephrite.Web.CoreDataContext
 	}
 
 
-	public partial class N_Filter : IN_Filter
+	public partial class N_Filter : IN_Filter, IWithoutEntityAudit
 	{
 		public virtual int FilterID { get; set; }
 		public virtual int? SubjectID { get; set; }
@@ -149,7 +149,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual int ExecutionTimeout { get; set; }
 	}
 
-	public partial class TM_TaskExecution : ITM_TaskExecution
+	public partial class TM_TaskExecution : ITM_TaskExecution, IWithoutEntityAudit
 	{
 		public virtual int TaskExecutionID { get; set; }
 		public virtual int TaskID { get; set; }
@@ -178,7 +178,7 @@ namespace Nephrite.Web.CoreDataContext
 		}
 	}
 
-	public partial class N_DownloadLog : IN_DownloadLog
+	public partial class N_DownloadLog : IN_DownloadLog, IWithoutEntityAudit
 	{
 		public virtual int DownloadLogID { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
@@ -308,7 +308,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string CheckedOutBy { get; protected set; }
 	}
 
-	public partial class N_FileData : IDbFileData
+	public partial class N_FileData : IDbFileData, IWithoutEntityAudit
 	{
 		public virtual byte[] Data { get; set; }
 		public virtual string Extension { get; set; }
@@ -316,7 +316,7 @@ namespace Nephrite.Web.CoreDataContext
 
 	}
 
-	public partial class N_VirusScanLog : IN_VirusScanLog
+	public partial class N_VirusScanLog : IN_VirusScanLog, IWithoutEntityAudit
 	{
 		public virtual int VirusScanLogID { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
@@ -345,24 +345,26 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string AcceptableValues { get; set; }
 	}
 
-	public partial class N_Cache : IN_Cache
+	public partial class N_Cache : IN_Cache, IWithoutEntityAudit
 	{
 		public virtual System.DateTime TimeStamp { get; set; }
 	}
 
-	/*public partial class UserActivity : IUserActivity
+	public partial class N_ObjectChange : IN_ObjectChange, IWithoutEntityAudit
 	{
-		public virtual int UserActivityID { get; set; }
-		public virtual int LastModifiedUserID { get; set; }
+		public virtual int ObjectChangeID { get; set; }
+		public virtual int SubjectID { get; set; }
 		public virtual System.DateTime LastModifiedDate { get; set; }
 		public virtual string Title { get; set; }
 		public virtual string ObjectKey { get; set; }
 		public virtual string ObjectTypeSysName { get; set; }
-		public virtual string Action { get; set; }
+		public virtual string ObjectTitle { get; set; }
 		public virtual string UserTitle { get; set; }
+		public virtual string UserLogin { get; set; }
 		public virtual string ObjectTypeTitle { get; set; }
 		public virtual string IP { get; set; }
-	}*/
+		public virtual string Details { get; set; }
+	}
 
 	public partial class N_RssFeed : IN_RssFeed
 	{
@@ -385,7 +387,7 @@ namespace Nephrite.Web.CoreDataContext
 	}
 
 
-	public partial class MM_Package : IMM_Package
+	public partial class MM_Package : IMM_Package, IWithoutEntityAudit
 	{
 		public virtual int PackageID { get; set; }
 		public virtual int? ParentPackageID { get; set; }
@@ -400,7 +402,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual int SeqNo { get; set; }
 	}
 
-	public partial class MM_ObjectType : IMM_ObjectType
+	public partial class MM_ObjectType : IMM_ObjectType, IWithoutEntityAudit
 	{
 		public virtual int ObjectTypeID { get; set; }
 		public virtual string Title { get; set; }
@@ -464,7 +466,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual int? RefObjectTypeID { get; set; }
 	}*/
 
-	public partial class MM_FormView : IMM_FormView
+	public partial class MM_FormView : IMM_FormView, IWithoutEntityAudit
 	{
 		public virtual int FormViewID { get; set; }
 		public virtual string Title { get; set; }

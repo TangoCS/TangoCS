@@ -56,7 +56,7 @@ namespace Nephrite.Web.ErrorLog
 				using (var dc = (IDC_ErrorLog)A.Model.NewDataContext())
                 {
 					//dc.CommandTimeout = 300;
-                    IErrorLog l = dc.NewErrorLog();
+                    IErrorLog l = dc.NewIErrorLog();
                     l.ErrorDate = DateTime.Now;
                     l.ErrorText = errortext;
                     l.Headers = "";
@@ -95,7 +95,7 @@ namespace Nephrite.Web.ErrorLog
 					//		l.SqlLog += "\r\n\r\n>>>>> " + item.GetType().FullName + " <<<<<\r\n" + item.Log.ToString();
 					//}
 					errorInfo += "[SqlLog]" + Environment.NewLine + l.SqlLog;
-					dc.ErrorLog.InsertOnSubmit(l);
+					dc.IErrorLog.InsertOnSubmit(l);
                     dc.SubmitChanges();
 					return l.ErrorLogID;
                 }
@@ -118,8 +118,8 @@ namespace Nephrite.Web.ErrorLog
 
 	public interface IDC_ErrorLog : IDataContext
 	{
-		IQueryable<IErrorLog> ErrorLog { get; }
-		IErrorLog NewErrorLog();
+		IQueryable<IErrorLog> IErrorLog { get; }
+		IErrorLog NewIErrorLog();
 	}
 
 	public interface IErrorLog : IEntity

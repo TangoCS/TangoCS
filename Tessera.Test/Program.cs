@@ -6,6 +6,7 @@ using System.Text;
 using Nephrite.Metamodel;
 using Nephrite.Web;
 using Nephrite.Web.Controls;
+using Nephrite.Web.CoreDataContext;
 using Nephrite.Web.Hibernate;
 using NHibernate;
 using NHibernate.Cfg.Loquacious;
@@ -20,7 +21,7 @@ namespace Tessera.Test
 	{
 		static void Main(string[] args)
 		{
-			App.DataContext.ExecuteCommand("SET SCHEMA = 'DBO';");
+			A.Model = new HCoreDataContext(HDataContext.DBConfig(ConnectionManager.ConnectionString));
 			Func<string, Expression<Func<SPM_Subject, bool>>> SearchExpression = s => (o => SqlMethods.Like(o.SystemName, "%" + s + "%"));
 
 			bool val = false;
@@ -29,10 +30,13 @@ namespace Tessera.Test
 
 			IQueryable<SPM_Subject> r = App.DataContext.SPM_Subject.Where(expr);
 			//r = ApplyFilter(r, SearchExpression, "anonymous");
-			var r2 = r.ToList();
+			var r2 = r.First();
 			//var r = App.DataContext.V_OrgUnit.Where(o => (o.ParentOrgUnitGUID ?? Guid.Empty) == new Guid("00000000-0000-0000-0000-000000000000")).ToList();
+			r2.LastModifiedDate = DateTime.Now;
+			App.DataContext.SubmitChanges();
 
 			Console.WriteLine(App.DataContext.Log.ToString());
+			Console.WriteLine(A.Model.Log.ToString());
 			Console.ReadKey();
 		}
 
@@ -42,11 +46,7 @@ namespace Tessera.Test
 			return query.Where(SearchExpression(val));
 		}
 
-		public static T Find<T>(IQueryable<T> collection, string name)
-			where T : IWithTitle
-		{
-			return collection.FirstOrDefault(o => o.SystemName == name);
-		}
+
 	}
 
 	public class ViewData
@@ -54,19 +54,14 @@ namespace Tessera.Test
 		public string UserName { get; set; }
 	}
 
-	public interface IWithTitle
-	{
-		string SystemName { get; set; }
-		string Title { get; set; }
-	}
 
-	public class SPM_Subject : IEntity, IWithTitle, IWithKey<SPM_Subject, int>
+	public class SPM_Subject : IEntity, IWithTitle, IWithKey<SPM_Subject, int>, IWithTimeStamp
 	{
 		public virtual int SubjectID { get; set; }
 		public virtual string SystemName { get; set; }
 		public virtual string Title { get; set; }
 		public virtual bool IsActive { get; set; }
-		//public virtual int LastModifiedUserID { get; set; }
+		public virtual DateTime LastModifiedDate { get; set; }
 
 		//int _LastModifiedUserID = 0;
 		public virtual int LastModifiedUserID
@@ -79,6 +74,11 @@ namespace Tessera.Test
 		public virtual System.Linq.Expressions.Expression<Func<SPM_Subject, bool>> KeySelector(int id)
 		{
 			return o => o.SubjectID == id;
+		}
+
+		public virtual string GetTitle()
+		{
+			return Title;
 		}
 	}
 
@@ -135,6 +135,7 @@ namespace Tessera.Test
 			Property(x => x.SystemName);
 			Property(x => x.Title);
 			Property(x => x.IsActive, map => map.Type<IntBackedBoolUserType>());
+			Property(x => x.LastModifiedDate);
 
 			Property(x => x.LastModifiedUserID, map => map.Formula("LastModifiedUserID"));
 			ManyToOne(x => x.LastModifiedUser, map => { map.Column("LastModifiedUserID"); map.Cascade(Cascade.None); });

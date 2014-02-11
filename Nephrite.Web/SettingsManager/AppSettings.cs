@@ -5,7 +5,6 @@ using System.Text;
 using System.Web;
 using System.IO;
 using Nephrite.Web.SPM;
-using Nephrite.Web.UserActivity;
 using System.Data.Linq;
 using Nephrite.Meta;
 
@@ -22,14 +21,6 @@ namespace Nephrite.Web.SettingsManager
 				return ((IDC_Settings)A.Model);
 			}
 		}
-		static IDC_UserActivity _dcUserActivity
-		{
-			get
-			{
-				return ((IDC_UserActivity)A.Model);
-			}
-		}
-
 
 		public static AppSettings Instance
 		{
@@ -81,17 +72,12 @@ namespace Nephrite.Web.SettingsManager
                 s.Title = name;
 				s.Value = value;
 				_dc.IN_Setting.InsertOnSubmit(s);
-
-				var ua = _dcUserActivity.NewUserActivity(A.Meta.GetOperation("N_Settings", "Edit"), name, name + " = " + value);
-				_dcUserActivity.UserActivity.InsertOnSubmit(ua);
             }
             else
             {
 				if (s.Value != value)
 				{
 					s.Value = value;
-					var ua = _dcUserActivity.NewUserActivity(A.Meta.GetOperation("N_Settings", "Edit"), name, name + " = " + value);
-					_dcUserActivity.UserActivity.InsertOnSubmit(ua);
 				}
             }
 			_settings = null;

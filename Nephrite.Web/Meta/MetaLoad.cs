@@ -99,7 +99,8 @@ namespace Nephrite.Meta
 
 			a.IsRequired = xp.GetAttributeValue("IsRequired") == "true";
 			a.UpperBound = xp.GetAttributeValue("UpperBound").ToInt32(0);
-
+			a.DefaultDBValue = xp.GetAttributeValue("DefaultDBValue");
+	
 			a.IsMultilingual = xp.GetAttributeValue("IsMultilingual") == "true";
 			a.IsIdentity = xp.GetAttributeValue("IsIdentity") == "true";
 			a.IsKey = xp.GetAttributeValue("IsKey");
