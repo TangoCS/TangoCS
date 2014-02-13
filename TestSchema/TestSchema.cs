@@ -104,7 +104,7 @@ namespace TestSchema
 							continue;
 						var count  =  Convert.ToInt32(cmd2.ExecuteScalar());
 
-						stringBuilder.AppendFormat("ALTER TABLE DBO.{0} ALTER COLUMN {1}  RESTART WITH {2} ;\n\r", table.Name, columnIdenity.Name, count);
+						stringBuilder.AppendFormat("ALTER TABLE DBO.{0} ALTER COLUMN {1}  RESTART WITH {2} ;\n\r", table.Name, columnIdenity.Name, count+1);
 					}
 				}
 			}
