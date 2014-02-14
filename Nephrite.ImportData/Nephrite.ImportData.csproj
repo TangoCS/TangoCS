@@ -32,6 +32,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="FluentNHibernate">
+      <HintPath>..\Nephrite.Metamodel\Bin\FluentNHibernate.dll</HintPath>
+    </Reference>
     <Reference Include="IBM.Data.DB2, Version=9.0.0.2, Culture=neutral, PublicKeyToken=7c307b91aa13d208, processorArchitecture=AMD64" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
