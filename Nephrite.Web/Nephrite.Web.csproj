@@ -112,6 +112,10 @@
   <ItemGroup>
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
     <Compile Include="Controllers\MMObjectController.cs" />
+    <Compile Include="Controls\Scripts\INavigScript.cs" />
+    <Compile Include="Controls\Scripts\NavigScriptDB2.cs" />
+    <Compile Include="Controls\Scripts\NavigScriptMSSQL.cs" />
+    <Compile Include="Controls\Scripts\NavigScripts.cs" />
     <Compile Include="CoreDataContext\HIMapping.cs" />
     <Compile Include="DBTypeScripts\DB2.cs" />
     <Compile Include="DBTypeScripts\IDBTypeScripts.cs" />
@@ -546,6 +550,7 @@
     <Folder Include="App_Data\" />
     <Folder Include="FileStorage\DataBase\" />
     <Folder Include="FileStorage\FileSystem\" />
+    <Folder Include="SPM2\Scripts\" />
     <Folder Include="UserActivity\" />
     <Folder Include="Workflow\" />
   </ItemGroup>
