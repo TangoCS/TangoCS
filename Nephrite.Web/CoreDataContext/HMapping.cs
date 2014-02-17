@@ -407,6 +407,27 @@ namespace Nephrite.Web.CoreDataContext
 		}
 	}
 
+	public class N_ObjectPropertyChangeMap : ClassMapping<N_ObjectPropertyChange>
+	{
+		public N_ObjectPropertyChangeMap()
+		{
+			Lazy(true);
+			Id(x => x.ObjectPropertyChangeID, map => { map.Generator(Generators.Identity); });
+			Property(x => x.Title);
+			Property(x => x.PropertySysName);
+			Property(x => x.OldValue);
+			Property(x => x.NewValue);
+			Property(x => x.OldValueTitle);
+			Property(x => x.NewValueTitle);
+			Property(x => x.ObjectChangeID, map => { map.Formula("ObjectChangeID"); });
+			ManyToOne(x => x.ObjectChange, map =>
+			{
+				map.Column("ObjectChangeID");
+				map.Cascade(Cascade.None);
+			});
+		}
+	}
+
 	public class N_RssFeedMap : ClassMapping<N_RssFeed>
 	{
 		public N_RssFeedMap()
@@ -540,21 +561,20 @@ namespace Nephrite.Web.CoreDataContext
 			Property(x => x.ViewTemplate);
 			Property(x => x.TemplateTypeCode);
 			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.Guid, map => map.NotNullable(true));
-			Property(x => x.IsCustom, map => map.NotNullable(true));
-			Property(x => x.IsDeleted, map => map.NotNullable(true));
+			Property(x => x.Guid, map => { map.NotNullable(true); MappingConfig.GuidPropertyConfig(map); });
+			Property(x => x.IsCustom, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
+			Property(x => x.IsDeleted, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
 			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-			Property(x => x.IsCaching, map => map.NotNullable(true));
+			Property(x => x.IsCaching, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
 			Property(x => x.CacheKeyParams);
 			Property(x => x.CacheTimeout, map => map.NotNullable(true));
 			Property(x => x.BaseClass, map => map.NotNullable(true));
 
 			Property(x => x.ObjectTypeID);
-			Property(x => x.PackageID);
+			Property(x => x.PackageID, map => map.Formula("PackageID"));
 
 			ManyToOne(x => x.Package, map =>
 			{
-				map.Fetch(FetchKind.Join);
 				map.Column("PackageID");
 				map.Cascade(Cascade.None);
 			});

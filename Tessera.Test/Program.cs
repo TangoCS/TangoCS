@@ -8,6 +8,7 @@ using Nephrite.Web;
 using Nephrite.Web.Controls;
 using Nephrite.Web.CoreDataContext;
 using Nephrite.Web.Hibernate;
+using Nephrite.Web.MetaStorage;
 using NHibernate;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Linq;
@@ -21,21 +22,22 @@ namespace Tessera.Test
 	{
 		static void Main(string[] args)
 		{
-			A.Model = new HCoreDataContext(HDataContext.DBConfig(ConnectionManager.ConnectionString));
+			var dc = new HCoreDataContext(HDataContext.DBConfig(ConnectionManager.ConnectionString));
+			A.Model = dc;
 			Func<string, Expression<Func<SPM_Subject, bool>>> SearchExpression = s => (o => SqlMethods.Like(o.SystemName, "%" + s + "%"));
 
 			bool val = false;
 			Expression<Func<SPM_Subject, bool>> column = o => o.IsActive;
 			var expr = Expression.Lambda<Func<SPM_Subject, bool>>(Expression.Equal(column.Body, Expression.Constant(val)), column.Parameters);
 
-			IQueryable<SPM_Subject> r = App.DataContext.SPM_Subject.Where(expr);
+			IMM_FormView r = dc.IMM_FormView.First();
 			//r = ApplyFilter(r, SearchExpression, "anonymous");
-			var r2 = r.First();
+			//var r2 = r.First();
 			//var r = App.DataContext.V_OrgUnit.Where(o => (o.ParentOrgUnitGUID ?? Guid.Empty) == new Guid("00000000-0000-0000-0000-000000000000")).ToList();
-			r2.LastModifiedDate = DateTime.Now;
-			App.DataContext.SubmitChanges();
+			r.LastModifiedDate = DateTime.Now;
+			dc.SubmitChanges();
 
-			Console.WriteLine(App.DataContext.Log.ToString());
+			//Console.WriteLine(App.DataContext.Log.ToString());
 			Console.WriteLine(A.Model.Log.ToString());
 			Console.ReadKey();
 		}
@@ -55,7 +57,7 @@ namespace Tessera.Test
 	}
 
 
-	public class SPM_Subject : IEntity, IWithTitle, IWithKey<SPM_Subject, int>, IWithTimeStamp
+	public class SPM_Subject : IEntity, IWithTitle, IWithKey<SPM_Subject, int>, IWithTimeStamp, IWithPropertyAudit
 	{
 		public virtual int SubjectID { get; set; }
 		public virtual string SystemName { get; set; }

@@ -366,6 +366,44 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string Details { get; set; }
 	}
 
+	public partial class N_ObjectPropertyChange : IN_ObjectPropertyChange, IWithoutEntityAudit
+	{
+		public virtual System.Int32 ObjectPropertyChangeID { get; set; }
+		public virtual System.String Title { get; set; }
+		public virtual System.String PropertySysName { get; set; }
+		public virtual System.String OldValue { get; set; }
+		public virtual System.String NewValue { get; set; }
+		public virtual System.String OldValueTitle { get; set; }
+		public virtual System.String NewValueTitle { get; set; }
+		public virtual System.Int32 ObjectChangeID
+		{
+			get
+			{
+
+				if (ObjectChange == null) return 0;
+				return ObjectChange.ObjectChangeID;
+			}
+			set
+			{
+
+				ObjectChange = new N_ObjectChange { ObjectChangeID = value };
+			}
+		}
+		public virtual N_ObjectChange ObjectChange { get; set; }
+		public virtual IN_ObjectChange IObjectChange
+		{
+			get
+			{
+				return ObjectChange as IN_ObjectChange;
+			}
+			set
+			{
+				ObjectChange = (N_ObjectChange)value;
+			}
+		}
+	}
+
+
 	public partial class N_RssFeed : IN_RssFeed
 	{
 		public virtual int RssFeedID { get; set; }
@@ -466,7 +504,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual int? RefObjectTypeID { get; set; }
 	}*/
 
-	public partial class MM_FormView : IMM_FormView, IWithoutEntityAudit
+	public partial class MM_FormView : IMM_FormView, IWithPropertyAudit
 	{
 		public virtual int FormViewID { get; set; }
 		public virtual string Title { get; set; }

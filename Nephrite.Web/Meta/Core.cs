@@ -589,7 +589,9 @@ namespace Nephrite.Meta
 
 	public static class Stereotypes
 	{
+		[ThreadStatic]
 		static Dictionary<Type, Dictionary<string, MetaElement>> _selements = new Dictionary<Type, Dictionary<string, MetaElement>>();
+		
 		internal static void AssignStereotype(Type stereotype, MetaElement element)
 		{
 			Dictionary<string, MetaElement> elements = null;
@@ -613,5 +615,10 @@ namespace Nephrite.Meta
 			else
 				return null;
 		}
+	}
+
+	public interface IWithMetadata
+	{
+		MetaClass MetaClass { get; }
 	}
 }

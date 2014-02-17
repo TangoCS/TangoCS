@@ -9,6 +9,7 @@ namespace Nephrite.Web
 {
 	public interface IEntity
 	{
+		
 	}
 
 	public interface IChildEntity : IEntity
