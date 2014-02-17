@@ -119,6 +119,11 @@ namespace Nephrite.Web.DBTypeScripts
 				order by pa.SystemName + '.' + a.SystemName";
 			}
 		}
+        public string F_ReportRecipientsGPO
+        {
+            get { return "EXEC F_ReportRecipientsGPO @StartDate=:StartDate,@EndDate=:EndDate;"; }
+        }
+
 		
 		#endregion
 	}

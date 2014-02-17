@@ -111,7 +111,12 @@ namespace Nephrite.Web.DBTypeScripts
 				pa.ActionID = asso2.ActionID and roota.ActionID = asso2.ParentActionID "; // order by pa.SystemName + '.' + a.SystemName
 			}
 		}
-		
-		#endregion
+
+	    public string F_ReportRecipientsGPO
+	    {
+            get { return "SELECT * from TABLE (DBO.F_ReportRecipientsGPO(DATE(:StartDate),DATE(:EndDate))) AS T;"; }
+	    }
+
+	    #endregion
 	}
 }

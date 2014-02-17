@@ -16,6 +16,8 @@ namespace Nephrite.Web.DBTypeScripts
 		string GetRolesAccessByNameQuery { get; }
 		string GetItemsIdsQuery { get; }
 		string GetItemsNamesQuery { get; }
+        string F_ReportRecipientsGPO { get; }
+
 
 	}
 }
