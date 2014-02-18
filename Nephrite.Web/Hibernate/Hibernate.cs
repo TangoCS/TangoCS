@@ -120,9 +120,9 @@ namespace Nephrite.Web.Hibernate
 
 			_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" }});
 			_cfg.SetInterceptor(new HDataContextSqlStatementInterceptor(this));
-			//_cfg.EventListeners.PreDeleteEventListeners = new IPreDeleteEventListener[] { new TrackChangesListener() };
-			//_cfg.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { new TrackChangesListener() };
-			//_cfg.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { new TrackChangesListener() };
+			_cfg.EventListeners.PreDeleteEventListeners = new IPreDeleteEventListener[] { new AuditEventListener() };
+			_cfg.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { new AuditEventListener() };
+			_cfg.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { new AuditEventListener() };
 
 			var mapper = new ModelMapper();
 			mapper.AddMappings(GetEntitiesTypes());
@@ -144,6 +144,9 @@ namespace Nephrite.Web.Hibernate
 
 			using (var transaction = _session.BeginTransaction())
 			{
+				Log.WriteLine("BEGIN TRANSACTION");
+				Log.WriteLine();
+
 				foreach (var action in BeforeSaveActions)
 					action();
 
@@ -159,6 +162,12 @@ namespace Nephrite.Web.Hibernate
 					action();
 
 				transaction.Commit();
+
+				Log.WriteLine("COMMIT TRANSACTION");
+				Log.WriteLine();
+
+				ToDelete.Clear();
+				ToInsert.Clear();
 				//_session.Flush();
 			}
 		}

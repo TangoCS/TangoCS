@@ -458,7 +458,7 @@
     <Compile Include="Web\RouteTable.cs" />
     <Compile Include="RSS\RssFeed.cs" />
     <Compile Include="RSS\RssItem.cs" />
-    <Compile Include="Web\RusNumber.cs" />
+    <Compile Include="RussianStrings\RusNumber.cs" />
     <Compile Include="SettingsManager\Settings.cs" />
     <Compile Include="Model\Extensions.cs" />
     <Compile Include="SPM2\SPM.cs" />

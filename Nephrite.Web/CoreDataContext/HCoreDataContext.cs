@@ -50,6 +50,7 @@ namespace Nephrite.Web.CoreDataContext
 			l.Add(typeof(N_FilterMap));
 			l.Add(typeof(N_SettingMap));
 			l.Add(typeof(N_ObjectChangeMap));
+			l.Add(typeof(N_ObjectPropertyChangeMap));
 			l.Add(typeof(N_RssFeedMap));
 
 			l.Add(typeof(MM_FormViewMap));
@@ -200,6 +201,11 @@ namespace Nephrite.Web.CoreDataContext
 			return new N_ObjectChange();
 		}
 
+		public IN_ObjectPropertyChange NewIN_ObjectPropertyChange()
+		{
+			return new N_ObjectPropertyChange();
+		}
+
 		public IQueryable<IN_RssFeed> IN_RssFeed
 		{
 			get { return new HTable<IN_RssFeed>(this, Session.Query<N_RssFeed>().Cast<IN_RssFeed>()); }
@@ -247,6 +253,9 @@ namespace Nephrite.Web.CoreDataContext
 		{
 			get { return new HTable<IMM_ObjectProperty>(this, Session.Query<MM_ObjectProperty>().Cast<IMM_ObjectProperty>()); }
 		}*/
+
+
+
 	}
 
 }
