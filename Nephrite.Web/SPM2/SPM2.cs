@@ -9,7 +9,7 @@ using Nephrite.Meta;
 using System.DirectoryServices.AccountManagement;
 using System.IO;
 using System.Threading;
-using Nephrite.Web.DBTypeScripts;
+using Nephrite.Web.Controls.Scripts;
 
 namespace Nephrite.Web.SPM
 {
@@ -68,14 +68,8 @@ namespace Nephrite.Web.SPM
 	public class Subject
 	{
 		private Subject() { }
-		private static IDBTypeScripts idbTypeScripts
-		{
-			get
-			{
-				return Activator.CreateInstance(Type.GetType(string.Format("Nephrite.Web.DBTypeScripts.{0}", ConfigurationManager.AppSettings["DBType"].ToUpper()))) as IDBTypeScripts;
-
-			}
-		}
+        private static SPM2Scripts sPM2Scripts =  new SPM2Scripts();
+			
 		static IDictionary Items
 		{
 			get
@@ -226,19 +220,19 @@ namespace Nephrite.Web.SPM
 		}
 		public static Subject FromLogin(string login)
 		{
-			return A.Model.ExecuteQuery<Subject>(idbTypeScripts.FromLogin, login.ToLower()).SingleOrDefault();
+            return A.Model.ExecuteQuery<Subject>(sPM2Scripts.GetFromLoginScript, login.ToLower()).SingleOrDefault();
 		}
 		public static Subject FromSID(string sid, string login)
 		{
-			return A.Model.ExecuteQuery<Subject>(idbTypeScripts.FromSID, sid, login).SingleOrDefault();
+            return A.Model.ExecuteQuery<Subject>(sPM2Scripts.GetFromSIDScript, sid, login).SingleOrDefault();
 		}
 		public static Subject FromID(int id)
 		{
-			return A.Model.ExecuteQuery<Subject>(idbTypeScripts.FromID, id).SingleOrDefault();
+            return A.Model.ExecuteQuery<Subject>(sPM2Scripts.GetFromIDScript, id).SingleOrDefault();
 		}
 		public static Subject FromEmail(string email)
 		{
-			return A.Model.ExecuteQuery<Subject>(idbTypeScripts.FromEmail, email.ToLower()).SingleOrDefault();
+            return A.Model.ExecuteQuery<Subject>(sPM2Scripts.GetFromEmailScript, email.ToLower()).SingleOrDefault();
 		}
 		public static Subject System
 		{

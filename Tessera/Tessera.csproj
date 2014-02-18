@@ -221,7 +221,7 @@
       <Name>Nephrite.Metamodel</Name>
     </ProjectReference>
     <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
-      <Project>{26A68254-0902-4499-8B5F-6B4B6341BA21}</Project>
+      <Project>{26a68254-0902-4499-8b5f-6b4b6341ba21}</Project>
       <Name>Nephrite.Web</Name>
     </ProjectReference>
   </ItemGroup>

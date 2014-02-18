@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Configuration;
-using Nephrite.Web.DBTypeScripts;
+using Nephrite.Web.Controls.Scripts;
+
 
 namespace Nephrite.Web.SPM
 {
@@ -320,14 +321,7 @@ namespace Nephrite.Web.SPM
 		{
 			_className = "Action";
 		}
-		private static IDBTypeScripts idbTypeScripts
-		{
-			get
-			{
-				return Activator.CreateInstance(Type.GetType(string.Format("Nephrite.Web.DBTypeScripts.{0}", ConfigurationManager.AppSettings["DBType"].ToUpper()))) as IDBTypeScripts;
-
-			}
-		}
+        private SPM2Scripts sPM2Scripts = new SPM2Scripts();
 		static ActionSPMContext _current = new ActionSPMContext();
 		public static ActionSPMContext Current
 		{
@@ -336,22 +330,22 @@ namespace Nephrite.Web.SPM
 
 		protected override string GetRolesAccessByIdQuery()
 		{
-			return idbTypeScripts.GetRolesAccessByIdQuery;
+            return sPM2Scripts.GetRolesAccessByIdQueryScript;
 		}
 
 		protected override string GetRolesAccessByNameQuery()
 		{
-			return idbTypeScripts.GetRolesAccessByNameQuery;
+            return sPM2Scripts.GetRolesAccessByNameQueryScript;
 		}
 
 		protected override string GetItemsIdsQuery()
 		{
-			return idbTypeScripts.GetItemsIdsQuery;
+            return sPM2Scripts.GetItemsIdsQueryScript;
 		}
 
 		protected override string GetItemsNamesQuery()
 		{
-			return idbTypeScripts.GetItemsNamesQuery;
+            return sPM2Scripts.GetItemsNamesQuery;
 		}
 	}
 

@@ -117,9 +117,6 @@
     <Compile Include="Controls\Scripts\NavigScriptMSSQL.cs" />
     <Compile Include="Controls\Scripts\NavigScripts.cs" />
     <Compile Include="CoreDataContext\HIMapping.cs" />
-    <Compile Include="DBTypeScripts\DB2.cs" />
-    <Compile Include="DBTypeScripts\IDBTypeScripts.cs" />
-    <Compile Include="DBTypeScripts\MSSQL.cs" />
     <Compile Include="FormsEngine\CodeGen.cs" />
     <Compile Include="FormsEngine\CompileConfig.designer.cs" />
     <Compile Include="FormsEngine\DynamicClassActivator.cs" />
@@ -162,6 +159,10 @@
     <Compile Include="Controllers\PackageFormViewController.cs" />
     <Compile Include="RussianStrings\RussianDate.cs" />
     <Compile Include="RussianStrings\RussianNumber.cs" />
+    <Compile Include="SPM2\Scripts\ISPM2Script.cs" />
+    <Compile Include="SPM2\Scripts\SPM2ScriptDB2.cs" />
+    <Compile Include="SPM2\Scripts\SPM2ScriptMSSQL.cs" />
+    <Compile Include="SPM2\Scripts\SPM2Scripts.cs" />
     <Compile Include="Web\CustomControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -550,7 +551,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="FileStorage\DataBase\" />
     <Folder Include="FileStorage\FileSystem\" />
-    <Folder Include="SPM2\Scripts\" />
     <Folder Include="UserActivity\" />
     <Folder Include="Workflow\" />
   </ItemGroup>
