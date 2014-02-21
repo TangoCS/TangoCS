@@ -142,34 +142,34 @@ namespace Nephrite.Web.Hibernate
 		public void SubmitChanges()
 		{
 
-			using (var transaction = _session.BeginTransaction())
-			{
-				Log.WriteLine("BEGIN TRANSACTION");
-				Log.WriteLine();
+            using (var transaction = _session.BeginTransaction())
+            {
+                Log.WriteLine("BEGIN TRANSACTION");
+                Log.WriteLine();
 
-				foreach (var action in BeforeSaveActions)
-					action();
+                foreach (var action in BeforeSaveActions)
+                    action();
 
-				foreach (object obj in ToInsert)
-				{
-					_session.SaveOrUpdate(obj);
-				}
+                foreach (object obj in ToInsert)
+                {
+                    _session.SaveOrUpdate(obj);
+                }
 
-				foreach (object obj in ToDelete)
-					_session.Delete(obj);
+                foreach (object obj in ToDelete)
+                    _session.Delete(obj);
 
-				foreach (var action in AfterSaveActions)
-					action();
+                foreach (var action in AfterSaveActions)
+                    action();
 
-				transaction.Commit();
+                transaction.Commit();
 
-				Log.WriteLine("COMMIT TRANSACTION");
-				Log.WriteLine();
+                Log.WriteLine("COMMIT TRANSACTION");
+                Log.WriteLine();
 
-				ToDelete.Clear();
-				ToInsert.Clear();
-				//_session.Flush();
-			}
+                ToDelete.Clear();
+                ToInsert.Clear();
+                _session.Flush();
+            }
 		}
 
 		public void Dispose()
