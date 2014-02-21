@@ -39,82 +39,91 @@ namespace Nephrite.ImportData
             }
 
             var tabelListString = tabelesForInmport.Split(',');
-           // try
-           // {
-                ConnectionManager.SetConnectionString(connectFrom);
-                SqlConnection sqlCon = new SqlConnection(connectFrom);
-                var schemaFrom = new SqlServerMetadataReader().ReadSchema("DBO");
+            // try
+            // {
+            ConnectionManager.SetConnectionString(connectFrom);
+            SqlConnection sqlCon = new SqlConnection(connectFrom);
+            var schemaFrom = new SqlServerMetadataReader().ReadSchema("DBO");
 
 
-                var tabelListObjects = schemaFrom.Tables.Values.Where(t => tabelListString.Any(c => t.Name == c));
-                Constraints(false, tabelListObjects, result);
+            var tabelListObjects = schemaFrom.Tables.Values.Where(t => tabelListString.Any(c => t.Name.ToUpper() == c.ToUpper()) ||   t.ForeignKeys.Any(f=>tabelListString.Any(l=>l.ToUpper()== f.Value.RefTable.ToUpper())));
+            Constraints(false, tabelListObjects, result);
 
-                DB2Connection db2Con = new DB2Connection(connectTo);
-                db2Con.Open();
-                foreach (var table in tabelListObjects)
+            DB2Connection db2Con = new DB2Connection(connectTo);
+            db2Con.Open();
+            foreach (var table in tabelListObjects.Where(t => tabelListString.Any(c => t.Name.ToUpper() == c.ToUpper())))
+            {
+                tableName = table.Name;
+                Console.WriteLine(@"Таблица " + table.Name + " start");
+                if (table.Name == "N_FileData")
                 {
-                    tableName = table.Name;
-                    Console.WriteLine(@"Таблица " + table.Name +" start");
-                    if (table.Name == "N_FileData")
+                    result.Clear();
+                    var isdo = true;
+                    var page = 1;
+
+                    result.AppendFormat("SET INTEGRITY FOR  {1}.{0} ALL IMMEDIATE UNCHECKED;\r\n", table.Name.ToUpper(), "DBO");
+                    result.AppendFormat("CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {1}.{0}' );\r\n", table.Name.ToUpper(), "DBO");
+                    result.AppendFormat("DELETE FROM  {1}.{0} ;\r\n", table.Name.ToUpper(), "DBO");
+
+                    while (isdo)
                     {
-                        result.Clear();
-                        var isdo = true;
-                        var page = 1;
 
-                        result.AppendFormat("SET INTEGRITY FOR  {1}.{0} ALL IMMEDIATE UNCHECKED;\r\n", table.Name.ToUpper(), "DBO");
-                        result.AppendFormat("CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {1}.{0}' );\r\n", table.Name.ToUpper(), "DBO");
-                        result.AppendFormat("DELETE FROM  {1}.{0} ;\r\n", table.Name.ToUpper(), "DBO");
-
-                        while (isdo)
+                        var list = ImportData(table, table.Columns.Any(t => t.Value.IsPrimaryKey), sqlCon, result, 10, page, ref isdo);
+                        Console.WriteLine("Записи с   " + (10 * page - 10) + "по " + (10 * page));
+                        foreach (var nfile in list)
                         {
-
-                            var list = ImportData(table, table.Columns.Any(t => t.Value.IsPrimaryKey), sqlCon, result, 10, page, ref isdo);
-                            Console.WriteLine("Записи с   " + (10 * page - 10) + "по " + (10 * page));
-                            foreach (var nfile in list)
-                            {
-                                Console.WriteLine(nfile.guid);
+                            Console.WriteLine(nfile.guid);
 
 
-                                DB2Command cmd2 = db2Con.CreateCommand();
-                                cmd2.CommandType = System.Data.CommandType.StoredProcedure;
-                                cmd2.CommandText = "DBO.INSERTNFILEd";
-                                cmd2.Parameters.Add("Data", nfile.data);
-                                cmd2.Parameters.Add("Extension", nfile.ext);
-                                cmd2.Parameters.Add("FileGUID", nfile.guid);
-                                cmd2.ExecuteReader();
-                    
-
-                            }
+                            DB2Command cmd2 = db2Con.CreateCommand();
+                            cmd2.CommandType = System.Data.CommandType.StoredProcedure;
+                            cmd2.CommandText = "DBO.INSERTNFILEd";
+                            cmd2.Parameters.Add("Data", nfile.data);
+                            cmd2.Parameters.Add("Extension", nfile.ext);
+                            cmd2.Parameters.Add("FileGUID", nfile.guid);
+                            cmd2.ExecuteReader();
 
 
-                            page++;
                         }
 
 
-                        continue;
+                        page++;
                     }
 
 
-
-                    ImportData(table, table.Columns.Any(t => t.Value.IsPrimaryKey), sqlCon, result);
-                    DB2Connection db2con = new DB2Connection(connectTo);
-                    db2con.Open();
-                    DB2Command cmd = db2con.CreateCommand();
-                    cmd.CommandType = System.Data.CommandType.Text;
-                    cmd.CommandText = result.ToString();
-                    cmd.ExecuteReader();
-                    result.Clear();
-                    Console.WriteLine(@"Таблица " + table.Name + " end");
-
-
+                    continue;
                 }
-                db2Con.Close();
-           // }
-          //  catch (Exception e)
-            //{
-            //    Console.WriteLine(tableName);
-            //    Console.WriteLine(e.Message);
-            //}
+
+                ////////////////////// Получаем данные
+                int itemsCount = 0;
+                ImportData(table, table.Columns.Any(t => t.Value.IsPrimaryKey), sqlCon, result, ref itemsCount);
+
+                ////////////////////// Резет счётчика
+                if (table.Identity)
+                {
+                    var columnIdenity = table.Columns.Values.FirstOrDefault(t => t.Identity);
+                    if (columnIdenity != null)
+                    {
+                        result.AppendFormat("ALTER TABLE DBO.{0} ALTER COLUMN {1}  RESTART WITH {2} ;\n\r", table.Name, columnIdenity.Name, itemsCount + 1);
+                    }
+                }
+
+                DB2Connection db2con = new DB2Connection(connectTo);
+                db2con.Open();
+                DB2Command cmd = db2con.CreateCommand();
+                cmd.CommandType = System.Data.CommandType.Text;
+                cmd.CommandText = result.ToString();
+                cmd.ExecuteReader();
+                result.Clear();
+                Console.WriteLine(@"Таблица " + table.Name + " end");
+
+             
+                
+
+            }
+
+            db2Con.Close();
+
             Console.WriteLine("End");
             Console.ReadKey();
         }
@@ -125,18 +134,11 @@ namespace Nephrite.ImportData
                 foreach (var fk in t.ForeignKeys.Values)
                 {
 
-                    if (fk.Name.ToUpper() == "FK_MASSOPERATIONQUEUE_STATE")
-                    {
-
-                    }
-
-
                     if (
                         (fk.RefTable.ToUpper() == "N_File".ToUpper() && fk.Columns.Any(c => c.ToUpper() == "FILEID".ToUpper() || c.ToUpper() == "FILEGUID".ToUpper() || c.ToUpper() == "PHOTOGUID".ToUpper())))
                         continue;
 
                     {
-
                         result.AppendFormat("ALTER TABLE {2}.{1} ALTER FOREIGN KEY {0} {3} ;\r\n", fk.Name.ToUpper(), t.Name.ToUpper(),
                                             t.Schema.Name.ToUpper(), enable ? "ENFORCED" : "NOT ENFORCED");
 
@@ -145,7 +147,7 @@ namespace Nephrite.ImportData
             }
 
         }
-        public static string ImportData(Table t, bool identityInsert, SqlConnection DbConnection, StringBuilder sqlInsert)
+        public static string ImportData(Table t, bool identityInsert, SqlConnection DbConnection, StringBuilder sqlInsert, ref int countItems)
         {
 
             if (DbConnection.State == System.Data.ConnectionState.Closed)
@@ -172,6 +174,7 @@ namespace Nephrite.ImportData
                     {
                         sc.Add(GetStringValue(reader, i).Replace("\\", ""));
                     }
+                    countItems++;
                     sqlInsert.AppendFormat("INSERT INTO DBO.{0} ({1})  VALUES ({2}); \r\n", t.Name, columns.Replace("[", "").Replace("]", ""), string.Join(",", sc.Cast<string>().ToArray<string>()));
                 }
             }
@@ -236,7 +239,6 @@ namespace Nephrite.ImportData
             var sqltext = string.Format("select  {0} from (SELECT {4} ,ROW_NUMBER()  OVER (ORDER BY [FileGUID]) AS rn " +
                                 "FROM {1} ) as m where m.rn>{2} and m.rn<={3}", columns, t.Name, page * count, (page * count) + count, columnsin);
             cmd.CommandText = sqltext;
-            //string.Format("select top {2} {0} from [{1}] ", columns, t.Name);
 
 
             if (identityInsert && t.Identity)
@@ -254,7 +256,6 @@ namespace Nephrite.ImportData
                     nfile.ext = reader["Extension"].ToString();
                     nfile.guid = reader["FileGUID"].ToString();
                     list.Add(nfile);
-                    //sqlInsert.AppendFormat("INSERT INTO DBO.{0} ({1})  VALUES ({2}); \r\n", t.Name, columns.Replace("[", "").Replace("]", ""), string.Join(",", sc.Cast<string>().ToArray<string>()));
                 }
             }
 
@@ -264,7 +265,7 @@ namespace Nephrite.ImportData
         {
             for (int index = 0; index < str.Length; index += maxLength)
             {
-                yield return  str.Substring(index, Math.Min(maxLength, str.Length - index)) ;
+                yield return str.Substring(index, Math.Min(maxLength, str.Length - index));
             }
         }
 
@@ -280,7 +281,6 @@ namespace Nephrite.ImportData
                 var arrayText = value.SplitByLength(15000);
                 return string.Format("CAST({0}' as CLOB) || '{1}", arrayText.First(),
                                      string.Join("'||'", arrayText.Skip(1).ToArray()));
-                //CAST(part1 as CLOB) || part2 || part3 || part4 ||
             }
             return value;
         }
@@ -315,9 +315,9 @@ namespace Nephrite.ImportData
                     case "char":
                         return "N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'";
                     case "nchar":
-                        return ("N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'").CuttingText();;
+                        return ("N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'").CuttingText(); ;
                     case "text":
-                        return ("N'" + reader.GetString(index).Replace("'", "''") + "'").CuttingText();;
+                        return ("N'" + reader.GetString(index).Replace("'", "''") + "'").CuttingText(); ;
                     case "decimal":
                         return reader.GetDecimal(index).ToString(CultureInfo.InvariantCulture);
                     case "date":

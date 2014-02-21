@@ -538,7 +538,7 @@ namespace Nephrite.Meta.Database
 					computedText = "AS ((SHORTNAME || ' ') || OFFNAME)";
 					break;
 				default:
-					computedText = " AS " + srcColumn.ComputedText.ToUpper().Replace("AS", "").Replace("[", "").Replace("]", "").Replace("NVARCHAR", "VARCHAR").ToUpper();
+					computedText = " AS " + srcColumn.ComputedText.ToUpper().Replace(" AS", "").Replace("[", "").Replace("]", "").Replace("NVARCHAR", "VARCHAR").ToUpper();
 					break;
 
 			}

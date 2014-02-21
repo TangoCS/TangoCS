@@ -53,6 +53,7 @@ namespace Nephrite.Meta.Database
 									xColumnsElement.Descendants("Column").ToList().ForEach(c =>
 									{
 										var column = new Column();
+                                        column.Identity = !string.IsNullOrEmpty(c.GetAttributeValue("Identity")) && c.GetAttributeValue("Identity") == "1";
 										column.Name = c.GetAttributeValue("Name");
 										column.Type =  DbScript.GetType(c.GetAttributeValue("Type"));
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("Nullable")) && c.GetAttributeValue("Nullable") == "1";

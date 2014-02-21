@@ -82,8 +82,8 @@ namespace TestSchema
 		[TestMethod]
 		public void GenerateResetDB2()
 		{
-			ConnectionManager.SetConnectionString("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000");
-			var ownSchema = new DB2ServerMetadataReader().ReadSchema("dbo");
+            ConnectionManager.SetConnectionString("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=Servants;Data Source=(local)");
+			var ownSchema = new SqlServerMetadataReader().ReadSchema("dbo");
 
 			var stringBuilder = new StringBuilder();
 			DB2Connection db3con = new DB2Connection(ConnectionManager.ConnectionString);
@@ -112,64 +112,64 @@ namespace TestSchema
 			var ss = stringBuilder.ToString();
 		}
 
-		//[TestMethod]
-		//public void TestSynchDB2()
-		//{
-		//	//var dd = new DBScriptDB2("DBO") as IDBScript;
-		//	//var ddss = dd.GetType().ToString();
-		//	//var dd = TypeFactory.TypeFactory.Char(true).ToString();
+        [TestMethod]
+        public void TestSynchDB2()
+        {
+            //var dd = new DBScriptDB2("DBO") as IDBScript;
+            //var ddss = dd.GetType().ToString();
+            //var dd = TypeFactory.TypeFactory.Char(true).ToString();
 
-		//	//var metaSolution = MetaSolution.Load();
+            //var metaSolution = MetaSolution.Load();
 
-		//	//foreach (var _class in metaSolution.Classes)
-		//	//{
-		//	//	foreach (var attribute in _class.Operations)
-		//	//	{
-		//	//		foreach (var param in attribute.Parameters)
-		//	//		{
-		//	//			//param.Value.
-		//	//		}
-		//	//		//attribute.Parameters
-		//	//		//var metaReference = attribute.IsDefault
-		//	//		//metaReference.Type
-		//	//		//metaReference.DataType
-		//	//	}
-		//	//	//_class.Name
+            //foreach (var _class in metaSolution.Classes)
+            //{
+            //	foreach (var attribute in _class.Operations)
+            //	{
+            //		foreach (var param in attribute.Parameters)
+            //		{
+            //			//param.Value.
+            //		}
+            //		//attribute.Parameters
+            //		//var metaReference = attribute.IsDefault
+            //		//metaReference.Type
+            //		//metaReference.DataType
+            //	}
+            //	//_class.Name
 
-		//	//}
-		//	ConnectionManager.SetConnectionString(
-		//		"Password=q121212;Persist Security Info=True;User ID=servantsuser;Initial Catalog=servants;Data Source=srvsql.refactorx.ru\\mssqlserver2008");
-		//	var sqlSchema = new SqlServerMetadataReader().ReadSchema("dbo");
-
-
-		//	//ConnectionManager.SetConnectionString("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000");
-		//	ConnectionManager.SetConnectionString("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000");
-		//	var ownSchema = new DB2ServerMetadataReader().ReadSchema("dbo");
-
-		//	//var update = new UpdateScriptBuilderDB2(db2Schema,
-		//	//										new SqlConnection(
-		//	//											"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=servants1;Data Source=TOSHIBA-TOSH\\SQL2008"),
-		//	//										false);
-		//	//var d = update.Generate(false, false);
-		//	//var sss = string.Join(",", update.dd.ToArray());
-		//	var dbScript = new DBScriptDB2("dbo");
-
-		//	foreach (var rsctable in sqlSchema.Tables)
-		//	{
-
-		//		var table = ownSchema.Tables.Values.SingleOrDefault(t => t.Name.ToUpper() == rsctable.Key.ToUpper());
+            //}
+            ConnectionManager.SetConnectionString(
+                "Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=Servants;Data Source=(local)");
+            var sqlSchema = new SqlServerMetadataReader().ReadSchema("dbo");
 
 
+            //ConnectionManager.SetConnectionString("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000");
+            ConnectionManager.SetConnectionString("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000");
+            var ownSchema = new DB2ServerMetadataReader().ReadSchema("dbo");
 
-		//		if (table == null)
-		//		{
-		//			dbScript.CreateTable(rsctable.Value);
-		//		}
-		//		else
-		//			table.Sync(dbScript, rsctable.Value);
+            //var update = new UpdateScriptBuilderDB2(db2Schema,
+            //										new SqlConnection(
+            //											"Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=servants1;Data Source=TOSHIBA-TOSH\\SQL2008"),
+            //										false);
+            //var d = update.Generate(false, false);
+            //var sss = string.Join(",", update.dd.ToArray());
+            var dbScript = new DBScriptDB2("dbo");
 
-		//	}
-		//	var strSql = string.Join(" ", dbScript.Scripts.ToArray());
-		//}
+            foreach (var rsctable in sqlSchema.Tables)
+            {
+
+                var table = ownSchema.Tables.Values.SingleOrDefault(t => t.Name.ToUpper() == rsctable.Key.ToUpper());
+
+
+
+                if (table == null)
+                {
+                    dbScript.CreateTable(rsctable.Value);
+                }
+                else
+                    table.Sync(dbScript, rsctable.Value);
+
+            }
+            var strSql = string.Join(" ", dbScript.Scripts.ToArray());
+        }
 	}
 }
