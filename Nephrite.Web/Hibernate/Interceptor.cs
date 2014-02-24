@@ -22,7 +22,7 @@ namespace Nephrite.Web.Hibernate
 
                 var dc = A.Model as IDC_EntityAudit;
                 string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).GetTitle() : "";
-                var oc = dc.NewIN_ObjectChange("Редактирование", e.Id.ToString(), e.Entity.GetType().Name, title);
+                var oc = dc.NewIN_ObjectChange("Редактирование", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
                 toInsert.Add(oc);
 
                 if (e.Entity is IWithPropertyAudit)
@@ -112,9 +112,7 @@ namespace Nephrite.Web.Hibernate
                 }
 
                 foreach (object obj in toInsert)
-                    dc.IN_ObjectChange.InsertOnSubmit((IN_ObjectChange)obj);
-
-                dc.SubmitChanges();
+                    e.Session.SaveOrUpdate(obj);
             }
             return false;
         }
@@ -128,7 +126,7 @@ namespace Nephrite.Web.Hibernate
 
                 var dc = A.Model as IDC_EntityAudit;
                 string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).GetTitle() : "";
-                var oc = dc.NewIN_ObjectChange("Удаление", e.Id.ToString(), e.Entity.GetType().Name, title);
+                var oc = dc.NewIN_ObjectChange("Удаление", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
                 toInsert.Add(oc);
 
                 foreach (object obj in toInsert)
