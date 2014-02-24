@@ -168,7 +168,7 @@ namespace Nephrite.Web.Hibernate
 
                 ToDelete.Clear();
                 ToInsert.Clear();
-                _session.Flush();
+               // _session.Flush();
             }
 		}
 
