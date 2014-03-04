@@ -14,22 +14,24 @@ namespace Nephrite.Meta.Forms
 
 	public class Container : FormElement
 	{
+		public MetaClass MetaClass { get; set; }
+		public string ViewDataClass { get; set; }
 		public List<FormElement> Content { get; set; }
 	}
 
-	public class EditPropertyField : FormElement
+	public class PropertyField : FormElement
 	{
 		public MetaClassifier Type { get; set; }
 		public bool IsRequired { get; set; }
 		public string DefaultValue { get; set; }
 	}
 
-	public class EditAttributeField : EditPropertyField
+	public class AttributeField : PropertyField
 	{
 		public string Format { get; set; }
 	}
 
-	public class EditReferenceField : EditPropertyField
+	public class ReferenceField : PropertyField
 	{
 		public string ClassName { get; set; }
 		public string DataValueField { get; set; }
@@ -37,8 +39,4 @@ namespace Nephrite.Meta.Forms
 		public string Filter { get; set; }
 		public string SearchExpression { get; set; }
 	}
-
-
-
-
 }

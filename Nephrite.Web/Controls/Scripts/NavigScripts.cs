@@ -4,7 +4,7 @@ using System.Configuration;
 using System.Linq;
 using System.Web;
 
-namespace Nephrite.Web.Controls.Scripts
+namespace Nephrite.Web.Controls
 {
 
     public class NavigScripts

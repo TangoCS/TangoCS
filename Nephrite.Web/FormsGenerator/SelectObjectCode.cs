@@ -12,12 +12,12 @@ namespace Nephrite.Web.FormsGenerator
 	{
 		string controlID = "";
 
-		public MultiObjectCode(EditReferenceField field)
+		public MultiObjectCode(ReferenceField field)
 			: base(field)
 		{
 			controlID = "mo" + field.Name;
 		}
-		public MultiObjectCode(EditReferenceField field, string prefix)
+		public MultiObjectCode(ReferenceField field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "mo" + prefix + field.Name;
@@ -79,13 +79,13 @@ namespace Nephrite.Web.FormsGenerator
 		string controlID = "";
 		string keySuffix = "";
 
-		public SingleObjectCode(EditReferenceField field)
+		public SingleObjectCode(ReferenceField field)
 			: base(field)
 		{
 			controlID = "so" + field.Name;
 			keySuffix = ((field.Type as MetaClass).Key.Type as IMetaIdentifierType).ColumnSuffix;
 		}
-		public SingleObjectCode(EditReferenceField field, string prefix)
+		public SingleObjectCode(ReferenceField field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "so" + prefix + field.Name;

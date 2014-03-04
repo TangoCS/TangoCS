@@ -10,12 +10,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class FileUploadCode : AttributeControlCode
 	{
 		string controlID = "";
-		public FileUploadCode(EditAttributeField field)
+		public FileUploadCode(AttributeField field)
 			: base(field)
 		{
 			controlID = "fu" + field.Name;
 		}
-		public FileUploadCode(EditAttributeField field, string prefix)
+		public FileUploadCode(AttributeField field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "fu" + prefix + field.Name;
@@ -79,12 +79,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class FileUploadSimpleCode : AttributeControlCode
 	{
 		string controlID = "";
-		public FileUploadSimpleCode(EditAttributeField field)
+		public FileUploadSimpleCode(AttributeField field)
 			: base(field)
 		{
 			controlID = "fu" + field.Name;
 		}
-		public FileUploadSimpleCode(EditAttributeField field, string prefix)
+		public FileUploadSimpleCode(AttributeField field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "fu" + prefix + field.Name;
@@ -159,12 +159,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class ImageUploadCode : AttributeControlCode
 	{
 		string controlID = "";
-		public ImageUploadCode(EditAttributeField field)
+		public ImageUploadCode(AttributeField field)
 			: base(field)
 		{
 			controlID = "iu" + field.Name;
 		}
-		public ImageUploadCode(EditAttributeField field, string prefix)
+		public ImageUploadCode(AttributeField field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "iu" + prefix + field.Name;

@@ -28,12 +28,12 @@ namespace Nephrite.Web.FormsGenerator
 
 	public abstract class AttributeControlCode : ControlCode
 	{
-		protected EditAttributeField _field { get; set; }
-		public AttributeControlCode(EditAttributeField field)
+		protected AttributeField _field { get; set; }
+		public AttributeControlCode(AttributeField field)
 		{
 			_field = field;
 		}
-		public AttributeControlCode(EditAttributeField field, string prefix)
+		public AttributeControlCode(AttributeField field, string prefix)
 		{
 			_field = field;
 			_prefix = prefix;
@@ -46,12 +46,12 @@ namespace Nephrite.Web.FormsGenerator
 
 	public abstract class ReferenceControlCode : ControlCode
 	{
-		protected EditReferenceField _field { get; set; }
-		public ReferenceControlCode(EditReferenceField field)
+		protected ReferenceField _field { get; set; }
+		public ReferenceControlCode(ReferenceField field)
 		{
 			_field = field;
 		}
-		public ReferenceControlCode(EditReferenceField field, string prefix)
+		public ReferenceControlCode(ReferenceField field, string prefix)
 		{
 			_field = field;
 			_prefix = prefix;

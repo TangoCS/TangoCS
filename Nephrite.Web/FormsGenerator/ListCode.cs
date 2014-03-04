@@ -4,36 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using Nephrite.Meta;
+using Nephrite.Meta.Forms;
 
 namespace Nephrite.Web.FormsGenerator
 {
 	/*
 	public partial class ViewCode
 	{
-		static string ClassName(MetaClass objectType)
+		public static string List(Container form)
 		{
-			if (objectType.IsMultiLingual)
-			{
-				if (objectType.HistoryTypeCode == HistoryType.IdentifiersMiss ||
-					objectType.HistoryTypeCode == HistoryType.IdentifiersRetain)
-					return "V_HST_" + objectType.SysName;
-				else
-					return "V_" + objectType.SysName;
-			}
-			else
-			{
-				if (objectType.HistoryTypeCode == HistoryType.IdentifiersMiss ||
-					objectType.HistoryTypeCode == HistoryType.IdentifiersRetain)
-					return "HST_" + objectType.SysName;
-				else
-					return objectType.SysName;
-			}
-		}
-
-		public static string List(MM_ObjectType objectType)
-		{
-			MM_ObjectProperty idProp = objectType.MM_ObjectProperties.SingleOrDefault(o => o.IsPrimaryKey);
-
 			StringBuilder res = new StringBuilder();
 
 			//res.Append(@"<%@ Control Language=""C#"" AutoEventWireup=""true"" Inherits=""ViewControl<IQueryable<").Append(objectType.SysName).AppendLine(@">>"" %>");
@@ -45,49 +24,36 @@ namespace Nephrite.Web.FormsGenerator
 			res.AppendLine("<%=Layout.ListTableBegin() %>");
 			res.AppendLine("<%=Layout.ListHeaderBegin() %>");
 
-			var cols = from f in AppMM.DataContext.MM_FormFields
-					   where f.MM_ObjectProperty.ObjectTypeID == objectType.ObjectTypeID
-					   && f.ShowInList
-					   orderby f.MM_ObjectProperty.SeqNo
-					   select f.MM_ObjectProperty;
+			var cols = form.Content;
 
 			if (cols.Count() == 0)
 			{
 				return "ERROR: Нет ни одного поля, отображаемого в списке";
 			}
 
-			foreach (MM_ObjectProperty p in cols)
+			foreach (var p in cols)
 			{
-				if (!String.IsNullOrEmpty(p.Expression))
-					if (String.IsNullOrEmpty(p.MM_FormField.SortExpression))
-						res.Append("<%=Layout.TH(\"" + p.Title + "\")%>");
-					else
-						res.Append("<%=Layout.TH(AddSortColumn<").
-						Append(ClassName(objectType)).
-						Append(",").
-						Append(CodeGenHelper.GetCSharpType(p.TypeCode, p.LowerBound)).
-						Append(@">(""").
-						Append(p.Title).
-						Append(@""", " + p.MM_FormField.SortExpression + "))%>");
-				else
-					res.Append("<%=Layout.TH(AddSortColumn<").
-						Append(ClassName(objectType)).
-						Append(",").
-						Append(CodeGenHelper.GetCSharpType(p.TypeCode, p.LowerBound)).
-						Append(@">(""").
-						Append(p.Title).
-						Append(@""", o => o.").
-						Append(p.TypeCode == ObjectPropertyType.Object ? p.SysName + ".Title" : p.SysName).
-						AppendLine("))%>");
+				res.Append("<%=Layout.TH(AddSortColumn<").
+					Append(form.ViewDataClass).
+					Append(",").
+					Append(
+					CodeGenHelper.GetCSharpType(p.TypeCode, p.LowerBound)).
+					Append(@">(""").
+					Append(p.Caption).
+					Append(@""", o => o.").
+					Append(p.TypeCode == ObjectPropertyType.Object ? p.Name + ".Title" : p.Name).
+					AppendLine("))%>");
 			}
 			res.AppendLine(@"<%=Layout.TH(""Действия"")%>");
 			res.AppendLine("<%=Layout.ListHeaderEnd() %>");
 			res.AppendLine(@"<% Html.Repeater(ApplyPaging(ApplyOrderBy(filter.ApplyFilter(qfilter.ApplyFilter(ViewData, SearchExpression)))), """", HtmlHelperWSS.CSSClassAlternating, (o, css) => {  %>");
 			res.AppendLine("<%=Layout.ListRowBegin(o.IsDeleted ? \"deletedItem\": css) %>");
 
+			var idProp = form.MetaClass.Key;
+
 			var linkColumn = cols.FirstOrDefault(o => o.TypeCode == ObjectPropertyType.String);
-			string linkCol = linkColumn == null ? cols.First().SysName : linkColumn.SysName;
-			foreach (MM_ObjectProperty p in cols)
+			string linkCol = linkColumn == null ? cols.First().Name : linkColumn.Name;
+			foreach (var p in cols)
 			{
 				res.Append("<%=Layout.TD(").Append(CodeGenHelper.GetCellValue(objectType, p, idProp, linkCol)).AppendLine(")%>");
 			}
@@ -97,9 +63,9 @@ namespace Nephrite.Web.FormsGenerator
 			if (idProp != null)
 			{
 				res.AppendLine("<% if (!o.IsDeleted) { %>");
-				res.AppendLine(@"<%=Html.ActionImage<" + objectType.SysName + "Controller>(oc => oc.Delete(o." + idProp.SysName + @", Query.CreateReturnUrl()), ""Удалить"", ""delete.gif"")%>");
+				res.AppendLine(@"<%=Html.ActionImage<" + form.MetaClass.Name + "Controller>(oc => oc.Delete(o." + idProp.Name + @", Query.CreateReturnUrl()), ""Удалить"", ""delete.gif"")%>");
 				res.AppendLine("<% } else { %>");
-				res.AppendLine(@"<%=Html.ActionImage<" + objectType.SysName + "Controller>(oc => oc.UnDelete(o." + idProp.SysName + @", Query.CreateReturnUrl()), ""Отменить удаление"", ""undelete.gif"")%>");
+				res.AppendLine(@"<%=Html.ActionImage<" + form.MetaClass.Name + "Controller>(oc => oc.UnDelete(o." + idProp.Name + @", Query.CreateReturnUrl()), ""Отменить удаление"", ""undelete.gif"")%>");
 				res.AppendLine("<% }%>");
 			}
 			res.AppendLine("<%=Layout.TDEnd()%>");
@@ -119,7 +85,7 @@ namespace Nephrite.Web.FormsGenerator
 			res.AppendLine(@"<script runat=""server"">");
 			res.AppendLine("protected void Page_Load(object sender, EventArgs e)");
 			res.AppendLine("{");
-			res.AppendLine("\tSetTitle(\"" + objectType.TitlePlural + "\");");
+			res.AppendLine("\tSetTitle(\"" + form.Caption + "\");");
 			res.AppendLine("");
 
 			res.AppendLine("\tvar ph = HttpContext.Current.Items[\"Toolbar\"] as PlaceHolder;");
@@ -129,25 +95,23 @@ namespace Nephrite.Web.FormsGenerator
 			res.AppendLine("\ttoolbar.AddItemFilter(filter);");
 			res.AppendLine("\ttoolbar.AddItemSeparator();");
 
-			res.AppendLine("\ttoolbar.AddItem<" + objectType.SysName + @"Controller>(""add.png"", ""Создать"", c => c.CreateNew(Query.CreateReturnUrl()));");
+			res.AppendLine("\ttoolbar.AddItem<" + form.MetaClass.Name + @"Controller>(""add.png"", ""Создать"", c => c.CreateNew(Query.CreateReturnUrl()));");
 
 			res.AppendLine("");
-			foreach (MM_ObjectProperty p in cols)
+			foreach (var p in cols)
 			{
-				res.AppendLine("\t" + CodeGenHelper.GetFilterCode(ClassName(objectType), p));
+				res.AppendLine("\t" + CodeGenHelper.GetFilterCode(form.ViewDataClass, p));
 			}
-			res.AppendLine("\t" + "filter.AddFieldBoolean<" + ClassName(objectType) + ">(\"Удален\", o => o.IsDeleted);");
+			res.AppendLine("\t" + "filter.AddFieldBoolean<" + form.ViewDataClass + ">(\"Удален\", o => o.IsDeleted);");
 
 
 			//res.AppendLine("\ttoolbar.AddRightItemText(search);");
 			res.AppendLine("\ttoolbar.AddRightItemQuickFilter(qfilter);");
 
-			if (objectType.IsEnableUserViews)
-			{
-				res.AppendLine("");
-				res.AppendLine("\ttoolbar.AddRightItemSeparator();");
-				res.AppendLine("\ttoolbar.EnableViews(filter);");
-			}
+			res.AppendLine("");
+			res.AppendLine("\ttoolbar.AddRightItemSeparator();");
+			res.AppendLine("\ttoolbar.EnableViews(filter);");
+			
 			res.AppendLine("");
 			res.Append("\tSearchExpression = s => (o =>");
 
@@ -171,7 +135,7 @@ namespace Nephrite.Web.FormsGenerator
 			res.Append(s.Join(" || ")).AppendLine(");");
 
 			res.AppendLine("}");
-			res.AppendLine("protected Func<string, Expression<Func<" + ClassName(objectType) + ", bool>>> SearchExpression { get; set; }");
+			res.AppendLine("protected Func<string, Expression<Func<" + form.ViewDataClass + ", bool>>> SearchExpression { get; set; }");
 			res.AppendLine("</script>");
 
 			return res.ToString();

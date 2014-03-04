@@ -10,12 +10,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class TextBoxCode : AttributeControlCode
 	{
 		string controlID = "";
-		public TextBoxCode(EditAttributeField field)
+		public TextBoxCode(AttributeField field)
 			: base(field)
 		{
 			controlID = "tb" + field.Name;
 		}
-		public TextBoxCode(EditAttributeField field, string prefix)
+		public TextBoxCode(AttributeField field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "tb" + prefix + field.Name;
@@ -88,12 +88,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class TextAreaCode : AttributeControlCode
 	{
 		string controlID = "";
-		public TextAreaCode(EditAttributeField field)
+		public TextAreaCode(AttributeField field)
 			: base(field)
 		{
 			controlID = "tb" + field.Name;
 		}
-		public TextAreaCode(EditAttributeField field, string prefix)
+		public TextAreaCode(AttributeField field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "tb" + prefix + field.Name;
@@ -136,12 +136,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class CheckBoxCode : AttributeControlCode
 	{
 		string controlID = "";
-		public CheckBoxCode(EditAttributeField field)
+		public CheckBoxCode(AttributeField field)
 			: base(field)
 		{
 			controlID = "cb" + field.Name;
 		}
-		public CheckBoxCode(EditAttributeField field, string prefix)
+		public CheckBoxCode(AttributeField field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "cb" + prefix + field.Name;
@@ -176,12 +176,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class TinyMCECode : AttributeControlCode
 	{
 		string controlID = "";
-		public TinyMCECode(EditAttributeField field)
+		public TinyMCECode(AttributeField field)
 			: base(field)
 		{
 			controlID = "tb" + field.Name;
 		}
-		public TinyMCECode(EditAttributeField field, string prefix)
+		public TinyMCECode(AttributeField field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "tb" + prefix + field.Name;
@@ -223,12 +223,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class JSCalendarCode : AttributeControlCode
 	{
 		string controlID = "";
-		public JSCalendarCode(EditAttributeField field)
+		public JSCalendarCode(AttributeField field)
 			: base(field)
 		{
 			controlID = "cal" + field.Name;
 		}
-		public JSCalendarCode(EditAttributeField field, string prefix)
+		public JSCalendarCode(AttributeField field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "cal" + prefix + field.Name;
@@ -275,12 +275,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class DDLCode : ReferenceControlCode
 	{
 		string controlID = "";
-		public DDLCode(EditReferenceField field)
+		public DDLCode(ReferenceField field)
 			: base(field)
 		{
 			controlID = "ddl" + field.Name;
 		}
-		public DDLCode(EditReferenceField field, string prefix)
+		public DDLCode(ReferenceField field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "ddl" + prefix + field.Name;
@@ -339,12 +339,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class DDLTextCode : ReferenceControlCode
 	{
 		string controlID = "";
-		public DDLTextCode(EditReferenceField field)
+		public DDLTextCode(ReferenceField field)
 			: base(field)
 		{
 			controlID = "ddl" + field.Name;
 		}
-		public DDLTextCode(EditReferenceField field, string prefix)
+		public DDLTextCode(ReferenceField field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "ddl" + prefix + field.Name;
@@ -400,13 +400,13 @@ namespace Nephrite.Web.FormsGenerator
 	internal class DateListsCode : AttributeControlCode
 	{
 		string controlID = "";
-		public DateListsCode(EditAttributeField field)
+		public DateListsCode(AttributeField field)
 			: base(field)
 		{
 			controlID = "dl" + field.Name;
 		}
 
-		public DateListsCode(EditAttributeField field, string prefix)
+		public DateListsCode(AttributeField field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "dl" + prefix + field.Name;
@@ -455,14 +455,14 @@ namespace Nephrite.Web.FormsGenerator
 		string controlID = "";
 		int decimals = 0;
 
-		public NumericBoxCode(EditAttributeField field)
+		public NumericBoxCode(AttributeField field)
 			: base(field)
 		{
 			controlID = "nb" + field.Name;
 			decimals = field.Type is MetaDecimalType ? (field.Type as MetaDecimalType).Scale : 0;
 		}
 
-		public NumericBoxCode(EditAttributeField field, string prefix)
+		public NumericBoxCode(AttributeField field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "tb" + prefix + field.Name;

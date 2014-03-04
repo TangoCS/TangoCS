@@ -16,6 +16,13 @@ namespace Nephrite.Meta
 	public class MetaPrimitiveType : MetaClassifier
 	{
 		public bool NotNullable { get; set; }
+		public override string CLRType
+		{
+			get
+			{
+				return "";
+			}
+		}
 	}
 
 	public partial class MetaDecimalType : MetaPrimitiveType, IMetaNumericType
@@ -23,16 +30,36 @@ namespace Nephrite.Meta
 		public int Precision { get; set; }
 		public int Scale { get; set; }
 
+		public override string CLRType
+		{
+			get
+			{
+				return NotNullable ? "decimal" : "decimal?";
+			}
+		}
 	}
 
 	public partial class MetaStringType : MetaPrimitiveType
 	{
 		public int Length { get; set; }
+		public override string CLRType
+		{
+			get
+			{
+				return "string";
+			}
+		}
 	}
 
 	public partial class MetaDateTimeType : MetaPrimitiveType
 	{
-
+		public override string CLRType
+		{
+			get
+			{
+				return NotNullable ? "DateTime" : "DateTime?";
+			}
+		}
 	}
 
 	public partial class MetaZoneDateTimeType : MetaPrimitiveType
@@ -42,7 +69,13 @@ namespace Nephrite.Meta
 
 	public partial class MetaDateType : MetaPrimitiveType
 	{
-
+		public override string CLRType
+		{
+			get
+			{
+				return NotNullable ? "DateTime" : "DateTime?";
+			}
+		}
 	}
 
 	public partial class MetaIntType : MetaPrimitiveType, IMetaIdentifierType, IMetaNumericType
@@ -52,21 +85,48 @@ namespace Nephrite.Meta
 		{
 			get { return "ID"; }
 		}
+
+		public override string CLRType
+		{
+			get
+			{
+				return NotNullable ? "int" : "int?";
+			}
+		}
 	}
 
 	public partial class MetaLongType : MetaPrimitiveType, IMetaNumericType
 	{
-
+		public override string CLRType
+		{
+			get
+			{
+				return NotNullable ? "long" : "long?";
+			}
+		}
 	}
 
 	public partial class MetaByteArrayType : MetaPrimitiveType
 	{
 		public int Length { get; set; }
+		public override string CLRType
+		{
+			get
+			{
+				return "byte[]";
+			}
+		}
 	}
 
 	public partial class MetaBooleanType : MetaPrimitiveType
 	{
-
+		public override string CLRType
+		{
+			get
+			{
+				return NotNullable ? "bool" : "bool?";
+			}
+		}
 	}
 
 	public partial class MetaGuidType : MetaPrimitiveType, IMetaIdentifierType
@@ -74,6 +134,13 @@ namespace Nephrite.Meta
 		public string ColumnSuffix
 		{
 			get { return "GUID"; }
+		}
+		public override string CLRType
+		{
+			get
+			{
+				return NotNullable ? "Guid" : "Guid?";
+			}
 		}
 	}
 
@@ -84,6 +151,14 @@ namespace Nephrite.Meta
 		public override string ColumnName(string propName)
 		{
 			return propName + IdentifierType.ColumnSuffix;
+		}
+
+		public override string CLRType
+		{
+			get
+			{
+				return (IdentifierType as MetaPrimitiveType).CLRType;
+			}
 		}
 	}
 

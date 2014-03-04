@@ -222,7 +222,7 @@ namespace Nephrite.Meta
 
 	public abstract partial class MetaClassifier : MetaElement
 	{
-		//public virtual Type CLRType { get; set; }
+		public abstract string CLRType { get; }
 		public virtual string ColumnName(string propName)
 		{
 			return propName;
@@ -232,17 +232,13 @@ namespace Nephrite.Meta
 
 	public class MetaClass : MetaClassifier
 	{
-		/*public override Type CLRType
+		public override string CLRType
 		{
 			get
 			{
-				return Type.GetType("Solution." + Name);
+				return IsMultilingual ? "V_" + Name : Name;
 			}
-			set
-			{
-				throw new Exception("Changing class CLR type is unsupported");
-			}
-		}*/
+		}
 
 		/// <summary>
 		/// Модель, которой принадлежит класс
