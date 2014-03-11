@@ -16,7 +16,7 @@ namespace Nephrite.Meta.Database
 {
     public class UpdateScriptBuilderDB2
     {
-        SqlConnection conn;
+        DB2Connection conn;
         TableExport export;
         StringBuilder result;
         string _dbname;
@@ -26,7 +26,7 @@ namespace Nephrite.Meta.Database
         public string DbName { get { return _dbname; } }
         public bool RecreateIndexes = true;
 
-        public UpdateScriptBuilderDB2(Schema schema, SqlConnection connection, bool isdb2)
+        public UpdateScriptBuilderDB2(Schema schema, DB2Connection connection, bool isdb2)
         {
 
             DB2ConnectionStringBuilder b = new DB2ConnectionStringBuilder(connection.ConnectionString);
@@ -428,14 +428,14 @@ namespace Nephrite.Meta.Database
         {
             int top = 0;
             Schema _schema;
-            SqlConnection conn;
-            public TableExport(SqlConnection connection, Schema schema)
+            DB2Connection conn;
+            public TableExport(DB2Connection connection, Schema schema)
             {
                 conn = connection;
                 _schema = schema;
             }
 
-            public TableExport(SqlConnection connection, int top, Schema schema)
+            public TableExport(DB2Connection connection, int top, Schema schema)
             {
                 conn = connection;
                 _schema = schema;
@@ -454,9 +454,9 @@ namespace Nephrite.Meta.Database
 
                 StringBuilder result = new StringBuilder();
 
-                SqlCommand cmd = conn.CreateCommand();
+                DB2Command cmd = conn.CreateCommand();
                 cmd.CommandType = System.Data.CommandType.Text;
-                cmd.CommandText = "select " + select + " from [" + tableName + "]";
+                cmd.CommandText = "select " + select + " from "+_schema.Name+"." + tableName;
                 if (where != "")
                     cmd.CommandText += " where " + where;
 
@@ -508,7 +508,7 @@ namespace Nephrite.Meta.Database
                 return result.ToString();
             }
 
-            public string GetStringValue(SqlDataReader reader, int index)
+            public string GetStringValue(DB2DataReader reader, int index)
             {
                 return new DBScriptDB2("DBO").GetStringValue(reader, index);
             }
@@ -525,9 +525,9 @@ namespace Nephrite.Meta.Database
                     {
                         StringBuilder result = new StringBuilder();
 
-                        SqlCommand cmd = conn.CreateCommand();
+                        DB2Command cmd = conn.CreateCommand();
                         cmd.CommandType = System.Data.CommandType.Text;
-                        cmd.CommandText = "select " + (top > 0 ? "TOP " + top.ToString() + " " : "") + "* from [" + tableName + "]";
+                        cmd.CommandText = "select " + (top > 0 ? "TOP " + top.ToString() + " " : "") + "* from " + _schema.Name + "." + tableName;
 
                         using (var reader = cmd.ExecuteReader())
                         {

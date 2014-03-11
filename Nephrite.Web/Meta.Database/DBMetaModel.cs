@@ -164,6 +164,7 @@ namespace Nephrite.Meta.Database
 	{
 		public string ProcedureName { get; set; }
 		public string ReturnType { get; set; }
+        public bool IsList { get; set; }
 		public Dictionary<string, string> Columns { get; set; }
 	}
 }
