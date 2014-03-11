@@ -59,6 +59,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>ExternalDll\DotNetOpenAuth.dll</HintPath>
     </Reference>
+    <Reference Include="IBM.Data.DB2, Version=9.7.4.4, Culture=neutral, PublicKeyToken=7c307b91aa13d208, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\IBM.Data.DB2.dll</HintPath>
+    </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
@@ -139,11 +143,13 @@
     <Compile Include="Hibernate\Interceptor.cs" />
     <Compile Include="Hibernate\MappingConfig.cs" />
     <Compile Include="Hibernate\StringBackedGuidUserType.cs" />
+    <Compile Include="Meta.Database\DBScriptDB2.cs" />
     <Compile Include="Meta.Database\DBScriptMSSQL.cs" />
     <Compile Include="Meta.Database\IDBScript.cs" />
     <Compile Include="Meta.Database\PrimitiveTypesExtensions.cs" />
     <Compile Include="Meta.Database\SchemaSync.cs" />
     <Compile Include="Meta.Database\UpdateScriptBuilder2.cs" />
+    <Compile Include="Meta.Database\UpdateScriptBuilderDB2.cs" />
     <Compile Include="MetaStorage\MetaStorageModel.cs" />
     <Compile Include="Meta.Forms\UIMetaModel.cs" />
     <Compile Include="Model\IEntity.cs">
