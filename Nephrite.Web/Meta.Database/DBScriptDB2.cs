@@ -15,6 +15,32 @@ using Nephrite.Web;
 
 namespace Nephrite.Meta.Database
 {
+    public static class ExtendString
+    {
+        public static IEnumerable<string> SplitByLength(this string str, int maxLength)
+        {
+            for (int index = 0; index < str.Length; index += maxLength)
+            {
+                yield return str.Substring(index, Math.Min(maxLength, str.Length - index));
+            }
+        }
+
+        public static string CuttingText(this string value)
+        {
+            if (value.StartsWith("N'<%=HtmlHelperWSS.FormTableBegin(\"700px\")%>"))
+            {
+
+            }
+
+            if (value.Length > 15000)
+            {
+                var arrayText = value.SplitByLength(15000);
+                return string.Format("CAST({0}' as CLOB) || '{1}", arrayText.First(),
+                                     string.Join("'||'", arrayText.Skip(1).ToArray()));
+            }
+            return value;
+        }
+    }
     public class DBScriptDB2 : IDBScript
     {
         private List<string> _MainScripts { get; set; }
@@ -377,19 +403,18 @@ namespace Nephrite.Meta.Database
             return "SMALLINT";
         }
 
-        public string GetStringValue(SqlDataReader reader, int index)
+        public  string GetStringValue(DB2DataReader reader, int index)
         {
             if (reader.IsDBNull(index))
                 return "null";
             else
             {
-                switch (reader.GetDataTypeName(index))
+                switch (reader.GetDataTypeName(index).ToLower())
                 {
-                    case "money":
-                        return reader.GetSqlMoney(index).Value.ToString(CultureInfo.InvariantCulture);
+
                     case "float":
-                        return reader.GetSqlDouble(index).Value.ToString(CultureInfo.InvariantCulture);
-                    case "int":
+                        return reader.GetDB2Double(index).Value.ToString(CultureInfo.InvariantCulture);
+                    case "integer":
                         return reader.GetInt32(index).ToString();
                     case "smallint":
                         return reader.GetInt16(index).ToString();
@@ -398,9 +423,9 @@ namespace Nephrite.Meta.Database
                     case "bigint":
                         return reader.GetInt64(index).ToString();
                     case "nvarchar":
-                        return "N'" + reader.GetString(index).Replace("'", "''") + "'";
+                        return ("N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'").CuttingText();
                     case "varchar":
-                        return "N'" + reader.GetString(index).Replace("'", "''") + "'";
+                        return ("N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'").CuttingText();
                     case "bit":
                         return reader.GetBoolean(index) ? "1" : "0";
                     case "uniqueidentifier":
@@ -408,26 +433,20 @@ namespace Nephrite.Meta.Database
                     case "char":
                         return "N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'";
                     case "nchar":
-                        return "N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'";
-                    case "text":
-                        return "N'" + reader.GetString(index).Replace("'", "''") + "'";
+                        return ("N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'").CuttingText(); ;
+                    case "clob":
+                        return ("N'" + reader.GetString(index).Replace("'", "''") + "'").CuttingText(); ;
                     case "decimal":
                         return reader.GetDecimal(index).ToString(CultureInfo.InvariantCulture);
                     case "date":
                         return String.Format("CAST('{0}' AS Date)", reader.GetDateTime(index).ToString("yyyy-MM-dd"));
-                    case "datetime":
-                        return String.Format("CAST('{0}' AS timestamp)", reader.GetSqlDateTime(index).Value.ToString("yyyy-MM-dd HH:mm:ss"), reader.GetSqlDateTime(index).TimeTicks.ToString("X8"));
-                    case "image":
-                        StringBuilder result = new StringBuilder();
-                        byte[] data = reader.GetSqlBytes(index).Value;
-                        for (int x = 0; x < data.Length; x++)
-                            result.Append(data[x].ToString("X2"));
-                        return string.Format("blob(X'{0}')", result.ToString());
+                    case "timestamp":
+                        return String.Format("CAST('{0}' AS timestamp)", reader.GetDateTime(index).ToString("yyyy-MM-dd HH:mm:ss"));
                     case "xml":
-                        return String.Format("N'{0}'", reader.GetSqlXml(index).Value.Replace("'", "''"));
+                        return String.Format("N'{0}'", reader.GetDB2Xml(index).GetString().Replace("'", "''"));
                     case "varbinary":
                         StringBuilder result1 = new StringBuilder();
-                        byte[] data1 = reader.GetSqlBytes(index).Value;
+                        byte[] data1 = reader.GetDB2Blob(index).Value;
                         for (int x = 0; x < data1.Length; x++)
                             result1.Append(data1[x].ToString("X2"));
                         return string.Format("blob(X'{0}')", result1.ToString());
@@ -439,33 +458,34 @@ namespace Nephrite.Meta.Database
         public string ImportData(Table t, bool identityInsert, SqlConnection DbConnection)
         {
 
-            if (DbConnection.State == System.Data.ConnectionState.Closed)
-                DbConnection.Open();
+            //if (DbConnection.State == System.Data.ConnectionState.Closed)
+            //    DbConnection.Open();
 
-            var columns = string.Join(", ", t.Columns.Values.Select(c => string.Format("{0}", c.Name)).ToArray());
-            SqlCommand cmd = DbConnection.CreateCommand();
-            cmd.CommandType = System.Data.CommandType.Text;
-            cmd.CommandText = string.Format("select {0} from [{1}] ", columns, t.Name);
+            //var columns = string.Join(", ", t.Columns.Values.Select(c => string.Format("{0}", c.Name)).ToArray());
+            //SqlCommand cmd = DbConnection.CreateCommand();
+            //cmd.CommandType = System.Data.CommandType.Text;
+            //cmd.CommandText = string.Format("select {0} from [{1}] ", columns, t.Name);
 
-            var sqlInsert = string.Empty;
-            using (var reader = cmd.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    StringCollection sc = new StringCollection();
-                    for (int i = 0; i < reader.FieldCount; i++)
-                    {
-                        sc.Add(GetStringValue(reader, i));
-                    }
-                    sqlInsert += string.Format("INSERT INTO {0} ({1})  VALUES ({2}); \r\n", t.Name, columns, string.Join(",", sc.Cast<string>().ToArray<string>()));
-                }
-            }
+            //var sqlInsert = string.Empty;
+            //using (var reader = cmd.ExecuteReader())
+            //{
+            //    while (reader.Read())
+            //    {
+            //        StringCollection sc = new StringCollection();
+            //        for (int i = 0; i < reader.FieldCount; i++)
+            //        {
+            //            sc.Add(GetStringValue(reader, i));
+            //        }
+            //        sqlInsert += string.Format("INSERT INTO {0} ({1})  VALUES ({2}); \r\n", t.Name, columns, string.Join(",", sc.Cast<string>().ToArray<string>()));
+            //    }
+            //}
 
-            if (identityInsert && t.Identity)
-            {
-                sqlInsert = string.Format("ALTER TABLE {0} ALTER COLUMN {1} SET GENERATED BY DEFAULT;\r\n {2} ALTER TABLE {0} ALTER COLUMN {1} SET GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 );", t.Name, t.Columns.Values.FirstOrDefault(c => c.IsPrimaryKey).Name, sqlInsert);
-            }
-            return sqlInsert;
+            //if (identityInsert && t.Identity)
+            //{
+            //    sqlInsert = string.Format("ALTER TABLE {0} ALTER COLUMN {1} SET GENERATED BY DEFAULT;\r\n {2} ALTER TABLE {0} ALTER COLUMN {1} SET GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 );", t.Name, t.Columns.Values.FirstOrDefault(c => c.IsPrimaryKey).Name, sqlInsert);
+            //}
+            //return sqlInsert;
+            return "";
         }
 
 
