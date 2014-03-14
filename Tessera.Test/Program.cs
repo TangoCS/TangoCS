@@ -24,18 +24,22 @@ namespace Tessera.Test
 		{
 			var dc = new HCoreDataContext(HDataContext.DBConfig(ConnectionManager.ConnectionString));
 			A.Model = dc;
-			Func<string, Expression<Func<SPM_Subject, bool>>> SearchExpression = s => (o => SqlMethods.Like(o.SystemName, "%" + s + "%"));
+			//Func<string, Expression<Func<SPM_Subject, bool>>> SearchExpression = s => (o => SqlMethods.Like(o.SystemName, "%" + s + "%"));
 
-			bool val = false;
-			Expression<Func<SPM_Subject, bool>> column = o => o.IsActive;
-			var expr = Expression.Lambda<Func<SPM_Subject, bool>>(Expression.Equal(column.Body, Expression.Constant(val)), column.Parameters);
+			//bool val = false;
+			//Expression<Func<SPM_Subject, bool>> column = o => o.IsActive;
+			//var expr = Expression.Lambda<Func<SPM_Subject, bool>>(Expression.Equal(column.Body, Expression.Constant(val)), column.Parameters);
 
-			IMM_FormView r = dc.IMM_FormView.First();
+			//IMM_FormView r = dc.IMM_FormView.First();
 			//r = ApplyFilter(r, SearchExpression, "anonymous");
 			//var r2 = r.First();
 			//var r = App.DataContext.V_OrgUnit.Where(o => (o.ParentOrgUnitGUID ?? Guid.Empty) == new Guid("00000000-0000-0000-0000-000000000000")).ToList();
-			r.LastModifiedDate = DateTime.Now;
-			dc.SubmitChanges();
+			//r.LastModifiedDate = DateTime.Now;
+			//dc.SubmitChanges();
+
+			
+
+			var r = dc.IMailMessage.Where(o => o.LastSendAttemptDate.HasValue && (o.LastSendAttemptDate - DateTime.Today) > new TimeSpan(o.AttemptsToSendCount, 0, 0, 0)).Select(o => o.MailMessageID).ToList();
 
 			//Console.WriteLine(App.DataContext.Log.ToString());
 			Console.WriteLine(A.Model.Log.ToString());

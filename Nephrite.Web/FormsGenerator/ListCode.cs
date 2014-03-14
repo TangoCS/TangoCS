@@ -33,16 +33,18 @@ namespace Nephrite.Web.FormsGenerator
 
 			foreach (var p in cols)
 			{
-				res.Append("<%=Layout.TH(AddSortColumn<").
-					Append(form.ViewDataClass).
-					Append(",").
-					Append(
-					CodeGenHelper.GetCSharpType(p.TypeCode, p.LowerBound)).
-					Append(@">(""").
-					Append(p.Caption).
-					Append(@""", o => o.").
-					Append(p.TypeCode == ObjectPropertyType.Object ? p.Name + ".Title" : p.Name).
-					AppendLine("))%>");
+				if (p is PropertyField)
+				{
+					res.Append("<%=Layout.TH(AddSortColumn<").
+						Append(form.ViewDataClass).
+						Append(",").
+						Append((p as PropertyField).Type.CLRType).
+						Append(@">(""").
+						Append(p.Caption).
+						Append(@""", o => o.").
+						Append(p.TypeCode == ObjectPropertyType.Object ? p.Name + ".Title" : p.Name).
+						AppendLine("))%>");
+				}
 			}
 			res.AppendLine(@"<%=Layout.TH(""Действия"")%>");
 			res.AppendLine("<%=Layout.ListHeaderEnd() %>");
@@ -115,22 +117,15 @@ namespace Nephrite.Web.FormsGenerator
 			res.AppendLine("");
 			res.Append("\tSearchExpression = s => (o =>");
 
-			string[] s = new string[cols.Where(o => (o.Expression == null || o.Expression == "") && (o.TypeCode == ObjectPropertyType.String ||
-				o.TypeCode == ObjectPropertyType.Number || o.TypeCode == ObjectPropertyType.Decimal ||
-				(o.TypeCode == ObjectPropertyType.Object && o.UpperBound == 1))).Count()];
-			int i = 0;
-			foreach (MM_ObjectProperty p in cols.Where(o => (o.Expression == null || o.Expression == "") && (o.TypeCode == ObjectPropertyType.String ||
-				o.TypeCode == ObjectPropertyType.Number || o.TypeCode == ObjectPropertyType.Decimal ||
-				(o.TypeCode == ObjectPropertyType.Object && o.UpperBound == 1))))
+			List<string> s = new List<string>();
+			foreach (var p in cols)
 			{
 				if (p.TypeCode == ObjectPropertyType.Number || p.TypeCode == ObjectPropertyType.Decimal)
-					s[i] = @"SqlMethods.Like(o." + p.SysName + @".ToString(), ""%"" + s + ""%"")";
+					s.Add(@"SqlMethods.Like(o." + p.Name + @".ToString(), ""%"" + s + ""%"")");
 				else if (p.TypeCode == ObjectPropertyType.Object)
-					s[i] = @"SqlMethods.Like(o." + p.SysName + @".Title, ""%"" + s + ""%"")";
+					s.Add(@"SqlMethods.Like(o." + p.Name + @".Title, ""%"" + s + ""%"")");
 				else
-					s[i] = @"SqlMethods.Like(o." + p.SysName + @", ""%"" + s + ""%"")";
-
-				i++;
+					s.Add(@"SqlMethods.Like(o." + p.Name + @", ""%"" + s + ""%"")");
 			}
 			res.Append(s.Join(" || ")).AppendLine(");");
 
@@ -142,4 +137,5 @@ namespace Nephrite.Web.FormsGenerator
 		}
 	}
 	*/
+	
 }

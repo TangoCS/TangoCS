@@ -39,6 +39,9 @@ namespace Nephrite.Web.Hibernate
 		ISession _session;
 		Configuration _cfg = null;
 
+		[ThreadStatic]
+		static string _dbType = "";
+
 		public List<object> ToInsert { get; private set; }
 		public List<object> ToDelete { get; private set; }
 		public List<Action> AfterSaveActions { get; private set; }
@@ -48,7 +51,12 @@ namespace Nephrite.Web.Hibernate
 		{
 			get
 			{
-				return System.Configuration.ConfigurationManager.AppSettings["DBType"].ToUpper();
+				if (_dbType == "") _dbType = System.Configuration.ConfigurationManager.AppSettings["DBType"].ToUpper();
+				return _dbType;
+			}
+			set
+			{
+				_dbType = value;
 			}
 		}
 

@@ -97,6 +97,11 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="CodeTemplates\test.txt">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>test.tt</DependentUpon>
+    </Content>
     <Content Include="Controls\ListExport.ascx" />
     <Content Include="View\Utils\generatedb.ascx" />
     <Content Include="View\Utils\generatewsdl.ascx" />
@@ -244,6 +249,10 @@
     <Content Include="ViewTemplates\setcurrentclassversion.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>setcurrentclassversion.cs</LastGenOutput>
+    </Content>
+    <Content Include="CodeTemplates\test.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>test.txt</LastGenOutput>
     </Content>
     <None Include="Nephrite.Metamodel.snk" />
     <Content Include="packages.config" />
