@@ -81,6 +81,27 @@ namespace Nephrite.Web.Hibernate
 					c.SchemaAction = SchemaAutoAction.Validate;
 			};
 		}
+        public static Action<IDbIntegrationConfigurationProperties> DBConfig(string connectionString, string dbType)
+        {
+            return c =>
+            {
+                switch (dbType)
+                {
+                    case "MSSQL": c.Dialect<MsSql2008Dialect>(); break;
+                    case "DB2": c.Dialect<DB2Dialect>(); break;
+                    case "ORACLE": c.Dialect<Oracle10gDialect>(); break;
+                    case "POSTGRESQL": c.Dialect<PostgreSQLDialect>(); break;
+                    default: c.Dialect<MsSql2008Dialect>(); break;
+                }
+
+                c.ConnectionString = connectionString;
+                c.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
+                c.IsolationLevel = System.Data.IsolationLevel.ReadUncommitted;
+                //c.LogFormattedSql = true;
+                if (!System.Configuration.ConfigurationManager.AppSettings["ValidateSchema"].IsEmpty())
+                    c.SchemaAction = SchemaAutoAction.Validate;
+            };
+        }
 
 		public ISession Session
 		{

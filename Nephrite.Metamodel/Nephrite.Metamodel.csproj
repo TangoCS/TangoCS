@@ -135,6 +135,7 @@
     <Compile Include="FormViewControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="HistoryType.cs" />
     <Compile Include="IFormControl.cs" />
     <Compile Include="IMMObjectMLView.cs" />
     <Compile Include="IMMObjectTransition.cs" />
