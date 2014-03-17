@@ -54,6 +54,8 @@ namespace Nephrite.Metamodel.Model
 			MM_ObjectProperties = new List<MM_ObjectProperty>();
 		}
 		public virtual int ObjectPropertyID { get; set; }
+        public virtual int? CodifierID { get; set; }
+        
 		public virtual MM_ObjectType ObjectType { get; set; }
 		public virtual MM_ObjectProperty RefObjectProperty { get; set; }
 		public virtual MM_ObjectType RefObjectType { get; set; }

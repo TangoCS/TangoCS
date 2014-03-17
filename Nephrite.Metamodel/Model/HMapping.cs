@@ -99,7 +99,7 @@ namespace Nephrite.Metamodel.Model
 			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
 			Property(x => x.IsIdentity, map => map.NotNullable(true));
 
-			//Property(x => x.ObjectTypeID, map => { map.NotNullable(true); map.Formula("ObjectTypeID"); });
+			Property(x => x.ObjectTypeID, map => { map.NotNullable(true); map.Formula("ObjectTypeID"); });
 			ManyToOne(x => x.ObjectType, map =>
 			{
 				map.Column("ObjectTypeID");
@@ -107,7 +107,7 @@ namespace Nephrite.Metamodel.Model
 				map.Cascade(Cascade.None);
 			});
 
-			//Property(x => x.RefObjectPropertyID, map => map.Formula("RefObjectPropertyID"));
+			Property(x => x.RefObjectPropertyID, map => map.Formula("RefObjectPropertyID"));
 			ManyToOne(x => x.RefObjectProperty, map =>
 			{
 				map.Column("RefObjectPropertyID");
@@ -115,7 +115,7 @@ namespace Nephrite.Metamodel.Model
 				map.Cascade(Cascade.None);
 			});
 
-			//Property(x => x.RefObjectTypeID, map => map.Formula("RefObjectTypeID"));
+			Property(x => x.RefObjectTypeID, map => map.Formula("RefObjectTypeID"));
 			ManyToOne(x => x.RefObjectType, map =>
 			{
 				map.Column("RefObjectTypeID");
@@ -123,6 +123,7 @@ namespace Nephrite.Metamodel.Model
 				map.Cascade(Cascade.None);
 			});
 
+            Property(x => x.CodifierID, map => map.Formula("CodifierID"));
 			ManyToOne(x => x.MM_Codifier, map =>
 			{
 				map.Column("CodifierID");
