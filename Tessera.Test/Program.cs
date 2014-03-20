@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using Nephrite.Meta;
+using Nephrite.Meta.Database;
 using Nephrite.Metamodel;
+using Nephrite.Metamodel.Model;
 using Nephrite.Web;
 using Nephrite.Web.Controls;
 using Nephrite.Web.CoreDataContext;
@@ -20,27 +23,64 @@ namespace Tessera.Test
 {
 	class Program
 	{
-		static void Main(string[] args)
-		{
-            ConnectionManager.SetConnectionString("Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
-            HDataContext.DBType = "DB2";
-		    //var cls = AppMM.DataContext.MM_ObjectTypes.First();
+	    private static void Main(string[] args)
+	    {
+            var mapType = new DataTypeMapper();
+	        ConnectionManager.SetConnectionString(
+	            "Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
+	        HDataContext.DBType = "DB2";
+	        var sqlServerMetadataReader = new DB2ServerMetadataReader();
+	        var schema = sqlServerMetadataReader.ReadSchema("dbo");
+	        foreach (var table in schema.Tables)
+	        {
+	            List<string> interfaces = new List<string>();
+	            interfaces.Add("IEntity");
+	            bool withKey = table.Value.PrimaryKey != null && table.Value.PrimaryKey.Columns.Length == 1;
+	            string keyType = "";
 
-		    var objectTypesWithWorkflow = (from o in
-		                                       AppMM.DataContext.MM_ObjectTypes
-		                                   join p in
-		                                       AppMM.DataContext.MM_ObjectProperties on o.ObjectTypeID equals p.ObjectTypeID
-		                                   where
-		                                       (!o.IsTemplate && o.IsSeparateTable && !o.SysName.EndsWith("Transition") &&
-		                                        !AppMM.DataContext.MM_ObjectTypes.Any(
-		                                            o1 => o1.SysName == o.SysName + "Transition")
-		                                        && p.SysName == "Activity" && p.RefObjectType != null &&
-		                                        p.RefObjectType.SysName == "WF_Activity")
-		                                   select o).ToList();
-		    foreach (var cls in objectTypesWithWorkflow)
-		    {
-                var unionallProperties = (cls.BaseObjectTypeID.HasValue ? AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID).Union(AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.BaseObjectTypeID)) : (AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID))).ToList();
-		    }
+	            if (withKey)
+	            {
+                    var pkColumn = table.Value.Columns.Values.SingleOrDefault(t => t.Name.ToUpper() == table.Value.PrimaryKey.Columns[0].ToUpper());
+                    keyType = mapType.MapFromSqlServerDBType(pkColumn.Type.GetDBType(new DBScriptDB2("DBO")), null, null, null).ToString();
+	                //interfaces.Add("IWithKey<" + table.Key + ", " + keyType + ">");
+	            }
+	            if (table.Value.Columns.ContainsKey("SeqNo"))
+	                interfaces.Add("IWithSeqNo");
+	        }
+	    
+
+	    //var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate && o.IsSeparateTable).ToList();
+            //foreach (var cls in objectTypes)
+            //{
+
+
+            //    var allProperties =
+            //        (!cls.BaseObjectTypeID.HasValue
+            //             ? AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID)
+            //             : AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID)
+            //                    .ToList()
+            //                    .Union(
+            //                        AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.BaseObjectTypeID)
+            //                             .ToList())).ToList();
+            //    //var allProperties = AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID).ToList().Union(AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.BaseObjectTypeID).ToList());
+            //    if (
+            //        allProperties.Any(
+            //            o =>
+            //            o.SysName == "SeqNo" && o.LowerBound == 1 && o.UpperBound == 1 &&
+            //            o.TypeCode == ObjectPropertyType.Number))
+            //    {
+            //        MM_ObjectProperty parentprop =
+            //            cls.MM_ObjectProperties.ToList().Where(o => o.RefObjectPropertyID.HasValue &&
+            //                                                        o.RefObjectProperty.IsAggregate)
+            //               .OrderBy(o => o.RefObjectTypeID == o.ObjectTypeID)
+            //               .FirstOrDefault();
+
+            //        if (parentprop.ObjectType.SysName == "MM_FormField")
+            //        {
+
+            //        }
+            //    }
+            //}
 		    //var allProperties = (AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID)).ToList();
             // BaseObjectTypeID.HasValue ? BaseObjectType.MM_ObjectProperties.Union(MM_ObjectProperties) : MM_ObjectProperties; }
            

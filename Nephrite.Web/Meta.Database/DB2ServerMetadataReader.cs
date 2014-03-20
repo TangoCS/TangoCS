@@ -76,13 +76,23 @@ namespace Nephrite.Meta.Database
 
                                 var xForeignKeysElement = t.Element("ForeignKeys");
                                 if (xForeignKeysElement != null)
+                                {
+                                   
                                     xForeignKeysElement.Descendants("ForeignKey").ToList().ForEach(c =>
                                     {
+                                        var fkColumns = c.Descendants("Column")
+                                                                    .Select(pc => pc.GetAttributeValue("NAME").ToUpper())
+                                                                    .ToArray();
+
                                         var foreignKey = new ForeignKey();
                                         foreignKey.Name = c.GetAttributeValue("NAME");
                                         foreignKey.RefTable = c.GetAttributeValue("REFTABLE");
                                         foreignKey.IsEnabled = !string.IsNullOrEmpty(c.GetAttributeValue("ISENABLED")) && c.GetAttributeValue("ISENABLED") == "1";
-                                        foreignKey.Columns = c.Descendants("Column").Select(fc => fc.GetAttributeValue("NAME")).ToArray();
+                                        foreignKey.Columns =
+                                            table.Columns.Where(pk => fkColumns.Any(fk => fk == pk.Key.ToUpper()))
+                                                 .Select(cr => cr.Value.Name)
+                                                 .ToArray();
+
                                         foreignKey.RefTableColumns = c.Descendants("RefTableColumn").Select(fc => fc.GetAttributeValue("NAME")).ToArray();
                                         //var xDeleteOptionElement = null;// t.Element("DeleteOption");
                                         foreignKey.DeleteOption = DeleteOption.Restrict;
@@ -92,6 +102,7 @@ namespace Nephrite.Meta.Database
                                         foreignKey.CurrentTable = table;
                                         table.ForeignKeys.Add(foreignKey.Name, foreignKey);
                                     });
+                                }
 
                                 var xTriggersElement = t.Element("Triggers");
                                 if (xTriggersElement != null)
@@ -107,16 +118,18 @@ namespace Nephrite.Meta.Database
 
 
                                 var xPrimaryKeyElement = t.Element("PrimaryKey");
+                             
                                 if (xPrimaryKeyElement != null)
+                                {
+                                    var pkColumns = xPrimaryKeyElement.Descendants("Column")
+                                                                  .Select(pc => pc.GetAttributeValue("NAME").ToUpper())
+                                                                  .ToArray();
                                     table.PrimaryKey = new PrimaryKey()
                                     {
                                         Name = xPrimaryKeyElement.GetAttributeValue("NAME"),
-                                        Columns =
-                                            xPrimaryKeyElement.Descendants("Column")
-                                                              .Select(pc => pc.GetAttributeValue("NAME"))
-                                                              .ToArray(),
+                                        Columns = table.Columns.Where(pk => pkColumns.Any(c => c == pk.Key.ToUpper())).Select(cr => cr.Value.Name).ToArray(),
                                         CurrentTable = table
-                                    };
+                                    };}
 
 
                                 var xIndexesElement = t.Element("Indexes");

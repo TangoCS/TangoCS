@@ -312,6 +312,7 @@ namespace Nephrite.Metamodel.Model
 				map.Cascade(Cascade.None);
 			});
 
+            Property(x => x.FormViewID, map => map.Formula("FormViewID"));
 			ManyToOne(x => x.MM_FormView, map =>
 			{
 				map.Column("FormViewID");

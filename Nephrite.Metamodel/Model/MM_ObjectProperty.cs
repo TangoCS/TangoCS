@@ -84,7 +84,7 @@ namespace Nephrite.Metamodel.Model
 				{
 					if (!RefObjectTypeID.HasValue)
 						return SysName + "ID";
-					if (RefObjectType.PrimaryKey.First().TypeCode  == "U")
+                    if (RefObjectType.PrimaryKey.First().TypeCode == "U" || RefObjectType.PrimaryKey.First().TypeCode == "N")
 						return SysName + "ID";
                     if (RefObjectType.PrimaryKey.First().TypeCode == "G")
 						return SysName + "GUID";
