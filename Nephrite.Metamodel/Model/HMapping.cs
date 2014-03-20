@@ -393,14 +393,14 @@ namespace Nephrite.Metamodel.Model
 			Property(x => x.SeqNo, map => map.NotNullable(true));
 			Property(x => x.Description);
 
-			//Property(x => x.PackageID, map => map.Formula("PackageID"));
+			Property(x => x.PackageID, map => map.Formula("PackageID"));
 			ManyToOne(x => x.MM_Package, map => 
 			{ 
 				map.Column("PackageID"); 
 				map.Cascade(Cascade.None); 
 			});
 
-			//Property(x => x.BaseObjectTypeID, map => map.Formula("BaseObjectTypeID"));
+			Property(x => x.BaseObjectTypeID, map => map.Formula("BaseObjectTypeID"));
 			ManyToOne(x => x.BaseObjectType, map =>
 			{
 				map.Column("BaseObjectTypeID");

@@ -20,7 +20,7 @@ namespace Nephrite.Metamodel.Model
 			}
 		}
 
-		public virtual string ClrType
+        public virtual string ClrType
         {
             get
             {
@@ -36,9 +36,9 @@ namespace Nephrite.Metamodel.Model
                         return "DateTime";
                     case ObjectPropertyType.Number:
                         return "int";
-					case ObjectPropertyType.BigNumber:
-						return "long";
-					case ObjectPropertyType.String:
+                    case ObjectPropertyType.BigNumber:
+                        return "long";
+                    case ObjectPropertyType.String:
                         return "string";
                     case ObjectPropertyType.Guid:
                         return "Guid";
@@ -48,10 +48,10 @@ namespace Nephrite.Metamodel.Model
                         return (RefObjectType == null ? "int" : RefObjectType.PrimaryKey.First().ClrType) + (LowerBound == 0 ? "?" : "");
                     case ObjectPropertyType.File:
                         return LowerBound == 0 ? "int?" : "int";
-					case ObjectPropertyType.FileEx:
-						return "Guid";
-					case ObjectPropertyType.Data:
-						return "global::System.Data.Linq.Binary";
+                    case ObjectPropertyType.FileEx:
+                        return "Guid";
+                    case ObjectPropertyType.Data:
+                        return "global::System.Data.Linq.Binary";
                     case ObjectPropertyType.Decimal:
                         return "decimal";
                     default:
@@ -84,9 +84,9 @@ namespace Nephrite.Metamodel.Model
 				{
 					if (!RefObjectTypeID.HasValue)
 						return SysName + "ID";
-					if (RefObjectType.PrimaryKey.First().ClrType == "int")
+					if (RefObjectType.PrimaryKey.First().TypeCode  == "U")
 						return SysName + "ID";
-					if (RefObjectType.PrimaryKey.First().ClrType == "Guid")
+                    if (RefObjectType.PrimaryKey.First().TypeCode == "G")
 						return SysName + "GUID";
 				}
                 if (TypeCode == ObjectPropertyType.File)

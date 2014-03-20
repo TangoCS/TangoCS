@@ -22,8 +22,28 @@ namespace Tessera.Test
 	{
 		static void Main(string[] args)
 		{
-			var dc = new HCoreDataContext(HDataContext.DBConfig(ConnectionManager.ConnectionString));
-			A.Model = dc;
+            ConnectionManager.SetConnectionString("Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
+            HDataContext.DBType = "DB2";
+		    //var cls = AppMM.DataContext.MM_ObjectTypes.First();
+
+		    var objectTypesWithWorkflow = (from o in
+		                                       AppMM.DataContext.MM_ObjectTypes
+		                                   join p in
+		                                       AppMM.DataContext.MM_ObjectProperties on o.ObjectTypeID equals p.ObjectTypeID
+		                                   where
+		                                       (!o.IsTemplate && o.IsSeparateTable && !o.SysName.EndsWith("Transition") &&
+		                                        !AppMM.DataContext.MM_ObjectTypes.Any(
+		                                            o1 => o1.SysName == o.SysName + "Transition")
+		                                        && p.SysName == "Activity" && p.RefObjectType != null &&
+		                                        p.RefObjectType.SysName == "WF_Activity")
+		                                   select o).ToList();
+		    foreach (var cls in objectTypesWithWorkflow)
+		    {
+                var unionallProperties = (cls.BaseObjectTypeID.HasValue ? AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID).Union(AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.BaseObjectTypeID)) : (AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID))).ToList();
+		    }
+		    //var allProperties = (AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID)).ToList();
+            // BaseObjectTypeID.HasValue ? BaseObjectType.MM_ObjectProperties.Union(MM_ObjectProperties) : MM_ObjectProperties; }
+           
 			//Func<string, Expression<Func<SPM_Subject, bool>>> SearchExpression = s => (o => SqlMethods.Like(o.SystemName, "%" + s + "%"));
 
 			//bool val = false;
@@ -39,7 +59,7 @@ namespace Tessera.Test
 
 			
 
-			var r = dc.IMailMessage.Where(o => o.LastSendAttemptDate.HasValue && (o.LastSendAttemptDate - DateTime.Today) > new TimeSpan(o.AttemptsToSendCount, 0, 0, 0)).Select(o => o.MailMessageID).ToList();
+			//var r = dc.IMailMessage.Where(o => o.LastSendAttemptDate.HasValue && (o.LastSendAttemptDate - DateTime.Today) > new TimeSpan(o.AttemptsToSendCount, 0, 0, 0)).Select(o => o.MailMessageID).ToList();
 
 			//Console.WriteLine(App.DataContext.Log.ToString());
 			Console.WriteLine(A.Model.Log.ToString());
