@@ -77,23 +77,37 @@ namespace Nephrite.Meta.Database
                                 var xForeignKeysElement = t.Element("ForeignKeys");
                                 if (xForeignKeysElement != null)
                                 {
-                                   
+
                                     xForeignKeysElement.Descendants("ForeignKey").ToList().ForEach(c =>
                                     {
                                         var fkColumns = c.Descendants("Column")
                                                                     .Select(pc => pc.GetAttributeValue("NAME").ToUpper())
                                                                     .ToArray();
 
+                                        var refkColumns = c.Descendants("RefTableColumn")
+                                                                   .Select(pc =>
+                                                                       pc.GetAttributeValue("RefTableColumnDescription") == null ? pc.GetAttributeValue("NAME") :
+                                                                        pc.GetAttributeValue("RefTableColumnDescription").Split('|').Length > 1 ? pc.GetAttributeValue("RefTableColumnDescription").Split('|')[1] : pc.GetAttributeValue("RefTableColumnDescription")
+                                                                       )
+                                                                   .ToArray();
+
                                         var foreignKey = new ForeignKey();
                                         foreignKey.Name = c.GetAttributeValue("NAME");
-                                        foreignKey.RefTable = c.GetAttributeValue("REFTABLE");
+
+                                        var refTableArray = !string.IsNullOrEmpty(c.GetAttributeValue("REFTABLEDESCRIPTION")) ? c.GetAttributeValue("REFTABLEDESCRIPTION").Split('|') : new string[] { };
+                                        var refTableName = refTableArray.Length > 1 ? refTableArray[1] : "";
+
+
+                                        foreignKey.RefTable = string.IsNullOrEmpty(refTableName)
+                                                                  ? c.GetAttributeValue("REFTABLE")
+                                                                  : refTableName;
                                         foreignKey.IsEnabled = !string.IsNullOrEmpty(c.GetAttributeValue("ISENABLED")) && c.GetAttributeValue("ISENABLED") == "1";
                                         foreignKey.Columns =
                                             table.Columns.Where(pk => fkColumns.Any(fk => fk == pk.Key.ToUpper()))
                                                  .Select(cr => cr.Value.Name)
                                                  .ToArray();
 
-                                        foreignKey.RefTableColumns = c.Descendants("RefTableColumn").Select(fc => fc.GetAttributeValue("NAME")).ToArray();
+                                        foreignKey.RefTableColumns = refkColumns;
                                         //var xDeleteOptionElement = null;// t.Element("DeleteOption");
                                         foreignKey.DeleteOption = DeleteOption.Restrict;
                                         //if (xDeleteOptionElement != null)
@@ -118,7 +132,7 @@ namespace Nephrite.Meta.Database
 
 
                                 var xPrimaryKeyElement = t.Element("PrimaryKey");
-                             
+
                                 if (xPrimaryKeyElement != null)
                                 {
                                     var pkColumns = xPrimaryKeyElement.Descendants("Column")
@@ -129,7 +143,8 @@ namespace Nephrite.Meta.Database
                                         Name = xPrimaryKeyElement.GetAttributeValue("NAME"),
                                         Columns = table.Columns.Where(pk => pkColumns.Any(c => c == pk.Key.ToUpper())).Select(cr => cr.Value.Name).ToArray(),
                                         CurrentTable = table
-                                    };}
+                                    };
+                                }
 
 
                                 var xIndexesElement = t.Element("Indexes");

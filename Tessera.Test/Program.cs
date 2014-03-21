@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Text.RegularExpressions;
 using Nephrite.Meta;
 using Nephrite.Meta.Database;
 using Nephrite.Metamodel;
@@ -33,19 +34,29 @@ namespace Tessera.Test
 	        var schema = sqlServerMetadataReader.ReadSchema("dbo");
 	        foreach (var table in schema.Tables)
 	        {
-	            List<string> interfaces = new List<string>();
-	            interfaces.Add("IEntity");
-	            bool withKey = table.Value.PrimaryKey != null && table.Value.PrimaryKey.Columns.Length == 1;
-	            string keyType = "";
+	           var foreignKeys = table.Value.ForeignKeys;
 
-	            if (withKey)
+	            foreach (var foreignKey in foreignKeys)
 	            {
-                    var pkColumn = table.Value.Columns.Values.SingleOrDefault(t => t.Name.ToUpper() == table.Value.PrimaryKey.Columns[0].ToUpper());
-                    keyType = mapType.MapFromSqlServerDBType(pkColumn.Type.GetDBType(new DBScriptDB2("DBO")), null, null, null).ToString();
-	                //interfaces.Add("IWithKey<" + table.Key + ", " + keyType + ">");
+
+	                int i = 0;
+	                foreach (var column in foreignKey.Value.Columns)
+	                {
+	                    var prefix = Regex.Replace(column, @"GUID$", String.Empty);
+	                    prefix = Regex.Replace(prefix, @"ID$", String.Empty);
+	                    //var col = table.Value.Columns.Single(o => o.Value.Name.ToUpper() == column).Value;
+	                    //Type t = mapType.MapFromSqlServerDBType(col.Type.GetDBType(new DBScriptDB2("DBO")), null, null, null);
+	                    //bool n = t.IsValueType && col.Nullable;	
+
+	                    if (column == prefix || prefix == table.Key)
+	                    {
+	                        prefix = foreignKey.Value.RefTable;
+	                    }
+
+	                    var refClass = foreignKey.Value.RefTable;
+	                    var refIDCol = foreignKey.Value.RefTableColumns[i];
+	                }
 	            }
-	            if (table.Value.Columns.ContainsKey("SeqNo"))
-	                interfaces.Add("IWithSeqNo");
 	        }
 	    
 
