@@ -26,38 +26,50 @@ namespace Tessera.Test
 	{
 	    private static void Main(string[] args)
 	    {
-            var mapType = new DataTypeMapper();
-	        ConnectionManager.SetConnectionString(
-	            "Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
-	        HDataContext.DBType = "DB2";
-	        var sqlServerMetadataReader = new DB2ServerMetadataReader();
-	        var schema = sqlServerMetadataReader.ReadSchema("dbo");
-	        foreach (var table in schema.Tables)
+            ConnectionManager.SetConnectionString("Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
+            HDataContext.DBType = "DB2";
+            A.Model = new HCoreDataContext(Nephrite.Web.Hibernate.HDataContext.DBConfig(ConnectionManager.ConnectionString));
+            var model = A.DynamicMeta;
+            var cls = model.Classes.SingleOrDefault(o => o.Name == "N_NavigItem" && o.IsMultilingual && o.Properties.Where(o2 => o2.UpperBound == 1 && o2 is MetaReference).Any());
+	        foreach (var p in cls.Properties.Where(o2 => o2.UpperBound == 1 && o2 is MetaReference))
 	        {
-	           var foreignKeys = table.Value.ForeignKeys;
-
-	            foreach (var foreignKey in foreignKeys)
-	            {
-
-	                int i = 0;
-	                foreach (var column in foreignKey.Value.Columns)
-	                {
-	                    var prefix = Regex.Replace(column, @"GUID$", String.Empty);
-	                    prefix = Regex.Replace(prefix, @"ID$", String.Empty);
-	                    //var col = table.Value.Columns.Single(o => o.Value.Name.ToUpper() == column).Value;
-	                    //Type t = mapType.MapFromSqlServerDBType(col.Type.GetDBType(new DBScriptDB2("DBO")), null, null, null);
-	                    //bool n = t.IsValueType && col.Nullable;	
-
-	                    if (column == prefix || prefix == table.Key)
-	                    {
-	                        prefix = foreignKey.Value.RefTable;
-	                    }
-
-	                    var refClass = foreignKey.Value.RefTable;
-	                    var refIDCol = foreignKey.Value.RefTableColumns[i];
-	                }
-	            }
+                MetaReference r = p as MetaReference;
+                var ллл = r.RefClass.ColumnName(r.Name);
 	        }
+	        var ss = "";
+
+            //var mapType = new DataTypeMapper();
+            //ConnectionManager.SetConnectionString(
+            //    "Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
+            //HDataContext.DBType = "DB2";
+            //var sqlServerMetadataReader = new DB2ServerMetadataReader();
+            //var schema = sqlServerMetadataReader.ReadSchema("dbo");
+            //foreach (var table in schema.Tables)
+            //{
+            //   var foreignKeys = table.Value.ForeignKeys;
+
+            //    foreach (var foreignKey in foreignKeys)
+            //    {
+
+            //        int i = 0;
+            //        foreach (var column in foreignKey.Value.Columns)
+            //        {
+            //            var prefix = Regex.Replace(column, @"GUID$", String.Empty);
+            //            prefix = Regex.Replace(prefix, @"ID$", String.Empty);
+            //            //var col = table.Value.Columns.Single(o => o.Value.Name.ToUpper() == column).Value;
+            //            //Type t = mapType.MapFromSqlServerDBType(col.Type.GetDBType(new DBScriptDB2("DBO")), null, null, null);
+            //            //bool n = t.IsValueType && col.Nullable;	
+
+            //            if (column == prefix || prefix == table.Key)
+            //            {
+            //                prefix = foreignKey.Value.RefTable;
+            //            }
+
+            //            var refClass = foreignKey.Value.RefTable;
+            //            var refIDCol = foreignKey.Value.RefTableColumns[i];
+            //        }
+            //    }
+            //}
 	    
 
 	    //var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate && o.IsSeparateTable).ToList();
