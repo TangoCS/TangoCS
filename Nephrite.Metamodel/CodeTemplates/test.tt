@@ -8,10 +8,14 @@
 <#@ import namespace="Nephrite.Metamodel" #>
 <#@ import namespace="Nephrite.Web" #>
 <#@ import namespace="Nephrite.Web.Hibernate" #>
+<#@ import namespace="System.Reflection" #>
+<#@ import namespace="System.IO" #>
 <#@ output extension=".txt" #>
 
 <# 
-	ConnectionManager.SetConnectionString("Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
-	HDataContext.DBType = "DB2";
+	var a = Assembly.GetAssembly(typeof(ConnectionManager));
+	//ConnectionManager.SetConnectionString("Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
+	//HDataContext.DBType = "DB2";
 #>
-<#=AppMM.DataContext.MM_Packages.Count() #>
+
+<#=Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(a.Location)), "web.config") #>

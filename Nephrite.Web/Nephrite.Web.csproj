@@ -135,9 +135,11 @@
     <Compile Include="FormsEngine\WebSiteCache.cs" />
     <Compile Include="FormsGenerator\BaseControlsCode.cs" />
     <Compile Include="FormsGenerator\ControlCode.cs" />
+    <Compile Include="FormsGenerator\EditCode.cs" />
     <Compile Include="FormsGenerator\ListCode.cs" />
     <Compile Include="FormsGenerator\SelectObjectCode.cs" />
     <Compile Include="FormsGenerator\UploadControlsCode.cs" />
+    <Compile Include="FormsGenerator\ViewCode.cs" />
     <Compile Include="Hibernate\ExtendedEqualsGenerator.cs" />
     <Compile Include="Hibernate\IntBackedBoolUserType.cs" />
     <Compile Include="Hibernate\Interceptor.cs" />

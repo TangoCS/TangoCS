@@ -25,6 +25,7 @@ namespace Tessera
     public class ProjectSync : System.Web.Services.WebService
     {
 
+
         [WebMethod]
         public string[] GetFolders(string path)
         {

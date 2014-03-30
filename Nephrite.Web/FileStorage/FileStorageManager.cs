@@ -157,6 +157,11 @@ namespace Nephrite.Web.FileStorage
 
 		public static IDbFile CreateFile(string title, string path)
 		{
+			return CreateFile(new Guid(), title, path);
+		}
+
+		public static IDbFile CreateFile(Guid id, string title, string path)
+		{
 			var item = dc.NewIDbFile();
 			item.Title = title;
 

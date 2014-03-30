@@ -8,10 +8,10 @@ using Nephrite.Meta.Forms;
 
 namespace Nephrite.Web.FormsGenerator
 {
-	/*
+	
 	public partial class ViewCode
 	{
-		public static string List(Container form)
+		public static string List(FormElement form)
 		{
 			StringBuilder res = new StringBuilder();
 
@@ -33,31 +33,28 @@ namespace Nephrite.Web.FormsGenerator
 
 			foreach (var p in cols)
 			{
-				if (p is PropertyField)
-				{
-					res.Append("<%=Layout.TH(AddSortColumn<").
-						Append(form.ViewDataClass).
-						Append(",").
-						Append((p as PropertyField).Type.CLRType).
-						Append(@">(""").
-						Append(p.Caption).
-						Append(@""", o => o.").
-						Append(p.TypeCode == ObjectPropertyType.Object ? p.Name + ".Title" : p.Name).
-						AppendLine("))%>");
-				}
+				res.Append("<%=Layout.TH(AddSortColumn<").
+					Append(form.ViewDataClass).
+					Append(",").
+					Append(p.Type.CLRType).
+					Append(@">(""").
+					Append(p.Caption).
+					Append(@""", o => o.").
+					Append(p.Type is MetaClass ? p.Name + ".Title" : p.Name).
+					AppendLine("))%>");
 			}
 			res.AppendLine(@"<%=Layout.TH(""Действия"")%>");
 			res.AppendLine("<%=Layout.ListHeaderEnd() %>");
 			res.AppendLine(@"<% Html.Repeater(ApplyPaging(ApplyOrderBy(filter.ApplyFilter(qfilter.ApplyFilter(ViewData, SearchExpression)))), """", HtmlHelperWSS.CSSClassAlternating, (o, css) => {  %>");
 			res.AppendLine("<%=Layout.ListRowBegin(o.IsDeleted ? \"deletedItem\": css) %>");
 
-			var idProp = form.MetaClass.Key;
+			var idProp = (form.Type as MetaClass).Key;
 
-			var linkColumn = cols.FirstOrDefault(o => o.TypeCode == ObjectPropertyType.String);
+			var linkColumn = cols.FirstOrDefault(o => o.Type is MetaStringType);
 			string linkCol = linkColumn == null ? cols.First().Name : linkColumn.Name;
 			foreach (var p in cols)
 			{
-				res.Append("<%=Layout.TD(").Append(CodeGenHelper.GetCellValue(objectType, p, idProp, linkCol)).AppendLine(")%>");
+				res.Append("<%=Layout.TD(").Append(GetCellValue(form.Type as MetaClass, p, idProp, linkCol)).AppendLine(")%>");
 			}
 
 			res.AppendLine(@"<%=Layout.TDBegin(new { style = ""text-align:center""})%>");
@@ -65,9 +62,9 @@ namespace Nephrite.Web.FormsGenerator
 			if (idProp != null)
 			{
 				res.AppendLine("<% if (!o.IsDeleted) { %>");
-				res.AppendLine(@"<%=Html.ActionImage<" + form.MetaClass.Name + "Controller>(oc => oc.Delete(o." + idProp.Name + @", Query.CreateReturnUrl()), ""Удалить"", ""delete.gif"")%>");
+				res.AppendLine(@"<%=Html.ActionImage<" + form.Type.Name + "Controller>(oc => oc.Delete(o." + idProp.Name + @", Query.CreateReturnUrl()), ""Удалить"", ""delete.gif"")%>");
 				res.AppendLine("<% } else { %>");
-				res.AppendLine(@"<%=Html.ActionImage<" + form.MetaClass.Name + "Controller>(oc => oc.UnDelete(o." + idProp.Name + @", Query.CreateReturnUrl()), ""Отменить удаление"", ""undelete.gif"")%>");
+				res.AppendLine(@"<%=Html.ActionImage<" + form.Type.Name + "Controller>(oc => oc.UnDelete(o." + idProp.Name + @", Query.CreateReturnUrl()), ""Отменить удаление"", ""undelete.gif"")%>");
 				res.AppendLine("<% }%>");
 			}
 			res.AppendLine("<%=Layout.TDEnd()%>");
@@ -97,17 +94,16 @@ namespace Nephrite.Web.FormsGenerator
 			res.AppendLine("\ttoolbar.AddItemFilter(filter);");
 			res.AppendLine("\ttoolbar.AddItemSeparator();");
 
-			res.AppendLine("\ttoolbar.AddItem<" + form.MetaClass.Name + @"Controller>(""add.png"", ""Создать"", c => c.CreateNew(Query.CreateReturnUrl()));");
+			res.AppendLine("\ttoolbar.AddItem<" + form.Type.Name + @"Controller>(""add.png"", ""Создать"", c => c.CreateNew(Query.CreateReturnUrl()));");
 
 			res.AppendLine("");
 			foreach (var p in cols)
 			{
-				res.AppendLine("\t" + CodeGenHelper.GetFilterCode(form.ViewDataClass, p));
+				res.AppendLine("\t" + GetFilterCode(form.ViewDataClass, p));
 			}
 			res.AppendLine("\t" + "filter.AddFieldBoolean<" + form.ViewDataClass + ">(\"Удален\", o => o.IsDeleted);");
 
 
-			//res.AppendLine("\ttoolbar.AddRightItemText(search);");
 			res.AppendLine("\ttoolbar.AddRightItemQuickFilter(qfilter);");
 
 			res.AppendLine("");
@@ -120,9 +116,9 @@ namespace Nephrite.Web.FormsGenerator
 			List<string> s = new List<string>();
 			foreach (var p in cols)
 			{
-				if (p.TypeCode == ObjectPropertyType.Number || p.TypeCode == ObjectPropertyType.Decimal)
+				if (p.Type is IMetaNumericType)
 					s.Add(@"SqlMethods.Like(o." + p.Name + @".ToString(), ""%"" + s + ""%"")");
-				else if (p.TypeCode == ObjectPropertyType.Object)
+				else if (p.Type is MetaClass)
 					s.Add(@"SqlMethods.Like(o." + p.Name + @".Title, ""%"" + s + ""%"")");
 				else
 					s.Add(@"SqlMethods.Like(o." + p.Name + @", ""%"" + s + ""%"")");
@@ -135,7 +131,113 @@ namespace Nephrite.Web.FormsGenerator
 
 			return res.ToString();
 		}
+
+		public static string GetCellValue(MetaClass t, FormElement p, MetaProperty idProp, string linkCol)
+		{
+			return GetCellValue(t, p, idProp, linkCol, false, "");
+		}
+		public static string GetCellValue(MetaClass t, FormElement p, MetaProperty idProp, string linkCol, bool internalLink, string modal)
+		{
+			if (p.Type is MetaGuidType || p.Type is MetaStringType)
+			{
+				if (p.Name == linkCol && idProp != null)
+				{
+					if (internalLink)
+					{
+						return "Html.InternalLink(" + modal + ".RenderRun(o." + idProp.Name + "), enc(o." + p.Name + "), true)";
+					}
+					else
+					{
+						var m = t.DefaultOperation;
+						return "Html.ActionLink<" + t.Name + "Controller>(c => c." + (m != null ? m.Name : "") + "(o." + idProp.Name + ", Query.CreateReturnUrl()), enc(o." + p.Name + "))";
+					}
+				}
+				else
+					return "enc(o." + p.Name + ")";
+			}
+			else if (p.Type is MetaDateTimeType)
+			{
+				return "o." + p.Name + ".DateTimeToString()";
+			}
+			else if (p.Type is MetaDateType)
+			{
+				return "o." + p.Name + ".DateToString()";
+			}
+			else if (p.Type is IMetaNumericType)
+			{
+				if (p.Name == linkCol && idProp != null)
+				{
+					if (internalLink)
+					{
+						return "Html.InternalLink(" + modal + ".RenderRun(o." + idProp.Name + "), enc(o." + p.Name + ".ToString()), true)";
+					}
+					else
+					{
+						var m = t.DefaultOperation;
+						return "Html.ActionLink<" + t.Name + "Controller>(c => c." + (m != null ? m.Name : "") +
+							"(o." + idProp.Name + ", Query.CreateReturnUrl()), enc(o." + p.Name + ".ToString()))";
+					}
+				}
+				else
+				{
+					if (!p.IsRequired)
+						return "o." + p.Name + ".HasValue ? o." + p.Name + ".Value.ToString() : \"\"";
+					else
+						return "o." + p.Name + ".ToString()";
+				}
+			}
+			else if (p.Type is MetaBooleanType)
+			{
+				return "o." + p.Name + ".Icon()";
+			}
+			else if (p.Type is MetaFileType)
+			{
+				return @"String.Format(""<a href='/file.ashx?oid={0}'>{1}</a>"", o." + p.Name + ".FileID.ToString(), o." + p.Name + ".Title)";
+			}
+			else if (p.Type is MetaClass)
+			{
+				if (p.IsRequired)
+				{
+					if (p.Name == linkCol && idProp != null)
+					{
+						if (internalLink)
+						{
+							return "Html.InternalLink(" + modal + ".RenderRun(o." + idProp.Name + "), enc(o." + p.Name + ".Title), true)";
+						}
+						else
+						{
+							var m = t.DefaultOperation;
+							return "Html.ActionLink<" + t.Name + "Controller>(c => c." + (m != null ? m.Name : "") + "(o." + idProp.Name + ", Query.CreateReturnUrl()), enc(o." + p.Name + ".Title))";
+						}
+					}
+					else
+						return "enc(o." + p.Name + ".Title)";
+				}
+				else
+					return "enc(o." + p.Name + @" == null ? """" : o." + p.Name + ".Title)";
+			}
+			else
+				return "";
+		}
+
+		public static string GetFilterCode(string t, FormElement p)
+		{
+			string fname = p.Caption;
+			if (p.Type is MetaGuidType || p.Type is MetaStringType)
+				return "filter.AddFieldString<" + t + ">(\"" + fname + "\", o => o." + p.Name + ");";
+			else if (p.Type is MetaDateTimeType)
+				return "filter.AddFieldDate<" + t + ">(\"" + fname + "\", o => o." + p.Name + ", false);";
+			else if (p.Type is IMetaNumericType)
+				return "filter.AddFieldNumber<" + t + ">(\"" + fname + "\", o => o." + p.Name + ");";
+			else if (p.Type is MetaBooleanType)
+				return "filter.AddFieldBoolean<" + t + ">(\"" + fname + "\", o => o." + p.Name + ");";
+			else if (p.Type is MetaClass)
+				return "filter.AddFieldString<" + t + ">(\"" + fname + "\", o => o." + p.Name + ".Title);";
+			else
+				return "";
+			}
+
 	}
-	*/
+	
 	
 }
