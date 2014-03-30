@@ -3,7 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using System.Text.RegularExpressions;
+using Nephrite.Meta;
+using Nephrite.Meta.Database;
 using Nephrite.Metamodel;
+using Nephrite.Metamodel.Model;
 using Nephrite.Web;
 using Nephrite.Web.Controls;
 using Nephrite.Web.CoreDataContext;
@@ -20,10 +24,89 @@ namespace Tessera.Test
 {
 	class Program
 	{
-		static void Main(string[] args)
-		{
-			var dc = new HCoreDataContext(HDataContext.DBConfig(ConnectionManager.ConnectionString));
-			A.Model = dc;
+	    private static void Main(string[] args)
+	    {
+            ConnectionManager.SetConnectionString("Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
+            HDataContext.DBType = "DB2";
+            A.Model = new HCoreDataContext(Nephrite.Web.Hibernate.HDataContext.DBConfig(ConnectionManager.ConnectionString));
+            var model = A.DynamicMeta;
+            var cls = model.Classes.SingleOrDefault(o => o.Name == "N_NavigItem" && o.IsMultilingual && o.Properties.Where(o2 => o2.UpperBound == 1 && o2 is MetaReference).Any());
+	        foreach (var p in cls.Properties.Where(o2 => o2.UpperBound == 1 && o2 is MetaReference))
+	        {
+                MetaReference r = p as MetaReference;
+                var ллл = r.RefClass.ColumnName(r.Name);
+	        }
+	        var ss = "";
+
+            //var mapType = new DataTypeMapper();
+            //ConnectionManager.SetConnectionString(
+            //    "Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
+            //HDataContext.DBType = "DB2";
+            //var sqlServerMetadataReader = new DB2ServerMetadataReader();
+            //var schema = sqlServerMetadataReader.ReadSchema("dbo");
+            //foreach (var table in schema.Tables)
+            //{
+            //   var foreignKeys = table.Value.ForeignKeys;
+
+            //    foreach (var foreignKey in foreignKeys)
+            //    {
+
+            //        int i = 0;
+            //        foreach (var column in foreignKey.Value.Columns)
+            //        {
+            //            var prefix = Regex.Replace(column, @"GUID$", String.Empty);
+            //            prefix = Regex.Replace(prefix, @"ID$", String.Empty);
+            //            //var col = table.Value.Columns.Single(o => o.Value.Name.ToUpper() == column).Value;
+            //            //Type t = mapType.MapFromSqlServerDBType(col.Type.GetDBType(new DBScriptDB2("DBO")), null, null, null);
+            //            //bool n = t.IsValueType && col.Nullable;	
+
+            //            if (column == prefix || prefix == table.Key)
+            //            {
+            //                prefix = foreignKey.Value.RefTable;
+            //            }
+
+            //            var refClass = foreignKey.Value.RefTable;
+            //            var refIDCol = foreignKey.Value.RefTableColumns[i];
+            //        }
+            //    }
+            //}
+	    
+
+	    //var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate && o.IsSeparateTable).ToList();
+            //foreach (var cls in objectTypes)
+            //{
+
+
+            //    var allProperties =
+            //        (!cls.BaseObjectTypeID.HasValue
+            //             ? AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID)
+            //             : AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID)
+            //                    .ToList()
+            //                    .Union(
+            //                        AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.BaseObjectTypeID)
+            //                             .ToList())).ToList();
+            //    //var allProperties = AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID).ToList().Union(AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.BaseObjectTypeID).ToList());
+            //    if (
+            //        allProperties.Any(
+            //            o =>
+            //            o.SysName == "SeqNo" && o.LowerBound == 1 && o.UpperBound == 1 &&
+            //            o.TypeCode == ObjectPropertyType.Number))
+            //    {
+            //        MM_ObjectProperty parentprop =
+            //            cls.MM_ObjectProperties.ToList().Where(o => o.RefObjectPropertyID.HasValue &&
+            //                                                        o.RefObjectProperty.IsAggregate)
+            //               .OrderBy(o => o.RefObjectTypeID == o.ObjectTypeID)
+            //               .FirstOrDefault();
+
+            //        if (parentprop.ObjectType.SysName == "MM_FormField")
+            //        {
+
+            //        }
+            //    }
+            //}
+		    //var allProperties = (AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID)).ToList();
+            // BaseObjectTypeID.HasValue ? BaseObjectType.MM_ObjectProperties.Union(MM_ObjectProperties) : MM_ObjectProperties; }
+           
 			//Func<string, Expression<Func<SPM_Subject, bool>>> SearchExpression = s => (o => SqlMethods.Like(o.SystemName, "%" + s + "%"));
 
 			//bool val = false;
@@ -39,7 +122,7 @@ namespace Tessera.Test
 
 			
 
-			var r = dc.IMailMessage.Where(o => o.LastSendAttemptDate.HasValue && (o.LastSendAttemptDate - DateTime.Today) > new TimeSpan(o.AttemptsToSendCount, 0, 0, 0)).Select(o => o.MailMessageID).ToList();
+			//var r = dc.IMailMessage.Where(o => o.LastSendAttemptDate.HasValue && (o.LastSendAttemptDate - DateTime.Today) > new TimeSpan(o.AttemptsToSendCount, 0, 0, 0)).Select(o => o.MailMessageID).ToList();
 
 			//Console.WriteLine(App.DataContext.Log.ToString());
 			Console.WriteLine(A.Model.Log.ToString());

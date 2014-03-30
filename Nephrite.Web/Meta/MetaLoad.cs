@@ -97,12 +97,12 @@ namespace Nephrite.Meta
 			a.Caption = xp.GetAttributeValue("Caption");
 			a.Description = xp.GetAttributeValue("Description");
 
-			a.IsRequired = xp.GetAttributeValue("IsRequired") == "true";
+            a.IsRequired = xp.GetAttributeValue("IsRequired").ToLower() == "true";
 			a.UpperBound = xp.GetAttributeValue("UpperBound").ToInt32(0);
 			a.DefaultDBValue = xp.GetAttributeValue("DefaultDBValue");
 	
-			a.IsMultilingual = xp.GetAttributeValue("IsMultilingual") == "true";
-			a.IsIdentity = xp.GetAttributeValue("IsIdentity") == "true";
+            a.IsMultilingual = xp.GetAttributeValue("IsMultilingual").ToLower() == "true";
+            a.IsIdentity = xp.GetAttributeValue("IsIdentity").ToLower() == "true";
 			a.IsKey = xp.GetAttributeValue("IsKey");
 			switch (xp.GetAttributeValue("DataType"))
 			{
@@ -122,7 +122,7 @@ namespace Nephrite.Meta
 				case "Z": a.Type = TypeFactory.ZoneDateTime(a.IsRequired); break;
 			}
 
-			if (xp.GetAttributeValue("IsKey") == "true") c.CompositeKey.Add(a);
+            if (xp.GetAttributeValue("IsKey").ToLower() == "true") c.CompositeKey.Add(a);
 			c.AddProperty(a);
 		}
 
@@ -187,7 +187,7 @@ namespace Nephrite.Meta
 		static void LoadReference(MetaClass c, XElement xp)
 		{
 			MetaReference a = null;
-			if (xp.GetAttributeValue("IsReferenceToVersion") == "true")
+            if (xp.GetAttributeValue("IsReferenceToVersion") != null && xp.GetAttributeValue("IsReferenceToVersion").ToLower() == "true")
 				a = new MetaReferenceToVersion();
 			else
 				a = new MetaReference();
@@ -196,14 +196,14 @@ namespace Nephrite.Meta
 			a.Caption = xp.GetAttributeValue("Caption");
 			a.Description = xp.GetAttributeValue("Description");
 
-			a.IsRequired = xp.GetAttributeValue("IsRequired") == "true";
+            a.IsRequired = xp.GetAttributeValue("IsRequired").ToLower() == "true";
 			a.UpperBound = xp.GetAttributeValue("UpperBound").ToInt32(0);
 
 			a.RefClassName = xp.GetAttributeValue("RefClass");
 			a.InversePropertyName = xp.GetAttributeValue("InverseProperty");
 			a.AssociationType = (AssociationType)xp.GetAttributeValue("AssociationType").ToInt32(0);
 			a.IsKey = xp.GetAttributeValue("IsKey");
-			if (xp.GetAttributeValue("IsKey") == "true") c.CompositeKey.Add(a);
+            if (xp.GetAttributeValue("IsKey").ToLower() == "true") c.CompositeKey.Add(a);
 			c.AddProperty(a);
 		}
 

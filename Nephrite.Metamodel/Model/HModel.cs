@@ -54,6 +54,8 @@ namespace Nephrite.Metamodel.Model
 			MM_ObjectProperties = new List<MM_ObjectProperty>();
 		}
 		public virtual int ObjectPropertyID { get; set; }
+        public virtual int? CodifierID { get; set; }
+        
 		public virtual MM_ObjectType ObjectType { get; set; }
 		public virtual MM_ObjectProperty RefObjectProperty { get; set; }
 		public virtual MM_ObjectType RefObjectType { get; set; }
@@ -206,7 +208,7 @@ namespace Nephrite.Metamodel.Model
 
 		//
 		public virtual int ObjectTypeID { get; set; }
-		public virtual int FormViewID { get; set; }
+		public virtual int? FormViewID { get; set; }
 	}
 
 	/*public partial class MM_FormFieldGroup
@@ -287,11 +289,11 @@ namespace Nephrite.Metamodel.Model
 				return AppMM.DataContext.MM_Methods.Where(o => o.MM_ObjectType == this);
 			}
 		}
-		public virtual IQueryable<MM_ObjectProperty> MM_ObjectProperties
+        public virtual IQueryable<MM_ObjectProperty> MM_ObjectProperties
 		{
 			get
 			{
-				return AppMM.DataContext.MM_ObjectProperties.Where(o => o.ObjectType == this);
+				return AppMM.DataContext.MM_ObjectProperties.Where(o =>  o.ObjectTypeID == this.ObjectTypeID);
 			}
 		}
 		//public virtual IList<MM_FormFieldGroup> MM_FormFieldGroups { get; set; }
