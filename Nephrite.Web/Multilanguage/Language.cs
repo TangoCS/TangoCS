@@ -25,11 +25,15 @@ namespace Nephrite.Web.Multilanguage
 			get
 			{
 				string lang = Query.GetString("lang");
-				if (HttpContext.Current.Request.Cookies["lcid"] != null)
-					lang = HttpContext.Current.Request.Cookies["lcid"].Value == "1033" ? "en" : "ru";
-				if (HttpContext.Current.Items["Lang"] != null)
-					lang = (string)HttpContext.Current.Items["Lang"];
-				var l = List.SingleOrDefault(o => o.Code == lang);
+			    if (HttpContext.Current != null)
+			    {
+			        if (HttpContext.Current.Request.Cookies["lcid"] != null)
+			            lang = HttpContext.Current.Request.Cookies["lcid"].Value == "1033" ? "en" : "ru";
+			        if (HttpContext.Current.Items["Lang"] != null)
+			            lang = (string) HttpContext.Current.Items["Lang"];
+			    }
+			    lang = lang ?? "ru";
+			    var l = List.SingleOrDefault(o => o.Code == lang);
 				if (l == null)
 					l = List.Single(o => o.IsDefault);
 				return l;

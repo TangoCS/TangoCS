@@ -26,17 +26,29 @@ namespace Tessera.Test
 	{
 	    private static void Main(string[] args)
 	    {
-            ConnectionManager.SetConnectionString("Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
+            ConnectionManager.SetConnectionString(
+                "Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
             HDataContext.DBType = "DB2";
-            A.Model = new HCoreDataContext(Nephrite.Web.Hibernate.HDataContext.DBConfig(ConnectionManager.ConnectionString));
-            var model = A.DynamicMeta;
-            var cls = model.Classes.SingleOrDefault(o => o.Name == "N_NavigItem" && o.IsMultilingual && o.Properties.Where(o2 => o2.UpperBound == 1 && o2 is MetaReference).Any());
-	        foreach (var p in cls.Properties.Where(o2 => o2.UpperBound == 1 && o2 is MetaReference))
-	        {
-                MetaReference r = p as MetaReference;
-                var ллл = r.RefClass.ColumnName(r.Name);
-	        }
-	        var ss = "";
+           // A.Model = new HCoreDataContext(Nephrite.Web.Hibernate.HDataContext.DBConfig(ConnectionManager.ConnectionString));
+            var classes = A.DynamicMeta.Classes;
+            //var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate).ToList();
+            //var allObjectProperties = AppMM.DataContext.MM_ObjectProperties;
+            //foreach (var cls in objectTypes.Where(o => o.MM_Methods.Any()))
+            //{
+            //    var allProperties = (!cls.BaseObjectTypeID.HasValue ? allObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID)
+            //: allObjectProperties.Where(o => o.ObjectTypeID == cls.ObjectTypeID).ToList().Union(allObjectProperties.Where(o => o.ObjectTypeID == cls.BaseObjectTypeID).ToList())).ToList();
+
+            //    var pParent = allProperties.FirstOrDefault(o => o.SysName == "Parent" && o.RefObjectTypeID.HasValue && o.UpperBound == 1);
+            //    var bParent = cls.BaseObjectTypeID != null ? allObjectProperties.Where(o => o.ObjectTypeID == cls.BaseObjectTypeID).FirstOrDefault(o => o.SysName == "Parent" && o.RefObjectTypeID.HasValue && o.UpperBound == 1):null;
+             
+            //    if (pParent != null || (bParent != null))
+            //    {
+            //        pParent.ClrType
+            //    }
+
+            //}
+            
+            var sdds = "";
 
             //var mapType = new DataTypeMapper();
             //ConnectionManager.SetConnectionString(
@@ -46,31 +58,31 @@ namespace Tessera.Test
             //var schema = sqlServerMetadataReader.ReadSchema("dbo");
             //foreach (var table in schema.Tables)
             //{
-            //   var foreignKeys = table.Value.ForeignKeys;
-
-            //    foreach (var foreignKey in foreignKeys)
+            //    if (table.Value.PrimaryKey != null && table.Value.PrimaryKey.Columns.Length == 1)
             //    {
-
-            //        int i = 0;
-            //        foreach (var column in foreignKey.Value.Columns)
+            //        var pkColumn =
+            //            table.Value.Columns.SingleOrDefault(t => t.Key.ToUpper() == table.Value.PrimaryKey.Columns[0].ToUpper());
+            //        var guidPropertyConfig = "";
+            //        if ((pkColumn.Value.Type is Nephrite.Meta.MetaGuidType))
             //        {
-            //            var prefix = Regex.Replace(column, @"GUID$", String.Empty);
-            //            prefix = Regex.Replace(prefix, @"ID$", String.Empty);
-            //            //var col = table.Value.Columns.Single(o => o.Value.Name.ToUpper() == column).Value;
-            //            //Type t = mapType.MapFromSqlServerDBType(col.Type.GetDBType(new DBScriptDB2("DBO")), null, null, null);
-            //            //bool n = t.IsValueType && col.Nullable;	
 
-            //            if (column == prefix || prefix == table.Key)
-            //            {
-            //                prefix = foreignKey.Value.RefTable;
-            //            }
-
-            //            var refClass = foreignKey.Value.RefTable;
-            //            var refIDCol = foreignKey.Value.RefTableColumns[i];
             //        }
             //    }
             //}
-	    
+
+            //ConnectionManager.SetConnectionString("Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
+            //HDataContext.DBType = "DB2";
+            //var objectTypes = from o in  App.DataContext.DocTask
+            //                  join dc in App.DataContext.Doc on o.DocID equals dc.DocID
+            //                  join dt in App.DataContext.C_DocType on dc.DocTypeID equals dt.DocTypeID
+
+            //                  where
+            //                      !o.CloseDate.HasValue && !o.AnnulmentDate.HasValue &&
+            //                      !o.SuspendDate.HasValue &&
+            //                      (o.PlanCompleteDate <
+            //                       DateTime.Today.AddDays(dt.CompleteWarning) ||
+            //                       o.Doc.IsCheckDeadline)
+            //                  select o;
 
 	    //var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate && o.IsSeparateTable).ToList();
             //foreach (var cls in objectTypes)

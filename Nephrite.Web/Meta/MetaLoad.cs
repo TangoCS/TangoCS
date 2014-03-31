@@ -55,18 +55,29 @@ namespace Nephrite.Meta
             c.Caption = xc.GetAttributeValue("Caption");
             c.Description = xc.GetAttributeValue("Description");
 
-            c.IsPersistent = true;
+
+
+
+            c.IsPersistent = xc.GetAttributeValue("IsSeparateTable")=="1";
             c.BaseClassName = xc.GetAttributeValue("BaseClass");
+            if (c.Name == "MM_Package")
+            {
+
+            }
 
             var properties = xc.Elements("Properties");
             if (properties != null)
                 foreach (XElement xe in properties.Nodes())
                 {
-                    if (xe.Name == "Attribute") LoadAttribute(c, xe);
+                    if (xe.Name == "Attribute")
+                    {
+                        LoadAttribute(c, xe);
+                    }
                     if (xe.Name == "Reference") LoadReference(c, xe);
                     if (xe.Name == "ComputedAttribute") LoadComputedAttribute(c, xe);
                     if (xe.Name == "PersistentComputedAttribute") LoadPersistentComputedAttribute(c, xe);
                 }
+
 
             var operations = xc.Elements("Operations");
             if (operations != null)
