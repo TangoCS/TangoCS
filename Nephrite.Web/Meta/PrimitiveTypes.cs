@@ -25,6 +25,17 @@ namespace Nephrite.Meta
 		}
 	}
 
+	public partial class MetaEnum : MetaPrimitiveType
+	{
+		public override string CLRType
+		{
+			get
+			{
+				return "string";
+			}
+		}
+	}
+
 	public partial class MetaDecimalType : MetaPrimitiveType, IMetaNumericType
 	{
 		public int Precision { get; set; }
@@ -129,6 +140,8 @@ namespace Nephrite.Meta
 		}
 	}
 
+	
+
 	public partial class MetaGuidType : MetaPrimitiveType, IMetaIdentifierType
 	{
 		public string ColumnSuffix
@@ -177,7 +190,7 @@ namespace Nephrite.Meta
 		static MetaFileType _fileIntKey = new MetaFileType { Name = "FileID", IdentifierType = TypeFactory.Int(true), NotNullable = true };
 		static MetaFileType _fileGuidKey = new MetaFileType { Name = "FileGUID", IdentifierType = TypeFactory.Guid(true), NotNullable = true };
 		static MetaDecimalType _decimal = new MetaDecimalType { Precision = 18, Scale = 5, Name = "Decimal", NotNullable = true };
-		static MetaStringType _char = new MetaStringType { Name = "Char", NotNullable = true, Length = 1 };
+		//static MetaEnumType _enum = new MetaEnumType { Name = "Enum", NotNullable = true };
 
 		static MetaDateType _date_n = new MetaDateType { Name = "Date", NotNullable = false };
 		static MetaDateTimeType _dateTime_n = new MetaDateTimeType { Name = "DateTime", NotNullable = false };
@@ -189,12 +202,11 @@ namespace Nephrite.Meta
 		static MetaFileType _fileIntKey_n = new MetaFileType { Name = "FileID", IdentifierType = TypeFactory.Int(false), NotNullable = false };
 		static MetaFileType _fileGuidKey_n = new MetaFileType { Name = "FileGUID", IdentifierType = TypeFactory.Guid(false), NotNullable = false };
 		static MetaDecimalType _decimal_n = new MetaDecimalType { Precision = 18, Scale = 5, Name = "Decimal", NotNullable = false };
-		static MetaStringType _char_n = new MetaStringType { Name = "Char", NotNullable = false, Length = 1 };
+		//static MetaEnumType _enum_n = new MetaEnumType { Name = "Enum", NotNullable = false };
 
 		public static MetaStringType String(int length) { return new MetaStringType { Length = length, Name = "String" }; }
 		public static MetaStringType String() { return _string; }
-		public static MetaStringType Char(bool notNull) { return notNull ? _char : _char_n; }
-		public static MetaStringType Char(int length, bool notNull) { return new MetaStringType { Length = length, Name = "Char", NotNullable = notNull }; }
+		//public static MetaEnumType Enum(bool notNull) { return notNull ? _enum : _enum_n; }
 		public static MetaByteArrayType ByteArray() { return _byteArray; }
 		public static MetaByteArrayType ByteArray(int length) { return new MetaByteArrayType() { Name = "ByteArray", Length = length }; }
 

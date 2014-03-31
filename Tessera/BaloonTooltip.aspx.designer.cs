@@ -29,6 +29,6 @@ namespace Tessera {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Nephrite.Metamodel.MView help;
+        protected global::Nephrite.Web.FormsEngine.MView help;
     }
 }

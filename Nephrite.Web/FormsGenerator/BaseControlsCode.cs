@@ -10,12 +10,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class TextBoxCode : AttributeControlCode
 	{
 		string controlID = "";
-		public TextBoxCode(AttributeField field)
+		public TextBoxCode(FormElement field)
 			: base(field)
 		{
 			controlID = "tb" + field.Name;
 		}
-		public TextBoxCode(AttributeField field, string prefix)
+		public TextBoxCode(FormElement field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "tb" + prefix + field.Name;
@@ -88,12 +88,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class TextAreaCode : AttributeControlCode
 	{
 		string controlID = "";
-		public TextAreaCode(AttributeField field)
+		public TextAreaCode(FormElement field)
 			: base(field)
 		{
 			controlID = "tb" + field.Name;
 		}
-		public TextAreaCode(AttributeField field, string prefix)
+		public TextAreaCode(FormElement field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "tb" + prefix + field.Name;
@@ -136,12 +136,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class CheckBoxCode : AttributeControlCode
 	{
 		string controlID = "";
-		public CheckBoxCode(AttributeField field)
+		public CheckBoxCode(FormElement field)
 			: base(field)
 		{
 			controlID = "cb" + field.Name;
 		}
-		public CheckBoxCode(AttributeField field, string prefix)
+		public CheckBoxCode(FormElement field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "cb" + prefix + field.Name;
@@ -176,12 +176,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class TinyMCECode : AttributeControlCode
 	{
 		string controlID = "";
-		public TinyMCECode(AttributeField field)
+		public TinyMCECode(FormElement field)
 			: base(field)
 		{
 			controlID = "tb" + field.Name;
 		}
-		public TinyMCECode(AttributeField field, string prefix)
+		public TinyMCECode(FormElement field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "tb" + prefix + field.Name;
@@ -223,12 +223,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class JSCalendarCode : AttributeControlCode
 	{
 		string controlID = "";
-		public JSCalendarCode(AttributeField field)
+		public JSCalendarCode(FormElement field)
 			: base(field)
 		{
 			controlID = "cal" + field.Name;
 		}
-		public JSCalendarCode(AttributeField field, string prefix)
+		public JSCalendarCode(FormElement field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "cal" + prefix + field.Name;
@@ -275,12 +275,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class DDLCode : ReferenceControlCode
 	{
 		string controlID = "";
-		public DDLCode(ReferenceField field)
+		public DDLCode(FormElement field)
 			: base(field)
 		{
 			controlID = "ddl" + field.Name;
 		}
-		public DDLCode(ReferenceField field, string prefix)
+		public DDLCode(FormElement field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "ddl" + prefix + field.Name;
@@ -317,7 +317,7 @@ namespace Nephrite.Web.FormsGenerator
 			string s = controlID + ".DataBindOnce(App.DataContext.";
 			string req = !_field.IsRequired ? "" : ", true";
 			string filter = !_field.Filter.IsEmpty() ? (".Where(" + _field.Filter + ")") : ".Where(o => !o.IsDeleted)";
-			return s + _field.ClassName + filter + req + ");";
+			return s + _field.Type.Name + filter + req + ");";
 		}
 
 		public override string SetDefaultOrEmpty()
@@ -339,12 +339,12 @@ namespace Nephrite.Web.FormsGenerator
 	internal class DDLTextCode : ReferenceControlCode
 	{
 		string controlID = "";
-		public DDLTextCode(ReferenceField field)
+		public DDLTextCode(FormElement field)
 			: base(field)
 		{
 			controlID = "ddl" + field.Name;
 		}
-		public DDLTextCode(ReferenceField field, string prefix)
+		public DDLTextCode(FormElement field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "ddl" + prefix + field.Name;
@@ -378,7 +378,7 @@ namespace Nephrite.Web.FormsGenerator
 			string req = !_field.IsRequired ? "" : ", true";
 			string filter = !String.IsNullOrEmpty(_field.Filter) ? (".Where(" + _field.Filter + ")") : ".Where(o => !o.IsDeleted)";
 
-			return s + _field.ClassName + filter + req + ");";
+			return s + _field.Type.Name + filter + req + ");";
 		}
 
 		public override string SetDefaultOrEmpty()
@@ -397,16 +397,79 @@ namespace Nephrite.Web.FormsGenerator
 		}
 	}
 
+	internal class DDLEnumCode : AttributeControlCode
+	{
+		string controlID = "";
+		public DDLEnumCode(FormElement field)
+			: base(field)
+		{
+			controlID = "ddl" + field.Name;
+		}
+		public DDLEnumCode(FormElement field, string prefix)
+			: base(field, prefix)
+		{
+			controlID = "ddl" + prefix + field.Name;
+		}
+		public override string Control()
+		{
+			return @"<asp:DropDownList ID=""" + controlID + @""" runat=""server"" Width=""100%"" DataTextField=""Title"" DataValueField=""Code""/>";
+		}
+
+		public override string SetValue(string value)
+		{
+			return controlID + ".SetValue( " + value + ");";
+		}
+
+		public override string Load(string var)
+		{
+			return controlID + ".SetValue(" + var + "." + _field.Name + ");";
+		}
+
+		public override string Save(string var)
+		{
+			string s = "";
+			if (!_field.IsRequired)
+			{
+				s += "if (!String.IsNullOrEmpty(" + controlID + ".SelectedValue))\r\n\t\t";
+			}
+			s += var + "." + _field.Name + " = " + controlID + ".SelectedValue[0];";
+			if (!_field.IsRequired)
+			{
+				s += "\r\n\telse\r\n\t\t" + var + "." + _field.Name + " = null;";
+			}
+			return s;
+
+			//return var + "." + _field.MM_ObjectProperty.SysName + " = " + controlID + ".SelectedValue[0];";
+		}
+
+		public override string Init()
+		{
+			string s = controlID + ".DataBindOnce(";
+			if (_field.IsRequired)
+				return s + _field.Type.Name + ".ToList());";
+			else
+				return s + _field.Type.Name + ".ToList(), true);";
+		}
+
+		public override string SetDefaultOrEmpty()
+		{
+			if (!String.IsNullOrEmpty(_field.DefaultValue))
+				return controlID + ".SetValue(" + _field.DefaultValue + ");";
+			else
+				return controlID + @".SetValue("""");";
+		}
+	}
+
 	internal class DateListsCode : AttributeControlCode
 	{
 		string controlID = "";
-		public DateListsCode(AttributeField field)
+		public DateListsCode(FormElement field)
 			: base(field)
 		{
 			controlID = "dl" + field.Name;
 		}
 
-		public DateListsCode(AttributeField field, string prefix)
+		public DateListsCode(FormElement field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "dl" + prefix + field.Name;
@@ -455,14 +518,14 @@ namespace Nephrite.Web.FormsGenerator
 		string controlID = "";
 		int decimals = 0;
 
-		public NumericBoxCode(AttributeField field)
+		public NumericBoxCode(FormElement field)
 			: base(field)
 		{
 			controlID = "nb" + field.Name;
 			decimals = field.Type is MetaDecimalType ? (field.Type as MetaDecimalType).Scale : 0;
 		}
 
-		public NumericBoxCode(AttributeField field, string prefix)
+		public NumericBoxCode(FormElement field, string prefix)
 			: base(field, prefix)
 		{
 			controlID = "tb" + prefix + field.Name;

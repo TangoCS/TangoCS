@@ -12,7 +12,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tessera</RootNamespace>
     <AssemblyName>Tessera</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <SccProjectName>
     </SccProjectName>
     <SccLocalPath>
@@ -77,6 +77,7 @@
       <RequiredTargetFramework>3.0</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Security" />
+    <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Drawing" />
@@ -216,17 +217,17 @@
     </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Nephrite.Metamodel\Nephrite.Metamodel.csproj">
-      <Project>{9F863D08-FD1F-4065-9F7D-F9DDBC469E81}</Project>
+      <Project>{9f863d08-fd1f-4065-9f7d-f9ddbc469e81}</Project>
       <Name>Nephrite.Metamodel</Name>
     </ProjectReference>
     <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
       <Project>{26a68254-0902-4499-8b5f-6b4b6341ba21}</Project>
       <Name>Nephrite.Web</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

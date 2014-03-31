@@ -55,10 +55,7 @@ namespace Nephrite.Meta
             c.Caption = xc.GetAttributeValue("Caption");
             c.Description = xc.GetAttributeValue("Description");
 
-
-
-
-            c.IsPersistent = xc.GetAttributeValue("IsSeparateTable")=="1";
+            c.IsPersistent = xc.GetAttributeValue("IsSeparateTable") == "1"; 
             c.BaseClassName = xc.GetAttributeValue("BaseClass");
             if (c.Name == "MM_Package")
             {
@@ -127,7 +124,7 @@ namespace Nephrite.Meta
                 case "B": a.Type = TypeFactory.Boolean(a.IsRequired); break;
                 case "G": a.Type = TypeFactory.Guid(a.IsRequired); break;
                 case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6), a.IsRequired); break;
-                case "C": a.Type = TypeFactory.Char(xp.GetAttributeValue("Length").ToInt32(1), a.IsRequired); break;
+				case "C": a.Type = new MetaEnum { Name = "", NotNullable = a.IsRequired }; break;
                 case "F": a.Type = TypeFactory.FileIntKey(a.IsRequired); break;
                 case "E": a.Type = TypeFactory.FileGuidKey(a.IsRequired); break;
                 case "Z": a.Type = TypeFactory.ZoneDateTime(a.IsRequired); break;
@@ -157,7 +154,7 @@ namespace Nephrite.Meta
                 case "B": a.Type = TypeFactory.Boolean(a.IsRequired); break;
                 case "G": a.Type = TypeFactory.Guid(a.IsRequired); break;
                 case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6), a.IsRequired); break;
-                case "C": a.Type = TypeFactory.Char(xp.GetAttributeValue("Length").ToInt32(1), a.IsRequired); break;
+				case "C": a.Type = new MetaEnum { Name = "", NotNullable = a.IsRequired }; break;
                 case "F": a.Type = TypeFactory.FileIntKey(a.IsRequired); break;
                 case "E": a.Type = TypeFactory.FileGuidKey(a.IsRequired); break;
                 case "Z": a.Type = TypeFactory.ZoneDateTime(a.IsRequired); break;
@@ -186,7 +183,7 @@ namespace Nephrite.Meta
                 case "B": a.Type = TypeFactory.Boolean(a.IsRequired); break;
                 case "G": a.Type = TypeFactory.Guid(a.IsRequired); break;
                 case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6), a.IsRequired); break;
-                case "C": a.Type = TypeFactory.Char(xp.GetAttributeValue("Length").ToInt32(1), a.IsRequired); break;
+				case "C": a.Type = new MetaEnum { Name = "", NotNullable = a.IsRequired }; break;
                 case "F": a.Type = TypeFactory.FileIntKey(a.IsRequired); break;
                 case "E": a.Type = TypeFactory.FileGuidKey(a.IsRequired); break;
                 case "Z": a.Type = TypeFactory.ZoneDateTime(a.IsRequired); break;

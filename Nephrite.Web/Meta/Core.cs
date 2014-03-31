@@ -573,6 +573,8 @@ namespace Nephrite.Meta
 		public string IsDefault { get; set; }
 	}
 
+	
+
 	public class MetaStereotype : MetaElement
 	{
 		public MetaElement Parent { get; set; }
