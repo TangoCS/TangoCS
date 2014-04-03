@@ -99,6 +99,10 @@ namespace Nephrite.Meta
 
         static void LoadAttribute(MetaClass c, XElement xp)
         {
+            if (c.Name == "SPM_Subject")
+            {
+
+            }
             MetaAttribute a = new MetaAttribute();
             a.ID = xp.GetAttributeValue("ID").ToGuid();
             a.Name = xp.GetAttributeValue("Name");
@@ -124,7 +128,7 @@ namespace Nephrite.Meta
                 case "B": a.Type = TypeFactory.Boolean(a.IsRequired); break;
                 case "G": a.Type = TypeFactory.Guid(a.IsRequired); break;
                 case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6), a.IsRequired); break;
-				case "C": a.Type = new MetaEnum { Name = "", NotNullable = a.IsRequired }; break;
+                case "C": a.Type = new MetaEnum { Name = xp.GetAttributeValue("EnumName") ??"", NotNullable = a.IsRequired }; break;
                 case "F": a.Type = TypeFactory.FileIntKey(a.IsRequired); break;
                 case "E": a.Type = TypeFactory.FileGuidKey(a.IsRequired); break;
                 case "Z": a.Type = TypeFactory.ZoneDateTime(a.IsRequired); break;
@@ -154,7 +158,7 @@ namespace Nephrite.Meta
                 case "B": a.Type = TypeFactory.Boolean(a.IsRequired); break;
                 case "G": a.Type = TypeFactory.Guid(a.IsRequired); break;
                 case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6), a.IsRequired); break;
-				case "C": a.Type = new MetaEnum { Name = "", NotNullable = a.IsRequired }; break;
+                case "C": a.Type = new MetaEnum { Name = xp.GetAttributeValue("EnumName") ?? "", NotNullable = a.IsRequired }; break;
                 case "F": a.Type = TypeFactory.FileIntKey(a.IsRequired); break;
                 case "E": a.Type = TypeFactory.FileGuidKey(a.IsRequired); break;
                 case "Z": a.Type = TypeFactory.ZoneDateTime(a.IsRequired); break;
@@ -183,7 +187,7 @@ namespace Nephrite.Meta
                 case "B": a.Type = TypeFactory.Boolean(a.IsRequired); break;
                 case "G": a.Type = TypeFactory.Guid(a.IsRequired); break;
                 case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6), a.IsRequired); break;
-				case "C": a.Type = new MetaEnum { Name = "", NotNullable = a.IsRequired }; break;
+                case "C": a.Type = new MetaEnum { Name = xp.GetAttributeValue("EnumName") ?? "", NotNullable = a.IsRequired }; break;
                 case "F": a.Type = TypeFactory.FileIntKey(a.IsRequired); break;
                 case "E": a.Type = TypeFactory.FileGuidKey(a.IsRequired); break;
                 case "Z": a.Type = TypeFactory.ZoneDateTime(a.IsRequired); break;

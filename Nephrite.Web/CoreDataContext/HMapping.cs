@@ -114,15 +114,35 @@ namespace Nephrite.Web.CoreDataContext
 		public V_N_TextResourceMap()
 		{
 
-			Table("V_N_TextResource");
+            Table("\"V_N_TextResource\"");
 
 			Lazy(true);
-			Id(x => x.TextResourceID, map => map.Generator(Generators.Identity));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.SysName, map => map.NotNullable(true));
-			Property(x => x.Text);
-			Property(x => x.LanguageCode, map => { map.NotNullable(true); });
-			Property(x => x.TextResourceID, map => { map.NotNullable(true); });
+		    Id(x => x.TextResourceID, map =>
+		        {
+		            map.Generator(Generators.Identity);
+		            map.Column("\"TextResourceID\"");
+		        });
+            Property(x => x.Title, map =>
+            {
+                map.NotNullable(true); 
+                map.Column("\"Title\"");
+            });
+            Property(x => x.SysName, map =>
+            {
+                map.NotNullable(true); ;
+                map.Column("\"SysName\"");
+            });
+            Property(x => x.Text, map => map.Column("\"Text\""));
+            Property(x => x.LanguageCode, map =>
+            {
+                map.NotNullable(true); ;
+                map.Column("\"LanguageCode\"");
+            });
+            Property(x => x.TextResourceID, map =>
+            {
+                map.NotNullable(true); ;
+                map.Column("\"TextResourceID\"");
+            });
 		}
 	}
 

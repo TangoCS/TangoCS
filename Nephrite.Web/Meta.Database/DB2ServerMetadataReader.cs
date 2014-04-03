@@ -34,7 +34,7 @@ namespace Nephrite.Meta.Database
                             XDocument doc = XDocument.Parse(s);
                             doc.Descendants("Table").ToList().ForEach(t =>
                             {
-                                if (t.GetAttributeValue("NAME") == "C_POSTPART2")
+                                if (t.GetAttributeValue("NAME") == "N_FILTER")
                                 {
 
                                 }
@@ -62,8 +62,8 @@ namespace Nephrite.Meta.Database
 
                                         var column = new Column();
                                         column.Identity = !string.IsNullOrEmpty(c.GetAttributeValue("IDENTITY")) && c.GetAttributeValue("IDENTITY") == "Y";
-                                        column.Name = string.IsNullOrEmpty(columnName) ? c.GetAttributeValue("NAME") : columnName; ;
-                                        column.Type = column.Name.EndsWith("GUID") ? new MetaGuidType() : DbScript.GetType(c.GetAttributeValue("TYPE"));
+                                        column.Name = string.IsNullOrEmpty(columnName) ? c.GetAttributeValue("NAME") : columnName;
+                                        column.Type = column.Name.EndsWith("GUID") || (c.GetAttributeValue("TYPELENGTH") != null && c.GetAttributeValue("TYPELENGTH") == "36") ? new MetaGuidType() : DbScript.GetType(c.GetAttributeValue("TYPE"));
                                         column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
                                         column.ComputedText = c.GetAttributeValue("COMPUTEDTEXT");
                                         column.Description = columnDescription;
@@ -174,13 +174,17 @@ namespace Nephrite.Meta.Database
                             {
                                 var view = new View();
                                 view.Name = v.GetAttributeValue("NAME");
+                                if (view.Name == "V_DbFile")
+                                {
+
+                                }
                                 var xColumnsElement = v.Element("Columns");
                                 if (xColumnsElement != null)
                                     xColumnsElement.Descendants("Column").ToList().ForEach(c =>
                                     {
                                         var column = new Column();
                                         column.Name = c.GetAttributeValue("NAME");
-                                        column.Type = column.Name.EndsWith("GUID") ? new MetaGuidType() : DbScript.GetType(c.GetAttributeValue("TYPE"));
+                                        column.Type = column.Name.EndsWith("GUID") || (c.GetAttributeValue("TYPELENGTH") != null && c.GetAttributeValue("TYPELENGTH") == "36") ? new MetaGuidType() : DbScript.GetType(c.GetAttributeValue("TYPE"));
                                         column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
                                         view.Columns.Add(column.Name, column);
                                     });
