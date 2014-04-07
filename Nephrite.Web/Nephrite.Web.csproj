@@ -167,7 +167,9 @@
     </Compile>
     <Compile Include="Controllers\PackageFormViewController.cs" />
     <Compile Include="RussianStrings\RussianDate.cs" />
-    <Compile Include="RussianStrings\RussianNumber.cs" />
+    <Compile Include="RussianStrings\RussianNumber.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SPM2\Scripts\ISPM2Script.cs" />
     <Compile Include="SPM2\Scripts\SPM2ScriptDB2.cs" />
     <Compile Include="SPM2\Scripts\SPM2ScriptMSSQL.cs" />
@@ -467,7 +469,6 @@
     <Compile Include="Web\RouteTable.cs" />
     <Compile Include="RSS\RssFeed.cs" />
     <Compile Include="RSS\RssItem.cs" />
-    <Compile Include="RussianStrings\RusNumber.cs" />
     <Compile Include="SettingsManager\Settings.cs" />
     <Compile Include="Model\Extensions.cs" />
     <Compile Include="SPM2\SPM.cs" />

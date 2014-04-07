@@ -71,11 +71,16 @@ namespace Nephrite.Meta
 	/// </summary>
 	public partial class MetaSolution : MetaElement
 	{
-		Dictionary<string, MetaClass> _classesbyname = new Dictionary<string, MetaClass>(255);
-		//Dictionary<Guid, MetaClass> _classesbyid = new Dictionary<Guid, MetaClass>(255);
+		public override string ID
+		{
+			get
+			{
+				return Name;
+			}
+		}
 
+		Dictionary<string, MetaClass> _classesbyname = new Dictionary<string, MetaClass>(255);
 		Dictionary<string, MetaPackage> _packagesbyname = new Dictionary<string, MetaPackage>(32);
-		//Dictionary<Guid, MetaPackage> _packagesbyid = new Dictionary<Guid, MetaPackage>(32);
 
 		/// <summary>
 		/// Пакеты модели
@@ -91,14 +96,12 @@ namespace Nephrite.Meta
 		{
 			metaClass.Solution = this;
 			_classesbyname.Add(metaClass.Name.ToLower(), metaClass);
-			//_classesbyid.Add(metaClass.ID, metaClass);
 		}
 
 		public void AddPackage(MetaPackage metaPackage)
 		{
 			metaPackage.Solution = this;
 			_packagesbyname.Add(metaPackage.Name.ToLower(), metaPackage);
-			//_packagesbyid.Add(metaPackage.ID, metaPackage);
 		}
 
 		public MetaClass GetClass(string name)
@@ -106,11 +109,6 @@ namespace Nephrite.Meta
 			string s = name.ToLower();
 			return _classesbyname.ContainsKey(s) ? _classesbyname[s] : null;
 		}
-
-		/*public MetaClass GetClass(Guid id)
-		{
-			return _classesbyid.ContainsKey(id) ? _classesbyid[id] : null;
-		}*/
 
 		public MetaOperation GetOperation(string className, string operationName)
 		{
@@ -123,19 +121,6 @@ namespace Nephrite.Meta
 		{
 			string s = name.ToLower();
 			return _packagesbyname.ContainsKey(s) ? _packagesbyname[s] : null;
-		}
-
-		/*public MetaPackage GetPackage(Guid id)
-		{
-			return _packagesbyid.ContainsKey(id) ? _packagesbyid[id] : null;
-		}*/
-
-		public override string ID
-		{
-			get
-			{
-				return Name;
-			}
 		}
 	}
 
@@ -293,7 +278,6 @@ namespace Nephrite.Meta
 		/// Свойства класса
 		/// </summary>
 		public Dictionary<string, MetaProperty>.ValueCollection Properties { get { return _properties.Values; } }
-		//public IEnumerable<T> Properties<T>() where T : MetaProperty { return _properties.Where(o => o is T).Select(o => o as T);  }
 		/// <summary>
 		/// Методы класса
 		/// </summary>
