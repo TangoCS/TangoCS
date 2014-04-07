@@ -166,6 +166,7 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controllers\PackageFormViewController.cs" />
+    <Compile Include="RussianStrings\Prop.cs" />
     <Compile Include="RussianStrings\RussianDate.cs" />
     <Compile Include="RussianStrings\RussianNumber.cs">
       <SubType>Code</SubType>
