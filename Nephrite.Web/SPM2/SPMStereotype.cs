@@ -12,7 +12,7 @@ namespace Nephrite.Web.SPM
 	{
 		public SSPM()
 		{
-			ID = new Guid("8572AC00-42C2-11E1-B555-75714824019B");
+			//ID = new Guid("8572AC00-42C2-11E1-B555-75714824019B");
 			Name = this.GetType().Name;
 			Caption = "Для сущности настраиваются права доступа";
 		}
