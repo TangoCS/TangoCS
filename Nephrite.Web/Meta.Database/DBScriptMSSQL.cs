@@ -426,7 +426,12 @@ namespace Nephrite.Meta.Database
 			return "bit";
 		}
 
-		public string GetZoneDateTimeType()
+	    public string GetXmlType()
+	    {
+            return "xml";
+	    }
+
+	    public string GetZoneDateTimeType()
 		{
 			return "datetimeoffset(7)";
 		}

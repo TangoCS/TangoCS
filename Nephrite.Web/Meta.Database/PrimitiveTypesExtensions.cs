@@ -33,6 +33,14 @@ namespace Nephrite.Meta
 		}
 
 	}
+    public partial class MetaXmlType
+    {
+        public override string GetDBType(IDBScript script)
+        {
+            return script.GetXmlType();
+        }
+
+    }
 	public partial class MetaStringType
 	{
 		public override string GetDBType(IDBScript script)

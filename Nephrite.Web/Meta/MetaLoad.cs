@@ -99,7 +99,7 @@ namespace Nephrite.Meta
 
         static void LoadAttribute(MetaClass c, XElement xp)
         {
-            if (c.Name == "SPM_Subject")
+            if (c.Name == "Appendix")
             {
 
             }
@@ -203,6 +203,10 @@ namespace Nephrite.Meta
                 a = new MetaReferenceToVersion();
             else
                 a = new MetaReference();
+            if (c.Name.ToUpper() == "Appendix".ToUpper())
+            {
+
+            }
             a.ID = xp.GetAttributeValue("ID").ToGuid();
             a.Name = xp.GetAttributeValue("Name");
             a.Caption = xp.GetAttributeValue("Caption");

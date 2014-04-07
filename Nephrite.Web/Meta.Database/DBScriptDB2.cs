@@ -402,6 +402,11 @@ namespace Nephrite.Meta.Database
         {
             return "SMALLINT";
         }
+        public string GetXmlType()
+        {
+            return "XML";
+        }
+
 
         public  string GetStringValue(DB2DataReader reader, int index)
         {
@@ -659,6 +664,8 @@ namespace Nephrite.Meta.Database
                     return new MetaByteArrayType();
                 case "SMALLINT":
                     return new MetaBooleanType();
+                case "XML":
+                    return new MetaXmlType();
                 default:
                     return new MetaStringType();
             }

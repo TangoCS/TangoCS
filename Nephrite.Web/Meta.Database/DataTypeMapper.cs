@@ -146,7 +146,7 @@ namespace Nephrite.Meta.Database
                         case 4:
                             return typeof(System.Int32);
                         case 8:
-                            return typeof(System.Int64);
+                            return typeof(long);
                     }
                 }
             }

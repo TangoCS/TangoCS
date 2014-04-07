@@ -56,52 +56,51 @@ namespace Tessera.Test
             //    //}
             //}
             //var ff = ss.ToString();
-            //ConnectionManager.SetConnectionString(
-            //    "Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
-            //HDataContext.DBType = "DB2";
-            //A.Model = new HCoreDataContext(Nephrite.Web.Hibernate.HDataContext.DBConfig(ConnectionManager.ConnectionString));
-            //var classes = A.DynamicMeta.Classes;
-            //var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate).ToList();
-            //var allObjectProperties = AppMM.DataContext.MM_ObjectProperties;
-            //var dddd = classes.Count(o => o.IsPersistent);
-            //foreach (var cls in classes.Where(o => o.IsPersistent ))
-            //{
-            //    foreach (var p in cls.Properties.Where(o2 => o2.UpperBound == 1 && o2 is MetaReference))
-            //    {
-            //        MetaReference r = p as MetaReference;
-            //        var dd = r.RefClass.ColumnName(r.Name);
-            //    }
-
-            //}
-
-            //var sdds = "";
-
-            var mapType = new DataTypeMapper();
             ConnectionManager.SetConnectionString(
                 "Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
             HDataContext.DBType = "DB2";
-            var sqlServerMetadataReader = new DB2ServerMetadataReader();
-            var schema = sqlServerMetadataReader.ReadSchema("dbo");
-            foreach (var table in schema.Tables)
+            A.Model = new HCoreDataContext(Nephrite.Web.Hibernate.HDataContext.DBConfig(ConnectionManager.ConnectionString));
+            var classes = A.DynamicMeta.Classes.Where(o => o.Properties.Any(c => c.Type is MetaFileType));
+           // var classes = A.DynamicMeta.Classes.Where(o => o.Name=="Appendix");
+            var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate).ToList();
+            var allObjectProperties = AppMM.DataContext.MM_ObjectProperties;
+            var dddd = classes.Count(o => o.IsPersistent);
+            foreach (var cls in classes)
             {
-                if (table.Key == "C_FIAS_House")
+                if (cls.Key.Name == "Appendix")
                 {
                 }
-                foreach (var column in table.Value.Columns)
-                {
-                    Type t = mapType.MapFromSqlServerDBType(column.Value.Type.GetDBType(new DBScriptMSSQL("DBO")), null, null, null);
-                }
-                //if (table.Value.PrimaryKey != null && table.Value.PrimaryKey.Columns.Length == 1)
-                //{
-                //    var pkColumn =
-                //        table.Value.Columns.SingleOrDefault(t => t.Key.ToUpper() == table.Value.PrimaryKey.Columns[0].ToUpper());
-                //    var guidPropertyConfig = "";
-                //    if ((pkColumn.Value.Type is Nephrite.Meta.MetaGuidType))
-                //    {
 
-                //    }
-                //}
             }
+
+            //var sdds = "";
+
+            //var mapType = new DataTypeMapper();
+            //ConnectionManager.SetConnectionString(
+            //    "Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
+            //HDataContext.DBType = "DB2";
+            //var sqlServerMetadataReader = new DB2ServerMetadataReader();
+            //var schema = sqlServerMetadataReader.ReadSchema("dbo");
+            //foreach (var table in schema.Views)
+            //{
+            //    if (table.Key == "V_DbFolder")
+            //    {
+            //    }
+            //    foreach (var column in table.Value.Columns)
+            //    {
+            //        Type t = mapType.MapFromSqlServerDBType(column.Value.Type.GetDBType(new DBScriptMSSQL("DBO")), null, null, null);
+            //    }
+            //    //if (table.Value.PrimaryKey != null && table.Value.PrimaryKey.Columns.Length == 1)
+            //    //{
+            //    //    var pkColumn =
+            //    //        table.Value.Columns.SingleOrDefault(t => t.Key.ToUpper() == table.Value.PrimaryKey.Columns[0].ToUpper());
+            //    //    var guidPropertyConfig = "";
+            //    //    if ((pkColumn.Value.Type is Nephrite.Meta.MetaGuidType))
+            //    //    {
+
+            //    //    }
+            //    //}
+            //}
 
             //ConnectionManager.SetConnectionString("Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
             //HDataContext.DBType = "DB2";

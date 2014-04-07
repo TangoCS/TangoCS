@@ -72,7 +72,16 @@ namespace Nephrite.Meta
 			}
 		}
 	}
-
+    public partial class MetaXmlType : MetaPrimitiveType
+    {
+        public override string CLRType
+        {
+            get
+            {
+                return "XDocument";
+            }
+        }
+    }
 	public partial class MetaZoneDateTimeType : MetaPrimitiveType
 	{
 
