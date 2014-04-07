@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI.HtmlControls;
-using Nephrite.Web;
-using Nephrite.Web.TextResources;
-
 
 namespace Nephrite.Meta
 {
@@ -17,20 +14,17 @@ namespace Nephrite.Meta
 		public MetaElement()
 		{
 		}
-		public MetaElement(Guid id, string name)
+		public MetaElement(string name)
 		{
-			ID = id;
 			Name = name;
 		}
-		public MetaElement(Guid id, string name, string caption)
+		public MetaElement(string name, string caption)
 		{
-			ID = id;
 			Name = name;
 			Caption = caption;
 		}
-		public MetaElement(Guid id, string name, string caption, string description)
+		public MetaElement(string name, string caption, string description)
 		{
-			ID = id;
 			Name = name;
 			Caption = caption;
 			Description = description;
@@ -39,34 +33,16 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// Уникальный идентификатор
 		/// </summary>
-		public Guid ID { get; set; }
+		public virtual string ID { get { return "MetaElement." + Name; } }
 		/// <summary>
 		/// Системное имя
 		/// </summary>
 		public string Name { get; set; }
-
-		#region Caption - работа с многоязычностью
-		public virtual string GetCaptionResourceKey()
-		{
-			throw new InvalidOperationException("Элемент " + Name + " не имеет ключа ресурса");
-		}
-		string _caption;
 		/// <summary>
 		/// Название на локальном языке
 		/// </summary>
-		public string Caption
-		{
-			get
-			{
-				return TextResource.Get(GetCaptionResourceKey(), _caption);
-			}
-			set
-			{
-				_caption = value;
-			}
-		}
-		#endregion
-
+		public string Caption { get; set; }
+		
 		/// <summary>
 		/// Описание
 		/// </summary>
@@ -96,33 +72,33 @@ namespace Nephrite.Meta
 	public partial class MetaSolution : MetaElement
 	{
 		Dictionary<string, MetaClass> _classesbyname = new Dictionary<string, MetaClass>(255);
-		Dictionary<Guid, MetaClass> _classesbyid = new Dictionary<Guid, MetaClass>(255);
+		//Dictionary<Guid, MetaClass> _classesbyid = new Dictionary<Guid, MetaClass>(255);
 
 		Dictionary<string, MetaPackage> _packagesbyname = new Dictionary<string, MetaPackage>(32);
-		Dictionary<Guid, MetaPackage> _packagesbyid = new Dictionary<Guid, MetaPackage>(32);
+		//Dictionary<Guid, MetaPackage> _packagesbyid = new Dictionary<Guid, MetaPackage>(32);
 
 		/// <summary>
 		/// Пакеты модели
 		/// </summary>
-		public Dictionary<Guid, MetaPackage>.ValueCollection Packages { get { return _packagesbyid.Values; } }
+		public Dictionary<string, MetaPackage>.ValueCollection Packages { get { return _packagesbyname.Values; } }
 		/// <summary>
 		/// Классы модели
 		/// </summary>
-		public Dictionary<Guid, MetaClass>.ValueCollection Classes { get { return _classesbyid.Values; } }
+		public Dictionary<string, MetaClass>.ValueCollection Classes { get { return _classesbyname.Values; } }
 
 		//public string EntryPoint { get; }
 		public void AddClass(MetaClass metaClass)
 		{
 			metaClass.Solution = this;
 			_classesbyname.Add(metaClass.Name.ToLower(), metaClass);
-			_classesbyid.Add(metaClass.ID, metaClass);
+			//_classesbyid.Add(metaClass.ID, metaClass);
 		}
 
 		public void AddPackage(MetaPackage metaPackage)
 		{
 			metaPackage.Solution = this;
 			_packagesbyname.Add(metaPackage.Name.ToLower(), metaPackage);
-			_packagesbyid.Add(metaPackage.ID, metaPackage);
+			//_packagesbyid.Add(metaPackage.ID, metaPackage);
 		}
 
 		public MetaClass GetClass(string name)
@@ -131,10 +107,10 @@ namespace Nephrite.Meta
 			return _classesbyname.ContainsKey(s) ? _classesbyname[s] : null;
 		}
 
-		public MetaClass GetClass(Guid id)
+		/*public MetaClass GetClass(Guid id)
 		{
 			return _classesbyid.ContainsKey(id) ? _classesbyid[id] : null;
-		}
+		}*/
 
 		public MetaOperation GetOperation(string className, string operationName)
 		{
@@ -149,15 +125,23 @@ namespace Nephrite.Meta
 			return _packagesbyname.ContainsKey(s) ? _packagesbyname[s] : null;
 		}
 
-		public MetaPackage GetPackage(Guid id)
+		/*public MetaPackage GetPackage(Guid id)
 		{
 			return _packagesbyid.ContainsKey(id) ? _packagesbyid[id] : null;
+		}*/
+
+		public override string ID
+		{
+			get
+			{
+				return Name;
+			}
 		}
 	}
 
 	public class MetaPackage : MetaElement
 	{
-		protected Guid? ParentID { get; set; }
+		protected string ParentID { get; set; }
 		MetaPackage _parent = null;
 
 		/// <summary>
@@ -167,7 +151,7 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				if (_parent == null && ParentID != null) _parent = Solution.GetPackage(ParentID.Value);
+				if (_parent == null && !String.IsNullOrEmpty(ParentID)) _parent = Solution.GetPackage(ParentID);
 				return _parent;
 			}
 		}
@@ -214,9 +198,12 @@ namespace Nephrite.Meta
 			return _packages.ContainsKey(s) ? _packages[s] : null;
 		}
 
-		public override string GetCaptionResourceKey()
+		public override string ID
 		{
-			return Name;
+			get
+			{
+				return Name;
+			}
 		}
 	}
 
@@ -262,7 +249,7 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				if (_baseClass == null && !BaseClassName.IsEmpty()) _baseClass = Solution.GetClass(BaseClassName);
+				if (_baseClass == null && !String.IsNullOrEmpty(BaseClassName)) _baseClass = Solution.GetClass(BaseClassName);
 				return _baseClass;
 			}
 		}
@@ -340,9 +327,12 @@ namespace Nephrite.Meta
 			return _operations.ContainsKey(s) ? _operations[s] : null;
 		}
 
-		public override string GetCaptionResourceKey()
+		public override string ID
 		{
-			return Name;
+			get
+			{
+				return Name;
+			}
 		}
 
 		/// <summary>
@@ -380,9 +370,12 @@ namespace Nephrite.Meta
 		/// </summary>
 		public int UpperBound { get; set; }
 
-		public override string GetCaptionResourceKey()
+		public override string ID
 		{
-			return Parent.Name + ".P." + Name;
+			get
+			{
+				return Parent.Name + ".P." + Name;
+			}
 		}
 
 		/// <summary>
@@ -509,7 +502,7 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				if (InversePropertyName.IsEmpty()) return null;
+				if (String.IsNullOrEmpty(InversePropertyName)) return null;
 				if (_refInverseProperty == null && RefClass != null) _refInverseProperty = RefClass.GetProperty(InversePropertyName) as MetaReference;
 				return _refInverseProperty;
 			}
@@ -563,9 +556,12 @@ namespace Nephrite.Meta
 		public string Image { get; set; }
 		//public bool IsDefault { get; set; }
 
-		public override string GetCaptionResourceKey()
+		public override string ID
 		{
-			return Parent.Name + ".O." + Name;
+			get
+			{
+				return Parent.Name + ".O." + Name;
+			}
 		}
 		/// <summary>
 		/// По умолчанию
@@ -579,9 +575,12 @@ namespace Nephrite.Meta
 	{
 		public MetaElement Parent { get; set; }
 
-		public override string GetCaptionResourceKey()
+		public override string ID
 		{
-			return Parent.Name + ".S." + Name;
+			get
+			{
+				return "Stereotype." + Name;
+			}
 		}
 	}
 

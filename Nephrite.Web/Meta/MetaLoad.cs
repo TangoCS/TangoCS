@@ -25,7 +25,7 @@ namespace Nephrite.Meta
         static void LoadPackage(MetaSolution s, XElement xp)
         {
             MetaPackage np = new MetaPackage();
-            np.ID = xp.GetAttributeValue("ID").ToGuid();
+            //np.ID = xp.GetAttributeValue("ID").ToGuid();
             np.Name = xp.GetAttributeValue("Name");
             np.Caption = xp.GetAttributeValue("Caption");
             np.Description = xp.GetAttributeValue("Description");
@@ -33,7 +33,7 @@ namespace Nephrite.Meta
             string parent = xp.GetAttributeValue("ParentID");
             if (!parent.IsEmpty())
             {
-                MetaPackage parentPck = s.GetPackage(parent.ToGuid());
+                MetaPackage parentPck = s.GetPackage(parent);
                 parentPck.AddPackage(np);
             }
             else
@@ -50,7 +50,7 @@ namespace Nephrite.Meta
         static void LoadClass(MetaPackage p, XElement xc)
         {
             MetaClass c = new MetaClass();
-            c.ID = xc.GetAttributeValue("ID").ToGuid();
+            //c.ID = xc.GetAttributeValue("ID").ToGuid();
             c.Name = xc.GetAttributeValue("Name");
             c.Caption = xc.GetAttributeValue("Caption");
             c.Description = xc.GetAttributeValue("Description");
@@ -104,7 +104,7 @@ namespace Nephrite.Meta
 
             }
             MetaAttribute a = new MetaAttribute();
-            a.ID = xp.GetAttributeValue("ID").ToGuid();
+            //a.ID = xp.GetAttributeValue("ID").ToGuid();
             a.Name = xp.GetAttributeValue("Name");
             a.Caption = xp.GetAttributeValue("Caption");
             a.Description = xp.GetAttributeValue("Description");
@@ -141,7 +141,7 @@ namespace Nephrite.Meta
         static void LoadComputedAttribute(MetaClass c, XElement xp)
         {
             MetaComputedAttribute a = new MetaComputedAttribute();
-            a.ID = xp.GetAttributeValue("ID").ToGuid();
+            //a.ID = xp.GetAttributeValue("ID").ToGuid();
             a.Name = xp.GetAttributeValue("Name");
             a.Caption = xp.GetAttributeValue("Caption");
             a.Description = xp.GetAttributeValue("Description");
@@ -169,7 +169,7 @@ namespace Nephrite.Meta
         static void LoadPersistentComputedAttribute(MetaClass c, XElement xp)
         {
             MetaPersistentComputedAttribute a = new MetaPersistentComputedAttribute();
-            a.ID = xp.GetAttributeValue("ID").ToGuid();
+            //a.ID = xp.GetAttributeValue("ID").ToGuid();
             a.Name = xp.GetAttributeValue("Name");
             a.Caption = xp.GetAttributeValue("Caption");
             a.Description = xp.GetAttributeValue("Description");
@@ -203,11 +203,7 @@ namespace Nephrite.Meta
                 a = new MetaReferenceToVersion();
             else
                 a = new MetaReference();
-            if (c.Name.ToUpper() == "Appendix".ToUpper())
-            {
-
-            }
-            a.ID = xp.GetAttributeValue("ID").ToGuid();
+            //a.ID = xp.GetAttributeValue("ID").ToGuid();
             a.Name = xp.GetAttributeValue("Name");
             a.Caption = xp.GetAttributeValue("Caption");
             a.Description = xp.GetAttributeValue("Description");
@@ -226,7 +222,7 @@ namespace Nephrite.Meta
         static void LoadOperation(MetaClass c, XElement xo)
         {
             MetaOperation o = new MetaOperation();
-            o.ID = xo.GetAttributeValue("ID").ToGuid();
+            //o.ID = xo.GetAttributeValue("ID").ToGuid();
             o.Name = xo.GetAttributeValue("Name");
             o.Caption = xo.GetAttributeValue("Caption");
             o.Description = xo.GetAttributeValue("Description");

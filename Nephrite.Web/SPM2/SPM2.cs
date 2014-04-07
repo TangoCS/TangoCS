@@ -253,16 +253,6 @@ namespace Nephrite.Web.SPM
 	[Cache("SPM")]
 	public class SPM2
 	{
-		public static void DeleteAction(int id)
-		{
-			A.Model.ExecuteCommand("delete from SPM_Action where ActionID = ?", id);
-		}
-
-		public static int CreateAction(MetaClass cls, int actionTypeID, Guid itemGUID)
-		{
-			return A.Model.ExecuteQuery<int>("insert into SPM_Action (ClassGUID, ActionTypeID, ItemGUID) values (?,?,?); select scope_identity()", cls.ID, actionTypeID, itemGUID).First();
-		}
-
 		static HashSet<string> _accessCache = null;
 		static HashSet<string> _itemsCache = null;
 
