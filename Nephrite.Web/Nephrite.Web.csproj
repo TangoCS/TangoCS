@@ -155,6 +155,7 @@
     <Compile Include="Meta.Database\UpdateScriptBuilderDB2.cs" />
     <Compile Include="MetaStorage\MetaStorageModel.cs" />
     <Compile Include="Meta.Forms\UIMetaModel.cs" />
+    <Compile Include="Meta\CoreFluent.cs" />
     <Compile Include="Model\IEntity.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -166,8 +167,11 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controllers\PackageFormViewController.cs" />
+    <Compile Include="RussianStrings\Prop.cs" />
     <Compile Include="RussianStrings\RussianDate.cs" />
-    <Compile Include="RussianStrings\RussianNumber.cs" />
+    <Compile Include="RussianStrings\RussianNumber.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="SPM2\Scripts\ISPM2Script.cs" />
     <Compile Include="SPM2\Scripts\SPM2ScriptDB2.cs" />
     <Compile Include="SPM2\Scripts\SPM2ScriptMSSQL.cs" />
@@ -413,7 +417,6 @@
     <Compile Include="Meta\MetaLoad.cs" />
     <Compile Include="Layout\SystemLayout.cs" />
     <Compile Include="Meta\Versioning.cs" />
-    <Compile Include="Meta\CoreMetaModel.cs" />
     <Compile Include="Meta.Database\DBMetaModel.cs" />
     <Compile Include="Meta\PrimitiveTypes.cs" />
     <Compile Include="Layout\Interfaces.cs" />
@@ -467,7 +470,6 @@
     <Compile Include="Web\RouteTable.cs" />
     <Compile Include="RSS\RssFeed.cs" />
     <Compile Include="RSS\RssItem.cs" />
-    <Compile Include="RussianStrings\RusNumber.cs" />
     <Compile Include="SettingsManager\Settings.cs" />
     <Compile Include="Model\Extensions.cs" />
     <Compile Include="SPM2\SPM.cs" />
