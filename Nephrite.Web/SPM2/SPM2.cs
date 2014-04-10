@@ -137,10 +137,10 @@ namespace Nephrite.Web.SPM
 					{
 						//IEnumerable<string> groups = ADUser.Current.GetGroups(5);
 						string groupNames = wi.Groups.Select(x => "'" + x.Value + "'").Join(",");
-						r = A.Model.ExecuteQuery<int>("select RoleID as \"RoleID\" from V_SPM_AllSubjectRole where SubjectID = ? union select RoleID from SPM_Role where SID in (" + groupNames + ")", sid).ToList();
+						r = A.Model.ExecuteQuery<int>("select \"RoleID\" from V_SPM_AllSubjectRole where SubjectID = ? union select RoleID from SPM_Role where SID in (" + groupNames + ")", sid).ToList();
 					}
 					else
-						r = A.Model.ExecuteQuery<int>("select RoleID as \"RoleID\" from V_SPM_AllSubjectRole where SubjectID = ?", sid).ToList();
+						r = A.Model.ExecuteQuery<int>("select  \"RoleID\" from V_SPM_AllSubjectRole where SubjectID = ?", sid).ToList();
 
 					roles = Role.GetList().Where(o => r.Contains(o.RoleID));
 					Items["SubjectRoles2_" + sid.ToString()] = roles;
