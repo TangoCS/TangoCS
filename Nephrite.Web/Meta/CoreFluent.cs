@@ -116,7 +116,7 @@ namespace Nephrite.Meta.Fluent
 		public static MetaClass TimeStamp(this MetaClass cls)
 		{
 			cls.Attribute("LastModifiedDate", "Дата последней модификации", TypeFactory.DateTime(true));
-			cls.Reference("LastModifiedUser", "Последний редактировавший пользователь", "SPM_Subject");
+			cls.Reference("LastModifiedUser", "Последний редактировавший пользователь", x => x.To("SPM_Subject"));
 			cls.Interfaces.Add(typeof(IWithTimeStamp));
 			return cls;
 		}
@@ -169,7 +169,7 @@ namespace Nephrite.Meta.Fluent
 
 		public static MetaClass Workflow(this MetaClass cls)
 		{
-			cls.Reference("Activity", "Статус", "WF_Activity");
+			cls.Reference("Activity", "Статус", x => x.To("WF_Activity"));
 			return cls;
 		}
 
