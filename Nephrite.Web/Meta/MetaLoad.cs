@@ -115,16 +115,16 @@ namespace Nephrite.Meta
 
             a.IsMultilingual = xp.GetAttributeValue("IsMultilingual").ToLower() == "true";
             a.IsIdentity = xp.GetAttributeValue("IsIdentity").ToLower() == "true";
-            a.IsKey = xp.GetAttributeValue("IsKey");
+            //a.IsKey = xp.GetAttributeValue("IsKey");
             switch (xp.GetAttributeValue("DataType"))
             {
-                case "S": a.Type = TypeFactory.String(xp.GetAttributeValue("Length").ToInt32(-1)); break;
+				case "S": a.Type = TypeFactory.String(xp.GetAttributeValue("Length").ToInt32(-1), a.IsRequired); break;
                 case "D": a.Type = TypeFactory.Date(a.IsRequired); break;
                 case "T": a.Type = TypeFactory.DateTime(a.IsRequired); break;
                 case "N": a.Type = TypeFactory.Int(a.IsRequired); break;
                 case "O": break;
                 case "U": a.Type = TypeFactory.Long(a.IsRequired); break;
-                case "X": a.Type = TypeFactory.ByteArray(xp.GetAttributeValue("Length").ToInt32(-1)); break;
+				case "X": a.Type = TypeFactory.ByteArray(xp.GetAttributeValue("Length").ToInt32(-1), a.IsRequired); break;
                 case "B": a.Type = TypeFactory.Boolean(a.IsRequired); break;
                 case "G": a.Type = TypeFactory.Guid(a.IsRequired); break;
                 case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6), a.IsRequired); break;
@@ -148,13 +148,13 @@ namespace Nephrite.Meta
             a.GetExpression = xp.GetAttributeValue("GetExpression");
             switch (xp.GetAttributeValue("DataType"))
             {
-                case "S": a.Type = TypeFactory.String(xp.GetAttributeValue("Length").ToInt32(-1)); break;
+				case "S": a.Type = TypeFactory.String(xp.GetAttributeValue("Length").ToInt32(-1), a.IsRequired); break;
                 case "D": a.Type = TypeFactory.Date(a.IsRequired); break;
                 case "T": a.Type = TypeFactory.DateTime(a.IsRequired); break;
                 case "N": a.Type = TypeFactory.Int(a.IsRequired); break;
                 case "O": break;
                 case "U": a.Type = TypeFactory.Long(a.IsRequired); break;
-                case "X": a.Type = TypeFactory.ByteArray(); break;
+				case "X": a.Type = TypeFactory.ByteArray(a.IsRequired); break;
                 case "B": a.Type = TypeFactory.Boolean(a.IsRequired); break;
                 case "G": a.Type = TypeFactory.Guid(a.IsRequired); break;
                 case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6), a.IsRequired); break;
@@ -174,16 +174,16 @@ namespace Nephrite.Meta
             a.Caption = xp.GetAttributeValue("Caption");
             a.Description = xp.GetAttributeValue("Description");
             a.Expression = xp.GetAttributeValue("Expression");
-            a.DataType = xp.GetAttributeValue("DataType");
+            //a.DataType = xp.GetAttributeValue("DataType");
             switch (xp.GetAttributeValue("DataType"))
             {
-                case "S": a.Type = TypeFactory.String(xp.GetAttributeValue("Length").ToInt32(-1)); break;
+				case "S": a.Type = TypeFactory.String(xp.GetAttributeValue("Length").ToInt32(-1), a.IsRequired); break;
                 case "D": a.Type = TypeFactory.Date(a.IsRequired); break;
                 case "T": a.Type = TypeFactory.DateTime(a.IsRequired); break;
                 case "N": a.Type = TypeFactory.Int(a.IsRequired); break;
                 case "O": break;
                 case "U": a.Type = TypeFactory.Long(a.IsRequired); break;
-                case "X": a.Type = TypeFactory.ByteArray(); break;
+				case "X": a.Type = TypeFactory.ByteArray(a.IsRequired); break;
                 case "B": a.Type = TypeFactory.Boolean(a.IsRequired); break;
                 case "G": a.Type = TypeFactory.Guid(a.IsRequired); break;
                 case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6), a.IsRequired); break;
@@ -214,7 +214,7 @@ namespace Nephrite.Meta
             a.RefClassName = xp.GetAttributeValue("RefClass");
             a.InversePropertyName = xp.GetAttributeValue("InverseProperty");
             a.AssociationType = (AssociationType)xp.GetAttributeValue("AssociationType").ToInt32(0);
-            a.IsKey = xp.GetAttributeValue("IsKey");
+            //a.IsKey = xp.GetAttributeValue("IsKey");
             if (xp.GetAttributeValue("IsKey").ToLower() == "true") c.CompositeKey.Add(a);
             c.AddProperty(a);
         }
@@ -226,7 +226,7 @@ namespace Nephrite.Meta
             o.Name = xo.GetAttributeValue("Name");
             o.Caption = xo.GetAttributeValue("Caption");
             o.Description = xo.GetAttributeValue("Description");
-            o.IsDefault = xo.GetAttributeValue("IsDefault");
+			o.IsDefault = xo.GetAttributeValue("IsDefault").ToLower() == "true";
             c.AddOperation(o);
         }
     }

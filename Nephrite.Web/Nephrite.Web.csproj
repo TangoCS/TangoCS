@@ -155,6 +155,7 @@
     <Compile Include="Meta.Database\UpdateScriptBuilderDB2.cs" />
     <Compile Include="MetaStorage\MetaStorageModel.cs" />
     <Compile Include="Meta.Forms\UIMetaModel.cs" />
+    <Compile Include="Meta\CoreFluent.cs" />
     <Compile Include="Model\IEntity.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -416,7 +417,6 @@
     <Compile Include="Meta\MetaLoad.cs" />
     <Compile Include="Layout\SystemLayout.cs" />
     <Compile Include="Meta\Versioning.cs" />
-    <Compile Include="Meta\CoreMetaModel.cs" />
     <Compile Include="Meta.Database\DBMetaModel.cs" />
     <Compile Include="Meta\PrimitiveTypes.cs" />
     <Compile Include="Layout\Interfaces.cs" />

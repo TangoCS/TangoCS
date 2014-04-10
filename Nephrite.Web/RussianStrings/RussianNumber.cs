@@ -81,23 +81,23 @@ namespace Nephrite.Web.RussianStrings
 			StringBuilder r = new StringBuilder();
 
 			if (n % 1000 != 0)
-				r.Append(RusNumber.Str(n, true, "", "", ""));
+				r.Append(Str(n, true, "", "", ""));
 
 			n /= 1000;
 
-			r.Insert(0, RusNumber.Str(n, false, "тысяча", "тысячи", "тысяч"));
+			r.Insert(0, Str(n, false, "тысяча", "тысячи", "тысяч"));
 			n /= 1000;
 
-			r.Insert(0, RusNumber.Str(n, true, "миллион", "миллиона", "миллионов"));
+			r.Insert(0, Str(n, true, "миллион", "миллиона", "миллионов"));
 			n /= 1000;
 
-			r.Insert(0, RusNumber.Str(n, true, "миллиард", "миллиарда", "миллиардов"));
+			r.Insert(0, Str(n, true, "миллиард", "миллиарда", "миллиардов"));
 			n /= 1000;
 
-			r.Insert(0, RusNumber.Str(n, true, "триллион", "триллиона", "триллионов"));
+			r.Insert(0, Str(n, true, "триллион", "триллиона", "триллионов"));
 			n /= 1000;
 
-			r.Insert(0, RusNumber.Str(n, true, "триллиард", "триллиарда", "триллиардов"));
+			r.Insert(0, Str(n, true, "триллиард", "триллиарда", "триллиардов"));
 
 			return r.ToString();
 		}

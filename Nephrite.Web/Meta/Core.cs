@@ -11,19 +11,8 @@ namespace Nephrite.Meta
 	/// </summary>
 	public abstract class MetaElement
 	{
-		public MetaElement()
-		{
-		}
-		public MetaElement(string name)
-		{
-			Name = name;
-		}
-		public MetaElement(string name, string caption)
-		{
-			Name = name;
-			Caption = caption;
-		}
-		public MetaElement(string name, string caption, string description)
+		public MetaElement() { }
+		public MetaElement(string name = "", string caption = "", string description = "")
 		{
 			Name = name;
 			Caption = caption;
@@ -104,6 +93,13 @@ namespace Nephrite.Meta
 			_packagesbyname.Add(metaPackage.Name.ToLower(), metaPackage);
 		}
 
+		public MetaPackage AddPackage(string name, string caption = "", string description = "")
+		{
+			MetaPackage p = new MetaPackage { Name = name, Caption = caption, Description = description };
+			AddPackage(p);
+			return p;
+		}
+
 		public MetaClass GetClass(string name)
 		{
 			string s = name.ToLower();
@@ -126,6 +122,8 @@ namespace Nephrite.Meta
 
 	public class MetaPackage : MetaElement
 	{
+		public MetaPackage(string name = "", string caption = "", string description = "") : base(name, caption, description) { }
+
 		protected string ParentID { get; set; }
 		MetaPackage _parent = null;
 
@@ -164,6 +162,13 @@ namespace Nephrite.Meta
 			_classes.Add(metaClass.Name.ToLower(), metaClass);
 		}
 
+		public MetaClass AddClass(string name, string caption = "", string description = "")
+		{
+			MetaClass c = new MetaClass { Name = name, Caption = caption, Description = description };
+			AddClass(c);
+			return c;
+		}
+
 		public void AddPackage(MetaPackage metaPackage)
 		{
 			Solution.AddPackage(metaPackage);
@@ -171,11 +176,20 @@ namespace Nephrite.Meta
 			_packages.Add(metaPackage.Name.ToLower(), metaPackage);
 		}
 
+		public MetaPackage AddPackage(string name, string caption = "", string description = "")
+		{
+			MetaPackage p = new MetaPackage { Name = name, Caption = caption, Description = description };
+			AddPackage(p);
+			return p;
+		}
+
 		public MetaClass GetClass(string name)
 		{
 			string s = name.ToLower();
 			return _classes.ContainsKey(s) ? _classes[s] : null;
 		}
+
+
 
 		public MetaPackage GetPackage(string name)
 		{
@@ -202,7 +216,7 @@ namespace Nephrite.Meta
 	
 	}
 
-	public class MetaClass : MetaClassifier
+	public partial class MetaClass : MetaClassifier
 	{
 		public override string CLRType
 		{
@@ -298,6 +312,7 @@ namespace Nephrite.Meta
 		{
 			metaOperation.Parent = this;
 			_operations.Add(metaOperation.Name.ToLower(), metaOperation);
+			if (metaOperation.IsDefault) DefaultOperation = metaOperation;
 		}
 
 		public MetaProperty GetProperty(string name)
@@ -326,18 +341,28 @@ namespace Nephrite.Meta
 		{
 			return propName + (Key.Type as IMetaIdentifierType).ColumnSuffix;
 		}
+
+		public MetaClass ShallowCopy()
+		{
+			return (MetaClass)this.MemberwiseClone();
+		}
+
+		List<Type> _interfaces = new List<Type>();
+		public List<Type> Interfaces
+		{
+			get
+			{
+				return _interfaces;
+			}
+		}
 	}
 
-	public abstract class MetaProperty : MetaElement
+	public abstract partial class MetaProperty : MetaElement
 	{
 		/// <summary>
 		/// Класс, к которому принадлежит свойство
 		/// </summary>
 		public MetaClass Parent { get; set; }
-		/// <summary>
-		/// Тип данных
-		/// </summary>
-		public virtual string DataType { get; set; }
 
 		public virtual string DefaultDBValue { get; set; }
 
@@ -352,7 +377,8 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// Верхняя граница: 1 - максимум одно значение, -1 - значений может быть сколько угодно
 		/// </summary>
-		public int UpperBound { get; set; }
+		public int UpperBound { get { return _upperBound; } set { _upperBound = value; } }
+		int _upperBound = 1;
 
 		public override string ID
 		{
@@ -375,7 +401,7 @@ namespace Nephrite.Meta
 	/// <summary>
 	/// Атрибут класса
 	/// </summary>
-	public class MetaAttribute : MetaProperty
+	public partial class MetaAttribute : MetaProperty
 	{
 		/// <summary>
 		/// Является мультиязычным
@@ -385,16 +411,12 @@ namespace Nephrite.Meta
 		/// Является автоинкрементным
 		/// </summary>
 		public bool IsIdentity { get; set; }
-		/// <summary>
-		/// Является первичным
-		/// </summary>
-		public string IsKey { get; set; }
 	}
 
 	/// <summary>
 	/// Вычислимое свойство класса
 	/// </summary>
-	public class MetaComputedAttribute : MetaProperty
+	public partial class MetaComputedAttribute : MetaProperty
 	{
 		/// <summary>
 		/// Код для get
@@ -409,7 +431,7 @@ namespace Nephrite.Meta
 	/// <summary>
 	/// Вычислимое на уровне базы данных свойство класса
 	/// </summary>
-	public class MetaPersistentComputedAttribute : MetaProperty
+	public partial class MetaPersistentComputedAttribute : MetaProperty
 	{
 		/// <summary>
 		/// Выражение
@@ -440,7 +462,7 @@ namespace Nephrite.Meta
 	/// <summary>
 	/// Свойство класса - ссылка 
 	/// </summary>
-	public class MetaReference : MetaProperty
+	public partial class MetaReference : MetaProperty
 	{
 		/// <summary>
 		/// Тип ассоциации
@@ -502,10 +524,6 @@ namespace Nephrite.Meta
 				return RefClass.ColumnName(Name);
 			}
 		}
-		/// <summary>
-		/// Является первичным
-		/// </summary>
-		public string IsKey { get; set; }
 	}
 
 	/// <summary>
@@ -538,7 +556,6 @@ namespace Nephrite.Meta
 		/// Иконка
 		/// </summary>
 		public string Image { get; set; }
-		//public bool IsDefault { get; set; }
 
 		public override string ID
 		{
@@ -550,7 +567,7 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// По умолчанию
 		/// </summary>
-		public string IsDefault { get; set; }
+		public bool IsDefault { get; set; }
 	}
 
 	
