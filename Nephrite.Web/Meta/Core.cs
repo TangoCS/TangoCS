@@ -354,7 +354,7 @@ namespace Nephrite.Meta
 			{
 				return _interfaces;
 			}
-		}
+	}
 	}
 
 	public abstract partial class MetaProperty : MetaElement

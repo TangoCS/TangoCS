@@ -24,6 +24,41 @@ namespace Tessera.Test
 {
     class Program
     {
+        private static string getType(MetaClassifier type, bool notNull)
+        {
+            switch (type.GetType().Name)
+            {
+                case "MetaStringType":
+                    return "new MetaStringType {Name = \"String\"}";
+                case "MetaByteArrayType":
+                    return "new MetaByteArrayType {Name = \"Data\"}";
+                case "MetaDateType":
+                    return "new MetaDateType { Name = \"Date\", NotNullable = " + notNull.ToString().ToLower() + " }";
+                case "MetaDateTimeType":
+                    return "new MetaDateTimeType  { Name = \"DateTime\", NotNullable = " + notNull.ToString().ToLower() + " }";
+                case "MetaIntType":
+                    return "new MetaIntType { Name = \"Int\", NotNullable = " + notNull.ToString().ToLower() + " }";
+                case "MetaLongType":
+                    return "new MetaLongType { Name = \"Long\", NotNullable = " + notNull.ToString().ToLower() + " }";
+                case "MetaBooleanType":
+                    return "new MetaBooleanType { Name = \"Boolean\", NotNullable = " + notNull.ToString().ToLower() + " }";
+                case "MetaGuidType":
+                    return "new MetaGuidType { Name = \"Guid\", NotNullable = " + notNull.ToString().ToLower() + " }";
+                case "MetaDecimalType":
+                    return "new MetaDecimalType { Precision = 18, Scale = 5, Name = \"Decimal\", NotNullable = " + notNull.ToString().ToLower() + " }";
+                case "MetaFileType":
+                    if ((type as MetaFileType).IdentifierType is MetaGuidType)
+                        return " new MetaFileType { Name = \"FileGUID\", IdentifierType = TypeFactory.Guid(false), NotNullable =  " + notNull.ToString().ToLower() + " }";
+                    else
+                        return "new MetaFileType { Name = \"FileID\", IdentifierType = TypeFactory.Int(false), NotNullable =  " + notNull.ToString().ToLower() + " }";
+                default:
+                    return "";
+
+            }
+
+        }
+
+
         private static void Main(string[] args)
         {
             //StringBuilder ss = new StringBuilder();
@@ -35,7 +70,7 @@ namespace Tessera.Test
             //var schema = sqlServerMetadataReader.ReadSchema("dbo");
             //foreach (var table in schema.Tables)
             //{
-          
+
             //    foreach (var column in table.Value.Columns)
             //    {
             //        if (column.Value.Type is MetaGuidType)
@@ -60,20 +95,41 @@ namespace Tessera.Test
                 "Database=servants;UserID=dbo;Password=q121212;Server=193.233.68.82:50000");
             HDataContext.DBType = "DB2";
             A.Model = new HCoreDataContext(Nephrite.Web.Hibernate.HDataContext.DBConfig(ConnectionManager.ConnectionString));
+
+            //var objectTypesWithWorkflow = (from o in
+            //                                   AppMM.DataContext.MM_ObjectTypes
+            //                               join p in
+            //                                   AppMM.DataContext.MM_ObjectProperties on o.ObjectTypeID equals p.ObjectTypeID
+            //                               where (!o.IsTemplate && o.IsSeparateTable && !o.SysName.EndsWith("Transition") && !AppMM.DataContext.MM_ObjectTypes.Any(o1 => o1.SysName == o.SysName + "Transition")
+            //                                           && p.SysName == "Activity" && p.RefObjectType != null && p.RefObjectType.SysName == "WF_Activity")
+            //                               select o).ToList();
+            //foreach (var cls in objectTypesWithWorkflow)
+            //{
+            //    foreach (
+            //        var prop in
+            //            cls.MM_ObjectProperties.Where(
+            //                o => o.UpperBound == 1 && o.TypeCode == ObjectPropertyType.Code && o.CodifierID.HasValue))
+            //    {
+            //    }
+            //}
+
             var classes = A.DynamicMeta.Classes.Where(o => o.Properties.Any(c => c.Type is MetaFileType));
-           // var classes = A.DynamicMeta.Classes.Where(o => o.Name=="Appendix");
+            var packages = A.DynamicMeta.Packages;
+            // var classes = A.DynamicMeta.Classes.Where(o => o.Name=="Appendix");
             var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate).ToList();
             var allObjectProperties = AppMM.DataContext.MM_ObjectProperties;
             var dddd = classes.Count(o => o.IsPersistent);
-            foreach (var cls in classes)
+            foreach (var _class in classes)
             {
-                if (cls.Key.Name == "Appendix")
+                foreach (var attribute in _class.Properties.Where(t => t is MetaAttribute))
                 {
+                    var metaAttribute = attribute as MetaAttribute;
+                    getType(metaAttribute.Type, metaAttribute.IsRequired);
                 }
 
             }
 
-            //var sdds = "";
+            var sdds = "";
 
             //var mapType = new DataTypeMapper();
             //ConnectionManager.SetConnectionString(
