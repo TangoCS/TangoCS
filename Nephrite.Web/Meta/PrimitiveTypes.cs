@@ -24,7 +24,7 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public partial class MetaEnum : MetaPrimitiveType
+	public class MetaEnum : MetaPrimitiveType
 	{
 		public override string CLRType
 		{
@@ -37,6 +37,11 @@ namespace Nephrite.Meta
 
 	public partial class MetaDecimalType : MetaPrimitiveType, IMetaNumericType
 	{
+		static MetaDecimalType _t = new MetaDecimalType { Precision = 18, Scale = 5, NotNullable = true };
+		static MetaDecimalType _t_n = new MetaDecimalType { Precision = 18, Scale = 5, NotNullable = false };
+		public static MetaDecimalType NotNull() { return _t; }
+		public static MetaDecimalType Null() { return _t_n; }
+
 		public int Precision { get; set; }
 		public int Scale { get; set; }
 
@@ -51,6 +56,12 @@ namespace Nephrite.Meta
 
 	public partial class MetaStringType : MetaPrimitiveType
 	{
+		static MetaStringType _t = new MetaStringType { NotNullable = true };
+		static MetaStringType _t_n = new MetaStringType { NotNullable = false };
+		public static MetaStringType NotNull() { return _t; }
+		public static MetaStringType Null() { return _t_n; }
+
+
 		public int Length { get; set; }
 		public override string CLRType
 		{
@@ -63,6 +74,11 @@ namespace Nephrite.Meta
 
 	public partial class MetaDateTimeType : MetaPrimitiveType
 	{
+		static MetaDateType _t = new MetaDateType { NotNullable = true };
+		static MetaDateType _t_n = new MetaDateType { NotNullable = false };
+		public static MetaDateType NotNull() { return _t; }
+		public static MetaDateType Null() { return _t_n; }
+
 		public override string CLRType
 		{
 			get
@@ -73,6 +89,11 @@ namespace Nephrite.Meta
 	}
     public partial class MetaXmlType : MetaPrimitiveType
     {
+		static MetaXmlType _t = new MetaXmlType { NotNullable = true };
+		static MetaXmlType _t_n = new MetaXmlType { NotNullable = false };
+		public static MetaXmlType NotNull() { return _t; }
+		public static MetaXmlType Null() { return _t_n; }
+
         public override string CLRType
         {
             get
@@ -81,6 +102,7 @@ namespace Nephrite.Meta
             }
         }
     }
+
 	public partial class MetaZoneDateTimeType : MetaPrimitiveType
 	{
 
@@ -88,6 +110,11 @@ namespace Nephrite.Meta
 
 	public partial class MetaDateType : MetaPrimitiveType
 	{
+		static MetaDateType _t = new MetaDateType { NotNullable = true };
+		static MetaDateType _t_n = new MetaDateType { NotNullable = false };
+		public static MetaDateType NotNull() { return _t; }
+		public static MetaDateType Null() { return _t_n; }
+
 		public override string CLRType
 		{
 			get
@@ -99,6 +126,10 @@ namespace Nephrite.Meta
 
 	public partial class MetaIntType : MetaPrimitiveType, IMetaIdentifierType, IMetaNumericType
 	{
+		static MetaIntType _t = new MetaIntType { NotNullable = true };
+		static MetaIntType _t_n = new MetaIntType { NotNullable = false };
+		public static MetaIntType NotNull() { return _t; }
+		public static MetaIntType Null() { return _t_n; }
 
 		public string ColumnSuffix
 		{
@@ -116,6 +147,11 @@ namespace Nephrite.Meta
 
 	public partial class MetaLongType : MetaPrimitiveType, IMetaNumericType
 	{
+		static MetaLongType _t = new MetaLongType { NotNullable = true };
+		static MetaLongType _t_n = new MetaLongType { NotNullable = false };
+		public static MetaLongType NotNull() { return _t; }
+		public static MetaLongType Null() { return _t_n; }
+
 		public override string CLRType
 		{
 			get
@@ -127,6 +163,11 @@ namespace Nephrite.Meta
 
 	public partial class MetaByteArrayType : MetaPrimitiveType
 	{
+		static MetaByteArrayType _t = new MetaByteArrayType { NotNullable = true };
+		static MetaByteArrayType _t_n = new MetaByteArrayType { NotNullable = false };
+		public static MetaByteArrayType NotNull() { return _t; }
+		public static MetaByteArrayType Null() { return _t_n; }
+
 		public int Length { get; set; }
 		public override string CLRType
 		{
@@ -139,6 +180,11 @@ namespace Nephrite.Meta
 
 	public partial class MetaBooleanType : MetaPrimitiveType
 	{
+		static MetaBooleanType _t = new MetaBooleanType { NotNullable = true };
+		static MetaBooleanType _t_n = new MetaBooleanType { NotNullable = false };
+		public static MetaBooleanType NotNull() { return _t; }
+		public static MetaBooleanType Null() { return _t_n; }
+
 		public override string CLRType
 		{
 			get
@@ -152,6 +198,11 @@ namespace Nephrite.Meta
 
 	public partial class MetaGuidType : MetaPrimitiveType, IMetaIdentifierType
 	{
+		static MetaGuidType _t = new MetaGuidType { NotNullable = true };
+		static MetaGuidType _t_n = new MetaGuidType { NotNullable = false };
+		public static MetaGuidType NotNull() { return _t; }
+		public static MetaGuidType Null() { return _t_n; }
+
 		public string ColumnSuffix
 		{
 			get { return "GUID"; }
@@ -167,6 +218,16 @@ namespace Nephrite.Meta
 
 	public class MetaFileType : MetaPrimitiveType
 	{
+		static MetaFileType _ti = new MetaFileType { IdentifierType = MetaIntType.NotNull(), NotNullable = true };
+		static MetaFileType _tg = new MetaFileType { IdentifierType = MetaGuidType.NotNull(), NotNullable = true };
+		static MetaFileType _ti_n = new MetaFileType { IdentifierType = MetaIntType.Null(), NotNullable = false };
+		static MetaFileType _tg_n = new MetaFileType { IdentifierType = MetaGuidType.Null(), NotNullable = false };
+
+		public static MetaFileType IntKeyNotNull() { return _ti; }
+		public static MetaFileType IntKeyNull() { return _ti_n; }
+		public static MetaFileType GuidKeyNotNull() { return _tg; }
+		public static MetaFileType GuidKeyNull() { return _tg_n; }
+
 		public IMetaIdentifierType IdentifierType { get; set; }
 
 		public override string ColumnName(string propName)

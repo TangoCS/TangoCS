@@ -169,6 +169,13 @@ namespace Nephrite.Meta
 			return c;
 		}
 
+		public MetaClass AddClass<T>(string caption = "", string description = "")
+		{
+			MetaClass c = new MetaClass { Name = typeof(T).Name, Caption = caption, Description = description };
+			AddClass(c);
+			return c;
+		}
+
 		public void AddPackage(MetaPackage metaPackage)
 		{
 			Solution.AddPackage(metaPackage);
@@ -354,7 +361,7 @@ namespace Nephrite.Meta
 			{
 				return _interfaces;
 			}
-	}
+		}
 	}
 
 	public abstract partial class MetaProperty : MetaElement

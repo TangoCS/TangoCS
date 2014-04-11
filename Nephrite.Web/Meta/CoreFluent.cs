@@ -16,9 +16,9 @@ namespace Nephrite.Meta.Fluent
 			_ref = reference;
 		}
 
-		public ReferenceBuilder To(string refClass)
+		public ReferenceBuilder To(string refClassName)
 		{
-			_ref.RefClassName = refClass;
+			_ref.RefClassName = refClassName;
 			return this;
 		}
 
@@ -98,10 +98,17 @@ namespace Nephrite.Meta.Fluent
 		}
 
 
-		public static MetaClass Reference(this MetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes)
+		public static MetaClass Reference<T>(this MetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes = null)
+		{
+			MetaReference a = new MetaReference { Name = name, Caption = caption, UpperBound = 1, RefClassName = typeof(T).Name };
+			if (attributes != null) attributes(new ReferenceBuilder(a));
+			cls.AddProperty(a);
+			return cls;
+		}
+		public static MetaClass Reference(this MetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes = null)
 		{
 			MetaReference a = new MetaReference { Name = name, Caption = caption, UpperBound = 1 };
-			attributes(new ReferenceBuilder(a));
+			if (attributes != null) attributes(new ReferenceBuilder(a));
 			cls.AddProperty(a);
 			return cls;
 		}
@@ -113,10 +120,10 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass TimeStamp(this MetaClass cls)
+		public static MetaClass TimeStamp<T>(this MetaClass cls)
 		{
 			cls.Attribute("LastModifiedDate", "Дата последней модификации", TypeFactory.DateTime(true));
-			cls.Reference("LastModifiedUser", "Последний редактировавший пользователь", x => x.To("SPM_Subject"));
+			cls.Reference<T>("LastModifiedUser", "Последний редактировавший пользователь");
 			cls.Interfaces.Add(typeof(IWithTimeStamp));
 			return cls;
 		}
