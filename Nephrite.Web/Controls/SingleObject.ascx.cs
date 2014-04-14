@@ -57,6 +57,7 @@ namespace Nephrite.Web.Controls
 			select.SearchQuery = SearchQuery;
 			select.SearchCountQuery = SearchCountQuery;
 			select.ShowFlatList = ShowFlatList;
+			select.CanSelectFunc = CanSelectFunc;
 
 			if (AutoComplete)
 			{
@@ -180,6 +181,7 @@ namespace Nephrite.Web.Controls
         public bool HighlightSearchResults { get { return select.HighlightSearchResults; } set { select.HighlightSearchResults = value; } }
 		public string NotFoundMessage { get { return select.GetNotFoundMessage(); } set { select.GetNotFoundMessage = () => value; } }
 		public Func<string> GetNotFoundMessage { get { return select.GetNotFoundMessage; } set { select.GetNotFoundMessage = value; } }
+		public Func<object, bool> CanSelectFunc { get; set; }
 		public string Title { get; set; }
 		public string QuickFilterValue { get { return select.QuickFilterValue; } set { select.QuickFilterValue = value; } }
 		public int PageSize { get; set; }

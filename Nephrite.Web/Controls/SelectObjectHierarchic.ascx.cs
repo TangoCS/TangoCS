@@ -34,6 +34,7 @@ namespace Nephrite.Web.Controls
 
 		protected string SearchText = TextResource.Get("Common.Controls.SelectObjectHierarchic.Search", "Поиск"); 
 		public Func<string> GetNotFoundMessage;
+		public Func<object, bool> CanSelectFunc { get; set; }
 		string[] selectedObjects { get; set; }
 		Guid[] rootGuids;
 		int[] rootIds;
@@ -325,8 +326,6 @@ namespace Nephrite.Web.Controls
 				ListItem li = new ListItem();
 				li.Text = (DataBinder.GetPropertyValue(obj, SearchDataTextField ?? DataTextField) ?? "").ToString();
 				li.Value = (DataBinder.GetPropertyValue(obj, DataValueField) ?? "").ToString();
-				if (ids.Contains(li.Value))
-					li.Selected = true;
 
                 if (HighlightSearchResults && hfQuickFilter.Value.Trim().Length > 0)
 				{
@@ -336,6 +335,15 @@ namespace Nephrite.Web.Controls
 						"<span style='color:Red; font-weight:bold'>$1</span>");
 					//li.Text = li.Text.Replace(hfQuickFilter.Value.Trim(), "<span style='color:Red; font-weight:bold'>" + hfQuickFilter.Value.Trim() + "</span>");
 				}
+
+				if (CanSelectFunc != null)
+				{
+					li.Enabled = CanSelectFunc(obj);
+					if (!li.Enabled)
+						li.Text = "<span style='color:Gray'>" + li.Text + "</span>";
+				}
+				if (ids.Contains(li.Value) && li.Enabled)
+					li.Selected = true;
 
 				if (!ParentField.IsEmpty() && !ShowFlatList && hfQuickFilter.Value.Trim() == String.Empty)
 				{
@@ -353,12 +361,12 @@ namespace Nephrite.Web.Controls
 
 			if (MultipleSelect)
             {
-				if (cblItems.Items.Count == 1 && (ParentField.IsEmpty() || hfQuickFilter.Value.Trim() != String.Empty))
+				if (cblItems.Items.Count == 1 && (ParentField.IsEmpty() || hfQuickFilter.Value.Trim() != String.Empty) && cblItems.Items[0].Enabled)
                     cblItems.Items[0].Selected = true;
             }
             else
             {
-				if (rblItems.Items.Count == 1 && (ParentField.IsEmpty() || hfQuickFilter.Value.Trim() != String.Empty))
+				if (rblItems.Items.Count == 1 && (ParentField.IsEmpty() || hfQuickFilter.Value.Trim() != String.Empty) && rblItems.Items[0].Enabled)
                     rblItems.Items[0].Selected = true;
             }
 
