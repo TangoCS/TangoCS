@@ -142,6 +142,12 @@ namespace Nephrite.Web.Controls
 		string[] _orderByColumns = null;
 		public void SetSortColumns(string columns)
 		{
+			if (columns.IsEmpty())
+			{
+				hf.Value = "";
+				_orderByColumns = null;
+			}
+			else
 			if (hf.Value.IsEmpty() && _orderByColumns == null && !columns.IsEmpty())
 			{
 				hf.Value = columns;
