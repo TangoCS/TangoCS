@@ -5,14 +5,19 @@ using System.Web;
 
 namespace Nephrite.Meta
 {
-	public interface IMetaIdentifierType
+	public interface IMetaPrimitiveType : IMetaClassifier
+	{
+		bool NotNullable { get; }
+	}
+
+	public interface IMetaIdentifierType : IMetaPrimitiveType
 	{
 		string ColumnSuffix { get; }
 	}
 
-	public interface IMetaNumericType { }
+	public interface IMetaNumericType : IMetaPrimitiveType { }
 
-	public class MetaPrimitiveType : MetaClassifier
+	public class MetaPrimitiveType : MetaClassifier, IMetaPrimitiveType
 	{
 		public bool NotNullable { get; set; }
 		public override string CLRType

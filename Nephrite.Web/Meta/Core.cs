@@ -213,7 +213,14 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public abstract partial class MetaClassifier : MetaElement
+
+	public partial interface IMetaClassifier
+	{
+		string CLRType { get; }
+		string ColumnName(string propName);
+	}
+
+	public abstract partial class MetaClassifier : MetaElement, IMetaClassifier
 	{
 		public abstract string CLRType { get; }
 		public virtual string ColumnName(string propName)
@@ -376,7 +383,7 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// “ип данных
 		/// </summary>
-		public virtual MetaClassifier Type { get; set; }
+		public virtual IMetaClassifier Type { get; set; }
 		/// <summary>
 		/// явл€етс€ ли свойство об€зательным дл€ заполнени€
 		/// </summary>
@@ -401,6 +408,11 @@ namespace Nephrite.Meta
 		public virtual string ColumnName
 		{
 			get { return Type == null ? Name : Type.ColumnName(Name); }
+		}
+
+		public string GetStringValue<T>(T obj)
+		{
+			return "";
 		}
 
 	}
@@ -493,7 +505,7 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// “ип данных
 		/// </summary>
-		public override MetaClassifier Type
+		public override IMetaClassifier Type
 		{
 			get
 			{

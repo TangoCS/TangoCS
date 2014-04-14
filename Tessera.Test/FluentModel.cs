@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using Nephrite.Meta;
 using Nephrite.Meta.Fluent;
@@ -14,7 +15,7 @@ namespace Tessera.Test
 	class LotDoc { }
 	class ProjectActivity { }
 	class C_Measure { }
-	class C_OperationType { }
+	class C_OperationType { public string Title { get; set; } }
 
 	class FluentModel
 	{
@@ -39,8 +40,12 @@ namespace Tessera.Test
 				.Reference<LotDoc>("Docs", "Документы", x => x.Multiple().Aggregation().InverseProperty("Lot"))
 				.Reference<ProjectActivity>("ProjectActivity", "Заявка на работу")
 				.Attribute("ContractName", "Предмет договора", TypeFactory.String(false));
-				
 
+
+			//Func<C_OperationType, string> f = o => o.Title;
+			//Expression<Func<C_OperationType, string>> f2 = o => o.Title;
+			//Action<C_OperationType, string> f3 = (o, v) => o.Title = v;
+			
 			return p;				
 		}
 	}
