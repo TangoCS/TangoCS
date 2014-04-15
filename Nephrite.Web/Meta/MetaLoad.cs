@@ -230,30 +230,4 @@ namespace Nephrite.Meta
             c.AddOperation(o);
         }
     }
-
-    public class XsltExtension
-    {
-        public string getType(string typeCode, string isRequired)
-        {
-            switch (typeCode)
-            {
-                case "S": return "TypeFactory.String()";
-                case "X": return "TypeFactory.ByteArray()";
-
-                case "C": return String.Format("TypeFactory.Char({0})", isRequired);
-                case "D": return String.Format("TypeFactory.Date({0})", isRequired);
-                case "T": return String.Format("TypeFactory.DateTime({0})", isRequired);
-                case "N": return String.Format("TypeFactory.Int({0})", isRequired);
-                case "U": return String.Format("TypeFactory.Long({0})", isRequired);
-
-                case "B": return String.Format("TypeFactory.Boolean({0})", isRequired);
-                case "G": return String.Format("TypeFactory.Guid({0})", isRequired);
-                case "M": return String.Format("TypeFactory.Decimal({0})", isRequired);
-
-                case "F": return String.Format("TypeFactory.FileIntKey({0})", isRequired);
-                case "E": return String.Format("TypeFactory.FileGuidKey({0})", isRequired);
-            }
-            return "new MetaPrimitiveType()";
-        }
-    }
 }

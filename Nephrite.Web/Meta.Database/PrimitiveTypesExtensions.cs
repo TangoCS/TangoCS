@@ -3,12 +3,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Nephrite.Meta;
 
 namespace Nephrite.Meta
 {
+	public partial interface IMetaClassifier
+	{
+		string GetDBType(IDBScript script);
+	}
 
-	public abstract partial class MetaClassifier : MetaElement
+	public abstract partial class MetaClassifier : MetaElement, IMetaClassifier
 	{
 
 		public virtual string GetDBType(IDBScript script)

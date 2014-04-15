@@ -16,9 +16,9 @@ namespace Nephrite.Meta.Fluent
 			_ref = reference;
 		}
 
-		public ReferenceBuilder To(string refClass)
+		public ReferenceBuilder To(string refClassName)
 		{
-			_ref.RefClassName = refClass;
+			_ref.RefClassName = refClassName;
 			return this;
 		}
 
@@ -57,23 +57,25 @@ namespace Nephrite.Meta.Fluent
 	{
 		public static MetaClass IntKey(this MetaClass cls, bool isIdentity = true)
 		{
-			var t = TypeFactory.Int(true);
-			var a = new MetaAttribute { Name = cls.Name + (t as IMetaIdentifierType).ColumnSuffix, Caption = "Ид", IsRequired = true, Type = t, IsIdentity = isIdentity };
-			cls.AddProperty(a);
-			cls.CompositeKey.Add(a);
-			return cls;
+			var t = MetaIntType.NotNull();
+			return cls.AttributeKey(cls.Name + t.ColumnSuffix, "Ид", t, isIdentity);
 		}
 
 		public static MetaClass GuidKey(this MetaClass cls)
 		{
-			var t = TypeFactory.Guid(true);
-			var a = new MetaAttribute { Name = cls.Name + (t as IMetaIdentifierType).ColumnSuffix, Caption = "Ид", IsRequired = true, Type = t };
+			var t = MetaGuidType.NotNull();
+			return cls.AttributeKey(cls.Name + t.ColumnSuffix, "Ид", t);
+		}
+
+		public static MetaClass AttributeKey(this MetaClass cls, string name, string caption, IMetaIdentifierType type, bool isIdentity = false)
+		{
+			MetaAttribute a = new MetaAttribute { Name = name, Caption = caption, Type = type, IsMultilingual = false, IsRequired = true, IsIdentity = isIdentity };
 			cls.AddProperty(a);
 			cls.CompositeKey.Add(a);
 			return cls;
 		}
 
-		public static MetaClass Attribute(this MetaClass cls, string name, string caption, MetaPrimitiveType type, bool isMultilingual = false)
+		public static MetaClass Attribute(this MetaClass cls, string name, string caption, IMetaPrimitiveType type, bool isMultilingual = false)
 		{
 			MetaAttribute a = new MetaAttribute { Name = name, Caption = caption, Type = type, IsMultilingual = isMultilingual };
 			if (type.NotNullable) a.IsRequired = true;
@@ -81,42 +83,49 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass ComputedAttribute(this MetaClass cls, string name, string caption, MetaPrimitiveType type)
+		public static MetaClass ComputedAttribute(this MetaClass cls, string name, string caption, IMetaPrimitiveType type)
 		{
-			MetaComputedAttribute a = new MetaComputedAttribute { Name = name, Caption = caption, Type = type };
+			MetaComputedAttribute a = new MetaComputedAttribute { Name = name, Caption = caption, Type = type};
 			if (type.NotNullable) a.IsRequired = true;
 			cls.AddProperty(a);
 			return cls;
 		}
 
-		public static MetaClass PersistentComputedAttribute(this MetaClass cls, string name, string caption, MetaPrimitiveType type)
+		public static MetaClass PersistentComputedAttribute(this MetaClass cls, string name, string caption, IMetaPrimitiveType type)
 		{
-			MetaPersistentComputedAttribute a = new MetaPersistentComputedAttribute { Name = name, Caption = caption, Type = type };
+			MetaPersistentComputedAttribute a = new MetaPersistentComputedAttribute { Name = name, Caption = caption, Type = type};
 			if (type.NotNullable) a.IsRequired = true;
 			cls.AddProperty(a);
 			return cls;
 		}
 
-
-		public static MetaClass Reference(this MetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes)
+		public static MetaClass Reference<T>(this MetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes = null)
 		{
-			MetaReference a = new MetaReference { Name = name, Caption = caption, UpperBound = 1 };
-			attributes(new ReferenceBuilder(a));
+			MetaReference a = new MetaReference { Name = name, Caption = caption, UpperBound = 1, RefClassName = typeof(T).Name };
+			if (attributes != null) attributes(new ReferenceBuilder(a));
 			cls.AddProperty(a);
+			return cls;
+		}
+		public static MetaClass ReferenceKey<T>(this MetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes = null)
+		{
+			MetaReference a = new MetaReference { Name = name, Caption = caption, UpperBound = 1, RefClassName = typeof(T).Name };
+			if (attributes != null) attributes(new ReferenceBuilder(a).Required());
+			cls.AddProperty(a);
+			cls.CompositeKey.Add(a);
 			return cls;
 		}
 
 		public static MetaClass Title(this MetaClass cls, string caption = "Наименование")
 		{
-			cls.AddProperty(new MetaAttribute { Name = "Title", Caption = caption, IsRequired = true, Type = TypeFactory.String(true) });
+			cls.AddProperty(new MetaAttribute { Name = "Title", Caption = caption, IsRequired = true, Type = MetaStringType.NotNull() });
 			cls.Interfaces.Add(typeof(IWithTitle));
 			return cls;
 		}
 
-		public static MetaClass TimeStamp(this MetaClass cls)
+		public static MetaClass TimeStamp<T>(this MetaClass cls)
 		{
-			cls.Attribute("LastModifiedDate", "Дата последней модификации", TypeFactory.DateTime(true));
-			cls.Reference("LastModifiedUser", "Последний редактировавший пользователь", x => x.To("SPM_Subject"));
+			cls.Attribute("LastModifiedDate", "Дата последней модификации", MetaDateTimeType.NotNull());
+			cls.Reference<T>("LastModifiedUser", "Последний редактировавший пользователь");
 			cls.Interfaces.Add(typeof(IWithTimeStamp));
 			return cls;
 		}
@@ -169,7 +178,7 @@ namespace Nephrite.Meta.Fluent
 
 		public static MetaClass Workflow(this MetaClass cls)
 		{
-			cls.Reference("Activity", "Статус", x => x.To("WF_Activity"));
+			//cls.Reference("Activity", "Статус", x => x.To("WF_Activity"));
 			return cls;
 		}
 

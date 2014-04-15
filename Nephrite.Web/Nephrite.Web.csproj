@@ -156,6 +156,7 @@
     <Compile Include="MetaStorage\MetaStorageModel.cs" />
     <Compile Include="Meta.Forms\UIMetaModel.cs" />
     <Compile Include="Meta\CoreFluent.cs" />
+    <Compile Include="Meta\CoreTyped.cs" />
     <Compile Include="Model\IEntity.cs">
       <SubType>Code</SubType>
     </Compile>

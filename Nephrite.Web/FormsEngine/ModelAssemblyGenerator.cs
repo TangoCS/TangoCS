@@ -568,7 +568,7 @@ namespace Nephrite.Web.FormsEngine
 			xe.Save(TempDir + "\\model.xml");
 
 			// Генерация по шаблонам XSLT
-			string xsltPath = "~/CodeTemplates";
+			/*string xsltPath = "~/CodeTemplates";
 			if (!ConfigurationManager.AppSettings["CodeTemplatesPath"].IsEmpty())
 				xsltPath = ConfigurationManager.AppSettings["CodeTemplatesPath"];
 			xsltPath = HttpContext.Current.Server.MapPath(xsltPath);
@@ -593,7 +593,7 @@ namespace Nephrite.Web.FormsEngine
 					if (errors != String.Empty)
 						return errors;
 				}
-			}
+			}*/
 
 			return String.Empty;
 		}
