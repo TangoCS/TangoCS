@@ -11,7 +11,7 @@ namespace Nephrite.Web.Controls
         {
             get
             {
-                return "SELECT t0.Title as \"Title\", t0.URL AS \"Url\", t0.Type AS \"MenuItemType\", t0.ImageURL AS \"ImageUrl\", " +
+                return "SELECT t0.\"Title\", t0.\"Url\" , t0.\"Type\" AS \"MenuItemType\", t0.\"ImageUrl\" , " +
                             "	(CASE" +
                             "		WHEN t2.test IS NOT NULL THEN cast(t6.SysName as varchar(32000))" +
                             "		WHEN t4.test IS NOT NULL THEN t7.SysName || 'Pck'" +
@@ -23,26 +23,26 @@ namespace Nephrite.Web.Controls
                             "		ELSE NULL" +
                             "	 END) AS \"EnableSPM\", " +
                             "	(CASE " +
-                            "		WHEN t0.Type = 'V' THEN t4.SysName " +
+                            "		WHEN t0.\"Type\" = 'V' THEN t4.SysName " +
                             "		ELSE t2.SysName " +
-                            "	 END) AS \"MethodSysName\", t0.SeqNo as \"SeqNo\", t0.ParentGUID AS \"_ParentMenuItemGUID\", t0.NavigItemGUID AS \"_MenuItemGUID\",  " +
+                            "	 END) AS \"MethodSysName\", t0.\"SeqNo\" , t0.\"ParentGUID\" AS \"_ParentMenuItemGUID\", t0.\"NavigItemGUID\" AS \"_MenuItemGUID\",  " +
                             "	(CASE  " +
-                            "		WHEN t0.Type = 'V' THEN t0.SPMActionGUID " +
+                            "		WHEN t0.\"Type\" = 'V' THEN t0.\"SPMActionGUID\" " +
                             "		ELSE t2.Guid " +
                             "	 END) AS \"_SPMActionGUID\"" +
-                            "FROM dbo.V_N_NavigItem AS t0 " +
+                            "FROM dbo.\"V_N_NavigItem\" AS t0 " +
                             "LEFT OUTER JOIN ( " +
                             "	SELECT 1 AS test, t1.MethodID, t1.SysName, t1.ObjectTypeID, t1.Guid " +
                             "	FROM dbo.MM_Method AS t1  " +
-                            "	) AS t2 ON t0.MethodID = (t2.MethodID) " +
+                            "	) AS t2 ON t0.\"MethodID\" = (t2.MethodID) " +
                             "LEFT OUTER JOIN ( " +
                             "	SELECT 1 AS test, t3.FormViewID, t3.SysName, t3.PackageID " +
                             "	FROM dbo.MM_FormView AS t3 " +
-                            "	) AS t4 ON t0.FormViewID = (t4.FormViewID) " +
-                            "INNER JOIN dbo.N_Navig AS t5 ON t5.NavigGUID = t0.NavigGUID " +
+                            "	) AS t4 ON t0.\"FormViewID\" = (t4.FormViewID) " +
+                            "INNER JOIN dbo.N_Navig AS t5 ON t5.NavigGUID = t0.\"NavigGUID\" " +
                             "LEFT OUTER JOIN dbo.MM_ObjectType AS t6 ON t6.ObjectTypeID = t2.ObjectTypeID " +
                             "LEFT OUTER JOIN dbo.MM_Package AS t7 ON t7.PackageID = t4.PackageID " +
-                            "WHERE (NOT (t0.IsDeleted = 1)) AND (t5.SysName = 'MainMenu') AND (t0.LanguageCode = 'ru')";
+                            "WHERE (NOT (t0.\"IsDeleted\" = 1)) AND (t5.SysName = 'MainMenu') AND (t0.\"LanguageCode\" = 'ru')";
             }
         }
     }

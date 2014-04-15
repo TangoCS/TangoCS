@@ -24,7 +24,7 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public partial class MetaEnum : MetaPrimitiveType
+	public class MetaEnum : MetaPrimitiveType
 	{
 		public override string CLRType
 		{
