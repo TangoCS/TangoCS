@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Configuration;
-using Nephrite.Web.Controls;
 using System.IO;
 using System.Web;
 
-namespace Nephrite.Web.SettingsManager
+namespace Nephrite.Web
 {
     public static class Settings
     {
@@ -40,15 +39,6 @@ namespace Nephrite.Web.SettingsManager
 			get
 			{
 				return (HttpRuntime.AppDomainAppVirtualPath + "/_controltemplates/Nephrite.Web/").Replace("//", "/");
-			}
-		}
-
-		// библиотека загружаемых картинок
-		public static string ImageLibratyPath
-		{
-			get
-			{
-				return "images";
 			}
 		}
 
@@ -113,10 +103,6 @@ namespace Nephrite.Web.SettingsManager
             fileProviderAssembly = ConfigurationManager.AppSettings["FileProviderAssembly"] ?? String.Empty;
             fileProviderClass = ConfigurationManager.AppSettings["FileProviderClass"] ?? String.Empty;
 
-			accessRightsManager = ConfigurationManager.AppSettings["AccessRightsManager"] ?? String.Empty;
-			settingsManager = ConfigurationManager.AppSettings["SettingsManager"] ?? String.Empty;
-
-
 			if (ConfigurationManager.AppSettings["NavMenuButtonsMode"] == "BigButtons")
 				navMenuButtonsMode = NavMenuButtonsMode.BigButtons;
 
@@ -128,23 +114,6 @@ namespace Nephrite.Web.SettingsManager
 			if (ConfigurationManager.AppSettings["EnableViewCache"] != null)
 				EnableViewCache = ConfigurationManager.AppSettings["EnableViewCache"] != "0" && ConfigurationManager.AppSettings["EnableViewCache"] != "false";
         }
-
-		static string accessRightsManager;
-		public static string AccessRightsManager
-		{
-			get
-			{
-				return accessRightsManager;
-			}
-		}
-		static string settingsManager;
-		public static string SettingsManager
-		{
-			get
-			{
-				return settingsManager;
-			}
-		}
 
 
 		static string addomain;
@@ -190,4 +159,10 @@ namespace Nephrite.Web.SettingsManager
             get { return fileProviderClass; }
         }
     }
+
+	public enum NavMenuButtonsMode
+	{
+		SmallButtons,
+		BigButtons
+	}
 }

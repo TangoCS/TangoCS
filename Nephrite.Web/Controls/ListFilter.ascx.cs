@@ -14,6 +14,7 @@ using System.Xml;
 using Nephrite.Web.SPM;
 using Nephrite.Web;
 using Nephrite.Web.TextResources;
+using Nephrite.Meta;
 
 namespace Nephrite.Web.Controls
 {
@@ -936,11 +937,8 @@ namespace Nephrite.Web.Controls
 			((List<object>)f.Column).Add(column);
 			f.Operator.Add(opname);
 		}
+
 		public void AddFieldBoolean<T>(string title, Expression<Func<T, bool>> column)
-		{
-			AddFieldBoolean<T>(title, column, null);
-		}
-		public void AddFieldBoolean<T>(string title, Expression<Func<T, bool>> column, bool? defaultFilter)
 		{
 			fieldList.Add(new Field
 			{
@@ -989,6 +987,40 @@ namespace Nephrite.Web.Controls
 			}
 			((List<object>)f.Column).Add(column);
 			f.Operator.Add(opname);
+		}
+		public void AddField<TClass, TValue>(MetaAttribute prop)
+		{
+			var f = new Field();
+			f.Title = prop.Caption;
+			f.Column = prop.GetValueExpression;
+
+			if (prop.Type is MetaStringType)
+				f.FieldType = FieldType.String;
+			else if (prop.Type is MetaDateType)
+				f.FieldType = FieldType.Date;
+			else if (prop.Type is MetaDateTimeType)
+				f.FieldType = FieldType.DateTime;
+			else if (prop.Type is IMetaNumericType)
+				f.FieldType = FieldType.Number;
+			else if (prop.Type is MetaBooleanType)
+				f.FieldType = FieldType.Boolean;
+			else
+				return;
+
+			fieldList.Add(f);
+		}
+		public void AddField<TClass, TValue>(MetaReference prop)
+		{
+			var f = new Field();
+			f.Title = prop.Caption;
+			f.Column = prop.GetValueExpression;
+			f.FieldType = FieldType.DDL;
+
+			f.DataSource = prop.AllObjects;
+			f.DisplayMember = prop.DataTextField;
+			f.ValueMember = prop.RefClass.Key.Name;
+
+			fieldList.Add(f);
 		}
 		#endregion
 

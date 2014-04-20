@@ -6,6 +6,7 @@ using System.Text;
 using Nephrite.Meta;
 using Nephrite.Meta.Fluent;
 using Nephrite.Web;
+using Nephrite.Web.Controls;
 
 namespace Tessera.Test
 {
@@ -38,11 +39,13 @@ namespace Tessera.Test
 				.Attribute("Copy_OrgUnit_Title", "Копия Наименование заказчика", TypeFactory.String(false))
 				.Reference<C_Contractor>("ContractorOuter", "Исполнитель")
 				.Reference<LotDoc>("Docs", "Документы", x => x.Multiple().Aggregation().InverseProperty("Lot"))
-				.Reference<ProjectActivity>("ProjectActivity", "Заявка на работу")
-				.Attribute("ContractName", "Предмет договора", TypeFactory.String(false));
+				.Reference<ProjectActivity>("ProjectActivity", "Заявка на работу");
 
+			Func<Appendix, int> f = o => o.AppendixID;
+			Expression<Func<Appendix, int>> f2 = o => o.AppendixID;
+			Sorter s = new Sorter();
+			s.AddSortColumn("", f2);
 
-			//Func<C_OperationType, string> f = o => o.Title;
 			//Expression<Func<C_OperationType, string>> f2 = o => o.Title;
 			//Action<C_OperationType, string> f3 = (o, v) => o.Title = v;
 			

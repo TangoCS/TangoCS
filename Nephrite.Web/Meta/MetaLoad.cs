@@ -145,7 +145,7 @@ namespace Nephrite.Meta
             a.Name = xp.GetAttributeValue("Name");
             a.Caption = xp.GetAttributeValue("Caption");
             a.Description = xp.GetAttributeValue("Description");
-            a.GetExpression = xp.GetAttributeValue("GetExpression");
+            //a.GetExpression = xp.GetAttributeValue("GetExpression");
             switch (xp.GetAttributeValue("DataType"))
             {
 				case "S": a.Type = TypeFactory.String(xp.GetAttributeValue("Length").ToInt32(-1), a.IsRequired); break;

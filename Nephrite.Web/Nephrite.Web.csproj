@@ -157,6 +157,7 @@
     <Compile Include="Meta.Forms\UIMetaModel.cs" />
     <Compile Include="Meta\CoreFluent.cs" />
     <Compile Include="Meta\CoreTyped.cs" />
+    <Compile Include="Meta\StringConverter.cs" />
     <Compile Include="Model\IEntity.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -471,7 +472,7 @@
     <Compile Include="Web\RouteTable.cs" />
     <Compile Include="RSS\RssFeed.cs" />
     <Compile Include="RSS\RssItem.cs" />
-    <Compile Include="SettingsManager\Settings.cs" />
+    <Compile Include="Web\Settings.cs" />
     <Compile Include="Model\Extensions.cs" />
     <Compile Include="SPM2\SPM.cs" />
     <Compile Include="MVC\ViewControl.cs">

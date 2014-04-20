@@ -245,6 +245,20 @@ namespace Nephrite.Web
 			return defaultValue;
 		}
 
+		public static string Icon(this bool src)
+		{
+			if (src)
+				return "<img src='" + Settings.ImagesPath + "tick.png' />";
+			return String.Empty;
+		}
+
+		public static string Icon(this bool? src)
+		{
+			if (src.HasValue)
+				return src.Value ? "<img src='" + Settings.ImagesPath + "tick.png' />" : "";
+			return String.Empty;
+		}
+
 		public static string Join(this string[] str, string separator)
 		{
 			return String.Join(separator, str.Where(s => !String.IsNullOrEmpty(s)).ToArray());
