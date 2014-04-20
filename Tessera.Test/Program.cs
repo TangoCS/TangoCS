@@ -51,6 +51,9 @@ namespace Tessera.Test
                         return " new MetaFileType { Name = \"FileGUID\", IdentifierType = TypeFactory.Guid(false), NotNullable =  " + notNull.ToString().ToLower() + " }";
                     else
                         return "new MetaFileType { Name = \"FileID\", IdentifierType = TypeFactory.Int(false), NotNullable =  " + notNull.ToString().ToLower() + " }";
+                case "MetaEnum":
+
+                    return " new MetaEnum { Name = \""+type.Name+"\" , NotNullable = " + notNull.ToString().ToLower() + " }";
                 default:
                     return "";
 
@@ -113,7 +116,7 @@ namespace Tessera.Test
             //    }
             //}
 
-            var classes = A.DynamicMeta.Classes.Where(o => o.Properties.Any(c => c.Type is MetaFileType));
+            var classes = A.DynamicMeta.Classes;
             var packages = A.DynamicMeta.Packages;
             // var classes = A.DynamicMeta.Classes.Where(o => o.Name=="Appendix");
             var objectTypes = AppMM.DataContext.MM_ObjectTypes.Where(o => !o.IsTemplate).ToList();
@@ -121,11 +124,13 @@ namespace Tessera.Test
             var dddd = classes.Count(o => o.IsPersistent);
             foreach (var _class in classes)
             {
-                foreach (var attribute in _class.Properties.Where(t => t is MetaAttribute))
-                {
-                    var metaAttribute = attribute as MetaAttribute;
-                    getType(metaAttribute.Type, metaAttribute.IsRequired);
-                }
+                if (_class.Name == "OutDocSend")
+                    foreach (var attribute in _class.Properties.Where(t => t is MetaAttribute))
+                    {
+                        var metaAttribute = attribute as MetaAttribute;
+                        if (metaAttribute.Name == "UnloadTitle")
+                            getType(metaAttribute.Type, metaAttribute.IsRequired);
+                    }
 
             }
 
