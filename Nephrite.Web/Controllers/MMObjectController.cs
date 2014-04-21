@@ -38,7 +38,7 @@ namespace Nephrite.Web.Controllers
 				if (viewData != null)
 					((ViewControl)ctl).SetViewData(viewData);
 				var t = ctl.GetType();
-				((ViewControl)ctl).RenderMargin = t.BaseType.BaseType.GetGenericArguments().Length == 1 && t.BaseType.BaseType.GetGenericArguments()[0].GetInterfaces().Contains(typeof(IMMObject));
+				((ViewControl)ctl).RenderMargin = !(viewData is IQueryable); //t.BaseType.BaseType.GetGenericArguments().Length == 1 && t.BaseType.BaseType.GetGenericArguments()[0].GetInterfaces().Contains(typeof(IMMObject));
 				container.Controls.Add(ctl);
 			}
 			catch (Exception e)

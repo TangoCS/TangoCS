@@ -19,6 +19,10 @@ namespace Nephrite.Meta
 		string ColumnSuffix { get; }
 	}
 
+	public interface IMetaParameterType : IMetaPrimitiveType
+	{
+	}
+
 	public interface IMetaNumericType : IMetaPrimitiveType { }
 
 	public abstract class MetaPrimitiveType : MetaClassifier, IMetaPrimitiveType
@@ -68,7 +72,7 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public partial class MetaStringType : MetaPrimitiveType
+	public partial class MetaStringType : MetaPrimitiveType, IMetaParameterType
 	{
 		static MetaStringType _t = new MetaStringType { NotNullable = true, GetStringValue = ToStringConverter.String };
 		static MetaStringType _t_n = new MetaStringType { NotNullable = false, GetStringValue = ToStringConverter.String };
@@ -141,7 +145,7 @@ namespace Nephrite.Meta
 
 
 
-	public partial class MetaIntType : MetaPrimitiveType, IMetaIdentifierType, IMetaNumericType
+	public partial class MetaIntType : MetaPrimitiveType, IMetaIdentifierType, IMetaNumericType, IMetaParameterType
 	{
 		static MetaIntType _t = new MetaIntType { NotNullable = true, GetStringValue = ToStringConverter.Int };
 		static MetaIntType _t_n = new MetaIntType { NotNullable = false, GetStringValue = ToStringConverter.NullableInt };
@@ -211,9 +215,9 @@ namespace Nephrite.Meta
 		}
 	}
 
-	
 
-	public partial class MetaGuidType : MetaPrimitiveType, IMetaIdentifierType
+
+	public partial class MetaGuidType : MetaPrimitiveType, IMetaIdentifierType, IMetaParameterType
 	{
 		static MetaGuidType _t = new MetaGuidType { NotNullable = true, GetStringValue = ToStringConverter.Guid };
 		static MetaGuidType _t_n = new MetaGuidType { NotNullable = false, GetStringValue = ToStringConverter.NullableGuid };

@@ -31,7 +31,7 @@ namespace Nephrite.Meta
 		/// Название на локальном языке
 		/// </summary>
 		public string Caption { get; set; }
-		
+
 		/// <summary>
 		/// Описание
 		/// </summary>
@@ -232,6 +232,8 @@ namespace Nephrite.Meta
 
 	public partial class MetaClass : MetaClassifier
 	{
+		public string CaptionPlural { get; set; }
+
 		public override string CLRType
 		{
 			get
@@ -326,7 +328,6 @@ namespace Nephrite.Meta
 		{
 			metaOperation.Parent = this;
 			_operations.Add(metaOperation.Name.ToLower(), metaOperation);
-			if (metaOperation.IsDefault) DefaultOperation = metaOperation;
 		}
 
 		public MetaProperty GetProperty(string name)
@@ -370,6 +371,9 @@ namespace Nephrite.Meta
 
 	public abstract partial class MetaProperty : MetaElement
 	{
+		string _captionShort = "";
+		public string CaptionShort { get { return String.IsNullOrEmpty(_captionShort) ? Caption : _captionShort; } set { _captionShort = value; } }
+
 		/// <summary>
 		/// Класс, к которому принадлежит свойство
 		/// </summary>
@@ -583,7 +587,7 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// Тип данных
 		/// </summary>
-		public MetaClassifier Type { get; set; }
+		public IMetaParameterType Type { get; set; }
 	}
 
 	/// <summary>
@@ -591,7 +595,7 @@ namespace Nephrite.Meta
 	/// </summary>
 	public class MetaOperation : MetaElement
 	{
-		Dictionary<string, MetaOperationParameter> _parameters = new Dictionary<string, MetaOperationParameter>();
+		List<MetaOperationParameter> _parameters = new List<MetaOperationParameter>();
 
 		/// <summary>
 		/// Класс, которому принадлежит метод
@@ -600,7 +604,7 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// Параметры метода
 		/// </summary>
-		public Dictionary<string, MetaOperationParameter> Parameters { get { return _parameters; } }
+		public List<MetaOperationParameter> Parameters { get { return _parameters; } }
 		/// <summary>
 		/// Иконка
 		/// </summary>
@@ -613,10 +617,13 @@ namespace Nephrite.Meta
 				return Parent.Name + ".O." + Name;
 			}
 		}
-		/// <summary>
-		/// По умолчанию
-		/// </summary>
-		public bool IsDefault { get; set; }
+
+		public object Action { get; set; }
+		public virtual void Invoke()
+		{
+			throw new NotImplementedException();
+		}
+
 	}
 
 	

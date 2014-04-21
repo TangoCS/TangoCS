@@ -226,7 +226,9 @@ namespace Nephrite.Meta
             o.Name = xo.GetAttributeValue("Name");
             o.Caption = xo.GetAttributeValue("Caption");
             o.Description = xo.GetAttributeValue("Description");
-			o.IsDefault = xo.GetAttributeValue("IsDefault").ToLower() == "true";
+
+			if (xo.GetAttributeValue("IsDefault").ToLower() == "true")
+				c.DefaultOperation = o;
             c.AddOperation(o);
         }
     }

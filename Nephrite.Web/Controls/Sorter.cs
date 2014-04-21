@@ -8,6 +8,7 @@ using System.Collections;
 using System.Linq.Expressions;
 using Nephrite.Web;
 using Nephrite.Web.SettingsManager;
+using Nephrite.Meta;
 
 
 namespace Nephrite.Web.Controls
@@ -138,6 +139,25 @@ namespace Nephrite.Web.Controls
 				return RenderSortPostBack(seqNo, title, showArrows);
 			else
 				return RenderSortLink(seqNo, title, showArrows);
+		}
+
+		public string AddSortColumn<T, TColumn>(MetaProperty prop, bool showArrows = true)
+		{
+			int seqNo = sortColumns.Count;
+			SortColumn<T> sc = new SortColumn<T>
+			{
+				Title = prop.CaptionShort,
+				//SeqNo = seqNo,
+				OrderAsc = q => q.OrderBy<T, TColumn>(prop.GetValueExpression as Expression<Func<T, TColumn>>),
+				OrderDesc = q => q.OrderByDescending<T, TColumn>(prop.GetValueExpression as Expression<Func<T, TColumn>>),
+				OrderAscOE = q => q.OrderBy<T, TColumn>(prop.GetValue as Func<T, TColumn>),
+				OrderDescOE = q => q.OrderByDescending<T, TColumn>(prop.GetValue as Func<T, TColumn>)
+			};
+			sortColumns.Add(seqNo, sc);
+			if (UsePostBack)
+				return RenderSortPostBack(seqNo, prop.CaptionShort, showArrows);
+			else
+				return RenderSortLink(seqNo, prop.CaptionShort, showArrows);
 		}
 
 		string[] _orderByColumns = null;

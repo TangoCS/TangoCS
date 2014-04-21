@@ -201,6 +201,10 @@ namespace Nephrite.Web
         {
 			return GetSorter().AddSortColumn(title, column, showArrows);
         }
+		public string AddSortColumn<T, TColumn>(MetaProperty prop, bool showArrows = true)
+		{
+			return GetSorter().AddSortColumn<T, TColumn>(prop, showArrows);
+		}
 		/*public string AddDefaultSortColumn<T, TColumn>(string title, Expression<Func<T, TColumn>> column)
         {
             if (!sortColumns.ContainsKey(1))

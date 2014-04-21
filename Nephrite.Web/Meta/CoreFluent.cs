@@ -140,19 +140,23 @@ namespace Nephrite.Meta.Fluent
 
 		public static MetaClass OperationEdit(this MetaClass cls)
 		{
-			cls.AddOperation(new MetaOperation { Name = "Edit", Caption = "Редактировать", Image = "edit", IsDefault = true });
+			var op = new MetaOperation { Name = "Edit", Caption = "Редактировать", Image = "edit" };
+			cls.AddOperation(op);
+			cls.DefaultOperation = op; 
 			return cls;
 		}
 
 		public static MetaClass OperationList(this MetaClass cls)
 		{
-			cls.AddOperation(new MetaOperation { Name = "ViewList", Caption = "Список", Image = "list", IsDefault = true });
+			cls.AddOperation(new MetaOperation { Name = "ViewList", Caption = "Список", Image = "list" });
 			return cls;
 		}
 
 		public static MetaClass OperationView(this MetaClass cls)
 		{
-			cls.AddOperation(new MetaOperation { Name = "View", Caption = "Свойства", Image = "properties" });
+			var op = new MetaOperation { Name = "View", Caption = "Свойства", Image = "properties" };
+			cls.AddOperation(op);
+			cls.DefaultOperation = op; 
 			return cls;
 		}
 
