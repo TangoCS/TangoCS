@@ -5,28 +5,28 @@
 <#@ assembly name="System.Data.Linq.dll" #>
 <#@ assembly name="System.Configuration.dll" #>
 <#@ assembly name="Nephrite.Web.dll" #>
-<#@ assembly name="Nephrite.Meta.Database.DB2.dll" #>
 <#@ assembly name="Nephrite.Metamodel.dll" #>
+<#@ assembly name="Solution.dll" #>
 <#@ import namespace="System" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Text.RegularExpressions" #>
 <#@ import namespace="Nephrite.Meta.Database" #>
 <#@ import namespace="System.Linq" #>
-
-
+<#var mapType = new DataTypeMapper(); #>
 using System;
 using System.Collections.Generic;
 using System.Data.Linq;
 using System.Linq;
 using Nephrite.Web;
+using Nephrite.Web.Hibernate;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 using NHibernate.Type;
-using Servants.UserTypes;
+
 namespace Solution.Model
 {
 <#
-var qlServerMetadataReader = new  DB2ServerMetadataReader();
+var qlServerMetadataReader = new SqlServerMetadataReader();
 var schema = qlServerMetadataReader.ReadSchema("dbo");
 foreach (var table in schema.Tables)
 {
@@ -39,63 +39,60 @@ foreach (var table in schema.Tables)
 			Schema("dbo");
 			Lazy(true);
 
-<# 	if (table.Value.PrimaryKey != null && table.Value.PrimaryKey.Columns.Length == 1) { #>
-			Id(x => x.<#=table.Value.PrimaryKey.Columns[0] #>, map => map.Generator(Generators.Identity));
+<# 	
+
+   if (table.Value.PrimaryKey != null && table.Value.PrimaryKey.Columns.Length == 1) { 
+         var pkColumn = table.Value.Columns.SingleOrDefault(t=>t.Key== table.Value.PrimaryKey.Columns[0]);
+	     var guidPropertyConfig = "";
+	   if(pkColumn.Value.Type is Nephrite.Meta.MetaGuidType)
+       {
+	    guidPropertyConfig =  " MappingConfig.GuidPropertyConfig(map);";
+	   }
+   #>
+			Id(x => x.<#=pkColumn.Key #>, map => {map.Generator(Generators.Identity); <#=guidPropertyConfig#> });
 <# 	} #>
-<# 	if (table.Value.PrimaryKey != null && table.Value.PrimaryKey.Columns.Length == 2) { #>
+<# 	if (table.Value.PrimaryKey != null && table.Value.PrimaryKey.Columns.Length == 2) { 
+		 if (table.Value.PrimaryKey.Columns.All(t => table.Value.ForeignKeys.Values.Any(f => f.Columns.Any(c => c == t))))
+		    {
+#>
 			ComposedId(map =>
 			{
 				map.ManyToOne(x => x.<#=table.Value.PrimaryKey.Columns[0].Replace("GUID", "").Replace("ID", "") #>);
 				map.ManyToOne(x => x.<#=table.Value.PrimaryKey.Columns[1].Replace("GUID", "").Replace("ID", "") #>);
 			});
-<# 	} #>
+<#
+            }else{
+#>
+			ComposedId(map =>
+			{
+				map.Property(x => x.<#=table.Value.PrimaryKey.Columns[0] #>);
+				map.Property(x => x.<#=table.Value.PrimaryKey.Columns[1] #>);
+			});
+<#
+			
+			}
+
+	 	} #>
 
 	<# 
 	var foreignKeys = table.Value.ForeignKeys;
-	foreach (var column in table.Value.Columns.Where(t => !foreignKeys.Values.Any(f => f.Columns.Any(c => c == t.Value.Name))))
+	var primaryKeys = table.Value.PrimaryKey.Columns;
+	foreach (var column in table.Value.Columns.Where(t => !foreignKeys.Values.Any(f => f.Columns.Any(c => c == t.Value.Name)) && !primaryKeys.Any(c => c == t.Value.Name)))
 	{
-		if (column.Value.Type is Nephrite.Meta.MetaGuidType)
-		{
-		if (!column.Value.IsPrimaryKey)
-			{
-				if (column.Value.Nullable)
-				{ #>
-			Property(x => x.<#=column.Key #>,map => {map.NotNullable(false);  map.Type<StringBackedGuidUserType>();});
-		<# }
-				else
-				{ #>
-			Property(x => x.<#=column.Key #>, map =>  map.Type<StringBackedGuidUserType>());
-		<# }
-			}
+		var mappingConfig =  "";
+		if(column.Value.Type is Nephrite.Meta.MetaGuidType)
+        {
+		  mappingConfig = " ,map => { MappingConfig.GuidPropertyConfig(map);}";
 		}
-		else if (column.Value.Type is Nephrite.Meta.MetaBooleanType)
-		{
-		if (!column.Value.IsPrimaryKey)
-			{
-				if (column.Value.Nullable)
-				{ #>
-			Property(x => x.<#=column.Key #>,map => {map.NotNullable(false);  map.Type<IntBackedBoolUserType>();});
-		<# }
-				else
-				{ #>
-			Property(x => x.<#=column.Key #>, map =>  map.Type<IntBackedBoolUserType>());
-		<# }
-			}
+		if(column.Value.Type is Nephrite.Meta.MetaBooleanType)
+        {
+		  mappingConfig = " ,map => { MappingConfig.BoolPropertyConfig(map);}";
 		}
-		else
-		{
-			if (!column.Value.IsPrimaryKey)
-			{
-				if (column.Value.Nullable)
-				{ #>
-			Property(x => x.<#=column.Key #>, map => map.NotNullable(false));
-		<# }
-				else
-				{ #>
-			Property(x => x.<#=column.Key #>);
-		<# }
-			}
-		}
+
+		#>
+			Property(x => x.<#=column.Key #><#=mappingConfig #>);
+		<#
+		
 	}
 
 	foreach (var foreignKey in foreignKeys)
@@ -118,7 +115,7 @@ foreach (var table in schema.Tables)
 			if (column.Contains("GUID"))
 			{
 			#>
-			 	Property(x => x.<#=column#>, map => { map.Formula("<#=column#>"); map.Type<StringBackedGuidUserType>();});
+			 	Property(x => x.<#=column#>, map => { map.Formula("<#=column#>"); MappingConfig.GuidPropertyConfig(map);});
 			<#
 			}
 			else
@@ -158,37 +155,21 @@ foreach (var table in schema.Views)
 	<# 
 	foreach (var column in table.Value.Columns)
 	{
-		if (column.Value.Type is Nephrite.Meta.MetaGuidType)
-		{
+		var mappingConfig =  "";
+		if(column.Value.Type is Nephrite.Meta.MetaGuidType)
+        {
+		  mappingConfig = " ,map => {map.NotNullable(false);  MappingConfig.GuidPropertyConfig(map);}";
+		}
+		if(column.Value.Type is Nephrite.Meta.MetaBooleanType)
+        {
+		  mappingConfig = " ,map => {map.NotNullable(false);  MappingConfig.BoolPropertyConfig(map);}";
+		}
 
-			if (column.Value.Nullable)
-			{
-				#>
-			Property(x => x.<#=column.Key #>, map => { map.NotNullable(false);  map.Type<StringBackedGuidUserType>();});
+		#>
+			Property(x => x.<#=column.Key #><#=mappingConfig #>);
 		<#
-			}
-			else
-			{
-				#>
-			Property(x => x.<#=column.Key #>, map => map.Type<StringBackedGuidUserType>());
-		<#
-			}
-		}
-		else
-		{
-			if (column.Value.Nullable)
-			{
-				#>
-			Property(x => x.<#=column.Key #>, map => map.NotNullable(false));
-		<#
-			}
-			else
-			{
-				#>
-			Property(x => x.<#=column.Key #>);
-		<#
-			}
-		}
+
+
 	}
         #>
 		}
@@ -209,7 +190,7 @@ foreach (var procDetails in qlServerMetadataReader.ReadProceduresDetails().Where
 		if (column.Value =="System.Guid")
 		{
 		#>		 
-			Property(x => x.<#=column.Key#>, map => map.Type<StringBackedGuidUserType>());
+			Property(x => x.<#=column.Key#>, MappingConfig.GuidPropertyConfig);
 		<#
 		}
 		else
