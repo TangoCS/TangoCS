@@ -8,6 +8,10 @@ namespace Nephrite.Meta
 	public interface IMetaPrimitiveType : IMetaClassifier
 	{
 		bool NotNullable { get; }
+		/// <summary>
+		/// Func &lt;TValue, string, IFormatProvider, string&gt;
+		/// </summary>
+		object GetStringValue { get; }
 	}
 
 	public interface IMetaIdentifierType : IMetaPrimitiveType
@@ -17,16 +21,13 @@ namespace Nephrite.Meta
 
 	public interface IMetaNumericType : IMetaPrimitiveType { }
 
-	public class MetaPrimitiveType : MetaClassifier, IMetaPrimitiveType
+	public abstract class MetaPrimitiveType : MetaClassifier, IMetaPrimitiveType
 	{
 		public bool NotNullable { get; set; }
-		public override string CLRType
-		{
-			get
-			{
-				return "";
-			}
-		}
+		/// <summary>
+		/// Func &lt;TValue, string, IFormatProvider, string&gt;
+		/// </summary>
+		public object GetStringValue { get; set; }
 	}
 
 	public class MetaEnum : MetaPrimitiveType
@@ -40,10 +41,18 @@ namespace Nephrite.Meta
 		}
 	}
 
+	public partial class MetaZoneDateTimeType : MetaPrimitiveType
+	{
+		public override string CLRType
+		{
+			get { return ""; }
+		}
+	}
+
 	public partial class MetaDecimalType : MetaPrimitiveType, IMetaNumericType
 	{
-		static MetaDecimalType _t = new MetaDecimalType { Precision = 18, Scale = 5, NotNullable = true };
-		static MetaDecimalType _t_n = new MetaDecimalType { Precision = 18, Scale = 5, NotNullable = false };
+		static MetaDecimalType _t = new MetaDecimalType { Precision = 18, Scale = 5, NotNullable = true, GetStringValue = ToStringConverter.Decimal };
+		static MetaDecimalType _t_n = new MetaDecimalType { Precision = 18, Scale = 5, NotNullable = false, GetStringValue = ToStringConverter.NullableDecimal };
 		public static MetaDecimalType NotNull() { return _t; }
 		public static MetaDecimalType Null() { return _t_n; }
 
@@ -61,8 +70,8 @@ namespace Nephrite.Meta
 
 	public partial class MetaStringType : MetaPrimitiveType
 	{
-		static MetaStringType _t = new MetaStringType { NotNullable = true };
-		static MetaStringType _t_n = new MetaStringType { NotNullable = false };
+		static MetaStringType _t = new MetaStringType { NotNullable = true, GetStringValue = ToStringConverter.String };
+		static MetaStringType _t_n = new MetaStringType { NotNullable = false, GetStringValue = ToStringConverter.String };
 		public static MetaStringType NotNull() { return _t; }
 		public static MetaStringType Null() { return _t_n; }
 
@@ -79,8 +88,8 @@ namespace Nephrite.Meta
 
 	public partial class MetaDateTimeType : MetaPrimitiveType
 	{
-		static MetaDateType _t = new MetaDateType { NotNullable = true };
-		static MetaDateType _t_n = new MetaDateType { NotNullable = false };
+		static MetaDateType _t = new MetaDateType { NotNullable = true, GetStringValue = ToStringConverter.DateTime };
+		static MetaDateType _t_n = new MetaDateType { NotNullable = false, GetStringValue = ToStringConverter.NullableDateTime };
 		public static MetaDateType NotNull() { return _t; }
 		public static MetaDateType Null() { return _t_n; }
 
@@ -92,10 +101,27 @@ namespace Nephrite.Meta
 			}
 		}
 	}
+
+	public partial class MetaDateType : MetaPrimitiveType
+	{
+		static MetaDateType _t = new MetaDateType { NotNullable = true, GetStringValue = ToStringConverter.Date };
+		static MetaDateType _t_n = new MetaDateType { NotNullable = false, GetStringValue = ToStringConverter.NullableDate };
+		public static MetaDateType NotNull() { return _t; }
+		public static MetaDateType Null() { return _t_n; }
+
+		public override string CLRType
+		{
+			get
+			{
+				return NotNullable ? "DateTime" : "DateTime?";
+			}
+		}
+	}
+
     public partial class MetaXmlType : MetaPrimitiveType
     {
-		static MetaXmlType _t = new MetaXmlType { NotNullable = true };
-		static MetaXmlType _t_n = new MetaXmlType { NotNullable = false };
+		static MetaXmlType _t = new MetaXmlType { NotNullable = true, GetStringValue = ToStringConverter.Xml };
+		static MetaXmlType _t_n = new MetaXmlType { NotNullable = false, GetStringValue = ToStringConverter.Xml };
 		public static MetaXmlType NotNull() { return _t; }
 		public static MetaXmlType Null() { return _t_n; }
 
@@ -113,26 +139,12 @@ namespace Nephrite.Meta
 
 	}
 
-	public partial class MetaDateType : MetaPrimitiveType
-	{
-		static MetaDateType _t = new MetaDateType { NotNullable = true };
-		static MetaDateType _t_n = new MetaDateType { NotNullable = false };
-		public static MetaDateType NotNull() { return _t; }
-		public static MetaDateType Null() { return _t_n; }
 
-		public override string CLRType
-		{
-			get
-			{
-				return NotNullable ? "DateTime" : "DateTime?";
-			}
-		}
-	}
 
 	public partial class MetaIntType : MetaPrimitiveType, IMetaIdentifierType, IMetaNumericType
 	{
-		static MetaIntType _t = new MetaIntType { NotNullable = true };
-		static MetaIntType _t_n = new MetaIntType { NotNullable = false };
+		static MetaIntType _t = new MetaIntType { NotNullable = true, GetStringValue = ToStringConverter.Int };
+		static MetaIntType _t_n = new MetaIntType { NotNullable = false, GetStringValue = ToStringConverter.NullableInt };
 		public static MetaIntType NotNull() { return _t; }
 		public static MetaIntType Null() { return _t_n; }
 
@@ -152,8 +164,8 @@ namespace Nephrite.Meta
 
 	public partial class MetaLongType : MetaPrimitiveType, IMetaNumericType
 	{
-		static MetaLongType _t = new MetaLongType { NotNullable = true };
-		static MetaLongType _t_n = new MetaLongType { NotNullable = false };
+		static MetaLongType _t = new MetaLongType { NotNullable = true, GetStringValue = ToStringConverter.Long };
+		static MetaLongType _t_n = new MetaLongType { NotNullable = false, GetStringValue = ToStringConverter.NullableLong };
 		public static MetaLongType NotNull() { return _t; }
 		public static MetaLongType Null() { return _t_n; }
 
@@ -185,8 +197,8 @@ namespace Nephrite.Meta
 
 	public partial class MetaBooleanType : MetaPrimitiveType
 	{
-		static MetaBooleanType _t = new MetaBooleanType { NotNullable = true };
-		static MetaBooleanType _t_n = new MetaBooleanType { NotNullable = false };
+		static MetaBooleanType _t = new MetaBooleanType { NotNullable = true, GetStringValue = ToStringConverter.Bool };
+		static MetaBooleanType _t_n = new MetaBooleanType { NotNullable = false, GetStringValue = ToStringConverter.NullableBool };
 		public static MetaBooleanType NotNull() { return _t; }
 		public static MetaBooleanType Null() { return _t_n; }
 
@@ -203,8 +215,8 @@ namespace Nephrite.Meta
 
 	public partial class MetaGuidType : MetaPrimitiveType, IMetaIdentifierType
 	{
-		static MetaGuidType _t = new MetaGuidType { NotNullable = true };
-		static MetaGuidType _t_n = new MetaGuidType { NotNullable = false };
+		static MetaGuidType _t = new MetaGuidType { NotNullable = true, GetStringValue = ToStringConverter.Guid };
+		static MetaGuidType _t_n = new MetaGuidType { NotNullable = false, GetStringValue = ToStringConverter.NullableGuid };
 		public static MetaGuidType NotNull() { return _t; }
 		public static MetaGuidType Null() { return _t_n; }
 

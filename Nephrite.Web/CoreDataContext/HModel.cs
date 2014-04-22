@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using System.Xml.Linq;
+using Nephrite.Meta;
 using Nephrite.Web.CalendarDays;
 using Nephrite.Web.Controls;
 using Nephrite.Web.ErrorLog;

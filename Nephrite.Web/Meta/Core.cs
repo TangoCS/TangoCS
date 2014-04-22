@@ -223,11 +223,11 @@ namespace Nephrite.Meta
 	public abstract partial class MetaClassifier : MetaElement, IMetaClassifier
 	{
 		public abstract string CLRType { get; }
+
 		public virtual string ColumnName(string propName)
 		{
 			return propName;
 		}
-	
 	}
 
 	public partial class MetaClass : MetaClassifier
@@ -356,10 +356,7 @@ namespace Nephrite.Meta
 			return propName + (Key.Type as IMetaIdentifierType).ColumnSuffix;
 		}
 
-		public MetaClass ShallowCopy()
-		{
-			return (MetaClass)this.MemberwiseClone();
-		}
+		public IQueryable AllObjects { get; set; }
 
 		List<Type> _interfaces = new List<Type>();
 		public List<Type> Interfaces
@@ -410,17 +407,33 @@ namespace Nephrite.Meta
 			get { return Type == null ? Name : Type.ColumnName(Name); }
 		}
 
-		public string GetStringValue<T>(T obj)
-		{
-			return "";
-		}
+		// Func<TClass, TValue>
+		public object GetValue { get; set; }
+		// Action<TClass, TValue>
+		public object SetValue { get; set; }
+		// Expression<Func<TClass, TValue>>
+		public object GetValueExpression { get; set; }
 
+		public abstract string GetStringValue<TClass, TValue>(TClass obj, string format = "", IFormatProvider provider = null);
+
+	}
+
+	public partial class MetaValueProperty : MetaProperty
+	{
+		public override string GetStringValue<TClass, TValue>(TClass obj, string format = "", IFormatProvider provider = null)
+		{
+			var pt = Type as IMetaPrimitiveType;
+			if (pt.GetStringValue == null) return "";
+			var valueGetter = GetValue as Func<TClass, TValue>;
+			var getter = pt.GetStringValue as Func<TValue, string, IFormatProvider, string>;
+			return getter(valueGetter(obj), format, provider);
+		}
 	}
 
 	/// <summary>
 	/// Атрибут класса
 	/// </summary>
-	public partial class MetaAttribute : MetaProperty
+	public partial class MetaAttribute : MetaValueProperty
 	{
 		/// <summary>
 		/// Является мультиязычным
@@ -430,27 +443,22 @@ namespace Nephrite.Meta
 		/// Является автоинкрементным
 		/// </summary>
 		public bool IsIdentity { get; set; }
+
+
 	}
 
 	/// <summary>
 	/// Вычислимое свойство класса
 	/// </summary>
-	public partial class MetaComputedAttribute : MetaProperty
+	public partial class MetaComputedAttribute : MetaValueProperty
 	{
-		/// <summary>
-		/// Код для get
-		/// </summary>
-		public string GetExpression { get; set; }
-		/// <summary>
-		/// Код для set
-		/// </summary>
-		public string SetExpression { get; set; }
+		
 	}
 
 	/// <summary>
 	/// Вычислимое на уровне базы данных свойство класса
 	/// </summary>
-	public partial class MetaPersistentComputedAttribute : MetaProperty
+	public partial class MetaPersistentComputedAttribute : MetaValueProperty
 	{
 		/// <summary>
 		/// Выражение
@@ -542,6 +550,28 @@ namespace Nephrite.Meta
 			{
 				return RefClass.ColumnName(Name);
 			}
+		}
+
+
+		public IQueryable AllObjects { get; set; }
+		public string DataTextField { get; set; }
+
+		// Func<TClass, TValue>
+		public object GetValueID { get; set; }
+		// Action<TClass, TValue>
+		public object SetValueID { get; set; }
+		// Expression<Func<TClass, TValue>>
+		public object GetValueIDExpression { get; set; }
+
+
+		public override string GetStringValue<TClass, TValue>(TClass obj, string format = "", IFormatProvider provider = null)
+		{
+			var valueGetter = GetValue as Func<TClass, TValue>;
+			TValue refObj = valueGetter(obj);
+			if (refObj != null && refObj is IWithTitle)
+				return (refObj as IWithTitle).GetTitle();
+			else
+				return "";
 		}
 	}
 
@@ -638,4 +668,6 @@ namespace Nephrite.Meta
 	{
 		MetaClass MetaClass { get; }
 	}
+
+	
 }

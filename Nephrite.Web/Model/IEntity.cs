@@ -5,21 +5,21 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 
-namespace Nephrite.Web
+namespace Nephrite
 {
 	public interface IEntity
 	{
 		
 	}
 
-	public interface IChildEntity : IEntity
-	{
-		string GetPath();
-	}
-
 	public interface IWithTitle
 	{
 		string GetTitle();
+	}
+
+	public interface IChildEntity : IEntity
+	{
+		string GetPath();
 	}
 
 	public interface IWithDefaultOrder<T> where T : IEntity
@@ -61,12 +61,5 @@ namespace Nephrite.Web
 		{
 			((ITable)q).DeleteAllOnSubmit(obj);
 		}
-	}
-
-	public interface IProperty<TObj, T>
-	{
-		Expression<Func<TObj, T>> Selector { get; set; }
-		Expression<Func<TObj, T>> FilterExpression { get; set; }
-		Expression<Func<TObj, T>> SortExpression { get; set; }
 	}
 }

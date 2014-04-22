@@ -7,63 +7,112 @@ using System.Web;
 
 namespace Nephrite.Meta
 {
-	public interface ITypedMetaProperty<TClass, TValue>
-	{
-		Func<TClass, TValue> GetValue { get; set; }
-		Action<TClass, TValue> SetValue { get; set; }
-	}
-
-	public interface ITypedPersistentMetaProperty<TClass, TValue>
-	{
-		Expression<Func<TClass, TValue>> GetValueExpression { get; set; }
-	}
-
 	public partial class MetaClass<T> : MetaClass
 	{
-		public IQueryable<T> AllObjects { get; set; }
+		public new IQueryable<T> AllObjects
+		{
+			get { return base.AllObjects as IQueryable<T>; }
+			set { base.AllObjects = value; }
+		}
 		public Func<string, Expression<Func<T, bool>>> SearchExpression { get; set; }
 		public Func<string, int, int, IEnumerable<T>> SearchQuery { get; set; }
 	}
 
-	public partial class MetaReference<TClass, TRefClass, TKey> : MetaReference, 
-		ITypedMetaProperty<TClass, TRefClass>, 
-		ITypedPersistentMetaProperty<TClass, TRefClass>
+	public partial class MetaReference<TClass, TValue, TKey> : MetaReference
 	{
-		public IQueryable<TRefClass> AllObjects { get; set; }
-		public Func<string, Expression<Func<TRefClass, bool>>> SearchExpression { get; set; }
-		public Func<string, int, int, IEnumerable<TRefClass>> SearchQuery { get; set; }
+		public new IQueryable<TValue> AllObjects
+		{
+			get { return base.AllObjects as IQueryable<TValue>; }
+			set { base.AllObjects = value; }
+		}
+		public Func<string, Expression<Func<TValue, bool>>> SearchExpression { get; set; }
+		public Func<string, int, int, IEnumerable<TValue>> SearchQuery { get; set; }
 
-		public Expression<Func<TClass, TRefClass>> GetValueExpression { get; set; }
-		public Func<TClass, TRefClass> GetValue { get; set; }
-		public Action<TClass, TRefClass> SetValue { get; set; }
+		public new Expression<Func<TClass, TValue>> GetValueExpression
+		{
+			get { return base.GetValueExpression as Expression<Func<TClass, TValue>>; }
+			set { base.GetValueExpression = value; }
+		}
+		public new Func<TClass, TValue> GetValue
+		{
+			get { return base.GetValue as Func<TClass, TValue>; }
+			set { base.GetValue = value; }
+		}
+		public new Action<TClass, TValue> SetValue
+		{
+			get { return base.SetValue as Action<TClass, TValue>; }
+			set { base.SetValue = value; }
+		}
 
-		public Expression<Func<TClass, TKey>> GetValueIDExpression { get; set; }
-		public Func<TClass, TKey> GetValueID { get; set; }
-		public Action<TClass, TKey> SetValueID { get; set; }	
+		public new Expression<Func<TClass, TValue>> GetValueIDExpression
+		{
+			get { return base.GetValueIDExpression as Expression<Func<TClass, TValue>>; }
+			set { base.GetValueIDExpression = value; }
+		}
+		public new Func<TClass, TValue> GetValueID
+		{
+			get { return base.GetValueID as Func<TClass, TValue>; }
+			set { base.GetValueID = value; }
+		}
+		public new Action<TClass, TValue> SetValueID
+		{
+			get { return base.SetValueID as Action<TClass, TValue>; }
+			set { base.SetValueID = value; }
+		}
 	}
 
-	public partial class MetaAttribute<TClass, TValue> : MetaAttribute,
-		ITypedMetaProperty<TClass, TValue>,
-		ITypedPersistentMetaProperty<TClass, TValue>
+	public partial class MetaAttribute<TClass, TValue> : MetaAttribute
 	{
-		public Expression<Func<TClass, TValue>> GetValueExpression { get; set; }
-		public Func<TClass, TValue> GetValue { get; set; }
-		public Action<TClass, TValue> SetValue { get; set; }
+		public new Expression<Func<TClass, TValue>> GetValueExpression 
+		{ 
+			get { return base.GetValueExpression as Expression<Func<TClass, TValue>>; }
+			set { base.GetValueExpression = value; } 
+		}
+		public new Func<TClass, TValue> GetValue 
+		{
+			get { return base.GetValue as Func<TClass, TValue>; }
+			set { base.GetValue = value; } 
+		}
+		public new Action<TClass, TValue> SetValue
+		{
+			get { return base.SetValue as Action<TClass, TValue>; }
+			set { base.SetValue = value; }
+		}
 	}
 
-	public partial class MetaComputedAttribute<TClass, TValue> : MetaProperty, 
-		ITypedMetaProperty<TClass, TValue>
+	public partial class MetaComputedAttribute<TClass, TValue> : MetaComputedAttribute
 	{
-		public Func<TClass, TValue> GetValue { get; set; }
-		public Action<TClass, TValue> SetValue { get; set; }
+		public new Func<TClass, TValue> GetValue
+		{
+			get { return base.GetValue as Func<TClass, TValue>; }
+			set { base.GetValue = value; }
+		}
+		public new Action<TClass, TValue> SetValue
+		{
+			get { return base.SetValue as Action<TClass, TValue>; }
+			set { base.SetValue = value; }
+		}
+
 	}
 
-	public partial class MetaPersistentComputedAttribute<TClass, TValue> : MetaProperty, 
-		ITypedMetaProperty<TClass, TValue>, 
-		ITypedPersistentMetaProperty<TClass, TValue>
+	public partial class MetaPersistentComputedAttribute<TClass, TValue> : MetaPersistentComputedAttribute
 	{
-		public Expression<Func<TClass, TValue>> GetValueExpression { get; set; }
-		public Func<TClass, TValue> GetValue { get; set; }
-		public Action<TClass, TValue> SetValue { get; set; }
+		public new Expression<Func<TClass, TValue>> GetValueExpression
+		{
+			get { return base.GetValueExpression as Expression<Func<TClass, TValue>>; }
+			set { base.GetValueExpression = value; }
+		}
+		public new Func<TClass, TValue> GetValue
+		{
+			get { return base.GetValue as Func<TClass, TValue>; }
+			set { base.GetValue = value; }
+		}
+		public new Action<TClass, TValue> SetValue
+		{
+			get { return base.SetValue as Action<TClass, TValue>; }
+			set { base.SetValue = value; }
+		}
 	}
+
+	
 }

@@ -63,10 +63,4 @@ namespace Nephrite.Web.Controls
 			return img + String.Format(@"<a href=""{0}"">{1}</a>", menuItem.Url, menuItem.Title + (menuItem.Expression.IsEmpty() ? "" : (" " + menuItem.EvaluateExpression())));
 		}
     }
-
-    public enum NavMenuButtonsMode
-	{
-		SmallButtons,
-		BigButtons
-	}
 }
