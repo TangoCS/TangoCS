@@ -5,7 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 
-namespace Nephrite
+namespace Nephrite.Web
 {
 	public interface IEntity
 	{

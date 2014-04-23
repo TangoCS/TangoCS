@@ -10,9 +10,11 @@ namespace Nephrite.Meta.Fluent
 	public class ReferenceBuilder
 	{
 		MetaReference _ref;
+		MetaClass _cls;
 
-		public ReferenceBuilder(MetaReference reference)
+		public ReferenceBuilder(MetaClass cls, MetaReference reference)
 		{
+			_cls = cls;
 			_ref = reference;
 		}
 
@@ -49,6 +51,35 @@ namespace Nephrite.Meta.Fluent
 		public ReferenceBuilder InverseProperty(string inverseProperty)
 		{
 			_ref.InversePropertyName = inverseProperty;
+			return this;
+		}
+	}
+
+	public class OperationBuilder
+	{
+		MetaOperation _op;
+		MetaClass _cls;
+
+		public OperationBuilder(MetaClass cls, MetaOperation op)
+		{
+			_cls = cls;
+			_op = op;
+		}
+
+		public OperationBuilder Parm(IMetaParameterType type, string name)
+		{
+			_op.Parameters.Add(new MetaOperationParameter { Name = name, Type = type });
+			return this;
+		}
+		public OperationBuilder Image(string name)
+		{
+			_op.Image = name;
+			return this;
+		}
+
+		public OperationBuilder Default()
+		{
+			_cls.DefaultOperation = _op;
 			return this;
 		}
 	}
@@ -102,14 +133,14 @@ namespace Nephrite.Meta.Fluent
 		public static MetaClass Reference<T>(this MetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes = null)
 		{
 			MetaReference a = new MetaReference { Name = name, Caption = caption, UpperBound = 1, RefClassName = typeof(T).Name };
-			if (attributes != null) attributes(new ReferenceBuilder(a));
+			if (attributes != null) attributes(new ReferenceBuilder(cls, a));
 			cls.AddProperty(a);
 			return cls;
 		}
 		public static MetaClass ReferenceKey<T>(this MetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes = null)
 		{
 			MetaReference a = new MetaReference { Name = name, Caption = caption, UpperBound = 1, RefClassName = typeof(T).Name };
-			if (attributes != null) attributes(new ReferenceBuilder(a).Required());
+			if (attributes != null) attributes(new ReferenceBuilder(cls, a).Required());
 			cls.AddProperty(a);
 			cls.CompositeKey.Add(a);
 			return cls;
@@ -134,49 +165,58 @@ namespace Nephrite.Meta.Fluent
 
 		public static MetaClass OperationCreateNew(this MetaClass cls)
 		{
-			cls.AddOperation(new MetaOperation { Name = "CreateNew", Caption = "Создать", Image = "create" }); 
+			cls.Operation("CreateNew", "Создать", x => x.Image("create").
+				Parm(MetaStringType.NotNull(), "returnurl"));
 			return cls;
 		}
 
 		public static MetaClass OperationEdit(this MetaClass cls)
 		{
-			var op = new MetaOperation { Name = "Edit", Caption = "Редактировать", Image = "edit" };
-			cls.AddOperation(op);
-			cls.DefaultOperation = op; 
+			cls.Operation("Edit", "Редактировать", x => x.Image("edit").Default()
+				.Parm(cls.Key.Type as IMetaParameterType, "id")
+				.Parm(MetaStringType.NotNull(), "returnurl"));
 			return cls;
 		}
 
 		public static MetaClass OperationList(this MetaClass cls)
 		{
-			cls.AddOperation(new MetaOperation { Name = "ViewList", Caption = "Список", Image = "list" });
+			cls.Operation("ViewList", "Список", x => x.Image("list"));
 			return cls;
 		}
 
 		public static MetaClass OperationView(this MetaClass cls)
 		{
-			var op = new MetaOperation { Name = "View", Caption = "Свойства", Image = "properties" };
-			cls.AddOperation(op);
-			cls.DefaultOperation = op; 
+			cls.Operation("View", "Свойства", x => x.Image("properties").Default()
+				.Parm(cls.Key.Type as IMetaParameterType, "id")
+				.Parm(MetaStringType.NotNull(), "returnurl")); 
 			return cls;
 		}
 
 		public static MetaClass OperationDelete(this MetaClass cls)
 		{
-			cls.AddOperation(new MetaOperation { Name = "Delete", Caption = "Удалить", Image = "delete" });
+			cls.Operation("Delete", "Удалить", x => x.Image("delete")
+				.Parm(cls.Key.Type as IMetaParameterType, "id")
+				.Parm(MetaStringType.NotNull(), "returnurl"));
 			return cls;
 		}
 
 		public static MetaClass LogicalDelete(this MetaClass cls)
 		{
 			cls.AddProperty(new MetaAttribute { Name = "IsDeleted", Caption = "Удален", IsRequired = true, Type = TypeFactory.Boolean(true) });
-			cls.AddOperation(new MetaOperation { Name = "UnDelete", Caption = "Отменить удаление", Image = "undelete" });
+
+			cls.Operation("UnDelete", "Отменить удаление", x => x.Image("undelete")
+				.Parm(cls.Key.Type as IMetaParameterType, "id")
+				.Parm(MetaStringType.NotNull(), "returnurl"));
+
 			cls.Interfaces.Add(typeof(IWithLogicalDelete));
 			return cls;
 		}
 
-		public static MetaClass Operation(this MetaClass cls, string name, string caption, string image = "")
+		public static MetaClass Operation(this MetaClass cls, string name, string caption, Action<OperationBuilder> attributes)
 		{
-			cls.AddOperation(new MetaOperation { Name = name, Caption = caption, Image = image });
+			var op = new MetaOperation { Name = name, Caption = caption };
+			attributes(new OperationBuilder(cls, op));
+			cls.AddOperation(op);
 			return cls;
 		}
 

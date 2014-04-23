@@ -572,8 +572,8 @@ namespace Nephrite.Meta
 		{
 			var valueGetter = GetValue as Func<TClass, TValue>;
 			TValue refObj = valueGetter(obj);
-			if (refObj != null && refObj is IWithTitle)
-				return (refObj as IWithTitle).GetTitle();
+			if (refObj != null && refObj is Nephrite.Web.IWithTitle)
+				return (refObj as Nephrite.Web.IWithTitle).GetTitle();
 			else
 				return "";
 		}
