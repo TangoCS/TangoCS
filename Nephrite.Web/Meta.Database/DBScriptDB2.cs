@@ -182,7 +182,7 @@ namespace Nephrite.Meta.Database
         public void CreatePrimaryKey(PrimaryKey srcPrimaryKey)
         {
             var curentTable = srcPrimaryKey.CurrentTable;
-            _MainScripts.Add(string.Format("ALTER TABLE {2}.{0}\r\n" +
+            _MainScripts.Add(string.Format("SET INTEGRITY FOR {2}.{0}  IMMEDIATE CHECKED; \r\n ALTER TABLE {2}.{0}\r\n" +
                                            "ADD  PRIMARY KEY ({1}) ; \r\n", curentTable.Name.ToUpper(),
                                                        string.Join(",", srcPrimaryKey.Columns),
                                                        _SchemaName));
@@ -499,7 +499,7 @@ namespace Nephrite.Meta.Database
 
             var currentTable = srcColumn.CurrentTable;
 
-            if (currentTable.Name.ToUpper() == "C_POSTSALARYINDEXING")
+            if (currentTable.Name.ToUpper() == "DOCTASK")
             {
 
             }
@@ -563,12 +563,13 @@ namespace Nephrite.Meta.Database
                     computedText = "AS ((SHORTNAME || ' ') || OFFNAME)";
                     break;
                 default:
-                    computedText = " AS " + srcColumn.ComputedText.ToUpper().Replace(" AS", "").Replace("[", "").Replace("]", "").Replace("NVARCHAR", "VARCHAR").ToUpper();
+                    computedText =  srcColumn.ComputedText.Trim().ToUpper().Replace("[", "").Replace("]", "").Replace("NVARCHAR", "VARCHAR").ToUpper();
+                    computedText = computedText.StartsWith("AS") ? computedText : " AS" +  computedText;
                     break;
 
             }
             _MainScripts.Add(Checked(currentTable.Name.ToUpper()));
-            _MainScripts.Add(string.Format(" CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {3}.{0}' ); \r\n SET INTEGRITY FOR {3}.{0} OFF CASCADE DEFERRED;\r\n ALTER TABLE {3}.{0} ADD {1} {4}  GENERATED ALWAYS {2} ; \r\n",
+            _MainScripts.Add(string.Format(" CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {3}.{0}' ); \r\n SET INTEGRITY FOR {3}.{0} OFF CASCADE DEFERRED;\r\n ALTER TABLE {3}.{0} ADD {1} {4}  GENERATED ALWAYS {2} NOT NULL; \r\n",
                                     currentTable.Name.ToUpper(),
                                     srcColumn.Name.ToUpper(),
                                     computedText.Replace("\"", "").Replace("+", "||").Replace("ISNULL", "COALESCE"),

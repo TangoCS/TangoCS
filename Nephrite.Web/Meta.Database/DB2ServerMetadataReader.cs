@@ -308,7 +308,7 @@ namespace Nephrite.Meta.Database
                         {
                             var procedureDetails = new ProcedureDetails();
                             procedureDetails.ProcedureName = reader["NAME"].ToString();
-                            procedureDetails.IsList = (reader["ISLIST"] as int? == 1);
+                            //procedureDetails.IsList = (reader["ISLIST"] as int? == 1);
                             XDocument doc = XDocument.Parse(reader["RETURNS"].ToString());
 
                             if (doc.Descendants("Column").Any())

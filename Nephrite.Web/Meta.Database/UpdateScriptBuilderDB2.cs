@@ -55,7 +55,7 @@ namespace Nephrite.Meta.Database
             //result.AppendLine("go");
             //result.AppendLine("BEGIN TRY");
 
-            result.AppendFormat("CALL DBO.DROPOBJECTS('{0}'); \r\n", _schema.Name);
+            //result.AppendFormat("CALL DBO.DROPOBJECTS('{0}'); \r\n", _schema.Name);
             result.AppendLine(" SAVEPOINT STARTSCRIPT ON ROLLBACK RETAIN CURSORS;");
 
             // Добавить содержимое всех *.sql файлов, найденных в папке Scripts
@@ -247,7 +247,7 @@ namespace Nephrite.Meta.Database
 
             /*Пока исключаем так как скрипты не подходют*/
 
-            if (_isdb2)
+            if (!_isdb2)
             {
                 foreach (var v in _schema.Views.Values)
                 {
