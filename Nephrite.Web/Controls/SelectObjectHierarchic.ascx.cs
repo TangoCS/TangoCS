@@ -361,12 +361,12 @@ namespace Nephrite.Web.Controls
 
 			if (MultipleSelect)
             {
-				if (cblItems.Items.Count == 1 && (ParentField.IsEmpty() || hfQuickFilter.Value.Trim() != String.Empty) && cblItems.Items[0].Enabled)
+				if (cblItems.Items.Count == 1 && select.PageIndex == 1 && (ParentField.IsEmpty() || hfQuickFilter.Value.Trim() != String.Empty) && cblItems.Items[0].Enabled)
                     cblItems.Items[0].Selected = true;
             }
             else
             {
-				if (rblItems.Items.Count == 1 && (ParentField.IsEmpty() || hfQuickFilter.Value.Trim() != String.Empty) && rblItems.Items[0].Enabled)
+				if (rblItems.Items.Count == 1 && select.PageIndex == 1 && (ParentField.IsEmpty() || hfQuickFilter.Value.Trim() != String.Empty) && rblItems.Items[0].Enabled)
                     rblItems.Items[0].Selected = true;
             }
 
