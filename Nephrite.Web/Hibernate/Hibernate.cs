@@ -40,19 +40,20 @@ namespace Nephrite.Web.Hibernate
 		Configuration _cfg = null;
 
 		[ThreadStatic]
-		static string _dbType = "";
+		static DBType? _dbType = null;
 
 		public List<object> ToInsert { get; private set; }
 		public List<object> ToDelete { get; private set; }
 		public List<Action> AfterSaveActions { get; private set; }
 		public List<Action> BeforeSaveActions { get; private set; }
 
-		public static string DBType
+		public static DBType DBType
 		{
 			get
 			{
-				if (_dbType == "") _dbType = System.Configuration.ConfigurationManager.AppSettings["DBType"].ToUpper();
-				return _dbType;
+				if (_dbType == null) _dbType = (DBType?)Enum.Parse(typeof(DBType), System.Configuration.ConfigurationManager.AppSettings["DBType"].ToUpper());
+				if (_dbType == null) throw new Exception("You must set DBType parameter in your app's config");
+				return _dbType.Value;
 			}
 			set
 			{
@@ -60,37 +61,17 @@ namespace Nephrite.Web.Hibernate
 			}
 		}
 
-		public static Action<IDbIntegrationConfigurationProperties> DBConfig(string connectionString)
-		{
-			return c =>
-			{
-				switch (DBType)
-				{
-					case "MSSQL": c.Dialect<MsSql2008Dialect>(); break;
-					case "DB2": c.Dialect<DB2Dialect>(); break;
-					case "ORACLE": c.Dialect<Oracle10gDialect>(); break;
-					case "POSTGRESQL": c.Dialect<PostgreSQLDialect>(); break;
-					default: c.Dialect<MsSql2008Dialect>(); break;
-				}
-				
-				c.ConnectionString = connectionString;
-				c.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
-				c.IsolationLevel = System.Data.IsolationLevel.ReadUncommitted;
-				//c.LogFormattedSql = true;
-				if (!System.Configuration.ConfigurationManager.AppSettings["ValidateSchema"].IsEmpty())
-					c.SchemaAction = SchemaAutoAction.Validate;
-			};
-		}
-        public static Action<IDbIntegrationConfigurationProperties> DBConfig(string connectionString, string dbType)
+		public static Action<IDbIntegrationConfigurationProperties> DBConfig(string connectionString, DBType? dbType = null)
         {
             return c =>
             {
+				if (dbType == null) dbType = DBType;
                 switch (dbType)
                 {
-                    case "MSSQL": c.Dialect<MsSql2008Dialect>(); break;
-                    case "DB2": c.Dialect<DB2Dialect>(); break;
-                    case "ORACLE": c.Dialect<Oracle10gDialect>(); break;
-                    case "POSTGRESQL": c.Dialect<PostgreSQLDialect>(); break;
+                    case Nephrite.Web.Hibernate.DBType.MSSQL: c.Dialect<MsSql2008Dialect>(); break;
+					case Nephrite.Web.Hibernate.DBType.DB2: c.Dialect<DB2Dialect>(); break;
+					case Nephrite.Web.Hibernate.DBType.ORACLE: c.Dialect<Oracle10gDialect>(); break;
+					case Nephrite.Web.Hibernate.DBType.POSTGRESQL: c.Dialect<PostgreSQLDialect>(); break;
                     default: c.Dialect<MsSql2008Dialect>(); break;
                 }
 
@@ -327,7 +308,10 @@ namespace Nephrite.Web.Hibernate
 		}
 	}
 
-	
+	public enum DBType
+	{
+		MSSQL, DB2, ORACLE, POSTGRESQL 
+	}
 
 	public class HTable : IQueryable, ITable
 	{

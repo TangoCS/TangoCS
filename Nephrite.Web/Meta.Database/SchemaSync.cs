@@ -219,8 +219,8 @@ namespace Nephrite.Meta.Database
                 }
                 if (IsPrimaryKey && CurrentTable.Identity != srcTable.Identity)
                 {
-
-
+					script.Comment(String.Format("у таблицы {0} identity не совпадает", CurrentTable.Name));
+					/*
                     //Находим таблицы ссылающиеся на текущую и у даляем их
                     var childrenForeignKeys = CurrentTable.Schema.Tables.Where(t => t.Value.ForeignKeys.Any(f => f.Value.RefTable.ToLower() == CurrentTable.Name.ToLower())).SelectMany(t => t.Value.ForeignKeys).ToList();
                     if (CurrentTable.PrimaryKey != null)
@@ -256,6 +256,7 @@ namespace Nephrite.Meta.Database
                         foreach (var foreignKey in childrenForeignKeys)
                         { script.CreateForeignKey(foreignKey.Value); }
                     }
+					*/
                 }
 
             }

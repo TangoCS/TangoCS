@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Iesi.Collections", "Iesi.Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBSchemaDiff", "DBSchemaDiff\DBSchemaDiff.csproj", "{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nephrite.Meta.Database.DB2", "Nephrite.Meta.Database.DB2\Nephrite.Meta.Database.DB2.csproj", "{2B25A041-FF5E-4308-A25A-AA60D097F009}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -107,6 +109,16 @@ Global
 		{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}.Release|x86.ActiveCfg = Release|Any CPU
+		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -51,20 +51,34 @@ namespace Nephrite.Meta.Database
         {
             _MainScripts = new List<string>();
             _FkScripts = new List<string>();
-            Scripts = new List<string>();
             _SchemaName = schemaName.ToUpper();
         }
 
+		public void Comment(string comment)
+		{
+			_MainScripts.Add("-- " + comment);
+		}
 
-        public List<string> Scripts
-        {
-            get
-            {
-                _MainScripts.AddRange(_FkScripts);
-                return _MainScripts;
-            }
-            set { }
-        }
+		public override string ToString()
+		{
+			var res = new List<string>(_MainScripts.Count + _FkScripts.Count + 10);
+			//res.Add("BEGIN TRY");
+			//res.Add("BEGIN TRANSACTION");
+			res.AddRange(_MainScripts);
+			res.AddRange(_FkScripts);
+			//res.Add("COMMIT TRANSACTION");
+			//res.Add("print 'Database structure successfully updated!'");
+			//res.Add("END TRY");
+			//res.Add("BEGIN CATCH");
+			//res.Add("ROLLBACK TRANSACTION");
+			//res.Add("print 'Error at line: ' + convert(varchar(50), ERROR_LINE())");
+			//res.Add("print ERROR_MESSAGE()");
+			//res.Add("GOTO RunupEnd");
+			//res.Add("END CATCH");
+			//res.Add("RunupEnd:");
+
+			return res.Join("\r\n");
+		}
 
 
         public void CreateTable(Table srcTable)
@@ -88,7 +102,7 @@ namespace Nephrite.Meta.Database
             tableScript = string.Format(tableScript, columnsScript);
             if (srcTable.ForeignKeys.Count > 0)
             {
-                var result = srcTable.ForeignKeys.Aggregate("", (current, key) => current + string.Format("ALTER TABLE {6}.{0}  ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" + "REFERENCES {6}.{3} ({4}) {5} ;\r\n", srcTable.Name.ToUpper(), key.Value.Name.ToUpper(), string.Join(",", key.Value.Columns).ToUpper(), key.Value.RefTable.ToUpper(), string.Join(",", key.Value.RefTableColumns).ToUpper(), "ON DELETE " + key.Value.DeleteOption.ToString().ToUpper(), _SchemaName));
+                var result = srcTable.ForeignKeys.Aggregate("", (current, key) => current + string.Format("ALTER TABLE {6}.{0}  ADD  CONSTRAINT {1} FOREIGN KEY({2})" + "REFERENCES {6}.{3} ({4}) {5} ;\r\n", srcTable.Name.ToUpper(), key.Value.Name.ToUpper(), string.Join(",", key.Value.Columns).ToUpper(), key.Value.RefTable.ToUpper(), string.Join(",", key.Value.RefTableColumns).ToUpper(), "ON DELETE " + key.Value.DeleteOption.ToString().ToUpper(), _SchemaName));
                 _FkScripts.Add(result);
             }
 
@@ -96,8 +110,7 @@ namespace Nephrite.Meta.Database
             {
 
                 tableScript += string.Format(
-                                   "ALTER TABLE {3}.{0}\r\n" +
-                                   "ADD CONSTRAINT {1} PRIMARY KEY ({2})  ;\r\n  ", srcTable.Name.ToUpper(),
+                                   "ALTER TABLE {3}.{0} ADD CONSTRAINT {1} PRIMARY KEY ({2})  ;\r\n  ", srcTable.Name.ToUpper(),
                                                       srcTable.PrimaryKey.Name.ToUpper(),
                                                       string.Join(",", srcTable.PrimaryKey.Columns),
                                                       _SchemaName);// {0)- TableName  {1} - Constraint Name, {2} - Columns,{3} - Ref Table ,{4} - Ref Columns
@@ -149,7 +162,7 @@ namespace Nephrite.Meta.Database
             {
                 currentTable.ForeignKeys.Clear();
             }
-            _MainScripts.Add(string.Format("DROP TABLE {1}.{0}; \r\n ", currentTable.Name.ToUpper(), _SchemaName));
+            _MainScripts.Add(string.Format("DROP TABLE {1}.{0}; ", currentTable.Name.ToUpper(), _SchemaName));
         }
 
         public void CreateForeignKey(ForeignKey srcforeignKey)
@@ -157,7 +170,7 @@ namespace Nephrite.Meta.Database
             var srcTable = srcforeignKey.CurrentTable;
             _FkScripts.Add(
                 string.Format(
-                    "ALTER TABLE {6}.{0}  ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" +
+                    "ALTER TABLE {6}.{0}  ADD  CONSTRAINT {1} FOREIGN KEY({2})" +
                     "REFERENCES {6}.{3} ({4}) {5} ;\r\n   ", srcTable.Name.ToUpper(), srcforeignKey.Name.ToUpper(), string.Join(",", srcforeignKey.Columns).ToUpper(),
                     srcforeignKey.RefTable.ToUpper(), string.Join(",", srcforeignKey.RefTableColumns).ToUpper(), "ON DELETE " + srcforeignKey.DeleteOption.ToString().ToUpper(),
                     _SchemaName));
@@ -167,7 +180,7 @@ namespace Nephrite.Meta.Database
         public void DeleteForeignKey(ForeignKey currentForeignKey)
         {
             var currentTable = currentForeignKey.CurrentTable;
-            _FkScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP CONSTRAINT {2}.{1}; \r\n ", currentTable.Name.ToUpper(),
+            _FkScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP CONSTRAINT {2}.{1}; ", currentTable.Name.ToUpper(),
                                           currentForeignKey.Name.ToUpper(), _SchemaName));
         }
 
@@ -175,15 +188,15 @@ namespace Nephrite.Meta.Database
         {
 
             var currentTable = currentPrimaryKey.CurrentTable;
-            _MainScripts.Add(string.Format("ALTER TABLE {1}.{0} DROP PRIMARY KEY ;  \r\n", currentTable.Name.ToUpper(), _SchemaName));
+            _MainScripts.Add(string.Format("ALTER TABLE {1}.{0} DROP PRIMARY KEY ;", currentTable.Name.ToUpper(), _SchemaName));
 
         }
 
         public void CreatePrimaryKey(PrimaryKey srcPrimaryKey)
         {
             var curentTable = srcPrimaryKey.CurrentTable;
-            _MainScripts.Add(string.Format("SET INTEGRITY FOR {2}.{0}  IMMEDIATE CHECKED; \r\n ALTER TABLE {2}.{0}\r\n" +
-                                           "ADD  PRIMARY KEY ({1}) ; \r\n", curentTable.Name.ToUpper(),
+            _MainScripts.Add(string.Format("SET INTEGRITY FOR {2}.{0}  IMMEDIATE CHECKED; ALTER TABLE {2}.{0}\r\n" +
+                                           "ADD  PRIMARY KEY ({1}) ;", curentTable.Name.ToUpper(),
                                                        string.Join(",", srcPrimaryKey.Columns),
                                                        _SchemaName));
 
@@ -223,7 +236,7 @@ namespace Nephrite.Meta.Database
                 }
 
             }
-            _MainScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP COLUMN {1} ; \r\n   ", currentTable.Name.ToUpper(),
+            _MainScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP COLUMN {1} ;   ", currentTable.Name.ToUpper(),
                                           currentColumn.Name.ToUpper(), _SchemaName));
 
         }
@@ -239,7 +252,7 @@ namespace Nephrite.Meta.Database
             {
 
 
-                _MainScripts.Add(string.Format("ALTER TABLE {6}.{5} ADD {0} {1} {2} {3} {4} ; \r\n   ",
+                _MainScripts.Add(string.Format("ALTER TABLE {6}.{5} ADD {0} {1} {2} {3} {4} ;   ",
                                         srcColumn.Name.ToUpper(),
                                         srcColumn.Type.GetDBType(this),
                                         srcColumn.Nullable ? "NULL" : "NOT NULL",
@@ -264,21 +277,21 @@ namespace Nephrite.Meta.Database
             }
             else
             {
-                _MainScripts.Add(string.Format("  ALTER TABLE {3}.{0} ALTER COLUMN {1} SET DATA TYPE {2}; \r\n  ",
+                _MainScripts.Add(string.Format("  ALTER TABLE {3}.{0} ALTER COLUMN {1} SET DATA TYPE {2};  ",
                                               currentTable.Name.ToUpper(),
                                               srcColumn.Name.ToUpper(),
                                               srcColumn.Type.GetDBType(this),
                                               _SchemaName));
                 if (srcColumn.Nullable)
                 {
-                    _MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1} DROP NOT  NULL; \r\n  ",
+                    _MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1} DROP NOT  NULL;  ",
                                                    currentTable.Name.ToUpper(),
                                                    srcColumn.Name.ToUpper(),
                                                    _SchemaName));
                 }
                 else
                 {
-                    _MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1} SET NOT  NULL;  \r\n ",
+                    _MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1} SET NOT  NULL; ",
                                                       currentTable.Name.ToUpper(),
                                                       srcColumn.Name.ToUpper(),
                                                       _SchemaName));
@@ -286,7 +299,7 @@ namespace Nephrite.Meta.Database
                 }
                 if (!string.IsNullOrEmpty(srcColumn.DefaultValue))
                 {
-                    _MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1}  SET DEFAULT {3}; \r\n ",
+                    _MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1}  SET DEFAULT {3}; ",
                                                       currentTable.Name.ToUpper(),
                                                       srcColumn.Name.ToUpper(),
                                                       _SchemaName,
@@ -299,7 +312,7 @@ namespace Nephrite.Meta.Database
 
         public void DeleteTrigger(Trigger currentTrigger)
         {
-            _MainScripts.Add(string.Format("DROP TRIGGER {1}.{0};  \r\n  ", currentTrigger.Name.ToUpper(), _SchemaName));
+            _MainScripts.Add(string.Format("DROP TRIGGER {1}.{0};", currentTrigger.Name.ToUpper(), _SchemaName));
         }
 
         public void CreateTrigger(Trigger srcTrigger)
@@ -312,20 +325,20 @@ namespace Nephrite.Meta.Database
             var srcTable = srcColumn.CurrentTable;
             if (srcColumn.Identity)
             {
-                _MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1} DROP IDENTITY;  \r\n", srcTable.Name.ToUpper(), srcColumn.Name.ToUpper(), _SchemaName));
-                _MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1}  SET GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 ); \r\n", srcTable.Name.ToUpper(), srcColumn.Name.ToUpper(), _SchemaName));
+                _MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1} DROP IDENTITY;", srcTable.Name.ToUpper(), srcColumn.Name.ToUpper(), _SchemaName));
+                _MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1}  SET GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 );", srcTable.Name.ToUpper(), srcColumn.Name.ToUpper(), _SchemaName));
 
 
             }
             else
             {
-                _MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1} DROP IDENTITY; \r\n ", srcTable.Name, srcColumn.Name.ToUpper(), _SchemaName));
+                _MainScripts.Add(string.Format("ALTER TABLE {2}.{0}  ALTER COLUMN {1} DROP IDENTITY; ", srcTable.Name, srcColumn.Name.ToUpper(), _SchemaName));
             }
         }
 
         public void DeleteView(View currentView)
         {
-            _MainScripts.Add(string.Format("DROP VIEW  {1}.{0}; \r\n  ", currentView.Name.ToUpper(), _SchemaName));
+            _MainScripts.Add(string.Format("DROP VIEW  {1}.{0};  ", currentView.Name.ToUpper(), _SchemaName));
         }
 
         public void CreateView(View srcView)
@@ -335,7 +348,7 @@ namespace Nephrite.Meta.Database
 
         public void DeleteProcedure(Procedure currentProcedure)
         {
-            _MainScripts.Add(string.Format("DROP PROCEDURE  {1}.{0}; \r\n  ", currentProcedure.Name.ToUpper(), _SchemaName));
+            _MainScripts.Add(string.Format("DROP PROCEDURE  {1}.{0};  ", currentProcedure.Name.ToUpper(), _SchemaName));
         }
 
         public void CreateProcedure(Procedure srcProcedure)
@@ -345,7 +358,7 @@ namespace Nephrite.Meta.Database
 
         public void DeleteFunction(Function currentFunction)
         {
-            _MainScripts.Add(string.Format("DROP FUNCTION   {1}.{0};  \r\n ", currentFunction.Name.ToUpper(), _SchemaName));
+            _MainScripts.Add(string.Format("DROP FUNCTION   {1}.{0}; ", currentFunction.Name.ToUpper(), _SchemaName));
         }
 
         public void CreateFunction(Function srcFunction)
@@ -481,7 +494,7 @@ namespace Nephrite.Meta.Database
             //        {
             //            sc.Add(GetStringValue(reader, i));
             //        }
-            //        sqlInsert += string.Format("INSERT INTO {0} ({1})  VALUES ({2}); \r\n", t.Name, columns, string.Join(",", sc.Cast<string>().ToArray<string>()));
+            //        sqlInsert += string.Format("INSERT INTO {0} ({1})  VALUES ({2});", t.Name, columns, string.Join(",", sc.Cast<string>().ToArray<string>()));
             //    }
             //}
 
@@ -569,7 +582,7 @@ namespace Nephrite.Meta.Database
 
             }
             _MainScripts.Add(Checked(currentTable.Name.ToUpper()));
-            _MainScripts.Add(string.Format(" CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {3}.{0}' ); \r\n SET INTEGRITY FOR {3}.{0} OFF CASCADE DEFERRED;\r\n ALTER TABLE {3}.{0} ADD {1} {4}  GENERATED ALWAYS {2} NOT NULL; \r\n",
+            _MainScripts.Add(string.Format(" CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {3}.{0}' ); SET INTEGRITY FOR {3}.{0} OFF CASCADE DEFERRED;\r\n ALTER TABLE {3}.{0} ADD {1} {4}  GENERATED ALWAYS {2} NOT NULL;",
                                     currentTable.Name.ToUpper(),
                                     srcColumn.Name.ToUpper(),
                                     computedText.Replace("\"", "").Replace("+", "||").Replace("ISNULL", "COALESCE"),
@@ -582,13 +595,13 @@ namespace Nephrite.Meta.Database
 
         public void DeleteDefaultValue(Column currentColumn)
         {
-            _MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} DROP DEFAULT;  \r\n", currentColumn.Name.ToUpper(), currentColumn.CurrentTable.Name.ToUpper(), _SchemaName));
+            _MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} DROP DEFAULT;", currentColumn.Name.ToUpper(), currentColumn.CurrentTable.Name.ToUpper(), _SchemaName));
             _MainScripts.Add(Checked(currentColumn.CurrentTable.Name.ToUpper()));
         }
 
         public void AddDefaultValue(Column srcColumn)
         {
-            _MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} SET DEFAULT {3}; \r\n", srcColumn.Name.ToUpper(), srcColumn.CurrentTable.Name.ToUpper(), _SchemaName, GetDefaultValue(srcColumn.DefaultValue, srcColumn.Type.GetDBType(this))));
+            _MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} SET DEFAULT {3};", srcColumn.Name.ToUpper(), srcColumn.CurrentTable.Name.ToUpper(), _SchemaName, GetDefaultValue(srcColumn.DefaultValue, srcColumn.Type.GetDBType(this))));
             _MainScripts.Add(Checked(srcColumn.CurrentTable.Name.ToUpper()));
         }
 
@@ -596,7 +609,7 @@ namespace Nephrite.Meta.Database
 
         public void DeleteIndex(Index currentIndex)
         {
-            _MainScripts.Add(string.Format("DROP INDEX {0}; \r\n", currentIndex.Name));
+            _MainScripts.Add(string.Format("DROP INDEX {0};", currentIndex.Name));
         }
 
 

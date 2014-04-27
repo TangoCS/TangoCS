@@ -10,12 +10,12 @@ namespace Nephrite.Web.Hibernate
 	{
 		public static void BoolPropertyConfig(IPropertyMapper map)
 		{
-			if (HDataContext.DBType == "DB2") map.Type<IntBackedBoolUserType>();
+			if (HDataContext.DBType == DBType.DB2) map.Type<IntBackedBoolUserType>();
 		}
 
 		public static void GuidPropertyConfig(IPropertyMapper map)
 		{
-			if (HDataContext.DBType == "DB2") map.Type<StringBackedGuidUserType>();
+			if (HDataContext.DBType == DBType.DB2) map.Type<StringBackedGuidUserType>();
 		}
 	}
 }
