@@ -137,14 +137,15 @@ namespace Nephrite.Meta.Database
 		{
 
 			var currentTable = srcforeignKey.CurrentTable;
-			_FkScripts.Add(string.Format("ALTER TABLE {5}.{0}  WITH NOCHECK ADD  CONSTRAINT {1} FOREIGN KEY({2}) \r\n" +
-									  "REFERENCES {5}.{3} ({4}); \r\n" +
-									  "ALTER TABLE {5}.{0} CHECK CONSTRAINT {1};", currentTable.Name,
+			_FkScripts.Add(string.Format("ALTER TABLE {5}.{0} WITH NOCHECK ADD CONSTRAINT {1} FOREIGN KEY({2}) REFERENCES {5}.{3} ({4}) ON UPDATE NO ACTION ON DELETE {6}", 
+													currentTable.Name,
 													srcforeignKey.Name,
 													string.Join(",", srcforeignKey.Columns),
 													srcforeignKey.RefTable,
 													string.Join(",", srcforeignKey.RefTableColumns),
-													_SchemaName));
+													_SchemaName,
+													srcforeignKey.DeleteOption == DeleteOption.Cascade ? "CASCADE" : 
+													(srcforeignKey.DeleteOption == DeleteOption.SetNull ? "SET NULL" : "NO ACTION")));
 		}
 
 		public void DeleteForeignKey(ForeignKey currentForeignKey)
@@ -251,7 +252,6 @@ namespace Nephrite.Meta.Database
 			}
 			else
 			{
-
 				_MainScripts.Add(string.Format("ALTER TABLE [{5}.{0}] ALTER COLUMN [{1}] {2} {3} {4}",
 											  currentTable.Name,
 											  srcColumn.Name,
