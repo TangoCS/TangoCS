@@ -87,7 +87,7 @@ namespace Nephrite.Meta.Database
 
             if (srcTable == null)
             {
-                // Создали таблицу со всемми колонками и ключами
+                // Создали таблицу со всеми колонками и ключами
                 script.DeleteTable(this);
             }
             else
@@ -105,14 +105,14 @@ namespace Nephrite.Meta.Database
 
                 // Если есть Computed колонки удаляем 
 
-                var computedColumns = srcTable.Columns.Values.Where(t => !string.IsNullOrEmpty(t.ComputedText));
-                    foreach (var column in computedColumns)
-                    {
-                        script.DeleteColumn(column);
-                    }
+                //var computedColumns = srcTable.Columns.Values.Where(t => !string.IsNullOrEmpty(t.ComputedText));
+                //    foreach (var column in computedColumns)
+                //    {
+                //        script.DeleteColumn(column);
+                //    }
                 
 
-                foreach (var column in curentColumns.Where(t=>string.IsNullOrEmpty(t.Value.ComputedText)))
+                foreach (var column in curentColumns) //.Where(t=>string.IsNullOrEmpty(t.Value.ComputedText)))
                 {
                     var srcColumn = srcColumns.Values.SingleOrDefault(t => t.Name.ToLower() == column.Value.Name.ToLower());
                     column.Value.srcTable = srcTable;
@@ -120,10 +120,10 @@ namespace Nephrite.Meta.Database
 
                 }
                 // Если есть Computed колонки создааём 
-                foreach (var column in this.Columns.Values.Where(t => !string.IsNullOrEmpty(t.ComputedText)))
-                {
-                    script.AddColumn(column);
-                }
+                //foreach (var column in this.Columns.Values.Where(t => !string.IsNullOrEmpty(t.ComputedText)))
+                //{
+                //    script.AddColumn(column);
+                //}
                 
                 //3 Обновляем primaryKey
                 if ((PrimaryKey == null || PrimaryKey.Columns.Count() == 0) && srcTable.PrimaryKey != null && srcTable.PrimaryKey.Columns.Count() > 0)
@@ -189,34 +189,33 @@ namespace Nephrite.Meta.Database
             }
             else
             {
-                // Обновляем Type, значение Default и Nullable
-                if (srcColumn.Type.GetType() != Type.GetType() || ((DefaultValue == null ? "" : DefaultValue.ToLower()) != (srcColumn.DefaultValue == null ? "" : srcColumn.DefaultValue.ToLower())) || Nullable != srcColumn.Nullable || ((ComputedText == null ? "" : ComputedText.ToLower()) != (srcColumn.ComputedText == null ? "" : srcColumn.ComputedText.ToLower())))
+				bool chg_type = srcColumn.Type.GetType() != Type.GetType();
+				bool chg_def = ((DefaultValue == null ? "" : DefaultValue.ToLower()) != (srcColumn.DefaultValue == null ? "" : srcColumn.DefaultValue.ToLower()));
+                bool chg_null = Nullable != srcColumn.Nullable;
+				bool chg_comp = ((ComputedText == null ? "" : ComputedText.ToLower()) != (srcColumn.ComputedText == null ? "" : srcColumn.ComputedText.ToLower()));
+				
+				// Обновляем Type, значение Default и Nullable
+				if (chg_def)
+				{
+					//script.Comment(String.Format("Обновление столбца: DEF={0} -> {1}",
+					//		srcColumn.DefaultValue == null ? "" : srcColumn.DefaultValue.ToLower(),
+					//		DefaultValue == null ? "" : DefaultValue.ToLower()));
+					script.DeleteDefaultValue(srcColumn);
+					script.AddDefaultValue(srcColumn);
+				}
+
+				if (chg_type || chg_null || chg_comp)
                 {
-                    var table = CurrentTable.Name;
-                    //var computedColumns = CurrentTable.Columns.Values.Where(t => !string.IsNullOrEmpty(t.ComputedText));
-                    //if (string.IsNullOrEmpty(ComputedText))
-                    //{
-                    //    foreach (var column in computedColumns)
-                    //    {
-                    //        script.DeleteColumn(column);
-                    //    }
-                    //}
+					//script.Comment(String.Format("Обновление столбца: TYPE={0}, DEFAULT={1}, NULLABLE={2}, EXPRESSION={3}", chg_type, chg_def, chg_null, chg_comp));
+					
 
                     if (!string.IsNullOrEmpty(DefaultValue))
                     {
                         script.DeleteDefaultValue(this);
                     }
                     script.ChangeColumn(srcColumn);
-
-
-                    //if (string.IsNullOrEmpty(ComputedText))
-                    //{
-                    //    foreach (var column in computedColumns)
-                    //    {
-                    //        script.AddColumn(column);
-                    //    }
-                    //}
                 }
+
                 if (IsPrimaryKey && CurrentTable.Identity != srcTable.Identity)
                 {
 					script.Comment(String.Format("у таблицы {0} identity не совпадает", CurrentTable.Name));
