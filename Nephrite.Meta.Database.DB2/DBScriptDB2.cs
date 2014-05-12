@@ -30,8 +30,7 @@ namespace Nephrite.Meta.Database
             if (value.Length > 15000)
             {
                 var arrayText = value.SplitByLength(15000);
-                return string.Format("CAST({0}' as CLOB) || '{1}", arrayText.First(),
-                                     string.Join("'||'", arrayText.Skip(1).ToArray()));
+                return string.Format("CAST({0}' as CLOB) || '{1}", arrayText.First(), string.Join("'||'", arrayText.Skip(1).ToArray()));
             }
             return value;
         }
@@ -642,44 +641,49 @@ namespace Nephrite.Meta.Database
         }
 
 
-        public MetaPrimitiveType GetType(string dataType)
+		public MetaPrimitiveType GetType(string dataType, bool notNull)
         {
             var type = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(", System.StringComparison.Ordinal)) : dataType;
-            var precision = string.Empty;
-            var scale = string.Empty;
+            int precision = -1;
+            int scale = -1;
             var match = Regex.Match(dataType, @"\((.*?)\)");
 
             if (match.Groups.Count > 1)
             {
-
                 var value = match.Groups[1].Value;
                 string[] arrayVal = value.Split(',');
-                precision = arrayVal[0];
+                precision = arrayVal[0].ToInt32(-1);
                 if (arrayVal.Length > 1)
                 {
-                    scale = arrayVal[1];
+					scale = arrayVal[1].ToInt32(-1);
                 }
             }
+
             switch (type)
             {
                 case "INTEGER":
-                    return new MetaIntType();
+					return notNull ? MetaIntType.NotNull() : MetaIntType.Null();
                 case "VARCHAR":
-                    return new MetaStringType() { Length = Int32.Parse(precision) };
+					if (precision == 36)
+						return notNull ? MetaGuidType.NotNull() : MetaGuidType.Null();
+					else if (precision == -1)
+						return notNull ? MetaStringType.NotNull() : MetaStringType.Null();
+					else
+						return new MetaStringType() { Length = precision, NotNullable = notNull };
                 case "DECIMAL":
-                    return new MetaDecimalType() { Precision = Int32.Parse(precision), Scale = Int32.Parse(scale) };
+					return new MetaDecimalType() { Precision = precision, Scale = scale, NotNullable = notNull };
                 case "TIMESTAMP":
-                    return new MetaDateTimeType();
+					return notNull ? MetaDateTimeType.NotNull() : MetaDateTimeType.Null();
                 case "DATE":
-                    return new MetaDateType();
+					return notNull ? MetaDateType.NotNull() : MetaDateType.Null();
                 case "BIGINT":
-                    return new MetaLongType();
+					return notNull ? MetaLongType.NotNull() : MetaLongType.Null();
                 case "BLOB":
-                    return new MetaByteArrayType();
+					return notNull ? MetaByteArrayType.NotNull() : MetaByteArrayType.Null();
                 case "SMALLINT":
-                    return new MetaBooleanType();
+					return notNull ? MetaBooleanType.NotNull() : MetaBooleanType.Null();
                 case "XML":
-                    return new MetaXmlType();
+					return notNull ? MetaXmlType.NotNull() : MetaXmlType.Null();
                 default:
                     return new MetaStringType();
             }

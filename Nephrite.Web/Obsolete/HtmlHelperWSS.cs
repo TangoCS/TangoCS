@@ -239,7 +239,7 @@ namespace Nephrite.Web
 			{
 				res.Append("<tr><td><table class='ms-navitem' width='100%' cellspacing='0' cellpadding='0' border='0'><tr><td style='width: 100%;'>");
 				if (item.Control != null)
-					res.Append(item.Control.RenderControl());
+					res.Append(item.Control);
 				else
 					res.AppendFormat("<a class='ms-navitem' style='border-style: none; font-size: 8pt;{0}' href='{1}'>{2}</a>", item.Selected ? " font-weight:bold;" : "", item.Url, item.Title + (item.Expression.IsEmpty() ? "" : (" " + item.EvaluateExpression())));
 				res.Append("</td></tr></table></td></tr>\r\n");

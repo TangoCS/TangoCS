@@ -65,7 +65,7 @@ namespace Nephrite.Meta.Database
 	public partial class Column
 	{
 		public string Name { get; set; }
-		public IMetaClassifier Type { get; set; }
+		public IMetaPrimitiveType Type { get; set; }
 		public bool Nullable { get; set; }
 		public string DefaultValue { get; set; }
 		public string ComputedText { get; set; }

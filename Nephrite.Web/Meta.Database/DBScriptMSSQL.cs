@@ -496,14 +496,15 @@ namespace Nephrite.Meta.Database
 
 		public XElement GetMeta()
 		{
-			return A.Model.ExecuteQuery<XElement>("EXEC [dbo].[usp_model]").FirstOrDefault();
+			var s = A.Model.ExecuteQuery<string>("EXEC [dbo].[usp_model]").FirstOrDefault();
+			return XElement.Parse(s);
 		}
 
 
 		#region IDBScript Members
 
 
-		public MetaPrimitiveType GetType(string dataType)
+		public MetaPrimitiveType GetType(string dataType, bool notNull)
 		{
 			var type = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(", System.StringComparison.Ordinal)) : dataType;
 			var precision = string.Empty;
@@ -523,27 +524,27 @@ namespace Nephrite.Meta.Database
 			switch (type)
 			{
 				case "int":
-					return new MetaIntType();
+					return notNull ? MetaIntType.NotNull() : MetaIntType.Null();
 				case "nvarchar":
-					return string.IsNullOrEmpty(precision) ? new MetaStringType() : new MetaStringType() { Length = Int32.Parse(precision == "max" ? "-1" : precision) };
+					return string.IsNullOrEmpty(precision) ? new MetaStringType { NotNullable = notNull } : new MetaStringType() { Length = Int32.Parse(precision == "max" ? "-1" : precision), NotNullable = notNull };
 				case "decimal":
-					return new MetaDecimalType() { Precision = Int32.Parse(precision), Scale = Int32.Parse(scale) };
+					return new MetaDecimalType() { Precision = Int32.Parse(precision), Scale = Int32.Parse(scale), NotNullable = notNull };
 				case "uniqueidentifier":
-					return new MetaGuidType();
+					return notNull ? MetaGuidType.NotNull() : MetaGuidType.Null();
 				case "datetime":
-					return new MetaDateType();
+					return notNull ? MetaDateTimeType.NotNull() : MetaDateTimeType.Null();
 				case "date":
-					return new MetaDateType();
+					return notNull ? MetaDateType.NotNull() : MetaDateType.Null();
 				case "bit":
-					return new MetaBooleanType();
-				case "datetimeoffset":
-					return new MetaZoneDateTimeType();
+					return notNull ? MetaBooleanType.NotNull() : MetaBooleanType.Null();
+				//case "datetimeoffset":
+				//	return new MetaZoneDateTimeType();
 				case "bigint":
-					return new MetaLongType();
+					return notNull ? MetaLongType.NotNull() : MetaLongType.Null();
 				case "varbinary":
-					return new MetaByteArrayType() { Length = Int32.Parse(precision == "max" ? "-1" : precision) };
+					return new MetaByteArrayType() { Length = Int32.Parse(precision == "max" ? "-1" : precision), NotNullable = notNull };
 				default:
-					return new MetaStringType();
+					return notNull ? MetaStringType.NotNull() : MetaStringType.Null();
 			}
 
 		}

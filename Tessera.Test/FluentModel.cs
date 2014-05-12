@@ -10,13 +10,13 @@ using Nephrite.Web.Controls;
 
 namespace Tessera.Test
 {
-	class Lot { }
-	class SPM_Subject { }
-	class C_Contractor { }
-	class LotDoc { }
-	class ProjectActivity { }
-	class C_Measure { }
-	class C_OperationType { public string Title { get; set; } }
+	interface ILot { }
+	interface ISPM_Subject { }
+	interface IC_Contractor { }
+	interface ILotDoc { }
+	interface IProjectActivity { }
+	interface IC_Measure { }
+	interface IC_OperationType { }
 
 	class FluentModel
 	{
@@ -26,11 +26,11 @@ namespace Tessera.Test
 		{
 			var p = new MetaPackage("TestPackage");
 
-			p.AddClass<C_OperationType>()
+			p.AddClass<IC_OperationType>()
 				.IntKey()
 				.TCLED().LogicalDelete().TimeStamp<SPM_Subject>();
 
-			p.AddClass<Lot>()
+			p.AddClass<ILot>()
 				.IntKey()
 				.TCLEVD().LogicalDelete().TimeStamp<SPM_Subject>()
 				.Workflow()
@@ -39,19 +39,19 @@ namespace Tessera.Test
 				.Attribute("AgreementCost", "Стоимость договора (рубли РФ)", MetaDecimalType.Null())
 				.Attribute("Copy_OrgUnit_Code", "Копия Код заказчика", MetaStringType.Null())
 				.Attribute("Copy_OrgUnit_Title", "Копия Наименование заказчика", MetaStringType.Null())
-				.Reference<C_Contractor>("ContractorOuter", "Исполнитель")
-				.Reference<LotDoc>("Docs", "Документы", x => x.Multiple().Aggregation().InverseProperty("Lot"))
-				.Reference<ProjectActivity>("ProjectActivity", "Заявка на работу");
+				.Reference<IC_Contractor>("ContractorOuter", "Исполнитель")
+				.Reference<ILotDoc>("Docs", "Документы", x => x.Multiple().Aggregation().InverseProperty("Lot"))
+				.Reference<IProjectActivity>("ProjectActivity", "Заявка на работу");
 
 			Func<Appendix, int> f = o => o.AppendixID;
 			Expression<Func<Appendix, int>> f2 = o => o.AppendixID;
-			Sorter s = new Sorter();
-			s.AddSortColumn("", f2);
+			//Sorter s = new Sorter();
+			//s.AddSortColumn("", f2);
 
 			//Expression<Func<C_OperationType, string>> f2 = o => o.Title;
 			dynamic d = null;
-			Action<C_OperationType, string> f3 = (o, v) => o.Title = v;
-			d = f3;
+			//Action<IC_OperationType, string> f3 = (o, v) => o.Title = v;
+			//d = f3;
 			
 			return p;				
 		}

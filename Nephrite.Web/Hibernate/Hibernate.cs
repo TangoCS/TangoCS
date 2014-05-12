@@ -29,6 +29,7 @@ using Nhibernate.Extensions;
 using Nephrite.Web.SPM;
 
 
+
 namespace Nephrite.Web.Hibernate
 {
 	
@@ -178,6 +179,8 @@ namespace Nephrite.Web.Hibernate
 
                 ToDelete.Clear();
                 ToInsert.Clear();
+				BeforeSaveActions.Clear();
+				AfterSaveActions.Clear();
                // _session.Flush();
             }
 		}

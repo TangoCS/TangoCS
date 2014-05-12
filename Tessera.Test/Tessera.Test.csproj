@@ -51,13 +51,26 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FluentModel.cs" />
+    <Compile Include="GenFluentModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GenFluentModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="GenFluentModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GenFluentModel.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Nephrite.Meta.Database.DB2\Nephrite.Meta.Database.DB2.csproj">
+      <Project>{2b25a041-ff5e-4308-a25a-aa60d097f009}</Project>
+      <Name>Nephrite.Meta.Database.DB2</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nephrite.Metamodel\Nephrite.Metamodel.csproj">
       <Project>{9f863d08-fd1f-4065-9f7d-f9ddbc469e81}</Project>
       <Name>Nephrite.Metamodel</Name>
@@ -70,6 +83,9 @@
       <Project>{5909bfe7-93cf-4e5f-be22-6293368af01d}</Project>
       <Name>NHibernate</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

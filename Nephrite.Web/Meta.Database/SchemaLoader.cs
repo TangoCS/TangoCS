@@ -49,9 +49,9 @@ namespace Nephrite.Meta.Database
 									xColumnsElement.Descendants("Column").ToList().ForEach(c =>
 									{
 										var column = new Column();
-										column.Name = c.GetAttributeValue("Name");
-										column.Type =  DbScript.GetType(c.GetAttributeValue("Type"));
+										column.Name = c.GetAttributeValue("Name");										
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("Nullable")) && c.GetAttributeValue("Nullable") == "1";
+										column.Type = DbScript.GetType(c.GetAttributeValue("Type"), !column.Nullable);
 										column.ComputedText = c.GetAttributeValue("ComputedText");
 										column.Description = c.GetAttributeValue("Description");
 										column.DefaultValue = c.GetAttributeValue("DefaultValue");
@@ -140,8 +140,9 @@ namespace Nephrite.Meta.Database
 									{
 										var column = new Column();
 										column.Name = c.GetAttributeValue("Name");
-										column.Type = DbScript.GetType(c.GetAttributeValue("Type"));
+										
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("Nullable")) && c.GetAttributeValue("Nullable") == "1";
+										column.Type = DbScript.GetType(c.GetAttributeValue("Type"), !column.Nullable);
 										view.Columns.Add(column.Name, column);
 									});
 
@@ -170,7 +171,7 @@ namespace Nephrite.Meta.Database
 									{
 										var Parameter = new Parameter();
 										Parameter.Name = c.GetAttributeValue("Name");
-										Parameter.Type = DbScript.GetType(c.GetAttributeValue("Type"));
+										Parameter.Type = DbScript.GetType(c.GetAttributeValue("Type"), true);
 										procedure.Parameters.Add(Parameter.Name, Parameter);
 									});
 
@@ -189,7 +190,7 @@ namespace Nephrite.Meta.Database
 									{
 										var Parameter = new Parameter();
 										Parameter.Name = c.GetAttributeValue("Name");
-										Parameter.Type = DbScript.GetType(c.GetAttributeValue("Type"));
+										Parameter.Type = DbScript.GetType(c.GetAttributeValue("Type"), true);
 										function.Parameters.Add(Parameter.Name, Parameter);
 									});
 

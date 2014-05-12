@@ -36,6 +36,9 @@ namespace Nephrite.Meta
 
 	public class MetaEnum : MetaPrimitiveType
 	{
+		public static MetaEnum NotNull() { return new MetaEnum { NotNullable = true }; }
+		public static MetaEnum Null() { return new MetaEnum { NotNullable = false }; }
+
 		public override string CLRType
 		{
 			get
@@ -248,6 +251,9 @@ namespace Nephrite.Meta
 		public static MetaFileType IntKeyNull() { return _ti_n; }
 		public static MetaFileType GuidKeyNotNull() { return _tg; }
 		public static MetaFileType GuidKeyNull() { return _tg_n; }
+		public static MetaFileType NotNull() { return _tg; }
+		public static MetaFileType Null() { return _tg_n; }
+
 
 		public IMetaIdentifierType IdentifierType { get; set; }
 

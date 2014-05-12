@@ -1,0 +1,83 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension="cs" #>
+<#@ assembly name="System.Core.dll" #>
+<#@ assembly name="System.Data.dll" #>
+<#@ assembly name="System.Data.Linq.dll" #>
+<#@ assembly name="System.Configuration.dll" #>
+<#@ assembly name="$(ProjectDir)$(OutDir)Nephrite.Metamodel.dll" #>
+<#@ assembly name="$(ProjectDir)$(OutDir)Nephrite.Web.dll" #>
+<#@ assembly name="$(ProjectDir)$(OutDir)NHibernate.dll" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="System.Text.RegularExpressions" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="Nephrite.Meta" #>
+<#@ import namespace="Nephrite.Meta.Database" #>
+<#@ import namespace="Nephrite.Web" #>
+<#@ import namespace="Nephrite.Web.Hibernate" #>
+<#@ import namespace="Nephrite.Web.CoreDataContext" #>
+<#@ import namespace="NHibernate.Cfg.Loquacious" #>
+
+<# 
+	A.DBScript = new DBScriptMSSQL("DBO");
+	ConnectionManager.SetConnectionString("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=Servants;Data Source=(local)");
+	HDataContext.DBType = DBType.MSSQL;
+
+	A.Model = new HCoreDataContext(Nephrite.Web.Hibernate.HDataContext.DBConfig(ConnectionManager.ConnectionString));
+	var model =  A.DynamicMeta;
+
+#>
+using System;
+using System.Linq;
+using Nephrite.Meta;
+using Nephrite.Meta.Fluent;
+
+namespace Solution.Model
+{
+<# foreach (var pck in model.Packages) { #>
+<# foreach (var cls in pck.Classes) { #>
+	public partial interface I<#=cls.Name#> { }
+<# } #>
+
+	public class <#=pck.Name#>Module
+	{
+		public MetaPackage Init()
+		{
+			var p = new MetaPackage("<#=pck.Name#>");
+<# foreach (var cls in pck.Classes) { #>
+			p.AddClass<I<#=cls.Name#>>()
+<#		if (cls.CompositeKey.Count == 1 && cls.Key.Type is MetaIntType) { #>
+				.IntKey()
+<#		} #>
+<#		if (cls.CompositeKey.Count == 1 && cls.Key.Type is MetaGuidType) { #>
+				.GuidKey()
+<#		} #>
+<#		foreach (var prop in cls.Properties) {
+			if (prop is MetaAttribute) { #>
+				.Attribute("<#=prop.Name#>", "<#=prop.Caption#>", <#=prop.Type.GetType().Name#>.<#=(prop.Type as MetaPrimitiveType).NotNullable ? "NotNull()" : "Null()"#>)
+<#			}
+			if (prop is MetaComputedAttribute) { #>
+				.ComputedAttribute("<#=prop.Name#>", "<#=prop.Caption#>", <#=prop.Type.GetType().Name#>.<#=(prop.Type as MetaPrimitiveType).NotNullable ? "NotNull()" : "Null()"#>)
+<#			}
+			if (prop is MetaPersistentComputedAttribute) { #>
+				.PersistentComputedAttribute("<#=prop.Name#>", "<#=prop.Caption#>", <#=prop.Type.GetType().Name#>.<#=(prop.Type as MetaPrimitiveType).NotNullable ? "NotNull()" : "Null()"#>)
+<#			}
+
+			if (prop is MetaReference) { 
+				var r = prop as MetaReference;
+				string add = "";
+				if (r.UpperBound == -1) add += ".Multiple()";
+				if (r.AssociationType == AssociationType.Aggregation) add += ".Aggregation()";
+				if (r.InverseProperty != null) add += @".InverseProperty(""" + r.InverseProperty.Name + @""")";
+			#>
+				.Reference<I<#=r.RefClass.Name#>>("<#=prop.Name#>", "<#=prop.Caption#>"<#=!add.IsEmpty() ? ", x => x" + add : "" #>)
+<#			} 
+		} #>
+			;	
+<# } #>
+			return p;
+		}
+	}
+<# } #>
+}

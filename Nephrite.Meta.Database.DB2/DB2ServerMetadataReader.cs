@@ -63,8 +63,8 @@ namespace Nephrite.Meta.Database
                                         var column = new Column();
                                         column.Identity = !string.IsNullOrEmpty(c.GetAttributeValue("IDENTITY")) && c.GetAttributeValue("IDENTITY") == "Y";
                                         column.Name = string.IsNullOrEmpty(columnName) ? c.GetAttributeValue("NAME") : columnName;
-                                        column.Type = column.Name.EndsWith("GUID") || (c.GetAttributeValue("TYPELENGTH") != null && c.GetAttributeValue("TYPELENGTH") == "36") ? new MetaGuidType() : DbScript.GetType(c.GetAttributeValue("TYPE"));
-                                        column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
+										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
+										column.Type = DbScript.GetType(c.GetAttributeValue("TYPE"), !column.Nullable);
                                         column.ComputedText = c.GetAttributeValue("COMPUTEDTEXT");
                                         column.Description = columnDescription;
                                         column.DefaultValue = c.GetAttributeValue("DEFAULTVALUE");
@@ -184,8 +184,8 @@ namespace Nephrite.Meta.Database
                                     {
                                         var column = new Column();
                                         column.Name = c.GetAttributeValue("NAME");
-                                        column.Type = column.Name.EndsWith("GUID") || (c.GetAttributeValue("TYPELENGTH") != null && c.GetAttributeValue("TYPELENGTH") == "36") ? new MetaGuidType() : DbScript.GetType(c.GetAttributeValue("TYPE"));
-                                        column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
+										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
+										column.Type = DbScript.GetType(c.GetAttributeValue("TYPE"), !column.Nullable);
                                         view.Columns.Add(column.Name, column);
                                     });
 
@@ -213,7 +213,7 @@ namespace Nephrite.Meta.Database
                                     {
                                         var Parameter = new Parameter();
                                         Parameter.Name = c.GetAttributeValue("NAME");
-                                        Parameter.Type = DbScript.GetType(c.GetAttributeValue("TYPE"));
+                                        Parameter.Type = DbScript.GetType(c.GetAttributeValue("TYPE"), true);
                                         procedure.Parameters.Add(Parameter.Name, Parameter);
                                     });
 
@@ -231,7 +231,7 @@ namespace Nephrite.Meta.Database
                                     {
                                         var Parameter = new Parameter();
                                         Parameter.Name = c.GetAttributeValue("NAME");
-                                        Parameter.Type = DbScript.GetType(c.GetAttributeValue("TYPE"));
+                                        Parameter.Type = DbScript.GetType(c.GetAttributeValue("TYPE"), true);
                                         if (!string.IsNullOrEmpty(Parameter.Name))
                                             function.Parameters.Add(Parameter.Name, Parameter);
                                     });

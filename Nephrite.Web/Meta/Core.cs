@@ -384,7 +384,7 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// “ип данных
 		/// </summary>
-		public virtual IMetaClassifier Type { get; set; }
+		public virtual IMetaPrimitiveType Type { get; set; }
 		/// <summary>
 		/// явл€етс€ ли свойство об€зательным дл€ заполнени€
 		/// </summary>
@@ -426,7 +426,7 @@ namespace Nephrite.Meta
 	{
 		public override string GetStringValue<TClass, TValue>(TClass obj, string format = "", IFormatProvider provider = null)
 		{
-			var pt = Type as IMetaPrimitiveType;
+			var pt = Type;
 			if (pt.GetStringValue == null) return "";
 			var valueGetter = GetValue as Func<TClass, TValue>;
 			var getter = pt.GetStringValue as Func<TValue, string, IFormatProvider, string>;
@@ -517,7 +517,7 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// “ип данных
 		/// </summary>
-		public override IMetaClassifier Type
+		public override IMetaPrimitiveType Type
 		{
 			get
 			{

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.UI;
+//using System.Web;
+//using System.Web.UI;
 
 namespace Nephrite.Web.Controls
 {
@@ -11,7 +11,7 @@ namespace Nephrite.Web.Controls
 		public string Title { get; set; }
 		public string Url { get; set; }
 		public string Icon { get; set; }
-		public Control Control { get; set; }
+		public string Control { get; set; }
 		public bool Selected { get; set; }
 		public string Expression { get; set; }
 		List<NavMenuItem> _items = null;
@@ -40,7 +40,7 @@ namespace Nephrite.Web.Controls
 			Items.Add(mi);
 			return mi;
 		}
-		public NavMenuItem AddItem(Control ctrl)
+		public NavMenuItem AddItem(string ctrl)
 		{
 			var mi = new NavMenuItem { Control = ctrl };
 			Items.Add(mi);

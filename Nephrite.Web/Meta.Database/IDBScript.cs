@@ -48,9 +48,10 @@ namespace Nephrite.Meta.Database
 		string GetByteArrayType(int length);
 		string GetBooleanType();
 		string GetXmlType();
+		MetaPrimitiveType GetType(string dataType, bool notNull);
 
 		string ImportData(Table t, bool identityInsert, SqlConnection DbConnection);
-		MetaPrimitiveType GetType(string dataType);
+
 
 		string ToString();
 	}
