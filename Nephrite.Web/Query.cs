@@ -135,7 +135,7 @@ namespace Nephrite.Web
 
 		public static string GetString(string parametername)
 		{
-			return HttpContext.Current.Request.Url.PathAndQuery.GetQueryParameter(parametername);
+			return (HttpContext.Current != null ? HttpContext.Current.Request.Url.PathAndQuery : "").GetQueryParameter(parametername);
 		}
 
 		public static string CreateReturnUrl()

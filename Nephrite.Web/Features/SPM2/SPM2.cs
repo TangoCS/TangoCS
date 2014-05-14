@@ -116,7 +116,7 @@ namespace Nephrite.Web.SPM
 				IEnumerable<Role> roles = Items["SubjectRoles2_" + sid.ToString()] as IEnumerable<Role>;
 				if (roles == null)
 				{
-					WindowsIdentity wi = HttpContext.Current.User.Identity as WindowsIdentity;
+					WindowsIdentity wi = HttpContext.Current != null ? HttpContext.Current.User.Identity as WindowsIdentity : null;
 					List<int> r = null;
 
 					if (wi != null && !wi.IsAnonymous)
@@ -158,7 +158,7 @@ namespace Nephrite.Web.SPM
 
 		public bool HasRole(params string[] roleName)
 		{
-			return Roles.Select(o => o.SysName).Intersect(roleName.Select(o => o.ToLower())).Count() > 0;
+			return Roles.Select(o => o.SysName).Intersect(roleName.Where(o => o != null).Select(o => o.ToLower())).Count() > 0;
 		}
 
 		public void Run(Action action)

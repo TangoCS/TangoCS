@@ -96,10 +96,13 @@ namespace Nephrite.Metamodel
             get
             {
                 string lang = Query.GetString("lang");
-				if (HttpContext.Current.Request.Cookies["lcid"] != null)
-					lang = HttpContext.Current.Request.Cookies["lcid"].Value == "1033" ? "en" : "ru";
-				if (HttpContext.Current.Items["Lang"] != null)
-					lang = (string)HttpContext.Current.Items["Lang"];
+				if (HttpContext.Current != null)
+				{
+					if (HttpContext.Current.Request.Cookies["lcid"] != null)
+						lang = HttpContext.Current.Request.Cookies["lcid"].Value == "1033" ? "en" : "ru";
+					if (HttpContext.Current.Items["Lang"] != null)
+						lang = (string)HttpContext.Current.Items["Lang"];
+				}
                 var l = Languages.SingleOrDefault(o => o.LanguageCode == lang);
                 if (l == null)
                     l = Languages.Single(o => o.IsDefault);

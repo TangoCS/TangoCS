@@ -27,7 +27,8 @@ namespace Nephrite.Web
 		{
 			get
 			{
-				return new Url(HttpContext.Current.Request.Url.PathAndQuery, HttpContext.Current.Request.QueryString);
+				return new Url(HttpContext.Current == null ? "" : HttpContext.Current.Request.Url.PathAndQuery, 
+								HttpContext.Current == null ? new NameValueCollection() : HttpContext.Current.Request.QueryString);
 			}
 		}
 

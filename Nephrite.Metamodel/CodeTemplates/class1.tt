@@ -251,7 +251,7 @@ namespace <#= AppMM.DBName() #>.Model
 			oc.ObjectTitle = Title ?? "[без названия]";
 			oc.ObjectTypeTitle = "<#= cls.Title #>";
             oc.ObjectTypeSysName = "<#= cls.SysName #>";
-            oc.UserTitle = Subject.Current.Title + (HttpContext.Current.Items["delegated"] != null ? " (делегировано)" : "");
+            oc.UserTitle = Subject.Current.Title + (HttpContext.Current != null && HttpContext.Current.Items["delegated"] != null ? " (делегировано)" : "");
 			oc.UserLogin = Subject.Current.Login;
 			oc.Details = "";
             App.DataContext.N_ObjectChange.InsertOnSubmit(oc);

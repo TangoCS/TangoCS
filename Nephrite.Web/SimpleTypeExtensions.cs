@@ -32,7 +32,7 @@ namespace Nephrite.Web
         /// <param name="writer"></param>
         public static void Render(this Exception ex, HtmlTextWriter writer)
         {
-            writer.Write("<i>" + HttpContext.Current.Request.Url.AbsoluteUri + "</i>");
+			writer.Write("<i>" + (HttpContext.Current != null ? HttpContext.Current.Request.Url.AbsoluteUri : "") + "</i>");
             writer.WriteBreak();
             writer.WriteBreak();
             Exception e = ex;
@@ -43,7 +43,7 @@ namespace Nephrite.Web
                 writer.Write("</b>");
                 writer.WriteBreak();
                 writer.WriteBreak();
-                writer.Write(HttpUtility.HtmlEncode(e.StackTrace).Replace("\n", "<br />"));
+				writer.Write(HttpUtility.HtmlEncode(e.StackTrace != null ? e.StackTrace : "").Replace("\n", "<br />"));
                 writer.WriteBreak();
                 writer.WriteBreak();
                 writer.WriteBreak();
