@@ -70,11 +70,22 @@ namespace Nephrite.Metamodel
 		{
 			if (AppSPM.IsCurrentUserHasRole(ConfigurationManager.AppSettings["AdministratorsRole"]))
 			{
-				if (HttpContext.Current.Items["MViewList"] == null)
-					HttpContext.Current.Items["MViewList"] = new List<string>();
-				var list = (List<string>)HttpContext.Current.Items["MViewList"];
-				if (!list.Any(o => o == fv))
-					list.Add(fv);
+				if (HttpContext.Current != null)
+				{
+					if (HttpContext.Current.Items["MViewList"] == null)
+						HttpContext.Current.Items["MViewList"] = new List<string>();
+					var list = (List<string>)HttpContext.Current.Items["MViewList"];
+					if (!list.Any(o => o == fv))
+						list.Add(fv);
+				}
+				else
+				{
+					if (AppDomain.CurrentDomain.GetData("MViewList") == null)
+						AppDomain.CurrentDomain.SetData("MViewList", new List<string>());
+					var list = (List<string>)AppDomain.CurrentDomain.GetData("MViewList");
+					if (!list.Any(o => o == fv))
+						list.Add(fv);
+				}
 			}
 		}
 

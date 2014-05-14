@@ -81,7 +81,7 @@ namespace Nephrite.Web.App
 				AppWeb.DataContext.UserActivities.InsertOnSubmit(new UserActivity
 				{
 					Action = "Редактирование",
-					IP = HttpContext.Current.Request.UserHostAddress,
+					IP = HttpContext.Current == null ? "127.0.0.1" : HttpContext.Current.Request.UserHostAddress,
 					LastModifiedDate = DateTime.Now,
 					LastModifiedUserID = Subject.Current.ID,
 					ObjectKey = name,
@@ -100,7 +100,7 @@ namespace Nephrite.Web.App
 					AppWeb.DataContext.UserActivities.InsertOnSubmit(new UserActivity
 					{
 						Action = "Редактирование",
-						IP = HttpContext.Current.Request.UserHostAddress,
+						IP = HttpContext.Current == null ? "127.0.0.1" : HttpContext.Current.Request.UserHostAddress,
 						LastModifiedDate = DateTime.Now,
 						LastModifiedUserID = Subject.Current.ID,
 						ObjectKey = name,

@@ -41,13 +41,16 @@ namespace Nephrite.Web
 				//if (HttpContext.Current != null && HttpContext.Current.Request.Url.ToString().ToLower().Contains("rss.aspx"))
 				//	return 0;
 
-				HttpRequest r = HttpContext.Current.Request;
-				// Проверить, не входит ли URL в список запрещенных к логированию
-				string[] blockedUrlPatterns = App.AppSettings.Get("ErrorLoggingBlockedUrlPatterns").Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-				foreach (var pattern in blockedUrlPatterns)
-					if (Regex.IsMatch(r.Url.AbsoluteUri, pattern))
-						return 0;
-
+				HttpRequest r = null;
+				if (HttpContext.Current != null)
+				{
+					r = HttpContext.Current.Request;
+					// Проверить, не входит ли URL в список запрещенных к логированию
+					string[] blockedUrlPatterns = App.AppSettings.Get("ErrorLoggingBlockedUrlPatterns").Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+					foreach (var pattern in blockedUrlPatterns)
+						if (Regex.IsMatch(r.Url.AbsoluteUri, pattern))
+							return 0;
+				}
                 string errortext = "";
                 Exception e = exception;
                 while (e != null)
@@ -65,39 +68,44 @@ namespace Nephrite.Web
                     l.ErrorDate = DateTime.Now;
                     l.ErrorText = errortext;
                     l.Headers = "";
-                    for (int i = 0; i < r.Headers.Count; i++)
-                        l.Headers += r.Headers.GetKey(i) + ": " + r.Headers[i] + Environment.NewLine;
-					errorInfo += "[Headers]" + Environment.NewLine + l.Headers ?? "";
-                    l.RequestType = r.RequestType;
-					errorInfo += "[RequestType]" + Environment.NewLine + l.RequestType + Environment.NewLine;
-                    l.Url = r.Url.AbsoluteUri;
-					errorInfo += "[Url]" + Environment.NewLine + l.Url + Environment.NewLine;
-					l.UrlReferrer = r.UrlReferrer == null ? "" : r.UrlReferrer.AbsoluteUri;
-					errorInfo += "[UrlReferrer]" + Environment.NewLine + l.UrlReferrer + Environment.NewLine;
-
-					l.UserName = HttpContext.Current.User.Identity.Name;
-					errorInfo += "[UserName]" + Environment.NewLine + l.UserName + Environment.NewLine;
-
-                    l.UserAgent = r.UserAgent;
-					errorInfo += "[UserAgent]" + Environment.NewLine + l.UserAgent + Environment.NewLine;
-                    l.UserHostAddress = r.UserHostAddress;
-					errorInfo += "[UserHostAddress]" + Environment.NewLine + l.UserHostAddress + Environment.NewLine;
-					l.UserHostName = r.UserHostName;
-
-					l.SqlLog = "";//dataContext.Log.ToString();
-					List<DataContext> loggedDC = new List<DataContext>();
-                    foreach (var item in HttpContext.Current.Items.Values.OfType<DataContext>())
-                    {
-						if (loggedDC.Contains(item))
-							continue;
-						loggedDC.Add(item);
-                        if (item.Log != null)
-                            l.SqlLog += "\r\n\r\n>>>>> " + item.GetType().FullName + " <<<<<\r\n" + item.Log.ToString();
-                    }
-					foreach (var item in HttpContext.Current.Items.Values.OfType<HCoreDataContext>())
+					if (r != null)
 					{
-						if (item.Log != null)
-							l.SqlLog += "\r\n\r\n>>>>> " + item.GetType().FullName + " <<<<<\r\n" + item.Log.ToString();
+						for (int i = 0; i < r.Headers.Count; i++)
+							l.Headers += r.Headers.GetKey(i) + ": " + r.Headers[i] + Environment.NewLine;
+						errorInfo += "[Headers]" + Environment.NewLine + l.Headers ?? "";
+						l.RequestType = r.RequestType;
+						errorInfo += "[RequestType]" + Environment.NewLine + l.RequestType + Environment.NewLine;
+						l.Url = r.Url.AbsoluteUri;
+						errorInfo += "[Url]" + Environment.NewLine + l.Url + Environment.NewLine;
+						l.UrlReferrer = r.UrlReferrer == null ? "" : r.UrlReferrer.AbsoluteUri;
+						errorInfo += "[UrlReferrer]" + Environment.NewLine + l.UrlReferrer + Environment.NewLine;
+
+						l.UserName = HttpContext.Current == null ? "System" : HttpContext.Current.User.Identity.Name;
+						errorInfo += "[UserName]" + Environment.NewLine + l.UserName + Environment.NewLine;
+
+						l.UserAgent = r.UserAgent;
+						errorInfo += "[UserAgent]" + Environment.NewLine + l.UserAgent + Environment.NewLine;
+						l.UserHostAddress = r.UserHostAddress;
+						errorInfo += "[UserHostAddress]" + Environment.NewLine + l.UserHostAddress + Environment.NewLine;
+						l.UserHostName = r.UserHostName;
+					}
+					l.SqlLog = "";//dataContext.Log.ToString();
+					if (HttpContext.Current != null)
+					{
+						List<DataContext> loggedDC = new List<DataContext>();
+						foreach (var item in HttpContext.Current.Items.Values.OfType<DataContext>())
+						{
+							if (loggedDC.Contains(item))
+								continue;
+							loggedDC.Add(item);
+							if (item.Log != null)
+								l.SqlLog += "\r\n\r\n>>>>> " + item.GetType().FullName + " <<<<<\r\n" + item.Log.ToString();
+						}
+						foreach (var item in HttpContext.Current.Items.Values.OfType<HCoreDataContext>())
+						{
+							if (item.Log != null)
+								l.SqlLog += "\r\n\r\n>>>>> " + item.GetType().FullName + " <<<<<\r\n" + item.Log.ToString();
+						}
 					}
 					errorInfo += "[SqlLog]" + Environment.NewLine + l.SqlLog;
 					dc.ErrorLogs.InsertOnSubmit(l);

@@ -126,8 +126,14 @@ namespace Nephrite.Web
 		}
 		public static NodeData NodeData
 		{
-			get { return HttpContext.Current.Items["NodeData"] as NodeData; }
-			set { HttpContext.Current.Items["NodeData"] = value; }
+			get { return HttpContext.Current != null ? HttpContext.Current.Items["NodeData"] as NodeData :
+														AppDomain.CurrentDomain.GetData("NodeData") as NodeData; }
+			set {
+				if (HttpContext.Current != null) 
+						HttpContext.Current.Items["NodeData"] = value;
+					else
+						AppDomain.CurrentDomain.SetData("NodeData", value); 
+				}
 		}
 		public static NodeData HomeNodeData { get; set; }
 		public static bool IsRouting
@@ -152,10 +158,13 @@ namespace Nephrite.Web
 			get
 			{
 				string lang = Query.GetString("lang");
-				if (HttpContext.Current.Request.Cookies["lcid"] != null)
-					lang = HttpContext.Current.Request.Cookies["lcid"].Value == "1033" ? "en" : "ru";
-				if (HttpContext.Current.Items["Lang"] != null)
-					lang = (string)HttpContext.Current.Items["Lang"];
+				if (HttpContext.Current != null)
+				{
+					if (HttpContext.Current.Request.Cookies["lcid"] != null)
+						lang = HttpContext.Current.Request.Cookies["lcid"].Value == "1033" ? "en" : "ru";
+					if (HttpContext.Current.Items["Lang"] != null)
+						lang = (string)HttpContext.Current.Items["Lang"];
+				}
 				var l = Languages.SingleOrDefault(o => o.LanguageCode == lang);
 				if (l == null)
 					l = Languages.Single(o => o.IsDefault);
