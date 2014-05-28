@@ -289,35 +289,34 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public V_DbFolderMap()
 		{
-			Table("V_DbFolder");
+			Schema("dbo");
+			Table("\"V_DbFolder\"");
 			Lazy(true);
-
 			ComposedId(i => i.Property(p => p.ID, map =>
 			{
 				map.Column("ID");
 				MappingConfig.GuidPropertyConfig(map);
 			}));
-
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.IsDeleted, map => map.NotNullable(true));
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.FullPath);
-			Property(x => x.StorageType, map => map.NotNullable(true));
-			Property(x => x.StorageParameter);
-			Property(x => x.Path);
-			Property(x => x.SPMActionItemGUID, map => { map.NotNullable(true); map.Insert(false); map.Update(false); MappingConfig.GuidPropertyConfig(map); });
-			Property(x => x.EnableVersioning, map => map.NotNullable(true));
-			Property(x => x.Tag);
-			Property(x => x.PublishDate);
-			Property(x => x.CreatorID, map => map.NotNullable(true));
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-
-			Property(x => x.Size, map => map.NotNullable(true));
-			Property(x => x.LastModifiedUserName, map => map.NotNullable(true));
-			Property(x => x.FullPath);
-			Property(x => x.Creator);
-			Property(x => x.ParentFolderID, map => MappingConfig.GuidPropertyConfig(map));
-			Property(x => x.IsDeleted, map => map.NotNullable(true));
+			Property(x => x.Title, map => { map.Column("\"Title\""); });
+			Property(x => x.LastModifiedDate, map => { map.Column("\"LastModifiedDate\""); });
+			Property(x => x.LastModifiedUserID, map => { map.Column("\"LastModifiedUserID\""); });
+			Property(x => x.IsDeleted, map => { map.NotNullable(false); MappingConfig.BoolPropertyConfig(map); map.Column("\"IsDeleted\""); });
+			Property(x => x.Size, map => { map.Column("\"Size\""); });
+			Property(x => x.LastModifiedUserName, map => { map.Column("\"LastModifiedUserName\""); });
+			Property(x => x.Path, map => { map.Column("\"Path\""); });
+			Property(x => x.ParentFolderID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ParentFolderID\""); });
+			Property(x => x.ID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ID\""); });
+			Property(x => x.StorageParameter, map => { map.Column("\"StorageParameter\""); });
+			Property(x => x.SPMActionItemGUID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"SPMActionItemGUID\""); });
+			Property(x => x.EnableVersioning, map => { map.NotNullable(false); MappingConfig.BoolPropertyConfig(map); map.Column("\"EnableVersioning\""); });
+			Property(x => x.FileCount, map => { map.Column("\"FileCount\""); });
+			Property(x => x.Tag, map => { map.Column("\"Tag\""); });
+			Property(x => x.PublishDate, map => { map.Column("\"PublishDate\""); });
+			Property(x => x.CreatorID, map => { map.Column("\"CreatorID\""); });
+			Property(x => x.Creator, map => { map.Column("\"Creator\""); });
+			Property(x => x.FullPath, map => { map.Column("\"FullPath\""); });
+			Property(x => x.IsValid, map => { map.Column("\"IsValid\""); });
+			Property(x => x.StorageType, map => { map.Column("\"StorageType\""); });
 		}
 	}
 

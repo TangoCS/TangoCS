@@ -66,10 +66,10 @@ namespace Nephrite.Web.Controls
 		public bool ShowFlatList { get; set; }
 		public bool HighlightSearchResults { get; set; }
 
-		public IQueryable AllObjects { get; set; }
+		public IQueryable<dynamic> AllObjects { get; set; }
 
 		//public Func<string, Expression<Func<IModelObject, bool>>> SearchExpression { get; set; }
-		public Func<string, Expression<Func<object, bool>>> SearchExpression { get; set; }
+		public Func<string, Expression<Func<dynamic, bool>>> SearchExpression { get; set; }
 		public Func<string, int, int, IEnumerable> SearchQuery { get; set; }
 		public Func<string, int> SearchCountQuery { get; set; }
 
@@ -110,6 +110,8 @@ namespace Nephrite.Web.Controls
 			//cblItems.DataTextField = SearchDataTextField ?? (DataTextField ?? "Title");
 			//cblItems.DataValueField = DataValueField;
 			select.OKClientClick = "selectOK_" + ClientID + "()";
+			select.DefaultFocus = "text_" + ClientID;
+
 
 			if (MultipleSelect)
 			{
@@ -232,7 +234,7 @@ namespace Nephrite.Web.Controls
 					hfSelectedTitles.Value += titles[ids[i]] + "\n";
 			}
 
-			IQueryable<object> items = AllObjects.Cast<object>();
+			IQueryable<dynamic> items = AllObjects;
 			if (select.IsFirstPopulate)
 			{
 				hfParentID.Value = "0";
@@ -249,9 +251,9 @@ namespace Nephrite.Web.Controls
 					{
 						object obj = null;
 						if (hfParentID.Value.ToInt32(0) > 0)
-							obj = items.SingleOrDefault(mo.FindByProperty<object>(IDField, hfParentID.Value.ToInt32(0)));
+							obj = items.Where(mo.FindByProperty<dynamic>(IDField, hfParentID.Value.ToInt32(0))).ToList().SingleOrDefault();
 						else
-							obj = items.SingleOrDefault(mo.FindByProperty<object>(IDField, hfParentID.Value.ToGuid()));
+							obj = items.Where(mo.FindByProperty<dynamic>(IDField, hfParentID.Value.ToGuid())).ToList().SingleOrDefault();
 						if (obj != null)
 						{
 							sled.Text = DataBinder.GetPropertyValue(obj, DataTextField).ToString();
@@ -260,7 +262,7 @@ namespace Nephrite.Web.Controls
 
 							while (parentid != null)
 							{
-								obj = items.SingleOrDefault(mo.FindByProperty<object>(IDField, parentid));
+								obj = items.Where(mo.FindByProperty<dynamic>(IDField, parentid)).ToList().SingleOrDefault();
 								if (obj == null || (rootIds != null && rootIds.Contains((int)DataBinder.GetPropertyValue(obj, DataValueField))) || (rootGuids != null && rootGuids.Contains((Guid)DataBinder.GetPropertyValue(obj, DataValueField))))
 									break;
 								sled.Text = "<a href='#' onclick=\"godeeper_" + ClientID + "('" + DataBinder.GetPropertyValue(obj, IDField).ToString() + "');return false;\">" + DataBinder.GetPropertyValue(obj, DataTextField) + "</a> / " + sled.Text;
@@ -276,11 +278,11 @@ namespace Nephrite.Web.Controls
 					{
 						if (RootObjectID == null)
 						{
-							items = items.Where(mo.FindByProperty<object>(ParentField, null));
+							items = items.Where(mo.FindByProperty<dynamic>(ParentField, null));
 						}
 						else
 						{
-							items = items.Where(mo.FindByProperty<object>(ParentField, RootObjectID));
+							items = items.Where(mo.FindByProperty<dynamic>(ParentField, RootObjectID));
 						}
 					}
 					else
@@ -288,11 +290,11 @@ namespace Nephrite.Web.Controls
 
 						if (idType == typeof(int))
 						{
-							items = items.Where(mo.FindByProperty<object>(ParentField, hfParentID.Value.ToInt32(0)));
+							items = items.Where(mo.FindByProperty<dynamic>(ParentField, hfParentID.Value.ToInt32(0)));
 						}
 						else if (idType == typeof(Guid))
 						{
-							items = items.Where(mo.FindByProperty<object>(ParentField, hfParentID.Value.ToGuid()));
+							items = items.Where(mo.FindByProperty<dynamic>(ParentField, hfParentID.Value.ToGuid()));
 						}
 					}
 				}
@@ -349,7 +351,7 @@ namespace Nephrite.Web.Controls
 				if (!ParentField.IsEmpty() && !ShowFlatList && hfQuickFilter.Value.Trim() == String.Empty)
 				{
 					object id = DataBinder.GetPropertyValue(obj, IDField);
-					int childcnt = AllObjects.Cast<object>().Where(mo.FindByProperty<object>(ParentField, id)).Count();
+					int childcnt = AllObjects.Where(mo.FindByProperty<dynamic>(ParentField, id)).Count();
 					if (childcnt > 0)
 						li.Text = "<a href='#' onclick=\"godeeper_" + ClientID + "('" + id + "');return false;\">" + li.Text + "</a>";
 				}

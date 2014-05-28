@@ -141,9 +141,9 @@ namespace Nephrite.Web.Controls
         public bool HighlightSearchResults { get { return select.HighlightSearchResults; } set { select.HighlightSearchResults = value; } }
 		public string NotFoundMessage { get { return select.GetNotFoundMessage(); } set { select.GetNotFoundMessage = () => value; } }
 		public Func<string> GetNotFoundMessage { get { return select.GetNotFoundMessage; } set { select.GetNotFoundMessage = value; } }
-		public IQueryable AllObjects { get; set; }
+		public IQueryable<dynamic> AllObjects { get; set; }
 		public string QuickFilterValue { get { return select.QuickFilterValue; } set { select.QuickFilterValue = value; } }
-		public Func<string, Expression<Func<object, bool>>> SearchExpression { get; set; }
+		public Func<string, Expression<Func<dynamic, bool>>> SearchExpression { get; set; }
 		public Func<string, int, int, IEnumerable> SearchQuery { get; set; }
 		public Func<string, int> SearchCountQuery { get; set; }
 		public bool RemoveUnselected { get; set; }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using Nephrite.Meta;
@@ -11,6 +12,7 @@ using Nephrite.Metamodel.Model;
 using Nephrite.Web;
 using Nephrite.Web.Controls;
 using Nephrite.Web.CoreDataContext;
+using Nephrite.Web.FileStorage;
 using Nephrite.Web.Hibernate;
 using Nephrite.Web.MetaStorage;
 using NHibernate;
@@ -24,43 +26,39 @@ namespace Tessera.Test
 {
     class Program
     {
-        private static string getType(MetaClassifier type, bool notNull)
-        {
-            switch (type.GetType().Name)
-            {
-                case "MetaStringType":
-                    return "new MetaStringType {Name = \"String\"}";
-                case "MetaByteArrayType":
-                    return "new MetaByteArrayType {Name = \"Data\"}";
-                case "MetaDateType":
-                    return "new MetaDateType { Name = \"Date\", NotNullable = " + notNull.ToString().ToLower() + " }";
-                case "MetaDateTimeType":
-                    return "new MetaDateTimeType  { Name = \"DateTime\", NotNullable = " + notNull.ToString().ToLower() + " }";
-                case "MetaIntType":
-                    return "new MetaIntType { Name = \"Int\", NotNullable = " + notNull.ToString().ToLower() + " }";
-                case "MetaLongType":
-                    return "new MetaLongType { Name = \"Long\", NotNullable = " + notNull.ToString().ToLower() + " }";
-                case "MetaBooleanType":
-                    return "new MetaBooleanType { Name = \"Boolean\", NotNullable = " + notNull.ToString().ToLower() + " }";
-                case "MetaGuidType":
-                    return "new MetaGuidType { Name = \"Guid\", NotNullable = " + notNull.ToString().ToLower() + " }";
-                case "MetaDecimalType":
-                    return "new MetaDecimalType { Precision = 18, Scale = 5, Name = \"Decimal\", NotNullable = " + notNull.ToString().ToLower() + " }";
-                case "MetaFileType":
-                    if ((type as MetaFileType).IdentifierType is MetaGuidType)
-                        return " new MetaFileType { Name = \"FileGUID\", IdentifierType = TypeFactory.Guid(false), NotNullable =  " + notNull.ToString().ToLower() + " }";
-                    else
-                        return "new MetaFileType { Name = \"FileID\", IdentifierType = TypeFactory.Int(false), NotNullable =  " + notNull.ToString().ToLower() + " }";
-                case "MetaEnum":
 
-                    return " new MetaEnum { Name = \""+type.Name+"\" , NotNullable = " + notNull.ToString().ToLower() + " }";
-                default:
-                    return "";
+		public static Expression<Func<dynamic, bool>> FindByProperty(Type t, string propertyName, object propertyValue)
+		{
+			PropertyInfo pi = t.GetProperty(propertyName);
 
-            }
+			if (pi != null)
+			{
+				ParameterExpression pe_c = Expression.Parameter(t, "c");
+				UnaryExpression ue_c = Expression.Convert(pe_c, t);
+				MemberExpression me_id = Expression.Property(ue_c, pi.Name);
+				if (propertyValue != null && propertyValue.GetType().IsArray)
+				{
+					Type arrayElementType = propertyValue.GetType().GetElementType();
+					MethodInfo method = typeof(Enumerable).GetMethods()
+					.Where(m => m.Name == "Contains" && m.GetParameters().Length == 2)
+					.Single().MakeGenericMethod(arrayElementType);
 
-        }
+					var callContains = Expression.Call(
+						method,
+						Expression.Convert(Expression.Constant(propertyValue, propertyValue.GetType()),
+						typeof(IEnumerable<>).MakeGenericType(arrayElementType)),
+						Expression.Convert(me_id, arrayElementType));
+					return Expression.Lambda<Func<object, bool>>(callContains, pe_c);
+				}
+				else
+				{
+					BinaryExpression be_eq = Expression.Equal(me_id, Expression.Constant(propertyValue, pi.PropertyType));
+					return Expression.Lambda<Func<object, bool>>(be_eq, pe_c);
+				}
+			}
 
+			throw new Exception("В классе " + t.FullName + " не найдено свойство " + propertyName);
+		}
 
         private static void Main(string[] args)
         {
@@ -68,8 +66,23 @@ namespace Tessera.Test
             HDataContext.DBType = DBType.DB2;
             A.Model = new HCoreDataContext(Nephrite.Web.Hibernate.HDataContext.DBConfig(ConnectionManager.ConnectionString));
 
-			var sqlServerMetadataReader = new DB2ServerMetadataReader();
-			var schema = sqlServerMetadataReader.ReadSchema("dbo");
+			//var f = Nephrite.Web.FileStorage.FileStorageManager.CreateFile("", "");
+			IQueryable<dynamic> items = FileStorageManager.DbFolders.Where(o => !o.IsDeleted);
+			Func<string, Expression<Func<dynamic, bool>>> SearchExpression = s => (o => (o as V_DbFolder).Title.Contains(s));
+			V_DbFolder obj = new V_DbFolder();
+
+			object obj2 =
+				items.Where(FindByProperty(typeof(V_DbFolder), "ID", Guid.Parse("4d442229-ee61-44d3-a390-058f06905c11"))).ToList().FirstOrDefault()
+				;
+			
+
+
+			//c = c.Where(obj.FindByProperty<dynamic>("ParentFolderID", null));
+			//int i = c.Count();
+ 
+
+			//var sqlServerMetadataReader = new DB2ServerMetadataReader();
+			//var schema = sqlServerMetadataReader.ReadSchema("dbo");
 
           
 
