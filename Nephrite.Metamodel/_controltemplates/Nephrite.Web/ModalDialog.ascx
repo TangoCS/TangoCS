@@ -26,7 +26,7 @@ function loaded<%=ClientID %>()
 	if (document.getElementById('<%=ClientID %>').style.visibility != 'visible')
 	{
 		document.getElementById('<%=ClientID %>').style.visibility = 'visible';
-		document.getElementById('<%=btnOK.ClientID %>').focus();
+		document.getElementById('<%=DefaultFocus %>').focus();
 	}
 }
 

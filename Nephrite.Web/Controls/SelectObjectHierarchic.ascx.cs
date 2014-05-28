@@ -109,6 +109,7 @@ namespace Nephrite.Web.Controls
 			//cblItems.DataTextField = SearchDataTextField ?? (DataTextField ?? "Title");
 			//cblItems.DataValueField = DataValueField;
             select.OKClientClick = "selectOK_" + ClientID + "()";
+			select.DefaultFocus = "text_" + ClientID;
 
             if (MultipleSelect)
             {

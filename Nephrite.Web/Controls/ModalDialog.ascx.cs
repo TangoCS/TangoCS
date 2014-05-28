@@ -27,6 +27,7 @@ namespace Nephrite.Web.Controls
 		public int PageCount { get; set; }
 		public string Title { get; set; }
 		public string Width { get { return width; } set { width = value; } }
+		public string DefaultFocus { get; set; }
 
 		public ILayoutModal Layout { get; set; }
 
@@ -76,6 +77,8 @@ namespace Nephrite.Web.Controls
             btnOK.Click += new EventHandler(btnOK_Click);
 			//btnOK.Visible = !MessageBoxMode;
             btnOK.Attributes.Add("disabled", "disabled");
+
+			DefaultFocus = btnOK.ClientID;
 
 			btnCancel.Text = TextResource.Get("Common.Buttons.Cancel", Properties.Resources.Cancel);
 			btnCancel.OnClientClick = String.Format("javascript:hide{0}();return false", ClientID);
