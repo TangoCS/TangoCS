@@ -18,6 +18,8 @@ using Nephrite.Web.SettingsManager;
 using Nephrite.Web.RSS;
 using Nephrite.Web.Hibernate;
 using Nephrite.Web.MetaStorage;
+using NHibernate.Dialect;
+using NHibernate.Cfg;
 
 namespace Nephrite.Web.CoreDataContext
 {
@@ -26,9 +28,32 @@ namespace Nephrite.Web.CoreDataContext
 		IDC_TimeZone, IDC_ListFilter, IDC_FileStorage, IDC_CalendarDays, IDC_Mailer,
 		IDC_TextResources, IDC_Multilanguage, IDC_TaskManager, IDC_Settings, IDC_RSS, IDC_MetaStorage, IDC_EntityAudit
 	{
-		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig)
-			: base(dbConfig)
+		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Listeners listeners)
+			: base(dbConfig, listeners)
 		{
+		}
+
+		public static Action<IDbIntegrationConfigurationProperties> DefaultDBConfig(string connectionString, DBType? dbType = null)
+		{
+			return c =>
+			{
+				if (dbType == null) dbType = DBType;
+				switch (dbType)
+				{
+					case Nephrite.Web.Hibernate.DBType.MSSQL: c.Dialect<MsSql2008Dialect>(); break;
+					case Nephrite.Web.Hibernate.DBType.DB2: c.Dialect<DB2Dialect>(); break;
+					case Nephrite.Web.Hibernate.DBType.ORACLE: c.Dialect<Oracle10gDialect>(); break;
+					case Nephrite.Web.Hibernate.DBType.POSTGRESQL: c.Dialect<PostgreSQLDialect>(); break;
+					default: c.Dialect<MsSql2008Dialect>(); break;
+				}
+
+				c.ConnectionString = connectionString;
+				c.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
+				c.IsolationLevel = System.Data.IsolationLevel.ReadUncommitted;
+				//c.LogFormattedSql = true;
+				if (!System.Configuration.ConfigurationManager.AppSettings["ValidateSchema"].IsEmpty())
+					c.SchemaAction = SchemaAutoAction.Validate;
+			};
 		}
 
 		public override IEnumerable<Type> GetEntitiesTypes()
@@ -213,12 +238,12 @@ namespace Nephrite.Web.CoreDataContext
 
 		public override IDataContext NewDataContext()
 		{
-			return new HCoreDataContext(DBConfig(ConnectionManager.ConnectionString));
+			return new HCoreDataContext(DefaultDBConfig(ConnectionManager.ConnectionString), null);
 		}
 
 		public override IDataContext NewDataContext(string connectionString)
 		{
-			return new HCoreDataContext(DBConfig(connectionString));
+			return new HCoreDataContext(DefaultDBConfig(connectionString), null);
 		}
 
 

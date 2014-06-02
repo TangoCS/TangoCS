@@ -7,9 +7,9 @@ namespace Nephrite.Metamodel
 {
     public abstract class BaseModelObject : ICloneable
     {
-        public abstract void WriteDeleteObjectHistory();
-        public abstract void WriteInsertObjectHistory();
-        public abstract void WriteUpdateObjectHistory();
+        //public abstract void WriteDeleteObjectHistory();
+        //public abstract void WriteInsertObjectHistory();
+        //public abstract void WriteUpdateObjectHistory();
 
 		public virtual object Clone()
         {

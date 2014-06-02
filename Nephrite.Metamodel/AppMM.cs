@@ -10,6 +10,7 @@ using System.Data.SqlClient;
 using System.Configuration;
 using System.Globalization;
 using Nephrite.Web.Hibernate;
+using Nephrite.Web.CoreDataContext;
 
 namespace Nephrite.Metamodel
 {
@@ -28,7 +29,7 @@ namespace Nephrite.Metamodel
 					{
 						if (HttpContext.Current.Items["MMmodelDataContext"] == null)
 						{
-							MMDataContext dc = new MMDataContext(HDataContext.DBConfig(ConnectionManager.ConnectionString));
+							MMDataContext dc = new MMDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString));
 							//dc.CommandTimeout = 300;
 							HttpContext.Current.Items["MMmodelDataContext"] = dc;
 							dc.Log = new DataContextLogWriter();
@@ -36,13 +37,13 @@ namespace Nephrite.Metamodel
 						return (MMDataContext)HttpContext.Current.Items["MMmodelDataContext"];
 					}
 					else
-						return new MMDataContext(HDataContext.DBConfig(ConnectionManager.ConnectionString));
+						return new MMDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString));
 				}
 				else
 				{
 					if (context == null)
 					{
-						context = new MMDataContext(HDataContext.DBConfig(ConnectionManager.ConnectionString));
+						context = new MMDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString));
 						context.Log = new DataContextLogWriter();
 						//context.CommandTimeout = 300;
 					}

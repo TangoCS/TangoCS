@@ -248,6 +248,40 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public V_DbFileMap()
 		{
+			Schema("dbo");
+			Table("\"V_DbFile\"");
+			Lazy(true);
+			Id(x => x.Title, map => { map.Column("\"Title\""); });
+			Property(x => x.Title, map => { map.Column("\"Title\""); });
+			Property(x => x.Extension, map => { map.Column("\"Extension\""); });
+			Property(x => x.LastModifiedUserName, map => { map.Column("\"LastModifiedUserName\""); });
+			Property(x => x.IsDeleted, map => { map.NotNullable(false); MappingConfig.BoolPropertyConfig(map); map.Column("\"IsDeleted\""); });
+			Property(x => x.ID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ID\""); });
+			Property(x => x.LastModifiedDate, map => { map.Column("\"LastModifiedDate\""); });
+			Property(x => x.LastModifiedUserID, map => { map.Column("\"LastModifiedUserID\""); });
+			Property(x => x.Size, map => { map.Column("\"Size\""); });
+			Property(x => x.Path, map => { map.Column("\"Path\""); });
+			Property(x => x.ParentFolderID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ParentFolderID\""); });
+			Property(x => x.Tag, map => { map.Column("\"Tag\""); });
+			Property(x => x.VersionNumber, map => { map.Column("\"VersionNumber\""); });
+			Property(x => x.MainID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"MainID\""); });
+			Property(x => x.CheckedOutByID, map => { map.Column("\"CheckedOutByID\""); });
+			Property(x => x.CheckedOutBy, map => { map.Column("\"CheckedOutBy\""); });
+			Property(x => x.FeatureGUID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"FeatureGUID\""); });
+			Property(x => x.PublishDate, map => { map.Column("\"PublishDate\""); });
+			Property(x => x.CreatorID, map => { map.Column("\"CreatorID\""); });
+			Property(x => x.Creator, map => { map.Column("\"Creator\""); });
+			Property(x => x.ParentFolderID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ParentID\""); });
+			Property(x => x.IsValid, map => { map.Column("\"IsValid\""); });
+			Property(x => x.SPMActionItemGUID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"SPMActionItemGUID\""); });
+			Property(x => x.FullPath, map => { map.Column("\"FullPath\""); });
+		}
+	}
+
+	/*public class V_DbFileMap : ClassMapping<V_DbFile>
+	{
+		public V_DbFileMap()
+		{
 			Table("V_DbFile");
 			Lazy(true);
 
@@ -283,7 +317,7 @@ namespace Nephrite.Web.CoreDataContext
 			Property(x => x.IsValid);
 			Property(x => x.ParentFolderID, map => MappingConfig.GuidPropertyConfig(map));
 		}
-	}
+	}*/
 
 	public class V_DbFolderMap : ClassMapping<V_DbFolder>
 	{

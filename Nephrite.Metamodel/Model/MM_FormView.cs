@@ -54,6 +54,7 @@ namespace Nephrite.Metamodel.Model
 			}
 		}
 
+		/*
 		public override void WriteDeleteObjectHistory()
 		{
 			
@@ -68,6 +69,7 @@ namespace Nephrite.Metamodel.Model
 		{
 			
 		}
+		*/
 
 		public virtual string BC
 		{

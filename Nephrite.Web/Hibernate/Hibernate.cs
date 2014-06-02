@@ -62,29 +62,6 @@ namespace Nephrite.Web.Hibernate
 			}
 		}
 
-		public static Action<IDbIntegrationConfigurationProperties> DBConfig(string connectionString, DBType? dbType = null)
-        {
-            return c =>
-            {
-				if (dbType == null) dbType = DBType;
-                switch (dbType)
-                {
-                    case Nephrite.Web.Hibernate.DBType.MSSQL: c.Dialect<MsSql2008Dialect>(); break;
-					case Nephrite.Web.Hibernate.DBType.DB2: c.Dialect<DB2Dialect>(); break;
-					case Nephrite.Web.Hibernate.DBType.ORACLE: c.Dialect<Oracle10gDialect>(); break;
-					case Nephrite.Web.Hibernate.DBType.POSTGRESQL: c.Dialect<PostgreSQLDialect>(); break;
-                    default: c.Dialect<MsSql2008Dialect>(); break;
-                }
-
-                c.ConnectionString = connectionString;
-                c.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
-                c.IsolationLevel = System.Data.IsolationLevel.ReadUncommitted;
-                //c.LogFormattedSql = true;
-                if (!System.Configuration.ConfigurationManager.AppSettings["ValidateSchema"].IsEmpty())
-                    c.SchemaAction = SchemaAutoAction.Validate;
-            };
-        }
-
 		public ISession Session
 		{
 			get { return _session; }
@@ -116,7 +93,7 @@ namespace Nephrite.Web.Hibernate
 		public TextWriter Log { get; set; }
 		public abstract IEnumerable<Type> GetEntitiesTypes();
 
-		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig)
+		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Listeners listeners = null)
 		{
 			Log = new StringWriter();
 
@@ -128,12 +105,15 @@ namespace Nephrite.Web.Hibernate
 			_cfg = new Configuration();
 			_cfg.DataBaseIntegration(dbConfig);
 	
-
 			_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" }});
 			_cfg.SetInterceptor(new HDataContextSqlStatementInterceptor(this));
-			_cfg.EventListeners.PreDeleteEventListeners = new IPreDeleteEventListener[] { new AuditEventListener() };
-			_cfg.EventListeners.PreInsertEventListeners = new IPreInsertEventListener[] { new AuditEventListener() };
-			_cfg.EventListeners.PreUpdateEventListeners = new IPreUpdateEventListener[] { new AuditEventListener() };
+
+			if (listeners != null)
+			{
+				_cfg.EventListeners.PreDeleteEventListeners = listeners.PreDeleteEventListeners.ToArray();
+				_cfg.EventListeners.PreInsertEventListeners = listeners.PreInsertEventListeners.ToArray();
+				_cfg.EventListeners.PreUpdateEventListeners = listeners.PreUpdateEventListeners.ToArray();
+			}
 
 			var mapper = new ModelMapper();
 			mapper.AddMappings(GetEntitiesTypes());
@@ -243,7 +223,10 @@ namespace Nephrite.Web.Hibernate
 			int i = 0;
 			foreach (object p in parameters)
 			{
-				s.SetParameter(i, p);
+				if (p is ISqlParameter)
+					(p as ISqlParameter).SetQueryParameter(s, i);
+				else
+					s.SetParameter(i, p);
 				i++;
 			}
 
@@ -256,7 +239,10 @@ namespace Nephrite.Web.Hibernate
 			int i = 0;
 			foreach (object p in parameters)
 			{
-				s.SetParameter(i, p);
+				if (p is ISqlParameter)
+					(p as ISqlParameter).SetQueryParameter(s, i);
+				else
+					s.SetParameter(i, p);
 				i++;
 			}
 
@@ -314,6 +300,38 @@ namespace Nephrite.Web.Hibernate
 	public enum DBType
 	{
 		MSSQL, DB2, ORACLE, POSTGRESQL 
+	}
+
+	public interface ISqlParameter
+	{
+		void SetQueryParameter(IQuery q, int position);
+	}
+
+	public class SqlParameter<T> : ISqlParameter
+	{
+		public T Value { get; set; }
+		public string Name { get; set; }
+
+		public static SqlParameter<T> Set<T>(T value)
+		{
+			return new SqlParameter<T> { Value = value };
+		}
+
+		public void SetQueryParameter(IQuery q, int position)
+		{
+			q.SetParameter<T>(position, Value);
+		}
+	}
+
+	public class Listeners
+	{
+		List<IPreDeleteEventListener> _preDeleteEventListeners = new List<IPreDeleteEventListener>();
+		List<IPreInsertEventListener> _preInsertEventListeners = new List<IPreInsertEventListener>();
+		List<IPreUpdateEventListener> _preUpdateEventListeners = new List<IPreUpdateEventListener>();
+
+		public List<IPreDeleteEventListener> PreDeleteEventListeners { get { return _preDeleteEventListeners; } }
+		public List<IPreInsertEventListener> PreInsertEventListeners { get { return _preInsertEventListeners; } }
+		public List<IPreUpdateEventListener> PreUpdateEventListeners { get { return _preUpdateEventListeners; } }
 	}
 
 	public class HTable : IQueryable, ITable

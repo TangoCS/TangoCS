@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Xml.Linq;
 using Nephrite.Web;
+using Nephrite.Web.CoreDataContext;
 using Nephrite.Web.Hibernate;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Linq;
@@ -91,12 +92,12 @@ namespace Nephrite.Metamodel.Model
 
 		public override IDataContext NewDataContext()
 		{
-			return new MMDataContext(DBConfig(ConnectionManager.ConnectionString));
+			return new MMDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString));
 		}
 
 		public override IDataContext NewDataContext(string connectionString)
 		{
-			return new MMDataContext(DBConfig(connectionString));
+			return new MMDataContext(HCoreDataContext.DefaultDBConfig(connectionString));
 		}
 	}
 }

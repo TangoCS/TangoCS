@@ -64,17 +64,14 @@ namespace Tessera.Test
         {
             ConnectionManager.SetConnectionString("Database=SRVNTS;UserID=dbo;Password=123*(iop;Server=176.227.213.5:50000");
             HDataContext.DBType = DBType.DB2;
-            A.Model = new HCoreDataContext(Nephrite.Web.Hibernate.HDataContext.DBConfig(ConnectionManager.ConnectionString));
+			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
 
 			//var f = Nephrite.Web.FileStorage.FileStorageManager.CreateFile("", "");
-			IQueryable<dynamic> items = FileStorageManager.DbFolders.Where(o => !o.IsDeleted);
-			Func<string, Expression<Func<dynamic, bool>>> SearchExpression = s => (o => (o as V_DbFolder).Title.Contains(s));
-			V_DbFolder obj = new V_DbFolder();
+			//var f = FileStorageManager.DbFiles.First(o => o.ID == Guid.Parse("53216139-9773-4811-8181-1b56034fe90d"));
+			//f.Tag = "1";
+			//A.Model.SubmitChanges();
+			var r = A.Model.ExecuteQuery<int>("select ? from SPM_Subject where SubjectID = 2", 111);
 
-			object obj2 =
-				items.Where(FindByProperty(typeof(V_DbFolder), "ID", Guid.Parse("4d442229-ee61-44d3-a390-058f06905c11"))).ToList().FirstOrDefault()
-				;
-			
 
 
 			//c = c.Where(obj.FindByProperty<dynamic>("ParentFolderID", null));
@@ -247,7 +244,7 @@ namespace Tessera.Test
 
     public class App
     {
-        static HibernateDataContext _dataContext = new HibernateDataContext(HDataContext.DBConfig(ConnectionManager.ConnectionString));
+		static HibernateDataContext _dataContext = new HibernateDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
 
         public static HibernateDataContext DataContext
         {
@@ -257,8 +254,8 @@ namespace Tessera.Test
 
     public class HibernateDataContext : HDataContext
     {
-        public HibernateDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig)
-            : base(dbConfig)
+        public HibernateDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Listeners l)
+            : base(dbConfig, l)
         {
         }
 
@@ -305,12 +302,12 @@ namespace Tessera.Test
 
         public override IDataContext NewDataContext()
         {
-            return new HibernateDataContext(DBConfig(ConnectionManager.ConnectionString));
+            return new HibernateDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
         }
 
         public override IDataContext NewDataContext(string connectionString)
         {
-            return new HibernateDataContext(DBConfig(connectionString));
+			return new HibernateDataContext(HCoreDataContext.DefaultDBConfig(connectionString), null);
         }
     }
 
