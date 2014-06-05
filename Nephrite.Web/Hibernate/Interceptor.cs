@@ -6,18 +6,23 @@ using System.Web;
 using Nephrite.Web.SPM;
 using NHibernate;
 using NHibernate.Event;
+using NHibernate.Event.Default;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace Nephrite.Web.Hibernate
 {
-    public class AuditEventListener : IPreUpdateEventListener, IPreInsertEventListener, IPreDeleteEventListener
+    public class AuditEventListener : DefaultSaveOrUpdateEventListener, 
+		IPreUpdateEventListener, IPreInsertEventListener, IPreDeleteEventListener
     {
+		object inProcess = null;
+		List<object> toInsert = new List<object>();
+
         public bool OnPreUpdate(PreUpdateEvent e)
         {
             if (!(e.Entity is IWithoutEntityAudit))
             {
-                List<object> toInsert = new List<object>();
+                
                 List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
 
                 var dc = A.Model as IDC_EntityAudit;
@@ -70,9 +75,9 @@ namespace Nephrite.Web.Hibernate
 
         public bool OnPreInsert(PreInsertEvent e)
         {
-            if (!(e.Entity is IWithoutEntityAudit))
+            if (!(e.Entity is IWithoutEntityAudit) && !(e.Entity == inProcess))
             {
-                List<object> toInsert = new List<object>();
+                //List<object> toInsert = new List<object>();
                 List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
 
                 var dc = A.Model as IDC_EntityAudit;
@@ -111,8 +116,9 @@ namespace Nephrite.Web.Hibernate
                     }
                 }
 
-                foreach (object obj in toInsert)
-                    e.Session.SaveOrUpdate(obj);
+				foreach (object obj in toInsert)
+					e.Session.SaveOrUpdate(obj);
+
             }
             return false;
         }
@@ -121,7 +127,7 @@ namespace Nephrite.Web.Hibernate
         {
             if (!(e.Entity is IWithoutEntityAudit))
             {
-                List<object> toInsert = new List<object>();
+                //List<object> toInsert = new List<object>();
                 List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
 
                 var dc = A.Model as IDC_EntityAudit;
@@ -134,13 +140,30 @@ namespace Nephrite.Web.Hibernate
             }
             return false;
         }
-    }
 
-    public class HDataContextSqlStatementInterceptor : EmptyInterceptor
+
+		public override void OnSaveOrUpdate(SaveOrUpdateEvent e)
+		{
+			base.OnSaveOrUpdate(e);
+		}
+
+		public void OnDelete(DeleteEvent e)
+		{
+			
+		}
+
+		public void OnDelete(DeleteEvent e, ISet<object> transientEntities)
+		{
+		}
+
+
+	}
+
+    public class HDataContextInterceptor : EmptyInterceptor
     {
         HDataContext _dataContext;
 
-        public HDataContextSqlStatementInterceptor(HDataContext dc)
+        public HDataContextInterceptor(HDataContext dc)
         {
             _dataContext = dc;
         }
@@ -161,6 +184,67 @@ namespace Nephrite.Web.Hibernate
                 }
             }
         }
+
+		public override bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types)
+		{
+			if (!(entity is IWithoutEntityAudit))
+			{
+				List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
+				//List<object> toInsert = new List<object>();
+
+				var dc = A.Model as IDC_EntityAudit;
+				var hdc = A.Model as HDataContext;
+				string title = entity is IWithTitle ? (entity as IWithTitle).GetTitle() : "";
+				var oc = dc.NewIN_ObjectChange("Создание", id != null ? id.ToString() : "", entity.GetType().Name, title);
+				//toInsert.Add(oc);
+				//dc.IN_ObjectChange.InsertOnSubmit(oc);
+				A.Model.AfterSaveActions.Add(() =>
+				{
+					hdc.Session.SaveOrUpdate(oc);
+				});
+
+				if (entity is IWithPropertyAudit)
+				{
+					var persister = hdc.Session.GetSessionImplementation().GetEntityPersister(entity.GetType().Name, entity);
+
+					for (int i = 0; i < propertyNames.Length; i++)
+					{
+						if (types[i] is ManyToOneType)
+						{
+							foreach (var opc in readOnlyColumns)
+								if (opc.PropertySysName == propertyNames[i] + "ID" || opc.PropertySysName == propertyNames[i] + "GUID")
+								{
+									opc.PropertySysName = propertyNames[i];
+									break;
+								}
+						}
+						else
+						{
+							var opc = dc.NewIN_ObjectPropertyChange();
+							opc.IObjectChange = oc;
+
+							opc.PropertySysName = propertyNames[i];
+							opc.Title = "";
+							opc.NewValue = state[i].ToString();
+							opc.NewValueTitle = state[i].ToString();
+
+							if (!persister.EntityMetamodel.PropertyUpdateability[i])
+								readOnlyColumns.Add(opc);
+
+							//toInsert.Add(opc);
+							A.Model.AfterSaveActions.Add(() =>
+							{
+								hdc.Session.SaveOrUpdate(opc);
+							});
+							//dc.IN_ObjectPropertyChange.InsertOnSubmit(opc);
+						}
+					}
+				}
+			}
+
+			return false;
+		}
+
 
         public override SqlString OnPrepareStatement(SqlString sql)
         {

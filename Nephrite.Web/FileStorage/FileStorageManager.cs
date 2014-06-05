@@ -20,20 +20,32 @@ namespace Nephrite.Web.FileStorage
 		}
 
 		public static event EventHandler<FileEventArgs> OnFileCreated;
-		public static event EventHandler<FileEventArgs> OnFileModified;
+		//public static event EventHandler<FileEventArgs> OnFileModified;
 		public static event EventHandler<FileEventArgs> OnFileDeleted;
 
 		public static event EventHandler<FolderEventArgs> OnFolderCreated;
-		public static event EventHandler<FolderEventArgs> OnFolderModified;
+		//public static event EventHandler<FolderEventArgs> OnFolderModified;
 		public static event EventHandler<FolderEventArgs> OnFolderDeleted;
+
+		[ThreadStatic]
+		static Dictionary<string, IDbFolder> _folderCache;
 
 		static Dictionary<string, IDbFolder> folderCache
 		{
 			get
 			{
-				if (HttpContext.Current.Items["FileRepositoryFolderCache"] == null)
-					HttpContext.Current.Items["FileRepositoryFolderCache"] = new Dictionary<string, IDbFolder>();
-				return (Dictionary<string, IDbFolder>)HttpContext.Current.Items["FileRepositoryFolderCache"];
+				if (HttpContext.Current != null)
+				{
+					if (HttpContext.Current.Items["FileRepositoryFolderCache"] == null)
+						HttpContext.Current.Items["FileRepositoryFolderCache"] = new Dictionary<string, IDbFolder>();
+
+					return (Dictionary<string, IDbFolder>)HttpContext.Current.Items["FileRepositoryFolderCache"];
+				}
+				else
+				{
+					if (_folderCache == null) _folderCache = new Dictionary<string, IDbFolder>();
+					return _folderCache;
+				}
 			}
 		}
 
@@ -64,6 +76,11 @@ namespace Nephrite.Web.FileStorage
 
 		public static IDbFolder CreateFolder(string fullpath)
 		{
+			return CreateFolder(Guid.NewGuid(), fullpath);
+		}
+
+		public static IDbFolder CreateFolder(Guid id, string fullpath)
+		{
 			if (folderCache.ContainsKey(fullpath.ToLower()))
 				return folderCache[fullpath.ToLower()];
 			//var items = App.DataContext.GetTable<Solution.Model.DbFolder>();
@@ -72,7 +89,7 @@ namespace Nephrite.Web.FileStorage
 				return item;
 
 			string title = fullpath.IndexOf('/') >= 0 ? fullpath.Substring(fullpath.LastIndexOf('/') + 1) : fullpath;
-			item = dc.NewIDbFolder();
+			item = dc.NewIDbFolder(id);
 			folderCache.Add(fullpath.ToLower(), item);
 			item.Title = title.IsEmpty() ? "new folder" : title;
 			if (title != fullpath && fullpath.Substring(0, fullpath.LastIndexOf('/')) != "")
@@ -157,13 +174,14 @@ namespace Nephrite.Web.FileStorage
 
 		public static IDbFile CreateFile(string title, string path)
 		{
-			return CreateFile(new Guid(), title, path);
+			return CreateFile(Guid.NewGuid(), title, path);
 		}
 
 		public static IDbFile CreateFile(Guid id, string title, string path)
 		{
-			var item = dc.NewIDbFile();
+			var item = dc.NewIDbFile(id);
 			item.Title = title;
+			//item.ID = id;
 
 			if (!path.IsEmpty())
 			{
@@ -313,8 +331,7 @@ namespace Nephrite.Web.FileStorage
 			var fileData = dc.IDbFileData.SingleOrDefault(o => o.FileGUID == fileGuid);
 			if (fileData == null)
 			{
-				fileData = dc.NewIDbFileData();
-				fileData.FileGUID = fileGuid;	
+				fileData = dc.NewIDbFileData(fileGuid);
 				dc.IDbFileData.InsertOnSubmit(fileData);
 			}
 
@@ -329,8 +346,7 @@ namespace Nephrite.Web.FileStorage
 				var fileData = remoteDC.IDbFileData.SingleOrDefault(o => o.FileGUID == fileGuid);
 				if (fileData == null)
 				{
-					fileData = remoteDC.NewIDbFileData();
-					fileData.FileGUID = fileGuid;
+					fileData = remoteDC.NewIDbFileData(fileGuid);
 					remoteDC.IDbFileData.InsertOnSubmit(fileData);
 				}
 

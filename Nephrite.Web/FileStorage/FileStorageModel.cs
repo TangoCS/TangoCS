@@ -13,9 +13,9 @@ namespace Nephrite.Web.FileStorage
 		IN_DownloadLog NewIN_DownloadLog();
 		IN_VirusScanLog NewIN_VirusScanLog();
 
-		IDbFolder NewIDbFolder();
-		IDbFile NewIDbFile();
-		IDbFileData NewIDbFileData();
+		IDbFolder NewIDbFolder(Guid ID);
+		IDbFile NewIDbFile(Guid ID);
+		IDbFileData NewIDbFileData(Guid ID);
 
 		IQueryable<IDbFile> IDbFile { get; }
 		IQueryable<IDbFolder> IDbFolder { get; }

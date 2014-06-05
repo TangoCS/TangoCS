@@ -64,14 +64,28 @@ namespace Tessera.Test
         {
             ConnectionManager.SetConnectionString("Database=SRVNTS;UserID=dbo;Password=123*(iop;Server=176.227.213.5:50000");
             HDataContext.DBType = DBType.DB2;
-			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
+
+			
+
+			Listeners l = new Listeners();
+			var ael = new AuditEventListener();
+			l.PreDeleteEventListeners.Add(ael);
+			l.PreInsertEventListeners.Add(ael);
+			l.PreUpdateEventListeners.Add(ael);
+			//l.PostDeleteEventListeners.Add(ael);
+			//l.PostInsertEventListeners.Add(ael);
+			//l.PostUpdateEventListeners.Add(ael);
+
+			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), l);
+			A.Model.ExecuteCommand("SET SCHEMA = 'DBO';");
 
 			//var f = Nephrite.Web.FileStorage.FileStorageManager.CreateFile("", "");
 			//var f = FileStorageManager.DbFiles.First(o => o.ID == Guid.Parse("53216139-9773-4811-8181-1b56034fe90d"));
 			//f.Tag = "1";
 			//A.Model.SubmitChanges();
-			var r = A.Model.ExecuteQuery<int>("select ? from SPM_Subject where SubjectID = 2", 111);
-
+			//var r = A.Model.ExecuteQuery<int>("select ? from SPM_Subject where SubjectID = 2", 111);
+			var f = FileStorageManager.CreateFile("text.txt", "");
+			A.Model.SubmitChanges();
 
 
 			//c = c.Where(obj.FindByProperty<dynamic>("ParentFolderID", null));

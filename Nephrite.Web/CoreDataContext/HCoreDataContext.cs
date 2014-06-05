@@ -121,19 +121,19 @@ namespace Nephrite.Web.CoreDataContext
 			return new N_VirusScanLog();
 		}
 
-		public IDbFolder NewIDbFolder()
+		public IDbFolder NewIDbFolder(Guid id)
 		{
-			return new V_DbFolder();
+			return new V_DbFolder { ID = id };
 		}
 
-		public IDbFile NewIDbFile()
+		public IDbFile NewIDbFile(Guid id)
 		{
-			return new V_DbFile();
+			return new V_DbFile { ID = id };
 		}
 
-		public IDbFileData NewIDbFileData()
+		public IDbFileData NewIDbFileData(Guid id)
 		{
-			return new N_FileData();
+			return new N_FileData { FileGUID = id };
 		}
 
 		public IQueryable<IDbFile> IDbFile
@@ -219,6 +219,11 @@ namespace Nephrite.Web.CoreDataContext
 		public IQueryable<IN_ObjectChange> IN_ObjectChange
 		{
 			get { return new HTable<IN_ObjectChange>(this, Session.Query<N_ObjectChange>().Cast<IN_ObjectChange>()); }
+		}
+
+		public IQueryable<IN_ObjectPropertyChange> IN_ObjectPropertyChange
+		{
+			get { return new HTable<IN_ObjectPropertyChange>(this, Session.Query<N_ObjectPropertyChange>().Cast<IN_ObjectPropertyChange>()); }
 		}
 
 		public IN_ObjectChange NewIN_ObjectChange()
