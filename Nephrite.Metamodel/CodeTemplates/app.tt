@@ -55,6 +55,17 @@ namespace <#= AppMM.DBName() #>
 					return context;
 				}
             }
+			set
+			{
+				if (HttpContext.Current != null)
+				{
+					System.Web.HttpContext.Current.Items["<#= AppMM.DBName() #>DataContext"] = value;
+				}
+				else
+				{
+					context = value;
+				}
+			}
         }
 
 		[ThreadStatic]
