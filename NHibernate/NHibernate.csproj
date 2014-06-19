@@ -192,6 +192,13 @@
     <Compile Include="Engine\ISessionFactoryImplementor.cs" />
     <Compile Include="Engine\ISessionImplementor.cs" />
     <Compile Include="Engine\QueryParameters.cs" />
+    <Compile Include="Engine\Query\Sql\INativeSQLQueryReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryCollectionReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryJoinReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryNonScalarReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryRootReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryScalarReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQuerySpecification.cs" />
     <Compile Include="Engine\RowSelection.cs" />
     <Compile Include="Engine\TypedValue.cs" />
     <Compile Include="Engine\UnsavedValueFactory.cs" />
@@ -319,6 +326,15 @@
     <Compile Include="Linq\Visitors\SubQueryFromClauseFlattener.cs" />
     <Compile Include="Linq\Visitors\VisitorUtil.cs" />
     <Compile Include="Linq\Visitors\WhereJoinDetector.cs" />
+    <Compile Include="Loader\Custom\Sql\SQLCustomQuery.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Loader\Custom\Sql\SQLQueryParser.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Loader\Custom\Sql\SQLQueryReturnProcessor.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Loader\TopologicalSorter.cs" />
     <Compile Include="Loader\Loader.cs" />
     <Compile Include="Loader\OuterJoinLoader.cs" />
@@ -1332,12 +1348,6 @@
     <Compile Include="Engine\Query\QueryPlanCache.cs" />
     <Compile Include="Engine\Query\ReturnMetadata.cs" />
     <Compile Include="Engine\Query\FilterQueryPlan.cs" />
-    <Compile Include="Engine\Query\Sql\INativeSQLQueryReturn.cs" />
-    <Compile Include="Engine\Query\Sql\NativeSQLQueryCollectionReturn.cs" />
-    <Compile Include="Engine\Query\Sql\NativeSQLQueryJoinReturn.cs" />
-    <Compile Include="Engine\Query\Sql\NativeSQLQueryNonScalarReturn.cs" />
-    <Compile Include="Engine\Query\Sql\NativeSQLQueryRootReturn.cs" />
-    <Compile Include="Engine\Query\Sql\NativeSQLQueryScalarReturn.cs" />
     <Compile Include="Engine\StatefulPersistenceContext.cs" />
     <Compile Include="Engine\TransactionHelper.cs" />
     <Compile Include="Engine\Transaction\IIsolatedWork.cs" />
@@ -1575,7 +1585,6 @@
     <Compile Include="Engine\JoinHelper.cs" />
     <Compile Include="Engine\NamedQueryDefinition.cs" />
     <Compile Include="Engine\NamedSQLQueryDefinition.cs" />
-    <Compile Include="Engine\Query\Sql\NativeSQLQuerySpecification.cs" />
     <Compile Include="Engine\Query\ParameterParser.cs" />
     <Compile Include="Engine\ResultSetMappingDefinition.cs">
       <SubType>Code</SubType>
@@ -1634,9 +1643,6 @@
     <Compile Include="Loader\Custom\NonScalarReturn.cs" />
     <Compile Include="Loader\Custom\RootReturn.cs" />
     <Compile Include="Loader\Custom\ScalarReturn.cs" />
-    <Compile Include="Loader\Custom\Sql\SQLCustomQuery.cs" />
-    <Compile Include="Loader\Custom\Sql\SQLQueryParser.cs" />
-    <Compile Include="Loader\Custom\Sql\SQLQueryReturnProcessor.cs" />
     <Compile Include="Loader\DefaultEntityAliases.cs" />
     <Compile Include="Loader\Entity\AbstractEntityLoader.cs" />
     <Compile Include="Loader\Entity\BatchingEntityLoader.cs" />
