@@ -97,11 +97,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="CodeTemplates\test.txt">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>test.tt</DependentUpon>
-    </Content>
     <Content Include="Controls\ListExport.ascx" />
     <Content Include="View\Utils\generatedb.ascx" />
     <Content Include="View\Utils\generatewsdl.ascx" />
@@ -110,20 +105,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppMM.cs" />
-    <Compile Include="BaseModelObject.cs" />
-    <EmbeddedResource Include="CodeTemplates\class1.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>class1.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\predicates.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>predicates.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Compile Include="CodeTemplates\predicates.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>predicates.tt</DependentUpon>
-    </Compile>
     <Compile Include="Controllers\UtilsController.cs" />
     <Compile Include="Controls\ListExport.ascx.cs">
       <DependentUpon>ListExport.ascx</DependentUpon>
@@ -138,11 +119,9 @@
     <Compile Include="HistoryType.cs" />
     <Compile Include="IFormControl.cs" />
     <Compile Include="IMMObjectMLView.cs" />
-    <Compile Include="IMMObjectTransition.cs" />
     <Compile Include="IMMObjectVersion.cs" />
     <Compile Include="ISiteMapProvider.cs" />
     <Compile Include="MMObjectExtensions.cs" />
-    <Compile Include="MMSettings.cs" />
     <Compile Include="Model\FormViewCacheKeyInfo.cs" />
     <Compile Include="Model\HMapping.cs" />
     <Compile Include="Model\HMMDataContext.cs" />
@@ -183,61 +162,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CodeTemplates\app.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>app.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\codifiers.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>codifiers.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\collections.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>collections.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\datacontextPartial.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>datacontextPartial.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\mlview.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>mlview.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\classes.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>classes.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\controllers.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>controllers.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\controllers1.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>controllers1.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\controllers3.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>controllers3.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\controllers4.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>controllers4.cs</LastGenOutput>
-    </EmbeddedResource>
     <EmbeddedResource Include="ViewTemplates\undelete.tt">
       <Generator>NephriteTextTransform</Generator>
       <LastGenOutput>undelete.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\pckcontrollers.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>pckcontrollers.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\controllers5.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>controllers5.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="CodeTemplates\controllersredirect.tt">
-      <Generator>NephriteTextTransform</Generator>
-      <LastGenOutput>controllersredirect.cs</LastGenOutput>
     </EmbeddedResource>
     <Content Include="ViewTemplates\createclassversion.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -250,10 +177,6 @@
     <Content Include="ViewTemplates\setcurrentclassversion.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>setcurrentclassversion.cs</LastGenOutput>
-    </Content>
-    <Content Include="CodeTemplates\test.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>test.txt</LastGenOutput>
     </Content>
     <None Include="Nephrite.Metamodel.snk" />
     <Content Include="packages.config" />

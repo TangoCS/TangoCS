@@ -194,7 +194,8 @@ namespace Nephrite.Meta.Database
 										function.Parameters.Add(Parameter.Name, Parameter);
 									});
 
-								returnSchema.Functions.Add(function.Name, function);
+								if (!returnSchema.Functions.ContainsKey(function.Name))
+									returnSchema.Functions.Add(function.Name, function);
 
 							});
 

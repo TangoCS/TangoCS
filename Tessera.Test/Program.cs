@@ -62,10 +62,16 @@ namespace Tessera.Test
 
         private static void Main(string[] args)
         {
-            ConnectionManager.SetConnectionString("Database=SRVNTS;UserID=dbo;Password=123*(iop;Server=176.227.213.5:50000");
-            HDataContext.DBType = DBType.DB2;
+			A.DBScript = new DBScriptMSSQL("DBO");
+			ConnectionManager.SetConnectionString("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=Servants;Data Source=(local)");
+			HDataContext.DBType = DBType.MSSQL;
 
-			
+            //ConnectionManager.SetConnectionString("Database=SRVNTS;UserID=dbo;Password=123*(iop;Server=176.227.213.5:50000");
+            //HDataContext.DBType = DBType.DB2;
+			//A.DBScript = new DBScriptDB2("DBO");
+
+			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
+			var classes = MetaSolution.Load().Classes;
 
 			Listeners l = new Listeners();
 			var ael = new AuditEventListener();

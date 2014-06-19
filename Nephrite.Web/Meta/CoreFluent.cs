@@ -212,10 +212,10 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass Operation(this MetaClass cls, string name, string caption, Action<OperationBuilder> attributes)
+		public static MetaClass Operation(this MetaClass cls, string name, string caption, Action<OperationBuilder> attributes = null)
 		{
 			var op = new MetaOperation { Name = name, Caption = caption };
-			attributes(new OperationBuilder(cls, op));
+			if (attributes != null) attributes(new OperationBuilder(cls, op));
 			cls.AddOperation(op);
 			return cls;
 		}

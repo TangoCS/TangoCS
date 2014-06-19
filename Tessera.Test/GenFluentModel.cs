@@ -6,29 +6,28 @@ using Nephrite.Meta.Fluent;
 
 namespace Solution.Model
 {
-	public partial interface IMM_Package { }
-	public partial interface IMM_ObjectType { }
-	public partial interface IMM_ObjectProperty { }
-	public partial interface IMM_FormField { }
-	public partial interface IMM_Codifier { }
-	public partial interface IMM_CodifierValue { }
-	public partial interface IMM_FormFieldAttribute { }
-	public partial interface IMM_FormView { }
-	public partial interface IMM_Method { }
-	public partial interface IMM_MethodParameter { }
-	public partial interface IMM_FormFieldGroup { }
-	public partial interface IMM_Predicate { }
+	public partial class MM_Package { }
+	public partial class MM_ObjectType { }
+	public partial class MM_ObjectProperty { }
+	public partial class MM_FormField { }
+	public partial class MM_Codifier { }
+	public partial class MM_CodifierValue { }
+	public partial class MM_FormFieldAttribute { }
+	public partial class MM_FormView { }
+	public partial class MM_Method { }
+	public partial class MM_MethodParameter { }
+	public partial class MM_FormFieldGroup { }
+	public partial class MM_Predicate { }
 
 	public class mmModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("mm");
-			p.AddClass<IMM_Package>()
+			p.AddClass<MM_Package>()
 				.IntKey()
 				.Attribute("Guid", "Guid", MetaGuidType.NotNull())
 				.Attribute("IsDataReplicated", "IsDataReplicated", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("PackageID", "Ид", MetaIntType.NotNull())
 				.Attribute("SeqNo", "SeqNo", MetaIntType.NotNull())
@@ -37,13 +36,30 @@ namespace Solution.Model
 				.Attribute("Version", "Version", MetaStringType.Null())
 				.ComputedAttribute("ControlsPath", "ControlsPath", MetaStringType.Null())
 				.ComputedAttribute("FullSysName", "FullSysName", MetaStringType.Null())
-				.Reference<IMM_Package>("ChildPackages", "Дочерние пакеты", x => x.Multiple().InverseProperty("ParentPackage"))
-				.Reference<IMM_Codifier>("Codifiers", "Справочники", x => x.Multiple().InverseProperty("Package"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IMM_ObjectType>("ObjectTypes", "Классы", x => x.Multiple().InverseProperty("Package"))
-				.Reference<IMM_Package>("ParentPackage", "Родительский пакет", x => x.InverseProperty("ChildPackages"))
+				.Reference<MM_Package>("ChildPackages", "Дочерние пакеты", x => x.Multiple().InverseProperty("ParentPackage"))
+				.Reference<MM_Codifier>("Codifiers", "Справочники", x => x.Multiple().InverseProperty("Package"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MM_ObjectType>("ObjectTypes", "Классы", x => x.Multiple().InverseProperty("Package"))
+				.Reference<MM_Package>("ParentPackage", "Родительский пакет", x => x.InverseProperty("ChildPackages"))
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationEdit()				
+				.OperationDelete()
+				.Operation("Import", "Импорт", x => x 
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("Export", "Экспорт", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("ExportObjectType", "Экспорт класса", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaIntType.NotNull(), "objectTypeID")
+				)
 			;	
-			p.AddClass<IMM_ObjectType>()
+			p.AddClass<MM_ObjectType>()
 				.IntKey()
 				.Attribute("DefaultOrderBy", "DefaultOrderBy", MetaStringType.Null())
 				.Attribute("Description", "Description", MetaStringType.Null())
@@ -51,7 +67,6 @@ namespace Solution.Model
 				.Attribute("HistoryTypeCode", "HistoryTypeCode", MetaEnum.NotNull())
 				.Attribute("Interface", "Interface", MetaStringType.Null())
 				.Attribute("IsDataReplicated", "IsDataReplicated", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("IsEnableObjectHistory", "IsEnableObjectHistory", MetaBooleanType.NotNull())
 				.Attribute("IsEnableSPM", "УПБ", MetaBooleanType.NotNull())
 				.Attribute("IsEnableUserViews", "IsEnableUserViews", MetaBooleanType.NotNull())
@@ -68,16 +83,55 @@ namespace Solution.Model
 				.Attribute("TitlePlural", "TitlePlural", MetaStringType.Null())
 				.ComputedAttribute("ControlsPath", "ControlsPath", MetaStringType.Null())
 				.ComputedAttribute("FullSysName", "FullSysName", MetaStringType.Null())
-				.Reference<IMM_ObjectType>("BaseObjectType", "Базовый тип")
-				.Reference<IMM_Predicate>("DataValidations", "Проверки данных", x => x.Multiple().InverseProperty("ObjectType"))
-				.Reference<IMM_FormFieldGroup>("FormFieldGroups", "Группы полей", x => x.Multiple().InverseProperty("ObjectType"))
-				.Reference<IMM_FormView>("FormViews", "Представления", x => x.Multiple().InverseProperty("ObjectType"))
-				.Reference<IMM_Method>("Methods", "Методы", x => x.Multiple().InverseProperty("ObjectType"))
-				.Reference<IMM_Package>("Package", "Пакет", x => x.InverseProperty("ObjectTypes"))
-				.Reference<IMM_ObjectProperty>("Properties", "Свойства", x => x.Multiple().InverseProperty("ObjectType"))
-				.Reference<IMM_ObjectType>("Stereotypes", "Стереотипы", x => x.Multiple())
+				.Reference<MM_ObjectType>("BaseObjectType", "Базовый тип")
+				.Reference<MM_Predicate>("DataValidations", "Проверки данных", x => x.Multiple().InverseProperty("ObjectType"))
+				.Reference<MM_FormFieldGroup>("FormFieldGroups", "Группы полей", x => x.Multiple().InverseProperty("ObjectType"))
+				.Reference<MM_FormView>("FormViews", "Представления", x => x.Multiple().InverseProperty("ObjectType"))
+				.Reference<MM_Method>("Methods", "Методы", x => x.Multiple().InverseProperty("ObjectType"))
+				.Reference<MM_Package>("Package", "Пакет", x => x.InverseProperty("ObjectTypes"))
+				.Reference<MM_ObjectProperty>("Properties", "Свойства", x => x.Multiple().InverseProperty("ObjectType"))
+				.Reference<MM_ObjectType>("Stereotypes", "Стереотипы", x => x.Multiple())
+				.OperationList()
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationEdit()				
+				.Operation("CreateFromTemplate", "Создать по шаблону", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationDelete()
+				.Operation("EditRights", "Редактировать права", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("EnableSPM", "Разрешить УПБ", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("DisableSPM", "Запретить УПБ", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationView()
+				.Operation("GenerateListControl", "Сгенерировать форму List", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("GenerateEditControl", "Сгенерировать форму Edit", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("GenerateViewControl", "Сгенерировать форму View", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("MassCreate", "Массовое создание классов", x => x 
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IMM_ObjectProperty>()
+			p.AddClass<MM_ObjectProperty>()
 				.IntKey()
 				.Attribute("DefaultDBValue", "DefaultDBValue", MetaStringType.Null())
 				.Attribute("DeleteRule", "DeleteRule", MetaEnum.NotNull())
@@ -85,7 +139,6 @@ namespace Solution.Model
 				.Attribute("Expression", "Expression", MetaStringType.Null())
 				.Attribute("Guid", "GUID", MetaGuidType.NotNull())
 				.Attribute("IsAggregate", "IsAggregate", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("IsIdentity", "Автоинкрементный идентификатор", MetaBooleanType.NotNull())
 				.Attribute("IsMultilingual", "Многоязычное", MetaBooleanType.NotNull())
 				.Attribute("IsNavigable", "IsNavigable", MetaBooleanType.NotNull())
@@ -105,19 +158,25 @@ namespace Solution.Model
 				.Attribute("TypeCode", "TypeCode", MetaEnum.NotNull())
 				.Attribute("UpperBound", "UpperBound", MetaIntType.NotNull())
 				.Attribute("ValueFilter", "ValueFilter", MetaStringType.Null())
-				.Reference<IMM_Codifier>("Codifier", "Кодификатор")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IMM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("Properties"))
-				.Reference<IMM_ObjectProperty>("RefObjectProperty", "Ссылается на свойство")
-				.Reference<IMM_ObjectType>("RefObjectType", "Ссылается на класс")
+				.Reference<MM_Codifier>("Codifier", "Кодификатор")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("Properties"))
+				.Reference<MM_ObjectProperty>("RefObjectProperty", "Ссылается на свойство")
+				.Reference<MM_ObjectType>("RefObjectType", "Ссылается на класс")
+				.OperationEdit()				
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "kind")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationDelete()
 			;	
-			p.AddClass<IMM_FormField>()
+			p.AddClass<MM_FormField>()
 				.IntKey()
 				.Attribute("Comment", "Подсказка", MetaStringType.Null())
 				.Attribute("ControlName", "Элемент управления", MetaIntType.Null())
 				.Attribute("DefaultValue", "Значение по умолчанию", MetaStringType.Null())
 				.Attribute("FormFieldID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("ListColumnWidth", "ListColumnWidth", MetaStringType.Null())
 				.Attribute("SeqNo", "SeqNo", MetaIntType.NotNull())
@@ -128,47 +187,49 @@ namespace Solution.Model
 				.Attribute("Title", "Заголовок", MetaStringType.Null())
 				.Attribute("ValueFunction", "ValueFunction", MetaStringType.Null())
 				.Attribute("ValueFunctionExecType", "ValueFunctionExecType", MetaBooleanType.NotNull())
-				.Reference<IMM_FormFieldAttribute>("Attributes", "Атрибуты", x => x.Multiple().InverseProperty("FormField"))
-				.Reference<IMM_FormFieldGroup>("FormFieldGroup", "Группа полей", x => x.InverseProperty("FormFields"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IMM_ObjectProperty>("ObjectProperty", "Свойство")
+				.Reference<MM_FormFieldAttribute>("Attributes", "Атрибуты", x => x.Multiple().InverseProperty("FormField"))
+				.Reference<MM_FormFieldGroup>("FormFieldGroup", "Группа полей", x => x.InverseProperty("FormFields"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MM_ObjectProperty>("ObjectProperty", "Свойство")
+				.OperationEdit()				
 			;	
-			p.AddClass<IMM_Codifier>()
+			p.AddClass<MM_Codifier>()
 				.IntKey()
 				.Attribute("CodifierID", "Ид", MetaIntType.NotNull())
 				.Attribute("Guid", "Guid", MetaGuidType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IMM_Package>("Package", "Пакет", x => x.InverseProperty("Codifiers"))
-				.Reference<IMM_CodifierValue>("Values", "Значения", x => x.Multiple().InverseProperty("Codifier"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MM_Package>("Package", "Пакет", x => x.InverseProperty("Codifiers"))
+				.Reference<MM_CodifierValue>("Values", "Значения", x => x.Multiple().InverseProperty("Codifier"))
+				.OperationView()
+				.OperationEdit()				
+				.OperationList()
+				.OperationDelete()
 			;	
-			p.AddClass<IMM_CodifierValue>()
+			p.AddClass<MM_CodifierValue>()
 				.IntKey()
 				.Attribute("Code", "Код", MetaEnum.NotNull())
 				.Attribute("CodifierValueID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("SeqNo", "Порядковый номер", MetaIntType.NotNull())
 				.Attribute("SysName", "SysName", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<IMM_Codifier>("Codifier", "Кодификатор", x => x.InverseProperty("Values"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MM_Codifier>("Codifier", "Кодификатор", x => x.InverseProperty("Values"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
 			;	
-			p.AddClass<IMM_FormFieldAttribute>()
+			p.AddClass<MM_FormFieldAttribute>()
 				.IntKey()
 				.Attribute("FormFieldAttributeID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("IsEvent", "Признак Событие", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("Value", "Значение", MetaStringType.NotNull())
-				.Reference<IMM_FormField>("FormField", "Поле", x => x.InverseProperty("Attributes"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MM_FormField>("FormField", "Поле", x => x.InverseProperty("Attributes"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
 			;	
-			p.AddClass<IMM_FormView>()
+			p.AddClass<MM_FormView>()
 				.IntKey()
 				.Attribute("BaseClass", "Базовый класс", MetaStringType.NotNull())
 				.Attribute("CacheKeyParams", "CacheKeyParams", MetaStringType.Null())
@@ -177,7 +238,6 @@ namespace Solution.Model
 				.Attribute("Guid", "Guid", MetaGuidType.NotNull())
 				.Attribute("IsCaching", "IsCaching", MetaBooleanType.NotNull())
 				.Attribute("IsCustom", "Пользовательское", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("TemplateTypeCode", "Тип представления", MetaEnum.NotNull())
@@ -185,11 +245,34 @@ namespace Solution.Model
 				.Attribute("ViewTemplate", "Шаблон формы", MetaStringType.Null())
 				.ComputedAttribute("ControlsPath", "ControlsPath", MetaStringType.Null())
 				.ComputedAttribute("FullSysName", "FullSysName", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IMM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("FormViews"))
-				.Reference<IMM_Package>("Package", "Пакет")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("FormViews"))
+				.Reference<MM_Package>("Package", "Пакет")
+				.OperationEdit()				
+				.Operation("Spm", "Настроить права доступа", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("ViewVersion", "Просмотр версий", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationDelete()
+				.Operation("Caching", "Настроить кэширование", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("CreateForObjectType", "Создать для класса", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("CreateForPackage", "Создать для пакета", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("LastChanges", "Последние изменения в представлениях") 
 			;	
-			p.AddClass<IMM_Method>()
+			p.AddClass<MM_Method>()
 				.IntKey()
 				.Attribute("Code", "Code", MetaStringType.Null())
 				.Attribute("Comment", "Comment", MetaStringType.Null())
@@ -203,25 +286,29 @@ namespace Solution.Model
 				.Attribute("SysName", "SysName", MetaStringType.NotNull())
 				.Attribute("Title", "Title", MetaStringType.NotNull())
 				.Attribute("ViewPath", "ViewPath", MetaStringType.Null())
-				.Reference<IMM_FormView>("FormView", "Представление")
-				.Reference<IMM_MethodParameter>("MethodParameters", "Параметры", x => x.Multiple().InverseProperty("Method"))
-				.Reference<IMM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("Methods"))
+				.Reference<MM_FormView>("FormView", "Представление")
+				.Reference<MM_MethodParameter>("MethodParameters", "Параметры", x => x.Multiple().InverseProperty("Method"))
+				.Reference<MM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("Methods"))
+				.OperationEdit()				
+				.OperationDelete()
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IMM_MethodParameter>()
+			p.AddClass<MM_MethodParameter>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последней модификации", MetaDateTimeType.NotNull())
 				.Attribute("MethodParameterID", "Ид", MetaIntType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.Null())
 				.Attribute("Title", "Наименование", MetaStringType.Null())
 				.Attribute("Type", "Тип данных", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IMM_Method>("Method", "Метод", x => x.InverseProperty("MethodParameters"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MM_Method>("Method", "Метод", x => x.InverseProperty("MethodParameters"))
 			;	
-			p.AddClass<IMM_FormFieldGroup>()
+			p.AddClass<MM_FormFieldGroup>()
 				.IntKey()
 				.Attribute("FormFieldGroupID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("SelectObjectClass", "SelectObjectClass", MetaStringType.Null())
 				.Attribute("SelectObjectDataTextField", "SelectObjectDataTextField", MetaStringType.Null())
@@ -231,50 +318,59 @@ namespace Solution.Model
 				.Attribute("SeqNo", "SeqNo", MetaIntType.NotNull())
 				.Attribute("ShowTitle", "ShowTitle", MetaBooleanType.NotNull())
 				.Attribute("Title", "Title", MetaStringType.NotNull())
-				.Reference<IMM_FormField>("FormFields", "Поля", x => x.Multiple().InverseProperty("FormFieldGroup"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IMM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("FormFieldGroups"))
-				.Reference<IMM_ObjectProperty>("SelectObjectProperty", "Свойство класса")
+				.Reference<MM_FormField>("FormFields", "Поля", x => x.Multiple().InverseProperty("FormFieldGroup"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("FormFieldGroups"))
+				.Reference<MM_ObjectProperty>("SelectObjectProperty", "Свойство класса")
+				.OperationEdit()				
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IMM_Predicate>()
+			p.AddClass<MM_Predicate>()
 				.GuidKey()
 				.Attribute("Body", "Body", MetaStringType.NotNull())
 				.Attribute("DesignerData", "DesignerData", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("Message", "Message", MetaStringType.NotNull())
 				.Attribute("PredicateGUID", "Ид", MetaGuidType.NotNull())
 				.Attribute("Title", "Наименовение", MetaStringType.NotNull())
 				.Attribute("Type", "Тип", MetaEnum.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IMM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("DataValidations"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("DataValidations"))
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationEdit()				
+				.OperationDelete()
 			;	
 			return p;
 		}
 	}
-	public partial interface ISPM_Subject { }
-	public partial interface ISPM_Role { }
-	public partial interface ISPM_Action { }
-	public partial interface ISPM_ActionAsso { }
-	public partial interface ISPM_RoleAsso { }
-	public partial interface ISPM_SubjectRole { }
-	public partial interface ISPM_RoleGroup { }
-	public partial interface ISPM_RoleAccess { }
-	public partial interface ISPM_CasheFlag { }
-	public partial interface ISPM_SubjectDelegate { }
-	public partial interface ISPM_AvailableRoleForGrant { }
-	public partial interface ISPM_C_RoleType { }
+	public partial class SPM_Subject { }
+	public partial class SPM_Role { }
+	public partial class SPM_Action { }
+	public partial class SPM_ActionAsso { }
+	public partial class SPM_RoleAsso { }
+	public partial class SPM_SubjectRole { }
+	public partial class SPM_RoleGroup { }
+	public partial class SPM_RoleAccess { }
+	public partial class SPM_CasheFlag { }
+	public partial class SPM_SubjectDelegate { }
+	public partial class SPM_AvailableRoleForGrant { }
+	public partial class SPM_C_RoleType { }
 
 	public class SPMModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("SPM");
-			p.AddClass<ISPM_Subject>()
+			p.AddClass<SPM_Subject>()
 				.IntKey()
 				.Attribute("EMail", "EMail", MetaStringType.Null())
 				.Attribute("IsActive", "IsActive", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("MustChangePassword", "MustChangePassword", MetaBooleanType.NotNull())
 				.Attribute("PasswordExpDate", "PasswordExpDate", MetaDateTimeType.Null())
@@ -285,12 +381,31 @@ namespace Solution.Model
 				.Attribute("SubjectID", "Ид", MetaIntType.NotNull())
 				.Attribute("SystemName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationList()
+				.OperationEdit()				
+				.Operation("Logoff", "Выйти") 
+				.Operation("Register", "Зарегистрироваться") 
+				.OperationDelete()
+				.Operation("RegistrationComplete", "Регистрация завершена") 
+				.Operation("RestorePassword", "Восстановить пароль") 
+				.Operation("Activate", "Активировать", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("ChangePassword", "Изменить пароль", x => x 
+					.Parm(MetaStringType.NotNull(), "magicString")
+				)
+				.OperationView()
+				.OperationCreateNew()
+				.Operation("Deactivate", "Деактивировать", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<ISPM_Role>()
+			p.AddClass<SPM_Role>()
 				.IntKey()
 				.Attribute("Description", "Описание", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("RoleForGrantCondition", "Условие выбора ролей для назначения пользователям", MetaIntType.NotNull())
 				.Attribute("RoleID", "Ид", MetaIntType.NotNull())
@@ -298,11 +413,29 @@ namespace Solution.Model
 				.Attribute("SID", "SID группы AD", MetaStringType.Null())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<ISPM_RoleGroup>("RoleGroup", "Группа ролей", x => x.InverseProperty("Roles"))
-				.Reference<ISPM_C_RoleType>("RoleType", "Тип роли")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_RoleGroup>("RoleGroup", "Группа ролей", x => x.InverseProperty("Roles"))
+				.Reference<SPM_C_RoleType>("RoleType", "Тип роли")
+				.OperationList()
+				.OperationEdit()				
+				.OperationDelete()
+				.OperationView()
+				.OperationCreateNew()
+				.Operation("EditRoles", "Редактировать роли для назначения пользователям", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("SubjectsList", "Список пользователей", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("RemoveSubject", "Отвязять пользователя", x => x 
+					.Parm(MetaIntType.NotNull(), "roleID")
+					.Parm(MetaIntType.NotNull(), "subjectID")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<ISPM_Action>()
+			p.AddClass<SPM_Action>()
 				.IntKey()
 				.Attribute("ActionID", "Ид", MetaIntType.NotNull())
 				.Attribute("ActionTypeID", "Тип операции", MetaIntType.NotNull())
@@ -313,41 +446,51 @@ namespace Solution.Model
 				.Attribute("SystemName", "SystemName", MetaStringType.Null())
 				.Attribute("Title", "Title", MetaStringType.NotNull())
 				.Attribute("Type", "Type (устарело)", MetaIntType.NotNull())
-				.Reference<IMM_Package>("Package", "Пакет")
-				.Reference<IMM_Predicate>("Predicate", "Предикат")
+				.Reference<MM_Package>("Package", "Пакет")
+				.Reference<MM_Predicate>("Predicate", "Предикат")
+				.OperationList()
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaGuidType.NotNull(), "classguid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationEdit()				
+				.OperationDelete()
+				.Operation("ViewListTree", "Список - дерево") 
 			;	
-			p.AddClass<ISPM_ActionAsso>()
+			p.AddClass<SPM_ActionAsso>()
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
-				.Reference<ISPM_Action>("Action", "Action")
-				.Reference<ISPM_Action>("ParentAction", "ParentAction")
+				.Reference<SPM_Action>("Action", "Action")
+				.Reference<SPM_Action>("ParentAction", "ParentAction")
 			;	
-			p.AddClass<ISPM_RoleAsso>()
+			p.AddClass<SPM_RoleAsso>()
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
-				.Reference<ISPM_Role>("ParentRole", "ParentRole")
-				.Reference<ISPM_Role>("Role", "Role")
+				.Reference<SPM_Role>("ParentRole", "ParentRole")
+				.Reference<SPM_Role>("Role", "Role")
 			;	
-			p.AddClass<ISPM_SubjectRole>()
+			p.AddClass<SPM_SubjectRole>()
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
-				.Reference<ISPM_Role>("Role", "Role")
-				.Reference<ISPM_Subject>("Subject", "Subject")
+				.Reference<SPM_Role>("Role", "Role")
+				.Reference<SPM_Subject>("Subject", "Subject")
 			;	
-			p.AddClass<ISPM_RoleGroup>()
+			p.AddClass<SPM_RoleGroup>()
 				.IntKey()
 				.Attribute("RoleGroupID", "Ид", MetaIntType.NotNull())
 				.Attribute("SeqNo", "Порядковый номер", MetaIntType.NotNull())
 				.Attribute("Title", "Название", MetaStringType.NotNull())
-				.Reference<ISPM_Role>("Roles", "Роли", x => x.InverseProperty("RoleGroup"))
+				.Reference<SPM_Role>("Roles", "Роли", x => x.InverseProperty("RoleGroup"))
+				.OperationEdit()				
+				.OperationDelete()
 			;	
-			p.AddClass<ISPM_RoleAccess>()
+			p.AddClass<SPM_RoleAccess>()
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
-				.Reference<ISPM_Action>("Action", "Action")
-				.Reference<ISPM_Role>("Role", "Role")
+				.Reference<SPM_Action>("Action", "Action")
+				.Reference<SPM_Role>("Role", "Role")
 			;	
-			p.AddClass<ISPM_CasheFlag>()
+			p.AddClass<SPM_CasheFlag>()
 				.Attribute("IsChange", "IsChange", MetaBooleanType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<ISPM_SubjectDelegate>()
+			p.AddClass<SPM_SubjectDelegate>()
 				.IntKey()
 				.Attribute("BeginDate", "Дата начала", MetaDateTimeType.NotNull())
 				.Attribute("EndDate", "Дата окончания", MetaDateTimeType.NotNull())
@@ -355,23 +498,34 @@ namespace Solution.Model
 				.Attribute("SubjectDelegateID", "Ид", MetaIntType.NotNull())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
 				.PersistentComputedAttribute("IsDeleted", "Признак Удалено", MetaBooleanType.Null())
-				.Reference<ISPM_Subject>("DelegatedFrom", "От кого делегировано")
-				.Reference<ISPM_Subject>("DelegatedTo", "Кому делегировано")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("DelegatedFrom", "От кого делегировано")
+				.Reference<SPM_Subject>("DelegatedTo", "Кому делегировано")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationDelete()
+				.OperationList()
+				.OperationView()
+				.Operation("ObjectChangeHistory", "История изменений") 
 			;	
-			p.AddClass<ISPM_AvailableRoleForGrant>()
+			p.AddClass<SPM_AvailableRoleForGrant>()
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
-				.Reference<ISPM_Role>("Role", "Role")
-				.Reference<ISPM_Role>("RoleForGrant", "RoleForGrant")
+				.Reference<SPM_Role>("Role", "Role")
+				.Reference<SPM_Role>("RoleForGrant", "RoleForGrant")
 			;	
-			p.AddClass<ISPM_C_RoleType>()
+			p.AddClass<SPM_C_RoleType>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("RoleTypeID", "ИД", MetaIntType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
 			return p;
 		}
@@ -385,45 +539,48 @@ namespace Solution.Model
 			return p;
 		}
 	}
-	public partial interface IN_TimeZone { }
-	public partial interface IN_RssFeed { }
-	public partial interface IUserActivity { }
-	public partial interface IN_TextResource { }
-	public partial interface ITM_Task { }
-	public partial interface ITM_TaskParameter { }
-	public partial interface IMailMessage { }
-	public partial interface IC_Help { }
-	public partial interface IMailTemplate { }
-	public partial interface ICalendarDay { }
-	public partial interface IN_DDL { }
-	public partial interface ITM_TaskExecution { }
-	public partial interface IN_Settings { }
-	public partial interface IN_SettingsGroup { }
-	public partial interface IN_TaskType { }
-	public partial interface IN_Task { }
+	public partial class N_TimeZone { }
+	public partial class N_RssFeed { }
+	public partial class UserActivity { }
+	public partial class N_TextResource { }
+	public partial class TM_Task { }
+	public partial class TM_TaskParameter { }
+	public partial class MailMessage { }
+	public partial class C_Help { }
+	public partial class MailTemplate { }
+	public partial class CalendarDay { }
+	public partial class N_DDL { }
+	public partial class TM_TaskExecution { }
+	public partial class N_Settings { }
+	public partial class N_SettingsGroup { }
+	public partial class N_TaskType { }
+	public partial class N_Task { }
 
 	public class SystemModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("System");
-			p.AddClass<IN_TimeZone>()
+			p.AddClass<N_TimeZone>()
 				.IntKey()
 				.Attribute("Comment", "Комментарий", MetaStringType.Null())
 				.Attribute("GMTOffset", "Смещение относительно GMT", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("TimeZoneID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.ComputedAttribute("DisplayTitle", "Отображаемое имя", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationCreateNew()
+				.OperationDelete()
+				.OperationEdit()				
+				.OperationView()
+				.OperationList()
 			;	
-			p.AddClass<IN_RssFeed>()
+			p.AddClass<N_RssFeed>()
 				.IntKey()
 				.Attribute("Author", "Автор элемента", MetaStringType.NotNull())
 				.Attribute("Copyright", "Информация об авторском праве", MetaStringType.NotNull())
 				.Attribute("Description", "Описание", MetaStringType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("LinkParams", "LinkParams", MetaStringType.Null())
 				.Attribute("ObjectTypeSysName", "Класс", MetaStringType.NotNull())
@@ -435,9 +592,14 @@ namespace Solution.Model
 				.Attribute("Ttl", "Время жизни", MetaIntType.NotNull())
 				.Attribute("ViewFormSysName", "Представление", MetaStringType.NotNull())
 				.Attribute("WebMaster", "E-mail веб-мастера", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationEdit()				
+				.OperationView()
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationList()
 			;	
-			p.AddClass<IUserActivity>()
+			p.AddClass<UserActivity>()
 				.IntKey()
 				.Attribute("Action", "Операция", MetaStringType.NotNull())
 				.Attribute("IP", "IP", MetaStringType.NotNull())
@@ -448,16 +610,25 @@ namespace Solution.Model
 				.Attribute("Title", "Название объекта", MetaStringType.NotNull())
 				.Attribute("UserActivityID", "Ид", MetaIntType.NotNull())
 				.Attribute("UserTitle", "Ф.И.О.", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Пользователь")
+				.OperationList()
+				.Operation("ExcelExport", "Экспорт в Excel", x => x 
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IN_TextResource>()
+			p.AddClass<N_TextResource>()
 				.IntKey()
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Text", "Текст", MetaStringType.Null())
 				.Attribute("TextResourceID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Название", MetaStringType.NotNull())
+				.OperationEdit()				
+				.OperationDelete()
+				.OperationList()
+				.OperationCreateNew()
+				.OperationView()
 			;	
-			p.AddClass<ITM_Task>()
+			p.AddClass<TM_Task>()
 				.IntKey()
 				.Attribute("Class", "Класс", MetaStringType.NotNull())
 				.Attribute("ErrorLogID", "Ид ошибки в журнале", MetaIntType.Null())
@@ -471,18 +642,27 @@ namespace Solution.Model
 				.Attribute("StartType", "Тип старта", MetaBooleanType.NotNull())
 				.Attribute("TaskID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Название", MetaStringType.NotNull())
-				.Reference<ITM_TaskParameter>("Parameters", "Параметры", x => x.Multiple().InverseProperty("Parent"))
+				.Reference<TM_TaskParameter>("Parameters", "Параметры", x => x.Multiple().InverseProperty("Parent"))
+				.OperationDelete()
+				.OperationEdit()				
+				.Operation("Start", "Запуск", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationView()
+				.OperationList()
 			;	
-			p.AddClass<ITM_TaskParameter>()
+			p.AddClass<TM_TaskParameter>()
 				.IntKey()
 				.Attribute("SeqNo", "Порядковый номер", MetaIntType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("TaskParameterID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Название", MetaStringType.NotNull())
 				.Attribute("Value", "Значение", MetaStringType.Null())
-				.Reference<ITM_Task>("Parent", "Задача", x => x.InverseProperty("Parameters"))
+				.Reference<TM_Task>("Parent", "Задача", x => x.InverseProperty("Parameters"))
+				.OperationDelete()
 			;	
-			p.AddClass<IMailMessage>()
+			p.AddClass<MailMessage>()
 				.IntKey()
 				.Attribute("Attachment", "Вложение", MetaByteArrayType.Null())
 				.Attribute("AttachmentName", "Наименование вложения", MetaStringType.Null())
@@ -496,18 +676,24 @@ namespace Solution.Model
 				.Attribute("Recipients", "Получатели", MetaStringType.Null())
 				.Attribute("Subject", "Тема", MetaStringType.Null())
 				.ComputedAttribute("Title", "Название", MetaStringType.Null())
+				.OperationView()
+				.OperationList()
 			;	
-			p.AddClass<IC_Help>()
+			p.AddClass<C_Help>()
 				.IntKey()
 				.Attribute("FormViewFullSysName", "Представление", MetaStringType.NotNull())
 				.Attribute("HelpID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Text", "Текст", MetaStringType.Null())
 				.Attribute("Title", "Форма системы", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationCreateNew()
+				.OperationDelete()
+				.OperationEdit()				
+				.OperationView()
+				.OperationList()
 			;	
-			p.AddClass<IMailTemplate>()
+			p.AddClass<MailTemplate>()
 				.IntKey()
 				.Attribute("Comment", "Комментарий", MetaStringType.Null())
 				.Attribute("IsSystem", "Системное", MetaBooleanType.NotNull())
@@ -515,21 +701,32 @@ namespace Solution.Model
 				.Attribute("TemplateBody", "Сообщение", MetaStringType.NotNull())
 				.Attribute("TemplateSubject", "Тема", MetaStringType.NotNull())
 				.Attribute("Title", "Имя", MetaStringType.NotNull())
+				.OperationCreateNew()
+				.OperationDelete()
+				.OperationEdit()				
+				.OperationView()
+				.OperationList()
 			;	
-			p.AddClass<ICalendarDay>()
+			p.AddClass<CalendarDay>()
 				.IntKey()
 				.Attribute("CalendarDayID", "Ид", MetaIntType.NotNull())
 				.Attribute("Date", "Дата", MetaDateType.NotNull())
 				.Attribute("IsWorkingDay", "Рабочий/Выходной", MetaBooleanType.NotNull())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
+				.OperationCreateNew()
+				.OperationDelete()
+				.OperationEdit()				
+				.OperationView()
+				.OperationList()
 			;	
-			p.AddClass<IN_DDL>()
+			p.AddClass<N_DDL>()
 				.IntKey()
 				.Attribute("DDLID", "Ид", MetaIntType.NotNull())
 				.Attribute("LastModifiedDate", "Дата", MetaDateTimeType.NotNull())
 				.Attribute("Title", "Команда", MetaStringType.NotNull())
+				.OperationList()
 			;	
-			p.AddClass<ITM_TaskExecution>()
+			p.AddClass<TM_TaskExecution>()
 				.IntKey()
 				.Attribute("ExecutionLog", "Журнал выполнения", MetaStringType.Null())
 				.Attribute("FinishDate", "Дата/время окончания", MetaDateTimeType.Null())
@@ -540,32 +737,45 @@ namespace Solution.Model
 				.Attribute("StartDate", "Дата/время запуска", MetaDateTimeType.NotNull())
 				.Attribute("TaskExecutionID", "Ид", MetaIntType.NotNull())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний изменивший пользователь")
-				.Reference<ITM_Task>("Task", "Задача")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний изменивший пользователь")
+				.Reference<TM_Task>("Task", "Задача")
+				.OperationList()
+				.OperationView()
 			;	
-			p.AddClass<IN_Settings>()
+			p.AddClass<N_Settings>()
 				.GuidKey()
 				.Attribute("AcceptableValues", "Список разрешенных значений", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("IsSystem", "Свойство является системным", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("SettingsGUID", "Ид", MetaGuidType.NotNull())
 				.Attribute("SystemName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("Value", "Значение", MetaStringType.NotNull())
-				.Reference<IN_SettingsGroup>("Group", "Группа параметра", x => x.InverseProperty("Settings"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<N_SettingsGroup>("Group", "Группа параметра", x => x.InverseProperty("Settings"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
+				.Operation("ObjectChangeHistory", "История изменений") 
 			;	
-			p.AddClass<IN_SettingsGroup>()
+			p.AddClass<N_SettingsGroup>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("SettingsGroupID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IN_Settings>("Settings", "Параметры системы", x => x.Multiple().InverseProperty("Group"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<N_Settings>("Settings", "Параметры системы", x => x.Multiple().InverseProperty("Group"))
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IN_TaskType>()
+			p.AddClass<N_TaskType>()
 				.IntKey()
 				.Attribute("ArgumentClass", "Класс параметров", MetaStringType.Null())
 				.Attribute("Class", "Класс", MetaStringType.NotNull())
@@ -575,8 +785,13 @@ namespace Solution.Model
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("TaskTypeID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.OperationView()
 			;	
-			p.AddClass<IN_Task>()
+			p.AddClass<N_Task>()
 				.GuidKey()
 				.Attribute("AbortRequestDate", "Дата запроса прерывания", MetaDateTimeType.Null())
 				.Attribute("Argument", "Параметры задания, сериализованные в формате JSON", MetaStringType.Null())
@@ -591,82 +806,97 @@ namespace Solution.Model
 				.Attribute("Result", "Результат выполнения задания, сериализованный в формате JSON", MetaStringType.Null())
 				.Attribute("StartTime", "Дата запуска", MetaDateTimeType.Null())
 				.Attribute("Status", "Статус", MetaIntType.NotNull())
-				.Reference<ISPM_Subject>("Creator", "Создал")
-				.Reference<IN_TaskType>("TaskType", "Тип задания")
+				.Reference<SPM_Subject>("Creator", "Создал")
+				.Reference<N_TaskType>("TaskType", "Тип задания")
+				.OperationDelete()
+				.OperationEdit()				
+				.OperationList()
+				.OperationView()
 			;	
 			return p;
 		}
 	}
-	public partial interface IMMS_ClassStereotype { }
-	public partial interface IMMS_Versioning { }
-	public partial interface IMMS_ChangeLog { }
-	public partial interface IMMS_Replication { }
+	public partial class MMS_ClassStereotype { }
+	public partial class MMS_Versioning { }
+	public partial class MMS_ChangeLog { }
+	public partial class MMS_Replication { }
 
 	public class StereotypesModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("Stereotypes");
-			p.AddClass<IMMS_ClassStereotype>()
+			p.AddClass<MMS_ClassStereotype>()
 			;	
-			p.AddClass<IMMS_Versioning>()
+			p.AddClass<MMS_Versioning>()
 				.Attribute("Type", "Тип", MetaEnum.NotNull())
+				.OperationEdit()				
 			;	
-			p.AddClass<IMMS_ChangeLog>()
+			p.AddClass<MMS_ChangeLog>()
 			;	
-			p.AddClass<IMMS_Replication>()
+			p.AddClass<MMS_Replication>()
 			;	
 			return p;
 		}
 	}
-	public partial interface IN_SqlStatementLog { }
+	public partial class N_SqlStatementLog { }
 
 	public class SqlExecutionModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("SqlExecution");
-			p.AddClass<IN_SqlStatementLog>()
+			p.AddClass<N_SqlStatementLog>()
 				.IntKey()
 				.Attribute("IP", "IP-адрес", MetaStringType.NotNull())
 				.Attribute("LastModifiedDate", "Дата выполнения", MetaDateTimeType.NotNull())
 				.Attribute("SqlStatementLogID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Текст запроса", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Выполнивший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Выполнивший пользователь")
+				.Operation("Execute", "Выполнение SQL") 
+				.Operation("ExecuteHistory", "Выполнить из журнала", x => x 
+					.Parm(MetaIntType.NotNull(), "oid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationView()
+				.OperationList()
 			;	
 			return p;
 		}
 	}
-	public partial interface IN_VirusScanLog { }
-	public partial interface IN_Folder { }
-	public partial interface IV_N_FolderFile { }
-	public partial interface IN_File { }
-	public partial interface IN_FileLibraryType { }
-	public partial interface IN_FileLibrary { }
-	public partial interface IN_DownloadLog { }
+	public partial class N_VirusScanLog { }
+	public partial class N_Folder { }
+	public partial class V_N_FolderFile { }
+	public partial class N_File { }
+	public partial class N_FileLibraryType { }
+	public partial class N_FileLibrary { }
+	public partial class N_DownloadLog { }
 
 	public class FileStorageModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("FileStorage");
-			p.AddClass<IN_VirusScanLog>()
+			p.AddClass<N_VirusScanLog>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата проверки", MetaDateTimeType.NotNull())
 				.Attribute("ResultCode", "Код результата", MetaIntType.NotNull())
 				.Attribute("Title", "Имя файла", MetaStringType.NotNull())
 				.Attribute("VirusScanLogID", "Ид", MetaIntType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Загрузивший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Загрузивший пользователь")
+				.OperationEdit()				
+				.OperationView()
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationList()
 			;	
-			p.AddClass<IN_Folder>()
+			p.AddClass<N_Folder>()
 				.IntKey()
 				.Attribute("EnableVersioning", "Включить версионность", MetaBooleanType.NotNull())
 				.Attribute("FolderID", "Ид", MetaIntType.NotNull())
 				.Attribute("FullPath", "Полный путь", MetaStringType.Null())
 				.Attribute("Guid", "Гуид", MetaGuidType.NotNull())
 				.Attribute("GuidPath", "Путь Гуид", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("IsReplicable", "Реплицируемый", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("PublishDate", "Дата публикации", MetaDateTimeType.Null())
@@ -676,24 +906,44 @@ namespace Solution.Model
 				.Attribute("Tag", "Tag", MetaStringType.Null())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.ComputedAttribute("PhysicalPath", "Путь на диске", MetaStringType.Null())
-				.Reference<ISPM_Subject>("Creator", "Создавший пользователь")
-				.Reference<IN_File>("Files", "Файлы", x => x.Multiple().InverseProperty("Folder"))
-				.Reference<IN_Folder>("Folders", "Папки", x => x.Multiple().InverseProperty("Parent"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IN_Folder>("Parent", "Родительская папка", x => x.InverseProperty("Folders"))
+				.Reference<SPM_Subject>("Creator", "Создавший пользователь")
+				.Reference<N_File>("Files", "Файлы", x => x.Multiple().InverseProperty("Folder"))
+				.Reference<N_Folder>("Folders", "Папки", x => x.Multiple().InverseProperty("Parent"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<N_Folder>("Parent", "Родительская папка", x => x.InverseProperty("Folders"))
+				.OperationEdit()				
+				.OperationView()
+				.OperationDelete()
+				.Operation("CreateNew", "Создать папку", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationList()
+				.Operation("Upload", "Загрузить файлы", x => x 
+					.Parm(MetaStringType.NotNull(), "parent")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("Predicates", "Права доступа") 
+				.Operation("PackAndDownload", "Упаковать и скачать", x => x 
+					.Parm(MetaGuidType.NotNull(), "id")
+				)
 			;	
-			p.AddClass<IV_N_FolderFile>()
+			p.AddClass<V_N_FolderFile>()
 				.IntKey()
 				.Attribute("Extension", "Тип", MetaStringType.NotNull())
 				.Attribute("ID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("LastModifiedUserID", "Последний редактировавший пользователь", MetaIntType.NotNull())
 				.Attribute("LastModifiedUserTitle", "Последний изменивший пользователь", MetaStringType.Null())
 				.Attribute("ParentID", "Ид родительского объекта", MetaIntType.Null())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
+				.OperationList()
+				.OperationCreateNew()
+				.OperationDelete()
+				.OperationEdit()				
+				.OperationView()
 			;	
-			p.AddClass<IN_File>()
+			p.AddClass<N_File>()
 				.IntKey()
 				.Attribute("BeginDate", "Дата начала действия", MetaDateTimeType.NotNull())
 				.Attribute("EndDate", "Дата окончания действия", MetaDateTimeType.NotNull())
@@ -716,48 +966,64 @@ namespace Solution.Model
 				.Attribute("VersionNumber", "Номер версии", MetaIntType.NotNull())
 				.ComputedAttribute("PhysicalPath", "Путь на диске", MetaStringType.Null())
 				.PersistentComputedAttribute("IsDeleted", "Признак Удалено", MetaBooleanType.Null())
-				.Reference<ISPM_Subject>("CheckedOutBy", "Кем извлечено")
-				.Reference<ISPM_Subject>("Creator", "Создавший пользователь")
-				.Reference<IN_Folder>("Folder", "Папка", x => x.InverseProperty("Files"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("CheckedOutBy", "Кем извлечено")
+				.Reference<SPM_Subject>("Creator", "Создавший пользователь")
+				.Reference<N_Folder>("Folder", "Папка", x => x.InverseProperty("Files"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationEdit()				
+				.Operation("CreateNew", "Создать файл", x => x 
+					.Parm(MetaIntType.NotNull(), "folderid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationView()
+				.OperationList()
+				.Operation("EditG", "Редактировать", x => x 
+					.Parm(MetaGuidType.NotNull(), "id")
+				)
 			;	
-			p.AddClass<IN_FileLibraryType>()
+			p.AddClass<N_FileLibraryType>()
 				.IntKey()
 				.Attribute("ClassName", "Имя класса", MetaStringType.Null())
 				.Attribute("Extensions", "Расширения", MetaStringType.NotNull())
 				.Attribute("FileLibraryTypeID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationDelete()
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IN_FileLibrary>()
+			p.AddClass<N_FileLibrary>()
 				.Attribute("MaxFileSize", "Максимальный размер файла", MetaIntType.NotNull())
-				.Reference<IN_FileLibraryType>("FileLibraryType", "Тип")
+				.Reference<N_FileLibraryType>("FileLibraryType", "Тип")
 			;	
-			p.AddClass<IN_DownloadLog>()
+			p.AddClass<N_DownloadLog>()
 				.IntKey()
 				.Attribute("DownloadLogID", "Ид", MetaIntType.NotNull())
 				.Attribute("FileGUID", "ИД Файла", MetaGuidType.NotNull())
 				.Attribute("IP", "IP", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
-				.Reference<IN_File>("File", "Файл")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<N_File>("File", "Файл")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationList()
 			;	
 			return p;
 		}
 	}
-	public partial interface IN_ObjectChange { }
-	public partial interface IN_ObjectPropertyChange { }
+	public partial class N_ObjectChange { }
+	public partial class N_ObjectPropertyChange { }
 
 	public class ChangeHistoryModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("ChangeHistory");
-			p.AddClass<IN_ObjectChange>()
+			p.AddClass<N_ObjectChange>()
 				.IntKey()
 				.Attribute("Details", "Дополнительная информация", MetaStringType.NotNull())
 				.Attribute("IP", "IP", MetaStringType.NotNull())
@@ -771,9 +1037,14 @@ namespace Solution.Model
 				.Attribute("Title", "Действие", MetaStringType.NotNull())
 				.Attribute("UserLogin", "Логин пользователя", MetaStringType.NotNull())
 				.Attribute("UserTitle", "Имя пользователя", MetaStringType.NotNull())
-				.Reference<IN_ObjectPropertyChange>("PropertyChanges", "Изменения свойств", x => x.Multiple().InverseProperty("ObjectChange"))
+				.Reference<N_ObjectPropertyChange>("PropertyChanges", "Изменения свойств", x => x.Multiple().InverseProperty("ObjectChange"))
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationDelete()
+				.OperationList()
+				.LogicalDelete()
 			;	
-			p.AddClass<IN_ObjectPropertyChange>()
+			p.AddClass<N_ObjectPropertyChange>()
 				.IntKey()
 				.Attribute("NewValue", "Новое значение", MetaStringType.Null())
 				.Attribute("NewValueTitle", "Отображаемый текст нового значения", MetaStringType.NotNull())
@@ -782,38 +1053,46 @@ namespace Solution.Model
 				.Attribute("OldValueTitle", "Отображаемый текст старого значения", MetaStringType.NotNull())
 				.Attribute("PropertySysName", "Системное имя свойства", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование свойства", MetaStringType.NotNull())
-				.Reference<IN_ObjectChange>("ObjectChange", "Изменение объекта", x => x.InverseProperty("PropertyChanges"))
+				.Reference<N_ObjectChange>("ObjectChange", "Изменение объекта", x => x.InverseProperty("PropertyChanges"))
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationDelete()
+				.OperationList()
+				.LogicalDelete()
 			;	
 			return p;
 		}
 	}
-	public partial interface IN_Navig { }
-	public partial interface IN_NavigItem { }
-	public partial interface IN_Node { }
-	public partial interface ICMSFormView { }
+	public partial class N_Navig { }
+	public partial class N_NavigItem { }
+	public partial class N_Node { }
+	public partial class CMSFormView { }
 
 	public class NavigationModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("Navigation");
-			p.AddClass<IN_Navig>()
+			p.AddClass<N_Navig>()
 				.GuidKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("MaxLevels", "Максимальное количество уровней", MetaIntType.Null())
 				.Attribute("NavigGUID", "Ид", MetaGuidType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<IN_NavigItem>("Items", "Элементы", x => x.Multiple().InverseProperty("Navig"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<N_NavigItem>("Items", "Элементы", x => x.Multiple().InverseProperty("Navig"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationDelete()
+				.OperationView()
+				.OperationList()
 			;	
-			p.AddClass<IN_NavigItem>()
+			p.AddClass<N_NavigItem>()
 				.GuidKey()
 				.Attribute("Expression", "Вычисляемая часть наименования", MetaStringType.Null())
 				.Attribute("FURL", "Friendly URL", MetaStringType.Null())
 				.Attribute("ImageURL", "URL картинки", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("NavigItemGUID", "Ид", MetaGuidType.NotNull())
 				.Attribute("OldID", "Старый ИД", MetaIntType.Null())
@@ -824,22 +1103,35 @@ namespace Solution.Model
 				.Attribute("Tooltip", "Подсказка", MetaStringType.Null())
 				.Attribute("Type", "Тип", MetaEnum.NotNull())
 				.Attribute("URL", "Реальный URL", MetaStringType.Null())
-				.Reference<IN_NavigItem>("Child", "Дочерние элементы", x => x.Multiple().InverseProperty("Parent"))
-				.Reference<IMM_FormView>("FormView", "Представление")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IMM_Method>("Method", "Метод")
-				.Reference<IN_Navig>("Navig", "Меню", x => x.InverseProperty("Items"))
-				.Reference<IN_Node>("Node", "Страница сайта")
-				.Reference<IN_NavigItem>("Parent", "Родительский элемент", x => x.InverseProperty("Child"))
+				.Reference<N_NavigItem>("Child", "Дочерние элементы", x => x.Multiple().InverseProperty("Parent"))
+				.Reference<MM_FormView>("FormView", "Представление")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MM_Method>("Method", "Метод")
+				.Reference<N_Navig>("Navig", "Меню", x => x.InverseProperty("Items"))
+				.Reference<N_Node>("Node", "Страница сайта")
+				.Reference<N_NavigItem>("Parent", "Родительский элемент", x => x.InverseProperty("Child"))
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaGuidType.NotNull(), "menuid")
+					.Parm(MetaGuidType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationEdit()				
+				.OperationDelete()
+				.OperationList()
+				.LogicalDelete()
+				.Operation("SortChildren", "Отсортировать дочерние элементы", x => x 
+					.Parm(MetaGuidType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("EditRights", "Редактировать права") 
 			;	
-			p.AddClass<IN_Node>()
+			p.AddClass<N_Node>()
 				.GuidKey()
 				.Attribute("Alt", "Подсказка", MetaStringType.Null())
 				.Attribute("CreateDate", "Дата создания", MetaDateTimeType.NotNull())
 				.Attribute("Description", "Описание", MetaStringType.Null())
 				.Attribute("FURL", "Friendly URL", MetaStringType.Null())
 				.Attribute("ImageURL", "URL изображения", MetaStringType.Null())
-				.Attribute("IsDeleted", "Признак Опубликовано", MetaBooleanType.NotNull())
 				.Attribute("Keywords", "Ключевые слова", MetaStringType.Null())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("NodeGUID", "Ид", MetaGuidType.NotNull())
@@ -849,60 +1141,83 @@ namespace Solution.Model
 				.Attribute("PublishDate", "Дата публикации", MetaDateTimeType.Null())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IMM_FormView>("MasterPage", "Мастер-страница")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MM_FormView>("MasterPage", "Мастер-страница")
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationDelete()
+				.OperationView()
+				.OperationList()
+				.LogicalDelete()
 			;	
-			p.AddClass<ICMSFormView>()
+			p.AddClass<CMSFormView>()
+				.OperationCreateNew()
+				.OperationList()
+				.OperationDelete()
 			;	
 			return p;
 		}
 	}
-	public partial interface IWF_Workflow { }
-	public partial interface IWF_Activity { }
-	public partial interface IWF_Transition { }
+	public partial class WF_Workflow { }
+	public partial class WF_Activity { }
+	public partial class WF_Transition { }
 
 	public class WorkflowModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("Workflow");
-			p.AddClass<IWF_Workflow>()
+			p.AddClass<WF_Workflow>()
 				.IntKey()
 				.Attribute("IsActive", "Действующий", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("WorkflowID", "Ид", MetaIntType.NotNull())
-				.Reference<IWF_Activity>("Activities", "Активности", x => x.Multiple().InverseProperty("Workflow"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IMM_ObjectType>("ObjectType", "Тип объекта")
+				.Reference<WF_Activity>("Activities", "Активности", x => x.Multiple().InverseProperty("Workflow"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MM_ObjectType>("ObjectType", "Тип объекта")
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationDelete()
+				.OperationList()
+				.OperationView()
+				.Operation("Generate", "Сгенерировать методы") 
 			;	
-			p.AddClass<IWF_Activity>()
+			p.AddClass<WF_Activity>()
 				.IntKey()
 				.Attribute("ActivityID", "Ид", MetaIntType.NotNull())
 				.Attribute("IsActive", "Действующее", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("SeqNo", "Порядковый номер", MetaIntType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<IWF_Activity>("ChildActivities", "Дочерние активности", x => x.Multiple().InverseProperty("ParentActivity"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IWF_Activity>("ParentActivity", "Родительская активность", x => x.InverseProperty("ChildActivities"))
-				.Reference<IWF_Workflow>("Workflow", "Рабочий процесс", x => x.InverseProperty("Activities"))
+				.Reference<WF_Activity>("ChildActivities", "Дочерние активности", x => x.Multiple().InverseProperty("ParentActivity"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<WF_Activity>("ParentActivity", "Родительская активность", x => x.InverseProperty("ChildActivities"))
+				.Reference<WF_Workflow>("Workflow", "Рабочий процесс", x => x.InverseProperty("Activities"))
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationDelete()
+				.OperationList()
+				.OperationView()
 			;	
-			p.AddClass<IWF_Transition>()
+			p.AddClass<WF_Transition>()
 				.IntKey()
 				.Attribute("IsActive", "Действующий", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("SeqNo", "Порядковый номер", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("TransitionID", "Ид", MetaIntType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IWF_Activity>("Parent", "Исходная активность")
-				.Reference<IWF_Activity>("TargetActivity", "Целевая активность")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<WF_Activity>("Parent", "Исходная активность")
+				.Reference<WF_Activity>("TargetActivity", "Целевая активность")
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationDelete()
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
 			return p;
 		}
@@ -925,14 +1240,14 @@ namespace Solution.Model
 			return p;
 		}
 	}
-	public partial interface IErrorLog { }
+	public partial class ErrorLog { }
 
 	public class UtilsModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("Utils");
-			p.AddClass<IErrorLog>()
+			p.AddClass<ErrorLog>()
 				.IntKey()
 				.Attribute("ErrorDate", "Дата ошибки", MetaDateTimeType.NotNull())
 				.Attribute("ErrorLogID", "Ид ошибки", MetaIntType.NotNull())
@@ -949,61 +1264,102 @@ namespace Solution.Model
 				.Attribute("UserHostName", "Имя хоста пользователя", MetaStringType.Null())
 				.Attribute("UserName", "Имя пользователя", MetaStringType.Null())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
+				.OperationList()
+				.OperationView()
+				.Operation("Delete", "Очистить", x => x 
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
 			return p;
 		}
 	}
-	public partial interface IDbFolder { }
-	public partial interface IDbFile { }
-	public partial interface IDbItem { }
+	public partial class DbFolder { }
+	public partial class DbFile { }
+	public partial class DbItem { }
 
 	public class FileStorage2Module
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("FileStorage2");
-			p.AddClass<IDbFolder>()
+			p.AddClass<DbFolder>()
 				.GuidKey()
 				.Attribute("ID", "Ид папки", MetaGuidType.NotNull())
+				.OperationView()
+				.OperationEdit()				
+				.OperationDelete()
+				.Operation("Create", "Создать папку", x => x 
+					.Parm(MetaStringType.NotNull(), "parentFolderID")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("PackAndDownload", "Упаковать и скачать", x => x 
+					.Parm(MetaGuidType.NotNull(), "id")
+				)
+				.Operation("Upload", "Загрузка файлов") 
 			;	
-			p.AddClass<IDbFile>()
+			p.AddClass<DbFile>()
 				.GuidKey()
 				.Attribute("ID", "Ид файла", MetaGuidType.NotNull())
+				.OperationView()
+				.OperationEdit()				
+				.OperationDelete()
+				.Operation("Create", "Создать файл", x => x 
+					.Parm(MetaStringType.NotNull(), "parentFolderID")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("CheckOut", "Извлечь", x => x 
+					.Parm(MetaGuidType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("CheckIn", "Вернуть", x => x 
+					.Parm(MetaGuidType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IDbItem>()
+			p.AddClass<DbItem>()
 				.GuidKey()
 				.Attribute("ID", "ID", MetaGuidType.NotNull())
+				.OperationList()
+				.Operation("ViewIcons", "Список. Плитка") 
+				.Operation("Comments", "Комментарии", x => x 
+					.Parm(MetaGuidType.NotNull(), "iod")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("Tags", "Теги", x => x 
+					.Parm(MetaGuidType.NotNull(), "iod")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
 			return p;
 		}
 	}
-	public partial interface IC_FIAS_ActualStatus { }
-	public partial interface IC_FIAS_AddressObject { }
-	public partial interface IC_FIAS_CenterStatus { }
-	public partial interface IC_FIAS_OperationStatus { }
-	public partial interface IC_FIAS_CurrentStatus { }
-	public partial interface IC_FIAS_NormativeDocument { }
-	public partial interface IC_FIAS_House { }
-	public partial interface IC_FIAS_EstateStatus { }
-	public partial interface IC_FIAS_IntervalStatus { }
-	public partial interface IC_FIAS_StructureStatus { }
-	public partial interface IC_FIAS_HouseStateStatus { }
-	public partial interface IC_FIAS_HouseInterval { }
-	public partial interface IC_FIAS_Landmark { }
-	public partial interface IC_FIAS_AddressObjectType { }
+	public partial class C_FIAS_ActualStatus { }
+	public partial class C_FIAS_AddressObject { }
+	public partial class C_FIAS_CenterStatus { }
+	public partial class C_FIAS_OperationStatus { }
+	public partial class C_FIAS_CurrentStatus { }
+	public partial class C_FIAS_NormativeDocument { }
+	public partial class C_FIAS_House { }
+	public partial class C_FIAS_EstateStatus { }
+	public partial class C_FIAS_IntervalStatus { }
+	public partial class C_FIAS_StructureStatus { }
+	public partial class C_FIAS_HouseStateStatus { }
+	public partial class C_FIAS_HouseInterval { }
+	public partial class C_FIAS_Landmark { }
+	public partial class C_FIAS_AddressObjectType { }
 
 	public class FIASModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("FIAS");
-			p.AddClass<IC_FIAS_ActualStatus>()
+			p.AddClass<C_FIAS_ActualStatus>()
 				.IntKey()
 				.Attribute("ActStatID", "Ид", MetaIntType.NotNull())
 				.Attribute("Name", "Наименование", MetaStringType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<IC_FIAS_AddressObject>()
+			p.AddClass<C_FIAS_AddressObject>()
 				.GuidKey()
 				.Attribute("AoGUID", "Глобальный уникальный идентификатор", MetaGuidType.NotNull())
 				.Attribute("AoID", "Уникальный идентификатор записи", MetaGuidType.NotNull())
@@ -1038,31 +1394,31 @@ namespace Solution.Model
 				.Attribute("UpdateDate", "Дата  внесения записи", MetaDateTimeType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 				.PersistentComputedAttribute("DisplayTitle", "Полное наименование", MetaStringType.Null())
-				.Reference<IC_FIAS_ActualStatus>("ActStatus", "Статус актуальности адресного объекта ФИАС")
-				.Reference<IC_FIAS_CenterStatus>("CentStatus", "Статус центра")
-				.Reference<IC_FIAS_CurrentStatus>("CurrStatus", "Статус актуальности КЛАДР 4 (последние две цифры в коде)")
-				.Reference<IC_FIAS_NormativeDocument>("NormDoc", "Внешний ключ на нормативный документ")
-				.Reference<IC_FIAS_OperationStatus>("OperStatus", "Статус действия над записью – причина появления записи")
+				.Reference<C_FIAS_ActualStatus>("ActStatus", "Статус актуальности адресного объекта ФИАС")
+				.Reference<C_FIAS_CenterStatus>("CentStatus", "Статус центра")
+				.Reference<C_FIAS_CurrentStatus>("CurrStatus", "Статус актуальности КЛАДР 4 (последние две цифры в коде)")
+				.Reference<C_FIAS_NormativeDocument>("NormDoc", "Внешний ключ на нормативный документ")
+				.Reference<C_FIAS_OperationStatus>("OperStatus", "Статус действия над записью – причина появления записи")
 			;	
-			p.AddClass<IC_FIAS_CenterStatus>()
+			p.AddClass<C_FIAS_CenterStatus>()
 				.IntKey()
 				.Attribute("CenterStID", "Ид", MetaIntType.NotNull())
 				.Attribute("Name", "Наименование", MetaStringType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<IC_FIAS_OperationStatus>()
+			p.AddClass<C_FIAS_OperationStatus>()
 				.IntKey()
 				.Attribute("Name", "Наименование", MetaStringType.NotNull())
 				.Attribute("OperStatID", "Ид", MetaIntType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<IC_FIAS_CurrentStatus>()
+			p.AddClass<C_FIAS_CurrentStatus>()
 				.IntKey()
 				.Attribute("CurentStID", "Ид", MetaIntType.NotNull())
 				.Attribute("Name", "Наименование", MetaStringType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<IC_FIAS_NormativeDocument>()
+			p.AddClass<C_FIAS_NormativeDocument>()
 				.GuidKey()
 				.Attribute("DocDate", "Дата документа", MetaDateTimeType.Null())
 				.Attribute("DocDateSpecified", "DocDateSpecified", MetaBooleanType.NotNull())
@@ -1073,7 +1429,7 @@ namespace Solution.Model
 				.Attribute("NormDocID", "Ид", MetaGuidType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<IC_FIAS_House>()
+			p.AddClass<C_FIAS_House>()
 				.GuidKey()
 				.Attribute("BuildNum", "Номер корпуса", MetaStringType.Null())
 				.Attribute("Counter", "Счетчик записей домов для КЛАДР 4", MetaIntType.NotNull())
@@ -1092,39 +1448,39 @@ namespace Solution.Model
 				.Attribute("TerrIFNSUL", "Код территориального участка ИФНС ЮЛ", MetaStringType.Null())
 				.Attribute("UpdateDate", "Дата время внесения записи", MetaDateTimeType.NotNull())
 				.PersistentComputedAttribute("Title", "Полное наименование", MetaStringType.Null())
-				.Reference<IC_FIAS_AddressObject>("Ao", "Родительский объект (улица, город, населеннй пункт и т.п.)")
-				.Reference<IC_FIAS_EstateStatus>("EstStatus", "Признак владения")
-				.Reference<IC_FIAS_NormativeDocument>("NormDoc", "Нормативный документ")
-				.Reference<IC_FIAS_HouseStateStatus>("StatStatus", "Состояние дома")
-				.Reference<IC_FIAS_StructureStatus>("StrStatus", "Признак строения")
+				.Reference<C_FIAS_AddressObject>("Ao", "Родительский объект (улица, город, населеннй пункт и т.п.)")
+				.Reference<C_FIAS_EstateStatus>("EstStatus", "Признак владения")
+				.Reference<C_FIAS_NormativeDocument>("NormDoc", "Нормативный документ")
+				.Reference<C_FIAS_HouseStateStatus>("StatStatus", "Состояние дома")
+				.Reference<C_FIAS_StructureStatus>("StrStatus", "Признак строения")
 			;	
-			p.AddClass<IC_FIAS_EstateStatus>()
+			p.AddClass<C_FIAS_EstateStatus>()
 				.IntKey()
 				.Attribute("EstStatID", "Ид", MetaIntType.NotNull())
 				.Attribute("Name", "Наименование", MetaStringType.NotNull())
 				.Attribute("ShortName", "Краткое наименование", MetaStringType.Null())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<IC_FIAS_IntervalStatus>()
+			p.AddClass<C_FIAS_IntervalStatus>()
 				.IntKey()
 				.Attribute("IntvStatID", "Ид", MetaIntType.NotNull())
 				.Attribute("Name", "Наименование", MetaStringType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<IC_FIAS_StructureStatus>()
+			p.AddClass<C_FIAS_StructureStatus>()
 				.IntKey()
 				.Attribute("Name", "Наименование", MetaStringType.Null())
 				.Attribute("ShortName", "Краткое наименование", MetaStringType.Null())
 				.Attribute("StrStatID", "Ид", MetaIntType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<IC_FIAS_HouseStateStatus>()
+			p.AddClass<C_FIAS_HouseStateStatus>()
 				.IntKey()
 				.Attribute("HouseStID", "Ид", MetaIntType.NotNull())
 				.Attribute("Name", "Наименование", MetaStringType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<IC_FIAS_HouseInterval>()
+			p.AddClass<C_FIAS_HouseInterval>()
 				.GuidKey()
 				.Attribute("Counter", "Счетчик записей домов для КЛАДР 4", MetaIntType.NotNull())
 				.Attribute("EndDate", "Окончание действия записи", MetaDateTimeType.NotNull())
@@ -1142,11 +1498,11 @@ namespace Solution.Model
 				.Attribute("TerrIFNSUL", "Код территориального участка ИФНС ЮЛ", MetaStringType.Null())
 				.Attribute("UpdateDate", "Дата  внесения записи", MetaDateTimeType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
-				.Reference<IC_FIAS_AddressObject>("Ao", "Идентификатор объекта")
-				.Reference<IC_FIAS_IntervalStatus>("IntStatus", "Статус интервала")
-				.Reference<IC_FIAS_NormativeDocument>("NormDoc", "Нормативный документ")
+				.Reference<C_FIAS_AddressObject>("Ao", "Идентификатор объекта")
+				.Reference<C_FIAS_IntervalStatus>("IntStatus", "Статус интервала")
+				.Reference<C_FIAS_NormativeDocument>("NormDoc", "Нормативный документ")
 			;	
-			p.AddClass<IC_FIAS_Landmark>()
+			p.AddClass<C_FIAS_Landmark>()
 				.GuidKey()
 				.Attribute("EndDate", "Окончание действия записи", MetaDateTimeType.NotNull())
 				.Attribute("IFNSFL", "Код ИФНС ФЛ", MetaStringType.Null())
@@ -1162,10 +1518,10 @@ namespace Solution.Model
 				.Attribute("TerrIFNSUL", "Код территориального участка ИФНС ЮЛ", MetaStringType.Null())
 				.Attribute("UpdateDate", "Дата  внесения записи", MetaDateTimeType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
-				.Reference<IC_FIAS_AddressObject>("Ao", "Родительский объект (улици, город и т.п.)")
-				.Reference<IC_FIAS_NormativeDocument>("NormDoc", "Нормативный документ")
+				.Reference<C_FIAS_AddressObject>("Ao", "Родительский объект (улици, город и т.п.)")
+				.Reference<C_FIAS_NormativeDocument>("NormDoc", "Нормативный документ")
 			;	
-			p.AddClass<IC_FIAS_AddressObjectType>()
+			p.AddClass<C_FIAS_AddressObjectType>()
 				.IntKey()
 				.Attribute("KOD_T_ST", "Ключевое поле", MetaIntType.NotNull())
 				.Attribute("Level", "Уровень адресного объекта", MetaIntType.NotNull())
@@ -1176,20 +1532,20 @@ namespace Solution.Model
 			return p;
 		}
 	}
-	public partial interface IOrgUnit { }
-	public partial interface IC_OrgUnitHie { }
-	public partial interface IOrgUnitAsso { }
-	public partial interface IC_OrgUnitType { }
-	public partial interface IOrgUnitHieRule { }
-	public partial interface IEmployee { }
-	public partial interface IOrgUnitResponsible { }
+	public partial class OrgUnit { }
+	public partial class C_OrgUnitHie { }
+	public partial class OrgUnitAsso { }
+	public partial class C_OrgUnitType { }
+	public partial class OrgUnitHieRule { }
+	public partial class Employee { }
+	public partial class OrgUnitResponsible { }
 
 	public class OrgStructureModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("OrgStructure");
-			p.AddClass<IOrgUnit>()
+			p.AddClass<OrgUnit>()
 				.GuidKey()
 				.Attribute("BeginDate", "Дата начала действия", MetaDateTimeType.NotNull())
 				.Attribute("ChiefName", "Ф.И.О. руководителя", MetaStringType.Null())
@@ -1202,7 +1558,6 @@ namespace Solution.Model
 				.Attribute("EMail", "Адрес электронной почты", MetaStringType.Null())
 				.Attribute("EndDate", "Дата окончания действия", MetaDateTimeType.Null())
 				.Attribute("ExternalID", "Ид во внешней системе", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("OrgUnitGUID", "ИД", MetaGuidType.NotNull())
 				.Attribute("PostAddress", "Почтовый адрес", MetaStringType.Null())
@@ -1213,50 +1568,73 @@ namespace Solution.Model
 				.Attribute("TitleGenetive", "Наименование (родительный падеж)", MetaStringType.Null())
 				.Attribute("VersionNumber", "Номер версии", MetaIntType.NotNull())
 				.Attribute("VipNetCode", "VipNet код", MetaStringType.Null())
-				.Reference<IOrgUnitAsso>("FromChildAsso", "Ассоциация дочернего элемента", x => x.Multiple().InverseProperty("ChildOrgUnit"))
-				.Reference<IOrgUnitAsso>("FromParentAsso", "Ассоциация родительского элемента", x => x.Multiple().InverseProperty("ParentOrgUnit"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IOrgUnit>("Main", "Основная версия")
-				.Reference<IC_PensionerCategory>("PensionerCategory", "Категория пенсионера")
-				.Reference<IC_PostPart>("PostParts", "Перечень должностей", x => x.Multiple())
-				.Reference<IC_RFSubject>("RFSubject", "Субъект РФ")
-				.Reference<IC_RFSubject>("RFSubjects", "Субъекты РФ", x => x.Multiple())
-				.Reference<IC_OrgUnitType>("Type", "Тип")
+				.Reference<OrgUnitAsso>("FromChildAsso", "Ассоциация дочернего элемента", x => x.Multiple().InverseProperty("ChildOrgUnit"))
+				.Reference<OrgUnitAsso>("FromParentAsso", "Ассоциация родительского элемента", x => x.Multiple().InverseProperty("ParentOrgUnit"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<OrgUnit>("Main", "Основная версия")
+				.Reference<C_PensionerCategory>("PensionerCategory", "Категория пенсионера")
+				.Reference<C_PostPart>("PostParts", "Перечень должностей", x => x.Multiple())
+				.Reference<C_RFSubject>("RFSubject", "Субъект РФ")
+				.Reference<C_RFSubject>("RFSubjects", "Субъекты РФ", x => x.Multiple())
+				.Reference<C_OrgUnitType>("Type", "Тип")
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "typeid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationEdit()				
+				.OperationList()
+				.OperationDelete()
+				.LogicalDelete()
+				.Operation("ObjectChangeHistory", "История изменений") 
+				.OperationView()
 			;	
-			p.AddClass<IC_OrgUnitHie>()
+			p.AddClass<C_OrgUnitHie>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("OrgUnitHieID", "ИД", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.OperationDelete()
+				.LogicalDelete()
 			;	
-			p.AddClass<IOrgUnitAsso>()
+			p.AddClass<OrgUnitAsso>()
 				.GuidKey()
 				.Attribute("OrgUnitAssoGUID", "Ид", MetaGuidType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
-				.Reference<IOrgUnit>("ChildOrgUnit", "Дочерний элемент", x => x.InverseProperty("FromChildAsso"))
-				.Reference<IC_OrgUnitHie>("OrgUnitHie", "Иерархия")
-				.Reference<IOrgUnit>("ParentOrgUnit", "Родительский элемент", x => x.InverseProperty("FromParentAsso"))
+				.Reference<OrgUnit>("ChildOrgUnit", "Дочерний элемент", x => x.InverseProperty("FromChildAsso"))
+				.Reference<C_OrgUnitHie>("OrgUnitHie", "Иерархия")
+				.Reference<OrgUnit>("ParentOrgUnit", "Родительский элемент", x => x.InverseProperty("FromParentAsso"))
 			;	
-			p.AddClass<IC_OrgUnitType>()
+			p.AddClass<C_OrgUnitType>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("OrgUnitTypeID", "ИД", MetaIntType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.OperationDelete()
+				.LogicalDelete()
 			;	
-			p.AddClass<IOrgUnitHieRule>()
+			p.AddClass<OrgUnitHieRule>()
 				.GuidKey()
 				.Attribute("OrgUnitHieRuleGUID", "Ид", MetaGuidType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
-				.Reference<IC_OrgUnitType>("ChildOrgUnitType", "Дочерний элемент")
-				.Reference<IC_OrgUnitHie>("OrgUnitHie", "Иерархия")
-				.Reference<IC_OrgUnitType>("ParentOrgUnitType", "Родительский элемент")
+				.Reference<C_OrgUnitType>("ChildOrgUnitType", "Дочерний элемент")
+				.Reference<C_OrgUnitHie>("OrgUnitHie", "Иерархия")
+				.Reference<C_OrgUnitType>("ParentOrgUnitType", "Родительский элемент")
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.OperationDelete()
+				.LogicalDelete()
 			;	
-			p.AddClass<IEmployee>()
+			p.AddClass<Employee>()
 				.GuidKey()
 				.Attribute("BeginDate", "Дата начала действия", MetaDateTimeType.NotNull())
 				.Attribute("BirthDate", "Дата рождения", MetaDateType.Null())
@@ -1267,7 +1645,6 @@ namespace Solution.Model
 				.Attribute("Firstname", "Имя", MetaStringType.NotNull())
 				.Attribute("HaveAccessToPC", "Наличие доступа к компьютеру", MetaBooleanType.Null())
 				.Attribute("IsChief", "Руководитель подразделения", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("Job", "Должность", MetaStringType.Null())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("Mobile", "Мобильный телефон", MetaStringType.Null())
@@ -1277,18 +1654,23 @@ namespace Solution.Model
 				.Attribute("Surname", "Фамилия", MetaStringType.NotNull())
 				.Attribute("VersionNumber", "Номер версии", MetaIntType.NotNull())
 				.PersistentComputedAttribute("Title", "ФИО", MetaStringType.Null())
-				.Reference<IEmployee>("Chief", "Вышестоящий сотрудник")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IEmployee>("Main", "Основная версия")
-				.Reference<IOrgUnit>("OrgUnit", "Организационная единица")
-				.Reference<ISPM_Subject>("Subject", "Пользователь")
+				.Reference<Employee>("Chief", "Вышестоящий сотрудник")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<Employee>("Main", "Основная версия")
+				.Reference<OrgUnit>("OrgUnit", "Организационная единица")
+				.Reference<SPM_Subject>("Subject", "Пользователь")
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.OperationDelete()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IOrgUnitResponsible>()
+			p.AddClass<OrgUnitResponsible>()
 				.IntKey()
 				.Attribute("BeginDate", "Дата начала замены", MetaDateType.Null())
 				.Attribute("EMail", "Адрес электронной почты", MetaStringType.Null())
 				.Attribute("EndDate", "Дата окончания замены", MetaDateType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("IsReserved", "Дублирующий", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("OrgUnitResponsibleID", "Ид", MetaIntType.NotNull())
@@ -1296,40 +1678,46 @@ namespace Solution.Model
 				.Attribute("Post", "Должность", MetaStringType.Null())
 				.Attribute("StructUnit", "Структурное подразделение", MetaStringType.Null())
 				.Attribute("Title", "Ф.И.О", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IOrgUnit>("OrgUnit", "Отделение ПФР")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<OrgUnit>("OrgUnit", "Отделение ПФР")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
 			return p;
 		}
 	}
-	public partial interface IDoc { }
-	public partial interface IDocAsso { }
-	public partial interface IAppendix { }
-	public partial interface ICitizen { }
-	public partial interface IDocTask { }
-	public partial interface IPensionFile { }
-	public partial interface IJuridicalCase { }
-	public partial interface ICitizenRequest { }
-	public partial interface IDocTaskOperation { }
-	public partial interface IWorkInfo { }
-	public partial interface IDocTaskRequest { }
-	public partial interface ICitizenPension { }
-	public partial interface IMassCalc { }
-	public partial interface IControlTask { }
-	public partial interface IInfoDoc { }
-	public partial interface IComplaint { }
-	public partial interface ICourtSession { }
-	public partial interface IDocTaskComplaint { }
-	public partial interface IOutDocSend { }
-	public partial interface IOfficeNote { }
-	public partial interface IMassOperationQueue { }
+	public partial class Doc { }
+	public partial class DocAsso { }
+	public partial class Appendix { }
+	public partial class Citizen { }
+	public partial class DocTask { }
+	public partial class PensionFile { }
+	public partial class JuridicalCase { }
+	public partial class CitizenRequest { }
+	public partial class DocTaskOperation { }
+	public partial class WorkInfo { }
+	public partial class DocTaskRequest { }
+	public partial class CitizenPension { }
+	public partial class MassCalc { }
+	public partial class ControlTask { }
+	public partial class InfoDoc { }
+	public partial class Complaint { }
+	public partial class CourtSession { }
+	public partial class DocTaskComplaint { }
+	public partial class OutDocSend { }
+	public partial class OfficeNote { }
+	public partial class MassOperationQueue { }
 
 	public class CivilServantsModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("CivilServants");
-			p.AddClass<IDoc>()
+			p.AddClass<Doc>()
 				.IntKey()
 				.Attribute("CitizenAddress", "Адрес", MetaStringType.Null())
 				.Attribute("CitizenBirthdate", "Дата рождения", MetaDateType.Null())
@@ -1350,7 +1738,6 @@ namespace Solution.Model
 				.Attribute("Guid", "Гуид", MetaGuidType.Null())
 				.Attribute("IsApproved", "Проверен", MetaBooleanType.NotNull())
 				.Attribute("IsCheckDeadline", "Признак контроля исполнения документа", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("IsMigrationData", "IsMigrationData", MetaBooleanType.NotNull())
 				.Attribute("JPSignPerson", "Подписант документа (Ф.И.О.)", MetaStringType.Null())
 				.Attribute("JPSignPersonPost", "Должность подписанта", MetaStringType.Null())
@@ -1371,46 +1758,115 @@ namespace Solution.Model
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
 				.ComputedAttribute("TitleWithSender", "Наименование с отправителем", MetaStringType.Null())
 				.PersistentComputedAttribute("CitizenTitle", "Ф.И.О. гражданина", MetaStringType.Null())
-				.Reference<IWF_Activity>("Activity", "Activity")
-				.Reference<IAppendix>("Appendix", "Приложения", x => x.Multiple().InverseProperty("Doc"))
-				.Reference<IC_RFSubject>("CitizenRFSubject", "Субъект РФ")
-				.Reference<IEmployee>("Creator", "Автор")
-				.Reference<IC_DocClass>("DocClass", "Тип документа")
-				.Reference<IDocTask>("DocTask", "Является результатом задания", x => x.InverseProperty("ResultDocs"))
-				.Reference<IDocTaskOperation>("DocTaskOperation", "Является результатом операции")
-				.Reference<IDocTask>("DocTasks", "Задания", x => x.Multiple().InverseProperty("Doc"))
-				.Reference<IC_DocType>("DocType", "Вид документа")
-				.Reference<IOrgUnit>("Federal", "Федеральный орган")
-				.Reference<IEmployee>("InnerSignPerson", "Подписант документа")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IMassCalc>("MassCalc", "Является результатом массового перерасчета")
-				.Reference<IC_PaymentType>("PaymentType", "Вид ГПО")
-				.Reference<IPensionFile>("PensionFile", "Пенсионное дело")
-				.Reference<IC_ProvisionMode>("ProvisionMode", "Способ передачи документа")
-				.Reference<IEmployee>("RegEmployee", "Регистратор документа")
-				.Reference<IOrgUnit>("Sender", "Отправитель")
-				.Reference<IC_SenderCategory>("SenderCategory", "Категория отправителя")
+				.Reference<WF_Activity>("Activity", "Activity")
+				.Reference<Appendix>("Appendix", "Приложения", x => x.Multiple().InverseProperty("Doc"))
+				.Reference<C_RFSubject>("CitizenRFSubject", "Субъект РФ")
+				.Reference<Employee>("Creator", "Автор")
+				.Reference<C_DocClass>("DocClass", "Тип документа")
+				.Reference<DocTask>("DocTask", "Является результатом задания", x => x.InverseProperty("ResultDocs"))
+				.Reference<DocTaskOperation>("DocTaskOperation", "Является результатом операции")
+				.Reference<DocTask>("DocTasks", "Задания", x => x.Multiple().InverseProperty("Doc"))
+				.Reference<C_DocType>("DocType", "Вид документа")
+				.Reference<OrgUnit>("Federal", "Федеральный орган")
+				.Reference<Employee>("InnerSignPerson", "Подписант документа")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MassCalc>("MassCalc", "Является результатом массового перерасчета")
+				.Reference<C_PaymentType>("PaymentType", "Вид ГПО")
+				.Reference<PensionFile>("PensionFile", "Пенсионное дело")
+				.Reference<C_ProvisionMode>("ProvisionMode", "Способ передачи документа")
+				.Reference<Employee>("RegEmployee", "Регистратор документа")
+				.Reference<OrgUnit>("Sender", "Отправитель")
+				.Reference<C_SenderCategory>("SenderCategory", "Категория отправителя")
+				.OperationDelete()
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "classid")
+					.Parm(MetaStringType.NotNull(), "types")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationEdit()				
+				.Operation("ViewList", "Список", x => x 
+					.Parm(MetaIntType.NotNull(), "classid")
+					.Parm(MetaStringType.NotNull(), "types")
+				)
+				.LogicalDelete()
+				.OperationView()
+				.Operation("UploadFiles", "Загрузка образов документов", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("Register", "Регистрация", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("Print", "Печать", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("PrintWord", "Печать в Word", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("ViewList_In", "Входящие документы") 
+				.Operation("ViewList_4", "Решения") 
+				.Operation("ViewList_5", "Поручения") 
+				.Operation("ViewList_Out", "Исходящие документы") 
+				.Operation("ViewList_9", "Обращения граждан") 
+				.Operation("ViewList_10", "Ответы на обращения") 
+				.Operation("PrintPdf", "Печать в PDF", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("PrintExcel", "Печать Excel", x => x 
+					.Parm(MetaIntType.NotNull(), "filterid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("SigningOut", "Передача на подписание", x => x 
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("RegisterOut", "Регистрация", x => x 
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("SendingOut", "Формирование пакетов документов для отправки", x => x 
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("CreateOutForTask", "Создать исходящий для задания", x => x 
+					.Parm(MetaIntType.NotNull(), "taskid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("ViewEl", "Просмотр для пакета (эл.)", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IDocAsso>()
+			p.AddClass<DocAsso>()
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
-				.Reference<IDoc>("ChildDoc", "Дочерний документ")
-				.Reference<IDoc>("ParentDoc", "Родительский документ")
+				.Reference<Doc>("ChildDoc", "Дочерний документ")
+				.Reference<Doc>("ParentDoc", "Родительский документ")
 			;	
-			p.AddClass<IAppendix>()
+			p.AddClass<Appendix>()
 				.IntKey()
 				.Attribute("AppendixID", "Ид", MetaIntType.NotNull())
 				.Attribute("Author", "Орган, выдавший приложение", MetaStringType.Null())
 				.Attribute("CreateDate", "Дата выдачи приложения", MetaDateType.Null())
 				.Attribute("File", "Электронный образ документа", MetaFileType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
-				.Reference<IC_DocName>("AppendixName", "Название приложения ")
-				.Reference<IDoc>("Doc", "Документ", x => x.InverseProperty("Appendix"))
-				.Reference<IDocTaskOperation>("DocTaskOperation", "Результат операции массового перерасчета")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_DocName>("AppendixName", "Название приложения ")
+				.Reference<Doc>("Doc", "Документ", x => x.InverseProperty("Appendix"))
+				.Reference<DocTaskOperation>("DocTaskOperation", "Результат операции массового перерасчета")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
+				.Operation("Scan", "Сканировать") 
 			;	
-			p.AddClass<ICitizen>()
+			p.AddClass<Citizen>()
 				.IntKey()
 				.Attribute("Address", "Адрес", MetaStringType.Null())
 				.Attribute("Birthdate", "Дата рождения", MetaDateType.Null())
@@ -1423,7 +1879,6 @@ namespace Solution.Model
 				.Attribute("FirstnameGenitive", "Имя (родительный падеж)", MetaStringType.Null())
 				.Attribute("Index", "Индекс", MetaStringType.Null())
 				.Attribute("InWork", "В работе", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("IsMigrationData", "IsMigrationData", MetaBooleanType.NotNull())
 				.Attribute("IsTrackingData", "Признак учета контрольных данных", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
@@ -1442,14 +1897,24 @@ namespace Solution.Model
 				.PersistentComputedAttribute("FullTitle", "Ф.И.О. полное", MetaStringType.Null())
 				.PersistentComputedAttribute("FullTitleWithBirth", "Ф.И.О. полное с др", MetaStringType.Null())
 				.PersistentComputedAttribute("Title", "Ф.И.О.", MetaStringType.Null())
-				.Reference<IC_CitizenCategory>("Category", "Категория")
-				.Reference<ICitizenPension>("CitizenPension", "Трудовая пенсия", x => x.Multiple().InverseProperty("Citizen"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IOrgUnit>("OrgUnit", "Отделение ПФР")
-				.Reference<IC_RFSubject>("RFSubject", "Субъект РФ")
-				.Reference<IC_SpecialNote>("SpecialNote", "Особые отметки", x => x.Multiple())
+				.Reference<C_CitizenCategory>("Category", "Категория")
+				.Reference<CitizenPension>("CitizenPension", "Трудовая пенсия", x => x.Multiple().InverseProperty("Citizen"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<OrgUnit>("OrgUnit", "Отделение ПФР")
+				.Reference<C_RFSubject>("RFSubject", "Субъект РФ")
+				.Reference<C_SpecialNote>("SpecialNote", "Особые отметки", x => x.Multiple())
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
+				.Operation("ViewList_Pens", "Получатели ГПО") 
+				.Operation("ViewList_Req", "Обратившиеся граждане") 
+				.Operation("ObjectChangeHistory", "История изменений") 
+				.Operation("ViewList_Compl", "С жалобами") 
 			;	
-			p.AddClass<IDocTask>()
+			p.AddClass<DocTask>()
 				.IntKey()
 				.Attribute("AnnulmentDate", "Дата аннулирования", MetaDateType.Null())
 				.Attribute("AssignmentDate", "Дата назначения исполнителя", MetaDateTimeType.Null())
@@ -1472,7 +1937,6 @@ namespace Solution.Model
 				.Attribute("Copy_Citizen_VIP", "VIP", MetaBooleanType.NotNull())
 				.Attribute("CreateDate", "Дата выдачи задания", MetaDateTimeType.Null())
 				.Attribute("DocTaskID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("IsMigrationData", "IsMigrationData", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("OnCheckDate", "Дата начала проверки", MetaDateTimeType.Null())
@@ -1483,67 +1947,157 @@ namespace Solution.Model
 				.Attribute("SuspendDate", "Дата откладывания", MetaDateType.Null())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
 				.PersistentComputedAttribute("Status", "Статус", MetaStringType.Null())
-				.Reference<IWF_Activity>("Activity", "Activity")
-				.Reference<IEmployee>("Author", "Автор")
-				.Reference<IEmployee>("ChiefPerformer", "Ответственный исполнитель")
-				.Reference<ICitizen>("Citizen", "Гражданин")
-				.Reference<IDoc>("Doc", "Документ - основание", x => x.InverseProperty("DocTasks"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IEmployee>("Performer", "Исполнитель")
-				.Reference<IDoc>("ResultDocs", "Документы - результаты", x => x.Multiple().InverseProperty("DocTask"))
-				.Reference<IC_DocTaskType>("Type", "Тип")
+				.Reference<WF_Activity>("Activity", "Activity")
+				.Reference<Employee>("Author", "Автор")
+				.Reference<Employee>("ChiefPerformer", "Ответственный исполнитель")
+				.Reference<Citizen>("Citizen", "Гражданин")
+				.Reference<Doc>("Doc", "Документ - основание", x => x.InverseProperty("DocTasks"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<Employee>("Performer", "Исполнитель")
+				.Reference<Doc>("ResultDocs", "Документы - результаты", x => x.Multiple().InverseProperty("DocTask"))
+				.Reference<C_DocTaskType>("Type", "Тип")
+				.OperationDelete()
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
+				.Operation("MyViewList", "Мои задания") 
+				.Operation("Complete", "Выполнить", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("OnCheck", "Взять на проверку", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("Checked", "Проверить", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("UnApprove", "На доработку", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("ViewListRequests", "Обращения") 
+				.Operation("ViewListOnCheck", "Задания на проверку") 
+				.Operation("ViewListExceeded", "Просроченные задания") 
+				.Operation("CreateDocs", "Создать документы", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("Annulment", "Аннулировать", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("Suspend", "Отложить", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("DocNeeded", "Запрос документов", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("Decline", "Отсутствие оснований", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("ViewListAnnulment", "Аннулированные задания") 
+				.Operation("ViewListSuspended", "Отложенные задания") 
+				.Operation("StatusHistory", "История изменения статуса", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("ViewListSigning", "Задания на подписании") 
+				.Operation("ViewListClosed", "Завершенные задания") 
+				.Operation("DownloadDocs", "Скачать документы ", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("Close", "Завершить", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IPensionFile>()
+			p.AddClass<PensionFile>()
 				.IntKey()
 				.Attribute("ArchiveDate", "Дата передачи в архив", MetaDateType.Null())
 				.Attribute("CloseDate", "Дата закрытия", MetaDateType.Null())
 				.Attribute("CreateDate", "Дата создания", MetaDateType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("PensionFileID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Номер", MetaStringType.NotNull())
-				.Reference<IEmployee>("ArchiveEmployee", "Сотрудник, передавший дело в архив")
-				.Reference<ICitizen>("Citizen", "Гражданин")
-				.Reference<IEmployee>("CloseEmployee", "Сотрудник, закрывший дело")
-				.Reference<IEmployee>("CreateEmployee", "Сотрудник, создавший дело")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<Employee>("ArchiveEmployee", "Сотрудник, передавший дело в архив")
+				.Reference<Citizen>("Citizen", "Гражданин")
+				.Reference<Employee>("CloseEmployee", "Сотрудник, закрывший дело")
+				.Reference<Employee>("CreateEmployee", "Сотрудник, создавший дело")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
+				.Operation("ViewListArch", "Список - архив") 
+				.Operation("UnArchieve", "Восстановить из архива", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IJuridicalCase>()
+			p.AddClass<JuridicalCase>()
 				.IntKey()
 				.Attribute("ArchiveDate", "Дата передачи в архив", MetaDateType.Null())
 				.Attribute("CloseDate", "Дата закрытия", MetaDateType.Null())
 				.Attribute("CreateDate", "Дата создания", MetaDateType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("JuridicalCaseID", "Ид", MetaIntType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Title", "Номер", MetaStringType.NotNull())
-				.Reference<IEmployee>("ArchiveEmployee", "Сотрудник, передавший дело в архив")
-				.Reference<ICitizen>("Citizen", "Гражданин")
-				.Reference<IEmployee>("CloseEmployee", "Сотрудник, закрывший дело")
-				.Reference<IEmployee>("CreateEmployee", "Сотрудник, создавший дело")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IOrgUnit>("OrgUnit", "Судебный орган")
+				.Reference<Employee>("ArchiveEmployee", "Сотрудник, передавший дело в архив")
+				.Reference<Citizen>("Citizen", "Гражданин")
+				.Reference<Employee>("CloseEmployee", "Сотрудник, закрывший дело")
+				.Reference<Employee>("CreateEmployee", "Сотрудник, создавший дело")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<OrgUnit>("OrgUnit", "Судебный орган")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
+				.Operation("ViewListArch", "Список - архив") 
+				.Operation("UnArchieve", "Восстановить из архива", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<ICitizenRequest>()
+			p.AddClass<CitizenRequest>()
 				.IntKey()
 				.Attribute("CitizenRequestID", "Ид", MetaIntType.NotNull())
 				.Attribute("Description", "Краткое описание проблемы", MetaStringType.NotNull())
 				.Attribute("Firstname", "Имя", MetaStringType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Patronymic", "Отчество", MetaStringType.Null())
 				.Attribute("RequestDate", "Дата обращения", MetaDateTimeType.NotNull())
 				.Attribute("Surname", "Фамилия", MetaStringType.NotNull())
 				.Attribute("Title", "Регистрационный номер", MetaStringType.NotNull())
-				.Reference<ICitizen>("Citizen", "Гражданин")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IEmployee>("RecorderEmployee", "Сотрудник зарегистрировавший обращение")
-				.Reference<IC_RequestCategory>("RequestCategory", "Категория обращения")
-				.Reference<IC_RequestMethod>("RequestMethod", "Способ обращения")
-				.Reference<IC_RequestResultCategory>("RequestResult", "Результат обращения")
-				.Reference<IC_RFSubject>("RFSubject", "Субъект РФ")
+				.Reference<Citizen>("Citizen", "Гражданин")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<Employee>("RecorderEmployee", "Сотрудник зарегистрировавший обращение")
+				.Reference<C_RequestCategory>("RequestCategory", "Категория обращения")
+				.Reference<C_RequestMethod>("RequestMethod", "Способ обращения")
+				.Reference<C_RequestResultCategory>("RequestResult", "Результат обращения")
+				.Reference<C_RFSubject>("RFSubject", "Субъект РФ")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IDocTaskOperation>()
+			p.AddClass<DocTaskOperation>()
 				.IntKey()
 				.Attribute("ActAblative", "НПА для перерасчета", MetaStringType.Null())
 				.Attribute("Bonus", "Премия", MetaDecimalType.Null())
@@ -1570,7 +2124,6 @@ namespace Solution.Model
 				.Attribute("FGASalary", "Должностной оклад (фед)", MetaDecimalType.Null())
 				.Attribute("FGASeniority", "Стаж (фед)", MetaIntType.Null())
 				.Attribute("IsApprove", "Решение", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("IsLast", "Признак Последняя", MetaBooleanType.NotNull())
 				.Attribute("IsMigrationData", "IsMigrationData", MetaBooleanType.NotNull())
 				.Attribute("IsTracking", "Признак Контрольная", MetaBooleanType.NotNull())
@@ -1595,31 +2148,72 @@ namespace Solution.Model
 				.Attribute("SumIndexing", "Суммарный коэффициент индексации", MetaDecimalType.NotNull())
 				.Attribute("SumIndexingPrev", "Суммарный коэффициент индексации до даты оклада", MetaDecimalType.NotNull())
 				.PersistentComputedAttribute("Title", "Номер", MetaStringType.Null())
-				.Reference<IWF_Activity>("Activity", "Статус")
-				.Reference<IC_RFSubject>("Copy_Citizen_RFSubject", "Субъект РФ")
-				.Reference<IDocTask>("DocTask", "Задание")
-				.Reference<IC_PostSalaryIndexing>("Indexing", "Индексация", x => x.Multiple())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IMassCalc>("MassCalc", "Результат массового перерасчета")
-				.Reference<IC_OperationReason>("OperationReason", "Причина")
-				.Reference<IC_PaymentStatus>("PaymentStatus", "Состояние выплаты")
-				.Reference<IC_PaymentType>("PaymentType", "Вид ГПО")
-				.Reference<IC_PensionerCategory>("PensionerCategory", "Категория пенсионера")
-				.Reference<IC_PensionType>("PensionType", "Вид трудовой пенсии")
-				.Reference<IC_RaiseRatio>("RaiseRatio", "Коэффициент увеличения")
-				.Reference<IC_RaiseRatio>("RaiseRatios", "Коэффициенты увеличения СМЗ", x => x.Multiple())
-				.Reference<IC_RegionalRatio>("RegionalRatio", "Районный коэффициент")
-				.Reference<IC_RestrictionRatio>("RestrictionRatio", "Коэффициент ограничения")
-				.Reference<IC_OperationType>("Type", "Вид операции")
-				.Reference<IWorkInfo>("WorkInfo", "Сведения о государственной службе", x => x.Multiple().InverseProperty("DocTaskOperation"))
+				.Reference<WF_Activity>("Activity", "Статус")
+				.Reference<C_RFSubject>("Copy_Citizen_RFSubject", "Субъект РФ")
+				.Reference<DocTask>("DocTask", "Задание")
+				.Reference<C_PostSalaryIndexing>("Indexing", "Индексация", x => x.Multiple())
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MassCalc>("MassCalc", "Результат массового перерасчета")
+				.Reference<C_OperationReason>("OperationReason", "Причина")
+				.Reference<C_PaymentStatus>("PaymentStatus", "Состояние выплаты")
+				.Reference<C_PaymentType>("PaymentType", "Вид ГПО")
+				.Reference<C_PensionerCategory>("PensionerCategory", "Категория пенсионера")
+				.Reference<C_PensionType>("PensionType", "Вид трудовой пенсии")
+				.Reference<C_RaiseRatio>("RaiseRatio", "Коэффициент увеличения")
+				.Reference<C_RaiseRatio>("RaiseRatios", "Коэффициенты увеличения СМЗ", x => x.Multiple())
+				.Reference<C_RegionalRatio>("RegionalRatio", "Районный коэффициент")
+				.Reference<C_RestrictionRatio>("RestrictionRatio", "Коэффициент ограничения")
+				.Reference<C_OperationType>("Type", "Вид операции")
+				.Reference<WorkInfo>("WorkInfo", "Сведения о государственной службе", x => x.Multiple().InverseProperty("DocTaskOperation"))
+				.Operation("EditCategory", "Редактировать категорию", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("EditPrecalc", "Редактировать предрасчетные значения", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("EditResult", "Редактировать результат", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("EditPrecalc2", "Редактировать предрасчетные значения 2", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("ViewListClosed", "Индивидуальные операции") 
+				.Operation("ViewPrecalc2", "Просмотр предрасчетных значений 2", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationDelete()
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("EditCitizen", "Редактировать данные гражданина", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("OtherPeriods", "Иные периоды", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("Correction", "Корректировка", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("Duplication", "Дублирование операций", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IWorkInfo>()
+			p.AddClass<WorkInfo>()
 				.IntKey()
 				.Attribute("BeginDate", "Дата начала службы", MetaDateType.Null())
 				.Attribute("CalcPostTitle", "Должность (текст)", MetaStringType.Null())
 				.Attribute("CalcSalary", "СМЗ (расчет)", MetaDecimalType.Null())
 				.Attribute("ExtraPayPostTitle", "Прочая должность (текст)", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("IsLast", "Признак Последний", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("LeavingDate", "Дата увольнения", MetaDateType.Null())
@@ -1627,39 +2221,58 @@ namespace Solution.Model
 				.Attribute("Seniority", "Стаж", MetaIntType.Null())
 				.Attribute("WorkInfoID", "Ид", MetaIntType.NotNull())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
-				.Reference<IC_Post>("CalcPost", "Должность (расчет)")
-				.Reference<IDocTaskOperation>("DocTaskOperation", "Операция", x => x.InverseProperty("WorkInfo"))
-				.Reference<IC_Post>("ExtraPayPost", "Прочая должность")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IOrgUnit>("OrgUnit", "Гос. орган")
+				.Reference<C_Post>("CalcPost", "Должность (расчет)")
+				.Reference<DocTaskOperation>("DocTaskOperation", "Операция", x => x.InverseProperty("WorkInfo"))
+				.Reference<C_Post>("ExtraPayPost", "Прочая должность")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<OrgUnit>("OrgUnit", "Гос. орган")
+				.OperationDelete()
+				.OperationEdit()				
+				.LogicalDelete()
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IDocTaskRequest>()
+			p.AddClass<DocTaskRequest>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Title", "Ответ на обращение", MetaStringType.Null())
-				.Reference<IC_CitizenCategory>("CitizenCategory", "Категория гражданина")
-				.Reference<IDocTask>("DocTask", "Ид")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IC_RequestCategory>("RequestCategory", "Категория обращения")
-				.Reference<IC_RequestResultCategory>("RequestResultCategory", "Категория результата")
+				.Reference<C_CitizenCategory>("CitizenCategory", "Категория гражданина")
+				.Reference<DocTask>("DocTask", "Ид")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_RequestCategory>("RequestCategory", "Категория обращения")
+				.Reference<C_RequestResultCategory>("RequestResultCategory", "Категория результата")
+				.OperationDelete()
+				.OperationEdit()				
+				.LogicalDelete()
+				.Operation("EditAnswer", "Редактировать ответ", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<ICitizenPension>()
+			p.AddClass<CitizenPension>()
 				.IntKey()
 				.Attribute("BeginDate", "Дата начала", MetaDateType.Null())
 				.Attribute("CitizenPensionID", "Ид", MetaIntType.NotNull())
 				.Attribute("CreateDate", "Дата записи", MetaDateType.Null())
 				.Attribute("EndDate", "Дата окончания", MetaDateType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("PensionValue", "Сумма трудовой пенсии", MetaDecimalType.Null())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
-				.Reference<ICitizen>("Citizen", "Гражданин", x => x.InverseProperty("CitizenPension"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IC_PaymentStatus>("PaymentStatus", "Состояние выплаты")
-				.Reference<IC_PensionType>("PensionType", "Вид трудовой пенсии")
+				.Reference<Citizen>("Citizen", "Гражданин", x => x.InverseProperty("CitizenPension"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_PaymentStatus>("PaymentStatus", "Состояние выплаты")
+				.Reference<C_PensionType>("PensionType", "Вид трудовой пенсии")
+				.OperationDelete()
+				.OperationEdit()				
+				.LogicalDelete()
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IMassCalc>()
+			p.AddClass<MassCalc>()
 				.IntKey()
 				.Attribute("Act", "Нормативно-правовой акт", MetaStringType.Null())
 				.Attribute("CloseDate", "Дата закрытия", MetaDateTimeType.Null())
@@ -1668,7 +2281,6 @@ namespace Solution.Model
 				.Attribute("CreateDate", "Дата создания", MetaDateTimeType.NotNull())
 				.Attribute("DecisionDate", "Дата решения об изменении ГПО", MetaDateTimeType.Null())
 				.Attribute("IsCalculated", "Рассчет выполнен", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("MassCalcID", "Ид", MetaIntType.NotNull())
 				.Attribute("OnCheckDate", "Дата начала проверки", MetaDateTimeType.Null())
@@ -1686,33 +2298,88 @@ namespace Solution.Model
 				.Attribute("StatusDate", "Дата установления текущего статуса", MetaDateTimeType.Null())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
 				.PersistentComputedAttribute("Status", "Статус", MetaStringType.Null())
-				.Reference<ICitizen>("Citizens", "Граждане для перерасчета", x => x.Multiple())
-				.Reference<IEmployee>("Employee", "Исполнитель")
-				.Reference<IC_PostSalaryIndexing>("Indexing", "Коэффициент индексации")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IOrgUnit>("OrgUnits", "Органы государственного управления", x => x.Multiple())
-				.Reference<IC_PaymentStatus>("PaymentStatuses", "Состояния ГПО", x => x.Multiple())
-				.Reference<IC_PensionerCategory>("PensionerCategory", "Категория получателей ГПО")
-				.Reference<IC_PostPart>("PostParts", "Должности федеральных служащих", x => x.Multiple())
-				.Reference<IC_Post>("Posts", "Государственные должности", x => x.Multiple())
-				.Reference<IC_RaiseRatio>("RaiseRatio", "Коэффициент увеличения СМЗ")
-				.Reference<IC_RestrictionRatio>("RestrictionRatio", "Коэффициент ограничения СМЗ")
-				.Reference<IC_RFSubject>("RFSubjects", "Субъекты РФ", x => x.Multiple())
-				.Reference<IC_SpecialNote>("SpecialNote", "Особые отметки", x => x.Multiple())
+				.Reference<Citizen>("Citizens", "Граждане для перерасчета", x => x.Multiple())
+				.Reference<Employee>("Employee", "Исполнитель")
+				.Reference<C_PostSalaryIndexing>("Indexing", "Коэффициент индексации")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<OrgUnit>("OrgUnits", "Органы государственного управления", x => x.Multiple())
+				.Reference<C_PaymentStatus>("PaymentStatuses", "Состояния ГПО", x => x.Multiple())
+				.Reference<C_PensionerCategory>("PensionerCategory", "Категория получателей ГПО")
+				.Reference<C_PostPart>("PostParts", "Должности федеральных служащих", x => x.Multiple())
+				.Reference<C_Post>("Posts", "Государственные должности", x => x.Multiple())
+				.Reference<C_RaiseRatio>("RaiseRatio", "Коэффициент увеличения СМЗ")
+				.Reference<C_RestrictionRatio>("RestrictionRatio", "Коэффициент ограничения СМЗ")
+				.Reference<C_RFSubject>("RFSubjects", "Субъекты РФ", x => x.Multiple())
+				.Reference<C_SpecialNote>("SpecialNote", "Особые отметки", x => x.Multiple())
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
+				.Operation("AddItem", "Добавить элемент", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaIntType.NotNull(), "citizenid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("DeleteItem", "Удалить элемент", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaIntType.NotNull(), "citizenid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("Complete", "Исполнить", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("OnCheck", "Взять на проверку", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("Close", "Проверить", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("UnApprove", "На доработку", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("EditResult", "Редактировать результат", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("UnDecision", "Выгрузить решения", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("UnOrder", "Выгрузить поручения", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaIntType.NotNull(), "type")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("UnNotice", "Выгрузить уведомления", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaIntType.NotNull(), "type")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IControlTask>()
+			p.AddClass<ControlTask>()
 				.IntKey()
 				.Attribute("CalcAmount", "Рассчитанный размер", MetaDecimalType.Null())
 				.Attribute("ControlTaskID", "Ид", MetaIntType.NotNull())
 				.Attribute("CreateDate", "Дата создания", MetaDateTimeType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ICitizen>("Citizen", "Гражданин")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IMassCalc>("MassCalc", "Результат массового перерасчета")
+				.Reference<Citizen>("Citizen", "Гражданин")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<MassCalc>("MassCalc", "Результат массового перерасчета")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IInfoDoc>()
+			p.AddClass<InfoDoc>()
 				.IntKey()
 				.Attribute("AccessCondition", "Доступ к документу", MetaIntType.NotNull())
 				.Attribute("Author", "Источник", MetaStringType.Null())
@@ -1722,59 +2389,79 @@ namespace Solution.Model
 				.Attribute("EndDate", "Дата прекращения действия", MetaDateType.Null())
 				.Attribute("File", "Электронный образ документа", MetaFileType.Null())
 				.Attribute("InfoDocID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("PublishDate", "Дата размещения", MetaDateType.Null())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<IEmployee>("Access", "Перечень пользователей для доступа к документу", x => x.Multiple())
-				.Reference<IEmployee>("Employee", "Сотрудник, разместивший документ")
-				.Reference<IC_InfoDocType>("InfoDocType", "Тип документа")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<Employee>("Access", "Перечень пользователей для доступа к документу", x => x.Multiple())
+				.Reference<Employee>("Employee", "Сотрудник, разместивший документ")
+				.Reference<C_InfoDocType>("InfoDocType", "Тип документа")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.Operation("ViewList", "Список", x => x 
+					.Parm(MetaIntType.NotNull(), "typeid")
+				)
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IComplaint>()
+			p.AddClass<Complaint>()
 				.IntKey()
 				.Attribute("ComplaintDate", "Дата подачи", MetaDateType.Null())
 				.Attribute("ComplaintID", "Ид", MetaIntType.NotNull())
 				.Attribute("DecisionDate", "Дата судебного решения", MetaDateType.Null())
 				.Attribute("DecisionText", "Содержание судебного решения", MetaStringType.Null())
 				.Attribute("ExternalFileNo", "Номер дела в судебном органе", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Title", "Содержание жалобы", MetaStringType.NotNull())
 				.PersistentComputedAttribute("DisplayTitle", "Отображаемое наименование", MetaStringType.Null())
-				.Reference<IC_RequestCategory>("Category", "Категория жалобы")
-				.Reference<IC_JuridicalInstance>("Instance", "Инстанция")
-				.Reference<IJuridicalCase>("JuridicalCase", "Судебное дело")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<ICourtSession>("Sessions", "Судебные заседания", x => x.Multiple().InverseProperty("Complaint"))
+				.Reference<C_RequestCategory>("Category", "Категория жалобы")
+				.Reference<C_JuridicalInstance>("Instance", "Инстанция")
+				.Reference<JuridicalCase>("JuridicalCase", "Судебное дело")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<CourtSession>("Sessions", "Судебные заседания", x => x.Multiple().InverseProperty("Complaint"))
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
+				.Operation("EditResult", "Редактирование результата", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<ICourtSession>()
+			p.AddClass<CourtSession>()
 				.IntKey()
 				.Attribute("CourtSessionID", "Ид", MetaIntType.NotNull())
 				.Attribute("FIO", "Ф.И.О. контактного лица", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Phone", "Телефон", MetaStringType.Null())
 				.Attribute("Post", "Должность контактного лица", MetaStringType.Null())
 				.Attribute("SessionDate", "Дата", MetaDateType.Null())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<IComplaint>("Complaint", "Жалоба", x => x.InverseProperty("Sessions"))
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IC_CourtSessionStatus>("Status", "Статус")
+				.Reference<Complaint>("Complaint", "Жалоба", x => x.InverseProperty("Sessions"))
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_CourtSessionStatus>("Status", "Статус")
+				.OperationDelete()
+				.OperationEdit()				
+				.LogicalDelete()
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IDocTaskComplaint>()
+			p.AddClass<DocTaskComplaint>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
-				.Reference<IComplaint>("Complaint", "Жалоба")
-				.Reference<IDocTask>("DocTask", "Ид")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<Complaint>("Complaint", "Жалоба")
+				.Reference<DocTask>("DocTask", "Ид")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
 			;	
-			p.AddClass<IOutDocSend>()
+			p.AddClass<OutDocSend>()
 				.IntKey()
 				.Attribute("CreateDate", "Дата создания", MetaDateType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("NoCalc", "Номер перерасчета", MetaIntType.NotNull())
 				.Attribute("NoUnload", "Номер выгрузки", MetaIntType.Null())
@@ -1785,21 +2472,60 @@ namespace Solution.Model
 				.Attribute("SigningDate", "Дата выгрузки", MetaDateType.Null())
 				.Attribute("Title", "Номер пакета", MetaStringType.NotNull())
 				.PersistentComputedAttribute("UnloadTitle", "Наименование выгрузки", MetaStringType.Null())
-				.Reference<IWF_Activity>("Activity", "Статус")
-				.Reference<IDoc>("Doc", "Документы", x => x.Multiple())
-				.Reference<IC_DocType>("DocType", "Вид документов")
-				.Reference<IEmployee>("Employee", "Исполнитель")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IOrgUnit>("Recipient", "Отделение ПФР")
-				.Reference<IOrgUnitResponsible>("Responsible", "Ответственный в ОПФР")
-				.Reference<IC_RFSubject>("RFSubject", "Субъект РФ")
+				.Reference<WF_Activity>("Activity", "Статус")
+				.Reference<Doc>("Doc", "Документы", x => x.Multiple())
+				.Reference<C_DocType>("DocType", "Вид документов")
+				.Reference<Employee>("Employee", "Исполнитель")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<OrgUnit>("Recipient", "Отделение ПФР")
+				.Reference<OrgUnitResponsible>("Responsible", "Ответственный в ОПФР")
+				.Reference<C_RFSubject>("RFSubject", "Субъект РФ")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.Operation("ViewListEl", "Реестр отправок в электронном виде") 
+				.LogicalDelete()
+				.OperationView()
+				.Operation("PrintWord", "Печать списка", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("ViewListP", "Реестр отправок в бумажном виде") 
+				.Operation("DeleteDoc", "Удалить документ", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaIntType.NotNull(), "docid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("ViewEl", "Просмотр пакета (эл.)", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("EditEl", "Редактировать пакет (эл.)", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("ViewUn", "Просмотр выгрузки (эл.)", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("PrintWordEl", "Печать выгрузки", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("DeleteUn", "Удалить выгрузку", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("EditUn", "Редактировать выгрузку (эл.)", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IOfficeNote>()
+			p.AddClass<OfficeNote>()
 				.IntKey()
 				.Attribute("AddresseeFIO", "Ф.И.О. адресата", MetaStringType.Null())
 				.Attribute("AddresseePost", "Должность адресата", MetaStringType.Null())
 				.Attribute("CreateDate", "Дата создания", MetaDateType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("OfficeNoteID", "Ид", MetaIntType.NotNull())
 				.Attribute("OperationType", "Тип операции", MetaIntType.Null())
@@ -1807,11 +2533,30 @@ namespace Solution.Model
 				.Attribute("SignerFIO", "Ф.И.О. подписанта", MetaStringType.Null())
 				.Attribute("SignerPost", "Должность подписанта", MetaStringType.Null())
 				.Attribute("Title", "Номер", MetaStringType.NotNull())
-				.Reference<IDoc>("Docs", "Документы", x => x.Multiple())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IC_PaymentType>("PaymentType", "Вид ГПО")
+				.Reference<Doc>("Docs", "Документы", x => x.Multiple())
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_PaymentType>("PaymentType", "Вид ГПО")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
+				.Operation("Sign", "Подписать", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("DeleteDoc", "Удалить документ", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaIntType.NotNull(), "docid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("PrintWord", "Печать", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IMassOperationQueue>()
+			p.AddClass<MassOperationQueue>()
 				.IntKey()
 				.Attribute("AbortDate", "Дата прерывания операции", MetaDateTimeType.Null())
 				.Attribute("CancelDate", "Дата отмены операции", MetaDateTimeType.Null())
@@ -1819,7 +2564,6 @@ namespace Solution.Model
 				.Attribute("Creator", "Сотрудник", MetaGuidType.Null())
 				.Attribute("FinishDate", "Дата завершения операции", MetaDateTimeType.Null())
 				.Attribute("InitDate", "Дата инициации операции", MetaDateTimeType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("MassCalcID", "Ид массового перерасчета", MetaIntType.NotNull())
 				.Attribute("MassOperationQueueID", "Ид", MetaIntType.NotNull())
@@ -1827,56 +2571,62 @@ namespace Solution.Model
 				.Attribute("StartDate", "Дата начала операции", MetaDateTimeType.Null())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("TotalCount", "Кол-во карточек для операции", MetaIntType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IC_MassOperationType>("Operation", "Операция")
-				.Reference<IC_MassOperationState>("State", "Состояние операции")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_MassOperationType>("Operation", "Операция")
+				.Reference<C_MassOperationState>("State", "Состояние операции")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
 			return p;
 		}
 	}
-	public partial interface IC_RFSubject { }
-	public partial interface IC_CitizenCategory { }
-	public partial interface IC_Post { }
-	public partial interface IC_ExtraPayPost { }
-	public partial interface IC_RegionalRatio { }
-	public partial interface IC_OperationReason { }
-	public partial interface IC_DocName { }
-	public partial interface IC_RegLog { }
-	public partial interface IC_DocType { }
-	public partial interface IC_ProvisionMode { }
-	public partial interface IC_RequestCategory { }
-	public partial interface IC_RequestResultCategory { }
-	public partial interface IC_DocClass { }
-	public partial interface IC_PostSalary { }
-	public partial interface IC_PostType { }
-	public partial interface IC_OperationType { }
-	public partial interface IC_SenderCategory { }
-	public partial interface IC_PensionType { }
-	public partial interface IC_PostSalaryIndexing { }
-	public partial interface IC_PensionerCategory { }
-	public partial interface IC_PaymentStatus { }
-	public partial interface IC_PaymentType { }
-	public partial interface IC_RestrictionRatio { }
-	public partial interface IC_RaiseRatio { }
-	public partial interface IC_RequestMethod { }
-	public partial interface IC_Seniority { }
-	public partial interface IC_PostPart { }
-	public partial interface IC_MassCalcStatus { }
-	public partial interface IC_DocTaskType { }
-	public partial interface IC_Sign { }
-	public partial interface IC_InfoDocType { }
-	public partial interface IC_JuridicalInstance { }
-	public partial interface IC_CourtSessionStatus { }
-	public partial interface IC_MassOperationType { }
-	public partial interface IC_MassOperationState { }
-	public partial interface IC_SpecialNote { }
+	public partial class C_RFSubject { }
+	public partial class C_CitizenCategory { }
+	public partial class C_Post { }
+	public partial class C_ExtraPayPost { }
+	public partial class C_RegionalRatio { }
+	public partial class C_OperationReason { }
+	public partial class C_DocName { }
+	public partial class C_RegLog { }
+	public partial class C_DocType { }
+	public partial class C_ProvisionMode { }
+	public partial class C_RequestCategory { }
+	public partial class C_RequestResultCategory { }
+	public partial class C_DocClass { }
+	public partial class C_PostSalary { }
+	public partial class C_PostType { }
+	public partial class C_OperationType { }
+	public partial class C_SenderCategory { }
+	public partial class C_PensionType { }
+	public partial class C_PostSalaryIndexing { }
+	public partial class C_PensionerCategory { }
+	public partial class C_PaymentStatus { }
+	public partial class C_PaymentType { }
+	public partial class C_RestrictionRatio { }
+	public partial class C_RaiseRatio { }
+	public partial class C_RequestMethod { }
+	public partial class C_Seniority { }
+	public partial class C_PostPart { }
+	public partial class C_MassCalcStatus { }
+	public partial class C_DocTaskType { }
+	public partial class C_Sign { }
+	public partial class C_InfoDocType { }
+	public partial class C_JuridicalInstance { }
+	public partial class C_CourtSessionStatus { }
+	public partial class C_MassOperationType { }
+	public partial class C_MassOperationState { }
+	public partial class C_SpecialNote { }
 
 	public class DictModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("Dict");
-			p.AddClass<IC_RFSubject>()
+			p.AddClass<C_RFSubject>()
 				.IntKey()
 				.Attribute("BeginDate", "Дата начала действия", MetaDateTimeType.NotNull())
 				.Attribute("Capital", "Административный центр", MetaStringType.Null())
@@ -1894,18 +2644,31 @@ namespace Solution.Model
 				.Attribute("TitleLocative", "Наименование (предложный падеж)", MetaStringType.Null())
 				.ComputedAttribute("DisplayTitle", "Отображаемое имя", MetaStringType.Null())
 				.PersistentComputedAttribute("IsDeleted", "Удален", MetaBooleanType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IN_TimeZone>("TimeZone", "Часовой пояс")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<N_TimeZone>("TimeZone", "Часовой пояс")
+				.OperationList()
+				.OperationEdit()				
+				.OperationCreateNew()
+				.OperationDelete()
+				.LogicalDelete()
+				.OperationView()
+				.Operation("ObjectChangeHistory", "История изменений") 
+				.Operation("Versions", "Журнал версий") 
 			;	
-			p.AddClass<IC_CitizenCategory>()
+			p.AddClass<C_CitizenCategory>()
 				.IntKey()
 				.Attribute("CitizenCategoryID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_Post>()
+			p.AddClass<C_Post>()
 				.IntKey()
 				.Attribute("BeginDate", "Дата учреждения", MetaDateType.Null())
 				.Attribute("Category", "Категория", MetaStringType.Null())
@@ -1913,7 +2676,6 @@ namespace Solution.Model
 				.Attribute("Code", "Код", MetaStringType.Null())
 				.Attribute("EndDate", "Дата упразднения", MetaDateType.Null())
 				.Attribute("Group", "Группа", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Part", "Раздел", MetaIntType.Null())
 				.Attribute("PostID", "Ид", MetaIntType.NotNull())
@@ -1921,191 +2683,279 @@ namespace Solution.Model
 				.Attribute("Subpart", "Подраздел", MetaIntType.Null())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("TitleGenetive", "Наименование (родительный падеж)", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IOrgUnit>("OrgUnit", "Государственный, законодательный или международный орган")
-				.Reference<IC_Post>("ParentPost", "Должность для расчета доплаты")
-				.Reference<IC_PostType>("ParentType", "Тип должности - соответствия")
-				.Reference<IC_PensionerCategory>("PensionerCategory", "Категория пенсионера")
-				.Reference<IC_PostPart>("PostPart", "Раздел")
-				.Reference<IC_PostSalary>("Salary", "Размер должностного оклада", x => x.Multiple().InverseProperty("Post"))
-				.Reference<IC_PostType>("Type", "Тип Государственная/Федеральная")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<OrgUnit>("OrgUnit", "Государственный, законодательный или международный орган")
+				.Reference<C_Post>("ParentPost", "Должность для расчета доплаты")
+				.Reference<C_PostType>("ParentType", "Тип должности - соответствия")
+				.Reference<C_PensionerCategory>("PensionerCategory", "Категория пенсионера")
+				.Reference<C_PostPart>("PostPart", "Раздел")
+				.Reference<C_PostSalary>("Salary", "Размер должностного оклада", x => x.Multiple().InverseProperty("Post"))
+				.Reference<C_PostType>("Type", "Тип Государственная/Федеральная")
+				.OperationDelete()
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "typeid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.OperationEdit()				
+				.Operation("ViewList1", "Государственные должности") 
+				.LogicalDelete()
+				.OperationView()
+				.Operation("ViewList3", "Прочие должности") 
+				.Operation("ViewList2", "Должности федеральных служащих") 
+				.Operation("Edit3", "Редактировать прочие", x => x 
+					.Parm(MetaIntType.NotNull(), "id")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
+				.Operation("ViewList4", "Воинские должности") 
 			;	
-			p.AddClass<IC_ExtraPayPost>()
+			p.AddClass<C_ExtraPayPost>()
 				.IntKey()
 				.Attribute("BeginDate", "Дата учреждения", MetaDateType.Null())
 				.Attribute("EndDate", "Дата упразднения", MetaDateType.Null())
 				.Attribute("ExtraPayPostID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IOrgUnit>("OrgUnit", "Государственный, законодательный или международный орган")
-				.Reference<IC_Post>("Post", "Должность для расчета доплаты")
-				.Reference<IC_PostPart>("PostPart", "Раздел")
-				.Reference<IC_PostType>("PostType", "Тип должности")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<OrgUnit>("OrgUnit", "Государственный, законодательный или международный орган")
+				.Reference<C_Post>("Post", "Должность для расчета доплаты")
+				.Reference<C_PostPart>("PostPart", "Раздел")
+				.Reference<C_PostType>("PostType", "Тип должности")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_RegionalRatio>()
+			p.AddClass<C_RegionalRatio>()
 				.IntKey()
 				.Attribute("Act", "НПА", MetaStringType.Null())
 				.Attribute("ATE", "Административно-территориальные единицы", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("PTK", "ПТК", MetaIntType.Null())
 				.Attribute("RegionalRatioID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("Value", "Коэффициент", MetaDecimalType.NotNull())
 				.PersistentComputedAttribute("DisplayTitle", "Отображаемое наименование", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IC_RFSubject>("RFSubject", "Субьект РФ")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_RFSubject>("RFSubject", "Субьект РФ")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_OperationReason>()
+			p.AddClass<C_OperationReason>()
 				.IntKey()
 				.Attribute("Act", "Акт", MetaBooleanType.NotNull())
 				.Attribute("Claim", "Личное заявление", MetaBooleanType.NotNull())
 				.Attribute("DecisionType", "Вид решения", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("OperationReasonID", "Ид", MetaIntType.NotNull())
 				.Attribute("PTK", "ПТК", MetaStringType.Null())
 				.Attribute("ShortTitle", "Краткое наименование", MetaStringType.Null())
 				.Attribute("Title", "Наименование основания", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IC_OperationType>("Type", "Наименование операции")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_OperationType>("Type", "Наименование операции")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_DocName>()
+			p.AddClass<C_DocName>()
 				.IntKey()
 				.Attribute("DocNameID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("TitleGenitive", "Наименование (родительный падеж)", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_RegLog>()
+			p.AddClass<C_RegLog>()
 				.IntKey()
 				.Attribute("Code", "Код", MetaIntType.Null())
 				.Attribute("CurrentNo", "Текущий номер документа", MetaIntType.NotNull())
 				.Attribute("FormatClass", "Формат номера документа", MetaStringType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Postfix", "Постфикс", MetaStringType.Null())
 				.Attribute("Prefix", "Префикс", MetaStringType.Null())
 				.Attribute("RegLogID", "Ид", MetaIntType.NotNull())
 				.Attribute("SpecialWork", "Специальное делопроизводство", MetaBooleanType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_DocType>()
+			p.AddClass<C_DocType>()
 				.IntKey()
 				.Attribute("CheckPeriod", "Срок проверки", MetaIntType.Null())
 				.Attribute("CompleteWarning", "Предупреждение о сроке выполнения ", MetaIntType.NotNull())
 				.Attribute("DocTypeID", "Ид", MetaIntType.NotNull())
 				.Attribute("FormWarning", "Предупреждение о сроке оформления ", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("PlanExecutionPeriod", "Плановый срок выполнения", MetaIntType.Null())
 				.Attribute("SendNeeded", "Включается в пакет отправки", MetaBooleanType.NotNull())
 				.Attribute("SendType", "Вид отправки", MetaIntType.NotNull())
 				.Attribute("SignNeeded", "Требуется вторая подпись", MetaBooleanType.NotNull())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
-				.Reference<IC_DocName>("Appendix", "Приложения", x => x.Multiple())
-				.Reference<IC_DocClass>("DocClass", "Тип")
-				.Reference<IC_DocName>("DocName", "Наименование документа")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IC_RegLog>("RegLog", "Журнал регистрации документов")
-				.Reference<IC_SenderCategory>("SenderCategory", "Категория отправителя")
+				.Reference<C_DocName>("Appendix", "Приложения", x => x.Multiple())
+				.Reference<C_DocClass>("DocClass", "Тип")
+				.Reference<C_DocName>("DocName", "Наименование документа")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_RegLog>("RegLog", "Журнал регистрации документов")
+				.Reference<C_SenderCategory>("SenderCategory", "Категория отправителя")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_ProvisionMode>()
+			p.AddClass<C_ProvisionMode>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("ProvisionModeID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_RequestCategory>()
+			p.AddClass<C_RequestCategory>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("RequestCategoryID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_RequestResultCategory>()
+			p.AddClass<C_RequestResultCategory>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("RequestResultCategoryID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_DocClass>()
+			p.AddClass<C_DocClass>()
 				.IntKey()
 				.Attribute("DocClassID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_PostSalary>()
+			p.AddClass<C_PostSalary>()
 				.IntKey()
 				.Attribute("Amount", "Сумма", MetaDecimalType.NotNull())
 				.Attribute("CreateDate", "Дата установления", MetaDateType.NotNull())
 				.Attribute("EndDate", "Дата прекращения действия", MetaDateType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("PostSalaryID", "Ид", MetaIntType.NotNull())
 				.Attribute("PublishDate", "Дата ввода в действие", MetaDateType.NotNull())
 				.Attribute("Ratio", "Коэффициент индексации", MetaDecimalType.NotNull())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
-				.Reference<IC_PostSalaryIndexing>("Indexing", "Является результатом индексации")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IC_Post>("ParentPost", "Соответствующая должность")
-				.Reference<IC_Post>("Post", "Должность", x => x.InverseProperty("Salary"))
-				.Reference<IC_PostPart>("PostPart", "Раздел")
+				.Reference<C_PostSalaryIndexing>("Indexing", "Является результатом индексации")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_Post>("ParentPost", "Соответствующая должность")
+				.Reference<C_Post>("Post", "Должность", x => x.InverseProperty("Salary"))
+				.Reference<C_PostPart>("PostPart", "Раздел")
+				.OperationDelete()
+				.OperationEdit()				
+				.LogicalDelete()
+				.Operation("CreateNew", "Создать", x => x 
+					.Parm(MetaIntType.NotNull(), "parentid")
+					.Parm(MetaStringType.NotNull(), "returnurl")
+				)
 			;	
-			p.AddClass<IC_PostType>()
+			p.AddClass<C_PostType>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("PostTypeID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationEdit()				
+				.LogicalDelete()
 			;	
-			p.AddClass<IC_OperationType>()
+			p.AddClass<C_OperationType>()
 				.IntKey()
 				.Attribute("Action", "Действие операции", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("OperationTypeID", "Ид", MetaIntType.NotNull())
 				.Attribute("Result", "Результат", MetaStringType.Null())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("TitlePrepositional", "Наименование операции (предложный падеж)", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_SenderCategory>()
+			p.AddClass<C_SenderCategory>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("SenderCategoryID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_PensionType>()
+			p.AddClass<C_PensionType>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("PensionTypeID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_PostSalaryIndexing>()
+			p.AddClass<C_PostSalaryIndexing>()
 				.IntKey()
 				.Attribute("ActDate", "Дата НПА", MetaDateType.Null())
 				.Attribute("Condition", "Условие применения", MetaIntType.NotNull())
 				.Attribute("IndexingDate", "Дата индексации", MetaDateType.Null())
 				.Attribute("IsCalcComplete", "Применение выполнено", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("PostSalaryIndexingID", "Ид", MetaIntType.NotNull())
 				.Attribute("PTK", "ПТК", MetaStringType.Null())
@@ -2113,19 +2963,24 @@ namespace Solution.Model
 				.Attribute("TitleAblative", "НПА (творительный падеж)", MetaStringType.Null())
 				.Attribute("Value", "Коэффициент", MetaDecimalType.Null())
 				.PersistentComputedAttribute("DisplayTitle", "Отображаемое наименование", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IC_PostPart>("PostParts", "Индексируемые разделы", x => x.Multiple())
-				.Reference<IC_Post>("Posts", "Индексируемые должности", x => x.Multiple())
-				.Reference<IC_PostType>("PostType", "Тип должности")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_PostPart>("PostParts", "Индексируемые разделы", x => x.Multiple())
+				.Reference<C_Post>("Posts", "Индексируемые должности", x => x.Multiple())
+				.Reference<C_PostType>("PostType", "Тип должности")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_PensionerCategory>()
+			p.AddClass<C_PensionerCategory>()
 				.IntKey()
 				.Attribute("AddInfo", "Дополнение", MetaStringType.Null())
 				.Attribute("Amounts", "Учитываемые суммы", MetaStringType.Null())
 				.Attribute("AmountsInstrumental", "Учитываемые суммы (творительный падеж)", MetaStringType.Null())
 				.Attribute("ExceptFull", "Исключение полное", MetaStringType.Null())
 				.Attribute("Exception", "Исключение", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("LegalAct", "Нормативно-правовой акт", MetaStringType.Null())
 				.Attribute("PensionerCategoryID", "Ид", MetaIntType.NotNull())
@@ -2134,21 +2989,31 @@ namespace Solution.Model
 				.Attribute("SignFio", "Подпись - ФИО", MetaStringType.Null())
 				.Attribute("SignPost", "Подпись - должность", MetaStringType.Null())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IC_PaymentType>("PaymentType", "Вид ГПО")
-				.Reference<IC_PostType>("PostType", "Тип должности")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_PaymentType>("PaymentType", "Вид ГПО")
+				.Reference<C_PostType>("PostType", "Тип должности")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_PaymentStatus>()
+			p.AddClass<C_PaymentStatus>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("PaymentStatusID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_PaymentType>()
+			p.AddClass<C_PaymentType>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("PaymentTypeID", "Ид", MetaIntType.NotNull())
 				.Attribute("ShortTitleAblative", "Краткое наименование (творительный падеж)", MetaStringType.Null())
@@ -2158,40 +3023,61 @@ namespace Solution.Model
 				.Attribute("TitleAccusative", "Наименование (винительный падеж)", MetaStringType.Null())
 				.Attribute("TitleGenitive", "Наименование (родительный падеж)", MetaStringType.Null())
 				.Attribute("TitlePrepositional", "Наименование (предложный падеж)", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_RestrictionRatio>()
+			p.AddClass<C_RestrictionRatio>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("RestrictionRatioID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Примечание", MetaStringType.Null())
 				.Attribute("Value", "Коэффициент", MetaDecimalType.NotNull())
 				.PersistentComputedAttribute("DisplayTitle", "Отображаемое наименование", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IC_PostType>("Type", "Тип получателя ГПО")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_PostType>("Type", "Тип получателя ГПО")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_RaiseRatio>()
+			p.AddClass<C_RaiseRatio>()
 				.IntKey()
 				.Attribute("EndDate", "Дата окончания действия", MetaDateType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("RaiseRatioID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Примечание", MetaStringType.Null())
 				.Attribute("Value", "Коэффициент", MetaDecimalType.NotNull())
 				.PersistentComputedAttribute("DisplayTitle", "Отображаемое наименование", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IC_PostType>("Type", "Тип получателя ГПО")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_PostType>("Type", "Тип получателя ГПО")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_RequestMethod>()
+			p.AddClass<C_RequestMethod>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("RequestMethodID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_Seniority>()
+			p.AddClass<C_Seniority>()
 				.IntKey()
 				.Attribute("BeginDate", "Дата начала действия", MetaDateType.Null())
 				.Attribute("Comment", "Примечание", MetaStringType.Null())
@@ -2201,20 +3087,24 @@ namespace Solution.Model
 				.Attribute("EndDate", "Дата окончания действия", MetaDateType.Null())
 				.Attribute("Folder", "Папка", MetaStringType.Null())
 				.Attribute("IsCountedToward", "Признак стаж засчитывается/не засчитывается", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("OrgUnitTitle", "Наименование органа ГУ", MetaStringType.Null())
 				.Attribute("Reason", "Основание", MetaStringType.Null())
 				.Attribute("SeniorityID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование организации", MetaStringType.NotNull())
-				.Reference<IEmployee>("Employee", "Исполнитель")
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<Employee>("Employee", "Исполнитель")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_PostPart>()
+			p.AddClass<C_PostPart>()
 				.IntKey()
 				.Attribute("Chapter", "Глава", MetaStringType.NotNull())
 				.Attribute("Description", "Описание", MetaStringType.Null())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Part", "Раздел", MetaStringType.NotNull())
 				.Attribute("PostPartID", "Ид", MetaIntType.NotNull())
@@ -2222,27 +3112,42 @@ namespace Solution.Model
 				.Attribute("Subpart", "Подраздел", MetaStringType.NotNull())
 				.PersistentComputedAttribute("ShortTitle", "Краткое наименование", MetaStringType.Null())
 				.PersistentComputedAttribute("Title", "Наименование", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_MassCalcStatus>()
+			p.AddClass<C_MassCalcStatus>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("MassCalcStatusID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_DocTaskType>()
+			p.AddClass<C_DocTaskType>()
 				.IntKey()
 				.Attribute("DocTaskTypeID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_Sign>()
+			p.AddClass<C_Sign>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Post", "Должность", MetaStringType.Null())
 				.Attribute("PostDative", "Должность (дательный падеж)", MetaStringType.Null())
@@ -2255,55 +3160,95 @@ namespace Solution.Model
 				.Attribute("SignRequest", "Подпись для ответов на обращения", MetaBooleanType.NotNull())
 				.Attribute("Title", "Ф.И.О.", MetaStringType.NotNull())
 				.Attribute("TitleDative", "Ф.И.О. (дательный падеж)", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Operation("ObjectChangeHistory", "История изменений") 
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_InfoDocType>()
+			p.AddClass<C_InfoDocType>()
 				.IntKey()
 				.Attribute("InfoDocTypeID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Operation("ObjectChangeHistory", "История изменений") 
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_JuridicalInstance>()
+			p.AddClass<C_JuridicalInstance>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("JuridicalInstanceID", "Ид", MetaIntType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Operation("ObjectChangeHistory", "История изменений") 
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_CourtSessionStatus>()
+			p.AddClass<C_CourtSessionStatus>()
 				.IntKey()
 				.Attribute("CourtSessionStatusID", "Ид", MetaIntType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Operation("ObjectChangeHistory", "История изменений") 
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_MassOperationType>()
+			p.AddClass<C_MassOperationType>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("MassOperationTypeID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_MassOperationState>()
+			p.AddClass<C_MassOperationState>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("MassOperationStateID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IC_SpecialNote>()
+			p.AddClass<C_SpecialNote>()
 				.IntKey()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("SpecialNoteID", "Ид", MetaIntType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
 			return p;
 		}
@@ -2317,20 +3262,19 @@ namespace Solution.Model
 			return p;
 		}
 	}
-	public partial interface IC_Scanner { }
-	public partial interface IScanUserSettings { }
+	public partial class C_Scanner { }
+	public partial class ScanUserSettings { }
 
 	public class NetScanModule
 	{
 		public MetaPackage Init()
 		{
 			var p = new MetaPackage("NetScan");
-			p.AddClass<IC_Scanner>()
+			p.AddClass<C_Scanner>()
 				.IntKey()
 				.Attribute("FileFormat", "Формат файла", MetaEnum.NotNull())
 				.Attribute("IsAvailable", "Доступен", MetaBooleanType.NotNull())
 				.Attribute("IsColoredScan", "Цветное сканирование", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Location", "Расположение сканера", MetaStringType.Null())
 				.Attribute("Model", "Марка/модель сканера", MetaStringType.Null())
@@ -2339,21 +3283,34 @@ namespace Solution.Model
 				.Attribute("ScannerID", "Ид", MetaIntType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Title", "Имя сканера", MetaStringType.NotNull())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Operation("ObjectChangeHistory", "История изменений") 
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
-			p.AddClass<IScanUserSettings>()
+			p.AddClass<ScanUserSettings>()
 				.IntKey()
 				.Attribute("FileFormat", "Формат файла", MetaEnum.NotNull())
 				.Attribute("IsColoredScan", "Цветное сканирование", MetaBooleanType.NotNull())
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("PaperFormat", "Формат бумаги", MetaEnum.NotNull())
 				.Attribute("Resolution", "Разрешение", MetaEnum.NotNull())
 				.Attribute("ScanUserSettingsID", "Ид", MetaIntType.NotNull())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
-				.Reference<ISPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
-				.Reference<IC_Scanner>("Scanner", "Сканер")
-				.Reference<ISPM_Subject>("Subject", "Пользователь")
+				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
+				.Reference<C_Scanner>("Scanner", "Сканер")
+				.Reference<SPM_Subject>("Subject", "Пользователь")
+				.Operation("ObjectChangeHistory", "История изменений") 
+				.OperationDelete()
+				.OperationCreateNew()
+				.OperationEdit()				
+				.OperationList()
+				.LogicalDelete()
+				.OperationView()
 			;	
 			return p;
 		}

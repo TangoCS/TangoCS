@@ -38,20 +38,13 @@ namespace Nephrite.Meta
 		public string Description { get; set; }
 		//public Dictionary<string, MetaTaggedValue> TaggedValues { get; set; }
 
-		Dictionary<Type, MetaStereotype> _stereotypes = new Dictionary<Type, MetaStereotype>();
-
-		public void AddStereotype(MetaStereotype stereotype)
-		{
-			Type t = stereotype.GetType();
-			_stereotypes.Add(t, stereotype);
-			Stereotypes.AssignStereotype(t, this);
-			stereotype.Parent = this;
-		}
+		protected Dictionary<Type, MetaStereotype> _stereotypes = new Dictionary<Type, MetaStereotype>();
 
 		public T S<T>() where T : MetaStereotype
 		{
-
-			return (T)_stereotypes[typeof(T)];
+			Type t = typeof(T);
+			if (!_stereotypes.ContainsKey(t)) return null;
+			return (T)_stereotypes[t];
 		}
 	}
 
@@ -117,6 +110,37 @@ namespace Nephrite.Meta
 		{
 			string s = name.ToLower();
 			return _packagesbyname.ContainsKey(s) ? _packagesbyname[s] : null;
+		}
+
+		Dictionary<Type, Dictionary<string, MetaElement>> _selements = new Dictionary<Type, Dictionary<string, MetaElement>>();
+
+		public void AssignStereotype(MetaStereotype stereotype, MetaElement element)
+		{
+			Type t = stereotype.GetType();
+			Dictionary<string, MetaElement> elements = null;
+			if (!_selements.ContainsKey(t))
+			{
+				elements = new Dictionary<string, MetaElement>();
+				_selements.Add(t, elements);
+			}
+			else
+				elements = _selements[t];
+
+			if (!_stereotypes.ContainsKey(t))
+				_stereotypes.Add(t, stereotype);
+			stereotype.Parent = this;
+
+			elements.Add(element.Name, element);
+		}
+
+		public Dictionary<string, MetaElement> GetElements<T>()
+			where T : MetaStereotype
+		{
+			Type t = typeof(T);
+			if (_selements.ContainsKey(t))
+				return _selements[t];
+			else
+				return null;
 		}
 	}
 
@@ -308,10 +332,12 @@ namespace Nephrite.Meta
 		/// Свойства класса
 		/// </summary>
 		public Dictionary<string, MetaProperty>.ValueCollection Properties { get { return _properties.Values; } }
+		public Dictionary<string, MetaProperty>.KeyCollection PropertyNames { get { return _properties.Keys; } }
 		/// <summary>
 		/// Методы класса
 		/// </summary>
 		public Dictionary<string, MetaOperation>.ValueCollection Operations { get { return _operations.Values; } }
+		public Dictionary<string, MetaOperation>.KeyCollection OperationNames { get { return _operations.Keys; } }
 
 		/// <summary>
 		/// Метод класса по умолчанию
@@ -348,6 +374,8 @@ namespace Nephrite.Meta
 				return Name;
 			}
 		}
+
+		public string LogicalDeleteExpressionString { get; set; }
 
 		/// <summary>
 		/// Имя столбца для свойств, которые ссылаются на данный класс
@@ -456,7 +484,8 @@ namespace Nephrite.Meta
 	/// </summary>
 	public partial class MetaComputedAttribute : MetaValueProperty
 	{
-		
+		public string GetExpressionString { get; set; }
+		public string SetExpressionString { get; set; }
 	}
 
 	/// <summary>
@@ -624,6 +653,20 @@ namespace Nephrite.Meta
 			throw new NotImplementedException();
 		}
 
+		public string ActionString { get; set; }
+		public string PredicateString { get; set; }
+
+		public string ViewName { get; set; }
+		public string ViewClass { get; set; }
+
+		public string ParametersString
+		{
+			get
+			{
+				return string.Join(",", Parameters.Select(o => o.Type.CLRType + " " + o.Name));
+			}
+		}
+
 	}
 
 	
@@ -638,36 +681,6 @@ namespace Nephrite.Meta
 			{
 				return "Stereotype." + Name;
 			}
-		}
-	}
-
-	public static class Stereotypes
-	{
-		[ThreadStatic]
-		static Dictionary<Type, Dictionary<string, MetaElement>> _selements = new Dictionary<Type, Dictionary<string, MetaElement>>();
-		
-		internal static void AssignStereotype(Type stereotype, MetaElement element)
-		{
-			Dictionary<string, MetaElement> elements = null;
-			if (!_selements.ContainsKey(stereotype))
-			{
-				elements = new Dictionary<string, MetaElement>();
-				_selements.Add(stereotype, elements);
-			}
-			else
-				elements = _selements[stereotype];
-
-			elements.Add(element.Name, element);
-		}
-
-		public static Dictionary<string, MetaElement> GetElements<T>()
-			where T : MetaStereotype
-		{
-			Type t = typeof(T);
-			if (_selements.ContainsKey(t))
-				return _selements[t];
-			else
-				return null;
 		}
 	}
 

@@ -24,7 +24,7 @@
 	ConnectionManager.SetConnectionString("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=Servants;Data Source=(local)");
 	HDataContext.DBType = DBType.MSSQL;
 
-	A.Model = new HCoreDataContext(Nephrite.Web.Hibernate.HDataContext.DBConfig(ConnectionManager.ConnectionString));
+	A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
 	var model =  A.DynamicMeta;
 
 #>
@@ -37,7 +37,7 @@ namespace Solution.Model
 {
 <# foreach (var pck in model.Packages) { #>
 <# foreach (var cls in pck.Classes) { #>
-	public partial interface I<#=cls.Name#> { }
+	public partial class <#=cls.Name#> { }
 <# } #>
 
 	public class <#=pck.Name#>Module
@@ -46,7 +46,7 @@ namespace Solution.Model
 		{
 			var p = new MetaPackage("<#=pck.Name#>");
 <# foreach (var cls in pck.Classes) { #>
-			p.AddClass<I<#=cls.Name#>>()
+			p.AddClass<<#=cls.Name#>>()
 <#		if (cls.CompositeKey.Count == 1 && cls.Key.Type is MetaIntType) { #>
 				.IntKey()
 <#		} #>
@@ -54,7 +54,7 @@ namespace Solution.Model
 				.GuidKey()
 <#		} #>
 <#		foreach (var prop in cls.Properties) {
-			if (prop is MetaAttribute) { #>
+			if (prop is MetaAttribute && prop.Name != "IsDeleted") { #>
 				.Attribute("<#=prop.Name#>", "<#=prop.Caption#>", <#=prop.Type.GetType().Name#>.<#=(prop.Type as MetaPrimitiveType).NotNullable ? "NotNull()" : "Null()"#>)
 <#			}
 			if (prop is MetaComputedAttribute) { #>
@@ -71,9 +71,32 @@ namespace Solution.Model
 				if (r.AssociationType == AssociationType.Aggregation) add += ".Aggregation()";
 				if (r.InverseProperty != null) add += @".InverseProperty(""" + r.InverseProperty.Name + @""")";
 			#>
-				.Reference<I<#=r.RefClass.Name#>>("<#=prop.Name#>", "<#=prop.Caption#>"<#=!add.IsEmpty() ? ", x => x" + add : "" #>)
+				.Reference<<#=r.RefClass.Name#>>("<#=prop.Name#>", "<#=prop.Caption#>"<#=!add.IsEmpty() ? ", x => x" + add : "" #>)
 <#			} 
 		} #>
+<#		foreach (var op in cls.Operations) { #>
+<#			if (op.Name == "CreateNew" && (op.Parameters.Count == 0 || op.Parameters.Count == 1)) { #>
+				.OperationCreateNew()
+<#			} else if (op.Name == "ViewList" && op.Parameters.Count == 0) { #>
+				.OperationList()
+<#			} else if (op.Name == "Edit" && (op.Parameters.Count == 0 || op.Parameters.Count == 2)) { #>
+				.OperationEdit()				
+<#			} else if (op.Name == "View" && (op.Parameters.Count == 0 || op.Parameters.Count == 2)) { #>
+				.OperationView()
+<#			} else if (op.Name == "Delete" && (op.Parameters.Count == 0 || op.Parameters.Count == 2)) { #>
+				.OperationDelete()
+<#			} else if (op.Name == "UnDelete" && (op.Parameters.Count == 0 || op.Parameters.Count == 2)) { #>
+				.LogicalDelete()
+<#			} else { #>
+				.Operation("<#=op.Name#>", "<#=op.Caption#>"<# if (op.Parameters.Count > 0) { #>, x => x<# } else {#>)<# } #> 
+<#				foreach (var p in op.Parameters) { #>
+					.Parm(<#=p.Type.GetType().Name#>.NotNull(), "<#=p.Name#>")
+<#				} 
+				if (op.Parameters.Count > 0) { #>
+				)
+<#				} #>
+<#			} #>
+<# } #>
 			;	
 <# } #>
 			return p;

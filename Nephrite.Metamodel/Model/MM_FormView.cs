@@ -8,7 +8,7 @@ using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Metamodel.Model
 {
-    partial class MM_FormView : BaseModelObject, IMM_ModelElement
+    partial class MM_FormView : IMM_ModelElement
     {
 		public virtual string Icon
         {
