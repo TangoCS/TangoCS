@@ -41,30 +41,19 @@ namespace Solution.Model
 				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
 				.Reference<MM_ObjectType>("ObjectTypes", "Классы", x => x.Multiple().InverseProperty("Package"))
 				.Reference<MM_Package>("ParentPackage", "Родительский пакет", x => x.InverseProperty("ChildPackages"))
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 				.OperationEdit()				
 				.OperationDelete()
-				.Operation("Import", "Импорт", x => x 
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("Export", "Экспорт", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("ExportObjectType", "Экспорт класса", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaIntType.NotNull(), "objectTypeID")
-				)
+				.Operation("Import", "Импорт") 
+				.Operation("Export", "Экспорт") 
+				.Operation("ExportObjectType", "Экспорт класса") 
 			;	
 			p.AddClass<MM_ObjectType>()
 				.IntKey()
 				.Attribute("DefaultOrderBy", "DefaultOrderBy", MetaStringType.Null())
 				.Attribute("Description", "Description", MetaStringType.Null())
 				.Attribute("Guid", "GUID", MetaGuidType.NotNull())
-				.Attribute("HistoryTypeCode", "HistoryTypeCode", MetaEnum.NotNull())
+				.Attribute("HistoryTypeCode", "HistoryTypeCode", MetaEnumType.NotNull(""))
 				.Attribute("Interface", "Interface", MetaStringType.Null())
 				.Attribute("IsDataReplicated", "IsDataReplicated", MetaBooleanType.NotNull())
 				.Attribute("IsEnableObjectHistory", "IsEnableObjectHistory", MetaBooleanType.NotNull())
@@ -92,49 +81,23 @@ namespace Solution.Model
 				.Reference<MM_ObjectProperty>("Properties", "Свойства", x => x.Multiple().InverseProperty("ObjectType"))
 				.Reference<MM_ObjectType>("Stereotypes", "Стереотипы", x => x.Multiple())
 				.OperationList()
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 				.OperationEdit()				
-				.Operation("CreateFromTemplate", "Создать по шаблону", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("CreateFromTemplate", "Создать по шаблону") 
 				.OperationDelete()
-				.Operation("EditRights", "Редактировать права", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("EnableSPM", "Разрешить УПБ", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("DisableSPM", "Запретить УПБ", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("EditRights", "Редактировать права") 
+				.Operation("EnableSPM", "Разрешить УПБ") 
+				.Operation("DisableSPM", "Запретить УПБ") 
 				.OperationView()
-				.Operation("GenerateListControl", "Сгенерировать форму List", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("GenerateEditControl", "Сгенерировать форму Edit", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("GenerateViewControl", "Сгенерировать форму View", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("MassCreate", "Массовое создание классов", x => x 
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("GenerateListControl", "Сгенерировать форму List") 
+				.Operation("GenerateEditControl", "Сгенерировать форму Edit") 
+				.Operation("GenerateViewControl", "Сгенерировать форму View") 
+				.Operation("MassCreate", "Массовое создание классов") 
 			;	
 			p.AddClass<MM_ObjectProperty>()
 				.IntKey()
 				.Attribute("DefaultDBValue", "DefaultDBValue", MetaStringType.Null())
-				.Attribute("DeleteRule", "DeleteRule", MetaEnum.NotNull())
+				.Attribute("DeleteRule", "DeleteRule", MetaEnumType.NotNull(""))
 				.Attribute("Description", "Description", MetaStringType.Null())
 				.Attribute("Expression", "Expression", MetaStringType.Null())
 				.Attribute("Guid", "GUID", MetaGuidType.NotNull())
@@ -145,7 +108,7 @@ namespace Solution.Model
 				.Attribute("IsPrimaryKey", "Первичный ключ", MetaBooleanType.NotNull())
 				.Attribute("IsReferenceToVersion", "IsReferenceToVersion", MetaBooleanType.NotNull())
 				.Attribute("IsSystem", "Системное свойство", MetaBooleanType.NotNull())
-				.Attribute("KindCode", "KindCode", MetaEnum.NotNull())
+				.Attribute("KindCode", "KindCode", MetaEnumType.NotNull(""))
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("Length", "Length", MetaIntType.Null())
 				.Attribute("LowerBound", "LowerBound", MetaIntType.NotNull())
@@ -155,7 +118,7 @@ namespace Solution.Model
 				.Attribute("SeqNo", "Порядковый номер", MetaIntType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.Attribute("TypeCode", "TypeCode", MetaEnum.NotNull())
+				.Attribute("TypeCode", "TypeCode", MetaEnumType.NotNull(""))
 				.Attribute("UpperBound", "UpperBound", MetaIntType.NotNull())
 				.Attribute("ValueFilter", "ValueFilter", MetaStringType.Null())
 				.Reference<MM_Codifier>("Codifier", "Кодификатор")
@@ -164,11 +127,7 @@ namespace Solution.Model
 				.Reference<MM_ObjectProperty>("RefObjectProperty", "Ссылается на свойство")
 				.Reference<MM_ObjectType>("RefObjectType", "Ссылается на класс")
 				.OperationEdit()				
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "kind")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 				.OperationDelete()
 			;	
 			p.AddClass<MM_FormField>()
@@ -210,7 +169,7 @@ namespace Solution.Model
 			;	
 			p.AddClass<MM_CodifierValue>()
 				.IntKey()
-				.Attribute("Code", "Код", MetaEnum.NotNull())
+				.Attribute("Code", "Код", MetaEnumType.NotNull(""))
 				.Attribute("CodifierValueID", "Ид", MetaIntType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("SeqNo", "Порядковый номер", MetaIntType.NotNull())
@@ -240,7 +199,7 @@ namespace Solution.Model
 				.Attribute("IsCustom", "Пользовательское", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
-				.Attribute("TemplateTypeCode", "Тип представления", MetaEnum.NotNull())
+				.Attribute("TemplateTypeCode", "Тип представления", MetaEnumType.NotNull("TemplateType"))
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("ViewTemplate", "Шаблон формы", MetaStringType.Null())
 				.ComputedAttribute("ControlsPath", "ControlsPath", MetaStringType.Null())
@@ -249,27 +208,12 @@ namespace Solution.Model
 				.Reference<MM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("FormViews"))
 				.Reference<MM_Package>("Package", "Пакет")
 				.OperationEdit()				
-				.Operation("Spm", "Настроить права доступа", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("ViewVersion", "Просмотр версий", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("Spm", "Настроить права доступа") 
+				.Operation("ViewVersion", "Просмотр версий") 
 				.OperationDelete()
-				.Operation("Caching", "Настроить кэширование", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("CreateForObjectType", "Создать для класса", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("CreateForPackage", "Создать для пакета", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("Caching", "Настроить кэширование") 
+				.Operation("CreateForObjectType", "Создать для класса") 
+				.Operation("CreateForPackage", "Создать для пакета") 
 				.Operation("LastChanges", "Последние изменения в представлениях") 
 			;	
 			p.AddClass<MM_Method>()
@@ -291,10 +235,7 @@ namespace Solution.Model
 				.Reference<MM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("Methods"))
 				.OperationEdit()				
 				.OperationDelete()
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 			;	
 			p.AddClass<MM_MethodParameter>()
 				.IntKey()
@@ -323,10 +264,7 @@ namespace Solution.Model
 				.Reference<MM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("FormFieldGroups"))
 				.Reference<MM_ObjectProperty>("SelectObjectProperty", "Свойство класса")
 				.OperationEdit()				
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 			;	
 			p.AddClass<MM_Predicate>()
 				.GuidKey()
@@ -336,13 +274,10 @@ namespace Solution.Model
 				.Attribute("Message", "Message", MetaStringType.NotNull())
 				.Attribute("PredicateGUID", "Ид", MetaGuidType.NotNull())
 				.Attribute("Title", "Наименовение", MetaStringType.NotNull())
-				.Attribute("Type", "Тип", MetaEnum.NotNull())
+				.Attribute("Type", "Тип", MetaEnumType.NotNull(""))
 				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
 				.Reference<MM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("DataValidations"))
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 				.OperationEdit()				
 				.OperationDelete()
 			;	
@@ -389,19 +324,11 @@ namespace Solution.Model
 				.OperationDelete()
 				.Operation("RegistrationComplete", "Регистрация завершена") 
 				.Operation("RestorePassword", "Восстановить пароль") 
-				.Operation("Activate", "Активировать", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("ChangePassword", "Изменить пароль", x => x 
-					.Parm(MetaStringType.NotNull(), "magicString")
-				)
+				.Operation("Activate", "Активировать") 
+				.Operation("ChangePassword", "Изменить пароль") 
 				.OperationView()
 				.OperationCreateNew()
-				.Operation("Deactivate", "Деактивировать", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("Deactivate", "Деактивировать") 
 			;	
 			p.AddClass<SPM_Role>()
 				.IntKey()
@@ -421,19 +348,9 @@ namespace Solution.Model
 				.OperationDelete()
 				.OperationView()
 				.OperationCreateNew()
-				.Operation("EditRoles", "Редактировать роли для назначения пользователям", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("SubjectsList", "Список пользователей", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("RemoveSubject", "Отвязять пользователя", x => x 
-					.Parm(MetaIntType.NotNull(), "roleID")
-					.Parm(MetaIntType.NotNull(), "subjectID")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("EditRoles", "Редактировать роли для назначения пользователям") 
+				.Operation("SubjectsList", "Список пользователей") 
+				.Operation("RemoveSubject", "Отвязять пользователя") 
 			;	
 			p.AddClass<SPM_Action>()
 				.IntKey()
@@ -449,10 +366,7 @@ namespace Solution.Model
 				.Reference<MM_Package>("Package", "Пакет")
 				.Reference<MM_Predicate>("Predicate", "Предикат")
 				.OperationList()
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaGuidType.NotNull(), "classguid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 				.OperationEdit()				
 				.OperationDelete()
 				.Operation("ViewListTree", "Список - дерево") 
@@ -612,9 +526,7 @@ namespace Solution.Model
 				.Attribute("UserTitle", "Ф.И.О.", MetaStringType.NotNull())
 				.Reference<SPM_Subject>("LastModifiedUser", "Пользователь")
 				.OperationList()
-				.Operation("ExcelExport", "Экспорт в Excel", x => x 
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("ExcelExport", "Экспорт в Excel") 
 			;	
 			p.AddClass<N_TextResource>()
 				.IntKey()
@@ -645,10 +557,7 @@ namespace Solution.Model
 				.Reference<TM_TaskParameter>("Parameters", "Параметры", x => x.Multiple().InverseProperty("Parent"))
 				.OperationDelete()
 				.OperationEdit()				
-				.Operation("Start", "Запуск", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("Start", "Запуск") 
 				.OperationView()
 				.OperationList()
 			;	
@@ -829,7 +738,7 @@ namespace Solution.Model
 			p.AddClass<MMS_ClassStereotype>()
 			;	
 			p.AddClass<MMS_Versioning>()
-				.Attribute("Type", "Тип", MetaEnum.NotNull())
+				.Attribute("Type", "Тип", MetaEnumType.NotNull("VersioningType"))
 				.OperationEdit()				
 			;	
 			p.AddClass<MMS_ChangeLog>()
@@ -854,10 +763,7 @@ namespace Solution.Model
 				.Attribute("Title", "Текст запроса", MetaStringType.NotNull())
 				.Reference<SPM_Subject>("LastModifiedUser", "Выполнивший пользователь")
 				.Operation("Execute", "Выполнение SQL") 
-				.Operation("ExecuteHistory", "Выполнить из журнала", x => x 
-					.Parm(MetaIntType.NotNull(), "oid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("ExecuteHistory", "Выполнить из журнала") 
 				.OperationView()
 				.OperationList()
 			;	
@@ -902,7 +808,7 @@ namespace Solution.Model
 				.Attribute("PublishDate", "Дата публикации", MetaDateTimeType.Null())
 				.Attribute("SPMActionItemGUID", "Гуид объекта проверки прав", MetaGuidType.NotNull())
 				.Attribute("StorageParameter", "Параметр хранения", MetaStringType.Null())
-				.Attribute("StorageType", "Тип хранения", MetaEnum.NotNull())
+				.Attribute("StorageType", "Тип хранения", MetaEnumType.NotNull("StorageType"))
 				.Attribute("Tag", "Tag", MetaStringType.Null())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.ComputedAttribute("PhysicalPath", "Путь на диске", MetaStringType.Null())
@@ -914,19 +820,11 @@ namespace Solution.Model
 				.OperationEdit()				
 				.OperationView()
 				.OperationDelete()
-				.Operation("CreateNew", "Создать папку", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 				.OperationList()
-				.Operation("Upload", "Загрузить файлы", x => x 
-					.Parm(MetaStringType.NotNull(), "parent")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("Upload", "Загрузить файлы") 
 				.Operation("Predicates", "Права доступа") 
-				.Operation("PackAndDownload", "Упаковать и скачать", x => x 
-					.Parm(MetaGuidType.NotNull(), "id")
-				)
+				.Operation("PackAndDownload", "Упаковать и скачать") 
 			;	
 			p.AddClass<V_N_FolderFile>()
 				.IntKey()
@@ -960,7 +858,7 @@ namespace Solution.Model
 				.Attribute("Path", "Путь", MetaStringType.Null())
 				.Attribute("PublishDate", "Дата публикации", MetaDateTimeType.Null())
 				.Attribute("StorageParameter", "Параметр хранения", MetaStringType.Null())
-				.Attribute("StorageType", "Тип хранения", MetaEnum.NotNull())
+				.Attribute("StorageType", "Тип хранения", MetaEnumType.NotNull(""))
 				.Attribute("Tag", "Tag", MetaStringType.Null())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("VersionNumber", "Номер версии", MetaIntType.NotNull())
@@ -972,15 +870,10 @@ namespace Solution.Model
 				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
 				.OperationDelete()
 				.OperationEdit()				
-				.Operation("CreateNew", "Создать файл", x => x 
-					.Parm(MetaIntType.NotNull(), "folderid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 				.OperationView()
 				.OperationList()
-				.Operation("EditG", "Редактировать", x => x 
-					.Parm(MetaGuidType.NotNull(), "id")
-				)
+				.Operation("EditG", "Редактировать") 
 			;	
 			p.AddClass<N_FileLibraryType>()
 				.IntKey()
@@ -1101,7 +994,7 @@ namespace Solution.Model
 				.Attribute("Tag", "Дополнительные данные", MetaStringType.Null())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("Tooltip", "Подсказка", MetaStringType.Null())
-				.Attribute("Type", "Тип", MetaEnum.NotNull())
+				.Attribute("Type", "Тип", MetaEnumType.NotNull("NavigItemType"))
 				.Attribute("URL", "Реальный URL", MetaStringType.Null())
 				.Reference<N_NavigItem>("Child", "Дочерние элементы", x => x.Multiple().InverseProperty("Parent"))
 				.Reference<MM_FormView>("FormView", "Представление")
@@ -1110,19 +1003,12 @@ namespace Solution.Model
 				.Reference<N_Navig>("Navig", "Меню", x => x.InverseProperty("Items"))
 				.Reference<N_Node>("Node", "Страница сайта")
 				.Reference<N_NavigItem>("Parent", "Родительский элемент", x => x.InverseProperty("Child"))
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaGuidType.NotNull(), "menuid")
-					.Parm(MetaGuidType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 				.OperationEdit()				
 				.OperationDelete()
 				.OperationList()
 				.LogicalDelete()
-				.Operation("SortChildren", "Отсортировать дочерние элементы", x => x 
-					.Parm(MetaGuidType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("SortChildren", "Отсортировать дочерние элементы") 
 				.Operation("EditRights", "Редактировать права") 
 			;	
 			p.AddClass<N_Node>()
@@ -1266,9 +1152,7 @@ namespace Solution.Model
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
 				.OperationList()
 				.OperationView()
-				.Operation("Delete", "Очистить", x => x 
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationDelete()
 			;	
 			return p;
 		}
@@ -1288,13 +1172,8 @@ namespace Solution.Model
 				.OperationView()
 				.OperationEdit()				
 				.OperationDelete()
-				.Operation("Create", "Создать папку", x => x 
-					.Parm(MetaStringType.NotNull(), "parentFolderID")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("PackAndDownload", "Упаковать и скачать", x => x 
-					.Parm(MetaGuidType.NotNull(), "id")
-				)
+				.Operation("Create", "Создать папку") 
+				.Operation("PackAndDownload", "Упаковать и скачать") 
 				.Operation("Upload", "Загрузка файлов") 
 			;	
 			p.AddClass<DbFile>()
@@ -1303,32 +1182,17 @@ namespace Solution.Model
 				.OperationView()
 				.OperationEdit()				
 				.OperationDelete()
-				.Operation("Create", "Создать файл", x => x 
-					.Parm(MetaStringType.NotNull(), "parentFolderID")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("CheckOut", "Извлечь", x => x 
-					.Parm(MetaGuidType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("CheckIn", "Вернуть", x => x 
-					.Parm(MetaGuidType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("Create", "Создать файл") 
+				.Operation("CheckOut", "Извлечь") 
+				.Operation("CheckIn", "Вернуть") 
 			;	
 			p.AddClass<DbItem>()
 				.GuidKey()
 				.Attribute("ID", "ID", MetaGuidType.NotNull())
 				.OperationList()
 				.Operation("ViewIcons", "Список. Плитка") 
-				.Operation("Comments", "Комментарии", x => x 
-					.Parm(MetaGuidType.NotNull(), "iod")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("Tags", "Теги", x => x 
-					.Parm(MetaGuidType.NotNull(), "iod")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("Comments", "Комментарии") 
+				.Operation("Tags", "Теги") 
 			;	
 			return p;
 		}
@@ -1577,10 +1441,7 @@ namespace Solution.Model
 				.Reference<C_RFSubject>("RFSubject", "Субъект РФ")
 				.Reference<C_RFSubject>("RFSubjects", "Субъекты РФ", x => x.Multiple())
 				.Reference<C_OrgUnitType>("Type", "Тип")
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "typeid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 				.OperationEdit()				
 				.OperationList()
 				.OperationDelete()
@@ -1778,65 +1639,28 @@ namespace Solution.Model
 				.Reference<OrgUnit>("Sender", "Отправитель")
 				.Reference<C_SenderCategory>("SenderCategory", "Категория отправителя")
 				.OperationDelete()
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "classid")
-					.Parm(MetaStringType.NotNull(), "types")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 				.OperationEdit()				
-				.Operation("ViewList", "Список", x => x 
-					.Parm(MetaIntType.NotNull(), "classid")
-					.Parm(MetaStringType.NotNull(), "types")
-				)
+				.OperationList()
 				.LogicalDelete()
 				.OperationView()
-				.Operation("UploadFiles", "Загрузка образов документов", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("Register", "Регистрация", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("Print", "Печать", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("PrintWord", "Печать в Word", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("UploadFiles", "Загрузка образов документов") 
+				.Operation("Register", "Регистрация") 
+				.Operation("Print", "Печать") 
+				.Operation("PrintWord", "Печать в Word") 
 				.Operation("ViewList_In", "Входящие документы") 
 				.Operation("ViewList_4", "Решения") 
 				.Operation("ViewList_5", "Поручения") 
 				.Operation("ViewList_Out", "Исходящие документы") 
 				.Operation("ViewList_9", "Обращения граждан") 
 				.Operation("ViewList_10", "Ответы на обращения") 
-				.Operation("PrintPdf", "Печать в PDF", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("PrintExcel", "Печать Excel", x => x 
-					.Parm(MetaIntType.NotNull(), "filterid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("SigningOut", "Передача на подписание", x => x 
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("RegisterOut", "Регистрация", x => x 
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("SendingOut", "Формирование пакетов документов для отправки", x => x 
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("CreateOutForTask", "Создать исходящий для задания", x => x 
-					.Parm(MetaIntType.NotNull(), "taskid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("ViewEl", "Просмотр для пакета (эл.)", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("PrintPdf", "Печать в PDF") 
+				.Operation("PrintExcel", "Печать Excel") 
+				.Operation("SigningOut", "Передача на подписание") 
+				.Operation("RegisterOut", "Регистрация") 
+				.Operation("SendingOut", "Формирование пакетов документов для отправки") 
+				.Operation("CreateOutForTask", "Создать исходящий для задания") 
+				.Operation("ViewEl", "Просмотр для пакета (эл.)") 
 			;	
 			p.AddClass<DocAsso>()
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
@@ -1856,10 +1680,7 @@ namespace Solution.Model
 				.Reference<DocTaskOperation>("DocTaskOperation", "Результат операции массового перерасчета")
 				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")
 				.OperationDelete()
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 				.OperationEdit()				
 				.OperationList()
 				.LogicalDelete()
@@ -1888,7 +1709,7 @@ namespace Solution.Model
 				.Attribute("PatronymicGenitive", "Отчество (родительный падеж)", MetaStringType.Null())
 				.Attribute("Phone", "Домашний телефон", MetaStringType.Null())
 				.Attribute("RFSubjectText", "Субъект РФ (название)", MetaStringType.Null())
-				.Attribute("Sex", "Пол", MetaEnum.NotNull())
+				.Attribute("Sex", "Пол", MetaEnumType.NotNull(""))
 				.Attribute("Snils", "СНИЛС", MetaStringType.Null())
 				.Attribute("Surname", "Фамилия", MetaStringType.NotNull())
 				.Attribute("SurnameDative", "Фамилия (дательный падеж)", MetaStringType.Null())
@@ -1957,70 +1778,31 @@ namespace Solution.Model
 				.Reference<Doc>("ResultDocs", "Документы - результаты", x => x.Multiple().InverseProperty("DocTask"))
 				.Reference<C_DocTaskType>("Type", "Тип")
 				.OperationDelete()
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 				.OperationEdit()				
 				.OperationList()
 				.LogicalDelete()
 				.OperationView()
 				.Operation("MyViewList", "Мои задания") 
-				.Operation("Complete", "Выполнить", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("OnCheck", "Взять на проверку", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("Checked", "Проверить", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("UnApprove", "На доработку", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("Complete", "Выполнить") 
+				.Operation("OnCheck", "Взять на проверку") 
+				.Operation("Checked", "Проверить") 
+				.Operation("UnApprove", "На доработку") 
 				.Operation("ViewListRequests", "Обращения") 
 				.Operation("ViewListOnCheck", "Задания на проверку") 
 				.Operation("ViewListExceeded", "Просроченные задания") 
-				.Operation("CreateDocs", "Создать документы", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("Annulment", "Аннулировать", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("Suspend", "Отложить", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("DocNeeded", "Запрос документов", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("Decline", "Отсутствие оснований", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("CreateDocs", "Создать документы") 
+				.Operation("Annulment", "Аннулировать") 
+				.Operation("Suspend", "Отложить") 
+				.Operation("DocNeeded", "Запрос документов") 
+				.Operation("Decline", "Отсутствие оснований") 
 				.Operation("ViewListAnnulment", "Аннулированные задания") 
 				.Operation("ViewListSuspended", "Отложенные задания") 
-				.Operation("StatusHistory", "История изменения статуса", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("StatusHistory", "История изменения статуса") 
 				.Operation("ViewListSigning", "Задания на подписании") 
 				.Operation("ViewListClosed", "Завершенные задания") 
-				.Operation("DownloadDocs", "Скачать документы ", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("Close", "Завершить", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("DownloadDocs", "Скачать документы ") 
+				.Operation("Close", "Завершить") 
 			;	
 			p.AddClass<PensionFile>()
 				.IntKey()
@@ -2042,10 +1824,7 @@ namespace Solution.Model
 				.LogicalDelete()
 				.OperationView()
 				.Operation("ViewListArch", "Список - архив") 
-				.Operation("UnArchieve", "Восстановить из архива", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("UnArchieve", "Восстановить из архива") 
 			;	
 			p.AddClass<JuridicalCase>()
 				.IntKey()
@@ -2068,10 +1847,7 @@ namespace Solution.Model
 				.LogicalDelete()
 				.OperationView()
 				.Operation("ViewListArch", "Список - архив") 
-				.Operation("UnArchieve", "Восстановить из архива", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("UnArchieve", "Восстановить из архива") 
 			;	
 			p.AddClass<CitizenRequest>()
 				.IntKey()
@@ -2165,48 +1941,18 @@ namespace Solution.Model
 				.Reference<C_RestrictionRatio>("RestrictionRatio", "Коэффициент ограничения")
 				.Reference<C_OperationType>("Type", "Вид операции")
 				.Reference<WorkInfo>("WorkInfo", "Сведения о государственной службе", x => x.Multiple().InverseProperty("DocTaskOperation"))
-				.Operation("EditCategory", "Редактировать категорию", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("EditPrecalc", "Редактировать предрасчетные значения", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("EditResult", "Редактировать результат", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("EditPrecalc2", "Редактировать предрасчетные значения 2", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("EditCategory", "Редактировать категорию") 
+				.Operation("EditPrecalc", "Редактировать предрасчетные значения") 
+				.Operation("EditResult", "Редактировать результат") 
+				.Operation("EditPrecalc2", "Редактировать предрасчетные значения 2") 
 				.Operation("ViewListClosed", "Индивидуальные операции") 
-				.Operation("ViewPrecalc2", "Просмотр предрасчетных значений 2", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("ViewPrecalc2", "Просмотр предрасчетных значений 2") 
 				.OperationDelete()
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("EditCitizen", "Редактировать данные гражданина", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("OtherPeriods", "Иные периоды", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("Correction", "Корректировка", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("Duplication", "Дублирование операций", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
+				.Operation("EditCitizen", "Редактировать данные гражданина") 
+				.Operation("OtherPeriods", "Иные периоды") 
+				.Operation("Correction", "Корректировка") 
+				.Operation("Duplication", "Дублирование операций") 
 			;	
 			p.AddClass<WorkInfo>()
 				.IntKey()
@@ -2229,10 +1975,7 @@ namespace Solution.Model
 				.OperationDelete()
 				.OperationEdit()				
 				.LogicalDelete()
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 			;	
 			p.AddClass<DocTaskRequest>()
 				.IntKey()
@@ -2246,10 +1989,7 @@ namespace Solution.Model
 				.OperationDelete()
 				.OperationEdit()				
 				.LogicalDelete()
-				.Operation("EditAnswer", "Редактировать ответ", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("EditAnswer", "Редактировать ответ") 
 			;	
 			p.AddClass<CitizenPension>()
 				.IntKey()
@@ -2267,10 +2007,7 @@ namespace Solution.Model
 				.OperationDelete()
 				.OperationEdit()				
 				.LogicalDelete()
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 			;	
 			p.AddClass<MassCalc>()
 				.IntKey()
@@ -2317,50 +2054,16 @@ namespace Solution.Model
 				.OperationList()
 				.LogicalDelete()
 				.OperationView()
-				.Operation("AddItem", "Добавить элемент", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaIntType.NotNull(), "citizenid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("DeleteItem", "Удалить элемент", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaIntType.NotNull(), "citizenid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("Complete", "Исполнить", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("OnCheck", "Взять на проверку", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("Close", "Проверить", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("UnApprove", "На доработку", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("EditResult", "Редактировать результат", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("UnDecision", "Выгрузить решения", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("UnOrder", "Выгрузить поручения", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaIntType.NotNull(), "type")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("UnNotice", "Выгрузить уведомления", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaIntType.NotNull(), "type")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("AddItem", "Добавить элемент") 
+				.Operation("DeleteItem", "Удалить элемент") 
+				.Operation("Complete", "Исполнить") 
+				.Operation("OnCheck", "Взять на проверку") 
+				.Operation("Close", "Проверить") 
+				.Operation("UnApprove", "На доработку") 
+				.Operation("EditResult", "Редактировать результат") 
+				.Operation("UnDecision", "Выгрузить решения") 
+				.Operation("UnOrder", "Выгрузить поручения") 
+				.Operation("UnNotice", "Выгрузить уведомления") 
 			;	
 			p.AddClass<ControlTask>()
 				.IntKey()
@@ -2399,9 +2102,7 @@ namespace Solution.Model
 				.OperationDelete()
 				.OperationCreateNew()
 				.OperationEdit()				
-				.Operation("ViewList", "Список", x => x 
-					.Parm(MetaIntType.NotNull(), "typeid")
-				)
+				.OperationList()
 				.LogicalDelete()
 				.OperationView()
 			;	
@@ -2426,10 +2127,7 @@ namespace Solution.Model
 				.OperationList()
 				.LogicalDelete()
 				.OperationView()
-				.Operation("EditResult", "Редактирование результата", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("EditResult", "Редактирование результата") 
 			;	
 			p.AddClass<CourtSession>()
 				.IntKey()
@@ -2446,10 +2144,7 @@ namespace Solution.Model
 				.OperationDelete()
 				.OperationEdit()				
 				.LogicalDelete()
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 			;	
 			p.AddClass<DocTaskComplaint>()
 				.IntKey()
@@ -2486,40 +2181,15 @@ namespace Solution.Model
 				.Operation("ViewListEl", "Реестр отправок в электронном виде") 
 				.LogicalDelete()
 				.OperationView()
-				.Operation("PrintWord", "Печать списка", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("PrintWord", "Печать списка") 
 				.Operation("ViewListP", "Реестр отправок в бумажном виде") 
-				.Operation("DeleteDoc", "Удалить документ", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaIntType.NotNull(), "docid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("ViewEl", "Просмотр пакета (эл.)", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("EditEl", "Редактировать пакет (эл.)", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("ViewUn", "Просмотр выгрузки (эл.)", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("PrintWordEl", "Печать выгрузки", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("DeleteUn", "Удалить выгрузку", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("EditUn", "Редактировать выгрузку (эл.)", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("DeleteDoc", "Удалить документ") 
+				.Operation("ViewEl", "Просмотр пакета (эл.)") 
+				.Operation("EditEl", "Редактировать пакет (эл.)") 
+				.Operation("ViewUn", "Просмотр выгрузки (эл.)") 
+				.Operation("PrintWordEl", "Печать выгрузки") 
+				.Operation("DeleteUn", "Удалить выгрузку") 
+				.Operation("EditUn", "Редактировать выгрузку (эл.)") 
 			;	
 			p.AddClass<OfficeNote>()
 				.IntKey()
@@ -2542,19 +2212,9 @@ namespace Solution.Model
 				.OperationList()
 				.LogicalDelete()
 				.OperationView()
-				.Operation("Sign", "Подписать", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("DeleteDoc", "Удалить документ", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaIntType.NotNull(), "docid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
-				.Operation("PrintWord", "Печать", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("Sign", "Подписать") 
+				.Operation("DeleteDoc", "Удалить документ") 
+				.Operation("PrintWord", "Печать") 
 			;	
 			p.AddClass<MassOperationQueue>()
 				.IntKey()
@@ -2692,20 +2352,14 @@ namespace Solution.Model
 				.Reference<C_PostSalary>("Salary", "Размер должностного оклада", x => x.Multiple().InverseProperty("Post"))
 				.Reference<C_PostType>("Type", "Тип Государственная/Федеральная")
 				.OperationDelete()
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "typeid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 				.OperationEdit()				
 				.Operation("ViewList1", "Государственные должности") 
 				.LogicalDelete()
 				.OperationView()
 				.Operation("ViewList3", "Прочие должности") 
 				.Operation("ViewList2", "Должности федеральных служащих") 
-				.Operation("Edit3", "Редактировать прочие", x => x 
-					.Parm(MetaIntType.NotNull(), "id")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.Operation("Edit3", "Редактировать прочие") 
 				.Operation("ViewList4", "Воинские должности") 
 			;	
 			p.AddClass<C_ExtraPayPost>()
@@ -2893,10 +2547,7 @@ namespace Solution.Model
 				.OperationDelete()
 				.OperationEdit()				
 				.LogicalDelete()
-				.Operation("CreateNew", "Создать", x => x 
-					.Parm(MetaIntType.NotNull(), "parentid")
-					.Parm(MetaStringType.NotNull(), "returnurl")
-				)
+				.OperationCreateNew()
 			;	
 			p.AddClass<C_PostType>()
 				.IntKey()
@@ -3272,14 +2923,14 @@ namespace Solution.Model
 			var p = new MetaPackage("NetScan");
 			p.AddClass<C_Scanner>()
 				.IntKey()
-				.Attribute("FileFormat", "Формат файла", MetaEnum.NotNull())
+				.Attribute("FileFormat", "Формат файла", MetaEnumType.NotNull("NetScanFileFormat"))
 				.Attribute("IsAvailable", "Доступен", MetaBooleanType.NotNull())
 				.Attribute("IsColoredScan", "Цветное сканирование", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
 				.Attribute("Location", "Расположение сканера", MetaStringType.Null())
 				.Attribute("Model", "Марка/модель сканера", MetaStringType.Null())
-				.Attribute("PaperFormat", "Формат бумаги", MetaEnum.NotNull())
-				.Attribute("Resolution", "Разрешение", MetaEnum.NotNull())
+				.Attribute("PaperFormat", "Формат бумаги", MetaEnumType.NotNull("NetScanPaperFormat"))
+				.Attribute("Resolution", "Разрешение", MetaEnumType.NotNull("NetScanResolution"))
 				.Attribute("ScannerID", "Ид", MetaIntType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Title", "Имя сканера", MetaStringType.NotNull())
@@ -3294,11 +2945,11 @@ namespace Solution.Model
 			;	
 			p.AddClass<ScanUserSettings>()
 				.IntKey()
-				.Attribute("FileFormat", "Формат файла", MetaEnum.NotNull())
+				.Attribute("FileFormat", "Формат файла", MetaEnumType.NotNull("NetScanFileFormat"))
 				.Attribute("IsColoredScan", "Цветное сканирование", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedDate", "Дата последнего изменения", MetaDateTimeType.NotNull())
-				.Attribute("PaperFormat", "Формат бумаги", MetaEnum.NotNull())
-				.Attribute("Resolution", "Разрешение", MetaEnum.NotNull())
+				.Attribute("PaperFormat", "Формат бумаги", MetaEnumType.NotNull("NetScanPaperFormat"))
+				.Attribute("Resolution", "Разрешение", MetaEnumType.NotNull("NetScanResolution"))
 				.Attribute("ScanUserSettingsID", "Ид", MetaIntType.NotNull())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
 				.Reference<SPM_Subject>("LastModifiedUser", "Последний редактировавший пользователь")

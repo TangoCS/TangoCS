@@ -102,6 +102,7 @@ namespace Nephrite.Web.Hibernate
 
 		public TextWriter Log { get; set; }
 		public abstract IEnumerable<Type> GetEntitiesTypes();
+		public virtual IEnumerable<Type> GetTableFunctionsTypes() { return new List<Type>(); }
 
 		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Listeners listeners = null)
 		{
@@ -132,6 +133,7 @@ namespace Nephrite.Web.Hibernate
 
 			var mapper = new ModelMapper();
 			mapper.AddMappings(GetEntitiesTypes());
+			mapper.AddMappings(GetTableFunctionsTypes());
 			HbmMapping domainMapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
 			_cfg.AddMapping(domainMapping);
 			

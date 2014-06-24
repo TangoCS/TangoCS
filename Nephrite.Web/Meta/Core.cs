@@ -9,7 +9,7 @@ namespace Nephrite.Meta
 	/// <summary>
 	/// јбстрактный класс дл€ всех сущностей модели
 	/// </summary>
-	public abstract class MetaElement
+	public abstract class MetaElement : IMetaElement
 	{
 		public MetaElement() { }
 		public MetaElement(string name = "", string caption = "", string description = "")
@@ -46,6 +46,14 @@ namespace Nephrite.Meta
 			if (!_stereotypes.ContainsKey(t)) return null;
 			return (T)_stereotypes[t];
 		}
+
+		public void AssignStereotype(MetaStereotype stereotype)
+		{
+			Type t = stereotype.GetType();
+			if (!_stereotypes.ContainsKey(t))
+				_stereotypes.Add(t, stereotype);
+			stereotype.Parent = this;
+		}
 	}
 
 	/// <summary>
@@ -63,6 +71,7 @@ namespace Nephrite.Meta
 
 		Dictionary<string, MetaClass> _classesbyname = new Dictionary<string, MetaClass>(255);
 		Dictionary<string, MetaPackage> _packagesbyname = new Dictionary<string, MetaPackage>(32);
+		Dictionary<string, MetaEnum> _enumsbyname = new Dictionary<string, MetaEnum>(32);
 
 		/// <summary>
 		/// ѕакеты модели
@@ -72,9 +81,12 @@ namespace Nephrite.Meta
 		///  лассы модели
 		/// </summary>
 		public Dictionary<string, MetaClass>.ValueCollection Classes { get { return _classesbyname.Values; } }
+		/// <summary>
+		/// Enums модели
+		/// </summary>
+		public Dictionary<string, MetaEnum>.ValueCollection Enums { get { return _enumsbyname.Values; } }
 
-		//public string EntryPoint { get; }
-		public void AddClass(MetaClass metaClass)
+		internal void AddClass(MetaClass metaClass)
 		{
 			metaClass.Solution = this;
 			_classesbyname.Add(metaClass.Name.ToLower(), metaClass);
@@ -84,6 +96,11 @@ namespace Nephrite.Meta
 		{
 			metaPackage.Solution = this;
 			_packagesbyname.Add(metaPackage.Name.ToLower(), metaPackage);
+		}
+
+		internal void AddEnum(MetaEnum metaEnum)
+		{
+			_enumsbyname.Add(metaEnum.Name.ToLower(), metaEnum);
 		}
 
 		public MetaPackage AddPackage(string name, string caption = "", string description = "")
@@ -112,39 +129,45 @@ namespace Nephrite.Meta
 			return _packagesbyname.ContainsKey(s) ? _packagesbyname[s] : null;
 		}
 
-		Dictionary<Type, Dictionary<string, MetaElement>> _selements = new Dictionary<Type, Dictionary<string, MetaElement>>();
-
-		public void AssignStereotype(MetaStereotype stereotype, MetaElement element)
+		public MetaEnum GetEnum(string name)
 		{
-			Type t = stereotype.GetType();
-			Dictionary<string, MetaElement> elements = null;
-			if (!_selements.ContainsKey(t))
-			{
-				elements = new Dictionary<string, MetaElement>();
-				_selements.Add(t, elements);
-			}
-			else
-				elements = _selements[t];
-
-			if (!_stereotypes.ContainsKey(t))
-				_stereotypes.Add(t, stereotype);
-			stereotype.Parent = this;
-
-			elements.Add(element.Name, element);
+			string s = name.ToLower();
+			return _enumsbyname.ContainsKey(s) ? _enumsbyname[s] : null;
 		}
 
-		public Dictionary<string, MetaElement> GetElements<T>()
-			where T : MetaStereotype
-		{
-			Type t = typeof(T);
-			if (_selements.ContainsKey(t))
-				return _selements[t];
-			else
-				return null;
-		}
+		//Dictionary<Type, Dictionary<string, MetaElement>> _selements = new Dictionary<Type, Dictionary<string, MetaElement>>();
+
+		//public void AssignStereotype(MetaStereotype stereotype, MetaElement element)
+		//{
+		//	Type t = stereotype.GetType();
+		//	Dictionary<string, MetaElement> elements = null;
+		//	if (!_selements.ContainsKey(t))
+		//	{
+		//		elements = new Dictionary<string, MetaElement>();
+		//		_selements.Add(t, elements);
+		//	}
+		//	else
+		//		elements = _selements[t];
+
+		//	if (!_stereotypes.ContainsKey(t))
+		//		_stereotypes.Add(t, stereotype);
+		//	stereotype.Parent = this;
+
+		//	elements.Add(element.Name, element);
+		//}
+
+		//public Dictionary<string, MetaElement> GetElements<T>()
+		//	where T : MetaStereotype
+		//{
+		//	Type t = typeof(T);
+		//	if (_selements.ContainsKey(t))
+		//		return _selements[t];
+		//	else
+		//		return null;
+		//}
 	}
 
-	public class MetaPackage : MetaElement
+	public class MetaPackage : MetaElement, IMetaOperationContainer
 	{
 		public MetaPackage(string name = "", string caption = "", string description = "") : base(name, caption, description) { }
 
@@ -169,6 +192,8 @@ namespace Nephrite.Meta
 		public MetaSolution Solution { get; internal set; }
 		Dictionary<string, MetaPackage> _packages = new Dictionary<string, MetaPackage>(16);
 		Dictionary<string, MetaClass> _classes = new Dictionary<string, MetaClass>(64);
+		Dictionary<string, MetaOperation> _operations = new Dictionary<string, MetaOperation>(16);
+		Dictionary<string, MetaEnum> _enums = new Dictionary<string, MetaEnum>(32);
 
 		/// <summary>
 		/// ¬ложенные пакеты
@@ -178,6 +203,12 @@ namespace Nephrite.Meta
 		///  лассы пакета
 		/// </summary>
 		public Dictionary<string, MetaClass>.ValueCollection Classes { get { return _classes.Values; } }
+		/// <summary>
+		/// ќперации пакета
+		/// </summary>
+		public Dictionary<string, MetaOperation>.ValueCollection Operations { get { return _operations.Values; } }
+
+		public Dictionary<string, MetaEnum>.ValueCollection Enums { get { return _enums.Values; } }
 
 		public void AddClass(MetaClass metaClass)
 		{
@@ -207,11 +238,24 @@ namespace Nephrite.Meta
 			_packages.Add(metaPackage.Name.ToLower(), metaPackage);
 		}
 
+		public void AddEnum(MetaEnum metaEnum)
+		{
+			Solution.AddEnum(metaEnum);
+			_enums.Add(metaEnum.Name.ToLower(), metaEnum);
+		}
+
+
 		public MetaPackage AddPackage(string name, string caption = "", string description = "")
 		{
 			MetaPackage p = new MetaPackage { Name = name, Caption = caption, Description = description };
 			AddPackage(p);
 			return p;
+		}
+
+		public void AddOperation(MetaOperation metaOperation)
+		{
+			metaOperation.Parent = this;
+			_operations.Add(metaOperation.Name.ToLower(), metaOperation);
 		}
 
 		public MetaClass GetClass(string name)
@@ -220,12 +264,16 @@ namespace Nephrite.Meta
 			return _classes.ContainsKey(s) ? _classes[s] : null;
 		}
 
-
-
 		public MetaPackage GetPackage(string name)
 		{
 			string s = name.ToLower();
 			return _packages.ContainsKey(s) ? _packages[s] : null;
+		}
+
+		public MetaOperation GetOperation(string name)
+		{
+			string s = name.ToLower();
+			return _operations.ContainsKey(s) ? _operations[s] : null;
 		}
 
 		public override string ID
@@ -237,8 +285,19 @@ namespace Nephrite.Meta
 		}
 	}
 
+	public interface IMetaElement
+	{
+		string ID { get; }
+		string Name { get; set; }
+	}
 
-	public partial interface IMetaClassifier
+	public interface IMetaOperationContainer : IMetaElement
+	{
+		Dictionary<string, MetaOperation>.ValueCollection Operations { get; }
+		void AddOperation(MetaOperation metaOperation);
+	}
+
+	public partial interface IMetaClassifier : IMetaElement
 	{
 		string CLRType { get; }
 		string ColumnName(string propName);
@@ -254,7 +313,7 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public partial class MetaClass : MetaClassifier
+	public partial class MetaClass : MetaClassifier, IMetaOperationContainer
 	{
 		public string CaptionPlural { get; set; }
 
@@ -276,6 +335,7 @@ namespace Nephrite.Meta
 		public MetaPackage Parent { get; set; }
 
 		Dictionary<string, MetaProperty> _properties = new Dictionary<string, MetaProperty>();
+		Dictionary<string, MetaProperty> _allproperties = null;
 		Dictionary<string, MetaOperation> _operations = new Dictionary<string, MetaOperation>();
 
 		internal string BaseClassName { get; set; }
@@ -333,6 +393,22 @@ namespace Nephrite.Meta
 		/// </summary>
 		public Dictionary<string, MetaProperty>.ValueCollection Properties { get { return _properties.Values; } }
 		public Dictionary<string, MetaProperty>.KeyCollection PropertyNames { get { return _properties.Keys; } }
+		public Dictionary<string, MetaProperty>.ValueCollection AllProperties
+		{
+			get
+			{
+				if (_allproperties == null)
+				{
+					Dictionary<string, MetaProperty> p = new Dictionary<string, MetaProperty>(_properties);
+					if (BaseClass != null)
+						foreach (var kv in BaseClass.AllProperties)
+							p.Add(kv.Name, kv);
+					_allproperties = p;
+				}
+				return _allproperties.Values;
+			}
+		}
+
 		/// <summary>
 		/// ћетоды класса
 		/// </summary>
@@ -376,6 +452,7 @@ namespace Nephrite.Meta
 		}
 
 		public string LogicalDeleteExpressionString { get; set; }
+		public string DefaultOrderByExpressionString { get; set; }
 
 		/// <summary>
 		/// »м€ столбца дл€ свойств, которые ссылаютс€ на данный класс
@@ -452,6 +529,11 @@ namespace Nephrite.Meta
 
 	public partial class MetaValueProperty : MetaProperty
 	{
+		/// <summary>
+		/// явл€етс€ мульти€зычным
+		/// </summary>
+		public bool IsMultilingual { get; set; }
+
 		public override string GetStringValue<TClass, TValue>(TClass obj, string format = "", IFormatProvider provider = null)
 		{
 			var pt = Type;
@@ -466,17 +548,11 @@ namespace Nephrite.Meta
 	/// јтрибут класса
 	/// </summary>
 	public partial class MetaAttribute : MetaValueProperty
-	{
-		/// <summary>
-		/// явл€етс€ мульти€зычным
-		/// </summary>
-		public bool IsMultilingual { get; set; }
+	{		
 		/// <summary>
 		/// явл€етс€ автоинкрементным
 		/// </summary>
 		public bool IsIdentity { get; set; }
-
-
 	}
 
 	/// <summary>
@@ -629,7 +705,7 @@ namespace Nephrite.Meta
 		/// <summary>
 		///  ласс, которому принадлежит метод
 		/// </summary>
-		public MetaClass Parent { get; set; }
+		public IMetaOperationContainer Parent { get; set; }
 		/// <summary>
 		/// ѕараметры метода
 		/// </summary>
@@ -669,7 +745,30 @@ namespace Nephrite.Meta
 
 	}
 
-	
+	public class MetaEnum : MetaElement
+	{
+		List<MetaEnumValue> _values = new List<MetaEnumValue>();
+		public List<MetaEnumValue> Values { get { return _values; } }
+	}
+
+	public class MetaEnumValue : MetaElement
+	{
+		string _value = "";
+
+		public MetaEnumValue(string id, string name, string caption)
+			: base(name, caption)
+		{
+			_value = id;
+		}
+
+		public override string ID
+		{
+			get
+			{
+				return _value;
+			}
+		}
+	}	
 
 	public class MetaStereotype : MetaElement
 	{

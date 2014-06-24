@@ -55,7 +55,8 @@ namespace Solution.Model
 <#		} #>
 <#		foreach (var prop in cls.Properties) {
 			if (prop is MetaAttribute && prop.Name != "IsDeleted") { #>
-				.Attribute("<#=prop.Name#>", "<#=prop.Caption#>", <#=prop.Type.GetType().Name#>.<#=(prop.Type as MetaPrimitiveType).NotNullable ? "NotNull()" : "Null()"#>)
+<#				string typeparm = prop.Type is MetaEnumType ? "\"" + prop.Type.Name + "\"" : ""; #>
+				.Attribute("<#=prop.Name#>", "<#=prop.Caption#>", <#=prop.Type.GetType().Name#>.<#=(prop.Type as MetaPrimitiveType).NotNullable ? "NotNull(" + typeparm + ")" : "Null(" + typeparm + ")"#>)
 <#			}
 			if (prop is MetaComputedAttribute) { #>
 				.ComputedAttribute("<#=prop.Name#>", "<#=prop.Caption#>", <#=prop.Type.GetType().Name#>.<#=(prop.Type as MetaPrimitiveType).NotNullable ? "NotNull()" : "Null()"#>)

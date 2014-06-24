@@ -40,12 +40,46 @@ namespace Nephrite.Meta
 			else
 				s.AddPackage(np);
 
+			var enums = xp.Elements("Enums");
+			if (enums != null)
+				foreach (XElement xe in enums.Nodes())
+				{
+					LoadEnum(np, xe);
+				}
+
+			var operations = xp.Elements("Operations");
+			if (operations != null)
+				foreach (XElement xe in operations.Nodes())
+				{
+					LoadOperation(np, xe);
+				}
+
 			var classes = xp.Elements("Classes");
 			if (classes != null)
 				foreach (XElement xe in classes.Nodes())
 				{
 					LoadClass(np, xe);
 				}
+		}
+
+		static void LoadEnum(MetaPackage p, XElement xc)
+		{
+			MetaEnum e = new MetaEnum();
+			e.Name = xc.GetAttributeValue("Name");
+			e.Caption = xc.GetAttributeValue("Caption");
+
+			var values = xc.Elements("Value");
+			if (values != null)
+			{
+				foreach (XElement xe in values)
+				{
+					MetaEnumValue ev = new MetaEnumValue(xe.GetAttributeValue("ID"), xe.GetAttributeValue("Name"), xe.GetAttributeValue("Caption"));
+					e.Values.Add(ev);
+				}
+			}
+
+			p.AddEnum(e);
+			
 		}
 
 		static void LoadClass(MetaPackage p, XElement xc)
@@ -59,10 +93,7 @@ namespace Nephrite.Meta
 			c.IsPersistent = xc.GetAttributeValue("IsSeparateTable") == "1";
 			c.BaseClassName = xc.GetAttributeValue("BaseClass");
 			c.LogicalDeleteExpressionString = xc.GetAttributeValue("LogicalDeleteExpression");
-			if (c.Name == "MM_Package")
-			{
-
-			}
+			c.DefaultOrderByExpressionString = xc.GetAttributeValue("DefaultOrderBy");
 
 			var properties = xc.Elements("Properties");
 			if (properties != null)
@@ -91,8 +122,8 @@ namespace Nephrite.Meta
 				{
 					if (xe.Name == "Versioning") // @Sad переделать потом на универсальный загрузчик
 					{
-						SVersioning s = new SVersioning(xe.GetAttributeValue("VersioningType"));
-						p.Solution.AssignStereotype(s, c);
+						SVersioning s = new SVersioning(xe.GetAttributeValue("Type"));
+						c.AssignStereotype(s);
 					}
 				}
 
@@ -101,10 +132,6 @@ namespace Nephrite.Meta
 
 		static void LoadAttribute(MetaClass c, XElement xp)
 		{
-			if (c.Name == "Appendix")
-			{
-
-			}
 			MetaAttribute a = new MetaAttribute();
 			//a.ID = xp.GetAttributeValue("ID").ToGuid();
 			a.Name = xp.GetAttributeValue("Name");
@@ -131,7 +158,7 @@ namespace Nephrite.Meta
 				case "G": a.Type = TypeFactory.Guid(a.IsRequired); break;
 				case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6), a.IsRequired); break;
 				case "C":
-					a.Type = new MetaEnum { Name = xp.GetAttributeValue("EnumName") ?? "", NotNullable = a.IsRequired }; break;
+					a.Type = new MetaEnumType { Name = xp.GetAttributeValue("EnumName") ?? "", NotNullable = a.IsRequired }; break;
 				case "F": a.Type = TypeFactory.FileIntKey(a.IsRequired); break;
 				case "E": a.Type = TypeFactory.FileGuidKey(a.IsRequired); break;
 				case "Z": a.Type = TypeFactory.ZoneDateTime(a.IsRequired); break;
@@ -161,7 +188,7 @@ namespace Nephrite.Meta
 				case "B": a.Type = TypeFactory.Boolean(a.IsRequired); break;
 				case "G": a.Type = TypeFactory.Guid(a.IsRequired); break;
 				case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6), a.IsRequired); break;
-				case "C": a.Type = new MetaEnum { Name = xp.GetAttributeValue("EnumName") ?? "", NotNullable = a.IsRequired }; break;
+				case "C": a.Type = new MetaEnumType { Name = xp.GetAttributeValue("EnumName") ?? "", NotNullable = a.IsRequired }; break;
 				case "F": a.Type = TypeFactory.FileIntKey(a.IsRequired); break;
 				case "E": a.Type = TypeFactory.FileGuidKey(a.IsRequired); break;
 				case "Z": a.Type = TypeFactory.ZoneDateTime(a.IsRequired); break;
@@ -177,6 +204,7 @@ namespace Nephrite.Meta
 			a.Caption = xp.GetAttributeValue("Caption");
 			a.Description = xp.GetAttributeValue("Description");
 			a.Expression = xp.GetAttributeValue("Expression");
+			a.IsMultilingual = xp.GetAttributeValue("IsMultilingual").ToLower() == "true";
 			//a.DataType = xp.GetAttributeValue("DataType");
 			switch (xp.GetAttributeValue("DataType"))
 			{
@@ -190,7 +218,7 @@ namespace Nephrite.Meta
 				case "B": a.Type = TypeFactory.Boolean(a.IsRequired); break;
 				case "G": a.Type = TypeFactory.Guid(a.IsRequired); break;
 				case "M": a.Type = TypeFactory.Decimal(xp.GetAttributeValue("Precision").ToInt32(14), xp.GetAttributeValue("Scale").ToInt32(6), a.IsRequired); break;
-				case "C": a.Type = new MetaEnum { Name = xp.GetAttributeValue("EnumName") ?? "", NotNullable = a.IsRequired }; break;
+				case "C": a.Type = new MetaEnumType { Name = xp.GetAttributeValue("EnumName") ?? "", NotNullable = a.IsRequired }; break;
 				case "F": a.Type = TypeFactory.FileIntKey(a.IsRequired); break;
 				case "E": a.Type = TypeFactory.FileGuidKey(a.IsRequired); break;
 				case "Z": a.Type = TypeFactory.ZoneDateTime(a.IsRequired); break;
@@ -222,7 +250,7 @@ namespace Nephrite.Meta
 			c.AddProperty(a);
 		}
 
-		static void LoadOperation(MetaClass c, XElement xo)
+		static void LoadOperation(IMetaOperationContainer c, XElement xo)
 		{
 			MetaOperation o = new MetaOperation();
 			//o.ID = xo.GetAttributeValue("ID").ToGuid();
@@ -236,12 +264,12 @@ namespace Nephrite.Meta
 			o.ViewName = xo.GetAttributeValue("ViewName");
 			o.ViewClass = xo.GetAttributeValue("ViewClass");
 
-			if (xo.GetAttributeValue("IsDefault").ToLower() == "true")
-				c.DefaultOperation = o;
+			if (xo.GetAttributeValue("IsDefault").ToLower() == "true" && c is MetaClass)
+				(c as MetaClass).DefaultOperation = o;
 
-			var parms = xo.Elements("Parameters");
+			var parms = xo.Elements("Parameter");
 			if (parms != null)
-				foreach (XElement xe in parms.Nodes())
+				foreach (XElement xe in parms)
 				{
 					MetaOperationParameter parm = new MetaOperationParameter();
 					parm.Name = xe.GetAttributeValue("Name");

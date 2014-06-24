@@ -94,7 +94,7 @@ namespace Nephrite.Web.FormsGenerator
 						return new MultiObjectCode(field, prefix);
 				else if (field.Type is MetaFileType)
 					return new FileUploadCode(field, prefix);
-				else if (field.Type is MetaEnum)
+				else if (field.Type is MetaEnumType)
 					return new DDLEnumCode(field, prefix);
 				else
 					return null;

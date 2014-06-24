@@ -17,9 +17,11 @@ using Nephrite.Web.Hibernate;
 using Nephrite.Web.MetaStorage;
 using NHibernate;
 using NHibernate.Cfg.Loquacious;
+using NHibernate.Engine;
 using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
+using NHibernate.Type;
 
 
 namespace Tessera.Test
@@ -62,17 +64,18 @@ namespace Tessera.Test
 
         private static void Main(string[] args)
         {
-			A.DBScript = new DBScriptMSSQL("DBO");
-			ConnectionManager.SetConnectionString("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=Servants;Data Source=(local)");
-			HDataContext.DBType = DBType.MSSQL;
+			//A.DBScript = new DBScriptMSSQL("DBO");
+			//ConnectionManager.SetConnectionString("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=Servants;Data Source=(local)");
+			//HDataContext.DBType = DBType.MSSQL;
 
-            //ConnectionManager.SetConnectionString("Database=SRVNTS;UserID=dbo;Password=123*(iop;Server=176.227.213.5:50000");
-            //HDataContext.DBType = DBType.DB2;
-			//A.DBScript = new DBScriptDB2("DBO");
+            ConnectionManager.SetConnectionString("Database=SRVNTS;UserID=dbo;Password=123*(iop;Server=176.227.213.5:50000");
+            HDataContext.DBType = DBType.DB2;
+			A.DBScript = new DBScriptDB2("DBO");
 
-			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
-			var classes = MetaSolution.Load().Classes;
+			
 
+
+	
 			Listeners l = new Listeners();
 			var ael = new AuditEventListener();
 			l.PreDeleteEventListeners.Add(ael);
@@ -85,13 +88,16 @@ namespace Tessera.Test
 			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), l);
 			A.Model.ExecuteCommand("SET SCHEMA = 'DBO';");
 
+			(App.DataContext as HDataContext).Session.EnableFilter("EMP").SetParameter("EmployeeID", "53216139-9773-4811-8181-1b56034fe90d");
+			var q = App.DataContext.F_DocTask.Where(o => o.DocTaskID == 379).ToList();
+
 			//var f = Nephrite.Web.FileStorage.FileStorageManager.CreateFile("", "");
 			//var f = FileStorageManager.DbFiles.First(o => o.ID == Guid.Parse("53216139-9773-4811-8181-1b56034fe90d"));
 			//f.Tag = "1";
 			//A.Model.SubmitChanges();
 			//var r = A.Model.ExecuteQuery<int>("select ? from SPM_Subject where SubjectID = 2", 111);
-			var f = FileStorageManager.CreateFile("text.txt", "");
-			A.Model.SubmitChanges();
+			//var f = FileStorageManager.CreateFile("text.txt", "");
+			//A.Model.SubmitChanges();
 
 
 			//c = c.Where(obj.FindByProperty<dynamic>("ParentFolderID", null));
@@ -223,7 +229,7 @@ namespace Tessera.Test
             Property(x => x.LastModifiedDate);
 
             Property(x => x.LastModifiedUserID, map => map.Formula("LastModifiedUserID"));
-            ManyToOne(x => x.LastModifiedUser, map => { map.Column("LastModifiedUserID"); map.Cascade(Cascade.None); });
+            ManyToOne(x => x.LastModifiedUser, map => { map.Column("LastModifiedUserID"); });
         }
     }
 
@@ -281,11 +287,20 @@ namespace Tessera.Test
 
         public override IEnumerable<Type> GetEntitiesTypes()
         {
+			var emp = new FilterDefinition(
+				"EMP",
+				null, // or your default condition
+				new Dictionary<string, IType> { { "EmployeeID", NHibernateUtil.String } },
+				false);
+			Configuration.AddFilterDefinition(emp);
+
+
             List<Type> l = new List<Type>();
             l.Add(typeof(SPM_SubjectMap));
             l.Add(typeof(EmployeeMap));
             l.Add(typeof(V_OrgUnitMap));
             l.Add(typeof(AppendixMap));
+			l.Add(typeof(F_DocTaskMap));
 
             return l;
         }
@@ -319,6 +334,14 @@ namespace Tessera.Test
             }
         }
 
+		public HTable<F_DocTask> F_DocTask
+		{
+			get
+			{
+				return new HTable<F_DocTask>(this, Session.Query<F_DocTask>());
+			}
+		}
+
 
         public override IDataContext NewDataContext()
         {
@@ -330,6 +353,63 @@ namespace Tessera.Test
 			return new HibernateDataContext(HCoreDataContext.DefaultDBConfig(connectionString), null);
         }
     }
+
+	public partial class F_DocTask
+	{
+		public virtual Nullable<int> DocTaskID { get; set; }
+		public virtual Nullable<bool> IsCheckDeadline { get; set; }
+		public virtual string FullTitle { get; set; }
+		public virtual string TypeTitle { get; set; }
+		public virtual string PensionNo { get; set; }
+		public virtual string RFSubjectTitle { get; set; }
+		public virtual Nullable<DateTime> DecisionDocDate { get; set; }
+		public virtual string RegNo { get; set; }
+		public virtual Nullable<DateTime> RegDate { get; set; }
+		public virtual string OrgUnitTitle { get; set; }
+		public virtual Nullable<DateTime> PlanCompleteDate { get; set; }
+		public virtual string PerformerTitle { get; set; }
+		public virtual Nullable<bool> CitizenVIP { get; set; }
+		public virtual Nullable<int> CompleteWarning { get; set; }
+		//public virtual string Status { get; set; }
+		public virtual Nullable<int> DocTaskResultID { get; set; }
+		public virtual string DocTypeTitle { get; set; }
+		public virtual Nullable<bool> IsDeleted { get; set; }
+		public virtual Nullable<DateTime> CreateDate { get; set; }
+		public virtual string CitizenTitle { get; set; }
+		//public virtual Nullable<int> TypeID { get; set; }
+	}
+
+	public partial class F_DocTaskMap : ClassMapping<F_DocTask>
+	{
+		public F_DocTaskMap()
+		{
+			//Schema("dbo");
+			Lazy(true);
+
+			Table("TABLE(DBO.F_DocTask(:EMP.EmployeeID))");
+			Id(x => x.DocTaskID);
+			Property(x => x.IsCheckDeadline);
+			Property(x => x.FullTitle);
+			Property(x => x.TypeTitle);
+			Property(x => x.PensionNo);
+			Property(x => x.RFSubjectTitle);
+			Property(x => x.DecisionDocDate);
+			Property(x => x.RegNo);
+			Property(x => x.RegDate);
+			Property(x => x.OrgUnitTitle);
+			Property(x => x.PlanCompleteDate);
+			Property(x => x.PerformerTitle);
+			Property(x => x.CitizenVIP);
+			Property(x => x.CompleteWarning);
+			//Property(x => x.Status);
+			Property(x => x.DocTaskResultID);
+			Property(x => x.DocTypeTitle);
+			Property(x => x.IsDeleted);
+			Property(x => x.CreateDate);
+			Property(x => x.CitizenTitle);
+			//Property(x => x.TypeID);
+		}
+	}
 
 
 }

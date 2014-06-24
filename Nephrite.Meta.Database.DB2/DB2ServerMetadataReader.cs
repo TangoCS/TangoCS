@@ -232,7 +232,7 @@ namespace Nephrite.Meta.Database
                                         var Parameter = new Parameter();
                                         Parameter.Name = c.GetAttributeValue("NAME");
                                         Parameter.Type = DbScript.GetType(c.GetAttributeValue("TYPE"), true);
-                                        if (!string.IsNullOrEmpty(Parameter.Name))
+										if (!string.IsNullOrEmpty(Parameter.Name) && !function.Parameters.ContainsKey(Parameter.Name))
                                             function.Parameters.Add(Parameter.Name, Parameter);
                                     });
 
