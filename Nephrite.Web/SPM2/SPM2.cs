@@ -94,18 +94,18 @@ namespace Nephrite.Web.SPM
 		public string Title { get; private set; }
 		public string Email { get; private set; }
 		public byte[] PasswordHash { get; private set; }
-		public int _IsActive { get; private set; }
+		internal int _IsActive { get; private set; }
 		public bool IsActive
 		{
 			get { return _IsActive == 1; }
 		}
-		public int _IsDeleted { get; private set; }
+		internal int _IsDeleted { get; private set; }
 		public bool IsDeleted
 		{
 			get { return _IsDeleted == 1; }
 		}
 		public string SID { get; set; }
-		public int _MustChangePassword { get; private set; }
+		internal int _MustChangePassword { get; private set; }
 		public bool MustChangePassword
 		{
 			get { return _MustChangePassword == 1; }

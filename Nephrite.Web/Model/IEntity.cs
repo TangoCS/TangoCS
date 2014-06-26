@@ -4,6 +4,7 @@ using System.Data.Linq;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
+using Nephrite.Meta;
 
 namespace Nephrite.Web
 {
@@ -60,6 +61,18 @@ namespace Nephrite.Web
 			where T : IEntity
 		{
 			((ITable)q).DeleteAllOnSubmit(obj);
+		}
+	}
+
+	public static class EntityExtensions
+	{
+		public static MetaClass GetMetaClass(this IEntity obj)
+		{
+			if (obj is IMMObjectVersion)
+				return A.Meta.GetClass(obj.GetType().Name.Substring("HST_".Length));
+			if (obj is IMMObjectMLView)
+				return A.Meta.GetClass(obj.GetType().Name.Substring("V_".Length));
+			return A.Meta.GetClass(obj.GetType().Name);
 		}
 	}
 }

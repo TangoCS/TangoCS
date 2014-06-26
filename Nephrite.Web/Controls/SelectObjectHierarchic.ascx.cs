@@ -95,8 +95,12 @@ namespace Nephrite.Web.Controls
 			select.SetBottomLeft();
 		}
 
+		object mo = null;
+
 		protected void Page_Load(object sender, EventArgs e)
 		{
+			mo = Activator.CreateInstance(Type);
+
 			if (!String.IsNullOrEmpty(Title))
 				select.Title = Title;
 			else
@@ -142,21 +146,20 @@ namespace Nephrite.Web.Controls
 					ids.Clear();
 					if (IDField.IsEmpty())
 					{
-						foreach (PropertyInfo pi in Type.GetProperties())
+						if (mo is IEntity)
 						{
-							object[] attr = pi.GetCustomAttributes(typeof(ColumnAttribute), true);
-							if (attr.Length == 1 && ((ColumnAttribute)attr[0]).IsPrimaryKey == true)
-								IDField = pi.Name;
+							var cls = (mo as IEntity).GetMetaClass();
+							if (cls != null && cls.CompositeKey.Count == 1) IDField = cls.Key.Name;
 						}
 						if (IDField.IsEmpty())
 							throw new Exception(ClientID + ": Не задано свойство IDField");
 					}
-					ids.AddRange(AllObjects.Cast<object>().ToList().Select(o => DataBinder.GetPropertyValue(o, IDField).ToString()).ToList());
-					titles = AllObjects.Cast<object>().Select(o => new
+					titles = AllObjects.ToList().Cast<object>().Select(o => new CodifierValue
 					{
-						id = DataBinder.GetPropertyValue(o, IDField).ToString(),
-						title = DataBinder.GetPropertyValue(o, DataTextField).ToString()
-					}).ToDictionary(o => o.id, o => o.title);
+						Code = Convert.ToString(DataBinder.GetPropertyValue(o, IDField)),
+						Title = Convert.ToString(DataBinder.GetPropertyValue(o, DataTextField))
+					}).ToDictionary(o => o.Code, o => o.Title);
+					ids.AddRange(titles.Keys);
 				}
 				if (hfCheckType.Value == "uncheck")
 					ids.Clear();
@@ -190,17 +193,15 @@ namespace Nephrite.Web.Controls
 			if (ParentField.IsEmpty() && Type.GetProperty("ParentGUID") != null)
 				ParentField = "ParentGUID";
 
+			
+
 			Type idType = null;
 			if (IDField.IsEmpty())
 			{
-				foreach (PropertyInfo pi in Type.GetProperties())
+				if (mo is IEntity)
 				{
-					object[] attr = pi.GetCustomAttributes(typeof(ColumnAttribute), true);
-					if (attr.Length == 1 && ((ColumnAttribute)attr[0]).IsPrimaryKey == true && pi.Name != "LanguageCode")
-					{
-						IDField = pi.Name;
-						idType = pi.PropertyType;
-					}
+					var cls = (mo as IEntity).GetMetaClass();
+					if (cls != null && cls.CompositeKey.Count == 1) IDField = cls.Key.Name;
 				}
 				if (IDField.IsEmpty())
 					throw new Exception(ClientID + ": Не задано свойство IDField");
@@ -208,7 +209,7 @@ namespace Nephrite.Web.Controls
 			else
 				idType = Type.GetProperty(IDField).PropertyType;
 
-			object mo = Activator.CreateInstance(Type);
+			
 
 			if (SearchExpression == null && mo is IModelObject)
 				SearchExpression = s => (o => SqlMethods.Like((o as IModelObject).Title, "%" + s + "%"));
@@ -221,7 +222,7 @@ namespace Nephrite.Web.Controls
 				foreach (var id in selectedObjects)
 				{
 					object typedid = id.ToGuid() == Guid.Empty ? (object)id.ToInt32(0) : (object)id.ToGuid();
-					var obj = AllObjects.OfType<object>().SingleOrDefault(mo.FindByProperty<object>(IDField, typedid));
+					var obj = AllObjects.Where(mo.FindByProperty<dynamic>(IDField, typedid)).ToList().SingleOrDefault();
 					if (obj != null)
 					{
 						ids.Add(id);

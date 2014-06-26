@@ -7,27 +7,31 @@ namespace Nephrite.Web.Controls.Scripts
 {
     public class SPM2ScriptDB2 : ISPM2Script
     {
+		string subjSelect = @"select SubjectID as ID, SystemName as ""Login"", Title as ""Title"", PasswordHash as ""PasswordHash"", 
+IsActive as ""_IsActive"", IsDeleted as ""_IsDeleted"", SID , MustChangePassword as ""_MustChangePassword"", 
+Email as ""Email"" from SPM_Subject where {0}";
+
         public string FromLogin
         {
-            get { return "select SubjectID as ID, SystemName as \"Login\", Title as \"Title\", PasswordHash as \"PasswordHash\",  IsActive as \"_IsActive\", IsDeleted as \"_IsDeleted\", SID , MustChangePassword  as \"_MustChangePassword\", Email as  \"Email\" from SPM_Subject where lower(SystemName) = ?"; }
+			get { return String.Format(subjSelect, "lower(SystemName) = ?"); }
         }
         public string FromSID
         {
-            get { return "select SubjectID  as ID, SystemName as \"Login\", Title as \"Title\", PasswordHash as \"PasswordHash\", IsActive as \"_IsActive\", IsDeleted  as \"_IsDeleted\", SID, MustChangePassword  as \"_MustChangePassword\", Email as \"Email\" from SPM_Subject where SID = ? or lower(SystemName) = ?"; }
+			get { return String.Format(subjSelect, "SID = ? or lower(SystemName) = ?"); }
         }
         public string FromID
         {
-            get { return "select SubjectID as ID, SystemName as \"Login\", Title as \"Title\", PasswordHash as \"PasswordHash\", IsActive as \"_IsActive\", IsDeleted as \"_IsDeleted\", SID, MustChangePassword as \"_MustChangePassword\", Email as  \"Email\" from SPM_Subject where SubjectID = ?"; }
+			get { return String.Format(subjSelect, "SubjectID = ?"); }
         }
         public string FromEmail
         {
-            get { return "select SubjectID as ID, SystemName as \"Login\", Title as \"Title\", PasswordHash as \"PasswordHash\", IsActive as \"_IsActive\", IsDeleted as \"IsDeleted\", SID, MustChangePassword as \"MustChangePassword\", Email as \"Email\" from SPM_Subject where lower(Email) = ?"; }
+			get { return String.Format(subjSelect, "lower(Email) = ?"); }
         }
         public string GetRolesAccessByIdQuery
         {
             get
             {
-                return @"select cast(a.ItemGUID as  varchar(36)) || '-1-' || cast(ra.RoleID as  varchar(36))
+                return @"select cast(a.ItemGUID as varchar(36)) || '-1-' || cast(ra.RoleID as varchar(36))
 				from DBO.SPM_Action a, DBO.SPM_RoleAccess ra
 				where ra.ActionID = a.ActionID and a.ItemGUID is not null";
             }
