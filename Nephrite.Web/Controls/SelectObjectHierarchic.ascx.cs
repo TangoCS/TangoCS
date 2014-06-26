@@ -209,7 +209,6 @@ namespace Nephrite.Web.Controls
 			else
 				idType = Type.GetProperty(IDField).PropertyType;
 
-			object mo = Activator.CreateInstance(Type);
 			if (SearchExpression == null && mo is ISearchExpression)
 				SearchExpression = ((ISearchExpression)mo).SearchExpression;
 
