@@ -199,7 +199,7 @@ namespace Nephrite.Web.Controls
 			if (IDField.IsEmpty())
 			{
 				if (mo is IEntity)
-				{
+					{
 					var cls = (mo as IEntity).GetMetaClass();
 					if (cls != null && cls.CompositeKey.Count == 1) IDField = cls.Key.Name;
 				}
@@ -209,7 +209,9 @@ namespace Nephrite.Web.Controls
 			else
 				idType = Type.GetProperty(IDField).PropertyType;
 
-			
+			object mo = Activator.CreateInstance(Type);
+			if (SearchExpression == null && mo is ISearchExpression)
+				SearchExpression = ((ISearchExpression)mo).SearchExpression;
 
 			if (SearchExpression == null && mo is IModelObject)
 				SearchExpression = s => (o => SqlMethods.Like((o as IModelObject).Title, "%" + s + "%"));
@@ -482,5 +484,10 @@ namespace Nephrite.Web.Controls
 			objects.Add(id);
 			titles.Add(title);
 		}
+	}
+
+	public interface ISearchExpression
+	{
+		Func<string, Expression<Func<object, bool>>> SearchExpression { get; }
 	}
 }
