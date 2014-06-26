@@ -61,7 +61,7 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\lib\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.TextTemplating, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -156,6 +156,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Model\IMMObject.cs" />
+    <Compile Include="Model\IMMObjectMLView.cs" />
+    <Compile Include="Model\IMMObjectVersion.cs" />
     <Compile Include="MVC\AppWeb.cs" />
     <Compile Include="Controllers\EntityController.cs" />
     <Compile Include="Model\A.cs" />

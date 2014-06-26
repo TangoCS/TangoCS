@@ -96,6 +96,9 @@ namespace Nephrite.Meta
 		{
 			metaPackage.Solution = this;
 			_packagesbyname.Add(metaPackage.Name.ToLower(), metaPackage);
+
+			foreach (var c in metaPackage.Classes)
+				AddClass(c);
 		}
 
 		internal void AddEnum(MetaEnum metaEnum)
@@ -212,7 +215,7 @@ namespace Nephrite.Meta
 
 		public void AddClass(MetaClass metaClass)
 		{
-			Solution.AddClass(metaClass);
+			//Solution.AddClass(metaClass);
 			metaClass.Parent = this;
 			_classes.Add(metaClass.Name.ToLower(), metaClass);
 		}

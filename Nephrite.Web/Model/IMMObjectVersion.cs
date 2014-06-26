@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Nephrite.Web;
 
-namespace Nephrite.Metamodel
+namespace Nephrite.Web
 {
     public interface IMMObjectVersion : IMMObject
     {

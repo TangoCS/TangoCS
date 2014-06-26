@@ -67,7 +67,7 @@
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ICSharpCode.SharpZipLib.dll.0.85.4.369\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\lib\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.VisualStudio.TextTemplating">
       <HintPath>..\Microsoft.VisualStudio.TextTemplating.dll</HintPath>
@@ -118,8 +118,6 @@
     </Compile>
     <Compile Include="HistoryType.cs" />
     <Compile Include="IFormControl.cs" />
-    <Compile Include="IMMObjectMLView.cs" />
-    <Compile Include="IMMObjectVersion.cs" />
     <Compile Include="ISiteMapProvider.cs" />
     <Compile Include="MMObjectExtensions.cs" />
     <Compile Include="Model\FormViewCacheKeyInfo.cs" />
