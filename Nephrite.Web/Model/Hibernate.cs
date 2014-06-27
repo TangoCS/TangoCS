@@ -158,7 +158,7 @@ namespace Nephrite.Web.Model
 
 		public void Dispose()
 		{
-			_session.Dispose();
+			if (_session != null) _session.Dispose();
 		}
 
 		public List<string> TestMappings(ICollection<string> entitiesFilter)
