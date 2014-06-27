@@ -14,21 +14,37 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Mapping.ByCode;
 using System.Text;
+using System.Data;
+using NHibernate.Engine;
+using NHibernate.Hql.Ast.ANTLR;
+using NHibernate.Transform;
 
 namespace Nephrite.Web.Model
 {
 	public abstract class HDataContext : IDisposable
 	{
-		ISessionFactory _sessionFactory;
+		static Dictionary<string, ISessionFactory> _sessionFactories = new Dictionary<string, ISessionFactory>();
+		static Dictionary<string, HbmMapping> _mappings = new Dictionary<string, HbmMapping>();
+		//ISessionFactory _sessionFactory;
 		ISession _session;
 		Configuration _cfg = null;
 
 		public List<object> ToInsert { get; private set; }
 		public List<object> ToDelete { get; private set; }
+		public List<Action> AfterSaveActions { get; private set; }
+		public List<Action> BeforeSaveActions { get; private set; }
 
 		public ISession Session
 		{
-			get { return _session; }
+			get
+			{
+				if (_session == null)
+				{
+					_session = SessionFactory.OpenSession();
+					_session.FlushMode = FlushMode.Commit;
+				}
+				return _session;
+			}
 		}
 
 		public Configuration Configuration
@@ -38,7 +54,42 @@ namespace Nephrite.Web.Model
 
 		public ISessionFactory SessionFactory
 		{
-			get { return _sessionFactory; }
+			get
+			{
+				string t = this.GetType().Name;
+				ISessionFactory f = null;
+				if (_sessionFactories == null) _sessionFactories = new Dictionary<string, ISessionFactory>();
+
+				if (_sessionFactories.ContainsKey(t))
+					f = _sessionFactories[t];
+				else
+				{
+					f = _cfg.BuildSessionFactory();
+					_sessionFactories.Add(t, f);
+				}
+				return f;
+			}
+		}
+
+		public HbmMapping Mapping
+		{
+			get
+			{
+				string t = this.GetType().Name;
+				HbmMapping f = null;
+				if (_mappings == null) _mappings = new Dictionary<string, HbmMapping>();
+
+				if (_mappings.ContainsKey(t))
+					f = _mappings[t];
+				else
+				{
+					var mapper = new ModelMapper();
+					mapper.AddMappings(GetEntitiesTypes());
+					f = mapper.CompileMappingForAllExplicitlyAddedEntities();
+					_mappings.Add(t, f);
+				}
+				return f;
+			}
 		}
 
 		public TextWriter Log { get; set; }
@@ -46,32 +97,23 @@ namespace Nephrite.Web.Model
 
 		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig)
 		{
-
-			//ConnectionManager.SetConnectionString("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=servants1;Data Source=TOSHIBA-TOSH\\SQL2008");
-			//ConnectionManager.SetConnectionString("Database=servants;UserID=db2admin;Password=q121212;Server=193.233.68.82:50000");
-
-			
 			Log = new StringWriter();
-
 			ToInsert = new List<object>();
 			ToDelete = new List<object>();
+			AfterSaveActions = new List<Action>();
+			BeforeSaveActions = new List<Action>();
 
 			_cfg = new Configuration();
 			_cfg.DataBaseIntegration(dbConfig);
 
-
 			_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" } });
 			_cfg.SetInterceptor(new HDataContextSqlStatementInterceptor());
 
-			var mapper = new ModelMapper();
-			mapper.AddMappings(GetEntitiesTypes());
-			HbmMapping domainMapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			_cfg.AddMapping(domainMapping);
+			_cfg.AddMapping(Mapping);
 
-			_sessionFactory = _cfg.BuildSessionFactory();
-			
-			_session = _sessionFactory.OpenSession();
-			_session.FlushMode = FlushMode.Never;
+
+			//_session = SessionFactory.OpenSession();
+			//_session.FlushMode = FlushMode.Commit;
 		}
 
 		~HDataContext()
@@ -83,14 +125,34 @@ namespace Nephrite.Web.Model
 		{
 			using (var transaction = _session.BeginTransaction())
 			{
+				Log.WriteLine("BEGIN TRANSACTION");
+				Log.WriteLine();
+
+				foreach (var action in BeforeSaveActions)
+					action();
+
 				foreach (object obj in ToInsert)
 					_session.SaveOrUpdate(obj);
 
 				foreach (object obj in ToDelete)
 					_session.Delete(obj);
 
+				foreach (var action in AfterSaveActions)
+					action();
+
 				transaction.Commit();
-				_session.Flush();
+
+				Log.WriteLine("COMMIT TRANSACTION");
+				Log.WriteLine();
+
+				ToDelete.Clear();
+				ToInsert.Clear();
+				BeforeSaveActions.Clear();
+				AfterSaveActions.Clear();
+
+				_session.Close();
+				_session.Dispose();
+				_session = null;
 			}
 		}
 
