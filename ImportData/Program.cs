@@ -61,15 +61,15 @@ namespace ImportData
 					var isdo = true;
 					var page = 1;
 
-					result.AppendFormat("SET INTEGRITY FOR  {1}.{0} ALL IMMEDIATE UNCHECKED;\r\n", table.Name.ToUpper(), "DBO");
-					result.AppendFormat("CALL SYSPROC.ADMIN_CMD( 'REORG TABLE {1}.{0}' );\r\n", table.Name.ToUpper(), "DBO");
-					result.AppendFormat("DELETE FROM  {1}.{0} ;\r\n", table.Name.ToUpper(), "DBO");
+					result.AppendFormat("SET INTEGRITY FOR {1}.{0} ALL IMMEDIATE UNCHECKED;\r\n", table.Name.ToUpper(), "DBO");
+					result.AppendFormat("CALL SYSPROC.ADMIN_CMD('REORG TABLE {1}.{0}' );\r\n", table.Name.ToUpper(), "DBO");
+					result.AppendFormat("DELETE FROM {1}.{0} ;\r\n", table.Name.ToUpper(), "DBO");
 
 					while (isdo)
 					{
 
 						var list = ImportData(table, table.Columns.Any(t => t.Value.IsPrimaryKey), sqlCon, result, 10, page, ref isdo);
-						Console.WriteLine("Записи с   " + (10 * page - 10) + "по " + (10 * page));
+						Console.WriteLine("Записи с " + (10 * page - 10) + "по " + (10 * page));
 						foreach (var nfile in list)
 						{
 							Console.WriteLine(nfile.guid);
@@ -104,7 +104,7 @@ namespace ImportData
 					var columnIdenity = table.Columns.Values.FirstOrDefault(t => t.Identity);
 					if (columnIdenity != null)
 					{
-						result.AppendFormat("ALTER TABLE DBO.{0} ALTER COLUMN {1}  RESTART WITH {2} ;\n\r", table.Name, columnIdenity.Name, itemsCount + 1);
+						result.AppendFormat("ALTER TABLE DBO.{0} ALTER COLUMN {1} RESTART WITH {2} ;\n\r", table.Name, columnIdenity.Name, itemsCount + 1);
 					}
 				}
 
@@ -175,7 +175,7 @@ namespace ImportData
 						sc.Add(GetStringValue(reader, i).Replace("\\", ""));
 					}
 					countItems++;
-					sqlInsert.AppendFormat("INSERT INTO DBO.{0} ({1})  VALUES ({2}); \r\n", t.Name, columns.Replace("[", "").Replace("]", ""), string.Join(",", sc.Cast<string>().ToArray<string>()));
+					sqlInsert.AppendFormat("INSERT INTO DBO.{0} ({1}) VALUES ({2}); \r\n", t.Name, columns.Replace("[", "").Replace("]", ""), string.Join(",", sc.Cast<string>().ToArray<string>()));
 				}
 			}
 
@@ -331,7 +331,7 @@ namespace ImportData
 							result.Append(data[x].ToString("X2"));
 						return string.Format("blob(X'{0}')", result.ToString());
 					case "xml":
-						return String.Format("N'{0}'", reader.GetSqlXml(index).Value.Replace("'", "''"));
+						return String.Format("'{0}'", reader.GetSqlXml(index).Value.Replace("'", "''"));
 					case "varbinary":
 						StringBuilder result1 = new StringBuilder();
 						byte[] data1 = reader.GetSqlBytes(index).Value;

@@ -938,7 +938,16 @@ namespace Nephrite.Web.Controls
 			f.Operator.Add(opname);
 		}
 
-		public void AddFieldBoolean<T>(string title, Expression<Func<T, object>> column)
+		public void AddFieldBoolean<T>(string title, Expression<Func<T, bool>> column)
+		{
+			fieldList.Add(new Field
+			{
+				Title = title,
+				Column = column,
+				FieldType = FieldType.Boolean
+			});
+		}
+		public void AddFieldBoolean<T>(string title, Expression<Func<T, bool?>> column)
 		{
 			fieldList.Add(new Field
 			{
