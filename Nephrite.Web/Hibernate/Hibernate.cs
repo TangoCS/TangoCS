@@ -109,7 +109,7 @@ namespace Nephrite.Web.Hibernate
 				HbmMapping f = null;
 				if (_mappings == null) _mappings = new Dictionary<string, HbmMapping>();
 
-				if (_sessionFactories.ContainsKey(t))
+				if (_mappings.ContainsKey(t))
 					f = _mappings[t];
 				else
 				{
