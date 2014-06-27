@@ -15,6 +15,7 @@ using Nephrite.Web.CoreDataContext;
 using Nephrite.Web.FileStorage;
 using Nephrite.Web.Hibernate;
 using Nephrite.Web.MetaStorage;
+using Nephrite.Web.SPM;
 using NHibernate;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Engine;
@@ -88,8 +89,9 @@ namespace Tessera.Test
 			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), l);
 			A.Model.ExecuteCommand("SET SCHEMA = 'DBO';");
 
-			(App.DataContext as HDataContext).Session.EnableFilter("EMP").SetParameter("EmployeeID", "53216139-9773-4811-8181-1b56034fe90d");
-			var q = App.DataContext.F_DocTask.Where(o => o.DocTaskID == 379).ToList();
+			var b = ActionSPMContext.Current.Check("DocTask.ReturnTask", 1);
+			//(App.DataContext as HDataContext).Session.EnableFilter("EMP").SetParameter("EmployeeID", "53216139-9773-4811-8181-1b56034fe90d");
+			//var q = App.DataContext.F_DocTask.Where(o => o.DocTaskID == 379).ToList();
 
 			//var f = Nephrite.Web.FileStorage.FileStorageManager.CreateFile("", "");
 			//var f = FileStorageManager.DbFiles.First(o => o.ID == Guid.Parse("53216139-9773-4811-8181-1b56034fe90d"));

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -6,37 +7,20 @@ using System.Xml;
 using System.Xml.Linq;
 using Nephrite.Meta;
 using Nephrite.Meta.Database;
-using Nephrite.Web.Hibernate;
 
 namespace Nephrite.Web
 {
 	public class A
 	{
-		[ThreadStatic]
-		static IDataContext model = null;
 		public static IDataContext Model
 		{
 			get
 			{
-				if (HttpContext.Current != null)
-				{
-					return HttpContext.Current.Items["Base.Model"] as IDataContext;
-				}
-				else
-				{
-					return model;
-				}
+				return A.Items["Base.Model"] as IDataContext;
 			}
 			set
 			{
-				if (HttpContext.Current != null)
-				{
-					HttpContext.Current.Items["Base.Model"] = value;
-				}
-				else
-				{
-					model = value;
-				}
+				A.Items["Base.Model"] = value;
 			}
 		}
 
@@ -69,6 +53,23 @@ namespace Nephrite.Web
 			{
 				if (_meta == null) _meta = MetaSolution.Load();
 				return _meta;
+			}
+		}
+
+		public static IDictionary Items
+		{
+			get
+			{
+				if (HttpContext.Current != null) return HttpContext.Current.Items;
+
+				Hashtable ht = (Hashtable)AppDomain.CurrentDomain.GetData("ContextItems");
+				if (ht == null)
+				{
+					ht = new Hashtable();
+					AppDomain.CurrentDomain.SetData("ContextItems", ht);
+				}
+				return ht;
+
 			}
 		}
 	}

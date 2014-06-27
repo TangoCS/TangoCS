@@ -35,13 +35,14 @@ namespace Nephrite.Web.Hibernate
 	
 	public abstract class HDataContext : IDisposable, IDataContext
 	{
-		[ThreadStatic]
+		//[ThreadStatic]
 		static Dictionary<string, ISessionFactory> _sessionFactories = new Dictionary<string, ISessionFactory>();
+		static Dictionary<string, HbmMapping> _mappings = new Dictionary<string, HbmMapping>();
 		//ISessionFactory _sessionFactory;
 		ISession _session;
 		Configuration _cfg = null;
 
-		[ThreadStatic]
+		//[ThreadStatic]
 		static DBType? _dbType = null;
 
 		public List<object> ToInsert { get; private set; }
@@ -100,6 +101,28 @@ namespace Nephrite.Web.Hibernate
 			}
 		}
 
+		public HbmMapping Mapping
+		{
+			get
+			{
+				string t = this.GetType().Name;
+				HbmMapping f = null;
+				if (_mappings == null) _mappings = new Dictionary<string, HbmMapping>();
+
+				if (_sessionFactories.ContainsKey(t))
+					f = _mappings[t];
+				else
+				{
+					var mapper = new ModelMapper();
+					mapper.AddMappings(GetEntitiesTypes());
+					mapper.AddMappings(GetTableFunctionsTypes());
+					f = mapper.CompileMappingForAllExplicitlyAddedEntities();
+					_mappings.Add(t, f);
+				}
+				return f;
+			}
+		}
+
 		public TextWriter Log { get; set; }
 		public abstract IEnumerable<Type> GetEntitiesTypes();
 		public virtual IEnumerable<Type> GetTableFunctionsTypes() { return new List<Type>(); }
@@ -131,11 +154,8 @@ namespace Nephrite.Web.Hibernate
 					_cfg.EventListeners.SaveOrUpdateEventListeners = listeners.SaveOrUpdateEventListeners.ToArray();
 			}
 
-			var mapper = new ModelMapper();
-			mapper.AddMappings(GetEntitiesTypes());
-			mapper.AddMappings(GetTableFunctionsTypes());
-			HbmMapping domainMapping = mapper.CompileMappingForAllExplicitlyAddedEntities();
-			_cfg.AddMapping(domainMapping);
+			
+			_cfg.AddMapping(Mapping);
 			
 
 			//_session = SessionFactory.OpenSession();

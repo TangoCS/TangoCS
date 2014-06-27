@@ -54,7 +54,7 @@ namespace Nephrite.Web.SPM
 		static List<RoleAsso> AllRoleAsso()
 		{
 			if (_allRoleAsso != null) return _allRoleAsso;
-			_allRoleAsso = A.Model.ExecuteQuery<RoleAsso>("select ParentRoleID as \"ParentRoleID\", RoleID as \"RoleID\" from V_SPM_AllRoleAsso").ToList();
+			_allRoleAsso = A.Model.ExecuteQuery<RoleAsso>(@"select ""ParentRoleID"", ""RoleID"" from dbo.""V_SPM_AllRoleAsso""").ToList();
 			return _allRoleAsso;
 		}
 
@@ -70,25 +70,6 @@ namespace Nephrite.Web.SPM
 		private Subject() { }
         private static SPM2Scripts sPM2Scripts =  new SPM2Scripts();
 			
-		static IDictionary Items
-		{
-			get
-			{
-				if (HttpContext.Current != null)
-					return HttpContext.Current.Items;
-				else
-				{
-					Hashtable ht = (Hashtable)AppDomain.CurrentDomain.GetData("ContextItems");
-					if (ht == null)
-					{
-						ht = new Hashtable();
-						AppDomain.CurrentDomain.SetData("ContextItems", ht);
-					}
-					return ht;
-				}
-			}
-		}
-
 		public int ID { get; private set; }
 		public string Login { get; private set; }
 		public string Title { get; private set; }
@@ -127,10 +108,11 @@ namespace Nephrite.Web.SPM
 			get
 			{
 				int sid = Subject.Current.ID;
-				IEnumerable<Role> roles = Items["SubjectRoles2_" + sid.ToString()] as IEnumerable<Role>;
+				IEnumerable<Role> roles = A.Items["SubjectRoles2_" + sid.ToString()] as IEnumerable<Role>;
 				if (roles == null)
 				{
-					WindowsIdentity wi = HttpContext.Current.User.Identity as WindowsIdentity;
+					WindowsIdentity wi = null;
+					if (HttpContext.Current != null) wi = HttpContext.Current.User.Identity as WindowsIdentity;
 					List<int> r = null;
 
 					if (wi != null && !wi.IsAnonymous)
@@ -140,10 +122,10 @@ namespace Nephrite.Web.SPM
                         r = A.Model.ExecuteQuery<int>("select \"RoleID\" from DBO.\"V_SPM_AllSubjectRole\" where \"SubjectID\" = ? union select RoleID from SPM_Role where SID in (" + groupNames + ")", sid).ToList();
 					}
 					else
-                        r = A.Model.ExecuteQuery<int>("select  \"RoleID\" from DBO.\"V_SPM_AllSubjectRole\" where \"SubjectID\" = ?", sid).ToList();
+                        r = A.Model.ExecuteQuery<int>("select \"RoleID\" from DBO.\"V_SPM_AllSubjectRole\" where \"SubjectID\" = ?", sid).ToList();
 
 					roles = Role.GetList().Where(o => r.Contains(o.RoleID));
-					Items["SubjectRoles2_" + sid.ToString()] = roles;
+					A.Items["SubjectRoles2_" + sid.ToString()] = roles;
 				}
 				return roles;
 			}
@@ -178,17 +160,17 @@ namespace Nephrite.Web.SPM
 		public void Run(Action action)
 		{
 			Subject oldSubject = Subject.Current;
-			Items["CurrentSubject2"] = this;
+			A.Items["CurrentSubject2"] = this;
 			action();
-			Items["CurrentSubject2"] = oldSubject;
+			A.Items["CurrentSubject2"] = oldSubject;
 		}
 
 		public static Subject Current
 		{
 			get
 			{
-				if (Items["CurrentSubject2"] != null)
-					return (Subject)Items["CurrentSubject2"];
+				if (A.Items["CurrentSubject2"] != null)
+					return (Subject)A.Items["CurrentSubject2"];
 
 				Subject s = null;
 				if (ConfigurationManager.AppSettings["DisableSPM"] != null || HttpContext.Current == null)
@@ -214,7 +196,7 @@ namespace Nephrite.Web.SPM
 							s = Subject.FromLogin("anonymous");
 					}
 				}
-				Items["CurrentSubject2"] = s;
+				A.Items["CurrentSubject2"] = s;
 				return s;
 			}
 		}
@@ -385,19 +367,14 @@ namespace Nephrite.Web.SPM
 
 		public static void SetLastMessage(string msg)
 		{
-			if (HttpContext.Current != null)
-			{
-				HttpContext.Current.Items["LastSPMMessage"] = msg;
-			}
+			A.Items["LastSPMMessage"] = msg;
 		}
 
 		public static string GetLastMessage()
 		{
-			if (HttpContext.Current != null)
-			{
-				if (HttpContext.Current.Items["LastSPMMessage"] != null)
-					return (string)HttpContext.Current.Items["LastSPMMessage"];
-			}
+			if (A.Items["LastSPMMessage"] != null)
+				return (string)A.Items["LastSPMMessage"];
+
 			return "";
 		}
 

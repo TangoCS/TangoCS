@@ -133,7 +133,7 @@ namespace Nephrite.Web.SPM
 					{
 						lock (_lock) { if (!s.AllowItems.Contains(key)) s.AllowItems.Add(key); }
 					}
-					HttpContext.Current.Items["SpmLog"] = (string)HttpContext.Current.Items["SpmLog"] + key + " v2.5: true (default/admin access)" + Environment.NewLine;
+					A.Items["SpmLog"] = (string)A.Items["SpmLog"] + key + " v2.5: true (default/admin access)" + Environment.NewLine;
 				}
 				else
 				{
@@ -141,7 +141,7 @@ namespace Nephrite.Web.SPM
 					{
 						lock (_lock) { if (!s.DisallowItems.Contains(key)) s.DisallowItems.Add(key); }
 					}
-					HttpContext.Current.Items["SpmLog"] = (string)HttpContext.Current.Items["SpmLog"] + key + " v2.5: false (default/admin access)" + Environment.NewLine;
+					A.Items["SpmLog"] = (string)A.Items["SpmLog"] + key + " v2.5: false (default/admin access)" + Environment.NewLine;
 				} 
 				return defaultAccess || s.IsAdministrator;
 			}
@@ -152,7 +152,7 @@ namespace Nephrite.Web.SPM
 				{
 					lock (_lock) { if (!s.AllowItems.Contains(key)) s.AllowItems.Add(key); }
 				}
-				HttpContext.Current.Items["SpmLog"] = (string)HttpContext.Current.Items["SpmLog"] + key + " v2.5: true (explicit access)" + Environment.NewLine;
+				A.Items["SpmLog"] = (string)A.Items["SpmLog"] + key + " v2.5: true (explicit access)" + Environment.NewLine;
 				return true;
 			}
 			else
@@ -161,7 +161,7 @@ namespace Nephrite.Web.SPM
 				{
 					lock (_lock) { if (!s.DisallowItems.Contains(key)) s.DisallowItems.Add(key); }
 				}
-				HttpContext.Current.Items["SpmLog"] = (string)HttpContext.Current.Items["SpmLog"] + key + " v2.5: false (explicit access denied)" + Environment.NewLine;
+				A.Items["SpmLog"] = (string)A.Items["SpmLog"] + key + " v2.5: false (explicit access denied)" + Environment.NewLine;
 				return false;
 			}
 		}
@@ -232,12 +232,12 @@ namespace Nephrite.Web.SPM
 			HashSet<string> _checking = new HashSet<string>(anc.Select(o => key + "-" + o.ToString()));
 			if (_access.Overlaps(_checking))
 			{
-				HttpContext.Current.Items["SpmLog"] = (string)HttpContext.Current.Items["SpmLog"] + "ROLE: " + roleID.ToString() + ", " + key + " v2.5: true" + Environment.NewLine;
+				A.Items["SpmLog"] = (string)A.Items["SpmLog"] + "ROLE: " + roleID.ToString() + ", " + key + " v2.5: true" + Environment.NewLine;
 				return true;
 			}
 			else
 			{
-				HttpContext.Current.Items["SpmLog"] = (string)HttpContext.Current.Items["SpmLog"] + "ROLE: " + roleID.ToString() + ", " + key + " v2.5: false" + Environment.NewLine;
+				A.Items["SpmLog"] = (string)A.Items["SpmLog"] + "ROLE: " + roleID.ToString() + ", " + key + " v2.5: false" + Environment.NewLine;
 				return false;
 			}
 		}
@@ -280,7 +280,7 @@ namespace Nephrite.Web.SPM
 					{
 						lock (_lock) { if (!s.AllowItems.Contains(key)) s.AllowItems.Add(key); }
 					}
-					HttpContext.Current.Items["SpmLog"] = (string)HttpContext.Current.Items["SpmLog"] + key + " v2.5: true (default/admin access)" + Environment.NewLine;
+					A.Items["SpmLog"] = (string)A.Items["SpmLog"] + key + " v2.5: true (default/admin access)" + Environment.NewLine;
 				}
 				else
 				{
@@ -288,7 +288,7 @@ namespace Nephrite.Web.SPM
 					{
 						lock (_lock) { if (!s.DisallowItems.Contains(key)) s.DisallowItems.Add(key); }
 					}
-					HttpContext.Current.Items["SpmLog"] = (string)HttpContext.Current.Items["SpmLog"] + key + " v2.5: false (default/admin access)" + Environment.NewLine;
+					A.Items["SpmLog"] = (string)A.Items["SpmLog"] + key + " v2.5: false (default/admin access)" + Environment.NewLine;
 				}
 				return defaultAccess || s.IsAdministrator;
 			}
@@ -300,7 +300,7 @@ namespace Nephrite.Web.SPM
 				{
 					lock (_lock) { if (!s.AllowItems.Contains(key)) s.AllowItems.Add(key); }
 				}
-				HttpContext.Current.Items["SpmLog"] = (string)HttpContext.Current.Items["SpmLog"] + key + " v2.5: true (explicit access)" + Environment.NewLine;
+				A.Items["SpmLog"] = (string)A.Items["SpmLog"] + key + " v2.5: true (explicit access)" + Environment.NewLine;
 				return true;
 			}
 			else
@@ -309,7 +309,7 @@ namespace Nephrite.Web.SPM
 				{
 					lock (_lock) { if (!s.DisallowItems.Contains(key)) s.DisallowItems.Add(key); }
 				}
-				HttpContext.Current.Items["SpmLog"] = (string)HttpContext.Current.Items["SpmLog"] + key + " v2.5: false (explicit access denied)" + Environment.NewLine;
+				A.Items["SpmLog"] = (string)A.Items["SpmLog"] + key + " v2.5: false (explicit access denied)" + Environment.NewLine;
 				return false;
 			}
 		}
