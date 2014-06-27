@@ -36,7 +36,7 @@ namespace Nephrite.Web.Controls.Scripts
         {
             get
             {
-                return @"select convert(varchar(36), a.ItemGUID) + '-1-' + convert(varchar, ra.RoleID)
+				return @"select upper(convert(varchar(36), a.ItemGUID) + '-1-' + convert(varchar, ra.RoleID))
 				from SPM_Action a, SPM_RoleAccess ra
 				where ra.ActionID = a.ActionID and a.ItemGUID is not null";
             }

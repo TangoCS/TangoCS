@@ -89,7 +89,8 @@ namespace Tessera.Test
 			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), l);
 			A.Model.ExecuteCommand("SET SCHEMA = 'DBO';");
 
-			var b = ActionSPMContext.Current.Check("DocTask.ReturnTask", 1);
+			A.Items["CurrentSubject2"] = Subject.FromLogin("Admin");
+			var b = ActionSPMContext.Current.Check("ДОКУМЕНТЫ.VIEW", 1);
 			//(App.DataContext as HDataContext).Session.EnableFilter("EMP").SetParameter("EmployeeID", "53216139-9773-4811-8181-1b56034fe90d");
 			//var q = App.DataContext.F_DocTask.Where(o => o.DocTaskID == 379).ToList();
 

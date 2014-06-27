@@ -31,7 +31,7 @@ Email as ""Email"" from SPM_Subject where {0}";
         {
             get
             {
-                return @"select cast(a.ItemGUID as varchar(36)) || '-1-' || cast(ra.RoleID as varchar(36))
+				return @"select ucase(cast(a.ItemGUID as varchar(36)) || '-1-' || cast(ra.RoleID as varchar(36)))
 				from DBO.SPM_Action a, DBO.SPM_RoleAccess ra
 				where ra.ActionID = a.ActionID and a.ItemGUID is not null";
             }
@@ -40,22 +40,23 @@ Email as ""Email"" from SPM_Subject where {0}";
         {
             get
             {
-                return @"select substr(pa.SystemName || '.' || a.SystemName,1,255) || '-1'
+				return @"select ucase(pa.SystemName || '.' || a.SystemName) || '-1-' || cast(ra.RoleID as varchar(10))
 				from DBO.SPM_Action a, 
 				DBO.SPM_ActionAsso asso,
 				DBO.SPM_Action pa,
 				DBO.SPM_ActionAsso asso2,
-				DBO.SPM_Action roota
+				DBO.SPM_Action roota,
+				DBO.SPM_RoleAccess ra
 				where a.ActionID = asso.ActionID and pa.ActionID = asso.ParentActionID and
-				pa.ActionID = asso2.ActionID and roota.ActionID = asso2.ParentActionID 
-				order by substr(pa.SystemName || '.' || a.SystemName,1,255) || '-1'";// order by pa.SystemName + '.' + a.SystemName
+				pa.ActionID = asso2.ActionID and roota.ActionID = asso2.ParentActionID and
+				ra.ActionID = a.ActionID";// order by pa.SystemName + '.' + a.SystemName
             }
         }
         public string GetItemsIdsQuery
         {
             get
             {
-                return @"select CAST(a.ItemGUID as varchar(36) ) || '-1'
+				return @"select ucase(CAST(a.ItemGUID as varchar(36))) || '-1'
 				from DBO.SPM_Action a
 				where a.ItemGUID is not null";
             }
@@ -64,7 +65,7 @@ Email as ""Email"" from SPM_Subject where {0}";
         {
             get
             {
-                return @"select pa.SystemName || '.' || a.SystemName || '-1'
+				return @"select ucase(pa.SystemName || '.' || a.SystemName) || '-1'
 				from DBO.SPM_Action a, 
 				DBO.SPM_ActionAsso asso,
 				DBO.SPM_Action pa,

@@ -190,7 +190,7 @@ namespace Nephrite.Web.SPM
 
 		public override bool Check(Guid securableObjectGUID, int actionTypeID)
 		{
-			return Check(securableObjectGUID.ToString(), actionTypeID, _className + "-byid", GetRolesAccessByIdQuery, GetItemsIdsQuery, false);
+			return Check(securableObjectGUID.ToString().ToUpper(), actionTypeID, _className + "-byid", GetRolesAccessByIdQuery, GetItemsIdsQuery, false);
 		}
 
 		public override bool Check(string securableObjectName, int actionTypeID)
@@ -200,7 +200,7 @@ namespace Nephrite.Web.SPM
 
 		public override bool Check(Guid securableObjectGUID, int actionTypeID, bool defaultAccess)
 		{
-			return Check(securableObjectGUID.ToString(), actionTypeID, _className + "-byid", GetRolesAccessByIdQuery, GetItemsIdsQuery, defaultAccess);
+			return Check(securableObjectGUID.ToString().ToUpper(), actionTypeID, _className + "-byid", GetRolesAccessByIdQuery, GetItemsIdsQuery, defaultAccess);
 		}
 
 		public override bool Check(string securableObjectName, int actionTypeID, bool defaultAccess)
