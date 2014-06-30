@@ -39,7 +39,21 @@ namespace Nephrite.Web.Controls
 		void btn_Click(object sender, EventArgs e)
 		{
 			PageIndex = hf.Value.ToInt32(1);
+			OnPage(e);
 		}
+
+		protected internal virtual void OnPage(EventArgs e)
+		{
+			if (Paged != null)
+			{
+				Paged(this, e);
+			}
+		}
+
+		/// <summary>
+		/// Доп. обработчик для UsePostBack = true
+		/// </summary>
+		public event EventHandler Paged;
 
 		/// <summary>
 		/// Номер текущей страницы, начиная с 1

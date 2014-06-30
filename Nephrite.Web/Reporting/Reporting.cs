@@ -29,6 +29,7 @@ namespace Nephrite.Web.Reporting
 		public string Group3Sort { get; set; }
 
 		public Sorter Sorter { get; set; }
+		public Paging Pager { get; set; }
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
@@ -252,8 +253,11 @@ namespace Nephrite.Web.Reporting
 			int i1 = 0;
 			int i2 = 0;
 			int i3 = 0;
-			int ii = 1;
-			HtmlHelperBase.Instance.Repeater<T>(ApplyOrderByGroup((ReportType == "D" && Sorter != null ? Sorter.ApplyOrderBy(ViewData) : ViewData)), "", "ms-alternating", (o, css) =>
+			int ii = Pager != null ? (Pager.PageIndex - 1) * Pager.PageSize + 1 : (Query.GetInt("page", 1) - 1) * Settings.PageSize + 1;
+			var rep = ApplyOrderByGroup((ReportType == "D" && Sorter != null ? Sorter.ApplyOrderBy(ViewData) : ViewData));
+			if (Pager != null) rep = Pager.ApplyPaging(rep);
+			//HtmlHelperBase.Instance.Repeater<T>(ApplyOrderByGroup((ReportType == "D" && Sorter != null ? Sorter.ApplyOrderBy(ViewData) : ViewData)), "", "ms-alternating", (o, css) =>
+			HtmlHelperBase.Instance.Repeater<T>(rep, "", "ms-alternating", (o, css) =>
 			{
 				bool printgr1 = false;
 				bool printgr2 = false;
@@ -437,10 +441,12 @@ namespace Nephrite.Web.Reporting
 					writer.Write("<td class='ms-vb2' style='mso-number-format:\"\\@\";'>" + (i1 > 0 ? i1.ToString() + "." : "") + (i2 > 0 ? i2.ToString() + "." : "") + (i3 > 0 ? i3.ToString() + "." : "") + ii.ToString() + "</td>");
 					foreach (Column<T> col in Columns)
 					{
+						string s = col.PropertyEx != null ? col.PropertyEx(o, this) : col.Property(o);
+						if (col.Encoding) s = HttpUtility.HtmlEncode(s);
 						if (col.Type == "decimal")
-							writer.Write("<td class='ms-vb2' style='mso-number-format:Standard; text-align:right;'>" + HttpUtility.HtmlEncode(col.PropertyEx != null ? col.PropertyEx(o, this) : col.Property(o)).Replace("&#160;", " ") + "</td>");
+							writer.Write("<td class='ms-vb2' style='mso-number-format:Standard; text-align:right;'>" + s.Replace("&#160;", " ") + "</td>");
 						else
-							writer.Write("<td class='ms-vb2' style='mso-number-format:\"\\@\";'>" + HttpUtility.HtmlEncode(col.PropertyEx != null ? col.PropertyEx(o, this) : col.Property(o)) + "</td>");
+							writer.Write("<td class='ms-vb2' style='mso-number-format:\"\\@\";'>" + s + "</td>");
 					}
 					writer.Write("</tr>");
 				}
@@ -483,6 +489,7 @@ namespace Nephrite.Web.Reporting
 
 	public class Column<T> where T : class
 	{
+		bool _encoding = true;
 		public string Title { get; set; }
 		public Func<T, string> Property { get; set; }
 		public Func<T, ReportTable<T>, string> PropertyEx { get; set; }
@@ -492,6 +499,7 @@ namespace Nephrite.Web.Reporting
 		public Expression<Func<T, DateTime>> SortPropertyDateTime { get; set; }
 		public Expression<Func<T, int>> SortPropertyInt { get; set; }
 		public Expression<Func<T, decimal>> SortPropertyDecimal { get; set; }
+		public bool Encoding { get { return _encoding; } set { _encoding = value; } }
 	}
 
 	public class GroupColumn<T> where T : class
