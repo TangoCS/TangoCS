@@ -169,7 +169,10 @@ namespace Nephrite.Web.FileStorage
 			var index = fullPath.LastIndexOfAny(new char[] { '/', '\\' });
 			var path = index > 0 ? fullPath.Substring(0, index) : null;
 			var title = fullPath.Substring(index + 1);
-			return dc.IDbFile.FirstOrDefault(o => ((o.Path == path && !path.IsEmpty()) || (o.ParentFolderID == null && path.IsEmpty())) && o.Title == title);
+			if (path.IsEmpty())
+				return dc.IDbFile.FirstOrDefault(o => o.ParentFolderID == null && o.Title == title);
+			else
+				return dc.IDbFile.FirstOrDefault(o => o.Path == path && o.Title == title);
 		}
 
 		public static IDbFile CreateFile(string title, string path)
