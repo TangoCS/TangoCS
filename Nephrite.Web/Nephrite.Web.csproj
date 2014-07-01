@@ -304,6 +304,9 @@
     <Compile Include="Features\Reporting\Report.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
+    <Compile Include="Features\Reporting\Reporting.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
     <Compile Include="Features\SPM2\ISPMContext.cs" />
     <Compile Include="Features\SPM2\SPM2.cs" />
     <Compile Include="Features\SPM2\SPMStereotype.cs" />
