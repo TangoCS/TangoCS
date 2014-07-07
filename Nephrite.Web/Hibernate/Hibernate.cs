@@ -32,7 +32,7 @@ using Nephrite.Web.SPM;
 
 namespace Nephrite.Web.Hibernate
 {
-	
+
 	public abstract class HDataContext : IDisposable, IDataContext
 	{
 		//[ThreadStatic]
@@ -66,14 +66,14 @@ namespace Nephrite.Web.Hibernate
 
 		public ISession Session
 		{
-			get 
+			get
 			{
 				if (_session == null)
 				{
 					_session = SessionFactory.OpenSession();
 					_session.FlushMode = FlushMode.Commit;
 				}
-				return _session; 
+				return _session;
 			}
 		}
 
@@ -84,7 +84,7 @@ namespace Nephrite.Web.Hibernate
 
 		public ISessionFactory SessionFactory
 		{
-			get 
+			get
 			{
 				string t = this.GetType().Name;
 				ISessionFactory f = null;
@@ -97,7 +97,7 @@ namespace Nephrite.Web.Hibernate
 					f = _cfg.BuildSessionFactory();
 					_sessionFactories.Add(t, f);
 				}
-				return f; 
+				return f;
 			}
 		}
 
@@ -137,8 +137,8 @@ namespace Nephrite.Web.Hibernate
 
 			_cfg = new Configuration();
 			_cfg.DataBaseIntegration(dbConfig);
-	
-			_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" }});
+
+			_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" } });
 			_cfg.SetInterceptor(new HDataContextInterceptor(this));
 
 			if (listeners != null)
@@ -154,9 +154,9 @@ namespace Nephrite.Web.Hibernate
 					_cfg.EventListeners.SaveOrUpdateEventListeners = listeners.SaveOrUpdateEventListeners.ToArray();
 			}
 
-			
+
 			_cfg.AddMapping(Mapping);
-			
+
 
 			//_session = SessionFactory.OpenSession();
 			//_session.FlushMode = FlushMode.Commit;
@@ -170,37 +170,37 @@ namespace Nephrite.Web.Hibernate
 		public void SubmitChanges()
 		{
 
-            using (var transaction = _session.BeginTransaction())
-            {
-                Log.WriteLine("BEGIN TRANSACTION");
-                Log.WriteLine();
+			using (var transaction = _session.BeginTransaction())
+			{
+				Log.WriteLine("BEGIN TRANSACTION");
+				Log.WriteLine();
 
-                foreach (var action in BeforeSaveActions)
-                    action();
+				foreach (var action in BeforeSaveActions) action();
+				foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
+				foreach (object obj in ToDelete) _session.Delete(obj);
 
-                foreach (object obj in ToInsert)
-                    _session.SaveOrUpdate(obj);
+				ToDelete.Clear();
+				ToInsert.Clear();
 
-                foreach (object obj in ToDelete)
-                    _session.Delete(obj);
+				foreach (var action in AfterSaveActions) action();
+				foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
+				foreach (object obj in ToDelete) _session.Delete(obj);
 
-                foreach (var action in AfterSaveActions)
-                    action();
+				ToDelete.Clear();
+				ToInsert.Clear();
 
-                transaction.Commit();
+				transaction.Commit();
 
-                Log.WriteLine("COMMIT TRANSACTION");
-                Log.WriteLine();
+				Log.WriteLine("COMMIT TRANSACTION");
+				Log.WriteLine();
 
-                ToDelete.Clear();
-                ToInsert.Clear();
 				BeforeSaveActions.Clear();
 				AfterSaveActions.Clear();
 
 				_session.Close();
 				_session.Dispose();
 				_session = null;
-            }
+			}
 		}
 
 		public void Dispose()
@@ -316,7 +316,7 @@ namespace Nephrite.Web.Hibernate
 		}
 
 		public IQueryable<T> GetTable<T>() //where T : class
-		{  
+		{
 			return Session.Query<T>();
 		}
 
@@ -326,7 +326,7 @@ namespace Nephrite.Web.Hibernate
 			MethodInfo mi = typeof(LinqExtensionMethods).GetMethods().FirstOrDefault(tp => tp.GetParameters().Any(p => p.ParameterType == typeof(ISession))).MakeGenericMethod(new Type[] { t }); ;
 			var q = mi.Invoke(Session, new object[] { Session }) as IQueryable;
 			return new HTable(this, q);
-		
+
 		}
 
 		public T Get<T, TKey>(TKey id) where T : IEntity, IWithKey<T, TKey>, new()
@@ -337,7 +337,7 @@ namespace Nephrite.Web.Hibernate
 
 	public enum DBType
 	{
-		MSSQL, DB2, ORACLE, POSTGRESQL 
+		MSSQL, DB2, ORACLE, POSTGRESQL
 	}
 
 	public interface ISqlParameter
@@ -489,7 +489,7 @@ namespace Nephrite.Web.Hibernate
 		}
 	}
 
-	
+
 
 	public class NoUpdateInterceptor : EmptyInterceptor
 	{
