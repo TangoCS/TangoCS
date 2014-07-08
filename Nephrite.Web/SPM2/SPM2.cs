@@ -170,7 +170,7 @@ namespace Nephrite.Web.SPM
 			get
 			{
 				if (A.Items["CurrentSubject2"] != null)
-					return (Subject)A.Items["CurrentSubject2"];
+					return A.Items["CurrentSubject2"] as Subject; 
 
 				Subject s = null;
 				if (ConfigurationManager.AppSettings["DisableSPM"] != null || HttpContext.Current == null)

@@ -215,7 +215,7 @@ namespace Nephrite.Meta
 
 		public void AddClass(MetaClass metaClass)
 		{
-			//Solution.AddClass(metaClass);
+			Solution.AddClass(metaClass);
 			metaClass.Parent = this;
 			_classes.Add(metaClass.Name.ToLower(), metaClass);
 		}

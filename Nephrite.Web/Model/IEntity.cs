@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
 using Nephrite.Meta;
+using Nephrite.Web.SPM;
 
 namespace Nephrite.Web
 {
@@ -49,6 +50,13 @@ namespace Nephrite.Web
 			where T : IEntity
 		{
 			((ITable)q).InsertOnSubmit(obj);
+
+			if (obj is IWithTimeStamp)
+			{
+				var obj2 = obj as IWithTimeStamp;
+				obj2.LastModifiedDate = DateTime.Now;
+				obj2.LastModifiedUserID = Subject.Current.ID;
+			}
 		}
 
 		public static void DeleteOnSubmit<T>(this IQueryable<T> q, T obj)

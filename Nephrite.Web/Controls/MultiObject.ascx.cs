@@ -6,7 +6,6 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Collections;
 using System.Linq.Expressions;
-using System.Data.Linq;
 using Nephrite.Web.SettingsManager;
 using Nephrite.Web.TextResources;
 
@@ -244,15 +243,14 @@ namespace Nephrite.Web.Controls
 			Clear();
 		}
 
-		public List<T> GetSelected<T>() where T : class, IModelObject, new()
+		public List<T> GetSelected<T>() where T : class, IEntity
 		{
 			List<T> list = new List<T>();
-			var iq = (System.Web.HttpContext.Current.Items["SolutionDataContext"] as DataContext).GetTable<T>();
-			var s = new T();
+
 			foreach (int id in Objects)
-				list.Add(iq.Single(s.FindByID<T>(id)));
+				list.Add(A.Model.Get<T, int>(id));
 			foreach (Guid guid in GuidObjects)
-				list.Add(iq.Single(s.FindByGUID<T>(guid)));
+				list.Add(A.Model.Get<T, Guid>(guid));
 			
 			return list;
 		}

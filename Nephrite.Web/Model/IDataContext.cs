@@ -22,7 +22,7 @@ namespace Nephrite.Web
 		IDbCommand GetCommand(IQueryable query);
 		IQueryable<T> GetTable<T>();
 		ITable GetTable(Type t);
-		T Get<T, TKey>(TKey id) where T : IEntity, IWithKey<T,TKey>, new();
+		T Get<T, TKey>(TKey id);
 		void SubmitChanges();
 
 		TextWriter Log { get; set; }

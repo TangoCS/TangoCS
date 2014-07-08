@@ -12,8 +12,8 @@ using NHibernate.Type;
 
 namespace Nephrite.Web.Hibernate
 {
-    public class AuditEventListener : DefaultSaveOrUpdateEventListener, 
-		IPreUpdateEventListener, IPreInsertEventListener, IPreDeleteEventListener
+    public class AuditEventListener :
+		IPreUpdateEventListener, IPreDeleteEventListener //, IPreInsertEventListener
     {
 		object inProcess = null;
 		List<object> toInsert = new List<object>();
@@ -73,7 +73,7 @@ namespace Nephrite.Web.Hibernate
             return false;
         }
 
-        public bool OnPreInsert(PreInsertEvent e)
+        /*public bool OnPreInsert(PreInsertEvent e)
         {
             if (!(e.Entity is IWithoutEntityAudit) && !(e.Entity == inProcess))
             {
@@ -121,7 +121,7 @@ namespace Nephrite.Web.Hibernate
 
             }
             return false;
-        }
+        }*/
 
         public bool OnPreDelete(PreDeleteEvent e)
         {
@@ -140,23 +140,6 @@ namespace Nephrite.Web.Hibernate
             }
             return false;
         }
-
-
-		public override void OnSaveOrUpdate(SaveOrUpdateEvent e)
-		{
-			base.OnSaveOrUpdate(e);
-		}
-
-		public void OnDelete(DeleteEvent e)
-		{
-			
-		}
-
-		public void OnDelete(DeleteEvent e, ISet<object> transientEntities)
-		{
-		}
-
-
 	}
 
     public class HDataContextInterceptor : EmptyInterceptor

@@ -80,7 +80,7 @@ namespace Tessera.Test
 			Listeners l = new Listeners();
 			var ael = new AuditEventListener();
 			l.PreDeleteEventListeners.Add(ael);
-			l.PreInsertEventListeners.Add(ael);
+			//l.PreInsertEventListeners.Add(ael);
 			l.PreUpdateEventListeners.Add(ael);
 			//l.PostDeleteEventListeners.Add(ael);
 			//l.PostInsertEventListeners.Add(ael);
@@ -88,6 +88,8 @@ namespace Tessera.Test
 
 			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), l);
 			A.Model.ExecuteCommand("SET SCHEMA = 'DBO';");
+
+			var classes = MetaSolution.Load().Classes;
 
 			A.Items["CurrentSubject2"] = Subject.FromLogin("Admin");
 			var b = ActionSPMContext.Current.Check("ДОКУМЕНТЫ.VIEW", 1);

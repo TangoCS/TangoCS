@@ -176,16 +176,16 @@ namespace Nephrite.Web.Hibernate
 				Log.WriteLine();
 
 				foreach (var action in BeforeSaveActions) action();
-				foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
 				foreach (object obj in ToDelete) _session.Delete(obj);
-
+				foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
+				
 				ToDelete.Clear();
 				ToInsert.Clear();
 
 				foreach (var action in AfterSaveActions) action();
-				foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
 				foreach (object obj in ToDelete) _session.Delete(obj);
-
+				foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
+				
 				ToDelete.Clear();
 				ToInsert.Clear();
 
@@ -329,7 +329,7 @@ namespace Nephrite.Web.Hibernate
 
 		}
 
-		public T Get<T, TKey>(TKey id) where T : IEntity, IWithKey<T, TKey>, new()
+		public T Get<T, TKey>(TKey id)
 		{
 			return Session.Get<T>(id);
 		}
