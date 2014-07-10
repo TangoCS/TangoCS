@@ -42,9 +42,6 @@ namespace Nephrite.Web.Hibernate
 		ISession _session;
 		Configuration _cfg = null;
 
-		//[ThreadStatic]
-		static DBType? _dbType = null;
-
 		public List<object> ToInsert { get; private set; }
 		public List<object> ToDelete { get; private set; }
 		public List<Action> AfterSaveActions { get; private set; }
@@ -54,13 +51,11 @@ namespace Nephrite.Web.Hibernate
 		{
 			get
 			{
-				if (_dbType == null) _dbType = (DBType?)Enum.Parse(typeof(DBType), System.Configuration.ConfigurationManager.AppSettings["DBType"].ToUpper());
-				if (_dbType == null) throw new Exception("You must set DBType parameter in your app's config");
-				return _dbType.Value;
+				return A.DBType;
 			}
 			set
 			{
-				_dbType = value;
+				A.DBType = value;
 			}
 		}
 
@@ -335,10 +330,7 @@ namespace Nephrite.Web.Hibernate
 		}
 	}
 
-	public enum DBType
-	{
-		MSSQL, DB2, ORACLE, POSTGRESQL
-	}
+
 
 	public interface ISqlParameter
 	{

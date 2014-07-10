@@ -72,5 +72,25 @@ namespace Nephrite.Web
 
 			}
 		}
+
+		static DBType? _dbType = null;
+		public static DBType DBType
+		{
+			get
+			{
+				if (_dbType == null) _dbType = (DBType?)Enum.Parse(typeof(DBType), System.Configuration.ConfigurationManager.AppSettings["DBType"].ToUpper());
+				if (_dbType == null) throw new Exception("DBType parameter not found in your app's config");
+				return _dbType.Value;
+			}
+			set
+			{
+				_dbType = value;
+			}
+		}
+	}
+
+	public enum DBType
+	{
+		MSSQL, DB2, ORACLE, POSTGRESQL
 	}
 }

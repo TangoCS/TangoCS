@@ -1190,15 +1190,23 @@ namespace Nephrite.Web.Controls
 					if (f.FieldType == FieldType.Boolean)
 					{
 						bool b;
+
 						if (!bool.TryParse(item.Value, out b))
 							b = false;
-						val = b;
 
+						if (A.DBType == DBType.DB2)
+						{
+							val = b ? 1 : 0;
+							valType = typeof(int);
+						}
+						else
+						{	
+							val = b;
+						}
 						if (item.Condition == "=")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(column.Body, Expression.Constant(val)), column.Parameters);
+							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);
 						if (item.Condition == "<>")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(column.Body, Expression.Constant(val)), column.Parameters);
-
+							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);	
 					}
 					else if (f.FieldType == FieldType.String || f.FieldType == FieldType.DDL)
 					{

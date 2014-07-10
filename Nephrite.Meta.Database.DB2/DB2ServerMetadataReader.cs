@@ -174,10 +174,8 @@ namespace Nephrite.Meta.Database
                             {
                                 var view = new View();
                                 view.Name = v.GetAttributeValue("NAME");
-                                if (view.Name == "V_DbFile")
-                                {
+								view.Text = v.GetAttributeValue("TEXT");
 
-                                }
                                 var xColumnsElement = v.Element("Columns");
                                 if (xColumnsElement != null)
                                     xColumnsElement.Descendants("Column").ToList().ForEach(c =>
@@ -207,6 +205,7 @@ namespace Nephrite.Meta.Database
                             {
                                 var procedure = new Procedure();
                                 procedure.Name = p.GetAttributeValue("NAME");
+								procedure.Text = p.GetAttributeValue("TEXT");
                                 var xParametrsElement = p.Element("Parameters");
                                 if (xParametrsElement != null)
                                     xParametrsElement.Descendants("Parameter").ToList().ForEach(c =>
@@ -225,6 +224,7 @@ namespace Nephrite.Meta.Database
                             {
                                 var function = new Function();
                                 function.Name = p.GetAttributeValue("NAME");
+								function.Text = p.GetAttributeValue("TEXT");
                                 var xParametrsElement = p.Element("Parameters");
                                 if (xParametrsElement != null)
                                     xParametrsElement.Descendants("Parameter").ToList().ForEach(c =>

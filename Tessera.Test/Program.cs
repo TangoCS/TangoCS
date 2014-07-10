@@ -89,6 +89,8 @@ namespace Tessera.Test
 			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), l);
 			A.Model.ExecuteCommand("SET SCHEMA = 'DBO';");
 
+			var schema = new DB2ServerMetadataReader().ReadSchema("DBO");
+
 			var classes = MetaSolution.Load().Classes;
 
 			A.Items["CurrentSubject2"] = Subject.FromLogin("Admin");

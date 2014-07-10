@@ -40,10 +40,10 @@ namespace Nephrite.Web.CoreDataContext
 				if (dbType == null) dbType = DBType;
 				switch (dbType)
 				{
-					case Nephrite.Web.Hibernate.DBType.MSSQL: c.Dialect<MsSql2008Dialect>(); break;
-					case Nephrite.Web.Hibernate.DBType.DB2: c.Dialect<DB2Dialect>(); break;
-					case Nephrite.Web.Hibernate.DBType.ORACLE: c.Dialect<Oracle10gDialect>(); break;
-					case Nephrite.Web.Hibernate.DBType.POSTGRESQL: c.Dialect<PostgreSQLDialect>(); break;
+					case Nephrite.Web.DBType.MSSQL: c.Dialect<MsSql2008Dialect>(); break;
+					case Nephrite.Web.DBType.DB2: c.Dialect<DB2Dialect>(); break;
+					case Nephrite.Web.DBType.ORACLE: c.Dialect<Oracle10gDialect>(); break;
+					case Nephrite.Web.DBType.POSTGRESQL: c.Dialect<PostgreSQLDialect>(); break;
 					default: c.Dialect<MsSql2008Dialect>(); break;
 				}
 

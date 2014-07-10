@@ -74,7 +74,7 @@ namespace Nephrite.Web.Hibernate
 
 		public override void Set(IDbCommand cmd, object value, int index)
 		{
-			var val = !((bool)value) ? 0 : 1;
+			var val = value is int ? value : !((bool)value) ? 0 : 1;
 			((IDataParameter)cmd.Parameters[index]).Value = val;
 		}
 	}
