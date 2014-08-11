@@ -18,7 +18,7 @@ namespace Nephrite.Meta
 		public Func<string, int, int, IEnumerable<T>> SearchQuery { get; set; }
 	}
 
-	public partial class MetaReference<TClass, TValue, TKey> : MetaReference
+	public partial class MetaReference<TClass, TValue> : MetaReference
 	{
 		public new IQueryable<TValue> AllObjects
 		{

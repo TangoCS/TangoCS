@@ -23,44 +23,30 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 using NHibernate.Type;
+using Solution.Model;
 
 
 namespace Tessera.Test
 {
+	public class ValuePair
+	{
+		public DateTime RegDate { get; set; }
+		public int RegNo { get; set; }
+
+		public ValuePair(DateTime d, int n)
+		{
+			RegDate = d;
+			RegNo = n;
+		}
+	}
+
     class Program
     {
-
-		public static Expression<Func<dynamic, bool>> FindByProperty(Type t, string propertyName, object propertyValue)
+		static int curRegNo = 0;
+		public static void GenRegNo(ValuePair d)
 		{
-			PropertyInfo pi = t.GetProperty(propertyName);
-
-			if (pi != null)
-			{
-				ParameterExpression pe_c = Expression.Parameter(t, "c");
-				UnaryExpression ue_c = Expression.Convert(pe_c, t);
-				MemberExpression me_id = Expression.Property(ue_c, pi.Name);
-				if (propertyValue != null && propertyValue.GetType().IsArray)
-				{
-					Type arrayElementType = propertyValue.GetType().GetElementType();
-					MethodInfo method = typeof(Enumerable).GetMethods()
-					.Where(m => m.Name == "Contains" && m.GetParameters().Length == 2)
-					.Single().MakeGenericMethod(arrayElementType);
-
-					var callContains = Expression.Call(
-						method,
-						Expression.Convert(Expression.Constant(propertyValue, propertyValue.GetType()),
-						typeof(IEnumerable<>).MakeGenericType(arrayElementType)),
-						Expression.Convert(me_id, arrayElementType));
-					return Expression.Lambda<Func<object, bool>>(callContains, pe_c);
-				}
-				else
-				{
-					BinaryExpression be_eq = Expression.Equal(me_id, Expression.Constant(propertyValue, pi.PropertyType));
-					return Expression.Lambda<Func<object, bool>>(be_eq, pe_c);
-				}
-			}
-
-			throw new Exception("В классе " + t.FullName + " не найдено свойство " + propertyName);
+			d.RegNo = curRegNo;
+			curRegNo++;
 		}
 
         private static void Main(string[] args)
@@ -73,9 +59,39 @@ namespace Tessera.Test
             HDataContext.DBType = DBType.DB2;
 			A.DBScript = new DBScriptDB2("DBO");
 
+			List<ValuePair> l2 = new List<ValuePair>();
+			l2.Add(new ValuePair(new DateTime(2014, 7, 25), 1));
+			l2.Add(new ValuePair(new DateTime(2014, 7, 26), 2));
+			l2.Add(new ValuePair(new DateTime(2014, 7, 28), 3));
+			l2.Add(new ValuePair(new DateTime(2014, 7, 28), 4));
+			l2.Add(new ValuePair(new DateTime(2014, 7, 29), 5));
+
+			DateTime newdate = new DateTime(2014, 7, 26);
+			DateTime newregdate = newdate;
+			var ViewData = l2[3];
+
+			if (ViewData.RegDate < newdate)
+			{
+				curRegNo = ViewData.RegNo;
+				newregdate = ViewData.RegDate;
+			}
+			else
+			{
+				curRegNo = l2.Where(o => o.RegDate <= newdate).Max(o => (int?)o.RegNo) ?? 0;
+				curRegNo++;
+				GenRegNo(ViewData);
+				
+			}
+			ViewData.RegDate = newdate;
 			
+			//maxno++;
+			var l22 = l2.Where(o => o.RegDate > newregdate).OrderBy(o => o.RegDate).ToList();
+			foreach (var d in l22)
+			{
+				GenRegNo(d);
+			}
 
-
+			var l3 = l2.OrderBy(o => o.RegDate).ToList();
 	
 			Listeners l = new Listeners();
 			var ael = new AuditEventListener();
@@ -89,9 +105,11 @@ namespace Tessera.Test
 			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), l);
 			A.Model.ExecuteCommand("SET SCHEMA = 'DBO';");
 
-			var schema = new DB2ServerMetadataReader().ReadSchema("DBO");
+			//var schema = new DB2ServerMetadataReader().ReadSchema("DBO");
 
-			var classes = MetaSolution.Load().Classes;
+
+
+			var classes = (new ModelFactory()).CreateSolution().Classes;
 
 			A.Items["CurrentSubject2"] = Subject.FromLogin("Admin");
 			var b = ActionSPMContext.Current.Check("ДОКУМЕНТЫ.VIEW", 1);

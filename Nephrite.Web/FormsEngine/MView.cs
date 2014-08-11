@@ -60,7 +60,7 @@ namespace Nephrite.Web.FormsEngine
 			}
 			else
 			{
-				string cls = ObjectTypeSysName.IsEmpty() ? (viewData as IMMObject).MetaClass.Name : ObjectTypeSysName;
+				string cls = ObjectTypeSysName.IsEmpty() ? (viewData as IModelObject).MetaClass.Name : ObjectTypeSysName;
 				addToUtils(cls + "." + ViewFormSysName);
 				return Settings.ControlsPath + "/" + cls + "/" + ViewFormSysName + ".ascx";
 			}

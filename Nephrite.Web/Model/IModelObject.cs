@@ -17,14 +17,14 @@ namespace Nephrite.Web
 
 
 
-    public interface IChildObject : IModelObject
-    {
-        IModelObject ParentObject { get; set; }
-        void SetParent(int parentID);
-		void SetParent(Guid parentGUID);
-        Expression<Func<T, bool>> FilterByParentID<T>(int id) where T : IModelObject;
-		Expression<Func<T, bool>> FilterByParentGUID<T>(Guid guid) where T : IModelObject;
-    }
+	//public interface IChildObject : IModelObject
+	//{
+	//	IModelObject ParentObject { get; set; }
+	//	void SetParent(int parentID);
+	//	void SetParent(Guid parentGUID);
+	//	Expression<Func<T, bool>> FilterByParentID<T>(int id) where T : IModelObject;
+	//	Expression<Func<T, bool>> FilterByParentGUID<T>(Guid guid) where T : IModelObject;
+	//}
 
 	public interface IActiveFlag
 	{
@@ -45,14 +45,5 @@ namespace Nephrite.Web
 	{
 		DateTime? LastModifiedDate { get; set; }
 		string LastModifiedUser { get; set; }
-	}
-
-	public static class ModelHelper
-	{
-		public static Type GetPrimaryKeyType(this Type t)
-		{
-			return t.GetProperties().Where(o => o.GetCustomAttributes(typeof(global::System.Data.Linq.Mapping.ColumnAttribute), false).
-				Cast<global::System.Data.Linq.Mapping.ColumnAttribute>().Any(o1 => o1.IsPrimaryKey)).First().PropertyType;
-		}
 	}
 }

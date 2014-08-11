@@ -28,11 +28,11 @@ namespace Tessera.Test
 
 			p.AddClass<IC_OperationType>()
 				.IntKey()
-				.TCLED().LogicalDelete().TimeStamp<SPM_Subject>();
+				.TCLED().TimeStamp<SPM_Subject>();
 
 			p.AddClass<ILot>()
 				.IntKey()
-				.TCLEVD().LogicalDelete().TimeStamp<SPM_Subject>()
+				.TCLEVD().TimeStamp<SPM_Subject>()
 				.Workflow()
 				.Attribute("CreateDate", "Дата создания лота", MetaDateType.NotNull())
 				.Attribute("StartCost", "Начальная цена лота (рубли РФ)", MetaDecimalType.Null())

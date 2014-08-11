@@ -98,14 +98,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Controls\ListExport.ascx" />
-    <Content Include="View\Utils\generatedb.ascx" />
-    <Content Include="View\Utils\generatewsdl.ascx" />
-    <Content Include="View\Utils\runup.ascx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppMM.cs" />
-    <Compile Include="Controllers\UtilsController.cs" />
     <Compile Include="Controls\ListExport.ascx.cs">
       <DependentUpon>ListExport.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -113,51 +109,17 @@
     <Compile Include="Controls\ListExport.ascx.designer.cs">
       <DependentUpon>ListExport.ascx</DependentUpon>
     </Compile>
-    <Compile Include="FormViewControl.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="HistoryType.cs" />
-    <Compile Include="IFormControl.cs" />
     <Compile Include="ISiteMapProvider.cs" />
     <Compile Include="MMObjectExtensions.cs" />
-    <Compile Include="Model\FormViewCacheKeyInfo.cs" />
     <Compile Include="Model\HMapping.cs" />
     <Compile Include="Model\HMMDataContext.cs" />
     <Compile Include="Model\HModel.cs" />
-    <Compile Include="Model\MM_FormView.cs" />
-    <Compile Include="Model\MM_ModelElement.cs" />
-    <Compile Include="Model\MM_ObjectProperty.cs" />
-    <Compile Include="Model\MM_ObjectType.cs" />
-    <Compile Include="Model\MM_Package.cs" />
-    <Compile Include="ElementType.cs" />
-    <Compile Include="Model\modelDataContextPartial.cs" />
-    <Compile Include="Model\_ModelObjectsTitles.cs" />
     <Compile Include="ObjectPropertyType.cs" />
     <Compile Include="Repository.cs" />
     <Compile Include="Model\_ModelObjects.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MenuItemType.cs" />
-    <Compile Include="View\Utils\generatedb.ascx.cs">
-      <DependentUpon>generatedb.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="View\Utils\generatedb.ascx.designer.cs">
-      <DependentUpon>generatedb.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="View\Utils\generatewsdl.ascx.cs">
-      <DependentUpon>generatewsdl.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="View\Utils\generatewsdl.ascx.designer.cs">
-      <DependentUpon>generatewsdl.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="View\Utils\runup.ascx.cs">
-      <DependentUpon>runup.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="View\Utils\runup.ascx.designer.cs">
-      <DependentUpon>runup.ascx</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="ViewTemplates\undelete.tt">
@@ -213,7 +175,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>53893</DevelopmentServerPort>
+          <DevelopmentServerPort>56293</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>
@@ -227,8 +189,7 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>%25systemroot%25\system32\xcopy /S "$(ProjectDir)View\*.ascx" "$(SolutionDir)Tessera\_controltemplates\Nephrite.Metamodel\" /E /R /Y
-
-</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

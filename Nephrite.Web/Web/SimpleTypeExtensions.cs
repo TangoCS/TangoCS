@@ -269,6 +269,16 @@ namespace Nephrite.Web
 			return String.Join(separator, str.Where(s => !String.IsNullOrEmpty(s)).ToArray());
 		}
 
+		public static StringBuilder Append(this StringBuilder sb, StringBuilder value)
+		{
+			sb.EnsureCapacity(sb.Length + value.Length);
+			for (int i = 0; i < value.Length; i++)
+			{
+				sb.Append(value[i]);
+			}
+			return sb;
+		}
+
 		/// <summary>
 		/// Число римскими цифрами
 		/// </summary>

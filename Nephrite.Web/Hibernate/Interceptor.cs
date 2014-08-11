@@ -26,7 +26,7 @@ namespace Nephrite.Web.Hibernate
                 List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
 
                 var dc = A.Model as IDC_EntityAudit;
-                string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).GetTitle() : "";
+                string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
                 var oc = dc.NewIN_ObjectChange("Редактирование", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
                 toInsert.Add(oc);
 
@@ -131,7 +131,7 @@ namespace Nephrite.Web.Hibernate
                 List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
 
                 var dc = A.Model as IDC_EntityAudit;
-                string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).GetTitle() : "";
+                string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
                 var oc = dc.NewIN_ObjectChange("Удаление", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
                 toInsert.Add(oc);
 
@@ -177,7 +177,7 @@ namespace Nephrite.Web.Hibernate
 
 				var dc = A.Model as IDC_EntityAudit;
 				var hdc = A.Model as HDataContext;
-				string title = entity is IWithTitle ? (entity as IWithTitle).GetTitle() : "";
+				string title = entity is IWithTitle ? (entity as IWithTitle).Title : "";
 				var oc = dc.NewIN_ObjectChange("Создание", id != null ? id.ToString() : "", entity.GetType().Name, title);
 				//toInsert.Add(oc);
 				//dc.IN_ObjectChange.InsertOnSubmit(oc);

@@ -24,7 +24,7 @@ namespace Nephrite.Web
 
     public static class AutoComplete
     {
-        public static void Apply(TextBox textBox, IQueryable<IModelObject> items, AutoCompleteOptions options)
+        public static void Apply(TextBox textBox, IQueryable<IWithTitle> items, AutoCompleteOptions options)
         {
             Apply(textBox, items.Select(i => i.Title), options);
         }

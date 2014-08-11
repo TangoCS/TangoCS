@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Nephrite.Web
 {
-    public interface IMMObjectMLView : IMMObject
+	public interface IMMObjectMLView : IModelObject
     {
         string LanguageCode { get; }
     }

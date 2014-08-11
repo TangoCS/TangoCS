@@ -92,13 +92,18 @@ namespace Nephrite.Meta
 			_classesbyname.Add(metaClass.Name.ToLower(), metaClass);
 		}
 
-		public void AddPackage(MetaPackage metaPackage)
+		public MetaPackage AddPackage(MetaPackage metaPackage)
 		{
 			metaPackage.Solution = this;
 			_packagesbyname.Add(metaPackage.Name.ToLower(), metaPackage);
 
 			foreach (var c in metaPackage.Classes)
 				AddClass(c);
+
+			foreach (var e in metaPackage.Enums)
+				AddEnum(e);
+
+			return metaPackage;
 		}
 
 		internal void AddEnum(MetaEnum metaEnum)
@@ -137,44 +142,13 @@ namespace Nephrite.Meta
 			string s = name.ToLower();
 			return _enumsbyname.ContainsKey(s) ? _enumsbyname[s] : null;
 		}
-
-		//Dictionary<Type, Dictionary<string, MetaElement>> _selements = new Dictionary<Type, Dictionary<string, MetaElement>>();
-
-		//public void AssignStereotype(MetaStereotype stereotype, MetaElement element)
-		//{
-		//	Type t = stereotype.GetType();
-		//	Dictionary<string, MetaElement> elements = null;
-		//	if (!_selements.ContainsKey(t))
-		//	{
-		//		elements = new Dictionary<string, MetaElement>();
-		//		_selements.Add(t, elements);
-		//	}
-		//	else
-		//		elements = _selements[t];
-
-		//	if (!_stereotypes.ContainsKey(t))
-		//		_stereotypes.Add(t, stereotype);
-		//	stereotype.Parent = this;
-
-		//	elements.Add(element.Name, element);
-		//}
-
-		//public Dictionary<string, MetaElement> GetElements<T>()
-		//	where T : MetaStereotype
-		//{
-		//	Type t = typeof(T);
-		//	if (_selements.ContainsKey(t))
-		//		return _selements[t];
-		//	else
-		//		return null;
-		//}
 	}
 
 	public class MetaPackage : MetaElement, IMetaOperationContainer
 	{
 		public MetaPackage(string name = "", string caption = "", string description = "") : base(name, caption, description) { }
 
-		protected string ParentID { get; set; }
+		public string ParentID { get; set; }
 		MetaPackage _parent = null;
 
 		/// <summary>
@@ -215,36 +189,52 @@ namespace Nephrite.Meta
 
 		public void AddClass(MetaClass metaClass)
 		{
-			Solution.AddClass(metaClass);
+			if (Solution != null) Solution.AddClass(metaClass);
 			metaClass.Parent = this;
 			_classes.Add(metaClass.Name.ToLower(), metaClass);
 		}
 
 		public MetaClass AddClass(string name, string caption = "", string description = "")
 		{
-			MetaClass c = new MetaClass { Name = name, Caption = caption, Description = description };
+			MetaClass c = new MetaClass { Name = name, Caption = caption, Description = description, IsPersistent = true };
 			AddClass(c);
 			return c;
 		}
 
 		public MetaClass AddClass<T>(string caption = "", string description = "")
 		{
-			MetaClass c = new MetaClass { Name = typeof(T).Name, Caption = caption, Description = description };
+			MetaClass c = new MetaClass { Name = typeof(T).Name, Caption = caption, Description = description, IsPersistent = true };
 			AddClass(c);
 			return c;
 		}
 
-		public void AddPackage(MetaPackage metaPackage)
+		public MetaPackage AddPackage(MetaPackage metaPackage)
 		{
-			Solution.AddPackage(metaPackage);
 			metaPackage.ParentID = this.ID;
+			//metaPackage.Solution = this.Solution;
+
+			//foreach (var c in metaPackage.Classes)
+			//	Solution.AddClass(c);
+
+			//foreach (var e in metaPackage.Enums)
+			//	Solution.AddEnum(e);
+
+			Solution.AddPackage(metaPackage);
 			_packages.Add(metaPackage.Name.ToLower(), metaPackage);
+			return metaPackage;
 		}
 
 		public void AddEnum(MetaEnum metaEnum)
 		{
-			Solution.AddEnum(metaEnum);
+			if (Solution != null) Solution.AddEnum(metaEnum);
 			_enums.Add(metaEnum.Name.ToLower(), metaEnum);
+		}
+
+		public MetaEnum AddEnum(string name, string caption = "", string description = "")
+		{
+			MetaEnum c = new MetaEnum { Name = name, Caption = caption, Description = description };
+			AddEnum(c);
+			return c;
 		}
 
 
@@ -681,7 +671,7 @@ namespace Nephrite.Meta
 			var valueGetter = GetValue as Func<TClass, TValue>;
 			TValue refObj = valueGetter(obj);
 			if (refObj != null && refObj is Nephrite.Web.IWithTitle)
-				return (refObj as Nephrite.Web.IWithTitle).GetTitle();
+				return (refObj as Nephrite.Web.IWithTitle).Title;
 			else
 				return "";
 		}
@@ -750,6 +740,8 @@ namespace Nephrite.Meta
 
 	public class MetaEnum : MetaElement
 	{
+		public MetaPackage Parent { get; set; }
+
 		List<MetaEnumValue> _values = new List<MetaEnumValue>();
 		public List<MetaEnumValue> Values { get { return _values; } }
 	}

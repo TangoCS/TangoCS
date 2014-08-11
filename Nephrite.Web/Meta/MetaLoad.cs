@@ -33,9 +33,9 @@ namespace Nephrite.Meta
 			string parent = xp.GetAttributeValue("ParentID");
 			if (!parent.IsEmpty())
 			{
-				//MetaPackage parentPck = s.GetPackage(parent);
-				//parentPck.AddPackage(np);
-				s.AddPackage(np);
+				MetaPackage parentPck = s.GetPackage(parent);
+				parentPck.AddPackage(np);
+				//s.AddPackage(np);
 			}
 			else
 				s.AddPackage(np);

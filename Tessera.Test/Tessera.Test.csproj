@@ -57,6 +57,11 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GenFluentModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="GenModelConfig.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GenModelConfig.tt</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -65,6 +70,10 @@
     <None Include="GenFluentModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>GenFluentModel.cs</LastGenOutput>
+    </None>
+    <None Include="GenModelConfig.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GenModelConfig.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>

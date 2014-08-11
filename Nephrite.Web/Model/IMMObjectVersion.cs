@@ -5,11 +5,11 @@ using System.Text;
 
 namespace Nephrite.Web
 {
-    public interface IMMObjectVersion : IMMObject
+    public interface IMMObjectVersion : IModelObject
     {
         int VersionID { get; }
 		Guid VersionGUID { get; }
-        IMMObject Object { get; }
+		IModelObject Object { get; }
         int VersionNumber { get; }
         bool IsCurrentVersion { get; }
     }

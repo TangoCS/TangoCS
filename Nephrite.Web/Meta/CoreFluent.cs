@@ -53,6 +53,12 @@ namespace Nephrite.Meta.Fluent
 			_ref.InversePropertyName = inverseProperty;
 			return this;
 		}
+
+		public ReferenceBuilder DefaultDBValue(string value)
+		{
+			_ref.DefaultDBValue = value;
+			return this;
+		}
 	}
 
 	public class OperationBuilder
@@ -71,6 +77,20 @@ namespace Nephrite.Meta.Fluent
 			_op.Parameters.Add(new MetaOperationParameter { Name = name, Type = type });
 			return this;
 		}
+
+		public OperationBuilder ParmString(string name)
+		{
+			return Parm(MetaStringType.NotNull(), name);
+		}
+		public OperationBuilder ParmInt(string name)
+		{
+			return Parm(MetaIntType.NotNull(), name);
+		}
+		public OperationBuilder ParmGuid(string name)
+		{
+			return Parm(MetaGuidType.NotNull(), name);
+		}
+
 		public OperationBuilder Image(string name)
 		{
 			_op.Image = name;
@@ -82,20 +102,57 @@ namespace Nephrite.Meta.Fluent
 			_cls.DefaultOperation = _op;
 			return this;
 		}
+
+		public OperationBuilder InvokesView(string viewClass, string viewName)
+		{
+			_op.ViewClass = viewClass;
+			_op.ViewName = viewName;
+			return this;
+		}
+
+		public OperationBuilder InvokesSingleObjectView(string viewName)
+		{
+			_op.ViewClass = "ViewControl{0}";
+			_op.ViewName = viewName;
+			return this;
+		}
+
+		public OperationBuilder InvokesObjectListView(string viewName)
+		{
+			_op.ViewClass = "ViewControl<IQueryable<{0}>>";
+			_op.ViewName = viewName;
+			return this;
+		}
+
+
 	}
 
 	public static class CoreFluent
 	{
-		public static MetaClass IntKey(this MetaClass cls, bool isIdentity = true)
+		public static MetaEnum Value(this MetaEnum cdf, string id, string name, string caption)
 		{
-			var t = MetaIntType.NotNull();
-			return cls.AttributeKey(cls.Name + t.ColumnSuffix, "Ид", t, isIdentity);
+			cdf.Values.Add(new MetaEnumValue(id, name, caption));
+			return cdf;
 		}
 
-		public static MetaClass GuidKey(this MetaClass cls)
+		public static MetaClass IntKey(this MetaClass cls, string name = "", bool isIdentity = true)
+		{
+			var t = MetaIntType.NotNull();
+			int i = cls.Name.IndexOf('_'); if (i == -1) i = 0; else i++;
+			return cls.AttributeKey(name.IsEmpty() ? cls.Name.Substring(i) + t.ColumnSuffix : name, "Ид", t, isIdentity);
+		}
+
+		public static MetaClass GuidKey(this MetaClass cls, string name = "")
 		{
 			var t = MetaGuidType.NotNull();
-			return cls.AttributeKey(cls.Name + t.ColumnSuffix, "Ид", t);
+			int i = cls.Name.IndexOf('_'); if (i == -1) i = 0; else i++;
+			return cls.AttributeKey(name.IsEmpty() ? cls.Name.Substring(i) + t.ColumnSuffix : name, "Ид", t);
+		}
+
+		public static MetaClass NonPersistent(this MetaClass cls)
+		{
+			cls.IsPersistent = false;
+			return cls;
 		}
 
 		public static MetaClass AttributeKey(this MetaClass cls, string name, string caption, IMetaIdentifierType type, bool isIdentity = false)
@@ -122,9 +179,9 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass PersistentComputedAttribute(this MetaClass cls, string name, string caption, IMetaPrimitiveType type)
+		public static MetaClass PersistentComputedAttribute(this MetaClass cls, string name, string caption, IMetaPrimitiveType type, bool isMultilingual = false)
 		{
-			MetaPersistentComputedAttribute a = new MetaPersistentComputedAttribute { Name = name, Caption = caption, Type = type};
+			MetaPersistentComputedAttribute a = new MetaPersistentComputedAttribute { Name = name, Caption = caption, Type = type, IsMultilingual = isMultilingual };
 			if (type.NotNullable) a.IsRequired = true;
 			cls.AddProperty(a);
 			return cls;
@@ -161,54 +218,92 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		
 
-		public static MetaClass OperationCreateNew(this MetaClass cls)
+
+		public static MetaClass OperationCreateNew(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
-			cls.Operation("CreateNew", "Создать", x => x.Image("create").
-				Parm(MetaStringType.NotNull(), "returnurl"));
+			var o = new MetaOperation { Name = "CreateNew", Caption = "Создать" };
+			var ob = new OperationBuilder(cls, o);
+
+			ob.Image("create").InvokesSingleObjectView("edit");
+			if (attributes != null) attributes(ob);
+
+			if (o.Parameters.Count == 0)
+				ob.ParmString("returnurl");
+
+			cls.AddOperation(o);
 			return cls;
 		}
 
-		public static MetaClass OperationEdit(this MetaClass cls)
+		public static MetaClass OperationEdit(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
-			cls.Operation("Edit", "Редактировать", x => x.Image("edit").Default()
-				.Parm(cls.Key.Type as IMetaParameterType, "id")
-				.Parm(MetaStringType.NotNull(), "returnurl"));
+			var o = new MetaOperation { Name = "Edit", Caption = "Редактировать" };
+			var ob = new OperationBuilder(cls, o);
+
+			ob.Image("edit").InvokesSingleObjectView("edit");
+			if (attributes != null) attributes(ob);
+
+			if (o.Parameters.Count == 0)
+				ob.ParmInt("id").ParmString("returnurl");
+
+			cls.AddOperation(o);
 			return cls;
 		}
 
-		public static MetaClass OperationList(this MetaClass cls)
+		public static MetaClass OperationList(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
-			cls.Operation("ViewList", "Список", x => x.Image("list"));
+			var o = new MetaOperation { Name = "ViewList", Caption = "Список" };
+			var ob = new OperationBuilder(cls, o);
+
+			ob.Image("list").InvokesObjectListView("list");
+			if (attributes != null) attributes(ob);
+
+			cls.AddOperation(o);
 			return cls;
 		}
 
-		public static MetaClass OperationView(this MetaClass cls)
+		public static MetaClass OperationView(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
-			cls.Operation("View", "Свойства", x => x.Image("properties").Default()
-				.Parm(cls.Key.Type as IMetaParameterType, "id")
-				.Parm(MetaStringType.NotNull(), "returnurl")); 
+			var o = new MetaOperation { Name = "View", Caption = "Свойства" };
+			var ob = new OperationBuilder(cls, o);
+
+			ob.Image("view").InvokesSingleObjectView("view");
+			if (attributes != null) attributes(ob);
+
+			if (o.Parameters.Count == 0)
+				ob.ParmInt("id").ParmString("returnurl");
+
+			cls.AddOperation(o);
 			return cls;
 		}
 
-		public static MetaClass OperationDelete(this MetaClass cls)
+		public static MetaClass OperationDelete(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
-			cls.Operation("Delete", "Удалить", x => x.Image("delete")
-				.Parm(cls.Key.Type as IMetaParameterType, "id")
-				.Parm(MetaStringType.NotNull(), "returnurl"));
+			var o = new MetaOperation { Name = "Delete", Caption = "Удалить" };
+			var ob = new OperationBuilder(cls, o);
+
+			ob.Image("delete").InvokesSingleObjectView("delete");
+			if (attributes != null) attributes(ob);
+
+			if (o.Parameters.Count == 0)
+				ob.ParmInt("id").ParmString("returnurl");
+
+			cls.AddOperation(o);
 			return cls;
 		}
 
-		public static MetaClass LogicalDelete(this MetaClass cls)
+		public static MetaClass OperationUnDelete(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
-			cls.AddProperty(new MetaAttribute { Name = "IsDeleted", Caption = "Удален", IsRequired = true, Type = TypeFactory.Boolean(true) });
+			var o = new MetaOperation { Name = "UnDelete", Caption = "Отменить удаление" };
+			var ob = new OperationBuilder(cls, o);
 
-			cls.Operation("UnDelete", "Отменить удаление", x => x.Image("undelete")
-				.Parm(cls.Key.Type as IMetaParameterType, "id")
-				.Parm(MetaStringType.NotNull(), "returnurl"));
+			ob.Image("undelete").InvokesSingleObjectView("undelete");
+			if (attributes != null) attributes(ob);
 
-			cls.Interfaces.Add(typeof(IWithLogicalDelete));
+			if (o.Parameters.Count == 0)
+				ob.ParmInt("id").ParmString("returnurl");
+
+			cls.AddOperation(o);
 			return cls;
 		}
 
@@ -228,12 +323,14 @@ namespace Nephrite.Meta.Fluent
 
 		public static MetaClass TCLED(this MetaClass cls)
 		{
-			cls.Title().OperationCreateNew().OperationList().OperationEdit().OperationDelete();
+			cls.Title().
+				OperationCreateNew().OperationList().OperationEdit().OperationDelete().OperationUnDelete();
 			return cls;
 		}
 		public static MetaClass TCLEVD(this MetaClass cls)
 		{
-			cls.Title().OperationCreateNew().OperationList().OperationEdit().OperationView().OperationDelete();
+			cls.Title().
+				OperationCreateNew().OperationList().OperationEdit().OperationView().OperationDelete().OperationUnDelete();
 			return cls;
 		}
 

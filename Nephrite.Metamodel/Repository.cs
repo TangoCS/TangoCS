@@ -89,14 +89,14 @@ namespace Nephrite.Metamodel
             defaultLanguage = Language.DefaultLanguage.Code;
         }
 
-        public IMMObject Get(MetaClass objectType, object id)
+        public IModelObject Get(MetaClass objectType, object id)
         {
 			try
 			{
 				Type T = assembly.GetType(ns + "." + objectType.Name, true, true);
 				// Параметр лямбда-выражения типа T
-				ParameterExpression pe_c = ParameterExpression.Parameter(typeof(IMMObject), "c");
-				// Преобразование IMMObject к нужному нам реальному типу объекта
+				ParameterExpression pe_c = ParameterExpression.Parameter(typeof(IModelObject), "c");
+				// Преобразование IModelObject к нужному нам реальному типу объекта
 				UnaryExpression ue_c = UnaryExpression.Convert(pe_c, T);
 				// Получение у объекта свойства с именем, соответствующим первичному ключу
 				MemberExpression me_id = MemberExpression.Property(ue_c, objectType.Key.ColumnName);
@@ -105,9 +105,9 @@ namespace Nephrite.Metamodel
 				// Сравнение первичного ключа с заданным идентификатором
 				BinaryExpression be_eq = BinaryExpression.Equal(me_id, ce_val);
 				// Само лямбда-выражение
-				Expression<Func<IMMObject, bool>> expr2 = Expression.Lambda<Func<IMMObject, bool>>(be_eq, pe_c);
+				Expression<Func<IModelObject, bool>> expr2 = Expression.Lambda<Func<IModelObject, bool>>(be_eq, pe_c);
 				// Загрузить нужный объект
-				return db.GetTable(T).OfType<IMMObject>().SingleOrDefault(expr2);
+				return db.GetTable(T).OfType<IModelObject>().SingleOrDefault(expr2);
 			}
 			catch (Exception e)
 			{
@@ -120,7 +120,7 @@ namespace Nephrite.Metamodel
             Type T = assembly.GetType(ns + ".HST_" + objectType.Name, true, true);
             // Параметр лямбда-выражения типа T
             ParameterExpression pe_c = ParameterExpression.Parameter(typeof(IMMObjectVersion), "c");
-            // Преобразование IMMObject к нужному нам реальному типу объекта
+            // Преобразование IModelObject к нужному нам реальному типу объекта
             UnaryExpression ue_c = UnaryExpression.Convert(pe_c, T);
             // Получение у объекта свойства с именем, соответствующим первичному ключу
 			string pkname = objectType.Key.ColumnName;
@@ -140,11 +140,11 @@ namespace Nephrite.Metamodel
             return db.GetTable(T).OfType<IMMObjectVersion>().SingleOrDefault(expr2);
         }
 
-        public IMMObject GetData(MetaClass objectType, int id, string languageCode)
+        public IModelObject GetData(MetaClass objectType, int id, string languageCode)
         {
             Type T = assembly.GetType(ns + "." + objectType.Name + "Data", true, true);
             // Параметр лямбда-выражения типа Object
-            ParameterExpression pe_c = ParameterExpression.Parameter(typeof(IMMObject), "c");
+            ParameterExpression pe_c = ParameterExpression.Parameter(typeof(IModelObject), "c");
             // Преобразование Object к нужному нам реальному типу объекта
             UnaryExpression ue_c = UnaryExpression.Convert(pe_c, T);
             // Получение у объекта свойства с именем, соответствующим первичному ключу
@@ -162,9 +162,9 @@ namespace Nephrite.Metamodel
             // Логическое И
             BinaryExpression be_and = BinaryExpression.And(be_eq, be_eqlc);
             // Само лямбда-выражение
-            Expression<Func<IMMObject, bool>> expr2 = Expression.Lambda<Func<IMMObject, bool>>(be_and, pe_c);
+            Expression<Func<IModelObject, bool>> expr2 = Expression.Lambda<Func<IModelObject, bool>>(be_and, pe_c);
             // Загрузить нужный объект
-            return db.GetTable(T).OfType<IMMObject>().SingleOrDefault<IMMObject>(expr2);
+            return db.GetTable(T).OfType<IModelObject>().SingleOrDefault<IModelObject>(expr2);
         }
 
         public XElement LoadObject(MetaClass objectType, int id, string languageCode)
@@ -207,7 +207,7 @@ namespace Nephrite.Metamodel
 				return f == null ? null : f.SerializeToXml();
 			}
             // Загрузить нужный объект
-            IMMObject o = Get(objectType, id);
+            IModelObject o = Get(objectType, id);
             if (o == null)
                 return null;
             // Преобразовать объект в XElement
@@ -436,10 +436,10 @@ namespace Nephrite.Metamodel
 			// Определить ид
 			XElement xeid = obj.Element(objectType.Key.Name);
 			object id = xeid != null ? (xeid.Value.ToInt32(0) > 0 ? (object)xeid.Value.ToInt32(0) : xeid.Value.ToGuid()) : 0;
-            IMMObject o = Get(objectType, id);
+            IModelObject o = Get(objectType, id);
             if (o == null)
             {
-                o = (IMMObject)Activator.CreateInstance(T);
+                o = (IModelObject)Activator.CreateInstance(T);
                 db.GetTable(T).InsertOnSubmit(o);
             }
 
@@ -579,14 +579,14 @@ namespace Nephrite.Metamodel
             }
         }
 
-		public IMMObject DeserializeObject(MetaClass objectType, XElement obj)
+		public IModelObject DeserializeObject(MetaClass objectType, XElement obj)
 		{
 			Type T = assembly.GetType(ns + "." + objectType.Name, true, true);
 
 			// Определить ид
 			XElement xeid = obj.Element(objectType.Key.ColumnName);
 			int id = xeid != null ? xeid.Value.ToInt32(0) : 0;
-			IMMObject o = (IMMObject)Activator.CreateInstance(T);
+			IModelObject o = (IModelObject)Activator.CreateInstance(T);
 
 			foreach (var p in objectType.Properties.Where(p1 => p1.UpperBound == 1))
 			{
@@ -680,7 +680,7 @@ namespace Nephrite.Metamodel
 			return o;
 		}
 
-		public IMMObject DeserializeObjectVersion(MetaClass objectType, XElement obj)
+		public IModelObject DeserializeObjectVersion(MetaClass objectType, XElement obj)
 		{
 			Type T = assembly.GetType(ns + ".HST_" + objectType.Name, true, true);
 
@@ -691,7 +691,7 @@ namespace Nephrite.Metamodel
 				pkname = pkname.Substring(0, pkname.Length - 2);
 			pkname += "Version" + (objectType.Key.Type is MetaGuidType ? "GUID" : "ID");
 			
-			IMMObject o = (IMMObject)Activator.CreateInstance(T);
+			IModelObject o = (IModelObject)Activator.CreateInstance(T);
 
 			foreach (var p in objectType.Properties.Where(p1 => p1.UpperBound == 1))
 			{
@@ -911,7 +911,7 @@ namespace Nephrite.Metamodel
 			}
         }
 
-        public static PropertyInfo GetPropertyInfo(IMMObject o, string propertyName)
+        public static PropertyInfo GetPropertyInfo(IModelObject o, string propertyName)
         {
             PropertyInfo pi = o.GetType().GetProperties().SingleOrDefault(p1 => p1.Name.ToLower() == propertyName.ToLower());
             //if (pi == null)
@@ -984,7 +984,7 @@ namespace Nephrite.Metamodel
             get { return db; }
         }
 
-		public IQueryable<IMMObject> GetList(MetaClass objectType)
+		public IQueryable<IModelObject> GetList(MetaClass objectType)
         {
             string sn;
 			if (objectType.Properties.Any(o => o is MetaAttribute && (o as MetaAttribute).IsMultilingual))
@@ -997,7 +997,7 @@ namespace Nephrite.Metamodel
             {
                 sn = ns + "." + objectType.Name;
                 Type T = assembly.GetType(sn);
-                return db.GetTable(T).OfType<IMMObject>();
+                return db.GetTable(T).OfType<IModelObject>();
             }
         }
 
@@ -1007,10 +1007,10 @@ namespace Nephrite.Metamodel
             return db.GetTable(T).OfType<IMMObjectVersion>();
         }
 
-		public static IQueryable<IMMObject> GetCurrentLang(IQueryable<IMMObjectMLView> data)
+		public static IQueryable<IModelObject> GetCurrentLang(IQueryable<IMMObjectMLView> data)
 		{
 			string langCode = Language.Current.Code.ToLower();
-			return data.Where(o => o.LanguageCode == langCode).OfType<IMMObject>();
+			return data.Where(o => o.LanguageCode == langCode).OfType<IModelObject>();
 		}
 
         public void Delete(object obj)
@@ -1018,27 +1018,27 @@ namespace Nephrite.Metamodel
             db.GetTable(obj.GetType()).DeleteOnSubmit(obj);
         }
 
-		public IMMObject Create(MetaClass objectType)
+		public IModelObject Create(MetaClass objectType)
         {
             Type T = assembly.GetType(ns + "." + objectType.Name);
             object obj = Activator.CreateInstance(T);
             db.GetTable(T).InsertOnSubmit(obj);
-            return (IMMObject)obj;
+            return (IModelObject)obj;
         }
 
-		public IMMObject Empty(MetaClass objectType)
+		public IModelObject Empty(MetaClass objectType)
         {
 			if (objectType.Properties.Any(o => o is MetaAttribute && (o as MetaAttribute).IsMultilingual))
             {
                 Type T = assembly.GetType(ns + ".V_" + objectType.Name);
                 object obj = Activator.CreateInstance(T);
-                return (IMMObject)obj;
+                return (IModelObject)obj;
             }
             else
             {
                 Type T = assembly.GetType(ns + "." + objectType.Name);
                 object obj = Activator.CreateInstance(T);
-                return (IMMObject)obj;
+                return (IModelObject)obj;
             }
         }
 

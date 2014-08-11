@@ -11,12 +11,25 @@ namespace Nephrite.Web
 {
 	public interface IEntity
 	{
-		
+		//MetaClass MetaClass { get; }
+	}
+
+	public interface IWithKey : IEntity
+	{
+	}
+
+	public interface IWithKey<TKey> : IWithKey
+	{
+	}
+
+	public interface IWithKey<T, TKey> : IWithKey<TKey> where T : IEntity
+	{
+		Expression<Func<T, bool>> KeySelector(TKey id);
 	}
 
 	public interface IWithTitle
 	{
-		string GetTitle();
+		string Title { get; }
 	}
 
 	public interface IChildEntity : IEntity
@@ -27,11 +40,6 @@ namespace Nephrite.Web
 	public interface IWithDefaultOrder<T> where T : IEntity
 	{
 		Func<T, string> DefaultOrderBy();
-	}
-
-	public interface IWithKey<T, TKey> where T : IEntity
-	{
-		Expression<Func<T, bool>> KeySelector(TKey id);
 	}
 
 	public interface IWithSeqNo
@@ -82,5 +90,15 @@ namespace Nephrite.Web
 				return A.Meta.GetClass(obj.GetType().Name.Substring("V_".Length));
 			return A.Meta.GetClass(obj.GetType().Name);
 		}
+
+		public static object GetID<T>(this T obj) where T : IWithKey, IEntity
+		{
+			return (obj.GetMetaClass().Key.GetValue as Func<T, object>)(obj);
+		}
+
+		//public static TKey GetTypedID<T, TKey>(this IWithKey<T, TKey> obj) where T : class
+		//{
+		//	return (obj.GetMetaClass().Key.GetValue as Func<T, TKey>)(obj as T);
+		//}
 	}
 }
