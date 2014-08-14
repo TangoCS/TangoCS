@@ -8,21 +8,21 @@ using System.Text;
 
 namespace Nephrite.Web.Office
 {
-	public class Columns<O, T> : IEnumerable<IColumn>
+	public class ExcelColumns<O, T> : IEnumerable<IExcelColumn>
 	{
 		protected Func<O, IEnumerable<T>> getObjects;
 		
-		public Columns(Func<O, IEnumerable<T>> objects)
+		public ExcelColumns(Func<O, IEnumerable<T>> objects)
 		{
 			getObjects = objects;
 		}
 
-		protected List<IColumn<T>> columns = new List<IColumn<T>>();
+		protected List<ExcelIColumn<T>> columns = new List<ExcelIColumn<T>>();
 
 		#region AddColumn
 		public void AddColumn(string header, Func<T, string> selector)
 		{
-			columns.Add(new Column<T>
+			columns.Add(new ExcelColumn<T>
 			{
 				Header = header,
 				Selector = o => new string[] { selector.Invoke(o) }
@@ -31,7 +31,7 @@ namespace Nephrite.Web.Office
 
 		public void AddColumn(string header, Func<T, IEnumerable<string>> selector)
 		{
-			columns.Add(new Column<T>
+			columns.Add(new ExcelColumn<T>
 			{
 				Header = header,
 				Selector = selector
@@ -40,7 +40,7 @@ namespace Nephrite.Web.Office
 
 		public void AddColumn(string header, Func<T, int?> selector)
 		{
-			columns.Add(new Column<T>
+			columns.Add(new ExcelColumn<T>
 			{
 				Header = header,
 				Selector = o => new string[] { selector.Invoke(o).ToString() }
@@ -49,7 +49,7 @@ namespace Nephrite.Web.Office
 
 		public void AddColumn(string header, Func<T, decimal?> selector)
 		{
-			columns.Add(new Column<T>
+			columns.Add(new ExcelColumn<T>
 			{
 				Header = header,
 				Selector = o =>
@@ -62,7 +62,7 @@ namespace Nephrite.Web.Office
 
 		public void AddColumn(string header, Func<T, bool?> selector)
 		{
-			columns.Add(new Column<T>
+			columns.Add(new ExcelColumn<T>
 			{
 				Header = header,
 				Selector = o =>
@@ -76,7 +76,7 @@ namespace Nephrite.Web.Office
 		}
 		#endregion
 
-		IEnumerator<IColumn> IEnumerable<IColumn>.GetEnumerator()
+		IEnumerator<IExcelColumn> IEnumerable<IExcelColumn>.GetEnumerator()
 		{
 			return columns.GetEnumerator();
 		}
@@ -87,15 +87,15 @@ namespace Nephrite.Web.Office
 		}
 	}
 
-	public class Export<T> : Columns<int, T>
+	public class ExcelExport<T> : ExcelColumns<int, T>
 	{
-		public Export(IEnumerable<T> objects) : base(o => objects)
+		public ExcelExport(IEnumerable<T> objects) : base(o => objects)
 		{
 		}
 		
-		public ColumnGroup<T, C> AddColumnGroup<C>(string header, Func<T, IEnumerable<C>> items)
+		public ExcelColumnGroup<T, C> AddColumnGroup<C>(string header, Func<T, IEnumerable<C>> items)
 		{
-			var cg = new ColumnGroup<T, C>(items);
+			var cg = new ExcelColumnGroup<T, C>(items);
 			cg.Header = header;
 			columns.Add(cg);
 			return cg;
@@ -153,7 +153,7 @@ namespace Nephrite.Web.Office
 		}
 	}
 
-	public class Column<T> : IColumn<T>
+	public class ExcelColumn<T> : ExcelIColumn<T>
 	{
 		public string Header { get; set; }
 		public Func<T, IEnumerable<string>> Selector;
@@ -183,16 +183,16 @@ namespace Nephrite.Web.Office
 			get { return 1; }
 		}
 		public bool Visible { get; set; }
-		public Column()
+		public ExcelColumn()
 		{
 			Visible = true;
 		}
 	}
 
-	public class ColumnGroup<T, C> : Columns<T, C>, IColumn<T>, IColumnGroup
+	public class ExcelColumnGroup<T, C> : ExcelColumns<T, C>, ExcelIColumn<T>, IExcelColumnGroup
 	{
 		public string Header { get; set; }
-		public ColumnGroup(Func<T, IEnumerable<C>> selector) : base(selector)
+		public ExcelColumnGroup(Func<T, IEnumerable<C>> selector) : base(selector)
 		{
 			Visible = true;
 		}
@@ -248,19 +248,19 @@ namespace Nephrite.Web.Office
 		public bool Visible { get; set; }
 	}
 
-	public interface IColumn<T> : IColumn
+	public interface ExcelIColumn<T> : IExcelColumn
 	{
 		new string Header { get; set; }
 		int WriteHeader(OfficeOpenXml.ExcelRange range, int rowNumber, int colNumber);
 		int WriteValue(OfficeOpenXml.ExcelRange range, T obj, int row, int col, ref int rows);
 		int HeaderRows { get; }
 	}
-	public interface IColumn
+	public interface IExcelColumn
 	{
 		string Header { get; }
 		bool Visible { get; set; }
 	}
-	public interface IColumnGroup : IColumn, IEnumerable<IColumn>
+	public interface IExcelColumnGroup : IExcelColumn, IEnumerable<IExcelColumn>
 	{
 	}
 }

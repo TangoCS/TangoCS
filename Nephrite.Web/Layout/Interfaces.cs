@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.UI;
 
@@ -298,14 +299,14 @@ namespace Nephrite.Web.Layout
 
 	public interface ILayoutSimpleTags
 	{
-		string Link(ILink link);
-		string ImageLink(ILink link);
-		string Image(string src, string alt, object attributes);
+		StringBuilder Link(ILink link);
+		StringBuilder ImageLink(ILink link);
+		StringBuilder Image(string src, string alt, object attributes);
 	}
 
 	public static class LayoutSimpleTagsExtensions
 	{
-		public static string Image(this ILayoutSimpleTags l, string src, string alt)
+		public static StringBuilder Image(this ILayoutSimpleTags l, string src, string alt)
 		{
 			return l.Image(src, alt, null);
 		}

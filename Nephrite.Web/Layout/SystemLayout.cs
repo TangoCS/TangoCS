@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web;
 
 namespace Nephrite.Web.Layout
@@ -200,17 +201,17 @@ namespace Nephrite.Web.Layout
 			return Paging.RenderPager(gotoPageJSFunction, pageIndex, pageCount, recordsCount);
 		}
 
-		public string Link(ILink link)
+		public StringBuilder Link(ILink link)
 		{
 			return SimpleTags.Link(link);
 		}
 
-		public string ImageLink(ILink link)
+		public StringBuilder ImageLink(ILink link)
 		{
 			return SimpleTags.ImageLink(link);
 		}
 
-		public string Image(string src, string alt, object attributes)
+		public StringBuilder Image(string src, string alt, object attributes)
 		{
 			return SimpleTags.Image(src, alt, attributes);
 		}

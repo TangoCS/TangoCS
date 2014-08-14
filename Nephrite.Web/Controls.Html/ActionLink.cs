@@ -112,7 +112,7 @@ namespace Nephrite.Web.Controls
 		{
 			Title = title;
 			if (Operation == null || ActionSPMContext.Current.Check(Operation.ID, 1))
-				return AppLayout.Current.Link(this);
+				return AppLayout.Current.Link(this).ToString();
 			else
 				return title;
 		}
@@ -135,7 +135,7 @@ namespace Nephrite.Web.Controls
 		public string ImageLink()
 		{
 			if (Operation == null || ActionSPMContext.Current.Check(Operation.ID, 1))
-				return AppLayout.Current.ImageLink(this);
+				return AppLayout.Current.ImageLink(this).ToString();
 			else
 				return "";
 		}

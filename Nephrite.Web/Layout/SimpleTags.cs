@@ -11,7 +11,7 @@ namespace Nephrite.Web.Layout
 {
 	public class SimpleTags : ILayoutSimpleTags
 	{
-		public string Link(ILink link)
+		public StringBuilder Link(ILink link)
 		{
 			StringBuilder sb = new StringBuilder(255);
 
@@ -24,10 +24,10 @@ namespace Nephrite.Web.Layout
 			sb.AppendAttributes(link.Attributes, "");
 			sb.AppendFormat(">{0}</a>", link.Title);
 
-			return sb.ToString();
+			return sb;
 		}
 
-		public string ImageLink(ILink link)
+		public StringBuilder ImageLink(ILink link)
 		{
 			StringBuilder sb = new StringBuilder(255);
 
@@ -39,17 +39,18 @@ namespace Nephrite.Web.Layout
 			sb.AppendAttributes(link.Attributes, "");
 			sb.AppendFormat(">{0}</a>", this.Image(link.Image, link.Title));
 
-			return sb.ToString();
+			return sb;
 		}
 
-		public string Image(string src, string alt, object attributes)
+		public StringBuilder Image(string src, string alt, object attributes)
 		{
 			// при необходимости сделать метод DBImage
 			//if (src.ToLower().Contains("data.ashx"))
 			//	return String.Format("<img src='{0}' class='middle' alt='{1}' title='{1}' />", DataHandler.GetDataUrl(src.GetQueryParameter("oid").ToInt32(0)), alt);
 			//if (src.IndexOf('/', 1) > 0 && !src.StartsWith(".."))
 			//	return String.Format("<img src='{0}' class='middle' alt='{1}' title='{1}' />", DataHandler.GetDataUrl(src), alt);
-			return String.Format("<img src='{0}' class='middle' alt='{1}' title='{1}' />", Settings.ImagesPath + src, alt);
+			StringBuilder sb = new StringBuilder(255);
+			return sb.AppendFormat("<img src='{0}' class='middle' alt='{1}' title='{1}' />", Settings.ImagesPath + src, alt);
 		}
 	}
 }
