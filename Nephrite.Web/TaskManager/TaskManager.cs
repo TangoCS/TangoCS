@@ -254,13 +254,12 @@ namespace Nephrite.Web.TaskManager
 
 		public static void RunTasks(string interopServiceUrl, string connectionString)
 		{
-			TaskManagerServiceReference.TaskManagerServiceClient svc = new TaskManagerServiceReference.TaskManagerServiceClient();
-			svc.Endpoint.Address = new System.ServiceModel.EndpointAddress(interopServiceUrl);
-			//svc.Url = interopServiceUrl;
-			//svc.AllowAutoRedirect = true;
-			//svc.UseDefaultCredentials = true;
-			//svc.PreAuthenticate = true;
-			//svc.Timeout = 1000 * 60 * 30; // 30 минут
+			TaskManagerServiceReference.TaskManagerService svc = new TaskManagerServiceReference.TaskManagerService();
+			svc.Url = interopServiceUrl;
+			svc.AllowAutoRedirect = true;
+			svc.UseDefaultCredentials = true;
+			svc.PreAuthenticate = true;
+			svc.Timeout = 1000 * 60 * 30; // 30 минут
 
 			using (var sdc = (IDC_Settings)A.Model.NewDataContext())
 			{
@@ -271,7 +270,8 @@ namespace Nephrite.Web.TaskManager
 				if (sp == null)
 					throw new Exception("Системный параметр ReplicationPassword отсутствует в БД");
 
-				svc.RunTasks(new TaskManagerServiceReference.UserCredentials { Login = sl.Value, Password = sp.Value });
+				svc.UserCredentialsValue = new TaskManagerServiceReference.UserCredentials { Login = sl.Value, Password = sp.Value };
+				svc.RunTasks();
 
 				TaskManager.RunService(connectionString);
 			}

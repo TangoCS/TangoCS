@@ -116,16 +116,19 @@
     <Content Include="ExternalDll\DotNetOpenAuth.dll" />
     <Content Include="js\knockout-2.2.1.js" />
     <Content Include="js\modalwindow.js" />
-    <Content Include="Service References\TaskManagerServiceReference\TaskManagerService.disco" />
-    <Content Include="Service References\TaskManagerServiceReference\configuration91.svcinfo" />
-    <Content Include="Service References\TaskManagerServiceReference\configuration.svcinfo" />
-    <Content Include="Service References\TaskManagerServiceReference\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </Content>
     <Content Include="TaskManager\TaskManagerService.asmx" />
     <Content Include="View\Message\show.ascx" />
+    <Content Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </Content>
+    <Content Include="Web References\TaskManagerServiceReference\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </Content>
+    <Content Include="Web References\TaskManagerServiceReference\TaskManagerService.disco" />
     <Content Include="Web.config" />
+    <Content Include="Web References\TaskManagerServiceReference\TaskManagerService.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
@@ -184,15 +187,15 @@
     <Compile Include="Controllers\PackageFormViewController.cs" />
     <Compile Include="Office\ExcelExportEx.cs" />
     <Compile Include="Office\WordDocumentGenerator.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="RussianStrings\Prop.cs" />
     <Compile Include="RussianStrings\RussianDate.cs" />
     <Compile Include="RussianStrings\RussianNumber.cs">
       <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Service References\TaskManagerServiceReference\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
     </Compile>
     <Compile Include="SPM2\Scripts\ISPM2Script.cs" />
     <Compile Include="SPM2\Scripts\SPM2ScriptDB2.cs" />
@@ -200,6 +203,11 @@
     <Compile Include="SPM2\Scripts\SPM2Scripts.cs" />
     <Compile Include="TaskManager\TaskManagerService.asmx.cs">
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Web References\TaskManagerServiceReference\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
     </Compile>
     <Compile Include="Web\CustomControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -567,7 +575,6 @@
     <Content Include="View\TinyMCEFileManager\list.ascx" />
     <Content Include="View\TinyMCEFileManager\upload.ascx" />
     <Content Include="packages.config" />
-    <Content Include="Service References\TaskManagerServiceReference\TaskManagerService.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -601,7 +608,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadataStorage Include="Service References\TaskManagerServiceReference\" />
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="http://localhost:24090/TaskManager/TaskManagerService.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\TaskManagerServiceReference\</RelPath>
+      <UpdateFromURL>http://localhost:24090/TaskManager/TaskManagerService.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>Nephrite_Web_TaskManagerServiceReference_TaskManagerService</CachedSettingsPropName>
+    </WebReferenceUrl>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
