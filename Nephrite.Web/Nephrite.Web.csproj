@@ -201,7 +201,7 @@
     <Compile Include="SPM2\Scripts\SPM2ScriptDB2.cs" />
     <Compile Include="SPM2\Scripts\SPM2ScriptMSSQL.cs" />
     <Compile Include="SPM2\Scripts\SPM2Scripts.cs" />
-    <Compile Include="TaskManager\TaskManagerService.asmx.cs">
+    <Compile Include="TaskManager\TaskManagerService.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Web References\TaskManagerServiceReference\Reference.cs">

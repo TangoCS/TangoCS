@@ -9,6 +9,7 @@ using Nephrite.Web.SPM;
 using System.IO;
 using System.Text;
 using Nephrite.Web.ErrorLog;
+using Nephrite.Web.CoreDataContext;
 
 namespace Nephrite.Web.TaskManager
 {
@@ -18,7 +19,7 @@ namespace Nephrite.Web.TaskManager
 
 		public static void Run()
 		{
-			using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
+			using (var dc = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null) as IDC_TaskManager)
 			{
 				// Задачи, которые не успели завершиться, пометить как завершенные
 				foreach (var t in from o in dc.ITM_TaskExecution
@@ -63,7 +64,7 @@ namespace Nephrite.Web.TaskManager
 		{
 			ConnectionManager.SetConnectionString(connectionString);
 			List<ITM_Task> tasks;
-			using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
+			using (var dc = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(connectionString), null) as IDC_TaskManager)
 			{
 				// Задачи, которые не успели завершиться, пометить как завершенные
 				foreach (var t in
@@ -127,7 +128,7 @@ namespace Nephrite.Web.TaskManager
 			{
 				List<ITM_TaskParameter> taskparms = new List<ITM_TaskParameter>();
 
-				using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
+				using (var dc = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null) as IDC_TaskManager)
 				{
 					dc.Log = new StringWriter();
 					task = dc.ITM_Task.Single(o => o.TaskID == taskID);
@@ -185,7 +186,7 @@ namespace Nephrite.Web.TaskManager
 					}
 					AppSPM.RunWithElevatedPrivileges(() => mi.Invoke(null, p));
 
-					using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
+					using (var dc = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null) as IDC_TaskManager)
 					{
 						try
 						{
@@ -211,7 +212,7 @@ namespace Nephrite.Web.TaskManager
 				catch (Exception e)
 				{
 					int errid = ErrorLogger.Log(e);
-					using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
+					using (var dc = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null) as IDC_TaskManager)
 					{
 						dc.Log = new StringWriter();
 						var t = dc.ITM_Task.Single(o => o.TaskID == taskID);
@@ -261,7 +262,7 @@ namespace Nephrite.Web.TaskManager
 			svc.PreAuthenticate = true;
 			svc.Timeout = 1000 * 60 * 30; // 30 минут
 
-			using (var sdc = (IDC_Settings)A.Model.NewDataContext())
+			using (var sdc = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(connectionString), null) as IDC_Settings)
 			{
 				var sl = sdc.IN_Setting.FirstOrDefault(o => o.SystemName == "ReplicationLogin");
 				if (sl == null)

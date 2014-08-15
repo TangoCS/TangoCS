@@ -37,7 +37,7 @@ namespace Nephrite.Web.CoreDataContext
 		{
 			return c =>
 			{
-				if (dbType == null) dbType = DBType;
+				if (dbType == null) dbType = A.DBType;
 				switch (dbType)
 				{
 					case Nephrite.Web.DBType.MSSQL: c.Dialect<MsSql2008Dialect>(); break;
