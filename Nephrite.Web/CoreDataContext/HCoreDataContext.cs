@@ -48,7 +48,7 @@ namespace Nephrite.Web.CoreDataContext
 				}
 
 				c.ConnectionString = connectionString;
-				c.KeywordsAutoImport = Hbm2DDLKeyWords.AutoQuote;
+				c.KeywordsAutoImport = Hbm2DDLKeyWords.None;
 				c.IsolationLevel = System.Data.IsolationLevel.ReadUncommitted;
 				//c.LogFormattedSql = true;
 				if (!System.Configuration.ConfigurationManager.AppSettings["ValidateSchema"].IsEmpty())
