@@ -88,12 +88,12 @@ namespace Nephrite.Web.CoreDataContext
 
 		public IQueryable<IN_TimeZone> IN_TimeZone
 		{
-			get { return new HTable<IN_TimeZone>(this, Session.Query<N_TimeZone>().Cast<IN_TimeZone>()); }
+			get { return new HTable<IN_TimeZone>(this, Session.Query<N_TimeZone>()); }
 		}
 
 		public IQueryable<IN_Filter> IN_Filter
 		{
-			get { return new HTable<IN_Filter>(this, Session.Query<N_Filter>().Cast<IN_Filter>()); }
+			get { return new HTable<IN_Filter>(this, Session.Query<N_Filter>()); }
 		}
 
 		public IN_Filter NewIN_Filter()
@@ -103,12 +103,12 @@ namespace Nephrite.Web.CoreDataContext
 
 		public IQueryable<IN_DownloadLog> IN_DownloadLog
 		{
-			get { return new HTable<IN_DownloadLog>(this, Session.Query<N_DownloadLog>().Cast<IN_DownloadLog>()); }
+			get { return new HTable<IN_DownloadLog>(this, Session.Query<N_DownloadLog>()); }
 		}
 
 		public IQueryable<IN_VirusScanLog> IN_VirusScanLog
 		{
-			get { return new HTable<IN_VirusScanLog>(this, Session.Query<N_VirusScanLog>().Cast<IN_VirusScanLog>()); }
+			get { return new HTable<IN_VirusScanLog>(this, Session.Query<N_VirusScanLog>()); }
 		}
 
 		public IN_DownloadLog NewIN_DownloadLog()
@@ -138,37 +138,37 @@ namespace Nephrite.Web.CoreDataContext
 
 		public IQueryable<IDbFile> IDbFile
 		{
-			get { return new HTable<IDbFile>(this, Session.Query<V_DbFile>().Cast<IDbFile>()); }
+			get { return new HTable<IDbFile>(this, Session.Query<V_DbFile>()); }
 		}
 
 		public IQueryable<IDbFolder> IDbFolder
 		{
-			get { return new HTable<IDbFolder>(this, Session.Query<V_DbFolder>().Cast<IDbFolder>()); }
+			get { return new HTable<IDbFolder>(this, Session.Query<V_DbFolder>()); }
 		}
 
 		public IQueryable<IDbItem> IDbItem
 		{
-			get { return new HTable<IDbItem>(this, Session.Query<V_DbItem>().Cast<IDbItem>()); }
+			get { return new HTable<IDbItem>(this, Session.Query<V_DbItem>()); }
 		}
 
 		public IQueryable<IDbFileData> IDbFileData
 		{
-			get { return new HTable<IDbFileData>(this, Session.Query<N_FileData>().Cast<IDbFileData>()); }
+			get { return new HTable<IDbFileData>(this, Session.Query<N_FileData>()); }
 		}
 
 		public IQueryable<ICalendarDay> ICalendarDay
 		{
-			get { return new HTable<ICalendarDay>(this, Session.Query<CalendarDay>().Cast<ICalendarDay>()); }
+			get { return new HTable<ICalendarDay>(this, Session.Query<CalendarDay>()); }
 		}
 
 		public IQueryable<IMailMessage> IMailMessage
 		{
-			get { return new HTable<IMailMessage>(this, Session.Query<MailMessage>().Cast<IMailMessage>()); }
+			get { return new HTable<IMailMessage>(this, Session.Query<MailMessage>()); }
 		}
 
 		public IQueryable<IMailTemplate> IMailTemplate
 		{
-			get { return new HTable<IMailTemplate>(this, Session.Query<MailTemplate>().Cast<IMailTemplate>()); }
+			get { return new HTable<IMailTemplate>(this, Session.Query<MailTemplate>()); }
 		}
 
 		public IMailMessage NewIMailMessage()
@@ -178,27 +178,27 @@ namespace Nephrite.Web.CoreDataContext
 
 		public IQueryable<IN_TextResource> IN_TextResource
 		{
-			get { return new HTable<IN_TextResource>(this, Session.Query<V_N_TextResource>().Cast<IN_TextResource>()); }
+			get { return new HTable<IN_TextResource>(this, Session.Query<V_N_TextResource>()); }
 		}
 
 		public IQueryable<IC_Language> IC_Language
 		{
-			get { return new HTable<IC_Language>(this, Session.Query<C_Language>().Cast<IC_Language>()); }
+			get { return new HTable<IC_Language>(this, Session.Query<C_Language>()); }
 		}
 
 		public IQueryable<ITM_Task> ITM_Task
 		{
-			get { return new HTable<ITM_Task>(this, Session.Query<TM_Task>().Cast<ITM_Task>()); }
+			get { return new HTable<ITM_Task>(this, Session.Query<TM_Task>()); }
 		}
 
 		public IQueryable<ITM_TaskExecution> ITM_TaskExecution
 		{
-			get { return new HTable<ITM_TaskExecution>(this, Session.Query<TM_TaskExecution>().Cast<ITM_TaskExecution>()); }
+			get { return new HTable<ITM_TaskExecution>(this, Session.Query<TM_TaskExecution>()); }
 		}
 
 		public IQueryable<ITM_TaskParameter> ITM_TaskParameter
 		{
-			get { return new HTable<ITM_TaskParameter>(this, Session.Query<TM_TaskParameter>().Cast<ITM_TaskParameter>()); }
+			get { return new HTable<ITM_TaskParameter>(this, Session.Query<TM_TaskParameter>()); }
 		}
 
 		public ITM_TaskExecution NewITM_TaskExecution()
@@ -218,12 +218,12 @@ namespace Nephrite.Web.CoreDataContext
 
 		public IQueryable<IN_ObjectChange> IN_ObjectChange
 		{
-			get { return new HTable<IN_ObjectChange>(this, Session.Query<N_ObjectChange>().Cast<IN_ObjectChange>()); }
+			get { return new HTable<IN_ObjectChange>(this, Session.Query<N_ObjectChange>()); }
 		}
 
 		public IQueryable<IN_ObjectPropertyChange> IN_ObjectPropertyChange
 		{
-			get { return new HTable<IN_ObjectPropertyChange>(this, Session.Query<N_ObjectPropertyChange>().Cast<IN_ObjectPropertyChange>()); }
+			get { return new HTable<IN_ObjectPropertyChange>(this, Session.Query<N_ObjectPropertyChange>()); }
 		}
 
 		public IN_ObjectChange NewIN_ObjectChange()
@@ -238,7 +238,7 @@ namespace Nephrite.Web.CoreDataContext
 
 		public IQueryable<IN_RssFeed> IN_RssFeed
 		{
-			get { return new HTable<IN_RssFeed>(this, Session.Query<N_RssFeed>().Cast<IN_RssFeed>()); }
+			get { return new HTable<IN_RssFeed>(this, Session.Query<N_RssFeed>()); }
 		}
 
 		public override IDataContext NewDataContext()
@@ -255,22 +255,22 @@ namespace Nephrite.Web.CoreDataContext
 
 		public IQueryable<IMM_ObjectType> IMM_ObjectType
 		{
-			get { return new HTable<IMM_ObjectType>(this, Session.Query<MM_ObjectType>().Cast<IMM_ObjectType>()); }
+			get { return new HTable<IMM_ObjectType>(this, Session.Query<MM_ObjectType>()); }
 		}
 
 		public IQueryable<IMM_FormView> IMM_FormView
 		{
-			get { return new HTable<IMM_FormView>(this, Session.Query<IMM_FormView>()); }
+			get { return new HTable<IMM_FormView>(this, Session.Query<MM_FormView>()); }
 		}
 
 		public IQueryable<IMM_Package> IMM_Package
 		{
-			get { return new HTable<IMM_Package>(this, Session.Query<IMM_Package>()); }
+			get { return new HTable<IMM_Package>(this, Session.Query<MM_Package>()); }
 		}
 
 		public IQueryable<IN_Cache> IN_Cache
 		{
-			get { return new HTable<IN_Cache>(this, Session.Query<N_Cache>().Cast<IN_Cache>()); }
+			get { return new HTable<IN_Cache>(this, Session.Query<N_Cache>()); }
 		}
 
 		public IN_Cache NewIN_Cache()

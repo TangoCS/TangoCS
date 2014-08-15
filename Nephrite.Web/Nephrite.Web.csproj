@@ -137,7 +137,6 @@
     <Compile Include="Controls\Scripts\NavigScriptDB2.cs" />
     <Compile Include="Controls\Scripts\NavigScriptMSSQL.cs" />
     <Compile Include="Controls\Scripts\NavigScripts.cs" />
-    <Compile Include="CoreDataContext\HIMapping.cs" />
     <Compile Include="FormsEngine\CodeGen.cs" />
     <Compile Include="FormsEngine\CompileConfig.designer.cs" />
     <Compile Include="FormsEngine\DynamicClassActivator.cs" />

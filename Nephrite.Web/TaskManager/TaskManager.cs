@@ -23,9 +23,10 @@ namespace Nephrite.Web.TaskManager
 			using (var dc = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null) as IDC_TaskManager)
 			{
 				// Задачи, которые не успели завершиться, пометить как завершенные
-				foreach (var t in from o in dc.ITM_TaskExecution
+				foreach (var t in 
+					from o in dc.ITM_TaskExecution
 					from t in dc.ITM_Task
-					where o.FinishDate == null && o.TaskID == t.TaskID && t.StartFromService == nullcont
+					where o.FinishDate == null && o.TaskID == t.TaskID && t.StartFromService == true
 					select o)
 				{
 					if (t.StartDate.AddMinutes(dc.ITM_Task.Single(o => o.TaskID == t.TaskID).ExecutionTimeout) < DateTime.Now)

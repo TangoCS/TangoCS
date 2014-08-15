@@ -16,6 +16,7 @@ using Nephrite.Web.FileStorage;
 using Nephrite.Web.Hibernate;
 using Nephrite.Web.MetaStorage;
 using Nephrite.Web.SPM;
+using Nephrite.Web.TaskManager;
 using NHibernate;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Engine;
@@ -56,42 +57,10 @@ namespace Tessera.Test
 			//HDataContext.DBType = DBType.MSSQL;
 
             ConnectionManager.SetConnectionString("Database=SRVNTS;UserID=dbo;Password=123*(iop;Server=176.227.213.5:50000");
-            HDataContext.DBType = DBType.DB2;
+            A.DBType = DBType.DB2;
 			A.DBScript = new DBScriptDB2("DBO");
 
-			List<ValuePair> l2 = new List<ValuePair>();
-			l2.Add(new ValuePair(new DateTime(2014, 7, 25), 1));
-			l2.Add(new ValuePair(new DateTime(2014, 7, 26), 2));
-			l2.Add(new ValuePair(new DateTime(2014, 7, 28), 3));
-			l2.Add(new ValuePair(new DateTime(2014, 7, 28), 4));
-			l2.Add(new ValuePair(new DateTime(2014, 7, 29), 5));
-
-			DateTime newdate = new DateTime(2014, 7, 26);
-			DateTime newregdate = newdate;
-			var ViewData = l2[3];
-
-			if (ViewData.RegDate < newdate)
-			{
-				curRegNo = ViewData.RegNo;
-				newregdate = ViewData.RegDate;
-			}
-			else
-			{
-				curRegNo = l2.Where(o => o.RegDate <= newdate).Max(o => (int?)o.RegNo) ?? 0;
-				curRegNo++;
-				GenRegNo(ViewData);
-				
-			}
-			ViewData.RegDate = newdate;
 			
-			//maxno++;
-			var l22 = l2.Where(o => o.RegDate > newregdate).OrderBy(o => o.RegDate).ToList();
-			foreach (var d in l22)
-			{
-				GenRegNo(d);
-			}
-
-			var l3 = l2.OrderBy(o => o.RegDate).ToList();
 	
 			Listeners l = new Listeners();
 			var ael = new AuditEventListener();
@@ -106,10 +75,9 @@ namespace Tessera.Test
 			A.Model.ExecuteCommand("SET SCHEMA = 'DBO';");
 
 			//var schema = new DB2ServerMetadataReader().ReadSchema("DBO");
-
-
-
-			var classes = (new ModelFactory()).CreateSolution().Classes;
+			
+			TaskManager.Run();
+			//var classes = (new ModelFactory()).CreateSolution().Classes;
 
 			A.Items["CurrentSubject2"] = Subject.FromLogin("Admin");
 			var b = ActionSPMContext.Current.Check("ДОКУМЕНТЫ.VIEW", 1);
