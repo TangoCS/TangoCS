@@ -19,12 +19,13 @@ namespace Nephrite.Web.TaskManager
 
 		public static void Run()
 		{
+			bool nullcont = (HttpContext.Current == null);
 			using (var dc = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null) as IDC_TaskManager)
 			{
 				// Задачи, которые не успели завершиться, пометить как завершенные
 				foreach (var t in from o in dc.ITM_TaskExecution
 					from t in dc.ITM_Task
-					where o.FinishDate == null && o.TaskID == t.TaskID && t.StartFromService == (HttpContext.Current == null)
+					where o.FinishDate == null && o.TaskID == t.TaskID && t.StartFromService == nullcont
 					select o)
 				{
 					if (t.StartDate.AddMinutes(dc.ITM_Task.Single(o => o.TaskID == t.TaskID).ExecutionTimeout) < DateTime.Now)
@@ -36,7 +37,7 @@ namespace Nephrite.Web.TaskManager
 				dc.SubmitChanges();
 
 
-				var tasks = dc.ITM_Task.Where(o => o.IsActive && o.StartFromService == (HttpContext.Current == null) && !dc.ITM_TaskExecution.Any(o1 => o1.TaskID == o.TaskID && o1.FinishDate == null)).ToList();
+				var tasks = dc.ITM_Task.Where(o => o.IsActive && o.StartFromService == nullcont && !dc.ITM_TaskExecution.Any(o1 => o1.TaskID == o.TaskID && o1.FinishDate == null)).ToList();
 				foreach (var task in tasks)
 				{
 					if (task.LastStartDate.HasValue)
