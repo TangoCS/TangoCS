@@ -92,7 +92,9 @@
     </Reference>
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Web.DynamicData" />
@@ -114,6 +116,14 @@
     <Content Include="ExternalDll\DotNetOpenAuth.dll" />
     <Content Include="js\knockout-2.2.1.js" />
     <Content Include="js\modalwindow.js" />
+    <Content Include="Service References\TaskManagerServiceReference\TaskManagerService.disco" />
+    <Content Include="Service References\TaskManagerServiceReference\configuration91.svcinfo" />
+    <Content Include="Service References\TaskManagerServiceReference\configuration.svcinfo" />
+    <Content Include="Service References\TaskManagerServiceReference\Reference.svcmap">
+      <Generator>WCF Proxy Generator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </Content>
+    <Content Include="TaskManager\TaskManagerService.asmx" />
     <Content Include="View\Message\show.ascx" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -179,10 +189,18 @@
     <Compile Include="RussianStrings\RussianNumber.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Service References\TaskManagerServiceReference\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.svcmap</DependentUpon>
+    </Compile>
     <Compile Include="SPM2\Scripts\ISPM2Script.cs" />
     <Compile Include="SPM2\Scripts\SPM2ScriptDB2.cs" />
     <Compile Include="SPM2\Scripts\SPM2ScriptMSSQL.cs" />
     <Compile Include="SPM2\Scripts\SPM2Scripts.cs" />
+    <Compile Include="TaskManager\TaskManagerService.asmx.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Web\CustomControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -549,6 +567,7 @@
     <Content Include="View\TinyMCEFileManager\list.ascx" />
     <Content Include="View\TinyMCEFileManager\upload.ascx" />
     <Content Include="packages.config" />
+    <Content Include="Service References\TaskManagerServiceReference\TaskManagerService.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -580,6 +599,9 @@
       <Project>{5909bfe7-93cf-4e5f-be22-6293368af01d}</Project>
       <Name>NHibernate</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadataStorage Include="Service References\TaskManagerServiceReference\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
