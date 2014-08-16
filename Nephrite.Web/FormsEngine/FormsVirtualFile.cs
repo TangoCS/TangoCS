@@ -8,7 +8,6 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using Nephrite.Meta;
-using Nephrite.Web.CoreDataContext;
 using Nephrite.Web.RSS;
 using Nephrite.Web.MetaStorage;
 

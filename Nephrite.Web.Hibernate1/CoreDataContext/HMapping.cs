@@ -5,9 +5,9 @@ using System.Web;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 using NHibernate.Type;
-using NHibernate;
 using Nephrite.Web.MetaStorage;
 using Nephrite.Web.Hibernate;
+using Nephrite.Web.TaskManager;
 
 namespace Nephrite.Web.CoreDataContext
 {
@@ -189,13 +189,14 @@ namespace Nephrite.Web.CoreDataContext
 		}
 	}
 
-	public class TM_TaskExecutionMap : ClassMapping<TM_TaskExecution>
+	public class ITM_TaskExecutionMap : ClassMapping<ITM_TaskExecution>
 	{
-		public TM_TaskExecutionMap()
+		public ITM_TaskExecutionMap()
 		{
 			Table("TM_TaskExecution");
 			Lazy(true);
 			Id(x => x.TaskExecutionID, map => map.Generator(Generators.Identity));
+			Discriminator(x => x.Formula("0"));
 			Property(x => x.StartDate, map => map.NotNullable(true));
 			Property(x => x.FinishDate);
 			Property(x => x.IsSuccessfull, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
@@ -208,13 +209,22 @@ namespace Nephrite.Web.CoreDataContext
 		}
 	}
 
-	public class TM_TaskMap : ClassMapping<TM_Task>
+	public class TM_TaskExecutionMap : SubclassMapping<TM_TaskExecution>
 	{
-		public TM_TaskMap()
+		public TM_TaskExecutionMap()
+		{
+			DiscriminatorValue("0");
+		}
+	}
+
+	public class ITM_TaskMap : ClassMapping<ITM_Task>
+	{
+		public ITM_TaskMap()
 		{
 			Table("TM_Task");
 			Lazy(true);
 			Id(x => x.TaskID, map => map.Generator(Generators.Identity));
+			Discriminator(x => x.Formula("0"));
 			Property(x => x.Title, map => map.NotNullable(true));
 			Property(x => x.Class, map => map.NotNullable(true));
 			Property(x => x.StartType, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
@@ -226,6 +236,14 @@ namespace Nephrite.Web.CoreDataContext
 			Property(x => x.StartFromService, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
 			Property(x => x.ErrorLogID);
 			Property(x => x.ExecutionTimeout, map => map.NotNullable(true));
+		}
+	}
+
+	public class TM_TaskMap : SubclassMapping<TM_Task>
+	{
+		public TM_TaskMap()
+		{
+			DiscriminatorValue("0");
 		}
 	}
 

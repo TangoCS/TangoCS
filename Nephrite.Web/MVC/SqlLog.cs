@@ -8,7 +8,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Nephrite.Web.Controls;
 using System.Collections.Generic;
-using Nephrite.Web.Hibernate;
 
 namespace Nephrite.Web
 {
@@ -37,7 +36,7 @@ namespace Nephrite.Web
 						dcl.Add(item);
 						continue;
 					}
-					var item2 = HttpContext.Current.Items[key] as HDataContext;
+					var item2 = HttpContext.Current.Items[key] as IDataContext;
 					if (item2 != null && item2.Log != null)
 					{
 						sql.Append("\r\n\r\n<b>" + item2.GetType().FullName + "</b> - " + key + "\r\n" + item2.Log.ToString());

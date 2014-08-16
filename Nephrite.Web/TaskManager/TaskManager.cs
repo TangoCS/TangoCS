@@ -9,7 +9,7 @@ using Nephrite.Web.SPM;
 using System.IO;
 using System.Text;
 using Nephrite.Web.ErrorLog;
-using Nephrite.Web.CoreDataContext;
+
 
 namespace Nephrite.Web.TaskManager
 {
@@ -20,7 +20,7 @@ namespace Nephrite.Web.TaskManager
 		public static void Run()
 		{
 			bool nullcont = (HttpContext.Current == null);
-			using (var dc = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null) as IDC_TaskManager)
+			using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
 			{
 				// Задачи, которые не успели завершиться, пометить как завершенные
 				foreach (var t in 
@@ -62,66 +62,6 @@ namespace Nephrite.Web.TaskManager
 			}
 		}
 
-		public static void RunService(string connectionString)
-		{
-			ConnectionManager.SetConnectionString(connectionString);
-			List<ITM_Task> tasks;
-			using (var dc = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(connectionString), null) as IDC_TaskManager)
-			{
-				// Задачи, которые не успели завершиться, пометить как завершенные
-				foreach (var t in
-					from o in dc.ITM_TaskExecution
-					from t in dc.ITM_Task
-					where o.FinishDate == null && o.TaskID == t.TaskID && t.StartFromService
-					select o)
-				{
-					if (t.StartDate.AddMinutes(dc.ITM_Task.Single(o => o.TaskID == t.TaskID).ExecutionTimeout) < DateTime.Now)
-					{
-						t.ExecutionLog += "\nExecution timed out";
-						t.FinishDate = DateTime.Now;
-					}
-				}
-				dc.SubmitChanges();
-				tasks = dc.ITM_Task.Where(o => o.IsActive && o.StartFromService && !!dc.ITM_TaskExecution.Any(o1 => o1.TaskID == o.TaskID && o1.FinishDate == null)).ToList();
-			}
-			foreach (var task in tasks)
-			{
-				if (task.LastStartDate.HasValue)
-				{
-					if (task.StartType) // В заданное время суток
-					{
-						if (task.LastStartDate.Value.Date == DateTime.Today)
-							continue; // Сегодня уже запускали
-						if (DateTime.Today.AddMinutes(task.Interval) > DateTime.Now)
-							continue; // Еще не время
-					}
-					else // Задан интервал в минутах
-					{
-						if (DateTime.Now.Subtract(task.LastStartDate.Value).TotalMinutes < task.Interval)
-							continue; // Ещё не прошло нужное количество минут
-					}
-				}
-				AppSPM.RunWithElevatedPrivileges(() => Run(task.TaskID));
-			}
-		}
-		
-		[ThreadStatic]
-		static ITM_Task task;
-
-		[ThreadStatic]
-		static int taskexecid;
-
-		public static void Log(string text)
-		{
-			using (var dc = (IDC_TaskManager)A.Model.NewDataContext())
-			{
-				var te = dc.ITM_TaskExecution.SingleOrDefault(o => o.TaskExecutionID == taskexecid);
-				te.ExecutionLog += text += Environment.NewLine;
-				te.LastModifiedDate = DateTime.Now;
-				dc.SubmitChanges();
-			}
-		}
-				
 		public static void Run(int taskID)
 		{
 			bool isServiceRun = false;
@@ -130,20 +70,20 @@ namespace Nephrite.Web.TaskManager
 			{
 				List<ITM_TaskParameter> taskparms = new List<ITM_TaskParameter>();
 
-				using (var dc = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null) as IDC_TaskManager)
+				using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
 				{
 					dc.Log = new StringWriter();
 					task = dc.ITM_Task.Single(o => o.TaskID == taskID);
 					//task.TM_TaskParameters.Count();
 
 					ITM_TaskExecution taskexec = dc.NewITM_TaskExecution();
-					
+
 					taskexec.LastModifiedDate = DateTime.Now;
 					taskexec.StartDate = DateTime.Now;
 					taskexec.MachineName = Environment.MachineName;
 					taskexec.TaskID = taskID;
 					taskexec.LastModifiedUserID = Subject.Current.ID;
-					
+
 					dc.ITM_TaskExecution.InsertOnSubmit(taskexec);
 					dc.SubmitChanges();
 					taskexecid = taskexec.TaskExecutionID;
@@ -188,7 +128,7 @@ namespace Nephrite.Web.TaskManager
 					}
 					AppSPM.RunWithElevatedPrivileges(() => mi.Invoke(null, p));
 
-					using (var dc = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null) as IDC_TaskManager)
+					using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
 					{
 						try
 						{
@@ -214,7 +154,7 @@ namespace Nephrite.Web.TaskManager
 				catch (Exception e)
 				{
 					int errid = ErrorLogger.Log(e);
-					using (var dc = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null) as IDC_TaskManager)
+					using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
 					{
 						dc.Log = new StringWriter();
 						var t = dc.ITM_Task.Single(o => o.TaskID == taskID);
@@ -241,6 +181,66 @@ namespace Nephrite.Web.TaskManager
 			}
 		}
 
+		public static void RunService(string connectionString)
+		{
+			ConnectionManager.SetConnectionString(connectionString);
+			List<ITM_Task> tasks;
+			using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
+			{
+				// Задачи, которые не успели завершиться, пометить как завершенные
+				foreach (var t in
+					from o in dc.ITM_TaskExecution
+					from t in dc.ITM_Task
+					where o.FinishDate == null && o.TaskID == t.TaskID && t.StartFromService
+					select o)
+				{
+					if (t.StartDate.AddMinutes(dc.ITM_Task.Single(o => o.TaskID == t.TaskID).ExecutionTimeout) < DateTime.Now)
+					{
+						t.ExecutionLog += "\nExecution timed out";
+						t.FinishDate = DateTime.Now;
+					}
+				}
+				dc.SubmitChanges();
+				tasks = dc.ITM_Task.Where(o => o.IsActive && o.StartFromService && !!dc.ITM_TaskExecution.Any(o1 => o1.TaskID == o.TaskID && o1.FinishDate == null)).ToList();
+			}
+			foreach (var task in tasks)
+			{
+				if (task.LastStartDate.HasValue)
+				{
+					if (task.StartType) // В заданное время суток
+					{
+						if (task.LastStartDate.Value.Date == DateTime.Today)
+							continue; // Сегодня уже запускали
+						if (DateTime.Today.AddMinutes(task.Interval) > DateTime.Now)
+							continue; // Еще не время
+					}
+					else // Задан интервал в минутах
+					{
+						if (DateTime.Now.Subtract(task.LastStartDate.Value).TotalMinutes < task.Interval)
+							continue; // Ещё не прошло нужное количество минут
+					}
+				}
+				AppSPM.RunWithElevatedPrivileges(() => Run(task.TaskID));
+			}
+		}
+
+		public static void Log(string text)
+		{
+			using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
+			{
+				var te = dc.ITM_TaskExecution.SingleOrDefault(o => o.TaskExecutionID == taskexecid);
+				te.ExecutionLog += text += Environment.NewLine;
+				te.LastModifiedDate = DateTime.Now;
+				dc.SubmitChanges();
+			}
+		}
+		
+		[ThreadStatic]
+		static ITM_Task task;
+
+		[ThreadStatic]
+		static int taskexecid;
+
 		static void LogError(Exception e, string taskname, string sql)
 		{
 			string str = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss " + (taskname != null ? "Ошибка при выполнении задачи " + taskname : ""));
@@ -253,33 +253,6 @@ namespace Nephrite.Web.TaskManager
 
 			File.AppendAllText(AppDomain.CurrentDomain.BaseDirectory + "\\errorlog.txt", str, Encoding.UTF8);
 			File.AppendAllText(AppDomain.CurrentDomain.BaseDirectory + "\\errorlog.txt", "------SQL------\r\n" + sql, Encoding.UTF8);
-		}
-
-		public static void RunTasks(string interopServiceUrl, string connectionString)
-		{
-			TaskManagerServiceReference.TaskManagerService svc = new TaskManagerServiceReference.TaskManagerService();
-			svc.Url = interopServiceUrl;
-			svc.AllowAutoRedirect = true;
-			svc.UseDefaultCredentials = true;
-			svc.PreAuthenticate = true;
-			svc.Timeout = 1000 * 60 * 30; // 30 минут
-
-			using (var sdc = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(connectionString), null) as IDC_Settings)
-			{
-				var sl = sdc.IN_Setting.FirstOrDefault(o => o.SystemName == "ReplicationLogin");
-				if (sl == null)
-					throw new Exception("Системный параметр ReplicationLogin отсутствует в БД");
-				var sp = sdc.IN_Setting.FirstOrDefault(o => o.SystemName == "ReplicationPassword");
-				if (sp == null)
-					throw new Exception("Системный параметр ReplicationPassword отсутствует в БД");
-
-				svc.UserCredentialsValue = new TaskManagerServiceReference.UserCredentials { Login = sl.Value, Password = sp.Value };
-				svc.RunTasks();
-
-				TaskManager.RunService(connectionString);
-			}
-
-			
 		}
 	}
 }

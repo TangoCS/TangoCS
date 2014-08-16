@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Nephrite.Web.Properties {
+namespace Nephrite.Web.Hibernate.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
@@ -20,6 +20,16 @@ namespace Nephrite.Web.Properties {
         public static Settings Default {
             get {
                 return defaultInstance;
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:64054/TaskManager/TaskManagerService.asmx")]
+        public string Nephrite_Web_Hibernate_TaskManagerRerefence_TaskManagerService {
+            get {
+                return ((string)(this["Nephrite_Web_Hibernate_TaskManagerRerefence_TaskManagerService"]));
             }
         }
     }

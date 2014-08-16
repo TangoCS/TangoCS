@@ -85,6 +85,10 @@
       <Project>{9f863d08-fd1f-4065-9f7d-f9ddbc469e81}</Project>
       <Name>Nephrite.Metamodel</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Nephrite.Web.Hibernate\Nephrite.Web.Hibernate.csproj">
+      <Project>{307c0353-867b-4942-b448-52635a6bc321}</Project>
+      <Name>Nephrite.Web.Hibernate</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
       <Project>{26a68254-0902-4499-8b5f-6b4b6341ba21}</Project>
       <Name>Nephrite.Web</Name>

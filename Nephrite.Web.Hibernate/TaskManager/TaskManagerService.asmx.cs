@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Services;
 using System.Web.Services.Protocols;
+using Nephrite.Web.CoreDataContext;
 using Nephrite.Web.SettingsManager;
 using Nephrite.Web.SPM;
 
@@ -37,7 +38,8 @@ namespace Nephrite.Web.TaskManager
 		[SoapHeader("user")]
 		public void RunTasks()
 		{
-			AppSPM.RunWithElevatedPrivileges(() => TaskManager.Run());
+			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
+			AppSPM.RunWithElevatedPrivileges(() => Nephrite.Web.TaskManager.TaskManager.Run());
 		}
 	}
 }

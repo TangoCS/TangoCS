@@ -71,11 +71,18 @@ namespace Tessera.Test
 			//l.PostInsertEventListeners.Add(ael);
 			//l.PostUpdateEventListeners.Add(ael);
 
-			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), l);
+			var dc1 = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), l);
+			A.Model = dc1;
 			A.Model.ExecuteCommand("SET SCHEMA = 'DBO';");
 
 			//var schema = new DB2ServerMetadataReader().ReadSchema("DBO");
+
+			//var dc = A.Model as IDC_TaskManager;
+			//var r1 = dc.ITM_Task.Where(o => o.TaskID == 3).First();
+			//var r2 = dc1.TM_Task.Where(o => o.TaskID == 3).First();
+
 			
+
 			TaskManager.Run();
 			//var classes = (new ModelFactory()).CreateSolution().Classes;
 

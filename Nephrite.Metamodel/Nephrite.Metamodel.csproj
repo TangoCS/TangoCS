@@ -150,6 +150,10 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Nephrite.Web.Hibernate\Nephrite.Web.Hibernate.csproj">
+      <Project>{307c0353-867b-4942-b448-52635a6bc321}</Project>
+      <Name>Nephrite.Web.Hibernate</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
       <Project>{26A68254-0902-4499-8B5F-6B4B6341BA21}</Project>
       <Name>Nephrite.Web</Name>
@@ -175,7 +179,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>56293</DevelopmentServerPort>
+          <DevelopmentServerPort>64221</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

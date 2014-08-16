@@ -69,6 +69,7 @@ namespace Nephrite.Web.CoreDataContext
 			l.Add(typeof(N_DownloadLogMap));
 			l.Add(typeof(V_N_TextResourceMap));
 			l.Add(typeof(C_LanguageMap));
+			l.Add(typeof(ITM_TaskMap));
 			l.Add(typeof(TM_TaskMap));
 			l.Add(typeof(TM_TaskExecutionMap));
 			l.Add(typeof(TM_TaskParameterMap));
@@ -188,7 +189,11 @@ namespace Nephrite.Web.CoreDataContext
 
 		public IQueryable<ITM_Task> ITM_Task
 		{
-			get { return new HTable<ITM_Task>(this, Session.Query<TM_Task>()); }
+			get { return new HTable<ITM_Task>(this, Session.Query<ITM_Task>()); }
+		}
+		public IQueryable<TM_Task> TM_Task
+		{
+			get { return new HTable<TM_Task>(this, Session.Query<TM_Task>()); }
 		}
 
 		public IQueryable<ITM_TaskExecution> ITM_TaskExecution

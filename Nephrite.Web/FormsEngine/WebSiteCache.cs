@@ -42,7 +42,7 @@ namespace Nephrite.Web.FormsEngine
                 A.Model.SubmitChanges();
 				TextResource.ResetCache();
 				MView.ResetCache();
-				DynamicClassActivator.Clear();
+				//DynamicClassActivator.Clear();
             }
         }
 
@@ -72,7 +72,7 @@ namespace Nephrite.Web.FormsEngine
 							AppSPM.Instance.RefreshCache();
 							AppSPM.AccessRightManager.RefreshCache();
 							TextResource.ResetCache();
-							DynamicClassActivator.Clear();
+							//DynamicClassActivator.Clear();
 							SPM2.ResetCache();
 							/*string binPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "bin");
 							foreach (var f in FileStorageManager.DbFiles.Where(o => o.Path.StartsWith(ModelAssemblyGenerator.SourceFolder + "/bin")))

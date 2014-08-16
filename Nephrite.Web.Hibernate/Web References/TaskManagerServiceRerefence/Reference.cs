@@ -13,7 +13,7 @@
 // 
 #pragma warning disable 1591
 
-namespace Nephrite.Web.TaskManagerServiceReference {
+namespace Nephrite.Web.Hibernate.TaskManagerServiceRerefence {
     using System;
     using System.Web.Services;
     using System.Diagnostics;
@@ -37,7 +37,7 @@ namespace Nephrite.Web.TaskManagerServiceReference {
         
         /// <remarks/>
         public TaskManagerService() {
-            this.Url = global::Nephrite.Web.Properties.Settings.Default.Nephrite_Web_TaskManagerServiceReference_TaskManagerService;
+            this.Url = global::Nephrite.Web.Hibernate.Properties.Settings.Default.Nephrite_Web_Hibernate_TaskManagerRerefence_TaskManagerService;
             if ((this.IsLocalFileSystemWebService(this.Url) == true)) {
                 this.UseDefaultCredentials = true;
                 this.useDefaultCredentialsSetExplicitly = false;

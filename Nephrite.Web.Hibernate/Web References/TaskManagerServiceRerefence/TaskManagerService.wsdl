@@ -61,10 +61,10 @@
   </wsdl:binding>
   <wsdl:service name="TaskManagerService">
     <wsdl:port name="TaskManagerService" binding="tns:TaskManagerService">
-      <soap:address location="http://localhost:24090/TaskManager/TaskManagerService.asmx" />
+      <soap:address location="http://localhost:64054/TaskManager/TaskManagerService.asmx" />
     </wsdl:port>
     <wsdl:port name="TaskManagerService1" binding="tns:TaskManagerService1">
-      <soap12:address location="http://localhost:24090/TaskManager/TaskManagerService.asmx" />
+      <soap12:address location="http://localhost:64054/TaskManager/TaskManagerService.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

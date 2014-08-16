@@ -318,7 +318,7 @@ namespace Nephrite.Web.Hibernate
 		public ITable GetTable(Type t)
 		{
 
-			MethodInfo mi = typeof(LinqExtensionMethods).GetMethods().FirstOrDefault(tp => tp.GetParameters().Any(p => p.ParameterType == typeof(ISession))).MakeGenericMethod(new Type[] { t }); ;
+			MethodInfo mi = typeof(LinqExtensionMethods).GetMethods().FirstOrDefault(tp => tp.GetParameters().Any(p => p.ParameterType == typeof(ISession))).MakeGenericMethod(new Type[] { t });
 			var q = mi.Invoke(Session, new object[] { Session }) as IQueryable;
 			return new HTable(this, q);
 

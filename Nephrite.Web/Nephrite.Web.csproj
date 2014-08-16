@@ -116,19 +116,12 @@
     <Content Include="ExternalDll\DotNetOpenAuth.dll" />
     <Content Include="js\knockout-2.2.1.js" />
     <Content Include="js\modalwindow.js" />
-    <Content Include="TaskManager\TaskManagerService.asmx" />
     <Content Include="View\Message\show.ascx" />
     <Content Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </Content>
-    <Content Include="Web References\TaskManagerServiceReference\Reference.map">
-      <Generator>MSDiscoCodeGenerator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </Content>
-    <Content Include="Web References\TaskManagerServiceReference\TaskManagerService.disco" />
     <Content Include="Web.config" />
-    <Content Include="Web References\TaskManagerServiceReference\TaskManagerService.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
@@ -137,14 +130,9 @@
     <Compile Include="Controls\Scripts\NavigScriptDB2.cs" />
     <Compile Include="Controls\Scripts\NavigScriptMSSQL.cs" />
     <Compile Include="Controls\Scripts\NavigScripts.cs" />
-    <Compile Include="FormsEngine\CodeGen.cs" />
-    <Compile Include="FormsEngine\CompileConfig.designer.cs" />
-    <Compile Include="FormsEngine\DynamicClassActivator.cs" />
-    <Compile Include="FormsEngine\DynamicClassAttribute.cs" />
     <Compile Include="FormsEngine\FormsVirtualFile.cs" />
     <Compile Include="FormsEngine\FormsVirtualPathProvider.cs" />
     <Compile Include="FormsEngine\Host.cs" />
-    <Compile Include="FormsEngine\ModelAssemblyGenerator.cs" />
     <Compile Include="FormsEngine\MView.cs" />
     <Compile Include="FormsEngine\TemplateType.cs" />
     <Compile Include="FormsEngine\VPPRegisterHandler.cs" />
@@ -156,11 +144,6 @@
     <Compile Include="FormsGenerator\SelectObjectCode.cs" />
     <Compile Include="FormsGenerator\UploadControlsCode.cs" />
     <Compile Include="FormsGenerator\ViewCode.cs" />
-    <Compile Include="Hibernate\ExtendedEqualsGenerator.cs" />
-    <Compile Include="Hibernate\IntBackedBoolUserType.cs" />
-    <Compile Include="Hibernate\Interceptor.cs" />
-    <Compile Include="Hibernate\MappingConfig.cs" />
-    <Compile Include="Hibernate\StringBackedGuidUserType.cs" />
     <Compile Include="Meta.Database\DBScriptMSSQL.cs" />
     <Compile Include="Meta.Database\IDBScript.cs" />
     <Compile Include="Meta.Database\PrimitiveTypesExtensions.cs" />
@@ -200,19 +183,9 @@
     <Compile Include="SPM2\Scripts\SPM2ScriptDB2.cs" />
     <Compile Include="SPM2\Scripts\SPM2ScriptMSSQL.cs" />
     <Compile Include="SPM2\Scripts\SPM2Scripts.cs" />
-    <Compile Include="TaskManager\TaskManagerService.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Web References\TaskManagerServiceReference\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.map</DependentUpon>
-    </Compile>
     <Compile Include="Web\CustomControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="CoreDataContext\FileStorage\DbFile.I.cs" />
-    <Compile Include="CoreDataContext\FileStorage\DbFolder.I.cs" />
     <Compile Include="FileStorage\FileStorageModel.cs" />
     <Compile Include="Meta.Database\DataTypeMapper.cs" />
     <Compile Include="Meta.Database\SchemaGenerator.cs" />
@@ -452,10 +425,6 @@
     <Compile Include="Meta.Database\DBMetaModel.cs" />
     <Compile Include="Meta\PrimitiveTypes.cs" />
     <Compile Include="Layout\Interfaces.cs" />
-    <Compile Include="CoreDataContext\HCoreDataContext.cs" />
-    <Compile Include="Hibernate\Hibernate.cs" />
-    <Compile Include="CoreDataContext\HMapping.cs" />
-    <Compile Include="CoreDataContext\HModel.cs" />
     <Compile Include="Model\IDataContext.cs" />
     <Compile Include="MVC\PageParser.cs" />
     <Compile Include="Web\ObjectPropertyChange.cs" />
@@ -510,7 +479,6 @@
     </Compile>
     <Compile Include="MVC\SqlLog.cs" />
     <Compile Include="TaskManager\TaskManager.cs" />
-    <Compile Include="TaskManager\TaskManagerModule.cs" />
     <Compile Include="TextResources\TextResource.cs" />
     <Compile Include="Web\SimpleTypeExtensions.cs">
       <SubType>Code</SubType>
@@ -546,9 +514,6 @@
     <Compile Include="Web\XMLSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="FormsEngine\CompileConfig.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Nephrite.Web.snk" />
     <Content Include="Controls\FileUpload.ascx" />
     <Content Include="Controls\FileUploadSimple.ascx" />
@@ -601,26 +566,7 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
-      <Project>{5909bfe7-93cf-4e5f-be22-6293368af01d}</Project>
-      <Name>NHibernate</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <WebReferences Include="Web References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WebReferenceUrl Include="http://localhost:24090/TaskManager/TaskManagerService.asmx">
-      <UrlBehavior>Dynamic</UrlBehavior>
-      <RelPath>Web References\TaskManagerServiceReference\</RelPath>
-      <UpdateFromURL>http://localhost:24090/TaskManager/TaskManagerService.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
-      <CachedSettingsPropName>Nephrite_Web_TaskManagerServiceReference_TaskManagerService</CachedSettingsPropName>
-    </WebReferenceUrl>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
