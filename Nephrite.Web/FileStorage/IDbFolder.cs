@@ -13,7 +13,7 @@ namespace Nephrite.Web.FileStorage
 		/// <summary>
 		/// Уникальный идентификатор
 		/// </summary>
-		Guid ID { get; }
+		Guid ID { get; set; }
 
 		/// <summary>
 		/// Имя папки
@@ -23,32 +23,32 @@ namespace Nephrite.Web.FileStorage
 		/// <summary>
 		/// Путь
 		/// </summary>
-		string Path { get; }
+		string Path { get; set; }
 
 		/// <summary>
 		/// Размер файлов
 		/// </summary>
-		long Size { get; }
+		long Size { get; set; }
 
 		/// <summary>
 		/// Признак Удалено
 		/// </summary>
-		bool IsDeleted { get; }
+		bool IsDeleted { get; set; }
 
 		/// <summary>
 		/// Идентификатор родительской папки
 		/// </summary>
-		Guid? ParentFolderID { get; }
+		Guid? ParentFolderID { get; set; }
 
 		/// <summary>
 		/// Дата и время последнего изменения
 		/// </summary>
-		DateTime LastModifiedDate { get; }
+		DateTime LastModifiedDate { get; set; }
 
 		/// <summary>
 		/// Имя пользователя, сделавшего последние изменения
 		/// </summary>
-		string LastModifiedUserName { get; }
+		string LastModifiedUserName { get; set; }
 
 		/// <summary>
 		/// Получить родительскую папку
@@ -80,13 +80,13 @@ namespace Nephrite.Web.FileStorage
 		/// </summary>
 		/// <param name="folder"></param>
 		void SetParentFolder(IDbFolder folder);
-		
-		Guid SPMActionItemGUID { get; }
+
+		Guid SPMActionItemGUID { get; set; }
 
 		/// <summary>
 		/// Полный путь
 		/// </summary>
-		string FullPath { get; }
+		string FullPath { get; set; }
 
 		/// <summary>
 		/// Включена версионность
@@ -96,12 +96,12 @@ namespace Nephrite.Web.FileStorage
 		/// <summary>
 		/// Создавший пользователь
 		/// </summary>
-		string Creator { get; }
+		string Creator { get; set; }
 
 		/// <summary>
 		/// Создавший пользователь
 		/// </summary>
-		int CreatorID { get; }
+		int CreatorID { get; set; }
 
 		/// <summary>
 		/// Тэг
@@ -111,6 +111,6 @@ namespace Nephrite.Web.FileStorage
 		/// <summary>
 		/// Опубликован
 		/// </summary>
-		DateTime? PublishDate { get; set; }
+		DateTime? PublishDate { get; set; }	
 	}
 }

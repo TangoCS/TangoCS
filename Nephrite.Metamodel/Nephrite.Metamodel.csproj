@@ -111,7 +111,6 @@
     </Compile>
     <Compile Include="HistoryType.cs" />
     <Compile Include="ISiteMapProvider.cs" />
-    <Compile Include="MMObjectExtensions.cs" />
     <Compile Include="Model\HMapping.cs" />
     <Compile Include="Model\HMMDataContext.cs" />
     <Compile Include="Model\HModel.cs" />

@@ -15,6 +15,7 @@ using Nephrite.Web.CoreDataContext;
 using Nephrite.Web.FileStorage;
 using Nephrite.Web.Hibernate;
 using Nephrite.Web.MetaStorage;
+using Nephrite.Web.SettingsManager;
 using Nephrite.Web.SPM;
 using Nephrite.Web.TaskManager;
 using NHibernate;
@@ -65,8 +66,8 @@ namespace Tessera.Test
 			Listeners l = new Listeners();
 			var ael = new AuditEventListener();
 			l.PreDeleteEventListeners.Add(ael);
-			//l.PreInsertEventListeners.Add(ael);
 			l.PreUpdateEventListeners.Add(ael);
+
 			//l.PostDeleteEventListeners.Add(ael);
 			//l.PostInsertEventListeners.Add(ael);
 			//l.PostUpdateEventListeners.Add(ael);
@@ -75,6 +76,11 @@ namespace Tessera.Test
 			A.Model = dc1;
 			A.Model.ExecuteCommand("SET SCHEMA = 'DBO';");
 
+
+			AppSettings.Set("theme", "CENTRLAD");
+			//var l23 = (A.Model as IDC_FileStorage).IDbFolder.First();
+			//var l22 = (A.Model as IDC_Settings).IN_Settings.First();
+			
 			//var schema = new DB2ServerMetadataReader().ReadSchema("DBO");
 
 			//var dc = A.Model as IDC_TaskManager;
@@ -83,11 +89,11 @@ namespace Tessera.Test
 
 			
 
-			TaskManager.Run();
+			//TaskManager.Run();
 			//var classes = (new ModelFactory()).CreateSolution().Classes;
 
-			A.Items["CurrentSubject2"] = Subject.FromLogin("Admin");
-			var b = ActionSPMContext.Current.Check("ДОКУМЕНТЫ.VIEW", 1);
+			//A.Items["CurrentSubject2"] = Subject.FromLogin("Admin");
+			//var b = ActionSPMContext.Current.Check("ДОКУМЕНТЫ.VIEW", 1);
 			//(App.DataContext as HDataContext).Session.EnableFilter("EMP").SetParameter("EmployeeID", "53216139-9773-4811-8181-1b56034fe90d");
 			//var q = App.DataContext.F_DocTask.Where(o => o.DocTaskID == 379).ToList();
 

@@ -16,7 +16,7 @@ namespace Nephrite.Web.FileStorage
 		/// <summary>
 		/// Уникальный идентификатор
 		/// </summary>
-		Guid ID { get; }
+		Guid ID { get; set; }
 
 		/// <summary>
 		/// Имя файла (включая расширение)
@@ -26,37 +26,37 @@ namespace Nephrite.Web.FileStorage
 		/// <summary>
 		/// Расширение (включая точку)
 		/// </summary>
-		string Extension { get; }
+		string Extension { get; set; }
 
 		/// <summary>
 		/// Размер содержимого
 		/// </summary>
-		long Size { get; }
+		long Size { get; set; }
 
 		/// <summary>
 		/// Путь
 		/// </summary>
-		string Path { get; }
+		string Path { get; set; }
 
 		/// <summary>
 		/// Признак Удалено
 		/// </summary>
-		bool IsDeleted { get; }
+		bool IsDeleted { get; set; }
 
 		/// <summary>
 		/// Идентификатор родительской папки
 		/// </summary>
-		Guid? ParentFolderID { get; }
+		Guid? ParentFolderID { get; set; }
 
 		/// <summary>
 		/// Дата и время последнего изменения
 		/// </summary>
-		DateTime LastModifiedDate { get; }
+		DateTime LastModifiedDate { get; set; }
 
 		/// <summary>
 		/// Имя пользователя, сделавшего последние изменения
 		/// </summary>
-		string LastModifiedUserName { get; }
+		string LastModifiedUserName { get; set; }
 
 		/// <summary>
 		/// Получить родительскую папку
@@ -89,12 +89,12 @@ namespace Nephrite.Web.FileStorage
 		/// <returns></returns>
 		string GetStorageParameter();
 
-		Guid SPMActionItemGUID { get; }
+		Guid SPMActionItemGUID { get; set; }
 
 		/// <summary>
 		/// Полный путь
 		/// </summary>
-		string FullPath { get; }
+		string FullPath { get; set; }
 
 		/// <summary>
 		/// Guid пакета или класса
@@ -104,22 +104,22 @@ namespace Nephrite.Web.FileStorage
 		/// <summary>
 		/// Ид извлекшего пользователя
 		/// </summary>
-		int? CheckedOutByID { get; }
+		int? CheckedOutByID { get; set; }
 
 		/// <summary>
 		/// Имя извлекшего пользователя
 		/// </summary>
-		string CheckedOutBy { get; }
+		string CheckedOutBy { get; set; }
 
 		/// <summary>
 		/// Ид основной версии файла
 		/// </summary>
-		Guid? MainID { get; }
+		Guid? MainID { get; set; }
 
 		/// <summary>
 		/// Номер версии
 		/// </summary>
-		int VersionNumber { get; }
+		int VersionNumber { get; set; }
 
 		/// <summary>
 		/// Тэг
@@ -172,12 +172,12 @@ namespace Nephrite.Web.FileStorage
 		/// <summary>
 		/// Создавший пользователь
 		/// </summary>
-		string Creator { get; }
+		string Creator { get; set; }
 
 		/// <summary>
 		/// Создавший пользователь
 		/// </summary>
-		int CreatorID { get; }
+		int CreatorID { get; set; }
 
 		/// <summary>
 		/// Опубликован

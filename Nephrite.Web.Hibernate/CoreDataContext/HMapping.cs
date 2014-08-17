@@ -11,210 +11,173 @@ using Nephrite.Web.TaskManager;
 
 namespace Nephrite.Web.CoreDataContext
 {
-	public class ErrorLogMap : ClassMapping<ErrorLog>
+	public class IErrorLogImplMap : SubclassMapping<ErrorLog>
 	{
-		public ErrorLogMap()
+		public IErrorLogImplMap()
 		{
-			Table("ErrorLog");
-			Lazy(true);
-			Id(x => x.ErrorLogID, map => map.Generator(Generators.Identity));
-			Property(x => x.ErrorDate, map => map.NotNullable(true));
-			Property(x => x.ErrorText, map => map.NotNullable(true));
-			Property(x => x.Url);
-			Property(x => x.UrlReferrer);
-			Property(x => x.UserHostName);
-			Property(x => x.UserHostAddress);
-			Property(x => x.UserAgent);
-			Property(x => x.RequestType);
-			Property(x => x.Headers);
-			Property(x => x.SqlLog);
-			Property(x => x.UserName);
-			Property(x => x.Hash);
-			Property(x => x.SimilarErrorID);
+			DiscriminatorValue("0");
 		}
 	}
-
-	public class CalendarDayMap : ClassMapping<CalendarDay>
+	public class ICalendarDayImplMap : SubclassMapping<CalendarDay>
 	{
-		public CalendarDayMap()
+		public ICalendarDayImplMap()
 		{
-			Table("CalendarDay");
-			Lazy(true);
-			Id(x => x.CalendarDayID, map => map.Generator(Generators.Identity));
-			Property(x => x.Date, map => map.NotNullable(true));
-			Property(x => x.IsWorkingDay, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
+			DiscriminatorValue("0");
 		}
 	}
-
-	public class MailMessageMap : ClassMapping<MailMessage>
+	public class IMailMessageImplMap : SubclassMapping<MailMessage>
 	{
-		public MailMessageMap()
+		public IMailMessageImplMap()
 		{
-			Table("MailMessage");
-			Lazy(true);
-			Id(x => x.MailMessageID, map => map.Generator(Generators.Identity));
-			Property(x => x.Recipients);
-			Property(x => x.Subject);
-			Property(x => x.Body);
-			Property(x => x.IsSent, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.Attachment, map => map.Type<BinaryBlobType>());
-			Property(x => x.AttachmentName);
-			Property(x => x.Error);
-			Property(x => x.CopyRecipients);
-			Property(x => x.LastSendAttemptDate);
-			Property(x => x.AttemptsToSendCount, map => map.NotNullable(true));
+			DiscriminatorValue("0");
 		}
 	}
-
-	public class MailTemplateMap : ClassMapping<MailTemplate>
+	public class IMailTemplateImplMap : SubclassMapping<MailTemplate>
 	{
-		public MailTemplateMap()
+		public IMailTemplateImplMap()
 		{
-			Lazy(true);
-			Id(x => x.MailTemplateID, map => map.Generator(Generators.Identity));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.TemplateSubject, map => map.NotNullable(true));
-			Property(x => x.TemplateBody, map => map.NotNullable(true));
-			Property(x => x.Comment);
-			Property(x => x.IsSystem, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
+			DiscriminatorValue("0");
 		}
 	}
-
-	public class N_TimeZoneMap : ClassMapping<N_TimeZone>
+	public class IN_TimeZoneImplMap : SubclassMapping<N_TimeZone>
 	{
-		public N_TimeZoneMap()
+		public IN_TimeZoneImplMap()
 		{
-			Table("N_TimeZone");
-			Lazy(true);
-			Id(x => x.TimeZoneID, map => map.Generator(Generators.Identity));
-			Property(x => x.IsDeleted, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.GMTOffset, map => map.NotNullable(true));
-			Property(x => x.Comment);
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
+			DiscriminatorValue("0");
 		}
 	}
-
-	public class C_LanguageMap : ClassMapping<C_Language>
+	public class IC_LanguageImplMap : SubclassMapping<C_Language>
 	{
-		public C_LanguageMap()
+		public IC_LanguageImplMap()
 		{
-			Schema("DBO");
-			Table("C_Language");
-			Lazy(true);
-			Id(x => x.Code, map => { map.Generator(Generators.Assigned); map.Length(2); map.Column("LanguageCode"); });
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.IsDefault, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
+			DiscriminatorValue("0");
 		}
 	}
-
-	public class V_N_TextResourceMap : ClassMapping<V_N_TextResource>
+	public class IN_TextResourceImplMap : SubclassMapping<V_N_TextResource>
 	{
-		public V_N_TextResourceMap()
+		public IN_TextResourceImplMap()
 		{
-
-            Table("\"V_N_TextResource\"");
-
-			Lazy(true);
-		    Id(x => x.TextResourceID, map =>
-		        {
-		            map.Generator(Generators.Identity);
-		            map.Column("\"TextResourceID\"");
-		        });
-            Property(x => x.Title, map =>
-            {
-                map.NotNullable(true); 
-                map.Column("\"Title\"");
-            });
-            Property(x => x.SysName, map =>
-            {
-                map.NotNullable(true); ;
-                map.Column("\"SysName\"");
-            });
-            Property(x => x.Text, map => map.Column("\"Text\""));
-            Property(x => x.LanguageCode, map =>
-            {
-                map.NotNullable(true); ;
-                map.Column("\"LanguageCode\"");
-            });
-            Property(x => x.TextResourceID, map =>
-            {
-                map.NotNullable(true); ;
-                map.Column("\"TextResourceID\"");
-            });
+			DiscriminatorValue("0");
 		}
 	}
-
-	public class N_FilterMap : ClassMapping<N_Filter>
+	public class IN_FilterImplMap : SubclassMapping<N_Filter>
 	{
-		public N_FilterMap()
+		public IN_FilterImplMap()
 		{
-			Table("N_Filter");
-			Lazy(true);
-			Id(x => x.FilterID, map => map.Generator(Generators.Identity));
-			Property(x => x.ListName);
-			Property(x => x.FilterValue, map => map.Type<XDocType>());
-			Property(x => x.FilterName);
-			Property(x => x.IsDefault, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.Group1Column);
-			Property(x => x.Group1Sort);
-			Property(x => x.Group2Column);
-			Property(x => x.Group2Sort);
-			Property(x => x.ListParms);
-			Property(x => x.Columns);
-			Property(x => x.Sort);
-			Property(x => x.ItemsOnPage, map => map.NotNullable(true));
-			Property(x => x.SubjectID, map =>
-			{
-				map.Column("SubjectID");
-			});
+			DiscriminatorValue("0");
 		}
 	}
-
-
-
-	public class ITM_TaskParameterMap : ClassMapping<ITM_TaskParameter>
+	public class IN_SettingsImplMap : SubclassMapping<N_Settings>
 	{
-		public ITM_TaskParameterMap()
+		public IN_SettingsImplMap()
 		{
-			Table("TM_TaskParameter");
-			Lazy(true);
-			Id(x => x.TaskParameterID, map => map.Generator(Generators.Identity));
-			Discriminator(x => x.Formula("0"));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.SysName, map => map.NotNullable(true));
-			Property(x => x.Value);
-			Property(x => x.SeqNo, map => map.NotNullable(true));
-			Property(x => x.ParentID, map => map.NotNullable(true));
+			DiscriminatorValue("0");
 		}
 	}
-
-	public class ITM_TaskParameterImplMap : ClassMapping<TM_TaskParameter>
+	public class IN_ObjectChangeImplMap : SubclassMapping<N_ObjectChange>
 	{
-		public ITM_TaskParameterImplMap()
+		public IN_ObjectChangeImplMap()
+		{
+			DiscriminatorValue("0");
+		}
+	}
+	public class IN_ObjectPropertyChangeImplMap : SubclassMapping<N_ObjectPropertyChange>
+	{
+		public IN_ObjectPropertyChangeImplMap()
+		{
+			DiscriminatorValue("0");
+		}
+	}
+	public class IN_RssFeedImplMap : SubclassMapping<N_RssFeed>
+	{
+		public IN_RssFeedImplMap()
+		{
+			DiscriminatorValue("0");
+		}
+	}
+	public class IMM_PackageImplMap : SubclassMapping<MM_Package>
+	{
+		public IMM_PackageImplMap()
+		{
+			DiscriminatorValue("0");
+		}
+	}
+	public class IMM_ObjectTypeImplMap : SubclassMapping<MM_ObjectType>
+	{
+		public IMM_ObjectTypeImplMap()
+		{
+			DiscriminatorValue("0");
+		}
+	}
+	public class IMM_FormViewImplMap : SubclassMapping<MM_FormView>
+	{
+		public IMM_FormViewImplMap()
+		{
+			DiscriminatorValue("0");
+		}
+	}
+	public class IN_CacheImplMap : SubclassMapping<N_Cache>
+	{
+		public IN_CacheImplMap()
 		{
 			DiscriminatorValue("0");
 		}
 	}
 
-	public class ITM_TaskExecutionMap : ClassMapping<ITM_TaskExecution>
+
+	public class IN_DownloadLogImplMap : SubclassMapping<N_DownloadLog>
 	{
-		public ITM_TaskExecutionMap()
+		public IN_DownloadLogImplMap()
 		{
-			Table("TM_TaskExecution");
-			Lazy(true);
-			Id(x => x.TaskExecutionID, map => map.Generator(Generators.Identity));
-			Discriminator(x => x.Formula("0"));
-			Property(x => x.StartDate, map => map.NotNullable(true));
-			Property(x => x.FinishDate);
-			Property(x => x.IsSuccessfull, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.MachineName, map => map.NotNullable(true));
-			Property(x => x.ResultXml);
-			Property(x => x.ExecutionLog);
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-			Property(x => x.TaskID, map => map.NotNullable(true));
+			DiscriminatorValue("0");
+		}
+	}
+
+	public class IDbFileImplMap : SubclassMapping<V_DbFile>
+	{
+		public IDbFileImplMap()
+		{
+			DiscriminatorValue("0");
+		}
+	}
+
+	public class IDbFolderImplMap : SubclassMapping<V_DbFolder>
+	{
+		public IDbFolderImplMap()
+		{
+			DiscriminatorValue("0");
+		}
+	}
+
+	public class IDbItemImplMap : SubclassMapping<V_DbItem>
+	{
+		public IDbItemImplMap()
+		{
+			DiscriminatorValue("0");
+		}
+	}
+
+	public class IDbFileDataImplMap : SubclassMapping<N_FileData>
+	{
+		public IDbFileDataImplMap()
+		{
+			DiscriminatorValue("0");
+		}
+	}
+
+	public class IN_VirusScanLogImplMap : SubclassMapping<N_VirusScanLog>
+	{
+		public IN_VirusScanLogImplMap()
+		{
+			DiscriminatorValue("0");
+		}
+	}
+
+	public class ITM_TaskParameterImplMap : SubclassMapping<TM_TaskParameter>
+	{
+		public ITM_TaskParameterImplMap()
+		{
+			DiscriminatorValue("0");
 		}
 	}
 
@@ -226,28 +189,6 @@ namespace Nephrite.Web.CoreDataContext
 		}
 	}
 
-	public class ITM_TaskMap : ClassMapping<ITM_Task>
-	{
-		public ITM_TaskMap()
-		{
-			Table("TM_Task");
-			Lazy(true);
-			Id(x => x.TaskID, map => map.Generator(Generators.Identity));
-			Discriminator(x => x.Formula("0"));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.Class, map => map.NotNullable(true));
-			Property(x => x.StartType, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.Method, map => map.NotNullable(true));
-			Property(x => x.Interval, map => map.NotNullable(true));
-			Property(x => x.LastStartDate);
-			Property(x => x.IsSuccessfull, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.IsActive, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.StartFromService, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.ErrorLogID);
-			Property(x => x.ExecutionTimeout, map => map.NotNullable(true));
-		}
-	}
-
 	public class ITM_TaskImplMap : SubclassMapping<TM_Task>
 	{
 		public ITM_TaskImplMap()
@@ -256,418 +197,5 @@ namespace Nephrite.Web.CoreDataContext
 		}
 	}
 
-	public class N_DownloadLogMap : ClassMapping<N_DownloadLog>
-	{
-		public N_DownloadLogMap()
-		{
-			Table("N_DownloadLog");
-			Lazy(true);
-			Id(x => x.DownloadLogID, map => map.Generator(Generators.Identity));
-			Property(x => x.IsDeleted, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.IP);
-			Property(x => x.FileGUID, map => { map.NotNullable(true); MappingConfig.GuidPropertyConfig(map); });
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-		}
-	}
 
-	public class V_DbFileMap : ClassMapping<V_DbFile>
-	{
-		public V_DbFileMap()
-		{
-			Schema("dbo");
-			Table("\"V_DbFile\"");
-			Lazy(true);
-			Id(x => x.Title, map => { map.Column("\"Title\""); });
-			Property(x => x.Title, map => { map.Column("\"Title\""); });
-			Property(x => x.Extension, map => { map.Column("\"Extension\""); });
-			Property(x => x.LastModifiedUserName, map => { map.Column("\"LastModifiedUserName\""); });
-			Property(x => x.IsDeleted, map => { map.NotNullable(false); MappingConfig.BoolPropertyConfig(map); map.Column("\"IsDeleted\""); });
-			Property(x => x.ID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ID\""); });
-			Property(x => x.LastModifiedDate, map => { map.Column("\"LastModifiedDate\""); });
-			Property(x => x.LastModifiedUserID, map => { map.Column("\"LastModifiedUserID\""); });
-			Property(x => x.Size, map => { map.Column("\"Size\""); });
-			Property(x => x.Path, map => { map.Column("\"Path\""); });
-			Property(x => x.ParentFolderID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ParentFolderID\""); });
-			Property(x => x.Tag, map => { map.Column("\"Tag\""); });
-			Property(x => x.VersionNumber, map => { map.Column("\"VersionNumber\""); });
-			Property(x => x.MainID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"MainID\""); });
-			Property(x => x.CheckedOutByID, map => { map.Column("\"CheckedOutByID\""); });
-			Property(x => x.CheckedOutBy, map => { map.Column("\"CheckedOutBy\""); });
-			Property(x => x.FeatureGUID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"FeatureGUID\""); });
-			Property(x => x.PublishDate, map => { map.Column("\"PublishDate\""); });
-			Property(x => x.CreatorID, map => { map.Column("\"CreatorID\""); });
-			Property(x => x.Creator, map => { map.Column("\"Creator\""); });
-			Property(x => x.ParentFolderID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ParentID\""); });
-			Property(x => x.IsValid, map => { map.Column("\"IsValid\""); });
-			Property(x => x.SPMActionItemGUID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"SPMActionItemGUID\""); });
-			Property(x => x.FullPath, map => { map.Column("\"FullPath\""); });
-		}
-	}
-
-	/*public class V_DbFileMap : ClassMapping<V_DbFile>
-	{
-		public V_DbFileMap()
-		{
-			Table("V_DbFile");
-			Lazy(true);
-
-			ComposedId(i => i.Property(p => p.ID, map =>
-			{
-				map.Column("ID");
-				MappingConfig.GuidPropertyConfig(map);
-			}));
-
-			Property(x => x.Size, map => map.NotNullable(true));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.Extension, map => map.NotNullable(true));
-			Property(x => x.Path);
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.Path);
-			Property(x => x.FullPath);
-			Property(x => x.FeatureGUID, map => MappingConfig.GuidPropertyConfig(map));
-			Property(x => x.VersionNumber, map => { map.NotNullable(true); map.Insert(false); map.Update(false); });
-			Property(x => x.MainID, map => { map.Insert(false); map.Update(false); MappingConfig.GuidPropertyConfig(map); });
-			Property(x => x.Tag);
-			Property(x => x.PublishDate);
-
-			Property(x => x.CreatorID, map => map.NotNullable(true));
-			Property(x => x.Creator);
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-			Property(x => x.LastModifiedUserName, map => map.NotNullable(true));
-			Property(x => x.CheckedOutByID);
-			Property(x => x.CheckedOutBy);
-
-			Property(x => x.IsDeleted, map => { map.Insert(false); map.Update(false); });
-
-			Property(x => x.SPMActionItemGUID, map => { map.Insert(false); map.Update(false); MappingConfig.GuidPropertyConfig(map); });
-			Property(x => x.IsValid);
-			Property(x => x.ParentFolderID, map => MappingConfig.GuidPropertyConfig(map));
-		}
-	}*/
-
-	public class V_DbFolderMap : ClassMapping<V_DbFolder>
-	{
-		public V_DbFolderMap()
-		{
-			Schema("dbo");
-			Table("\"V_DbFolder\"");
-			Lazy(true);
-			ComposedId(i => i.Property(p => p.ID, map =>
-			{
-				map.Column("ID");
-				MappingConfig.GuidPropertyConfig(map);
-			}));
-			Property(x => x.Title, map => { map.Column("\"Title\""); });
-			Property(x => x.LastModifiedDate, map => { map.Column("\"LastModifiedDate\""); });
-			Property(x => x.LastModifiedUserID, map => { map.Column("\"LastModifiedUserID\""); });
-			Property(x => x.IsDeleted, map => { map.NotNullable(false); MappingConfig.BoolPropertyConfig(map); map.Column("\"IsDeleted\""); });
-			Property(x => x.Size, map => { map.Column("\"Size\""); });
-			Property(x => x.LastModifiedUserName, map => { map.Column("\"LastModifiedUserName\""); });
-			Property(x => x.Path, map => { map.Column("\"Path\""); });
-			Property(x => x.ParentFolderID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ParentFolderID\""); });
-			Property(x => x.ID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ID\""); });
-			Property(x => x.StorageParameter, map => { map.Column("\"StorageParameter\""); });
-			Property(x => x.SPMActionItemGUID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"SPMActionItemGUID\""); });
-			Property(x => x.EnableVersioning, map => { map.NotNullable(false); MappingConfig.BoolPropertyConfig(map); map.Column("\"EnableVersioning\""); });
-			Property(x => x.FileCount, map => { map.Column("\"FileCount\""); });
-			Property(x => x.Tag, map => { map.Column("\"Tag\""); });
-			Property(x => x.PublishDate, map => { map.Column("\"PublishDate\""); });
-			Property(x => x.CreatorID, map => { map.Column("\"CreatorID\""); });
-			Property(x => x.Creator, map => { map.Column("\"Creator\""); });
-			Property(x => x.FullPath, map => { map.Column("\"FullPath\""); });
-			Property(x => x.IsValid, map => { map.Column("\"IsValid\""); });
-			Property(x => x.StorageType, map => { map.Column("\"StorageType\""); });
-		}
-	}
-
-	public class V_DbItemMap : ClassMapping<V_DbItem>
-	{
-		public V_DbItemMap()
-		{
-			Table("V_DbItem");
-			Lazy(true);
-
-			ComposedId(i => i.Property(p => p.ID, map =>
-			{
-				map.Column("ID");
-				MappingConfig.GuidPropertyConfig(map);
-			}));
-
-			Property(x => x.Size, map => map.NotNullable(true));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.Extension, map => map.NotNullable(true));
-			Property(x => x.Path);
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.Path);
-			Property(x => x.FullPath, map => { map.Insert(false); map.Update(false); });
-			Property(x => x.Tag);
-			Property(x => x.PublishDate);
-
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-			Property(x => x.LastModifiedUserName, map => map.NotNullable(true));
-			Property(x => x.CheckedOutByID, map => { map.Insert(false); map.Update(false); });
-			Property(x => x.CheckedOutBy, map => { map.Insert(false); map.Update(false); });
-			Property(x => x.CreatorID, map => map.NotNullable(true));
-			Property(x => x.Creator);
-
-			Property(x => x.IsDeleted, map => { map.Insert(false); map.Update(false); });
-			Property(x => x.EnableVersioning, map => { map.NotNullable(true); map.Insert(false); map.Update(false); });
-			Property(x => x.SPMActionItemGUID, map => { map.Insert(false); map.Update(false); MappingConfig.GuidPropertyConfig(map); });
-
-			Property(x => x.Type, map => { map.NotNullable(true); map.Type<int>(); });
-		}
-	}
-
-	public class N_FileDataMap : ClassMapping<N_FileData>
-	{
-		public N_FileDataMap()
-		{
-			Table("N_FileData");
-			Lazy(true);
-			Id(x => x.FileGUID, map => map.Generator(Generators.Guid));
-			Property(x => x.Data);
-			Property(x => x.Extension);
-		}
-	}
-
-	public class N_VirusScanLogMap : ClassMapping<N_VirusScanLog>
-	{
-		public N_VirusScanLogMap()
-		{
-			Table("N_VirusScanLog");
-
-			Lazy(true);
-			Id(x => x.VirusScanLogID, map => map.Generator(Generators.Identity));
-			Property(x => x.IsDeleted, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.ResultCode, map => map.NotNullable(true));
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-		}
-	}
-
-
-	public class N_SettingMap : ClassMapping<N_Setting>
-	{
-		public N_SettingMap()
-		{
-			Table("N_Settings");
-			Lazy(true);
-			Id(x => x.SettingsGUID, map => map.Generator(Generators.Assigned));
-			Property(x => x.SystemName, map => map.NotNullable(true));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.Value, map => map.NotNullable(true));
-			Property(x => x.IsSystem, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.IsDeleted, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.AcceptableValues);
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-		}
-	}
-
-
-	public class N_ObjectChangeMap : ClassMapping<N_ObjectChange>
-	{
-		public N_ObjectChangeMap()
-		{
-			Lazy(true);
-			Id(x => x.ObjectChangeID, map => map.Generator(Generators.Identity));
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.Title);
-			Property(x => x.ObjectKey, map => map.NotNullable(true));
-			Property(x => x.ObjectTypeSysName);
-			Property(x => x.ObjectTitle, map => map.NotNullable(true));
-			Property(x => x.UserTitle, map => map.NotNullable(true));
-			Property(x => x.UserLogin, map => map.NotNullable(true));
-			Property(x => x.ObjectTypeTitle, map => map.NotNullable(true));
-			Property(x => x.IP, map => map.NotNullable(true));
-			Property(x => x.SubjectID, map => map.NotNullable(true));
-			Property(x => x.Details, map => map.NotNullable(true));
-		}
-	}
-
-	public class N_ObjectPropertyChangeMap : ClassMapping<N_ObjectPropertyChange>
-	{
-		public N_ObjectPropertyChangeMap()
-		{
-			Lazy(true);
-			Id(x => x.ObjectPropertyChangeID, map => { map.Generator(Generators.Identity); });
-			Property(x => x.Title);
-			Property(x => x.PropertySysName);
-			Property(x => x.OldValue);
-			Property(x => x.NewValue);
-			Property(x => x.OldValueTitle);
-			Property(x => x.NewValueTitle);
-			Property(x => x.ObjectChangeID, map => { map.Formula("ObjectChangeID"); });
-			ManyToOne(x => x.ObjectChange, map =>
-			{
-				map.Column("ObjectChangeID");
-				map.Cascade(Cascade.None);
-			});
-		}
-	}
-
-	public class N_RssFeedMap : ClassMapping<N_RssFeed>
-	{
-		public N_RssFeedMap()
-		{
-			Schema("dbo");
-			Lazy(true);
-			Id(x => x.RssFeedID, map => map.Generator(Generators.Identity));
-			Property(x => x.Copyright, map => map.NotNullable(true));
-			Property(x => x.Description, map => map.NotNullable(true));
-			Property(x => x.IsDeleted, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-			Property(x => x.ObjectTypeSysName, map => map.NotNullable(true));
-			Property(x => x.Predicate, map => map.NotNullable(true));
-			Property(x => x.PubDate, map => map.NotNullable(true));
-			Property(x => x.SysName, map => map.NotNullable(true));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.Ttl, map => map.NotNullable(true));
-			Property(x => x.ViewFormSysName, map => map.NotNullable(true));
-			Property(x => x.Author, map => map.NotNullable(true));
-			Property(x => x.WebMaster, map => map.NotNullable(true));
-			Property(x => x.LinkParams);
-		}
-	}
-
-	public class MM_PackageMap : ClassMapping<MM_Package>
-	{
-		public MM_PackageMap()
-		{
-			Schema("dbo");
-			Lazy(true);
-			Id(x => x.PackageID, map => map.Generator(Generators.Identity));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.SysName, map => map.NotNullable(true));
-			Property(x => x.IsDeleted, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-			Property(x => x.Guid, map => map.NotNullable(true));
-			Property(x => x.IsDataReplicated, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.Version);
-			Property(x => x.SeqNo, map => map.NotNullable(true));
-			Property(x => x.ParentPackageID);
-		}
-	}
-
-	public class MM_ObjectTypeMap : ClassMapping<MM_ObjectType>
-	{
-		public MM_ObjectTypeMap()
-		{
-			Schema("dbo");
-			Lazy(true);
-			Id(x => x.ObjectTypeID, map => map.Generator(Generators.Identity));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.SysName, map => map.NotNullable(true));
-			Property(x => x.IsEnableSPM, map => map.NotNullable(true));
-			Property(x => x.Guid, map => map.NotNullable(true));
-			Property(x => x.IsSeparateTable, map => map.NotNullable(true));
-			Property(x => x.IsTemplate, map => map.NotNullable(true));
-			Property(x => x.TitlePlural);
-			Property(x => x.DefaultOrderBy);
-			Property(x => x.LogicalDelete);
-			Property(x => x.IsReplicate, map => map.NotNullable(true));
-			Property(x => x.IsEnableUserViews, map => map.NotNullable(true));
-			Property(x => x.SecurityPackageSystemName);
-			Property(x => x.IsEnableObjectHistory, map => map.NotNullable(true));
-			Property(x => x.Interface);
-			Property(x => x.HistoryTypeCode, map => map.NotNullable(true));
-			Property(x => x.IsDataReplicated, map => map.NotNullable(true));
-			Property(x => x.IsDeleted, map => map.NotNullable(true));
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-			Property(x => x.SeqNo, map => map.NotNullable(true));
-			Property(x => x.Description);
-
-			Property(x => x.PackageID);
-			Property(x => x.BaseObjectTypeID);
-		}
-	}
-
-	/*public class MM_ObjectPropertyMap : ClassMapping<MM_ObjectProperty>
-	{
-
-		public MM_ObjectPropertyMap()
-		{
-			Schema("dbo");
-			Lazy(true);
-			Id(x => x.ObjectPropertyID, map => map.Generator(Generators.Identity));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.SysName, map => map.NotNullable(true));
-			Property(x => x.SeqNo, map => map.NotNullable(true));
-			Property(x => x.TypeCode, map => map.NotNullable(true));
-			Property(x => x.Guid, map => map.NotNullable(true));
-			Property(x => x.IsMultilingual, map => map.NotNullable(true));
-			Property(x => x.IsPrimaryKey, map => map.NotNullable(true));
-			Property(x => x.IsSystem, map => map.NotNullable(true));
-			Property(x => x.IsNavigable, map => map.NotNullable(true));
-			Property(x => x.IsAggregate, map => map.NotNullable(true));
-			Property(x => x.LowerBound, map => map.NotNullable(true));
-			Property(x => x.UpperBound, map => map.NotNullable(true));
-			Property(x => x.Expression);
-			Property(x => x.IsReferenceToVersion, map => map.NotNullable(true));
-			Property(x => x.ValueFilter);
-			Property(x => x.Precision);
-			Property(x => x.Scale);
-			Property(x => x.Length);
-			Property(x => x.DeleteRule, map => map.NotNullable(true));
-			Property(x => x.KindCode, map => map.NotNullable(true));
-			Property(x => x.DefaultDBValue);
-			Property(x => x.Description);
-			Property(x => x.IsDeleted, map => map.NotNullable(true));
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-			Property(x => x.IsIdentity, map => map.NotNullable(true));
-
-			Property(x => x.ObjectTypeID, map => { map.NotNullable(true);});
-			Property(x => x.RefObjectPropertyID);
-			Property(x => x.RefObjectTypeID);
-
-		}
-	}*/
-	
-	public class MM_FormViewMap : ClassMapping<MM_FormView>
-	{
-		public MM_FormViewMap()
-		{
-			Schema("dbo");
-			Lazy(true);
-			Id(x => x.FormViewID, map => map.Generator(Generators.Identity));
-			Property(x => x.Title, map => map.NotNullable(true));
-			Property(x => x.SysName, map => map.NotNullable(true));
-			Property(x => x.ViewTemplate);
-			Property(x => x.TemplateTypeCode);
-			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
-			Property(x => x.Guid, map => { map.NotNullable(true); MappingConfig.GuidPropertyConfig(map); });
-			Property(x => x.IsCustom, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.IsDeleted, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
-			Property(x => x.IsCaching, map => { map.NotNullable(true); MappingConfig.BoolPropertyConfig(map); });
-			Property(x => x.CacheKeyParams);
-			Property(x => x.CacheTimeout, map => map.NotNullable(true));
-			Property(x => x.BaseClass, map => map.NotNullable(true));
-
-			Property(x => x.ObjectTypeID);
-			Property(x => x.PackageID, map => map.Formula("PackageID"));
-
-			ManyToOne(x => x.Package, map =>
-			{
-				map.Column("PackageID");
-				map.Cascade(Cascade.None);
-			});
-		}
-	}
-
-	public class N_CacheMap : ClassMapping<N_Cache>
-	{
-		public N_CacheMap()
-		{
-			Schema("dbo");
-			Lazy(true);
-			Property(x => x.TimeStamp, map => map.NotNullable(true));
-		}
-	}
 }

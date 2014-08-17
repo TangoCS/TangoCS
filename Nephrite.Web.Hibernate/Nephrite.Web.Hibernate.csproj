@@ -78,6 +78,18 @@
     <Compile Include="CoreDataContext\HCoreDataContext.cs" />
     <Compile Include="CoreDataContext\HMapping.cs" />
     <Compile Include="CoreDataContext\HModel.cs" />
+    <Compile Include="CoreMapping\CalendarDaysMapping.cs" />
+    <Compile Include="CoreMapping\ControlsMapping.cs" />
+    <Compile Include="CoreMapping\EntityAuditMapping.cs" />
+    <Compile Include="CoreMapping\ErrorLogMapping.cs" />
+    <Compile Include="CoreMapping\FileStorageMapping.cs" />
+    <Compile Include="CoreMapping\MailerMapping.cs" />
+    <Compile Include="CoreMapping\MetaStorageMapping.cs" />
+    <Compile Include="CoreMapping\MultilanguageMapping.cs" />
+    <Compile Include="CoreMapping\RSSMapping.cs" />
+    <Compile Include="CoreMapping\SettingsManagerMapping.cs" />
+    <Compile Include="CoreMapping\TaskManagerMapping.cs" />
+    <Compile Include="CoreMapping\TextResourcesMapping.cs" />
     <Compile Include="ExtendedEqualsGenerator.cs" />
     <Compile Include="Hibernate.cs" />
     <Compile Include="IntBackedBoolUserType.cs" />
@@ -136,6 +148,7 @@
       <CachedSettingsPropName>Nephrite_Web_Hibernate_TaskManagerRerefence_TaskManagerService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

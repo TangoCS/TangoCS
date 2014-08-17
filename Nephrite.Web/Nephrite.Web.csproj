@@ -559,7 +559,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="FileStorage\DataBase\" />
     <Folder Include="FileStorage\FileSystem\" />
-    <Folder Include="UserActivity\" />
     <Folder Include="Workflow\" />
   </ItemGroup>
   <ItemGroup>

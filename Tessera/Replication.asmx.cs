@@ -89,12 +89,12 @@ namespace Tessera
 
 			MetaClass ot = A.Meta.GetClass(objectType);
 			if (ot == null)
-				throw new Exception("Класс " + objectType + " не найден в метамодели");
+				throw new Exception("Класс " + objectType + " не найден в модели");
 
 			var instance = r.EmptyHst(ot);
 			
-			object id = ot.Key.Type is MetaGuidType ? (object)objectID.ToGuid() : objectID.ToInt32(0);
-            var list = r.GetListHst(ot).Where(instance.FilterByObjectID(id)).Where(o => o.LastModifiedDate > startDate).
+			//object id = ot.Key.Type is MetaGuidType ? (object)objectID.ToGuid() : objectID.ToInt32(0);
+			var list = r.GetListHst(ot).Where(instance.FindByProperty(ot.Key.Name, objectID)).Where(o => o.LastModifiedDate > startDate).
                 Select(instance.GetIdentifierSelector());
             return list.Select(o => o.ToString()).ToArray();
         }
@@ -233,7 +233,7 @@ namespace Tessera
 			CheckCredentials();
 			var ot = A.Meta.GetClass(objectType);
             var instance = r.Empty(ot);
-            return r.GetList(ot).Where(instance.FilterByProperty(propertyName, id)).
+            return r.GetList(ot).Where(instance.FindByProperty(propertyName, id)).
                 Select(instance.GetIdentifierSelector()).Select(o => o.ToString()).ToArray();
         }
 

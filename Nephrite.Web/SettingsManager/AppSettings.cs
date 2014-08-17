@@ -40,11 +40,11 @@ namespace Nephrite.Web.SettingsManager
             _settings = null;
         }
 
-		static List<IN_Setting> _settings = null;
+		static List<IN_Settings> _settings = null;
 		public static string Get(string name)
 		{
-			if (_settings == null) _settings = _dc.IN_Setting.ToList();
-			IN_Setting s = _settings.Where(o => o.SystemName == name).SingleOrDefault();
+			if (_settings == null) _settings = _dc.IN_Settings.ToList();
+			IN_Settings s = _settings.Where(o => o.SystemName == name).SingleOrDefault();
 			if (s == null)
 				return "";
 			else
@@ -64,14 +64,14 @@ namespace Nephrite.Web.SettingsManager
 
         public static void Set(string name, string value)
         {
-			IN_Setting s = _dc.IN_Setting.Where(o => o.SystemName == name).SingleOrDefault();
+			IN_Settings s = _dc.IN_Settings.Where(o => o.SystemName == name).SingleOrDefault();
             if (s == null)
             {
-				s = _dc.NewIN_Setting();
+				s = _dc.NewIN_Settings();
 				s.SystemName = name;
                 s.Title = name;
 				s.Value = value;
-				_dc.IN_Setting.InsertOnSubmit(s);
+				_dc.IN_Settings.InsertOnSubmit(s);
             }
             else
             {

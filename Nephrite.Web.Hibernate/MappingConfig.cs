@@ -17,5 +17,10 @@ namespace Nephrite.Web.Hibernate
 		{
 			if (HDataContext.DBType == DBType.DB2) map.Type<StringBackedGuidUserType>();
 		}
+
+		public static void GuidIDPropertyConfig(IIdMapper map)
+		{
+			if (HDataContext.DBType == DBType.DB2) map.Type(new StringBackedGuidUserType());
+		}
 	}
 }

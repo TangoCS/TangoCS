@@ -81,6 +81,6 @@ namespace Nephrite.Web
 		System.String OldValueTitle { get; set; }
 		System.String NewValueTitle { get; set; }
 		System.Int32 ObjectChangeID { get; set; }
-		IN_ObjectChange IObjectChange { get; set; }
+		IN_ObjectChange ObjectChange { get; set; }
 	}
 }

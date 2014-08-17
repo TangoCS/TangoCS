@@ -199,17 +199,6 @@ namespace Nephrite.Web.CoreDataContext
 			CreatorID = 2;
 		}
 
-		public override bool Equals(object obj)
-		{
-			if (obj == null)
-				return false;
-			return true;
-		}
-		public override int GetHashCode()
-		{
-			return ID.GetHashCode();
-		} 
-
 		public virtual string CheckedOutBy { get; set; }
 		public virtual string Creator { get; set; }
 		public virtual int CreatorID { get; set; }
@@ -219,18 +208,18 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual long Size { get; set; }
 		public virtual string Title { get; set; }
 		public virtual System.Guid ID { get; set; }
-		public virtual System.Guid SPMActionItemGUID { get; protected set; }
-		public virtual Nullable<System.Guid> MainID { get; protected set; }
+		public virtual System.Guid SPMActionItemGUID { get;  set; }
+		public virtual Nullable<System.Guid> MainID { get;  set; }
 		public virtual string Extension { get; set; }
 		public virtual string Path { get; set; }
-		public virtual string FullPath { get; protected set; }
+		public virtual string FullPath { get;  set; }
 		public virtual System.DateTime LastModifiedDate { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
-		public virtual int VersionNumber { get; protected set; }
+		public virtual int VersionNumber { get;  set; }
 		public virtual int IsValid { get; set; }
 		public virtual System.Nullable<System.Guid> ParentFolderID { get; set; }
 		public virtual System.Nullable<System.Guid> FeatureGUID { get; set; }
-		public virtual bool IsDeleted { get; protected set; }
+		public virtual bool IsDeleted { get;  set; }
 		public virtual string Tag { get; set; }
 	}
 
@@ -241,17 +230,6 @@ namespace Nephrite.Web.CoreDataContext
 			ID = Guid.NewGuid();
 			CreatorID = 2;
 		}
-
-		public override bool Equals(object obj)
-		{
-			if (obj == null)
-				return false;
-			return true;
-		}
-		public override int GetHashCode()
-		{
-			return ID.GetHashCode();
-		} 
 
 		public virtual string Title { get; set; }
 		public virtual string Tag { get; set; }
@@ -277,17 +255,6 @@ namespace Nephrite.Web.CoreDataContext
 
 	public partial class V_DbItem : IDbItem
 	{
-		public override bool Equals(object obj)
-		{
-			if (obj == null)
-				return false;
-			return true;
-		}
-		public override int GetHashCode()
-		{
-			return ID.GetHashCode();
-		} 
-
 		public virtual string Title { get; set; }
 		public virtual System.DateTime LastModifiedDate { get; set; }
 		public virtual System.DateTime? PublishDate { get; set; }
@@ -303,11 +270,11 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string Extension { get; set; }
 		public virtual DbItemType Type { get; set; }
 		public virtual System.Guid ID { get; set; }
-		public virtual System.Guid SPMActionItemGUID { get; protected set; }
-		public virtual bool EnableVersioning { get; protected set; }
-		public virtual string FullPath { get; protected set; }
-		public virtual int? CheckedOutByID { get; protected set; }
-		public virtual string CheckedOutBy { get; protected set; }
+		public virtual System.Guid SPMActionItemGUID { get;  set; }
+		public virtual bool EnableVersioning { get;  set; }
+		public virtual string FullPath { get;  set; }
+		public virtual int? CheckedOutByID { get;  set; }
+		public virtual string CheckedOutBy { get;  set; }
 	}
 
 	public partial class N_FileData : IDbFileData, IWithoutEntityAudit
@@ -334,7 +301,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual System.DateTime LastDataModify { get; set; }
 	}*/
 
-	public partial class N_Setting : IN_Setting
+	public partial class N_Settings : IN_Settings
 	{
 		public virtual System.Guid SettingsGUID { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
@@ -344,7 +311,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual bool IsSystem { get; set; }
 		public virtual bool IsDeleted { get; set; }
 		public virtual System.DateTime LastModifiedDate { get; set; }
-		public virtual string AcceptableValues { get; set; }
+		public virtual string AcceptableValues { get; set; } 
 	}
 
 	public partial class N_Cache : IN_Cache, IWithoutEntityAudit
@@ -391,18 +358,18 @@ namespace Nephrite.Web.CoreDataContext
 				ObjectChange = new N_ObjectChange { ObjectChangeID = value };
 			}
 		}
-		public virtual N_ObjectChange ObjectChange { get; set; }
-		public virtual IN_ObjectChange IObjectChange
-		{
-			get
-			{
-				return ObjectChange as IN_ObjectChange;
-			}
-			set
-			{
-				ObjectChange = (N_ObjectChange)value;
-			}
-		}
+		public virtual IN_ObjectChange ObjectChange { get; set; }
+		//public virtual IN_ObjectChange IObjectChange
+		//{
+		//	get
+		//	{
+		//		return ObjectChange as IN_ObjectChange;
+		//	}
+		//	set
+		//	{
+		//		ObjectChange = (N_ObjectChange)value;
+		//	}
+		//}
 	}
 
 
@@ -467,7 +434,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual int SeqNo { get; set; }
 		public virtual string Description { get; set; }
 
-		public virtual Nullable<System.Int32> PackageID { get; set; }
+		public virtual int PackageID { get; set; }
 		public virtual Nullable<System.Int32> BaseObjectTypeID { get; set; }
 	}
 

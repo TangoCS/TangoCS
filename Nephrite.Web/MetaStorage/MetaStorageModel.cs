@@ -40,7 +40,7 @@ namespace Nephrite.Web.MetaStorage
 		int LastModifiedUserID { get; set; }
 		int SeqNo { get; set; }
 		string Description { get; set; }
-		Nullable<System.Int32> PackageID { get; set; }
+		int PackageID { get; set; }
 		Nullable<System.Int32> BaseObjectTypeID { get; set; }
 	}
 

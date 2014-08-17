@@ -48,7 +48,7 @@ namespace Nephrite.Web.Hibernate
                             else
                             {
                                 var opc = dc.NewIN_ObjectPropertyChange();
-                                opc.IObjectChange = oc;
+                                opc.ObjectChange = oc;
 
                                 opc.PropertySysName = e.Persister.PropertyNames[i];
                                 opc.Title = "";
@@ -204,7 +204,7 @@ namespace Nephrite.Web.Hibernate
 						else
 						{
 							var opc = dc.NewIN_ObjectPropertyChange();
-							opc.IObjectChange = oc;
+							opc.ObjectChange = oc;
 
 							opc.PropertySysName = propertyNames[i];
 							opc.Title = "";
