@@ -54,7 +54,7 @@ namespace NHibernate.Cfg
 
 					if (attrs != null && attrs.Length > 0)
 					{
-						cachedVersion = string.Format("{0} ({1})", thisAssembly.GetName().Version, attrs[0].InformationalVersion);
+						cachedVersion = string.Format("{0} (assembly {1})", attrs[0].InformationalVersion, thisAssembly.GetName().Version);
 					}
 					else
 					{
@@ -170,6 +170,14 @@ namespace NHibernate.Cfg
 
 		/// <summary> Enable ordering of insert statements for the purpose of more effecient batching.</summary>
 		public const string OrderInserts = "order_inserts";
+
+		/// <summary>
+		/// If this setting is set to false, exceptions in IInterceptor.BeforeTransactionCompletion bubble to the caller of ITransaction.Commit and abort the commit.
+		/// If this setting is set to true, exceptions in IInterceptor.BeforeTransactionCompletion are ignored and the commit is performed.
+		/// The default setting is false.
+		/// </summary>
+		[Obsolete("This setting is likely to be removed in a future version of NHibernate. The workaround is to catch all exceptions in the IInterceptor implementation.")]
+		public const string InterceptorsBeforeTransactionCompletionIgnoreExceptions = "interceptors.beforetransactioncompletion_ignore_exceptions";
 
 		private static readonly Dictionary<string, string> GlobalProperties;
 

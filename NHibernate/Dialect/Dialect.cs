@@ -84,7 +84,7 @@ namespace NHibernate.Dialect
 			
 			// standard sql92 functions (can be overridden by subclasses)
 			RegisterFunction("substring", new AnsiSubstringFunction());
-			RegisterFunction("locate", new SQLFunctionTemplate(NHibernateUtil.Int32, "locate(?1, ?2, ?3)"));
+			RegisterFunction("locate", new StandardSQLFunction("locate", NHibernateUtil.Int32));
 			RegisterFunction("trim", new AnsiTrimFunction());
 			RegisterFunction("length", new StandardSQLFunction("length", NHibernateUtil.Int32));
 			RegisterFunction("bit_length", new StandardSQLFunction("bit_length", NHibernateUtil.Int32));
@@ -422,7 +422,7 @@ namespace NHibernate.Dialect
 
 		public virtual IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
-			return new SybaseAnywhereDataBaseMetaData(connection);
+			throw new NotSupportedException();
 		}
 
 		#endregion

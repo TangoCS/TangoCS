@@ -34,6 +34,7 @@ namespace NHibernate.Linq.Functions
 					ReflectionHelper.GetMethodDefinition<double>(x => x.Equals(x)),
 					ReflectionHelper.GetMethodDefinition<decimal>(x => x.Equals(x)),
 
+					ReflectionHelper.GetMethodDefinition<Guid>(x => x.Equals(x)),
 					ReflectionHelper.GetMethodDefinition<DateTime>(x => x.Equals(x)),
 					ReflectionHelper.GetMethodDefinition<DateTimeOffset>(x => x.Equals(x))
 				};

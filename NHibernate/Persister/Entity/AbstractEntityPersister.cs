@@ -3199,9 +3199,71 @@ namespace NHibernate.Persister.Entity
 		public virtual string FilterFragment(string alias, IDictionary<string, IFilter> enabledFilters)
 		{
 			StringBuilder sessionFilterFragment = new StringBuilder();
-			filterHelper.Render(sessionFilterFragment, GenerateFilterConditionAlias(alias), enabledFilters);
+
+			filterHelper.Render(sessionFilterFragment, GenerateFilterConditionAlias(alias), GetColumnsToTableAliasMap(alias), enabledFilters);
 
 			return sessionFilterFragment.Append(FilterFragment(alias)).ToString();
+		}
+
+		private IDictionary<string, string> GetColumnsToTableAliasMap(string rootAlias)
+		{
+			IDictionary<PropertyKey, string> propDictionary = new Dictionary<PropertyKey, string>();
+			for (int i =0; i < SubclassPropertyNameClosure.Length; i++)
+			{
+				string property = SubclassPropertyNameClosure[i];
+                string[] cols = GetSubclassPropertyColumnNames(property);
+
+				if (cols != null && cols.Length > 0)
+				{
+					PropertyKey key = new PropertyKey(cols[0], GetSubclassPropertyTableNumber(i));
+					propDictionary[key] = property;
+				}
+			}
+
+			IDictionary<string, string> dict = new Dictionary<string, string>();
+			for (int i = 0; i < SubclassColumnTableNumberClosure.Length; i++ )
+			{
+				string col = SubclassColumnClosure[i];
+				string alias = GenerateTableAlias(rootAlias, SubclassColumnTableNumberClosure[i]);
+
+				string fullColumn = string.Format("{0}.{1}", alias, col);
+
+				PropertyKey key = new PropertyKey(col, SubclassColumnTableNumberClosure[i]);
+				if (propDictionary.ContainsKey(key))
+				{
+					dict[propDictionary[key]] = fullColumn;
+				}
+
+				if (!dict.ContainsKey(col))
+				{
+					dict[col] = fullColumn;	
+				}
+			}
+
+			return dict;
+		}
+
+		private class PropertyKey
+		{
+			public string Column { get; set; }
+			public int TableNumber { get; set; }
+
+			public PropertyKey(string column, int tableNumber)
+			{
+				Column = column;
+				TableNumber = tableNumber;
+			}
+
+			public override int GetHashCode()
+			{
+				return Column.GetHashCode() ^ TableNumber.GetHashCode();
+			}
+
+			public override bool Equals(object other)
+			{
+				PropertyKey otherTuple = other as PropertyKey;
+				return otherTuple == null ? false : Column.Equals(otherTuple.Column) && TableNumber.Equals(otherTuple.TableNumber);
+			}
 		}
 
 		public virtual string GenerateFilterConditionAlias(string rootAlias)
@@ -3684,35 +3746,34 @@ namespace NHibernate.Persister.Entity
 				return true;
 			}
 
-			// check the version unsaved-value, if appropriate
-			if (IsVersioned)
-			{
-				object version = GetVersion(entity, session.EntityMode);
-				// let this take precedence if defined, since it works for
-				// assigned identifiers
-				bool? result = entityMetamodel.VersionProperty.UnsavedValue.IsUnsaved(version);
-				if (result.HasValue)
-				{
-					return result;
-				}
-			}
+            // check the id unsaved-value
+            // We do this first so we don't have to hydrate the version property if the id property already gives us the info we need (NH-3505).
+            bool? result2 = entityMetamodel.IdentifierProperty.UnsavedValue.IsUnsaved(id);
+            if (result2.HasValue)
+            {
+                if (IdentifierGenerator is Assigned)
+                {
+                    // if using assigned identifier, we can only make assumptions
+                    // if the value is a known unsaved-value
+                    if (result2.Value)
+                        return true;
+                }
+                else
+                {
+                    return result2;
+                }
+            }
 
-			// check the id unsaved-value
-			bool? result2 = entityMetamodel.IdentifierProperty.UnsavedValue.IsUnsaved(id);
-			if (result2.HasValue)
-			{
-				if (IdentifierGenerator is Assigned)
-				{
-					// if using assigned identifier, we can only make assumptions
-					// if the value is a known unsaved-value
-					if (result2.Value)
-						return true;
-				}
-				else
-				{
-					return result2;
-				}
-			}
+            // check the version unsaved-value, if appropriate
+            if (IsVersioned)
+            {
+                object version = GetVersion(entity, session.EntityMode);
+                bool? result = entityMetamodel.VersionProperty.UnsavedValue.IsUnsaved(version);
+                if (result.HasValue)
+                {
+                    return result;
+                }
+            }
 
 			// check to see if it is in the second-level cache
 			if (HasCache)

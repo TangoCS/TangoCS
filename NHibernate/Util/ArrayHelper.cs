@@ -87,7 +87,12 @@ namespace NHibernate.Util
 			return sb.ToString();
 		}
 
-		// NH-specific
+
+		/// <summary>
+		/// Append all elements in the 'from' list to the 'to' list.
+		/// </summary>
+		/// <param name="to"></param>
+		/// <param name="from"></param>
 		public static void AddAll(IList to, IList from)
 		{
 			System.Action addNull = null;
@@ -128,6 +133,12 @@ namespace NHibernate.Util
 		}
 
 		// NH-specific
+		public static void AddAll<T>(IList<T> to, IList<T> from)
+		{
+			foreach (T obj in from)
+				to.Add(obj);
+		}
+
 		public static void AddAll<TKey, TValue>(IDictionary<TKey, TValue> to, IDictionary<TKey, TValue> from)
 		{
 			foreach (KeyValuePair<TKey, TValue> de in from)
@@ -232,6 +243,24 @@ namespace NHibernate.Util
 				i++;
 			}
 			return true;
+		}
+
+		/// <summary>
+		/// Calculate a hash code based on the length and contents of the array.
+		/// The algorithm is such that if ArrayHelper.ArrayEquals(a,b) returns true,
+		/// then ArrayGetHashCode(a) == ArrayGetHashCode(b).
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="array"></param>
+		/// <returns></returns>
+		public static int ArrayGetHashCode<T>(T[] array)
+		{
+			int hc = array.Length;
+
+			foreach (var e in array)
+				hc = unchecked(hc*31 + e.GetHashCode());
+
+			return hc;
 		}
 	}
 }

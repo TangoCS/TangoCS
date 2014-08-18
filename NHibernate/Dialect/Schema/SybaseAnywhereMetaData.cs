@@ -22,7 +22,7 @@ namespace NHibernate.Dialect.Schema
 			DataTable dtReservedWords = Connection.GetSchema(DbMetaDataCollectionNames.ReservedWords);
 			foreach (DataRow row in dtReservedWords.Rows)
 			{
-				result.Add(row[DbMetaDataColumnNames.ReservedWord].ToString());
+				result.Add(row["reserved_word"].ToString());
 			}
 			return result;
 		}
