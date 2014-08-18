@@ -5,7 +5,6 @@ using System.Web;
 using System.Xml.Linq;
 using System.Reflection;
 using System.Configuration;
-using Nephrite.Web;
 using System.Linq.Expressions;
 using System.ComponentModel;
 using System.IO;
@@ -16,7 +15,7 @@ using System.Data.SqlClient;
 using Nephrite.Web.Versioning;
 using Nephrite.Web.Multilanguage;
 
-namespace Nephrite.Metamodel
+namespace Nephrite.Web
 { 
     public class Repository
     {
@@ -25,38 +24,7 @@ namespace Nephrite.Metamodel
         string ns;
         string defaultLanguage = "ru";
 
-        /*public Repository(string assemblyFileName)
-		{
-			try
-			{
-				if (assemblyFileName == "default")
-					assembly = AppDomain.CurrentDomain.GetAssemblies().FirstOrDefault(o => o.GetName().Name.ToUpper() == ConfigurationManager.AppSettings["ModelAssembly"].ToUpper());
-				else
-				{
-					assemblyFileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, assemblyFileName);
-					assembly = Assembly.LoadFile(assemblyFileName);
-				}
-			}
-			catch(FileNotFoundException)
-			{
-				throw new FileNotFoundException("Файл не найден: " + assemblyFileName);
-			}
-			var mdc = assembly.GetTypes().Single(o => o.Name == "modelDataContext");
-            ns = mdc.Namespace;
-			db = Activator.CreateInstance(mdc, ConnectionManager.Connection) as DataContext;
-			db.Log = new StringWriter();
-			db.CommandTimeout = 300;
-        }
-		
-		public Repository(Assembly a, DataContext d, string n)
-		{
-			assembly = a;
-			db = d;
-			ns = n;
-			defaultLanguage = AppMM.DefaultLanguage;
-		}*/
-
-        public Repository()
+         public Repository()
         {
             if (String.IsNullOrEmpty(ConfigurationManager.AppSettings["ModelAssembly"]))
             {
