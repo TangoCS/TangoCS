@@ -21,11 +21,12 @@ namespace Nephrite.Web.TaskManager
 			svc.Timeout = 1000 * 60 * 30; // 30 минут
 
 			ConnectionManager.SetConnectionString(connectionString);
-			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
 
 			DBType? dbtypeenum = Enum.Parse(typeof(DBType), dbType.ToUpper()) as DBType?;
 			if (dbtypeenum == null) throw new Exception("Incorrect DBType parameter");
+
 			A.DBType = dbtypeenum.Value;
+			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
 
 			var sl = AppSettings.Get("ReplicationLogin");
 			if (sl.IsEmpty())
