@@ -7,6 +7,7 @@
 <#@ assembly name="$(ProjectDir)$(OutDir)Nephrite.Meta.Database.DB2.dll" #>
 <#@ assembly name="$(ProjectDir)$(OutDir)Nephrite.Web.dll" #>
 <#@ assembly name="$(ProjectDir)$(OutDir)NHibernate.dll" #>
+<#@ assembly name="$(ProjectDir)$(OutDir)Nephrite.Web.Hibernate.dll" #>
 <#@ import namespace="System" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Text.RegularExpressions" #>
