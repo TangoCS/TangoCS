@@ -27,14 +27,19 @@ namespace Nephrite.Web
 				else
 				{
 					var a = Assembly.GetCallingAssembly();
-					string webConfigPath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(a.Location)), "web.config");
+
+					string webConfigPath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(a.Location)), "connectionStrings.config");
+					if (!File.Exists(webConfigPath))
+						webConfigPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "connectionStrings.config");
+					if (!File.Exists(webConfigPath))
+						webConfigPath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(a.Location)), "web.config");
 					if (!File.Exists(webConfigPath))
 						webConfigPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "web.config");
 					if (!File.Exists(webConfigPath))
 						throw new Exception("Файл " + webConfigPath + " не найден");
 					XmlDocument doc = new XmlDocument();
 					doc.Load(webConfigPath);
-					var cs = doc.SelectSingleNode("configuration/connectionStrings/add[@name='ConnectionString']");
+					var cs = doc.SelectSingleNode("connectionStrings/add[@name='ConnectionString']");
 					if (cs == null)
 						throw new Exception("Строка подключения с именем ConnectionString не найдена в файле " + webConfigPath);
 
