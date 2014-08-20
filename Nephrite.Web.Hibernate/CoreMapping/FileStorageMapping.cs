@@ -76,7 +76,7 @@ namespace Nephrite.Web.Hibernate.CoreMapping
 			Property(x => x.LastModifiedUserName, map => { map.Column("\"LastModifiedUserName\""); });
 			Property(x => x.Path, map => { map.Column("\"Path\""); });
 			Property(x => x.ParentFolderID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ParentFolderID\""); });
-			//Property(x => x.StorageParameter, map => { map.Column("\"StorageParameter\""); });
+			Property(x => x.StorageParameter, map => { map.Column("\"StorageParameter\""); });
 			Property(x => x.SPMActionItemGUID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"SPMActionItemGUID\""); });
 			Property(x => x.EnableVersioning, map => { map.NotNullable(false); MappingConfig.BoolPropertyConfig(map); map.Column("\"EnableVersioning\""); });
 			//Property(x => x.FileCount, map => { map.Column("\"FileCount\""); });
@@ -86,7 +86,7 @@ namespace Nephrite.Web.Hibernate.CoreMapping
 			Property(x => x.Creator, map => { map.Column("\"Creator\""); });
 			Property(x => x.FullPath, map => { map.Column("\"FullPath\""); });
 			//Property(x => x.IsValid, map => { map.Column("\"IsValid\""); });
-			//Property(x => x.StorageType, map => { map.Column("\"StorageType\""); });
+			Property(x => x.StorageType, map => { map.Column("\"StorageType\""); });
 		}
 	}
 

@@ -128,6 +128,18 @@ namespace Nephrite.Web.Html
 		public int Value { set { _builder.MergeAttribute("value", value.ToString()); } }
 	}
 
+	public class LinkTagAttributes : TagAttributes
+	{
+		public LinkTagAttributes(TagBuilder builder) : base(builder) { }
+
+		public string Href { set { _builder.MergeAttribute("href", value); } }
+		public string HrefLang { set { _builder.MergeAttribute("hreflang", value); } }
+		public string Media { set { _builder.MergeAttribute("media", value); } }
+		public LinkRel Rel { set { _builder.MergeAttribute("rel", value.ToString().ToLower()); } }
+		public Target Target { set { _builder.MergeAttribute("target", value.ToString().ToLower()); } }
+		public string Type { set { _builder.MergeAttribute("type", value); } }
+	}
+
 	public class MetaTagAttributes : TagAttributes
 	{
 		public MetaTagAttributes(TagBuilder builder) : base(builder) { }
@@ -175,56 +187,8 @@ namespace Nephrite.Web.Html
 
 	public enum Dir { Ltr, Rtl, Auto }
 	public enum Rel { Alternate, Author, Bookmark, Help, License, Next, Nofollow, Noreferrer, Prefetch, Prev, Search, Tag }
+	public enum LinkRel { Alternate, Archives, Author, Bookmark, External, First, Help, Icon, Last, License, Next, Nofollow, Noreferrer, Pingback, Prefetch, Prev, Search, Sidebar, Stylesheet, Tag, Up }
 	public enum Target { _blank, _parent, _self, _top }
 	public enum Method { Get, Post }
 	public enum Scope { Col, ColGroup, Row, RowGroup }
-
-	public interface ILayoutHtmlTags
-	{
-		string A(Action<ATagAttributes> attributes = null, Action inner = null);
-		string B(Action<TagAttributes> attributes = null, Action inner = null);
-		string Body(Action<TagAttributes> attributes = null, Action inner = null);
-		string Br(Action<TagAttributes> attributes = null, Action inner = null);
-		string Canvas(Action<CanvasTagAttributes> attributes = null, Action inner = null);
-		string Col(Action<ColTagAttributes> attributes = null, Action inner = null);
-		string Colgroup(Action<ColTagAttributes> attributes = null, Action inner = null);
-		string Dd(Action<TagAttributes> attributes = null, Action inner = null);
-		string Div(Action<TagAttributes> attributes = null, Action inner = null);
-		string Dl(Action<TagAttributes> attributes = null, Action inner = null);
-		string Dt(Action<TagAttributes> attributes = null, Action inner = null);
-		string Em(Action<TagAttributes> attributes = null, Action inner = null);
-		string Fieldset(Action<TagAttributes> attributes = null, Action inner = null);
-		string Form(Action<FormTagAttributes> attributes = null, Action inner = null);
-		string H1(Action<TagAttributes> attributes = null, Action inner = null);
-		string H2(Action<TagAttributes> attributes = null, Action inner = null);
-		string H3(Action<TagAttributes> attributes = null, Action inner = null);
-		string H4(Action<TagAttributes> attributes = null, Action inner = null);
-		string H5(Action<TagAttributes> attributes = null, Action inner = null);
-		string H6(Action<TagAttributes> attributes = null, Action inner = null);
-		string Head(Action<TagAttributes> attributes = null, Action inner = null);
-		string Html(Action<HtmlTagAttributes> attributes = null, Action inner = null);
-		string I(Action<TagAttributes> attributes = null, Action inner = null);
-		string Img(Action<ImgTagAttributes> attributes = null, Action inner = null);
-		string Label(Action<LabelTagAttributes> attributes = null, Action inner = null);
-		string Li(Action<LiTagAttributes> attributes = null, Action inner = null);
-		string Meta(Action<MetaTagAttributes> attributes = null, Action inner = null);
-		string Ol(Action<OlTagAttributes> attributes = null, Action inner = null);
-		string P(Action<TagAttributes> attributes = null, Action inner = null);
-		string Pre(Action<TagAttributes> attributes = null, Action inner = null);
-		string Q(Action<QTagAttributes> attributes = null, Action inner = null);
-		string S(Action<TagAttributes> attributes = null, Action inner = null);
-		string Small(Action<TagAttributes> attributes = null, Action inner = null);
-		string Span(Action<TagAttributes> attributes = null, Action inner = null);
-		string Sub(Action<TagAttributes> attributes = null, Action inner = null);
-		string Sup(Action<TagAttributes> attributes = null, Action inner = null);
-		string Table(Action<TagAttributes> attributes = null, Action inner = null);
-		string Tbody(Action<TagAttributes> attributes = null, Action inner = null);
-		string Td(Action<TdTagAttributes> attributes = null, Action inner = null);
-		string Th(Action<ThTagAttributes> attributes = null, Action inner = null);
-		string Thead(Action<TagAttributes> attributes = null, Action inner = null);
-		string Title(Action<TagAttributes> attributes = null, Action inner = null);
-		string Tr(Action<TagAttributes> attributes = null, Action inner = null);
-		string U(Action<TagAttributes> attributes = null, Action inner = null);
-		string Ul(Action<TagAttributes> attributes = null, Action inner = null);
-	}
 }

@@ -144,6 +144,7 @@
     <Compile Include="FormsGenerator\SelectObjectCode.cs" />
     <Compile Include="FormsGenerator\UploadControlsCode.cs" />
     <Compile Include="FormsGenerator\ViewCode.cs" />
+    <Compile Include="Html\HtmlControl.cs" />
     <Compile Include="Html\TagAttributes.cs" />
     <Compile Include="Html\HtmlControl.Tags.cs" />
     <Compile Include="Html\TagBuilder.cs" />

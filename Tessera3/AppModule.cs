@@ -4,6 +4,7 @@ using System.IO;
 using System.Web;
 using System.Web.UI;
 using Nephrite.Web.Html;
+using Tessera3.Views;
 
 namespace Tessera3Sample
 {
@@ -20,16 +21,10 @@ namespace Tessera3Sample
 				var r = context.Response;
 				r.Clear();
 
-				HtmlControl h = new HtmlControl();
-				h.DocType();
-				h.Html(() =>
-				{
-					
-					h.Head();
-					h.Body(() => h.Write("Test"));
-				});
+				HomePage p = new HomePage();
+				p.Render();
 
-				r.Write(h.ToString());
+				r.Write(p.ToString());
 				r.End();
 			};
 		}
