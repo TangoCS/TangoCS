@@ -8,7 +8,7 @@ namespace Nephrite.Web.FileStorage
 	/// <summary>
 	/// Элемент файлового хранилища (папка, файл)
 	/// </summary>
-	public interface IDbItem : IEntity
+	public interface IDbItem : IEntity, IWithTimeStamp
 	{
 		/// <summary>
 		/// Тип элемента

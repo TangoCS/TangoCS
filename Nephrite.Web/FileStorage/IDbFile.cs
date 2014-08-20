@@ -11,7 +11,7 @@ namespace Nephrite.Web.FileStorage
 	/// <summary>
 	/// Файл из файлового хранилища
 	/// </summary>
-	public interface IDbFile : IValidatable, IEntity
+	public interface IDbFile : IValidatable, IEntity, IWithTimeStamp
 	{
 		/// <summary>
 		/// Уникальный идентификатор
