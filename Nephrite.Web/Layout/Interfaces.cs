@@ -350,35 +350,6 @@ namespace Nephrite.Web.Layout
 		string Style(string image);
 	}
 
-	//public interface ISystemLayout : ILayoutList, ILayoutForm, 
-	//	ILayoutListRowDrag, ILayoutMessage, ILayoutPaging, ILayoutSimpleTags, ILayoutLabels
-	//{
-	//	List<ILayoutInit> Init { get; set; }
-	//	ILayoutMain Main { get; set; }
-	//	ILayoutList List { get; set; }
-	//	ILayoutForm Form { get; set; }
-	//	ILayoutListRowDrag ListRowDrag { get; set; }
-
-	//	ILayoutToolbar Toolbar { get; set; }
-	//	ILayoutToolbar ButtonBar { get; set; }
-		
-	//	ILayoutMessage Message { get; set; }
-	//	ILayoutPaging Paging { get; set; }
-	//	ILayoutModal Modal { get; set; }
-
-	//	ILayoutPopupMenu ToolbarDropdownCompact { get; set; }
-	//	ILayoutPopupMenu ToolbarDropdownLarge { get; set; }
-	//	ILayoutPopupMenu ButtonDropdown { get; set; }
-	//	ILayoutPopupMenu SplitButtonDropdown { get; set; }
-
-	//	ILayoutSimpleTags SimpleTags { get; set; }
-	//	ILayoutLabels Labels { get; set; }
-	//	ILayoutAutoMargin AutoMargin { get; set; }
-
-	//	ILayoutBarItem Button { get; set; }
-	//	ILayoutBarItem ToolbarButton { get; set; }
-	//}
-
 	public interface ILayoutLabels
 	{
 		string Label(string text);
@@ -422,6 +393,4 @@ namespace Nephrite.Web.Layout
 		string MarginBegin();
 		string MarginEnd();
 	}
-
-
 }

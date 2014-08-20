@@ -38,9 +38,8 @@ namespace Nephrite.Web.Hibernate.CoreMapping
 			Property(x => x.Extension, map => { map.Column("\"Extension\""); });
 			Property(x => x.LastModifiedUserName, map => { map.Column("\"LastModifiedUserName\""); });
 			Property(x => x.IsDeleted, map => { map.NotNullable(false); MappingConfig.BoolPropertyConfig(map); map.Column("\"IsDeleted\""); });
-			//Property(x => x.ID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ID\""); });
 			Property(x => x.LastModifiedDate, map => { map.Column("\"LastModifiedDate\""); });
-			//Property(x => x.LastModifiedUserID, map => { map.Column("\"LastModifiedUserID\""); });
+			Property(x => x.LastModifiedUserID, map => { map.Column("\"LastModifiedUserID\""); });
 			Property(x => x.Size, map => { map.Column("\"Size\""); });
 			Property(x => x.Path, map => { map.Column("\"Path\""); });
 			Property(x => x.ParentFolderID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ParentFolderID\""); });
@@ -71,13 +70,12 @@ namespace Nephrite.Web.Hibernate.CoreMapping
 			Discriminator(x => x.Formula("0"));
 			Property(x => x.Title, map => { map.Column("\"Title\""); });
 			Property(x => x.LastModifiedDate, map => { map.Column("\"LastModifiedDate\""); });
-			//Property(x => x.LastModifiedUserID, map => { map.Column("\"LastModifiedUserID\""); });
+			Property(x => x.LastModifiedUserID, map => { map.Column("\"LastModifiedUserID\""); });
 			Property(x => x.IsDeleted, map => { map.NotNullable(false); MappingConfig.BoolPropertyConfig(map); map.Column("\"IsDeleted\""); });
 			Property(x => x.Size, map => { map.Column("\"Size\""); });
 			Property(x => x.LastModifiedUserName, map => { map.Column("\"LastModifiedUserName\""); });
 			Property(x => x.Path, map => { map.Column("\"Path\""); });
 			Property(x => x.ParentFolderID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ParentFolderID\""); });
-			//Property(x => x.ID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"ID\""); });
 			//Property(x => x.StorageParameter, map => { map.Column("\"StorageParameter\""); });
 			Property(x => x.SPMActionItemGUID, map => { map.NotNullable(false); MappingConfig.GuidPropertyConfig(map); map.Column("\"SPMActionItemGUID\""); });
 			Property(x => x.EnableVersioning, map => { map.NotNullable(false); MappingConfig.BoolPropertyConfig(map); map.Column("\"EnableVersioning\""); });
@@ -103,7 +101,7 @@ namespace Nephrite.Web.Hibernate.CoreMapping
 			Discriminator(x => x.Formula("0"));
 			Property(x => x.Title, map => { map.Column("\"Title\""); });
 			Property(x => x.LastModifiedDate, map => { map.Column("\"LastModifiedDate\""); });
-			//Property(x => x.LastModifiedUserID, map => { map.Column("\"LastModifiedUserID\""); });
+			Property(x => x.LastModifiedUserID, map => { map.Column("\"LastModifiedUserID\""); });
 			Property(x => x.IsDeleted, map => { map.NotNullable(false); MappingConfig.BoolPropertyConfig(map); map.Column("\"IsDeleted\""); });
 			Property(x => x.Size, map => { map.Column("\"Size\""); });
 			Property(x => x.LastModifiedUserName, map => { map.Column("\"LastModifiedUserName\""); });

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using System.Web.UI;
+using Nephrite.Web.Html;
 
 namespace Tessera3Sample
 {
@@ -19,10 +20,11 @@ namespace Tessera3Sample
 				var r = context.Response;
 				r.Clear();
 
-				HtmlWriter h = new HtmlWriter();
+				HtmlControl h = new HtmlControl();
 				h.DocType();
 				h.Html(() =>
 				{
+					
 					h.Head();
 					h.Body(() => h.Write("Test"));
 				});

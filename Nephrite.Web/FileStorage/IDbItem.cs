@@ -59,6 +59,7 @@ namespace Nephrite.Web.FileStorage
 		/// Имя пользователя, сделавшего последние изменения
 		/// </summary>
 		string LastModifiedUserName { get; set; }
+		int LastModifiedUserID { get; set; }
 
 		Guid SPMActionItemGUID { get; set; }
 

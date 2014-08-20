@@ -196,7 +196,6 @@ namespace Nephrite.Web.CoreDataContext
 		public V_DbFile()
 		{
 			ID = Guid.NewGuid();
-			CreatorID = 2;
 		}
 
 		public virtual string CheckedOutBy { get; set; }
@@ -205,6 +204,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual DateTime? PublishDate { get; set; }
 		public virtual System.Nullable<int> CheckedOutByID { get; set; }
 		public virtual string LastModifiedUserName { get; set; }
+		public virtual int LastModifiedUserID { get; set; }
 		public virtual long Size { get; set; }
 		public virtual string Title { get; set; }
 		public virtual System.Guid ID { get; set; }
@@ -214,7 +214,6 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string Path { get; set; }
 		public virtual string FullPath { get;  set; }
 		public virtual System.DateTime LastModifiedDate { get; set; }
-		public virtual int LastModifiedUserID { get; set; }
 		public virtual int VersionNumber { get;  set; }
 		public virtual int IsValid { get; set; }
 		public virtual System.Nullable<System.Guid> ParentFolderID { get; set; }
@@ -228,7 +227,6 @@ namespace Nephrite.Web.CoreDataContext
 		public V_DbFolder()
 		{
 			ID = Guid.NewGuid();
-			CreatorID = 2;
 		}
 
 		public virtual string Title { get; set; }

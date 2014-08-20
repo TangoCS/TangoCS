@@ -49,6 +49,7 @@ namespace Nephrite.Web.FileStorage
 		/// Имя пользователя, сделавшего последние изменения
 		/// </summary>
 		string LastModifiedUserName { get; set; }
+		int LastModifiedUserID { get; set; }
 
 		/// <summary>
 		/// Получить родительскую папку
@@ -61,6 +62,8 @@ namespace Nephrite.Web.FileStorage
 		/// </summary>
 		/// <returns></returns>
 		FileStorageType GetStorageType();
+		string StorageType { get; set; }
+		string StorageParameter { get; set; }
 
 		/// <summary>
 		/// Получить параметр хранения файлов

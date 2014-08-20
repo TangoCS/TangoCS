@@ -144,6 +144,9 @@
     <Compile Include="FormsGenerator\SelectObjectCode.cs" />
     <Compile Include="FormsGenerator\UploadControlsCode.cs" />
     <Compile Include="FormsGenerator\ViewCode.cs" />
+    <Compile Include="Html\TagAttributes.cs" />
+    <Compile Include="Html\HtmlControl.Tags.cs" />
+    <Compile Include="Html\TagBuilder.cs" />
     <Compile Include="Layout\Icons.cs" />
     <Compile Include="Meta.Database\DBScriptMSSQL.cs" />
     <Compile Include="Meta.Database\IDBScript.cs" />
