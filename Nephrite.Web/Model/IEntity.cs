@@ -78,6 +78,19 @@ namespace Nephrite.Web
 		{
 			((ITable)q).DeleteAllOnSubmit(obj);
 		}
+
+		public static void AttachOnSubmit<T>(this IQueryable<T> q, T obj)
+		where T : IEntity
+		{
+			((ITable)q).Attach(obj);
+
+			if (obj is IWithTimeStamp)
+			{
+				var obj2 = obj as IWithTimeStamp;
+				obj2.LastModifiedDate = DateTime.Now;
+				obj2.LastModifiedUserID = Subject.Current.ID;
+			}
+		}
 	}
 
 	public static class EntityExtensions

@@ -44,6 +44,7 @@ namespace Nephrite.Web.Hibernate
 
 		public List<object> ToInsert { get; private set; }
 		public List<object> ToDelete { get; private set; }
+		public List<object> ToAttach { get; private set; }
 		public List<Action> AfterSaveActions { get; private set; }
 		public List<Action> BeforeSaveActions { get; private set; }
 
@@ -127,6 +128,7 @@ namespace Nephrite.Web.Hibernate
 			Log = new StringWriter();
 			ToInsert = new List<object>();
 			ToDelete = new List<object>();
+			ToAttach = new List<object>();
 			AfterSaveActions = new List<Action>();
 			BeforeSaveActions = new List<Action>();
 
@@ -165,7 +167,7 @@ namespace Nephrite.Web.Hibernate
 		public void SubmitChanges()
 		{
 
-			using (var transaction = _session.BeginTransaction())
+			using (var transaction = Session.BeginTransaction())
 			{
 				Log.WriteLine("BEGIN TRANSACTION");
 				Log.WriteLine();
@@ -173,16 +175,20 @@ namespace Nephrite.Web.Hibernate
 				foreach (var action in BeforeSaveActions) action();
 				foreach (object obj in ToDelete) _session.Delete(obj);
 				foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
-				
+				foreach (object obj in ToAttach) _session.Merge(obj);
+
 				ToDelete.Clear();
 				ToInsert.Clear();
+				ToAttach.Clear();
 
 				foreach (var action in AfterSaveActions) action();
 				foreach (object obj in ToDelete) _session.Delete(obj);
 				foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
+				foreach (object obj in ToAttach) _session.Merge(obj);
 				
 				ToDelete.Clear();
 				ToInsert.Clear();
+				ToAttach.Clear();
 
 				transaction.Commit();
 
@@ -435,7 +441,7 @@ namespace Nephrite.Web.Hibernate
 		}
 		public void Attach(object entity)
 		{
-			throw new NotImplementedException();
+			_dataContext.ToAttach.Add(entity);
 		}
 		public void AttachAll(IEnumerable entities, bool asModified)
 		{

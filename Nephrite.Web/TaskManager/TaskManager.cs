@@ -26,7 +26,7 @@ namespace Nephrite.Web.TaskManager
 				foreach (var t in 
 					from o in dc.ITM_TaskExecution
 					from t in dc.ITM_Task
-					where o.FinishDate == null && o.TaskID == t.TaskID && t.StartFromService == true
+					where o.FinishDate == null && o.TaskID == t.TaskID && t.StartFromService == nullcont
 					select o)
 				{
 					if (t.StartDate.AddMinutes(dc.ITM_Task.Single(o => o.TaskID == t.TaskID).ExecutionTimeout) < DateTime.Now)
