@@ -191,7 +191,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string IP { get; set; }
 	}
 
-	public partial class V_DbFile : IDbFile
+	public partial class V_DbFile : IDbFile, IWithTimeStamp
 	{
 		public V_DbFile()
 		{
@@ -222,7 +222,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string Tag { get; set; }
 	}
 
-	public partial class V_DbFolder : IDbFolder
+	public partial class V_DbFolder : IDbFolder, IWithTimeStamp
 	{
 		public V_DbFolder()
 		{
@@ -251,7 +251,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual bool EnableVersioning { get; set; }
 	}
 
-	public partial class V_DbItem : IDbItem
+	public partial class V_DbItem : IDbItem, IWithTimeStamp
 	{
 		public virtual string Title { get; set; }
 		public virtual System.DateTime LastModifiedDate { get; set; }

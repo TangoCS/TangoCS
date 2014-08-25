@@ -8,8 +8,10 @@ namespace Nephrite.Web.FileStorage
 	/// <summary>
 	/// Папка в файловом хранилище
 	/// </summary>
-	public interface IDbFolder : IValidatable, IEntity, IWithTimeStamp
+	public interface IDbFolder : IValidatable, IEntity
 	{
+		DateTime LastModifiedDate { get; set; }
+		int LastModifiedUserID { get; set; }
 		/// <summary>
 		/// Уникальный идентификатор
 		/// </summary>
