@@ -9,32 +9,32 @@ namespace Nephrite.Web.Html
 	{
 		public string GetString(string controlName)
 		{
-			return Form[controlName];
+			return FormValues[controlName];
 		}
 
 		public int? GetInt(string controlName)
 		{
-			return Form[controlName].ToInt32();
+			return FormValues[controlName].ToInt32();
 		}
 
 		public decimal? GetDecimal(string controlName)
 		{
-			return Form[controlName].ToDecimal();
+			return FormValues[controlName].ToDecimal();
 		}
 
 		public Guid? GetGuid(string controlName)
 		{
-			return Form[controlName].IsEmpty() ? (Guid?)null : Form[controlName].ToGuid();
+			return FormValues[controlName].IsEmpty() ? (Guid?)null : FormValues[controlName].ToGuid();
 		}
 
 		public DateTime? GetDateTime(string controlName)
 		{
-			return Form[controlName].ToDateTime();
+			return FormValues[controlName].ToDateTime();
 		}
 
 		public DateTime? GetDate(string controlName)
 		{
-			return Form[controlName].ToDate();
+			return FormValues[controlName].ToDate();
 		}
 	}
 }

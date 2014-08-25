@@ -9,13 +9,13 @@ namespace Nephrite.Web.Html
 	{
 		public HtmlPage Page { get; set; }
 
-		NameValueCollection _form = null;
-		public NameValueCollection Form
+		NameValueCollection _formValues = null;
+		public NameValueCollection FormValues
 		{
 			get
 			{
-				if (_form == null) _form = HttpContext.Current.Request.Form;
-				return _form;
+				if (_formValues == null) _formValues = HttpContext.Current.Request.Form;
+				return _formValues;
 			}
 		}
 
