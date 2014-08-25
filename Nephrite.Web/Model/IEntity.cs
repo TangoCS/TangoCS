@@ -20,6 +20,7 @@ namespace Nephrite.Web
 
 	public interface IWithKey<TKey> : IWithKey
 	{
+		//TKey ID { get; }
 	}
 
 	public interface IWithKey<T, TKey> : IWithKey<TKey> where T : IEntity

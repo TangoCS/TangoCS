@@ -144,7 +144,13 @@
     <Compile Include="FormsGenerator\SelectObjectCode.cs" />
     <Compile Include="FormsGenerator\UploadControlsCode.cs" />
     <Compile Include="FormsGenerator\ViewCode.cs" />
+    <Compile Include="Html\ComplexControls\BackButton.cs" />
+    <Compile Include="Html\ComplexControls\Calendar.cs" />
+    <Compile Include="Html\ComplexControls\CodeArea.cs" />
     <Compile Include="Html\HtmlControl.cs" />
+    <Compile Include="Html\HtmlControl.ParseForm.cs" />
+    <Compile Include="Html\HtmlControl.Select.cs" />
+    <Compile Include="Html\HtmlPage.cs" />
     <Compile Include="Html\TagAttributes.cs" />
     <Compile Include="Html\HtmlControl.Tags.cs" />
     <Compile Include="Html\TagBuilder.cs" />
@@ -520,6 +526,7 @@
     <Compile Include="Web\XMLSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Html\HtmlControl.Input.cs" />
     <None Include="Nephrite.Web.snk" />
     <Content Include="Controls\FileUpload.ascx" />
     <Content Include="Controls\FileUploadSimple.ascx" />

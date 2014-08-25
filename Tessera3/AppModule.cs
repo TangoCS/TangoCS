@@ -19,9 +19,10 @@ namespace Tessera3Sample
 			context.PostAuthenticateRequest += (o, e) =>
 			{
 				var r = context.Response;
-				r.Clear();
+				HtmlPage page = new HtmlPage();
 
 				HomePage p = new HomePage();
+				p.Page = page;
 				p.Render();
 
 				r.Write(p.ToString());

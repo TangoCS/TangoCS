@@ -179,9 +179,9 @@ namespace Nephrite.Web
 			src = src.Replace("%20", " ");
 			src = src.Replace("%3a", ":");
 			src = src.Replace("+", " ");
-			if (DateTime.TryParseExact(src, "d.MM.yyyy H:mm:ss", null, System.Globalization.DateTimeStyles.None, out dt))
+			if (DateTime.TryParseExact(src, "d.MM.yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out dt))
 				return dt;
-			if (DateTime.TryParseExact(src, "d.MM.yyyy H:mm", null, System.Globalization.DateTimeStyles.None, out dt))
+			if (DateTime.TryParseExact(src, "d.MM.yyyy HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out dt))
 				return dt;
 			return defaultValue;
 		}
@@ -192,9 +192,9 @@ namespace Nephrite.Web
 			src = src.Replace("%20", " ");
 			src = src.Replace("%3a", ":");
 			src = src.Replace("+", " ");
-			if (DateTime.TryParseExact(src, "d.MM.yyyy H:mm:ss", null, System.Globalization.DateTimeStyles.None, out dt))
+			if (DateTime.TryParseExact(src, "d.MM.yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out dt))
 				return dt;
-			if (DateTime.TryParseExact(src, "d.MM.yyyy H:mm", null, System.Globalization.DateTimeStyles.None, out dt))
+			if (DateTime.TryParseExact(src, "d.MM.yyyy HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out dt))
 				return dt;
 			return null;
 		}

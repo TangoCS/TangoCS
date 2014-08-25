@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace Nephrite.Web.Html
 {
@@ -113,6 +111,36 @@ namespace Nephrite.Web.Html
 		public int Width { set { _builder.MergeAttribute("width", value.ToString()); } }
 	}
 
+	public class InputTagAttributes : TagAttributes
+	{
+		public InputTagAttributes(TagBuilder builder) : base(builder) { }
+
+		public string Accept { set { _builder.MergeAttribute("accept", value); } }
+		public string Alt { set { _builder.MergeAttribute("alt", value); } }
+		public bool Autocomplete { set { _builder.MergeAttribute("autocomplete", value ? "on" : "off"); } }
+		public bool Autofocus { set { if (value) _builder.MergeAttribute("autofocus", "autofocus"); } }
+		public bool Checked { set { if (value) _builder.MergeAttribute("checked", "checked"); } }
+		public bool Disabled { set { if (value) _builder.MergeAttribute("disabled", "disabled"); } }
+		public string Formaction { set { _builder.MergeAttribute("formaction", value); } }
+		public string Formenctype { set { _builder.MergeAttribute("formenctype", value); } }
+		public Method Formmethod { set { _builder.MergeAttribute("formmethod", value.ToString().ToLower()); } }
+		public Target Formtarget { set { _builder.MergeAttribute("formtarget", value.ToString().ToLower()); } }
+		public int Height { set { _builder.MergeAttribute("height", value.ToString()); } }
+		public string Max { set { _builder.MergeAttribute("max", value); } }
+		public int Maxlength { set { _builder.MergeAttribute("maxlength", value.ToString()); } }
+		public string Min { set { _builder.MergeAttribute("min", value); } }
+		public bool Multiple { set { if (value) _builder.MergeAttribute("multiple", "multiple"); } }
+		public string Name { set { _builder.MergeAttribute("name", value); } }
+		public string Placeholder { set { _builder.MergeAttribute("placeholder", value); } }
+		public bool Readonly { set { if (value) _builder.MergeAttribute("readonly", "readonly"); } }
+		public int Size { set { _builder.MergeAttribute("size", value.ToString()); } }
+		public string Src { set { _builder.MergeAttribute("src", value); } }
+		public int Step { set { _builder.MergeAttribute("step", value.ToString()); } }
+		public Type Type { set { _builder.MergeAttribute("type", value.ToString().ToLower()); } }
+		public string Value { set { _builder.MergeAttribute("value", value); } }
+		public int Width { set { _builder.MergeAttribute("width", value.ToString()); } }
+	}
+
 	public class LabelTagAttributes : TagAttributes
 	{
 		public LabelTagAttributes(TagBuilder builder) : base(builder) { }
@@ -158,11 +186,32 @@ namespace Nephrite.Web.Html
 		public string Type { set { _builder.MergeAttribute("type", value); } }
 	}
 
+	public class OptionTagAttributes : TagAttributes
+	{
+		public OptionTagAttributes(TagBuilder builder) : base(builder) { }
+
+		public bool Disabled { set { if (value) _builder.MergeAttribute("disabled", "disabled"); } }
+		public string Label { set { _builder.MergeAttribute("label", value); } }
+		public bool Selected { set { if (value) _builder.MergeAttribute("selected", "selected"); } }
+		public string Value { set { _builder.MergeAttribute("value", value); } }
+	}
+
 	public class QTagAttributes : TagAttributes
 	{
 		public QTagAttributes(TagBuilder builder) : base(builder) { }
 
 		public string Cite { set { _builder.MergeAttribute("cite", value); } }
+	}
+
+	public class SelectTagAttributes : TagAttributes
+	{
+		public SelectTagAttributes(TagBuilder builder) : base(builder) { }
+
+		public bool Autofocus { set { if (value) _builder.MergeAttribute("autofocus", "autofocus"); } }
+		public bool Disabled { set { if (value) _builder.MergeAttribute("disabled", "disabled"); } }
+		public bool Multiple { set { if (value) _builder.MergeAttribute("multiple", "multiple"); } }
+		public string Name { set { _builder.MergeAttribute("name", value); } }
+		public int Size { set { _builder.MergeAttribute("size", value.ToString()); } }
 	}
 
 	public class TdTagAttributes : TagAttributes
@@ -172,6 +221,20 @@ namespace Nephrite.Web.Html
 		public int ColSpan { set { _builder.MergeAttribute("colspan", value.ToString()); } }
 		public string Headers { set { _builder.MergeAttribute("headers", value); } }
 		public int RowSpan { set { _builder.MergeAttribute("rowspan", value.ToString()); } }
+	}
+
+	public class TextAreaTagAttributes : TagAttributes
+	{
+		public TextAreaTagAttributes(TagBuilder builder) : base(builder) { }
+
+		public bool Autofocus { set { if (value) _builder.MergeAttribute("autofocus", "autofocus"); } }
+		public int Cols { set { _builder.MergeAttribute("cols", value.ToString()); } }
+		public bool Disabled { set { if (value) _builder.MergeAttribute("disabled", "disabled"); } }
+		public string Name { set { _builder.MergeAttribute("name", value); } }
+		public string Placeholder { set { _builder.MergeAttribute("placeholder", value); } }
+		public bool Readonly { set { if (value) _builder.MergeAttribute("readonly", "readonly"); } }
+		public int Rows { set { _builder.MergeAttribute("rows", value.ToString()); } }
+		public Wrap Wrap { set { _builder.MergeAttribute("wrap", value.ToString().ToLower()); } }
 	}
 
 	public class ThTagAttributes : TagAttributes
@@ -191,4 +254,6 @@ namespace Nephrite.Web.Html
 	public enum Target { _blank, _parent, _self, _top }
 	public enum Method { Get, Post }
 	public enum Scope { Col, ColGroup, Row, RowGroup }
+	public enum Type { Button, Checkbox, File, Hidden, Image, Number, Password, Radio, Range, Reset, Submit, Text }
+	public enum Wrap { Hard, Soft}
 }

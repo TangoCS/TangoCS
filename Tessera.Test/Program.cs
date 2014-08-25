@@ -51,6 +51,12 @@ namespace Tessera.Test
 			curRegNo++;
 		}
 
+		//public static List<CodifierValue> GetDict<T>(IQueryable<T> q) where T : IWithKey<T, dynamic>, IWithTitle
+		//{
+		//	return q.Select(o => new CodifierValue { Code = o.ID, Title = o.Title }).ToList();
+		//}
+
+
         private static void Main(string[] args)
         {
 			//A.DBScript = new DBScriptMSSQL("DBO");
@@ -61,7 +67,7 @@ namespace Tessera.Test
             A.DBType = DBType.DB2;
 			A.DBScript = new DBScriptDB2("DBO");
 
-			
+			//GetDict(App.DataContext.SPM_Subject);
 	
 			Listeners l = new Listeners();
 			var ael = new AuditEventListener();

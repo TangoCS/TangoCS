@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Web;
 
 namespace Nephrite.Web.Html
 {
@@ -53,18 +51,11 @@ namespace Nephrite.Web.Html
 			else
 				Write(tb);
 		}
-		public void Br(Action<TagAttributes> attributes = null, Action inner = null)
+		public void Br(Action<TagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("br");
 			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				Write(tb.Render(TagRenderMode.StartTag));
-				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
-			}
-			else
-				Write(tb);
+			Write(tb);
 		}
 		public void Canvas(Action<CanvasTagAttributes> attributes = null, Action inner = null)
 		{
@@ -79,18 +70,11 @@ namespace Nephrite.Web.Html
 			else
 				Write(tb);
 		}
-		public void Col(Action<ColTagAttributes> attributes = null, Action inner = null)
+		public void Col(Action<ColTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("col");
 			if (attributes != null) attributes(new ColTagAttributes(tb));
-			if (inner != null)
-			{
-				Write(tb.Render(TagRenderMode.StartTag));
-				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
-			}
-			else
-				Write(tb);
+			Write(tb);
 		}
 		public void Colgroup(Action<ColTagAttributes> attributes = null, Action inner = null)
 		{
@@ -313,18 +297,11 @@ namespace Nephrite.Web.Html
 			else
 				Write(tb);
 		}
-		public void Img(Action<ImgTagAttributes> attributes = null, Action inner = null)
+		public void Img(Action<ImgTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("body");
 			if (attributes != null) attributes(new ImgTagAttributes(tb));
-			if (inner != null)
-			{
-				Write(tb.Render(TagRenderMode.StartTag));
-				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
-			}
-			else
-				Write(tb);
+			Write(tb);
 		}
 		public void Label(Action<LabelTagAttributes> attributes = null, Action inner = null)
 		{
@@ -352,31 +329,17 @@ namespace Nephrite.Web.Html
 			else
 				Write(tb);
 		}
-		public void Link(Action<LinkTagAttributes> attributes = null, Action inner = null)
+		public void Link(Action<LinkTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("link");
 			if (attributes != null) attributes(new LinkTagAttributes(tb));
-			if (inner != null)
-			{
-				Write(tb.Render(TagRenderMode.StartTag));
-				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
-			}
-			else
-				Write(tb);
+			Write(tb);
 		}
-		public void Meta(Action<MetaTagAttributes> attributes = null, Action inner = null)
+		public void Meta(Action<MetaTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("meta");
 			if (attributes != null) attributes(new MetaTagAttributes(tb));
-			if (inner != null)
-			{
-				Write(tb.Render(TagRenderMode.StartTag));
-				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
-			}
-			else
-				Write(tb);
+			Write(tb);
 		}
 		public void Ol(Action<OlTagAttributes> attributes = null, Action inner = null)
 		{
@@ -617,9 +580,9 @@ namespace Nephrite.Web.Html
 		public void A(Action inner) { A(null, inner); }
 		public void B(Action inner) { B(null, inner); }
 		public void Body(Action inner) { Body(null, inner); }
-		public void Br(Action inner) { Br(null, inner); }
+		public void Br() { Br(null); }
 		public void Canvas(Action inner) { Canvas(null, inner); }
-		public void Col(Action inner) { Col(null, inner); }
+		public void Col() { Col(null); }
 		public void Colgroup(Action inner) { Colgroup(null, inner); }
 		public void Dd(Action inner) { Dd(null, inner); }
 		public void Div(Action inner) { Div(null, inner); }
@@ -637,11 +600,11 @@ namespace Nephrite.Web.Html
 		public void Head(Action inner) { Head(null, inner); }
 		public void Html(Action inner) { Html(null, inner); }
 		public void I(Action inner) { I(null, inner); }
-		public void Img(Action inner) { Img(null, inner); }
+		public void Img() { Img(null); }
 		public void Label(Action inner) { Label(null, inner); }
 		public void Li(Action inner) { Li(null, inner); }
 		public void Link(Action inner) { Li(null, inner); }
-		public void Meta(Action inner) { Meta(null, inner); }
+		public void Meta() { Meta(null); }
 		public void Ol(Action inner) { Ol(null, inner); }
 		public void P(Action inner) { P(null, inner); }
 		public void Pre(Action inner) { Pre(null, inner); }

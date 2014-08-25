@@ -49,15 +49,9 @@ namespace Nephrite.Web.FileStorage
 		Guid? ParentFolderID { get; set; }
 
 		/// <summary>
-		/// Дата и время последнего изменения
-		/// </summary>
-		DateTime LastModifiedDate { get; set; }
-
-		/// <summary>
 		/// Имя пользователя, сделавшего последние изменения
 		/// </summary>
 		string LastModifiedUserName { get; set; }
-		int LastModifiedUserID { get; set; }
 
 		/// <summary>
 		/// Получить родительскую папку
