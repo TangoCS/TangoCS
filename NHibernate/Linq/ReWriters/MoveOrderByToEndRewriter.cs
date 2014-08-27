@@ -11,8 +11,8 @@ namespace NHibernate.Linq.ReWriters
 	{
 		public static void ReWrite(QueryModel queryModel)
 		{
-			int len = queryModel.BodyClauses.Count;
-			for(int i=0; i<len; i++)
+			int len = queryModel.BodyClauses.Count-1;
+			for(int i=len; i>=0; i--)
 			{
 				if (queryModel.BodyClauses[i] is OrderByClause)
 				{
@@ -21,8 +21,8 @@ namespace NHibernate.Linq.ReWriters
 					IBodyClause clause = queryModel.BodyClauses[i];
 					queryModel.BodyClauses.RemoveAt(i);
 					queryModel.BodyClauses.Add(clause);
-					i--;
-					len--;
+					//i--;
+					//len--;
 				}
 			}
 		}
