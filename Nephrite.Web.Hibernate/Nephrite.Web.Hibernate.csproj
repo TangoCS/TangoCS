@@ -86,6 +86,7 @@
     <Compile Include="CoreMapping\MailerMapping.cs" />
     <Compile Include="CoreMapping\MetaStorageMapping.cs" />
     <Compile Include="CoreMapping\MultilanguageMapping.cs" />
+    <Compile Include="CoreMapping\ReplicationMapping.cs" />
     <Compile Include="CoreMapping\RSSMapping.cs" />
     <Compile Include="CoreMapping\SettingsManagerMapping.cs" />
     <Compile Include="CoreMapping\TaskManagerMapping.cs" />

@@ -102,11 +102,6 @@
     <Content Include="Home.aspx" />
     <Content Include="PrintList.aspx" />
     <Content Include="PrintReport.aspx" />
-    <Content Include="Replication.asmx" />
-    <None Include="Web References\ReplicationService\ObjectTransition.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
-    <None Include="Web References\ReplicationService\Replication.disco" />
     <Content Include="Web.aspx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
@@ -133,21 +128,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Replication.asmx.cs">
-      <DependentUpon>Replication.asmx</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Rss.aspx.cs">
       <DependentUpon>Rss.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Rss.aspx.designer.cs">
       <DependentUpon>Rss.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="Web References\ReplicationService\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.map</DependentUpon>
     </Compile>
     <Compile Include="_controltemplates\Tessera\Common\title.ascx.cs">
       <DependentUpon>title.ascx</DependentUpon>
@@ -185,30 +171,9 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <None Include="Tessera.snk" />
-    <None Include="Web References\ReplicationService\Reference.map">
-      <Generator>MSDiscoCodeGenerator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <None Include="Web References\ReplicationService\Replication.wsdl" />
-    <None Include="Web References\ReplicationService\ReplicationObject.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WebReferenceUrl Include="http://localhost:8011/Replication.asmx">
-      <UrlBehavior>Dynamic</UrlBehavior>
-      <RelPath>Web References\ReplicationService\</RelPath>
-      <UpdateFromURL>http://localhost:8011/Replication.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
-      <CachedSettingsPropName>Tessera_Web_ReplicationService_Replication</CachedSettingsPropName>
-    </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

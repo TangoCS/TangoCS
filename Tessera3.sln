@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nephrite.Web.Hibernate", "N
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tessera3", "Tessera3\Tessera3.csproj", "{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nephrite.Meta.Database.PostgreSQL", "Nephrite.Meta.Database.PostgreSQL\Nephrite.Meta.Database.PostgreSQL.csproj", "{2B3754DC-5507-4046-A135-BCED1C161ACF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -136,6 +138,16 @@ Global
 		{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}.Release|x86.ActiveCfg = Release|Any CPU
+		{2B3754DC-5507-4046-A135-BCED1C161ACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B3754DC-5507-4046-A135-BCED1C161ACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B3754DC-5507-4046-A135-BCED1C161ACF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{2B3754DC-5507-4046-A135-BCED1C161ACF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{2B3754DC-5507-4046-A135-BCED1C161ACF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{2B3754DC-5507-4046-A135-BCED1C161ACF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B3754DC-5507-4046-A135-BCED1C161ACF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B3754DC-5507-4046-A135-BCED1C161ACF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{2B3754DC-5507-4046-A135-BCED1C161ACF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{2B3754DC-5507-4046-A135-BCED1C161ACF}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

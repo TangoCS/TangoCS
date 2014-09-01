@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Nephrite.Web
 {
-    public interface IMMObjectVersion : IModelObject
+    public interface IMMObjectVersion : IModelObject, IWithTimeStamp
     {
         int VersionID { get; }
 		Guid VersionGUID { get; }

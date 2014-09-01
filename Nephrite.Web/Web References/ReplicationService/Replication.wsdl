@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<wsdl:definitions xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://nephritetech.com/tessera/integration/1.0" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://nephritetech.com/tessera/integration/1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://nephritetech.com/tessera/integration/1.0" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://nephritetech.com/tessera/integration/1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="http://nephritetech.com/tessera/integration/1.0">
       <s:import namespace="http://microsoft.com/wsdl/types/" />
@@ -128,7 +128,7 @@
       <s:complexType name="ReplicationObject">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="1" name="ObjectType" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="ObjectID" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ObjectID" type="s:int" />
           <s:element minOccurs="1" maxOccurs="1" name="Ticks" type="s:long" />
         </s:sequence>
       </s:complexType>
@@ -136,7 +136,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="objectType" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="id" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="id" type="s:int" />
             <s:element minOccurs="1" maxOccurs="1" name="ticks" type="s:long" />
           </s:sequence>
         </s:complexType>
@@ -190,39 +190,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="GetObjectTransitions">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="objectType" type="s:string" />
-            <s:element minOccurs="0" maxOccurs="1" name="id" type="s:string" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="GetObjectTransitionsResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="GetObjectTransitionsResult" type="tns:ArrayOfObjectTransition" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:complexType name="ArrayOfObjectTransition">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="ObjectTransition" nillable="true" type="tns:ObjectTransition" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="ObjectTransition">
-        <s:sequence>
-          <s:element minOccurs="1" maxOccurs="1" name="CreateDate" type="s:dateTime" />
-          <s:element minOccurs="0" maxOccurs="1" name="Comment" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="IsCurrent" type="s:boolean" />
-          <s:element minOccurs="1" maxOccurs="1" name="IsLast" type="s:boolean" />
-          <s:element minOccurs="1" maxOccurs="1" name="SeqNo" type="s:int" />
-          <s:element minOccurs="0" maxOccurs="1" name="WorkflowSysName" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="ActivitySysName" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="PrevActivitySysName" type="s:string" />
-          <s:element minOccurs="1" maxOccurs="1" name="ObjectTransitionID" type="s:int" />
-        </s:sequence>
-      </s:complexType>
       <s:element name="RunTasks">
         <s:complexType />
       </s:element>
@@ -337,15 +304,6 @@
   <wsdl:message name="GetObjectsListUserCredentials">
     <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
   </wsdl:message>
-  <wsdl:message name="GetObjectTransitionsSoapIn">
-    <wsdl:part name="parameters" element="tns:GetObjectTransitions" />
-  </wsdl:message>
-  <wsdl:message name="GetObjectTransitionsSoapOut">
-    <wsdl:part name="parameters" element="tns:GetObjectTransitionsResponse" />
-  </wsdl:message>
-  <wsdl:message name="GetObjectTransitionsUserCredentials">
-    <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
-  </wsdl:message>
   <wsdl:message name="RunTasksSoapIn">
     <wsdl:part name="parameters" element="tns:RunTasks" />
   </wsdl:message>
@@ -399,10 +357,6 @@
     <wsdl:operation name="GetObjectsList">
       <wsdl:input message="tns:GetObjectsListSoapIn" />
       <wsdl:output message="tns:GetObjectsListSoapOut" />
-    </wsdl:operation>
-    <wsdl:operation name="GetObjectTransitions">
-      <wsdl:input message="tns:GetObjectTransitionsSoapIn" />
-      <wsdl:output message="tns:GetObjectTransitionsSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="RunTasks">
       <wsdl:input message="tns:RunTasksSoapIn" />
@@ -516,16 +470,6 @@
       <wsdl:input>
         <soap:body use="literal" />
         <soap:header message="tns:GetObjectsListUserCredentials" part="UserCredentials" use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="GetObjectTransitions">
-      <soap:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetObjectTransitions" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-        <soap:header message="tns:GetObjectTransitionsUserCredentials" part="UserCredentials" use="literal" />
       </wsdl:input>
       <wsdl:output>
         <soap:body use="literal" />
@@ -654,16 +598,6 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="GetObjectTransitions">
-      <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetObjectTransitions" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-        <soap12:header message="tns:GetObjectTransitionsUserCredentials" part="UserCredentials" use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
     <wsdl:operation name="RunTasks">
       <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/RunTasks" style="document" />
       <wsdl:input>
@@ -677,10 +611,10 @@
   </wsdl:binding>
   <wsdl:service name="Replication">
     <wsdl:port name="Replication" binding="tns:Replication">
-      <soap:address location="http://localhost:8011/Replication.asmx" />
+      <soap:address location="http://localhost:51278/Replication/Replication.asmx" />
     </wsdl:port>
     <wsdl:port name="Replication1" binding="tns:Replication1">
-      <soap12:address location="http://localhost:8011/Replication.asmx" />
+      <soap12:address location="http://localhost:51278/Replication/Replication.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>

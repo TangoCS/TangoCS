@@ -166,7 +166,7 @@ namespace Nephrite.Web.Controls
 
 		public T GetObject<T>() where T : IModelObject
 		{
-			object empty = Activator.CreateInstance(Type);
+			T empty = default(T);
 			if (hfObjectID.Value.ToInt32(0) > 0)
 				return AllObjects.Cast<T>().SingleOrDefault(empty.FindByID<T>(hfObjectID.Value.ToInt32(0)));
 			if (hfObjectID.Value.ToGuid() != Guid.Empty)

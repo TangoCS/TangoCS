@@ -116,12 +116,21 @@
     <Content Include="ExternalDll\DotNetOpenAuth.dll" />
     <Content Include="js\knockout-2.2.1.js" />
     <Content Include="js\modalwindow.js" />
+    <Content Include="Replication\Replication.asmx" />
     <Content Include="View\Message\show.ascx" />
     <Content Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </Content>
+    <Content Include="Web References\ReplicationService\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </Content>
+    <Content Include="Web References\ReplicationService\Replication.disco" />
     <Content Include="Web.config" />
+    <Content Include="Web References\ReplicationService\ReplicationObject.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
@@ -186,6 +195,10 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="Replication\Replication.asmx.cs">
+      <DependentUpon>Replication.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="RussianStrings\Prop.cs" />
     <Compile Include="RussianStrings\RussianDate.cs" />
     <Compile Include="RussianStrings\RussianNumber.cs">
@@ -195,6 +208,11 @@
     <Compile Include="SPM2\Scripts\SPM2ScriptDB2.cs" />
     <Compile Include="SPM2\Scripts\SPM2ScriptMSSQL.cs" />
     <Compile Include="SPM2\Scripts\SPM2Scripts.cs" />
+    <Compile Include="Web References\ReplicationService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
     <Compile Include="Web\CustomControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -552,6 +570,7 @@
     <Content Include="View\TinyMCEFileManager\list.ascx" />
     <Content Include="View\TinyMCEFileManager\upload.ascx" />
     <Content Include="packages.config" />
+    <Content Include="Web References\ReplicationService\Replication.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -579,6 +598,19 @@
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="http://localhost:51278/Replication/Replication.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\ReplicationService\</RelPath>
+      <UpdateFromURL>http://localhost:51278/Replication/Replication.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>Nephrite_Web_ReplicationService_Replication</CachedSettingsPropName>
+    </WebReferenceUrl>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

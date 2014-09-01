@@ -24,7 +24,7 @@ namespace Nephrite.Web
         string ns;
         string defaultLanguage = "ru";
 
-         public Repository()
+        public Repository()
         {
             if (String.IsNullOrEmpty(ConfigurationManager.AppSettings["ModelAssembly"]))
             {

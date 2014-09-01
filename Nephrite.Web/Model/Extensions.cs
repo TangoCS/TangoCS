@@ -22,20 +22,21 @@ using System.Globalization;
 using System.Collections;
 using Nephrite.Web.SettingsManager;
 using Nephrite.Web.Multilanguage;
+using Nephrite.Meta;
 
 namespace Nephrite.Web
 {
     public static partial class ModelExtensions
     {
        
-        public static string LastModifiedDateString(this ILastModifiedDate obj)
+        public static string LastModifiedDateString(this IWithTimeStamp obj)
         {
             if (((IModelObject)obj).ObjectID > 0)
                 return obj.LastModifiedDate.ToString("dd.MM.yyyy HH:mm");
             return String.Empty;
         }
 
-        public static Expression<Func<T, bool>> FindByID<T>(this Object obj, int id)
+        public static Expression<Func<T, bool>> FindByID<T>(this T obj, int id)
         {
             // Найти свойство с первичным ключом
             foreach (PropertyInfo pi in obj.GetType().GetProperties())
@@ -58,7 +59,7 @@ namespace Nephrite.Web
             throw new Exception("В классе " + obj.GetType().FullName + " не определён первичный ключ");
         }
 
-		public static Expression<Func<T, bool>> FindByID<T>(this Object obj, object id)
+		public static Expression<Func<T, bool>> FindByID<T>(this T obj, object id)
 		{
 			// Найти свойство с первичным ключом
 			foreach (PropertyInfo pi in obj.GetType().GetProperties())
@@ -115,7 +116,7 @@ namespace Nephrite.Web
 			throw new Exception("В классе " + t.FullName + " не найдено свойство " + propertyName);
 		}
 
-		public static Expression<Func<T, bool>> FindByIDs<T>(this Object obj, IEnumerable<int> collection)
+		public static Expression<Func<T, bool>> FindByIDs<T>(this T obj, IEnumerable<int> collection)
 		{
 			// Найти свойство с первичным ключом
 			foreach (PropertyInfo pi in obj.GetType().GetProperties())
@@ -138,7 +139,7 @@ namespace Nephrite.Web
 			throw new Exception("В классе " + obj.GetType().FullName + " не определён первичный ключ");
 		}
 
-		public static Expression<Func<T, bool>> FindByGUID<T>(this Object obj, Guid guid)
+		public static Expression<Func<T, bool>> FindByGUID<T>(this T obj, Guid guid)
 		{
 			// Найти свойство с первичным ключом
 			foreach (PropertyInfo pi in obj.GetType().GetProperties())
@@ -161,7 +162,7 @@ namespace Nephrite.Web
 			throw new Exception("В классе " + obj.GetType().FullName + " не определён первичный ключ");
 		}
 
-		public static Expression<Func<T, bool>> NotID<T>(this Object obj, int id)
+		public static Expression<Func<T, bool>> NotID<T>(this T obj, int id)
 		{
 			// Найти свойство с первичным ключом
 			foreach (PropertyInfo pi in obj.GetType().GetProperties())
@@ -197,6 +198,35 @@ namespace Nephrite.Web
                     obj.SeqNo = sequenceContext.Max(o => o.SeqNo) + 1;*/
             }
         }
+
+		public static Expression<Func<IMMObjectVersion, object>> GetIdentifierSelector(this IMMObjectVersion obj)
+		{
+			ParameterExpression pe_c = ParameterExpression.Parameter(typeof(IMMObjectVersion), "c");
+			// Преобразование IMMObject к нужному нам реальному типу объекта
+			UnaryExpression ue_c = UnaryExpression.Convert(pe_c, obj.GetType());
+			// Получение у объекта свойства с именем, соответствующим первичному ключу
+			string pkname = obj.MetaClass.Key.ColumnName;
+			if (pkname.EndsWith("GUID"))
+				pkname = pkname.Substring(0, pkname.Length - 4);
+			else if (pkname.EndsWith("ID"))
+				pkname = pkname.Substring(0, pkname.Length - 2);
+			pkname += "Version" + (obj.MetaClass.Key.Type is MetaGuidType ? "GUID" : "ID");
+			MemberExpression me_id = MemberExpression.Property(ue_c, pkname);
+			UnaryExpression ue_c1 = UnaryExpression.Convert(me_id, typeof(object));
+			return Expression.Lambda<Func<IMMObjectVersion, object>>(ue_c1, pe_c);
+		}
+
+		public static Expression<Func<IModelObject, object>> GetIdentifierSelector(this IModelObject obj)
+		{
+			ParameterExpression pe_c = ParameterExpression.Parameter(typeof(IModelObject), "c");
+			// Преобразование IMMObject к нужному нам реальному типу объекта
+			UnaryExpression ue_c = UnaryExpression.Convert(pe_c, obj.GetType());
+			// Получение у объекта свойства с именем, соответствующим первичному ключу
+			MemberExpression me_id = MemberExpression.Property(ue_c, obj.MetaClass.Key.ColumnName);
+			UnaryExpression ue_c1 = UnaryExpression.Convert(me_id, typeof(object));
+			return Expression.Lambda<Func<IModelObject, object>>(ue_c1, pe_c);
+		}
+
 
     }
 }

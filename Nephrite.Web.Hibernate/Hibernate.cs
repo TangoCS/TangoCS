@@ -198,9 +198,11 @@ namespace Nephrite.Web.Hibernate
 				BeforeSaveActions.Clear();
 				AfterSaveActions.Clear();
 
-				_session.Close();
-				_session.Dispose();
-				_session = null;
+				//_session.Clear();
+				//_session = SessionFactory.OpenSession();
+				//_session.FlushMode = FlushMode.Commit;
+				//_session.Close();
+				//_session.Dispose();
 			}
 		}
 

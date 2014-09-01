@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Services;
-using Nephrite.Metamodel;
-using Nephrite.Metamodel.Model;
-using Nephrite.Web;
 using System.Xml.Linq;
 using System.Configuration;
 using System.EnterpriseServices;
@@ -14,13 +11,24 @@ using System.Web.Services.Protocols;
 using System.Linq.Expressions;
 using Nephrite.Web.SPM;
 using Nephrite.Web.FileStorage;
-using System.Data.SqlClient;
 using Nephrite.Meta;
 using Nephrite.Web.ErrorLog;
 using Nephrite.Web.SettingsManager;
 
-namespace Tessera
+namespace Nephrite.Web.Replication
 {
+	public interface IN_ReplicationObject : IEntity
+	{
+		string ObjectTypeSysName { get; set; }
+		int ObjectID { get; set; }
+		DateTime ChangeDate { get; set; }
+	}
+
+	public interface IDC_Replication
+	{
+		IQueryable<IN_ReplicationObject> IN_ReplicationObject { get; } 
+	}
+
     /// <summary>
     /// Summary description for Replication
     /// </summary>
@@ -40,24 +48,23 @@ namespace Tessera
 		public UserCredentials user;
 
         Repository r = new Repository();
-        Tessera.ReplicationService.Replication svc;
-        
-        Tessera.ReplicationService.Replication ReplicationSourceServer
-        {
-            get
-            {
-                if (svc == null)
-                {
-                    svc = new Tessera.ReplicationService.Replication();
-                    svc.Url = ConfigurationManager.AppSettings["ReplicationSourceUrl"];
-                    svc.AllowAutoRedirect = true;
-                    svc.UseDefaultCredentials = true;
-                    svc.PreAuthenticate = true;
-					svc.UserCredentialsValue = new Tessera.ReplicationService.UserCredentials { Login = user.Login, Password = user.Password };
-                }
-                return svc;
-            }
-        }
+		ReplicationService.Replication svc;
+		ReplicationService.Replication ReplicationSourceServer
+		{
+			get
+			{
+				if (svc == null)
+				{
+					svc = new ReplicationService.Replication();
+					svc.Url = ConfigurationManager.AppSettings["ReplicationSourceUrl"];
+					svc.AllowAutoRedirect = true;
+					svc.UseDefaultCredentials = true;
+					svc.PreAuthenticate = true;
+					svc.UserCredentialsValue = new ReplicationService.UserCredentials { Login = user.Login, Password = user.Password };
+				}
+				return svc;
+			}
+		}
 		
 		void CheckCredentials()
 		{
@@ -171,7 +178,7 @@ namespace Tessera
 		public ReplicationObject[] GetReplicationObjects(int maxCount)
         {
 			CheckCredentials();
-			var nr = AppMM.DataContext.N_ReplicationObjects.OrderBy(o => o.ChangeDate).Take(maxCount);
+			var nr = (A.Model as IDC_Replication).IN_ReplicationObject.OrderBy(o => o.ChangeDate).Take(maxCount);
             return nr.Select(o => new ReplicationObject
             {
                 ObjectID = o.ObjectID,
@@ -187,12 +194,13 @@ namespace Tessera
         {
 			CheckCredentials();
 			DateTime dt = new DateTime(ticks);
-            var nr = AppMM.DataContext.N_ReplicationObjects.SingleOrDefault(o => o.ObjectTypeSysName == objectType &&
+			var dc = (A.Model as IDC_Replication);
+            var nr = dc.IN_ReplicationObject.SingleOrDefault(o => o.ObjectTypeSysName == objectType &&
                 o.ObjectID == id && o.ChangeDate == dt);
             if (nr != null)
             {
-                AppMM.DataContext.N_ReplicationObjects.DeleteOnSubmit(nr);
-                AppMM.DataContext.SubmitChanges();
+                dc.IN_ReplicationObject.DeleteOnSubmit(nr);
+                A.Model.SubmitChanges();
             }
         }
 
@@ -279,7 +287,7 @@ namespace Tessera
 					}
 				}
 			}
-			var exp = m.Invoke(controller, plist) as Expression<Func<IMMObject, bool>>;
+			var exp = m.Invoke(controller, plist) as Expression<Func<IModelObject, bool>>;
 			return r.GetList(ot).Where(exp).Select(instance.GetIdentifierSelector()).Select(o => o.ToString()).ToArray();
 		}
 
@@ -454,20 +462,9 @@ namespace Tessera
 							file.CheckValid();
 							A.Model.SubmitChanges();
                         }
-						var cmd = ConnectionManager.Connection.CreateCommand();
-						cmd.CommandText = "select FileID from N_File where Guid = @Guid";
-						cmd.CommandType = System.Data.CommandType.Text;
-						cmd.Parameters.Add(new SqlParameter("@Guid", file.ID));
-						if (cmd.Connection.State != System.Data.ConnectionState.Open)
-							cmd.Connection.Open();
-						try
-						{
-							xe.SetElementValue(fileProp.Name, cmd.ExecuteScalar());
-						}
-						finally
-						{
-							cmd.Connection.Close();
-						}
+
+						var fid = A.Model.ExecuteQuery<int>("select FileID from N_File where Guid = ?", file.ID);
+						xe.SetElementValue(fileProp.Name, fid);						
                     }
                 }
             }

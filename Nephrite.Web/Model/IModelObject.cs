@@ -26,24 +26,24 @@ namespace Nephrite.Web
 	//	Expression<Func<T, bool>> FilterByParentGUID<T>(Guid guid) where T : IModelObject;
 	//}
 
-	public interface IActiveFlag
-	{
-		bool IsActive { get; set; }
-	}
+	//public interface IActiveFlag
+	//{
+	//	bool IsActive { get; set; }
+	//}
 
-    public interface IDeletedFlag
-    {
-        bool IsDeleted { get; set; }
-    }
+	//public interface IDeletedFlag
+	//{
+	//	bool IsDeleted { get; set; }
+	//}
 
-    public interface ILastModifiedDate
-    {
-        DateTime LastModifiedDate { get; set; }
-    }
+	//public interface ILastModifiedDate
+	//{
+	//	DateTime LastModifiedDate { get; set; }
+	//}
 
-	public interface ILastModifiedStamp
-	{
-		DateTime? LastModifiedDate { get; set; }
-		string LastModifiedUser { get; set; }
-	}
+	//public interface ILastModifiedStamp
+	//{
+	//	DateTime? LastModifiedDate { get; set; }
+	//	string LastModifiedUser { get; set; }
+	//}
 }

@@ -83,7 +83,10 @@ namespace Tessera.Test
 			A.Model.ExecuteCommand("SET SCHEMA = 'DBO';");
 
 
-			AppSettings.Set("theme", "CENTRLAD");
+			//AppSettings.Set("theme", "CENTRLAD");
+
+			var l44 = App.DataContext.SPM_Subject.ToList();
+			var l45 = App.DataContext.SPM_Subject.OrderBy(o => o.Title).ToList();
 			//var l23 = (A.Model as IDC_FileStorage).IDbFolder.First();
 			//var l22 = (A.Model as IDC_Settings).IN_Settings.First();
 			
@@ -138,7 +141,7 @@ namespace Tessera.Test
 
             //var r = dc.IMailMessage.Where(o => o.LastSendAttemptDate.HasValue && (o.LastSendAttemptDate - DateTime.Today) > new TimeSpan(o.AttemptsToSendCount, 0, 0, 0)).Select(o => o.MailMessageID).ToList();
 
-            //Console.WriteLine(App.DataContext.Log.ToString());
+            Console.WriteLine(App.DataContext.Log.ToString());
             Console.WriteLine(A.Model.Log.ToString());
             Console.ReadKey();
         }
