@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.UI;
 using System.Globalization;
 using Nephrite.Web.Layout;
+using System.Data;
 
 namespace Nephrite.Web.Reporting
 {
@@ -46,9 +47,9 @@ namespace Nephrite.Web.Reporting
 							query += ", ";
 						query += AggregateColumns[i].Selector + " as AC" + i.ToString();
 					}
-					var cmd = A.Model.GetCommand(DataSource);
-					query += cmd.CommandText.Substring(cmd.CommandText.IndexOf("\nFROM "));
-					query = query.Substring(0, query.LastIndexOf("\nORDER BY "));
+					var cmd = A.Model.GetCommandWithParameters(DataSource);
+					query += cmd.CommandText.Substring(cmd.CommandText.ToUpper().IndexOf(" FROM "));
+					query = query.Substring(0, query.ToUpper().LastIndexOf(" ORDER BY "));
 					if (!groupings.IsEmpty())
 					{
 						query += " GROUP BY " + groupings;
@@ -84,8 +85,12 @@ namespace Nephrite.Web.Reporting
 					Sql = cmd.CommandText;
 					var list = new List<ReportItem>();
 					Data.Add(list);
-
-					cmd.Connection.Open();
+					foreach(var sss in cmd.Parameters)
+					{
+					}
+					
+					var state = cmd.Connection.State;
+					if (state != ConnectionState.Open) cmd.Connection.Open();
 					try
 					{
 						using (var dr = cmd.ExecuteReader())
@@ -108,7 +113,7 @@ namespace Nephrite.Web.Reporting
 					}
 					finally
 					{
-						cmd.Connection.Close();
+						if (state != ConnectionState.Open) cmd.Connection.Close();
 					}
 				}
 			}

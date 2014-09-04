@@ -318,6 +318,29 @@ namespace Nephrite.Web.Hibernate
 			return command;
 		}
 
+		public IDbCommand GetCommandWithParameters(IQueryable query)
+		{
+			var sessionImp = (ISessionImplementor)Session;
+			var nhLinqExpression = new NhLinqExpression(query.Expression, sessionImp.Factory);
+			var translatorFactory = new ASTQueryTranslatorFactory();
+			var translators = translatorFactory.CreateQueryTranslators(nhLinqExpression, null, false, sessionImp.EnabledFilters, sessionImp.Factory);
+
+			string sql = translators[0].SQLString;
+
+			var command = Session.Connection.CreateCommand();
+			command.CommandText = sql;
+			foreach (var key in nhLinqExpression.ParameterValuesByName.Keys)
+			{
+				var param = nhLinqExpression.ParameterValuesByName[key];
+				var p = command.CreateParameter();
+				p.ParameterName = key;
+				p.Value = param.Item1;
+				command.Parameters.Add(p);
+			}
+
+			return command;
+		}
+
 		public IQueryable<T> GetTable<T>() //where T : class
 		{
 			return Session.Query<T>();

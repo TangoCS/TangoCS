@@ -20,6 +20,7 @@ namespace Nephrite.Web
 		IEnumerable<TResult> ExecuteQuery<TResult>(string query, params object[] parameters);
 		//IEnumerable ExecuteQuery(Type elementType, string query, params object[] parameters);
 		IDbCommand GetCommand(IQueryable query);
+		IDbCommand GetCommandWithParameters(IQueryable query);
 		IQueryable<T> GetTable<T>();
 		ITable GetTable(Type t);
 		T Get<T, TKey>(TKey id);
