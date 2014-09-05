@@ -85,9 +85,6 @@ namespace Nephrite.Web.Reporting
 					Sql = cmd.CommandText;
 					var list = new List<ReportItem>();
 					Data.Add(list);
-					foreach(var sss in cmd.Parameters)
-					{
-					}
 					
 					var state = cmd.Connection.State;
 					if (state != ConnectionState.Open) cmd.Connection.Open();

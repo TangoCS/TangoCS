@@ -27,6 +27,7 @@ using System.Reflection;
 using Nephrite.Web.SettingsManager;
 using Nhibernate.Extensions;
 using Nephrite.Web.SPM;
+using NHibernate.Impl;
 
 
 
@@ -326,9 +327,20 @@ namespace Nephrite.Web.Hibernate
 			var translators = translatorFactory.CreateQueryTranslators(nhLinqExpression, null, false, sessionImp.EnabledFilters, sessionImp.Factory);
 
 			string sql = translators[0].SQLString;
-
 			var command = Session.Connection.CreateCommand();
-			command.CommandText = sql;
+
+			foreach (FilterImpl filter in sessionImp.EnabledFilters.Values)
+			{
+				foreach (var param in filter.Parameters)
+				{
+					sql = sql.Replace(":" + filter.Name + "." + param.Key, "?"); 
+					
+					var p = command.CreateParameter();
+					p.ParameterName = param.Key;
+					p.Value = param.Value;
+					command.Parameters.Add(p);
+				}
+			}
 			foreach (var key in nhLinqExpression.ParameterValuesByName.Keys)
 			{
 				var param = nhLinqExpression.ParameterValuesByName[key];
@@ -337,6 +349,7 @@ namespace Nephrite.Web.Hibernate
 				p.Value = param.Item1;
 				command.Parameters.Add(p);
 			}
+			command.CommandText = sql;
 
 			return command;
 		}
