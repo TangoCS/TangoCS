@@ -64,11 +64,9 @@ namespace Nephrite.Meta.Fluent
 	public class OperationBuilder
 	{
 		MetaOperation _op;
-		MetaClass _cls;
 
-		public OperationBuilder(MetaClass cls, MetaOperation op)
+		public OperationBuilder(MetaOperation op)
 		{
-			_cls = cls;
 			_op = op;
 		}
 
@@ -97,12 +95,6 @@ namespace Nephrite.Meta.Fluent
 			return this;
 		}
 
-		public OperationBuilder Default()
-		{
-			_cls.DefaultOperation = _op;
-			return this;
-		}
-
 		public OperationBuilder InvokesView(string viewClass, string viewName)
 		{
 			_op.ViewClass = viewClass;
@@ -112,7 +104,7 @@ namespace Nephrite.Meta.Fluent
 
 		public OperationBuilder InvokesSingleObjectView(string viewName)
 		{
-			_op.ViewClass = "ViewControl{0}";
+			_op.ViewClass = "ViewControl<{0}>";
 			_op.ViewName = viewName;
 			return this;
 		}
@@ -223,7 +215,7 @@ namespace Nephrite.Meta.Fluent
 		public static MetaClass OperationCreateNew(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "CreateNew", Caption = "Создать" };
-			var ob = new OperationBuilder(cls, o);
+			var ob = new OperationBuilder(o);
 
 			ob.Image("create").InvokesSingleObjectView("edit");
 			if (attributes != null) attributes(ob);
@@ -238,13 +230,13 @@ namespace Nephrite.Meta.Fluent
 		public static MetaClass OperationEdit(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "Edit", Caption = "Редактировать" };
-			var ob = new OperationBuilder(cls, o);
+			var ob = new OperationBuilder(o);
 
 			ob.Image("edit").InvokesSingleObjectView("edit");
 			if (attributes != null) attributes(ob);
 
 			if (o.Parameters.Count == 0)
-				ob.ParmInt("id").ParmString("returnurl");
+				ob.Parm(cls.Key.Type as IMetaParameterType, "id").ParmString("returnurl");
 
 			cls.AddOperation(o);
 			return cls;
@@ -253,7 +245,7 @@ namespace Nephrite.Meta.Fluent
 		public static MetaClass OperationList(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "ViewList", Caption = "Список" };
-			var ob = new OperationBuilder(cls, o);
+			var ob = new OperationBuilder(o);
 
 			ob.Image("list").InvokesObjectListView("list");
 			if (attributes != null) attributes(ob);
@@ -265,13 +257,13 @@ namespace Nephrite.Meta.Fluent
 		public static MetaClass OperationView(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "View", Caption = "Свойства" };
-			var ob = new OperationBuilder(cls, o);
+			var ob = new OperationBuilder(o);
 
 			ob.Image("view").InvokesSingleObjectView("view");
 			if (attributes != null) attributes(ob);
 
 			if (o.Parameters.Count == 0)
-				ob.ParmInt("id").ParmString("returnurl");
+				ob.Parm(cls.Key.Type as IMetaParameterType, "id").ParmString("returnurl");
 
 			cls.AddOperation(o);
 			return cls;
@@ -280,13 +272,13 @@ namespace Nephrite.Meta.Fluent
 		public static MetaClass OperationDelete(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "Delete", Caption = "Удалить" };
-			var ob = new OperationBuilder(cls, o);
+			var ob = new OperationBuilder(o);
 
 			ob.Image("delete").InvokesSingleObjectView("delete");
 			if (attributes != null) attributes(ob);
 
 			if (o.Parameters.Count == 0)
-				ob.ParmInt("id").ParmString("returnurl");
+				ob.Parm(cls.Key.Type as IMetaParameterType, "id").ParmString("returnurl");
 
 			cls.AddOperation(o);
 			return cls;
@@ -295,13 +287,13 @@ namespace Nephrite.Meta.Fluent
 		public static MetaClass OperationUnDelete(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "UnDelete", Caption = "Отменить удаление" };
-			var ob = new OperationBuilder(cls, o);
+			var ob = new OperationBuilder(o);
 
 			ob.Image("undelete").InvokesSingleObjectView("undelete");
 			if (attributes != null) attributes(ob);
 
 			if (o.Parameters.Count == 0)
-				ob.ParmInt("id").ParmString("returnurl");
+				ob.Parm(cls.Key.Type as IMetaParameterType, "id").ParmString("returnurl");
 
 			cls.AddOperation(o);
 			return cls;
@@ -310,9 +302,17 @@ namespace Nephrite.Meta.Fluent
 		public static MetaClass Operation(this MetaClass cls, string name, string caption, Action<OperationBuilder> attributes = null)
 		{
 			var op = new MetaOperation { Name = name, Caption = caption };
-			if (attributes != null) attributes(new OperationBuilder(cls, op));
+			if (attributes != null) attributes(new OperationBuilder(op));
 			cls.AddOperation(op);
 			return cls;
+		}
+
+		public static MetaPackage Operation(this MetaPackage pck, string name, string caption, Action<OperationBuilder> attributes = null)
+		{
+			var op = new MetaOperation { Name = name, Caption = caption };
+			if (attributes != null) attributes(new OperationBuilder(op));
+			pck.AddOperation(op);
+			return pck;
 		}
 
 		public static MetaClass Workflow(this MetaClass cls)

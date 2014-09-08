@@ -11,7 +11,7 @@ namespace Nephrite.Web.Controls
         {
             get
             {
-                return "SELECT t0.\"Title\", t0.\"Url\" , t0.\"Type\" AS \"MenuItemType\", t0.\"ImageUrl\" , " +
+                return "SELECT t0.\"Title\", t0.\"URL\" , t0.\"Type\" AS \"MenuItemType\", t0.\"ImageURL\" , " +
                             "	(CASE" +
                             "		WHEN t2.test IS NOT NULL THEN cast(t6.SysName as varchar(32000))" +
                             "		WHEN t4.test IS NOT NULL THEN t7.SysName || 'Pck'" +

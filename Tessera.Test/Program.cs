@@ -63,9 +63,9 @@ namespace Tessera.Test
 			//ConnectionManager.SetConnectionString("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=Servants;Data Source=(local)");
 			//HDataContext.DBType = DBType.MSSQL;
 
-            ConnectionManager.SetConnectionString("Database=SRVNTS;UserID=dbo;Password=123*(iop;Server=176.227.213.5:50000");
-            A.DBType = DBType.DB2;
-			A.DBScript = new DBScriptDB2("DBO");
+            //ConnectionManager.SetConnectionString("Database=SRVNTS;UserID=dbo;Password=123*(iop;Server=176.227.213.5:50000");
+            //A.DBType = DBType.DB2;
+			//A.DBScript = new DBScriptDB2("DBO");
 
 			//GetDict(App.DataContext.SPM_Subject);
 	
@@ -78,18 +78,13 @@ namespace Tessera.Test
 			//l.PostInsertEventListeners.Add(ael);
 			//l.PostUpdateEventListeners.Add(ael);
 
-			var dc1 = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), l);
-			A.Model = dc1;
-			A.Model.ExecuteCommand("SET SCHEMA = 'DBO';");
+			//var dc1 = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), l);
+			//A.Model = dc1;
+			//A.Model.ExecuteCommand("SET SCHEMA = 'DBO';");
 
-
-			//AppSettings.Set("theme", "CENTRLAD");
-
-			var l44 = App.DataContext.SPM_Subject.ToList();
-			var l45 = App.DataContext.SPM_Subject.OrderBy(o => o.Title).ToList();
-			//var l23 = (A.Model as IDC_FileStorage).IDbFolder.First();
-			//var l22 = (A.Model as IDC_Settings).IN_Settings.First();
-			
+			ModelFactory m = new ModelFactory();
+			m.CreateSolution();
+			int i = 0;
 			//var schema = new DB2ServerMetadataReader().ReadSchema("DBO");
 
 			//var dc = A.Model as IDC_TaskManager;

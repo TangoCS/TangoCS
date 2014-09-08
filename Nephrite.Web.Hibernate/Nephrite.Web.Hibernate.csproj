@@ -91,7 +91,6 @@
     <Compile Include="CoreMapping\SettingsManagerMapping.cs" />
     <Compile Include="CoreMapping\TaskManagerMapping.cs" />
     <Compile Include="CoreMapping\TextResourcesMapping.cs" />
-    <Compile Include="ExtendedEqualsGenerator.cs" />
     <Compile Include="Hibernate.cs" />
     <Compile Include="IntBackedBoolUserType.cs" />
     <Compile Include="Interceptor.cs" />

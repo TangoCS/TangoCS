@@ -6,6 +6,7 @@
 <#@ assembly name="System.Configuration.dll" #>
 <#@ assembly name="$(ProjectDir)$(OutDir)Nephrite.Meta.Database.DB2.dll" #>
 <#@ assembly name="$(ProjectDir)$(OutDir)Nephrite.Web.dll" #>
+<#@ assembly name="$(ProjectDir)$(OutDir)Nephrite.Web.Hibernate.dll" #>
 <#@ assembly name="$(ProjectDir)$(OutDir)NHibernate.dll" #>
 <#@ import namespace="System" #>
 <#@ import namespace="System.Collections.Generic" #>
@@ -42,12 +43,13 @@ namespace Solution.Model
 		public MetaSolution CreateSolution()
 		{
 			var s = new MetaSolution();
+
 <# foreach (var pck in model.Packages) { #>
-			var p<#=pck.Name#> = <#=pck.Name#>Package.Create();
+			var p<#=pck.Name#> = <#=pck.Parent == null ? "s" : ("p" + pck.Parent.Name)#>.AddPackage("<#=pck.Name#>", "<#=pck.Caption#>");
 <# } #>
 
 <# foreach (var pck in model.Packages) { #>
-			<#=pck.Parent == null ? "s" : ("p" + pck.Parent.Name)#>.AddPackage(p<#=pck.Name#>);
+			<#=pck.Name#>Package.Init(p<#=pck.Name#>);
 <# } #>
 			return s;
 		}

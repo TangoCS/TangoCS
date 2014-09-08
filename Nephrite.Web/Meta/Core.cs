@@ -54,6 +54,15 @@ namespace Nephrite.Meta
 				_stereotypes.Add(t, stereotype);
 			stereotype.Parent = this;
 		}
+
+		List<string> _tags = new List<string>();
+		public List<string> Tags
+		{
+			get
+			{
+				return _tags;
+			}
+		}
 	}
 
 	/// <summary>

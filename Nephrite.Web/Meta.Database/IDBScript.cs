@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Xml;
@@ -49,10 +48,6 @@ namespace Nephrite.Meta.Database
 		string GetBooleanType();
 		string GetXmlType();
 		MetaPrimitiveType GetType(string dataType, bool notNull);
-
-		string ImportData(Table t, bool identityInsert, SqlConnection DbConnection);
-
-
 		string ToString();
 	}
 

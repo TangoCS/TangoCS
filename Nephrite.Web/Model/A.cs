@@ -62,7 +62,7 @@ namespace Nephrite.Web
 			{
 				if (HttpContext.Current != null) return HttpContext.Current.Items;
 
-				Hashtable ht = (Hashtable)AppDomain.CurrentDomain.GetData("ContextItems");
+				Hashtable ht = AppDomain.CurrentDomain.GetData("ContextItems") as Hashtable;
 				if (ht == null)
 				{
 					ht = new Hashtable();

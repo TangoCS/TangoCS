@@ -16,6 +16,8 @@ namespace Nephrite.Meta
 		}
 		public Func<string, Expression<Func<T, bool>>> SearchExpression { get; set; }
 		public Func<string, int, int, IEnumerable<T>> SearchQuery { get; set; }
+
+		public Func<IQueryable<T>, IOrderedQueryable<T>> DefaultOrderBy { get; set; }
 	}
 
 	public partial class MetaReference<TClass, TValue> : MetaReference
@@ -114,5 +116,8 @@ namespace Nephrite.Meta
 		}
 	}
 
-	
+	public partial class MetaOperation<TClass> : MetaOperation
+	{
+		public Func<TClass, bool> Predicate { get; set; }
+	}
 }

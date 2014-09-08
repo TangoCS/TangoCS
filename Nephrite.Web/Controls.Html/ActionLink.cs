@@ -139,5 +139,10 @@ namespace Nephrite.Web.Controls
 			else
 				return "";
 		}
+
+		public void Go()
+		{
+			HttpContext.Current.Response.Redirect(Href);
+		}
 	}
 }

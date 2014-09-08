@@ -3,20 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using Nephrite.Meta;
+using Nephrite.Web.Controllers;
 using Nephrite.Web.Multilanguage;
 
 namespace Nephrite.Web
 {
-	public abstract class EntityController<T, TKey> where T : IEntity, IWithKey<T, TKey>, new()
+	public abstract class EntityController<T, TKey> : MMObjectController 
+		where T : IEntity, IWithKey<T, TKey>, new()
 	{
-		public abstract void FilterTable(ref IQueryable<T> table);
+		public EntityController(string className)
+			: base(className)
+		{
+		}
 
 		Dictionary<TKey, T> loaded = new Dictionary<TKey, T>();
 
 		protected virtual IQueryable<T> GetTable()
 		{
 			IQueryable<T> table = A.Model.GetTable<T>();
-			FilterTable(ref table);
 			if (_tobj is IMultilanguage) table = table.Where(o => (o as IMultilanguage).LanguageCode == Language.Current.Code);
 			return table;
 		}

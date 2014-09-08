@@ -25,7 +25,6 @@ using NHibernate.Transform;
 using NHibernate.Event;
 using System.Reflection;
 using Nephrite.Web.SettingsManager;
-using Nhibernate.Extensions;
 using Nephrite.Web.SPM;
 
 
