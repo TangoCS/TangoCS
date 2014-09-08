@@ -311,21 +311,6 @@ namespace Nephrite.Web.Hibernate
 			var translators = translatorFactory.CreateQueryTranslators(nhLinqExpression, null, false, sessionImp.EnabledFilters, sessionImp.Factory);
 
 			string sql = translators[0].SQLString;
-
-			var command = Session.Connection.CreateCommand();
-			command.CommandText = sql;
-
-			return command;
-		}
-
-		public IDbCommand GetCommandWithParameters(IQueryable query)
-		{
-			var sessionImp = (ISessionImplementor)Session;
-			var nhLinqExpression = new NhLinqExpression(query.Expression, sessionImp.Factory);
-			var translatorFactory = new ASTQueryTranslatorFactory();
-			var translators = translatorFactory.CreateQueryTranslators(nhLinqExpression, null, false, sessionImp.EnabledFilters, sessionImp.Factory);
-
-			string sql = translators[0].SQLString;
 			var command = Session.Connection.CreateCommand();
 
 			foreach (FilterImpl filter in sessionImp.EnabledFilters.Values)

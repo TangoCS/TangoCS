@@ -47,7 +47,7 @@ namespace Nephrite.Web.Reporting
 							query += ", ";
 						query += AggregateColumns[i].Selector + " as AC" + i.ToString();
 					}
-					var cmd = A.Model.GetCommandWithParameters(DataSource);
+					var cmd = A.Model.GetCommand(DataSource);
 					query += cmd.CommandText.Substring(cmd.CommandText.ToUpper().IndexOf(" FROM "));
 					query = query.Substring(0, query.ToUpper().LastIndexOf(" ORDER BY "));
 					if (!groupings.IsEmpty())
