@@ -83,6 +83,14 @@ namespace Solution.Model
 					.ParmInt("parentid")
 					.ParmString("returnurl")
 				)
+				.Operation("MoveUp", "Переместить вверх", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveDown", "Переместить вниз", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
 			;	
 			p.AddClass<MM_ObjectType>()
 				.IntKey()
@@ -162,6 +170,14 @@ namespace Solution.Model
 					.ParmInt("parentid")
 					.ParmString("returnurl")
 				)
+				.Operation("MoveUp", "Переместить вверх", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveDown", "Переместить вниз", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
 			;	
 			p.AddClass<MM_ObjectProperty>()
 				.IntKey()
@@ -201,6 +217,14 @@ namespace Solution.Model
 					.ParmString("kind")
 					.ParmString("returnurl")
 				)
+				.Operation("MoveUp", "Переместить вверх", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveDown", "Переместить вниз", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
 			;	
 			p.AddClass<MM_FormField>()
 				.IntKey()
@@ -222,6 +246,14 @@ namespace Solution.Model
 				.Reference<MM_FormFieldAttribute>("Attributes", "Атрибуты", x => x.Multiple().InverseProperty("FormField"))
 				.Reference<MM_FormFieldGroup>("FormFieldGroup", "Группа полей", x => x.InverseProperty("FormFields"))
 				.OperationEdit() 
+				.Operation("MoveUp", "Переместить вверх", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveDown", "Переместить вниз", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
 			;	
 			p.AddClass<MM_Codifier>()
 				.IntKey()
@@ -246,6 +278,14 @@ namespace Solution.Model
 				.Attribute("SysName", "SysName", MetaStringType.NotNull())
 				.Attribute("SeqNo", "Порядковый номер", MetaIntType.NotNull())
 				.Reference<MM_Codifier>("Codifier", "Кодификатор", x => x.InverseProperty("Values"))
+				.Operation("MoveUp", "Переместить вверх", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveDown", "Переместить вниз", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
 			;	
 			p.AddClass<MM_FormFieldAttribute>()
 				.IntKey()
@@ -325,6 +365,14 @@ namespace Solution.Model
 					.ParmInt("parentid")
 					.ParmString("returnurl")
 				)
+				.Operation("MoveUp", "Переместить вверх", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveDown", "Переместить вниз", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
 			;	
 			p.AddClass<MM_MethodParameter>()
 				.IntKey()
@@ -353,6 +401,14 @@ namespace Solution.Model
 				.OperationEdit() 
 				.OperationCreateNew(x => x 
 					.ParmInt("parentid")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveUp", "Переместить вверх", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveDown", "Переместить вниз", x => x 
+					.ParmInt("id")
 					.ParmString("returnurl")
 				)
 			;	
@@ -474,6 +530,14 @@ namespace Solution.Model
 				.OperationCreateNew(x => x 
 					.InvokesSingleObjectView("edit")
 				)
+				.Operation("MoveUp", "Переместить вверх", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveDown", "Переместить вниз", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
 			;	
 			p.AddClass<SPM_Action>()
 				.IntKey()
@@ -520,6 +584,14 @@ namespace Solution.Model
 				.Reference<SPM_Role>("Roles", "Роли", x => x.InverseProperty("RoleGroup"))
 				.OperationDelete() 
 				.OperationEdit() 
+				.Operation("MoveUp", "Переместить вверх", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveDown", "Переместить вниз", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
 			;	
 			p.AddClass<SPM_RoleAccess>()
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
@@ -728,6 +800,14 @@ namespace Solution.Model
 				.Attribute("Title", "Название", MetaStringType.NotNull())
 				.Reference<TM_Task>("Parent", "Задача", x => x.InverseProperty("Parameters"))
 				.OperationDelete() 
+				.Operation("MoveUp", "Переместить вверх", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveDown", "Переместить вниз", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
 			;	
 			p.AddClass<MailMessage>()
 				.IntKey()
@@ -1229,6 +1309,14 @@ namespace Solution.Model
 					.ParmGuid("id")
 					.ParmString("returnurl")
 				)
+				.Operation("MoveUp", "Переместить вверх", x => x 
+					.ParmGuid("id")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveDown", "Переместить вниз", x => x 
+					.ParmGuid("id")
+					.ParmString("returnurl")
+				)
 			;	
 			p.AddClass<N_Node>()
 				.GuidKey()
@@ -1311,6 +1399,14 @@ namespace Solution.Model
 				.OperationView(x => x 
 					.InvokesSingleObjectView("view")
 				)
+				.Operation("MoveUp", "Переместить вверх", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveDown", "Переместить вниз", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
 			;	
 			p.AddClass<WF_Transition>()
 				.IntKey()
@@ -1328,6 +1424,14 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView(x => x 
 					.InvokesSingleObjectView("view")
+				)
+				.Operation("MoveUp", "Переместить вверх", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveDown", "Переместить вниз", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
 				)
 			;	
 			return p;

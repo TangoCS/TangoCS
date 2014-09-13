@@ -48,6 +48,25 @@ namespace Nephrite.Web.Hibernate
 		public List<Action> AfterSaveActions { get; private set; }
 		public List<Action> BeforeSaveActions { get; private set; }
 
+		protected bool EnableTableAutoFilter = true;
+
+		public IDataContext All
+		{
+			get
+			{
+				EnableTableAutoFilter = false;
+				return this;
+			}
+		}
+		public IDataContext Filtered
+		{
+			get
+			{
+				EnableTableAutoFilter = true;
+				return this;
+			}
+		}
+
 		public static DBType DBType
 		{
 			get
@@ -355,7 +374,7 @@ namespace Nephrite.Web.Hibernate
 
 		public IQueryable<T> GetTable<T>() //where T : class
 		{
-			return Session.Query<T>();
+			return EnableTableAutoFilter ? DefaultTableFilters.ApplyFor<T>(Session.Query<T>()) : Session.Query<T>();
 		}
 
 		public ITable GetTable(Type t)
@@ -523,8 +542,6 @@ namespace Nephrite.Web.Hibernate
 			return _query2.GetEnumerator();
 		}
 	}
-
-
 
 	public class NoUpdateInterceptor : EmptyInterceptor
 	{

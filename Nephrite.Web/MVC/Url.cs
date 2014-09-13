@@ -33,7 +33,7 @@ namespace Nephrite.Web
 
 		public string Mode { get { return GetString("mode"); }}
 		public string Action { get { return GetString("action"); }}
-		public int? ID { get { return GetInt("oid"); }}
+		//public int? ID { get { return GetInt("oid"); }}
 
 		public Url RemoveParameter(params string[] parametername)
 		{

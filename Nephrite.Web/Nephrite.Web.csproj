@@ -169,10 +169,12 @@
     <Compile Include="Meta.Database\PrimitiveTypesExtensions.cs" />
     <Compile Include="Meta.Database\SchemaSync.cs" />
     <Compile Include="Meta.Database\UpdateScriptBuilder2.cs" />
+    <Compile Include="Meta.Forms\WebFormRenderer.cs" />
     <Compile Include="MetaStorage\MetaStorageModel.cs" />
     <Compile Include="Meta.Forms\UIMetaModel.cs" />
     <Compile Include="Meta\CoreFluent.cs" />
     <Compile Include="Meta\CoreTyped.cs" />
+    <Compile Include="Meta\StandardOperations.cs" />
     <Compile Include="Meta\StringConverter.cs" />
     <Compile Include="Model\IEntity.cs">
       <SubType>Code</SubType>

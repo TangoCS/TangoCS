@@ -131,7 +131,17 @@ namespace Solution.Model
 				)
 <#				} #>
 <#			} #>
-<# } #>
+<#		} #>
+<#		if (cls.Properties.Any(o => o.Name == "SeqNo" && o.IsRequired && o.UpperBound == 1 && o.Type is IMetaNumericType)) { #>
+				.Operation("MoveUp", "Переместить вверх", x => x 
+					.Parm<#=cls.Key.Type is MetaIntType ? "Int" : "Guid"#>("id")
+					.ParmString("returnurl")
+				)
+				.Operation("MoveDown", "Переместить вниз", x => x 
+					.Parm<#=cls.Key.Type is MetaIntType ? "Int" : "Guid"#>("id")
+					.ParmString("returnurl")
+				)
+<#		} #>
 			;	
 <# } #>
 			return p;

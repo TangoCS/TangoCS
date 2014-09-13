@@ -21,6 +21,7 @@ namespace Nephrite.Meta
 
 	public interface IMetaParameterType : IMetaPrimitiveType
 	{
+
 	}
 
 	public interface IMetaNumericType : IMetaPrimitiveType { }

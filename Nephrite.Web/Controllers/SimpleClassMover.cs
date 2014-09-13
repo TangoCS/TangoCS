@@ -8,13 +8,8 @@ using Nephrite.Web;
 namespace Nephrite.Web.Controllers
 {
 	public class SimpleClassMover<T, TKey>
-		where T : class, IEntity, IWithKey<T, TKey>, IWithSeqNo, new()
+		where T : IEntity, IWithKey<T, TKey>, IWithSeqNo, new()
 	{
-		public static void Up(EntitySet<T> collection, TKey id)
-		{
-			Up(collection.AsQueryable(), id);
-		}
-
 		public static void Up(IQueryable<T> collection, TKey id)
 		{
 			T b = default(T);
@@ -29,11 +24,6 @@ namespace Nephrite.Web.Controllers
 					b.SeqNo = s1;
 				}
 			}
-		}
-
-		public static void Down(EntitySet<T> collection, TKey id)
-		{
-			Down(collection.AsQueryable(), id);
 		}
 
 		public static void Down(IQueryable<T> collection, TKey id)

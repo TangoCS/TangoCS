@@ -725,27 +725,26 @@ namespace Nephrite.Meta
 			}
 		}
 
-		public object Action { get; set; }
-		public virtual void Invoke()
-		{
-			throw new NotImplementedException();
-		}
+		public Action Invoke { get; set; }
 
 		public string ActionString { get; set; }
 		public string PredicateString { get; set; }
 
 		public string ViewName { get; set; }
 		public string ViewClass { get; set; }
+		public string DTOClass { get; set; }
+		public DTOClassKind DTOClassKind { get; set; }
 
 		public string ParametersString
 		{
 			get
 			{
-				return string.Join(",", Parameters.Select(o => o.Type.CLRType + " " + o.Name));
+				return string.Join(", ", Parameters.Select(o => o.Type.CLRType + " " + o.Name));
 			}
 		}
-
 	}
+
+	public enum DTOClassKind { Single, Queryable }
 
 	public class MetaEnum : MetaElement
 	{

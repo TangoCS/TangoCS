@@ -44,6 +44,7 @@ namespace Nephrite.Web
 			{
 				if (i >= parms.Length) continue; 
 				string[] partParms = parms[i].Split(new char[] { ',' });
+				HttpContext.Current.Items["ViewContainer"] = content.Control;
 				if (partParms[0] == "M")
 				{
 					BaseController.Run(content.Control, partParms[1], partParms[2], true, true);

@@ -16,11 +16,11 @@ namespace Nephrite.Web
 		{
 			get
 			{
-				return A.Items["Base.Model"] as IDataContext;
+				return A.Items["SolutionDataContext"] as IDataContext;
 			}
 			set
 			{
-				A.Items["Base.Model"] = value;
+				A.Items["SolutionDataContext"] = value;
 			}
 		}
 
@@ -43,16 +43,6 @@ namespace Nephrite.Web
 				if (_metaXml == null)
 					return DBScript.GetMeta();
 				return _metaXml;
-			}
-		}
-
-		static MetaSolution _meta = null;
-		public static MetaSolution DynamicMeta
-		{
-			get
-			{
-				if (_meta == null) _meta = MetaSolution.Load();
-				return _meta;
 			}
 		}
 

@@ -104,15 +104,24 @@ namespace Nephrite.Meta.Fluent
 
 		public OperationBuilder InvokesSingleObjectView(string viewName)
 		{
-			_op.ViewClass = "ViewControl<{0}>";
+			_op.ViewClass = "ViewControl";
 			_op.ViewName = viewName;
+			WithDTOClass(_op.Parent.Name);
 			return this;
 		}
 
 		public OperationBuilder InvokesObjectListView(string viewName)
 		{
-			_op.ViewClass = "ViewControl<IQueryable<{0}>>";
+			_op.ViewClass = "ViewControl";
 			_op.ViewName = viewName;
+			WithDTOClass(_op.Parent.Name, DTOClassKind.Queryable);
+			return this;
+		}
+
+		public OperationBuilder WithDTOClass(string className, DTOClassKind kind = DTOClassKind.Single)
+		{
+			_op.DTOClass = className;
+			_op.DTOClassKind = kind;
 			return this;
 		}
 
@@ -215,103 +224,103 @@ namespace Nephrite.Meta.Fluent
 		public static MetaClass OperationCreateNew(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "CreateNew", Caption = "Создать" };
-			var ob = new OperationBuilder(o);
+			cls.AddOperation(o);
 
+			var ob = new OperationBuilder(o);
 			ob.Image("create").InvokesSingleObjectView("edit");
 			if (attributes != null) attributes(ob);
 
 			if (o.Parameters.Count == 0)
 				ob.ParmString("returnurl");
 
-			cls.AddOperation(o);
 			return cls;
 		}
 
 		public static MetaClass OperationEdit(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "Edit", Caption = "Редактировать" };
-			var ob = new OperationBuilder(o);
+			cls.AddOperation(o);
 
+			var ob = new OperationBuilder(o);
 			ob.Image("edit").InvokesSingleObjectView("edit");
 			if (attributes != null) attributes(ob);
 
 			if (o.Parameters.Count == 0)
 				ob.Parm(cls.Key.Type as IMetaParameterType, "id").ParmString("returnurl");
 
-			cls.AddOperation(o);
 			return cls;
 		}
 
 		public static MetaClass OperationList(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "ViewList", Caption = "Список" };
-			var ob = new OperationBuilder(o);
+			cls.AddOperation(o);
 
+			var ob = new OperationBuilder(o);
 			ob.Image("list").InvokesObjectListView("list");
 			if (attributes != null) attributes(ob);
 
-			cls.AddOperation(o);
 			return cls;
 		}
 
 		public static MetaClass OperationView(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "View", Caption = "Свойства" };
-			var ob = new OperationBuilder(o);
+			cls.AddOperation(o);
 
+			var ob = new OperationBuilder(o);
 			ob.Image("view").InvokesSingleObjectView("view");
 			if (attributes != null) attributes(ob);
 
 			if (o.Parameters.Count == 0)
 				ob.Parm(cls.Key.Type as IMetaParameterType, "id").ParmString("returnurl");
 
-			cls.AddOperation(o);
 			return cls;
 		}
 
 		public static MetaClass OperationDelete(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "Delete", Caption = "Удалить" };
-			var ob = new OperationBuilder(o);
+			cls.AddOperation(o);
 
+			var ob = new OperationBuilder(o);
 			ob.Image("delete").InvokesSingleObjectView("delete");
 			if (attributes != null) attributes(ob);
 
 			if (o.Parameters.Count == 0)
 				ob.Parm(cls.Key.Type as IMetaParameterType, "id").ParmString("returnurl");
 
-			cls.AddOperation(o);
 			return cls;
 		}
 
 		public static MetaClass OperationUnDelete(this MetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "UnDelete", Caption = "Отменить удаление" };
-			var ob = new OperationBuilder(o);
+			cls.AddOperation(o);
 
+			var ob = new OperationBuilder(o);
 			ob.Image("undelete").InvokesSingleObjectView("undelete");
 			if (attributes != null) attributes(ob);
 
 			if (o.Parameters.Count == 0)
 				ob.Parm(cls.Key.Type as IMetaParameterType, "id").ParmString("returnurl");
 
-			cls.AddOperation(o);
 			return cls;
 		}
 
 		public static MetaClass Operation(this MetaClass cls, string name, string caption, Action<OperationBuilder> attributes = null)
 		{
 			var op = new MetaOperation { Name = name, Caption = caption };
-			if (attributes != null) attributes(new OperationBuilder(op));
 			cls.AddOperation(op);
+			if (attributes != null) attributes(new OperationBuilder(op));
 			return cls;
 		}
 
 		public static MetaPackage Operation(this MetaPackage pck, string name, string caption, Action<OperationBuilder> attributes = null)
 		{
 			var op = new MetaOperation { Name = name, Caption = caption };
-			if (attributes != null) attributes(new OperationBuilder(op));
 			pck.AddOperation(op);
+			if (attributes != null) attributes(new OperationBuilder(op));
 			return pck;
 		}
 
@@ -336,6 +345,5 @@ namespace Nephrite.Meta.Fluent
 
 
 	}
-
 
 }
