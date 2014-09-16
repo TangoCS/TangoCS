@@ -253,7 +253,7 @@ namespace Nephrite.Web.SPM
 			HashSet<string> _access = null;
 			HashSet<string> _items = null;
 
-			if (!_accessCache.ContainsKey(cacheName))
+			if (!_accessCache.ContainsKey(cacheName) || !_itemsCache.ContainsKey(cacheName))
 			{
 				lock (_lock)
 				{
