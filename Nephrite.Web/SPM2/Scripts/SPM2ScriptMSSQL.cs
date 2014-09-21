@@ -7,31 +7,26 @@ namespace Nephrite.Web.Controls.Scripts
 {
     public class SPM2ScriptMSSQL : ISPM2Script
     {
-        public string FromLogin
-        {
-            get
-            {
-                return "select SubjectID as ID, SystemName as \"Login\", Title, PasswordHash,  IsActive, IsDeleted, SID, MustChangePassword, Email from SPM_Subject where lower(SystemName) = ?";
-            }
-        }
-        public string FromSID
-        {
-            get
-            {
-                return "select SubjectID as ID, SystemName as \"Login\", Title, PasswordHash,  IsActive, IsDeleted, SID, MustChangePassword, Email from SPM_Subject where SID = ? or lower(SystemName) = ?";
-            }
-        }
-        public string FromID
-        {
-            get
-            {
-                return "select SubjectID as ID, SystemName as \"Login\", Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email from SPM_Subject where SubjectID = ?";
-            }
-        }
-        public string FromEmail
-        {
-            get { return "select SubjectID as ID, SystemName as \"Login\", Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email from SPM_Subject where lower(Email) = ?"; }
-        }
+		string subjSelect = @"select SubjectID as ID, SystemName as ""Login"", Title, PasswordHash as ""PasswordHash"", 
+cast(IsActive as int) as ""_IsActive"", cast(IsDeleted as int) as ""_IsDeleted"", SID , cast(MustChangePassword as int) as ""_MustChangePassword"", 
+Email from SPM_Subject where {0}";
+
+		public string FromLogin
+		{
+			get { return String.Format(subjSelect, "lower(SystemName) = ?"); }
+		}
+		public string FromSID
+		{
+			get { return String.Format(subjSelect, "SID = ? or lower(SystemName) = ?"); }
+		}
+		public string FromID
+		{
+			get { return String.Format(subjSelect, "SubjectID = ?"); }
+		}
+		public string FromEmail
+		{
+			get { return String.Format(subjSelect, "lower(Email) = ?"); }
+		}
         public string GetRolesAccessByIdQuery
         {
             get

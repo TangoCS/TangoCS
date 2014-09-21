@@ -72,7 +72,7 @@ namespace Nephrite.Web.TaskManager
 
 				using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
 				{
-					dc.Log = new StringWriter();
+					//dc.Log = new StringWriter();
 					task = dc.ITM_Task.Single(o => o.TaskID == taskID);
 					//task.TM_TaskParameters.Count();
 
@@ -132,7 +132,7 @@ namespace Nephrite.Web.TaskManager
 					{
 						try
 						{
-							dc.Log = new StringWriter();
+							//dc.Log = new StringWriter();
 							var t = dc.ITM_Task.Single(o => o.TaskID == taskID);
 							t.LastStartDate = DateTime.Now;
 							t.IsSuccessfull = true;
@@ -156,7 +156,7 @@ namespace Nephrite.Web.TaskManager
 					int errid = ErrorLogger.Log(e);
 					using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
 					{
-						dc.Log = new StringWriter();
+						//dc.Log = new StringWriter();
 						var t = dc.ITM_Task.Single(o => o.TaskID == taskID);
 						if (isServiceRun)
 							LogError(e, taskName, dc.Log.ToString());

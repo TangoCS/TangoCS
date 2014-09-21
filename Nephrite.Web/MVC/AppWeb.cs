@@ -20,11 +20,11 @@ namespace Nephrite.Web
 {
 	public class AppWeb
 	{
-		public static Page Page
-		{
-			get { return HttpContext.Current.Items["page"] as Page; }
-			set { HttpContext.Current.Items["page"] = value; }
-		}
+		//public static Page Page
+		//{
+		//	get { return HttpContext.Current.Items["page"] as Page; }
+		//	set { HttpContext.Current.Items["page"] = value; }
+		//}
 		public static IMasterControl MasterControl
 		{
 			get { return HttpContext.Current.Items["mastercontrol"] as IMasterControl; }
@@ -47,22 +47,22 @@ namespace Nephrite.Web
 			set { HttpContext.Current.Items["description"] = value; }
 		}
 
-		public static IDictionary<string, object> RouteDataTokens
-		{
-			get { return HttpContext.Current.Items["RouteDataTokens"] as IDictionary<string, object>; }
-			set { HttpContext.Current.Items["RouteDataTokens"] = value; }
-		}
-		public static IDictionary<string, object> RouteDataValues
-		{
-			get { return HttpContext.Current.Items["RouteDataValues"] as IDictionary<string, object>; }
-			set { HttpContext.Current.Items["RouteDataValues"] = value; }
-		}
+		//public static IDictionary<string, object> RouteDataTokens
+		//{
+		//	get { return HttpContext.Current.Items["RouteDataTokens"] as IDictionary<string, object>; }
+		//	set { HttpContext.Current.Items["RouteDataTokens"] = value; }
+		//}
+		//public static IDictionary<string, object> RouteDataValues
+		//{
+		//	get { return HttpContext.Current.Items["RouteDataValues"] as IDictionary<string, object>; }
+		//	set { HttpContext.Current.Items["RouteDataValues"] = value; }
+		//}
 		public static NodeData NodeData
 		{
 			get { return HttpContext.Current.Items["NodeData"] as NodeData; }
 			set { HttpContext.Current.Items["NodeData"] = value; }
 		}
-		public static NodeData HomeNodeData { get; set; }
+		//public static NodeData HomeNodeData { get; set; }
 		public static bool IsRouting
 		{
 			get { return Convert.ToBoolean(HttpContext.Current.Items["IsRouting"]); }
@@ -80,27 +80,23 @@ namespace Nephrite.Web
 
 	public class NodeData
 	{
-		public Guid NodeGUID { get; set; }
+		//public Guid NodeGUID { get; set; }
 		public string FURL { get; set; }
 		public string MasterPage { get; set; }
-		public string Parameters { get; set; }
+		//public string Parameters { get; set; }
 		public string Description { get; set; }
 		public string Keywords { get; set; }
 		public string PageTitle { get; set; }
 		public string Title { get; set; }
 		public string Site { get; set; }
-	}
 
-	public class DataContextLogWriter : StringWriter
-	{
-		public override void Write(char[] buffer, int index, int count)
+		public Dictionary<string, Action> ContentPlaceHolderRenderers { get; set; }
+
+		public NodeData()
 		{
-			base.Write(buffer, index, count);
-			if ((new string(buffer)).StartsWith("-- Context:"))
-			{
-				char[] buff = ("-- Execute start: " + DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss.fff") + System.Environment.NewLine).ToCharArray();
-				base.Write(buff, 0, buff.Length);
-			}
+			ContentPlaceHolderRenderers = new Dictionary<string, Action>();
 		}
 	}
+
+	
 }

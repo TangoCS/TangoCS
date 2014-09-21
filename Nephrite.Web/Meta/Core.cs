@@ -506,7 +506,7 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				return Parent.Name + ".P." + Name;
+				return Parent.Name + "." + Name;
 			}
 		}
 
@@ -721,7 +721,7 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				return Parent.Name + ".O." + Name;
+				return Parent.Name + "." + Name;
 			}
 		}
 

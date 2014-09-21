@@ -134,7 +134,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
-    <Compile Include="Controllers\MMObjectController.cs" />
     <Compile Include="Controls\Scripts\INavigScript.cs" />
     <Compile Include="Controls\Scripts\NavigScriptDB2.cs" />
     <Compile Include="Controls\Scripts\NavigScriptMSSQL.cs" />
@@ -189,7 +188,6 @@
     <Compile Include="MVC\MasterControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Controllers\PackageFormViewController.cs" />
     <Compile Include="Office\ExcelExportEx.cs" />
     <Compile Include="Office\WordDocumentGenerator.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -542,7 +540,6 @@
       <DependentUpon>upload.ascx</DependentUpon>
     </Compile>
     <Compile Include="Office\Word.cs" />
-    <Compile Include="MVC\Workspace.cs" />
     <Compile Include="Web\XMLSerializer.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -72,7 +72,12 @@ namespace Nephrite.Meta.Fluent
 
 		public OperationBuilder Parm(IMetaParameterType type, string name)
 		{
-			_op.Parameters.Add(new MetaOperationParameter { Name = name, Type = type });
+			var parm = _op.Parameters.FirstOrDefault(o => o.Name.ToLower() == name.ToLower());
+			if (parm == null)
+			{
+				parm = new MetaOperationParameter { Name = name, Type = type };
+				_op.Parameters.Add(parm);
+			}
 			return this;
 		}
 
@@ -106,7 +111,7 @@ namespace Nephrite.Meta.Fluent
 		{
 			_op.ViewClass = "ViewControl";
 			_op.ViewName = viewName;
-			WithDTOClass(_op.Parent.Name);
+			WithDTOClass();
 			return this;
 		}
 
@@ -114,13 +119,20 @@ namespace Nephrite.Meta.Fluent
 		{
 			_op.ViewClass = "ViewControl";
 			_op.ViewName = viewName;
-			WithDTOClass(_op.Parent.Name, DTOClassKind.Queryable);
+			WithDTOClass(DTOClassKind.Queryable);
 			return this;
 		}
 
 		public OperationBuilder WithDTOClass(string className, DTOClassKind kind = DTOClassKind.Single)
 		{
 			_op.DTOClass = className;
+			_op.DTOClassKind = kind;
+			return this;
+		}
+
+		public OperationBuilder WithDTOClass(DTOClassKind kind = DTOClassKind.Single)
+		{
+			_op.DTOClass = _op.Parent.Name;
 			_op.DTOClassKind = kind;
 			return this;
 		}

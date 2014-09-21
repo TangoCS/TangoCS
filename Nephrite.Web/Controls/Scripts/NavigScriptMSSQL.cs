@@ -12,7 +12,7 @@ namespace Nephrite.Web.Controls
         {
             get
             {
-                return @"SELECT [t0].[Title], [t0].[URL] AS [Url], [t0].[Type] AS [MenuItemType], [t0].[ImageURL] AS [ImageUrl], 
+				return @"SELECT [t0].[Title], [t0].[URL], [t0].[Type] AS [MenuItemType], [t0].[ImageURL], 
 							(CASE 
 								WHEN [t2].[test] IS NOT NULL THEN CONVERT(NVarChar(MAX),[t6].[SysName])
 								WHEN [t4].[test] IS NOT NULL THEN [t7].[SysName] + 'Pck'

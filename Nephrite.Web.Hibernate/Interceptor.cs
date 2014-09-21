@@ -231,10 +231,12 @@ namespace Nephrite.Web.Hibernate
 
         public override SqlString OnPrepareStatement(SqlString sql)
         {
+			_dataContext.Log.WriteLine(String.Format("-- {1}, datacontext {0}", _dataContext.ID, DateTime.Now.ToString("HH:mm:ss.fff")));
             _dataContext.Log.WriteLine(sql.ToString());
             _dataContext.Log.WriteLine();
             return sql;
         }
+
     }
 
 

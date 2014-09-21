@@ -35,25 +35,7 @@ namespace Nephrite.Web.FormsEngine
 			{
 				if (PackageSysName.IsEmpty())
 				{
-					if (packageViewLocation.ContainsKey(PackageViewFormSysName))
-						PackageSysName = packageViewLocation[PackageViewFormSysName];
-					else
-					{
-						lock (packageViewLocation)
-						{
-							if (packageViewLocation.ContainsKey(PackageViewFormSysName))
-								PackageSysName = packageViewLocation[PackageViewFormSysName];
-							else
-							{
-								var dc = ((IDC_MetaStorage)A.Model);
-								PackageSysName = (from fv in dc.IMM_FormView
-												  join p in dc.IMM_Package on fv.PackageID equals p.PackageID
-													where fv.ObjectTypeID == null && fv.SysName == PackageViewFormSysName
-												select p.SysName).FirstOrDefault() ?? "";
-								packageViewLocation[PackageViewFormSysName] = PackageSysName;
-							}
-						}
-					}
+					throw new Exception("Не задано свойство PackageSysName");
 				}
 				addToUtils(PackageSysName + "Pck." + PackageViewFormSysName);
 				return Settings.ControlsPath + "/" + PackageSysName + "Pck/" + PackageViewFormSysName + ".ascx";
@@ -201,74 +183,5 @@ namespace Nephrite.Web.FormsEngine
 		public string TitleIconImageUrl { get; set; }
 		public string TitleUrl { get; set; }
 		#endregion
-	}
-
-	public class MViewWorkSpace : MView, IWebPart
-	{
-		Exception error = null;
-		public bool SkipCreateMdm { get; set; }
-		public bool DisableScriptManager { get; set; }
-		public bool RenderTitle { get; set; }
-		public string DefaultMode { get; set; }
-		public string DefaultAction { get; set; }
-
-		protected override void OnInit(EventArgs e)
-		{
-			base.OnInit(e);
-			try
-			{
-				TraceContext tc = HttpContext.Current.Trace;
-				tc.Write("Workspace class - begin");
-
-				if (Query.GetString("notitle").Length == 0 && RenderTitle)
-					Controls.Add(Page.LoadControl(Settings.ControlsPath + "/Common/title.ascx"));
-
-				string mode = Query.GetString("mode");
-				string action = Query.GetString("action");
-
-				if (String.IsNullOrEmpty(mode) || String.IsNullOrEmpty(action))
-				{
-					mode = DefaultMode;
-					action = DefaultAction;
-				}
-
-				if (!String.IsNullOrEmpty(mode) && !String.IsNullOrEmpty(action))
-				{
-					BaseController.Run(this, mode, action, DisableScriptManager, SkipCreateMdm);
-				}
-			}
-			catch (ThreadAbortException)
-			{
-
-			}
-			catch (Exception ex)
-			{
-				error = ex;
-				int errorID = ErrorLogger.Log(ex);
-			}
-		}
-
-		protected override void Render(HtmlTextWriter writer)
-		{
-			if (error != null)
-			{
-				if (Controls.Count > 1 && Controls[1].ID == "ChangeEmployee")
-					Controls[1].RenderControl(writer);
-
-				error.Render(writer);
-			}
-			else
-			{
-				try
-				{
-					base.Render(writer);
-				}
-				catch (Exception e)
-				{
-					ErrorLogger.Log(e);
-					e.Render(writer);
-				}
-			}
-		}
 	}
 }

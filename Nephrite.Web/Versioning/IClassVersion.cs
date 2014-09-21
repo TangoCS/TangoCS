@@ -31,42 +31,42 @@ namespace Nephrite.Web.Versioning
 		int ClassVersionID { get; }
 	}
 
-	public abstract class EntityControllerWithVersioning<T, TKey> : EntityController<T, TKey>
-		where T : IEntity, IWithKey<T, TKey>, IWithVersioning<T, TKey>, new()
-	{
-		public EntityControllerWithVersioning(string className)
-			: base(className)
-		{
-		}
+	//public abstract class EntityControllerWithVersioning<T, TKey> : EntityController<T, TKey>
+	//	where T : IEntity, IWithKey<T, TKey>, IWithVersioning<T, TKey>, new()
+	//{
+	//	public EntityControllerWithVersioning(string className)
+	//		: base(className)
+	//	{
+	//	}
 
-		protected override IQueryable<T> GetTable()
-		{
-			var table = base.GetTable();
-			table = table.Where(o => o.IsCurrentVersion);
-			return table;
-		}
+	//	protected override IQueryable<T> GetTable()
+	//	{
+	//		var table = base.GetTable();
+	//		table = table.Where(o => o.IsCurrentVersion);
+	//		return table;
+	//	}
 
-		public T GetVersion(TKey id)
-		{
-			return A.Model.GetTable<T>().Where(_tobj.VersionKeySelector(id)).FirstOrDefault();
-		}
-	}
+	//	public T GetVersion(TKey id)
+	//	{
+	//		return A.Model.GetTable<T>().Where(_tobj.VersionKeySelector(id)).FirstOrDefault();
+	//	}
+	//}
 
-	public abstract class EntityControllerWithClassVersioning<T, TKey, TClassVersion> : EntityControllerWithVersioning<T, TKey>
-		where T : IEntity, IWithKey<T, TKey>, IWithClassVersioning<T, TKey>, new()
-		where TClassVersion : IClassVersion
-	{
-		public EntityControllerWithClassVersioning(string className)
-			: base(className)
-		{
-		}
+	//public abstract class EntityControllerWithClassVersioning<T, TKey, TClassVersion> : EntityControllerWithVersioning<T, TKey>
+	//	where T : IEntity, IWithKey<T, TKey>, IWithClassVersioning<T, TKey>, new()
+	//	where TClassVersion : IClassVersion
+	//{
+	//	public EntityControllerWithClassVersioning(string className)
+	//		: base(className)
+	//	{
+	//	}
 
-		protected override IQueryable<T> GetTable()
-		{
-			var table = base.GetTable();
+	//	protected override IQueryable<T> GetTable()
+	//	{
+	//		var table = base.GetTable();
 
-			table = table.Where(o => o.IsCurrentVersion && o.ClassVersionID == ClassVersion<TClassVersion>.CurrentVersionID);
-			return table;
-		}
-	}
+	//		table = table.Where(o => o.IsCurrentVersion && o.ClassVersionID == ClassVersion<TClassVersion>.CurrentVersionID);
+	//		return table;
+	//	}
+	//}
 }

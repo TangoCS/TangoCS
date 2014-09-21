@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web.Routing;
 
 
 
@@ -33,6 +34,7 @@ namespace Nephrite.Web
 
 		public string Mode { get { return GetString("mode"); }}
 		public string Action { get { return GetString("action"); }}
+		public RouteData RouteData { get { return HttpContext.Current.Request.RequestContext.RouteData; } }
 		//public int? ID { get { return GetInt("oid"); }}
 
 		public Url RemoveParameter(params string[] parametername)
@@ -42,7 +44,7 @@ namespace Nephrite.Web
 				if (_isCurrent && AppWeb.NodeData != null && AppWeb.NodeData.FURL.IndexOf("{" + s + "}") != -1)
 				{
 					// потом учесть вариант, когда несколько параметров имеют одинаковые значения
-					string value = Convert.ToString(AppWeb.RouteDataValues[s]);
+					string value = Convert.ToString(RouteData.Values[s]);
 					if (_q.EndsWith("/" + value)) 
 						_q = _q.Replace("/" + value, "");
 					else
@@ -101,7 +103,7 @@ namespace Nephrite.Web
 		public int GetInt(string parametername, int defaultValue)
 		{
 			if (_isCurrent && AppWeb.NodeData != null && AppWeb.NodeData.FURL.IndexOf("{" + parametername + "}") != -1)
-				return Convert.ToString(AppWeb.RouteDataValues[parametername]).ToInt32(defaultValue);
+				return Convert.ToString(RouteData.Values[parametername]).ToInt32(defaultValue);
 			else
 				return _c[parametername].ToInt32(defaultValue);
 		}
@@ -109,7 +111,7 @@ namespace Nephrite.Web
 		public int? GetInt(string parametername)
 		{
 			if (_isCurrent && AppWeb.NodeData != null && AppWeb.NodeData.FURL.IndexOf("{" + parametername + "}") != -1)
-				return Convert.ToInt32(AppWeb.RouteDataValues[parametername]);
+				return Convert.ToInt32(RouteData.Values[parametername]);
 			else
 				return _c[parametername].ToInt32();
 		}
@@ -118,7 +120,7 @@ namespace Nephrite.Web
 		{
 			if (_isCurrent && AppWeb.NodeData != null && AppWeb.NodeData.FURL.IndexOf("{" + parametername + "}") != -1)
 			{
-				object o = AppWeb.RouteDataValues[parametername];
+				object o = RouteData.Values[parametername];
 				if (o == null)
 					return Guid.Empty;
 				else
@@ -131,7 +133,7 @@ namespace Nephrite.Web
 		public string GetString(string parametername)
 		{
 			if (_isCurrent && AppWeb.NodeData != null && AppWeb.NodeData.FURL.IndexOf("{" + parametername + "}") != -1)
-				return Convert.ToString(AppWeb.RouteDataValues[parametername]);
+				return Convert.ToString(RouteData.Values[parametername]);
 			else
 				return _q.GetQueryParameter(parametername);
 		}

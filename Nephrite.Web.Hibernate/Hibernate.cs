@@ -138,13 +138,30 @@ namespace Nephrite.Web.Hibernate
 			}
 		}
 
-		public TextWriter Log { get; set; }
+
+		public TextWriter Log 
+		{ 
+			get 
+			{
+				if (A.Items["SqlLog"] == null)
+				{
+					TextWriter log = new StringWriter();
+					A.Items["SqlLog"] = log;
+					return log;
+				}
+				return A.Items["SqlLog"] as TextWriter;
+			} 
+		}
+		public string ID { get; set; }
+
 		public abstract IEnumerable<Type> GetEntitiesTypes();
 		public virtual IEnumerable<Type> GetTableFunctionsTypes() { return new List<Type>(); }
 
 		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Listeners listeners = null)
 		{
-			Log = new StringWriter();
+			ID = GetType().Name + "-" + Guid.NewGuid().ToString();
+			Log.WriteLine(String.Format("-- create {0}", ID)); Log.WriteLine();
+			//Log = new StringWriter();
 			ToInsert = new List<object>();
 			ToDelete = new List<object>();
 			ToAttach = new List<object>();
@@ -557,4 +574,17 @@ namespace Nephrite.Web.Hibernate
 			invalidUpdates.Add(msg);
 		}
 	}
+
+	//public class DataContextLogWriter : StringWriter
+	//{
+	//	public override void Write(char[] buffer, int index, int count)
+	//	{
+	//		base.Write(buffer, index, count);
+	//		if ((new string(buffer)).StartsWith("-- Context:"))
+	//		{
+	//			char[] buff = ("-- Execute start: " + DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss.fff") + System.Environment.NewLine).ToCharArray();
+	//			base.Write(buff, 0, buff.Length);
+	//		}
+	//	}
+	//}
 }

@@ -7,10 +7,10 @@ namespace Nephrite.Web.MetaStorage
 {
 	public interface IDC_MetaStorage
 	{
-		IQueryable<IMM_ObjectType> IMM_ObjectType { get; }
+		//IQueryable<IMM_ObjectType> IMM_ObjectType { get; }
 		//IQueryable<IMM_ObjectProperty> IMM_ObjectProperty { get; }
-		IQueryable<IMM_FormView> IMM_FormView { get; }
-		IQueryable<IMM_Package> IMM_Package { get; }
+		//IQueryable<IMM_FormView> IMM_FormView { get; }
+		//IQueryable<IMM_Package> IMM_Package { get; }
 		IQueryable<IN_Cache> IN_Cache { get; }
 
 		IN_Cache NewIN_Cache();
