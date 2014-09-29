@@ -218,10 +218,7 @@ namespace Nephrite.Meta
 		{
 			Invoke = () =>
 			{
-				if (Parent is MetaPackage)
-					WebFormRenderer.RenderView(Parent.Name + "Pck", ViewName, null);
-				else
-					WebFormRenderer.RenderView(Parent.Name, ViewName, null);
+				WebFormRenderer.RenderView(Parent.Name, ViewName, null);
 			};
 		}
 	}

@@ -141,19 +141,19 @@ namespace Nephrite.Meta.Forms
 				if (!CheckPermissions(mode + "." + action)) return;
 			}
 
-			MetaOperation op = null;
-			if (mode.EndsWith("Pck"))
-			{
-				var pck = A.Meta.GetPackage(mode.Replace("Pck", ""));
-				if (pck == null)
-				{
-					RenderMessage(String.Format(Nephrite.Web.Resources.Common.ControllerMethodNotFound, action, mode));
-					return;
-				}
-				op = pck.GetOperation(action);
-			}
-			else
-				op = A.Meta.GetOperation(mode, action);
+			//MetaOperation op = null;
+			//if (mode.EndsWith("Pck"))
+			//{
+			//	var pck = A.Meta.GetPackage(mode.Replace("Pck", ""));
+			//	if (pck == null)
+			//	{
+			//		RenderMessage(String.Format(Nephrite.Web.Resources.Common.ControllerMethodNotFound, action, mode));
+			//		return;
+			//	}
+			//	op = pck.GetOperation(action);
+			//}
+			//else
+			var	op = A.Meta.GetOperation(mode, action);
 
 			if (op == null)
 			{

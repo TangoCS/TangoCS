@@ -5,6 +5,7 @@ using Nephrite.Meta.Fluent;
 
 namespace Solution.Model
 {
+
 	public partial class MM_Package { }
 	public partial class MM_ObjectType { }
 	public partial class MM_ObjectProperty { }
@@ -17,18 +18,158 @@ namespace Solution.Model
 	public partial class MM_MethodParameter { }
 	public partial class MM_FormFieldGroup { }
 	public partial class MM_Predicate { }
+	public partial class SPM_Subject { }
+	public partial class SPM_Role { }
+	public partial class SPM_Action { }
+	public partial class SPM_ActionAsso { }
+	public partial class SPM_RoleAsso { }
+	public partial class SPM_SubjectRole { }
+	public partial class SPM_RoleGroup { }
+	public partial class SPM_RoleAccess { }
+	public partial class SPM_CasheFlag { }
+	public partial class SPM_SubjectDelegate { }
+	public partial class SPM_AvailableRoleForGrant { }
+	public partial class SPM_C_RoleType { }
+	public partial class SiteViews { }
+	public partial class N_TimeZone { }
+	public partial class N_RssFeed { }
+	public partial class UserActivity { }
+	public partial class N_TextResource { }
+	public partial class TM_Task { }
+	public partial class TM_TaskParameter { }
+	public partial class MailMessage { }
+	public partial class C_Help { }
+	public partial class MailTemplate { }
+	public partial class CalendarDay { }
+	public partial class N_DDL { }
+	public partial class TM_TaskExecution { }
+	public partial class N_Settings { }
+	public partial class N_SettingsGroup { }
+	public partial class N_TaskType { }
+	public partial class N_Task { }
+	public partial class MMS_ClassStereotype { }
+	public partial class MMS_Versioning { }
+	public partial class MMS_ChangeLog { }
+	public partial class MMS_Replication { }
+	public partial class N_SqlStatementLog { }
+	public partial class N_VirusScanLog { }
+	public partial class N_Folder { }
+	public partial class V_N_FolderFile { }
+	public partial class N_File { }
+	public partial class N_FileLibraryType { }
+	public partial class N_FileLibrary { }
+	public partial class N_DownloadLog { }
+	public partial class N_ObjectChange { }
+	public partial class N_ObjectPropertyChange { }
+	public partial class N_Navig { }
+	public partial class N_NavigItem { }
+	public partial class N_Node { }
+	public partial class CMSFormView { }
+	public partial class WF_Workflow { }
+	public partial class WF_Activity { }
+	public partial class WF_Transition { }
+	public partial class MasterPages { }
+	public partial class Utils { }
+	public partial class ErrorLog { }
+	public partial class DbFolder { }
+	public partial class DbFile { }
+	public partial class DbItem { }
+	public partial class C_FIAS_ActualStatus { }
+	public partial class C_FIAS_AddressObject { }
+	public partial class C_FIAS_CenterStatus { }
+	public partial class C_FIAS_OperationStatus { }
+	public partial class C_FIAS_CurrentStatus { }
+	public partial class C_FIAS_NormativeDocument { }
+	public partial class C_FIAS_House { }
+	public partial class C_FIAS_EstateStatus { }
+	public partial class C_FIAS_IntervalStatus { }
+	public partial class C_FIAS_StructureStatus { }
+	public partial class C_FIAS_HouseStateStatus { }
+	public partial class C_FIAS_HouseInterval { }
+	public partial class C_FIAS_Landmark { }
+	public partial class C_FIAS_AddressObjectType { }
+	public partial class OrgUnit { }
+	public partial class C_OrgUnitHie { }
+	public partial class OrgUnitAsso { }
+	public partial class C_OrgUnitType { }
+	public partial class OrgUnitHieRule { }
+	public partial class Employee { }
+	public partial class OrgUnitResponsible { }
+	public partial class CivilServants { }
+	public partial class Doc { }
+	public partial class Citizen { }
+	public partial class DocTask { }
+	public partial class PensionFile { }
+	public partial class JuridicalCase { }
+	public partial class CitizenRequest { }
+	public partial class DocTaskOperation { }
+	public partial class WorkInfo { }
+	public partial class DocAsso { }
+	public partial class Appendix { }
+	public partial class DocTaskRequest { }
+	public partial class CitizenPension { }
+	public partial class MassCalc { }
+	public partial class ControlTask { }
+	public partial class Complaint { }
+	public partial class CourtSession { }
+	public partial class DocTaskComplaint { }
+	public partial class OutDocSend { }
+	public partial class OfficeNote { }
+	public partial class MassOperationQueue { }
+	public partial class InfoDoc { }
+	public partial class C_RFSubject { }
+	public partial class C_CitizenCategory { }
+	public partial class C_Post { }
+	public partial class C_ExtraPayPost { }
+	public partial class C_RegionalRatio { }
+	public partial class C_OperationReason { }
+	public partial class C_DocName { }
+	public partial class C_RegLog { }
+	public partial class C_DocType { }
+	public partial class C_ProvisionMode { }
+	public partial class C_RequestCategory { }
+	public partial class C_RequestResultCategory { }
+	public partial class C_DocClass { }
+	public partial class C_PostSalary { }
+	public partial class C_PostType { }
+	public partial class C_OperationType { }
+	public partial class C_SenderCategory { }
+	public partial class C_PensionType { }
+	public partial class C_PostSalaryIndexing { }
+	public partial class C_PensionerCategory { }
+	public partial class C_PaymentStatus { }
+	public partial class C_RestrictionRatio { }
+	public partial class C_RaiseRatio { }
+	public partial class C_RequestMethod { }
+	public partial class C_Seniority { }
+	public partial class C_PostPart { }
+	public partial class C_MassCalcStatus { }
+	public partial class C_DocTaskType { }
+	public partial class C_Sign { }
+	public partial class C_PaymentType { }
+	public partial class C_JuridicalInstance { }
+	public partial class C_CourtSessionStatus { }
+	public partial class C_MassOperationType { }
+	public partial class C_MassOperationState { }
+	public partial class C_InfoDocType { }
+	public partial class C_SpecialNote { }
+	public partial class C_District { }
+	public partial class Reports { }
+	public partial class C_Scanner { }
+	public partial class ScanUserSettings { }
+	public partial class AssemblyGen { }
 
-	public class mmPackage
+	public class ApplicationDomain
 	{
-		public static MetaPackage Init(MetaPackage p)
+		public static MetaSolution Init(MetaSolution s)
 		{
-			p.AddEnum("VersioningType", "Тип версионности")
+			s.AddEnum("VersioningType", "Тип версионности")
 				.Value("O", "Object", "Версионность объектов")
 				.Value("M", "IdentifierMiss", "Версионность справочника без сохранения идентификаторов   ")
 				.Value("R", "IdentifiersRetain", "Версионность справочника с сохранением идентификаторов   ")
 				.Value("N", "None", "Нет");
 
-			p.AddEnum("TemplateType", "Тип представления")
+			s.AddEnum("TemplateType", "Тип представления")
 				.Value("A", "Ascx", "Ascx")
 				.Value("S", "SiteView", "Представление сайта")
 				.Value("P", "Aspx", "Aspx")
@@ -36,18 +177,48 @@ namespace Solution.Model
 				.Value("H", "Ashx", "Ashx")
 				.Value("C", "Svc", "Svc");
 
-			p.AddEnum("ViewDataBound", "Мощность представления")
+			s.AddEnum("ViewDataBound", "Мощность представления")
 				.Value("0", "None", "Без объекта")
 				.Value("1", "Single", "Один объект")
 				.Value("*", "Collection", "Коллекция объектов");
 
-			p.AddEnum("NoticeType", "Тип оповещения")
+			s.AddEnum("NoticeType", "Тип оповещения")
 				.Value("T", "Timeline", "Хронология")
 				.Value("S", "Static", "Статические");
 
+			s.AddEnum("StorageType", "Тип хранения файлов")
+				.Value("D", "Disk", "Диск")
+				.Value("B", "Database", "База данных");
+
+			s.AddEnum("NavigItemType", "Тип элемента меню")
+				.Value("T", "Text", "Текст")
+				.Value("L", "Link", "Ссылка")
+				.Value("N", "Node", "Страница сайта")
+				.Value("C", "Control", "Компонент")
+				.Value("M", "Method", "Метод, мастер-страница по умолчанию")
+				.Value("V", "View", "Представление пакета, мастер-страница по умолчанию");
+
+			s.AddEnum("NetScanFileFormat", "Формат файла")
+				.Value("J", "Jpeg", "JPEG")
+				.Value("P", "Pdf", "PDF")
+				.Value("N", "Png", "PNG")
+				.Value("T", "Tiff", "TIFF")
+				.Value("G", "Gif", "GIF");
+
+			s.AddEnum("NetScanPaperFormat", "Формат бумаги")
+				.Value("L", "Letter", "Letter")
+				.Value("G", "Legal", "Legal")
+				.Value("A", "A4", "A4");
+
+			s.AddEnum("NetScanResolution", "Разрешение")
+				.Value("3", "Dpi300", "300x300 dpi")
+				.Value("6", "Dpi600", "600x600 dpi")
+				.Value("1", "Dpi150", "150x150 dpi");
 
 
-			p.AddClass<MM_Package>()
+
+
+			s.AddClass<MM_Package>("Пакет")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -60,10 +231,15 @@ namespace Solution.Model
 				.ComputedAttribute("ControlsPath", "ControlsPath", MetaStringType.Null())
 				.ComputedAttribute("FullSysName", "FullSysName", MetaStringType.Null())
 				.Reference<MM_Package>("ParentPackage", "Родительский пакет", x => x.InverseProperty("ChildPackages"))
-				.Reference<MM_Package>("ChildPackages", "Дочерние пакеты", x => x.Multiple().InverseProperty("ParentPackage"))
-				.Reference<MM_Codifier>("Codifiers", "Справочники", x => x.Multiple().InverseProperty("Package"))
-				.Reference<MM_ObjectType>("ObjectTypes", "Классы", x => x.Multiple().InverseProperty("Package"))
+				.Reference<MM_Package>("ChildPackages", "Дочерние пакеты", x => x.Multiple().Aggregation().InverseProperty("ParentPackage"))
+				.Reference<MM_Codifier>("Codifiers", "Справочники", x => x.Multiple().Aggregation().InverseProperty("Package"))
+				.Reference<MM_ObjectType>("ObjectTypes", "Классы", x => x.Multiple().Aggregation().InverseProperty("Package"))
+				.OperationEdit() 
 				.OperationDelete() 
+				.Operation("Import", "Импорт", x => x 
+					.ParmString("returnurl")
+					.InvokesView("Nephrite.Web.ViewControl", "import")
+				)
 				.Operation("Export", "Экспорт", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
@@ -74,11 +250,6 @@ namespace Solution.Model
 					.ParmInt("objectTypeID")
 					.InvokesSingleObjectView("exportobjecttype")
 				)
-				.Operation("Import", "Импорт", x => x 
-					.ParmString("returnurl")
-					.InvokesView("Nephrite.Web.ViewControl", "import")
-				)
-				.OperationEdit() 
 				.OperationCreateNew(x => x 
 					.ParmInt("parentid")
 					.ParmString("returnurl")
@@ -92,7 +263,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<MM_ObjectType>()
+			s.AddClass<MM_ObjectType>("Класс")
 				.IntKey()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("LastModifiedUserID", "Последний редактировавший пользователь", MetaIntType.NotNull())
@@ -117,24 +288,48 @@ namespace Solution.Model
 				.ComputedAttribute("ControlsPath", "ControlsPath", MetaStringType.Null())
 				.ComputedAttribute("FullSysName", "FullSysName", MetaStringType.Null())
 				.Reference<MM_ObjectType>("BaseObjectType", "Базовый тип")
-				.Reference<MM_Method>("Methods", "Методы", x => x.Multiple().InverseProperty("ObjectType"))
-				.Reference<MM_ObjectProperty>("Properties", "Свойства", x => x.Multiple().InverseProperty("ObjectType"))
-				.Reference<MM_FormView>("FormViews", "Представления", x => x.Multiple().InverseProperty("ObjectType"))
-				.Reference<MM_FormFieldGroup>("FormFieldGroups", "Группы полей", x => x.Multiple().InverseProperty("ObjectType"))
-				.Reference<MM_Predicate>("DataValidations", "Проверки данных", x => x.Multiple().InverseProperty("ObjectType"))
+				.Reference<MM_Method>("Methods", "Методы", x => x.Multiple().Aggregation().InverseProperty("ObjectType"))
+				.Reference<MM_ObjectProperty>("Properties", "Свойства", x => x.Multiple().Aggregation().InverseProperty("ObjectType"))
+				.Reference<MM_FormView>("FormViews", "Представления", x => x.Multiple().Aggregation().InverseProperty("ObjectType"))
+				.Reference<MM_FormFieldGroup>("FormFieldGroups", "Группы полей", x => x.Multiple().Aggregation().InverseProperty("ObjectType"))
+				.Reference<MM_Predicate>("DataValidations", "Проверки данных", x => x.Multiple().Aggregation().InverseProperty("ObjectType"))
 				.Reference<MM_Package>("Package", "Пакет", x => x.InverseProperty("ObjectTypes"))
 				.Reference<MM_ObjectType>("Stereotypes", "Стереотипы", x => x.Multiple())
+				.Operation("MassCreate", "Массовое создание классов", x => x 
+					.ParmString("returnurl")
+					.InvokesView("Nephrite.Web.ViewControl", "masscreate")
+				)
+				.OperationList() 
+				.OperationCreateNew(x => x 
+					.ParmInt("parentid")
+					.ParmString("returnurl")
+				)
+				.OperationEdit() 
+				.Operation("CreateFromTemplate", "Создать по шаблону", x => x 
+					.ParmInt("parentid")
+					.ParmString("returnurl")
+				)
 				.OperationDelete() 
+				.Operation("EditRights", "Редактировать права", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("spm")
+				)
+				.Operation("EnableSPM", "Разрешить УПБ", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("enablespm")
+				)
 				.Operation("DisableSPM", "Запретить УПБ", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("disablespm")
 				)
-				.OperationEdit() 
-				.Operation("EnableSPM", "Разрешить УПБ", x => x 
+				.OperationView() 
+				.Operation("GenerateListControl", "Сгенерировать форму List", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
-					.InvokesSingleObjectView("enablespm")
+					.InvokesSingleObjectView("generatlistcontrol")
 				)
 				.Operation("GenerateEditControl", "Сгенерировать форму Edit", x => x 
 					.ParmInt("id")
@@ -146,30 +341,6 @@ namespace Solution.Model
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("generateviewcontrol")
 				)
-				.Operation("GenerateListControl", "Сгенерировать форму List", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("generatlistcontrol")
-				)
-				.OperationList() 
-				.Operation("EditRights", "Редактировать права", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("spm")
-				)
-				.OperationView() 
-				.Operation("MassCreate", "Массовое создание классов", x => x 
-					.ParmString("returnurl")
-					.InvokesView("Nephrite.Web.ViewControl", "masscreate")
-				)
-				.OperationCreateNew(x => x 
-					.ParmInt("parentid")
-					.ParmString("returnurl")
-				)
-				.Operation("CreateFromTemplate", "Создать по шаблону", x => x 
-					.ParmInt("parentid")
-					.ParmString("returnurl")
-				)
 				.Operation("MoveUp", "Переместить вверх", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
@@ -179,7 +350,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<MM_ObjectProperty>()
+			s.AddClass<MM_ObjectProperty>("Свойство")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -210,13 +381,13 @@ namespace Solution.Model
 				.Reference<MM_ObjectProperty>("RefObjectProperty", "Ссылается на свойство")
 				.Reference<MM_Codifier>("Codifier", "Кодификатор")
 				.Reference<MM_ObjectType>("RefObjectType", "Ссылается на класс")
-				.OperationDelete() 
 				.OperationEdit() 
 				.OperationCreateNew(x => x 
 					.ParmInt("parentid")
 					.ParmString("kind")
 					.ParmString("returnurl")
 				)
+				.OperationDelete() 
 				.Operation("MoveUp", "Переместить вверх", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
@@ -226,7 +397,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<MM_FormField>()
+			s.AddClass<MM_FormField>("Поле формы")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -243,7 +414,7 @@ namespace Solution.Model
 				.Attribute("ListColumnWidth", "ListColumnWidth", MetaStringType.Null())
 				.Attribute("ValueFunctionExecType", "ValueFunctionExecType", MetaBooleanType.NotNull())
 				.Reference<MM_ObjectProperty>("ObjectProperty", "Свойство")
-				.Reference<MM_FormFieldAttribute>("Attributes", "Атрибуты", x => x.Multiple().InverseProperty("FormField"))
+				.Reference<MM_FormFieldAttribute>("Attributes", "Атрибуты", x => x.Multiple().Aggregation().InverseProperty("FormField"))
 				.Reference<MM_FormFieldGroup>("FormFieldGroup", "Группа полей", x => x.InverseProperty("FormFields"))
 				.OperationEdit() 
 				.Operation("MoveUp", "Переместить вверх", x => x 
@@ -255,21 +426,21 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<MM_Codifier>()
+			s.AddClass<MM_Codifier>("Кодификатор")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Guid", "Guid", MetaGuidType.NotNull())
-				.Reference<MM_CodifierValue>("Values", "Значения", x => x.Multiple().InverseProperty("Codifier"))
+				.Reference<MM_CodifierValue>("Values", "Значения", x => x.Multiple().Aggregation().InverseProperty("Codifier"))
 				.Reference<MM_Package>("Package", "Пакет", x => x.InverseProperty("Codifiers"))
 				.OperationView() 
-				.OperationDelete() 
 				.OperationEdit() 
 				.OperationList() 
+				.OperationDelete() 
 			;	
-			p.AddClass<MM_CodifierValue>()
+			s.AddClass<MM_CodifierValue>("Значение кодификатора")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -287,7 +458,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<MM_FormFieldAttribute>()
+			s.AddClass<MM_FormFieldAttribute>("Атрибут поля формы")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -296,7 +467,7 @@ namespace Solution.Model
 				.Attribute("IsEvent", "Признак Событие", MetaBooleanType.NotNull())
 				.Reference<MM_FormField>("FormField", "Поле", x => x.InverseProperty("Attributes"))
 			;	
-			p.AddClass<MM_FormView>()
+			s.AddClass<MM_FormView>("Представление")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -314,12 +485,20 @@ namespace Solution.Model
 				.ComputedAttribute("FullSysName", "FullSysName", MetaStringType.Null())
 				.Reference<MM_Package>("Package", "Пакет")
 				.Reference<MM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("FormViews"))
+				.OperationDelete() 
 				.Operation("Caching", "Настроить кэширование", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("caching")
 				)
-				.OperationDelete() 
+				.Operation("CreateForObjectType", "Создать для класса", x => x 
+					.ParmInt("parentid")
+					.ParmString("returnurl")
+				)
+				.Operation("CreateForPackage", "Создать для пакета", x => x 
+					.ParmInt("parentid")
+					.ParmString("returnurl")
+				)
 				.OperationEdit() 
 				.Operation("Spm", "Настроить права доступа", x => x 
 					.ParmInt("id")
@@ -334,16 +513,8 @@ namespace Solution.Model
 				.Operation("LastChanges", "Последние изменения в представлениях", x => x 
 					.InvokesObjectListView("lastchanges")
 				)
-				.Operation("CreateForObjectType", "Создать для класса", x => x 
-					.ParmInt("parentid")
-					.ParmString("returnurl")
-				)
-				.Operation("CreateForPackage", "Создать для пакета", x => x 
-					.ParmInt("parentid")
-					.ParmString("returnurl")
-				)
 			;	
-			p.AddClass<MM_Method>()
+			s.AddClass<MM_Method>("Метод")
 				.IntKey()
 				.Attribute("SysName", "SysName", MetaStringType.NotNull())
 				.Attribute("Title", "Title", MetaStringType.NotNull())
@@ -356,7 +527,7 @@ namespace Solution.Model
 				.Attribute("PredicateCode", "PredicateCode", MetaStringType.Null())
 				.Attribute("Comment", "Comment", MetaStringType.Null())
 				.Attribute("Parameters", "Parameters", MetaStringType.Null())
-				.Reference<MM_MethodParameter>("MethodParameters", "Параметры", x => x.Multiple().InverseProperty("Method"))
+				.Reference<MM_MethodParameter>("MethodParameters", "Параметры", x => x.Multiple().Aggregation().InverseProperty("Method"))
 				.Reference<MM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("Methods"))
 				.Reference<MM_FormView>("FormView", "Представление")
 				.OperationEdit() 
@@ -374,7 +545,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<MM_MethodParameter>()
+			s.AddClass<MM_MethodParameter>("Параметр метода")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("Title", "Наименование", MetaStringType.Null())
@@ -383,7 +554,7 @@ namespace Solution.Model
 				.Attribute("Type", "Тип данных", MetaStringType.Null())
 				.Reference<MM_Method>("Method", "Метод", x => x.InverseProperty("MethodParameters"))
 			;	
-			p.AddClass<MM_FormFieldGroup>()
+			s.AddClass<MM_FormFieldGroup>("Группа полей")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("Title", "Title", MetaStringType.NotNull())
@@ -397,7 +568,7 @@ namespace Solution.Model
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Reference<MM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("FormFieldGroups"))
 				.Reference<MM_ObjectProperty>("SelectObjectProperty", "Свойство класса")
-				.Reference<MM_FormField>("FormFields", "Поля", x => x.Multiple().InverseProperty("FormFieldGroup"))
+				.Reference<MM_FormField>("FormFields", "Поля", x => x.Multiple().Aggregation().InverseProperty("FormFieldGroup"))
 				.OperationEdit() 
 				.OperationCreateNew(x => x 
 					.ParmInt("parentid")
@@ -412,7 +583,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<MM_Predicate>()
+			s.AddClass<MM_Predicate>("Предикат")
 				.GuidKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("DesignerData", "DesignerData", MetaStringType.Null())
@@ -422,36 +593,14 @@ namespace Solution.Model
 				.Attribute("Body", "Body", MetaStringType.NotNull())
 				.Attribute("Type", "Тип", MetaEnumType.NotNull(""))
 				.Reference<MM_ObjectType>("ObjectType", "Класс", x => x.InverseProperty("DataValidations"))
-				.OperationDelete() 
-				.OperationEdit() 
 				.OperationCreateNew(x => x 
 					.ParmInt("parentid")
 					.ParmString("returnurl")
 				)
+				.OperationEdit() 
+				.OperationDelete() 
 			;	
-			return p;
-		}
-	}
-	public partial class SPM_Subject { }
-	public partial class SPM_Role { }
-	public partial class SPM_Action { }
-	public partial class SPM_ActionAsso { }
-	public partial class SPM_RoleAsso { }
-	public partial class SPM_SubjectRole { }
-	public partial class SPM_RoleGroup { }
-	public partial class SPM_RoleAccess { }
-	public partial class SPM_CasheFlag { }
-	public partial class SPM_SubjectDelegate { }
-	public partial class SPM_AvailableRoleForGrant { }
-	public partial class SPM_C_RoleType { }
-
-	public class SPMPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-
-			p.AddClass<SPM_Subject>()
+			s.AddClass<SPM_Subject>("Субъект доступа")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -465,19 +614,19 @@ namespace Solution.Model
 				.Attribute("EMail", "EMail", MetaStringType.Null())
 				.Attribute("MustChangePassword", "MustChangePassword", MetaBooleanType.NotNull())
 				.Attribute("PasswordExpDate", "PasswordExpDate", MetaDateTimeType.Null())
-				.OperationEdit() 
 				.OperationList() 
+				.OperationEdit() 
+				.Operation("Logoff", "Выйти") 
 				.Operation("Register", "Зарегистрироваться", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "Register")
 				)
+				.OperationDelete() 
 				.Operation("RegistrationComplete", "Регистрация завершена", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "registrationcomplete")
 				)
 				.Operation("RestorePassword", "Восстановить пароль", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "restorepassword")
 				)
-				.OperationDelete() 
-				.Operation("Logoff", "Выйти") 
 				.Operation("Activate", "Активировать", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
@@ -496,7 +645,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<SPM_Role>()
+			s.AddClass<SPM_Role>("Роль")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -508,10 +657,6 @@ namespace Solution.Model
 				.Attribute("SID", "SID группы AD", MetaStringType.Null())
 				.Reference<SPM_RoleGroup>("RoleGroup", "Группа ролей", x => x.InverseProperty("Roles"))
 				.Reference<SPM_C_RoleType>("RoleType", "Тип роли")
-				.OperationDelete() 
-				.OperationEdit() 
-				.OperationList() 
-				.OperationView() 
 				.Operation("EditRoles", "Редактировать роли для назначения пользователям", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
@@ -527,6 +672,10 @@ namespace Solution.Model
 					.ParmInt("subjectID")
 					.ParmString("returnurl")
 				)
+				.OperationList() 
+				.OperationEdit() 
+				.OperationDelete() 
+				.OperationView() 
 				.OperationCreateNew(x => x 
 					.InvokesSingleObjectView("edit")
 				)
@@ -539,7 +688,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<SPM_Action>()
+			s.AddClass<SPM_Action>("Защищаемая операция")
 				.IntKey()
 				.Attribute("Title", "Title", MetaStringType.NotNull())
 				.Attribute("Type", "Type (устарело)", MetaIntType.NotNull())
@@ -551,39 +700,39 @@ namespace Solution.Model
 				.Attribute("SubCategoryGUID", "SubCategoryGUID", MetaGuidType.Null())
 				.Reference<MM_Predicate>("Predicate", "Предикат")
 				.Reference<MM_Package>("Package", "Пакет")
-				.OperationDelete() 
+				.Operation("ViewListTree", "Список - дерево", x => x 
+					.InvokesView("Nephrite.Web.ViewControl", "treelist")
+				)
+				.OperationList() 
 				.OperationCreateNew(x => x 
 					.ParmGuid("classguid")
 					.ParmString("returnurl")
 				)
 				.OperationEdit() 
-				.OperationList() 
-				.Operation("ViewListTree", "Список - дерево", x => x 
-					.InvokesView("Nephrite.Web.ViewControl", "treelist")
-				)
+				.OperationDelete() 
 			;	
-			p.AddClass<SPM_ActionAsso>()
+			s.AddClass<SPM_ActionAsso>("Ассоциатор ЗО")
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 				.ReferenceKey<SPM_Action>("Action", "Action")
 				.ReferenceKey<SPM_Action>("ParentAction", "ParentAction")
 			;	
-			p.AddClass<SPM_RoleAsso>()
+			s.AddClass<SPM_RoleAsso>("Наследование ролей")
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 				.ReferenceKey<SPM_Role>("ParentRole", "ParentRole")
 				.ReferenceKey<SPM_Role>("Role", "Role")
 			;	
-			p.AddClass<SPM_SubjectRole>()
+			s.AddClass<SPM_SubjectRole>("Роль пользователя")
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 				.ReferenceKey<SPM_Role>("Role", "Role")
 				.ReferenceKey<SPM_Subject>("Subject", "Subject")
 			;	
-			p.AddClass<SPM_RoleGroup>()
+			s.AddClass<SPM_RoleGroup>("Группа ролей")
 				.IntKey()
 				.Attribute("Title", "Название", MetaStringType.NotNull())
 				.Attribute("SeqNo", "Порядковый номер", MetaIntType.NotNull())
 				.Reference<SPM_Role>("Roles", "Роли", x => x.InverseProperty("RoleGroup"))
-				.OperationDelete() 
 				.OperationEdit() 
+				.OperationDelete() 
 				.Operation("MoveUp", "Переместить вверх", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
@@ -593,16 +742,16 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<SPM_RoleAccess>()
+			s.AddClass<SPM_RoleAccess>("Права роли")
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 				.ReferenceKey<SPM_Action>("Action", "Action")
 				.ReferenceKey<SPM_Role>("Role", "Role")
 			;	
-			p.AddClass<SPM_CasheFlag>()
+			s.AddClass<SPM_CasheFlag>("Кэш флаг")
 				.Attribute("IsChange", "IsChange", MetaBooleanType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<SPM_SubjectDelegate>()
+			s.AddClass<SPM_SubjectDelegate>("Делегирование полномочий")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("BeginDate", "Дата начала", MetaDateTimeType.NotNull())
@@ -611,23 +760,23 @@ namespace Solution.Model
 				.PersistentComputedAttribute("IsDeleted", "Признак Удалено", MetaBooleanType.Null())
 				.Reference<SPM_Subject>("DelegatedFrom", "От кого делегировано")
 				.Reference<SPM_Subject>("DelegatedTo", "Кому делегировано")
-				.Operation("ObjectChangeHistory", "История изменений", x => x 
-					.InvokesSingleObjectView("changehistory")
-				)
-				.OperationDelete() 
 				.OperationCreateNew() 
 				.OperationEdit() 
+				.OperationDelete() 
 				.OperationList() 
 				.OperationView(x => x 
 					.InvokesSingleObjectView("view")
 				)
+				.Operation("ObjectChangeHistory", "История изменений", x => x 
+					.InvokesSingleObjectView("changehistory")
+				)
 			;	
-			p.AddClass<SPM_AvailableRoleForGrant>()
+			s.AddClass<SPM_AvailableRoleForGrant>("Доступная роль для назначения пользователям")
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 				.ReferenceKey<SPM_Role>("Role", "Role")
 				.ReferenceKey<SPM_Role>("RoleForGrant", "RoleForGrant")
 			;	
-			p.AddClass<SPM_C_RoleType>()
+			s.AddClass<SPM_C_RoleType>("Тип роли")
 				.IntKey("RoleTypeID")
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -640,65 +789,28 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			return p;
-		}
-	}
-
-	public class SiteViewsPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-			p.Operation("AdminLogin", "Форма логина в админку", x => x 
+			s.AddClass<SiteViews>("Представления сайта")
+				.NonPersistent()
+				.Operation("AdminLogin", "Форма логина в админку", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "AdminLogin")
-			);
-			p.Operation("homeheader", "Шапка домашней страницы", x => x 
+				)
+				.Operation("homeheader", "Шапка домашней страницы", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "homeheader")
-			);
-			p.Operation("NavMenu", "Меню навигации админки", x => x 
+				)
+				.Operation("NavMenu", "Меню навигации админки", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "NavMenu")
-			);
-			p.Operation("ChangePassword", "Изменение пароля", x => x 
+				)
+				.Operation("ChangePassword", "Изменение пароля", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "ChangePassword")
-			);
-			p.Operation("utilsmenu", "Меню Утилиты шапки страницы", x => x 
+				)
+				.Operation("utilsmenu", "Меню Утилиты шапки страницы", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "utilsmenu")
-			);
-			p.Operation("runup", "Накат", x => x 
+				)
+				.Operation("runup", "Накат", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "runup")
-			);
-
-			return p;
-		}
-	}
-	public partial class N_TimeZone { }
-	public partial class N_RssFeed { }
-	public partial class UserActivity { }
-	public partial class N_TextResource { }
-	public partial class TM_Task { }
-	public partial class TM_TaskParameter { }
-	public partial class MailMessage { }
-	public partial class C_Help { }
-	public partial class MailTemplate { }
-	public partial class CalendarDay { }
-	public partial class N_DDL { }
-	public partial class TM_TaskExecution { }
-	public partial class N_Settings { }
-	public partial class N_SettingsGroup { }
-	public partial class N_TaskType { }
-	public partial class N_Task { }
-
-	public class SystemPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-			p.AddEnum("StorageType", "Тип хранения файлов")
-				.Value("D", "Disk", "Диск")
-				.Value("B", "Database", "База данных");
-
-
-
-			p.AddClass<N_TimeZone>()
+				)
+			;	
+			s.AddClass<N_TimeZone>("Часовой пояс")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -706,17 +818,17 @@ namespace Solution.Model
 				.Attribute("GMTOffset", "Смещение относительно GMT", MetaIntType.NotNull())
 				.Attribute("Comment", "Комментарий", MetaStringType.Null())
 				.ComputedAttribute("DisplayTitle", "Отображаемое имя", MetaStringType.Null())
-				.OperationDelete() 
-				.OperationEdit() 
-				.OperationList() 
 				.OperationCreateNew(x => x 
 					.InvokesSingleObjectView("edit")
 				)
+				.OperationDelete() 
+				.OperationEdit() 
 				.OperationView(x => x 
 					.InvokesSingleObjectView("view")
 				)
+				.OperationList() 
 			;	
-			p.AddClass<N_RssFeed>()
+			s.AddClass<N_RssFeed>("RSS Канал")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -733,14 +845,14 @@ namespace Solution.Model
 				.Attribute("WebMaster", "E-mail веб-мастера", MetaStringType.NotNull())
 				.Attribute("LinkParams", "LinkParams", MetaStringType.Null())
 				.OperationEdit() 
-				.OperationCreateNew() 
-				.OperationList() 
-				.OperationDelete() 
 				.OperationView(x => x 
 					.InvokesSingleObjectView("view")
 				)
+				.OperationDelete() 
+				.OperationCreateNew() 
+				.OperationList() 
 			;	
-			p.AddClass<UserActivity>()
+			s.AddClass<UserActivity>("Действие пользователя")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("Title", "Название объекта", MetaStringType.NotNull())
@@ -756,20 +868,20 @@ namespace Solution.Model
 					.InvokesObjectListView("excelexport")
 				)
 			;	
-			p.AddClass<N_TextResource>()
+			s.AddClass<N_TextResource>("Текстовый ресурс")
 				.IntKey()
 				.Attribute("Title", "Название", MetaStringType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Text", "Текст", MetaStringType.Null(), true)
-				.OperationList() 
-				.OperationDelete() 
 				.OperationEdit() 
+				.OperationDelete() 
+				.OperationList() 
 				.OperationCreateNew() 
 				.OperationView(x => x 
 					.InvokesSingleObjectView("view")
 				)
 			;	
-			p.AddClass<TM_Task>()
+			s.AddClass<TM_Task>("Задача")
 				.IntKey()
 				.Attribute("Title", "Название", MetaStringType.NotNull())
 				.Attribute("Class", "Класс", MetaStringType.NotNull())
@@ -782,17 +894,17 @@ namespace Solution.Model
 				.Attribute("StartFromService", "Старт службой", MetaBooleanType.NotNull())
 				.Attribute("ErrorLogID", "Ид ошибки в журнале", MetaIntType.Null())
 				.Attribute("ExecutionTimeout", "Таймаут выполнения задачи, мин", MetaIntType.NotNull())
-				.Reference<TM_TaskParameter>("Parameters", "Параметры", x => x.Multiple().InverseProperty("Parent"))
-				.OperationEdit() 
-				.OperationView() 
-				.OperationList() 
+				.Reference<TM_TaskParameter>("Parameters", "Параметры", x => x.Multiple().Aggregation().InverseProperty("Parent"))
 				.OperationDelete() 
+				.OperationEdit() 
 				.Operation("Start", "Запуск", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
 				)
+				.OperationView() 
+				.OperationList() 
 			;	
-			p.AddClass<TM_TaskParameter>()
+			s.AddClass<TM_TaskParameter>("Параметр задачи")
 				.IntKey()
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Value", "Значение", MetaStringType.Null())
@@ -809,7 +921,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<MailMessage>()
+			s.AddClass<MailMessage>("Письмо")
 				.IntKey()
 				.Attribute("Recipients", "Получатели", MetaStringType.Null())
 				.Attribute("Subject", "Тема", MetaStringType.Null())
@@ -825,7 +937,7 @@ namespace Solution.Model
 				.OperationView() 
 				.OperationList() 
 			;	
-			p.AddClass<C_Help>()
+			s.AddClass<C_Help>("Справка")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("Text", "Текст", MetaStringType.Null())
@@ -833,53 +945,53 @@ namespace Solution.Model
 				.Attribute("Title", "Форма системы", MetaStringType.Null())
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.OperationCreateNew() 
-				.OperationEdit() 
 				.OperationDelete() 
-				.OperationList() 
+				.OperationEdit() 
 				.OperationView(x => x 
 					.InvokesSingleObjectView("view")
 				)
+				.OperationList() 
 			;	
-			p.AddClass<MailTemplate>()
+			s.AddClass<MailTemplate>("Шаблон почтового уведомления")
 				.IntKey()
 				.Attribute("Comment", "Комментарий", MetaStringType.Null())
 				.Attribute("IsSystem", "Системное", MetaBooleanType.NotNull())
 				.Attribute("TemplateBody", "Сообщение", MetaStringType.NotNull())
 				.Attribute("TemplateSubject", "Тема", MetaStringType.NotNull())
 				.Attribute("Title", "Имя", MetaStringType.NotNull())
-				.OperationDelete() 
-				.OperationEdit() 
-				.OperationList() 
 				.OperationCreateNew(x => x 
 					.InvokesSingleObjectView("edit")
 				)
+				.OperationDelete() 
+				.OperationEdit() 
 				.OperationView(x => x 
 					.InvokesSingleObjectView("view")
 				)
+				.OperationList() 
 			;	
-			p.AddClass<CalendarDay>()
+			s.AddClass<CalendarDay>("Элемент календаря")
 				.IntKey()
 				.Attribute("Date", "Дата", MetaDateType.NotNull())
 				.Attribute("IsWorkingDay", "Рабочий/Выходной", MetaBooleanType.NotNull())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
-				.OperationDelete() 
-				.OperationList() 
 				.OperationCreateNew(x => x 
 					.InvokesSingleObjectView("edit")
 				)
+				.OperationDelete() 
 				.OperationEdit(x => x 
 					.InvokesSingleObjectView("edit")
 				)
 				.OperationView(x => x 
 					.InvokesSingleObjectView("view")
 				)
+				.OperationList() 
 			;	
-			p.AddClass<N_DDL>()
+			s.AddClass<N_DDL>("Журнал модификации структуры БД")
 				.IntKey()
 				.Attribute("Title", "Команда", MetaStringType.NotNull())
 				.OperationList() 
 			;	
-			p.AddClass<TM_TaskExecution>()
+			s.AddClass<TM_TaskExecution>("Запуск задачи")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("ExecutionLog", "Журнал выполнения", MetaStringType.Null())
@@ -893,7 +1005,7 @@ namespace Solution.Model
 				.OperationList() 
 				.OperationView() 
 			;	
-			p.AddClass<N_Settings>()
+			s.AddClass<N_Settings>("Параметр системы")
 				.GuidKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -903,17 +1015,17 @@ namespace Solution.Model
 				.Attribute("AcceptableValues", "Список разрешенных значений", MetaStringType.Null())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Reference<N_SettingsGroup>("Group", "Группа параметра", x => x.InverseProperty("Settings"))
-				.Operation("ObjectChangeHistory", "История изменений", x => x 
-					.InvokesSingleObjectView("changehistory")
-				)
 				.OperationDelete() 
 				.OperationCreateNew() 
 				.OperationEdit() 
 				.OperationList() 
 				.OperationUnDelete() 
 				.OperationView() 
+				.Operation("ObjectChangeHistory", "История изменений", x => x 
+					.InvokesSingleObjectView("changehistory")
+				)
 			;	
-			p.AddClass<N_SettingsGroup>()
+			s.AddClass<N_SettingsGroup>("Группа параметров")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
@@ -926,7 +1038,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<N_TaskType>()
+			s.AddClass<N_TaskType>("Тип задания")
 				.IntKey()
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
@@ -941,7 +1053,7 @@ namespace Solution.Model
 				.OperationList() 
 				.OperationView() 
 			;	
-			p.AddClass<N_Task>()
+			s.AddClass<N_Task>("Задание")
 				.GuidKey("GUID")
 				.Attribute("CreateDate", "Дата создания", MetaDateTimeType.NotNull())
 				.Attribute("FinishTime", "Дата завершения", MetaDateTimeType.Null())
@@ -963,52 +1075,25 @@ namespace Solution.Model
 				.OperationList() 
 				.OperationView() 
 			;	
-			return p;
-		}
-	}
-	public partial class MMS_ClassStereotype { }
-	public partial class MMS_Versioning { }
-	public partial class MMS_ChangeLog { }
-	public partial class MMS_Replication { }
-
-	public class StereotypesPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-
-			p.AddClass<MMS_ClassStereotype>()
+			s.AddClass<MMS_ClassStereotype>("Стереотип класса")
 				.IntKey()
 			;	
-			p.AddClass<MMS_Versioning>()
+			s.AddClass<MMS_Versioning>("Версионность")
 				.IntKey()
 				.Attribute("Type", "Тип", MetaEnumType.NotNull("VersioningType"))
 				.OperationEdit() 
 			;	
-			p.AddClass<MMS_ChangeLog>()
+			s.AddClass<MMS_ChangeLog>("Класс с историей изменений")
 				.IntKey()
 			;	
-			p.AddClass<MMS_Replication>()
+			s.AddClass<MMS_Replication>("Класс, поддерживающий репликацию")
 				.IntKey()
 			;	
-			return p;
-		}
-	}
-	public partial class N_SqlStatementLog { }
-
-	public class SqlExecutionPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-
-			p.AddClass<N_SqlStatementLog>()
+			s.AddClass<N_SqlStatementLog>("Элемент журнала SQL-запросов")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("Title", "Текст запроса", MetaStringType.NotNull())
 				.Attribute("IP", "IP-адрес", MetaStringType.NotNull())
-				.OperationView() 
-				.OperationList() 
 				.Operation("Execute", "Выполнение SQL", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "exec")
 				)
@@ -1017,25 +1102,10 @@ namespace Solution.Model
 					.ParmString("returnurl")
 					.InvokesView("Nephrite.Web.ViewControl", "exec")
 				)
+				.OperationView() 
+				.OperationList() 
 			;	
-			return p;
-		}
-	}
-	public partial class N_VirusScanLog { }
-	public partial class N_Folder { }
-	public partial class V_N_FolderFile { }
-	public partial class N_File { }
-	public partial class N_FileLibraryType { }
-	public partial class N_FileLibrary { }
-	public partial class N_DownloadLog { }
-
-	public class FileStoragePackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-
-			p.AddClass<N_VirusScanLog>()
+			s.AddClass<N_VirusScanLog>("Проверка загружаемого файла на вирусы")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -1045,13 +1115,13 @@ namespace Solution.Model
 					.InvokesSingleObjectView("view")
 				)
 				.OperationView() 
-				.OperationList() 
 				.OperationDelete() 
 				.OperationCreateNew(x => x 
 					.InvokesSingleObjectView("edit")
 				)
+				.OperationList() 
 			;	
-			p.AddClass<N_Folder>()
+			s.AddClass<N_Folder>("Папка")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -1068,33 +1138,33 @@ namespace Solution.Model
 				.Attribute("Tag", "Tag", MetaStringType.Null())
 				.ComputedAttribute("PhysicalPath", "Путь на диске", MetaStringType.Null())
 				.Reference<N_Folder>("Parent", "Родительская папка", x => x.InverseProperty("Folders"))
-				.Reference<N_Folder>("Folders", "Папки", x => x.Multiple().InverseProperty("Parent"))
-				.Reference<N_File>("Files", "Файлы", x => x.Multiple().InverseProperty("Folder"))
+				.Reference<N_Folder>("Folders", "Папки", x => x.Multiple().Aggregation().InverseProperty("Parent"))
+				.Reference<N_File>("Files", "Файлы", x => x.Multiple().Aggregation().InverseProperty("Folder"))
 				.Reference<SPM_Subject>("Creator", "Создавший пользователь")
-				.OperationDelete() 
-				.OperationList() 
 				.Operation("CreateNew", "Создать папку", x => x 
 					.ParmInt("parentid")
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("edit")
 				)
-				.OperationEdit() 
+				.OperationList() 
 				.Operation("Upload", "Загрузить файлы", x => x 
 					.ParmString("parent")
 					.ParmString("returnurl")
 					.InvokesView("Nephrite.Web.ViewControl", "upload")
 				)
-				.Operation("Predicates", "Права доступа", x => x 
-					.InvokesSingleObjectView("predicates")
-				)
+				.OperationEdit() 
 				.OperationView(x => x 
 					.InvokesSingleObjectView("view")
+				)
+				.OperationDelete() 
+				.Operation("Predicates", "Права доступа", x => x 
+					.InvokesSingleObjectView("predicates")
 				)
 				.Operation("PackAndDownload", "Упаковать и скачать", x => x 
 					.ParmGuid("id")
 				)
 			;	
-			p.AddClass<V_N_FolderFile>()
+			s.AddClass<V_N_FolderFile>("Файл/папка")
 				.IntKey("ID")
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
@@ -1116,7 +1186,7 @@ namespace Solution.Model
 					.InvokesSingleObjectView("view")
 				)
 			;	
-			p.AddClass<N_File>()
+			s.AddClass<N_File>("Файл")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
@@ -1141,25 +1211,25 @@ namespace Solution.Model
 				.Reference<N_Folder>("Folder", "Папка", x => x.InverseProperty("Files"))
 				.Reference<SPM_Subject>("CheckedOutBy", "Кем извлечено")
 				.Reference<SPM_Subject>("Creator", "Создавший пользователь")
+				.OperationDelete() 
 				.OperationEdit() 
-				.Operation("EditG", "Редактировать", x => x 
-					.ParmGuid("id")
-					.InvokesSingleObjectView("edit")
-				)
 				.Operation("CreateNew", "Создать файл", x => x 
 					.ParmInt("folderid")
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("edit")
 				)
-				.OperationDelete() 
 				.OperationView(x => x 
 					.InvokesSingleObjectView("view")
 				)
 				.OperationList(x => x 
 					.InvokesObjectListView("list")
 				)
+				.Operation("EditG", "Редактировать", x => x 
+					.ParmGuid("id")
+					.InvokesSingleObjectView("edit")
+				)
 			;	
-			p.AddClass<N_FileLibraryType>()
+			s.AddClass<N_FileLibraryType>("Тип библиотеки файлов")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -1175,12 +1245,12 @@ namespace Solution.Model
 					.InvokesSingleObjectView("view")
 				)
 			;	
-			p.AddClass<N_FileLibrary>()
+			s.AddClass<N_FileLibrary>("Библиотека")
 				.IntKey("FolderID")
 				.Attribute("MaxFileSize", "Максимальный размер файла", MetaIntType.NotNull())
 				.Reference<N_FileLibraryType>("FileLibraryType", "Тип")
 			;	
-			p.AddClass<N_DownloadLog>()
+			s.AddClass<N_DownloadLog>("Журнал скачивания файлов")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -1190,19 +1260,7 @@ namespace Solution.Model
 				.Reference<N_File>("File", "Файл")
 				.OperationList() 
 			;	
-			return p;
-		}
-	}
-	public partial class N_ObjectChange { }
-	public partial class N_ObjectPropertyChange { }
-
-	public class ChangeHistoryPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-
-			p.AddClass<N_ObjectChange>()
+			s.AddClass<N_ObjectChange>("Изменение объекта")
 				.IntKey()
 				.Attribute("Details", "Дополнительная информация", MetaStringType.NotNull())
 				.Attribute("IP", "IP", MetaStringType.NotNull())
@@ -1214,14 +1272,14 @@ namespace Solution.Model
 				.Attribute("Title", "Действие", MetaStringType.NotNull())
 				.Attribute("UserLogin", "Логин пользователя", MetaStringType.NotNull())
 				.Attribute("UserTitle", "Имя пользователя", MetaStringType.NotNull())
-				.Reference<N_ObjectPropertyChange>("PropertyChanges", "Изменения свойств", x => x.Multiple().InverseProperty("ObjectChange"))
-				.OperationDelete() 
+				.Reference<N_ObjectPropertyChange>("PropertyChanges", "Изменения свойств", x => x.Multiple().Aggregation().InverseProperty("ObjectChange"))
 				.OperationCreateNew() 
 				.OperationEdit() 
+				.OperationDelete() 
 				.OperationList() 
 				.OperationUnDelete() 
 			;	
-			p.AddClass<N_ObjectPropertyChange>()
+			s.AddClass<N_ObjectPropertyChange>("Изменение свойства")
 				.IntKey()
 				.Attribute("NewValue", "Новое значение", MetaStringType.Null())
 				.Attribute("NewValueTitle", "Отображаемый текст нового значения", MetaStringType.NotNull())
@@ -1230,49 +1288,27 @@ namespace Solution.Model
 				.Attribute("PropertySysName", "Системное имя свойства", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование свойства", MetaStringType.NotNull())
 				.Reference<N_ObjectChange>("ObjectChange", "Изменение объекта", x => x.InverseProperty("PropertyChanges"))
-				.OperationDelete() 
 				.OperationCreateNew() 
 				.OperationEdit() 
+				.OperationDelete() 
 				.OperationList() 
 				.OperationUnDelete() 
 			;	
-			return p;
-		}
-	}
-	public partial class N_Navig { }
-	public partial class N_NavigItem { }
-	public partial class N_Node { }
-	public partial class CMSFormView { }
-
-	public class NavigationPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-			p.AddEnum("NavigItemType", "Тип элемента меню")
-				.Value("T", "Text", "Текст")
-				.Value("L", "Link", "Ссылка")
-				.Value("N", "Node", "Страница сайта")
-				.Value("C", "Control", "Компонент")
-				.Value("M", "Method", "Метод, мастер-страница по умолчанию")
-				.Value("V", "View", "Представление пакета, мастер-страница по умолчанию");
-
-
-
-			p.AddClass<N_Navig>()
+			s.AddClass<N_Navig>("Меню навигации")
 				.GuidKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("MaxLevels", "Максимальное количество уровней", MetaIntType.Null())
-				.Reference<N_NavigItem>("Items", "Элементы", x => x.Multiple().InverseProperty("Navig"))
+				.Reference<N_NavigItem>("Items", "Элементы", x => x.Multiple().Aggregation().InverseProperty("Navig"))
 				.OperationCreateNew() 
 				.OperationEdit() 
 				.OperationDelete() 
 				.OperationView() 
 				.OperationList() 
 			;	
-			p.AddClass<N_NavigItem>()
+			s.AddClass<N_NavigItem>("Элемент меню")
 				.GuidKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -1292,7 +1328,10 @@ namespace Solution.Model
 				.Reference<N_Node>("Node", "Страница сайта")
 				.Reference<MM_Method>("Method", "Метод")
 				.Reference<MM_FormView>("FormView", "Представление")
-				.Reference<N_NavigItem>("Child", "Дочерние элементы", x => x.Multiple().InverseProperty("Parent"))
+				.Reference<N_NavigItem>("Child", "Дочерние элементы", x => x.Multiple().Aggregation().InverseProperty("Parent"))
+				.Operation("EditRights", "Редактировать права", x => x 
+					.InvokesSingleObjectView("spm")
+				)
 				.OperationCreateNew(x => x 
 					.ParmGuid("menuid")
 					.ParmGuid("parentid")
@@ -1302,9 +1341,6 @@ namespace Solution.Model
 				.OperationDelete() 
 				.OperationList() 
 				.OperationUnDelete() 
-				.Operation("EditRights", "Редактировать права", x => x 
-					.InvokesSingleObjectView("spm")
-				)
 				.Operation("SortChildren", "Отсортировать дочерние элементы", x => x 
 					.ParmGuid("id")
 					.ParmString("returnurl")
@@ -1318,7 +1354,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<N_Node>()
+			s.AddClass<N_Node>("Страница сайта")
 				.GuidKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("NodeID", "Старый ид", MetaIntType.Null())
@@ -1342,28 +1378,15 @@ namespace Solution.Model
 				.OperationList() 
 				.OperationUnDelete() 
 			;	
-			p.AddClass<CMSFormView>()
+			s.AddClass<CMSFormView>("Разрешенное представление для CMS")
 				.IntKey()
+				.OperationList() 
+				.OperationDelete() 
 				.OperationCreateNew(x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "createnew")
 				)
-				.OperationDelete() 
-				.OperationList() 
 			;	
-			return p;
-		}
-	}
-	public partial class WF_Workflow { }
-	public partial class WF_Activity { }
-	public partial class WF_Transition { }
-
-	public class WorkflowPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-
-			p.AddClass<WF_Workflow>()
+			s.AddClass<WF_Workflow>("Рабочий процесс")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -1371,7 +1394,7 @@ namespace Solution.Model
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("IsActive", "Действующий", MetaBooleanType.NotNull())
 				.Reference<MM_ObjectType>("ObjectType", "Тип объекта")
-				.Reference<WF_Activity>("Activities", "Активности", x => x.Multiple().InverseProperty("Workflow"))
+				.Reference<WF_Activity>("Activities", "Активности", x => x.Multiple().Aggregation().InverseProperty("Workflow"))
 				.OperationCreateNew() 
 				.OperationEdit() 
 				.OperationDelete() 
@@ -1381,7 +1404,7 @@ namespace Solution.Model
 					.InvokesSingleObjectView("generate")
 				)
 			;	
-			p.AddClass<WF_Activity>()
+			s.AddClass<WF_Activity>("Активность")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -1408,7 +1431,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<WF_Transition>()
+			s.AddClass<WF_Transition>("Переход")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -1434,65 +1457,40 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			return p;
-		}
-	}
-
-	public class TemplatesPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-
-			return p;
-		}
-	}
-
-	public class MasterPagesPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-			p.Operation("InternalPage", "Шаблон страницы внутренней части", x => x 
+			s.AddClass<MasterPages>("Мастер-страницы")
+				.NonPersistent()
+				.Operation("InternalPage", "Шаблон страницы внутренней части", x => x 
 					.InvokesView("MasterControl", "InternalPage")
-			);
-			p.Operation("InternalPageTitle", "Заголовок страниц", x => x 
+				)
+				.Operation("InternalPageTitle", "Заголовок страниц", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "InternalPageTitle")
-			);
-			p.Operation("Redirect301", "301 redirect", x => x 
+				)
+				.Operation("Redirect301", "301 redirect", x => x 
 					.InvokesView("MasterControl", "Redirect301")
-			);
-			p.Operation("SitePageBootstrap", "Шаблон bootstrap", x => x 
+				)
+				.Operation("SitePageBootstrap", "Шаблон bootstrap", x => x 
 					.InvokesView("MasterControl", "SitePageBootstrap")
-			);
-
-			return p;
-		}
-	}
-	public partial class ErrorLog { }
-
-	public class UtilsPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-			p.Operation("DBReport", "Отчет по базе данных", x => x 
+				)
+			;	
+			s.AddClass<Utils>("Утилиты")
+				.NonPersistent()
+				.Operation("DBReport", "Отчет по базе данных", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "DBReport")
-			);
-			p.Operation("utils", "Утилиты", x => x 
+				)
+				.Operation("utils", "Утилиты", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "utils")
-			);
-			p.Operation("theme", "Тема", x => x 
+				)
+				.Operation("theme", "Тема", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "theme")
-			);
-			p.Operation("spmtable", "Отчет по правам доступа", x => x 
+				)
+				.Operation("spmtable", "Отчет по правам доступа", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "spmtable")
-			);
-			p.Operation("DbBackup", "Бэкап", x => x 
+				)
+				.Operation("DbBackup", "Бэкап", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "DbBackup")
-			);
-
-			p.AddClass<ErrorLog>()
+				)
+			;	
+			s.AddClass<ErrorLog>("Ошибка системы")
 				.IntKey()
 				.Attribute("ErrorDate", "Дата ошибки", MetaDateTimeType.NotNull())
 				.Attribute("ErrorText", "Текст ошибки", MetaStringType.NotNull())
@@ -1508,55 +1506,42 @@ namespace Solution.Model
 				.Attribute("Hash", "Хэш", MetaByteArrayType.Null())
 				.Attribute("SimilarErrorID", "Похожая ошибка", MetaIntType.Null())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
+				.OperationList() 
+				.OperationView() 
 				.Operation("Delete", "Очистить", x => x 
 					.ParmString("returnurl")
 					.InvokesView("Nephrite.Web.ViewControl", "delete")
 				)
-				.OperationList() 
-				.OperationView() 
 			;	
-			return p;
-		}
-	}
-	public partial class DbFolder { }
-	public partial class DbFile { }
-	public partial class DbItem { }
-
-	public class FileStorage2Package
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-
-			p.AddClass<DbFolder>()
+			s.AddClass<DbFolder>("Папка в файловом хранилище")
 				.GuidKey("ID")
 				.NonPersistent()
-				.OperationDelete() 
+				.OperationView() 
 				.OperationEdit() 
+				.OperationDelete() 
 				.Operation("Create", "Создать папку", x => x 
 					.ParmString("parentFolderID")
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("edit")
 				)
-				.Operation("Upload", "Загрузка файлов", x => x 
-					.InvokesSingleObjectView("upload")
-				)
-				.OperationView() 
 				.Operation("PackAndDownload", "Упаковать и скачать", x => x 
 					.ParmGuid("id")
 				)
+				.Operation("Upload", "Загрузка файлов", x => x 
+					.InvokesSingleObjectView("upload")
+				)
 			;	
-			p.AddClass<DbFile>()
+			s.AddClass<DbFile>("Файл в файловом хранилище")
 				.GuidKey("ID")
 				.NonPersistent()
-				.OperationDelete() 
+				.OperationView() 
 				.OperationEdit() 
+				.OperationDelete() 
 				.Operation("Create", "Создать файл", x => x 
 					.ParmString("parentFolderID")
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("edit")
 				)
-				.OperationView() 
 				.Operation("CheckOut", "Извлечь", x => x 
 					.ParmGuid("id")
 					.ParmString("returnurl")
@@ -1566,11 +1551,13 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<DbItem>()
+			s.AddClass<DbItem>("Элемент в файловом хранилище")
 				.GuidKey("ID")
 				.NonPersistent()
-				.Operation("ViewIcons", "Список. Плитка", x => x 
-					.InvokesObjectListView("icons")
+				.Operation("Comments", "Комментарии", x => x 
+					.ParmGuid("iod")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("comments")
 				)
 				.Operation("Tags", "Теги", x => x 
 					.ParmGuid("iod")
@@ -1578,42 +1565,16 @@ namespace Solution.Model
 					.InvokesSingleObjectView("tags")
 				)
 				.OperationList() 
-				.Operation("Comments", "Комментарии", x => x 
-					.ParmGuid("iod")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("comments")
+				.Operation("ViewIcons", "Список. Плитка", x => x 
+					.InvokesObjectListView("icons")
 				)
 			;	
-			return p;
-		}
-	}
-	public partial class C_FIAS_ActualStatus { }
-	public partial class C_FIAS_AddressObject { }
-	public partial class C_FIAS_CenterStatus { }
-	public partial class C_FIAS_OperationStatus { }
-	public partial class C_FIAS_CurrentStatus { }
-	public partial class C_FIAS_NormativeDocument { }
-	public partial class C_FIAS_House { }
-	public partial class C_FIAS_EstateStatus { }
-	public partial class C_FIAS_IntervalStatus { }
-	public partial class C_FIAS_StructureStatus { }
-	public partial class C_FIAS_HouseStateStatus { }
-	public partial class C_FIAS_HouseInterval { }
-	public partial class C_FIAS_Landmark { }
-	public partial class C_FIAS_AddressObjectType { }
-
-	public class FIASPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-
-			p.AddClass<C_FIAS_ActualStatus>()
+			s.AddClass<C_FIAS_ActualStatus>("Статус актуальности ФИАС")
 				.IntKey("ActStatID")
 				.Attribute("Name", "Наименование", MetaStringType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<C_FIAS_AddressObject>()
+			s.AddClass<C_FIAS_AddressObject>("Классификатор адресообразующих элементов")
 				.GuidKey("AoID")
 				.Attribute("AoGUID", "Глобальный уникальный идентификатор", MetaGuidType.NotNull())
 				.Attribute("AoLevel", "Уровень адресного объекта", MetaIntType.NotNull())
@@ -1653,22 +1614,22 @@ namespace Solution.Model
 				.Reference<C_FIAS_NormativeDocument>("NormDoc", "Внешний ключ на нормативный документ")
 				.Reference<C_FIAS_OperationStatus>("OperStatus", "Статус действия над записью – причина появления записи")
 			;	
-			p.AddClass<C_FIAS_CenterStatus>()
+			s.AddClass<C_FIAS_CenterStatus>("Статус центра")
 				.IntKey("CenterStID")
 				.Attribute("Name", "Наименование", MetaStringType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<C_FIAS_OperationStatus>()
+			s.AddClass<C_FIAS_OperationStatus>("Статус действия")
 				.IntKey("OperStatID")
 				.Attribute("Name", "Наименование", MetaStringType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<C_FIAS_CurrentStatus>()
+			s.AddClass<C_FIAS_CurrentStatus>("Статус актуальности КЛАДР 4.0")
 				.IntKey("CurentStID")
 				.Attribute("Name", "Наименование", MetaStringType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<C_FIAS_NormativeDocument>()
+			s.AddClass<C_FIAS_NormativeDocument>("Нормативный документ-основанием присвоения наименования ")
 				.GuidKey("NormDocID")
 				.Attribute("DocDate", "Дата документа", MetaDateTimeType.Null())
 				.Attribute("DocDateSpecified", "DocDateSpecified", MetaBooleanType.NotNull())
@@ -1678,7 +1639,7 @@ namespace Solution.Model
 				.Attribute("DocType", "Тип документа", MetaIntType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<C_FIAS_House>()
+			s.AddClass<C_FIAS_House>("Сведения по номерам домов улиц городов и населенных пунктов, номера земельных участков")
 				.GuidKey("HouseID")
 				.Attribute("BuildNum", "Номер корпуса", MetaStringType.Null())
 				.Attribute("Counter", "Счетчик записей домов для КЛАДР 4", MetaIntType.NotNull())
@@ -1702,29 +1663,29 @@ namespace Solution.Model
 				.Reference<C_FIAS_HouseStateStatus>("StatStatus", "Состояние дома")
 				.Reference<C_FIAS_StructureStatus>("StrStatus", "Признак строения")
 			;	
-			p.AddClass<C_FIAS_EstateStatus>()
+			s.AddClass<C_FIAS_EstateStatus>("Признак владения")
 				.IntKey("EstStatID")
 				.Attribute("Name", "Наименование", MetaStringType.NotNull())
 				.Attribute("ShortName", "Краткое наименование", MetaStringType.Null())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<C_FIAS_IntervalStatus>()
+			s.AddClass<C_FIAS_IntervalStatus>("Статус интервала домов")
 				.IntKey("IntvStatID")
 				.Attribute("Name", "Наименование", MetaStringType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<C_FIAS_StructureStatus>()
+			s.AddClass<C_FIAS_StructureStatus>("Признак строения")
 				.IntKey("StrStatID")
 				.Attribute("Name", "Наименование", MetaStringType.Null())
 				.Attribute("ShortName", "Краткое наименование", MetaStringType.Null())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<C_FIAS_HouseStateStatus>()
+			s.AddClass<C_FIAS_HouseStateStatus>("Статус состояния домов")
 				.IntKey("HouseStID")
 				.Attribute("Name", "Наименование", MetaStringType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			p.AddClass<C_FIAS_HouseInterval>()
+			s.AddClass<C_FIAS_HouseInterval>("Интервал дома")
 				.GuidKey("HouseIntID")
 				.Attribute("Counter", "Счетчик записей домов для КЛАДР 4", MetaIntType.NotNull())
 				.Attribute("EndDate", "Окончание действия записи", MetaDateTimeType.NotNull())
@@ -1745,7 +1706,7 @@ namespace Solution.Model
 				.Reference<C_FIAS_IntervalStatus>("IntStatus", "Статус интервала")
 				.Reference<C_FIAS_NormativeDocument>("NormDoc", "Нормативный документ")
 			;	
-			p.AddClass<C_FIAS_Landmark>()
+			s.AddClass<C_FIAS_Landmark>("Описание мест расположения имущественных объектов")
 				.GuidKey("LandID")
 				.Attribute("EndDate", "Окончание действия записи", MetaDateTimeType.NotNull())
 				.Attribute("IFNSFL", "Код ИФНС ФЛ", MetaStringType.Null())
@@ -1763,31 +1724,14 @@ namespace Solution.Model
 				.Reference<C_FIAS_AddressObject>("Ao", "Родительский объект (улици, город и т.п.)")
 				.Reference<C_FIAS_NormativeDocument>("NormDoc", "Нормативный документ")
 			;	
-			p.AddClass<C_FIAS_AddressObjectType>()
+			s.AddClass<C_FIAS_AddressObjectType>("Тип адресного объекта")
 				.IntKey("KOD_T_ST")
 				.Attribute("Level", "Уровень адресного объекта", MetaIntType.NotNull())
 				.Attribute("ScName", "Краткое наименование типа объекта", MetaStringType.Null())
 				.Attribute("SocrName", "Полное наименование типа объекта", MetaStringType.NotNull())
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 			;	
-			return p;
-		}
-	}
-	public partial class OrgUnit { }
-	public partial class C_OrgUnitHie { }
-	public partial class OrgUnitAsso { }
-	public partial class C_OrgUnitType { }
-	public partial class OrgUnitHieRule { }
-	public partial class Employee { }
-	public partial class OrgUnitResponsible { }
-
-	public class OrgStructurePackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-
-			p.AddClass<OrgUnit>()
+			s.AddClass<OrgUnit>("Организационная единица")
 				.GuidKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("VipNetCode", "VipNet код", MetaStringType.Null())
@@ -1819,61 +1763,61 @@ namespace Solution.Model
 				.Reference<C_PensionerCategory>("PensionerCategory", "Категория пенсионера")
 				.Reference<C_RFSubject>("RFSubject", "Субъект РФ")
 				.OperationView() 
-				.Operation("ObjectChangeHistory", "История изменений", x => x 
-					.InvokesSingleObjectView("changehistory")
-				)
-				.OperationDelete() 
 				.OperationCreateNew(x => x 
 					.ParmInt("typeid")
 					.ParmString("returnurl")
 				)
 				.OperationEdit() 
 				.OperationList() 
+				.OperationDelete() 
 				.OperationUnDelete() 
+				.Operation("ObjectChangeHistory", "История изменений", x => x 
+					.InvokesSingleObjectView("changehistory")
+				)
 			;	
-			p.AddClass<C_OrgUnitHie>()
+			s.AddClass<C_OrgUnitHie>("Иерархия орг. единиц")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.OperationDelete() 
 				.OperationCreateNew() 
 				.OperationEdit() 
 				.OperationList() 
+				.OperationDelete() 
 				.OperationUnDelete() 
 			;	
-			p.AddClass<OrgUnitAsso>()
+			s.AddClass<OrgUnitAsso>("Связь орг. единиц")
 				.GuidKey()
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 				.Reference<OrgUnit>("ChildOrgUnit", "Дочерний элемент", x => x.InverseProperty("FromChildAsso"))
 				.Reference<C_OrgUnitHie>("OrgUnitHie", "Иерархия")
 				.Reference<OrgUnit>("ParentOrgUnit", "Родительский элемент", x => x.InverseProperty("FromParentAsso"))
 			;	
-			p.AddClass<C_OrgUnitType>()
+			s.AddClass<C_OrgUnitType>("Тип орг. единицы")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("SysName", "Системное имя", MetaStringType.NotNull())
 				.Attribute("Title", "Наименование", MetaStringType.NotNull(), true)
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.OperationEdit() 
-				.OperationCreateNew() 
 				.OperationList() 
-				.OperationUnDelete() 
 				.OperationDelete() 
+				.OperationUnDelete() 
+				.OperationCreateNew() 
 			;	
-			p.AddClass<OrgUnitHieRule>()
+			s.AddClass<OrgUnitHieRule>("Правило связи орг. единиц")
 				.GuidKey()
 				.ComputedAttribute("Title", "Title", MetaStringType.Null())
 				.Reference<C_OrgUnitType>("ChildOrgUnitType", "Дочерний элемент")
 				.Reference<C_OrgUnitHie>("OrgUnitHie", "Иерархия")
 				.Reference<C_OrgUnitType>("ParentOrgUnitType", "Родительский элемент")
-				.OperationDelete() 
 				.OperationCreateNew() 
 				.OperationEdit() 
 				.OperationList() 
+				.OperationDelete() 
 				.OperationUnDelete() 
 			;	
-			p.AddClass<Employee>()
+			s.AddClass<Employee>("Сотрудник")
 				.GuidKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("BeginDate", "Дата начала действия", MetaDateTimeType.NotNull())
@@ -1897,14 +1841,14 @@ namespace Solution.Model
 				.Reference<Employee>("Main", "Основная версия")
 				.Reference<OrgUnit>("OrgUnit", "Организационная единица")
 				.Reference<SPM_Subject>("Subject", "Пользователь")
-				.OperationDelete() 
 				.OperationCreateNew() 
 				.OperationEdit() 
 				.OperationList() 
+				.OperationDelete() 
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<OrgUnitResponsible>()
+			s.AddClass<OrgUnitResponsible>("Ответственный в ОПФР")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -1924,50 +1868,22 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			return p;
-		}
-	}
-	public partial class Doc { }
-	public partial class Citizen { }
-	public partial class DocTask { }
-	public partial class PensionFile { }
-	public partial class JuridicalCase { }
-	public partial class CitizenRequest { }
-	public partial class DocTaskOperation { }
-	public partial class WorkInfo { }
-	public partial class DocAsso { }
-	public partial class Appendix { }
-	public partial class DocTaskRequest { }
-	public partial class CitizenPension { }
-	public partial class MassCalc { }
-	public partial class ControlTask { }
-	public partial class Complaint { }
-	public partial class CourtSession { }
-	public partial class DocTaskComplaint { }
-	public partial class OutDocSend { }
-	public partial class OfficeNote { }
-	public partial class MassOperationQueue { }
-	public partial class InfoDoc { }
-
-	public class CivilServantsPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-			p.Operation("About", "О системе", x => x 
+			s.AddClass<CivilServants>("Госслужащие")
+				.NonPersistent()
+				.Operation("About", "О системе", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "About")
-			);
-			p.Operation("GenerateDB2Inserts", "Импорт данных в DB2", x => x 
+				)
+				.Operation("GenerateDB2Inserts", "Импорт данных в DB2", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "GenerateDB2Inserts")
-			);
-			p.Operation("FileStorageService", "Сервис файлового хранилища", x => x 
+				)
+				.Operation("FileStorageService", "Сервис файлового хранилища", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "FileStorageService")
-			);
-			p.Operation("depersonalize", "Подготовка дампа с деперсонализацией", x => x 
+				)
+				.Operation("depersonalize", "Подготовка дампа с деперсонализацией", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "depersonalize")
-			);
-
-			p.AddClass<Doc>()
+				)
+			;	
+			s.AddClass<Doc>("Документ")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("PrintNo", "Номер для печати", MetaStringType.Null())
@@ -2018,10 +1934,10 @@ namespace Solution.Model
 				.Reference<OrgUnit>("Sender", "Отправитель")
 				.Reference<Employee>("InnerSignPerson", "Подписант документа")
 				.Reference<C_ProvisionMode>("ProvisionMode", "Способ передачи документа")
-				.Reference<Appendix>("Appendix", "Приложения", x => x.Multiple().InverseProperty("Doc"))
+				.Reference<Appendix>("Appendix", "Приложения", x => x.Multiple().Aggregation().InverseProperty("Doc"))
 				.Reference<C_RFSubject>("CitizenRFSubject", "Субъект РФ")
 				.Reference<Employee>("RegEmployee", "Регистратор документа")
-				.Reference<DocTask>("DocTasks", "Задания", x => x.Multiple().InverseProperty("Doc"))
+				.Reference<DocTask>("DocTasks", "Задания", x => x.Multiple().Aggregation().InverseProperty("Doc"))
 				.Reference<C_SenderCategory>("SenderCategory", "Категория отправителя")
 				.Reference<PensionFile>("PensionFile", "Пенсионное дело")
 				.Reference<DocTask>("DocTask", "Является результатом задания", x => x.InverseProperty("ResultDocs"))
@@ -2029,6 +1945,40 @@ namespace Solution.Model
 				.Reference<DocTaskOperation>("DocTaskOperation", "Является результатом операции")
 				.Reference<WF_Activity>("Activity", "Activity")
 				.Reference<C_PaymentType>("PaymentType", "Вид ГПО")
+				.OperationList(x => x 
+					.ParmInt("classid")
+					.ParmString("types")
+				)
+				.OperationUnDelete() 
+				.OperationView() 
+				.Operation("UploadFiles", "Загрузка образов документов", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("uploadfiles")
+				)
+				.Operation("Register", "Регистрация", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("register")
+				)
+				.Operation("Print", "Печать", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("print")
+				)
+				.Operation("ViewList_9", "Письменные обращения граждан", x => x 
+					.InvokesObjectListView("list_9")
+				)
+				.Operation("PrintWord", "Печать приложения", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+				)
+				.Operation("ViewList_In", "Входящие документы", x => x 
+					.InvokesObjectListView("list_in")
+				)
+				.Operation("ViewList_Out", "Исходящие документы", x => x 
+					.InvokesObjectListView("list_out")
+				)
 				.Operation("PrintExcel", "Экспорт в Excel", x => x 
 					.ParmInt("filterid")
 					.ParmString("returnurl")
@@ -2049,48 +1999,14 @@ namespace Solution.Model
 					.InvokesSingleObjectView("viewpackel")
 				)
 				.OperationDelete() 
-				.OperationEdit() 
-				.OperationUnDelete() 
-				.OperationView() 
-				.Operation("UploadFiles", "Загрузка образов документов", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("uploadfiles")
-				)
-				.Operation("Register", "Регистрация", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("register")
-				)
-				.Operation("Print", "Печать", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("print")
-				)
-				.Operation("ViewList_In", "Входящие документы", x => x 
-					.InvokesObjectListView("list_in")
-				)
-				.Operation("ViewList_Out", "Исходящие документы", x => x 
-					.InvokesObjectListView("list_out")
-				)
-				.Operation("ViewList_9", "Письменные обращения граждан", x => x 
-					.InvokesObjectListView("list_9")
-				)
-				.OperationList(x => x 
-					.ParmInt("classid")
-					.ParmString("types")
-				)
-				.Operation("PrintWord", "Печать приложения", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-				)
 				.OperationCreateNew(x => x 
 					.ParmInt("classid")
 					.ParmString("types")
 					.ParmString("returnurl")
 				)
+				.OperationEdit() 
 			;	
-			p.AddClass<Citizen>()
+			s.AddClass<Citizen>("Гражданин")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -2126,10 +2042,7 @@ namespace Solution.Model
 				.Reference<C_RFSubject>("RFSubject", "Субъект РФ")
 				.Reference<C_CitizenCategory>("Category", "Категория")
 				.Reference<OrgUnit>("OrgUnit", "Отделение ПФР")
-				.Reference<CitizenPension>("CitizenPension", "Трудовая пенсия", x => x.Multiple().InverseProperty("Citizen"))
-				.Operation("ViewList_Compl", "С жалобами", x => x 
-					.InvokesObjectListView("list_compl")
-				)
+				.Reference<CitizenPension>("CitizenPension", "Трудовая пенсия", x => x.Multiple().Aggregation().InverseProperty("Citizen"))
 				.OperationDelete() 
 				.OperationCreateNew() 
 				.OperationEdit() 
@@ -2145,8 +2058,11 @@ namespace Solution.Model
 				.Operation("ObjectChangeHistory", "История изменений", x => x 
 					.InvokesSingleObjectView("changehistory")
 				)
+				.Operation("ViewList_Compl", "С жалобами", x => x 
+					.InvokesObjectListView("list_compl")
+				)
 			;	
-			p.AddClass<DocTask>()
+			s.AddClass<DocTask>("Задание")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("ReturnedDate", "Дата возврата", MetaDateTimeType.Null())
@@ -2188,11 +2104,16 @@ namespace Solution.Model
 				.Reference<C_DocTaskType>("Type", "Тип")
 				.Reference<Doc>("ResultDocs", "Документы - результаты", x => x.Multiple().InverseProperty("DocTask"))
 				.Reference<WF_Activity>("Activity", "Activity")
-				.Operation("CreateDocs", "Создать документы", x => x 
-					.ParmInt("id")
+				.OperationDelete() 
+				.OperationCreateNew(x => x 
+					.ParmInt("parentid")
 					.ParmString("returnurl")
-					.InvokesSingleObjectView("createdocs")
 				)
+				.OperationEdit() 
+				.Operation("ViewList", "Все задания") 
+				.OperationUnDelete() 
+				.OperationView() 
+				.Operation("MyViewList", "Мои задания") 
 				.Operation("Complete", "Выполнить", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
@@ -2208,11 +2129,22 @@ namespace Solution.Model
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("unapprove")
 				)
+				.Operation("ViewListOnCheck", "Задания на проверку") 
+				.Operation("ViewListExceeded", "Задания на контроле") 
+				.Operation("CreateDocs", "Создать документы", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("createdocs")
+				)
+				.Operation("ViewListAnnulment", "Аннулированные задания") 
+				.Operation("ViewListSuspended", "Отложенные задания") 
 				.Operation("StatusHistory", "История изменения статуса", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("statushistory")
 				)
+				.Operation("ViewListSigning", "Задания на подписании") 
+				.Operation("ViewListClosed", "Завершенные задания") 
 				.Operation("DownloadDocs", "Скачать документы ", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
@@ -2223,22 +2155,6 @@ namespace Solution.Model
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("closecorrected")
 				)
-				.OperationDelete() 
-				.OperationCreateNew(x => x 
-					.ParmInt("parentid")
-					.ParmString("returnurl")
-				)
-				.OperationEdit() 
-				.OperationUnDelete() 
-				.OperationView() 
-				.Operation("ViewList", "Все задания") 
-				.Operation("MyViewList", "Мои задания") 
-				.Operation("ViewListOnCheck", "Задания на проверку") 
-				.Operation("ViewListExceeded", "Задания на контроле") 
-				.Operation("ViewListAnnulment", "Аннулированные задания") 
-				.Operation("ViewListSuspended", "Отложенные задания") 
-				.Operation("ViewListSigning", "Задания на подписании") 
-				.Operation("ViewListClosed", "Завершенные задания") 
 				.Operation("DeleteDocs", "Удалить документы", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
@@ -2252,7 +2168,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<PensionFile>()
+			s.AddClass<PensionFile>("Пенсионное дело")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -2264,23 +2180,23 @@ namespace Solution.Model
 				.Reference<Employee>("CreateEmployee", "Сотрудник, создавший дело")
 				.Reference<Employee>("CloseEmployee", "Сотрудник, закрывший дело")
 				.Reference<Employee>("ArchiveEmployee", "Сотрудник, передавший дело в архив")
-				.Operation("Archive", "Архивирование", x => x 
-					.ParmString("returnurl")
-					.InvokesView("Nephrite.Web.ViewControl", "archive")
-				)
 				.OperationDelete() 
 				.OperationCreateNew() 
 				.OperationEdit() 
+				.OperationList() 
 				.OperationUnDelete() 
 				.OperationView() 
-				.OperationList() 
 				.Operation("ViewListArch", "Список - архив") 
 				.Operation("UnArchieve", "Восстановить из архива", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
 				)
+				.Operation("Archive", "Архивирование", x => x 
+					.ParmString("returnurl")
+					.InvokesView("Nephrite.Web.ViewControl", "archive")
+				)
 			;	
-			p.AddClass<JuridicalCase>()
+			s.AddClass<JuridicalCase>("Судебное дело")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("Title", "Номер", MetaStringType.NotNull())
@@ -2309,7 +2225,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<CitizenRequest>()
+			s.AddClass<CitizenRequest>("Устное обращение гражданина")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -2332,7 +2248,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<DocTaskOperation>()
+			s.AddClass<DocTaskOperation>("Операция")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("Basis", "Основа для расчета", MetaBooleanType.NotNull())
@@ -2387,7 +2303,7 @@ namespace Solution.Model
 				.Reference<WF_Activity>("Activity", "Статус")
 				.Reference<C_District>("Copy_Citizen_District", "Территория")
 				.Reference<DocTask>("DocTask", "Задание")
-				.Reference<WorkInfo>("WorkInfo", "Сведения о государственной службе", x => x.Multiple().InverseProperty("DocTaskOperation"))
+				.Reference<WorkInfo>("WorkInfo", "Сведения о государственной службе", x => x.Multiple().Aggregation().InverseProperty("DocTaskOperation"))
 				.Reference<C_PensionerCategory>("PensionerCategory", "Категория пенсионера")
 				.Reference<C_PostSalaryIndexing>("Indexing", "Индексация", x => x.Multiple())
 				.Reference<C_PaymentType>("PaymentType", "Вид ГПО")
@@ -2401,22 +2317,6 @@ namespace Solution.Model
 				.Reference<C_RaiseRatio>("RaiseRatios", "Коэффициенты увеличения СМЗ", x => x.Multiple())
 				.Reference<C_PensionType>("PensionType", "Вид трудовой пенсии")
 				.Reference<C_RFSubject>("Copy_Citizen_RFSubject", "Субъект РФ")
-				.OperationDelete() 
-				.Operation("EditCitizen", "Редактировать данные гражданина", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("editcitizen")
-				)
-				.Operation("EditSalary", "Редактирование надбавок", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("editsalary")
-				)
-				.Operation("Correction", "Корректировка", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("correction")
-				)
 				.Operation("EditCategory", "Редактировать категорию", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
@@ -2435,25 +2335,41 @@ namespace Solution.Model
 				.Operation("ViewListClosed", "Индивидуальные операции", x => x 
 					.InvokesObjectListView("closedlist")
 				)
-				.Operation("Cancel", "Отменить", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("cancel")
-				)
+				.OperationDelete() 
 				.OperationCreateNew(x => x 
 					.ParmInt("parentid")
 					.ParmString("returnurl")
+				)
+				.Operation("EditCitizen", "Редактировать данные гражданина", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("editcitizen")
 				)
 				.Operation("OtherPeriods", "Иные периоды", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
 				)
+				.Operation("Correction", "Корректировка", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("correction")
+				)
 				.Operation("Duplication", "Дублирование операций", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
 				)
+				.Operation("EditSalary", "Редактирование надбавок", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("editsalary")
+				)
+				.Operation("Cancel", "Отменить", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("cancel")
+				)
 			;	
-			p.AddClass<WorkInfo>()
+			s.AddClass<WorkInfo>("Сведения о государственной службе")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -2478,12 +2394,12 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<DocAsso>()
+			s.AddClass<DocAsso>("Связь документов")
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
 				.ReferenceKey<Doc>("ParentDoc", "Родительский документ")
 				.ReferenceKey<Doc>("ChildDoc", "Дочерний документ")
 			;	
-			p.AddClass<Appendix>()
+			s.AddClass<Appendix>("Приложение к документу")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -2494,10 +2410,6 @@ namespace Solution.Model
 				.Reference<DocTaskOperation>("DocTaskOperation", "Результат операции массового перерасчета")
 				.Reference<Doc>("Doc", "Документ", x => x.InverseProperty("Appendix"))
 				.Reference<C_DocName>("AppendixName", "Название приложения ")
-				.Operation("Scan", "Сканировать", x => x 
-					.InvokesSingleObjectView("scan")
-				)
-				.OperationView() 
 				.OperationDelete() 
 				.OperationCreateNew(x => x 
 					.ParmInt("parentid")
@@ -2506,8 +2418,12 @@ namespace Solution.Model
 				.OperationEdit() 
 				.OperationList() 
 				.OperationUnDelete() 
+				.OperationView() 
+				.Operation("Scan", "Сканировать", x => x 
+					.InvokesSingleObjectView("scan")
+				)
 			;	
-			p.AddClass<DocTaskRequest>()
+			s.AddClass<DocTaskRequest>("Обращение")
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.Attribute("Title", "Ответ на обращение", MetaStringType.Null())
@@ -2515,16 +2431,16 @@ namespace Solution.Model
 				.Reference<C_RequestCategory>("RequestCategory", "Категория обращения")
 				.Reference<C_RequestResultCategory>("RequestResultCategory", "Категория результата")
 				.Reference<C_CitizenCategory>("CitizenCategory", "Категория гражданина")
-				.OperationDelete() 
 				.OperationEdit() 
 				.OperationUnDelete() 
+				.OperationDelete() 
 				.Operation("EditAnswer", "Редактировать ответ", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("editanswer")
 				)
 			;	
-			p.AddClass<CitizenPension>()
+			s.AddClass<CitizenPension>("Трудовая пенсия")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -2544,7 +2460,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<MassCalc>()
+			s.AddClass<MassCalc>("Массовые перерасчеты")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("SendingOrgUnit", "Отправка уведомлений Управлением", MetaBooleanType.NotNull())
@@ -2584,37 +2500,12 @@ namespace Solution.Model
 				.Reference<C_PaymentStatus>("PaymentStatuses", "Состояния ГПО", x => x.Multiple())
 				.Reference<Citizen>("Citizens", "Граждане для перерасчета", x => x.Multiple())
 				.Reference<C_RFSubject>("RFSubjects", "Субъекты РФ", x => x.Multiple())
-				.Operation("UnDecision", "Выгрузить решения", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("unloaddecision")
-				)
-				.Operation("UnOrder", "Выгрузить поручения ПД", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("unloadorder")
-				)
-				.Operation("UnNotice", "Выгрузить уведомления", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("unloadnotice")
-				)
-				.Operation("Select", "Отобрать ПД", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("select")
-				)
-				.Operation("UnOrderOU", "Выгрузить поручения ОПФР", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("unloadordersou")
-				)
 				.OperationDelete() 
-				.OperationView() 
 				.OperationCreateNew() 
 				.OperationEdit() 
 				.OperationList() 
 				.OperationUnDelete() 
+				.OperationView() 
 				.Operation("AddItem", "Добавить элемент", x => x 
 					.ParmInt("id")
 					.ParmInt("citizenid")
@@ -2637,6 +2528,21 @@ namespace Solution.Model
 					.ParmInt("id")
 					.ParmString("returnurl")
 				)
+				.Operation("UnDecision", "Выгрузить решения", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("unloaddecision")
+				)
+				.Operation("UnOrder", "Выгрузить поручения ПД", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("unloadorder")
+				)
+				.Operation("UnNotice", "Выгрузить уведомления", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("unloadnotice")
+				)
 				.Operation("CreateDocs", "Создать документы", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
@@ -2648,6 +2554,11 @@ namespace Solution.Model
 				.Operation("DeleteDocs", "Удалить сводные документы", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
+				)
+				.Operation("Select", "Отобрать ПД", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("select")
 				)
 				.Operation("Calc", "Рассчитать", x => x 
 					.ParmInt("id")
@@ -2673,8 +2584,13 @@ namespace Solution.Model
 					.ParmInt("id")
 					.ParmString("returnurl")
 				)
+				.Operation("UnOrderOU", "Выгрузить поручения ОПФР", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("unloadordersou")
+				)
 			;	
-			p.AddClass<ControlTask>()
+			s.AddClass<ControlTask>("Контрольная операция")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -2690,7 +2606,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<Complaint>()
+			s.AddClass<Complaint>("Жалоба")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -2702,8 +2618,11 @@ namespace Solution.Model
 				.PersistentComputedAttribute("DisplayTitle", "Отображаемое наименование", MetaStringType.Null())
 				.Reference<C_JuridicalInstance>("Instance", "Инстанция")
 				.Reference<C_RequestCategory>("Category", "Категория жалобы")
-				.Reference<CourtSession>("Sessions", "Судебные заседания", x => x.Multiple().InverseProperty("Complaint"))
+				.Reference<CourtSession>("Sessions", "Судебные заседания", x => x.Multiple().Aggregation().InverseProperty("Complaint"))
 				.Reference<JuridicalCase>("JuridicalCase", "Судебное дело")
+				.OperationDelete() 
+				.OperationCreateNew() 
+				.OperationEdit() 
 				.OperationList() 
 				.OperationUnDelete() 
 				.OperationView() 
@@ -2712,11 +2631,8 @@ namespace Solution.Model
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("editresult")
 				)
-				.OperationDelete() 
-				.OperationCreateNew() 
-				.OperationEdit() 
 			;	
-			p.AddClass<CourtSession>()
+			s.AddClass<CourtSession>("Судебное заседание")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -2735,14 +2651,14 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<DocTaskComplaint>()
+			s.AddClass<DocTaskComplaint>("Задание на жалобу")
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
 				.ComputedAttribute("Title", "Наименование", MetaStringType.Null())
 				.ReferenceKey<DocTask>("DocTask", "Ид")
 				.Reference<Complaint>("Complaint", "Жалоба")
 			;	
-			p.AddClass<OutDocSend>()
+			s.AddClass<OutDocSend>("Отправка")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("NoUnload", "Номер выгрузки", MetaIntType.Null())
@@ -2764,7 +2680,9 @@ namespace Solution.Model
 				.Reference<Doc>("Doc", "Документы", x => x.Multiple())
 				.Reference<C_DocType>("DocType", "Вид документов")
 				.OperationDelete() 
+				.OperationCreateNew() 
 				.OperationEdit() 
+				.Operation("ViewListEl", "Реестр отправок в электронном виде") 
 				.OperationUnDelete() 
 				.OperationView() 
 				.Operation("PrintWord", "Печать списка", x => x 
@@ -2772,10 +2690,11 @@ namespace Solution.Model
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("doclistword")
 				)
-				.Operation("ViewEl", "Просмотр пакета (эл.)", x => x 
+				.Operation("ViewListP", "Реестр отправок в бумажном виде") 
+				.Operation("DeleteDoc", "Удалить документ", x => x 
 					.ParmInt("id")
+					.ParmInt("docid")
 					.ParmString("returnurl")
-					.InvokesSingleObjectView("viewel")
 				)
 				.Operation("EditEl", "Редактировать пакет (эл.)", x => x 
 					.ParmInt("id")
@@ -2797,18 +2716,15 @@ namespace Solution.Model
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("deleteunel")
 				)
+				.Operation("ViewEl", "Просмотр пакета (эл.)", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("viewel")
+				)
 				.Operation("EditUn", "Редактировать выгрузку (эл.)", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("editunel")
-				)
-				.OperationCreateNew() 
-				.Operation("ViewListEl", "Реестр отправок в электронном виде") 
-				.Operation("ViewListP", "Реестр отправок в бумажном виде") 
-				.Operation("DeleteDoc", "Удалить документ", x => x 
-					.ParmInt("id")
-					.ParmInt("docid")
-					.ParmString("returnurl")
 				)
 				.Operation("CheckPack", "Проверить пакет", x => x 
 					.ParmInt("id")
@@ -2823,7 +2739,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<OfficeNote>()
+			s.AddClass<OfficeNote>("Служебная записка")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("NoteNo", "Номер записки", MetaIntType.Null())
@@ -2838,29 +2754,29 @@ namespace Solution.Model
 				.PersistentComputedAttribute("Title", "Номер служебной записки", MetaStringType.Null())
 				.Reference<C_PaymentType>("PaymentType", "Вид ГПО")
 				.Reference<Doc>("Docs", "Документы", x => x.Multiple())
+				.OperationDelete() 
+				.OperationCreateNew() 
+				.OperationEdit() 
+				.OperationList() 
+				.OperationUnDelete() 
 				.OperationView() 
 				.Operation("Sign", "Подписать", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("sign")
 				)
-				.Operation("PrintWord", "Печать", x => x 
-					.ParmInt("id")
-					.ParmString("returnurl")
-					.InvokesSingleObjectView("printword")
-				)
-				.OperationDelete() 
-				.OperationCreateNew() 
-				.OperationEdit() 
-				.OperationList() 
-				.OperationUnDelete() 
 				.Operation("DeleteDoc", "Удалить документ", x => x 
 					.ParmInt("id")
 					.ParmInt("docid")
 					.ParmString("returnurl")
 				)
+				.Operation("PrintWord", "Печать", x => x 
+					.ParmInt("id")
+					.ParmString("returnurl")
+					.InvokesSingleObjectView("printword")
+				)
 			;	
-			p.AddClass<MassOperationQueue>()
+			s.AddClass<MassOperationQueue>("Очередь массовых операций")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("AbortDate", "Дата прерывания операции", MetaDateTimeType.Null())
@@ -2886,7 +2802,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<InfoDoc>()
+			s.AddClass<InfoDoc>("Информационный материал")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -2911,54 +2827,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			return p;
-		}
-	}
-	public partial class C_RFSubject { }
-	public partial class C_CitizenCategory { }
-	public partial class C_Post { }
-	public partial class C_ExtraPayPost { }
-	public partial class C_RegionalRatio { }
-	public partial class C_OperationReason { }
-	public partial class C_DocName { }
-	public partial class C_RegLog { }
-	public partial class C_DocType { }
-	public partial class C_ProvisionMode { }
-	public partial class C_RequestCategory { }
-	public partial class C_RequestResultCategory { }
-	public partial class C_DocClass { }
-	public partial class C_PostSalary { }
-	public partial class C_PostType { }
-	public partial class C_OperationType { }
-	public partial class C_SenderCategory { }
-	public partial class C_PensionType { }
-	public partial class C_PostSalaryIndexing { }
-	public partial class C_PensionerCategory { }
-	public partial class C_PaymentStatus { }
-	public partial class C_RestrictionRatio { }
-	public partial class C_RaiseRatio { }
-	public partial class C_RequestMethod { }
-	public partial class C_Seniority { }
-	public partial class C_PostPart { }
-	public partial class C_MassCalcStatus { }
-	public partial class C_DocTaskType { }
-	public partial class C_Sign { }
-	public partial class C_PaymentType { }
-	public partial class C_JuridicalInstance { }
-	public partial class C_CourtSessionStatus { }
-	public partial class C_MassOperationType { }
-	public partial class C_MassOperationState { }
-	public partial class C_InfoDocType { }
-	public partial class C_SpecialNote { }
-	public partial class C_District { }
-
-	public class DictPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-
-			p.AddClass<C_RFSubject>()
+			s.AddClass<C_RFSubject>("Субъект РФ")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("Code", "Код", MetaStringType.NotNull())
@@ -2975,22 +2844,22 @@ namespace Solution.Model
 				.Attribute("TitleGenitive", "Наименование (родительный падеж)", MetaStringType.Null())
 				.ComputedAttribute("DisplayTitle", "Отображаемое имя", MetaStringType.Null())
 				.PersistentComputedAttribute("IsDeleted", "Удален", MetaBooleanType.Null())
-				.Reference<C_District>("Districts", "Территории", x => x.Multiple().InverseProperty("RFSubject"))
+				.Reference<C_District>("Districts", "Территории", x => x.Multiple().Aggregation().InverseProperty("RFSubject"))
 				.Reference<N_TimeZone>("TimeZone", "Часовой пояс")
 				.OperationList() 
+				.OperationEdit() 
+				.OperationCreateNew() 
+				.OperationDelete() 
 				.OperationUnDelete() 
-				.Operation("Versions", "Журнал версий", x => x 
-					.InvokesSingleObjectView("versions")
-				)
 				.OperationView() 
 				.Operation("ObjectChangeHistory", "История изменений", x => x 
 					.InvokesSingleObjectView("changehistory")
 				)
-				.OperationDelete() 
-				.OperationEdit() 
-				.OperationCreateNew() 
+				.Operation("Versions", "Журнал версий", x => x 
+					.InvokesSingleObjectView("versions")
+				)
 			;	
-			p.AddClass<C_CitizenCategory>()
+			s.AddClass<C_CitizenCategory>("Категория граждан")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3002,7 +2871,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_Post>()
+			s.AddClass<C_Post>("Реестр должностей")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3017,42 +2886,42 @@ namespace Solution.Model
 				.Attribute("EndDate", "Дата упразднения", MetaDateType.Null())
 				.Attribute("PTK", "Код ПТК", MetaIntType.Null())
 				.Attribute("TitleGenetive", "Наименование (родительный падеж)", MetaStringType.Null())
-				.Reference<C_PostSalary>("Salary", "Размер должностного оклада", x => x.Multiple().InverseProperty("Post"))
+				.Reference<C_PostSalary>("Salary", "Размер должностного оклада", x => x.Multiple().Aggregation().InverseProperty("Post"))
 				.Reference<C_PostType>("Type", "Тип Государственная/Федеральная")
 				.Reference<C_PensionerCategory>("PensionerCategory", "Категория пенсионера")
 				.Reference<C_PostPart>("PostPart", "Раздел")
 				.Reference<C_Post>("ParentPost", "Должность для расчета доплаты")
 				.Reference<OrgUnit>("OrgUnit", "Государственный, законодательный или международный орган")
 				.Reference<C_PostType>("ParentType", "Тип должности - соответствия")
-				.OperationDelete() 
-				.OperationEdit() 
-				.OperationUnDelete() 
-				.OperationView() 
+				.Operation("ViewList3", "Прочие должности") 
+				.Operation("ViewList2", "Должности федеральных служащих") 
 				.Operation("Edit3", "Редактировать прочие", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("edit3")
 				)
+				.Operation("ViewList4", "Воинские должности") 
 				.Operation("Clean", "Очистить", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("clean")
 				)
+				.OperationDelete() 
+				.OperationCreateNew(x => x 
+					.ParmInt("typeid")
+					.ParmString("returnurl")
+				)
+				.OperationEdit() 
+				.Operation("ViewList1", "Государственные должности") 
+				.OperationUnDelete() 
+				.OperationView() 
 				.Operation("Calc", "Индексировать", x => x 
 					.ParmInt("id")
 					.ParmString("returnurl")
 					.InvokesSingleObjectView("indexing")
 				)
-				.Operation("ViewList3", "Прочие должности") 
-				.Operation("ViewList2", "Должности федеральных служащих") 
-				.Operation("ViewList4", "Воинские должности") 
-				.OperationCreateNew(x => x 
-					.ParmInt("typeid")
-					.ParmString("returnurl")
-				)
-				.Operation("ViewList1", "Государственные должности") 
 			;	
-			p.AddClass<C_ExtraPayPost>()
+			s.AddClass<C_ExtraPayPost>("Перечень должностей, дающих право на установление доплаты")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3070,7 +2939,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_RegionalRatio>()
+			s.AddClass<C_RegionalRatio>("Районный коэффициент")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3088,7 +2957,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_OperationReason>()
+			s.AddClass<C_OperationReason>("Основание для операций с пенсиями")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3106,7 +2975,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_DocName>()
+			s.AddClass<C_DocName>("Наименование документов")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3119,7 +2988,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_RegLog>()
+			s.AddClass<C_RegLog>("Журнал регистрации документов")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("SpecialWork", "Специальное делопроизводство", MetaBooleanType.NotNull())
@@ -3130,14 +2999,14 @@ namespace Solution.Model
 				.Attribute("Code", "Код", MetaIntType.Null())
 				.Attribute("Prefix", "Префикс", MetaStringType.Null())
 				.Attribute("Postfix", "Постфикс", MetaStringType.Null())
-				.OperationList() 
-				.OperationUnDelete() 
-				.OperationView() 
 				.OperationDelete() 
 				.OperationCreateNew() 
 				.OperationEdit() 
+				.OperationList() 
+				.OperationUnDelete() 
+				.OperationView() 
 			;	
-			p.AddClass<C_DocType>()
+			s.AddClass<C_DocType>("Вид обрабатываемых документов")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("SenderNeeded", "Отправитель", MetaBooleanType.NotNull())
@@ -3163,7 +3032,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_ProvisionMode>()
+			s.AddClass<C_ProvisionMode>("Способ передачи документов")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3175,7 +3044,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_RequestCategory>()
+			s.AddClass<C_RequestCategory>("Категория обращений")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3187,19 +3056,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_RequestResultCategory>()
-				.IntKey()
-				.TimeStamp<SPM_Subject>()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
-				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.OperationCreateNew() 
-				.OperationEdit() 
-				.OperationList() 
-				.OperationUnDelete() 
-				.OperationView() 
-				.OperationDelete() 
-			;	
-			p.AddClass<C_DocClass>()
+			s.AddClass<C_RequestResultCategory>("Категория результатов обращений")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3211,7 +3068,19 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_PostSalary>()
+			s.AddClass<C_DocClass>("Тип документа")
+				.IntKey()
+				.TimeStamp<SPM_Subject>()
+				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
+				.Attribute("Title", "Наименование", MetaStringType.NotNull())
+				.OperationDelete() 
+				.OperationCreateNew() 
+				.OperationEdit() 
+				.OperationList() 
+				.OperationUnDelete() 
+				.OperationView() 
+			;	
+			s.AddClass<C_PostSalary>("Размер должностного оклада")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3233,7 +3102,7 @@ namespace Solution.Model
 					.ParmString("returnurl")
 				)
 			;	
-			p.AddClass<C_PostType>()
+			s.AddClass<C_PostType>("Тип должности")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3244,7 +3113,7 @@ namespace Solution.Model
 				)
 				.OperationUnDelete() 
 			;	
-			p.AddClass<C_OperationType>()
+			s.AddClass<C_OperationType>("Тип операции")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3259,7 +3128,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_SenderCategory>()
+			s.AddClass<C_SenderCategory>("Категория отправителя")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3271,7 +3140,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_PensionType>()
+			s.AddClass<C_PensionType>("Вид трудовой пенсии")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3283,7 +3152,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_PostSalaryIndexing>()
+			s.AddClass<C_PostSalaryIndexing>("Индексация")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3306,7 +3175,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_PensionerCategory>()
+			s.AddClass<C_PensionerCategory>("Категория пенсионера")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("ReasonChange", "Основание для изменения", MetaStringType.Null())
@@ -3325,12 +3194,12 @@ namespace Solution.Model
 				.Reference<C_PaymentType>("PaymentType", "Вид ГПО")
 				.OperationDelete() 
 				.OperationCreateNew() 
+				.OperationView() 
 				.OperationEdit() 
 				.OperationList() 
 				.OperationUnDelete() 
-				.OperationView() 
 			;	
-			p.AddClass<C_PaymentStatus>()
+			s.AddClass<C_PaymentStatus>("Состояние выплаты")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3342,7 +3211,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_RestrictionRatio>()
+			s.AddClass<C_RestrictionRatio>("Коэффициент ограничения СМЗ")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3357,7 +3226,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_RaiseRatio>()
+			s.AddClass<C_RaiseRatio>("Коэффициент увеличения СМЗ")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("Title", "Примечание", MetaStringType.Null())
@@ -3373,7 +3242,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_RequestMethod>()
+			s.AddClass<C_RequestMethod>("Способ обращения")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("Title", "Наименование", MetaStringType.NotNull())
@@ -3385,7 +3254,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_Seniority>()
+			s.AddClass<C_Seniority>("Стаж государственной службы")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3401,14 +3270,14 @@ namespace Solution.Model
 				.Attribute("CreateDate", "Дата создания записи", MetaDateType.Null())
 				.Attribute("Folder", "Папка", MetaStringType.Null())
 				.Reference<Employee>("Employee", "Исполнитель")
-				.OperationDelete() 
 				.OperationCreateNew() 
 				.OperationEdit() 
 				.OperationList() 
 				.OperationUnDelete() 
 				.OperationView() 
+				.OperationDelete() 
 			;	
-			p.AddClass<C_PostPart>()
+			s.AddClass<C_PostPart>("Элемент структуры должностей федеральных служащих")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("Part", "Раздел", MetaStringType.NotNull())
@@ -3426,7 +3295,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_MassCalcStatus>()
+			s.AddClass<C_MassCalcStatus>("Статус массового перерасчета")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3438,7 +3307,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_DocTaskType>()
+			s.AddClass<C_DocTaskType>("Тип задания")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3450,7 +3319,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_Sign>()
+			s.AddClass<C_Sign>("Подпись")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("TitleDative", "Ф.И.О. (дательный падеж)", MetaStringType.Null())
@@ -3474,7 +3343,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_PaymentType>()
+			s.AddClass<C_PaymentType>("Вид выплаты")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3492,7 +3361,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_JuridicalInstance>()
+			s.AddClass<C_JuridicalInstance>("Инстанция")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3507,46 +3376,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_CourtSessionStatus>()
-				.IntKey()
-				.TimeStamp<SPM_Subject>()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
-				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.OperationDelete() 
-				.OperationCreateNew() 
-				.OperationEdit() 
-				.OperationList() 
-				.OperationUnDelete() 
-				.OperationView() 
-				.Operation("ObjectChangeHistory", "История изменений", x => x 
-					.InvokesSingleObjectView("changehistory")
-				)
-			;	
-			p.AddClass<C_MassOperationType>()
-				.IntKey()
-				.TimeStamp<SPM_Subject>()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
-				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.OperationDelete() 
-				.OperationCreateNew() 
-				.OperationEdit() 
-				.OperationList() 
-				.OperationUnDelete() 
-				.OperationView() 
-			;	
-			p.AddClass<C_MassOperationState>()
-				.IntKey()
-				.TimeStamp<SPM_Subject>()
-				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
-				.Attribute("Title", "Наименование", MetaStringType.NotNull())
-				.OperationDelete() 
-				.OperationCreateNew() 
-				.OperationEdit() 
-				.OperationList() 
-				.OperationUnDelete() 
-				.OperationView() 
-			;	
-			p.AddClass<C_InfoDocType>()
+			s.AddClass<C_CourtSessionStatus>("Статус судебного заседания")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3561,7 +3391,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_SpecialNote>()
+			s.AddClass<C_MassOperationType>("Массовая операция")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3573,7 +3403,46 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<C_District>()
+			s.AddClass<C_MassOperationState>("Состояние массовой операции")
+				.IntKey()
+				.TimeStamp<SPM_Subject>()
+				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
+				.Attribute("Title", "Наименование", MetaStringType.NotNull())
+				.OperationCreateNew() 
+				.OperationEdit() 
+				.OperationList() 
+				.OperationUnDelete() 
+				.OperationView() 
+				.OperationDelete() 
+			;	
+			s.AddClass<C_InfoDocType>("Тип информационного документа")
+				.IntKey()
+				.TimeStamp<SPM_Subject>()
+				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
+				.Attribute("Title", "Наименование", MetaStringType.NotNull())
+				.Operation("ObjectChangeHistory", "История изменений", x => x 
+					.InvokesSingleObjectView("changehistory")
+				)
+				.OperationDelete() 
+				.OperationCreateNew() 
+				.OperationEdit() 
+				.OperationList() 
+				.OperationUnDelete() 
+				.OperationView() 
+			;	
+			s.AddClass<C_SpecialNote>("Особая отметка")
+				.IntKey()
+				.TimeStamp<SPM_Subject>()
+				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
+				.Attribute("Title", "Наименование", MetaStringType.NotNull())
+				.OperationDelete() 
+				.OperationCreateNew() 
+				.OperationEdit() 
+				.OperationList() 
+				.OperationUnDelete() 
+				.OperationView() 
+			;	
+			s.AddClass<C_District>("Территория")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3586,64 +3455,28 @@ namespace Solution.Model
 				)
 				.OperationUnDelete() 
 			;	
-			return p;
-		}
-	}
-
-	public class ReportsPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-			p.Operation("gpo_ReportRecipients", "Отчет по получателям ГПО", x => x 
+			s.AddClass<Reports>("Отчеты")
+				.NonPersistent()
+				.Operation("gpo_ReportRecipients", "Отчет по получателям ГПО", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "gpo_ReportRecipients")
-			);
-			p.Operation("gpo_ReportImplementation", "Отчет по осуществлению ГПО", x => x 
+				)
+				.Operation("gpo_ReportImplementation", "Отчет по осуществлению ГПО", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "gpo_ReportImplementation")
-			);
-			p.Operation("ReportDocTaskRequests", "Отчет по работе с обращениями", x => x 
+				)
+				.Operation("ReportDocTaskRequests", "Отчет по работе с обращениями", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "ReportDocTaskRequests")
-			);
-			p.Operation("ReportComplaints", "Отчет по работе с жалобами", x => x 
+				)
+				.Operation("ReportComplaints", "Отчет по работе с жалобами", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "ReportComplaints")
-			);
-			p.Operation("ReportInDoc", "Отчет по входящим документам", x => x 
+				)
+				.Operation("ReportInDoc", "Отчет по входящим документам", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "ReportInDoc")
-			);
-			p.Operation("ReportOutDoc", "Отчет по исходящим документам", x => x 
+				)
+				.Operation("ReportOutDoc", "Отчет по исходящим документам", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "ReportOutDoc")
-			);
-
-			return p;
-		}
-	}
-	public partial class C_Scanner { }
-	public partial class ScanUserSettings { }
-
-	public class NetScanPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-			p.AddEnum("NetScanFileFormat", "Формат файла")
-				.Value("J", "Jpeg", "JPEG")
-				.Value("P", "Pdf", "PDF")
-				.Value("N", "Png", "PNG")
-				.Value("T", "Tiff", "TIFF")
-				.Value("G", "Gif", "GIF");
-
-			p.AddEnum("NetScanPaperFormat", "Формат бумаги")
-				.Value("L", "Letter", "Letter")
-				.Value("G", "Legal", "Legal")
-				.Value("A", "A4", "A4");
-
-			p.AddEnum("NetScanResolution", "Разрешение")
-				.Value("3", "Dpi300", "300x300 dpi")
-				.Value("6", "Dpi600", "600x600 dpi")
-				.Value("1", "Dpi150", "150x150 dpi");
-
-
-
-			p.AddClass<C_Scanner>()
+				)
+			;	
+			s.AddClass<C_Scanner>("Сканер")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3666,7 +3499,7 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			p.AddClass<ScanUserSettings>()
+			s.AddClass<ScanUserSettings>("Настройки сканирования")
 				.IntKey()
 				.TimeStamp<SPM_Subject>()
 				.Attribute("IsDeleted", "Удален", MetaBooleanType.NotNull())
@@ -3687,21 +3520,15 @@ namespace Solution.Model
 				.OperationUnDelete() 
 				.OperationView() 
 			;	
-			return p;
-		}
-	}
-
-	public class AssemblyGenPackage
-	{
-		public static MetaPackage Init(MetaPackage p)
-		{
-
-			p.Operation("templategen", "Генерация по шаблону", x => x 
+			s.AddClass<AssemblyGen>("Генерация кода")
+				.NonPersistent()
+				.Operation("templategen", "Генерация по шаблону", x => x 
 					.InvokesView("Nephrite.Web.ViewControl", "templategen")
-			);
-
-			return p;
+				)
+			;	
+			return s;
 		}
 	}
+
 }
 

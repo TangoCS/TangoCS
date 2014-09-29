@@ -1,0 +1,24 @@
+﻿<#@ template debug="true" hostSpecific="true" #>
+<#@ output extension=".txt" #>
+<#@ Assembly Name="System.Core" #>
+<#@ Assembly Name="System.Windows.Forms" #>
+<#@ import namespace="System" #>
+<#@ import namespace="System.IO" #>
+<#@ import namespace="System.Diagnostics" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Collections" #>
+<#@ import namespace="System.Collections.Generic" #> 
+
+<#@ assembly name="EnvDTE" #>
+<#@ import namespace="EnvDTE" #>
+These are the projects in this solution:
+<#
+var serviceProvider = this.Host as IServiceProvider;
+var dte = serviceProvider.GetService(typeof(DTE)) as DTE;
+foreach (Project p in dte.Solution.Projects)
+{
+#>
+    <#=p.Name#> at <#=p.FullName#>
+<#
+}
+#>

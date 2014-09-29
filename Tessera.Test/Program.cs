@@ -82,8 +82,8 @@ namespace Tessera.Test
 			//A.Model = dc1;
 			//A.Model.ExecuteCommand("SET SCHEMA = 'DBO';");
 
-			ModelFactory m = new ModelFactory();
-			m.CreateSolution();
+			//ModelFactory m = new ModelFactory();
+			//m.CreateSolution();
 			int i = 0;
 			//var schema = new DB2ServerMetadataReader().ReadSchema("DBO");
 
@@ -91,7 +91,6 @@ namespace Tessera.Test
 			//var r1 = dc.ITM_Task.Where(o => o.TaskID == 3).First();
 			//var r2 = dc1.TM_Task.Where(o => o.TaskID == 3).First();
 
-			
 
 			//TaskManager.Run();
 			//var classes = (new ModelFactory()).CreateSolution().Classes;

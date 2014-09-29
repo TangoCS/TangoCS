@@ -24,45 +24,38 @@ namespace Nephrite.Meta
 
 		static void LoadPackage(MetaSolution s, XElement xp)
 		{
-			MetaPackage np = new MetaPackage();
-			//np.ID = xp.GetAttributeValue("ID").ToGuid();
-			np.Name = xp.GetAttributeValue("Name");
-			np.Caption = xp.GetAttributeValue("Caption");
-			np.Description = xp.GetAttributeValue("Description");
-
-			string parent = xp.GetAttributeValue("ParentID");
-			if (!parent.IsEmpty())
+			var operations = xp.Elements("Operations");
+			if (operations != null && operations.Nodes().Count() > 0)
 			{
-				MetaPackage parentPck = s.GetPackage(parent);
-				parentPck.AddPackage(np);
-				//s.AddPackage(np);
+				MetaClass np = new MetaClass();
+				//np.ID = xp.GetAttributeValue("ID").ToGuid();
+				np.Name = xp.GetAttributeValue("Name");
+				np.Caption = xp.GetAttributeValue("Caption");
+				np.Description = xp.GetAttributeValue("Description");
+				s.AddClass(np);
+
+				foreach (XElement xe in operations.Nodes())
+				{
+					LoadOperation(np, xe);
+				}
 			}
-			else
-				s.AddPackage(np);
 
 			var enums = xp.Elements("Enums");
 			if (enums != null)
 				foreach (XElement xe in enums.Nodes())
 				{
-					LoadEnum(np, xe);
-				}
-
-			var operations = xp.Elements("Operations");
-			if (operations != null)
-				foreach (XElement xe in operations.Nodes())
-				{
-					LoadOperation(np, xe);
+					LoadEnum(s, xe);
 				}
 
 			var classes = xp.Elements("Classes");
 			if (classes != null)
 				foreach (XElement xe in classes.Nodes())
 				{
-					LoadClass(np, xe);
+					LoadClass(s, xe);
 				}
 		}
 
-		static void LoadEnum(MetaPackage p, XElement xc)
+		static void LoadEnum(MetaSolution p, XElement xc)
 		{
 			MetaEnum e = new MetaEnum();
 			e.Name = xc.GetAttributeValue("Name");
@@ -82,7 +75,7 @@ namespace Nephrite.Meta
 			
 		}
 
-		static void LoadClass(MetaPackage p, XElement xc)
+		static void LoadClass(MetaSolution p, XElement xc)
 		{
 			MetaClass c = new MetaClass();
 			//c.ID = xc.GetAttributeValue("ID").ToGuid();
@@ -230,27 +223,20 @@ namespace Nephrite.Meta
 		static void LoadReference(MetaClass c, XElement xp)
 		{
 			MetaReference a = null;
-			if (xp.GetAttributeValue("IsReferenceToVersion") != null && xp.GetAttributeValue("IsReferenceToVersion").ToLower() == "true")
-				a = new MetaReferenceToVersion();
-			else
-				a = new MetaReference();
-			//a.ID = xp.GetAttributeValue("ID").ToGuid();
-			a.Name = xp.GetAttributeValue("Name");
-			a.Caption = xp.GetAttributeValue("Caption");
-			a.Description = xp.GetAttributeValue("Description");
-
-			a.IsRequired = xp.GetAttributeValue("IsRequired").ToLower() == "true";
-			a.UpperBound = xp.GetAttributeValue("UpperBound").ToInt32(0);
-
-			a.RefClassName = xp.GetAttributeValue("RefClass");
-			a.InversePropertyName = xp.GetAttributeValue("InverseProperty");
-			a.AssociationType = (AssociationType)xp.GetAttributeValue("AssociationType").ToInt32(0);
+			//if (xp.GetAttributeValue("IsReferenceToVersion") != null && xp.GetAttributeValue("IsReferenceToVersion").ToLower() == "true")
+			//	a = new MetaReferenceToVersion();
+			//else
+			a = new MetaReference(xp.GetAttributeValue("Name"), xp.GetAttributeValue("Caption"), xp.GetAttributeValue("RefClass"),
+				xp.GetAttributeValue("IsRequired").ToLower() == "true", xp.GetAttributeValue("UpperBound").ToInt32(1),
+ 				(AssociationType)xp.GetAttributeValue("AssociationType").ToInt32(0),
+				xp.GetAttributeValue("InverseProperty"), xp.GetAttributeValue("Description"));
+			//a.ID = xp.GetAttributeValue("ID").ToGuid(); 
 			//a.IsKey = xp.GetAttributeValue("IsKey");
 			if (xp.GetAttributeValue("IsKey").ToLower() == "true") c.CompositeKey.Add(a);
 			c.AddProperty(a);
 		}
 
-		static void LoadOperation(IMetaOperationContainer c, XElement xo)
+		static void LoadOperation(MetaClass c, XElement xo)
 		{
 			MetaOperation o = new MetaOperation();
 			//o.ID = xo.GetAttributeValue("ID").ToGuid();

@@ -23,6 +23,13 @@ namespace Nephrite.Meta
 
 	public partial class MetaReference<TClass, TValue> : MetaReference
 	{
+		public MetaReference(string name, string caption, string refClassName, bool isRequired = false,
+			int upperBound = 1, AssociationType associationType = AssociationType.Default,
+			string inversePropertyName = "", string description = "") : base(name, caption, refClassName, isRequired,
+			upperBound, associationType, inversePropertyName, description)
+		{
+		}
+
 		public new IQueryable<TValue> AllObjects
 		{
 			get { return base.AllObjects as IQueryable<TValue>; }

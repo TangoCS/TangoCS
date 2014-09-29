@@ -104,6 +104,7 @@ namespace Nephrite.Meta.Fluent
 		{
 			_op.ViewClass = viewClass;
 			_op.ViewName = viewName;
+			_op.DTOClassKind = DTOClassKind.None;
 			return this;
 		}
 
@@ -111,7 +112,7 @@ namespace Nephrite.Meta.Fluent
 		{
 			_op.ViewClass = "ViewControl";
 			_op.ViewName = viewName;
-			WithDTOClass();
+			WithDTOClass(DTOClassKind.Single);
 			return this;
 		}
 
@@ -130,7 +131,7 @@ namespace Nephrite.Meta.Fluent
 			return this;
 		}
 
-		public OperationBuilder WithDTOClass(DTOClassKind kind = DTOClassKind.Single)
+		public OperationBuilder WithDTOClass(DTOClassKind kind)
 		{
 			_op.DTOClass = _op.Parent.Name;
 			_op.DTOClassKind = kind;
@@ -202,14 +203,14 @@ namespace Nephrite.Meta.Fluent
 
 		public static MetaClass Reference<T>(this MetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes = null)
 		{
-			MetaReference a = new MetaReference { Name = name, Caption = caption, UpperBound = 1, RefClassName = typeof(T).Name };
+			MetaReference a = new MetaReference(name, caption, typeof(T).Name);
 			if (attributes != null) attributes(new ReferenceBuilder(cls, a));
 			cls.AddProperty(a);
 			return cls;
 		}
 		public static MetaClass ReferenceKey<T>(this MetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes = null)
 		{
-			MetaReference a = new MetaReference { Name = name, Caption = caption, UpperBound = 1, RefClassName = typeof(T).Name };
+			MetaReference a = new MetaReference(name, caption, typeof(T).Name);
 			if (attributes != null) attributes(new ReferenceBuilder(cls, a).Required());
 			cls.AddProperty(a);
 			cls.CompositeKey.Add(a);
@@ -328,13 +329,13 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaPackage Operation(this MetaPackage pck, string name, string caption, Action<OperationBuilder> attributes = null)
-		{
-			var op = new MetaOperation { Name = name, Caption = caption };
-			pck.AddOperation(op);
-			if (attributes != null) attributes(new OperationBuilder(op));
-			return pck;
-		}
+		//public static MetaPackage Operation(this MetaPackage pck, string name, string caption, Action<OperationBuilder> attributes = null)
+		//{
+		//	var op = new MetaOperation { Name = name, Caption = caption };
+		//	pck.AddOperation(op);
+		//	if (attributes != null) attributes(new OperationBuilder(op));
+		//	return pck;
+		//}
 
 		public static MetaClass Workflow(this MetaClass cls)
 		{

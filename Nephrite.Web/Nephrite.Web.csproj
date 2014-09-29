@@ -134,10 +134,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
-    <Compile Include="Controls\Scripts\INavigScript.cs" />
-    <Compile Include="Controls\Scripts\NavigScriptDB2.cs" />
-    <Compile Include="Controls\Scripts\NavigScriptMSSQL.cs" />
-    <Compile Include="Controls\Scripts\NavigScripts.cs" />
     <Compile Include="FormsEngine\FormsVirtualFile.cs" />
     <Compile Include="FormsEngine\FormsVirtualPathProvider.cs" />
     <Compile Include="FormsEngine\Host.cs" />

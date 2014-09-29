@@ -1,0 +1,16 @@
+﻿ 
+
+These are the projects in this solution:
+    Tessera at C:\Projects\Tessera3\Tessera\Tessera.csproj
+    Nephrite.Web at C:\Projects\Tessera3\Nephrite.Web\Nephrite.Web.csproj
+    Nephrite.Metamodel at C:\Projects\Tessera3\Nephrite.Metamodel\Nephrite.Metamodel.csproj
+    Nephrite.MSOffice at C:\Projects\Tessera3\Nephrite.MSOffice\Nephrite.MSOffice.csproj
+    Tessera.Test at C:\Projects\Tessera3\Tessera.Test\Tessera.Test.csproj
+    NHibernate at C:\Projects\Tessera3\NHibernate\NHibernate.csproj
+    DBSchemaDiff at C:\Projects\Tessera3\DBSchemaDiff\DBSchemaDiff.csproj
+    Nephrite.Meta.Database.DB2 at C:\Projects\Tessera3\Nephrite.Meta.Database.DB2\Nephrite.Meta.Database.DB2.csproj
+    ImportData at C:\Projects\Tessera3\ImportData\ImportData.csproj
+    Nephrite.Web.Hibernate at C:\Projects\Tessera3\Nephrite.Web.Hibernate\Nephrite.Web.Hibernate.csproj
+    Tessera3 at C:\Projects\Tessera3\Tessera3\Tessera3.csproj
+    Nephrite.Meta.Database.PostgreSQL at C:\Projects\Tessera3\Nephrite.Meta.Database.PostgreSQL\Nephrite.Meta.Database.PostgreSQL.csproj
+    Miscellaneous Files at 

@@ -37,8 +37,8 @@ namespace Nephrite.Web.FormsEngine
 				{
 					throw new Exception("Не задано свойство PackageSysName");
 				}
-				addToUtils(PackageSysName + "Pck." + PackageViewFormSysName);
-				return Settings.ControlsPath + "/" + PackageSysName + "Pck/" + PackageViewFormSysName + ".ascx";
+				addToUtils(PackageSysName + "." + PackageViewFormSysName);
+				return Settings.ControlsPath + "/" + PackageSysName + "/" + PackageViewFormSysName + ".ascx";
 			}
 			else
 			{

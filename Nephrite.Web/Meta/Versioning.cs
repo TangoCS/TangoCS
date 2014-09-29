@@ -6,10 +6,6 @@ using Nephrite.Web;
 
 namespace Nephrite.Meta
 {
-	public class MetaReferenceToVersion : MetaReference
-	{
-	}
-
 	public class SVersioning : MetaStereotype
 	{
 		public SVersioning(string versioningType)

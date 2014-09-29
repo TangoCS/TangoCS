@@ -38,17 +38,17 @@ using Nephrite.Meta.Fluent;
 
 namespace Solution.Model
 {
-<# foreach (var pck in model.Packages) { #>
-<# foreach (var cls in pck.Classes) { #>
+
+<# foreach (var cls in model.Classes) { #>
 	public partial class <#=cls.Name#> { }
 <# } #>
 
-	public class <#=pck.Name#>Package
+	public class ApplicationDomain
 	{
-		public static MetaPackage Init(MetaPackage p)
+		public static MetaSolution Init(MetaSolution s)
 		{
-<# foreach (var cdf in pck.Enums) { #>
-			p.AddEnum("<#=cdf.Name#>", "<#=cdf.Caption#>")
+<# foreach (var cdf in model.Enums) { #>
+			s.AddEnum("<#=cdf.Name#>", "<#=cdf.Caption#>")
 <#	var lastcdf = cdf.Values.Last();
 	foreach (var val in cdf.Values) { #>
 				.Value("<#=val.ID#>", "<#=val.Name#>", "<#=val.Caption#>")<# if (val == lastcdf) { #>;<# } #>
@@ -57,17 +57,10 @@ namespace Solution.Model
 
 <# } #>
 
-<#		foreach (var op in pck.Operations) { #>
-			p.Operation("<#=op.Name#>", "<#=op.Caption#>"<# if (op.Parameters.Count > 0 || !op.ViewName.IsEmpty()) { #>, x => x<# } else {#>);<# } #> 
-<#				GenParms(op.Parameters); #>
-<#				if (!op.ViewName.IsEmpty()) GenInvokes(op, op.ViewName); #>
-<#				if (op.Parameters.Count > 0 || !op.ViewName.IsEmpty()) { #>
-			);
-<#			} #>
-<# } #>
 
-<# foreach (var cls in pck.Classes) { #>
-			p.AddClass<<#=cls.Name#>>()
+
+<# foreach (var cls in model.Classes) { #>
+			s.AddClass<<#=cls.Name#>>("<#=cls.Caption#>")
 <#		if (cls.CompositeKey.Count == 1 && cls.Key is MetaAttribute) {
 			int i = cls.Name.IndexOf('_'); if (i == -1) i = 0; else i++;
 			string keyName = cls.Name.Substring(i) + (cls.Key.Type as IMetaIdentifierType).ColumnSuffix;
@@ -144,10 +137,10 @@ namespace Solution.Model
 <#		} #>
 			;	
 <# } #>
-			return p;
+			return s;
 		}
 	}
-<# } #>
+
 }
 
 <#+

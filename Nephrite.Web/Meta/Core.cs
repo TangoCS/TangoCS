@@ -79,13 +79,13 @@ namespace Nephrite.Meta
 		}
 
 		Dictionary<string, MetaClass> _classesbyname = new Dictionary<string, MetaClass>(255);
-		Dictionary<string, MetaPackage> _packagesbyname = new Dictionary<string, MetaPackage>(32);
+		//Dictionary<string, MetaPackage> _packagesbyname = new Dictionary<string, MetaPackage>(32);
 		Dictionary<string, MetaEnum> _enumsbyname = new Dictionary<string, MetaEnum>(32);
 
 		/// <summary>
 		/// Пакеты модели
 		/// </summary>
-		public Dictionary<string, MetaPackage>.ValueCollection Packages { get { return _packagesbyname.Values; } }
+		//public Dictionary<string, MetaPackage>.ValueCollection Packages { get { return _packagesbyname.Values; } }
 		/// <summary>
 		/// Классы модели
 		/// </summary>
@@ -95,37 +95,51 @@ namespace Nephrite.Meta
 		/// </summary>
 		public Dictionary<string, MetaEnum>.ValueCollection Enums { get { return _enumsbyname.Values; } }
 
-		internal void AddClass(MetaClass metaClass)
+		public void AddClass(MetaClass metaClass)
 		{
-			metaClass.Solution = this;
+			metaClass.Parent = this;
 			_classesbyname.Add(metaClass.Name.ToLower(), metaClass);
 		}
 
-		public MetaPackage AddPackage(MetaPackage metaPackage)
+		public MetaClass AddClass<T>(string caption = "", string description = "")
 		{
-			metaPackage.Solution = this;
-			_packagesbyname.Add(metaPackage.Name.ToLower(), metaPackage);
-
-			foreach (var c in metaPackage.Classes)
-				AddClass(c);
-
-			foreach (var e in metaPackage.Enums)
-				AddEnum(e);
-
-			return metaPackage;
+			MetaClass c = new MetaClass { Name = typeof(T).Name, Caption = caption, Description = description, IsPersistent = true };
+			AddClass(c);
+			return c;
 		}
+
+		//public MetaPackage AddPackage(MetaPackage metaPackage)
+		//{
+		//	metaPackage.Solution = this;
+		//	_packagesbyname.Add(metaPackage.Name.ToLower(), metaPackage);
+
+		//	foreach (var c in metaPackage.Classes)
+		//		AddClass(c);
+
+		//	foreach (var e in metaPackage.Enums)
+		//		AddEnum(e);
+
+		//	return metaPackage;
+		//}
 
 		internal void AddEnum(MetaEnum metaEnum)
 		{
 			_enumsbyname.Add(metaEnum.Name.ToLower(), metaEnum);
 		}
 
-		public MetaPackage AddPackage(string name, string caption = "", string description = "")
+		public MetaEnum AddEnum(string name, string caption = "", string description = "")
 		{
-			MetaPackage p = new MetaPackage { Name = name, Caption = caption, Description = description };
-			AddPackage(p);
-			return p;
+			MetaEnum c = new MetaEnum { Name = name, Caption = caption, Description = description };
+			AddEnum(c);
+			return c;
 		}
+
+		//public MetaPackage AddPackage(string name, string caption = "", string description = "")
+		//{
+		//	MetaPackage p = new MetaPackage { Name = name, Caption = caption, Description = description };
+		//	AddPackage(p);
+		//	return p;
+		//}
 
 		public MetaClass GetClass(string name)
 		{
@@ -140,11 +154,11 @@ namespace Nephrite.Meta
 			return c.GetOperation(operationName);
 		}
 
-		public MetaPackage GetPackage(string name)
-		{
-			string s = name.ToLower();
-			return _packagesbyname.ContainsKey(s) ? _packagesbyname[s] : null;
-		}
+		//public MetaPackage GetPackage(string name)
+		//{
+		//	string s = name.ToLower();
+		//	return _packagesbyname.ContainsKey(s) ? _packagesbyname[s] : null;
+		//}
 
 		public MetaEnum GetEnum(string name)
 		{
@@ -153,150 +167,144 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public class MetaPackage : MetaElement, IMetaOperationContainer
-	{
-		public MetaPackage(string name = "", string caption = "", string description = "") : base(name, caption, description) { }
+	//public class MetaPackage : MetaElement, IMetaOperationContainer
+	//{
+	//	public MetaPackage(string name = "", string caption = "", string description = "") : base(name, caption, description) { }
 
-		public string ParentID { get; set; }
-		MetaPackage _parent = null;
+	//	public string ParentID { get; set; }
+	//	MetaPackage _parent = null;
 
-		/// <summary>
-		/// Родительский пакет
-		/// </summary>
-		public MetaPackage Parent
-		{
-			get
-			{
-				if (_parent == null && !String.IsNullOrEmpty(ParentID)) _parent = Solution.GetPackage(ParentID);
-				return _parent;
-			}
-		}
+	//	/// <summary>
+	//	/// Родительский пакет
+	//	/// </summary>
+	//	public MetaPackage Parent
+	//	{
+	//		get
+	//		{
+	//			if (_parent == null && !String.IsNullOrEmpty(ParentID)) _parent = Solution.GetPackage(ParentID);
+	//			return _parent;
+	//		}
+	//	}
 
-		/// <summary>
-		/// Модель, которой принадлежит пакет
-		/// </summary>
-		public MetaSolution Solution { get; internal set; }
-		Dictionary<string, MetaPackage> _packages = new Dictionary<string, MetaPackage>(16);
-		Dictionary<string, MetaClass> _classes = new Dictionary<string, MetaClass>(64);
-		Dictionary<string, MetaOperation> _operations = new Dictionary<string, MetaOperation>(16);
-		Dictionary<string, MetaEnum> _enums = new Dictionary<string, MetaEnum>(32);
+	//	/// <summary>
+	//	/// Модель, которой принадлежит пакет
+	//	/// </summary>
+	//	public MetaSolution Solution { get; internal set; }
+	//	Dictionary<string, MetaPackage> _packages = new Dictionary<string, MetaPackage>(16);
+	//	Dictionary<string, MetaClass> _classes = new Dictionary<string, MetaClass>(64);
+	//	Dictionary<string, MetaOperation> _operations = new Dictionary<string, MetaOperation>(16);
+	//	Dictionary<string, MetaEnum> _enums = new Dictionary<string, MetaEnum>(32);
 
-		/// <summary>
-		/// Вложенные пакеты
-		/// </summary>
-		public Dictionary<string, MetaPackage>.ValueCollection Packages { get { return _packages.Values; } }
-		/// <summary>
-		/// Классы пакета
-		/// </summary>
-		public Dictionary<string, MetaClass>.ValueCollection Classes { get { return _classes.Values; } }
-		/// <summary>
-		/// Операции пакета
-		/// </summary>
-		public Dictionary<string, MetaOperation>.ValueCollection Operations { get { return _operations.Values; } }
+	//	/// <summary>
+	//	/// Вложенные пакеты
+	//	/// </summary>
+	//	public Dictionary<string, MetaPackage>.ValueCollection Packages { get { return _packages.Values; } }
+	//	/// <summary>
+	//	/// Классы пакета
+	//	/// </summary>
+	//	public Dictionary<string, MetaClass>.ValueCollection Classes { get { return _classes.Values; } }
+	//	/// <summary>
+	//	/// Операции пакета
+	//	/// </summary>
+	//	public Dictionary<string, MetaOperation>.ValueCollection Operations { get { return _operations.Values; } }
 
-		public Dictionary<string, MetaEnum>.ValueCollection Enums { get { return _enums.Values; } }
+	//	public Dictionary<string, MetaEnum>.ValueCollection Enums { get { return _enums.Values; } }
 
-		public void AddClass(MetaClass metaClass)
-		{
-			if (Solution != null) Solution.AddClass(metaClass);
-			metaClass.Parent = this;
-			_classes.Add(metaClass.Name.ToLower(), metaClass);
-		}
+	//	public void AddClass(MetaClass metaClass)
+	//	{
+	//		if (Solution != null) Solution.AddClass(metaClass);
+	//		metaClass.Parent = this;
+	//		_classes.Add(metaClass.Name.ToLower(), metaClass);
+	//	}
 
-		public MetaClass AddClass(string name, string caption = "", string description = "")
-		{
-			MetaClass c = new MetaClass { Name = name, Caption = caption, Description = description, IsPersistent = true };
-			AddClass(c);
-			return c;
-		}
+	//	public MetaClass AddClass(string name, string caption = "", string description = "")
+	//	{
+	//		MetaClass c = new MetaClass { Name = name, Caption = caption, Description = description, IsPersistent = true };
+	//		AddClass(c);
+	//		return c;
+	//	}
 
-		public MetaClass AddClass<T>(string caption = "", string description = "")
-		{
-			MetaClass c = new MetaClass { Name = typeof(T).Name, Caption = caption, Description = description, IsPersistent = true };
-			AddClass(c);
-			return c;
-		}
+	//	public MetaClass AddClass<T>(string caption = "", string description = "")
+	//	{
+	//		MetaClass c = new MetaClass { Name = typeof(T).Name, Caption = caption, Description = description, IsPersistent = true };
+	//		AddClass(c);
+	//		return c;
+	//	}
 
-		public MetaPackage AddPackage(MetaPackage metaPackage)
-		{
-			metaPackage.ParentID = this.ID;
-			//metaPackage.Solution = this.Solution;
+	//	public MetaPackage AddPackage(MetaPackage metaPackage)
+	//	{
+	//		metaPackage.ParentID = this.ID;
+	//		//metaPackage.Solution = this.Solution;
 
-			//foreach (var c in metaPackage.Classes)
-			//	Solution.AddClass(c);
+	//		//foreach (var c in metaPackage.Classes)
+	//		//	Solution.AddClass(c);
 
-			//foreach (var e in metaPackage.Enums)
-			//	Solution.AddEnum(e);
+	//		//foreach (var e in metaPackage.Enums)
+	//		//	Solution.AddEnum(e);
 
-			Solution.AddPackage(metaPackage);
-			_packages.Add(metaPackage.Name.ToLower(), metaPackage);
-			return metaPackage;
-		}
+	//		Solution.AddPackage(metaPackage);
+	//		_packages.Add(metaPackage.Name.ToLower(), metaPackage);
+	//		return metaPackage;
+	//	}
 
-		public void AddEnum(MetaEnum metaEnum)
-		{
-			if (Solution != null) Solution.AddEnum(metaEnum);
-			_enums.Add(metaEnum.Name.ToLower(), metaEnum);
-		}
+	//	public void AddEnum(MetaEnum metaEnum)
+	//	{
+	//		if (Solution != null) Solution.AddEnum(metaEnum);
+	//		_enums.Add(metaEnum.Name.ToLower(), metaEnum);
+	//	}
 
-		public MetaEnum AddEnum(string name, string caption = "", string description = "")
-		{
-			MetaEnum c = new MetaEnum { Name = name, Caption = caption, Description = description };
-			AddEnum(c);
-			return c;
-		}
+	//	public MetaEnum AddEnum(string name, string caption = "", string description = "")
+	//	{
+	//		MetaEnum c = new MetaEnum { Name = name, Caption = caption, Description = description };
+	//		AddEnum(c);
+	//		return c;
+	//	}
 
 
-		public MetaPackage AddPackage(string name, string caption = "", string description = "")
-		{
-			MetaPackage p = new MetaPackage { Name = name, Caption = caption, Description = description };
-			AddPackage(p);
-			return p;
-		}
+	//	public MetaPackage AddPackage(string name, string caption = "", string description = "")
+	//	{
+	//		MetaPackage p = new MetaPackage { Name = name, Caption = caption, Description = description };
+	//		AddPackage(p);
+	//		return p;
+	//	}
 
-		public void AddOperation(MetaOperation metaOperation)
-		{
-			metaOperation.Parent = this;
-			_operations.Add(metaOperation.Name.ToLower(), metaOperation);
-		}
+	//	public void AddOperation(MetaOperation metaOperation)
+	//	{
+	//		metaOperation.Parent = this;
+	//		_operations.Add(metaOperation.Name.ToLower(), metaOperation);
+	//	}
 
-		public MetaClass GetClass(string name)
-		{
-			string s = name.ToLower();
-			return _classes.ContainsKey(s) ? _classes[s] : null;
-		}
+	//	public MetaClass GetClass(string name)
+	//	{
+	//		string s = name.ToLower();
+	//		return _classes.ContainsKey(s) ? _classes[s] : null;
+	//	}
 
-		public MetaPackage GetPackage(string name)
-		{
-			string s = name.ToLower();
-			return _packages.ContainsKey(s) ? _packages[s] : null;
-		}
+	//	public MetaPackage GetPackage(string name)
+	//	{
+	//		string s = name.ToLower();
+	//		return _packages.ContainsKey(s) ? _packages[s] : null;
+	//	}
 
-		public MetaOperation GetOperation(string name)
-		{
-			string s = name.ToLower();
-			return _operations.ContainsKey(s) ? _operations[s] : null;
-		}
+	//	public MetaOperation GetOperation(string name)
+	//	{
+	//		string s = name.ToLower();
+	//		return _operations.ContainsKey(s) ? _operations[s] : null;
+	//	}
 
-		public override string ID
-		{
-			get
-			{
-				return Name;
-			}
-		}
-	}
+	//	public override string ID
+	//	{
+	//		get
+	//		{
+	//			return Name;
+	//		}
+	//	}
+	//}
 
 	public interface IMetaElement
 	{
 		string ID { get; }
 		string Name { get; set; }
-	}
-
-	public interface IMetaOperationContainer : IMetaElement
-	{
-		Dictionary<string, MetaOperation>.ValueCollection Operations { get; }
-		void AddOperation(MetaOperation metaOperation);
 	}
 
 	public partial interface IMetaClassifier : IMetaElement
@@ -315,7 +323,7 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public partial class MetaClass : MetaClassifier, IMetaOperationContainer
+	public partial class MetaClass : MetaClassifier
 	{
 		public string CaptionPlural { get; set; }
 
@@ -328,13 +336,9 @@ namespace Nephrite.Meta
 		}
 
 		/// <summary>
-		/// Модель, которой принадлежит класс
+		/// Модель, в которой располагается класс
 		/// </summary>
-		public MetaSolution Solution { get; internal set; }
-		/// <summary>
-		/// Пакет, в котором располагается класс
-		/// </summary>
-		public MetaPackage Parent { get; set; }
+		public MetaSolution Parent { get; set; }
 
 		Dictionary<string, MetaProperty> _properties = new Dictionary<string, MetaProperty>();
 		Dictionary<string, MetaProperty> _allproperties = null;
@@ -350,7 +354,7 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				if (_baseClass == null && !String.IsNullOrEmpty(BaseClassName)) _baseClass = Solution.GetClass(BaseClassName);
+				if (_baseClass == null && !String.IsNullOrEmpty(BaseClassName)) _baseClass = Parent.GetClass(BaseClassName);
 				return _baseClass;
 			}
 		}
@@ -602,6 +606,20 @@ namespace Nephrite.Meta
 	/// </summary>
 	public partial class MetaReference : MetaProperty
 	{
+		public MetaReference(string name, string caption, string refClassName, bool isRequired = false, 
+			int upperBound = 1, AssociationType associationType = AssociationType.Default, 
+			string inversePropertyName = "", string description = "")
+		{
+			Name = name;
+			Caption = caption;
+			RefClassName = refClassName;
+			InversePropertyName = inversePropertyName;
+			Description = description;
+			UpperBound = upperBound;
+			IsRequired = isRequired;
+			AssociationType = associationType;
+		}
+
 		/// <summary>
 		/// Тип ассоциации
 		/// </summary>
@@ -616,7 +634,7 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				if (_refClass == null) _refClass = Parent.Solution.GetClass(RefClassName);
+				if (_refClass == null) _refClass = Parent.Parent.GetClass(RefClassName);
 				return _refClass;
 			}
 		}
@@ -628,7 +646,7 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				if (_refClass == null) _refClass = Parent.Solution.GetClass(RefClassName);
+				if (_refClass == null) _refClass = Parent.Parent.GetClass(RefClassName);
 				return _refClass.Key.Type;
 			}
 			set
@@ -707,11 +725,11 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// Класс, которому принадлежит метод
 		/// </summary>
-		public IMetaOperationContainer Parent { get; set; }
+		public MetaClass Parent { get; set; }
 		/// <summary>
 		/// Параметры метода
 		/// </summary>
-		public List<MetaOperationParameter> Parameters { get { return _parameters; } }
+		public List<MetaOperationParameter> Parameters { get { return _parameters; } set { _parameters = value; } }
 		/// <summary>
 		/// Иконка
 		/// </summary>
@@ -744,11 +762,11 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public enum DTOClassKind { Single, Queryable }
+	public enum DTOClassKind { Single, Queryable, None }
 
 	public class MetaEnum : MetaElement
 	{
-		public MetaPackage Parent { get; set; }
+		public MetaSolution Parent { get; set; }
 
 		List<MetaEnumValue> _values = new List<MetaEnumValue>();
 		public List<MetaEnumValue> Values { get { return _values; } }

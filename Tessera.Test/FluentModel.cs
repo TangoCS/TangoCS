@@ -22,15 +22,15 @@ namespace Tessera.Test
 	{
 		
 
-		public MetaPackage TestPackage()
+		public MetaSolution Test()
 		{
-			var p = new MetaPackage("TestPackage");
+			var s = new MetaSolution();
 
-			p.AddClass<IC_OperationType>()
+			s.AddClass<IC_OperationType>()
 				.IntKey()
 				.TCLED().TimeStamp<SPM_Subject>();
 
-			p.AddClass<ILot>()
+			s.AddClass<ILot>()
 				.IntKey()
 				.TCLEVD().TimeStamp<SPM_Subject>()
 				.Workflow()
@@ -53,7 +53,7 @@ namespace Tessera.Test
 			//Action<IC_OperationType, string> f3 = (o, v) => o.Title = v;
 			//d = f3;
 			
-			return p;				
+			return s;				
 		}
 	}
 }

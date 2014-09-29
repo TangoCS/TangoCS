@@ -410,15 +410,16 @@ namespace Nephrite.Web.Replication
                     {
 						var ref_ot = A.Meta.GetClass(prop_r.RefClass.Name);
 						object propIDobj = propID.ToInt32(0) > 0 ? (object)propID.ToInt32(0) : (object)propID.ToGuid();
-						if ((prop_r is MetaReferenceToVersion ? r.GetVersion(ref_ot, propIDobj) : r.Get(ref_ot, propIDobj)) == null)
-                        {
+						//if ((prop_r is MetaReferenceToVersion ? r.GetVersion(ref_ot, propIDobj) : r.Get(ref_ot, propIDobj)) == null)
+						if (r.Get(ref_ot, propIDobj) == null)                        
+						{
                             // Импорт версии или объекта
-							if (prop_r is MetaReferenceToVersion)
-                            {
-								ImportObjectVersion(ref_ot, propID);
-                            }
-                            else
-                            {
+							//if (prop_r is MetaReferenceToVersion)
+                            //{
+							//	ImportObjectVersion(ref_ot, propID);
+                            //}
+                            //else
+                            //{
 								string refdata = ReplicationSourceServer.GetRecord(ref_ot.Name, propID);
                                 if (refdata == "")
                                 {
@@ -427,7 +428,7 @@ namespace Nephrite.Web.Replication
                                     return false;
                                 }
 								ImportObject(ref_ot, refdata);
-                            }
+                            //}
                         }
                     }
                 }

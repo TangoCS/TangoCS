@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Nephrite.Web;
 
 namespace Nephrite.Meta.Database
 {
@@ -135,62 +137,105 @@ namespace Nephrite.Meta.Database
 
 		public string GetIntType()
 		{
-			throw new NotImplementedException();
+			return "integer";
 		}
 
 		public string GetGuidType()
 		{
-			throw new NotImplementedException();
+			return "uuid";
 		}
 
 		public string GetStringType(int length)
 		{
-			throw new NotImplementedException();
+			return string.Format("varchar[{0}]", length);
 		}
 
 		public string GetDecimalType(int precision, int scale)
 		{
-			throw new NotImplementedException();
+			return string.Format("numeric[{0},{1}]", precision, scale);
 		}
 
 		public string GetDateTimeType()
 		{
-			throw new NotImplementedException();
+			return "timestamp";
 		}
 
 		public string GetDateType()
 		{
-			throw new NotImplementedException();
+			return "date";
 		}
 
 		public string GetZoneDateTimeType()
 		{
-			throw new NotImplementedException();
+			return "timestamptz";
 		}
 
 		public string GetLongType()
 		{
-			throw new NotImplementedException();
+			return "bigint";
 		}
 
 		public string GetByteArrayType(int length)
 		{
-			throw new NotImplementedException();
+			return "bytea";
 		}
 
 		public string GetBooleanType()
 		{
-			throw new NotImplementedException();
+			return "boolean";
 		}
 
 		public string GetXmlType()
 		{
-			throw new NotImplementedException();
+			return "xml";
 		}
 
 		public MetaPrimitiveType GetType(string dataType, bool notNull)
 		{
-			throw new NotImplementedException();
+			var type = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(", System.StringComparison.Ordinal)) : dataType;
+			int precision = -1;
+			int scale = -1;
+			var match = Regex.Match(dataType, @"\((.*?)\)");
+
+			if (match.Groups.Count > 1)
+			{
+				var value = match.Groups[1].Value;
+				string[] arrayVal = value.Split(',');
+				precision = arrayVal[0].ToInt32(-1);
+				if (arrayVal.Length > 1)
+				{
+					scale = arrayVal[1].ToInt32(-1);
+				}
+			}
+
+			switch (type.ToUpper())
+			{
+				case "INTEGER":
+					return notNull ? MetaIntType.NotNull() : MetaIntType.Null();
+				case "VARCHAR":
+					if (precision == 36)
+						return notNull ? MetaGuidType.NotNull() : MetaGuidType.Null();
+					else if (precision == -1)
+						return notNull ? MetaStringType.NotNull() : MetaStringType.Null();
+					else
+						return new MetaStringType() { Length = precision, NotNullable = notNull };
+				case "NUMERIC":
+					return new MetaDecimalType() { Precision = precision, Scale = scale, NotNullable = notNull };
+				case "TIMESTAMP":
+					return notNull ? MetaDateTimeType.NotNull() : MetaDateTimeType.Null();
+				case "DATE":
+					return notNull ? MetaDateType.NotNull() : MetaDateType.Null();
+				case "BIGINT":
+					return notNull ? MetaLongType.NotNull() : MetaLongType.Null();
+				case "BYTEA":
+					return notNull ? MetaByteArrayType.NotNull() : MetaByteArrayType.Null();
+				case "BOOLEAN":
+					return notNull ? MetaBooleanType.NotNull() : MetaBooleanType.Null();
+				case "XML":
+					return notNull ? MetaXmlType.NotNull() : MetaXmlType.Null();
+				default:
+					return new MetaStringType();
+			}
 		}
 
 	}
