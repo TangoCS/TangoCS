@@ -35,17 +35,6 @@ namespace Nephrite.Web
 
 		public static MetaSolution Meta { get; set; }
 
-		static XElement _metaXml = null;
-		public static XElement MetaXml
-		{
-			get
-			{
-				if (_metaXml == null)
-					return DBScript.GetMeta();
-				return _metaXml;
-			}
-		}
-
 		public static IDictionary Items
 		{
 			get

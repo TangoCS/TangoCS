@@ -10,6 +10,7 @@ using System.Web.UI;
 using Nephrite.Web;
 using Nephrite.Web.SettingsManager;
 using Nephrite.Web.SPM;
+using Nephrite.Web.View;
 
 namespace Nephrite.Meta.Forms
 {
@@ -17,7 +18,7 @@ namespace Nephrite.Meta.Forms
 	{
 		[DefaultSettingValue("ViewList")]
 		public static string DefaultViewName { get; set; }
-
+		
 		public static void RenderMessage(string message)
 		{
 			Control container = HttpContext.Current.Items["ViewContainer"] as Control;
@@ -66,7 +67,24 @@ namespace Nephrite.Meta.Forms
 			Control ctl = null;
 			try
 			{
-				ctl = container.Page.LoadControl(path);
+				
+				if (!File.Exists(String.Format("{0}\\{1}\\{2}\\{3}.ascx", AppDomain.CurrentDomain.BaseDirectory, Settings.ControlsPath, 
+					folder, viewName)))
+				{
+					if (viewName == "delete")
+						ctl = container.Page.LoadControl(typeof(StandardDelete), null);
+					else if (viewName == "undelete")
+						ctl = container.Page.LoadControl(typeof(StandardUndelete), null);
+					else 
+					{
+						RenderMessage("Представление " + VirtualPathUtility.ToAppRelative(path) + " не найдено");
+						return;
+					}
+				}
+				else
+				{
+					ctl = container.Page.LoadControl(path);
+				}
 				if (viewData != null)
 					((ViewControl)ctl).SetViewData(viewData);
 				var t = ctl.GetType();

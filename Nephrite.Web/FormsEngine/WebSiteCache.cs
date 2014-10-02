@@ -58,7 +58,7 @@ namespace Nephrite.Web.FormsEngine
 							AppSPM.AccessRightManager.RefreshCache();
 							TextResource.ResetCache();
 							//DynamicClassActivator.Clear();
-							SPM2.ResetCache();
+							//SPM2.ResetCache();
 						}
 					}
                 }

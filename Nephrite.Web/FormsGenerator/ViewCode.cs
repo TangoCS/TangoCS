@@ -116,5 +116,61 @@ namespace Nephrite.Web.FormsGenerator
 				return "";
 		}
 
+		public static string Delete(FormElement form)
+		{
+			return @"<%if(lo .GetLinkedObjects().Count > 0){%>
+Нельзя удалить <%=ViewData.MetaClass.Caption.ToLower()%>, так как имеются связанные объекты:
+<br /><br />
+<nw:LinkedObjects runat=""server"" ID=""lo"" />
+<br />
+<%}%>
+<%if(lo.GetLinkedObjects().Count == 0){%>
+Вы уверены, что хотите удалить <%=ViewData.MetaClass.Caption%> ""<%=ViewData.Title%>""?
+<br /><br />
+<asp:Button CssClass=""ms-ButtonHeightWidth"" Text=""Удалить"" ID=""bDelete"" runat=""server"" OnClick=""bDelete_Click"" />
+<%}%>
+<nw:BackButton runat=""server"" ID=""bBackButton"" />
+<script runat=""server"">
+protected void Page_Load(object sender, EventArgs e)
+{
+    SetTitle(ViewData.Title + "" - удаление"");
+    if (!ViewData.IsLogicalDelete) lo.SetObject(ViewData);
+}
+
+protected void bDelete_Click(object sender, EventArgs e)
+{
+	var r = new Repository();
+	if (ViewData.IsLogicalDelete)
+		ViewData.IsDeleted = true;
+	else
+		r.Delete(ViewData);
+	r.SubmitChanges();
+
+	Query.RedirectBack();
+}
+</script>";
+		}
+
+		public static string UnDelete(FormElement form)
+		{
+			return @"Вы уверены, что хотите отменить удаление ""<%=ViewData.Title%>""?
+<br /><br />
+<asp:Button CssClass=""ms-ButtonHeightWidth"" Text=""Продолжить"" ID=""bUndelete"" runat=""server"" OnClick=""bUndelete_Click"" />
+<nw:BackButton runat=""server"" ID=""bBackButton"" />
+<script runat=""server"">
+protected void Page_Load(object sender, EventArgs e)
+{
+	SetTitle(""Отмена удаления"");
+}
+
+protected void bUndelete_Click(object sender, EventArgs e)
+{
+	ViewData.IsDeleted = false;
+	App.DataContext.SubmitChanges();
+	Query.RedirectBack();
+}
+</script>";
+		}
+
 	}
 }

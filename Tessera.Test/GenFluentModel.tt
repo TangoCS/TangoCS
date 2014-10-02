@@ -92,6 +92,7 @@ namespace Solution.Model
 			if (prop is MetaReference) { 
 				var r = prop as MetaReference;
 				string add = "";
+				if (r.IsRequired) add += ".Required()";
 				if (r.UpperBound == -1) add += ".Multiple()";
 				if (r.AssociationType == AssociationType.Aggregation) add += ".Aggregation()";
 				if (r.InverseProperty != null) add += @".InverseProperty(""" + r.InverseProperty.Name + @""")";

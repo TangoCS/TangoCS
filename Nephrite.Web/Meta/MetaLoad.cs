@@ -13,7 +13,7 @@ namespace Nephrite.Meta
 		{
 			MetaSolution s = new MetaSolution();
 
-			XElement x = A.MetaXml;
+			XElement x = A.DBScript.GetMeta();
 			if (x == null) throw new Exception("Unable to load model from database");
 
 			foreach (XElement xe in x.Nodes())

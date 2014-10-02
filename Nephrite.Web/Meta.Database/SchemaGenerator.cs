@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Nephrite.Web;
 
 namespace Nephrite.Meta.Database
 {
 	public partial class Schema
 	{
-		public void Generate(MetaClass cls, Dictionary<Guid, MetaClass>.ValueCollection classes)
+		public void Generate(MetaClass cls)
 		{
 
 			var tempListJoinTables = new List<string>();
-			var dbScript = new DBScriptMSSQL("dbo");
+			var dbScript = A.DBScript;
 			//if (!cls.IsPersistent) return;
 
 			Table t = new Table();
@@ -20,7 +21,7 @@ namespace Nephrite.Meta.Database
 			t.Identity = cls.CompositeKey.Count > 0 ? cls.CompositeKey.Count > 1 ? cls.CompositeKey.Where(c => c is MetaAttribute).Any(a => (a as MetaAttribute).IsIdentity) : cls.Key is MetaAttribute && (cls.Key as MetaAttribute).IsIdentity : false;
 			t.Schema = this;
 			if (t.Identity && cls.CompositeKey.Any(c => c.Type is MetaGuidType))
-				throw new Exception(string.Format("Class -{0}. Поле не может быть Identity с типом uniqueidentifier", t.Name));
+				throw new Exception(string.Format("Class {0}. Поле не может быть Identity с типом uniqueidentifier", t.Name));
 
 
 			if (cls.BaseClass != null)
@@ -125,7 +126,7 @@ namespace Nephrite.Meta.Database
 				{
 
 					var metaReference = f as MetaReference;
-					var fkcolumnname = classes.FirstOrDefault(c => c.Name == metaReference.RefClassName).CompositeKey.Select(o => o.Name).First();
+					var fkcolumnname = metaReference.RefClass.CompositeKey.Select(o => o.Name).First();
 					t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { CurrentTable = t, Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaReference.RefClassName, Columns = new[] { metaReference.RefClass.ColumnName(metaReference.Name) }, RefTableColumns = new[] { fkcolumnname } });
 				}
 

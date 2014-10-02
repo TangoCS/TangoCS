@@ -43,7 +43,7 @@ namespace Nephrite.Meta.Database
 								table.Name = t.GetAttributeValue("Name");
 									table.Owner = t.GetAttributeValue("Owner");
 								table.Description = t.GetAttributeValue("Description");
-								table.Identity = !string.IsNullOrEmpty(t.GetAttributeValue("Identity")) && t.GetAttributeValue("Identity") == "1";
+								//table.Identity = !string.IsNullOrEmpty(t.GetAttributeValue("Identity")) && t.GetAttributeValue("Identity") == "1";
 								var xColumnsElement = t.Element("Columns");
 								if (xColumnsElement != null)
 									xColumnsElement.Descendants("Column").ToList().ForEach(c =>
@@ -59,6 +59,8 @@ namespace Nephrite.Meta.Database
 										column.Description = c.GetAttributeValue("Description");
 										column.IsPrimaryKey = !string.IsNullOrEmpty(c.GetAttributeValue("IsPrimaryKey")) && c.GetAttributeValue("IsPrimaryKey") == "1";
 										column.CurrentTable = table;
+										if (!string.IsNullOrEmpty(c.GetAttributeValue("Identity")) && c.GetAttributeValue("Identity") == "1")
+											table.Identity = true;
 										table.Columns.Add(column.Name, column);
 									});
 
