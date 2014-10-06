@@ -58,7 +58,7 @@ namespace Nephrite.Meta.Database
 										column.ForeignKeyName = c.GetAttributeValue("ForeignKeyName");
 										column.Description = c.GetAttributeValue("Description");
 										column.IsPrimaryKey = !string.IsNullOrEmpty(c.GetAttributeValue("IsPrimaryKey")) && c.GetAttributeValue("IsPrimaryKey") == "1";
-										column.CurrentTable = table;
+										column.Table = table;
 										if (!string.IsNullOrEmpty(c.GetAttributeValue("Identity")) && c.GetAttributeValue("Identity") == "1")
 											table.Identity = true;
 										table.Columns.Add(column.Name, column);
@@ -79,7 +79,7 @@ namespace Nephrite.Meta.Database
 										if (xDeleteOptionElement != null)
 											foreignKey.DeleteOption = (DeleteOption)Int32.Parse(xDeleteOptionElement.Value);
 
-										foreignKey.CurrentTable = table;
+										foreignKey.Table = table;
 										table.ForeignKeys.Add(foreignKey.Name, foreignKey);
 									});
 
@@ -116,7 +116,7 @@ namespace Nephrite.Meta.Database
 										var index = new Index();
 										index.Name = c.GetAttributeValue("Name");
 										index.Columns = c.Descendants("Column").Select(fc => fc.GetAttributeValue("Name")).ToArray();
-										index.CurrentTable = table;
+										index.Table = table;
 										index.Cluster = c.GetAttributeValue("Cluster");
 										index.AllowPageLocks = !string.IsNullOrEmpty(c.GetAttributeValue("AllowPageLocks")) && c.GetAttributeValue("AllowPageLocks") == "1";
 										index.AllowRowLocks = !string.IsNullOrEmpty(c.GetAttributeValue("AllowRowLocks")) && c.GetAttributeValue("AllowRowLocks") == "1";

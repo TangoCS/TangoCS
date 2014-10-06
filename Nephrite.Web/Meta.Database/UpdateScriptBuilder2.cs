@@ -278,7 +278,7 @@ namespace Nephrite.Meta.Database
 						result.AppendFormat("	IF EXISTS (select * from sys.indexes where name = '{1}') DROP INDEX [{1}] ON [{0}].[{2}]\r\n", _schema.Name, indx.Name, t.Name);
 						result.AppendFormat("	EXEC dbo.sp_executesql @statement = N'{0}'\r\n", string.Format(createIndex,
 							indx.Name,
-							indx.CurrentTable.Name,
+							indx.Table.Name,
 							string.Join(", ", indx.Columns.ToArray()),
 							indx.IgnoreDupKey ? "ON" : "OFF",
 							indx.AllowRowLocks ? "ON" : "OFF",

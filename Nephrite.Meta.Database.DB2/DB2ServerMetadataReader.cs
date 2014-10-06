@@ -70,7 +70,7 @@ namespace Nephrite.Meta.Database
                                         column.DefaultValue = c.GetAttributeValue("DEFAULTVALUE");
                                         column.ForeignKeyName = c.GetAttributeValue("FOREIGNKEYNAME");
                                         column.IsPrimaryKey = !string.IsNullOrEmpty(c.GetAttributeValue("ISPRIMARYKEY")) && c.GetAttributeValue("ISPRIMARYKEY") == "1";
-                                        column.CurrentTable = table;
+                                        column.Table = table;
                                         table.Columns.Add(column.Name, column);
                                     });
 
@@ -113,7 +113,7 @@ namespace Nephrite.Meta.Database
                                         //if (xDeleteOptionElement != null)
                                         //foreignKey.DeleteOption = (DeleteOption)Int32.Parse(xDeleteOptionElement.Value);
 
-                                        foreignKey.CurrentTable = table;
+                                        foreignKey.Table = table;
                                         table.ForeignKeys.Add(foreignKey.Name, foreignKey);
                                     });
                                 }
@@ -154,7 +154,7 @@ namespace Nephrite.Meta.Database
                                         var index = new Index();
                                         index.Name = c.GetAttributeValue("NAME");
                                         index.Columns = c.Descendants("Column").Select(fc => fc.GetAttributeValue("NAME")).ToArray();
-                                        index.CurrentTable = table;
+                                        index.Table = table;
                                         index.Cluster = c.GetAttributeValue("CLUSTER");
                                         //index.AllowPageLocks = !string.IsNullOrEmpty(c.GetAttributeValue("AllowPageLocks")) && c.GetAttributeValue("AllowPageLocks") == "1";
                                         //index.AllowRowLocks = !string.IsNullOrEmpty(c.GetAttributeValue("AllowRowLocks")) && c.GetAttributeValue("AllowRowLocks") == "1";

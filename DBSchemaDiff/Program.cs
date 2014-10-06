@@ -16,27 +16,7 @@ namespace DBSchemaDiff
 	{
 		static void Main(string[] args)
 		{
-
 			string mydocpath = System.IO.Directory.GetCurrentDirectory();
-
-
-			//     ConnectionManager.SetConnectionString(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString());
-			//    var  DB2readerTo = new DB2ServerMetadataReader();
-			//     var schemaDB2 = DB2readerTo.ReadSchema("DBO");
-
-			//     UpdateScriptBuilderDB2 updateDB2 = new UpdateScriptBuilderDB2(schemaDB2,new DB2Connection(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString()),true );
-
-			//     var ss = updateDB2.Generate(true, false);
-
-
-
-
-			//     var filePathUpdate = mydocpath + "\\DbScripts\\update_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss ") +
-			//".txt";
-			//     TextWriter twUpdate = File.CreateText(filePathUpdate);
-			//     twUpdate.Write(ss);
-			//     twUpdate.Close();
-
 
 			IDatabaseMetadataReader readerFrom;
 			IDatabaseMetadataReader readerTo;
@@ -74,17 +54,11 @@ namespace DBSchemaDiff
 				dbToName = db2Builder.DBName;
 			}
 
-
-
-
-
 			ConnectionManager.SetConnectionString(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ConnectionString);
 			var fromSchema = readerFrom.ReadSchema("dbo");
 
 			ConnectionManager.SetConnectionString(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ConnectionString);
 			var toSchema = readerTo.ReadSchema("dbo");
-
-
 
 			foreach (var rsctable in fromSchema.Tables)
 			{
@@ -100,8 +74,6 @@ namespace DBSchemaDiff
 
 			}
 			var script = dbScript.ToString();
-
-
 
 			var filePath = mydocpath + "\\DbScripts\\" + dbFromName + "_" + dbToName + "_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss") + ".txt";
 			TextWriter tw = File.CreateText(filePath);

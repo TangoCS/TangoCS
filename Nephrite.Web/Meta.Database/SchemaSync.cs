@@ -216,9 +216,9 @@ namespace Nephrite.Meta.Database
                     script.ChangeColumn(srcColumn);
                 }
 
-                if (IsPrimaryKey && CurrentTable.Identity != srcTable.Identity)
+                if (IsPrimaryKey && Table.Identity != srcTable.Identity)
                 {
-					script.Comment(String.Format("у таблицы {0} identity не совпадает", CurrentTable.Name));
+					script.Comment(String.Format("у таблицы {0} identity не совпадает", Table.Name));
 					/*
                     //Находим таблицы ссылающиеся на текущую и у даляем их
                     var childrenForeignKeys = CurrentTable.Schema.Tables.Where(t => t.Value.ForeignKeys.Any(f => f.Value.RefTable.ToLower() == CurrentTable.Name.ToLower())).SelectMany(t => t.Value.ForeignKeys).ToList();

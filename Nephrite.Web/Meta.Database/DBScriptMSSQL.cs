@@ -139,7 +139,7 @@ namespace Nephrite.Meta.Database
 		public void CreateForeignKey(ForeignKey srcforeignKey)
 		{
 
-			var currentTable = srcforeignKey.CurrentTable;
+			var currentTable = srcforeignKey.Table;
 			_FkScripts.Add(string.Format("ALTER TABLE {5}.[{0}] WITH NOCHECK ADD CONSTRAINT {1} FOREIGN KEY({2}) REFERENCES {5}.{3} ({4}) ON UPDATE NO ACTION ON DELETE {6}", 
 													currentTable.Name,
 													srcforeignKey.Name,
@@ -153,7 +153,7 @@ namespace Nephrite.Meta.Database
 
 		public void DeleteForeignKey(ForeignKey currentForeignKey)
 		{
-			var currentTable = currentForeignKey.CurrentTable;
+			var currentTable = currentForeignKey.Table;
 			_FkScripts.Add(string.Format("ALTER TABLE {2}.[{0}] DROP CONSTRAINT {1}", currentTable.Name,
 										  currentForeignKey.Name, _SchemaName));
 		}
@@ -161,7 +161,7 @@ namespace Nephrite.Meta.Database
 		public void DeleteColumn(Column currentColumn)
 		{
 
-			var currentTable = currentColumn.CurrentTable;
+			var currentTable = currentColumn.Table;
 			// При удалении колонки  удаляем  и её pk и fk 
 			if (currentTable.PrimaryKey != null && currentTable.PrimaryKey.Columns.Any(t => t == currentColumn.Name))
 			{
@@ -182,9 +182,9 @@ namespace Nephrite.Meta.Database
 			{
 				DeleteDefaultValue(currentColumn);
 			}
-			if (currentColumn.CurrentTable.Indexes != null && currentColumn.CurrentTable.Indexes.Values.Any(t => t.Columns.Any(c => c == currentColumn.Name)))
+			if (currentColumn.Table.Indexes != null && currentColumn.Table.Indexes.Values.Any(t => t.Columns.Any(c => c == currentColumn.Name)))
 			{
-				foreach (var index in currentColumn.CurrentTable.Indexes)
+				foreach (var index in currentColumn.Table.Indexes)
 				{
 					if (index.Value.Columns.Any(c => c == currentColumn.Name))
 					{
@@ -200,21 +200,21 @@ namespace Nephrite.Meta.Database
 			string c = "C" + _defCnt.ToString();
 			_defCnt++;
 			_MainScripts.Add(string.Format("DECLARE @{0} nvarchar(200)", c));
-			_MainScripts.Add(string.Format("SELECT @{3} = Name FROM SYS.DEFAULT_CONSTRAINTS WHERE PARENT_OBJECT_ID = OBJECT_ID('{1}.[{0}]') AND PARENT_COLUMN_ID = (SELECT column_id FROM sys.columns WHERE NAME = '{2}' AND object_id = OBJECT_ID('{1}.[{0}]'))", currentColumn.CurrentTable.Name, _SchemaName, currentColumn.Name, c));
-			_MainScripts.Add(string.Format("IF @{2} IS NOT NULL EXEC('ALTER TABLE {1}.[{0}] DROP CONSTRAINT ' + @{2})", currentColumn.CurrentTable.Name, _SchemaName, c));
+			_MainScripts.Add(string.Format("SELECT @{3} = Name FROM SYS.DEFAULT_CONSTRAINTS WHERE PARENT_OBJECT_ID = OBJECT_ID('{1}.[{0}]') AND PARENT_COLUMN_ID = (SELECT column_id FROM sys.columns WHERE NAME = '{2}' AND object_id = OBJECT_ID('{1}.[{0}]'))", currentColumn.Table.Name, _SchemaName, currentColumn.Name, c));
+			_MainScripts.Add(string.Format("IF @{2} IS NOT NULL EXEC('ALTER TABLE {1}.[{0}] DROP CONSTRAINT ' + @{2})", currentColumn.Table.Name, _SchemaName, c));
 
 			//_MainScripts.Add(string.Format("ALTER TABLE {2}.[{0}] DROP {1}", currentColumn.CurrentTable.Name, "DF_" + currentColumn.CurrentTable.Name + "_" + currentColumn.Name, _SchemaName));
 		}
 
 		public void AddDefaultValue(Column srcColumn)
 		{
-			_MainScripts.Add(string.Format("ALTER TABLE {4}.[{0}] ADD CONSTRAINT {1} DEFAULT ({2}) FOR {3}", srcColumn.CurrentTable.Name,
-											  "DF_" + srcColumn.CurrentTable.Name + "_" + srcColumn.Name, srcColumn.DefaultValue, srcColumn.Name, _SchemaName));
+			_MainScripts.Add(string.Format("ALTER TABLE {4}.[{0}] ADD CONSTRAINT {1} DEFAULT ({2}) FOR {3}", srcColumn.Table.Name,
+											  "DF_" + srcColumn.Table.Name + "_" + srcColumn.Name, srcColumn.DefaultValue, srcColumn.Name, _SchemaName));
 		}
 		public void AddColumn(Column srcColumn)
 		{
 
-			var currentTable = srcColumn.CurrentTable;
+			var currentTable = srcColumn.Table;
 			if (!string.IsNullOrEmpty(srcColumn.ComputedText))
 			{
 				AddComputedColumn(srcColumn);
@@ -237,12 +237,12 @@ namespace Nephrite.Meta.Database
 		}
 		public void DeleteIndex(Index currentIndex)
 		{
-			_MainScripts.Add(string.Format("DROP INDEX {2} ON {0}.[{1}]", _SchemaName, currentIndex.CurrentTable.Name, currentIndex.Name));
+			_MainScripts.Add(string.Format("DROP INDEX {2} ON {0}.[{1}]", _SchemaName, currentIndex.Table.Name, currentIndex.Name));
 		}
 
 		public void AddComputedColumn(Column srcColumn)
 		{
-			var currentTable = srcColumn.CurrentTable;
+			var currentTable = srcColumn.Table;
 
 			_MainScripts.Add(string.Format("ALTER TABLE {3}.[{0}] ADD [{1}] AS ({2})",
 									currentTable.Name,
@@ -253,7 +253,7 @@ namespace Nephrite.Meta.Database
 		public void ChangeColumn(Column srcColumn)
 		{
 
-			var currentTable = srcColumn.CurrentTable;
+			var currentTable = srcColumn.Table;
 			if (!string.IsNullOrEmpty(srcColumn.ComputedText))
 			{
 				DeleteColumn(srcColumn);

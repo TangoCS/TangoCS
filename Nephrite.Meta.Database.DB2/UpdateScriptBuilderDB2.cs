@@ -181,7 +181,7 @@ namespace Nephrite.Meta.Database
 							(indx.IsUnique ? "UNIQUE " : ""),
 							t.Schema.Name.ToUpper(),
 							indx.Name.ToUpper(),
-							indx.CurrentTable.Name.ToUpper(),
+							indx.Table.Name.ToUpper(),
 							string.Join(", ", indx.Columns.ToArray()).ToUpper().Replace("+", ""));
 					}
 				}

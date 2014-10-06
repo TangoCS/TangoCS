@@ -161,7 +161,7 @@ namespace Nephrite.Meta.Database
 
         public void CreateForeignKey(ForeignKey srcforeignKey)
         {
-            var srcTable = srcforeignKey.CurrentTable;
+            var srcTable = srcforeignKey.Table;
             _FkScripts.Add(
                 string.Format(
                     "ALTER TABLE {6}.{0} ADD CONSTRAINT {1} FOREIGN KEY({2}) REFERENCES {6}.{3} ({4}) {5};", srcTable.Name.ToUpper(), srcforeignKey.Name.ToUpper(), string.Join(",", srcforeignKey.Columns).ToUpper(),
@@ -172,7 +172,7 @@ namespace Nephrite.Meta.Database
 
         public void DeleteForeignKey(ForeignKey currentForeignKey)
         {
-            var currentTable = currentForeignKey.CurrentTable;
+            var currentTable = currentForeignKey.Table;
             _FkScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP CONSTRAINT {2}.{1};", currentTable.Name.ToUpper(),
                                           currentForeignKey.Name.ToUpper(), _SchemaName));
         }
@@ -196,7 +196,7 @@ namespace Nephrite.Meta.Database
 
         public void DeleteColumn(Column currentColumn)
         {
-            var currentTable = currentColumn.CurrentTable;
+            var currentTable = currentColumn.Table;
             // При удалении колонки  удаляем  и её pk и fk 
             if (currentTable.PrimaryKey != null && currentTable.PrimaryKey.Columns.Any(t => t.ToUpper() == currentColumn.Name.ToUpper()))
             {
@@ -217,9 +217,9 @@ namespace Nephrite.Meta.Database
             {
                 DeleteDefaultValue(currentColumn);
             }
-            if (currentColumn.CurrentTable.Indexes != null && currentColumn.CurrentTable.Indexes.Values.Any(t => t.Columns.Any(c => c.ToUpper() == currentColumn.Name.ToUpper())))
+            if (currentColumn.Table.Indexes != null && currentColumn.Table.Indexes.Values.Any(t => t.Columns.Any(c => c.ToUpper() == currentColumn.Name.ToUpper())))
             {
-                foreach (var index in currentColumn.CurrentTable.Indexes)
+                foreach (var index in currentColumn.Table.Indexes)
                 {
                     if (index.Value.Columns.Any(c => c.ToUpper() == currentColumn.Name.ToUpper()))
                     {
@@ -242,7 +242,7 @@ namespace Nephrite.Meta.Database
 
         public void AddColumn(Column srcColumn)
         {
-            var currentTable = srcColumn.CurrentTable;
+            var currentTable = srcColumn.Table;
             if (!string.IsNullOrEmpty(srcColumn.ComputedText))
             {
                 AddComputedColumn(srcColumn);
@@ -268,7 +268,7 @@ namespace Nephrite.Meta.Database
 
         public void ChangeColumn(Column srcColumn)
         {
-            var currentTable = srcColumn.CurrentTable;
+            var currentTable = srcColumn.Table;
             if (!string.IsNullOrEmpty(srcColumn.ComputedText))
             {
                 DeleteColumn(srcColumn);
@@ -321,7 +321,7 @@ namespace Nephrite.Meta.Database
 
         public void SyncIdentityColumn(Column srcColumn)
         {
-            var srcTable = srcColumn.CurrentTable;
+            var srcTable = srcColumn.Table;
             if (srcColumn.Identity)
             {
                 _MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1} DROP IDENTITY;", srcTable.Name.ToUpper(), srcColumn.Name.ToUpper(), _SchemaName));
@@ -474,7 +474,7 @@ namespace Nephrite.Meta.Database
 		public void AddComputedColumn(Column srcColumn)
         {
 
-            var currentTable = srcColumn.CurrentTable;
+            var currentTable = srcColumn.Table;
 
             if (currentTable.Name.ToUpper() == "DOCTASK")
             {
@@ -561,13 +561,13 @@ namespace Nephrite.Meta.Database
 
         public void DeleteDefaultValue(Column currentColumn)
         {
-            _MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} DROP DEFAULT;", currentColumn.Name.ToUpper(), currentColumn.CurrentTable.Name.ToUpper(), _SchemaName));
+            _MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} DROP DEFAULT;", currentColumn.Name.ToUpper(), currentColumn.Table.Name.ToUpper(), _SchemaName));
             //_MainScripts.Add(Checked(currentColumn.CurrentTable.Name.ToUpper()));
         }
 
         public void AddDefaultValue(Column srcColumn)
         {
-            _MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} SET DEFAULT {3};", srcColumn.Name.ToUpper(), srcColumn.CurrentTable.Name.ToUpper(), _SchemaName, GetDefaultValue(srcColumn.DefaultValue, srcColumn.Type.GetDBType(this))));
+            _MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} SET DEFAULT {3};", srcColumn.Name.ToUpper(), srcColumn.Table.Name.ToUpper(), _SchemaName, GetDefaultValue(srcColumn.DefaultValue, srcColumn.Type.GetDBType(this))));
             //_MainScripts.Add(Checked(srcColumn.CurrentTable.Name.ToUpper()));
         }
 

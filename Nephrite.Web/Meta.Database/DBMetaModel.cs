@@ -52,7 +52,7 @@ namespace Nephrite.Meta.Database
 	{
 		public string Name { get; set; }
 		public string[] Columns { get; set; }
-		public Table CurrentTable { get; set; }
+		public Table Table { get; set; }
 
 		public string Cluster { get; set; }
 		public bool AllowPageLocks { get; set; }
@@ -74,7 +74,7 @@ namespace Nephrite.Meta.Database
 		public string ForeignKeyName { get; set; }
 		public bool IsPrimaryKey { get; set; }
 		public bool Identity { get; set; }
-		public Table CurrentTable { get; set; }
+		public Table Table { get; set; }
 	}
 
 	[Serializable]
@@ -94,7 +94,7 @@ namespace Nephrite.Meta.Database
 		public string[] Columns { get; set; }
 		public string[] RefTableColumns { get; set; }
 		public DeleteOption DeleteOption { get; set; }
-		public Table CurrentTable { get; set; }
+		public Table Table { get; set; }
 	}
 
 	public enum DeleteOption
