@@ -8,7 +8,7 @@ using Nephrite.Web;
 
 namespace Nephrite.Meta.Database
 {
-	class DBScriptPostgreSQL : IDBScript
+	public class DBScriptPostgreSQL : IDBScript
 	{
 		private List<string> _MainScripts { get; set; }
 		private List<string> _FkScripts { get; set; }

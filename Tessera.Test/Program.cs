@@ -67,6 +67,10 @@ namespace Tessera.Test
             //A.DBType = DBType.DB2;
 			//A.DBScript = new DBScriptDB2("DBO");
 
+			//ConnectionManager.SetConnectionString("Database=SRVNTS;UserID=dbo;Password=123*(iop;Server=176.227.213.5:50000");
+			//A.DBType = DBType.POSTGRESQL;
+			//A.DBScript = new DBScriptPostgreSQL("dbo");
+
 			//GetDict(App.DataContext.SPM_Subject);
 	
 			Listeners l = new Listeners();

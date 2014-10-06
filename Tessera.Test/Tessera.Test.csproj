@@ -85,6 +85,10 @@
       <Project>{2b25a041-ff5e-4308-a25a-aa60d097f009}</Project>
       <Name>Nephrite.Meta.Database.DB2</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Nephrite.Meta.Database.PostgreSQL\Nephrite.Meta.Database.PostgreSQL.csproj">
+      <Project>{2b3754dc-5507-4046-a135-bced1c161acf}</Project>
+      <Name>Nephrite.Meta.Database.PostgreSQL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nephrite.Metamodel\Nephrite.Metamodel.csproj">
       <Project>{9f863d08-fd1f-4065-9f7d-f9ddbc469e81}</Project>
       <Name>Nephrite.Metamodel</Name>
