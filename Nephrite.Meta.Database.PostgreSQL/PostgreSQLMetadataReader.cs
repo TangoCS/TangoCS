@@ -10,7 +10,7 @@ using System.Xml.Linq;
 namespace Nephrite.Meta.Database
 {
 	public class PostgreSQLMetadataReader : IDatabaseMetadataReader
-    {
+	{
 		public Schema ReadSchema(string name)
 		{
 			var returnSchema = new Schema();
@@ -81,8 +81,8 @@ namespace Nephrite.Meta.Database
 
 										var refkColumns = c.Descendants("RefTableColumn")
 																   .Select(pc =>
-																	   pc.GetAttributeValue("RefTableColumnDescription") == null ? pc.GetAttributeValue("NAME") :
-																		pc.GetAttributeValue("RefTableColumnDescription").Split('|').Length > 1 ? pc.GetAttributeValue("RefTableColumnDescription").Split('|')[1] : pc.GetAttributeValue("RefTableColumnDescription")
+																	   pc.GetAttributeValue("REFTABLECOLUMNDESCRIPTION") == null ? pc.GetAttributeValue("NAME") :
+																		pc.GetAttributeValue("REFTABLECOLUMNDESCRIPTION").Split('|').Length > 1 ? pc.GetAttributeValue("REFTABLECOLUMNDESCRIPTION").Split('|')[1] : pc.GetAttributeValue("REFTABLECOLUMNDESCRIPTION")
 																	   )
 																   .ToArray();
 
