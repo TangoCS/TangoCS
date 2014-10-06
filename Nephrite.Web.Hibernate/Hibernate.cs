@@ -376,7 +376,9 @@ namespace Nephrite.Web.Hibernate
 
 		public IQueryable<T> GetTable<T>() //where T : class
 		{
-			return EnableTableAutoFilter ? DefaultTableFilters.ApplyFor<T>(Session.Query<T>()) : Session.Query<T>();
+			return EnableTableAutoFilter ? 
+				new HTable<T>(this, DefaultTableFilters.ApplyFor<T>(Session.Query<T>())) : 
+				new HTable<T>(this, Session.Query<T>());
 		}
 
 		public ITable GetTable(Type t)

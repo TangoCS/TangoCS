@@ -13,41 +13,6 @@ namespace Nephrite.Web.Layout
 		void RegisterJS();
 	}
 
-	public interface ILayoutMain
-	{
-		string HeaderBegin();
-		string HeaderEnd();
-
-		string MainBegin();
-		string MainEnd();
-
-		string ContainerBegin();
-		string ContainerEnd();
-
-		string ContainerFluidBegin();
-		string ContainerFluidEnd();
-		
-		string SidebarBegin();
-		string SidebarEnd();
-
-		string ContentBegin();
-		string ContentEnd();
-
-		string ContentHeaderBegin();
-		string ContentHeaderEnd();
-		string ContentBodyBegin();
-		string ContentBodyEnd();
-
-		string FooterBegin();
-		string FooterEnd();
-
-		string GridRowBegin();
-		string GridRowEnd();
-
-		string GridSpanBegin(int value);
-		string GridSpanEnd();
-	}
-
 	public interface ILayoutForm
 	{
 		string FormTableBegin(object attributes);

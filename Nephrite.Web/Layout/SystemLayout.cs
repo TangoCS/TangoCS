@@ -10,7 +10,6 @@ namespace Nephrite.Web.Layout
 		ILayoutListRowDrag, ILayoutMessage, ILayoutPaging, ILayoutSimpleTags, ILayoutLabels
 	{
 		public List<ILayoutInit> Init { get; set; }
-		public ILayoutMain Main { get; set; }
 		public ILayoutList List { get; set; }
 		public ILayoutForm Form { get; set; }
 		public ILayoutListRowDrag ListRowDrag { get; set; }
@@ -38,7 +37,6 @@ namespace Nephrite.Web.Layout
 				if (_layout == null)
 				{
 					AppLayout sl = new AppLayout();
-					sl.Main = new MainWSS2007_FixHeight();
 					sl.List = new ListWSS2007();
 					sl.ListRowDrag = new ListRowDragWSS2007();
 					sl.Message = new MessageWSS2007();

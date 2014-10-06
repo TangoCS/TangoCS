@@ -21,7 +21,7 @@ namespace Nephrite.Web.SPM
 		bool Check(Guid securableObjectGUID, int actionTypeID, object predicateContext, bool defaultAccess);
 		bool Check(string securableObjectName, int actionTypeID, bool defaultAccess);
 
-		bool CheckForRole(int roleID, Guid securableObjectGUID, int actionTypeID);
+		bool CheckForRole(int roleID, string securableObjectName, int actionTypeID);
 
 		string GetLastMessage();
 	}
@@ -75,7 +75,7 @@ namespace Nephrite.Web.SPM
 
 		protected static object _lock = new object();
 
-		public virtual bool CheckForRole(int roleID, Guid securableObjectGUID, int actionTypeID)
+		public virtual bool CheckForRole(int roleID, string securableObjectName, int actionTypeID)
 		{
 			throw new NotImplementedException();
 		}
@@ -208,10 +208,10 @@ namespace Nephrite.Web.SPM
 			return Check(securableObjectName, actionTypeID, _className + "-byname", GetRolesAccessByNameQuery, GetItemsNamesQuery, defaultAccess);
 		}
 
-		public override bool CheckForRole(int roleID, Guid securableObjectGUID, int actionTypeID)
+		public override bool CheckForRole(int roleID, string securableObjectName, int actionTypeID)
 		{
 			List<int> anc = Role.FromID(roleID).Ancestors;
-			string key = securableObjectGUID.ToString().ToUpper() + "-" + actionTypeID.ToString();
+			string key = securableObjectName.ToUpper() + "-" + actionTypeID.ToString();
 
 			HashSet<string> _access = null;
 			string cacheName = _className + "-byid";

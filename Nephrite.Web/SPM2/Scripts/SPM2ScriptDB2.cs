@@ -31,48 +31,38 @@ Email as ""Email"" from SPM_Subject where {0}";
         {
             get
             {
-				return @"select ucase(cast(a.ItemGUID as varchar(36)) || '-1-' || cast(ra.RoleID as varchar(36)))
-				from DBO.SPM_Action a, DBO.SPM_RoleAccess ra
-				where ra.ActionID = a.ActionID and a.ItemGUID is not null";
+				return @"select ucase(a.SystemName) || '-1-' || cast(ra.RoleID as varchar(10))
+				from dbo.SPM_Action a, dbo.SPM_RoleAccess ra
+				where ra.ActionID = a.ActionID
+				order by a.SystemName";
             }
         }
         public string GetRolesAccessByNameQuery
         {
             get
             {
-				return @"select ucase(pa.SystemName || '.' || a.SystemName) || '-1-' || cast(ra.RoleID as varchar(10))
-				from DBO.SPM_Action a, 
-				DBO.SPM_ActionAsso asso,
-				DBO.SPM_Action pa,
-				DBO.SPM_ActionAsso asso2,
-				DBO.SPM_Action roota,
-				DBO.SPM_RoleAccess ra
-				where a.ActionID = asso.ActionID and pa.ActionID = asso.ParentActionID and
-				pa.ActionID = asso2.ActionID and roota.ActionID = asso2.ParentActionID and
-				ra.ActionID = a.ActionID";// order by pa.SystemName + '.' + a.SystemName
+				return @"select ucase(a.SystemName) || '-1-' || cast(ra.RoleID as varchar(10))
+				from dbo.SPM_Action a, dbo.SPM_RoleAccess ra
+				where ra.ActionID = a.ActionID
+				order by a.SystemName";
             }
         }
         public string GetItemsIdsQuery
         {
             get
             {
-				return @"select ucase(CAST(a.ItemGUID as varchar(36))) || '-1'
+				return @"select ucase(a.SystemName) || '-1'
 				from DBO.SPM_Action a
-				where a.ItemGUID is not null";
+				order by a.SystemName";
             }
         }
         public string GetItemsNamesQuery
         {
             get
             {
-				return @"select ucase(pa.SystemName || '.' || a.SystemName) || '-1'
-				from DBO.SPM_Action a, 
-				DBO.SPM_ActionAsso asso,
-				DBO.SPM_Action pa,
-				DBO.SPM_ActionAsso asso2,
-				DBO.SPM_Action roota
-				where a.ActionID = asso.ActionID and pa.ActionID = asso.ParentActionID and
-				pa.ActionID = asso2.ActionID and roota.ActionID = asso2.ParentActionID "; // order by pa.SystemName + '.' + a.SystemName
+				return @"select ucase(a.SystemName) || '-1'
+				from DBO.SPM_Action a
+				order by a.SystemName";
             }
         }
     }

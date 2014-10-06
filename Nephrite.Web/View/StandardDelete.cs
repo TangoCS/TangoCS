@@ -10,15 +10,12 @@ namespace Nephrite.Web.View
 {
 	public class StandardDelete : ViewControl
 	{
-		Button bOK = new Button { Text = "Удалить" };
+		Button bOK = new Button { Text = "Удалить", CssClass = "ms-ButtonHeightWidth" };
 		BackButton bBack = new BackButton();
 
 		protected override void OnInit(EventArgs e)
 		{
-			base.OnInit(e);
-
 			bOK.Click += bOK_Click;
-			bOK.CssClass = "ms-ButtonHeightWidth";
 
 			Controls.Add(bOK);
 			Controls.Add(bBack);
@@ -26,7 +23,6 @@ namespace Nephrite.Web.View
 
 		protected override void OnLoad(EventArgs e)
 		{
-			base.OnLoad(e);
 			SetTitle((ViewData as IModelObject).Title + " &mdash; удаление"); 
 		}
 

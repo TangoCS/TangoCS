@@ -227,7 +227,7 @@ namespace Nephrite.Meta.Fluent
 		public static MetaClass TimeStamp<T>(this MetaClass cls)
 		{
 			cls.Attribute("LastModifiedDate", "Дата последней модификации", MetaDateTimeType.NotNull());
-			cls.Reference<T>("LastModifiedUser", "Последний редактировавший пользователь");
+			cls.Reference<T>("LastModifiedUser", "Последний редактировавший пользователь", x => x.Required());
 			cls.Interfaces.Add(typeof(IWithTimeStamp));
 			return cls;
 		}

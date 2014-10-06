@@ -31,50 +31,38 @@ Email from SPM_Subject where {0}";
         {
             get
             {
-				return @"select upper(convert(varchar(36), a.ItemGUID) + '-1-' + convert(varchar, ra.RoleID))
+				return @"select upper(a.SystemName) + '-1-' + convert(varchar, ra.RoleID)
 				from SPM_Action a, SPM_RoleAccess ra
-				where ra.ActionID = a.ActionID and a.ItemGUID is not null";
+				where ra.ActionID = a.ActionID
+				order by a.SystemName";
             }
         }
         public string GetRolesAccessByNameQuery
         {
             get
             {
-                return @"select upper(pa.SystemName + '.' + a.SystemName) + '-1-' + convert(varchar, ra.RoleID)
-				from SPM_Action a, 
-				SPM_ActionAsso asso,
-				SPM_Action pa,
-				SPM_ActionAsso asso2,
-				SPM_Action roota,
-				SPM_RoleAccess ra
-				where a.ActionID = asso.ActionID and pa.ActionID = asso.ParentActionID and
-				pa.ActionID = asso2.ActionID and roota.ActionID = asso2.ParentActionID and
-				ra.ActionID = a.ActionID
-				order by pa.SystemName + '.' + a.SystemName";
+                return @"select upper(a.SystemName) + '-1-' + convert(varchar, ra.RoleID)
+				from SPM_Action a, SPM_RoleAccess ra
+				where ra.ActionID = a.ActionID
+				order by a.SystemName";
             }
         }
         public string GetItemsIdsQuery
         {
             get
             {
-                return @"select convert(varchar(36), a.ItemGUID) + '-1'
+				return @"select upper(a.SystemName) + '-1'
 				from SPM_Action a
-				where a.ItemGUID is not null";
+				order by a.SystemName";
             }
         }
         public string GetItemsNamesQuery
         {
             get
             {
-                return @"select upper(pa.SystemName + '.' + a.SystemName) + '-1'
-				from SPM_Action a, 
-				SPM_ActionAsso asso,
-				SPM_Action pa,
-				SPM_ActionAsso asso2,
-				SPM_Action roota
-				where a.ActionID = asso.ActionID and pa.ActionID = asso.ParentActionID and
-				pa.ActionID = asso2.ActionID and roota.ActionID = asso2.ParentActionID 
-				order by pa.SystemName + '.' + a.SystemName";
+                return @"select upper(a.SystemName) + '-1'
+				from SPM_Action a
+				order by a.SystemName";
             }
         }
     }
