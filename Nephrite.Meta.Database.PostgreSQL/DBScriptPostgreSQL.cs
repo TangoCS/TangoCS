@@ -10,9 +10,41 @@ namespace Nephrite.Meta.Database
 {
 	class DBScriptPostgreSQL : IDBScript
 	{
+		private List<string> _MainScripts { get; set; }
+		private List<string> _FkScripts { get; set; }
+		private string _SchemaName { get; set; }
+
+		public DBScriptPostgreSQL(string schemaName)
+        {
+            _MainScripts = new List<string>();
+            _FkScripts = new List<string>();
+            _SchemaName = schemaName.ToLower();
+        }
+
+		public override string ToString()
+		{
+			var res = new List<string>(_MainScripts.Count + _FkScripts.Count + 10);
+			//res.Add("BEGIN TRY");
+			//res.Add("BEGIN TRANSACTION");
+			res.AddRange(_MainScripts);
+			res.AddRange(_FkScripts);
+			//res.Add("COMMIT TRANSACTION");
+			//res.Add("print 'Database structure successfully updated!'");
+			//res.Add("END TRY");
+			//res.Add("BEGIN CATCH");
+			//res.Add("ROLLBACK TRANSACTION");
+			//res.Add("print 'Error at line: ' + convert(varchar(50), ERROR_LINE())");
+			//res.Add("print ERROR_MESSAGE()");
+			//res.Add("GOTO RunupEnd");
+			//res.Add("END CATCH");
+			//res.Add("RunupEnd:");
+
+			return res.Join("\r\n");
+		}
+
 		public void Comment(string comment)
 		{
-			throw new NotImplementedException();
+			_MainScripts.Add("-- " + comment);
 		}
 
 		public void CreateTable(Table srcTable)
