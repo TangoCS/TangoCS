@@ -142,7 +142,7 @@ namespace Nephrite.Meta.Database
 						tempListJoinTables.Add(joinTable.Name);
 					}
 				}
-			});
+			};
 
 			Table tdata = null;
 			if (cls.IsMultilingual)
