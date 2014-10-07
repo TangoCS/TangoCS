@@ -23,14 +23,17 @@ namespace Nephrite.Meta.Database
 
 		public override string ToString()
 		{
-			var res = new List<string>(_MainScripts.Count + _FkScripts.Count + 10);
-			//res.Add("DO LANGUAGE plpgsql $$");
-			//res.Add("BEGIN");
+			var res = new List<string>(_MainScripts.Count + _FkScripts.Count + 8);
+			res.Add("DO LANGUAGE plpgsql");
+			res.Add("$$");
+			res.Add("BEGIN");
 			res.AddRange(_MainScripts);
 			res.AddRange(_FkScripts);
-			//res.Add("RAISE NOTICE 'Database structure successfully updated!';");
-			//res.Add("RAISE EXCEPTION 'Error: % %', SQLERRM, SQLSTATE;");
-			//res.Add("END; $$");
+			res.Add("EXCEPTION WHEN OTHERS THEN");
+			res.Add("RAISE EXCEPTION 'Error state: %, Error message: %', SQLSTATE, SQLERRM;");
+			res.Add("RAISE NOTICE 'Database structure successfully updated!';");
+			res.Add("END;");
+			res.Add("$$");
 
 			return res.Join("\r\n");
 		}
@@ -52,22 +55,31 @@ namespace Nephrite.Meta.Database
 
 		public void CreateForeignKey(ForeignKey srcforeignKey)
 		{
-			throw new NotImplementedException();
+			var srcTable = srcforeignKey.Table;
+			_FkScripts.Add(
+				string.Format(
+					"ALTER TABLE {6}.{0} ADD CONSTRAINT {1} FOREIGN KEY({2}) REFERENCES {6}.{3} ({4}) {5};", srcTable.Name.ToLower(), srcforeignKey.Name.ToLower(), string.Join(",", srcforeignKey.Columns).ToLower(),
+					srcforeignKey.RefTable.ToLower(), string.Join(",", srcforeignKey.RefTableColumns).ToLower(), "ON DELETE " + srcforeignKey.DeleteOption.ToString().ToUpper(),
+					_SchemaName));
 		}
 
 		public void DeleteForeignKey(ForeignKey currentForeignKey)
 		{
-			throw new NotImplementedException();
+			var currentTable = currentForeignKey.Table;
+			_FkScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP CONSTRAINT {1};", currentTable.Name.ToLower(), currentForeignKey.Name.ToLower(), _SchemaName));
 		}
 
 		public void DeletePrimaryKey(PrimaryKey currentPrimaryKey)
 		{
-			throw new NotImplementedException();
+			var currentTable = currentPrimaryKey.CurrentTable;
+			_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP CONSTRAINT {1};", currentTable.Name.ToUpper(), currentPrimaryKey.Name.ToLower(), _SchemaName));
 		}
 
 		public void CreatePrimaryKey(PrimaryKey srcPrimaryKey)
 		{
-			throw new NotImplementedException();
+			var curentTable = srcPrimaryKey.CurrentTable;
+			_MainScripts.Add(string.Format("ALTER TABLE {3}.{0} ADD CONSTRAINT {1} PRIMARY KEY ({2});", curentTable.Name.ToLower(), srcPrimaryKey.Name.ToLower(),
+													   string.Join(",", srcPrimaryKey.Columns).ToLower(), _SchemaName));
 		}
 
 		public void DeleteColumn(Column currentColumn)
@@ -247,6 +259,7 @@ namespace Nephrite.Meta.Database
 				case "NUMERIC":
 					return new MetaDecimalType() { Precision = precision, Scale = scale, NotNullable = notNull };
 				case "TIMESTAMP":
+				case "TIMESTAMPTZ":
 					return notNull ? MetaDateTimeType.NotNull() : MetaDateTimeType.Null();
 				case "DATE":
 					return notNull ? MetaDateType.NotNull() : MetaDateType.Null();

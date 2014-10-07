@@ -43,7 +43,7 @@ namespace Nephrite.Meta.Database
 								table.Name = string.IsNullOrEmpty(tableName) ? t.GetAttributeValue("NAME") : tableName;
 								table.Owner = t.GetAttributeValue("OWNER");
 								table.Description = tableDescription;
-								table.Identity = !string.IsNullOrEmpty(t.GetAttributeValue("IDENTITY")) && t.GetAttributeValue("IDENTITY") == "1";
+								//table.Identity = !string.IsNullOrEmpty(t.GetAttributeValue("IDENTITY")) && t.GetAttributeValue("IDENTITY") == "1";
 								var xColumnsElement = t.Element("Columns");
 								if (xColumnsElement != null)
 									xColumnsElement.Descendants("Column").ToList().ForEach(c =>
