@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Npgsql;
 using Nephrite.Web;
-using System.Xml.Linq;
 
 namespace Nephrite.Meta.Database
 {
@@ -52,11 +53,11 @@ namespace Nephrite.Meta.Database
 										var columnDescription = columnArray.Length > 0 ? columnArray[0] : "";
 
 
-										// Проверяем наличие описания и отсутствие мени в нижнем регистре( происходит когда коментарий не записалса с др бд а старый остался написанный кирилицей)
+										// Проверяем наличие описания и отсутствие имени в нижнем регистре( происходит когда коментарий не записалса с др бд а старый остался написанный кирилицей)
 
 
 										var column = new Column();
-										column.Identity = !string.IsNullOrEmpty(c.GetAttributeValue("IDENTITY")) && c.GetAttributeValue("IDENTITY") == "Y";
+										column.Identity = !string.IsNullOrEmpty(c.GetAttributeValue("IDENTITY")) && c.GetAttributeValue("IDENTITY") == "1";
 										column.Name = string.IsNullOrEmpty(columnName) ? c.GetAttributeValue("NAME") : columnName;
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
 										column.Type = DbScript.GetType(c.GetAttributeValue("TYPE"), !column.Nullable);
@@ -103,10 +104,10 @@ namespace Nephrite.Meta.Database
 												 .ToArray();
 
 										foreignKey.RefTableColumns = refkColumns;
-										//var xDeleteOptionElement = null;// t.Element("DeleteOption");
+										var xDeleteOptionElement = c.Element("DeleteOption");
 										foreignKey.DeleteOption = DeleteOption.Restrict;
-										//if (xDeleteOptionElement != null)
-										//foreignKey.DeleteOption = (DeleteOption)Int32.Parse(xDeleteOptionElement.Value);
+										if (xDeleteOptionElement != null && !string.IsNullOrEmpty(xDeleteOptionElement.Value))
+											foreignKey.DeleteOption = (DeleteOption)Int32.Parse(xDeleteOptionElement.Value);
 
 										foreignKey.Table = table;
 										table.ForeignKeys.Add(foreignKey.Name, foreignKey);
@@ -151,10 +152,10 @@ namespace Nephrite.Meta.Database
 										index.Columns = c.Descendants("Column").Select(fc => fc.GetAttributeValue("NAME")).ToArray();
 										index.Table = table;
 										index.Cluster = c.GetAttributeValue("CLUSTER");
+										index.IsUnique = !string.IsNullOrEmpty(c.GetAttributeValue("ISUNIQUE")) && c.GetAttributeValue("ISUNIQUE") == "1";
 										//index.AllowPageLocks = !string.IsNullOrEmpty(c.GetAttributeValue("AllowPageLocks")) && c.GetAttributeValue("AllowPageLocks") == "1";
 										//index.AllowRowLocks = !string.IsNullOrEmpty(c.GetAttributeValue("AllowRowLocks")) && c.GetAttributeValue("AllowRowLocks") == "1";
 										//index.IgnoreDupKey = !string.IsNullOrEmpty(c.GetAttributeValue("IgnoreDupKey")) && c.GetAttributeValue("IgnoreDupKey") == "1";
-										//index.IsUnique = !string.IsNullOrEmpty(c.GetAttributeValue("IsUnique")) && c.GetAttributeValue("IsUnique") == "1";
 
 										table.Indexes.Add(index.Name, index);
 									});
@@ -196,7 +197,7 @@ namespace Nephrite.Meta.Database
 
 							});
 
-							doc.Descendants("Procedure").ToList().ForEach(p =>
+							/*doc.Descendants("Procedure").ToList().ForEach(p =>
 							{
 								var procedure = new Procedure();
 								procedure.Name = p.GetAttributeValue("NAME");
@@ -213,7 +214,7 @@ namespace Nephrite.Meta.Database
 
 								returnSchema.Procedures.Add(procedure.Name, procedure);
 
-							});
+							});*/
 
 							doc.Descendants("Function").ToList().ForEach(p =>
 							{
@@ -246,7 +247,44 @@ namespace Nephrite.Meta.Database
 
 		public List<ProcedureDetails> ReadProceduresDetails()
 		{
-			throw new NotImplementedException();
+			var mapType = new DataTypeMapper();
+			var listProcedureDetails = new List<ProcedureDetails>();
+			using (NpgsqlConnection con = new NpgsqlConnection(ConnectionManager.ConnectionString))
+			{
+				using (NpgsqlCommand cmd = new NpgsqlCommand("select * from DBO.MM_DBProgrammability", con))
+				{
+					cmd.CommandType = CommandType.Text;
+
+					con.Open();
+					using (var reader = cmd.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							var procedureDetails = new ProcedureDetails();
+							procedureDetails.ProcedureName = reader["name"].ToString();
+							XDocument doc = XDocument.Parse(reader["returns"].ToString());
+
+							if (doc.Descendants("Column").Any())
+							{
+								procedureDetails.ReturnType = procedureDetails.ProcedureName + "Result";
+								procedureDetails.Columns = new Dictionary<string, string>();
+								doc.Descendants("Column").ToList().ForEach(c => procedureDetails.Columns.Add(c.GetAttributeValue("Name"), mapType.MapFromSqlServerDBType(c.GetAttributeValue("Type"), null, null, null).ToString()));
+							}
+							else if (doc.Descendants("SingleResult").Any())
+							{
+								procedureDetails.ReturnType = mapType.MapFromSqlServerDBType(doc.Descendants("SingleResult").FirstOrDefault().GetAttributeValue("Type"), null, null, null).ToString();
+							}
+							else
+							{
+								procedureDetails.ReturnType = "void";
+							}
+							listProcedureDetails.Add(procedureDetails);
+
+						}
+					}
+				}
+			}
+			return listProcedureDetails;
 		}
 	}
 }

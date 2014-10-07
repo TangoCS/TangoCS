@@ -24,20 +24,13 @@ namespace Nephrite.Meta.Database
 		public override string ToString()
 		{
 			var res = new List<string>(_MainScripts.Count + _FkScripts.Count + 10);
-			//res.Add("BEGIN TRY");
-			//res.Add("BEGIN TRANSACTION");
+			//res.Add("DO LANGUAGE plpgsql $$");
+			//res.Add("BEGIN");
 			res.AddRange(_MainScripts);
 			res.AddRange(_FkScripts);
-			//res.Add("COMMIT TRANSACTION");
-			//res.Add("print 'Database structure successfully updated!'");
-			//res.Add("END TRY");
-			//res.Add("BEGIN CATCH");
-			//res.Add("ROLLBACK TRANSACTION");
-			//res.Add("print 'Error at line: ' + convert(varchar(50), ERROR_LINE())");
-			//res.Add("print ERROR_MESSAGE()");
-			//res.Add("GOTO RunupEnd");
-			//res.Add("END CATCH");
-			//res.Add("RunupEnd:");
+			//res.Add("RAISE NOTICE 'Database structure successfully updated!';");
+			//res.Add("RAISE EXCEPTION 'Error: % %', SQLERRM, SQLSTATE;");
+			//res.Add("END; $$");
 
 			return res.Join("\r\n");
 		}
