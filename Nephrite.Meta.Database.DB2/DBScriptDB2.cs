@@ -87,7 +87,7 @@ namespace Nephrite.Meta.Database
                                                          srcColumn.Value.Name.ToUpper(),
                                                          srcColumn.Value.Type.GetDBType(this),
                                                          srcColumn.Value.Nullable ? "NULL" : "NOT NULL",
-                                                         srcColumn.Value.IsPrimaryKey && srcTable.Identity ? " GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 )" : "",
+														 srcColumn.Value.IsPrimaryKey && srcColumn.Value.Identity ? " GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 )" : "",
                                                          (!string.IsNullOrEmpty(srcColumn.Value.DefaultValue) ? string.Format(" WITH DEFAULT {0}", GetDefaultValue(srcColumn.Value.DefaultValue, srcColumn.Value.Type.GetDBType(this))) : "")
                                                         ) :
                                                          string.Format(" {0} GENERATED ALWAYS AS (\"{1}\") ", srcColumn.Value.Name.ToUpper(), srcColumn.Value.ComputedText)
@@ -255,7 +255,7 @@ namespace Nephrite.Meta.Database
                                         srcColumn.Name.ToUpper(),
                                         srcColumn.Type.GetDBType(this),
                                         srcColumn.Nullable ? "NULL" : "NOT NULL",
-                                        srcColumn.IsPrimaryKey && currentTable.Identity ? " GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 )" : "",
+										srcColumn.IsPrimaryKey && srcColumn.Identity ? " GENERATED ALWAYS AS IDENTITY ( START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 20 )" : "",
                                        (!string.IsNullOrEmpty(srcColumn.DefaultValue) ? string.Format(" WITH DEFAULT {0}", GetDefaultValue(srcColumn.DefaultValue, srcColumn.Type.GetDBType(this))) : ""),
                                         currentTable.Name.ToUpper(), _SchemaName));
                 if (!string.IsNullOrEmpty(srcColumn.DefaultValue))

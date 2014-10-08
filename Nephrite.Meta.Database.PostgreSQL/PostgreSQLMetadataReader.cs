@@ -67,6 +67,7 @@ namespace Nephrite.Meta.Database
 										column.ForeignKeyName = c.GetAttributeValue("FOREIGNKEYNAME");
 										column.IsPrimaryKey = !string.IsNullOrEmpty(c.GetAttributeValue("ISPRIMARYKEY")) && c.GetAttributeValue("ISPRIMARYKEY") == "1";
 										column.Table = table;
+										if (column.Identity) table.Identity = true;
 										table.Columns.Add(column.Name, column);
 									});
 
@@ -119,6 +120,7 @@ namespace Nephrite.Meta.Database
 									xTriggersElement.Descendants("Trigger").ToList().ForEach(c =>
 									{
 										var trigger = new Trigger();
+										trigger.Owner = table.Name;
 										trigger.Name = c.GetAttributeValue("NAME");
 										trigger.Text = c.GetAttributeValue("TEXT");
 										table.Triggers.Add(trigger.Name, trigger);
@@ -188,6 +190,7 @@ namespace Nephrite.Meta.Database
 									xTriggersElement.Descendants("Trigger").ToList().ForEach(c =>
 									{
 										var trigger = new Trigger();
+										trigger.Owner = view.Name;
 										trigger.Name = c.GetAttributeValue("NAME");
 										trigger.Text = c.GetAttributeValue("TEXT");
 										view.Triggers.Add(trigger.Name, trigger);

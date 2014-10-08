@@ -41,7 +41,7 @@ namespace Nephrite.Meta.Database
 							{
 								var table = new Table();
 								table.Name = t.GetAttributeValue("Name");
-									table.Owner = t.GetAttributeValue("Owner");
+								table.Owner = t.GetAttributeValue("Owner");
 								table.Description = t.GetAttributeValue("Description");
 								//table.Identity = !string.IsNullOrEmpty(t.GetAttributeValue("Identity")) && t.GetAttributeValue("Identity") == "1";
 								var xColumnsElement = t.Element("Columns");
@@ -49,7 +49,8 @@ namespace Nephrite.Meta.Database
 									xColumnsElement.Descendants("Column").ToList().ForEach(c =>
 									{
 										var column = new Column();
-										column.Name = c.GetAttributeValue("Name");										
+										column.Name = c.GetAttributeValue("Name");
+										column.Identity = !string.IsNullOrEmpty(c.GetAttributeValue("Identity")) && c.GetAttributeValue("Identity") == "1";
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("Nullable")) && c.GetAttributeValue("Nullable") == "1";
 										column.Type = DbScript.GetType(c.GetAttributeValue("Type"), !column.Nullable);
 										column.ComputedText = c.GetAttributeValue("ComputedText");
@@ -59,8 +60,7 @@ namespace Nephrite.Meta.Database
 										column.Description = c.GetAttributeValue("Description");
 										column.IsPrimaryKey = !string.IsNullOrEmpty(c.GetAttributeValue("IsPrimaryKey")) && c.GetAttributeValue("IsPrimaryKey") == "1";
 										column.Table = table;
-										if (!string.IsNullOrEmpty(c.GetAttributeValue("Identity")) && c.GetAttributeValue("Identity") == "1")
-											table.Identity = true;
+										if (column.Identity) table.Identity = true;
 										table.Columns.Add(column.Name, column);
 									});
 
@@ -88,6 +88,7 @@ namespace Nephrite.Meta.Database
 									xTriggersElement.Descendants("Trigger").ToList().ForEach(c =>
 									{
 										var trigger = new Trigger();
+										trigger.Owner = table.Name;
 										trigger.Name = c.GetAttributeValue("Name");
 										trigger.Text = c.GetAttributeValue("Text");
 										table.Triggers.Add(trigger.Name, trigger);
@@ -153,6 +154,7 @@ namespace Nephrite.Meta.Database
 									xTriggersElement.Descendants("Trigger").ToList().ForEach(c =>
 									{
 										var trigger = new Trigger();
+										trigger.Owner = view.Name;
 										trigger.Name = c.GetAttributeValue("Name");
 										trigger.Text = c.GetAttributeValue("Text");
 										view.Triggers.Add(trigger.Name, trigger);

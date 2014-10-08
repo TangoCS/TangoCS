@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using IBM.Data.DB2;
 using Nephrite.Meta.Database;
 using Nephrite.Web;
+using Npgsql;
 
 namespace DBSchemaDiff
 {
@@ -30,6 +31,13 @@ namespace DBSchemaDiff
 				dbFromName = mssqlBuilder.InitialCatalog;
 			}
 			else
+			if (ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString().Contains("Port"))
+			{
+				readerFrom = new PostgreSQLMetadataReader();
+				NpgsqlConnectionStringBuilder mssqlBuilder = new NpgsqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString());
+				dbFromName = mssqlBuilder.Database;
+			}
+			else
 			{
 				readerFrom = new DB2ServerMetadataReader();
 				DB2ConnectionStringBuilder db2Builder = new DB2ConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString());
@@ -44,6 +52,15 @@ namespace DBSchemaDiff
 				SqlConnectionStringBuilder mssqlBuilder = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString());
 				dbToName = mssqlBuilder.InitialCatalog;
 
+			}
+			else
+			if (ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString().Contains("Port"))
+			{
+				readerTo = new PostgreSQLMetadataReader();
+				dbScript = new DBScriptPostgreSQL("dbo");
+
+				NpgsqlConnectionStringBuilder mssqlBuilder = new NpgsqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString());
+				dbToName = mssqlBuilder.Database;
 			}
 			else
 			{
