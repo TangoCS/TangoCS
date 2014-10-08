@@ -338,7 +338,7 @@ namespace Nephrite.Meta.Database
 
 		public string GetStringType(int length)
 		{
-			return string.Format("varchar({0})", length);
+			return string.Format("varchar({0})", length == -1 ? "10485760" : length.ToString());
 		}
 
 		public string GetDecimalType(int precision, int scale)
@@ -404,9 +404,7 @@ namespace Nephrite.Meta.Database
 				case "integer":
 					return notNull ? MetaIntType.NotNull() : MetaIntType.Null();
 				case "varchar":
-					if (precision == 36)
-						return notNull ? MetaGuidType.NotNull() : MetaGuidType.Null();
-					else if (precision == -1)
+					if (precision == -1)
 						return notNull ? MetaStringType.NotNull() : MetaStringType.Null();
 					else
 						return new MetaStringType() { Length = precision, NotNullable = notNull };

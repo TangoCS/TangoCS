@@ -24,6 +24,8 @@ namespace DBSchemaDiff
 			IDBScript dbScript;
 			var dbFromName = string.Empty;
 			var dbToName = string.Empty;
+			var cfgTables = ConfigurationManager.AppSettings["Tables"].Split(',');
+
 			if (ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString().Contains("Data Source"))
 			{
 				readerFrom = new SqlServerMetadataReader();
@@ -76,18 +78,20 @@ namespace DBSchemaDiff
 
 			ConnectionManager.SetConnectionString(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ConnectionString);
 			var toSchema = readerTo.ReadSchema("dbo");
-
-			foreach (var rsctable in fromSchema.Tables)
+			
+			var Tables = fromSchema.Tables.Values.Where(t => cfgTables.Any(c => t.Name.ToLower() == c.ToLower()) /*|| t.ForeignKeys.Any(f => cfgTables.Any(l => l.ToLower() == f.Value.RefTable.ToLower()))*/);
+			 
+			foreach (var rsctable in Tables)
 			{
-				Console.WriteLine(@"Таблица - " + rsctable.Key);
-				var table = toSchema.Tables.Values.SingleOrDefault(t => t.Name.ToUpper() == rsctable.Key.ToUpper());
+				Console.WriteLine(@"Таблица - " + rsctable.Name);
+				var table = toSchema.Tables.Values.SingleOrDefault(t => t.Name.ToUpper() == rsctable.Name.ToUpper());
 
 				if (table == null)
 				{
-					dbScript.CreateTable(rsctable.Value);
+					dbScript.CreateTable(rsctable);
 				}
 				else
-					table.Sync(dbScript, rsctable.Value);
+					table.Sync(dbScript, rsctable);
 
 			}
 			var script = dbScript.ToString();
