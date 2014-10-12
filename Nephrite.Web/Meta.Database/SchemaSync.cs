@@ -190,7 +190,7 @@ namespace Nephrite.Meta.Database
             else
             {
 				bool chg_type = srcColumn.Type.GetType() != Type.GetType();
-				bool chg_def = ((DefaultValue == null ? "" : DefaultValue.ToLower()) != (srcColumn.DefaultValue == null ? "" : srcColumn.DefaultValue.ToLower()));
+				bool chg_def = !Identity && ((DefaultValue == null ? "" : DefaultValue.ToLower()) != (srcColumn.DefaultValue == null ? "" : srcColumn.DefaultValue.ToLower()));
                 bool chg_null = Nullable != srcColumn.Nullable;
 				bool chg_comp = ((ComputedText == null ? "" : ComputedText.ToLower()) != (srcColumn.ComputedText == null ? "" : srcColumn.ComputedText.ToLower()));
 				

@@ -54,7 +54,7 @@ namespace Nephrite.Meta.Database
 														 srcColumn.Value.Name.ToLower(),
 														 srcColumn.Value.Identity ? "serial" : srcColumn.Value.Type.GetDBType(this),
 														 srcColumn.Value.Nullable ? "NULL" : "NOT NULL",
-														 (!string.IsNullOrEmpty(srcColumn.Value.DefaultValue) ? string.Format(" DEFAULT {0}", GetDefaultValue(srcColumn.Value.DefaultValue, srcColumn.Value.Type.GetDBType(this))) : "")
+														 (!srcColumn.Value.Identity && !string.IsNullOrEmpty(srcColumn.Value.DefaultValue) ? string.Format(" DEFAULT {0}", GetDefaultValue(srcColumn.Value.DefaultValue, srcColumn.Value.Type.GetDBType(this))) : "")
 														) :
 														 string.Format(" {0} GENERATED ALWAYS AS (\"{1}\") ", srcColumn.Value.Name.ToLower(), srcColumn.Value.ComputedText)
 														 )).Trim().TrimEnd(',');
@@ -253,7 +253,7 @@ namespace Nephrite.Meta.Database
 
 		public void AddComputedColumn(Column srcColumn)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 
 		public void DeleteTrigger(Trigger currentTrigger)
@@ -403,6 +403,8 @@ namespace Nephrite.Meta.Database
 			{
 				case "integer":
 					return notNull ? MetaIntType.NotNull() : MetaIntType.Null();
+				case "uuid":
+					return notNull ? MetaGuidType.NotNull() : MetaGuidType.Null();
 				case "varchar":
 					if (precision == -1)
 						return notNull ? MetaStringType.NotNull() : MetaStringType.Null();
