@@ -273,7 +273,7 @@ namespace Nephrite.Meta.Database
             else
             {
                 // Обновляем Type, значение Default и Nullable
-                if (Text.ToLower() != srcTrigger.Text.ToLower())
+				if (Text != null && srcTrigger.Text != null && Text.ToLower() != srcTrigger.Text.ToLower())
                 {
                     script.DeleteTrigger(this);
                     script.CreateTrigger(srcTrigger);

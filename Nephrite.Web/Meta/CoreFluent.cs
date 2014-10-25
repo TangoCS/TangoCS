@@ -61,6 +61,28 @@ namespace Nephrite.Meta.Fluent
 		}
 	}
 
+	public class ValuePropertyBuilder
+	{
+		MetaValueProperty _prop;
+
+		public ValuePropertyBuilder(MetaValueProperty property)
+		{
+			_prop = property;
+		}
+
+		public ValuePropertyBuilder Multilingual()
+		{
+			_prop.IsMultilingual = true;
+			return this;
+		}
+
+		public ValuePropertyBuilder DefaultDBValue(string value)
+		{
+			_prop.DefaultDBValue = value;
+			return this;
+		}
+	}
+
 	public class OperationBuilder
 	{
 		MetaOperation _op;
@@ -177,10 +199,11 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass Attribute(this MetaClass cls, string name, string caption, IMetaPrimitiveType type, bool isMultilingual = false)
+		public static MetaClass Attribute(this MetaClass cls, string name, string caption, IMetaPrimitiveType type, Action<ValuePropertyBuilder> attributes = null)
 		{
-			MetaAttribute a = new MetaAttribute { Name = name, Caption = caption, Type = type, IsMultilingual = isMultilingual };
+			MetaAttribute a = new MetaAttribute { Name = name, Caption = caption, Type = type, IsMultilingual = false };
 			if (type.NotNullable) a.IsRequired = true;
+			if (attributes != null) attributes(new ValuePropertyBuilder(a));
 			cls.AddProperty(a);
 			return cls;
 		}
@@ -193,10 +216,11 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass PersistentComputedAttribute(this MetaClass cls, string name, string caption, IMetaPrimitiveType type, bool isMultilingual = false)
+		public static MetaClass PersistentComputedAttribute(this MetaClass cls, string name, string caption, IMetaPrimitiveType type, Action<ValuePropertyBuilder> attributes = null)
 		{
-			MetaPersistentComputedAttribute a = new MetaPersistentComputedAttribute { Name = name, Caption = caption, Type = type, IsMultilingual = isMultilingual };
+			MetaPersistentComputedAttribute a = new MetaPersistentComputedAttribute { Name = name, Caption = caption, Type = type, IsMultilingual = false };
 			if (type.NotNullable) a.IsRequired = true;
+			if (attributes != null) attributes(new ValuePropertyBuilder(a));
 			cls.AddProperty(a);
 			return cls;
 		}
