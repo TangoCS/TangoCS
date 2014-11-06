@@ -23,5 +23,6 @@ namespace Nephrite.Web.SettingsManager
 		bool IsDeleted { get; set; }
 		System.DateTime LastModifiedDate { get; set; }
 		string AcceptableValues { get; set; }
+		int? GroupID { get; set; }
 	}
 }

@@ -82,7 +82,7 @@ namespace Nephrite.Meta.Database
 	{
 		public string Name { get; set; }
 		public string[] Columns { get; set; }
-		public Table CurrentTable { get; set; }
+		public Table Table { get; set; }
 	}
 
 	[Serializable]

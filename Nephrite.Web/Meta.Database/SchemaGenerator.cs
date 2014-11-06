@@ -34,7 +34,7 @@ namespace Nephrite.Meta.Database
 				PrimaryKey pk = new PrimaryKey();
 				pk.Name = "PK_" + cls.Name.Trim();
 				pk.Columns = new string[] { column.Name };
-				pk.CurrentTable = t;
+				pk.Table = t;
 				t.PrimaryKey = pk;
 
 				column.ForeignKeyName = "FK_" + cls.Name + "_" + cls.BaseClass.Name;
@@ -55,7 +55,7 @@ namespace Nephrite.Meta.Database
 				PrimaryKey pk = new PrimaryKey();
 				pk.Name = "PK_" + cls.Name.Trim();
 				pk.Columns = cls.CompositeKey.Select(o => o.Name).ToArray();
-				pk.CurrentTable = t;
+				pk.Table = t;
 				t.PrimaryKey = pk;
 
 			}
@@ -74,6 +74,7 @@ namespace Nephrite.Meta.Database
 				column.Name = prop.Name;
 				column.Table = t;
 				column.Type = prop.Type;
+				column.DefaultValue = prop.DefaultDBValue;
 				if (prop is MetaPersistentComputedAttribute)
 				{
 					column.ComputedText = (prop as MetaPersistentComputedAttribute).Expression;

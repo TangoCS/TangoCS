@@ -84,48 +84,30 @@ namespace Nephrite.Meta.Database
     {
         public void Sync(IDBScript script, Table srcTable)
         {
-
             if (srcTable == null)
             {
-                // Создали таблицу со всеми колонками и ключами
                 script.DeleteTable(this);
             }
             else
             {
-
                 //1 Обновляем колонки 
-                var curentColumns = this.Columns;
                 var srcColumns = srcTable.Columns;
                 //1.1. Добавляем колонки 
-                foreach (var srcColumn in srcColumns.Where(srcColumn => curentColumns.All(t => t.Value.Name.ToLower() != srcColumn.Value.Name.ToLower())))
+                foreach (var col in srcColumns.Where(o => Columns.All(t => t.Value.Name.ToLower() != o.Value.Name.ToLower())))
                 {
-                    script.AddColumn(srcColumn.Value);
+                    script.AddColumn(col.Value);
                 }
-                //1.2. Удаляем колонки и синхронизируем 
-
-                // Если есть Computed колонки удаляем 
-
-                //var computedColumns = srcTable.Columns.Values.Where(t => !string.IsNullOrEmpty(t.ComputedText));
-                //    foreach (var column in computedColumns)
-                //    {
-                //        script.DeleteColumn(column);
-                //    }
-                
-
-                foreach (var column in curentColumns) //.Where(t=>string.IsNullOrEmpty(t.Value.ComputedText)))
+ 
+				//1.2. Синхронизируем 
+                foreach (var col in Columns) //.Where(t=>string.IsNullOrEmpty(t.Value.ComputedText)))
                 {
-                    var srcColumn = srcColumns.Values.SingleOrDefault(t => t.Name.ToLower() == column.Value.Name.ToLower());
-                    column.Value.srcTable = srcTable;
-                    column.Value.Sync(script, srcColumn);
+                    var srcColumn = srcColumns.Values.SingleOrDefault(t => t.Name.ToLower() == col.Value.Name.ToLower());
+                    col.Value.srcTable = srcTable;
+                    col.Value.Sync(script, srcColumn);
 
                 }
-                // Если есть Computed колонки создааём 
-                //foreach (var column in this.Columns.Values.Where(t => !string.IsNullOrEmpty(t.ComputedText)))
-                //{
-                //    script.AddColumn(column);
-                //}
-                
-                //3 Обновляем primaryKey
+
+				//3 Обновляем primaryKey
                 if ((PrimaryKey == null || PrimaryKey.Columns.Count() == 0) && srcTable.PrimaryKey != null && srcTable.PrimaryKey.Columns.Count() > 0)
                     script.CreatePrimaryKey(srcTable.PrimaryKey);
                 else
@@ -133,44 +115,38 @@ namespace Nephrite.Meta.Database
                     if (PrimaryKey != null && PrimaryKey.Columns.Any())
                         PrimaryKey.Sync(script, srcTable.PrimaryKey);
                 }
-
-
-
+				
                 //2.  Обновляем foreignKey
-                var currentForeignKeys = this.ForeignKeys;
                 var srcForeignKeys = srcTable.ForeignKeys;
                 //2.1. Удаляем foreignKey
-                foreach (var curentforeignKey in currentForeignKeys.Where(curentforeignKey => srcForeignKeys.All(t => t.Key.ToLower() != curentforeignKey.Key.ToLower())))
+                foreach (var fk in ForeignKeys.Where(o => srcForeignKeys.All(t => t.Key.ToLower() != o.Key.ToLower())))
                 {
-                    script.DeleteForeignKey(curentforeignKey.Value);
+                    script.DeleteForeignKey(fk.Value);
                 }
+
                 //2.2. Добаляем foreignKey
-                foreach (var srcforeignKey in srcForeignKeys.Where(srcforeignKey => currentForeignKeys.All(t => t.Key.ToLower() != srcforeignKey.Key.ToLower())))
+                foreach (var fk in srcForeignKeys.Where(o => ForeignKeys.All(t => t.Key.ToLower() != o.Key.ToLower())))
                 {
-                    // Проверяем есть ли таблица в методанных
-                    if (srcTable.Schema.Tables.Values.Any(t => srcforeignKey.Value.RefTable.ToLower() == t.Name.ToLower()))
-                        script.CreateForeignKey(srcforeignKey.Value);
+                    if (srcTable.Schema.Tables.Values.Any(t => fk.Value.RefTable.ToLower() == t.Name.ToLower()))
+                        script.CreateForeignKey(fk.Value);
                 }
-
-
-
 
                 if (script.GetType().ToString() == "Nephrite.Meta.Database.DBScriptDB2")
                     return;
-                //4 Обновляем trigger
-                var currentTriggers = this.Triggers;
+ 
+				//4 Обновляем trigger
                 var srcTriggers = srcTable.Triggers;
                 //4.1. Удаляем trigger и синхронизируем
-                foreach (var currentTrigger in currentTriggers)
+                foreach (var tr in Triggers)
                 {
-                    var srcTrigger = srcTriggers.Values.SingleOrDefault(t => t.Name.ToLower() == currentTrigger.Value.Name.ToLower());
-                    currentTrigger.Value.Sync(script, srcTrigger);
+                    var srcTrigger = srcTriggers.Values.SingleOrDefault(t => t.Name.ToLower() == tr.Value.Name.ToLower());
+                    tr.Value.Sync(script, srcTrigger);
                 }
 
                 //4.2. Добавляем trigger 
-                foreach (var srcTrigger in srcTriggers.Where(srcTrigger => currentTriggers.All(t => t.Value.Name.ToLower() != srcTrigger.Value.Name.ToLower())))
+                foreach (var tr in srcTriggers.Where(o => Triggers.All(t => t.Value.Name.ToLower() != o.Value.Name.ToLower())))
                 {
-                    script.CreateTrigger(srcTrigger.Value);
+                    script.CreateTrigger(tr.Value);
                 }
             }
         }
@@ -189,10 +165,14 @@ namespace Nephrite.Meta.Database
             }
             else
             {
-				bool chg_type = srcColumn.Type.GetType() != Type.GetType();
+				bool chg_type = srcColumn.Type.GetType() != Type.GetType() && String.IsNullOrEmpty(ComputedText);
 				bool chg_def = !Identity && ((DefaultValue == null ? "" : DefaultValue.ToLower()) != (srcColumn.DefaultValue == null ? "" : srcColumn.DefaultValue.ToLower()));
                 bool chg_null = Nullable != srcColumn.Nullable;
-				bool chg_comp = ((ComputedText == null ? "" : ComputedText.ToLower()) != (srcColumn.ComputedText == null ? "" : srcColumn.ComputedText.ToLower()));
+
+				string ct1 = ComputedText == null ? "" : ComputedText.Replace("(", "").Replace(")", "").Replace("[", "").Replace("]", "").ToLower();
+				string ct2 = srcColumn.ComputedText == null ? "" : srcColumn.ComputedText.Replace("(", "").Replace(")", "").Replace("[", "").Replace("]", "").ToLower();
+
+				bool chg_comp = ct1 != ct2;
 				
 				// Обновляем Type, значение Default и Nullable
 				if (chg_def)

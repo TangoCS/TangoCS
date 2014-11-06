@@ -273,7 +273,7 @@ namespace Nephrite.Meta.Database
 
 		public void DeletePrimaryKey(PrimaryKey currentPrimaryKey)
 		{
-			var currentTable = currentPrimaryKey.CurrentTable;
+			var currentTable = currentPrimaryKey.Table;
 			_MainScripts.Add(string.Format("ALTER TABLE {2}.[{0}] DROP CONSTRAINT {1}", currentTable.Name,
 										  currentPrimaryKey.Name,
 										  _SchemaName));
@@ -281,7 +281,7 @@ namespace Nephrite.Meta.Database
 
 		public void CreatePrimaryKey(PrimaryKey srcPrimaryKey)
 		{
-			var curentTable = srcPrimaryKey.CurrentTable;
+			var curentTable = srcPrimaryKey.Table;
 			_MainScripts.Add(string.Format("ALTER TABLE {3}.[{0}] ADD CONSTRAINT {1} PRIMARY KEY ({2})", curentTable.Name,
 													   srcPrimaryKey.Name,
 													   string.Join(",", srcPrimaryKey.Columns),

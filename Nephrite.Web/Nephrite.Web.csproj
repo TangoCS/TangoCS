@@ -134,6 +134,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
+    <Compile Include="FileStorage\FolderActionType.cs" />
     <Compile Include="FormsEngine\FormsVirtualFile.cs" />
     <Compile Include="FormsEngine\FormsVirtualPathProvider.cs" />
     <Compile Include="FormsEngine\Host.cs" />

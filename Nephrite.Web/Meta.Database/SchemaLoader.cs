@@ -106,7 +106,7 @@ namespace Nephrite.Meta.Database
 											xPrimaryKeyElement.Descendants("Column")
 															  .Select(pc => pc.GetAttributeValue("Name"))
 															  .ToArray(),
-										CurrentTable = table
+										Table = table
 									};
 
 

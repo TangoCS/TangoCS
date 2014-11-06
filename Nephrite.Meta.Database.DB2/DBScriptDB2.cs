@@ -180,14 +180,14 @@ namespace Nephrite.Meta.Database
         public void DeletePrimaryKey(PrimaryKey currentPrimaryKey)
         {
 
-            var currentTable = currentPrimaryKey.CurrentTable;
+            var currentTable = currentPrimaryKey.Table;
             _MainScripts.Add(string.Format("ALTER TABLE {1}.{0} DROP PRIMARY KEY;", currentTable.Name.ToUpper(), _SchemaName));
 
         }
 
         public void CreatePrimaryKey(PrimaryKey srcPrimaryKey)
         {
-            var curentTable = srcPrimaryKey.CurrentTable;
+            var curentTable = srcPrimaryKey.Table;
             _MainScripts.Add(string.Format("SET INTEGRITY FOR {2}.{0} IMMEDIATE CHECKED; ALTER TABLE {2}.{0} ADD PRIMARY KEY ({1});", curentTable.Name.ToUpper(),
                                                        string.Join(",", srcPrimaryKey.Columns),
                                                        _SchemaName));

@@ -115,6 +115,23 @@ namespace Nephrite.Web.FileStorage
 
 			return item;
 		}
+		public static IDbFolder CreateFolder(Guid id, Guid parentid)
+		{
+			var parent = GetFolder(parentid);
+			if (parent == null) throw new Exception("Parent folder not found");
+
+			var item = dc.NewIDbFolder(id);
+			item.SetParentFolder(parent);
+			item.SetStorageInfo(parent.GetStorageType(), "");
+			dc.IDbFolder.InsertOnSubmit(item);
+			//item.CheckValid();
+
+			if (OnFolderCreated != null)
+				OnFolderCreated(null, new FolderEventArgs { Folder = item });
+
+			return item;
+		}
+
 
 		public static IDbFolder CreateFolder(string title, string path)
 		{
@@ -361,7 +378,7 @@ namespace Nephrite.Web.FileStorage
 
 		static void StoreInFileSystem(IDbFile file, byte[] bytes)
 		{
-			var origin = ((ITable)dc.IDbFile).GetOriginalEntityState(file) as IDbFile;
+			//var origin = ((ITable)dc.IDbFile).GetOriginalEntityState(file) as IDbFile;
 			string fullFilePath = GetFsFullPath(file);
 			//if (origin != null)
 			//{

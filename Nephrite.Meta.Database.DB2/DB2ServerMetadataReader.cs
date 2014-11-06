@@ -144,7 +144,7 @@ namespace Nephrite.Meta.Database
                                     {
                                         Name = xPrimaryKeyElement.GetAttributeValue("NAME"),
                                         Columns = table.Columns.Where(pk => pkColumns.Any(c => c == pk.Key.ToUpper())).Select(cr => cr.Value.Name).ToArray(),
-                                        CurrentTable = table
+                                        Table = table
                                     };
                                 }
 

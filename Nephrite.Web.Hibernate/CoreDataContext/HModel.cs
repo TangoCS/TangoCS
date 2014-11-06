@@ -309,7 +309,9 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual bool IsSystem { get; set; }
 		public virtual bool IsDeleted { get; set; }
 		public virtual System.DateTime LastModifiedDate { get; set; }
-		public virtual string AcceptableValues { get; set; } 
+		public virtual string AcceptableValues { get; set; }
+
+		public virtual int? GroupID { get; set; }
 	}
 
 	public partial class N_Cache : IN_Cache, IWithoutEntityAudit

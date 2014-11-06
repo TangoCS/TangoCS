@@ -24,6 +24,8 @@ namespace Nephrite.Web.Hibernate.CoreMapping
 			Property(x => x.LastModifiedDate, map => map.NotNullable(true));
 			Property(x => x.AcceptableValues);
 			Property(x => x.LastModifiedUserID, map => map.NotNullable(true));
+			Property(x => x.GroupID);
+			
 		}
 	}
 }
