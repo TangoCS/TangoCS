@@ -140,16 +140,12 @@ namespace Nephrite.Web
 
 		public static string CreateReturnUrl()
 		{
-			return HttpUtility.UrlEncode(Url.Current);
-			//return CreateReturnUrl(HttpContext.Current.Request.Url.Query);
+			return Url.CreateReturnUrl();
 		}
 
 		public static string CreateReturnUrl(string urlquery)
 		{
-			return HttpUtility.UrlEncode(urlquery);
-			//if (urlquery.Contains('?'))
-			//	urlquery = urlquery.Substring(urlquery.IndexOf('?'));
-			//return UrlStack.CreateReturnUrl(urlquery);
+			return Url.CreateReturnUrl(urlquery);
 		}
 
 		public static string GetReturnUrl()

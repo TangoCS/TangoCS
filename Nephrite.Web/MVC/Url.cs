@@ -214,7 +214,7 @@ namespace Nephrite.Web
 
 		public static string CreateReturnUrl()
 		{
-			return HttpUtility.UrlEncode(Url.Current);
+			return CreateReturnUrl(Url.Current.ToString());
 		}
 
 		public static string CreateReturnUrl(string url)
