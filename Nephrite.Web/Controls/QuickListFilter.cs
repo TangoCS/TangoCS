@@ -29,7 +29,8 @@ namespace Nephrite.Web.Controls
 			{
 				if (HttpContext.Current.Request.Form["qfind"] != null)
 					return HttpContext.Current.Request.Form["qfind"];
-
+				if (HttpContext.Current.Request.Cookies["qfind"] != null)
+					return HttpUtility.UrlDecode(HttpContext.Current.Request.Cookies["qfind"].Value);
 				return HttpUtility.UrlDecode(Query.GetString("qfind"));
 			}
 		}
@@ -41,7 +42,7 @@ namespace Nephrite.Web.Controls
 		{
 			return url.SetParameter("qfind", HttpUtility.UrlEncode(QuickFilter.SearchQuery));
 		}
-		
+
 
 		protected override void OnInit(EventArgs e)
 		{
@@ -49,6 +50,9 @@ namespace Nephrite.Web.Controls
 
 			Controls.Add(hQuickFilter);
 			Controls.Add(go);
+			Page.ClientScript.RegisterClientScriptInclude("jquery", Settings.JSPath + "jquery-1.4.2.min.js");
+			Page.ClientScript.RegisterClientScriptInclude("jquery-placeholder", Settings.JSPath + "jquery.placeholder.min.js");
+			Page.ClientScript.RegisterStartupScript(GetType(), "QFilterUnload", "$(window).unload(function() {if ($('#qfind').val() != 'Поиск') $.cookie('qfind', $('#qfind').val()); });", true);
 		}
 
 		protected override void OnLoad(EventArgs e)
@@ -76,6 +80,7 @@ function run" + ClientID + @"filter()
 	document.getElementById('" + hQuickFilter.ClientID + @"').value = document.getElementById('qfind').value;
 	" + Page.ClientScript.GetPostBackEventReference(go, "") + @"
 }
+$(document).ready(function(){$('qfind').placeholder()});
 </script>
 ";
 			base.Render(writer);
@@ -93,12 +98,9 @@ function run" + ClientID + @"filter()
 			get
 			{
 				string s = TextResource.Get("Common.Toolbar.QFind", "Поиск");
-				return SearchQuery.IsEmpty() ? "<input type=\"text\" onblur=\"if(this.value ==''){this.value='" + s + "';this.className = 'filterInput TextItalic';}\"" +
-		" onfocus=\"if(this.className!='filterInput filterInputActive'){this.value='';this.className = 'filterInput filterInputActive';}\" name=\"qfind\" autocomplete=\"Off\"" +
-		" value=\"" + s + "\" class=\"filterInput TextItalic\" id=\"qfind\" onkeydown=\"return event.keyCode != 13;\" onkeyup=\"" + ClientID + "filter();\"/>" :
-		"<input type=\"text\" onblur=\"if(this.value ==''){this.value='" + s + "';this.className = 'filterInput TextItalic';}\"" +
-		" onfocus=\"if(this.className!='filterInput filterInputActive'){this.value='';this.className = 'filterInput filterInputActive';}\" name=\"qfind\" autocomplete=\"Off\"" +
-		" value=\"" + SearchQuery + "\" class=\"filterInput filterInputActive\" id=\"qfind\" onkeydown=\"return event.keyCode != 13;\" onkeyup=\"" + ClientID + "filter();\"/>";
+				return SearchQuery.IsEmpty() ?
+					"<input type=\"text\" name=\"qfind\" placeholder=" + s + " autocomplete=\"Off\" id=\"qfind\" onkeydown=\"return event.keyCode != 13;\" onkeyup=\"" + ClientID + "filter();\"/>" :
+					"<input type=\"text\" name=\"qfind\" placeholder=" + s + " autocomplete=\"Off\" value=\"" + SearchQuery + "\" id=\"qfind\" onkeydown=\"return event.keyCode != 13;\" onkeyup=\"" + ClientID + "filter();\"/>";
 			}
 		}
 	}
