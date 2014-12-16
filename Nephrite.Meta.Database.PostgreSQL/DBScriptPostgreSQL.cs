@@ -56,7 +56,7 @@ namespace Nephrite.Meta.Database
 														 srcColumn.Value.Nullable ? "NULL" : "NOT NULL",
 														 (!srcColumn.Value.Identity && !string.IsNullOrEmpty(srcColumn.Value.DefaultValue) ? string.Format(" DEFAULT {0}", GetDefaultValue(srcColumn.Value.DefaultValue, srcColumn.Value.Type.GetDBType(this))) : "")
 														) :
-														 string.Format(" {0} GENERATED ALWAYS AS (\"{1}\") ", srcColumn.Value.Name.ToLower(), srcColumn.Value.ComputedText)
+														 string.Format(" {0} GENERATED ALWAYS AS (\"{1}\",\r\n) ", srcColumn.Value.Name.ToLower(), srcColumn.Value.ComputedText.Replace("getdate", "now"))
 														 )).Trim().TrimEnd(',');
 
 			tableScript = string.Format(tableScript, columnsScript);
@@ -439,7 +439,16 @@ namespace Nephrite.Meta.Database
 				var match1 = Regex.Match(Value, @"\((.*)\)");
 				defValue = match1.Groups[1].Value;
 			}
-			return Value == "(getdate())" ? (Type.ToLower() == "timestamp" ? "current_timestamp" : "current_date") : "'" + defValue.Replace("'", "").Replace("(", "").Replace(")", "").Replace("\"", "") + "'";
+			string retvalue;
+			if (Value == "(getdate())")
+				retvalue = (Type.ToLower() == "date" ? "current_date" : "current_timestamp");
+			else
+				if (Value == "(newid())")
+					retvalue = "uuid_generate_v4()";
+				else
+					retvalue = "'" + defValue.Replace("'", "").Replace("(", "").Replace(")", "").Replace("\"", "") + "'";
+ 
+			return retvalue;
 		}
 	}
 }
