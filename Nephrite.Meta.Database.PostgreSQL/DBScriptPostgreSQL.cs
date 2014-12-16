@@ -50,13 +50,13 @@ namespace Nephrite.Meta.Database
 				srcTable.Columns.Aggregate(string.Empty,
 										   (current, srcColumn) =>
 										   current +
-										   (string.IsNullOrEmpty(srcColumn.Value.ComputedText) ? string.Format("\t{0} {1} {2} {3},\r\n ",
+										   (string.IsNullOrEmpty(srcColumn.Value.ComputedText) ? string.Format("\t{0} {1} {2} {3},\r\n",
 														 srcColumn.Value.Name.ToLower(),
 														 srcColumn.Value.Identity ? "serial" : srcColumn.Value.Type.GetDBType(this),
 														 srcColumn.Value.Nullable ? "NULL" : "NOT NULL",
 														 (!srcColumn.Value.Identity && !string.IsNullOrEmpty(srcColumn.Value.DefaultValue) ? string.Format(" DEFAULT {0}", GetDefaultValue(srcColumn.Value.DefaultValue, srcColumn.Value.Type.GetDBType(this))) : "")
 														) :
-														 string.Format(" {0} GENERATED ALWAYS AS (\"{1}\",\r\n) ", srcColumn.Value.Name.ToLower(), srcColumn.Value.ComputedText.Replace("getdate", "now"))
+														 string.Format("\t{0} GENERATED ALWAYS AS (\"{1}\"),\r\n", srcColumn.Value.Name.ToLower(), srcColumn.Value.ComputedText.Replace("getdate", "now"))
 														 )).Trim().TrimEnd(',');
 
 			tableScript = string.Format(tableScript, columnsScript);
