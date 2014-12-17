@@ -55,7 +55,7 @@ namespace Nephrite.Meta.Database
 														 srcColumn.Value.Identity ? "serial" : srcColumn.Value.Type.GetDBType(this),
 														 srcColumn.Value.Nullable ? "NULL" : "NOT NULL",
 														 (!srcColumn.Value.Identity && !string.IsNullOrEmpty(srcColumn.Value.DefaultValue) ? string.Format(" DEFAULT {0}", GetDefaultValue(srcColumn.Value.DefaultValue, srcColumn.Value.Type.GetDBType(this))) : "")
-														) :
+														) : 
 														 string.Format("\t{0} GENERATED ALWAYS AS (\"{1}\"),\r\n", srcColumn.Value.Name.ToLower(), srcColumn.Value.ComputedText.Replace("getdate", "now"))
 														 )).Trim().TrimEnd(',');
 
@@ -72,7 +72,7 @@ namespace Nephrite.Meta.Database
 				tableScript += string.Format(
 								   "\r\nALTER TABLE {3}.{0} ADD CONSTRAINT {1} PRIMARY KEY ({2});", srcTable.Name.ToLower(),
 													  srcTable.PrimaryKey.Name.ToLower(),
-													  string.Join(",", srcTable.PrimaryKey.Columns),
+													  string.Join(",", srcTable.PrimaryKey.Columns).ToLower(),
 													  _SchemaName);// {0)- TableName  {1} - Constraint Name, {2} - Columns,{3} - Ref Table ,{4} - Ref Columns
 			}
 
@@ -143,7 +143,7 @@ namespace Nephrite.Meta.Database
 		public void DeletePrimaryKey(PrimaryKey currentPrimaryKey)
 		{
 			var currentTable = currentPrimaryKey.Table;
-			_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP CONSTRAINT IF EXISTS {1};", currentTable.Name.ToUpper(), currentPrimaryKey.Name.ToLower(), _SchemaName));
+			_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP CONSTRAINT IF EXISTS {1};", currentTable.Name.ToLower(), currentPrimaryKey.Name.ToLower(), _SchemaName));
 		}
 
 		public void CreatePrimaryKey(PrimaryKey srcPrimaryKey)
@@ -220,30 +220,30 @@ namespace Nephrite.Meta.Database
 			else
 			{
 				_MainScripts.Add(string.Format("ALTER TABLE {3}.{0} ALTER COLUMN {1} TYPE {2};",
-											  srcTable.Name.ToUpper(),
-											  srcColumn.Name.ToUpper(),
+											  srcTable.Name.ToLower(),
+											  srcColumn.Name.ToLower(),
 											  srcColumn.Type.GetDBType(this),
 											  _SchemaName));
 				if (srcColumn.Nullable)
 				{
 					_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1} DROP NOT NULL;",
-												   srcTable.Name.ToUpper(),
-												   srcColumn.Name.ToUpper(),
+												   srcTable.Name.ToLower(),
+												   srcColumn.Name.ToLower(),
 												   _SchemaName));
 				}
 				else
 				{
 					_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1} SET NOT NULL;",
-													  srcTable.Name.ToUpper(),
-													  srcColumn.Name.ToUpper(),
+													  srcTable.Name.ToLower(),
+													  srcColumn.Name.ToLower(),
 													  _SchemaName));
 
 				}
 				if (!srcColumn.Identity && !string.IsNullOrEmpty(srcColumn.DefaultValue))
 				{
 					_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} ALTER COLUMN {1} SET DEFAULT {3};",
-													  srcTable.Name.ToUpper(),
-													  srcColumn.Name.ToUpper(),
+													  srcTable.Name.ToLower(),
+													  srcColumn.Name.ToLower(),
 													  _SchemaName,
 													  GetDefaultValue(srcColumn.DefaultValue, srcColumn.Type.GetDBType(this))));
 				}
@@ -444,7 +444,7 @@ namespace Nephrite.Meta.Database
 				retvalue = (Type.ToLower() == "date" ? "current_date" : "current_timestamp");
 			else
 				if (Value == "(newid())")
-					retvalue = "uuid_generate_v4()";
+					retvalue = "newid()";
 				else
 					retvalue = "'" + defValue.Replace("'", "").Replace("(", "").Replace(")", "").Replace("\"", "") + "'";
  
