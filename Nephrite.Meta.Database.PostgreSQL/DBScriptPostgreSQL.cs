@@ -338,7 +338,7 @@ namespace Nephrite.Meta.Database
 
 		public string GetStringType(int length)
 		{
-			return string.Format("varchar({0})", length == -1 ? "10485760" : length.ToString());
+			return string.Format("varchar({0})", length == -1 ? "10485760" : length == 0 ? "1" : length.ToString());
 		}
 
 		public string GetDecimalType(int precision, int scale)
