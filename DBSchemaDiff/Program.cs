@@ -79,7 +79,11 @@ namespace DBSchemaDiff
 			ConnectionManager.SetConnectionString(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ConnectionString);
 			var toSchema = readerTo.ReadSchema("dbo");
 			
-			var Tables = fromSchema.Tables.Values.Where(t => cfgTables.Any(c => t.Name.ToLower() == c.ToLower()) /*|| t.ForeignKeys.Any(f => cfgTables.Any(l => l.ToLower() == f.Value.RefTable.ToLower()))*/);
+			List<Table> Tables;
+			if (cfgTables[0].ToLower() == "all")
+				Tables = fromSchema.Tables.Values.ToList();
+			else
+				Tables = fromSchema.Tables.Values.Where(t => cfgTables.Any(c => t.Name.ToLower() == c.ToLower()) /*|| t.ForeignKeys.Any(f => cfgTables.Any(l => l.ToLower() == f.Value.RefTable.ToLower()))*/).ToList();
 			 
 			foreach (var rsctable in Tables)
 			{

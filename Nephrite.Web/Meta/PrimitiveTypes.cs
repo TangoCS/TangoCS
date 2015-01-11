@@ -96,10 +96,10 @@ namespace Nephrite.Meta
 
 	public partial class MetaDateTimeType : MetaPrimitiveType
 	{
-		static MetaDateType _t = new MetaDateType { NotNullable = true, GetStringValue = ToStringConverter.DateTime };
-		static MetaDateType _t_n = new MetaDateType { NotNullable = false, GetStringValue = ToStringConverter.NullableDateTime };
-		public static MetaDateType NotNull() { return _t; }
-		public static MetaDateType Null() { return _t_n; }
+		static MetaDateTimeType _t = new MetaDateTimeType { NotNullable = true, GetStringValue = ToStringConverter.DateTime };
+		static MetaDateTimeType _t_n = new MetaDateTimeType { NotNullable = false, GetStringValue = ToStringConverter.NullableDateTime };
+		public static MetaDateTimeType NotNull() { return _t; }
+		public static MetaDateTimeType Null() { return _t_n; }
 
 		public override string CLRType
 		{
