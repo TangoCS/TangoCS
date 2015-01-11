@@ -10,7 +10,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
 
-namespace Nephrite.Web
+namespace Nephrite
 {
 	public static partial class SimpleTypeExtensions
 	{

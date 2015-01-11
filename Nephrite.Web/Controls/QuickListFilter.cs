@@ -50,6 +50,7 @@ namespace Nephrite.Web.Controls
 
 			Controls.Add(hQuickFilter);
 			Controls.Add(go);
+			Page.ClientScript.RegisterStartupScript(GetType(), "QFilterUnload", "$(window).unload(function() {if ($('#qfind').val() != 'Поиск') $.cookie('qfind', $('#qfind').val()); });", true);
 		}
 
 		protected override void OnLoad(EventArgs e)

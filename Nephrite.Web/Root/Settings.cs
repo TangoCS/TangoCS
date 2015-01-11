@@ -6,7 +6,7 @@ using System.Configuration;
 using System.IO;
 using System.Web;
 
-namespace Nephrite.Web
+namespace Nephrite
 {
     public static class Settings
     {

@@ -12,24 +12,29 @@ namespace Nephrite.Web.FileStorage
 		public void PackFolder(Guid folderID)
 		{
 			var folder = FileStorageManager.GetFolder(folderID);
-
-			MemoryStream ms = new MemoryStream();
-			PackFolder(folder, ms);
-			var r = HttpContext.Current.Response;
-			r.AppendHeader("Content-Type", "application/x-zip-compressed");
-			r.AppendHeader("Content-disposition", "attachment; filename=" + folder.Title + ".zip");
-			ms.WriteTo(r.OutputStream);
-			r.End();
+			PackFolder(folder);
 		}
 
-		void PackFolder(IDbFolder f, Stream s)
+		public void PackFolder(string folderPath)
 		{
+			var folder = FileStorageManager.GetFolder(folderPath);
+			PackFolder(folder);
+		}
+
+		public void PackFolder(IDbFolder f)
+		{
+			MemoryStream ms = new MemoryStream();
 			ZipConstants.DefaultCodePage = 866;
-			using (ZipFile zf = ZipFile.Create(s))
+			using (ZipFile zf = ZipFile.Create(ms))
 			{
 				AddFiles(zf, f, "");
 				zf.Close();
 			}
+			var r = HttpContext.Current.Response;
+			r.AppendHeader("Content-Type", "application/x-zip-compressed");
+			r.AppendHeader("Content-disposition", "attachment; filename=" + f.Title + ".zip");
+			ms.WriteTo(r.OutputStream);
+			r.End();
 		}
 
 		void AddFiles(ZipFile zf, IDbFolder f, string parent)
@@ -49,7 +54,7 @@ namespace Nephrite.Web.FileStorage
 			}
 		}
 
-		class MemoryDataStream : IStaticDataSource
+		public class MemoryDataStream : IStaticDataSource
 		{
 			private MemoryStream _ms;
 

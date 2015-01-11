@@ -172,7 +172,7 @@
     <Compile Include="Meta\CoreTyped.cs" />
     <Compile Include="Meta\StandardOperations.cs" />
     <Compile Include="Meta\StringConverter.cs" />
-    <Compile Include="Model\IEntity.cs">
+    <Compile Include="Root\IEntity.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Model\IMMObject.cs" />
@@ -240,7 +240,7 @@
     <Compile Include="Controls\CodeArea.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Web\CodifierValue.cs" />
+    <Compile Include="Root\CodifierValue.cs" />
     <Compile Include="Web\ConnectionManager.cs" />
     <Compile Include="Controls.Html\CaptchaImage.cs" />
     <Compile Include="Controllers\SimpleClassMover.cs" />
@@ -504,7 +504,7 @@
     <Compile Include="Web\RouteTable.cs" />
     <Compile Include="RSS\RssFeed.cs" />
     <Compile Include="RSS\RssItem.cs" />
-    <Compile Include="Web\Settings.cs" />
+    <Compile Include="Root\Settings.cs" />
     <Compile Include="Model\Extensions.cs" />
     <Compile Include="SPM2\SPM.cs" />
     <Compile Include="MVC\ViewControl.cs">
@@ -513,7 +513,7 @@
     <Compile Include="MVC\SqlLog.cs" />
     <Compile Include="TaskManager\TaskManager.cs" />
     <Compile Include="TextResources\TextResource.cs" />
-    <Compile Include="Web\SimpleTypeExtensions.cs">
+    <Compile Include="Root\SimpleTypeExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Web\Transliteration.cs" />

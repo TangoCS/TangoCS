@@ -17,12 +17,6 @@ namespace Nephrite.Web
 	}
 
 
-	public interface IWithTimeStamp
-	{
-		DateTime LastModifiedDate { get; set; }
-		int LastModifiedUserID { get; set; }
-	}
-
 	public interface IWithoutEntityAudit
 	{
 

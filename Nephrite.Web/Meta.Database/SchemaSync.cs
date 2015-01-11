@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Nephrite.Meta.Database;
 
 namespace Nephrite.Meta.Database
 {

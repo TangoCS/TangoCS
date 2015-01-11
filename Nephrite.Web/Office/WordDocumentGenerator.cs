@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.CustomProperties;
 using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.VariantTypes;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Nephrite.Web.FileStorage;
 
@@ -246,5 +248,61 @@ namespace Nephrite.Web.Office
 					Clean(childelement, e);
 			}
 		}
+
+		public static Result SetCustomProperty(string fileName, string propertyName, PropertyTypes propertyType, object propertyValue)
+		{
+			using (var document = WordprocessingDocument.Open(fileName, true))
+			{
+				var customProps = document.CustomFilePropertiesPart;
+				if (customProps == null) return new Result(-1, "В документе отсутствуют расширенные свойства");
+				var props = customProps.Properties;
+				if (props == null) return new Result(-1, "В документе отсутствуют расширенные свойства");
+
+				var prop = props.Where(p => ((CustomDocumentProperty)p).Name.Value == propertyName).FirstOrDefault();
+				if (prop == null) return new Result(-1, "В документе отсутствует свойство " + propertyName);
+				var custProp = prop as CustomDocumentProperty;
+				//if (prop != null) prop.Remove();
+
+				// Append the new property, and 
+				// fix up all the property ID values. 
+				// The PropertyId value must start at 2.
+				//props.AppendChild(newProp);
+				//int pid = 2;
+				//foreach (CustomDocumentProperty item in props)
+				//{
+				//	item.PropertyId = pid++;
+				//}
+
+				switch (propertyType)
+				{
+					case PropertyTypes.DateTime:
+						custProp.VTFileTime = new VTFileTime(string.Format("{0:s}Z", Convert.ToDateTime(propertyValue)));
+						break;
+					case PropertyTypes.NumberInteger:
+						custProp.VTInt32 = new VTInt32(propertyValue.ToString());
+						break;
+					case PropertyTypes.NumberDouble:
+						custProp.VTFloat = new VTFloat(propertyValue.ToString());
+						break;
+					case PropertyTypes.Text:
+						custProp.VTLPWSTR = new VTLPWSTR(propertyValue.ToString());
+						break;
+					case PropertyTypes.YesNo:
+						custProp.VTBool = new VTBool(Convert.ToBoolean(propertyValue).ToString().ToLower());
+						break;
+				}
+				props.Save();
+			}
+			return new Result(0, "");
+		}
+	}
+
+	public enum PropertyTypes : int
+	{
+		YesNo,
+		Text,
+		DateTime,
+		NumberInteger,
+		NumberDouble
 	}
 }
