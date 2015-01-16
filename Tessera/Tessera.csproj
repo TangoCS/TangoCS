@@ -92,7 +92,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="css\CALENDAR.CSS" />
-    <Content Include="css\CORE.CSS" />
     <Content Include="css\datepicker.css" />
     <Content Include="css\PrintList.css" />
     <Content Include="css\RESET.css" />

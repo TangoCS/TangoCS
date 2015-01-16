@@ -32,7 +32,6 @@ namespace Nephrite.Metamodel
 							MMDataContext dc = new MMDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString));
 							//dc.CommandTimeout = 300;
 							HttpContext.Current.Items["MMmodelDataContext"] = dc;
-							dc.Log = new DataContextLogWriter();
 						}
 						return (MMDataContext)HttpContext.Current.Items["MMmodelDataContext"];
 					}
@@ -44,7 +43,6 @@ namespace Nephrite.Metamodel
 					if (context == null)
 					{
 						context = new MMDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString));
-						context.Log = new DataContextLogWriter();
 						//context.CommandTimeout = 300;
 					}
 					return context;

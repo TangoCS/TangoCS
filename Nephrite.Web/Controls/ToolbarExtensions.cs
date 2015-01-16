@@ -21,9 +21,9 @@ namespace Nephrite.Web.Controls
 		{
 			string s = Query.GetString("filterid");
 			if (!filter.HasValue)
-				toolbar.AddItemJS("filter.gif", TextResource.Get("Common.Toolbar.Filter", "Фильтр"), filter.RenderMethod());
+				toolbar.AddItemJS(IconSet.Filter.X16, TextResource.Get("Common.Toolbar.Filter", "Фильтр"), filter.RenderMethod());
 			else
-				toolbar.AddItemJS("filter.gif", "<b>" + TextResource.Get("Common.Toolbar.Filter", "Фильтр") + "</b>", filter.RenderMethod());
+				toolbar.AddItemJS(IconSet.Filter.X16, "<b>" + TextResource.Get("Common.Toolbar.Filter", "Фильтр") + "</b>", filter.RenderMethod());
 		}
 
 		public static void EnableViews(this Toolbar toolbar, Filter filter)
@@ -70,9 +70,9 @@ namespace Nephrite.Web.Controls
 			mc.AddSeparator();
 
 			if (currentViewID > 0 && (isPersonal || ActionSPMContext.Current.Check("filter.managecommonviews", 1, true)))
-				mc.AddItemJS(TextResource.Get("Common.Toolbar.EditThisView", "Изменить это представление"), filter.RenderEditViewMethod(currentViewID), "modifyview.gif");
+				mc.AddItemJS(TextResource.Get("Common.Toolbar.EditThisView", "Изменить это представление"), filter.RenderEditViewMethod(currentViewID), IconSet.Modifyview.X16);
 
-			mc.AddItemJS(TextResource.Get("Common.Toolbar.CreateView", "Создать представление"), filter.RenderCreateViewMethod(), "createview.gif");
+			mc.AddItemJS(TextResource.Get("Common.Toolbar.CreateView", "Создать представление"), filter.RenderCreateViewMethod(), IconSet.Createview.X16);
 
 
 			if (Query.GetInt("filterid", 0) > 0 && !views.Any(o => o.FilterID == Query.GetInt("filterid", 0)) &&
@@ -100,7 +100,7 @@ Sys.WebForms.PageRequestManager.getInstance().add_endRequest(QF_EndRequest);", t
 
 		public static void AddBackButton(this Toolbar toolbar)
 		{
-			toolbar.AddItem("back.png", TextResource.Get("Common.Toolbar.Back"), Url.Current.ReturnUrl);
+			toolbar.AddItem(IconSet.Back.X16, TextResource.Get("Common.Toolbar.Back"), Url.Current.ReturnUrl);
 		}
 
 		public static void AddItem(this Toolbar toolbar, ActionLink actionLink)

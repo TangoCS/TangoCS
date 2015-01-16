@@ -25,6 +25,7 @@ namespace Nephrite
 				return imagespath;
 			}
 		}
+
 		// Где лежат javascript
 		public static string JSPath
 		{
@@ -98,7 +99,7 @@ namespace Nephrite
 
             imageProviderAssembly = ConfigurationManager.AppSettings["ImageProviderAssembly"] ?? String.Empty;
             imageProviderClass = ConfigurationManager.AppSettings["ImageProviderClass"] ?? String.Empty;
-			imagespath = (HttpRuntime.AppDomainAppVirtualPath + (ConfigurationManager.AppSettings["ImagesPath"] ?? "/i/n/")).Replace("//", "/");
+			imagespath = (HttpRuntime.AppDomainAppVirtualPath + (ConfigurationManager.AppSettings["ImagesPath"] ?? "/i/")).Replace("//", "/");
 			
             fileProviderAssembly = ConfigurationManager.AppSettings["FileProviderAssembly"] ?? String.Empty;
             fileProviderClass = ConfigurationManager.AppSettings["FileProviderClass"] ?? String.Empty;

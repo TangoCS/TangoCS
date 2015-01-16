@@ -60,8 +60,8 @@ namespace Nephrite.Web.Controls
 
 		string RenderSortPostBack(int column, string text, bool showArrows)
 		{
-			string iup = !showArrows ? "" : String.Format("<img src='{0}up.gif' style='border:0; vertical-align:middle;' />", Settings.ImagesPath);
-			string idown = !showArrows ? "" : String.Format("<img src='{0}down.gif' style='border:0; vertical-align:middle;' />", Settings.ImagesPath); 
+			string iup = !showArrows ? "" : String.Format("<img src='{0}' style='border:0; vertical-align:middle;' />", Settings.ImagesPath + IconSet.TitleSortasc.X16);
+			string idown = !showArrows ? "" : String.Format("<img src='{0}' style='border:0; vertical-align:middle;' />", Settings.ImagesPath + IconSet.TitleSortdesc.X16); 
 
 			if (_orderByColumns == null) _orderByColumns = hf.Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -81,8 +81,8 @@ namespace Nephrite.Web.Controls
 
 		string RenderSortLink(int column, string text, bool showArrows)
 		{
-			string iup = !showArrows ? "" : String.Format("<img src='{0}up.gif' style='border:0; vertical-align:middle;' />", Settings.ImagesPath);
-			string idown = !showArrows ? "" : String.Format("<img src='{0}down.gif' style='border:0; vertical-align:middle;' />", Settings.ImagesPath); 
+			string iup = !showArrows ? "" : String.Format("<img src='{0}' style='border:0; vertical-align:middle;' />", Settings.ImagesPath + IconSet.TitleSortasc.X16);
+			string idown = !showArrows ? "" : String.Format("<img src='{0}' style='border:0; vertical-align:middle;' />", Settings.ImagesPath + IconSet.TitleSortdesc.X16); 
 
 			Url baseUrl = Url.Current.SetQuickSearchQuery();
 			string curSettings = baseUrl.GetString(ParameterName).ToLower();

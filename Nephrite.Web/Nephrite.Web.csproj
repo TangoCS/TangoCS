@@ -116,6 +116,7 @@
     <Content Include="ExternalDll\DotNetOpenAuth.dll" />
     <Content Include="js\knockout-2.2.1.js" />
     <Content Include="js\modalwindow.js" />
+    <Content Include="js\popup2.js" />
     <Content Include="Replication\Replication.asmx" />
     <Content Include="View\Message\show.ascx" />
     <Content Include="Properties\Settings.settings">
@@ -159,7 +160,7 @@
     <Compile Include="Html\TagAttributes.cs" />
     <Compile Include="Html\HtmlControl.Tags.cs" />
     <Compile Include="Html\TagBuilder.cs" />
-    <Compile Include="Layout\Icons.cs" />
+    <Compile Include="Root\Icons.cs" />
     <Compile Include="Meta.Database\DBScriptMSSQL.cs" />
     <Compile Include="Meta.Database\IDBScript.cs" />
     <Compile Include="Meta.Database\PrimitiveTypesExtensions.cs" />
