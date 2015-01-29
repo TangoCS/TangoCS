@@ -11,7 +11,7 @@ namespace Nephrite.Web.MetaStorage
 		//IQueryable<IMM_ObjectProperty> IMM_ObjectProperty { get; }
 		//IQueryable<IMM_FormView> IMM_FormView { get; }
 		//IQueryable<IMM_Package> IMM_Package { get; }
-		IQueryable<IN_Cache> IN_Cache { get; }
+		ITable<IN_Cache> IN_Cache { get; }
 
 		IN_Cache NewIN_Cache();
 	}

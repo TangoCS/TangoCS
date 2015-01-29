@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 
-namespace Nephrite.Web.Multilanguage
+namespace Nephrite.Multilanguage
 {
 	public interface IDC_Multilanguage
 	{
-		IQueryable<IC_Language> IC_Language { get; }
+		ITable<IC_Language> IC_Language { get; }
 	}
 
 	public interface IC_Language

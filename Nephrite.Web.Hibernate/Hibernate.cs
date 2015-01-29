@@ -15,7 +15,6 @@ using NHibernate.Cfg.MappingSchema;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Mapping.ByCode;
 using System.Text;
-using System.Data.Linq;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR;
 using System.Data.Common;
@@ -27,6 +26,7 @@ using System.Reflection;
 using Nephrite.Web.SettingsManager;
 using Nephrite.Web.SPM;
 using NHibernate.Impl;
+using System.Linq.Expressions;
 
 
 
@@ -374,7 +374,7 @@ namespace Nephrite.Web.Hibernate
 			return command;
 		}
 
-		public IQueryable<T> GetTable<T>() //where T : class
+		public ITable<T> GetTable<T>()
 		{
 			return EnableTableAutoFilter ? 
 				new HTable<T>(this, DefaultTableFilters.ApplyFor<T>(Session.Query<T>())) : 
@@ -383,11 +383,9 @@ namespace Nephrite.Web.Hibernate
 
 		public ITable GetTable(Type t)
 		{
-
 			MethodInfo mi = typeof(LinqExtensionMethods).GetMethods().FirstOrDefault(tp => tp.GetParameters().Any(p => p.ParameterType == typeof(ISession))).MakeGenericMethod(new Type[] { t });
 			var q = mi.Invoke(Session, new object[] { Session }) as IQueryable;
 			return new HTable(this, q);
-
 		}
 
 		public T Get<T, TKey>(TKey id)
@@ -457,7 +455,7 @@ namespace Nephrite.Web.Hibernate
 		{
 			return _query.GetEnumerator();
 		}
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return _query.GetEnumerator();
 		}
@@ -465,7 +463,7 @@ namespace Nephrite.Web.Hibernate
 		{
 			get { return _query.ElementType; }
 		}
-		public System.Linq.Expressions.Expression Expression
+		public Expression Expression
 		{
 			get { return _query.Expression; }
 		}
@@ -478,10 +476,6 @@ namespace Nephrite.Web.Hibernate
 		{
 			_dataContext.ToInsert.Add(obj);
 		}
-		public void InsertAllOnSubmit(IEnumerable objs)
-		{
-			_dataContext.ToDelete.AddRange(objs.Cast<object>());
-		}
 		public void DeleteOnSubmit(object obj)
 		{
 			_dataContext.ToDelete.Add(obj);
@@ -491,46 +485,18 @@ namespace Nephrite.Web.Hibernate
 			_dataContext.ToDelete.AddRange(objs.Cast<object>());
 		}
 
-		public void Attach(object entity, object original)
-		{
-			throw new NotImplementedException();
-		}
-		public void Attach(object entity, bool asModified)
-		{
-			throw new NotImplementedException();
-		}
-		public void Attach(object entity)
+		public void AttachOnSubmit(object entity)
 		{
 			_dataContext.ToAttach.Add(entity);
 		}
-		public void AttachAll(IEnumerable entities, bool asModified)
-		{
-			throw new NotImplementedException();
-		}
-		public void AttachAll(IEnumerable entities)
-		{
-			throw new NotImplementedException();
-		}
-		public DataContext Context
-		{
-			get { throw new NotImplementedException(); }
-		}
-		public ModifiedMemberInfo[] GetModifiedMembers(object entity)
-		{
-			throw new NotImplementedException();
-		}
 
-		public object GetOriginalEntityState(object entity)
-		{
-			throw new NotImplementedException();
-		}
 		public bool IsReadOnly
 		{
 			get { return false; }
 		}
 	}
 
-	public class HTable<T> : HTable, IQueryable<T>
+	public class HTable<T> : HTable, ITable<T>
 	{
 		protected IQueryable<T> _query2;
 
@@ -540,10 +506,29 @@ namespace Nephrite.Web.Hibernate
 			_query2 = query;
 		}
 
-
 		public new IEnumerator<T> GetEnumerator()
 		{
 			return _query2.GetEnumerator();
+		}
+
+		public void InsertOnSubmit(T obj)
+		{
+			base.InsertOnSubmit(obj);
+		}
+
+		public void DeleteOnSubmit(T obj)
+		{
+			base.DeleteOnSubmit(obj);
+		}
+
+		public void DeleteAllOnSubmit(IEnumerable<T> objs)
+		{
+			base.DeleteAllOnSubmit(objs);
+		}
+
+		public void AttachOnSubmit(T obj)
+		{
+			base.AttachOnSubmit(obj);
 		}
 	}
 

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Web;
 
-namespace Nephrite.Web.Html
+namespace Nephrite.Html
 {
 	public abstract partial class HtmlControl
 	{
@@ -14,7 +13,7 @@ namespace Nephrite.Web.Html
 		{
 			get
 			{
-				if (_formValues == null) _formValues = HttpContext.Current.Request.Form;
+				if (_formValues == null) _formValues = Page.AppContext.Request.Form;
 				return _formValues;
 			}
 		}

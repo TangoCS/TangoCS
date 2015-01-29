@@ -2,14 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Web;
-using System.Web.UI;
-using Nephrite.Meta.Forms;
 using Nephrite.Web;
 using Nephrite.Web.Controllers;
 
-
-namespace Nephrite.Meta
+namespace Nephrite.Meta.Forms
 {
 	public delegate void OperationDelegate();
 	public delegate void SingleObjectOperationDelegate<TKey>(TKey id);

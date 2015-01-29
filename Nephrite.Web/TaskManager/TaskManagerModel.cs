@@ -7,9 +7,9 @@ namespace Nephrite.Web.TaskManager
 {
 	public interface IDC_TaskManager : IDataContext
 	{
-		IQueryable<ITM_Task> ITM_Task { get; }
-		IQueryable<ITM_TaskExecution> ITM_TaskExecution { get; }
-		IQueryable<ITM_TaskParameter> ITM_TaskParameter { get; }
+		ITable<ITM_Task> ITM_Task { get; }
+		ITable<ITM_TaskExecution> ITM_TaskExecution { get; }
+		ITable<ITM_TaskParameter> ITM_TaskParameter { get; }
 
 		ITM_TaskExecution NewITM_TaskExecution();
 	}

@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
-using System.Web;
 using Nephrite.Web.CalendarDays;
 
-namespace Nephrite.Web.Html
+namespace Nephrite.Html
 {
 	public static class CalendarExtension
 	{

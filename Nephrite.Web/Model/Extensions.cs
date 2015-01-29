@@ -21,7 +21,7 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Collections;
 using Nephrite.Web.SettingsManager;
-using Nephrite.Web.Multilanguage;
+using Nephrite.Multilanguage;
 using Nephrite.Meta;
 using System.Data.Linq;
 using Nephrite.Web.SPM;
@@ -231,47 +231,6 @@ namespace Nephrite.Web
 
 
     }
-
-	public static class IQueryableExtension
-	{
-		public static void InsertOnSubmit<T>(this IQueryable<T> q, T obj)
-			where T : IEntity
-		{
-			((ITable)q).InsertOnSubmit(obj);
-
-			if (obj is IWithTimeStamp)
-			{
-				var obj2 = obj as IWithTimeStamp;
-				obj2.LastModifiedDate = DateTime.Now;
-				obj2.LastModifiedUserID = Subject.Current.ID;
-			}
-		}
-
-		public static void DeleteOnSubmit<T>(this IQueryable<T> q, T obj)
-			where T : IEntity
-		{
-			((ITable)q).DeleteOnSubmit(obj);
-		}
-
-		public static void DeleteAllOnSubmit<T>(this IQueryable<T> q, IEnumerable<T> obj)
-			where T : IEntity
-		{
-			((ITable)q).DeleteAllOnSubmit(obj);
-		}
-
-		public static void AttachOnSubmit<T>(this IQueryable<T> q, T obj)
-		where T : IEntity
-		{
-			((ITable)q).Attach(obj);
-
-			if (obj is IWithTimeStamp)
-			{
-				var obj2 = obj as IWithTimeStamp;
-				obj2.LastModifiedDate = DateTime.Now;
-				obj2.LastModifiedUserID = Subject.Current.ID;
-			}
-		}
-	}
 
 	public static class EntityExtensions
 	{

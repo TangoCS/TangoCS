@@ -250,13 +250,13 @@ namespace Nephrite.Web.Layout
 		}
 
 
-		public void ToolbarItem(HtmlTextWriter writer, IBarItem content)
-		{
-			writer.Write(@"<td class=""ms-toolbar"" style=""border: none;"">");
-			content.Layout = AppLayout.Current.ToolbarButton;
-			content.RenderControl(writer);
-			writer.Write("</td>");
-		}
+		//public void ToolbarItem(IBarItem content)
+		//{
+		//	writer.Write(@"<td class=""ms-toolbar"" style=""border: none;"">");
+		//	content.Layout = AppLayout.Current.ToolbarButton;
+		//	content.RenderControl(writer);
+		//	writer.Write("</td>");
+		//}
 	}
 
 	public class MessageWSS2007 : ILayoutMessage
@@ -546,13 +546,13 @@ namespace Nephrite.Web.Layout
 			throw new NotImplementedException();
 		}
 
-		public void ToolbarItem(HtmlTextWriter writer, IBarItem content)
-		{
-			writer.Write(@"<td style=""vertical-align:middle"">");
-			content.Layout = AppLayout.Current.Button;
-			content.RenderControl(writer);
-			writer.Write("</td>");
-		}
+		//public void ToolbarItem(HtmlTextWriter writer, IBarItem content)
+		//{
+		//	writer.Write(@"<td style=""vertical-align:middle"">");
+		//	content.Layout = AppLayout.Current.Button;
+		//	content.RenderControl(writer);
+		//	writer.Write("</td>");
+		//}
 
 
 		public ILayoutBarItem LayoutBarItem {get; set;}

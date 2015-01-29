@@ -2,20 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Nephrite.Meta;
-using Nephrite.Web.Multilanguage;
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Web.TextResources
 {
 	public static class TextResource
 	{
+		static IDC_TextResources DataContext;
+		static IAppContext AppContext;
+
+		public static void Init(IAppContext appContext, IDC_TextResources dataContext)
+		{
+			AppContext = appContext;
+			DataContext = dataContext;
+		}
+
 		static bool EditMode
 		{
 			get
 			{
-				if (HttpContext.Current.Items["reseditmode"] == null)
-					HttpContext.Current.Items["reseditmode"] = HttpContext.Current.Request.Cookies["resourceeditmode"] != null && HttpContext.Current.Request.Cookies["resourceeditmode"].Value == "1";
-				return (bool)HttpContext.Current.Items["reseditmode"];
+				if (AppContext.Items["reseditmode"] == null)
+					AppContext.Items["reseditmode"] = AppContext.Request.Cookies["resourceeditmode"] != null && AppContext.Request.Cookies["resourceeditmode"] == "1";
+				return (bool)AppContext.Items["reseditmode"];
 			}
 		}
 
@@ -37,7 +45,7 @@ namespace Nephrite.Web.TextResources
 			{
 				lock (locker)
 				{
-					var nrs = ((IDC_TextResources)A.Model).IN_TextResource.Select(o => new { Res = o.SysName + "-" + o.LanguageCode, ID = o.TextResourceID, Text = o.Text });
+					var nrs = DataContext.IN_TextResource.Select(o => new { Res = o.SysName + "-" + o.LanguageCode, ID = o.TextResourceID, Text = o.Text });
 					foreach (var nr in nrs)
 					{
 						resources[nr.Res] = nr.Text;
@@ -65,7 +73,7 @@ namespace Nephrite.Web.TextResources
 						return "<span class='resedit' onclick='EditTextResource(" + resourceids[res] + ");'>[" + sysName + "]</span>";
 				}
 				else
-					return "<span class=\"resedit\" onclick=\"EditTextResource('" + sysName + "', '" + HttpUtility.HtmlEncode(resources[res]) + "');\">{" + sysName + "}</span>";
+					return "<span class=\"resedit\" onclick=\"EditTextResource('" + sysName + "', '" + HtmlHelpers.HtmlEncode(resources[res]) + "');\">{" + sysName + "}</span>";
 			}
 			return resources[res];
 		}
@@ -97,6 +105,6 @@ namespace Nephrite.Web.TextResources
 
 	public interface IDC_TextResources
 	{
-		IQueryable<IN_TextResource> IN_TextResource { get; }
+		ITable<IN_TextResource> IN_TextResource { get; }
 	}
 }

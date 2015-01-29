@@ -52,10 +52,10 @@ namespace Nephrite.Web
 			return null;
 		}
 
-		public override ButtonBar GetButtonBar()
-		{
-			return null;
-		}
+		//public override ButtonBar GetButtonBar()
+		//{
+		//	return null;
+		//}
 	}
 
 	public class ContentPlaceHolderInfo

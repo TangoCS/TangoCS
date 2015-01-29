@@ -6,7 +6,7 @@ using System.Web;
 using System.Xml.Serialization;
 using System.Collections.Specialized;
 using System.IO;
-using System.Data.Linq;
+//using System.Data.Linq;
 using System.Text.RegularExpressions;
 using Nephrite.Web.SettingsManager;
 
@@ -14,11 +14,6 @@ namespace Nephrite.Web.ErrorLog
 {
     public static class ErrorLogger
     {
-		[Obsolete]
-		public static int Log(Exception exception, DataContext dataContext)
-		{
-			return Log(exception);
-		}
 		public static int Log(Exception exception)
         {
 			string errorInfo = DateTime.Now.ToString()+Environment.NewLine;
@@ -118,7 +113,7 @@ namespace Nephrite.Web.ErrorLog
 
 	public interface IDC_ErrorLog : IDataContext
 	{
-		IQueryable<IErrorLog> IErrorLog { get; }
+		ITable<IErrorLog> IErrorLog { get; }
 		IErrorLog NewIErrorLog();
 	}
 

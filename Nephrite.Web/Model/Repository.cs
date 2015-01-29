@@ -13,7 +13,7 @@ using Nephrite.Web.FileStorage;
 using Nephrite.Meta;
 using System.Data.SqlClient;
 using Nephrite.Web.Versioning;
-using Nephrite.Web.Multilanguage;
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Web
 { 

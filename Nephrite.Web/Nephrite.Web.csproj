@@ -153,14 +153,6 @@
     <Compile Include="Html\ComplexControls\BackButton.cs" />
     <Compile Include="Html\ComplexControls\Calendar.cs" />
     <Compile Include="Html\ComplexControls\CodeArea.cs" />
-    <Compile Include="Html\HtmlControl.cs" />
-    <Compile Include="Html\HtmlControl.ParseForm.cs" />
-    <Compile Include="Html\HtmlControl.Select.cs" />
-    <Compile Include="Html\HtmlPage.cs" />
-    <Compile Include="Html\TagAttributes.cs" />
-    <Compile Include="Html\HtmlControl.Tags.cs" />
-    <Compile Include="Html\TagBuilder.cs" />
-    <Compile Include="Root\Icons.cs" />
     <Compile Include="Meta.Database\DBScriptMSSQL.cs" />
     <Compile Include="Meta.Database\IDBScript.cs" />
     <Compile Include="Meta.Database\PrimitiveTypesExtensions.cs" />
@@ -171,11 +163,8 @@
     <Compile Include="Meta.Forms\UIMetaModel.cs" />
     <Compile Include="Meta\CoreFluent.cs" />
     <Compile Include="Meta\CoreTyped.cs" />
-    <Compile Include="Meta\StandardOperations.cs" />
+    <Compile Include="Meta.Forms\StandardOperations.cs" />
     <Compile Include="Meta\StringConverter.cs" />
-    <Compile Include="Root\IEntity.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Model\IMMObject.cs" />
     <Compile Include="Model\IMMObjectMLView.cs" />
     <Compile Include="Model\IMMObjectVersion.cs" />
@@ -196,6 +185,10 @@
     <Compile Include="Replication\Replication.asmx.cs">
       <DependentUpon>Replication.asmx</DependentUpon>
       <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Root\Settings.cs" />
+    <Compile Include="Root\SimpleTypeExtensionsWeb.cs">
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="RussianStrings\Prop.cs" />
     <Compile Include="RussianStrings\RussianDate.cs" />
@@ -224,7 +217,6 @@
     <Compile Include="Meta.Database\DataTypeMapper.cs" />
     <Compile Include="Meta.Database\SchemaGenerator.cs" />
     <Compile Include="Meta.Database\SchemaLoader.cs" />
-    <Compile Include="Multilanguage\Language.cs" />
     <Compile Include="Reporting\Reporting.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -241,7 +233,6 @@
     <Compile Include="Controls\CodeArea.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Root\CodifierValue.cs" />
     <Compile Include="Web\ConnectionManager.cs" />
     <Compile Include="Controls.Html\CaptchaImage.cs" />
     <Compile Include="Controllers\SimpleClassMover.cs" />
@@ -433,7 +424,6 @@
     <Compile Include="SPM2\SPMStereotype.cs" />
     <Compile Include="Validation\IValidatable.cs" />
     <Compile Include="Validation\ValidationMessage.cs" />
-    <Compile Include="Multilanguage\MultilanguageModel.cs" />
     <Compile Include="FileStorage\DataHandler.cs" />
     <Compile Include="Web\DebuggerWriter.cs" />
     <Compile Include="ErrorLog\ErrorLogger.cs" />
@@ -459,10 +449,8 @@
     <Compile Include="Meta.Database\DBMetaModel.cs" />
     <Compile Include="Meta\PrimitiveTypes.cs" />
     <Compile Include="Layout\Interfaces.cs" />
-    <Compile Include="Model\IDataContext.cs" />
     <Compile Include="MVC\PageParser.cs" />
     <Compile Include="Web\ObjectPropertyChange.cs" />
-    <Compile Include="Web\Result.cs" />
     <Compile Include="SPM2\SpmActionNameAttribute.cs" />
     <Compile Include="Mailer\MailerTask.cs" />
     <Compile Include="MVC\MainMenu.cs" />
@@ -505,7 +493,6 @@
     <Compile Include="Web\RouteTable.cs" />
     <Compile Include="RSS\RssFeed.cs" />
     <Compile Include="RSS\RssItem.cs" />
-    <Compile Include="Root\Settings.cs" />
     <Compile Include="Model\Extensions.cs" />
     <Compile Include="SPM2\SPM.cs" />
     <Compile Include="MVC\ViewControl.cs">
@@ -513,10 +500,6 @@
     </Compile>
     <Compile Include="MVC\SqlLog.cs" />
     <Compile Include="TaskManager\TaskManager.cs" />
-    <Compile Include="TextResources\TextResource.cs" />
-    <Compile Include="Root\SimpleTypeExtensions.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Web\Transliteration.cs" />
     <Compile Include="MVC\Url.cs" />
     <Compile Include="Web\UrlStack.cs" />
@@ -547,7 +530,6 @@
     <Compile Include="Web\XMLSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Html\HtmlControl.Input.cs" />
     <None Include="Nephrite.Web.snk" />
     <Content Include="Controls\FileUpload.ascx" />
     <Content Include="Controls\FileUploadSimple.ascx" />
@@ -614,6 +596,12 @@
       <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
       <CachedSettingsPropName>Nephrite_Web_ReplicationService_Replication</CachedSettingsPropName>
     </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nephrite\Nephrite.csproj">
+      <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
+      <Name>Nephrite</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

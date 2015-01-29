@@ -7,8 +7,8 @@ namespace Nephrite.Web.FileStorage
 {
 	public interface IDC_FileStorage : IDataContext
 	{
-		IQueryable<IN_DownloadLog> IN_DownloadLog { get; }
-		IQueryable<IN_VirusScanLog> IN_VirusScanLog { get; }
+		ITable<IN_DownloadLog> IN_DownloadLog { get; }
+		ITable<IN_VirusScanLog> IN_VirusScanLog { get; }
 
 		IN_DownloadLog NewIN_DownloadLog();
 		IN_VirusScanLog NewIN_VirusScanLog();
@@ -17,10 +17,10 @@ namespace Nephrite.Web.FileStorage
 		IDbFile NewIDbFile(Guid ID);
 		IDbFileData NewIDbFileData(Guid ID);
 
-		IQueryable<IDbFile> IDbFile { get; }
-		IQueryable<IDbFolder> IDbFolder { get; }
-		IQueryable<IDbItem> IDbItem { get; }
-		IQueryable<IDbFileData> IDbFileData { get; }
+		ITable<IDbFile> IDbFile { get; }
+		ITable<IDbFolder> IDbFolder { get; }
+		ITable<IDbItem> IDbItem { get; }
+		ITable<IDbFileData> IDbFileData { get; }
 	}
 
 	public interface IN_DownloadLog : IEntity

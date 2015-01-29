@@ -26,7 +26,7 @@ namespace Nephrite.Web.Replication
 
 	public interface IDC_Replication
 	{
-		IQueryable<IN_ReplicationObject> IN_ReplicationObject { get; } 
+		ITable<IN_ReplicationObject> IN_ReplicationObject { get; } 
 	}
 
     /// <summary>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Linq;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web;
@@ -14,7 +13,7 @@ using Nephrite.Web.FormsEngine;
 using Nephrite.Web.Hibernate;
 using Nephrite.Web.Mailer;
 using Nephrite.Web.MetaStorage;
-using Nephrite.Web.Multilanguage;
+using Nephrite.Multilanguage;
 using Nephrite.Web.RSS;
 using Nephrite.Web.SettingsManager;
 using Nephrite.Web.SPM;

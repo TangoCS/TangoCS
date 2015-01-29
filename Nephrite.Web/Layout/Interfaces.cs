@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Web;
-using System.Web.UI;
 
 namespace Nephrite.Web.Layout
 {
@@ -188,7 +186,7 @@ namespace Nephrite.Web.Layout
 		string ToolbarLink(string title, string url, string image, string onclick, bool targetBlank);
 		string ToolbarImageLink(string title, string url, string image, string onclick, bool targetBlank);
 		string ToolbarItem(string content);
-		void ToolbarItem(HtmlTextWriter writer, IBarItem content);
+		//string ToolbarItem(IBarItem content);
 	}
 
 	public static class LayoutToolbarExtensions
@@ -296,18 +294,18 @@ namespace Nephrite.Web.Layout
 		WhiteSpace
 	}
 
-	public interface IBarItem
-	{
-		string Text { get; }
-		string Image { get; }
-		string OnClientClick { get; }
-		string AccessKey { get; }
-		ButtonNextOption? Next { get; }
-		ILayoutBarItem Layout { get; set; }
+	//public interface IBarItem
+	//{
+	//	string Text { get; }
+	//	string Image { get; }
+	//	string OnClientClick { get; }
+	//	string AccessKey { get; }
+	//	ButtonNextOption? Next { get; }
+	//	ILayoutBarItem Layout { get; set; }
 
-		event EventHandler Click;
-		void RenderControl(HtmlTextWriter writer);
-	}
+	//	event EventHandler Click;
+	//	string Render();
+	//}
 
 	public interface ILayoutBarItem
 	{

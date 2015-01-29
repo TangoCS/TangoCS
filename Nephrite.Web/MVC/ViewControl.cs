@@ -114,10 +114,10 @@ namespace Nephrite.Web
 			return AppWeb.MasterControl.GetToolbar();
 		}
 
-		public virtual ButtonBar GetButtonBar()
-		{
-			return AppWeb.MasterControl.GetButtonBar();
-		}
+		//public virtual ButtonBar GetButtonBar()
+		//{
+		//	return AppWeb.MasterControl.GetButtonBar();
+		//}
 
 	
 		

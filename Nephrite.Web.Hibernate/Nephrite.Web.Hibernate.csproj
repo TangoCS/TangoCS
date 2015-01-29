@@ -40,7 +40,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data.Linq" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -48,7 +47,6 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
@@ -126,6 +124,10 @@
     <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
       <Project>{26a68254-0902-4499-8b5f-6b4b6341ba21}</Project>
       <Name>Nephrite.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Nephrite\Nephrite.csproj">
+      <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
+      <Name>Nephrite</Name>
     </ProjectReference>
     <ProjectReference Include="..\NHibernate\NHibernate.csproj">
       <Project>{5909bfe7-93cf-4e5f-be22-6293368af01d}</Project>

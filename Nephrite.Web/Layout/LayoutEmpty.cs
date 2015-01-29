@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using Nephrite.Meta;
-using Nephrite.Web.Controls;
 
 namespace Nephrite.Web.Layout
 {
@@ -52,10 +49,10 @@ namespace Nephrite.Web.Layout
 		}
 
 
-		public void ToolbarItem(System.Web.UI.HtmlTextWriter writer, IBarItem content)
-		{
+		//public void ToolbarItem(HtmlTextWriter writer, IBarItem content)
+		//{
 			
-		}
+		//}
 
 
 	}

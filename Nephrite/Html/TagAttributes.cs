@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Nephrite.Web.Html
+namespace Nephrite.Html
 {
 	public class TagAttributes
 	{

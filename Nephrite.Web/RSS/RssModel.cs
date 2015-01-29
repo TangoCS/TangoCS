@@ -7,7 +7,7 @@ namespace Nephrite.Web.RSS
 {
 	public interface IDC_RSS : IDataContext
 	{
-		IQueryable<IN_RssFeed> IN_RssFeed { get; } 
+		ITable<IN_RssFeed> IN_RssFeed { get; } 
 	}
 
 

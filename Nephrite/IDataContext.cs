@@ -3,13 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.Linq;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Web;
 
-namespace Nephrite.Web
+namespace Nephrite
 {
 	public interface IDataContext : IDisposable
 	{
@@ -18,9 +16,8 @@ namespace Nephrite.Web
 
 		int ExecuteCommand(string command, params object[] parameters);
 		IEnumerable<TResult> ExecuteQuery<TResult>(string query, params object[] parameters);
-		//IEnumerable ExecuteQuery(Type elementType, string query, params object[] parameters);
 		IDbCommand GetCommand(IQueryable query);
-		IQueryable<T> GetTable<T>();
+		ITable<T> GetTable<T>();
 		ITable GetTable(Type t);
 		T Get<T, TKey>(TKey id);
 		void SubmitChanges();
@@ -32,6 +29,22 @@ namespace Nephrite.Web
 
 		IDataContext All { get; }
 		IDataContext Filtered { get; }
+	}
+
+	public interface ITable : IQueryable
+	{
+		void InsertOnSubmit(object obj);
+		void DeleteOnSubmit(object obj);
+		void DeleteAllOnSubmit(IEnumerable obj);
+		void AttachOnSubmit(object obj);
+	}
+
+	public interface ITable<T> : IQueryable<T>
+	{
+		void InsertOnSubmit(T obj);
+		void DeleteOnSubmit(T obj);
+		void DeleteAllOnSubmit(IEnumerable<T> obj);
+		void AttachOnSubmit(T obj);
 	}
 
 	public static class DefaultTableFilters

@@ -6,7 +6,7 @@ using System.Web.UI.WebControls;
 using System.Web.UI;
 using System.Globalization;
 using Nephrite.Web.SettingsManager;
-using Nephrite.Web.Multilanguage;
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Web.Controls
 {

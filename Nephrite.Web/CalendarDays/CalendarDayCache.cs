@@ -64,7 +64,7 @@ namespace Nephrite.Web.CalendarDays
 
 	public interface IDC_CalendarDays : IDataContext
 	{
-		IQueryable<ICalendarDay> ICalendarDay { get; }
+		ITable<ICalendarDay> ICalendarDay { get; }
 	}
 
 	public interface ICalendarDay : IEntity

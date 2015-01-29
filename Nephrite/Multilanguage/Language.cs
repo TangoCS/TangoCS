@@ -2,20 +2,28 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Web;
-using Nephrite.Meta;
 
-namespace Nephrite.Web.Multilanguage
+namespace Nephrite.Multilanguage
 {
 	public static class Language
 	{
+		static IDC_Multilanguage DataContext;
+		static IAppContext AppContext;
+
 		static List<IC_Language> _langs;
+
+		public static void Init(IAppContext appContext, IDC_Multilanguage dataContext)
+		{
+			AppContext = appContext;
+			DataContext = dataContext;
+		}
+
 		public static List<IC_Language> List
 		{
 			get
 			{
 				if (_langs == null)
-					_langs = ((IDC_Multilanguage)A.Model).IC_Language.OrderByDescending(o => o.IsDefault).ToList();
+					_langs = DataContext.IC_Language.OrderByDescending(o => o.IsDefault).ToList();
 				return _langs;
 			}
 		}
@@ -24,15 +32,14 @@ namespace Nephrite.Web.Multilanguage
 		{
 			get
 			{
-				string lang = Query.GetString("lang");
-			    if (HttpContext.Current != null)
-			    {
-			        if (HttpContext.Current.Request.Cookies["lcid"] != null)
-			            lang = HttpContext.Current.Request.Cookies["lcid"].Value == "1033" ? "en" : "ru";
-			        if (HttpContext.Current.Items["Lang"] != null)
-			            lang = (string) HttpContext.Current.Items["Lang"];
-			    }
-			    lang = lang ?? "ru";
+				string lang = AppContext.Request.Query["lang"];
+
+				if (AppContext.Request.Cookies["lcid"] != null)
+					lang = AppContext.Request.Cookies["lcid"] == "1033" ? "en" : "ru";
+				if (AppContext.Items["Lang"] != null)
+					lang = (string)AppContext.Items["Lang"];
+
+				lang = lang ?? "ru";
 			    var l = List.SingleOrDefault(o => o.Code == lang);
 				if (l == null)
 					l = List.Single(o => o.IsDefault);
@@ -50,10 +57,10 @@ namespace Nephrite.Web.Multilanguage
 
 		public static void WithLang(string lang, Action action)
 		{
-			string prevLang = (string)HttpContext.Current.Items["Lang"];
-			HttpContext.Current.Items["Lang"] = lang;
+			string prevLang = (string)AppContext.Items["Lang"];
+			AppContext.Items["Lang"] = lang;
 			action();
-			HttpContext.Current.Items["Lang"] = prevLang;
+			AppContext.Items["Lang"] = prevLang;
 		}
 
 		public static CultureInfo CurrentCulture
@@ -75,24 +82,6 @@ namespace Nephrite.Web.Multilanguage
 
 	public static class LangExtender
 	{
-		public static string Lang(this System.Web.UI.Control ctrl, string lang, string data)
-		{
-			if (Language.Current.Code.ToUpper() == lang.ToUpper())
-				return data;
-			return String.Empty;
-		}
-
-		public static string Lang(this System.Web.UI.Control ctrl, string lang, string data, params string[] otherLang)
-		{
-			string lc = Language.Current.Code.ToUpper();
-			if (lc == lang.ToUpper())
-				return data;
-			for (int i = 0; i < otherLang.Length; i += 2)
-				if (otherLang[i].ToUpper() == lc)
-					return otherLang[i + 1];
-			return String.Empty;
-		}
-
 		public static string MoneyToString(this decimal money)
 		{
 			return money.ToString("###,###,###,###,##0.00", Language.CurrentCulture);
@@ -104,6 +93,5 @@ namespace Nephrite.Web.Multilanguage
 				return "";
 			return money.Value.ToString("###,###,###,###,##0.00", Language.CurrentCulture);
 		}
-
 	}
 }

@@ -10,8 +10,8 @@ namespace Nephrite.Web
 {
 	public interface IDC_EntityAudit : IDataContext
 	{
-		IQueryable<IN_ObjectChange> IN_ObjectChange { get; }
-		IQueryable<IN_ObjectPropertyChange> IN_ObjectPropertyChange { get; }
+		ITable<IN_ObjectChange> IN_ObjectChange { get; }
+		ITable<IN_ObjectPropertyChange> IN_ObjectPropertyChange { get; }
 		IN_ObjectChange NewIN_ObjectChange();
 		IN_ObjectPropertyChange NewIN_ObjectPropertyChange();
 	}

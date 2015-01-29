@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Nephrite.Web.Html
+namespace Nephrite.Html
 {
 	public partial class HtmlControl : StringWriter
 	{

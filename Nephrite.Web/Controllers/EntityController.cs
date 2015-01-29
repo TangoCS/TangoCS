@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using Nephrite.Meta;
 using Nephrite.Web.Controllers;
-using Nephrite.Web.Multilanguage;
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Web
 {

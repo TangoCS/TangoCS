@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Linq;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Web;
+
 
 namespace Nephrite
 {
 	public interface IEntity
 	{
-		//MetaClass MetaClass { get; }
 	}
 
 	public interface IWithKey : IEntity
@@ -18,7 +16,6 @@ namespace Nephrite
 
 	public interface IWithKey<TKey> : IWithKey
 	{
-		//TKey ID { get; }
 	}
 
 	public interface IWithKey<T, TKey> : IWithKey<TKey> where T : IEntity
@@ -56,5 +53,4 @@ namespace Nephrite
 		DateTime LastModifiedDate { get; set; }
 		int LastModifiedUserID { get; set; }
 	}
-
 }

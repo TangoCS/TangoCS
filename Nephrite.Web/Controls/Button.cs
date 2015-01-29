@@ -1,15 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 using Nephrite.Web.Layout;
 
 namespace Nephrite.Web.Controls
 {
-	public class SimpleButton : Button, IBarItem
+	public class SimpleButton : Button//, IBarItem
 	{
-		public ButtonNextOption? Next { get; set; }
+		//public ButtonNextOption? Next { get; set; }
 		public ILayoutBarItem Layout { get; set; }
 		public string Image { get; set; }
 
@@ -25,5 +28,7 @@ namespace Nephrite.Web.Controls
 			if (!s.IsEmpty()) Attributes.Add("style", Layout.Style(Image));
 			base.Render(writer);
 		}
+
+
 	}
 }

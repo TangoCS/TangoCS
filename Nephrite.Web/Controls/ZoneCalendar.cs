@@ -192,7 +192,7 @@ namespace Nephrite.Web.Controls
 
 	public interface IDC_TimeZone : IDataContext
 	{
-		IQueryable<IN_TimeZone> IN_TimeZone { get; }
+		ITable<IN_TimeZone> IN_TimeZone { get; }
 	}
 
 	public interface IN_TimeZone

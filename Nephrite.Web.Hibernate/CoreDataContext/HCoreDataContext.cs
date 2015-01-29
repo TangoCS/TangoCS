@@ -12,7 +12,7 @@ using NHibernate.Linq;
 using NHibernate.SqlCommand;
 using Nephrite.Web.Mailer;
 using Nephrite.Web.TextResources;
-using Nephrite.Web.Multilanguage;
+using Nephrite.Multilanguage;
 using Nephrite.Web.TaskManager;
 using Nephrite.Web.SettingsManager;
 using Nephrite.Web.RSS;
@@ -182,103 +182,103 @@ namespace Nephrite.Web.CoreDataContext
 			return new ErrorLog();
 		}
 
-		public IQueryable<IErrorLog> IErrorLog
+		public ITable<IErrorLog> IErrorLog
 		{
 			get { return new HTable<IErrorLog>(this, Session.Query<IErrorLog>()); }
 		}
-		public IQueryable<ICalendarDay> ICalendarDay
+		public ITable<ICalendarDay> ICalendarDay
 		{
 			get { return new HTable<ICalendarDay>(this, Session.Query<ICalendarDay>()); }
 		}
-		public IQueryable<IMailMessage> IMailMessage
+		public ITable<IMailMessage> IMailMessage
 		{
 			get { return new HTable<IMailMessage>(this, Session.Query<IMailMessage>()); }
 		}
-		public IQueryable<IMailTemplate> IMailTemplate
+		public ITable<IMailTemplate> IMailTemplate
 		{
 			get { return new HTable<IMailTemplate>(this, Session.Query<IMailTemplate>()); }
 		}
-		public IQueryable<IN_TimeZone> IN_TimeZone
+		public ITable<IN_TimeZone> IN_TimeZone
 		{
 			get { return new HTable<IN_TimeZone>(this, Session.Query<IN_TimeZone>()); }
 		}
-		public IQueryable<IC_Language> IC_Language
+		public ITable<IC_Language> IC_Language
 		{
 			get { return new HTable<IC_Language>(this, Session.Query<IC_Language>()); }
 		}
-		public IQueryable<IN_TextResource> IN_TextResource
+		public ITable<IN_TextResource> IN_TextResource
 		{
 			get { return new HTable<IN_TextResource>(this, Session.Query<IN_TextResource>()); }
 		}
-		public IQueryable<IN_Filter> IN_Filter
+		public ITable<IN_Filter> IN_Filter
 		{
 			get { return new HTable<IN_Filter>(this, Session.Query<IN_Filter>()); }
 		}
-		public IQueryable<IN_Settings> IN_Settings
+		public ITable<IN_Settings> IN_Settings
 		{
 			get { return new HTable<IN_Settings>(this, Session.Query<IN_Settings>()); }
 		}
-		public IQueryable<IN_ObjectChange> IN_ObjectChange
+		public ITable<IN_ObjectChange> IN_ObjectChange
 		{
 			get { return new HTable<IN_ObjectChange>(this, Session.Query<IN_ObjectChange>()); }
 		}
-		public IQueryable<IN_ObjectPropertyChange> IN_ObjectPropertyChange
+		public ITable<IN_ObjectPropertyChange> IN_ObjectPropertyChange
 		{
 			get { return new HTable<IN_ObjectPropertyChange>(this, Session.Query<IN_ObjectPropertyChange>()); }
 		}
-		public IQueryable<IN_RssFeed> IN_RssFeed
+		public ITable<IN_RssFeed> IN_RssFeed
 		{
 			get { return new HTable<IN_RssFeed>(this, Session.Query<IN_RssFeed>()); }
 		}
-		public IQueryable<IMM_Package> IMM_Package
+		public ITable<IMM_Package> IMM_Package
 		{
 			get { return new HTable<IMM_Package>(this, Session.Query<IMM_Package>()); }
 		}
-		public IQueryable<IMM_ObjectType> IMM_ObjectType
+		public ITable<IMM_ObjectType> IMM_ObjectType
 		{
 			get { return new HTable<IMM_ObjectType>(this, Session.Query<IMM_ObjectType>()); }
 		}
-		public IQueryable<IMM_FormView> IMM_FormView
+		public ITable<IMM_FormView> IMM_FormView
 		{
 			get { return new HTable<IMM_FormView>(this, Session.Query<IMM_FormView>()); }
 		}
-		public IQueryable<IN_Cache> IN_Cache
+		public ITable<IN_Cache> IN_Cache
 		{
 			get { return new HTable<IN_Cache>(this, Session.Query<IN_Cache>()); }
 		}
-		public IQueryable<IN_DownloadLog> IN_DownloadLog
+		public ITable<IN_DownloadLog> IN_DownloadLog
 		{
 			get { return new HTable<IN_DownloadLog>(this, Session.Query<IN_DownloadLog>()); }
 		}
-		public IQueryable<IDbFile> IDbFile
+		public ITable<IDbFile> IDbFile
 		{
 			get { return new HTable<IDbFile>(this, Session.Query<IDbFile>()); }
 		}
-		public IQueryable<IDbFolder> IDbFolder
+		public ITable<IDbFolder> IDbFolder
 		{
 			get { return new HTable<IDbFolder>(this, Session.Query<IDbFolder>()); }
 		}
-		public IQueryable<IDbItem> IDbItem
+		public ITable<IDbItem> IDbItem
 		{
 			get { return new HTable<IDbItem>(this, Session.Query<IDbItem>()); }
 		}
-		public IQueryable<IDbFileData> IDbFileData
+		public ITable<IDbFileData> IDbFileData
 		{
 			get { return new HTable<IDbFileData>(this, Session.Query<IDbFileData>()); }
 		}
-		public IQueryable<IN_VirusScanLog> IN_VirusScanLog
+		public ITable<IN_VirusScanLog> IN_VirusScanLog
 		{
 			get { return new HTable<IN_VirusScanLog>(this, Session.Query<IN_VirusScanLog>()); }
 		}
-		public IQueryable<ITM_TaskParameter> ITM_TaskParameter
+		public ITable<ITM_TaskParameter> ITM_TaskParameter
 		{
 			get { return new HTable<ITM_TaskParameter>(this, Session.Query<ITM_TaskParameter>()); }
 		}
-		public IQueryable<ITM_TaskExecution> ITM_TaskExecution
+		public ITable<ITM_TaskExecution> ITM_TaskExecution
 		{
 			get { return new HTable<ITM_TaskExecution>(this, Session.Query<ITM_TaskExecution>()); }
 		}
-		public IQueryable<ITM_Task> ITM_Task
+		public ITable<ITM_Task> ITM_Task
 		{
 			get { return new HTable<ITM_Task>(this, Session.Query<ITM_Task>()); }
 		}

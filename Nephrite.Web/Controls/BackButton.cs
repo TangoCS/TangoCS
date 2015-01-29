@@ -5,10 +5,11 @@ using System.Text;
 using System.Web.UI;
 using Nephrite.Web.TextResources;
 using Nephrite.Web.Layout;
+using System.IO;
 
 namespace Nephrite.Web.Controls
 {
-	public class BackButton : Control, IBarItem
+	public class BackButton : Control//, IBarItem
     {
 		public ILayoutBarItem Layout { get; set; }
 		public string AccessKey { get; set; }
@@ -34,7 +35,7 @@ namespace Nephrite.Web.Controls
 
         public string Url { get; set; }
 		public string Text { get; set; }
-		public ButtonNextOption? Next { get; set; }
+		//public ButtonNextOption? Next { get; set; }
 		
 		public string OnClientClick
 		{
@@ -48,5 +49,6 @@ namespace Nephrite.Web.Controls
 		}
 
 		public event EventHandler Click;
+
 	}
 }

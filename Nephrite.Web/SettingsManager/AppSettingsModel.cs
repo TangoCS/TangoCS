@@ -8,7 +8,7 @@ namespace Nephrite.Web.SettingsManager
 {
 	public interface IDC_Settings : IDataContext
 	{
-		IQueryable<IN_Settings> IN_Settings { get; }
+		ITable<IN_Settings> IN_Settings { get; }
 		IN_Settings NewIN_Settings();
 	}
 

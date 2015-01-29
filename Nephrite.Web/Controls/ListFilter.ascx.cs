@@ -1650,7 +1650,7 @@ namespace Nephrite.Web.Controls
 
 	public interface IDC_ListFilter : IDataContext
 	{
-		IQueryable<IN_Filter> IN_Filter { get; }
+		ITable<IN_Filter> IN_Filter { get; }
 		IN_Filter NewIN_Filter();
 	}
 }

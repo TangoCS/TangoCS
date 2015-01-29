@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Web;
 
-namespace Nephrite.Web.Html
+namespace Nephrite.Html
 {
 	public class TagBuilder
 	{
@@ -32,7 +31,7 @@ namespace Nephrite.Web.Html
 			foreach (var attribute in Attributes)
 			{
 				string key = attribute.Key;
-				string value = HttpUtility.HtmlAttributeEncode(attribute.Value);
+				string value = HtmlHelpers.HtmlEncode(attribute.Value);
 				sb.Append(' ')
 					.Append(key)
 					.Append("=\"")
@@ -64,7 +63,7 @@ namespace Nephrite.Web.Html
 
 		public void SetInnerText(string innerText)
 		{
-			InnerHtml = HttpUtility.HtmlEncode(innerText);
+			InnerHtml = HtmlHelpers.HtmlEncode(innerText);
 		}
 
 		public override string ToString()

@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
 using System.Web.UI;
-using Nephrite.Web.Html;
+using Nephrite;
+using Nephrite.Html;
 using Tessera3.Views;
 
 namespace Tessera3Sample
@@ -19,14 +21,18 @@ namespace Tessera3Sample
 			context.PostAuthenticateRequest += (o, e) =>
 			{
 				var r = context.Response;
-				HtmlPage page = new HtmlPage();
 
-				HomePage p = new HomePage();
-				p.Page = page;
-				p.Render();
+				using (var appContext = new DefaultAppContext())
+				{
+					HtmlPage page = new HtmlPage(appContext);
 
-				r.Write(p.ToString());
-				r.End();
+					HomePage p = new HomePage();
+					p.Page = page;
+					p.Render();
+
+					r.Write(p.ToString());
+					r.End();
+				}
 			};
 		}
 	}

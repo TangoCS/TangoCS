@@ -7,9 +7,9 @@ using Nephrite.Web.Layout;
 
 namespace Nephrite.Web.Controls
 {
-	public class SubmitButton : Button, IBarItem
+	public class SubmitButton : Button//, IBarItem
 	{
-		public ButtonNextOption? Next { get; set; }
+		//public ButtonNextOption? Next { get; set; }
 		public ILayoutBarItem Layout { get; set; }
 		public string Image { get; set; }
 
