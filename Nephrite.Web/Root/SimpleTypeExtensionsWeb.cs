@@ -83,19 +83,7 @@ namespace Nephrite
 				li.Selected = true;
 		}
 
-		public static string Icon(this bool src)
-		{
-			if (src)
-				return "<img src='" + Settings.ImagesPath + "tick.png' />";
-			return String.Empty;
-		}
-
-		public static string Icon(this bool? src)
-		{
-			if (src.HasValue)
-				return src.Value ? "<img src='" + Settings.ImagesPath + "tick.png' />" : "";
-			return String.Empty;
-		}
+		
 
 		public static string RenderControl(this Control ctrl)
 		{

@@ -2,20 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using Nephrite.Web;
 
 namespace Nephrite.Meta
 {
 	public partial class MetaSolution : MetaElement
 	{
-		public static MetaSolution Load()
+		public static MetaSolution Load(XElement metaData)
 		{
 			MetaSolution s = new MetaSolution();
 
-			XElement x = A.DBScript.GetMeta();
-			if (x == null) throw new Exception("Unable to load model from database");
-
-			foreach (XElement xe in x.Nodes())
+			foreach (XElement xe in metaData.Nodes())
 				if (xe.Name == "Package") LoadPackage(s, xe);
 
 			return s;

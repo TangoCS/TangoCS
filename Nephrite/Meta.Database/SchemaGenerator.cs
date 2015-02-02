@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using Nephrite.Web;
 
 namespace Nephrite.Meta.Database
 {
 	public partial class Schema
 	{
-		public void Generate(MetaClass cls)
+		public void Generate(MetaClass cls, IDBScript dbScript)
 		{
 			if (!cls.IsPersistent) return;
 
 			var tempListJoinTables = new List<string>();
-			var dbScript = A.DBScript;
 
 			Table t = new Table();
 			t.Name = cls.Name;

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Nephrite.Web.SPM;
 
 namespace Nephrite.Meta
 {
@@ -126,16 +125,5 @@ namespace Nephrite.Meta
 	public partial class MetaOperation<TDelegate> : MetaOperation
 	{
 		public TDelegate Delegate { get; set; }
-	}
-
-	public partial class MetaOperation<TViewModel, TDelegate> : MetaOperation<TDelegate>
-	{
-		public Func<TViewModel, bool> Predicate { get; set; }
-		public bool CheckPredicate(TViewModel obj)
-		{
-			if (!SPM2.Enabled) return true;
-			if (Predicate == null) return true;
-			return Predicate(obj);
-		}		
 	}
 }

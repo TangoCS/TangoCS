@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Nephrite
@@ -17,6 +18,9 @@ namespace Nephrite
 
 	public class IconSet
 	{
+		[DefaultValue("/i/")]
+		public static string RootPath { get; set; }
+
 		// Paging
 		static ItemIcon _Firstpage = new ItemIcon { X16 = "", X32 = "" };
 		static ItemIcon _Prevpage = new ItemIcon { X16 = "", X32 = "" };

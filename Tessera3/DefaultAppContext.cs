@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Web;
 using Nephrite;
+using Nephrite.Http;
 
 namespace Tessera3Sample
 {
@@ -55,14 +57,28 @@ namespace Tessera3Sample
 
 	public class DefaultAppRequest : IRequest
 	{
-		public Nephrite.Http.IReadableStringCollection Query
+		public NameValueCollection Query
 		{
-			get { throw new NotImplementedException(); }
+			get { return HttpContext.Current.Request.QueryString; }
 		}
 
-		public Nephrite.Http.RequestCookiesCollection Cookies
+		RequestCookiesCollection _cookies;
+		public RequestCookiesCollection Cookies
 		{
-			get { throw new NotImplementedException(); }
+			get 
+			{ 
+				if (_cookies == null)
+				{
+					IDictionary<string, string> d = new Dictionary<string, string>();
+					var cookies = HttpContext.Current.Request.Cookies;
+
+					foreach (string c in cookies.AllKeys)
+						d.Add(c, cookies[c].Value);
+
+					_cookies = new RequestCookiesCollection(d);
+				}
+				return _cookies; 
+			}
 		}
 
 		public Uri Url
@@ -70,12 +86,12 @@ namespace Tessera3Sample
 			get { return HttpContext.Current.Request.Url; }
 		}
 
-		public System.Collections.Specialized.NameValueCollection Headers
+		public NameValueCollection Headers
 		{
 			get { return HttpContext.Current.Request.Headers; }
 		}
 
-		public System.Collections.Specialized.NameValueCollection Form
+		public NameValueCollection Form
 		{
 			get { return HttpContext.Current.Request.Form; }
 		}

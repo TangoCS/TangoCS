@@ -13,7 +13,7 @@ using System.Xml.Linq;
 using System.Xml;
 using Nephrite.Web.SPM;
 using Nephrite.Web;
-using Nephrite.Web.TextResources;
+using Nephrite.TextResources;
 using Nephrite.Meta;
 
 namespace Nephrite.Web.Controls

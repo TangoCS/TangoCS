@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using Nephrite.Multilanguage;
 
-namespace Nephrite.Web.TextResources
+namespace Nephrite.TextResources
 {
 	public static class TextResource
 	{

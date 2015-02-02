@@ -64,10 +64,28 @@
     <Compile Include="IDataContext.cs" />
     <Compile Include="IEntity.cs" />
     <Compile Include="IPersistentSettings.cs" />
+    <Compile Include="Meta.Database\DataTypeMapper.cs" />
+    <Compile Include="Meta.Database\DBMetaModel.cs" />
+    <Compile Include="Meta.Database\IDatabaseMetadataReader.cs" />
+    <Compile Include="Meta.Database\IDBScript.cs" />
+    <Compile Include="Meta.Database\PrimitiveTypesExtensions.cs" />
+    <Compile Include="Meta.Database\SchemaGenerator.cs" />
+    <Compile Include="Meta.Database\SchemaSync.cs" />
+    <Compile Include="Meta\Core.cs" />
+    <Compile Include="Meta\CoreFluent.cs" />
+    <Compile Include="Meta\CoreTyped.cs" />
+    <Compile Include="Meta\MetaLoad.cs" />
+    <Compile Include="Meta\PrimitiveTypes.cs" />
+    <Compile Include="Meta\StringConverter.cs" />
+    <Compile Include="Meta\Versioning.cs" />
     <Compile Include="Multilanguage\Language.cs" />
     <Compile Include="Multilanguage\MultilanguageModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Result.cs" />
+    <Compile Include="RussianStrings\Prop.cs" />
+    <Compile Include="RussianStrings\RussianDate.cs" />
+    <Compile Include="RussianStrings\RussianNumber.cs" />
+    <Compile Include="RussianStrings\Transliteration.cs" />
     <Compile Include="SimpleTypeExtensions.cs">
       <SubType>Code</SubType>
     </Compile>

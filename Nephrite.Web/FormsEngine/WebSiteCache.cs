@@ -8,7 +8,7 @@ using System.Data.Linq;
 using System.IO;
 using Nephrite.Web.FileStorage;
 using Nephrite.Web.SettingsManager;
-using Nephrite.Web.TextResources;
+using Nephrite.TextResources;
 using Nephrite.Web.MetaStorage;
 
 namespace Nephrite.Web.FormsEngine

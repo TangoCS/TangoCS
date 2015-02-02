@@ -18,7 +18,7 @@ using Nephrite.Web.RSS;
 using Nephrite.Web.SettingsManager;
 using Nephrite.Web.SPM;
 using Nephrite.Web.TaskManager;
-using Nephrite.Web.TextResources;
+using Nephrite.TextResources;
 
 namespace Nephrite.Web.CoreDataContext
 {

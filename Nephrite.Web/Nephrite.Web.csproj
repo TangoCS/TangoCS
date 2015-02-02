@@ -153,18 +153,12 @@
     <Compile Include="Html\ComplexControls\BackButton.cs" />
     <Compile Include="Html\ComplexControls\Calendar.cs" />
     <Compile Include="Html\ComplexControls\CodeArea.cs" />
-    <Compile Include="Meta.Database\DBScriptMSSQL.cs" />
-    <Compile Include="Meta.Database\IDBScript.cs" />
-    <Compile Include="Meta.Database\PrimitiveTypesExtensions.cs" />
-    <Compile Include="Meta.Database\SchemaSync.cs" />
-    <Compile Include="Meta.Database\UpdateScriptBuilder2.cs" />
+    <Compile Include="Meta.Database.MSSQL\DBScriptMSSQL.cs" />
+    <Compile Include="Meta.Database.MSSQL\UpdateScriptBuilder2.cs" />
     <Compile Include="Meta.Forms\WebFormRenderer.cs" />
     <Compile Include="MetaStorage\MetaStorageModel.cs" />
     <Compile Include="Meta.Forms\UIMetaModel.cs" />
-    <Compile Include="Meta\CoreFluent.cs" />
-    <Compile Include="Meta\CoreTyped.cs" />
     <Compile Include="Meta.Forms\StandardOperations.cs" />
-    <Compile Include="Meta\StringConverter.cs" />
     <Compile Include="Model\IMMObject.cs" />
     <Compile Include="Model\IMMObjectMLView.cs" />
     <Compile Include="Model\IMMObjectVersion.cs" />
@@ -190,11 +184,6 @@
     <Compile Include="Root\SimpleTypeExtensionsWeb.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="RussianStrings\Prop.cs" />
-    <Compile Include="RussianStrings\RussianDate.cs" />
-    <Compile Include="RussianStrings\RussianNumber.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="SPM2\Scripts\ISPM2Script.cs" />
     <Compile Include="SPM2\Scripts\SPM2ScriptDB2.cs" />
     <Compile Include="SPM2\Scripts\SPM2ScriptMSSQL.cs" />
@@ -214,9 +203,7 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="FileStorage\FileStorageModel.cs" />
-    <Compile Include="Meta.Database\DataTypeMapper.cs" />
-    <Compile Include="Meta.Database\SchemaGenerator.cs" />
-    <Compile Include="Meta.Database\SchemaLoader.cs" />
+    <Compile Include="Meta.Database.MSSQL\SchemaLoader.cs" />
     <Compile Include="Reporting\Reporting.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -439,15 +426,10 @@
     <Compile Include="Web\IRouteHandler.cs" />
     <Compile Include="Web\JqTreeNode.cs" />
     <Compile Include="Web\MacroManager.cs" />
-    <Compile Include="Meta\Core.cs" />
     <Compile Include="Layout\LayoutBootstrap.cs" />
     <Compile Include="Layout\LayoutEmpty.cs" />
     <Compile Include="Layout\LayoutWSS2007.cs" />
-    <Compile Include="Meta\MetaLoad.cs" />
     <Compile Include="Layout\SystemLayout.cs" />
-    <Compile Include="Meta\Versioning.cs" />
-    <Compile Include="Meta.Database\DBMetaModel.cs" />
-    <Compile Include="Meta\PrimitiveTypes.cs" />
     <Compile Include="Layout\Interfaces.cs" />
     <Compile Include="MVC\PageParser.cs" />
     <Compile Include="Web\ObjectPropertyChange.cs" />
@@ -500,7 +482,6 @@
     </Compile>
     <Compile Include="MVC\SqlLog.cs" />
     <Compile Include="TaskManager\TaskManager.cs" />
-    <Compile Include="Web\Transliteration.cs" />
     <Compile Include="MVC\Url.cs" />
     <Compile Include="Web\UrlStack.cs" />
     <Compile Include="Web\Utils.cs" />

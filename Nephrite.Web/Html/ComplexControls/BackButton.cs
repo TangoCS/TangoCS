@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nephrite.Web.Layout;
-using Nephrite.Web.TextResources;
+using Nephrite.TextResources;
 
 namespace Nephrite.Html
 {

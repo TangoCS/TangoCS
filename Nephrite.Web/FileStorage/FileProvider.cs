@@ -6,7 +6,7 @@ using System.IO;
 using System.Web.UI.WebControls;
 using System.Data.Linq;
 using Nephrite.Web.SPM;
-using Nephrite.Web.TextResources;
+using Nephrite.TextResources;
 
 namespace Nephrite.Web.FileStorage
 {

@@ -3,20 +3,12 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Web;
 using System.Xml;
 using System.Xml.Linq;
 using Nephrite.Web;
 
 namespace Nephrite.Meta.Database
 {
-	public interface IDatabaseMetadataReader
-	{
-		Schema ReadSchema(string name);
-		List<ProcedureDetails> ReadProceduresDetails();
-	
-	}
-
 	public class SqlServerMetadataReader : IDatabaseMetadataReader
 	{
 		public Schema ReadSchema(string name)

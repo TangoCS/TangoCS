@@ -5,7 +5,7 @@ using System.Web;
 using System.Linq.Expressions;
 using System.Web.UI.WebControls;
 using System.Web.UI;
-using Nephrite.Web.TextResources;
+using Nephrite.TextResources;
 
 namespace Nephrite.Web.Controls
 {

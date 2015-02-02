@@ -4,9 +4,21 @@ using System.ComponentModel;
 using System.Linq;
 using Nephrite.Web;
 using Nephrite.Web.Controllers;
+using Nephrite.Web.SPM;
 
 namespace Nephrite.Meta.Forms
 {
+	public partial class MetaOperation<TViewModel, TDelegate> : MetaOperation<TDelegate>
+	{
+		public Func<TViewModel, bool> Predicate { get; set; }
+		public bool CheckPredicate(TViewModel obj)
+		{
+			if (!SPM2.Enabled) return true;
+			if (Predicate == null) return true;
+			return Predicate(obj);
+		}
+	}
+
 	public delegate void OperationDelegate();
 	public delegate void SingleObjectOperationDelegate<TKey>(TKey id);
 

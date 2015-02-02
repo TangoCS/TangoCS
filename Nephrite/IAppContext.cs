@@ -25,7 +25,7 @@ namespace Nephrite
 
 	public interface IRequest
 	{
-		IReadableStringCollection Query { get; }
+		NameValueCollection Query { get; }
 		RequestCookiesCollection Cookies { get; }
 		Uri Url { get; }
 		NameValueCollection Headers { get; }

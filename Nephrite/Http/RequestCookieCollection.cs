@@ -14,6 +14,10 @@ namespace Nephrite.Http
 		{
 			_dictionary = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
+		public RequestCookiesCollection(IDictionary<string, string> dictionary)
+		{
+			_dictionary = dictionary;
+		}
 
 		public string this[string key]
 		{

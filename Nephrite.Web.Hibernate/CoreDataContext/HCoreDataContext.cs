@@ -11,7 +11,7 @@ using NHibernate.Cfg.Loquacious;
 using NHibernate.Linq;
 using NHibernate.SqlCommand;
 using Nephrite.Web.Mailer;
-using Nephrite.Web.TextResources;
+using Nephrite.TextResources;
 using Nephrite.Multilanguage;
 using Nephrite.Web.TaskManager;
 using Nephrite.Web.SettingsManager;

@@ -12,7 +12,7 @@ using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using System.ComponentModel;
 using Nephrite.Web.SettingsManager;
-using Nephrite.Web.TextResources;
+using Nephrite.TextResources;
 using Nephrite.Web.Layout;
 
 

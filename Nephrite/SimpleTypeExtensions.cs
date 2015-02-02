@@ -173,6 +173,21 @@ namespace Nephrite
 			return defaultValue;
 		}
 
+		public static string Icon(this bool src)
+		{
+			if (src)
+				return "<img src='" + IconSet.RootPath + IconSet.BoolTrue + "' />";
+			return String.Empty;
+		}
+
+		public static string Icon(this bool? src)
+		{
+			if (src.HasValue)
+				return src.Value ? "<img src='" + IconSet.RootPath + IconSet.BoolTrue + "' />" : "";
+			return String.Empty;
+		}
+
+
 		public static string Join(this string[] str, string separator)
 		{
 			return String.Join(separator, str.Where(s => !String.IsNullOrEmpty(s)).ToArray());

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 
-namespace Nephrite.Web.RussianStrings
+namespace Nephrite.RussianStrings
 {
 	/// <summary>
 	/// Класс для записи денежных сумм прописью: "тысяча рублей 00 копеек".
