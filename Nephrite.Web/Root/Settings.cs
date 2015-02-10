@@ -97,12 +97,7 @@ namespace Nephrite
 			aduser = ConfigurationManager.AppSettings["ADUser"] ?? String.Empty;
 			adpassword = ConfigurationManager.AppSettings["ADPassword"] ?? String.Empty;
 
-            imageProviderAssembly = ConfigurationManager.AppSettings["ImageProviderAssembly"] ?? String.Empty;
-            imageProviderClass = ConfigurationManager.AppSettings["ImageProviderClass"] ?? String.Empty;
 			imagespath = (HttpRuntime.AppDomainAppVirtualPath + (ConfigurationManager.AppSettings["ImagesPath"] ?? "/i/")).Replace("//", "/");
-			
-            fileProviderAssembly = ConfigurationManager.AppSettings["FileProviderAssembly"] ?? String.Empty;
-            fileProviderClass = ConfigurationManager.AppSettings["FileProviderClass"] ?? String.Empty;
 
 			if (ConfigurationManager.AppSettings["NavMenuButtonsMode"] == "BigButtons")
 				navMenuButtonsMode = NavMenuButtonsMode.BigButtons;
@@ -135,30 +130,6 @@ namespace Nephrite
 		{
 			get { return adpassword; }
 		}
-
-        static string imageProviderAssembly;
-        internal static string ImageProviderAssembly
-        {
-            get { return imageProviderAssembly; }
-        }
-
-        static string imageProviderClass;
-        internal static string ImageProviderClass
-        {
-            get { return imageProviderClass; }
-        }
-
-        static string fileProviderAssembly;
-        internal static string FileProviderAssembly
-        {
-            get { return fileProviderAssembly; }
-        }
-
-        static string fileProviderClass;
-        internal static string FileProviderClass
-        {
-            get { return fileProviderClass; }
-        }
     }
 
 	public enum NavMenuButtonsMode

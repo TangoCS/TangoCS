@@ -6,17 +6,22 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Npgsql;
-using Nephrite.Web;
 
 namespace Nephrite.Meta.Database
 {
 	public class PostgreSQLMetadataReader : IDatabaseMetadataReader
 	{
+		string _connectionString = "";
+		public PostgreSQLMetadataReader(string connectionString)
+		{
+			_connectionString = connectionString;
+		}
+
 		public Schema ReadSchema(string name)
 		{
 			var returnSchema = new Schema();
 			var DbScript = new DBScriptPostgreSQL(name);
-			using (NpgsqlConnection con = new NpgsqlConnection(ConnectionManager.ConnectionString))
+			using (NpgsqlConnection con = new NpgsqlConnection(_connectionString))
 			{
 				using (NpgsqlCommand cmd = new NpgsqlCommand("select dbo.usp_dbschema('dbo')", con))
 				{
@@ -252,7 +257,7 @@ namespace Nephrite.Meta.Database
 		{
 			var mapType = new DataTypeMapper();
 			var listProcedureDetails = new List<ProcedureDetails>();
-			using (NpgsqlConnection con = new NpgsqlConnection(ConnectionManager.ConnectionString))
+			using (NpgsqlConnection con = new NpgsqlConnection(_connectionString))
 			{
 				using (NpgsqlCommand cmd = new NpgsqlCommand("select * from DBO.MM_DBProgrammability", con))
 				{

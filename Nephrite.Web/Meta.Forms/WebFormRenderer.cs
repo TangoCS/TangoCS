@@ -7,10 +7,11 @@ using System.Web;
 using System.Web.Hosting;
 using System.Web.Routing;
 using System.Web.UI;
+using Nephrite.SettingsManager;
 using Nephrite.Web;
-using Nephrite.Web.SettingsManager;
-using Nephrite.Web.SPM;
+using Nephrite.Identity;
 using Nephrite.Web.View;
+using Nephrite.AccessControl;
 
 namespace Nephrite.Meta.Forms
 {
@@ -184,7 +185,7 @@ namespace Nephrite.Meta.Forms
 
 		public static bool CheckPermissions(string securableObjectID)
 		{
-			if (!ActionSPMContext.Current.Check(securableObjectID, 1))
+			if (!ActionAccessControl.Instance.Check(securableObjectID))
 			{
 				if (AppSettings.Get("loginurl").IsEmpty())
 				{

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Text;
 using System.Xml.Linq;
-using Nephrite.Web.SPM;
+using Nephrite.Identity;
 
 namespace Nephrite.Web.FileStorage
 {

@@ -6,9 +6,7 @@ using System.Text;
 using System.Globalization;
 using System.Configuration;
 using IBM.Data.DB2;
-using Nephrite.Web;
 //using System.Web;
-using Nephrite.Web.FileStorage;
 using System.IO;
 
 

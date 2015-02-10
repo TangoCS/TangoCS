@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
-using Nephrite.Web.SPM;
+using Nephrite.Identity;
 using Nephrite.Web.Controls;
 using Nephrite.Web.Controllers;
 

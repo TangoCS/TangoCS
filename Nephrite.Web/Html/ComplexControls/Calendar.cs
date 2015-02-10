@@ -9,7 +9,7 @@ namespace Nephrite.Html
 {
 	public static class CalendarExtension
 	{
-		public static void Calendar(this HtmlControl c, string name, DateTime? value = null, bool enabled = true, bool showTime = false)
+		public static void Calendar(this HtmlWriter c, string name, DateTime? value = null, bool enabled = true, bool showTime = false)
 		{
 			string basePath = Settings.JSPath + "Calendar/";
 

@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Nephrite.Web.SPM;
+using Nephrite.Identity;
 using System.Configuration;
 using System.Collections.Specialized;
 using Nephrite.Web.Layout;
 using Nephrite.Meta;
+using Nephrite.AccessControl;
 
 namespace Nephrite.Web.Controls
 {
@@ -111,7 +112,7 @@ namespace Nephrite.Web.Controls
 		public string Link(string title)
 		{
 			Title = title;
-			if (Operation == null || ActionSPMContext.Current.Check(Operation.ID, 1))
+			if (Operation == null || ActionAccessControl.Instance.Check(Operation.ID))
 				return AppLayout.Current.Link(this).ToString();
 			else
 				return title;
@@ -123,7 +124,7 @@ namespace Nephrite.Web.Controls
 		public string ImageTextLink(string title)
 		{
 			Title = title;
-			if (Operation == null || ActionSPMContext.Current.Check(Operation.ID, 1))
+			if (Operation == null || ActionAccessControl.Instance.Check(Operation.ID))
 				return AppLayout.Current.ImageLink(this) + "&nbsp;" + AppLayout.Current.Link(this);
 			else
 				return AppLayout.Current.Image(Image, title) + "&nbsp;" + title;
@@ -134,7 +135,7 @@ namespace Nephrite.Web.Controls
 		}
 		public string ImageLink()
 		{
-			if (Operation == null || ActionSPMContext.Current.Check(Operation.ID, 1))
+			if (Operation == null || ActionAccessControl.Instance.Check(Operation.ID))
 				return AppLayout.Current.ImageLink(this).ToString();
 			else
 				return "";

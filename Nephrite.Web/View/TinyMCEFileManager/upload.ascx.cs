@@ -6,7 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.IO;
 using Nephrite.Web.FileStorage;
-using Nephrite.Web.SettingsManager;
+
 
 namespace Nephrite.Web.View
 {

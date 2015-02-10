@@ -5,8 +5,8 @@ using System.Web;
 using System.IO;
 using System.Web.UI.WebControls;
 using System.Data.Linq;
-using Nephrite.Web.SPM;
-using Nephrite.TextResources;
+using Nephrite.Identity;
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Web.FileStorage
 {
@@ -34,14 +34,14 @@ namespace Nephrite.Web.FileStorage
 			
 			if (dbFile != null)
 			{
-				if (!N_FolderSPMContext.Current.Check(dbFile.SPMActionItemGUID, 2, dbFile, true))
+				//if (!N_FolderSPMContext.Current.Check(dbFile.SPMActionItemGUID, 2, dbFile, true))
 				//if (!SPM2.Check(2, dbFile.SPMActionItemGUID, dbFile, true))
-				{
-					contentType = N_FolderSPMContext.Current.GetLastMessage();
-					fileName = null;
-					data = null;
-					return false;
-				}
+				//{
+				//	contentType = N_FolderSPMContext.Current.GetLastMessage();
+				//	fileName = null;
+				//	data = null;
+				//	return false;
+				//}
 				fileName = dbFile.Title;
 				data = dbFile.GetBytes();
 				contentType = GetContentType(dbFile.Extension);

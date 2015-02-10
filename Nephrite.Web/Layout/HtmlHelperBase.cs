@@ -8,15 +8,18 @@ using System.Web;
 using System.Web.Caching;
 using System.Configuration;
 using Nephrite.Meta;
-using Nephrite.Web.SPM;
+using Nephrite.Identity;
 using Nephrite.Web.Controls;
-using Nephrite.Web.SettingsManager;
-using Nephrite.TextResources;
+
+using Nephrite.Multilanguage;
+using Nephrite.AccessControl;
 
 namespace Nephrite.Web.Layout
 {
 	public class HtmlHelperBase
 	{
+		public static string DefaultPath = String.IsNullOrEmpty(ConfigurationManager.AppSettings["DefaultPath"]) ? "/" : ConfigurationManager.AppSettings["DefaultPath"];
+
 		static HtmlHelperBase _instance = null;
 		public static HtmlHelperBase Instance
 		{
@@ -179,14 +182,14 @@ namespace Nephrite.Web.Layout
 			if (ConfigurationManager.AppSettings["DisableSPM"] == null)
 			{
 				string checkaction = actionName;
-				object[] ca = body.Method.GetCustomAttributes(typeof(SpmActionNameAttribute), true);
+				object[] ca = body.Method.GetCustomAttributes(typeof(SecurableObjectKeyAttribute), true);
 				if (ca != null && ca.Length == 1)
 				{
-					var san = ca[0] as SpmActionNameAttribute;
+					var san = ca[0] as SecurableObjectKeyAttribute;
 					checkaction = san.Name;
 				}
 				//MetaOperation mo = Base.Meta.GetOperation(mode, checkaction);
-				if (!String.IsNullOrEmpty(checkaction) && !ActionSPMContext.Current.Check(mode + "." + checkaction, 1)) return "#";
+				if (!String.IsNullOrEmpty(checkaction) && !ActionAccessControl.Instance.Check(mode + "." + checkaction + "-1")) return "#";
 				//if (!AppSPM.AccessRightManager.Check(mode, checkaction)) return "#";
 			}
 
@@ -276,7 +279,7 @@ namespace Nephrite.Web.Layout
 				{
 					result = result + "&returnurl=" + Query.CreateReturnUrl();
 				}
-				return RouteTable.GenerateUrl(result);
+				return DefaultPath + result;
 			}
 
 		}

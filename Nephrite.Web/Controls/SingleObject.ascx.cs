@@ -8,7 +8,7 @@ using System.Linq.Expressions;
 using System.Web.UI.WebControls.WebParts;
 using System.Collections;
 using Nephrite.Web;
-using Nephrite.Web.SettingsManager;
+
 
 namespace Nephrite.Web.Controls
 {

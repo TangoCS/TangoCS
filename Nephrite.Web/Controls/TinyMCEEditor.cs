@@ -8,7 +8,7 @@ using System.Reflection;
 using System.IO;
 using Nephrite.HtmlPurifier;
 using System.Text.RegularExpressions;
-using Nephrite.Web.SettingsManager;
+
 
 namespace Nephrite.Web.Controls
 {

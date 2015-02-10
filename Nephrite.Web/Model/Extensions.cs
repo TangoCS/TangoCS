@@ -20,11 +20,11 @@ using System.IO;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Collections;
-using Nephrite.Web.SettingsManager;
+
 using Nephrite.Multilanguage;
 using Nephrite.Meta;
 using System.Data.Linq;
-using Nephrite.Web.SPM;
+using Nephrite.Identity;
 
 namespace Nephrite.Web
 {

@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 using System.Configuration;
 using System.Web.UI.HtmlControls;
 using Nephrite.Web.CalendarDays;
-using Nephrite.Web.SettingsManager;
+
 
 namespace Nephrite.Web.Controls
 {

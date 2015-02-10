@@ -26,7 +26,7 @@ namespace Nephrite.Meta.Database
 		void AddColumn(Column srcColumn);
 		void DeleteView(View currentView);
 		void CreateView(View srcView);
-		XElement GetMeta();
+		XElement GetMeta(string connectionString);
 		void DeleteProcedure(Procedure currentProcedure);
 		void CreateProcedure(Procedure srcProcedure);
 		void DeleteFunction(Function currentFunction);

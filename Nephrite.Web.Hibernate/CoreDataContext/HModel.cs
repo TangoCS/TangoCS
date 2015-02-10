@@ -12,13 +12,11 @@ using Nephrite.Web.FileStorage;
 using Nephrite.Web.FormsEngine;
 using Nephrite.Web.Hibernate;
 using Nephrite.Web.Mailer;
-using Nephrite.Web.MetaStorage;
 using Nephrite.Multilanguage;
 using Nephrite.Web.RSS;
-using Nephrite.Web.SettingsManager;
+using Nephrite.SettingsManager;
 using Nephrite.Web.SPM;
 using Nephrite.Web.TaskManager;
-using Nephrite.TextResources;
 
 namespace Nephrite.Web.CoreDataContext
 {
@@ -313,11 +311,6 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual int? GroupID { get; set; }
 	}
 
-	public partial class N_Cache : IN_Cache, IWithoutEntityAudit
-	{
-		public virtual System.DateTime TimeStamp { get; set; }
-	}
-
 	public partial class N_ObjectChange : IN_ObjectChange, IWithoutEntityAudit
 	{
 		public virtual int ObjectChangeID { get; set; }
@@ -390,120 +383,6 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string Author { get; set; }
 		public virtual string WebMaster { get; set; }
 		public virtual string LinkParams { get; set; }
-	}
-
-
-	public partial class MM_Package : IMM_Package, IWithoutEntityAudit
-	{
-		public virtual int PackageID { get; set; }
-		public virtual int? ParentPackageID { get; set; }
-		public virtual string Title { get; set; }
-		public virtual string SysName { get; set; }
-		public virtual bool IsDeleted { get; set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
-		public virtual int LastModifiedUserID { get; set; }
-		public virtual System.Guid Guid { get; set; }
-		public virtual bool IsDataReplicated { get; set; }
-		public virtual string Version { get; set; }
-		public virtual int SeqNo { get; set; }
-	}
-
-	public partial class MM_ObjectType : IMM_ObjectType, IWithoutEntityAudit
-	{
-		public virtual int ObjectTypeID { get; set; }
-		public virtual string Title { get; set; }
-		public virtual string SysName { get; set; }
-		public virtual bool IsEnableSPM { get; set; }
-		public virtual System.Guid Guid { get; set; }
-		public virtual bool IsSeparateTable { get; set; }
-		public virtual bool IsTemplate { get; set; }
-		public virtual string TitlePlural { get; set; }
-		public virtual string DefaultOrderBy { get; set; }
-		public virtual string LogicalDelete { get; set; }
-		public virtual bool IsReplicate { get; set; }
-		public virtual bool IsEnableUserViews { get; set; }
-		public virtual string SecurityPackageSystemName { get; set; }
-		public virtual bool IsEnableObjectHistory { get; set; }
-		public virtual string Interface { get; set; }
-		public virtual string HistoryTypeCode { get; set; }
-		public virtual bool IsDataReplicated { get; set; }
-		public virtual bool IsDeleted { get; set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
-		public virtual int LastModifiedUserID { get; set; }
-		public virtual int SeqNo { get; set; }
-		public virtual string Description { get; set; }
-
-		public virtual int PackageID { get; set; }
-		public virtual Nullable<System.Int32> BaseObjectTypeID { get; set; }
-	}
-
-	/*public partial class MM_ObjectProperty
-	{
-		public virtual int ObjectPropertyID { get; set; }
-		public virtual string Title { get; set; }
-		public virtual string SysName { get; set; }
-		public virtual int SeqNo { get; set; }
-		public virtual string TypeCode { get; set; }
-		public virtual System.Guid Guid { get; set; }
-		public virtual bool IsMultilingual { get; set; }
-		public virtual bool IsPrimaryKey { get; set; }
-		public virtual bool IsSystem { get; set; }
-		public virtual bool IsNavigable { get; set; }
-		public virtual bool IsAggregate { get; set; }
-		public virtual int LowerBound { get; set; }
-		public virtual int UpperBound { get; set; }
-		public virtual string Expression { get; set; }
-		public virtual bool IsReferenceToVersion { get; set; }
-		public virtual string ValueFilter { get; set; }
-		public virtual System.Nullable<int> Precision { get; set; }
-		public virtual System.Nullable<int> Scale { get; set; }
-		public virtual System.Nullable<int> Length { get; set; }
-		public virtual string DeleteRule { get; set; }
-		public virtual string KindCode { get; set; }
-		public virtual string DefaultDBValue { get; set; }
-		public virtual string Description { get; set; }
-		public virtual bool IsDeleted { get; set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
-		public virtual int LastModifiedUserID { get; set; }
-		public virtual bool IsIdentity { get; set; }
-
-		public virtual int? RefObjectPropertyID { get; set; }
-		public virtual int ObjectTypeID { get; set; }
-		public virtual int? RefObjectTypeID { get; set; }
-	}*/
-
-	public partial class MM_FormView : IMM_FormView, IWithPropertyAudit
-	{
-		public virtual int FormViewID { get; set; }
-		public virtual string Title { get; set; }
-		public virtual string SysName { get; set; }
-		public virtual string ViewTemplate { get; set; }
-		public virtual string TemplateTypeCode { get; set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
-		public virtual System.Guid Guid { get; set; }
-		public virtual bool IsCustom { get; set; }
-		public virtual bool IsDeleted { get; set; }
-		public virtual int LastModifiedUserID { get; set; }
-		public virtual bool IsCaching { get; set; }
-		public virtual string CacheKeyParams { get; set; }
-		public virtual int CacheTimeout { get; set; }
-		public virtual string BaseClass { get; set; }
-		public virtual Nullable<System.Int32> ObjectTypeID { get; set; }
-		public virtual Nullable<System.Int32> PackageID
-		{
-			get
-			{
-
-				if (Package == null) return null;
-				return Package.PackageID;
-			}
-			set
-			{
-				if (value == null) return;
-				Package = new MM_Package { PackageID = value.Value };
-			}
-		}
-		public virtual MM_Package Package { get; set; }
 	}
 
 }

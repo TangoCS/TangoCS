@@ -6,9 +6,9 @@ using System.IO;
 using System.Xml.Linq;
 using System.Reflection;
 using System.Configuration;
-using Nephrite.Web.SPM;
+using Nephrite.Identity;
 using Nephrite.Web.Controls;
-using Nephrite.Web.SettingsManager;
+
 using Nephrite.Meta;
 using Nephrite.Web.Office;
 using Nephrite.Web.Layout;

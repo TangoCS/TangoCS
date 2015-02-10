@@ -6,7 +6,7 @@ namespace Nephrite.Html
 {
 	public static class CodeAreaExtension
 	{
-		public static void CodeArea(this HtmlControl c, string name, string value = null, bool enabled = true, string height = "500px")
+		public static void CodeArea(this HtmlWriter c, string name, string value = null, bool enabled = true, string height = "500px")
 		{
 			c.Page.RegisterScript("codearea", Settings.JSPath + "codearea.js");
 			c.Page.RegisterScript("jquery.textarea", Settings.JSPath + "jquery.textarea.js");

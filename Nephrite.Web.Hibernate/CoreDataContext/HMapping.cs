@@ -5,7 +5,6 @@ using System.Web;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 using NHibernate.Type;
-using Nephrite.Web.MetaStorage;
 using Nephrite.Web.Hibernate;
 using Nephrite.Web.TaskManager;
 
@@ -95,35 +94,6 @@ namespace Nephrite.Web.CoreDataContext
 			DiscriminatorValue("0");
 		}
 	}
-	public class IMM_PackageImplMap : SubclassMapping<MM_Package>
-	{
-		public IMM_PackageImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
-	public class IMM_ObjectTypeImplMap : SubclassMapping<MM_ObjectType>
-	{
-		public IMM_ObjectTypeImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
-	public class IMM_FormViewImplMap : SubclassMapping<MM_FormView>
-	{
-		public IMM_FormViewImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
-	public class IN_CacheImplMap : SubclassMapping<N_Cache>
-	{
-		public IN_CacheImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
-
 
 	public class IN_DownloadLogImplMap : SubclassMapping<N_DownloadLog>
 	{

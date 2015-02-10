@@ -2,8 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using Nephrite.Web.SPM;
+using Nephrite.Identity;
 using NHibernate;
 using NHibernate.Event;
 using NHibernate.Event.Default;

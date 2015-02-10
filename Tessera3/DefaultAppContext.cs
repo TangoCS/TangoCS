@@ -7,7 +7,7 @@ using System.Web;
 using Nephrite;
 using Nephrite.Http;
 
-namespace Tessera3Sample
+namespace Solution
 {
 	public class DefaultAppContext : IAppContext
 	{

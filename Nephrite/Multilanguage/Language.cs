@@ -7,7 +7,9 @@ namespace Nephrite.Multilanguage
 {
 	public static class Language
 	{
+		[ThreadStatic]
 		static IDC_Multilanguage DataContext;
+		[ThreadStatic]
 		static IAppContext AppContext;
 
 		static List<IC_Language> _langs;

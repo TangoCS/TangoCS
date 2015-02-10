@@ -4,8 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Reflection;
 using System.Threading;
-using Nephrite.Web.SettingsManager;
-using Nephrite.Web.SPM;
+using Nephrite.Identity;
 using System.IO;
 using System.Text;
 using Nephrite.Web.ErrorLog;
@@ -126,7 +125,7 @@ namespace Nephrite.Web.TaskManager
 							}
 						}
 					}
-					AppSPM.RunWithElevatedPrivileges(() => mi.Invoke(null, p));
+					Subject.System.Run(() => mi.Invoke(null, p));
 
 					using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
 					{
@@ -220,7 +219,7 @@ namespace Nephrite.Web.TaskManager
 							continue; // Ещё не прошло нужное количество минут
 					}
 				}
-				AppSPM.RunWithElevatedPrivileges(() => Run(task.TaskID));
+				Subject.System.Run(() => Run(task.TaskID));
 			}
 		}
 

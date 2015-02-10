@@ -8,7 +8,8 @@ using System.Collections.Specialized;
 using System.IO;
 //using System.Data.Linq;
 using System.Text.RegularExpressions;
-using Nephrite.Web.SettingsManager;
+using Nephrite.SettingsManager;
+
 
 namespace Nephrite.Web.ErrorLog
 {

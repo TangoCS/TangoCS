@@ -82,13 +82,11 @@
     <Compile Include="CoreMapping\ErrorLogMapping.cs" />
     <Compile Include="CoreMapping\FileStorageMapping.cs" />
     <Compile Include="CoreMapping\MailerMapping.cs" />
-    <Compile Include="CoreMapping\MetaStorageMapping.cs" />
     <Compile Include="CoreMapping\MultilanguageMapping.cs" />
     <Compile Include="CoreMapping\ReplicationMapping.cs" />
     <Compile Include="CoreMapping\RSSMapping.cs" />
     <Compile Include="CoreMapping\SettingsManagerMapping.cs" />
     <Compile Include="CoreMapping\TaskManagerMapping.cs" />
-    <Compile Include="CoreMapping\TextResourcesMapping.cs" />
     <Compile Include="Hibernate.cs" />
     <Compile Include="IntBackedBoolUserType.cs" />
     <Compile Include="Interceptor.cs" />

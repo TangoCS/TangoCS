@@ -6,8 +6,8 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Collections;
 using System.Linq.Expressions;
-using Nephrite.Web.SettingsManager;
-using Nephrite.TextResources;
+
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Web.Controls
 {

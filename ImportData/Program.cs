@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using IBM.Data.DB2;
 using Nephrite.Meta.Database;
-using Nephrite.Web;
+using Nephrite;
 
 namespace ImportData
 {
@@ -41,9 +41,9 @@ namespace ImportData
 			var tabelListString = tabelesForInmport.Split(',');
 			// try
 			// {
-			ConnectionManager.SetConnectionString(connectFrom);
+			//ConnectionManager.SetConnectionString(connectFrom);
 			SqlConnection sqlCon = new SqlConnection(connectFrom);
-			var schemaFrom = new SqlServerMetadataReader().ReadSchema("DBO");
+			var schemaFrom = (new SqlServerMetadataReader(connectFrom)).ReadSchema("DBO");
 
 
 			var tabelListObjects = schemaFrom.Tables.Values.Where(t => tabelListString.Any(c => t.Name.ToUpper() == c.ToUpper()) || t.ForeignKeys.Any(f => tabelListString.Any(l => l.ToUpper() == f.Value.RefTable.ToUpper())));

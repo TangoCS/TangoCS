@@ -2,16 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Data;
-//using System.Data.SqlClient;
 using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-//using System.Web;
 using System.Xml;
 using System.Xml.Linq;
 using IBM.Data.DB2;
-using Nephrite.Web;
+
 
 namespace Nephrite.Meta.Database
 {
@@ -586,9 +584,9 @@ namespace Nephrite.Meta.Database
 
 
 
-        public XElement GetMeta()
+        public XElement GetMeta(string connectionString)
         {
-            using (var con = new DB2Connection(ConnectionManager.ConnectionString))
+			using (var con = new DB2Connection(connectionString))
             {
                 using (var cmd = new DB2Command("CALL DBO.USP_MODEL()", con))
                 {

@@ -4,7 +4,7 @@ using System.Data.Linq;
 using System.Linq;
 using System.Web;
 using Nephrite.Meta;
-using Nephrite.Web.SPM;
+using Nephrite.Identity;
 
 namespace Nephrite.Web
 {
@@ -41,7 +41,7 @@ namespace Nephrite.Web
 			ua.ObjectTypeTitle = "";
 			ua.ObjectTitle = objectTitle;
 			ua.UserTitle = Subject.Current.Title;
-			ua.UserLogin = Subject.Current.Login;
+			ua.UserLogin = Subject.Current.Name;
 			ua.Details = "";
 			return ua;
 		}

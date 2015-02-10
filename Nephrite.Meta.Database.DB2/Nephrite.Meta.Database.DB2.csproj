@@ -36,18 +36,11 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="DB2ServerMetadataReader.cs" />
     <Compile Include="DBScriptDB2.cs" />
     <Compile Include="UpdateScriptBuilderDB2.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
-      <Project>{26a68254-0902-4499-8b5f-6b4b6341ba21}</Project>
-      <Name>Nephrite.Web</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Nephrite\Nephrite.csproj">
       <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
       <Name>Nephrite</Name>

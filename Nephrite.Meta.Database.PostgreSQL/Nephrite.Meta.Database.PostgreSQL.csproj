@@ -48,10 +48,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
-      <Project>{26a68254-0902-4499-8b5f-6b4b6341ba21}</Project>
-      <Name>Nephrite.Web</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Nephrite\Nephrite.csproj">
       <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
       <Name>Nephrite</Name>

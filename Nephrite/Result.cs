@@ -16,7 +16,13 @@ namespace Nephrite
 
 	public class BoolResult
 	{
-		public BoolResult(bool value, string message)
+		static BoolResult _true = new BoolResult(true);
+		public static BoolResult True
+		{
+			get { return _true; }
+		}
+
+		public BoolResult(bool value, string message = "")
 		{
 			Value = value;
 			Message = message;

@@ -11,10 +11,11 @@ using System.Globalization;
 using System.IO;
 using System.Xml.Linq;
 using System.Xml;
-using Nephrite.Web.SPM;
+using Nephrite.Identity;
 using Nephrite.Web;
-using Nephrite.TextResources;
+using Nephrite.Multilanguage;
 using Nephrite.Meta;
+using Nephrite.AccessControl;
 
 namespace Nephrite.Web.Controls
 {
@@ -78,7 +79,7 @@ namespace Nephrite.Web.Controls
 
 		public List<IN_Filter> GetViews()
 		{
-			int subjectID = AppSPM.GetCurrentSubjectID();
+			int subjectID = Subject.Current.ID;
 			var flist = (from f in dc.IN_Filter
 						 where f.ListName == Url.Current.Mode + "_" + actionName &&
 									(!f.SubjectID.HasValue || f.SubjectID.Value == subjectID) && f.FilterName != null
@@ -490,10 +491,10 @@ namespace Nephrite.Web.Controls
 			}
 			filterObject.Sort = sortRes.Join(",");
 
-			if (!cbPersonal.Checked && ActionSPMContext.Current.Check("filter.managecommonviews", 1))
+			if (!cbPersonal.Checked && ActionAccessControl.Instance.Check("filter.managecommonviews"))
 				filterObject.SubjectID = null;
 			else
-				filterObject.SubjectID = AppSPM.GetCurrentSubjectID();
+				filterObject.SubjectID = Subject.Current.ID;
 
 			if (ddlGroup1Order.SelectedValue == "")
 			{

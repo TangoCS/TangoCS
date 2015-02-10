@@ -136,13 +136,7 @@
   <ItemGroup>
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
     <Compile Include="FileStorage\FolderActionType.cs" />
-    <Compile Include="FormsEngine\FormsVirtualFile.cs" />
-    <Compile Include="FormsEngine\FormsVirtualPathProvider.cs" />
-    <Compile Include="FormsEngine\Host.cs" />
     <Compile Include="FormsEngine\MView.cs" />
-    <Compile Include="FormsEngine\TemplateType.cs" />
-    <Compile Include="FormsEngine\VPPRegisterHandler.cs" />
-    <Compile Include="FormsEngine\WebSiteCache.cs" />
     <Compile Include="FormsGenerator\BaseControlsCode.cs" />
     <Compile Include="FormsGenerator\ControlCode.cs" />
     <Compile Include="FormsGenerator\EditCode.cs" />
@@ -153,10 +147,7 @@
     <Compile Include="Html\ComplexControls\BackButton.cs" />
     <Compile Include="Html\ComplexControls\Calendar.cs" />
     <Compile Include="Html\ComplexControls\CodeArea.cs" />
-    <Compile Include="Meta.Database.MSSQL\DBScriptMSSQL.cs" />
-    <Compile Include="Meta.Database.MSSQL\UpdateScriptBuilder2.cs" />
     <Compile Include="Meta.Forms\WebFormRenderer.cs" />
-    <Compile Include="MetaStorage\MetaStorageModel.cs" />
     <Compile Include="Meta.Forms\UIMetaModel.cs" />
     <Compile Include="Meta.Forms\StandardOperations.cs" />
     <Compile Include="Model\IMMObject.cs" />
@@ -164,7 +155,6 @@
     <Compile Include="Model\IMMObjectVersion.cs" />
     <Compile Include="Model\Repository.cs" />
     <Compile Include="MVC\AppWeb.cs" />
-    <Compile Include="Controllers\EntityController.cs" />
     <Compile Include="Model\A.cs" />
     <Compile Include="MVC\MasterControl.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -203,12 +193,10 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="FileStorage\FileStorageModel.cs" />
-    <Compile Include="Meta.Database.MSSQL\SchemaLoader.cs" />
     <Compile Include="Reporting\Reporting.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="RSS\RssModel.cs" />
-    <Compile Include="SettingsManager\AppSettings.cs" />
     <Compile Include="Web\Cache.cs" />
     <Compile Include="Controls.Html\ActionLink.cs" />
     <Compile Include="Controls\AutoComplete.cs" />
@@ -379,7 +367,6 @@
     <Compile Include="Web\Cramb.cs" />
     <Compile Include="Web\CustomControlManager.cs" />
     <Compile Include="Office\ExcelExport.cs" />
-    <Compile Include="SettingsManager\AppSettingsModel.cs" />
     <Compile Include="LinkedObjects\ILinkedObjectsProvider.cs" />
     <Compile Include="LinkedObjects\LinkedObjectsView.cs" />
     <Compile Include="LinkedObjects\ObjectLink.cs" />
@@ -406,9 +393,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="RSS\RssLinker.cs" />
-    <Compile Include="SPM2\ISPMContext.cs" />
-    <Compile Include="SPM2\SPM2.cs" />
-    <Compile Include="SPM2\SPMStereotype.cs" />
     <Compile Include="Validation\IValidatable.cs" />
     <Compile Include="Validation\ValidationMessage.cs" />
     <Compile Include="FileStorage\DataHandler.cs" />
@@ -423,7 +407,6 @@
     <Compile Include="Model\IModelObject.cs" />
     <Compile Include="Web\Impersonation.cs" />
     <Compile Include="CalendarDays\CalendarDayCache.cs" />
-    <Compile Include="Web\IRouteHandler.cs" />
     <Compile Include="Web\JqTreeNode.cs" />
     <Compile Include="Web\MacroManager.cs" />
     <Compile Include="Layout\LayoutBootstrap.cs" />
@@ -472,11 +455,9 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Web\RouteTable.cs" />
     <Compile Include="RSS\RssFeed.cs" />
     <Compile Include="RSS\RssItem.cs" />
     <Compile Include="Model\Extensions.cs" />
-    <Compile Include="SPM2\SPM.cs" />
     <Compile Include="MVC\ViewControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -557,7 +538,6 @@
     <Folder Include="App_Data\" />
     <Folder Include="FileStorage\DataBase\" />
     <Folder Include="FileStorage\FileSystem\" />
-    <Folder Include="Workflow\" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
-using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Web.Controls
 {

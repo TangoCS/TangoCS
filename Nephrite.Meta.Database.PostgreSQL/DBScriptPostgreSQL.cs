@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Nephrite.Web;
 
 namespace Nephrite.Meta.Database
 {
@@ -321,7 +320,7 @@ namespace Nephrite.Meta.Database
 			throw new NotImplementedException();
 		}
 
-		public System.Xml.Linq.XElement GetMeta()
+		public System.Xml.Linq.XElement GetMeta(string connectionString)
 		{
 			throw new NotImplementedException();
 		}

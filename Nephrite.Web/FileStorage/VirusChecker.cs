@@ -8,8 +8,9 @@ using System.Diagnostics;
 using System.Threading;
 using System.Configuration;
 using System.Data.Linq;
-using Nephrite.Web.SPM;
-using Nephrite.Web.SettingsManager;
+using Nephrite.Identity;
+using Nephrite.SettingsManager;
+
 
 namespace Nephrite.Web.FileStorage
 {

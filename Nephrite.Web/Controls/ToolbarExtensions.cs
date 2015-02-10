@@ -10,8 +10,9 @@ using System.Web.UI.WebControls;
 using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using Nephrite.Web.SPM;
-using Nephrite.TextResources;
+using Nephrite.Identity;
+using Nephrite.Multilanguage;
+using Nephrite.AccessControl;
 
 namespace Nephrite.Web.Controls
 {
@@ -69,7 +70,7 @@ namespace Nephrite.Web.Controls
 
 			mc.AddSeparator();
 
-			if (currentViewID > 0 && (isPersonal || ActionSPMContext.Current.Check("filter.managecommonviews", 1, true)))
+			if (currentViewID > 0 && (isPersonal || ActionAccessControl.Instance.Check("filter.managecommonviews", true)))
 				mc.AddItemJS(TextResource.Get("Common.Toolbar.EditThisView", "Изменить это представление"), filter.RenderEditViewMethod(currentViewID), IconSet.Modifyview.X16);
 
 			mc.AddItemJS(TextResource.Get("Common.Toolbar.CreateView", "Создать представление"), filter.RenderCreateViewMethod(), IconSet.Createview.X16);

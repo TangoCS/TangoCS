@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using Nephrite.Web;
 using Nephrite.Web.Controllers;
-using Nephrite.Web.SPM;
+using Nephrite.Identity;
 
 namespace Nephrite.Meta.Forms
 {
@@ -13,7 +13,6 @@ namespace Nephrite.Meta.Forms
 		public Func<TViewModel, bool> Predicate { get; set; }
 		public bool CheckPredicate(TViewModel obj)
 		{
-			if (!SPM2.Enabled) return true;
 			if (Predicate == null) return true;
 			return Predicate(obj);
 		}

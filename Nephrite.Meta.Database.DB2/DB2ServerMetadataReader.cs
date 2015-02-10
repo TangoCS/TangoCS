@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-//using System.Data.SqlClient;
 using System.Linq;
 using System.Text.RegularExpressions;
-//using System.Web;
 using System.Xml;
 using System.Xml.Linq;
 using IBM.Data.DB2;
-using Nephrite.Web;
 
 namespace Nephrite.Meta.Database
 {
@@ -16,11 +13,17 @@ namespace Nephrite.Meta.Database
 
     public partial class DB2ServerMetadataReader : IDatabaseMetadataReader
     {
+		string _connectionString = "";
+		public DB2ServerMetadataReader(string connectionString)
+		{
+			_connectionString = connectionString;
+		}
+
         public Schema ReadSchema(string name)
         {
             var returnSchema = new Schema();
             var DbScript = new DBScriptDB2(name);
-            using (DB2Connection con = new DB2Connection(ConnectionManager.ConnectionString))
+			using (DB2Connection con = new DB2Connection(_connectionString))
             {
                 using (DB2Command cmd = new DB2Command("CALL DBO.USP_DBSCHEMA('DBO')", con))
                 {
@@ -298,7 +301,7 @@ namespace Nephrite.Meta.Database
         {
             var mapType = new DataTypeMapper();
             var listProcedureDetails = new List<ProcedureDetails>();
-            using (DB2Connection con = new DB2Connection(ConnectionManager.ConnectionString))
+			using (DB2Connection con = new DB2Connection(_connectionString))
             {
                 using (DB2Command cmd = new DB2Command("select * from DBO.MM_DBProgrammability", con))
                 {

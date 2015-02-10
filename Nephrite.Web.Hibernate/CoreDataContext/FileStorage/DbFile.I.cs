@@ -5,8 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Xml.Linq;
+using Nephrite.Identity;
 using Nephrite.Web.FileStorage;
-using Nephrite.Web.SPM;
 
 namespace Nephrite.Web.CoreDataContext
 {

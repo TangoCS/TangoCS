@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nephrite.Web.Layout;
-using Nephrite.TextResources;
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Html
 {
 	public static class BackButtonExtension
 	{
-		public static void BackButton(this HtmlControl c, string title = null, string url = null)
+		public static void BackButton(this HtmlWriter c, string title = null, string url = null)
 		{
 			//if (url.IsEmpty()) url = Query.GetReturnUrl();
 			if (title.IsEmpty()) title = TextResource.Get("Common.Buttons.Back", "Назад");

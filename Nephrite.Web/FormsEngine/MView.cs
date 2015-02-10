@@ -8,9 +8,8 @@ using System.Web.UI;
 using System.Web.UI.WebControls.WebParts;
 using Nephrite.Web;
 using Nephrite.Web.ErrorLog;
-using Nephrite.Web.SettingsManager;
-using Nephrite.Web.SPM;
-using Nephrite.Web.MetaStorage;
+
+using Nephrite.Identity;
 
 namespace Nephrite.Web.FormsEngine
 {
@@ -51,7 +50,7 @@ namespace Nephrite.Web.FormsEngine
 
 		void addToUtils(string fv)
 		{
-			if (AppSPM.IsCurrentUserHasRole(ConfigurationManager.AppSettings["AdministratorsRole"]))
+			if (Subject.Current.HasRole(ConfigurationManager.AppSettings["AdministratorsRole"]))
 			{
 				if (HttpContext.Current.Items["MViewList"] == null)
 					HttpContext.Current.Items["MViewList"] = new List<string>();

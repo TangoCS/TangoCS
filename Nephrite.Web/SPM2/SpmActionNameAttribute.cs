@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Nephrite.Web.SPM
 {
-	[global::System.AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
 	public sealed class SpmActionNameAttribute : Attribute
 	{
 		readonly string _name;

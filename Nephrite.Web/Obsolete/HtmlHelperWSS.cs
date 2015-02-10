@@ -4,7 +4,6 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI;
 using Nephrite.Web.Controls;
 using System.Text;
-using Nephrite.Web.SettingsManager;
 using Nephrite.Web.Layout;
 
 namespace Nephrite.Web

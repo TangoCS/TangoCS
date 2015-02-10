@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 using System.Collections;
 using System.Reflection;
 using System.Data.Linq.Mapping;
-using Nephrite.TextResources;
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Web.Controls
 {

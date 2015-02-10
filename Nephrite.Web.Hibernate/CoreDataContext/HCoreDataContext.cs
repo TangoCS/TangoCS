@@ -11,24 +11,22 @@ using NHibernate.Cfg.Loquacious;
 using NHibernate.Linq;
 using NHibernate.SqlCommand;
 using Nephrite.Web.Mailer;
-using Nephrite.TextResources;
 using Nephrite.Multilanguage;
 using Nephrite.Web.TaskManager;
-using Nephrite.Web.SettingsManager;
 using Nephrite.Web.RSS;
 using Nephrite.Web.Hibernate;
-using Nephrite.Web.MetaStorage;
 using NHibernate.Dialect;
 using NHibernate.Cfg;
 using Nephrite.Web.Hibernate.CoreMapping;
 using Nephrite.Web.ErrorLog;
+using Nephrite.SettingsManager;
 
 namespace Nephrite.Web.CoreDataContext
 {
 
 	public class HCoreDataContext : HDataContext,  IDC_ErrorLog,
 		IDC_TimeZone, IDC_ListFilter, IDC_FileStorage, IDC_CalendarDays, IDC_Mailer,
-		IDC_TextResources, IDC_Multilanguage, IDC_TaskManager, IDC_Settings, IDC_RSS, IDC_MetaStorage, IDC_EntityAudit
+		IDC_TextResources, IDC_Multilanguage, IDC_TaskManager, IDC_Settings, IDC_RSS, IDC_EntityAudit
 	{
 		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Listeners listeners)
 			: base(dbConfig, listeners)
@@ -82,10 +80,6 @@ namespace Nephrite.Web.CoreDataContext
 			l.Add(typeof(IN_ObjectChangeMap));
 			l.Add(typeof(IN_ObjectPropertyChangeMap));
 			l.Add(typeof(IN_RssFeedMap));
-			l.Add(typeof(IMM_FormViewMap));
-			l.Add(typeof(IMM_ObjectTypeMap));
-			l.Add(typeof(IMM_PackageMap));
-			l.Add(typeof(IN_CacheMap));
 
 			l.Add(typeof(IErrorLogImplMap));
 			l.Add(typeof(ICalendarDayImplMap));
@@ -99,10 +93,6 @@ namespace Nephrite.Web.CoreDataContext
 			l.Add(typeof(IN_ObjectChangeImplMap));
 			l.Add(typeof(IN_ObjectPropertyChangeImplMap));
 			l.Add(typeof(IN_RssFeedImplMap));
-			l.Add(typeof(IMM_PackageImplMap));
-			l.Add(typeof(IMM_ObjectTypeImplMap));
-			l.Add(typeof(IMM_FormViewImplMap));
-			l.Add(typeof(IN_CacheImplMap));
 			l.Add(typeof(IN_DownloadLogImplMap));
 			l.Add(typeof(IDbFileImplMap));
 			l.Add(typeof(IDbFolderImplMap));
@@ -172,11 +162,6 @@ namespace Nephrite.Web.CoreDataContext
 			return new N_ObjectPropertyChange();
 		}
 
-		public IN_Cache NewIN_Cache()
-		{
-			return new N_Cache();
-		}
-
 		public IErrorLog NewIErrorLog()
 		{
 			return new ErrorLog();
@@ -229,22 +214,6 @@ namespace Nephrite.Web.CoreDataContext
 		public ITable<IN_RssFeed> IN_RssFeed
 		{
 			get { return new HTable<IN_RssFeed>(this, Session.Query<IN_RssFeed>()); }
-		}
-		public ITable<IMM_Package> IMM_Package
-		{
-			get { return new HTable<IMM_Package>(this, Session.Query<IMM_Package>()); }
-		}
-		public ITable<IMM_ObjectType> IMM_ObjectType
-		{
-			get { return new HTable<IMM_ObjectType>(this, Session.Query<IMM_ObjectType>()); }
-		}
-		public ITable<IMM_FormView> IMM_FormView
-		{
-			get { return new HTable<IMM_FormView>(this, Session.Query<IMM_FormView>()); }
-		}
-		public ITable<IN_Cache> IN_Cache
-		{
-			get { return new HTable<IN_Cache>(this, Session.Query<IN_Cache>()); }
 		}
 		public ITable<IN_DownloadLog> IN_DownloadLog
 		{

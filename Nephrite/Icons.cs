@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Linq;
 
 namespace Nephrite
@@ -18,8 +19,8 @@ namespace Nephrite
 
 	public class IconSet
 	{
-		[DefaultValue("/i/")]
-		public static string RootPath { get; set; }
+		static Lazy<string> _rootPath = new Lazy<string>(() => ConfigurationManager.AppSettings["ImagesPath"] ?? "/i/");
+		public static string RootPath { get { return _rootPath.Value; } }
 
 		// Paging
 		static ItemIcon _Firstpage = new ItemIcon { X16 = "", X32 = "" };

@@ -13,14 +13,14 @@ namespace Nephrite
 	{
 		IRequest Request { get; }
 		IDictionary Items { get; }
-		IPersistentSettings Settings { get; } 
+		//IPersistentSettings Settings { get; } 
 		IPrincipal User { get; }
 
 		//object GetFeature(Type type);
 		//void SetFeature(Type type, object instance);
 
-		//T GetFeature<T>();
-		//void SetFeature<T>(T instance);
+		T GetFeature<T>();
+		void SetFeature<T>(T instance);
 	}
 
 	public interface IRequest
@@ -31,9 +31,9 @@ namespace Nephrite
 		NameValueCollection Headers { get; }
 		NameValueCollection Form { get; }
 
-		Uri UrlReferrer { get; }
-		string UserName { get; }
-		string UserAgent { get; }
-		string UserHostAddress { get; }
+		//Uri UrlReferrer { get; }
+		//string UserName { get; }
+		//string UserAgent { get; }
+		//string UserHostAddress { get; }
 	}
 }

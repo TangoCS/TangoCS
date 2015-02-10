@@ -1,14 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Nephrite.Meta;
 using System.Text;
-using Nephrite.Web.Controls;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using Nephrite.Web.SettingsManager;
-using Nephrite.TextResources;
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Web.Layout
 {
@@ -558,10 +553,6 @@ namespace Nephrite.Web.Layout
 		public ILayoutBarItem LayoutBarItem {get; set;}
 
 
-		public void InitPosition(Control toolbar, ToolbarPosition? position)
-		{
-			
-		}
 	}
 
 	public class ButtonWSS2007 : ILayoutBarItem

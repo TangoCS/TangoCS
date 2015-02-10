@@ -8,7 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 using IBM.Data.DB2;
 using Nephrite.Meta.Database;
-using Nephrite.Web;
 using Npgsql;
 
 namespace DBSchemaDiff
@@ -28,55 +27,53 @@ namespace DBSchemaDiff
 
 			if (ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString().Contains("Data Source"))
 			{
-				readerFrom = new SqlServerMetadataReader();
-				SqlConnectionStringBuilder mssqlBuilder = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString());
-				dbFromName = mssqlBuilder.InitialCatalog;
+				SqlConnectionStringBuilder strBuilder = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString());
+				dbFromName = strBuilder.InitialCatalog;
+				readerFrom = new SqlServerMetadataReader(strBuilder.ConnectionString);
 			}
 			else
 			if (ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString().Contains("Port"))
 			{
-				readerFrom = new PostgreSQLMetadataReader();
-				NpgsqlConnectionStringBuilder mssqlBuilder = new NpgsqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString());
-				dbFromName = mssqlBuilder.Database;
+				NpgsqlConnectionStringBuilder strBuilder = new NpgsqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString());
+				dbFromName = strBuilder.Database;
+				readerFrom = new PostgreSQLMetadataReader(strBuilder.ConnectionString);
 			}
 			else
 			{
-				readerFrom = new DB2ServerMetadataReader();
-				DB2ConnectionStringBuilder db2Builder = new DB2ConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString());
-				dbFromName = db2Builder.DBName;
+				DB2ConnectionStringBuilder strBuilder = new DB2ConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString());
+				dbFromName = strBuilder.DBName;
+				readerFrom = new DB2ServerMetadataReader(strBuilder.ConnectionString);
 			}
 
 			if (ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString().Contains("Data Source"))
 			{
-				readerTo = new SqlServerMetadataReader();
+				
 				dbScript = new DBScriptMSSQL("dbo");
 
-				SqlConnectionStringBuilder mssqlBuilder = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString());
-				dbToName = mssqlBuilder.InitialCatalog;
+				SqlConnectionStringBuilder strBuilder = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString());
+				dbToName = strBuilder.InitialCatalog;
+				readerTo = new SqlServerMetadataReader(strBuilder.ConnectionString);
 
 			}
 			else
 			if (ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString().Contains("Port"))
-			{
-				readerTo = new PostgreSQLMetadataReader();
+			{				
 				dbScript = new DBScriptPostgreSQL("dbo");
 
-				NpgsqlConnectionStringBuilder mssqlBuilder = new NpgsqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString());
-				dbToName = mssqlBuilder.Database;
+				NpgsqlConnectionStringBuilder strBuilder = new NpgsqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString());
+				dbToName = strBuilder.Database;
+				readerTo = new PostgreSQLMetadataReader(strBuilder.ConnectionString);
 			}
 			else
-			{
-				readerTo = new DB2ServerMetadataReader();
+			{			
 				dbScript = new DBScriptDB2("dbo");
 
-				DB2ConnectionStringBuilder db2Builder = new DB2ConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString());
-				dbToName = db2Builder.DBName;
+				DB2ConnectionStringBuilder strBuilder = new DB2ConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString());
+				dbToName = strBuilder.DBName;
+				readerTo = new DB2ServerMetadataReader(strBuilder.ConnectionString);
 			}
 
-			ConnectionManager.SetConnectionString(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ConnectionString);
 			var fromSchema = readerFrom.ReadSchema("dbo");
-
-			ConnectionManager.SetConnectionString(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ConnectionString);
 			var toSchema = readerTo.ReadSchema("dbo");
 			
 			List<Table> Tables;
