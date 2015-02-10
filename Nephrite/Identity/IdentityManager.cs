@@ -7,14 +7,14 @@ using System.Text;
 
 namespace Nephrite.Identity
 {
-	public class IdentityManager<TKey>
+	public class IdentityManager<TKey> : IIdentityManager<TKey>
 	{
-		static IdentityManager<TKey> _instanceHolder;
+		static IIdentityManager<TKey> _instanceHolder;
 		static object LockObject = new object();
 
-		public Func<IAppContext> AppContext { get; set; }
-		public Func<IDC_Identity<TKey>> DataContext { get; set; }
-		public IdentityOptions Options { get; set; }
+		public Func<IAppContext> AppContext { get; private set; }
+		public Func<IDC_Identity<TKey>> DataContext { get; private set; }
+		public IdentityOptions Options { get; private set; }
 
 		public IdentityManager(
 			Func<IAppContext> appContext,
@@ -47,7 +47,7 @@ namespace Nephrite.Identity
 			throw new ApplicationException("Initalize() method should be called only once.");
 		}
 
-		public static IdentityManager<TKey> Instance
+		public static IIdentityManager<TKey> Instance
 		{
 			get
 			{
@@ -92,6 +92,17 @@ namespace Nephrite.Identity
 					}
 				}
 				ctx.Items["CurrentSubject2"] = s;
+				return s;
+			}
+		}
+
+		public Subject<TKey> SystemSubject
+		{
+			get
+			{
+				var name = Options.SystemSubjectName;
+				var s = DataContext().SubjectFromName(name);
+				if (s == null) throw new Exception(String.Format("Учетная запись {0} не зарегистрирована в системе", name));
 				return s;
 			}
 		}

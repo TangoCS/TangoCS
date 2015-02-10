@@ -8,19 +8,22 @@ namespace Nephrite.AccessControl
 {
 	public class DefaultAccessControl<TIdentityKey> : IAccessControl<TIdentityKey>
 	{
-		protected string _message = "";
+		string _message = "";
 
-		protected Func<IAppContext> AppContext { get; set; }
+		public Func<IAppContext> AppContext { get; private set; }
 		public AccessControlOptions Options { get; private set; }
 		public Func<IDefaultAccessControlDataContext<TIdentityKey>> DataContext { get; private set; }
+		public Func<IIdentityManager<TIdentityKey>> IdentityManager { get; private set; }
 
 		public DefaultAccessControl(
 			Func<IAppContext> appContext,
-			Func<IDefaultAccessControlDataContext<TIdentityKey>> dataContext, 
+			Func<IDefaultAccessControlDataContext<TIdentityKey>> dataContext,
+			Func<IIdentityManager<TIdentityKey>> identityManager,
 			AccessControlOptions options = null)
 		{
 			AppContext = appContext;
 			DataContext = dataContext;
+			IdentityManager = identityManager;
 			Options = options ?? new AccessControlOptions { Enabled = () => true };
 		}
 
@@ -47,7 +50,8 @@ namespace Nephrite.AccessControl
 
 		public virtual bool Check(string securableObjectKey, bool defaultAccess = false)
 		{
-			Subject<TIdentityKey> s = Subject<TIdentityKey>.Current;
+			//Subject<TIdentityKey> s = Subject<TIdentityKey>.Current;
+			var s = IdentityManager().CurrentSubject;
 			if (s == null) return false;
 
 			var ctx = AppContext();
@@ -115,26 +119,28 @@ namespace Nephrite.AccessControl
 	public class CacheableAccessControl<TIdentityKey>
 		: IAccessControl<TIdentityKey>
 	{
-		protected string _message = "";
-		protected static object _lock = new object();
+		static object _lock = new object();
 
-		protected Func<IAppContext> AppContext { get; set; }
+		public Func<IAppContext> AppContext { get; private set; }
 		public CacheableAccessControlOptions Options { get; private set; }
 		public Func<ICacheableAccessControlDataContext> DataContext { get; private set; }
+		public Func<IIdentityManager<TIdentityKey>> IdentityManager { get; private set; }
 
 		public CacheableAccessControl(
 			Func<IAppContext> appContext,
 			Func<ICacheableAccessControlDataContext> dataContext,
+			Func<IIdentityManager<TIdentityKey>> identityManager,
 			CacheableAccessControlOptions options = null)
 		{
 			AppContext = appContext;
 			DataContext = dataContext;
+			IdentityManager = identityManager;
 			Options = options ?? new CacheableAccessControlOptions { Enabled = () => true };
 		}
 
 		public bool CheckForRole(TIdentityKey roleID, string securableObjectKey)
 		{
-			List<TIdentityKey> anc = IdentityManager<TIdentityKey>.Instance.DataContext().RoleAncestors(roleID);
+			List<TIdentityKey> anc = IdentityManager().DataContext().RoleAncestors(roleID);
 			string key = securableObjectKey.ToUpper();
 
 			HashSet<string> _access = null;
@@ -172,7 +178,7 @@ namespace Nephrite.AccessControl
 			string cacheName = Options.ClassName;
 			string key = securableObjectKey.ToUpper();
 
-			Subject<TIdentityKey> s = Subject<TIdentityKey>.Current;
+			var s = IdentityManager().CurrentSubject;
 			if (s == null) return false;
 
 			if (s.AllowItems.Contains(key)) return true;

@@ -7,14 +7,12 @@ namespace Nephrite.Multilanguage
 {
 	public static class Language
 	{
-		[ThreadStatic]
-		static IDC_Multilanguage DataContext;
-		[ThreadStatic]
-		static IAppContext AppContext;
+		static Func<IDC_Multilanguage> DataContext;
+		static Func<IAppContext> AppContext;
 
 		static List<IC_Language> _langs;
 
-		public static void Init(IAppContext appContext, IDC_Multilanguage dataContext)
+		public static void Init(Func<IAppContext> appContext, Func<IDC_Multilanguage> dataContext)
 		{
 			AppContext = appContext;
 			DataContext = dataContext;
@@ -25,7 +23,7 @@ namespace Nephrite.Multilanguage
 			get
 			{
 				if (_langs == null)
-					_langs = DataContext.IC_Language.OrderByDescending(o => o.IsDefault).ToList();
+					_langs = DataContext().IC_Language.OrderByDescending(o => o.IsDefault).ToList();
 				return _langs;
 			}
 		}
@@ -34,12 +32,12 @@ namespace Nephrite.Multilanguage
 		{
 			get
 			{
-				string lang = AppContext.Request.Query["lang"];
+				string lang = AppContext().Request.Query["lang"];
 
-				if (AppContext.Request.Cookies["lcid"] != null)
-					lang = AppContext.Request.Cookies["lcid"] == "1033" ? "en" : "ru";
-				if (AppContext.Items["Lang"] != null)
-					lang = (string)AppContext.Items["Lang"];
+				if (AppContext().Request.Cookies["lcid"] != null)
+					lang = AppContext().Request.Cookies["lcid"] == "1033" ? "en" : "ru";
+				if (AppContext().Items["Lang"] != null)
+					lang = (string)AppContext().Items["Lang"];
 
 				lang = lang ?? "ru";
 			    var l = List.SingleOrDefault(o => o.Code == lang);
@@ -59,10 +57,10 @@ namespace Nephrite.Multilanguage
 
 		public static void WithLang(string lang, Action action)
 		{
-			string prevLang = (string)AppContext.Items["Lang"];
-			AppContext.Items["Lang"] = lang;
+			string prevLang = (string)AppContext().Items["Lang"];
+			AppContext().Items["Lang"] = lang;
 			action();
-			AppContext.Items["Lang"] = prevLang;
+			AppContext().Items["Lang"] = prevLang;
 		}
 
 		public static CultureInfo CurrentCulture

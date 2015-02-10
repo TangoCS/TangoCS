@@ -6,12 +6,10 @@ namespace Nephrite.Multilanguage
 {
 	public static class TextResource
 	{
-		[ThreadStatic]
-		static IDC_TextResources DataContext;
-		[ThreadStatic]
-		static IAppContext AppContext;
+		static Func<IDC_TextResources> DataContext;
+		static Func<IAppContext> AppContext;
 
-		public static void Init(IAppContext appContext, IDC_TextResources dataContext)
+		public static void Init(Func<IAppContext> appContext, Func<IDC_TextResources> dataContext)
 		{
 			AppContext = appContext;
 			DataContext = dataContext;
@@ -21,9 +19,9 @@ namespace Nephrite.Multilanguage
 		{
 			get
 			{
-				if (AppContext.Items["reseditmode"] == null)
-					AppContext.Items["reseditmode"] = AppContext.Request.Cookies["resourceeditmode"] != null && AppContext.Request.Cookies["resourceeditmode"] == "1";
-				return (bool)AppContext.Items["reseditmode"];
+				if (AppContext().Items["reseditmode"] == null)
+					AppContext().Items["reseditmode"] = AppContext().Request.Cookies["resourceeditmode"] != null && AppContext().Request.Cookies["resourceeditmode"] == "1";
+				return (bool)AppContext().Items["reseditmode"];
 			}
 		}
 
@@ -45,7 +43,7 @@ namespace Nephrite.Multilanguage
 			{
 				lock (locker)
 				{
-					var nrs = DataContext.IN_TextResource.Select(o => new { Res = o.SysName + "-" + o.LanguageCode, ID = o.TextResourceID, Text = o.Text });
+					var nrs = DataContext().IN_TextResource.Select(o => new { Res = o.SysName + "-" + o.LanguageCode, ID = o.TextResourceID, Text = o.Text });
 					foreach (var nr in nrs)
 					{
 						resources[nr.Res] = nr.Text;

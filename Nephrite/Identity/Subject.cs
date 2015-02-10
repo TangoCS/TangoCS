@@ -24,7 +24,7 @@ namespace Nephrite.Identity
 			get
 			{
 				if (!isAdministrator.HasValue)
-					isAdministrator = Roles.Any(o => o.SysName == IdentityManager<TKey>.Instance.Options.AdminRoleName.ToLower());
+					isAdministrator = Roles.Any(o => o.SysName.ToLower() == IdentityManager<TKey>.Instance.Options.AdminRoleName.ToLower());
 				return isAdministrator.Value;
 			}
 		}
@@ -41,19 +41,17 @@ namespace Nephrite.Identity
 		{
 			get
 			{
-				var s = IdentityManager<TKey>.Instance.DataContext().SubjectFromName("System");
-				if (s == null) throw new Exception("Учетная запись System не зарегистрирована в системе");
-				return s;
+				return IdentityManager<TKey>.Instance.SystemSubject;
 			}
 		}
 
+		IEnumerable<Role<TKey>> _roles = null;
 		public IEnumerable<Role<TKey>> Roles
 		{
 			get
 			{
 				var ctx = IdentityManager<TKey>.Instance.AppContext();
-				IEnumerable<Role<TKey>> roles = ctx.Items["SubjectRoles2_" + ID.ToString()] as IEnumerable<Role<TKey>>;
-				if (roles == null)
+				if (_roles == null)
 				{
 					WindowsIdentity wi = ctx.User.Identity as WindowsIdentity;
 					List<TKey> r = null;
@@ -70,16 +68,15 @@ namespace Nephrite.Identity
 						r = dc.SubjectRoles(ID); 
 						// A.Model.ExecuteQuery<int>("select \"RoleID\" from DBO.\"V_SPM_AllSubjectRole\" where \"SubjectID\" = ?", sid).ToList();
 
-					roles = dc.GetAllRoles().Where(o => r.Contains(o.RoleID));
-					ctx.Items["SubjectRoles2_" + ID.ToString()] = roles;
+					_roles = dc.GetAllRoles().Where(o => r.Contains(o.RoleID));
 				}
-				return roles;
+				return _roles;
 			}
 		}
 
 		public bool HasRole(params string[] roleName)
 		{
-			return Roles.Select(o => o.SysName).Intersect(roleName.Select(o => o.ToLower())).Count() > 0;
+			return Roles.Select(o => o.SysName.ToLower()).Intersect(roleName.Select(o => o.ToLower())).Count() > 0;
 		}
 
 		HashSet<string> _allowItems = new HashSet<string>();

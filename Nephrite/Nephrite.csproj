@@ -45,10 +45,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccessControl\DefaultAccessControlContext.cs" />
+    <Compile Include="AccessControl\DefaultAccessControl.cs" />
     <Compile Include="AccessControl\IAccessControl.cs" />
     <Compile Include="AccessControl\ActionAccessControl.cs" />
     <Compile Include="AccessControl\PredicateChecker.cs" />
+    <Compile Include="Identity\IIdentityManager.cs" />
     <Compile Include="Identity\Role.cs" />
     <Compile Include="Identity\Subject.cs" />
     <Compile Include="CodifierValue.cs" />

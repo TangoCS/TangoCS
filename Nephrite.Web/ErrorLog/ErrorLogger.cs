@@ -41,6 +41,7 @@ namespace Nephrite.Web.ErrorLog
 
                 string errortext = "";
                 Exception e = exception;
+				
                 while (e != null)
                 {
                     errortext += e.Message + Environment.NewLine + e.StackTrace ?? String.Empty;

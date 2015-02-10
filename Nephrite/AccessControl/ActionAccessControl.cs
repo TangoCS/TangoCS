@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nephrite.Identity;
 
 namespace Nephrite.AccessControl
 {
@@ -12,6 +13,7 @@ namespace Nephrite.AccessControl
 		public static void Init(
 			Func<IAppContext> appContext,
 			Func<ICacheableAccessControlDataContext> dataContext,
+			Func<IIdentityManager<int>> identityManager,
 			CacheableAccessControlOptions options = null
 			)
 		{
@@ -23,7 +25,7 @@ namespace Nephrite.AccessControl
 					{
 						if (options == null) options = new CacheableAccessControlOptions { Enabled = () => true };
 						if (options.ClassName.IsEmpty()) options.ClassName = "Action";
-						_instanceHolder = new CacheableAccessControl<int>(appContext, dataContext, options);
+						_instanceHolder = new CacheableAccessControl<int>(appContext, dataContext, identityManager, options);
 						return;
 					}
 				}
