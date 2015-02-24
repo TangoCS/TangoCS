@@ -49,6 +49,9 @@
     <Compile Include="AccessControl\IAccessControl.cs" />
     <Compile Include="AccessControl\ActionAccessControl.cs" />
     <Compile Include="AccessControl\PredicateChecker.cs" />
+    <Compile Include="Html.Controls\Navigation.cs" />
+    <Compile Include="Html\Link.cs" />
+    <Compile Include="MacroManager.cs" />
     <Compile Include="Identity\IIdentityManager.cs" />
     <Compile Include="Identity\Role.cs" />
     <Compile Include="Identity\Subject.cs" />
@@ -102,6 +105,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Multilanguage\TextResource.cs" />
+    <Compile Include="TypeFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Nephrite.snk" />

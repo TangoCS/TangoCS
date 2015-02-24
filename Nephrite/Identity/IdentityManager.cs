@@ -106,6 +106,14 @@ namespace Nephrite.Identity
 				return s;
 			}
 		}
+
+		public void RunAs(TKey sid, Action action)
+		{
+			var oldSubject2 = Subject.Current;
+			AppContext().Items["CurrentSubject2"] = DataContext().SubjectFromID(sid);
+			action();
+			AppContext().Items["CurrentSubject2"] = oldSubject2;
+		}
 	}
 
 	public interface IDC_Identity<TKey>

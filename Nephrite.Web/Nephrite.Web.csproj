@@ -135,6 +135,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
+    <Compile Include="Controls\NavMenu.cs" />
     <Compile Include="FileStorage\FolderActionType.cs" />
     <Compile Include="FormsEngine\MView.cs" />
     <Compile Include="FormsGenerator\BaseControlsCode.cs" />
@@ -204,7 +205,6 @@
     <Compile Include="Controls\AutoNumeric.cs" />
     <Compile Include="Controls\Button.cs" />
     <Compile Include="Controls\ButtonsBar.cs" />
-    <Compile Include="Controls\Cart.cs" />
     <Compile Include="Controls\CodeArea.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -271,7 +271,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\MultilingualField.cs" />
-    <Compile Include="Controls\NavMenu.cs" />
     <Compile Include="Controls\NumericBox.cs" />
     <Compile Include="Controls\Paging.cs" />
     <Compile Include="Controls\ParameterizedLinkManager.cs" />
@@ -408,7 +407,6 @@
     <Compile Include="Web\Impersonation.cs" />
     <Compile Include="CalendarDays\CalendarDayCache.cs" />
     <Compile Include="Web\JqTreeNode.cs" />
-    <Compile Include="Web\MacroManager.cs" />
     <Compile Include="Layout\LayoutBootstrap.cs" />
     <Compile Include="Layout\LayoutEmpty.cs" />
     <Compile Include="Layout\LayoutWSS2007.cs" />

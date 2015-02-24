@@ -96,7 +96,10 @@ namespace Nephrite.Meta
 		public void AddClass(MetaClass metaClass)
 		{
 			metaClass.Parent = this;
-			_classesbyname.Add(metaClass.Name.ToLower(), metaClass);
+			var key = metaClass.Name.ToLower();
+			if (_classesbyname.ContainsKey(key))
+				throw new Exception(String.Format("Class {0} already exists in the model", metaClass.Name));
+			_classesbyname.Add(key, metaClass);
 		}
 
 		public MetaClass AddClass<T>(string caption = "", string description = "")
@@ -122,7 +125,10 @@ namespace Nephrite.Meta
 
 		internal void AddEnum(MetaEnum metaEnum)
 		{
-			_enumsbyname.Add(metaEnum.Name.ToLower(), metaEnum);
+			var key = metaEnum.Name.ToLower();
+			if (_enumsbyname.ContainsKey(key))
+				throw new Exception(String.Format("Enum {0} already exists in the model", metaEnum.Name));
+			_enumsbyname.Add(key, metaEnum);
 		}
 
 		public MetaEnum AddEnum(string name, string caption = "", string description = "")

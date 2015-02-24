@@ -8,21 +8,10 @@ using System.Collections.Specialized;
 using Nephrite.Web.Layout;
 using Nephrite.Meta;
 using Nephrite.AccessControl;
+using Nephrite.Html;
 
 namespace Nephrite.Web.Controls
 {
-	public class SimpleLink : ILink
-	{
-		public string Title { get; set; }
-		public string Description { get; set; }
-		public string Image { get; set; }
-		public string OnClick { get; set; }
-		public bool TargetBlank { get; set; }
-		public string AccessKey { get; set; }
-		public object Attributes { get; set; }
-		public string Href { get; set; }
-	}
-
 	public class ActionLink : SimpleLink
 	{
 		public MetaOperation Operation { get; private set; }

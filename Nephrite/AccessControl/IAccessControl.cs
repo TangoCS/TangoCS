@@ -5,9 +5,13 @@ using System.Text;
 
 namespace Nephrite.AccessControl
 {
-	public interface IAccessControl<TIdentityKey>
+	public interface IAccessControl
 	{
 		bool Check(string securableObjectKey, bool defaultAccess = false);
+	}
+
+	public interface IAccessControlForRole<TIdentityKey>
+	{
 		bool CheckForRole(TIdentityKey roleID, string securableObjectKey);
 	}
 }

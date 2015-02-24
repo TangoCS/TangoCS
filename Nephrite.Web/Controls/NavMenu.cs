@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-//using System.Web;
-//using System.Web.UI;
 
 namespace Nephrite.Web.Controls
 {
@@ -14,6 +12,7 @@ namespace Nephrite.Web.Controls
 		public string Control { get; set; }
 		public bool Selected { get; set; }
 		public string Expression { get; set; }
+
 		List<NavMenuItem> _items = null;
 		public List<NavMenuItem> Items 
 		{ 

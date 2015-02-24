@@ -7,15 +7,13 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Nephrite.Meta;
 using Nephrite.Meta.Database;
-using Nephrite.Metamodel;
-using Nephrite.Metamodel.Model;
+using Nephrite;
 using Nephrite.Web;
 using Nephrite.Web.Controls;
 using Nephrite.Web.CoreDataContext;
 using Nephrite.Web.FileStorage;
 using Nephrite.Web.Hibernate;
-using Nephrite.Web.MetaStorage;
-using Nephrite.Web.SettingsManager;
+using Nephrite.SettingsManager;
 using Nephrite.Web.SPM;
 using Nephrite.Web.TaskManager;
 using NHibernate;
@@ -25,8 +23,6 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 using NHibernate.Type;
-using Solution.Model;
-
 
 namespace Tessera.Test
 {

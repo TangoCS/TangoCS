@@ -6,7 +6,7 @@ namespace Nephrite.Meta.Database
 {
 	public partial class Schema
 	{
-		public void Generate(MetaClass cls, IDBScript dbScript)
+		public void Generate(MetaClass cls)
 		{
 			if (!cls.IsPersistent) return;
 

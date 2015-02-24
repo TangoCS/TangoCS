@@ -136,7 +136,7 @@ namespace Nephrite.Html
 		public int Size { set { _builder.MergeAttribute("size", value.ToString()); } }
 		public string Src { set { _builder.MergeAttribute("src", value); } }
 		public int Step { set { _builder.MergeAttribute("step", value.ToString()); } }
-		public Type Type { set { _builder.MergeAttribute("type", value.ToString().ToLower()); } }
+		public InputType Type { set { _builder.MergeAttribute("type", value.ToString().ToLower()); } }
 		public string Value { set { _builder.MergeAttribute("value", value); } }
 		public int Width { set { _builder.MergeAttribute("width", value.ToString()); } }
 	}
@@ -254,6 +254,6 @@ namespace Nephrite.Html
 	public enum Target { _blank, _parent, _self, _top }
 	public enum Method { Get, Post }
 	public enum Scope { Col, ColGroup, Row, RowGroup }
-	public enum Type { Button, Checkbox, File, Hidden, Image, Number, Password, Radio, Range, Reset, Submit, Text }
+	public enum InputType { Button, Checkbox, File, Hidden, Image, Number, Password, Radio, Range, Reset, Submit, Text }
 	public enum Wrap { Hard, Soft}
 }

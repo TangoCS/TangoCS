@@ -2,9 +2,13 @@
 <#@ output extension="cs" #>
 <#@ assembly name="System.Core.dll" #>
 <#@ assembly name="System.Data.dll" #>
+<#@ assembly name="System.Xml.dll" #>
+<#@ assembly name="System.Xml.Linq.dll" #>
 <#@ assembly name="System.Data.Linq.dll" #>
 <#@ assembly name="System.Configuration.dll" #>
 <#@ assembly name="$(ProjectDir)$(OutDir)Nephrite.Meta.Database.DB2.dll" #>
+<#@ assembly name="$(ProjectDir)$(OutDir)Nephrite.Meta.Database.MSSQL.dll" #>
+<#@ assembly name="$(ProjectDir)$(OutDir)Nephrite.dll" #>
 <#@ assembly name="$(ProjectDir)$(OutDir)Nephrite.Web.dll" #>
 <#@ assembly name="$(ProjectDir)$(OutDir)NHibernate.dll" #>
 <#@ assembly name="$(ProjectDir)$(OutDir)Nephrite.Web.Hibernate.dll" #>
@@ -12,24 +16,113 @@
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="System.Text.RegularExpressions" #>
 <#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Xml.Linq" #>
 <#@ import namespace="System.Text" #>
 <#@ import namespace="Nephrite.Meta" #>
 <#@ import namespace="Nephrite.Meta.Database" #>
+<#@ import namespace="Nephrite" #>
 <#@ import namespace="Nephrite.Web" #>
 <#@ import namespace="Nephrite.Web.Hibernate" #>
 <#@ import namespace="Nephrite.Web.CoreDataContext" #>
 <#@ import namespace="NHibernate.Cfg.Loquacious" #>
 <# 
-	//A.DBScript = new DBScriptMSSQL("DBO");
-	//ConnectionManager.SetConnectionString("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=Servants;Data Source=(local)");
-	//HDataContext.DBType = DBType.MSSQL;
-	A.DBScript = new DBScriptDB2("DBO");
-	ConnectionManager.SetConnectionString("Database=SRVNTS;UserID=dbo;Password=123*(iop;Server=176.227.213.5:50000");
-	HDataContext.DBType = DBType.DB2;
+	A.DBScript = new DBScriptMSSQL("DBO");
+	ConnectionManager.SetConnectionString("Integrated Security=SSPI;Persist Security Info=False;Initial Catalog=Servants_Cur;Data Source=(local)");
+	HDataContext.DBType = DBType.MSSQL;
+	//A.DBScript = new DBScriptDB2("DBO");
+	//ConnectionManager.SetConnectionString("Database=SRVNTS;UserID=dbo;Password=123*(iop;Server=176.227.213.5:50000");
+	//HDataContext.DBType = DBType.DB2;
 
 	A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
-	var model = MetaSolution.Load();
+	var model = MetaSolution.Load(A.DBScript.GetMeta(ConnectionManager.ConnectionString));
 
+	string[] coreClasses = {
+"N_TimeZone",
+"C_Help",
+"N_RssFeed",
+"UserActivity",
+"CalendarDay",
+"N_TextResource",
+"MailMessage",
+"MailTemplate",
+"N_DDL",
+"N_Settings",
+"N_SettingsGroup",
+"N_SqlStatementLog",
+"N_Navig",
+"N_NavigItem",
+"MasterPages",
+"Utils",
+"ErrorLog",
+"AssemblyGen",
+"SiteViews",
+"N_Folder",
+"V_N_FolderFile",
+"N_File",
+"N_FileLibraryType",
+"N_FileLibrary",
+"N_DownloadLog",
+"DbFolder",
+"DbFile",
+"DbItem",
+"N_VirusScanLog",
+"N_ObjectChange",
+"N_ObjectPropertyChange",
+"SPM_Subject",
+"SPM_Role",
+"SPM_Action",
+"SPM_ActionAsso",
+"SPM_RoleAsso",
+"SPM_SubjectRole",
+"SPM_RoleGroup",
+"SPM_RoleAccess",
+"SPM_CasheFlag",
+"SPM_SubjectDelegate",
+"SPM_AvailableRoleForGrant",
+"SPM_C_RoleType",
+"TM_Task",
+"TM_TaskParameter",
+"TM_TaskExecution",
+"WF_Workflow",
+"WF_Activity",
+"WF_Transition",
+"MM_Package",
+"MM_ObjectType",
+"MM_ObjectProperty",
+"MM_FormField",
+"MM_Codifier",
+"MM_CodifierValue",
+"MM_FormFieldAttribute",
+"MM_FormView",
+"MM_Method",
+"MM_MethodParameter",
+"MM_FormFieldGroup",
+"MM_Predicate",
+"MMS_ClassStereotype",
+"MMS_Versioning",
+"MMS_ChangeLog",
+"MMS_Replication",
+"N_Node",
+"CMSFormView",
+"C_FIAS_ActualStatus",
+"C_FIAS_AddressObject",
+"C_FIAS_CenterStatus",
+"C_FIAS_OperationStatus",
+"C_FIAS_CurrentStatus",
+"C_FIAS_NormativeDocument",
+"C_FIAS_House",
+"C_FIAS_EstateStatus",
+"C_FIAS_IntervalStatus",
+"C_FIAS_StructureStatus",
+"C_FIAS_HouseStateStatus",
+"C_FIAS_HouseInterval",
+"C_FIAS_Landmark",
+"C_FIAS_AddressObjectType",
+"VersioningType",
+"NoticeType",
+"NavigItemType",
+"StorageType"
+};
 #>
 using System;
 using System.Linq;
@@ -38,8 +131,12 @@ using Nephrite.Meta.Fluent;
 
 namespace Solution.Model
 {
+	// 
+<# foreach (var cls in model.Classes) { if (!coreClasses.Contains(cls.Name)) continue; #>
+	public partial class <#=cls.Name#> { }
+<# } #>
 
-<# foreach (var cls in model.Classes) { #>
+<# foreach (var cls in model.Classes) { if (coreClasses.Contains(cls.Name)) continue; #>
 	public partial class <#=cls.Name#> { }
 <# } #>
 
@@ -47,7 +144,7 @@ namespace Solution.Model
 	{
 		public static MetaSolution Init(MetaSolution s)
 		{
-<# foreach (var cdf in model.Enums) { #>
+<# foreach (var cdf in model.Enums) { if (coreClasses.Contains(cdf.Name)) continue; #>
 			s.AddEnum("<#=cdf.Name#>", "<#=cdf.Caption#>")
 <#	var lastcdf = cdf.Values.Last();
 	foreach (var val in cdf.Values) { #>
@@ -59,7 +156,7 @@ namespace Solution.Model
 
 
 
-<# foreach (var cls in model.Classes) { #>
+<# foreach (var cls in model.Classes) { if (coreClasses.Contains(cls.Name)) continue; #>
 			s.AddClass<<#=cls.Name#>>("<#=cls.Caption#>")
 <#		if (cls.CompositeKey.Count == 1 && cls.Key is MetaAttribute) {
 			int i = cls.Name.IndexOf('_'); if (i == -1) i = 0; else i++;
@@ -80,13 +177,13 @@ namespace Solution.Model
 <#		foreach (var prop in cls.Properties.Where(o => !o.Name.In("LastModifiedDate", "LastModifiedUser"))) {
 			if (prop is MetaAttribute && !cls.CompositeKey.Contains(prop)) { #>
 <#				string typeparm = prop.Type is MetaEnumType ? "\"" + prop.Type.Name + "\"" : ""; #>
-				.Attribute("<#=prop.Name#>", "<#=prop.Caption#>", <#=prop.Type.GetType().Name#>.<#=(prop.Type as MetaPrimitiveType).NotNullable ? "NotNull(" + typeparm + ")" : "Null(" + typeparm + ")"#><# if ((prop as MetaAttribute).IsMultilingual) {#>, true<#}#>)
+				.Attribute("<#=prop.Name#>", "<#=prop.Caption#>", <#=prop.Type.GetType().Name#>.<#=(prop.Type as MetaPrimitiveType).NotNullable ? "NotNull(" + typeparm + ")" : "Null(" + typeparm + ")"#><# if ((prop as MetaAttribute).IsMultilingual) {#>, x => x.Multilingual()<#}#>)
 <#			}
 			if (prop is MetaComputedAttribute) { #>
 				.ComputedAttribute("<#=prop.Name#>", "<#=prop.Caption#>", <#=prop.Type.GetType().Name#>.<#=(prop.Type as MetaPrimitiveType).NotNullable ? "NotNull()" : "Null()"#>)
 <#			}
 			if (prop is MetaPersistentComputedAttribute) { #>
-				.PersistentComputedAttribute("<#=prop.Name#>", "<#=prop.Caption#>", <#=prop.Type.GetType().Name#>.<#=(prop.Type as MetaPrimitiveType).NotNullable ? "NotNull()" : "Null()"#><# if ((prop as MetaPersistentComputedAttribute).IsMultilingual) {#>, true<#}#>)
+				.PersistentComputedAttribute("<#=prop.Name#>", "<#=prop.Caption#>", <#=prop.Type.GetType().Name#>.<#=(prop.Type as MetaPrimitiveType).NotNullable ? "NotNull()" : "Null()"#><# if ((prop as MetaPersistentComputedAttribute).IsMultilingual) {#>, x => x.Multilingual()<#}#>)
 <#			}
 
 			if (prop is MetaReference) { 
@@ -105,17 +202,17 @@ namespace Solution.Model
 <#			} 
 		} #>
 <#		foreach (var op in cls.Operations) { #>
-<#			if (op.Name == "CreateNew" && op.Caption == "Создать") {  #>
+<#			if (op.Name == "CreateNew" && op.Caption == "Создать" && (op.Parameters.Count == 1 || op.Parameters.Count == 0)) {  #>
 				.OperationCreateNew(<# GenStdOperation(op, "edit", new int[] { 0, 1 }); #>
-<#			} else if (op.Name == "ViewList" && op.Caption == "Список") {  #>
+<#			} else if (op.Name == "ViewList" && op.Caption == "Список" && op.Parameters.Count == 0) {  #>
 				.OperationList(<# GenStdOperation(op, "list", new int[] { 0 }); #>
-<#			} else if (op.Name == "Edit" && op.Caption.In("Редактировать", "Редактирование")) { #>
+<#			} else if (op.Name == "Edit" && op.Caption.In("Редактировать", "Редактирование") && (op.Parameters.Count == 2 || op.Parameters.Count == 0)) { #>
 				.OperationEdit(<# GenStdOperation(op, "edit", new int[] { 0, 2 }); #>
-<#			} else if (op.Name == "View" && op.Caption == "Просмотр") { #>
+<#			} else if (op.Name == "View" && op.Caption == "Просмотр" && (op.Parameters.Count == 2 || op.Parameters.Count == 0)) { #>
 				.OperationView(<# GenStdOperation(op, "view", new int[] { 0, 2 }); #>
-<#			} else if (op.Name == "Delete" && op.Caption == "Удалить") { #>
+<#			} else if (op.Name == "Delete" && op.Caption == "Удалить" && (op.Parameters.Count == 2 || op.Parameters.Count == 0)) { #>
 				.OperationDelete(<# GenStdOperation(op, "delete", new int[] { 0, 2 }); #>
-<#			} else if (op.Name == "UnDelete" && op.Caption.In("Восстановить", "Отмена удаления", "Отменить удаление")) { #>
+<#			} else if (op.Name == "UnDelete" && op.Caption.In("Восстановить", "Отмена удаления", "Отменить удаление") && (op.Parameters.Count == 2 || op.Parameters.Count == 0)) { #>
 				.OperationUnDelete(<# GenStdOperation(op, "undelete", new int[] { 0, 2 }); #>
 <#			} else { #>
 				.Operation("<#=op.Name#>", "<#=op.Caption#>"<# if (op.Parameters.Count > 0 || !op.ViewName.IsEmpty()) { #>, x => x<# } else {#>)<# } #> 

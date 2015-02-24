@@ -16,6 +16,8 @@ namespace Nephrite.Web.Office
 	{
 		public byte[] DocTemplate { get; set; }
 		public object DataSource { get; set; }
+		public bool MacroEnabled { get; set; }
+		public CustomProperty[] CustomProperties { get; set; }
 
 		public byte[] Generate()
 		{
@@ -27,16 +29,25 @@ namespace Nephrite.Web.Office
 
 				using (WordprocessingDocument wordDocument = WordprocessingDocument.Open(ms, true))
 				{
-					wordDocument.ChangeDocumentType(WordprocessingDocumentType.Document);
+					wordDocument.ChangeDocumentType(MacroEnabled ? WordprocessingDocumentType.MacroEnabledDocument : WordprocessingDocumentType.Document);
 					var mainDocumentPart = wordDocument.MainDocumentPart;
 
 					foreach (var hp in mainDocumentPart.HeaderParts)
+					{
 						SetContentInElement(hp.Header, DataSource);
+						Clean(hp.Header, null);
+					}
 					SetContentInElement(mainDocumentPart.Document, DataSource);
-					foreach (var fp in mainDocumentPart.FooterParts)
-						SetContentInElement(fp.Footer, DataSource);
 					Clean(mainDocumentPart.Document, null);
+					foreach (var fp in mainDocumentPart.FooterParts)
+					{
+						SetContentInElement(fp.Footer, DataSource);
+						Clean(fp.Footer, null);
+					}
 					mainDocumentPart.Document.Save();
+					if (CustomProperties != null)
+						foreach (var customProperty in CustomProperties)
+							SetCustomProperty(wordDocument, customProperty);
 				}
 
 				ms.Position = 0;
@@ -45,6 +56,38 @@ namespace Nephrite.Web.Office
 			}
 
 			return output;
+		}
+
+		private void SetCustomProperty(WordprocessingDocument document, CustomProperty property)
+		{
+			var customProps = document.CustomFilePropertiesPart;
+			if (customProps == null) return;
+			var props = customProps.Properties;
+			if (props == null) return;
+
+			var prop = props.Where(p => ((CustomDocumentProperty)p).Name.Value == property.PropertyName).FirstOrDefault();
+			if (prop == null) return;
+			var custProp = prop as CustomDocumentProperty;
+
+			switch (property.PropertyType)
+			{
+				case PropertyTypes.DateTime:
+					custProp.VTFileTime = new VTFileTime(string.Format("{0:s}Z", Convert.ToDateTime(property.PropertyValue)));
+					break;
+				case PropertyTypes.NumberInteger:
+					custProp.VTInt32 = new VTInt32(property.PropertyValue.ToString());
+					break;
+				case PropertyTypes.NumberDouble:
+					custProp.VTFloat = new VTFloat(property.PropertyValue.ToString());
+					break;
+				case PropertyTypes.Text:
+					custProp.VTLPWSTR = new VTLPWSTR(property.PropertyValue.ToString());
+					break;
+				case PropertyTypes.YesNo:
+					custProp.VTBool = new VTBool(Convert.ToBoolean(property.PropertyValue).ToString().ToLower());
+					break;
+			}
+			props.Save();
 		}
 
 		void SetContentInElements(List<OpenXmlElement> elements, object data, string propertyName)
@@ -199,7 +242,20 @@ namespace Nephrite.Web.Office
 		{
 			WordDocumentGenerator gen = new WordDocumentGenerator();
 			gen.DataSource = data;
-			var file = FileStorageManager.DbFiles.FirstOrDefault(o => o.FullPath == templateFullPath && !o.MainID.HasValue);
+			var file = Nephrite.Web.FileStorage.FileStorageManager.DbFiles.FirstOrDefault(o => o.FullPath == templateFullPath && !o.MainID.HasValue);
+			if (file == null)
+				throw new Exception("В файловом хранилище отсутствует файл " + templateFullPath);
+			gen.DocTemplate = file.GetBytes();
+			return gen.Generate();
+		}
+
+		public static byte[] CreateFromTemplate(string templateFullPath, object data, bool ismacroenabled, CustomProperty[] custom = null)
+		{
+			WordDocumentGenerator gen = new WordDocumentGenerator();
+			gen.DataSource = data;
+			gen.MacroEnabled = ismacroenabled;
+			gen.CustomProperties = custom;
+			var file = Nephrite.Web.FileStorage.FileStorageManager.DbFiles.FirstOrDefault(o => o.FullPath == templateFullPath && !o.MainID.HasValue);
 			if (file == null)
 				throw new Exception("В файловом хранилище отсутствует файл " + templateFullPath);
 			gen.DocTemplate = file.GetBytes();
@@ -230,7 +286,7 @@ namespace Nephrite.Web.Office
 		{
 			if (e is SdtElement)
 			{
-				var content = e.ChildElements.SingleOrDefault(o => o is SdtContentBlock || o is SdtContentRun || o is SdtContentRow);
+				var content = e.ChildElements.SingleOrDefault(o => o is SdtContentBlock || o is SdtContentRun || o is SdtContentRow || o is SdtContentCell);
 				if (content != null && content.HasChildren)
 				{
 					foreach (var c in content.ChildElements.ToList())
@@ -304,5 +360,12 @@ namespace Nephrite.Web.Office
 		DateTime,
 		NumberInteger,
 		NumberDouble
+	}
+
+	public class CustomProperty
+	{
+		public string PropertyName { get; set; }
+		public PropertyTypes PropertyType { get; set; }
+		public object PropertyValue { get; set; }
 	}
 }

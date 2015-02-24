@@ -9,7 +9,7 @@ namespace Nephrite.Html
 		public void TextBox(string name, string value = null, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
-			InputTagAttributes ta = new InputTagAttributes(tb) { Type = Type.Text, Name = name };
+			InputTagAttributes ta = new InputTagAttributes(tb) { Type = InputType.Text, Name = name };
 			if (value != null) ta.Value = value;
 			if (attributes != null) attributes(ta);
 			Write(tb);
@@ -17,7 +17,7 @@ namespace Nephrite.Html
 		public void Password(string name, string value = null, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
-			InputTagAttributes ta = new InputTagAttributes(tb) { Type = Type.Password, Name = name };
+			InputTagAttributes ta = new InputTagAttributes(tb) { Type = InputType.Password, Name = name };
 			if (value != null) ta.Value = value;
 			if (attributes != null) attributes(ta);
 			Write(tb);
@@ -25,7 +25,7 @@ namespace Nephrite.Html
 		public void Hidden(string name, string value = null, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
-			InputTagAttributes ta = new InputTagAttributes(tb) { Type = Type.Hidden, Name = name };
+			InputTagAttributes ta = new InputTagAttributes(tb) { Type = InputType.Hidden, Name = name };
 			if (value != null) ta.Value = value;
 			if (attributes != null) attributes(ta);
 			Write(tb);
@@ -33,14 +33,14 @@ namespace Nephrite.Html
 		public void CheckBox(string name, bool isChecked = false, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
-			InputTagAttributes ta = new InputTagAttributes(tb) { Type = Type.Hidden, Name = name, Checked = isChecked };
+			InputTagAttributes ta = new InputTagAttributes(tb) { Type = InputType.Hidden, Name = name, Checked = isChecked };
 			if (attributes != null) attributes(ta);
 			Write(tb);
 		}
 		public void RadioButton(string name, bool isChecked = false, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
-			InputTagAttributes ta = new InputTagAttributes(tb) { Type = Type.Radio, Name = name, Checked = isChecked };
+			InputTagAttributes ta = new InputTagAttributes(tb) { Type = InputType.Radio, Name = name, Checked = isChecked };
 			if (attributes != null) attributes(ta);
 			Write(tb);
 		}
@@ -57,7 +57,7 @@ namespace Nephrite.Html
 		public void Button(string name, string title, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
-			InputTagAttributes ta = new InputTagAttributes(tb) { Name = name, Type = Type.Button };
+			InputTagAttributes ta = new InputTagAttributes(tb) { Name = name, Type = InputType.Button };
 			if (attributes != null) attributes(ta);
 			Write(tb.Render(TagRenderMode.StartTag));
 			Write(title);
@@ -66,7 +66,7 @@ namespace Nephrite.Html
 		public void SubmitButton(string name, string title, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
-			InputTagAttributes ta = new InputTagAttributes(tb) { Name = name, Type = Type.Submit };
+			InputTagAttributes ta = new InputTagAttributes(tb) { Name = name, Type = InputType.Submit };
 			if (attributes != null) attributes(ta);
 			Write(tb.Render(TagRenderMode.StartTag));
 			Write(title);
@@ -75,7 +75,7 @@ namespace Nephrite.Html
 		public void ResetButton(string name, string title, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
-			InputTagAttributes ta = new InputTagAttributes(tb) { Name = name, Type = Type.Reset };
+			InputTagAttributes ta = new InputTagAttributes(tb) { Name = name, Type = InputType.Reset };
 			if (attributes != null) attributes(ta);
 			Write(tb.Render(TagRenderMode.StartTag));
 			Write(title);

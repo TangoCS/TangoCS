@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Nephrite.Html;
 
 namespace Nephrite.Web.Layout
 {
@@ -273,19 +274,6 @@ namespace Nephrite.Web.Layout
 		{
 			return l.Image(src, alt, null);
 		}
-	}
-
-	public interface ILink
-	{
-		string Title { get; }
-		string Href { get; }
-		string Description { get; }
-		string Image { get; }
-		string OnClick { get; }
-		bool TargetBlank { get; }
-		//bool ShowDisabled { get; }
-		string AccessKey { get; }
-		object Attributes { get; }
 	}
 
 	public enum ButtonNextOption

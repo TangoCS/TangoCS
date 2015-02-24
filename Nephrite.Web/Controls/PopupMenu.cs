@@ -11,6 +11,7 @@ using System.Web.UI.WebControls.WebParts;
 using System.Xml.Linq;
 using System.Collections.Generic;
 using Nephrite.Meta;
+using Nephrite.Html;
 
 namespace Nephrite.Web.Controls
 {

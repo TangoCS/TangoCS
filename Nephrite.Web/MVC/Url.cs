@@ -1,5 +1,4 @@
 ﻿using System.Collections.Specialized;
-using System.Web.UI;
 using System.Web;
 using System.Text.RegularExpressions;
 using System;
@@ -164,7 +163,7 @@ namespace Nephrite.Web
 					site.IsEmpty() ? "" : (site + "/"),
 					mode,
 					action.IsEmpty() ? "" : ("/" + action),
-					oid,
+					oid, 
 					p.IsEmpty() ? "" : ("?" + p)
 				);
 			else

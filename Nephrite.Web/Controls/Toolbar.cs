@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq.Expressions;
 using Nephrite.Meta;
 using System.Web.UI.WebControls;
+using Nephrite.Html;
 
 
 namespace Nephrite.Web.Controls

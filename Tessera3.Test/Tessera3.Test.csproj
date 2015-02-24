@@ -60,17 +60,23 @@
     <Content Include="css\Home.css" />
     <Content Include="css\RESET.css" />
     <Content Include="css\tessera.css" />
+    <Content Include="Views\DefaultNavigation.cshtml" />
     <None Include="Views\HomePage.cshtml" />
+    <Content Include="Default.aspx" />
+    <Content Include="Test.ascx" />
     <Content Include="Global.asax" />
+    <None Include="Views\Section.cshtml" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\UtilsController.cs" />
     <Compile Include="AppHandler.cs" />
-    <Compile Include="DefaultAppContext.cs" />
+    <Compile Include="Configuration\DefaultAppContext.cs" />
+    <Compile Include="Configuration\Sidebar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Routes.cs" />
+    <Compile Include="Configuration\Routes.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Web.Debug.config">
@@ -81,6 +87,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Nephrite.Razor\Nephrite.Razor.csproj">
+      <Project>{8e63794b-0d88-4eba-b74a-942dcf32dfa5}</Project>
+      <Name>Nephrite.Razor</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
       <Project>{26a68254-0902-4499-8b5f-6b4b6341ba21}</Project>
       <Name>Nephrite.Web</Name>
@@ -90,6 +100,7 @@
       <Name>Nephrite</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

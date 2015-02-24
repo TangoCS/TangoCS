@@ -6,18 +6,18 @@ using Nephrite.Identity;
 
 namespace Nephrite.AccessControl
 {
-	public class DefaultAccessControl<TIdentityKey> : IAccessControl<TIdentityKey>
+	public class DefaultAccessControl<TIdentityKey> : IAccessControl, IAccessControlForRole<TIdentityKey>
 	{
-		string _message = "";
+		//string _message = "";
 
 		public Func<IAppContext> AppContext { get; private set; }
 		public AccessControlOptions Options { get; private set; }
-		public Func<IDefaultAccessControlDataContext<TIdentityKey>> DataContext { get; private set; }
+		public Func<IAccessControlDataContext<TIdentityKey>> DataContext { get; private set; }
 		public Func<IIdentityManager<TIdentityKey>> IdentityManager { get; private set; }
 
 		public DefaultAccessControl(
 			Func<IAppContext> appContext,
-			Func<IDefaultAccessControlDataContext<TIdentityKey>> dataContext,
+			Func<IAccessControlDataContext<TIdentityKey>> dataContext,
 			Func<IIdentityManager<TIdentityKey>> identityManager,
 			AccessControlOptions options = null)
 		{
@@ -104,7 +104,7 @@ namespace Nephrite.AccessControl
 	}
 
 
-	internal class AccessControlCache
+	public class AccessControlCache
 	{
 		public static Dictionary<string, HashSet<string>> AccessCache = new Dictionary<string, HashSet<string>>();
 		public static Dictionary<string, HashSet<string>> ItemsCache = new Dictionary<string, HashSet<string>>();
@@ -117,7 +117,7 @@ namespace Nephrite.AccessControl
 	}
 
 	public class CacheableAccessControl<TIdentityKey>
-		: IAccessControl<TIdentityKey>
+		: IAccessControl, IAccessControlForRole<TIdentityKey>
 	{
 		static object _lock = new object();
 
@@ -250,7 +250,7 @@ namespace Nephrite.AccessControl
 
 
 
-	public interface IDefaultAccessControlDataContext<TIdentityKey>
+	public interface IAccessControlDataContext<TIdentityKey>
 	{
 		IEnumerable<TIdentityKey> GetAccessInfo(string securableObjectKey);
 	}

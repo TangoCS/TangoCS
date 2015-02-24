@@ -25,7 +25,7 @@ namespace Nephrite.Meta.Database
 				using (SqlCommand cmd = new SqlCommand("usp_dbschema", con))
 				{
 					cmd.CommandType = CommandType.StoredProcedure;
-
+					cmd.CommandTimeout = 300;
 					cmd.Parameters.Add("@schema", SqlDbType.VarChar).Value = name;
 					con.Open();
 					using (XmlReader reader = cmd.ExecuteXmlReader())
