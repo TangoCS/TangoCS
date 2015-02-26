@@ -78,7 +78,7 @@ namespace Nephrite.Meta
 			c.Caption = xc.GetAttributeValue("Caption");
 			c.Description = xc.GetAttributeValue("Description");
 
-			c.IsPersistent = xc.GetAttributeValue("IsSeparateTable") == "1";
+			if (xc.GetAttributeValue("IsSeparateTable") == "1") c.Persistent = PersistenceType.Table;
 			c.BaseClassName = xc.GetAttributeValue("BaseClass");
 			c.LogicalDeleteExpressionString = xc.GetAttributeValue("LogicalDeleteExpression");
 			c.DefaultOrderByExpressionString = xc.GetAttributeValue("DefaultOrderBy");

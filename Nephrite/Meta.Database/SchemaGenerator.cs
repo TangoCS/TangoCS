@@ -8,7 +8,7 @@ namespace Nephrite.Meta.Database
 	{
 		public void Generate(MetaClass cls)
 		{
-			if (!cls.IsPersistent) return;
+			if (cls.Persistent == PersistenceType.None) return;
 
 			var tempListJoinTables = new List<string>();
 

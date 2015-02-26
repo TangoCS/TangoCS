@@ -185,7 +185,12 @@ namespace Nephrite.Meta.Fluent
 
 		public static MetaClass NonPersistent(this MetaClass cls)
 		{
-			cls.IsPersistent = false;
+			cls.Persistent = PersistenceType.None;
+			return cls;
+		}
+		public static MetaClass Persistent(this MetaClass cls, PersistenceType type)
+		{
+			cls.Persistent = type;
 			return cls;
 		}
 

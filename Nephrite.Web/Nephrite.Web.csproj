@@ -405,7 +405,6 @@
     <Compile Include="FileStorage\ImageHandler.cs" />
     <Compile Include="Model\IModelObject.cs" />
     <Compile Include="Web\Impersonation.cs" />
-    <Compile Include="CalendarDays\CalendarDayCache.cs" />
     <Compile Include="Web\JqTreeNode.cs" />
     <Compile Include="Layout\LayoutBootstrap.cs" />
     <Compile Include="Layout\LayoutEmpty.cs" />

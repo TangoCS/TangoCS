@@ -7,7 +7,12 @@ namespace Nephrite.Html
 {
 	public abstract partial class HtmlWriter : StringWriter
 	{
-		public HtmlPage Page { get; set; }
+		public HtmlPage Page { get; private set; }
+
+		public HtmlWriter(HtmlPage page)
+		{
+			Page = page;	
+		}
 
 		NameValueCollection _formValues = null;
 		public NameValueCollection FormValues

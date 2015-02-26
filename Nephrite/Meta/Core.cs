@@ -104,7 +104,7 @@ namespace Nephrite.Meta
 
 		public MetaClass AddClass<T>(string caption = "", string description = "")
 		{
-			MetaClass c = new MetaClass { Name = typeof(T).Name, Caption = caption, Description = description, IsPersistent = true };
+			MetaClass c = new MetaClass { Name = typeof(T).Name, Caption = caption, Description = description, Persistent = PersistenceType.Table };
 			AddClass(c);
 			return c;
 		}
@@ -366,7 +366,7 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// —охран€ютс€ ли объекты класса в базе данных
 		/// </summary>
-		public bool IsPersistent { get; set; }
+		public PersistenceType Persistent { get; set; }
 
 		bool _isMultilingual = false;
 
@@ -813,5 +813,12 @@ namespace Nephrite.Meta
 		MetaClass MetaClass { get; }
 	}
 
-	
+	public enum PersistenceType
+	{
+		None,
+		Table,
+		View,
+		Function,
+		Procedure
+	}	
 }
