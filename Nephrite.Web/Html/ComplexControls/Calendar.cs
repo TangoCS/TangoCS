@@ -93,7 +93,15 @@ function jscal_calendarDate(date, y, m, d){" + CalendarDayCache.ToJSArray("w", "
 		static DateTime[] holidays;
 		static DateTime lastLoad = DateTime.MinValue;
 		static object locker = new object();
-		static void Init()
+
+		static Func<IDC_CalendarDays> DataContext;
+
+		public static void Init(Func<IDC_CalendarDays> dataContext)
+		{
+			DataContext = dataContext;
+		}
+
+		static void Load()
 		{
 			if (DateTime.Now.Subtract(lastLoad).TotalSeconds > 60)
 			{
@@ -101,7 +109,7 @@ function jscal_calendarDate(date, y, m, d){" + CalendarDayCache.ToJSArray("w", "
 				{
 					if (DateTime.Now.Subtract(lastLoad).TotalSeconds > 60)
 					{
-						var days = ((IDC_CalendarDays)A.Model).ICalendarDay.ToArray();
+						var days = DataContext().ICalendarDay.ToArray();
 						workingDays = days.Where(o => o.IsWorkingDay).Select(o => o.Date).ToArray();
 						holidays = days.Where(o => !o.IsWorkingDay).Select(o => o.Date).ToArray();
 						lastLoad = DateTime.Now;
@@ -114,7 +122,7 @@ function jscal_calendarDate(date, y, m, d){" + CalendarDayCache.ToJSArray("w", "
 		{
 			get
 			{
-				Init();
+				Load();
 				return workingDays;
 			}
 		}
@@ -123,7 +131,7 @@ function jscal_calendarDate(date, y, m, d){" + CalendarDayCache.ToJSArray("w", "
 		{
 			get
 			{
-				Init();
+				Load();
 				return holidays;
 			}
 		}
