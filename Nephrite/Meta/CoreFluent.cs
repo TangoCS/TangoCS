@@ -95,7 +95,7 @@ namespace Nephrite.Meta.Fluent
 			var parm = _op.Parameters.FirstOrDefault(o => o.Name.ToLower() == name.ToLower());
 			if (parm == null)
 			{
-				parm = new MetaOperationParameter { Name = name, Type = type };
+				parm = new MetaParameter { Name = name, Type = type };
 				_op.Parameters.Add(parm);
 			}
 			return this;
@@ -157,8 +157,44 @@ namespace Nephrite.Meta.Fluent
 			_op.DTOClassKind = kind;
 			return this;
 		}
+	}
 
+	public class FunctionBuilder
+	{
+		MetaClass _cl;
 
+		public FunctionBuilder(MetaClass cl)
+		{
+			_cl = cl;
+		}
+
+		public FunctionBuilder Parm(IMetaParameterType type, string name)
+		{
+			var parm = _cl.Parameters.FirstOrDefault(o => o.Name.ToLower() == name.ToLower());
+			if (parm == null)
+			{
+				parm = new MetaParameter { Name = name, Type = type };
+				_cl.Parameters.Add(parm);
+			}
+			return this;
+		}
+
+		public FunctionBuilder ParmString(string name)
+		{
+			return Parm(MetaStringType.NotNull(), name);
+		}
+		public FunctionBuilder ParmInt(string name)
+		{
+			return Parm(MetaIntType.NotNull(), name);
+		}
+		public FunctionBuilder ParmGuid(string name)
+		{
+			return Parm(MetaGuidType.NotNull(), name);
+		}
+		public FunctionBuilder ParmDateTime(string name)
+		{
+			return Parm(MetaDateTimeType.NotNull(), name);
+		}
 	}
 
 	public static class CoreFluent
@@ -188,9 +224,13 @@ namespace Nephrite.Meta.Fluent
 			cls.Persistent = PersistenceType.None;
 			return cls;
 		}
-		public static MetaClass Persistent(this MetaClass cls, PersistenceType type)
+		public static MetaClass Persistent(this MetaClass cls, PersistenceType type, Action<FunctionBuilder> parameters = null)
 		{
 			cls.Persistent = type;
+			if (parameters != null)
+			{
+				parameters(new FunctionBuilder(cls));
+			}
 			return cls;
 		}
 

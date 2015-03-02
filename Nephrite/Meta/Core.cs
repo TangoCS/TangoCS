@@ -347,6 +347,7 @@ namespace Nephrite.Meta
 		Dictionary<string, MetaProperty> _properties = new Dictionary<string, MetaProperty>();
 		Dictionary<string, MetaProperty> _allproperties = null;
 		Dictionary<string, MetaOperation> _operations = new Dictionary<string, MetaOperation>();
+		List<MetaParameter> _parameters = null;
 
 		internal string BaseClassName { get; set; }
 		MetaClass _baseClass = null;
@@ -417,6 +418,15 @@ namespace Nephrite.Meta
 				}
 				return _allproperties.Values;
 			}
+		}
+		public List<MetaParameter> Parameters 
+		{
+			get 
+			{
+				if (_parameters == null)
+					_parameters = new List<MetaParameter>() ;
+				return _parameters; 
+			} 
 		}
 
 		/// <summary>
@@ -711,7 +721,7 @@ namespace Nephrite.Meta
 	/// <summary>
 	/// Параметр метода
 	/// </summary>
-	public class MetaOperationParameter : MetaElement
+	public class MetaParameter : MetaElement
 	{
 		/// <summary>
 		/// Тип данных
@@ -724,7 +734,7 @@ namespace Nephrite.Meta
 	/// </summary>
 	public class MetaOperation : MetaElement
 	{
-		List<MetaOperationParameter> _parameters = new List<MetaOperationParameter>();
+		List<MetaParameter> _parameters = new List<MetaParameter>();
 
 		/// <summary>
 		/// Класс, которому принадлежит метод
@@ -733,7 +743,7 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// Параметры метода
 		/// </summary>
-		public List<MetaOperationParameter> Parameters { get { return _parameters; } set { _parameters = value; } }
+		public List<MetaParameter> Parameters { get { return _parameters; } set { _parameters = value; } }
 		/// <summary>
 		/// Иконка
 		/// </summary>

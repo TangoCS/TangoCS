@@ -252,7 +252,7 @@ namespace Nephrite.Meta
 			if (parms != null)
 				foreach (XElement xe in parms)
 				{
-					MetaOperationParameter parm = new MetaOperationParameter();
+					MetaParameter parm = new MetaParameter();
 					parm.Name = xe.GetAttributeValue("Name");
 					switch (xe.GetAttributeValue("Type").ToLower())
 					{

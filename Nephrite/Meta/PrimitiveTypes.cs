@@ -93,7 +93,7 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public partial class MetaDateTimeType : MetaPrimitiveType
+	public partial class MetaDateTimeType : MetaPrimitiveType, IMetaParameterType
 	{
 		static MetaDateTimeType _t = new MetaDateTimeType { NotNullable = true, GetStringValue = ToStringConverter.DateTime };
 		static MetaDateTimeType _t_n = new MetaDateTimeType { NotNullable = false, GetStringValue = ToStringConverter.NullableDateTime };
