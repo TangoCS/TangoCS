@@ -51,7 +51,7 @@ namespace Nephrite.Meta.Database
 			{
 				PrimaryKey pk = new PrimaryKey();
 				pk.Name = "PK_" + cls.Name.Trim();
-				pk.Columns = cls.CompositeKey.Select(o => o.Name).ToArray();
+				pk.Columns = cls.CompositeKey.Select(o => o.ColumnName).ToArray();
 				pk.Table = t;
 				t.PrimaryKey = pk;
 
@@ -65,6 +65,9 @@ namespace Nephrite.Meta.Database
 				if (prop is MetaComputedAttribute)
 					continue;
 				if (prop is MetaReference && (prop as MetaReference).UpperBound == -1)
+					continue;
+				if ((prop is MetaAttribute && (prop as MetaAttribute).IsMultilingual) || 
+					(prop is MetaPersistentComputedAttribute && (prop as MetaPersistentComputedAttribute).IsMultilingual))
 					continue;
 
 				var column = new Column();
@@ -119,7 +122,7 @@ namespace Nephrite.Meta.Database
 				if (f.UpperBound == 1) //Если у свойства мощность 0..1 или 1..1 Создаём FK
 				{
 					var metaReference = f as MetaReference;
-					var fkcolumnname = metaReference.RefClass.CompositeKey.Select(o => o.Name).First();
+					var fkcolumnname = metaReference.RefClass.CompositeKey.Select(o => o.ColumnName).First();
 					t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { Table = t, Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaReference.RefClassName, Columns = new[] { metaReference.RefClass.ColumnName(metaReference.Name) }, RefTableColumns = new[] { fkcolumnname } });
 				}
 
@@ -148,10 +151,41 @@ namespace Nephrite.Meta.Database
 				tdata = new Table();
 				tdata.Schema = this;
 				tdata.Name = cls.Name + "Data";
-				foreach (var prop in cls.Properties)
+
+				// Добавляем PK
+				var columnPk = new Column();
+				columnPk.Name = tdata.Name + (primaryColumn.Type is MetaGuidType ? "GUID" : "ID");
+				columnPk.Type = primaryColumn.Type;
+				columnPk.IsPrimaryKey = true;
+				columnPk.Nullable = false;
+				columnPk.Table = tdata;
+
+				PrimaryKey pk = new PrimaryKey();
+				pk.Name = "PK_" + tdata.Name.Trim();
+				pk.Columns = new string[] { columnPk.Name }; 
+				pk.Table = tdata;
+				tdata.PrimaryKey = pk;
+
+				tdata.Columns.Add(columnPk.Name, columnPk);
+
+				primaryColumn.ForeignKeyName = "FK_" + tdata.Name + "_" + t.Name; // Ссылка на базовую таблицу
+
+				tdata.ForeignKeys.Add(primaryColumn.ForeignKeyName, new ForeignKey() { Table = tdata, Name = primaryColumn.ForeignKeyName, RefTable = tdata.Name, Columns = new[] { primaryColumn.Name }, RefTableColumns = new[] { primaryColumn.Name } });
+
+				var languageColumn = new Column(); // Ссылка на таблицу C_Language
+				languageColumn.Name = "LanguageCode";
+				languageColumn.Type = new MetaStringType() { Length = 2 };
+				languageColumn.ForeignKeyName = "FK_" + tdata.Name + "_C_Language";
+				languageColumn.Table = tdata;
+				tdata.Columns.Add("LanguageCode", languageColumn);
+
+				tdata.ForeignKeys.Add(languageColumn.ForeignKeyName, new ForeignKey() { Table = tdata, Name = languageColumn.ForeignKeyName, RefTable = "C_Language", Columns = new[] { "LanguageCode" }, RefTableColumns = new[] { "LanguageCode" } });
+
+				foreach (var prop in cls.Properties.Where(o => (o is MetaAttribute && (o as MetaAttribute).IsMultilingual) ||
+							(o is MetaPersistentComputedAttribute && (o as MetaPersistentComputedAttribute).IsMultilingual)))
 				{
 					var column = new Column();
-					column.Name = prop.Name;
+					column.Name = prop.ColumnName;
 					column.Table = tdata;
 					if (prop is MetaPersistentComputedAttribute)
 					{
@@ -168,29 +202,13 @@ namespace Nephrite.Meta.Database
 					tdata.Columns.Add(column.Name, column);
 				}
 
-				// Добавляем PK
-				var columnPk = new Column();
-				columnPk.Name = tdata.Name + "ID";
-				columnPk.IsPrimaryKey = true;
-				columnPk.Nullable = false;
-				columnPk.Table = tdata;
-
-				primaryColumn.ForeignKeyName = "FK_" + tdata.Name + "_" + t.Name; // Ссылка на базовую таблицу
-				tdata.ForeignKeys.Add(primaryColumn.ForeignKeyName, new ForeignKey() { Table = tdata, Name = primaryColumn.ForeignKeyName, RefTable = "C_Language", Columns = new[] { "LanguageCode" }, RefTableColumns = new[] { "LanguageCode" } });
-
-				var languageColumn = new Column(); // Ссылка на таблицу C_Language
-				languageColumn.Name = "LanguageCode";
-				languageColumn.Type = new MetaStringType() { Length = 2 };
-				languageColumn.ForeignKeyName = "FK_" + tdata.Name + "_C_Language";
-				languageColumn.Table = tdata;
-				tdata.Columns.Add("LanguageCode", languageColumn);
-
-				tdata.ForeignKeys.Add(languageColumn.ForeignKeyName, new ForeignKey() { Table = tdata, Name = languageColumn.ForeignKeyName, RefTable = "C_Language", Columns = new[] { "LanguageCode" }, RefTableColumns = new[] { "LanguageCode" } });
-
 				Tables.Add(tdata.Name, tdata);
 
 				// Создаём вьюшку
 				var view = new View();
+				foreach(var cl in t.Columns.Values)	view.Columns.Add(cl.Name, cl);
+				foreach (var cl in tdata.Columns.Values)
+					/*if (!view.Columns.ContainsKey(cl.Name)) */view.Columns.Add(cl.Name, cl);
 				view.Name = "V_" + cls.Name;
 				view.Text = string.Format(@"CREATE view {0} as select f.*, s.*
 					from {1} f JOIN {2} s ON f.{3} = s.{3}", view.Name, t.Name, tdata.Name, primaryColumn.Name);
