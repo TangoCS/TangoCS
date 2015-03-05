@@ -138,7 +138,7 @@ namespace Nephrite.Meta.Database
 								if (xColumnsElement != null)
 									xColumnsElement.Descendants("Column").ToList().ForEach(c =>
 									{
-										var column = new Column();
+										var column = new ViewColumn();
 										column.Name = c.GetAttributeValue("Name");
 										
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("Nullable")) && c.GetAttributeValue("Nullable") == "1";
@@ -209,7 +209,7 @@ namespace Nephrite.Meta.Database
 			return returnSchema;
 		}
 
-		public List<ProcedureDetails> ReadProceduresDetails()
+		/*public List<ProcedureDetails> ReadProceduresDetails()
 		{
 			var mapType = new DataTypeMapper();
 			var listProcedureDetails = new List<ProcedureDetails>();
@@ -249,7 +249,7 @@ namespace Nephrite.Meta.Database
 				}
 			}
 			return listProcedureDetails;
-		}
+		}*/
 	}
 
 

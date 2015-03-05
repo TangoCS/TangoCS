@@ -219,9 +219,25 @@ namespace Nephrite.Meta.Database
 
 					// Создаём вьюшку
 					var view = new View();
-					foreach(var cl in t.Columns.Values)	view.Columns.Add(cl.Name, cl);
+					foreach(var cl in t.Columns.Values)	
+					{
+						var vcl = new ViewColumn();
+						vcl.Name = cl.Name;
+						vcl.Type = cl.Type;
+						vcl.Description = cl.Description;
+						vcl.Nullable = cl.Nullable;
+						view.Columns.Add(vcl.Name, vcl);
+					}
 					foreach (var cl in tdata.Columns.Values)
-						if (cl.Name != columnPk.Name && cl.Name != fk.Name) view.Columns.Add(cl.Name, cl);
+						if (cl.Name != columnPk.Name && cl.Name != fk.Name) 
+						{
+							var vcl = new ViewColumn();
+							vcl.Name = cl.Name;
+							vcl.Type = cl.Type;
+							vcl.Description = cl.Description;
+							vcl.Nullable = cl.Nullable;
+							view.Columns.Add(vcl.Name, vcl);
+						}
 					view.Name = "V_" + cls.Name;
 					view.Text = string.Format(@"CREATE view {0} as select f.*, s.*
 						from {1} f JOIN {2} s ON f.{3} = s.{3}", view.Name, t.Name, tdata.Name, primaryColumn.Name);
@@ -236,25 +252,47 @@ namespace Nephrite.Meta.Database
 
 				if (cls.CompositeKey != null && cls.CompositeKey.Count() != 0)
 				{
-					var column = new Column();
+					var column = new ViewColumn();
 					column.Name = cls.Key.ColumnName;
-					//column.Table = view;
 					column.Type = cls.Key.Type;
-					column.IsPrimaryKey = true;
 					
 					view.Columns.Add(column.Name, column);
 				}
 				foreach (var prop in cls.Properties.Where(t => !cls.CompositeKey.Any(o => o == t)))
 				{
-					var column = new Column();
+					var column = new ViewColumn();
 					column.Name = prop.ColumnName;
-					//column.Table = view;
 					column.Type = prop.Type;
 					column.Nullable = !prop.IsRequired;
 
 					view.Columns.Add(column.Name, column);
 				}
 				Views.Add(view.Name, view);
+			}
+			if (cls.Persistent == PersistenceType.TableFunction)
+			{
+				var function = new TableFunction();
+				function.Name = cls.Name;
+				function.ReturnType = cls.Name;
+				//function.Text = "";
+				foreach(var param in cls.Parameters)
+				{
+					var par = new Parameter();
+					par.Name = param.Name;
+					par.Type = param.Type;
+					function.Parameters.Add(par.Name, par);
+				}
+				foreach(var prop in cls.Properties)
+				{
+					var column = new ViewColumn();
+					column.Name = prop.ColumnName;
+					column.Type = prop.Type;
+					column.Nullable = !prop.IsRequired;
+					column.Description = prop.Description;
+
+					function.Columns.Add(column.Name, column);
+				}
+				TableFunctions.Add(function.Name, function);
 			}
 		}
 	}

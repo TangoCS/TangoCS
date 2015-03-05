@@ -185,7 +185,7 @@ namespace Nephrite.Meta.Database
                                 if (xColumnsElement != null)
                                     xColumnsElement.Descendants("Column").ToList().ForEach(c =>
                                     {
-                                        var column = new Column();
+                                        var column = new ViewColumn();
                                         column.Name = c.GetAttributeValue("NAME");
 										column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
 										column.Type = DbScript.GetType(c.GetAttributeValue("TYPE"), !column.Nullable);
@@ -297,7 +297,7 @@ namespace Nephrite.Meta.Database
         //	return listProcedureDetails;
         //}
 
-        public List<ProcedureDetails> ReadProceduresDetails()
+        /*public List<ProcedureDetails> ReadProceduresDetails()
         {
             var mapType = new DataTypeMapper();
             var listProcedureDetails = new List<ProcedureDetails>();
@@ -338,7 +338,7 @@ namespace Nephrite.Meta.Database
                 }
             }
             return listProcedureDetails;
-        }
+        }*/
     }
 
     public class DB2MetadataReader : IDatabaseMetadataReader
@@ -349,9 +349,9 @@ namespace Nephrite.Meta.Database
         }
 
 
-        public List<ProcedureDetails> ReadProceduresDetails()
+        /*public List<ProcedureDetails> ReadProceduresDetails()
         {
             throw new NotImplementedException();
-        }
+        }*/
     }
 }

@@ -11,6 +11,7 @@ namespace Nephrite.Meta.Database
 		public Dictionary<string, View> Views { get; private set; }
 		public Dictionary<string, Procedure> Procedures { get; private set; }
 		public Dictionary<string, Function> Functions { get; private set; }
+		public Dictionary<string, TableFunction> TableFunctions { get; private set; }
 		public string Name { get; set; }
 		public Schema()
 		{
@@ -18,6 +19,7 @@ namespace Nephrite.Meta.Database
 			Views = new Dictionary<string, View>();
 			Procedures = new Dictionary<string, Procedure>();
 			Functions = new Dictionary<string, Function>();
+			TableFunctions = new Dictionary<string, TableFunction>();
 		}
 	}
 
@@ -76,6 +78,15 @@ namespace Nephrite.Meta.Database
 	}
 
 	[Serializable]
+	public partial class ViewColumn
+	{
+		public string Name { get; set; }
+		public IMetaPrimitiveType Type { get; set; }
+		public bool Nullable { get; set; }
+		public string Description { get; set; }
+	}
+
+	[Serializable]
 	public partial class PrimaryKey
 	{
 		public string Name { get; set; }
@@ -128,17 +139,34 @@ namespace Nephrite.Meta.Database
 			Parameters = new Dictionary<string, Parameter>();
 		}
 	}
+
+	[Serializable]
+	public partial class TableFunction
+	{
+		public string Name { get; set; }
+		public string Text { get; set; }
+		public Dictionary<string, Parameter> Parameters { get; private set; }
+		public Dictionary<string, ViewColumn> Columns { get; private set; }
+		public string ReturnType { get; set; }
+
+		public TableFunction()
+		{
+			Parameters = new Dictionary<string, Parameter>();
+			Columns = new Dictionary<string, ViewColumn>();
+		}
+	}
+
 	[Serializable]
 	public partial class View
 	{
 		public string Name { get; set; }
 		public string Text { get; set; }
-		public Dictionary<string, Column> Columns { get; private set; }
+		public Dictionary<string, ViewColumn> Columns { get; private set; }
 		public Dictionary<string, Trigger> Triggers { get; private set; }
 
 		public View()
 		{
-			Columns = new Dictionary<string, Column>();
+			Columns = new Dictionary<string, ViewColumn>();
 			Triggers = new Dictionary<string, Trigger>();
 		}
 	}
@@ -155,15 +183,15 @@ namespace Nephrite.Meta.Database
 	public class Parameter
 	{
 		public string Name { get; set; }
-		public MetaClassifier Type { get; set; }
+		public IMetaPrimitiveType Type { get; set; }
 	}
 
 
-	public class ProcedureDetails
+	/*public class ProcedureDetails
 	{
 		public string ProcedureName { get; set; }
 		public string ReturnType { get; set; }
         public bool IsList { get; set; }
 		public Dictionary<string, string> Columns { get; set; }
-	}
+	}*/
 }

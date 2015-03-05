@@ -828,7 +828,7 @@ namespace Nephrite.Meta
 		None,
 		Table,
 		View,
-		Function,
+		TableFunction,
 		Procedure
 	}	
 }

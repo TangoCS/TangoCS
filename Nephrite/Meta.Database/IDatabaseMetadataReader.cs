@@ -8,6 +8,6 @@ namespace Nephrite.Meta.Database
 	public interface IDatabaseMetadataReader
 	{
 		Schema ReadSchema(string name);
-		List<ProcedureDetails> ReadProceduresDetails();
+		//List<ProcedureDetails> ReadProceduresDetails();
 	}
 }
