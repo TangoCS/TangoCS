@@ -188,8 +188,9 @@ namespace Nephrite.Meta.Database
 					languageColumn.Name = "LanguageCode";
 					languageColumn.Type = new MetaStringType() { Length = 2 };
 					languageColumn.ForeignKeyName = "FK_" + tdata.Name + "_C_Language";
+					languageColumn.Nullable = false;
 					languageColumn.Table = tdata;
-					tdata.Columns.Add("LanguageCode", languageColumn);
+					tdata.Columns.Add(languageColumn.Name, languageColumn);
 
 					tdata.ForeignKeys.Add(languageColumn.ForeignKeyName, new ForeignKey() { Table = tdata, Name = languageColumn.ForeignKeyName, RefTable = "C_Language", Columns = new[] { "LanguageCode" }, RefTableColumns = new[] { "LanguageCode" } });
 
@@ -255,6 +256,7 @@ namespace Nephrite.Meta.Database
 					var column = new ViewColumn();
 					column.Name = cls.Key.ColumnName;
 					column.Type = cls.Key.Type;
+					column.Nullable = !cls.Key.IsRequired;
 					
 					view.Columns.Add(column.Name, column);
 				}
