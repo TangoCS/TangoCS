@@ -75,15 +75,20 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public partial class MetaStringType : MetaPrimitiveType, IMetaParameterType
+	public partial class MetaStringType : MetaPrimitiveType, IMetaIdentifierType, IMetaParameterType
 	{
 		static MetaStringType _t = new MetaStringType { NotNullable = true, GetStringValue = ToStringConverter.String };
 		static MetaStringType _t_n = new MetaStringType { NotNullable = false, GetStringValue = ToStringConverter.String };
 		public static MetaStringType NotNull() { return _t; }
 		public static MetaStringType Null() { return _t_n; }
 
-
 		public int Length { get; set; }
+
+		public string ColumnSuffix
+		{
+			get { return ""; }
+		}
+
 		public override string CLRType
 		{
 			get
