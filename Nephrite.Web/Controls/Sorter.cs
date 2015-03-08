@@ -9,6 +9,7 @@ using System.Linq.Expressions;
 using Nephrite.Web;
 
 using Nephrite.Meta;
+using Nephrite.Http;
 
 
 namespace Nephrite.Web.Controls
@@ -84,7 +85,7 @@ namespace Nephrite.Web.Controls
 			string iup = !showArrows ? "" : String.Format("<img src='{0}' style='border:0; vertical-align:middle;' />", Settings.ImagesPath + IconSet.TitleSortasc.X16);
 			string idown = !showArrows ? "" : String.Format("<img src='{0}' style='border:0; vertical-align:middle;' />", Settings.ImagesPath + IconSet.TitleSortdesc.X16); 
 
-			Url baseUrl = Url.Current.SetQuickSearchQuery();
+			Url baseUrl = UrlHelper.Current().SetQuickSearchQuery();
 			string curSettings = baseUrl.GetString(ParameterName).ToLower();
 
 			if (curSettings == column.ToString())
@@ -187,7 +188,7 @@ namespace Nephrite.Web.Controls
 			IQueryable<T> res = query;
 			if (!UsePostBack)
 			{
-				string s = Url.Current.GetString(ParameterName);
+				string s = UrlHelper.Current().GetString(ParameterName);
 				if (!s.IsEmpty())
 					_orderByColumns = s.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 			}
@@ -212,7 +213,7 @@ namespace Nephrite.Web.Controls
 			IOrderedEnumerable<T> res = query;
 			if (!UsePostBack)
 			{
-				string s = Url.Current.GetString(ParameterName);
+				string s = UrlHelper.Current().GetString(ParameterName);
 				if (!s.IsEmpty())
 					_orderByColumns = s.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 			}

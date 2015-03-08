@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Text;
 
 namespace Nephrite.Html
@@ -31,7 +32,7 @@ namespace Nephrite.Html
 			foreach (var attribute in Attributes)
 			{
 				string key = attribute.Key;
-				string value = HtmlHelpers.HtmlEncode(attribute.Value);
+				string value = WebUtility.HtmlEncode(attribute.Value);
 				sb.Append(' ')
 					.Append(key)
 					.Append("=\"")
@@ -63,7 +64,7 @@ namespace Nephrite.Html
 
 		public void SetInnerText(string innerText)
 		{
-			InnerHtml = HtmlHelpers.HtmlEncode(innerText);
+			InnerHtml = WebUtility.HtmlEncode(innerText);
 		}
 
 		public override string ToString()

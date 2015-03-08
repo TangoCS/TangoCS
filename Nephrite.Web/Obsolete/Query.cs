@@ -5,7 +5,7 @@ using System.Text;
 using System.Web;
 using System.Text.RegularExpressions;
 using System.Reflection;
-
+using Nephrite.Http;
 
 namespace Nephrite.Web
 {
@@ -30,46 +30,6 @@ namespace Nephrite.Web
 			return query;
 		}
 
-		/// <summary>
-		/// Удалить параметры из URL
-		/// </summary>
-		/// <param name="str">Строка с исходным URL</param>
-		/// <param name="parametername">Имена параметров, которые надо удалить</param>
-		/// <returns>Строка с URL без перечисленных параметров</returns>
-		public static string RemoveQueryParameter(this string str, params string[] parametername)
-		{
-			string query = str;
-			if (query.IndexOf('?') < 0)
-				return query;
-			string path = query.Substring(0, query.IndexOf('?'));
-			query = query.Substring(query.IndexOf('?'));
-
-			for (int i = 0; i < parametername.Length; i++)
-				query = Regex.Replace(query, "[?&]" + parametername[i] + "=(?<1>[^&]*)", "", RegexOptions.IgnoreCase);
-			if (query.Length == 0)
-				return path;
-			if (query[0] != '?')
-				return path + "?" + query.Substring(1);
-			return path + query;
-		}
-
-		public static string AddQueryParameter(this string str, string param)
-		{
-			return str + (str.IndexOf('?') >= 0 ? "&" : "?") + param;
-		}
-
-		public static string AddQueryParameter(this string str, string param, string value)
-		{
-			return str + (str.IndexOf('?') >= 0 ? "&" : "?") + param + "=" + value;
-		}
-		public static string AddQueryParameter(this string str, string param, int value)
-		{
-			return str + (str.IndexOf('?') >= 0 ? "&" : "?") + param + "=" + value.ToString();
-		}
-		public static string AddQueryParameter(this string str, string param, Guid value)
-		{
-			return str + (str.IndexOf('?') >= 0 ? "&" : "?") + param + "=" + value.ToString();
-		}
 
 		public static bool SortAsc
 		{
@@ -120,19 +80,6 @@ namespace Nephrite.Web
 			}
 		}
 
-		public static string GetQueryParameter(this string querystring, string parameterName)
-		{
-			if (querystring.IndexOf('?') < 0)
-				return String.Empty;
-
-			querystring = querystring.Substring(querystring.IndexOf('?'));
-
-			Match m = Regex.Match(querystring, "[?&]" + parameterName + "=(?<1>[^&]*)", RegexOptions.IgnoreCase);
-			if (querystring[0] != '?')
-				return "?" + querystring.Substring(1);
-			return m.Groups[1].Value;
-		}
-
 		public static string GetString(string parametername)
 		{
 			return HttpContext.Current!=null ? HttpContext.Current.Request.Url.PathAndQuery.GetQueryParameter(parametername):"";
@@ -140,20 +87,21 @@ namespace Nephrite.Web
 
 		public static string CreateReturnUrl()
 		{
-			return Url.CreateReturnUrl();
+			return UrlHelper.Current().CreateReturnUrl();
 		}
 
 		public static string CreateReturnUrl(string urlquery)
-		{
-			return Url.CreateReturnUrl(urlquery);
+		{			
+			return (new Url(urlquery)).CreateReturnUrl();
 		}
 
 		public static string GetReturnUrl()
 		{
+			var url = UrlHelper.Current();
 			//return HttpContext.Current.Request.Url.AbsolutePath + "?" + GetString("returnurl").Replace("-e*", "=").Replace("-a*", "&").Replace("-n*", "#").Replace("-t*", "*");
-			if (Url.Current.ReturnUrl == null)
-				return Url.Current;
-			return Url.Current.ReturnUrl;// UrlStack.GetReturnUrl();
+			if (url.ReturnUrl == null)
+				return url;
+			return url.ReturnUrl;// UrlStack.GetReturnUrl();
 		}
 
 		public static void Redirect()
@@ -163,9 +111,11 @@ namespace Nephrite.Web
 
 		public static void RedirectBack()
 		{
-			if (Url.Current.ReturnUrl != null)
-				Url.Current.ReturnUrl.Go();
-			Url.Current.Go();
+			var ret = UrlHelper.Current().ReturnUrl;
+			if (ret != null)
+				HttpContext.Current.Response.Redirect(ret);
+
+			HttpContext.Current.Response.Redirect(HttpContext.Current.Request.Url.PathAndQuery);
 			//HttpContext.Current.Response.Redirect(UrlStack.GetReturnUrl());
 		}
 	}

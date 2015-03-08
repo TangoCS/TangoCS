@@ -7,6 +7,7 @@ using System.Web.UI.WebControls;
 using System.Data.Linq;
 using Nephrite.Identity;
 using Nephrite.Multilanguage;
+using Nephrite.Http;
 
 namespace Nephrite.Web.FileStorage
 {

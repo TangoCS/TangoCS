@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Nephrite.Html;
 
-namespace Nephrite.Web.Layout
+namespace Nephrite.Layout
 {
 	public class SimpleTags : ILayoutSimpleTags
 	{
@@ -47,7 +47,7 @@ namespace Nephrite.Web.Layout
 			//if (src.IndexOf('/', 1) > 0 && !src.StartsWith(".."))
 			//	return String.Format("<img src='{0}' class='middle' alt='{1}' title='{1}' />", DataHandler.GetDataUrl(src), alt);
 			StringBuilder sb = new StringBuilder(255);
-			return sb.AppendFormat("<img src='{0}' class='middle' alt='{1}' title='{1}' />", Settings.ImagesPath + src, alt);
+			return sb.AppendFormat("<img src='{0}' class='middle' alt='{1}' title='{1}' />", IconSet.RootPath + src, alt);
 		}
 	}
 }

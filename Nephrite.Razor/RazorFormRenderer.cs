@@ -25,7 +25,7 @@ namespace Nephrite.Razor
 			return "";
 		}
 
-		public static string RenderView(IAppContext ctx, string folder, string viewName, object viewData)
+		public static string RenderView(IHttpContext ctx, string folder, string viewName, object viewData)
 		{
 			var templatePath = Path.Combine(folder, viewName + ".cshtml");
 			var templateKey = viewName.ToLower() + ".cshtml";// +File.GetLastWriteTime(templatePath).ToString();

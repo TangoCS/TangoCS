@@ -12,7 +12,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nephrite.Web</RootNamespace>
     <AssemblyName>Nephrite.Web</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Nephrite.Web.snk</AssemblyOriginatorKeyFile>
     <SccProjectName>
@@ -44,6 +44,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -53,6 +54,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DocumentFormat.OpenXml">
@@ -382,10 +384,6 @@
     <Compile Include="FileStorage\IDbItem.cs" />
     <Compile Include="FileStorage\Samples.cs" />
     <Compile Include="FileStorage\StorageTypes.cs" />
-    <Compile Include="Layout\Helper.cs" />
-    <Compile Include="Layout\LayoutTessera.cs" />
-    <Compile Include="Layout\SimpleTags.cs" />
-    <Compile Include="Layout\WinModal.cs" />
     <Compile Include="Reporting\AggregateColumn.cs" />
     <Compile Include="Reporting\Grouping.cs" />
     <Compile Include="Reporting\Report.cs">
@@ -406,11 +404,6 @@
     <Compile Include="Model\IModelObject.cs" />
     <Compile Include="Web\Impersonation.cs" />
     <Compile Include="Web\JqTreeNode.cs" />
-    <Compile Include="Layout\LayoutBootstrap.cs" />
-    <Compile Include="Layout\LayoutEmpty.cs" />
-    <Compile Include="Layout\LayoutWSS2007.cs" />
-    <Compile Include="Layout\SystemLayout.cs" />
-    <Compile Include="Layout\Interfaces.cs" />
     <Compile Include="MVC\PageParser.cs" />
     <Compile Include="Web\ObjectPropertyChange.cs" />
     <Compile Include="SPM2\SpmActionNameAttribute.cs" />
@@ -436,7 +429,7 @@
       <DependentUpon>ModalDialog.ascx</DependentUpon>
     </Compile>
     <Compile Include="Obsolete\HtmlHelperWSS.cs" />
-    <Compile Include="Layout\HtmlHelperBase.cs" />
+    <Compile Include="Controls.Html\HtmlHelperBase.cs" />
     <Compile Include="Controls\JSCalendar.cs" />
     <Compile Include="Controls\MessageBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -447,11 +440,6 @@
     </Compile>
     <Compile Include="Purifier\Purifier.cs" />
     <Compile Include="Obsolete\Query.cs" />
-    <Compile Include="Resources\Common.Designer.cs">
-      <DependentUpon>Common.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="RSS\RssFeed.cs" />
     <Compile Include="RSS\RssItem.cs" />
     <Compile Include="Model\Extensions.cs" />
@@ -461,7 +449,6 @@
     <Compile Include="MVC\SqlLog.cs" />
     <Compile Include="TaskManager\TaskManager.cs" />
     <Compile Include="MVC\Url.cs" />
-    <Compile Include="Web\UrlStack.cs" />
     <Compile Include="Web\Utils.cs" />
     <Compile Include="View\Message\show.ascx.cs">
       <DependentUpon>show.ascx</DependentUpon>
@@ -520,11 +507,6 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Common.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Common.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>

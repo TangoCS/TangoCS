@@ -5,11 +5,10 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
-using Nephrite.Http;
 
-namespace Nephrite
+namespace Nephrite.Http
 {
-	public interface IAppContext : IDisposable
+	public interface IHttpContext : IDisposable
 	{
 		IRequest Request { get; }
 		IDictionary Items { get; }

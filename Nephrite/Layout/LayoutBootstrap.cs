@@ -5,7 +5,7 @@ using System.Text;
 using Nephrite.Html;
 
 
-namespace Nephrite.Web.Layout
+namespace Nephrite.Layout
 {
 	public class ToolbarDropdownBootstrap : ILayoutPopupMenu
 	{
@@ -98,14 +98,14 @@ namespace Nephrite.Web.Layout
 		public string ToolbarLink(string title, string url, string image, string onclick, bool targetBlank)
 		{
 			string c = onclick.IsEmpty() ? "" : String.Format(@"onclick=""{0}""", onclick);
-			string i = image.IsEmpty() ? "" : String.Format(@"<img src=""{0}{1}"" alt=""{2}"" class=""middle"" />", Settings.ImagesPath, image, title);
+			string i = image.IsEmpty() ? "" : String.Format(@"<img src=""{0}{1}"" alt=""{2}"" class=""middle"" />", IconSet.RootPath, image, title);
 			return String.Format(@"<li><a href=""{1}"" {2}>{3} {0}</a></li>", title, url, c, i);
 		}
 
 		public string ToolbarImageLink(string title, string url, string image, string onclick, bool targetBlank)
 		{
 			string c = onclick.IsEmpty() ? "" : String.Format(@"onclick=""{0}""", onclick);
-			string i = image.IsEmpty() ? "" : String.Format(@"<img src=""{0}{1}"" alt=""{2}"" class=""middle"" />", Settings.ImagesPath, image, title);
+			string i = image.IsEmpty() ? "" : String.Format(@"<img src=""{0}{1}"" alt=""{2}"" class=""middle"" />", IconSet.RootPath, image, title);
 			return String.Format(@"<li><a href=""{0}"" {1}>{2}</a></li>", url, c, i);
 		}
 

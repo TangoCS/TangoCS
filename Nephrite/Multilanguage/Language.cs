@@ -2,19 +2,20 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Nephrite.Http;
 
 namespace Nephrite.Multilanguage
 {
 	public static class Language
 	{
 		static Func<IDC_Multilanguage> DataContext;
-		static Func<IAppContext> AppContext;
+		static Func<IHttpContext> HttpContext;
 
 		static List<IC_Language> _langs;
 
-		public static void Init(Func<IAppContext> appContext, Func<IDC_Multilanguage> dataContext)
+		public static void Init(Func<IHttpContext> httpContext, Func<IDC_Multilanguage> dataContext)
 		{
-			AppContext = appContext;
+			HttpContext = httpContext;
 			DataContext = dataContext;
 		}
 
@@ -32,12 +33,12 @@ namespace Nephrite.Multilanguage
 		{
 			get
 			{
-				string lang = AppContext().Request.Query["lang"];
+				string lang = HttpContext().Request.Query["lang"];
 
-				if (AppContext().Request.Cookies["lcid"] != null)
-					lang = AppContext().Request.Cookies["lcid"] == "1033" ? "en" : "ru";
-				if (AppContext().Items["Lang"] != null)
-					lang = (string)AppContext().Items["Lang"];
+				if (HttpContext().Request.Cookies["lcid"] != null)
+					lang = HttpContext().Request.Cookies["lcid"] == "1033" ? "en" : "ru";
+				if (HttpContext().Items["Lang"] != null)
+					lang = (string)HttpContext().Items["Lang"];
 
 				lang = lang ?? "ru";
 			    var l = List.SingleOrDefault(o => o.Code == lang);
@@ -57,10 +58,10 @@ namespace Nephrite.Multilanguage
 
 		public static void WithLang(string lang, Action action)
 		{
-			string prevLang = (string)AppContext().Items["Lang"];
-			AppContext().Items["Lang"] = lang;
+			string prevLang = (string)HttpContext().Items["Lang"];
+			HttpContext().Items["Lang"] = lang;
 			action();
-			AppContext().Items["Lang"] = prevLang;
+			HttpContext().Items["Lang"] = prevLang;
 		}
 
 		public static CultureInfo CurrentCulture

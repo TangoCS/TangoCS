@@ -55,7 +55,7 @@ namespace Nephrite.Web.ActiveDirectory
     {
         public string Surname { get; set; }
         public string FirstName { get; set; }
-        public string FatherName { get; set; }
+        public string Patronymic { get; set; }
         public string Login { get; set; }
         public string Sid { get; set; }
 		public string LoginWithDomain
@@ -82,7 +82,7 @@ namespace Nephrite.Web.ActiveDirectory
 				for (int i = 0; i < words.Length; i++)
 					if (words[i].ToLower() == Surname.ToLower() || words[i].ToLower() == FirstName.ToLower())
 						words[i] = String.Empty;
-				FatherName = String.Join(" ", words).Trim();
+				Patronymic = String.Join(" ", words).Trim();
 			}
 			
         }
@@ -91,9 +91,9 @@ namespace Nephrite.Web.ActiveDirectory
         {
             get 
 			{
-				return String.IsNullOrEmpty((Surname + " " + FirstName + " " + FatherName).Trim()) 
+				return String.IsNullOrEmpty((Surname + " " + FirstName + " " + Patronymic).Trim()) 
 					? Login 
-					: Surname + " " + FirstName + " " + FatherName + " (" + Login + ")"; 
+					: Surname + " " + FirstName + " " + Patronymic + " (" + Login + ")"; 
 			}
         }
     }

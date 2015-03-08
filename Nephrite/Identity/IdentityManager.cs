@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
+using Nephrite.Http;
 
 namespace Nephrite.Identity
 {
@@ -12,22 +13,22 @@ namespace Nephrite.Identity
 		static IIdentityManager<TKey> _instanceHolder;
 		static object LockObject = new object();
 
-		public Func<IAppContext> AppContext { get; private set; }
+		public Func<IHttpContext> HttpContext { get; private set; }
 		public Func<IDC_Identity<TKey>> DataContext { get; private set; }
 		public IdentityOptions Options { get; private set; }
 
 		public IdentityManager(
-			Func<IAppContext> appContext,
+			Func<IHttpContext> httpContext,
 			Func<IDC_Identity<TKey>> dataContext,
 			IdentityOptions options = null)
 		{
-			AppContext = appContext;
+			HttpContext = httpContext;
 			DataContext = dataContext;
 			Options = options ?? new IdentityOptions();
 		}
 
 		public static void Init(
-			Func<IAppContext> appContext,
+			Func<IHttpContext> HttpContext,
 			Func<IDC_Identity<TKey>> dataContext,
 			IdentityOptions options = null
 			)
@@ -38,7 +39,7 @@ namespace Nephrite.Identity
 				{
 					if (_instanceHolder == null)
 					{
-						_instanceHolder = new IdentityManager<TKey>(appContext, dataContext, options);
+						_instanceHolder = new IdentityManager<TKey>(HttpContext, dataContext, options);
 						return;
 					}
 				}
@@ -64,7 +65,7 @@ namespace Nephrite.Identity
 		{
 			get
 			{
-				var ctx = AppContext();
+				var ctx = HttpContext();
 				if (ctx.Items["CurrentSubject2"] != null)
 					return ctx.Items["CurrentSubject2"] as Subject<TKey>;
 
@@ -110,9 +111,9 @@ namespace Nephrite.Identity
 		public void RunAs(TKey sid, Action action)
 		{
 			var oldSubject2 = Subject.Current;
-			AppContext().Items["CurrentSubject2"] = DataContext().SubjectFromID(sid);
+			HttpContext().Items["CurrentSubject2"] = DataContext().SubjectFromID(sid);
 			action();
-			AppContext().Items["CurrentSubject2"] = oldSubject2;
+			HttpContext().Items["CurrentSubject2"] = oldSubject2;
 		}
 	}
 

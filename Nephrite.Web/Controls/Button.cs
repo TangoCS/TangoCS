@@ -6,7 +6,8 @@ using System.Text;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Nephrite.Web.Layout;
+using Nephrite.Layout;
+
 
 namespace Nephrite.Web.Controls
 {

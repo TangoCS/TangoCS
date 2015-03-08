@@ -7,7 +7,9 @@ using System.Web.UI.WebControls;
 using System.Linq.Expressions;
 using Nephrite.Meta;
 
-using Nephrite.Web.Layout;
+
+using Nephrite.Layout;
+using Nephrite.Http;
 
 namespace Nephrite.Web.Controls
 {
@@ -44,7 +46,7 @@ namespace Nephrite.Web.Controls
 			}
 			bOK.RenderControl(writer);
 
-			string url = Url.Current.RemoveParameter(_factory.Parameters.Keys.ToArray()).RemoveParameter("r");
+			string url = UrlHelper.Current().RemoveParameter(_factory.Parameters.Keys.ToArray()).RemoveParameter("r");
 			writer.Write("&nbsp;<input type='submit' value='Очистить' onclick='window.location=\"" + url + "\"; return false;'>");
 		}
 
@@ -53,7 +55,7 @@ namespace Nephrite.Web.Controls
 			var p = _factory.Prepare();
 			if (_factory.Messages.Count > 0) return;
 
-			Response.Redirect(Url.Current.RemoveParameter(p.Keys.ToArray()).RemoveParameter("r") + "&" + p.Select(o => o.Key + "=" + o.Value).Join("&") + "&r=1");
+			Response.Redirect(UrlHelper.Current().RemoveParameter(p.Keys.ToArray()).RemoveParameter("r") + "&" + p.Select(o => o.Key + "=" + o.Value).Join("&") + "&r=1");
 		}
 
 		/*public FormCriteriaFactory<T> CreateFactory<T>(IQueryable<T> viewData)

@@ -14,16 +14,6 @@ namespace Nephrite.Html
 			Page = page;	
 		}
 
-		NameValueCollection _formValues = null;
-		public NameValueCollection FormValues
-		{
-			get
-			{
-				if (_formValues == null) _formValues = Page.AppContext.Request.Form;
-				return _formValues;
-			}
-		}
-
 		public abstract void Render();
 	}
 }

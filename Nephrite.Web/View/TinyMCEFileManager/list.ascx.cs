@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
+using Nephrite.Http;
 using Nephrite.Web.Controls;
 using Nephrite.Web.FileStorage;
 
@@ -49,9 +50,9 @@ namespace Nephrite.Web.View
 			if (parentid != Guid.Empty)
 			{
 				var p = FileStorageManager.GetFolder(parentid);
-				toolbar.AddItem("back.gif", "На уровень выше", Url.Current.SetParameter("parent", p.ParentFolderID.ToString()).RemoveParameter("op"));
+				toolbar.AddItem("back.gif", "На уровень выше", UrlHelper.Current().SetParameter("parent", p.ParentFolderID.ToString()).RemoveParameter("op"));
 				toolbar.AddItemSeparator();
-				toolbar.AddItem("upload.gif", "Загрузить файлы", Url.Current.SetParameter("op", "upload"));
+				toolbar.AddItem("upload.gif", "Загрузить файлы", UrlHelper.Current().SetParameter("op", "upload"));
 			}
 
 			//toolbar.AddItemFilter(filter);

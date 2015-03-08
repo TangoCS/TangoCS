@@ -5,6 +5,7 @@ using System.Linq;
 using Nephrite.Web;
 using Nephrite.Web.Controllers;
 using Nephrite.Identity;
+using Nephrite.Http;
 
 namespace Nephrite.Meta.Forms
 {
@@ -52,7 +53,7 @@ namespace Nephrite.Meta.Forms
 
 			Invoke = () =>
 			{
-				TKey id = (TKey)TypeDescriptor.GetConverter(typeof(TKey)).ConvertFromInvariantString(Url.Current.GetString("oid"));
+				TKey id = (TKey)TypeDescriptor.GetConverter(typeof(TKey)).ConvertFromInvariantString(UrlHelper.Current().GetString("oid"));
 				Delegate(id);
 			};
 		}
@@ -132,7 +133,7 @@ namespace Nephrite.Meta.Forms
 
 			Invoke = () =>
 			{
-				TKey id = (TKey)TypeDescriptor.GetConverter(typeof(TKey)).ConvertFromInvariantString(Url.Current.GetString("oid"));
+				TKey id = (TKey)TypeDescriptor.GetConverter(typeof(TKey)).ConvertFromInvariantString(UrlHelper.Current().GetString("oid"));
 				Delegate(id);
 			};
 		}
@@ -167,12 +168,12 @@ namespace Nephrite.Meta.Forms
 				SimpleClassMover<TDTO, TKey>.Up(A.Model.GetTable<TDTO>(), id);
 
 				A.Model.SubmitChanges();
-				Url.Current.ReturnUrl.Go();
+				UrlHelper.Current().ReturnUrl.Go();
 			};
 
 			Invoke = () =>
 			{
-				TKey id = (TKey)TypeDescriptor.GetConverter(typeof(TKey)).ConvertFromInvariantString(Url.Current.GetString("oid"));
+				TKey id = (TKey)TypeDescriptor.GetConverter(typeof(TKey)).ConvertFromInvariantString(UrlHelper.Current().GetString("oid"));
 				Delegate(id);
 			};
 		}
@@ -207,12 +208,12 @@ namespace Nephrite.Meta.Forms
 				SimpleClassMover<TDTO, TKey>.Down(A.Model.GetTable<TDTO>(), id);
 
 				A.Model.SubmitChanges();
-				Url.Current.ReturnUrl.Go();
+				UrlHelper.Current().ReturnUrl.Go();
 			};
 
 			Invoke = () =>
 			{
-				TKey id = (TKey)TypeDescriptor.GetConverter(typeof(TKey)).ConvertFromInvariantString(Url.Current.GetString("oid"));
+				TKey id = (TKey)TypeDescriptor.GetConverter(typeof(TKey)).ConvertFromInvariantString(UrlHelper.Current().GetString("oid"));
 				Delegate(id);
 			};
 		}

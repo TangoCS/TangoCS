@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using Nephrite.Identity;
 using Nephrite.Multilanguage;
 using Nephrite.AccessControl;
+using Nephrite.Http;
 
 namespace Nephrite.Web.Controls
 {
@@ -40,11 +41,11 @@ namespace Nephrite.Web.Controls
 			IN_Filter defaultf = views.Where(o => o.IsDefault).OrderByDescending(o => o.SubjectID ?? 0).FirstOrDefault();
 			if (defaultf != null)
 			{
-				mc.AddItem(defaultf.FilterName, Url.Current.RemoveParameter("filter").SetParameter("filterid", defaultf.FilterID.ToString()));
+				mc.AddItem(defaultf.FilterName, UrlHelper.Current().RemoveParameter("filter").SetParameter("filterid", defaultf.FilterID.ToString()));
 				mc.AddSeparator();
 				if (defaultf.FilterID == currentViewID) currentView = defaultf.FilterName;
 			}
-			mc.AddItem(TextResource.Get("Common.Toolbar.AllItems", "Все записи"), Url.Current.SetParameter("filter", "all").RemoveParameter("filterid"));
+			mc.AddItem(TextResource.Get("Common.Toolbar.AllItems", "Все записи"), UrlHelper.Current().SetParameter("filter", "all").RemoveParameter("filterid"));
 			bool isPersonal = false;
 			foreach (IN_Filter f in views.Where(o => !o.IsDefault || (o.IsDefault && o.SubjectID == null && defaultf != null)).OrderBy(o => o.FilterName))
 			{
@@ -53,7 +54,7 @@ namespace Nephrite.Web.Controls
 					currentView = f.FilterName;
 					isPersonal = f.SubjectID == Subject.Current.ID;
 				}
-				mc.AddItem(f.IsDefault ? "<b>" + f.FilterName + "</b>" : f.FilterName, Url.Current.RemoveParameter("filter").SetParameter("filterid", f.FilterID.ToString()));
+				mc.AddItem(f.IsDefault ? "<b>" + f.FilterName + "</b>" : f.FilterName, UrlHelper.Current().RemoveParameter("filter").SetParameter("filterid", f.FilterID.ToString()));
 			}
 
 			if (defaultf != null && Query.GetString("filter") != "all")
@@ -101,7 +102,7 @@ Sys.WebForms.PageRequestManager.getInstance().add_endRequest(QF_EndRequest);", t
 
 		public static void AddBackButton(this Toolbar toolbar)
 		{
-			toolbar.AddItem(IconSet.Back.X16, TextResource.Get("Common.Toolbar.Back"), Url.Current.ReturnUrl);
+			toolbar.AddItem(IconSet.Back.X16, TextResource.Get("Common.Toolbar.Back"), UrlHelper.Current().ReturnUrl);
 		}
 
 		public static void AddItem(this Toolbar toolbar, ActionLink actionLink)
@@ -109,7 +110,7 @@ Sys.WebForms.PageRequestManager.getInstance().add_endRequest(QF_EndRequest);", t
 			string img = actionLink.Image;
 			if (img.IsEmpty())
 			{
-				switch (actionLink.Operation.Name)
+				switch (actionLink.ActionName)
 				{
 					case "Edit":
 						img = "edititem.gif";
@@ -125,7 +126,7 @@ Sys.WebForms.PageRequestManager.getInstance().add_endRequest(QF_EndRequest);", t
 						break;
 				}
 			}
-			toolbar.AddItem(img, actionLink.Operation.Caption, actionLink.Href, actionLink.TargetBlank);
+			toolbar.AddItem(img, actionLink.Title, actionLink.Href, actionLink.TargetBlank);
 		}
 	}
 }

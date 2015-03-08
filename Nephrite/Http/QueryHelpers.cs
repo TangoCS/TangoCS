@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 
@@ -8,52 +9,17 @@ namespace Nephrite.Http
 	public static class QueryHelpers
 	{
 		/// <summary>
-		/// Append the given query key and value to the URI.
-		/// </summary>
-		/// <param name="uri">The base URI.</param>
-		/// <param name="name">The name of the query key.</param>
-		/// <param name="value">The query value.</param>
-		/// <returns>The combined result.</returns>
-		public static string AddQueryString(string uri, string name, string value)
-		{
-			bool hasQuery = uri.IndexOf('?') != -1;
-			return uri + (hasQuery ? "&" : "?") + Uri.EscapeDataString(name) + "=" + Uri.EscapeDataString(value);
-		}
-
-		/// <summary>
-		/// Append the given query keys and values to the uri.
-		/// </summary>
-		/// <param name="uri">The base uri.</param>
-		/// <param name="queryString">A collection of name value query pairs to append.</param>
-		/// <returns>The combine result.</returns>
-		public static string AddQueryString(string uri, IDictionary<string, string> queryString)
-		{
-			var sb = new StringBuilder();
-			sb.Append(uri);
-			bool hasQuery = uri.IndexOf('?') != -1;
-			foreach (var parameter in queryString)
-			{
-				sb.Append(hasQuery ? '&' : '?');
-				sb.Append(Uri.EscapeDataString(parameter.Key));
-				sb.Append('=');
-				sb.Append(Uri.EscapeDataString(parameter.Value));
-				hasQuery = true;
-			}
-			return sb.ToString();
-		}
-
-		/// <summary>
 		/// Parse a query string into its component key and value parts.
 		/// </summary>
 		/// <param name="text">The raw query string value, with or without the leading '?'.</param>
 		/// <returns>A collection of parsed keys and values.</returns>
-		public static IDictionary<string, string[]> ParseQuery(string queryString)
+		public static NameValueCollection ParseQuery(string queryString)
 		{
 			if (!string.IsNullOrEmpty(queryString) && queryString[0] == '?')
 			{
 				queryString = queryString.Substring(1);
 			}
-			var accumulator = new KeyValueAccumulator<string, string>(StringComparer.OrdinalIgnoreCase);
+			var accumulator = new NameValueCollection();
 
 			int textLength = queryString.Length;
 			int equalIndex = queryString.IndexOf('=');
@@ -77,7 +43,7 @@ namespace Nephrite.Http
 					}
 					string name = queryString.Substring(scanIndex, equalIndex - scanIndex);
 					string value = queryString.Substring(equalIndex + 1, delimiterIndex - equalIndex - 1);
-					accumulator.Append(
+					accumulator.Add(
 						Uri.UnescapeDataString(name.Replace('+', ' ')),
 						Uri.UnescapeDataString(value.Replace('+', ' ')));
 					equalIndex = queryString.IndexOf('=', delimiterIndex);
@@ -89,42 +55,42 @@ namespace Nephrite.Http
 				scanIndex = delimiterIndex + 1;
 			}
 
-			return accumulator.GetResults();
+			return accumulator;
 		}
+
+		public static string CreateUrl(string route, HtmlParms parms = null)
+		{
+			string s = "/" + route;
+			HtmlParms p = new HtmlParms();
+			foreach (var parm in parms)
+			{
+				if (route.IndexOf("{" + parm.Key + "}") != -1)
+					s = s.Replace("{" + parm.Key + "}", parm.Value);
+				else
+					p.Add(parm.Key, parm.Value);
+			}
+			string ps = p.ToString();
+			return s + (ps.IsEmpty() ? "" : ("?" + ps));
+		}
+
 	}
 
-	public class KeyValueAccumulator<TKey, TValue>
+	public class HtmlParms : Dictionary<string, string>
 	{
-		private Dictionary<TKey, List<TValue>> _accumulator;
-		IEqualityComparer<TKey> _comparer;
+		public HtmlParms() : base() { }
+		public HtmlParms(IDictionary<string, string> dictionary) : base(dictionary) { }
 
-		public KeyValueAccumulator(IEqualityComparer<TKey> comparer)
+		public override string ToString()
 		{
-			_comparer = comparer;
-			_accumulator = new Dictionary<TKey, List<TValue>>(comparer);
+			return this.Select(o => o.Value.IsEmpty() ? "" : (o.Key + "=" + o.Value)).Join("&");
 		}
 
-		public void Append(TKey key, TValue value)
+		public HtmlParms(string key, string value)
+			: base()
 		{
-			List<TValue> values;
-			if (_accumulator.TryGetValue(key, out values))
-			{
-				values.Add(value);
-			}
-			else
-			{
-				_accumulator[key] = new List<TValue>(1) { value };
-			}
-		}
-
-		public IDictionary<TKey, TValue[]> GetResults()
-		{
-			var results = new Dictionary<TKey, TValue[]>(_comparer);
-			foreach (var kv in _accumulator)
-			{
-				results.Add(kv.Key, kv.Value.ToArray());
-			}
-			return results;
+			Add(key, value);
 		}
 	}
+
+
 }
