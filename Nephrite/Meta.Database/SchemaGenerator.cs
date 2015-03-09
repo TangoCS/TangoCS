@@ -17,7 +17,8 @@ namespace Nephrite.Meta.Database
 				Table t = new Table();
 				t.Name = cls.Name;
 				t.Description = cls.Caption;
-				t.Identity = cls.CompositeKey.Count > 0 ? cls.CompositeKey.Count > 1 ? cls.CompositeKey.Where(c => c is MetaAttribute).Any(a => (a as MetaAttribute).IsIdentity) : cls.Key is MetaAttribute && (cls.Key as MetaAttribute).IsIdentity : false;
+				t.Identity = cls.Properties.Where(c => c is MetaAttribute).Any(a => (a as MetaAttribute).IsIdentity);
+				//cls.CompositeKey.Count > 0 ? cls.CompositeKey.Count > 1 ? cls.CompositeKey.Where(c => c is MetaAttribute).Any(a => (a as MetaAttribute).IsIdentity) : cls.Key is MetaAttribute && (cls.Key as MetaAttribute).IsIdentity : false;
 				t.Schema = this;
 				if (t.Identity && cls.CompositeKey.Any(c => c.Type is MetaGuidType))
 					throw new Exception(string.Format("Class {0}. Поле не может быть Identity с типом uniqueidentifier", t.Name));
@@ -161,6 +162,7 @@ namespace Nephrite.Meta.Database
 					columnPk.IsPrimaryKey = true;
 					columnPk.Nullable = false;
 					columnPk.Table = tdata;
+					//if (primaryColumn.Type is MetaGuidType) columnPk.DefaultValue = "(newid())";
 
 					PrimaryKey pk = new PrimaryKey();
 					pk.Name = "PK_" + tdata.Name.Trim();

@@ -98,7 +98,7 @@ namespace Nephrite.Meta.Database
                 _FkScripts.Add(result);
             }
 
-            if (srcTable.PrimaryKey != null)
+			if (srcTable.PrimaryKey != null && srcTable.PrimaryKey.Columns.Count() > 0)
             {
 
                 tableScript += string.Format(
@@ -116,7 +116,7 @@ namespace Nephrite.Meta.Database
         {
             //Находим таблицы ссылающиеся на текущую и удаляем их
             var childrenForeignKeys = currentTable.Schema.Tables.Where(t => t.Value.ForeignKeys.Any(f => f.Value.RefTable.ToUpper() == currentTable.Name.ToUpper())).SelectMany(t => t.Value.ForeignKeys).ToList();
-            if (currentTable.PrimaryKey != null)
+			if (currentTable.PrimaryKey != null && currentTable.PrimaryKey.Columns.Count() > 0)
             {
                 foreach (var foreignKey in childrenForeignKeys)
                     DeleteForeignKey(foreignKey.Value);
@@ -129,7 +129,7 @@ namespace Nephrite.Meta.Database
             }
 
             //Удаляем PK
-            if (currentTable.PrimaryKey != null)
+			if (currentTable.PrimaryKey != null && currentTable.PrimaryKey.Columns.Count() > 0)
             {
                 DeletePrimaryKey(currentTable.PrimaryKey);
             }
@@ -140,7 +140,7 @@ namespace Nephrite.Meta.Database
             {
                 if (t.Value.ForeignKeys != null && t.Value.ForeignKeys.Count > 0)
                 {
-                    var removeForeignKeys = t.Value.ForeignKeys.Where(f => f.Value.RefTable.ToUpper() == currentTable.Name.ToUpper()).Select(f => f.Value.Name.ToUpper()).ToList();
+                    var removeForeignKeys = t.Value.ForeignKeys.Where(f => f.Value.RefTable.ToUpper() == currentTable.Name.ToUpper()).Select(f => f.Value.Name).ToList();
                     removeForeignKeys.ForEach(r => t.Value.ForeignKeys.Remove(r));
                 }
 
@@ -187,7 +187,7 @@ namespace Nephrite.Meta.Database
         {
             var curentTable = srcPrimaryKey.Table;
             _MainScripts.Add(string.Format("SET INTEGRITY FOR {2}.{0} IMMEDIATE CHECKED; ALTER TABLE {2}.{0} ADD PRIMARY KEY ({1});", curentTable.Name.ToUpper(),
-                                                       string.Join(",", srcPrimaryKey.Columns),
+                                                       string.Join(",", srcPrimaryKey.Columns).ToUpper(),
                                                        _SchemaName));
 
         }
@@ -203,7 +203,7 @@ namespace Nephrite.Meta.Database
             }
 
 
-            var toRemove = currentTable.ForeignKeys.Where(t => t.Value.Columns.Any(c => c.ToUpper() == currentColumn.Name.ToUpper())).Select(t => t.Key.ToUpper()).ToArray();
+            var toRemove = currentTable.ForeignKeys.Where(t => t.Value.Columns.Any(c => c.ToUpper() == currentColumn.Name.ToUpper())).Select(t => t.Key).ToArray();
             foreach (var key in toRemove)
             {
 
@@ -373,7 +373,7 @@ namespace Nephrite.Meta.Database
 
         public string GetStringType(int length)
         {
-            return string.Format("VARCHAR({0})", length == -1 ? "32000" : length.ToString());
+            return string.Format("VARCHAR({0})", length == -1 ? "2048" : length.ToString());
         }
 
         public string GetDecimalType(int precision, int scale)
@@ -565,7 +565,8 @@ namespace Nephrite.Meta.Database
 
         public void AddDefaultValue(Column srcColumn)
         {
-            _MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} SET DEFAULT {3};", srcColumn.Name.ToUpper(), srcColumn.Table.Name.ToUpper(), _SchemaName, GetDefaultValue(srcColumn.DefaultValue, srcColumn.Type.GetDBType(this))));
+			if (!string.IsNullOrEmpty(srcColumn.DefaultValue))
+				_MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} SET DEFAULT {3};", srcColumn.Name.ToUpper(), srcColumn.Table.Name.ToUpper(), _SchemaName, GetDefaultValue(srcColumn.DefaultValue, srcColumn.Type.GetDBType(this))));
             //_MainScripts.Add(Checked(srcColumn.CurrentTable.Name.ToUpper()));
         }
 
