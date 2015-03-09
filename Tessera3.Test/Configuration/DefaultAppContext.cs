@@ -9,11 +9,11 @@ using Nephrite.Http;
 
 namespace Solution.Configuration
 {
-	public class DefaultAppContext : IAppContext
+	public class DefaultHttpContext : IHttpContext
 	{
 		IRequest _request;
 
-		public DefaultAppContext()
+		public DefaultHttpContext()
 		{
 			_request = new DefaultAppRequest();
 		}

@@ -5,16 +5,18 @@ using System.Web;
 using Nephrite.Identity;
 using System.Configuration;
 using System.Collections.Specialized;
-using Nephrite.Web.Layout;
 using Nephrite.Meta;
 using Nephrite.AccessControl;
 using Nephrite.Html;
+using Nephrite.Layout;
+using Nephrite.Http;
 
 namespace Nephrite.Web.Controls
 {
 	public class ActionLink : SimpleLink
 	{
-		public MetaOperation Operation { get; private set; }
+		public string ControllerName { get; set; }
+		public string ActionName { get; set; }
 
 		public static ActionLink To(MetaOperation operation)
 		{
@@ -23,25 +25,37 @@ namespace Nephrite.Web.Controls
 
 		public ActionLink(MetaOperation operation)
 		{
-			Operation = operation;
-
 			if (operation != null)
 			{
 				Title = operation.Caption;
 				Image = operation.Image;
+				SecurableObjectKey = operation.ID;
+				ControllerName = operation.Parent.Name;
+				ActionName = operation.Name;
 			}
+		}
+
+		public ActionLink(string controllerName, string actionName, string title, string image = null)
+		{
+			Title = title;
+			Image = image;
+			SecurableObjectKey = controllerName + "." + actionName;
+			ControllerName = controllerName;
+			ActionName = actionName;
 		}
 
 		public ActionLink With(HtmlParms parametersValues, bool addReturnUrl = true)
 		{
-			parametersValues.Add("bgroup", Url.Current.GetString("bgroup"));
+			parametersValues.Add("bgroup", UrlHelper.Current().GetString("bgroup"));
+			parametersValues.Add("mode", ControllerName);
+			parametersValues.Add("action", ActionName);
 			if (AppWeb.IsRouting)
-				Href = Url.Create(Operation.Parent.Name, Operation.Name, parametersValues);
+				Href = QueryHelpers.CreateUrl(AppWeb.NodeData.FURL, parametersValues);
 			else
 			{
 				HtmlParms pRes = new HtmlParms();
-				pRes.Add("mode", Operation.Parent.Name);
-				pRes.Add("action", Operation.Name);
+				pRes.Add("mode", ControllerName);
+				pRes.Add("action", ActionName);
 
 				NameValueCollection qs = HttpContext.Current.Request.QueryString;
 				HtmlParms pSave = new HtmlParms();
@@ -53,7 +67,7 @@ namespace Nephrite.Web.Controls
 					switch (parm)
 					{
 						case "mode":
-							m = qs[i].ToLower() == Operation.Parent.Name.ToLower();
+							m = qs[i].ToLower() == ControllerName.ToLower();
 							break;
 						case "action":
 						case "returnurl":
@@ -89,7 +103,7 @@ namespace Nephrite.Web.Controls
 
 				if (addReturnUrl && !pRes.ContainsKey("returnurl"))
 				{
-					pRes.Add("returnurl", Url.Current.ReturnUrl);
+					pRes.Add("returnurl", UrlHelper.Current().ReturnUrl);
 				}
 				//@sad
 				Href = "?" + pRes;
@@ -101,30 +115,30 @@ namespace Nephrite.Web.Controls
 		public string Link(string title)
 		{
 			Title = title;
-			if (Operation == null || ActionAccessControl.Instance.Check(Operation.ID))
+			if (SecurableObjectKey.IsEmpty() || ActionAccessControl.Instance.Check(SecurableObjectKey))
 				return AppLayout.Current.Link(this).ToString();
 			else
 				return title;
 		}
 		public string Link()
 		{
-			return Link(Operation.Caption);
+			return Link(Title);
 		}
 		public string ImageTextLink(string title)
 		{
 			Title = title;
-			if (Operation == null || ActionAccessControl.Instance.Check(Operation.ID))
+			if (SecurableObjectKey.IsEmpty() || ActionAccessControl.Instance.Check(SecurableObjectKey))
 				return AppLayout.Current.ImageLink(this) + "&nbsp;" + AppLayout.Current.Link(this);
 			else
 				return AppLayout.Current.Image(Image, title) + "&nbsp;" + title;
 		}
 		public string ImageTextLink()
 		{
-			return ImageTextLink(Operation.Caption);
+			return ImageTextLink(Title);
 		}
 		public string ImageLink()
 		{
-			if (Operation == null || ActionAccessControl.Instance.Check(Operation.ID))
+			if (SecurableObjectKey.IsEmpty() || ActionAccessControl.Instance.Check(SecurableObjectKey))
 				return AppLayout.Current.ImageLink(this).ToString();
 			else
 				return "";

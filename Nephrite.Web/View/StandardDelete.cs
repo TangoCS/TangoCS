@@ -4,7 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
 using Nephrite.Web.Controls;
-using Nephrite.Web.Layout;
+
+using Nephrite.Layout;
 
 namespace Nephrite.Web.View
 {

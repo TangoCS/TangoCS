@@ -10,11 +10,12 @@ using System.Collections;
 
 using Nephrite.Web.Controls;
 using System.Web.UI.WebControls;
-using Nephrite.Web.Layout;
-using System.Text.RegularExpressions;
 
+using System.Text.RegularExpressions;
+using Nephrite.Http;
 using Nephrite.Meta;
 using Nephrite.SettingsManager;
+using Nephrite.Layout;
 
 namespace Nephrite.Web
 {
@@ -231,7 +232,7 @@ namespace Nephrite.Web
 		{
 			string result = String.Empty;
 			column = column.ToLower();
-			var baseUrl = Url.Current.SetQuickSearchQuery().SetParameter(param, column);
+			var baseUrl = UrlHelper.Current().SetQuickSearchQuery().SetParameter(param, column);
             if (Query.GetString(param).Replace("_desc", "") == column && !Query.GetString(param).ToLower().EndsWith("_desc"))
 			{
 				baseUrl = baseUrl.SetParameter(param, column + "_desc");

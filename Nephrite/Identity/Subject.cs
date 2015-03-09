@@ -50,7 +50,7 @@ namespace Nephrite.Identity
 		{
 			get
 			{
-				var ctx = IdentityManager<TKey>.Instance.AppContext();
+				var ctx = IdentityManager<TKey>.Instance.HttpContext();
 				if (_roles == null)
 				{
 					WindowsIdentity wi = ctx.User.Identity as WindowsIdentity;
@@ -101,7 +101,7 @@ namespace Nephrite.Identity
 		public void Run(Action action)
 		{
 			var oldSubject = Current;
-			var ctx = IdentityManager<TKey>.Instance.AppContext();
+			var ctx = IdentityManager<TKey>.Instance.HttpContext();
 			ctx.Items["CurrentSubject2"] = this;
 			action();
 			ctx.Items["CurrentSubject2"] = oldSubject;

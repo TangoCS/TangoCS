@@ -13,7 +13,8 @@ using System.Xml.Linq;
 using System.ComponentModel;
 
 using Nephrite.Multilanguage;
-using Nephrite.Web.Layout;
+
+using Nephrite.Layout;
 
 
 namespace Nephrite.Web.Controls

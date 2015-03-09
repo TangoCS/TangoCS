@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nephrite.Html;
+using Nephrite.Http;
 
-namespace Nephrite.Web.Layout
+namespace Nephrite.Layout
 {
 	public class ToolbarEmpty : ILayoutToolbar
 	{

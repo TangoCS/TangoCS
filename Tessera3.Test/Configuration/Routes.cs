@@ -28,12 +28,12 @@ namespace Solution.Configuration
 			routes.Ignore("{file}.js");
 			routes.Ignore("{file}.css");
 
-			routes.Add(new Route("api/{mode}/{action}", hApi));
-			routes.Add(new Route("web/{mode}/{action}", hWeb));
+			routes.Add(new Route("api/{class}/{method}", hApi));
+			routes.Add(new Route("web/{class}/{operation}", hWeb));
 			routes.Add(new Route("web", hWeb));
-			routes.Add(new Route("{mode}/{action}", hRazor));
-			routes.Add(new Route("{mode}/{action}/{oid}", hRazor));
-			routes.Add(new Route("{mode}/{oid}", hRazor));
+			routes.Add(new Route("{class}/{operation}", hRazor));
+			routes.Add(new Route("{class}/{operation}/{oid}", hRazor));
+			routes.Add(new Route("{class}/{oid}", hRazor));
 			routes.Add(new Route("", hRazor));
 			
 			//routes.MapPageRoute("{mode}/{oid}", DefaultMasterPage, x =>

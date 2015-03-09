@@ -8,6 +8,7 @@ using System.Web.Hosting;
 using System.Web.Routing;
 using System.Web.UI;
 using Nephrite.SettingsManager;
+using Nephrite.Http;
 using Nephrite.Web;
 using Nephrite.Identity;
 using Nephrite.Web.View;
@@ -40,21 +41,6 @@ namespace Nephrite.Meta.Forms
 			control.SetViewData(new MessageViewData { Title = title, Text = message });
 
 			container.Controls.Add(control);
-		}
-
-		public static void RenderView()
-		{
-			RenderView(Url.Current.GetString("mode"), Url.Current.GetString("action"), null);
-		}
-
-		public static void RenderView(object viewData)
-		{
-			RenderView(Url.Current.GetString("mode"), Url.Current.GetString("action"), viewData);
-		}
-		
-		public static void RenderView(string viewName, object viewData)
-		{
-			RenderView(Url.Current.GetString("mode"), viewName, viewData);
 		}
 
 		public static void RenderView(string folder, string viewName, object viewData)
@@ -176,7 +162,7 @@ namespace Nephrite.Meta.Forms
 
 			if (op == null)
 			{
-				RenderMessage(String.Format(Nephrite.Web.Resources.Common.ControllerMethodNotFound, action, mode));
+				RenderMessage(String.Format(Resources.Common.ControllerMethodNotFound, action, mode));
 				return;
 			}
 

@@ -9,12 +9,11 @@ using System.Web.Caching;
 using System.Configuration;
 using Nephrite.Meta;
 using Nephrite.Identity;
-using Nephrite.Web.Controls;
-
 using Nephrite.Multilanguage;
 using Nephrite.AccessControl;
+using Nephrite.Http;
 
-namespace Nephrite.Web.Layout
+namespace Nephrite.Web.Controls
 {
 	public class HtmlHelperBase
 	{
@@ -189,7 +188,7 @@ namespace Nephrite.Web.Layout
 					checkaction = san.Name;
 				}
 				//MetaOperation mo = Base.Meta.GetOperation(mode, checkaction);
-				if (!String.IsNullOrEmpty(checkaction) && !ActionAccessControl.Instance.Check(mode + "." + checkaction + "-1")) return "#";
+				if (!String.IsNullOrEmpty(checkaction) && !ActionAccessControl.Instance.Check(mode + "." + checkaction)) return "#";
 				//if (!AppSPM.AccessRightManager.Check(mode, checkaction)) return "#";
 			}
 
@@ -229,14 +228,14 @@ namespace Nephrite.Web.Layout
 			if (AppWeb.IsRouting)
 			{
 				p.Add("mode", mode);
-				p.Add("bgroup", Url.Current.GetString("bgroup"));
+				p.Add("bgroup", UrlHelper.Current().GetString("bgroup"));
 				if (p.ContainsKey("oid"))
 				{
-					return Url.CreateUrl("{mode}/{action}/{oid}", p).ToString();
+					return QueryHelpers.CreateUrl("{mode}/{action}/{oid}", p);
 				}
 				else
 				{
-					return Url.CreateUrl("{mode}/{action}", p).ToString();
+					return QueryHelpers.CreateUrl("{mode}/{action}", p);
 				}
 			}
 			else
@@ -251,7 +250,7 @@ namespace Nephrite.Web.Layout
 				string result = "";
 				if (Query.GetString("mode").ToLower() == mode.ToLower())
 				{
-					result = Url.Current.RemoveParameter(remove.ToArray()).ToString();
+					result = UrlHelper.Current().RemoveParameter(remove.ToArray()).ToString();
 					result = result.Substring(result.IndexOf('?'));
 					if (ConfigurationManager.AppSettings["ActionPage"] != null)
 						result = ConfigurationManager.AppSettings["ActionPage"] + result;
@@ -380,48 +379,6 @@ namespace Nephrite.Web.Layout
 			//if (image.IndexOf('/', 1) > 0 && !image.StartsWith(".."))
 			//	return String.Format(@"<a href=""#"" onclick=""javascript:{0}""><img src=""{2}"" alt=""{1}"" title=""{1}"" border=""0"" style=""border:0; vertical-align:middle;""/></a>", onClick, text, DataHandler.GetDataUrl(image));
             return String.Format(@"<a href=""#"" onclick=""javascript:{0}""><img src=""" + Settings.ImagesPath + @"{2}"" alt=""{1}"" title=""{1}"" border=""0"" style=""border:0; vertical-align:middle;""/></a>", onClick, text, image);
-        }
-
-		[Obsolete]
-        public string CaptchaImage(int height, int width)
-        {
-			return Nephrite.Web.Controls.CaptchaImage.Render(height, width);
-        }
-
-        /// <summary>
-        /// Формирование "пейджера" для перехода по страницам с вызовом JavaScript-функции вместо формирования ссылок
-        /// </summary>
-        /// <param name="gotoPageJSFunction">Функция JavaScript с аргументом page (номер страницы)</param>
-        /// <returns>HTML-код</returns>
-		[Obsolete]
-        public string RenderCustomPager(int pageIndex, int pageCount, string gotoPageJSFunction)
-        {
-            if (pageCount < 2)
-                return String.Empty;
-
-			if (pageIndex == 0) pageIndex = 1;
-
-            string result = String.Empty;
-            
-            if (pageIndex > 2)
-            {
-				result += @" <a href=""#"" onclick=""" + gotoPageJSFunction + @"(1); return false;""><img src=""" + Settings.ImagesPath + @"firstpage.gif"" alt=""Страница 1"" style=""border:0;"" /></a>";
-            }
-            if (pageIndex > 1)
-            {
-				result += @" <a href=""#"" onclick=""" + gotoPageJSFunction + @"(" + (pageIndex - 1).ToString() + @"); return false;""><img src=""" + Settings.ImagesPath + @"prevpage.gif"" alt=""" + Resources.Common.PagerPage + " " + (pageIndex - 1).ToString() + @""" style=""border:0;"" /></a>";
-            }
-            result += " " + Resources.Common.PagerPage + @" <input name=""page"" type=""text"" value=""" + pageIndex.ToString() + @""" style=""width:20px;"" onkeydown=""javascript:if(event.keyCode==13){ " + gotoPageJSFunction + @"(document.forms[0].page.value); return false;}""/> из " + pageCount.ToString() + " ";
-            if (pageIndex < pageCount)
-            {
-				result += @" <a href=""#"" onclick=""" + gotoPageJSFunction + @"(" + (pageIndex + 1).ToString() + @"); return false;""><img src=""" + Settings.ImagesPath + @"nextpage.gif"" alt=""" + Resources.Common.PagerPage + " " + (pageIndex + 1).ToString() + @""" style=""border:0;"" /></a>";
-            }
-            if (pageIndex < pageCount - 1)
-            {
-				result += @" <a href=""#"" onclick=""" + gotoPageJSFunction + @"(" + pageCount.ToString() + @"); return false;""><img src=""" + Settings.ImagesPath + @"lastpage.gif"" alt=""" + Resources.Common.PagerPage + " " + pageCount.ToString() + @""" style=""border:0;"" /></a>";
-            }
-
-            return result;
         }
     }
 }

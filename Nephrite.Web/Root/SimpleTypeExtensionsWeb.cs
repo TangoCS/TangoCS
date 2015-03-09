@@ -9,6 +9,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
+using Nephrite.Http;
 
 namespace Nephrite
 {
@@ -136,6 +137,8 @@ namespace Nephrite
 
 		}
 
+		
+
 		/// <summary>
 		/// Вывод текста исключения в поток
 		/// </summary>
@@ -160,6 +163,20 @@ namespace Nephrite
 				writer.WriteBreak();
 				e = e.InnerException;
 			}
+		}
+	}
+
+	public static class UrlHelper
+	{
+		public static Url Current()
+		{
+			var request = HttpContext.Current.Request;
+			return new Url(request.Url.PathAndQuery, request.QueryString, request.RequestContext.RouteData.Values);
+		}
+
+		public static void Go(this Url url)
+		{
+			HttpContext.Current.Response.Redirect(url);
 		}
 	}
 }

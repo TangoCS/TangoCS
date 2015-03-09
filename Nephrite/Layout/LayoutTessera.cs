@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Nephrite.Web.Layout
+namespace Nephrite.Layout
 {
 	public class FormTessera : ILayoutForm
 	{
@@ -53,7 +53,7 @@ namespace Nephrite.Web.Layout
 
 		public string FormTableEnd()
 		{
-			return @"<tr><td class=""t-formline"" colspan=""2""><img height=""1"" src=""" + Settings.ImagesPath + @"blank.gif"" width=""1"" /></td></tr></table>";
+			return @"<tr><td class=""t-formline"" colspan=""2""><img height=""1"" src=""" + IconSet.RootPath + @"blank.gif"" width=""1"" /></td></tr></table>";
 		}
 
 		public string GroupTitleBegin(string id)

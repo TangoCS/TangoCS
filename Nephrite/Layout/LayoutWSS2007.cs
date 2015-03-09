@@ -5,8 +5,10 @@ using Nephrite.Meta;
 using System.Text;
 using Nephrite.Multilanguage;
 using Nephrite.Html;
+using Nephrite.Http;
 
-namespace Nephrite.Web.Layout
+
+namespace Nephrite.Layout
 {
 	public class ListWSS2007 : ILayoutList
 	{
@@ -129,7 +131,7 @@ namespace Nephrite.Web.Layout
 
 		public string FormTableEnd()
 		{
-			return @"<tr><td class=""ms-formline"" colspan=""2""><IMG height=""1"" src=""" + Settings.ImagesPath + @"blank.gif"" width=""1"" /></td></tr></table>";
+			return @"<tr><td class=""ms-formline"" colspan=""2""><IMG height=""1"" src=""" + IconSet.RootPath + @"blank.gif"" width=""1"" /></td></tr></table>";
 		}
 
 		public string GroupTitleBegin(string id)
@@ -198,7 +200,7 @@ namespace Nephrite.Web.Layout
 
 		public string ToolbarSeparator()
 		{
-			return @"<td class=""ms-separator"" style=""white-space: nowrap; padding: 3px; border: none""><img alt="""" src=""" + Settings.ImagesPath + @"blank.gif"" /></td>";
+			return @"<td class=""ms-separator"" style=""white-space: nowrap; padding: 3px; border: none""><img alt="""" src=""" + IconSet.RootPath + @"blank.gif"" /></td>";
 		}
 
 		public string ToolbarWhiteSpace()
@@ -215,7 +217,7 @@ namespace Nephrite.Web.Layout
 					(targetBlank ? @"target=""_blank""" : String.Empty),
 					url,
 					onclick,
-					Settings.ImagesPath + image);
+					IconSet.RootPath + image);
 
 			sb.AppendFormat(@"<td class=""ms-toolbar"" style=""white-space: nowrap; padding: 3px; border: none; vertical-align:middle""><a {0} href=""{1}"" onclick=""{2}"">{3}</a></td>",
 					(targetBlank ? @"target=""_blank""" : String.Empty),
@@ -235,7 +237,7 @@ namespace Nephrite.Web.Layout
 					(targetBlank ? @"target=""_blank""" : String.Empty),
 					url,
 					onclick,
-					Settings.ImagesPath + image);
+					IconSet.RootPath + image);
 
 			return sb.ToString();
 		}
@@ -303,16 +305,16 @@ namespace Nephrite.Web.Layout
 			sb.Append(@"<div style=""padding:3px 0px 8px 7px; vertical-align:middle"">");
 			if (pageCount > 1)
 			{
-				string s = @"<a href=""{0}""><img src=""{1}{2}page.png"" alt=""" + TextResource.Get("Common.Paging.Page", Properties.Resources.PagerPage) + @" {3}"" style=""border:0;"" /></a>&nbsp;";
+				string s = @"<a href=""{0}""><img src=""{1}{2}page.png"" alt=""" + TextResource.Get("Common.Paging.Page", Resources.Common.PagerPage) + @" {3}"" style=""border:0;"" /></a>&nbsp;";
 				if (pageIndex > 2)
 				{
 					baseUrl = baseUrl.SetParameter("page", "1");
-					sb.AppendFormat(s, baseUrl, Settings.ImagesPath, "first", 1);
+					sb.AppendFormat(s, baseUrl, IconSet.RootPath, "first", 1);
 				}
 				if (pageIndex > 1)
 				{
 					baseUrl = baseUrl.SetParameter("page", (pageIndex - 1).ToString());
-					sb.AppendFormat(s, baseUrl, Settings.ImagesPath, "prev", pageIndex - 1);
+					sb.AppendFormat(s, baseUrl, IconSet.RootPath, "prev", pageIndex - 1);
 				}
 				string bu = baseUrl.RemoveParameter("page");
 				if (!bu.EndsWith("&") && !bu.EndsWith("?"))
@@ -323,16 +325,21 @@ namespace Nephrite.Web.Layout
 						bu += "?";
 				}
 				bu += "page=";
-				sb.AppendFormat(@"{0}&nbsp;<input name=""page"" type=""text"" value=""{1}"" style=""width:40px;"" onkeydown=""javascript:if(event.keyCode==13){{ document.location='{2}'+document.forms[0].page.value; return false;}}""/>&nbsp;{4}&nbsp;{3}&nbsp;", TextResource.Get("Common.Paging.Page", Properties.Resources.PagerPage), pageIndex, bu, pageCount, TextResource.Get("Common.Paging.From", "из"));
+				sb.AppendFormat(@"{0}&nbsp;<input name=""page"" type=""text"" value=""{1}"" style=""width:40px;"" onkeydown=""javascript:if(event.keyCode==13){{ document.location='{2}'+document.forms[0].page.value; return false;}}""/>&nbsp;{4}&nbsp;{3}&nbsp;", 
+					TextResource.Get("Common.Paging.Page", Resources.Common.PagerPage), 
+					pageIndex, 
+					bu, 
+					pageCount, 
+					TextResource.Get("Common.Paging.From", "из"));
 				if (pageIndex < pageCount)
 				{
 					baseUrl = baseUrl.SetParameter("page", (pageIndex + 1).ToString());
-					sb.AppendFormat(s, baseUrl, Settings.ImagesPath, "next", pageIndex + 1);
+					sb.AppendFormat(s, baseUrl, IconSet.RootPath, "next", pageIndex + 1);
 				}
 				if (pageIndex < pageCount - 1)
 				{
 					baseUrl = baseUrl.SetParameter("page", pageCount.ToString());
-					sb.AppendFormat(s, baseUrl, Settings.ImagesPath, "last", pageCount);
+					sb.AppendFormat(s, baseUrl, IconSet.RootPath, "last", pageCount);
 				}
 			}
 			sb.AppendFormat(@"<b>{0}:</b> {1}</div>", TextResource.Get("Common.Paging.TotalRecords", "Всего записей"), recordsCount);
@@ -349,27 +356,27 @@ namespace Nephrite.Web.Layout
 			sb.Append(@"<div style=""padding:3px 0px 8px 7px; vertical-align:middle"">");
 			if (pageCount > 1)
 			{
-				string s = @"<a href=""#"" onclick=""{0}""><img src=""{1}{2}page.png"" alt=""" + TextResource.Get("Common.Paging.Page", Properties.Resources.PagerPage) + @" {3}"" style=""border:0;"" /></a>&nbsp;";
+				string s = @"<a href=""#"" onclick=""{0}""><img src=""{1}{2}page.png"" alt=""" + TextResource.Get("Common.Paging.Page", Resources.Common.PagerPage) + @" {3}"" style=""border:0;"" /></a>&nbsp;";
 				if (pageIndex > 2)
 				{
-					sb.AppendFormat(s, String.Format(gotoPageJSFunction, 1), Settings.ImagesPath, "first", 1);
+					sb.AppendFormat(s, String.Format(gotoPageJSFunction, 1), IconSet.RootPath, "first", 1);
 				}
 				if (pageIndex > 1)
 				{
-					sb.AppendFormat(s, String.Format(gotoPageJSFunction, pageIndex - 1), Settings.ImagesPath, "prev", pageIndex - 1);
+					sb.AppendFormat(s, String.Format(gotoPageJSFunction, pageIndex - 1), IconSet.RootPath, "prev", pageIndex - 1);
 				}
-				sb.AppendFormat(@"{0}&nbsp;<input name=""page"" type=""text"" value=""{1}"" style=""width:40px;"" onkeydown=""javascript:if(event.keyCode==13){{ {2} }}""/>&nbsp;{4}&nbsp;{3}&nbsp;", TextResource.Get("Common.Paging.Page", Properties.Resources.PagerPage), pageIndex, String.Format(gotoPageJSFunction, "document.forms[0].page.value"), pageCount, TextResource.Get("Common.Paging.From", "из"));
+				sb.AppendFormat(@"{0}&nbsp;<input name=""page"" type=""text"" value=""{1}"" style=""width:40px;"" onkeydown=""javascript:if(event.keyCode==13){{ {2} }}""/>&nbsp;{4}&nbsp;{3}&nbsp;", TextResource.Get("Common.Paging.Page", Resources.Common.PagerPage), pageIndex, String.Format(gotoPageJSFunction, "document.forms[0].page.value"), pageCount, TextResource.Get("Common.Paging.From", "из"));
 				if (pageIndex < pageCount)
 				{
-					sb.AppendFormat(s, String.Format(gotoPageJSFunction, pageIndex + 1), Settings.ImagesPath, "next", pageIndex + 1);
+					sb.AppendFormat(s, String.Format(gotoPageJSFunction, pageIndex + 1), IconSet.RootPath, "next", pageIndex + 1);
 				}
 				if (pageIndex < pageCount - 1)
 				{
-					sb.AppendFormat(s, String.Format(gotoPageJSFunction, pageCount), Settings.ImagesPath, "last", pageCount);
+					sb.AppendFormat(s, String.Format(gotoPageJSFunction, pageCount), IconSet.RootPath, "last", pageCount);
 				}
 			}
 
-			sb.AppendFormat(@"<img src=""{0}Wait_Animate.gif"" name=""{1}"" style=""visibility:hidden;border:0;"" class=""middle"" title=""{2}"" />", Settings.ImagesPath, imgname, TextResource.Get("Common.Paging.Wait", "ждите..."));
+			sb.AppendFormat(@"<img src=""{0}Wait_Animate.gif"" name=""{1}"" style=""visibility:hidden;border:0;"" class=""middle"" title=""{2}"" />", IconSet.RootPath, imgname, TextResource.Get("Common.Paging.Wait", "ждите..."));
 			sb.AppendFormat(@"<b>{0}:</b> {1}</div>", TextResource.Get("Common.Paging.TotalRecords", "Всего записей"), recordsCount);
 			return sb.ToString();
 		}
@@ -397,8 +404,8 @@ namespace Nephrite.Web.Layout
 			string onClick = String.IsNullOrEmpty(link.OnClick) ? (link.TargetBlank ? ("javascript:window.open('" + link.Href + "')") : "javascript:window.location = '" + link.Href + "'") : link.OnClick;
 			string accessKey = link.AccessKey.IsEmpty() ? "" : String.Format(@"<input style=""position:absolute; top:-300px; left:-300px"" type=""button"" accesskey=""{0}"" onfocus=""{1}"" />", link.AccessKey.ToUpper(), onClick);
 			string img = String.IsNullOrEmpty(link.Image) ?
-				String.Format(@"<img src=""{0}blank.gif"" style=""width: 16px"" />", Settings.ImagesPath) :
-				String.Format(@"<img src=""{0}{1}"" style=""width: 16px"" />", Settings.ImagesPath, link.Image);
+				String.Format(@"<img src=""{0}blank.gif"" style=""width: 16px"" />", IconSet.RootPath) :
+				String.Format(@"<img src=""{0}{1}"" style=""width: 16px"" />", IconSet.RootPath, link.Image);
 
 			return String.Format(@"<tr><td class=""ms-MenuUIItemTableCellCompact"" style=""padding: 2px"">
 				<table cellpadding=""0"" cellspacing=""0"" class=""ms-MenuUIItemTable"" width=""100%"" onmouseover=""nt_listtoolbar_mouseover_tbl(this)"" onmouseout=""nt_listtoolbar_mouseout_tbl(this)"" onclick=""{2}"">
@@ -421,7 +428,7 @@ namespace Nephrite.Web.Layout
 
 		public string PopupMenuEnd()
 		{
-			return String.Format(@"<img src=""{0}menudark.gif"" align=""absmiddle"" border=""0"" /></div>", Settings.ImagesPath);
+			return String.Format(@"<img src=""{0}menudark.gif"" align=""absmiddle"" border=""0"" /></div>", IconSet.RootPath);
 		}
 	}
 
@@ -447,8 +454,8 @@ namespace Nephrite.Web.Layout
 			string onClick = String.IsNullOrEmpty(link.OnClick) ? (link.TargetBlank ? ("javascript:window.open('" + link.Href + "')") : "javascript:window.location = '" + link.Href + "'") : link.OnClick;
 			string accessKey = link.AccessKey.IsEmpty() ? "" : String.Format(@"<input style=""position:absolute; top:-300px; left:-300px"" type=""button"" accesskey=""{0}"" onfocus=""{1}"" />", link.AccessKey.ToUpper(), onClick);
 			string img = String.IsNullOrEmpty(link.Image) ?
-				String.Format(@"<img src=""{0}blank.gif"" style=""width: 32px"" />", Settings.ImagesPath) :
-				String.Format(@"<img src=""{0}{1}"" style=""width: 32px"" />", Settings.ImagesPath, link.Image);
+				String.Format(@"<img src=""{0}blank.gif"" style=""width: 32px"" />", IconSet.RootPath) :
+				String.Format(@"<img src=""{0}{1}"" style=""width: 32px"" />", IconSet.RootPath, link.Image);
 
 			string style1 = String.IsNullOrEmpty(link.Href) && String.IsNullOrEmpty(link.OnClick) ? "color:gray;" : "cursor:pointer;";
 			string style2 = !String.IsNullOrEmpty(link.Href) || !String.IsNullOrEmpty(link.OnClick) ? "style='cursor:pointer;'" : "";
@@ -477,7 +484,7 @@ namespace Nephrite.Web.Layout
 
 		public string PopupMenuEnd()
 		{
-			return String.Format(@"<img src=""{0}menudark.gif"" align=""absmiddle"" border=""0"" /></div>", Settings.ImagesPath);
+			return String.Format(@"<img src=""{0}menudark.gif"" align=""absmiddle"" border=""0"" /></div>", IconSet.RootPath);
 		}
 	}
 

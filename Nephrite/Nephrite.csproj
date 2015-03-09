@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nephrite</RootNamespace>
     <AssemblyName>Nephrite</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -51,6 +54,15 @@
     <Compile Include="AccessControl\PredicateChecker.cs" />
     <Compile Include="Html.Controls\Navigation.cs" />
     <Compile Include="Html\Link.cs" />
+    <Compile Include="Http\Url.cs" />
+    <Compile Include="Layout\Interfaces.cs" />
+    <Compile Include="Layout\LayoutBootstrap.cs" />
+    <Compile Include="Layout\LayoutEmpty.cs" />
+    <Compile Include="Layout\LayoutTessera.cs" />
+    <Compile Include="Layout\LayoutWSS2007.cs" />
+    <Compile Include="Layout\SimpleTags.cs" />
+    <Compile Include="Layout\SystemLayout.cs" />
+    <Compile Include="Layout\WinModal.cs" />
     <Compile Include="MacroManager.cs" />
     <Compile Include="Identity\IIdentityManager.cs" />
     <Compile Include="Identity\Role.cs" />
@@ -58,11 +70,9 @@
     <Compile Include="CodifierValue.cs" />
     <Compile Include="Html\HtmlWriter.cs" />
     <Compile Include="Html\HtmlWriter.Input.cs" />
-    <Compile Include="Html\HtmlWriter.ParseForm.cs" />
     <Compile Include="Html\HtmlWriter.Select.cs" />
     <Compile Include="Html\HtmlWriter.Tags.cs" />
     <Compile Include="Html\HtmlPage.cs" />
-    <Compile Include="HtmlHelpers.cs" />
     <Compile Include="Html\TagAttributes.cs" />
     <Compile Include="Html\TagBuilder.cs" />
     <Compile Include="Http\IReadableStringCollection.cs" />
@@ -70,7 +80,7 @@
     <Compile Include="Http\QueryHelpers.cs" />
     <Compile Include="Http\ReadableStringCollection.cs" />
     <Compile Include="Http\RequestCookieCollection.cs" />
-    <Compile Include="IAppContext.cs" />
+    <Compile Include="Http\IHttpContext.cs" />
     <Compile Include="Icons.cs" />
     <Compile Include="IDataContext.cs" />
     <Compile Include="Identity\IdentityManager.cs" />
@@ -93,7 +103,13 @@
     <Compile Include="Meta\Versioning.cs" />
     <Compile Include="Multilanguage\Language.cs" />
     <Compile Include="Multilanguage\MultilanguageModel.cs" />
+    <Compile Include="Http\ActionContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\Common.Designer.cs">
+      <DependentUpon>Common.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Result.cs" />
     <Compile Include="RussianStrings\Prop.cs" />
     <Compile Include="RussianStrings\RussianDate.cs" />
@@ -109,6 +125,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Nephrite.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Common.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Common.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

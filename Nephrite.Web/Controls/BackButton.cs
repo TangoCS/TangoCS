@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Web.UI;
 using Nephrite.Multilanguage;
-using Nephrite.Web.Layout;
+
 using System.IO;
+using Nephrite.Layout;
 
 namespace Nephrite.Web.Controls
 {

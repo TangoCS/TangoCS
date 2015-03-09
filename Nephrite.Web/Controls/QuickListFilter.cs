@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Web.UI.WebControls;
 using System.Web.UI;
 using Nephrite.Multilanguage;
+using Nephrite.Http;
 
 namespace Nephrite.Web.Controls
 {
@@ -36,7 +37,7 @@ namespace Nephrite.Web.Controls
 		}
 		public static Url SetSearchQuery()
 		{
-			return Url.Current.SetParameter("qfind", HttpUtility.UrlEncode(QuickFilter.SearchQuery));
+			return UrlHelper.Current().SetParameter("qfind", HttpUtility.UrlEncode(QuickFilter.SearchQuery));
 		}
 		public static Url SetSearchQuery(Url url)
 		{

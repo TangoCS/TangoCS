@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nephrite.Http;
 
 namespace Nephrite.Html
 {
 	public class HtmlPage
 	{
-		IAppContext _context;
+		ActionContext _context;
 
 		Dictionary<string, string> _css = new Dictionary<string, string>();
 		Dictionary<string, string> _js = new Dictionary<string, string>();
 		Dictionary<string, string> _startupjs = new Dictionary<string, string>();
 
-		public IAppContext AppContext { get { return _context; } }
+		//public ActionContext ActionContext { get { return _context; } }
 
-		public HtmlPage(IAppContext context)
+		public HtmlPage(ActionContext context)
 		{
 			_context = context;
 		}

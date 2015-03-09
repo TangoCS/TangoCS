@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Nephrite.Html;
+using Nephrite.Http;
 
-namespace Nephrite.Web.Layout
+namespace Nephrite.Layout
 {
 	public class AppLayout : ILayoutList, ILayoutForm,
 		ILayoutListRowDrag, ILayoutMessage, ILayoutPaging, ILayoutSimpleTags, ILayoutLabels

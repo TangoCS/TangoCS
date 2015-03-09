@@ -6,7 +6,8 @@ using System.Linq.Expressions;
 using System.Web.UI;
 using System.Text.RegularExpressions;
 using Nephrite.Meta;
-using Nephrite.Web.Layout;
+
+using Nephrite.Layout;
 
 namespace Nephrite.Web.Controls
 {

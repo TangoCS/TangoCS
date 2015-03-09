@@ -5,8 +5,9 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Nephrite.Web;
+using Nephrite.Http;
 using System.Text.RegularExpressions;
-using Nephrite.Web.Layout;
+
 
 namespace Nephrite.Web.Controls
 {

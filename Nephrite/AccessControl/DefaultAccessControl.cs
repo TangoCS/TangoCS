@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Nephrite.Http;
 using Nephrite.Identity;
 
 namespace Nephrite.AccessControl
@@ -10,18 +11,18 @@ namespace Nephrite.AccessControl
 	{
 		//string _message = "";
 
-		public Func<IAppContext> AppContext { get; private set; }
+		public Func<IHttpContext> HttpContext { get; private set; }
 		public AccessControlOptions Options { get; private set; }
 		public Func<IAccessControlDataContext<TIdentityKey>> DataContext { get; private set; }
 		public Func<IIdentityManager<TIdentityKey>> IdentityManager { get; private set; }
 
 		public DefaultAccessControl(
-			Func<IAppContext> appContext,
+			Func<IHttpContext> httpContext,
 			Func<IAccessControlDataContext<TIdentityKey>> dataContext,
 			Func<IIdentityManager<TIdentityKey>> identityManager,
 			AccessControlOptions options = null)
 		{
-			AppContext = appContext;
+			HttpContext = httpContext;
 			DataContext = dataContext;
 			IdentityManager = identityManager;
 			Options = options ?? new AccessControlOptions { Enabled = () => true };
@@ -54,7 +55,7 @@ namespace Nephrite.AccessControl
 			var s = IdentityManager().CurrentSubject;
 			if (s == null) return false;
 
-			var ctx = AppContext();
+			var ctx = HttpContext();
 			string key = securableObjectKey.ToUpper();
 			if (s.AllowItems.Contains(key)) return true;
 			if (s.DisallowItems.Contains(key)) return false;
@@ -121,18 +122,18 @@ namespace Nephrite.AccessControl
 	{
 		static object _lock = new object();
 
-		public Func<IAppContext> AppContext { get; private set; }
+		public Func<IHttpContext> HttpContext { get; private set; }
 		public CacheableAccessControlOptions Options { get; private set; }
 		public Func<ICacheableAccessControlDataContext> DataContext { get; private set; }
 		public Func<IIdentityManager<TIdentityKey>> IdentityManager { get; private set; }
 
 		public CacheableAccessControl(
-			Func<IAppContext> appContext,
+			Func<IHttpContext> httpContext,
 			Func<ICacheableAccessControlDataContext> dataContext,
 			Func<IIdentityManager<TIdentityKey>> identityManager,
 			CacheableAccessControlOptions options = null)
 		{
-			AppContext = appContext;
+			HttpContext = httpContext;
 			DataContext = dataContext;
 			IdentityManager = identityManager;
 			Options = options ?? new CacheableAccessControlOptions { Enabled = () => true };
@@ -145,7 +146,7 @@ namespace Nephrite.AccessControl
 
 			HashSet<string> _access = null;
 			string cacheName = Options.ClassName;
-			var ctx = AppContext();
+			var ctx = HttpContext();
 
 			if (!AccessControlCache.AccessCache.ContainsKey(cacheName))
 			{
@@ -186,7 +187,7 @@ namespace Nephrite.AccessControl
 
 			HashSet<string> _access = null;
 			HashSet<string> _items = null;
-			var ctx = AppContext();
+			var ctx = HttpContext();
 
 			if (!AccessControlCache.AccessCache.ContainsKey(cacheName) || !AccessControlCache.ItemsCache.ContainsKey(cacheName))
 			{

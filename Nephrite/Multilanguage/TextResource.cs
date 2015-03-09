@@ -1,17 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using Nephrite.Http;
 
 namespace Nephrite.Multilanguage
 {
 	public static class TextResource
 	{
 		static Func<IDC_TextResources> DataContext;
-		static Func<IAppContext> AppContext;
+		static Func<IHttpContext> HttpContext;
 
-		public static void Init(Func<IAppContext> appContext, Func<IDC_TextResources> dataContext)
+		public static void Init(Func<IHttpContext> httpContext, Func<IDC_TextResources> dataContext)
 		{
-			AppContext = appContext;
+			HttpContext = httpContext;
 			DataContext = dataContext;
 		}
 
@@ -19,9 +21,9 @@ namespace Nephrite.Multilanguage
 		{
 			get
 			{
-				if (AppContext().Items["reseditmode"] == null)
-					AppContext().Items["reseditmode"] = AppContext().Request.Cookies["resourceeditmode"] != null && AppContext().Request.Cookies["resourceeditmode"] == "1";
-				return (bool)AppContext().Items["reseditmode"];
+				if (HttpContext().Items["reseditmode"] == null)
+					HttpContext().Items["reseditmode"] = HttpContext().Request.Cookies["resourceeditmode"] != null && HttpContext().Request.Cookies["resourceeditmode"] == "1";
+				return (bool)HttpContext().Items["reseditmode"];
 			}
 		}
 
@@ -71,7 +73,7 @@ namespace Nephrite.Multilanguage
 						return "<span class='resedit' onclick='EditTextResource(" + resourceids[res] + ");'>[" + sysName + "]</span>";
 				}
 				else
-					return "<span class=\"resedit\" onclick=\"EditTextResource('" + sysName + "', '" + HtmlHelpers.HtmlEncode(resources[res]) + "');\">{" + sysName + "}</span>";
+					return "<span class=\"resedit\" onclick=\"EditTextResource('" + sysName + "', '" + WebUtility.HtmlEncode(resources[res]) + "');\">{" + sysName + "}</span>";
 			}
 			return resources[res];
 		}

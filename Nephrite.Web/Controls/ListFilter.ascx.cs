@@ -16,6 +16,7 @@ using Nephrite.Web;
 using Nephrite.Multilanguage;
 using Nephrite.Meta;
 using Nephrite.AccessControl;
+using Nephrite.Http;
 
 namespace Nephrite.Web.Controls
 {
@@ -32,7 +33,7 @@ namespace Nephrite.Web.Controls
 		public string Width { get; set; }
 		protected bool ViewEditMode { get; set; }
 
-		protected PersistentFilter filterObject = new PersistentFilter(Url.Current.Action);
+		protected PersistentFilter filterObject = new PersistentFilter(UrlHelper.Current().Action);
 		public PersistentFilter FilterObject { get { return filterObject; } }
 		public List<FilterItem> FilterList
 		{
@@ -56,7 +57,7 @@ namespace Nephrite.Web.Controls
 
 		protected List<Field> fieldList = new List<Field>();
 
-		string actionName = Url.Current.Action;
+		string actionName = UrlHelper.Current().Action;
 		public void SetActionName(string action)
 		{
 			actionName = action;
@@ -67,7 +68,7 @@ namespace Nephrite.Web.Controls
 		{
 			get
 			{
-				if (Url.Current.GetString("filterid").IsEmpty())
+				if (UrlHelper.Current().GetString("filterid").IsEmpty())
 					return false;
 				else
 					return !filterObject.Columns.IsEmpty() || !filterObject.Sort.IsEmpty() ||
@@ -81,7 +82,7 @@ namespace Nephrite.Web.Controls
 		{
 			int subjectID = Subject.Current.ID;
 			var flist = (from f in dc.IN_Filter
-						 where f.ListName == Url.Current.Mode + "_" + actionName &&
+						 where f.ListName == UrlHelper.Current().Mode + "_" + actionName &&
 									(!f.SubjectID.HasValue || f.SubjectID.Value == subjectID) && f.FilterName != null
 						 select f).ToList();
 			int i = 0;
@@ -466,7 +467,7 @@ namespace Nephrite.Web.Controls
 			filterObject.Name = tbTitle.Text != "" ? tbTitle.Text : null;
 			filterObject.ListParms = tbParms.Text;
 			filterObject.IsDefault = cbDefault.Checked;
-			filterObject.ListName = Url.Current.Mode + "_" + Url.Current.Action;
+			filterObject.ListName = UrlHelper.Current().Mode + "_" + UrlHelper.Current().Action;
 			filterObject.editMode = filter.Argument.ToInt32(0) > 0;
 			filterObject.Columns = cblColumns.GetSelectedValues().Join(",");
 			filterObject.ItemsOnPage = tbItemsOnPage.Text.ToInt32(0);
@@ -539,7 +540,7 @@ namespace Nephrite.Web.Controls
 				item.Advanced = mode.Value == "A";
 
 			filterObject.Save(FilterList);
-			Response.Redirect(Url.Current.SetParameter("filterid", filterObject.FilterID.ToString()));
+			Response.Redirect(UrlHelper.Current().SetParameter("filterid", filterObject.FilterID.ToString()));
 		}
 
 		void StoreRepeater()
@@ -1509,7 +1510,7 @@ namespace Nephrite.Web.Controls
 
 		public PersistentFilter(string action)
 		{
-			_filter = dc.IN_Filter.SingleOrDefault(o => o.FilterID == Query.GetInt("filterid", 0) && o.ListName.ToLower() == Url.Current.Mode.ToLower() + "_" + action.ToLower());
+			_filter = dc.IN_Filter.SingleOrDefault(o => o.FilterID == Query.GetInt("filterid", 0) && o.ListName.ToLower() == UrlHelper.Current().Mode.ToLower() + "_" + action.ToLower());
 			_items = _filter != null && _filter.FilterValue != null ? XMLSerializer.Deserialize<List<FilterItem>>(_filter.FilterValue.Root) : new List<FilterItem>();
 		}
 

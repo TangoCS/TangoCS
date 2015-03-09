@@ -6,28 +6,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.Routing;
-
+using Nephrite.Http;
 
 
 namespace Nephrite.Web
 {
-	public class Url
+	public class _Url
 	{
 		string _q = "";
 		NameValueCollection _c = null;
 		bool _isCurrent = true;
 
-		protected Url(string pathandquery, NameValueCollection query)
+		protected _Url(string pathandquery, NameValueCollection query)
 		{
 			_q = pathandquery;
 			_c = query;
 		}
 
-		public static Url Current
+		public static _Url Current
 		{
 			get
 			{
-				return new Url(HttpContext.Current.Request.Url.PathAndQuery, HttpContext.Current.Request.QueryString);
+				return new _Url(HttpContext.Current.Request.Url.PathAndQuery, HttpContext.Current.Request.QueryString);
 			}
 		}
 
@@ -36,7 +36,7 @@ namespace Nephrite.Web
 		public RouteData RouteData { get { return HttpContext.Current.Request.RequestContext.RouteData; } }
 		//public int? ID { get { return GetInt("oid"); }}
 
-		public Url RemoveParameter(params string[] parametername)
+		public _Url RemoveParameter(params string[] parametername)
 		{
 			foreach (string s in parametername)
 			{
@@ -66,7 +66,7 @@ namespace Nephrite.Web
 			return this;
 		}
 
-		public Url SetParameter(HtmlParms parms)
+		public _Url SetParameter(HtmlParms parms)
 		{
 			foreach (var parm in parms)
 				RemoveParameter(parm.Key);
@@ -75,14 +75,14 @@ namespace Nephrite.Web
 			return this;
 		}
 
-		public Url SetParameter(string parm, string value)
+		public _Url SetParameter(string parm, string value)
 		{
 			RemoveParameter(parm);
 			if (!value.IsEmpty()) _q = _q.AddQueryParameter(parm, value);
 			return this;
 		}
 
-		public Url ReturnUrl
+		public _Url ReturnUrl
 		{
 			get
 			{
@@ -91,7 +91,7 @@ namespace Nephrite.Web
 					return null;
 				Uri u = new Uri(HttpContext.Current.Request.Url, r);
 				string hash = u.ToString().IndexOf('#') > 0 ? u.ToString().Substring(u.ToString().IndexOf('#')) : "";
-				return new Url(u.PathAndQuery + hash, HttpUtility.ParseQueryString(u.Query));
+				return new _Url(u.PathAndQuery + hash, HttpUtility.ParseQueryString(u.Query));
 			}
 			set
 			{
@@ -137,7 +137,7 @@ namespace Nephrite.Web
 				return _q.GetQueryParameter(parametername);
 		}
 
-		public static implicit operator string(Url m)
+		public static implicit operator string(_Url m)
 		{
 			if (m == null)
 				return null;
@@ -200,10 +200,10 @@ namespace Nephrite.Web
 			return s + (ps.IsEmpty() ? "" : ("?" + ps));
 		}
 
-		public static Url CreateUrl(string route, HtmlParms parms = null, string site = null)
+		public static _Url CreateUrl(string route, HtmlParms parms = null, string site = null)
 		{
-			string s = Url.Create(route, parms, site);
-			return new Url(s, HttpUtility.ParseQueryString(s)); 
+			string s = _Url.Create(route, parms, site);
+			return new _Url(s, HttpUtility.ParseQueryString(s)); 
 		}
 
 		public override string ToString()
@@ -213,7 +213,7 @@ namespace Nephrite.Web
 
 		public static string CreateReturnUrl()
 		{
-			return CreateReturnUrl(Url.Current.ToString());
+			return CreateReturnUrl(UrlHelper.Current().ToString());
 		}
 
 		public static string CreateReturnUrl(string url)
@@ -239,22 +239,4 @@ namespace Nephrite.Web
 		public static int MaxReturnUrlLength = 1800;
 	}
 
-	public class HtmlParms : Dictionary<string, string>
-	{
-		public HtmlParms() : base() { }
-		public HtmlParms(IDictionary<string, string> dictionary) : base(dictionary) { }
-
-		public override string ToString()
-		{
-			return this.Select(o => o.Value.IsEmpty() ? "" : (o.Key + "=" + o.Value)).Join("&");
-		}
-
-		public HtmlParms(string key, string value) : base() 
-		{
-			Add(key, value);
-		}
-	}
-
-	
-	
 }

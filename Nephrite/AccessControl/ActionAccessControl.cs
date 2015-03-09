@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nephrite.Http;
 using Nephrite.Identity;
 
 namespace Nephrite.AccessControl
@@ -11,7 +12,7 @@ namespace Nephrite.AccessControl
 		static object LockObject = new object();
 
 		public static void Init(
-			Func<IAppContext> appContext,
+			Func<IHttpContext> httpContext,
 			Func<ICacheableAccessControlDataContext> dataContext,
 			Func<IIdentityManager<int>> identityManager,
 			CacheableAccessControlOptions options = null
@@ -25,7 +26,7 @@ namespace Nephrite.AccessControl
 					{
 						if (options == null) options = new CacheableAccessControlOptions { Enabled = () => true };
 						if (options.ClassName.IsEmpty()) options.ClassName = "Action";
-						_instanceHolder = new CacheableAccessControl<int>(appContext, dataContext, identityManager, options);
+						_instanceHolder = new CacheableAccessControl<int>(httpContext, dataContext, identityManager, options);
 						return;
 					}
 				}
