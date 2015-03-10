@@ -43,7 +43,7 @@ namespace Nephrite.Meta.Database
 			ForeignKeys = new Dictionary<string, ForeignKey>();
 			Triggers = new Dictionary<string, Trigger>();
 			Indexes = new Dictionary<string, Index>();
-			Identity = true;
+			//Identity = true;
 		}
 	}
 
