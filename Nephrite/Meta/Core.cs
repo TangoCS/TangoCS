@@ -653,6 +653,7 @@ namespace Nephrite.Meta
 			}
 		}
 
+		IMetaPrimitiveType _type = null;
 		/// <summary>
 		/// Тип данных
 		/// </summary>
@@ -660,8 +661,12 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				if (_refClass == null) _refClass = Parent.Parent.GetClass(RefClassName);
-				return _refClass.Key.Type;
+				if (_type == null)
+				{
+					if (_refClass == null) _refClass = Parent.Parent.GetClass(RefClassName);
+					_type = _refClass.Key.Type.Clone(IsRequired);
+				}
+				return _type;
 			}
 			set
 			{

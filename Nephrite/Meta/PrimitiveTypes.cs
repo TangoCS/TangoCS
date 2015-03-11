@@ -11,6 +11,8 @@ namespace Nephrite.Meta
 		/// Func &lt;TValue, string, IFormatProvider, string&gt;
 		/// </summary>
 		object GetStringValue { get; }
+
+		IMetaPrimitiveType Clone(bool notNullable);
 	}
 
 	public interface IMetaIdentifierType : IMetaPrimitiveType
@@ -32,6 +34,14 @@ namespace Nephrite.Meta
 		/// Func &lt;TValue, string, IFormatProvider, string&gt;
 		/// </summary>
 		public object GetStringValue { get; set; }
+
+
+		public IMetaPrimitiveType Clone(bool notNullable)
+		{
+			var copy = MemberwiseClone() as MetaPrimitiveType;
+			copy.NotNullable = notNullable;
+			return copy;
+		}
 	}
 
 	public class MetaEnumType : MetaPrimitiveType
