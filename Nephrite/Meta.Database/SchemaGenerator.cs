@@ -95,7 +95,7 @@ namespace Nephrite.Meta.Database
 							{
 								column.Name = "FileGUID";
 							}
-							column.Type = (prop as MetaReference).RefClass.Key.Type;
+							//column.Type = (prop as MetaReference).RefClass.Key.Type;
 
 							column.ForeignKeyName = "FK_" + cls.Name + "_" + (prop as MetaReference).RefClassName;
 						}
