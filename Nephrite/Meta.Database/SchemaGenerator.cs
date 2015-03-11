@@ -15,11 +15,11 @@ namespace Nephrite.Meta.Database
 				var tempListJoinTables = new List<string>();
 
 				Table t = new Table();
+				t.Schema = this;
 				t.Name = cls.Name;
 				t.Description = cls.Caption;
 				t.Identity = cls.CompositeKey.Count > 0 ? cls.CompositeKey.Count > 1 ? cls.CompositeKey.Where(c => c is MetaAttribute).Any(a => (a as MetaAttribute).IsIdentity) : cls.Key is MetaAttribute && (cls.Key as MetaAttribute).IsIdentity : false;
-				//cls.Properties.Where(c => c is MetaAttribute).Any(a => (a as MetaAttribute).IsIdentity);
-				t.Schema = this;
+
 				if (t.Identity && cls.CompositeKey.Any(c => c.Type is MetaGuidType))
 					throw new Exception(string.Format("Class {0}. Поле не может быть Identity с типом uniqueidentifier", t.Name));
 
@@ -122,36 +122,46 @@ namespace Nephrite.Meta.Database
 
 				foreach (var f in cls.Properties.Where(o => o is MetaReference))
 				{
-					if (f.UpperBound == 1) //Если у свойства мощность 0..1 или 1..1 Создаём FK
+					//Если у свойства мощность 0..1 или 1..1 Создаём FK
+					if (f.UpperBound == 1)
 					{
 						var metaReference = f as MetaReference;
 						var fkcolumnname = metaReference.RefClass.CompositeKey.Select(o => o.ColumnName).First();
 						t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { Table = t, Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaReference.RefClassName, Columns = new[] { metaReference.RefClass.ColumnName(metaReference.Name) }, RefTableColumns = new[] { fkcolumnname } });
 					}
 
-					if (f.UpperBound == -1 && (f as MetaReference).RefClass.Key.UpperBound == -1) //Если у свойства мощность 0..* или 1..* Кроме случая, когда есть обратное свойство с мощностью 0..1 Создаём третью таблицу с двумя колонками
+					//Если у свойства мощность 0..* или 1..* Кроме случая, когда есть обратное свойство с мощностью 0..1 Создаём третью таблицу с двумя колонками
+					if (f.UpperBound == -1 && (f as MetaReference).InverseProperty == null) //RefClass.Key.UpperBound == -1)
 					{
 						if (!tempListJoinTables.Contains(t.Name + f.Name) && !tempListJoinTables.Contains(f.Name + t.Name))
 						{
-							var joinTable = new Table();
-							joinTable.Name = t.Name + f.Name;
+							var jt = new Table();
+							jt.Schema = this;
+							jt.Name = t.Name + f.Name;
 							var columnNameLeft = primaryColumn.Name;
-							var columnNameRight = (f as MetaReference).RefClass.ColumnName((f as MetaReference).RefClass.Key.Name);
-							joinTable.Columns.Add(columnNameLeft, new Column() { Table = t, Name = columnNameLeft, Nullable = false, Type = f.Type });
-							joinTable.Columns.Add(columnNameRight, new Column() { Table = t, Name = columnNameRight, Nullable = false, Type = (f as MetaReference).RefClass.Key.Type });
+							var columnNameRight = f.ColumnName;
+							//(f as MetaReference).RefClass.ColumnName((f as MetaReference).RefClass.Key.Name);
+							jt.Columns.Add(columnNameLeft, new Column() { Table = jt, Name = columnNameLeft, IsPrimaryKey = true, Nullable = false, Type = primaryColumn.Type });
+							jt.Columns.Add(columnNameRight, new Column() { Table = jt, Name = columnNameRight, IsPrimaryKey = true, Nullable = false, Type = (f as MetaReference).RefClass.Key.Type });
 
-							t.ForeignKeys.Add("FK_" + joinTable.Name + "_" + t.Name, new ForeignKey() { Table = t, Name = "FK_" + joinTable.Name + "_" + t.Name, RefTable = t.Name, Columns = new[] { columnNameLeft }, RefTableColumns = new[] { primaryColumn.Name } });
-							t.ForeignKeys.Add("FK_" + joinTable.Name + "_" + (f as MetaReference).RefClass.Name, new ForeignKey() { Table = t, Name = "FK_" + joinTable.Name + "_" + (f as MetaReference).RefClass.Name, RefTable = (f as MetaReference).RefClass.Name, Columns = new[] { columnNameRight }, RefTableColumns = new[] { (f as MetaReference).RefClass.Key.Name } });
+							PrimaryKey joinPk = new PrimaryKey();
+							joinPk.Name = "PK_" + jt.Name;
+							joinPk.Columns = jt.Columns.Select(o => o.Key).ToArray();
+							joinPk.Table = jt;
+							jt.PrimaryKey = joinPk;
 
-							tempListJoinTables.Add(joinTable.Name);
+							jt.ForeignKeys.Add("FK_" + jt.Name + "_" + t.Name, new ForeignKey() { Table = jt, Name = "FK_" + jt.Name + "_" + t.Name, RefTable = t.Name, Columns = new[] { columnNameLeft }, RefTableColumns = new[] { primaryColumn.Name } });
+							jt.ForeignKeys.Add("FK_" + jt.Name + "_" + f.Name, new ForeignKey() { Table = jt, Name = "FK_" + jt.Name + "_" + f.Name, RefTable = (f as MetaReference).RefClass.Name, Columns = new[] { columnNameRight }, RefTableColumns = new[] { (f as MetaReference).RefClass.Key.Name } });
+
+							Tables.Add(jt.Name, jt);
+							tempListJoinTables.Add(jt.Name);
 						}
 					}
 				};
 
-				Table tdata = null;
 				if (cls.IsMultilingual)
 				{
-					tdata = new Table();
+					var tdata = new Table();
 					tdata.Schema = this;
 					tdata.Name = cls.Name + "Data";
 
