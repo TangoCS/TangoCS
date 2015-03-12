@@ -67,7 +67,7 @@ namespace Nephrite.Meta.Database
 				{
 					if (prop is MetaComputedAttribute)
 						continue;
-					if (prop is MetaReference && (prop as MetaReference).UpperBound == -1)
+					if (prop is MetaReference && prop.UpperBound == -1)
 						continue;
 					if ((prop is MetaAttribute && (prop as MetaAttribute).IsMultilingual) || 
 						(prop is MetaPersistentComputedAttribute && (prop as MetaPersistentComputedAttribute).IsMultilingual))
@@ -83,22 +83,18 @@ namespace Nephrite.Meta.Database
 						column.ComputedText = (prop as MetaPersistentComputedAttribute).Expression;
 					}
 
-					if (prop is MetaReference)
+					//Если у свойства мощность 0..1 или 1..1
+					if (prop is MetaReference && prop.UpperBound == 1)
 					{
-						if (prop.UpperBound == 1) //Если у свойства мощность 0..1 или 1..1
+						if ((prop as MetaReference).RefClass.Key.Type is MetaIntType || (prop as MetaReference).RefClass.Key.Type is MetaGuidType)
 						{
-							if ((prop as MetaReference).RefClass.Key.Type is MetaIntType || (prop as MetaReference).RefClass.Key.Type is MetaGuidType)
-							{
-								column.Name = (prop as MetaReference).RefClass.ColumnName(prop.Name);
-							}
-							if ((prop as MetaReference).RefClass.Key.Type is MetaFileType)
-							{
-								column.Name = "FileGUID";
-							}
-							//column.Type = (prop as MetaReference).RefClass.Key.Type;
-
-							column.ForeignKeyName = "FK_" + cls.Name + "_" + (prop as MetaReference).RefClassName;
+							column.Name = (prop as MetaReference).RefClass.ColumnName(prop.Name);
 						}
+						if ((prop as MetaReference).RefClass.Key.Type is MetaFileType)
+						{
+							column.Name = "FileGUID";
+						}
+						column.ForeignKeyName = "FK_" + cls.Name + "_" + (prop as MetaReference).RefClassName;
 					}
 
 					if (prop.Type is MetaFileType)
@@ -125,39 +121,93 @@ namespace Nephrite.Meta.Database
 					//Если у свойства мощность 0..1 или 1..1 Создаём FK
 					if (f.UpperBound == 1)
 					{
-						var metaReference = f as MetaReference;
-						var fkcolumnname = metaReference.RefClass.CompositeKey.Select(o => o.ColumnName).First();
-						t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { Table = t, Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaReference.RefClassName, Columns = new[] { metaReference.RefClass.ColumnName(metaReference.Name) }, RefTableColumns = new[] { fkcolumnname } });
+						var metaRef = f as MetaReference;
+						var fkcolumnname = metaRef.RefClass.CompositeKey.Select(o => o.ColumnName).First();
+						t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { Table = t, Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaRef.RefClassName, Columns = new[] { metaRef.RefClass.ColumnName(metaRef.Name) }, RefTableColumns = new[] { fkcolumnname } });
+
+						// Если референс на WF_Activity
+						var wf = new string[] {"wf_activity", "wf_workflow", "wf_transition" };
+						if (metaRef.RefClassName.ToLower() == "wf_activity" && !wf.Any(o => o == cls.Name.ToLower()))
+						{
+							var ttr = new Table();
+							ttr.Schema = this;
+							ttr.Name = cls.Name + "Transition";
+
+							// Добавляем PK
+							var trPk = new Column();
+							trPk.Name = ttr.Name + "ID";
+							trPk.Type = MetaIntType.NotNull();
+							trPk.IsPrimaryKey = true;
+							trPk.Nullable = false;
+							trPk.Table = ttr;
+							trPk.Identity = true;
+
+							var pk = new PrimaryKey();
+							pk.Name = "PK_" + ttr.Name.Trim();
+							pk.Columns = new string[] { trPk.Name };
+							pk.Table = ttr;
+							ttr.Identity = true;
+							ttr.PrimaryKey = pk;
+
+							ttr.Columns.Add(trPk.Name, trPk);
+
+							ttr.Columns.Add("CreateDate", new Column() { Table = ttr, Name = "CreateDate", Type = MetaDateTimeType.NotNull() });
+							ttr.Columns.Add("Comment", new Column() { Table = ttr, Name = "Comment", Nullable = true, Type = MetaStringType.Null() });
+							ttr.Columns.Add("IsCurrent", new Column() { Table = ttr, Name = "IsCurrent", Type = MetaBooleanType.NotNull() });
+							ttr.Columns.Add("IsLast", new Column() { Table = ttr, Name = "IsLast", Type = MetaBooleanType.NotNull() });
+							ttr.Columns.Add("SeqNo", new Column() { Table = ttr, Name = "SeqNo", Type = MetaIntType.NotNull() });
+
+							var fknm = "FK_" + ttr.Name + "_Parent";
+							ttr.Columns.Add("ParentID", new Column() { Table = ttr, Name = "ParentID", ForeignKeyName = fknm, Type = MetaIntType.NotNull() });
+							ttr.ForeignKeys.Add(fknm, new ForeignKey() { Table = ttr, Name = fknm, RefTable = t.Name, Columns = new[] { "ParentID" }, RefTableColumns = new[] { metaRef.RefClass.Key.Name } });
+
+							fknm = "FK_" + ttr.Name + "_Subject";
+							ttr.Columns.Add("SubjectID", new Column() { Table = ttr, Name = "SubjectID", ForeignKeyName = fknm, Type = MetaIntType.NotNull() });
+							ttr.ForeignKeys.Add(fknm, new ForeignKey() { Table = ttr, Name = fknm, RefTable = "SPM_Subject", Columns = new[] { "SubjectID" }, RefTableColumns = new[] { "SubjectID" } });
+
+							fknm = "FK_" + ttr.Name + "_Workflow";
+							ttr.Columns.Add("WorkflowID", new Column() { Table = ttr, Name = "WorkflowID", ForeignKeyName = fknm, Type = MetaIntType.NotNull() });
+							ttr.ForeignKeys.Add(fknm, new ForeignKey() { Table = ttr, Name = fknm, RefTable = "WF_Workflow", Columns = new[] { "WorkflowID" }, RefTableColumns = new[] { "WorkflowID" } });
+
+							fknm = "FK_" + ttr.Name + "_Activity";
+							ttr.Columns.Add("ActivityID", new Column() { Table = ttr, Name = "ActivityID", ForeignKeyName = fknm, Type = MetaIntType.NotNull() });
+							ttr.ForeignKeys.Add(fknm, new ForeignKey() { Table = ttr, Name = fknm, RefTable = "WF_Activity", Columns = new[] { "ActivityID" }, RefTableColumns = new[] { "ActivityID" } });
+
+							fknm = "FK_" + ttr.Name + "_Transition";
+							ttr.Columns.Add("TransitionID", new Column() { Table = ttr, Name = "TransitionID", ForeignKeyName = fknm, Type = MetaIntType.NotNull() });
+							ttr.ForeignKeys.Add(fknm, new ForeignKey() { Table = ttr, Name = fknm, RefTable = "WF_Transition", Columns = new[] { "TransitionID" }, RefTableColumns = new[] { "TransitionID" } });
+							
+							Tables.Add(ttr.Name, ttr);
+						}
 					}
 
 					//Если у свойства мощность 0..* или 1..* Кроме случая, когда есть обратное свойство с мощностью 0..1 Создаём третью таблицу с двумя колонками
-					if (f.UpperBound == -1 && (f as MetaReference).InverseProperty == null) //RefClass.Key.UpperBound == -1)
+					if (f.UpperBound == -1 && (f as MetaReference).InverseProperty == null)
 					{
 						if (!tempListJoinTables.Contains(t.Name + f.Name) && !tempListJoinTables.Contains(f.Name + t.Name))
 						{
-							var jt = new Table();
-							jt.Schema = this;
-							jt.Name = t.Name + f.Name;
+							var tj = new Table();
+							tj.Schema = this;
+							tj.Name = t.Name + f.Name;
 							var columnNameLeft = primaryColumn.Name;
 							var columnNameRight = f.ColumnName;
-							//(f as MetaReference).RefClass.ColumnName((f as MetaReference).RefClass.Key.Name);
-							jt.Columns.Add(columnNameLeft, new Column() { Table = jt, Name = columnNameLeft, IsPrimaryKey = true, Nullable = false, Type = primaryColumn.Type });
-							jt.Columns.Add(columnNameRight, new Column() { Table = jt, Name = columnNameRight, IsPrimaryKey = true, Nullable = false, Type = (f as MetaReference).RefClass.Key.Type });
+							tj.Columns.Add(columnNameLeft, new Column() { Table = tj, Name = columnNameLeft, IsPrimaryKey = true, ForeignKeyName = "FK_" + tj.Name + "_" + t.Name, Type = primaryColumn.Type });
+							tj.Columns.Add(columnNameRight, new Column() { Table = tj, Name = columnNameRight, IsPrimaryKey = true, ForeignKeyName = "FK_" + tj.Name + "_" + f.Name, Type = (f as MetaReference).RefClass.Key.Type });
 
 							PrimaryKey joinPk = new PrimaryKey();
-							joinPk.Name = "PK_" + jt.Name;
-							joinPk.Columns = jt.Columns.Select(o => o.Key).ToArray();
-							joinPk.Table = jt;
-							jt.PrimaryKey = joinPk;
+							joinPk.Name = "PK_" + tj.Name;
+							joinPk.Columns = tj.Columns.Select(o => o.Key).ToArray();
+							joinPk.Table = tj;
+							tj.PrimaryKey = joinPk;
 
-							jt.ForeignKeys.Add("FK_" + jt.Name + "_" + t.Name, new ForeignKey() { Table = jt, Name = "FK_" + jt.Name + "_" + t.Name, RefTable = t.Name, Columns = new[] { columnNameLeft }, RefTableColumns = new[] { primaryColumn.Name } });
-							jt.ForeignKeys.Add("FK_" + jt.Name + "_" + f.Name, new ForeignKey() { Table = jt, Name = "FK_" + jt.Name + "_" + f.Name, RefTable = (f as MetaReference).RefClass.Name, Columns = new[] { columnNameRight }, RefTableColumns = new[] { (f as MetaReference).RefClass.Key.Name } });
+							tj.ForeignKeys.Add("FK_" + tj.Name + "_" + t.Name, new ForeignKey() { Table = tj, Name = "FK_" + tj.Name + "_" + t.Name, RefTable = t.Name, Columns = new[] { columnNameLeft }, RefTableColumns = new[] { primaryColumn.Name } });
+							tj.ForeignKeys.Add("FK_" + tj.Name + "_" + f.Name, new ForeignKey() { Table = tj, Name = "FK_" + tj.Name + "_" + f.Name, RefTable = (f as MetaReference).RefClass.Name, Columns = new[] { columnNameRight }, RefTableColumns = new[] { (f as MetaReference).RefClass.Key.Name } });
 
-							Tables.Add(jt.Name, jt);
-							tempListJoinTables.Add(jt.Name);
+							Tables.Add(tj.Name, tj);
+							tempListJoinTables.Add(tj.Name);
 						}
 					}
-				};
+				}
 
 				if (cls.IsMultilingual)
 				{
