@@ -44,7 +44,7 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public class MetaEnumType : MetaPrimitiveType
+	public partial class MetaEnumType : MetaPrimitiveType
 	{
 		public static MetaEnumType NotNull(string enumName) { return new MetaEnumType { NotNullable = true, Name = enumName }; }
 		public static MetaEnumType Null(string enumName) { return new MetaEnumType { NotNullable = false, Name = enumName }; }

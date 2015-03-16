@@ -5,6 +5,68 @@ using System.Text;
 
 namespace Nephrite.Meta.Database
 {
+	public partial class Schema
+	{
+        public void Sync(IDBScript dbscript, Schema srcSchema)
+        {
+			foreach (var srctable in srcSchema.Tables.Values)
+			{
+				var table = Tables.Values.SingleOrDefault(t => t.Name.ToUpper() == srctable.Name.ToUpper());
+
+				if (table == null)
+				{
+					dbscript.CreateTable(srctable);
+				}
+				else
+					table.Sync(dbscript, srctable);
+			}
+			foreach (var srcview in srcSchema.Views.Values)
+			{
+				var view = Views.Values.SingleOrDefault(t => t.Name.ToUpper() == srcview.Name.ToUpper());
+
+				if (view == null)
+				{
+					dbscript.CreateView(srcview);
+				}
+				else
+					view.Sync(dbscript, srcview);
+			}
+			foreach (var srcfunction in srcSchema.Functions.Values)
+			{
+				var function = Functions.Values.SingleOrDefault(t => t.Name.ToUpper() == srcfunction.Name.ToUpper());
+
+				if (function == null)
+				{
+					dbscript.CreateFunction(srcfunction);
+				}
+				else
+					function.Sync(dbscript, srcfunction);
+			}
+			/*foreach (var srcfunction in srcSchema.TableFunctions.Values)
+			{
+				var function = TableFunctions.Values.SingleOrDefault(t => t.Name.ToUpper() == srcfunction.Name.ToUpper());
+
+				if (function == null)
+				{
+					dbscript.CreateFunction(srcfunction);
+				}
+				else
+					function.Sync(dbscript, srcfunction);
+			}*/
+			foreach (var srcprocedure in srcSchema.Procedures.Values)
+			{
+				var procedure = Procedures.Values.SingleOrDefault(t => t.Name.ToUpper() == srcprocedure.Name.ToUpper());
+
+				if (procedure == null)
+				{
+					dbscript.CreateProcedure(srcprocedure);
+				}
+				else
+					procedure.Sync(dbscript, srcprocedure);
+			}
+		}
+	}
+
     public partial class Procedure
     {
         public void Sync(IDBScript script, Procedure srcProcedure)
