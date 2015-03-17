@@ -306,8 +306,10 @@ namespace Nephrite.Meta.Database
 							view.Columns.Add(vcl.Name, vcl);
 						}
 					view.Name = "V_" + cls.Name;
-					view.Text = string.Format(@"CREATE view {0} as select f.*, s.*
-						from {1} f JOIN {2} s ON f.{3} = s.{3}", view.Name, t.Name, tdata.Name, primaryColumn.Name);
+					var fcol = t.Columns.Values.Select(o => o.Name).Join(",f.");
+					var scol = tdata.Columns.Values.Where(o => o.Name != columnPk.Name && o.Name != fk.Name).Select(o => o.Name).Join(",s.");
+					view.Text = string.Format(@"CREATE view dbo.{0} as select f.{4}, s.{5}
+						from dbo.{1} f JOIN dbo.{2} s ON f.{3} = s.{3};", view.Name, t.Name, tdata.Name, primaryColumn.Name, fcol, scol);
 					Views.Add(view.Name, view);
 				}
 			}
@@ -337,20 +339,34 @@ namespace Nephrite.Meta.Database
 				}
 				Views.Add(view.Name, view);
 			}
+			if (cls.Persistent == PersistenceType.Procedure)
+			{
+				var procedure = new Procedure();
+				procedure.Name = cls.Name;
+				//procedure.Text = "";
+				foreach(var param in cls.Parameters)
+				{
+					var par = new Parameter();
+					par.Name = param.Name;
+					par.Type = param.Type;
+					procedure.Parameters.Add(par.Name, par);
+				}
+				Procedures.Add(procedure.Name, procedure);
+			}
 			if (cls.Persistent == PersistenceType.TableFunction)
 			{
 				var function = new TableFunction();
 				function.Name = cls.Name;
 				function.ReturnType = cls.Name;
 				//function.Text = "";
-				foreach(var param in cls.Parameters)
+				foreach (var param in cls.Parameters)
 				{
 					var par = new Parameter();
 					par.Name = param.Name;
 					par.Type = param.Type;
 					function.Parameters.Add(par.Name, par);
 				}
-				foreach(var prop in cls.Properties)
+				foreach (var prop in cls.Properties)
 				{
 					var column = new ViewColumn();
 					column.Name = prop.ColumnName;

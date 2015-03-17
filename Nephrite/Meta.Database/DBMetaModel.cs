@@ -123,7 +123,6 @@ namespace Nephrite.Meta.Database
 		public Procedure()
 		{
 			Parameters = new Dictionary<string, Parameter>();
-
 		}
 	}
 

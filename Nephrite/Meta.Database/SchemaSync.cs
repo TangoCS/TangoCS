@@ -42,17 +42,17 @@ namespace Nephrite.Meta.Database
 				else
 					function.Sync(dbscript, srcfunction);
 			}
-			/*foreach (var srcfunction in srcSchema.TableFunctions.Values)
+			foreach (var srcfunction in srcSchema.TableFunctions.Values)
 			{
 				var function = TableFunctions.Values.SingleOrDefault(t => t.Name.ToUpper() == srcfunction.Name.ToUpper());
 
 				if (function == null)
 				{
-					dbscript.CreateFunction(srcfunction);
+					dbscript.CreateTableFunction(srcfunction);
 				}
 				else
 					function.Sync(dbscript, srcfunction);
-			}*/
+			}
 			foreach (var srcprocedure in srcSchema.Procedures.Values)
 			{
 				var procedure = Procedures.Values.SingleOrDefault(t => t.Name.ToUpper() == srcprocedure.Name.ToUpper());
@@ -105,7 +105,26 @@ namespace Nephrite.Meta.Database
         }
     }
 
-    public partial class View
+	public partial class TableFunction
+	{
+		public void Sync(IDBScript script, TableFunction srcFunction)
+		{
+			if (srcFunction == null)
+			{
+				script.DeleteTableFunction(this);
+			}
+			else
+			{
+				if (srcFunction.Text != this.Text)
+				{
+					script.DeleteTableFunction(this);
+					script.CreateTableFunction(srcFunction);
+				}
+			}
+		}
+	}
+
+	public partial class View
     {
 
         public void Sync(IDBScript script, View srcView)

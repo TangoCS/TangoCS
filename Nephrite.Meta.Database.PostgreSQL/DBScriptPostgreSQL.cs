@@ -295,6 +295,16 @@ namespace Nephrite.Meta.Database
 			_MainScripts.Add(srcFunction.Text);
 		}
 
+		public void DeleteTableFunction(TableFunction currentFunction)
+		{
+			_MainScripts.Add(string.Format("DROP FUNCTION IF EXISTS {1}.{0}", currentFunction.Name, _SchemaName));
+		}
+
+		public void CreateTableFunction(TableFunction srcFunction)
+		{
+			_MainScripts.Add(srcFunction.Text);
+		}
+
 		public void DeleteDefaultValue(Column currentColumn)
 		{
 			_MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} DROP DEFAULT;", currentColumn.Name.ToLower(), currentColumn.Table.Name.ToLower(), _SchemaName));
