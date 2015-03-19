@@ -103,4 +103,11 @@ namespace Nephrite.Meta
 			return script.GetByteArrayType(Length);
 		}
 	}
+	public partial class MetaEnumType
+	{
+		public override string GetDBType(IDBScript script)
+		{
+			return script.GetStringType(1);
+		}
+	}
 }

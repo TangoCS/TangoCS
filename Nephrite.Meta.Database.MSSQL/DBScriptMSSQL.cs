@@ -132,9 +132,6 @@ namespace Nephrite.Meta.Database
 			}
 		}
 
-
-
-
 		public void CreateForeignKey(ForeignKey srcforeignKey)
 		{
 
@@ -194,6 +191,7 @@ namespace Nephrite.Meta.Database
 			}
 			_MainScripts.Add(string.Format("ALTER TABLE {2}.[{0}] DROP COLUMN [{1}] ", currentTable.Name, currentColumn.Name, _SchemaName));
 		}
+
 		public void DeleteDefaultValue(Column currentColumn)
 		{
 			string c = "C" + _defCnt.ToString();
@@ -210,6 +208,7 @@ namespace Nephrite.Meta.Database
 			_MainScripts.Add(string.Format("ALTER TABLE {4}.[{0}] ADD CONSTRAINT {1} DEFAULT ({2}) FOR {3}", srcColumn.Table.Name,
 											  "DF_" + srcColumn.Table.Name + "_" + srcColumn.Name, srcColumn.DefaultValue, srcColumn.Name, _SchemaName));
 		}
+
 		public void AddColumn(Column srcColumn)
 		{
 
@@ -234,6 +233,7 @@ namespace Nephrite.Meta.Database
 
 			}
 		}
+
 		public void DeleteIndex(Index currentIndex)
 		{
 			_MainScripts.Add(string.Format("DROP INDEX {2} ON {0}.[{1}]", _SchemaName, currentIndex.Table.Name, currentIndex.Name));
@@ -249,6 +249,7 @@ namespace Nephrite.Meta.Database
 									srcColumn.ComputedText,
 									_SchemaName));//    // {0}- Название таблицы, {1} - Название колонки, {2} - ComputedText
 		}
+
 		public void ChangeColumn(Column srcColumn)
 		{
 
@@ -355,15 +356,11 @@ namespace Nephrite.Meta.Database
 												"SELECT {1} FROM {2}.{0} WITH (HOLDLOCK TABLOCKX)')\r\n", srcTable.Name, string.Join("\r\n,", srcTable.Columns.Select(t => t.Value.Name).ToArray()), _SchemaName));
 				_MainScripts.Add(string.Format("DROP TABLE {1}.{0}; EXECUTE sp_rename N'{1}.Tmp_{0}', N'{1}.{0}', 'OBJECT'", srcTable.Name, _SchemaName));
 			}
-
-
 		}
 
 		public void DeleteProcedure(Procedure currentProcedure)
 		{
-			_MainScripts.Add(
-				string.Format("DROP PROCEDURE {1}.{0}",
-					currentProcedure.Name, _SchemaName));
+			_MainScripts.Add(string.Format("DROP PROCEDURE {1}.{0}", currentProcedure.Name, _SchemaName));
 		}
 
 		public void CreateProcedure(Procedure srcProcedure)
@@ -373,10 +370,20 @@ namespace Nephrite.Meta.Database
 
 		public void DeleteFunction(Function currentFunction)
 		{
-			_MainScripts.Add(string.Format("DROP PROCEDURE {1}.{0}", currentFunction.Name, _SchemaName));
+			_MainScripts.Add(string.Format("DROP FUNCTION {1}.{0}", currentFunction.Name, _SchemaName));
 		}
 
 		public void CreateFunction(Function srcFunction)
+		{
+			_MainScripts.Add(srcFunction.Text);
+		}
+
+		public void DeleteTableFunction(TableFunction currentFunction)
+		{
+			_MainScripts.Add(string.Format("DROP FUNCTION {1}.{0}", currentFunction.Name, _SchemaName));
+		}
+
+		public void CreateTableFunction(TableFunction srcFunction)
 		{
 			_MainScripts.Add(srcFunction.Text);
 		}

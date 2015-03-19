@@ -361,7 +361,17 @@ namespace Nephrite.Meta.Database
             _MainScripts.Add(srcFunction.Text);
         }
 
-        public string GetIntType()
+		public void DeleteTableFunction(TableFunction currentFunction)
+		{
+			_MainScripts.Add(string.Format("DROP FUNCTION {1}.{0}", currentFunction.Name, _SchemaName));
+		}
+
+		public void CreateTableFunction(TableFunction srcFunction)
+		{
+			_MainScripts.Add(srcFunction.Text);
+		}
+
+		public string GetIntType()
         {
             return string.Format("INTEGER");
         }

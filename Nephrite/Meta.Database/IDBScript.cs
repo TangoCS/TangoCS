@@ -31,6 +31,8 @@ namespace Nephrite.Meta.Database
 		void CreateProcedure(Procedure srcProcedure);
 		void DeleteFunction(Function currentFunction);
 		void CreateFunction(Function srcFunction);
+		void DeleteTableFunction(TableFunction currentFunction);
+		void CreateTableFunction(TableFunction srcFunction);
 		void DeleteDefaultValue(Column currentColumn);
 		void AddDefaultValue(Column srcColumn);
 		void DeleteIndex(Index currentIndex);
