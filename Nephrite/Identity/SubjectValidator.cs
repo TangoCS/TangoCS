@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -81,7 +80,7 @@ namespace Nephrite.Identity
 				}
 			}
 
-			if (_dc.SubjectFromName(name) != null)
+			if (_dc.SubjectFromName<Subject<TKey>>(name) != null)
 			{
 				if (!String.IsNullOrEmpty(lMess)) lMess += "<br />";
 				lMess += "Введенное имя пользователя уже существует в системе!";
@@ -100,7 +99,7 @@ namespace Nephrite.Identity
 				lMess += "Необходимо ввести имя email!";
 			}
 
-			if (_options.RequireUniqueEmail && _dc.SubjectFromEmail(email) != null)
+			if (_options.RequireUniqueEmail && _dc.SubjectFromEmail<Subject<TKey>>(email) != null)
 			{
 				if (!String.IsNullOrEmpty(lMess)) lMess += "<br />";
 				lMess += "В системе уже зарегистрирован пользователь с указанным адресом электронной почты!";
@@ -112,22 +111,21 @@ namespace Nephrite.Identity
 
 	public class SubjectOptions
 	{
-		[DefaultValue(4)]
 		public int MinPasswordLength { get; set; }
-
-		[DefaultValue("QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890~!@#$%^&*()-=\\][{}|+_`';:/?.>,<")]
 		public string AllowedPasswordChars { get; set; }
-
-		[DefaultValue("QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890_")]
 		public string AllowedLoginChars { get; set; }
-
-		[DefaultValue(12)]
 		public int MaxLoginLength { get; set; }
-
-		[DefaultValue(true)]
 		public bool RequireEmail { get; set; }
-
-		[DefaultValue(true)]
 		public bool RequireUniqueEmail { get; set; }
+
+		public SubjectOptions()
+		{
+			MinPasswordLength = 4;
+			AllowedPasswordChars = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890~!@#$%^&*()-=\\][{}|+_`';:/?.>,<";
+			AllowedLoginChars = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890_";
+			MaxLoginLength = 12;
+			RequireEmail = true;
+			RequireUniqueEmail = true;
+		}
 	}
 }

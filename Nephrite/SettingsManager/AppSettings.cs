@@ -8,9 +8,9 @@ namespace Nephrite.SettingsManager
 {
 	public class AppSettings
 	{
-		static IDC_Settings _dc;
+		static Func<IDC_Settings> _dc;
 
-		public static void Init(IDC_Settings dataContext)
+		public static void Init(Func<IDC_Settings> dataContext)
 		{
 			_dc = dataContext;
 		}
@@ -23,7 +23,7 @@ namespace Nephrite.SettingsManager
 		static List<IN_Settings> _settings = null;
 		public static string Get(string name)
 		{
-			if (_settings == null) _settings = _dc.IN_Settings.ToList();
+			if (_settings == null) _settings = _dc().IN_Settings.ToList();
 			IN_Settings s = _settings.Where(o => o.SystemName == name).SingleOrDefault();
 			if (s == null)
 				return "";
@@ -44,14 +44,14 @@ namespace Nephrite.SettingsManager
 
         public static void Set(string name, string value)
         {
-			IN_Settings s = _dc.IN_Settings.Where(o => o.SystemName == name).SingleOrDefault();
+			IN_Settings s = _dc().IN_Settings.Where(o => o.SystemName == name).SingleOrDefault();
             if (s == null)
             {
-				s = _dc.NewIN_Settings();
+				s = _dc().NewIN_Settings();
 				s.SystemName = name;
                 s.Title = name;
 				s.Value = value;
-				_dc.IN_Settings.InsertOnSubmit(s);
+				_dc().IN_Settings.InsertOnSubmit(s);
             }
             else
             {
@@ -61,7 +61,7 @@ namespace Nephrite.SettingsManager
 				}
             }
 			_settings = null;
-			_dc.SubmitChanges();
+			_dc().SubmitChanges();
         }
 	}
 }

@@ -137,6 +137,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
+    <Compile Include="Controls\ListFilter.ascx.designer.cs">
+      <DependentUpon>ListFilter.ascx</DependentUpon>
+    </Compile>
     <Compile Include="Controls\NavMenu.cs" />
     <Compile Include="FileStorage\FolderActionType.cs" />
     <Compile Include="FormsEngine\MView.cs" />
@@ -177,10 +180,6 @@
     <Compile Include="Root\SimpleTypeExtensionsWeb.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SPM2\Scripts\ISPM2Script.cs" />
-    <Compile Include="SPM2\Scripts\SPM2ScriptDB2.cs" />
-    <Compile Include="SPM2\Scripts\SPM2ScriptMSSQL.cs" />
-    <Compile Include="SPM2\Scripts\SPM2Scripts.cs" />
     <Compile Include="View\StandardDelete.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -279,9 +278,6 @@
     <Compile Include="Controls\ListFilter.ascx.cs">
       <DependentUpon>ListFilter.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\ListFilter.ascx.designer.cs">
-      <DependentUpon>ListFilter.ascx</DependentUpon>
     </Compile>
     <Compile Include="Controls\MultiObject.ascx.cs">
       <DependentUpon>MultiObject.ascx</DependentUpon>
@@ -406,7 +402,6 @@
     <Compile Include="Web\JqTreeNode.cs" />
     <Compile Include="MVC\PageParser.cs" />
     <Compile Include="Web\ObjectPropertyChange.cs" />
-    <Compile Include="SPM2\SpmActionNameAttribute.cs" />
     <Compile Include="Mailer\MailerTask.cs" />
     <Compile Include="MVC\MainMenu.cs" />
     <Compile Include="Controls\MaskedInput.cs" />

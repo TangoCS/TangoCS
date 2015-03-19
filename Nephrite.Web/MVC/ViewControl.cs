@@ -16,6 +16,7 @@ using Nephrite.Http;
 using Nephrite.Meta;
 using Nephrite.SettingsManager;
 using Nephrite.Layout;
+using System.IO;
 
 namespace Nephrite.Web
 {
@@ -258,7 +259,18 @@ namespace Nephrite.Web
             {
 				writer.Write(AppLayout.Current.AutoMargin.MarginBegin());
             }
-            base.RenderControl(writer);
+
+			try
+			{
+				StringWriter sw = new StringWriter();
+				HtmlTextWriter hw = new HtmlTextWriter(sw);
+				base.RenderControl(hw);
+				writer.Write(sw.ToString());
+			}
+			catch (Exception e)
+			{
+				e.Render(writer);
+			}
 			
             if (RenderMargin)
             {

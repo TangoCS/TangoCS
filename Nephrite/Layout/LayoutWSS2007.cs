@@ -407,17 +407,8 @@ namespace Nephrite.Layout
 				String.Format(@"<img src=""{0}blank.gif"" style=""width: 16px"" />", IconSet.RootPath) :
 				String.Format(@"<img src=""{0}{1}"" style=""width: 16px"" />", IconSet.RootPath, link.Image);
 
-			return String.Format(@"<tr><td class=""ms-MenuUIItemTableCellCompact"" style=""padding: 2px"">
-				<table cellpadding=""0"" cellspacing=""0"" class=""ms-MenuUIItemTable"" width=""100%"" onmouseover=""nt_listtoolbar_mouseover_tbl(this)"" onmouseout=""nt_listtoolbar_mouseout_tbl(this)"" onclick=""{2}"">
-					<tr>
-						<td class=""ms-MenuUIIcon"" align=""center"" style=""padding: 0px 6px 0px 2px;"">{0}</td>
-						<td class=""ms-MenuUILabelCompact"" style=""padding: 2px 10px 3px 6px;"">
-							<label><div style=""white-space: nowrap"">{3}</div></label>
-						</td>
-						<td class=""ms-MenuUIAccessKey"">{1}</td>
-						<td class=""ms-MenuUISubmenuArrow"" style=""width: 16px""></td>
-					</tr>
-				</table>
+			return String.Format(@"<tr><td class=""ms-MenuUIItemTable"" onmouseover=""nt_listtoolbar_mouseover_tbl(this)"" onmouseout=""nt_listtoolbar_mouseout_tbl(this)"" onclick=""{2}"">
+				{0}{3}{1}
 			</td></tr>", img, accessKey, onClick, link.Title);
 		}
 
@@ -441,12 +432,12 @@ namespace Nephrite.Layout
 
 		public string PopupMenuBodyBegin()
 		{
-			return @"<div class=""ms-MenuUIPopupBody"" style=""float: left; position: absolute; visibility: hidden; display:none; z-index:100"">	<table class=""ms-MenuUILarge"" cellpadding=""0"" cellspacing=""0"">";
+			return @"<div class=""ms-MenuUIPopupBody ms-MenuUILarge"" style=""float: left; position: absolute; visibility: hidden; display:none; z-index:100"">";
 		}
 
 		public string PopupMenuBodyEnd()
 		{
-			return "</table></div>";
+			return "</div>";
 		}
 
 		public string PopupMenuLink(ILink link)
@@ -457,29 +448,21 @@ namespace Nephrite.Layout
 				String.Format(@"<img src=""{0}blank.gif"" style=""width: 32px"" />", IconSet.RootPath) :
 				String.Format(@"<img src=""{0}{1}"" style=""width: 32px"" />", IconSet.RootPath, link.Image);
 
-			string style1 = String.IsNullOrEmpty(link.Href) && String.IsNullOrEmpty(link.OnClick) ? "color:gray;" : "cursor:pointer;";
+			string style1 = String.IsNullOrEmpty(link.Href) && String.IsNullOrEmpty(link.OnClick) ? "color:gray;" : "";
 			string style2 = !String.IsNullOrEmpty(link.Href) || !String.IsNullOrEmpty(link.OnClick) ? "style='cursor:pointer;'" : "";
 
-			return String.Format(@"<tr><td class=""ms-MenuUIItemTableCell"" style=""padding: 2px"">
-				<table cellpadding=""0"" cellspacing=""0"" class=""ms-MenuUIItemTable"" width=""100%"" onmouseover=""nt_listtoolbar_mouseover_tbl(this)"" onmouseout=""nt_listtoolbar_mouseout_tbl(this)"" onclick=""{2}"">
-					<tr>
-						<td class=""ms-MenuUIIcon"" align=""center"" style=""padding: 0px 6px 0px 2px;"">{0}</td>
-						<td class=""ms-MenuUILabel"" style=""padding:2px 16px 3px 6px;"">
-							<label>
-                                <b><span style=""{5}white-space:nowrap"">{3}</span></b><br />
-                                <span class=""ms-menuitemdescription"" {6}>{4}</span>
-                            </label>
-						</td>
-						<td class=""ms-MenuUIAccessKey"">{1}</td>
-						<td class=""ms-MenuUISubmenuArrow"" style=""width: 16px""></td>
-					</tr>
-				</table>
-			</td></tr>", img, accessKey, onClick, link.Title, link.Description, style1, style2);
+			return String.Format(@"<div class=""ms-MenuUIItemTable"" onmouseover=""nt_listtoolbar_mouseover_tbl(this)"" onmouseout=""nt_listtoolbar_mouseout_tbl(this)"" onclick=""{2}"">
+				<div class=""ms-MenuUILargeImage"">{0}</div>
+				<div class=""ms-MenuUILargeLabel"">
+				<div class=""ms-menuitemcaption"" style=""{5}"">{3}</div>
+				<div class=""ms-menuitemdescription"" {6}>{4}</div>{1}
+				</div>
+			</div>", img, accessKey, onClick, link.Title, link.Description, style1, style2);
 		}
 
 		public string PopupMenuSeparator()
 		{
-			return @"<tr><td><div class=""ms-MenuUISeparatorLarge"">&nbsp;</div></td></tr>";
+			return @"<div class=""ms-MenuUISeparatorLarge"">&nbsp;</div>";
 		}
 
 		public string PopupMenuEnd()

@@ -8,8 +8,8 @@ using System.Web.UI;
 using System.Web.UI.WebControls.WebParts;
 using Nephrite.Web;
 using Nephrite.Web.ErrorLog;
-
-using Nephrite.Identity;
+using Nephrite.AccessControl;
+using System.IO;
 
 namespace Nephrite.Web.FormsEngine
 {
@@ -50,7 +50,7 @@ namespace Nephrite.Web.FormsEngine
 
 		void addToUtils(string fv)
 		{
-			if (Subject.Current.HasRole(ConfigurationManager.AppSettings["AdministratorsRole"]))
+			if (SubjectWithRoles.Current.IsAdministrator)
 			{
 				if (HttpContext.Current.Items["MViewList"] == null)
 					HttpContext.Current.Items["MViewList"] = new List<string>();
@@ -160,7 +160,10 @@ namespace Nephrite.Web.FormsEngine
 			{
 				try
 				{
-					base.RenderControl(writer);
+					StringWriter sw = new StringWriter();
+					HtmlTextWriter hw = new HtmlTextWriter(sw);
+					base.RenderControl(hw);
+					writer.Write(sw.ToString());
 				}
 				catch (ThreadAbortException)
 				{

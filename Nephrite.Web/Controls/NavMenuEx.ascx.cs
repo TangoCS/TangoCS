@@ -61,7 +61,7 @@ namespace Nephrite.Web.Controls
 			string img = "";
 			if (!String.IsNullOrEmpty(menuItem.Icon))
 				img = HtmlHelperBase.Instance.Image(menuItem.Icon, menuItem.Title);
-			return String.Format(@"<div class='ms-vb2'><a href='{0}'>{1}{2}</a></div>", menuItem.Url, img, menuItem.Title + (menuItem.Expression.IsEmpty() ? "" : (" " + menuItem.EvaluateExpression())));
+			return String.Format(@"<a href='{0}'>{1}{2}</a>", menuItem.Url, img, menuItem.Title + (menuItem.Expression.IsEmpty() ? "" : (" " + menuItem.EvaluateExpression())));
 		}
     }
 }

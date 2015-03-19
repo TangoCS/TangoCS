@@ -43,6 +43,11 @@ namespace Nephrite.Meta.Forms
 			container.Controls.Add(control);
 		}
 
+		public static void RenderView(string viewName, object viewData)
+		{
+			RenderView(UrlHelper.Current().GetString("mode"), viewName, viewData);
+		}
+
 		public static void RenderView(string folder, string viewName, object viewData)
 		{
 			Control container = HttpContext.Current.Items["ViewContainer"] as Control;

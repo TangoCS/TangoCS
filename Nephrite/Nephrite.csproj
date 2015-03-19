@@ -49,12 +49,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccessControl\DefaultAccessControl.cs" />
-    <Compile Include="AccessControl\IAccessControl.cs" />
+    <Compile Include="AccessControl\DefaultAccessControlDataContext.cs" />
+    <Compile Include="AccessControl\Interfaces.cs" />
     <Compile Include="AccessControl\ActionAccessControl.cs" />
     <Compile Include="AccessControl\PredicateChecker.cs" />
+    <Compile Include="AccessControl\SubjectWithRoles.cs" />
     <Compile Include="Html.Controls\Navigation.cs" />
     <Compile Include="Html\Link.cs" />
     <Compile Include="Http\Url.cs" />
+    <Compile Include="Identity\DefaultIdentityDataContext.cs" />
     <Compile Include="Layout\Interfaces.cs" />
     <Compile Include="Layout\LayoutBootstrap.cs" />
     <Compile Include="Layout\LayoutEmpty.cs" />
@@ -65,7 +68,7 @@
     <Compile Include="Layout\WinModal.cs" />
     <Compile Include="MacroManager.cs" />
     <Compile Include="Identity\IIdentityManager.cs" />
-    <Compile Include="Identity\Role.cs" />
+    <Compile Include="AccessControl\Role.cs" />
     <Compile Include="Identity\Subject.cs" />
     <Compile Include="CodifierValue.cs" />
     <Compile Include="Html\HtmlWriter.cs" />

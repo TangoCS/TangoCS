@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
@@ -28,7 +27,7 @@ namespace Nephrite.Identity
 		}
 
 		public static void Init(
-			Func<IHttpContext> HttpContext,
+			Func<IHttpContext> httpContext,
 			Func<IDC_Identity<TKey>> dataContext,
 			IdentityOptions options = null
 			)
@@ -39,7 +38,7 @@ namespace Nephrite.Identity
 				{
 					if (_instanceHolder == null)
 					{
-						_instanceHolder = new IdentityManager<TKey>(HttpContext, dataContext, options);
+						_instanceHolder = new IdentityManager<TKey>(httpContext, dataContext, options);
 						return;
 					}
 				}
@@ -54,7 +53,7 @@ namespace Nephrite.Identity
 			{
 				if (_instanceHolder == null)
 				{
-					throw new ApplicationException("IdentityConfiguration instance hasn't been initialized.");
+					throw new ApplicationException("IdentityManager instance hasn't been initialized.");
 				}
 
 				return _instanceHolder;
@@ -72,24 +71,24 @@ namespace Nephrite.Identity
 				Subject<TKey> s = null;
 				if (!Options.Enabled)
 				{
-					s = DataContext().SubjectFromName("anonymous");
+					s = DataContext().SubjectFromName<Subject<TKey>>("anonymous");
 				}
 				else
 				{
-					if (ctx.User == null) s = DataContext().SubjectFromName("anonymous");
+					if (ctx.User == null) s = DataContext().SubjectFromName<Subject<TKey>>("anonymous");
 
 					WindowsIdentity wi = ctx.User.Identity as WindowsIdentity;
 					if (wi != null && !wi.IsAnonymous)
 					{
-						s = DataContext().SubjectFromSID(wi.User.Value);
-						if (s == null) s = DataContext().SubjectFromName("anonymous");
+						s = DataContext().SubjectFromSID<Subject<TKey>>(wi.User.Value);
+						if (s == null) s = DataContext().SubjectFromName<Subject<TKey>>("anonymous");
 					}
 					else
 					{
 						if (ctx.User.Identity.AuthenticationType == "Forms")
-							s = DataContext().SubjectFromName(ctx.User.Identity.Name);
+							s = DataContext().SubjectFromName<Subject<TKey>>(ctx.User.Identity.Name);
 						else
-							s = DataContext().SubjectFromName("anonymous");
+							s = DataContext().SubjectFromName<Subject<TKey>>("anonymous");
 					}
 				}
 				ctx.Items["CurrentSubject2"] = s;
@@ -102,7 +101,7 @@ namespace Nephrite.Identity
 			get
 			{
 				var name = Options.SystemSubjectName;
-				var s = DataContext().SubjectFromName(name);
+				var s = DataContext().SubjectFromName<Subject<TKey>>(name);
 				if (s == null) throw new Exception(String.Format("Учетная запись {0} не зарегистрирована в системе", name));
 				return s;
 			}
@@ -111,7 +110,7 @@ namespace Nephrite.Identity
 		public void RunAs(TKey sid, Action action)
 		{
 			var oldSubject2 = Subject.Current;
-			HttpContext().Items["CurrentSubject2"] = DataContext().SubjectFromID(sid);
+			HttpContext().Items["CurrentSubject2"] = DataContext().SubjectFromID<Subject<TKey>>(sid);
 			action();
 			HttpContext().Items["CurrentSubject2"] = oldSubject2;
 		}
@@ -119,16 +118,10 @@ namespace Nephrite.Identity
 
 	public interface IDC_Identity<TKey>
 	{
-		Subject<TKey> SubjectFromName(string name);
-		Subject<TKey> SubjectFromSID(string sid);
-		Subject<TKey> SubjectFromID(TKey id);
-		Subject<TKey> SubjectFromEmail(string email);
-
-		List<Role<TKey>> GetAllRoles();
-		Role<TKey> RoleFromID(TKey id);
-		List<TKey> RoleAncestors(TKey id);
-
-		List<TKey> SubjectRoles(TKey id, IEnumerable<string> activeDirectoryGroups = null);
+		TSubject SubjectFromName<TSubject>(string name);
+		TSubject SubjectFromSID<TSubject>(string sid);
+		TSubject SubjectFromID<TSubject>(TKey id);
+		TSubject SubjectFromEmail<TSubject>(string email);
 
 		//public static List<Role> GetList()
 		//{
@@ -164,16 +157,15 @@ namespace Nephrite.Identity
 
 	public class IdentityOptions
 	{
-		[DefaultValue("Administrators")]
-		public string AdminRoleName { get; set; }
-
-		[DefaultValue("anonymous")]
 		public string AnonymousSubjectName { get; set; }
-
-		[DefaultValue("system")]
 		public string SystemSubjectName { get; set; }
-
-		[DefaultValue(true)]
 		public bool Enabled { get; set; }
+
+		public IdentityOptions()
+		{
+			AnonymousSubjectName = "anonymous";
+			SystemSubjectName = "system";
+			Enabled = true;
+		}
 	}
 }

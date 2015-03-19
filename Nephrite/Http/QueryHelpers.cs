@@ -13,13 +13,13 @@ namespace Nephrite.Http
 		/// </summary>
 		/// <param name="text">The raw query string value, with or without the leading '?'.</param>
 		/// <returns>A collection of parsed keys and values.</returns>
-		public static NameValueCollection ParseQuery(string queryString)
+		public static IDictionary<string,string> ParseQuery(string queryString)
 		{
 			if (!string.IsNullOrEmpty(queryString) && queryString[0] == '?')
 			{
 				queryString = queryString.Substring(1);
 			}
-			var accumulator = new NameValueCollection();
+			var accumulator = new Dictionary<string, string>();
 
 			int textLength = queryString.Length;
 			int equalIndex = queryString.IndexOf('=');

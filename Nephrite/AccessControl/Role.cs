@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Nephrite.Identity
+namespace Nephrite.AccessControl
 {
 	public class Role<TKey>
 	{

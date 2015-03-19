@@ -13,12 +13,12 @@ namespace Nephrite.AccessControl
 
 		public Func<IHttpContext> HttpContext { get; private set; }
 		public AccessControlOptions Options { get; private set; }
-		public Func<IAccessControlDataContext<TIdentityKey>> DataContext { get; private set; }
+		public Func<IDefaultAccessControlDataContext<TIdentityKey>> DataContext { get; private set; }
 		public Func<IIdentityManager<TIdentityKey>> IdentityManager { get; private set; }
 
 		public DefaultAccessControl(
 			Func<IHttpContext> httpContext,
-			Func<IAccessControlDataContext<TIdentityKey>> dataContext,
+			Func<IDefaultAccessControlDataContext<TIdentityKey>> dataContext,
 			Func<IIdentityManager<TIdentityKey>> identityManager,
 			AccessControlOptions options = null)
 		{
@@ -52,8 +52,9 @@ namespace Nephrite.AccessControl
 		public virtual bool Check(string securableObjectKey, bool defaultAccess = false)
 		{
 			//Subject<TIdentityKey> s = Subject<TIdentityKey>.Current;
-			var s = IdentityManager().CurrentSubject;
-			if (s == null) return false;
+			var curSubj = IdentityManager().CurrentSubject;
+			if (curSubj == null) return false;
+			var s = new SubjectWithRoles<TIdentityKey>(curSubj, HttpContext().User.Identity, DataContext(), Options);
 
 			var ctx = HttpContext();
 			string key = securableObjectKey.ToUpper();
@@ -124,12 +125,12 @@ namespace Nephrite.AccessControl
 
 		public Func<IHttpContext> HttpContext { get; private set; }
 		public CacheableAccessControlOptions Options { get; private set; }
-		public Func<ICacheableAccessControlDataContext> DataContext { get; private set; }
+		public Func<ICacheableAccessControlDataContext<TIdentityKey>> DataContext { get; private set; }
 		public Func<IIdentityManager<TIdentityKey>> IdentityManager { get; private set; }
 
 		public CacheableAccessControl(
 			Func<IHttpContext> httpContext,
-			Func<ICacheableAccessControlDataContext> dataContext,
+			Func<ICacheableAccessControlDataContext<TIdentityKey>> dataContext,
 			Func<IIdentityManager<TIdentityKey>> identityManager,
 			CacheableAccessControlOptions options = null)
 		{
@@ -141,7 +142,7 @@ namespace Nephrite.AccessControl
 
 		public bool CheckForRole(TIdentityKey roleID, string securableObjectKey)
 		{
-			List<TIdentityKey> anc = IdentityManager().DataContext().RoleAncestors(roleID);
+			List<TIdentityKey> anc = DataContext().RoleAncestors(roleID);
 			string key = securableObjectKey.ToUpper();
 
 			HashSet<string> _access = null;
@@ -179,8 +180,9 @@ namespace Nephrite.AccessControl
 			string cacheName = Options.ClassName;
 			string key = securableObjectKey.ToUpper();
 
-			var s = IdentityManager().CurrentSubject;
-			if (s == null) return false;
+			var curSubj = IdentityManager().CurrentSubject;
+			if (curSubj == null) return false;
+			var s = new SubjectWithRoles<TIdentityKey>(curSubj, HttpContext().User.Identity, DataContext(), Options);
 
 			if (s.AllowItems.Contains(key)) return true;
 			if (s.DisallowItems.Contains(key)) return false;
@@ -249,22 +251,15 @@ namespace Nephrite.AccessControl
 		}
 	}
 
-
-
-	public interface IAccessControlDataContext<TIdentityKey>
-	{
-		IEnumerable<TIdentityKey> GetAccessInfo(string securableObjectKey);
-	}
-
-	public interface ICacheableAccessControlDataContext
-	{
-		IEnumerable<string> GetRolesAccess();
-		IEnumerable<string> GetKeys();
-	}
-
 	public class AccessControlOptions
 	{
+		public string AdminRoleName { get; set; }
 		public Func<bool> Enabled { get; set; }
+
+		public AccessControlOptions()
+		{
+			AdminRoleName = "Administrator";
+		}
 	}
 
 	public class CacheableAccessControlOptions : AccessControlOptions

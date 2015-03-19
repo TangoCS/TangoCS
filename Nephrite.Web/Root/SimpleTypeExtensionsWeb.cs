@@ -171,7 +171,10 @@ namespace Nephrite
 		public static Url Current()
 		{
 			var request = HttpContext.Current.Request;
-			return new Url(request.Url.PathAndQuery, request.QueryString, request.RequestContext.RouteData.Values);
+			return new Url(
+				request.Url.PathAndQuery, 
+				request.QueryString.AllKeys.ToDictionary(k => k, k => request.QueryString[k]), 
+				request.RequestContext.RouteData.Values);
 		}
 
 		public static void Go(this Url url)

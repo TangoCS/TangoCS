@@ -11,10 +11,10 @@ namespace Nephrite.Http
 	public class Url
 	{
 		string _q = "";
-		NameValueCollection _c = null;
+		IDictionary<string, string> _c = null;
 		IDictionary<string, object> _routeValues = null;
 
-		public Url(string pathAndQuery, NameValueCollection query, IDictionary<string, object> routeValues)
+		public Url(string pathAndQuery, IDictionary<string, string> query, IDictionary<string, object> routeValues)
 		{
 			_q = pathAndQuery;
 			_c = query;
@@ -65,7 +65,7 @@ namespace Nephrite.Http
 			if (_routeValues.ContainsKey(parametername))
 				return Convert.ToString(_routeValues[parametername]);
 			else
-				return _c.Get(parametername);
+				return _c.Get(parametername) ?? "";
 		}
 
 		public Url RemoveParameter(params string[] parametername)

@@ -6,15 +6,15 @@ using Nephrite.Identity;
 
 namespace Nephrite.AccessControl
 {
-	public class ActionAccessControl
+	public class ActionAccessControl<TKey>
 	{
-		static CacheableAccessControl<int> _instanceHolder;
+		static CacheableAccessControl<TKey> _instanceHolder;
 		static object LockObject = new object();
 
 		public static void Init(
 			Func<IHttpContext> httpContext,
-			Func<ICacheableAccessControlDataContext> dataContext,
-			Func<IIdentityManager<int>> identityManager,
+			Func<ICacheableAccessControlDataContext<TKey>> dataContext,
+			Func<IIdentityManager<TKey>> identityManager,
 			CacheableAccessControlOptions options = null
 			)
 		{
@@ -26,7 +26,7 @@ namespace Nephrite.AccessControl
 					{
 						if (options == null) options = new CacheableAccessControlOptions { Enabled = () => true };
 						if (options.ClassName.IsEmpty()) options.ClassName = "Action";
-						_instanceHolder = new CacheableAccessControl<int>(httpContext, dataContext, identityManager, options);
+						_instanceHolder = new CacheableAccessControl<TKey>(httpContext, dataContext, identityManager, options);
 						return;
 					}
 				}
@@ -35,7 +35,7 @@ namespace Nephrite.AccessControl
 			throw new ApplicationException("ActionAccessControl.Init() method should be called only once.");
 		}
 
-		public static CacheableAccessControl<int> Instance
+		public static CacheableAccessControl<TKey> Instance
 		{
 			get
 			{
@@ -47,6 +47,11 @@ namespace Nephrite.AccessControl
 				return _instanceHolder;
 			}
 		}
+	}
+
+	public class ActionAccessControl : ActionAccessControl<int>
+	{
+
 	}
 
 	[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]

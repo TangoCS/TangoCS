@@ -2,7 +2,7 @@
 <%@ Register Assembly="Nephrite.Web" TagPrefix="nw" Namespace="Nephrite.Web.Controls" %>
 <%@ Register src="ModalDialog.ascx" tagname="ModalDialog" tagprefix="uc1" %>
 <%@ Import Namespace="Nephrite.Web" %>
-<%@ Import Namespace="Nephrite.Web.SPM" %>
+
 
 <uc1:ModalDialog ID="filter" runat="server"  Width="650px" OnPopulate="filter_Populate" OnOKClick="filter_OKClick">
 <ContentTemplate>
@@ -20,7 +20,7 @@
 <%=AppLayout.Current.FormRowEnd()%>
 
 <%=AppLayout.Current.FormRowBegin(TextResource.Get("System.Filter.PropertiesOfVisibility", "Свойства видимости"))%>
-<% cbShared.Enabled = cbPersonal.Enabled = ActionSPMContext.Current.Check("filter.managecommonviews", 1);%>
+<% cbShared.Enabled = cbPersonal.Enabled = ActionAccessControl.Instance.Check("filter.managecommonviews", 1);%>
 
 <asp:RadioButton ID="cbPersonal" GroupName="isshared" runat="server"/><br />
 <asp:RadioButton ID="cbShared" GroupName="isshared" runat="server" /><br />
