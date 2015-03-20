@@ -200,6 +200,11 @@ namespace Nephrite.Layout
 			return Paging.RenderPager(gotoPageJSFunction, pageIndex, pageCount, recordsCount);
 		}
 
+		public string RenderPager(string gotoPageJSFunction, int pageIndex, int pageCount)
+		{
+			return Paging.RenderPager(gotoPageJSFunction, pageIndex, pageCount);
+		}
+
 		public StringBuilder Link(ILink link)
 		{
 			return SimpleTags.Link(link);

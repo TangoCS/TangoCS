@@ -386,8 +386,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="RSS\RssLinker.cs" />
-    <Compile Include="Validation\IValidatable.cs" />
-    <Compile Include="Validation\ValidationMessage.cs" />
     <Compile Include="FileStorage\DataHandler.cs" />
     <Compile Include="Web\DebuggerWriter.cs" />
     <Compile Include="ErrorLog\ErrorLogger.cs" />

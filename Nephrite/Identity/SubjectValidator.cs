@@ -7,9 +7,9 @@ namespace Nephrite.Identity
 {
 	public interface ISubjectValidator
 	{
-		string CheckPassword(string password1, string password2);
-		string CheckName(string name);
-		string CheckEmail(string email);
+		List<ValidationMessage> CheckPassword(string password1, string password2);
+		List<ValidationMessage> CheckName(string name);
+		List<ValidationMessage> CheckEmail(string email);
 	}
 
 	public class DefaultSubjectValidator<TKey> : ISubjectValidator
@@ -23,89 +23,80 @@ namespace Nephrite.Identity
 			_dc = dataContext;
 		}
 
-		public virtual string CheckPassword(string password1, string password2)
+		public virtual List<ValidationMessage> CheckPassword(string password1, string password2)
 		{
-			string lMess = "";
+			List<ValidationMessage> res = new List<ValidationMessage>();
 			char[] pwdChars = _options.AllowedPasswordChars.ToCharArray();
 
 			if (password1 != password2)
 			{
-				lMess = "Введенные пароли не совпадают!";
+				res.Add(new ValidationMessage("Введенные пароли не совпадают!"));
 			}
 
 			if (password1.Length < _options.MinPasswordLength)
 			{
-				if (!String.IsNullOrEmpty(lMess)) lMess += "<br />";
-				lMess += "Пароль должен быть не короче " + _options.MinPasswordLength.ToString() + " символов!";
+				res.Add(new ValidationMessage("Пароль должен быть не короче " + _options.MinPasswordLength.ToString() + " символов!"));
 			}
 
 			foreach (char c in password1.ToCharArray())
 			{
 				if (!pwdChars.Contains(c))
 				{
-					if (!String.IsNullOrEmpty(lMess)) lMess += "<br />";
-					lMess += "Пароль содержит недопустимые символы!";
+					res.Add(new ValidationMessage("Пароль содержит недопустимые символы!"));
 					break;
 				}
 			}
 
-			return lMess;
+			return res;
 		}
 
-		public virtual string CheckName(string name)
+		public virtual List<ValidationMessage> CheckName(string name)
 		{
-			string lMess = "";
+			List<ValidationMessage> res = new List<ValidationMessage>();
 			char[] loginChars = _options.AllowedLoginChars.ToCharArray();
 
 			if (String.IsNullOrEmpty(name))
 			{
-				if (!String.IsNullOrEmpty(lMess)) lMess += "<br />";
-				lMess += "Необходимо ввести имя пользователя!";
+				res.Add(new ValidationMessage("Необходимо ввести имя пользователя!"));
 			}
 
 			if (name.Length > _options.MaxLoginLength)
 			{
-				if (!String.IsNullOrEmpty(lMess)) lMess += "<br />";
-				lMess += "Длина имени пользователя не должна превышать " + _options.MaxLoginLength.ToString() + " символов!";
+				res.Add(new ValidationMessage("Длина имени пользователя не должна превышать " + _options.MaxLoginLength.ToString() + " символов!"));
 			}
-
 
 			foreach (char c in name.ToCharArray())
 			{
 				if (!loginChars.Contains(c))
 				{
-					if (!String.IsNullOrEmpty(lMess)) lMess += "<br />";
-					lMess += "Имя пользователя содержит недопустимые символы!";
+					res.Add(new ValidationMessage("Имя пользователя содержит недопустимые символы!"));
 					break;
 				}
 			}
 
 			if (_dc.SubjectFromName<Subject<TKey>>(name) != null)
 			{
-				if (!String.IsNullOrEmpty(lMess)) lMess += "<br />";
-				lMess += "Введенное имя пользователя уже существует в системе!";
+				res.Add(new ValidationMessage("Введенное имя пользователя уже существует в системе!"));
 			}
 
-			return lMess;
+			return res;
 		}
 
-		public virtual string CheckEmail(string email)
+		public virtual List<ValidationMessage> CheckEmail(string email)
 		{
-			string lMess = "";
+			List<ValidationMessage> res = new List<ValidationMessage>();
 
 			if (_options.RequireEmail && String.IsNullOrEmpty(email))
 			{
-				if (!String.IsNullOrEmpty(lMess)) lMess += "<br />";
-				lMess += "Необходимо ввести имя email!";
+				res.Add(new ValidationMessage("Необходимо ввести имя email!"));
 			}
 
 			if (_options.RequireUniqueEmail && _dc.SubjectFromEmail<Subject<TKey>>(email) != null)
 			{
-				if (!String.IsNullOrEmpty(lMess)) lMess += "<br />";
-				lMess += "В системе уже зарегистрирован пользователь с указанным адресом электронной почты!";
+				res.Add(new ValidationMessage("В системе уже зарегистрирован пользователь с указанным адресом электронной почты!"));
 			}
 
-			return lMess;
+			return res;
 		}
 	}
 

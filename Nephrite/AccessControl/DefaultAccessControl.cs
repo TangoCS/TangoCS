@@ -51,10 +51,7 @@ namespace Nephrite.AccessControl
 
 		public virtual bool Check(string securableObjectKey, bool defaultAccess = false)
 		{
-			//Subject<TIdentityKey> s = Subject<TIdentityKey>.Current;
-			var curSubj = IdentityManager().CurrentSubject;
-			if (curSubj == null) return false;
-			var s = new SubjectWithRoles<TIdentityKey>(curSubj, HttpContext().User.Identity, DataContext(), Options);
+			var s = SubjectWithRoles<TIdentityKey>.Current;
 
 			var ctx = HttpContext();
 			string key = securableObjectKey.ToUpper();
@@ -180,9 +177,7 @@ namespace Nephrite.AccessControl
 			string cacheName = Options.ClassName;
 			string key = securableObjectKey.ToUpper();
 
-			var curSubj = IdentityManager().CurrentSubject;
-			if (curSubj == null) return false;
-			var s = new SubjectWithRoles<TIdentityKey>(curSubj, HttpContext().User.Identity, DataContext(), Options);
+			var s = SubjectWithRoles<TIdentityKey>.Current;
 
 			if (s.AllowItems.Contains(key)) return true;
 			if (s.DisallowItems.Contains(key)) return false;
@@ -259,6 +254,7 @@ namespace Nephrite.AccessControl
 		public AccessControlOptions()
 		{
 			AdminRoleName = "Administrator";
+			Enabled = () => true;
 		}
 	}
 

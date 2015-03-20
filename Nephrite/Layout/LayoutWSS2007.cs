@@ -380,6 +380,33 @@ namespace Nephrite.Layout
 			sb.AppendFormat(@"<b>{0}:</b> {1}</div>", TextResource.Get("Common.Paging.TotalRecords", "Всего записей"), recordsCount);
 			return sb.ToString();
 		}
+
+		public string RenderPager(string gotoPageJSFunction, int pageIndex, int pageCount)
+		{
+			StringBuilder sb = new StringBuilder(1024);
+			if (pageCount > 1)
+			{
+				string s = @"<a href=""#"" onclick=""{0}""><img src=""{1}{2}page.png"" alt=""" + TextResource.Get("Common.Paging.Page", Resources.Common.PagerPage) + @" {3}"" style=""border:0;"" /></a>&nbsp;";
+				if (pageIndex > 2)
+				{
+					sb.AppendFormat(s, String.Format(gotoPageJSFunction, 1), IconSet.RootPath, "first", 1);
+				}
+				if (pageIndex > 1)
+				{
+					sb.AppendFormat(s, String.Format(gotoPageJSFunction, pageIndex - 1), IconSet.RootPath, "prev", pageIndex - 1);
+				}
+				sb.AppendFormat(@"{0}&nbsp;<input name=""page"" type=""text"" value=""{1}"" style=""width:40px;"" onkeydown=""javascript:if(event.keyCode==13){{ {2} }}""/>&nbsp;{4}&nbsp;{3}&nbsp;", TextResource.Get("Common.Paging.Page", Resources.Common.PagerPage), pageIndex, String.Format(gotoPageJSFunction, "document.forms[0].page.value"), pageCount, TextResource.Get("Common.Paging.From", "из"));
+				if (pageIndex < pageCount)
+				{
+					sb.AppendFormat(s, String.Format(gotoPageJSFunction, pageIndex + 1), IconSet.RootPath, "next", pageIndex + 1);
+				}
+				if (pageIndex < pageCount - 1)
+				{
+					sb.AppendFormat(s, String.Format(gotoPageJSFunction, pageCount), IconSet.RootPath, "last", pageCount);
+				}
+			}
+			return sb.ToString();
+		}
 	}
 
 	public class PopupMenuWSS2007Compact : ILayoutPopupMenu

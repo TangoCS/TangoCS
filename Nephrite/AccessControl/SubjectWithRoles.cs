@@ -97,8 +97,11 @@ namespace Nephrite.AccessControl
 				if (ctx.Items["CurrentSubjectWithRoles"] != null)
 					return ctx.Items["CurrentSubjectWithRoles"] as SubjectWithRoles<TKey>;
 
+				var curSubj = IdentityManager<TKey>.Instance.CurrentSubject;
+				if (curSubj == null) return null;
+
 				var s = new SubjectWithRoles<TKey>(
-					IdentityManager<TKey>.Instance.CurrentSubject, 
+					curSubj, 
 					ctx.User.Identity, 
 					ActionAccessControl<TKey>.Instance.DataContext());
 				ctx.Items["CurrentSubjectWithRoles"] = s;

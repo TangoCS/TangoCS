@@ -31,4 +31,31 @@ namespace Nephrite
 		public bool Value { get; set; }
 		public string Message { get; set; }
 	}
+
+	public class ValidationMessage
+	{
+		public string Name { get; set; }
+		public ValidationMessageSeverity Severity { get; private set; }
+		public string Message { get; private set; }
+
+		public ValidationMessage(string name, string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		{
+			Name = name;
+			Message = message;
+			Severity = severity;
+		}
+
+		public ValidationMessage(string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		{
+			Message = message;
+			Severity = severity;
+		}
+	}
+
+	public enum ValidationMessageSeverity
+	{
+		Error,
+		Warning,
+		Information
+	}
 }

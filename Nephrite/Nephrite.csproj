@@ -58,6 +58,7 @@
     <Compile Include="Html\Link.cs" />
     <Compile Include="Http\Url.cs" />
     <Compile Include="Identity\DefaultIdentityDataContext.cs" />
+    <Compile Include="IValidatable.cs" />
     <Compile Include="Layout\Interfaces.cs" />
     <Compile Include="Layout\LayoutBootstrap.cs" />
     <Compile Include="Layout\LayoutEmpty.cs" />

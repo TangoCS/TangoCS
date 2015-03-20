@@ -70,6 +70,11 @@ namespace Nephrite.Layout
 		{
 			return "";
 		}
+
+		public string RenderPager(string gotoPageJSFunction, int pageIndex, int pageCount)
+		{
+			return "";
+		}
 	}
 
 	public class ListRowDragEmpty : ILayoutListRowDrag

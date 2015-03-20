@@ -203,6 +203,7 @@ namespace Nephrite.Layout
 	{
 		string RenderPager(Url baseUrl, int pageIndex, int pageCount, int recordsCount);
 		string RenderPager(string gotoPageJSFunction, int pageIndex, int pageCount, int recordsCount);
+		string RenderPager(string gotoPageJSFunction, int pageIndex, int pageCount);
 	}
 
 	public interface ILayoutMessage
