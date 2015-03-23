@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
 
 namespace Nephrite.Identity
 {
 	public class DefaultIdentityDataContext : IDC_Identity<int>
 	{
-		IDataContext _dc;
+		IDbConnection _dc;
 
-		public DefaultIdentityDataContext(IDataContext dc)
+		public DefaultIdentityDataContext(IDbConnection dc)
 		{
 			_dc = dc;
 		}
@@ -19,22 +21,22 @@ namespace Nephrite.Identity
 
 		public TSubject SubjectFromName<TSubject>(string name)
 		{
-			return _dc.ExecuteQuery<TSubject>(String.Format(subjSelect, "lower(Name) = ?"), name.ToLower()).FirstOrDefault();
+			return _dc.Query<TSubject>(String.Format(subjSelect, "lower(Name) = @p1"), new { p1 = name.ToLower() }).FirstOrDefault();
 		}
 
 		public TSubject SubjectFromSID<TSubject>(string sid)
 		{
-			return _dc.ExecuteQuery<TSubject>(String.Format(subjSelect, "lower(SID) = ?"), sid.ToLower()).FirstOrDefault();
+			return _dc.Query<TSubject>(String.Format(subjSelect, "lower(SID) = @p1"), new { p1 = sid.ToLower() }).FirstOrDefault();
 		}
 
 		public TSubject SubjectFromID<TSubject>(int id)
 		{
-			return _dc.ExecuteQuery<TSubject>(String.Format(subjSelect, "ID = ?"), id).FirstOrDefault();
+			return _dc.Query<TSubject>(String.Format(subjSelect, "ID = @p1"), new { p1 = id }).FirstOrDefault();
 		}
 
 		public TSubject SubjectFromEmail<TSubject>(string email)
 		{
-			return _dc.ExecuteQuery<TSubject>(String.Format(subjSelect, "lower(Email) = ?"), email.ToLower()).FirstOrDefault();
+			return _dc.Query<TSubject>(String.Format(subjSelect, "lower(Email) = @p1"), new { p1 = email.ToLower() }).FirstOrDefault();
 		}
 	}
 }

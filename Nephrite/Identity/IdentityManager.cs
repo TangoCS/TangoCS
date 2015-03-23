@@ -36,11 +36,8 @@ namespace Nephrite.Identity
 			{
 				lock (LockObject)
 				{
-					if (_instanceHolder == null)
-					{
-						_instanceHolder = new IdentityManager<TKey>(httpContext, dataContext, options);
-						return;
-					}
+					_instanceHolder = new IdentityManager<TKey>(httpContext, dataContext, options);
+					return;
 				}
 			}
 

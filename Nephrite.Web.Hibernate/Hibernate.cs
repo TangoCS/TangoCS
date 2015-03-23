@@ -23,9 +23,10 @@ using NHibernate.Transform;
 using NHibernate.Event;
 using System.Reflection;
 using Nephrite.SettingsManager;
-using Nephrite.Web.SPM;
+
 using NHibernate.Impl;
 using System.Linq.Expressions;
+using System.Diagnostics;
 
 
 
@@ -37,9 +38,10 @@ namespace Nephrite.Web.Hibernate
 		//[ThreadStatic]
 		static Dictionary<string, ISessionFactory> _sessionFactories = new Dictionary<string, ISessionFactory>();
 		static Dictionary<string, HbmMapping> _mappings = new Dictionary<string, HbmMapping>();
+		static Dictionary<string, Configuration> _configs = new Dictionary<string, Configuration>();
 		//ISessionFactory _sessionFactory;
 		ISession _session;
-		Configuration _cfg = null;
+		//Configuration _cfg = null;
 
 		public List<object> ToInsert { get; private set; }
 		public List<object> ToDelete { get; private set; }
@@ -66,17 +68,17 @@ namespace Nephrite.Web.Hibernate
 			}
 		}
 
-		public static DBType DBType
-		{
-			get
-			{
-				return A.DBType;
-			}
-			set
-			{
-				A.DBType = value;
-			}
-		}
+		//public static DBType DBType
+		//{
+		//	get
+		//	{
+		//		return A.DBType;
+		//	}
+		//	set
+		//	{
+		//		A.DBType = value;
+		//	}
+		//}
 
 		public ISession Session
 		{
@@ -93,7 +95,45 @@ namespace Nephrite.Web.Hibernate
 
 		public Configuration Configuration
 		{
-			get { return _cfg; }
+			get 
+			{
+				string t = this.GetType().Name;
+				Configuration _cfg = null;
+				if (_configs == null) _configs = new Dictionary<string, Configuration>();
+
+				if (_sessionFactories.ContainsKey(t))
+					_cfg = _configs[t];
+				else
+				{
+					_cfg = new NHibernate.Cfg.Configuration();
+					_cfg = new Configuration();
+					_cfg.DataBaseIntegration(_dbConfig);
+
+					var sw = A.Items["Stopwatch"] as Stopwatch;
+					Log.WriteLine(String.Format("-- {1} create {0} DataBaseIntegration", ID, sw.Elapsed.ToString()));
+
+					_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" } });
+					_cfg.SetInterceptor(new HDataContextInterceptor());
+
+					if (_listeners != null)
+					{
+						_cfg.EventListeners.PreDeleteEventListeners = _listeners.PreDeleteEventListeners.ToArray();
+						_cfg.EventListeners.PreInsertEventListeners = _listeners.PreInsertEventListeners.ToArray();
+						_cfg.EventListeners.PreUpdateEventListeners = _listeners.PreUpdateEventListeners.ToArray();
+						_cfg.EventListeners.PostDeleteEventListeners = _listeners.PostDeleteEventListeners.ToArray();
+						_cfg.EventListeners.PostInsertEventListeners = _listeners.PostInsertEventListeners.ToArray();
+						_cfg.EventListeners.PostUpdateEventListeners = _listeners.PostUpdateEventListeners.ToArray();
+
+						if (_listeners.SaveOrUpdateEventListeners.Count > 0)
+							_cfg.EventListeners.SaveOrUpdateEventListeners = _listeners.SaveOrUpdateEventListeners.ToArray();
+					}
+
+					Log.WriteLine(String.Format("-- {1} create {0} Added Listeners", ID, sw.Elapsed.ToString()));
+					_cfg.AddMapping(Mapping);
+					Log.WriteLine(String.Format("-- {1} create {0} Added Mapping", ID, sw.Elapsed.ToString())); 
+				}
+				return _cfg;
+			}
 		}
 
 		public ISessionFactory SessionFactory
@@ -108,7 +148,7 @@ namespace Nephrite.Web.Hibernate
 					f = _sessionFactories[t];
 				else
 				{
-					f = _cfg.BuildSessionFactory();
+					f = Configuration.BuildSessionFactory();
 					_sessionFactories.Add(t, f);
 				}
 				return f;
@@ -153,13 +193,21 @@ namespace Nephrite.Web.Hibernate
 		}
 		public string ID { get; set; }
 
+		Action<IDbIntegrationConfigurationProperties> _dbConfig;
+		Listeners _listeners;
+
 		public abstract IEnumerable<Type> GetEntitiesTypes();
 		public virtual IEnumerable<Type> GetTableFunctionsTypes() { return new List<Type>(); }
 
 		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Listeners listeners = null)
 		{
 			ID = GetType().Name + "-" + Guid.NewGuid().ToString();
-			Log.WriteLine(String.Format("-- create {0}", ID)); Log.WriteLine();
+			_dbConfig = dbConfig;
+			_listeners = listeners;
+
+			var sw = A.Items["Stopwatch"] as Stopwatch;
+			Log.WriteLine(String.Format("-- {1} create {0}", ID, sw.Elapsed.ToString())); 
+			Log.WriteLine();
 			//Log = new StringWriter();
 			ToInsert = new List<object>();
 			ToDelete = new List<object>();
@@ -167,28 +215,7 @@ namespace Nephrite.Web.Hibernate
 			AfterSaveActions = new List<Action>();
 			BeforeSaveActions = new List<Action>();
 
-			_cfg = new Configuration();
-			_cfg.DataBaseIntegration(dbConfig);
-
-			_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" } });
-			_cfg.SetInterceptor(new HDataContextInterceptor(this));
-
-			if (listeners != null)
-			{
-				_cfg.EventListeners.PreDeleteEventListeners = listeners.PreDeleteEventListeners.ToArray();
-				_cfg.EventListeners.PreInsertEventListeners = listeners.PreInsertEventListeners.ToArray();
-				_cfg.EventListeners.PreUpdateEventListeners = listeners.PreUpdateEventListeners.ToArray();
-				_cfg.EventListeners.PostDeleteEventListeners = listeners.PostDeleteEventListeners.ToArray();
-				_cfg.EventListeners.PostInsertEventListeners = listeners.PostInsertEventListeners.ToArray();
-				_cfg.EventListeners.PostUpdateEventListeners = listeners.PostUpdateEventListeners.ToArray();
-
-				if (listeners.SaveOrUpdateEventListeners.Count > 0)
-					_cfg.EventListeners.SaveOrUpdateEventListeners = listeners.SaveOrUpdateEventListeners.ToArray();
-			}
-
-
-			_cfg.AddMapping(Mapping);
-
+			
 
 			//_session = SessionFactory.OpenSession();
 			//_session.FlushMode = FlushMode.Commit;
@@ -254,11 +281,11 @@ namespace Nephrite.Web.Hibernate
 			IEnumerable<string> entitiesToCheck;
 			if (entitiesFilter == null)
 			{
-				entitiesToCheck = _cfg.ClassMappings.Select(x => x.EntityName);
+				entitiesToCheck = Configuration.ClassMappings.Select(x => x.EntityName);
 			}
 			else
 			{
-				entitiesToCheck = from persistentClass in _cfg.ClassMappings
+				entitiesToCheck = from persistentClass in Configuration.ClassMappings
 								  where entitiesFilter.Contains(persistentClass.EntityName)
 								  select persistentClass.EntityName;
 			}

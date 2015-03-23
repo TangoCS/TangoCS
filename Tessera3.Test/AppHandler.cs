@@ -60,9 +60,13 @@ namespace Solution
 			var r = context.Response;
 			var routes = context.Request.RequestContext.RouteData;
 
-			using (var HttpContext = new DefaultHttpContext())
+			using (var ctx = new DefaultHttpContext())
 			{
-				r.Write(RazorFormRenderer.RenderView(HttpContext, Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Views"), "HomePage", HttpContext));
+				r.Write(RazorFormRenderer.RenderView(
+					ctx, 
+					Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Views"), 
+					"HomePage", 
+					ctx));
 			}
 			
 			sw.Stop();

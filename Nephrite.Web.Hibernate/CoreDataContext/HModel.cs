@@ -7,7 +7,7 @@ using System.Xml.Linq;
 using Nephrite.Html;
 using Nephrite.Meta;
 using Nephrite.Web.Controls;
-using Nephrite.Web.ErrorLog;
+using Nephrite.ErrorLog;
 using Nephrite.Web.FileStorage;
 using Nephrite.Web.FormsEngine;
 using Nephrite.Web.Hibernate;
@@ -15,8 +15,9 @@ using Nephrite.Web.Mailer;
 using Nephrite.Multilanguage;
 using Nephrite.Web.RSS;
 using Nephrite.SettingsManager;
-using Nephrite.Web.SPM;
+
 using Nephrite.Web.TaskManager;
+using Nephrite.Html.Controls;
 
 namespace Nephrite.Web.CoreDataContext
 {

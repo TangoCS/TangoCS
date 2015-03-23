@@ -11,20 +11,20 @@ namespace Nephrite.Http
 	public class Url
 	{
 		string _q = "";
-		IDictionary<string, string> _c = null;
+		StringCollection _c = null;
 		IDictionary<string, object> _routeValues = null;
 
-		public Url(string pathAndQuery, IDictionary<string, string> query, IDictionary<string, object> routeValues)
+		public Url(string pathAndQuery, StringCollection query, IDictionary<string, object> routeValues)
 		{
 			_q = pathAndQuery;
 			_c = query;
 			_routeValues = routeValues;
 		}
-		public Url(string pathAndQuery)
+		public Url(string pathAndQuery, IDictionary<string, object> routeValues = null)
 		{
 			_q = pathAndQuery;
-			_c = QueryHelpers.ParseQuery(_q);
-			_routeValues = null;
+			_c = new StringCollection(QueryHelpers.ParseQuery(_q));
+			_routeValues = routeValues;
 		}
 
 		public string Mode { get { return GetString("mode"); } }
@@ -208,6 +208,24 @@ namespace Nephrite.Http
 				str = str.AddQueryParameter(parm, value);
 			}
 			return str;
+		}
+	}
+
+	public class StringCollection : ReadableStringCollection
+	{
+		public StringCollection(IDictionary<string, string[]> store) : base(store)
+		{
+
+		}
+
+		public void Add(string key, string value)
+		{
+			Store.Add(key, new string[] { value });
+		}
+
+		public void Remove(string key)
+		{
+			Store.Remove(key);
 		}
 	}
 }

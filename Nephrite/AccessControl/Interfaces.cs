@@ -8,6 +8,7 @@ namespace Nephrite.AccessControl
 	public interface IAccessControl
 	{
 		bool Check(string securableObjectKey, bool defaultAccess = false);
+		StringBuilder Log { get; }
 	}
 
 	public interface IAccessControlForRole<TIdentityKey>

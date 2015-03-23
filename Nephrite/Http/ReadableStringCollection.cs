@@ -17,7 +17,7 @@ namespace Nephrite.Http
 			Store = store;
 		}
 
-		private IDictionary<string, string[]> Store { get; set; }
+		protected IDictionary<string, string[]> Store { get; set; }
 
 		/// <summary>
 		/// Gets the number of elements contained in the collection.

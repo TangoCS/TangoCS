@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Nephrite.Html;
+using Nephrite.Html.Controls;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 

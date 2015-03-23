@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Nephrite.Identity;
 using NHibernate;
@@ -143,13 +144,6 @@ namespace Nephrite.Web.Hibernate
 
     public class HDataContextInterceptor : EmptyInterceptor
     {
-        HDataContext _dataContext;
-
-        public HDataContextInterceptor(HDataContext dc)
-        {
-            _dataContext = dc;
-        }
-
         public override void PreFlush(ICollection entitites)
         {
             int sid = -1;
@@ -230,9 +224,11 @@ namespace Nephrite.Web.Hibernate
 
         public override SqlString OnPrepareStatement(SqlString sql)
         {
-			_dataContext.Log.WriteLine(String.Format("-- {1}, datacontext {0}", _dataContext.ID, DateTime.Now.ToString("HH:mm:ss.fff")));
-            _dataContext.Log.WriteLine(sql.ToString());
-            _dataContext.Log.WriteLine();
+			var hdc = A.Model as HDataContext;
+			var sw = A.Items["Stopwatch"] as Stopwatch;
+			hdc.Log.WriteLine(String.Format("-- {1}, datacontext {0}", hdc.ID, sw.Elapsed));
+			hdc.Log.WriteLine(sql.ToString());
+			hdc.Log.WriteLine();
             return sql;
         }
 

@@ -93,10 +93,6 @@ namespace Nephrite
             systemTitle = ConfigurationManager.AppSettings["SystemTitle"] ?? String.Empty;
 			ControlsPath = (HttpRuntime.AppDomainAppVirtualPath + ConfigurationManager.AppSettings["ControlsPath"]).Replace("//", "/");
 
-			addomain = ConfigurationManager.AppSettings["ADDomain"] ?? String.Empty;
-			aduser = ConfigurationManager.AppSettings["ADUser"] ?? String.Empty;
-			adpassword = ConfigurationManager.AppSettings["ADPassword"] ?? String.Empty;
-
 			imagespath = (HttpRuntime.AppDomainAppVirtualPath + (ConfigurationManager.AppSettings["ImagesPath"] ?? "/i/")).Replace("//", "/");
 
 			if (ConfigurationManager.AppSettings["NavMenuButtonsMode"] == "BigButtons")
@@ -110,26 +106,6 @@ namespace Nephrite
 			if (ConfigurationManager.AppSettings["EnableViewCache"] != null)
 				EnableViewCache = ConfigurationManager.AppSettings["EnableViewCache"] != "0" && ConfigurationManager.AppSettings["EnableViewCache"] != "false";
         }
-
-
-		static string addomain;
-		static string aduser;
-		static string adpassword;
-
-		public static string ADDomain
-		{
-			get { return addomain; }
-		}
-
-		public static string ADUser
-		{
-			get { return aduser; }
-		}
-
-		public static string ADPassword
-		{
-			get { return adpassword; }
-		}
     }
 
 	public enum NavMenuButtonsMode

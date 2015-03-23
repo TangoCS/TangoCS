@@ -5,7 +5,7 @@ using System.Linq;
 using Nephrite.Multilanguage;
 using Nephrite.Layout;
 
-namespace Nephrite.Html
+namespace Nephrite.Html.Controls
 {
 	public static class BackButtonExtension
 	{

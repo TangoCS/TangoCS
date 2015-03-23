@@ -4,13 +4,13 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 
-namespace Nephrite.Html
+namespace Nephrite.Html.Controls
 {
 	public static class CalendarExtension
 	{
 		public static void Calendar(this HtmlWriter c, string name, DateTime? value = null, bool enabled = true, bool showTime = false)
 		{
-			string basePath = Settings.JSPath + "Calendar/";
+			string basePath = GlobalSettings.JSPath + "Calendar/";
 
 			c.Page.RegisterScript("calendar", basePath + "calendar_stripped.js");
 			c.Page.RegisterScript("calendar-ru", basePath + "lang/calendar-ru.js");
@@ -87,7 +87,7 @@ function jscal_calendarDate(date, y, m, d){" + CalendarDayCache.ToJSArray("w", "
 		}
 	}
 
-	internal class CalendarDayCache
+	public class CalendarDayCache
 	{
 		static DateTime[] workingDays;
 		static DateTime[] holidays;
@@ -118,7 +118,7 @@ function jscal_calendarDate(date, y, m, d){" + CalendarDayCache.ToJSArray("w", "
 			}
 		}
 
-		internal static DateTime[] WorkingDays
+		public static DateTime[] WorkingDays
 		{
 			get
 			{
@@ -127,7 +127,7 @@ function jscal_calendarDate(date, y, m, d){" + CalendarDayCache.ToJSArray("w", "
 			}
 		}
 
-		internal static DateTime[] Holidays
+		public static DateTime[] Holidays
 		{
 			get
 			{
@@ -136,7 +136,7 @@ function jscal_calendarDate(date, y, m, d){" + CalendarDayCache.ToJSArray("w", "
 			}
 		}
 
-		internal static string ToJSArray(string wName, string hName)
+		public static string ToJSArray(string wName, string hName)
 		{
 			StringBuilder sb = new StringBuilder(1000);
 			var h = Holidays;

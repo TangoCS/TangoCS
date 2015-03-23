@@ -7,7 +7,7 @@ using System.Web.UI;
 using System.Drawing;
 using Nephrite.Web;
 using System.Threading;
-using Nephrite.Web.ErrorLog;
+using Nephrite.ErrorLog;
 
 namespace Nephrite.Web
 {

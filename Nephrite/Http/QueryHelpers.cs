@@ -6,20 +6,55 @@ using System.Text;
 
 namespace Nephrite.Http
 {
-	public static class QueryHelpers
+	public static partial class QueryHelpers
 	{
+		/// <summary>
+		/// Append the given query key and value to the URI.
+		/// </summary>
+		/// <param name="uri">The base URI.</param>
+		/// <param name="name">The name of the query key.</param>
+		/// <param name="value">The query value.</param>
+		/// <returns>The combined result.</returns>
+		public static string AddQueryString([NotNull] string uri, [NotNull] string name, [NotNull] string value)
+		{
+			bool hasQuery = uri.IndexOf('?') != -1;
+			return uri + (hasQuery ? "&" : "?") + Uri.EscapeDataString(name) + "=" + Uri.EscapeDataString(value);
+		}
+
+		/// <summary>
+		/// Append the given query keys and values to the uri.
+		/// </summary>
+		/// <param name="uri">The base uri.</param>
+		/// <param name="queryString">A collection of name value query pairs to append.</param>
+		/// <returns>The combine result.</returns>
+		public static string AddQueryString([NotNull] string uri, [NotNull] IDictionary<string, string> queryString)
+		{
+			var sb = new StringBuilder();
+			sb.Append(uri);
+			bool hasQuery = uri.IndexOf('?') != -1;
+			foreach (var parameter in queryString)
+			{
+				sb.Append(hasQuery ? '&' : '?');
+				sb.Append(Uri.EscapeDataString(parameter.Key));
+				sb.Append('=');
+				sb.Append(Uri.EscapeDataString(parameter.Value));
+				hasQuery = true;
+			}
+			return sb.ToString();
+		}
+
 		/// <summary>
 		/// Parse a query string into its component key and value parts.
 		/// </summary>
 		/// <param name="text">The raw query string value, with or without the leading '?'.</param>
 		/// <returns>A collection of parsed keys and values.</returns>
-		public static IDictionary<string,string> ParseQuery(string queryString)
+		public static IDictionary<string, string[]> ParseQuery(string queryString)
 		{
 			if (!string.IsNullOrEmpty(queryString) && queryString[0] == '?')
 			{
 				queryString = queryString.Substring(1);
 			}
-			var accumulator = new Dictionary<string, string>();
+			var accumulator = new KeyValueAccumulator<string, string>(StringComparer.OrdinalIgnoreCase);
 
 			int textLength = queryString.Length;
 			int equalIndex = queryString.IndexOf('=');
@@ -43,7 +78,7 @@ namespace Nephrite.Http
 					}
 					string name = queryString.Substring(scanIndex, equalIndex - scanIndex);
 					string value = queryString.Substring(equalIndex + 1, delimiterIndex - equalIndex - 1);
-					accumulator.Add(
+					accumulator.Append(
 						Uri.UnescapeDataString(name.Replace('+', ' ')),
 						Uri.UnescapeDataString(value.Replace('+', ' ')));
 					equalIndex = queryString.IndexOf('=', delimiterIndex);
@@ -55,24 +90,8 @@ namespace Nephrite.Http
 				scanIndex = delimiterIndex + 1;
 			}
 
-			return accumulator;
+			return accumulator.GetResults();
 		}
-
-		public static string CreateUrl(string route, HtmlParms parms = null)
-		{
-			string s = "/" + route;
-			HtmlParms p = new HtmlParms();
-			foreach (var parm in parms)
-			{
-				if (route.IndexOf("{" + parm.Key + "}") != -1)
-					s = s.Replace("{" + parm.Key + "}", parm.Value);
-				else
-					p.Add(parm.Key, parm.Value);
-			}
-			string ps = p.ToString();
-			return s + (ps.IsEmpty() ? "" : ("?" + ps));
-		}
-
 	}
 
 	public class HtmlParms : Dictionary<string, string>
@@ -89,6 +108,24 @@ namespace Nephrite.Http
 			: base()
 		{
 			Add(key, value);
+		}
+	}
+
+	public static partial class QueryHelpers
+	{
+		public static string CreateUrl(string route, HtmlParms parms = null)
+		{
+			string s = "/" + route;
+			HtmlParms p = new HtmlParms();
+			foreach (var parm in parms)
+			{
+				if (route.IndexOf("{" + parm.Key + "}") != -1)
+					s = s.Replace("{" + parm.Key + "}", parm.Value);
+				else
+					p.Add(parm.Key, parm.Value);
+			}
+			string ps = p.ToString();
+			return s + (ps.IsEmpty() ? "" : ("?" + ps));
 		}
 	}
 

@@ -1,17 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.DirectoryServices;
 using System.Linq;
 using System.Security.Principal;
 
-namespace Nephrite.Web.ActiveDirectory
+namespace Nephrite.ActiveDirectory
 {
+	public static class ADSettings
+	{
+		static Lazy<string> _adDomain = new Lazy<string>(() => ConfigurationManager.AppSettings["ADDomain"] ?? "");
+		public static string ADDomain { get { return _adDomain.Value; } }
+	}
+
     public static class ADSearcher
     {
         public static List<ADUser> Search(string surname, string firstname, string login)
         {
             DirectorySearcher deSearch = new DirectorySearcher();
-			deSearch.SearchRoot = new DirectoryEntry(Settings.ADDomain != String.Empty ? "LDAP://" + Settings.ADDomain : String.Empty);
+			deSearch.SearchRoot = new DirectoryEntry(ADSettings.ADDomain != String.Empty ? "LDAP://" + ADSettings.ADDomain : String.Empty);
 			deSearch.Filter = String.Format("(&(|(objectClass=user)(objectClass=group))(|(samaccountname={0}*)(givenname={1}*)(sn={2}*)))", PurifyString(login), PurifyString(firstname), PurifyString(surname));
             deSearch.Sort.Direction = SortDirection.Ascending;
             deSearch.Sort.PropertyName = "displayname";

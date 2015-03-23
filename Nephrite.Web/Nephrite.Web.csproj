@@ -60,10 +60,6 @@
     <Reference Include="DocumentFormat.OpenXml">
       <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
     </Reference>
-    <Reference Include="DotNetOpenAuth, Version=3.4.7.11121, Culture=neutral, PublicKeyToken=2780ccd10d57b246, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>ExternalDll\DotNetOpenAuth.dll</HintPath>
-    </Reference>
     <Reference Include="EPPlus">
       <HintPath>..\packages\EPPlus.3.1.3.3\lib\net35\EPPlus.dll</HintPath>
     </Reference>
@@ -93,7 +89,6 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.DirectoryServices" />
-    <Reference Include="System.DirectoryServices.AccountManagement" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
     <Reference Include="System.ServiceModel" />
@@ -136,7 +131,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ActiveDirectory\ADSearcher.cs" />
     <Compile Include="Controls\ListFilter.ascx.designer.cs">
       <DependentUpon>ListFilter.ascx</DependentUpon>
     </Compile>
@@ -150,9 +144,6 @@
     <Compile Include="FormsGenerator\SelectObjectCode.cs" />
     <Compile Include="FormsGenerator\UploadControlsCode.cs" />
     <Compile Include="FormsGenerator\ViewCode.cs" />
-    <Compile Include="Html\ComplexControls\BackButton.cs" />
-    <Compile Include="Html\ComplexControls\Calendar.cs" />
-    <Compile Include="Html\ComplexControls\CodeArea.cs" />
     <Compile Include="Meta.Forms\WebFormRenderer.cs" />
     <Compile Include="Meta.Forms\UIMetaModel.cs" />
     <Compile Include="Meta.Forms\StandardOperations.cs" />
@@ -388,7 +379,6 @@
     <Compile Include="RSS\RssLinker.cs" />
     <Compile Include="FileStorage\DataHandler.cs" />
     <Compile Include="Web\DebuggerWriter.cs" />
-    <Compile Include="ErrorLog\ErrorLogger.cs" />
     <Compile Include="FileStorage\FileHandler.cs" />
     <Compile Include="FileStorage\FileProvider.cs" />
     <Compile Include="FileStorage\FileTypeIcon.cs" />

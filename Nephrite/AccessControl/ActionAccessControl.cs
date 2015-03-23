@@ -8,51 +8,22 @@ namespace Nephrite.AccessControl
 {
 	public class ActionAccessControl<TKey>
 	{
-		static CacheableAccessControl<TKey> _instanceHolder;
-		static object LockObject = new object();
-
-		public static void Init(
-			Func<IHttpContext> httpContext,
-			Func<ICacheableAccessControlDataContext<TKey>> dataContext,
-			Func<IIdentityManager<TKey>> identityManager,
-			CacheableAccessControlOptions options = null
-			)
+		static Func<IHttpContext> HttpContext = null;
+		public static void Init(Func<IHttpContext> httpContext)
 		{
-			if (_instanceHolder == null)
-			{
-				lock (LockObject)
-				{
-					if (_instanceHolder == null)
-					{
-						if (options == null) options = new CacheableAccessControlOptions { Enabled = () => true };
-						if (options.ClassName.IsEmpty()) options.ClassName = "Action";
-						_instanceHolder = new CacheableAccessControl<TKey>(httpContext, dataContext, identityManager, options);
-						return;
-					}
-				}
-			}
-
-			throw new ApplicationException("ActionAccessControl.Init() method should be called only once.");
+			HttpContext = httpContext;
 		}
 
 		public static CacheableAccessControl<TKey> Instance
 		{
 			get
 			{
-				if (_instanceHolder == null)
-				{
-					throw new ApplicationException("ActionAccessControl instance hasn't been initialized.");
-				}
-
-				return _instanceHolder;
+				return HttpContext().Items["ActionAccessControl"] as CacheableAccessControl<TKey>;
 			}
 		}
 	}
 
-	public class ActionAccessControl : ActionAccessControl<int>
-	{
-
-	}
+	public class ActionAccessControl : ActionAccessControl<int> { }
 
 	[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
 	public sealed class SecurableObjectKeyAttribute : Attribute

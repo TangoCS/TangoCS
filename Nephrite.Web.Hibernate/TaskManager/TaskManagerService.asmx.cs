@@ -7,7 +7,7 @@ using System.Web.Services.Protocols;
 using Nephrite.Identity;
 using Nephrite.SettingsManager;
 using Nephrite.Web.CoreDataContext;
-using Nephrite.Web.SPM;
+
 
 namespace Nephrite.Web.TaskManager
 {
@@ -40,7 +40,7 @@ namespace Nephrite.Web.TaskManager
 		public void RunTasks()
 		{
 			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
-			Subject.System.Run(() => Nephrite.Web.TaskManager.TaskManager.Run());
+			Subject.System.Run(() => Nephrite.Web.TaskManager.TaskManager.Run(HttpContext.Current == null));
 		}
 	}
 }

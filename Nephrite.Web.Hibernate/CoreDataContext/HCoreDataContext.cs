@@ -18,8 +18,9 @@ using Nephrite.Web.Hibernate;
 using NHibernate.Dialect;
 using NHibernate.Cfg;
 using Nephrite.Web.Hibernate.CoreMapping;
-using Nephrite.Web.ErrorLog;
+using Nephrite.ErrorLog;
 using Nephrite.SettingsManager;
+using Nephrite.Html.Controls;
 
 namespace Nephrite.Web.CoreDataContext
 {

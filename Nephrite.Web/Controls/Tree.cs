@@ -4,8 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.Script.Serialization;
+using Nephrite.ErrorLog;
 
-using Nephrite.Web.ErrorLog;
 
 namespace Nephrite.Web.Controls
 {

@@ -12,7 +12,7 @@ using System.Linq.Expressions;
 using Nephrite.Identity;
 using Nephrite.Web.FileStorage;
 using Nephrite.Meta;
-using Nephrite.Web.ErrorLog;
+using Nephrite.ErrorLog;
 using Nephrite.SettingsManager;
 
 
@@ -343,7 +343,7 @@ namespace Nephrite.Web.Replication
 		[SoapHeader("user")]
 		public void RunTasks()
 		{
-			Subject.System.Run(() => Nephrite.Web.TaskManager.TaskManager.Run());
+			Subject.System.Run(() => Nephrite.Web.TaskManager.TaskManager.Run(HttpContext.Current == null));
 		}
 
 		public bool ImportObject(MetaClass objectType, string data)

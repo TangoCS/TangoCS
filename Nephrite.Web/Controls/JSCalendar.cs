@@ -7,6 +7,7 @@ using System.Web.UI.WebControls;
 using System.Configuration;
 using System.Web.UI.HtmlControls;
 using Nephrite.Html;
+using Nephrite.Html.Controls;
 
 
 namespace Nephrite.Web.Controls

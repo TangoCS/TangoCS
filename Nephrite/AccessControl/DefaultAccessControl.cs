@@ -10,22 +10,21 @@ namespace Nephrite.AccessControl
 	public class DefaultAccessControl<TIdentityKey> : IAccessControl, IAccessControlForRole<TIdentityKey>
 	{
 		//string _message = "";
+		public StringBuilder Log { get; set; }
 
-		public Func<IHttpContext> HttpContext { get; private set; }
 		public AccessControlOptions Options { get; private set; }
-		public Func<IDefaultAccessControlDataContext<TIdentityKey>> DataContext { get; private set; }
-		public Func<IIdentityManager<TIdentityKey>> IdentityManager { get; private set; }
+		public IDefaultAccessControlDataContext<TIdentityKey> DataContext { get; private set; }
+		public IIdentityManager<TIdentityKey> IdentityManager { get; private set; }
 
 		public DefaultAccessControl(
-			Func<IHttpContext> httpContext,
-			Func<IDefaultAccessControlDataContext<TIdentityKey>> dataContext,
-			Func<IIdentityManager<TIdentityKey>> identityManager,
+			IDefaultAccessControlDataContext<TIdentityKey> dataContext,
+			IIdentityManager<TIdentityKey> identityManager,
 			AccessControlOptions options = null)
 		{
-			HttpContext = httpContext;
 			DataContext = dataContext;
 			IdentityManager = identityManager;
 			Options = options ?? new AccessControlOptions { Enabled = () => true };
+			Log = new StringBuilder();
 		}
 
 
@@ -53,12 +52,11 @@ namespace Nephrite.AccessControl
 		{
 			var s = SubjectWithRoles<TIdentityKey>.Current;
 
-			var ctx = HttpContext();
 			string key = securableObjectKey.ToUpper();
 			if (s.AllowItems.Contains(key)) return true;
 			if (s.DisallowItems.Contains(key)) return false;
 
-			List<TIdentityKey> _access = DataContext().GetAccessInfo(securableObjectKey).ToList();
+			List<TIdentityKey> _access = DataContext.GetAccessInfo(securableObjectKey).ToList();
 
 			if (_access.Count == 0)
 			{
@@ -68,7 +66,7 @@ namespace Nephrite.AccessControl
 					{
 						lock (_lock) { if (!s.AllowItems.Contains(key)) s.AllowItems.Add(key); }
 					}
-					ctx.Items["SpmLog"] = (string)ctx.Items["SpmLog"] + key + " v3: true (default/admin access)" + Environment.NewLine;
+					Log.AppendLine(key + " v3: true (default/admin access)");
 				}
 				else
 				{
@@ -76,7 +74,7 @@ namespace Nephrite.AccessControl
 					{
 						lock (_lock) { if (!s.DisallowItems.Contains(key)) s.DisallowItems.Add(key); }
 					}
-					ctx.Items["SpmLog"] = (string)ctx.Items["SpmLog"] + key + " v3: false (default/admin access)" + Environment.NewLine;
+					Log.AppendLine(key + " v3: false (default/admin access denied)");
 				}
 				return defaultAccess || s.IsAdministrator;
 			}
@@ -87,7 +85,7 @@ namespace Nephrite.AccessControl
 				{
 					lock (_lock) { if (!s.AllowItems.Contains(key)) s.AllowItems.Add(key); }
 				}
-				ctx.Items["SpmLog"] = (string)ctx.Items["SpmLog"] + key + " v3: true (explicit access)" + Environment.NewLine;
+				Log.AppendLine(key + " v3: true (explicit access)"); 
 				return true;
 			}
 			else
@@ -96,7 +94,7 @@ namespace Nephrite.AccessControl
 				{
 					lock (_lock) { if (!s.DisallowItems.Contains(key)) s.DisallowItems.Add(key); }
 				}
-				ctx.Items["SpmLog"] = (string)ctx.Items["SpmLog"] + key + " v3: false (explicit access denied)" + Environment.NewLine;
+				Log.AppendLine(key + " v3: false (explicit access denied)");
 				return false;
 			}
 		}
@@ -118,39 +116,37 @@ namespace Nephrite.AccessControl
 	public class CacheableAccessControl<TIdentityKey>
 		: IAccessControl, IAccessControlForRole<TIdentityKey>
 	{
+		public StringBuilder Log { get; set; }
 		static object _lock = new object();
 
-		public Func<IHttpContext> HttpContext { get; private set; }
 		public CacheableAccessControlOptions Options { get; private set; }
-		public Func<ICacheableAccessControlDataContext<TIdentityKey>> DataContext { get; private set; }
-		public Func<IIdentityManager<TIdentityKey>> IdentityManager { get; private set; }
+		public ICacheableAccessControlDataContext<TIdentityKey> DataContext { get; private set; }
+		public IIdentityManager<TIdentityKey> IdentityManager { get; private set; }
 
 		public CacheableAccessControl(
-			Func<IHttpContext> httpContext,
-			Func<ICacheableAccessControlDataContext<TIdentityKey>> dataContext,
-			Func<IIdentityManager<TIdentityKey>> identityManager,
+			ICacheableAccessControlDataContext<TIdentityKey> dataContext,
+			IIdentityManager<TIdentityKey> identityManager,
 			CacheableAccessControlOptions options = null)
 		{
-			HttpContext = httpContext;
 			DataContext = dataContext;
 			IdentityManager = identityManager;
 			Options = options ?? new CacheableAccessControlOptions { Enabled = () => true };
+			Log = new StringBuilder();
 		}
 
 		public bool CheckForRole(TIdentityKey roleID, string securableObjectKey)
 		{
-			List<TIdentityKey> anc = DataContext().RoleAncestors(roleID);
+			List<TIdentityKey> anc = DataContext.RoleAncestors(roleID);
 			string key = securableObjectKey.ToUpper();
 
 			HashSet<string> _access = null;
 			string cacheName = Options.ClassName;
-			var ctx = HttpContext();
 
 			if (!AccessControlCache.AccessCache.ContainsKey(cacheName))
 			{
 				lock (_lock)
 				{
-					_access = new HashSet<string>(DataContext().GetRolesAccess());
+					_access = new HashSet<string>(DataContext.GetRolesAccess());
 					if (!AccessControlCache.AccessCache.ContainsKey(cacheName)) AccessControlCache.AccessCache.Add(cacheName, _access);
 				}
 			}
@@ -162,12 +158,12 @@ namespace Nephrite.AccessControl
 			HashSet<string> _checking = new HashSet<string>(anc.Select(o => key + "-" + o.ToString()));
 			if (_access.Overlaps(_checking))
 			{
-				ctx.Items["SpmLog"] = (string)ctx.Items["SpmLog"] + "ROLE: " + roleID.ToString() + ", " + key + " v3: true" + Environment.NewLine;
+				Log.AppendLine("ROLE: " + roleID.ToString() + ", " + key + " v3: true");
 				return true;
 			}
 			else
 			{
-				ctx.Items["SpmLog"] = (string)ctx.Items["SpmLog"] + "ROLE: " + roleID.ToString() + ", " + key + " v3: false" + Environment.NewLine;
+				Log.AppendLine("ROLE: " + roleID.ToString() + ", " + key + " v3: false");
 				return false;
 			}
 		}
@@ -184,14 +180,13 @@ namespace Nephrite.AccessControl
 
 			HashSet<string> _access = null;
 			HashSet<string> _items = null;
-			var ctx = HttpContext();
 
 			if (!AccessControlCache.AccessCache.ContainsKey(cacheName) || !AccessControlCache.ItemsCache.ContainsKey(cacheName))
 			{
 				lock (_lock)
 				{
-					_access = new HashSet<string>(DataContext().GetRolesAccess());
-					_items = new HashSet<string>(DataContext().GetKeys());
+					_access = new HashSet<string>(DataContext.GetRolesAccess());
+					_items = new HashSet<string>(DataContext.GetKeys());
 
 					if (!AccessControlCache.AccessCache.ContainsKey(cacheName)) AccessControlCache.AccessCache.Add(cacheName, _access);
 					if (!AccessControlCache.ItemsCache.ContainsKey(cacheName)) AccessControlCache.ItemsCache.Add(cacheName, _items);
@@ -211,7 +206,7 @@ namespace Nephrite.AccessControl
 					{
 						lock (_lock) { if (!s.AllowItems.Contains(key)) s.AllowItems.Add(key); }
 					}
-					ctx.Items["SpmLog"] = (string)ctx.Items["SpmLog"] + key + " v3: true (default/admin access)" + Environment.NewLine;
+					Log.AppendLine(key + " v3: true (default/admin access)");
 				}
 				else
 				{
@@ -219,7 +214,7 @@ namespace Nephrite.AccessControl
 					{
 						lock (_lock) { if (!s.DisallowItems.Contains(key)) s.DisallowItems.Add(key); }
 					}
-					ctx.Items["SpmLog"] = (string)ctx.Items["SpmLog"] + key + " v3: false (default/admin access)" + Environment.NewLine;
+					Log.AppendLine(key + " v3: false (default/admin access denied)");
 				}
 				return defaultAccess || s.IsAdministrator;
 			}
@@ -231,7 +226,7 @@ namespace Nephrite.AccessControl
 				{
 					lock (_lock) { if (!s.AllowItems.Contains(key)) s.AllowItems.Add(key); }
 				}
-				ctx.Items["SpmLog"] = (string)ctx.Items["SpmLog"] + key + " v3: true (explicit access)" + Environment.NewLine;
+				Log.AppendLine(key + " v3: true (explicit access)");
 				return true;
 			}
 			else
@@ -240,7 +235,7 @@ namespace Nephrite.AccessControl
 				{
 					lock (_lock) { if (!s.DisallowItems.Contains(key)) s.DisallowItems.Add(key); }
 				}
-				ctx.Items["SpmLog"] = (string)ctx.Items["SpmLog"] + key + " v3: false (explicit access denied)" + Environment.NewLine;
+				Log.AppendLine(key + " v3: false (explicit access denied)");
 				return false;
 			}
 		}

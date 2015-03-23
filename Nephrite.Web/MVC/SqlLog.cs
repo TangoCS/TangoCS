@@ -15,7 +15,6 @@ namespace Nephrite.Web
         protected override void Render(System.Web.UI.HtmlTextWriter writer)
         {
             base.Render(writer);
-
             if (Page.Request.QueryString["showsql"] == "1")
             {
 				StringBuilder sql = new StringBuilder(20000);
@@ -38,7 +37,7 @@ namespace Nephrite.Web
 				if (HttpContext.Current.Items["RequestBeginDate"] != null)
 				{
 					TimeSpan ts = DateTime.Now.Subtract((DateTime)HttpContext.Current.Items["RequestBeginDate"]);
-					writer.Write("<br /><b>Время формирования страцицы: {0}.{1} c</b>", Math.Floor(ts.TotalSeconds), ts.Milliseconds);
+					writer.Write("<br /><b>Время формирования страницы: {0}.{1} c</b>", Math.Floor(ts.TotalSeconds), ts.Milliseconds);
 				}
             }
         }

@@ -1,28 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Dapper;
 
 namespace Nephrite.AccessControl
 {
 	public class DefaultAccessControlDataContext : ICacheableAccessControlDataContext<int>, IAccessControlDataContext<int>
 	{
-		IDataContext _dc;
+		IDbConnection _dc;
 
-		public DefaultAccessControlDataContext(IDataContext dc)
+		public DefaultAccessControlDataContext(IDbConnection dc)
 		{
 			_dc = dc;
 		}
 
 		public IEnumerable<string> GetRolesAccess()
 		{
-			return _dc.ExecuteQuery<string>(@"select ActionRoleAccess from V_AccessControl_ActionRoleAccess order by ActionRoleAccess");
+			return _dc.Query<string>(@"select ActionRoleAccess from V_AccessControl_ActionRoleAccess order by ActionRoleAccess");
 		}
 
 		public IEnumerable<string> GetKeys()
 		{
-			return _dc.ExecuteQuery<string>(@"select upper(a.SystemName) from SPM_Action a order by a.SystemName");
+			return _dc.Query<string>(@"select upper(a.SystemName) from SPM_Action a order by a.SystemName");
 		}
 
 		public IEnumerable<int> GetAccessInfo(string securableObjectKey)
@@ -34,7 +36,7 @@ namespace Nephrite.AccessControl
 		public List<Role<int>> GetAllRoles()
 		{
 			if (_allRoles != null) return _allRoles;
-			_allRoles = _dc.ExecuteQuery<Role<int>>("select RoleID, Title, lower(SysName) as \"SysName\" from SPM_Role").ToList();
+			_allRoles = _dc.Query<Role<int>>("select RoleID, Title, lower(SysName) as \"SysName\" from SPM_Role").ToList();
 			return _allRoles;
 		}
 
@@ -47,7 +49,7 @@ namespace Nephrite.AccessControl
 		List<RoleAsso<int>> AllRoleAsso()
 		{
 			if (_allRoleAsso != null) return _allRoleAsso;
-			_allRoleAsso = _dc.ExecuteQuery<RoleAsso<int>>(@"select ParentRoleID, RoleID from dbo.V_AccessControl_RoleAsso").ToList();
+			_allRoleAsso = _dc.Query<RoleAsso<int>>(@"select ParentRoleID, RoleID from dbo.V_AccessControl_RoleAsso").ToList();
 			return _allRoleAsso;
 		}
 
@@ -62,11 +64,11 @@ namespace Nephrite.AccessControl
 			List<int> r = null;
 			if (activeDirectoryGroups != null)
 			{
-				r = _dc.ExecuteQuery<int>("select RoleID from V_AccessControl_SubjectRole where SubjectID = ? union select RoleID from SPM_Role where SID in (" + activeDirectoryGroups.Join(",") + ")", id).ToList();
+				r = _dc.Query<int>("select RoleID from V_AccessControl_SubjectRole where SubjectID = @p1 union select RoleID from SPM_Role where SID in (" + activeDirectoryGroups.Join(",") + ")", new { p1 = id }).ToList();
 			}
 			else
 			{
-				r = _dc.ExecuteQuery<int>("select RoleID from V_AccessControl_SubjectRole where SubjectID = ?", id).ToList();
+				r = _dc.Query<int>("select RoleID from V_AccessControl_SubjectRole where SubjectID = @p1", new { p1 = id }).ToList();
 			}
 			return r;
 		}

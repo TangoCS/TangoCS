@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Nephrite.Http;
 using RazorEngine;
 using RazorEngine.Configuration;
 using RazorEngine.Templating;

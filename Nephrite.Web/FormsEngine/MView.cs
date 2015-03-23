@@ -7,7 +7,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls.WebParts;
 using Nephrite.Web;
-using Nephrite.Web.ErrorLog;
+using Nephrite.ErrorLog;
 using Nephrite.AccessControl;
 using System.IO;
 

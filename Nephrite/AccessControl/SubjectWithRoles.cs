@@ -103,7 +103,7 @@ namespace Nephrite.AccessControl
 				var s = new SubjectWithRoles<TKey>(
 					curSubj, 
 					ctx.User.Identity, 
-					ActionAccessControl<TKey>.Instance.DataContext());
+					ActionAccessControl<TKey>.Instance.DataContext);
 				ctx.Items["CurrentSubjectWithRoles"] = s;
 				return s;
 			}
