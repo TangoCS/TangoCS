@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Tessera.Test</RootNamespace>
     <AssemblyName>Tessera.Test</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -30,6 +30,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -39,16 +40,10 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Nephrite.Web\ExternalDll\Iesi.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="NHibernate, Version=3.3.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Nephrite.Web\ExternalDll\NHibernate.dll</HintPath>
-    </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.Linq" />
@@ -58,17 +53,69 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FluentModel.cs" />
+    <Compile Include="GenFluentModel.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>GenFluentModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="GenFluentModel.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GenFluentModel.cs</LastGenOutput>
+    </None>
+    <None Include="GenModelConfig.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>GenModelConfig.cs</LastGenOutput>
+    </None>
+    <None Include="Test.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Test.txt</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Nephrite.Meta.Database.DB2\Nephrite.Meta.Database.DB2.csproj">
+      <Project>{2b25a041-ff5e-4308-a25a-aa60d097f009}</Project>
+      <Name>Nephrite.Meta.Database.DB2</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Nephrite.Meta.Database.MSSQL\Nephrite.Meta.Database.MSSQL.csproj">
+      <Project>{de61160e-44db-40cd-82c9-ba812dce4812}</Project>
+      <Name>Nephrite.Meta.Database.MSSQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Nephrite.Meta.Database.PostgreSQL\Nephrite.Meta.Database.PostgreSQL.csproj">
+      <Project>{2b3754dc-5507-4046-a135-bced1c161acf}</Project>
+      <Name>Nephrite.Meta.Database.PostgreSQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Nephrite.Web.Hibernate\Nephrite.Web.Hibernate.csproj">
+      <Project>{307c0353-867b-4942-b448-52635a6bc321}</Project>
+      <Name>Nephrite.Web.Hibernate</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
       <Project>{26a68254-0902-4499-8b5f-6b4b6341ba21}</Project>
       <Name>Nephrite.Web</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Nephrite\Nephrite.csproj">
+      <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
+      <Name>Nephrite</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
+      <Project>{5909bfe7-93cf-4e5f-be22-6293368af01d}</Project>
+      <Name>NHibernate</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Test.txt">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Test.tt</DependentUpon>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

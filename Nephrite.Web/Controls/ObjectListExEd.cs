@@ -8,6 +8,7 @@ using System.Web.UI.WebControls;
 using System.Drawing;
 using System.Data.Linq;
 
+
 namespace Nephrite.Web.Controls
 {
     [ParseChildren(true)]
@@ -171,12 +172,12 @@ namespace Nephrite.Web.Controls
         public void Add(T item)
         {
             Data.Add(new ObjectListObject<T> { Current = item, Original = null });
-            if (item is IMovableObject)
+            if (item is IWithSeqNo)
             {
                 if (Data.Count == 0)
-                    ((IMovableObject)item).SeqNo = 1;
+                    ((IWithSeqNo)item).SeqNo = 1;
                 else
-                    ((IMovableObject)item).SeqNo = GetItems().Max(m => ((IMovableObject)m).SeqNo) + 1;
+                    ((IWithSeqNo)item).SeqNo = GetItems().Max(m => ((IWithSeqNo)m).SeqNo) + 1;
             }
         }
 
@@ -185,8 +186,8 @@ namespace Nephrite.Web.Controls
             if (index >= Data.Count || index == 0)
                 return;
 
-            var obj1 = Data[index].Current as IMovableObject;
-            var obj2 = Data[index - 1].Current as IMovableObject;
+            var obj1 = Data[index].Current as IWithSeqNo;
+            var obj2 = Data[index - 1].Current as IWithSeqNo;
             if (obj1 == null || obj2 == null)
                 return;
 
@@ -201,8 +202,8 @@ namespace Nephrite.Web.Controls
             if (index >= Data.Count - 1)
                 return;
 
-            var obj1 = Data[index].Current as IMovableObject;
-            var obj2 = Data[index + 1].Current as IMovableObject;
+            var obj1 = Data[index].Current as IWithSeqNo;
+            var obj2 = Data[index + 1].Current as IWithSeqNo;
             if (obj1 == null || obj2 == null)
                 return;
 
@@ -328,7 +329,7 @@ namespace Nephrite.Web.Controls
                 {
                     if (EditorDialog != null)
                         writer.Write("<a href='#' onclick=\"" + EditorDialog.RenderRun(i.ToString()) + "\"><img src='" + Settings.ImagesPath + "edit.png' alt='Редактировать' style='border-width:0px;'/></a>");
-                    if (typeof(IMovableObject).IsAssignableFrom(typeof(T)))
+                    if (typeof(IWithSeqNo).IsAssignableFrom(typeof(T)))
                     {
                         writer.Write(" <a href='#' onclick=\"objectlist_" + ClientID + "_action('U'," + i.ToString() + ")\"><img src='" + Settings.ImagesPath + "arrow_up.png' alt='Переместить вверх' style='border-width:0px;'/></a>");
                         writer.Write(" <a href='#' onclick=\"objectlist_" + ClientID + "_action('D'," + i.ToString() + ")\"><img src='" + Settings.ImagesPath + "arrow_down.png' alt='Переместить вниз' style='border-width:0px;'/></a>");

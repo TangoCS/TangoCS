@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://nephritetech.com/tessera/integration/1.0" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://nephritetech.com/tessera/integration/1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://nephritetech.com/tessera/integration/1.0">
+      <s:element name="RunTasks">
+        <s:complexType />
+      </s:element>
+      <s:element name="RunTasksResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="UserCredentials" type="tns:UserCredentials" />
+      <s:complexType name="UserCredentials">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Login" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+        </s:sequence>
+        <s:anyAttribute />
+      </s:complexType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="RunTasksSoapIn">
+    <wsdl:part name="parameters" element="tns:RunTasks" />
+  </wsdl:message>
+  <wsdl:message name="RunTasksSoapOut">
+    <wsdl:part name="parameters" element="tns:RunTasksResponse" />
+  </wsdl:message>
+  <wsdl:message name="RunTasksUserCredentials">
+    <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
+  </wsdl:message>
+  <wsdl:portType name="TaskManagerService">
+    <wsdl:operation name="RunTasks">
+      <wsdl:input message="tns:RunTasksSoapIn" />
+      <wsdl:output message="tns:RunTasksSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="TaskManagerService" type="tns:TaskManagerService">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RunTasks">
+      <soap:operation soapAction="http://nephritetech.com/tessera/integration/1.0/RunTasks" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:RunTasksUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="TaskManagerService1" type="tns:TaskManagerService">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RunTasks">
+      <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/RunTasks" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:RunTasksUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="TaskManagerService">
+    <wsdl:port name="TaskManagerService" binding="tns:TaskManagerService">
+      <soap:address location="http://localhost:64054/TaskManager/TaskManagerService.asmx" />
+    </wsdl:port>
+    <wsdl:port name="TaskManagerService1" binding="tns:TaskManagerService1">
+      <soap12:address location="http://localhost:64054/TaskManager/TaskManagerService.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

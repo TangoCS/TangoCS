@@ -5,7 +5,7 @@ using System.Web;
 using System.Xml.Linq;
 using System.IO;
 
-namespace Nephrite.Web
+namespace Nephrite.Web.FileStorage
 {
     public static class FileTypeIcon
     {

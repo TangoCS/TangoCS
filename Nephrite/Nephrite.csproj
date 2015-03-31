@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{2D823E9B-401E-4A8E-A7ED-8658A711BE06}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Nephrite</RootNamespace>
+    <AssemblyName>Nephrite</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Nephrite.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Dapper">
+      <HintPath>..\packages\Dapper.StrongName.1.39\lib\net45\Dapper.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AccessControl\DefaultAccessControl.cs" />
+    <Compile Include="AccessControl\DefaultAccessControlDataContext.cs" />
+    <Compile Include="AccessControl\Interfaces.cs" />
+    <Compile Include="AccessControl\ActionAccessControl.cs" />
+    <Compile Include="AccessControl\PredicateChecker.cs" />
+    <Compile Include="AccessControl\SubjectWithRoles.cs" />
+    <Compile Include="ActiveDirectory\ADSearcher.cs" />
+    <Compile Include="ErrorLog\ErrorLogger.cs" />
+    <Compile Include="GlobalSettings.cs" />
+    <Compile Include="Html.Controls\BackButton.cs" />
+    <Compile Include="Html.Controls\Calendar.cs" />
+    <Compile Include="Html.Controls\CodeArea.cs" />
+    <Compile Include="Html.Controls\Navigation.cs" />
+    <Compile Include="Html\Link.cs" />
+    <Compile Include="Http\ApplicationBuilder.cs" />
+    <Compile Include="Http\AuthenticateContext.cs" />
+    <Compile Include="Http\AuthenticationDescription.cs" />
+    <Compile Include="Http\AuthenticationProperties.cs" />
+    <Compile Include="Http\AuthenticationResult.cs" />
+    <Compile Include="Http\BaseHeaderParser.cs" />
+    <Compile Include="Http\BufferedReadStream.cs" />
+    <Compile Include="Http\BufferingHelper.cs" />
+    <Compile Include="Http\ChallengeContext.cs" />
+    <Compile Include="Http\Constants.cs" />
+    <Compile Include="Http\ContentDispositionHeaderValue.cs" />
+    <Compile Include="Http\CookieOption.cs" />
+    <Compile Include="Http\DefaultHttpResponse.cs" />
+    <Compile Include="Http\DefaultHttpContext.cs" />
+    <Compile Include="Http\DefaultHttpRequest.cs" />
+    <Compile Include="Http\DescribeSchemesContext.cs" />
+    <Compile Include="Http\FeatureCollection.cs" />
+    <Compile Include="Http\FeatureReference.cs" />
+    <Compile Include="Http\CoreInterfaces.cs" />
+    <Compile Include="Http\FeaturesInterfaces.cs" />
+    <Compile Include="Http\FileBufferingReadStream.cs" />
+    <Compile Include="Http\FormCollection.cs" />
+    <Compile Include="Http\FormFeature.cs" />
+    <Compile Include="Http\FormFile.cs" />
+    <Compile Include="Http\FormFileCollection.cs" />
+    <Compile Include="Http\FormReader.cs" />
+    <Compile Include="Http\GenericHeaderParser.cs" />
+    <Compile Include="Http\HeaderDictionary.cs" />
+    <Compile Include="Http\HeaderNames.cs" />
+    <Compile Include="Http\HeaderUtilities.cs" />
+    <Compile Include="Http\HostString.cs" />
+    <Compile Include="Http\HttpAuthenticationFeature.cs" />
+    <Compile Include="Http\HttpContext.cs" />
+    <Compile Include="Http\HttpHeaderParser.cs" />
+    <Compile Include="Http\HttpRequest.cs" />
+    <Compile Include="Http\HttpRequestFeature.cs" />
+    <Compile Include="Http\HttpResponse.cs" />
+    <Compile Include="Http\HttpResponseFeature.cs" />
+    <Compile Include="Http\HttpRuleParser.cs" />
+    <Compile Include="Http\ItemsDictionary.cs" />
+    <Compile Include="Http\ItemsFeature.cs" />
+    <Compile Include="Http\KeyValueAccumulator.cs" />
+    <Compile Include="Http\MediaTypeHeaderValue.cs" />
+    <Compile Include="Http\MultipartReader.cs" />
+    <Compile Include="Http\MultipartReaderStream.cs" />
+    <Compile Include="Http\MultipartSection.cs" />
+    <Compile Include="Http\NameValueHeaderValue.cs" />
+    <Compile Include="Http\ObjectCollection.cs" />
+    <Compile Include="Http\PathString.cs" />
+    <Compile Include="Http\QueryFeature.cs" />
+    <Compile Include="Http\QueryString.cs" />
+    <Compile Include="Http\ReferenceReadStream.cs" />
+    <Compile Include="Http\RequestCookieFeature.cs" />
+    <Compile Include="Http\ResponseCookies.cs" />
+    <Compile Include="Http\ResponseCookiesFeature.cs" />
+    <Compile Include="Http\ServiceProvidersFeature.cs" />
+    <Compile Include="Http\SessionCollection.cs" />
+    <Compile Include="Http\SignInContext.cs" />
+    <Compile Include="Http\SignOutContext.cs" />
+    <Compile Include="Http\StreamHelperExtensions.cs" />
+    <Compile Include="Http\Url.cs" />
+    <Compile Include="Http\WebSocketAcceptContext.cs" />
+    <Compile Include="WebEncoders\AllowedCharsBitmap.cs" />
+    <Compile Include="WebEncoders\CodePointFilter.cs" />
+    <Compile Include="WebEncoders\EncoderCommon.cs" />
+    <Compile Include="WebEncoders\HexUtil.cs" />
+    <Compile Include="WebEncoders\ICodePointFilter.cs" />
+    <Compile Include="WebEncoders\IUrlEncoder.cs" />
+    <Compile Include="WebEncoders\UnicodeEncoderBase.cs" />
+    <Compile Include="WebEncoders\UnicodeHelpers.cs" />
+    <Compile Include="WebEncoders\UnicodeRange.cs" />
+    <Compile Include="WebEncoders\UnicodeRanges.cs" />
+    <Compile Include="WebEncoders\UnicodeRanges.generated.cs" />
+    <Compile Include="WebEncoders\UrlEncoder.cs" />
+    <Compile Include="Identity\DefaultIdentityDataContext.cs" />
+    <Compile Include="IValidatable.cs" />
+    <Compile Include="Layout\Interfaces.cs" />
+    <Compile Include="Layout\LayoutBootstrap.cs" />
+    <Compile Include="Layout\LayoutEmpty.cs" />
+    <Compile Include="Layout\LayoutTessera.cs" />
+    <Compile Include="Layout\LayoutWSS2007.cs" />
+    <Compile Include="Layout\SimpleTags.cs" />
+    <Compile Include="Layout\SystemLayout.cs" />
+    <Compile Include="Layout\WinModal.cs" />
+    <Compile Include="MacroManager.cs" />
+    <Compile Include="Identity\IIdentityManager.cs" />
+    <Compile Include="AccessControl\Role.cs" />
+    <Compile Include="Identity\Subject.cs" />
+    <Compile Include="CodifierValue.cs" />
+    <Compile Include="Html\HtmlWriter.cs" />
+    <Compile Include="Html\HtmlWriter.Input.cs" />
+    <Compile Include="Html\HtmlWriter.Select.cs" />
+    <Compile Include="Html\HtmlWriter.Tags.cs" />
+    <Compile Include="Html\HtmlPage.cs" />
+    <Compile Include="Html\TagAttributes.cs" />
+    <Compile Include="Html\TagBuilder.cs" />
+    <Compile Include="Http\ParsingHelpers.cs" />
+    <Compile Include="Http\QueryHelpers.cs" />
+    <Compile Include="Http\ReadableStringCollection.cs" />
+    <Compile Include="Http\RequestCookieCollection.cs" />
+    <Compile Include="Http\IHttpContext.cs" />
+    <Compile Include="Icons.cs" />
+    <Compile Include="IDataContext.cs" />
+    <Compile Include="Identity\IdentityManager.cs" />
+    <Compile Include="Identity\SubjectValidator.cs" />
+    <Compile Include="IEntity.cs" />
+    <Compile Include="IPersistentSettings.cs" />
+    <Compile Include="Meta.Database\DataTypeMapper.cs" />
+    <Compile Include="Meta.Database\DBMetaModel.cs" />
+    <Compile Include="Meta.Database\IDatabaseMetadataReader.cs" />
+    <Compile Include="Meta.Database\IDBScript.cs" />
+    <Compile Include="Meta.Database\PrimitiveTypesExtensions.cs" />
+    <Compile Include="Meta.Database\SchemaGenerator.cs" />
+    <Compile Include="Meta.Database\SchemaSync.cs" />
+    <Compile Include="Meta\Core.cs" />
+    <Compile Include="Meta\CoreFluent.cs" />
+    <Compile Include="Meta\CoreTyped.cs" />
+    <Compile Include="Meta\MetaLoad.cs" />
+    <Compile Include="Meta\PrimitiveTypes.cs" />
+    <Compile Include="Meta\StringConverter.cs" />
+    <Compile Include="Meta\Versioning.cs" />
+    <Compile Include="Multilanguage\Language.cs" />
+    <Compile Include="Multilanguage\MultilanguageModel.cs" />
+    <Compile Include="Http\ActionContext.cs" />
+    <Compile Include="NotNullAttribute.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\Common.Designer.cs">
+      <DependentUpon>Common.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Result.cs" />
+    <Compile Include="RussianStrings\Prop.cs" />
+    <Compile Include="RussianStrings\RussianDate.cs" />
+    <Compile Include="RussianStrings\RussianNumber.cs" />
+    <Compile Include="RussianStrings\Transliteration.cs" />
+    <Compile Include="SettingsManager\AppSettings.cs" />
+    <Compile Include="SettingsManager\AppSettingsModel.cs" />
+    <Compile Include="SimpleTypeExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Multilanguage\TextResource.cs" />
+    <Compile Include="TypeFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Nephrite.snk" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Common.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Common.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

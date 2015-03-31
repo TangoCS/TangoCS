@@ -11,13 +11,13 @@ namespace Nephrite.Metamodel
         public const string None = "N";
         public static string NoneTitle = "Нет";
 
-		public const string Object = "O";
+        public const string Object = "O";
         public static string ObjectTitle = "Версионность объектов";
 
-		public const string IdentifiersRetain = "R";
+        public const string IdentifiersRetain = "R";
         public static string IdentifiersRetainTitle = "Версионность справочника с сохранением идентификаторов";
 
-		public const string IdentifiersMiss = "M";
+        public const string IdentifiersMiss = "M";
         public static string IdentifiersMissTitle = "Версионность справочника без сохранения идентификаторов";
 
         public static List<CodifierValue> ToList()

@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
-using Nephrite.Web.Layout;
+
 using System.IO;
 using System.Linq.Expressions;
 using Nephrite.Meta;
 using System.Web.UI.WebControls;
+using Nephrite.Html;
+using Nephrite.Layout;
+
 
 namespace Nephrite.Web.Controls
 {
@@ -29,7 +32,7 @@ namespace Nephrite.Web.Controls
 		protected override void OnInit(EventArgs e)
 		{
 			base.OnInit(e);
-			Layout = AppWeb.Layout.Toolbar;
+			Layout = AppLayout.Current.Toolbar;
 			ItemsAlign = ToolbarItemsAlign.Left;
 		}
 

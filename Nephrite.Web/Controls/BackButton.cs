@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.UI;
-using Nephrite.Meta;
+using Nephrite.Multilanguage;
+
+using System.IO;
+using Nephrite.Layout;
 
 namespace Nephrite.Web.Controls
 {
-	public class BackButton : Control, IBarItem
+	public class BackButton : Control//, IBarItem
     {
 		public ILayoutBarItem Layout { get; set; }
 		public string AccessKey { get; set; }
@@ -15,7 +18,7 @@ namespace Nephrite.Web.Controls
 
 		public BackButton()
 		{
-			Layout = AppWeb.Layout.Button;
+			Layout = AppLayout.Current.Button;
 		}
 
         protected override void OnInit(EventArgs e)
@@ -33,7 +36,7 @@ namespace Nephrite.Web.Controls
 
         public string Url { get; set; }
 		public string Text { get; set; }
-		public ButtonNextOption? Next { get; set; }
+		//public ButtonNextOption? Next { get; set; }
 		
 		public string OnClientClick
 		{
@@ -47,5 +50,6 @@ namespace Nephrite.Web.Controls
 		}
 
 		public event EventHandler Click;
+
 	}
 }

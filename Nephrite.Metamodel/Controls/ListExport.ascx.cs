@@ -8,7 +8,6 @@ using System.Collections;
 using Nephrite.Web;
 using System.Text;
 using System.Threading;
-using Nephrite.Web.App;
 using System.Text.RegularExpressions;
 using Nephrite.Metamodel.Model;
 using OfficeOpenXml;
@@ -16,6 +15,7 @@ using OfficeOpenXml.Style;
 using System.IO;
 using System.Drawing;
 using OfficeOpenXml.Style.XmlAccess;
+using Nephrite.Web.SettingsManager;
 
 namespace Nephrite.Metamodel.Controls
 {
@@ -55,16 +55,15 @@ namespace Nephrite.Metamodel.Controls
 			customProps.Add(name, func);
 
 
-			ot.MM_ObjectProperties.Add(new MM_ObjectProperty
+			/*ot.MM_ObjectProperties.Add(new MM_ObjectProperty
 			{
 				Title = title,
 				SysName = name,
 				SeqNo = seqNo,
 				MM_FormField = new MM_FormField { ShowInView = true },
 				UpperBound = 1,
-				ObjectPropertyID =
-					ot.MM_ObjectProperties.Max(o => o.ObjectPropertyID) + 1
-			});
+				ObjectPropertyID = ot.MM_ObjectProperties.Max(o => o.ObjectPropertyID) + 1
+			});*/
 
 		}
 

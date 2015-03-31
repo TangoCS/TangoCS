@@ -1,0 +1,620 @@
+<?xml version="1.0" encoding="utf-8"?>
+<wsdl:definitions xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:tns="http://nephritetech.com/tessera/integration/1.0" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:s1="http://microsoft.com/wsdl/types/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" targetNamespace="http://nephritetech.com/tessera/integration/1.0" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+  <wsdl:types>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://nephritetech.com/tessera/integration/1.0">
+      <s:import namespace="http://microsoft.com/wsdl/types/" />
+      <s:element name="RunDynamic">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="type" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="method" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="data" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RunDynamicResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="RunDynamicResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="UserCredentials" type="tns:UserCredentials" />
+      <s:complexType name="UserCredentials">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="Login" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="Password" type="s:string" />
+        </s:sequence>
+        <s:anyAttribute />
+      </s:complexType>
+      <s:element name="GetVersionRecords">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="objectType" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="objectID" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="startDate" type="s:dateTime" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetVersionRecordsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetVersionRecordsResult" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfString">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="string" nillable="true" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="GetRecord">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="objectType" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="id" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetRecordResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetRecordResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetVersionRecord">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="objectType" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="versionid" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetVersionRecordResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetVersionRecordResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetFileContent">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="fileGuid" type="s1:guid" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetFileContentResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetFileContentResult" type="s:base64Binary" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetFile">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="fileGuid" type="s1:guid" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetFileResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetFileResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetReplicationObjects">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="maxCount" type="s:int" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetReplicationObjectsResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetReplicationObjectsResult" type="tns:ArrayOfReplicationObject" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:complexType name="ArrayOfReplicationObject">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="ReplicationObject" nillable="true" type="tns:ReplicationObject" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ReplicationObject">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ObjectType" type="s:string" />
+          <s:element minOccurs="1" maxOccurs="1" name="ObjectID" type="s:int" />
+          <s:element minOccurs="1" maxOccurs="1" name="Ticks" type="s:long" />
+        </s:sequence>
+      </s:complexType>
+      <s:element name="ConfirmReplication">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="objectType" type="s:string" />
+            <s:element minOccurs="1" maxOccurs="1" name="id" type="s:int" />
+            <s:element minOccurs="1" maxOccurs="1" name="ticks" type="s:long" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ConfirmReplicationResponse">
+        <s:complexType />
+      </s:element>
+      <s:element name="ImportObject">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="xmlData" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="ImportObjectResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="1" maxOccurs="1" name="ImportObjectResult" type="s:boolean" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetObjectsByPropertyValue">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="objectType" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="propertyName" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="id" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetObjectsByPropertyValueResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetObjectsByPropertyValueResult" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetObjectsList">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="objectType" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="controllerMethod" type="s:string" />
+            <s:element minOccurs="0" maxOccurs="1" name="parameters" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetObjectsListResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetObjectsListResult" type="tns:ArrayOfString" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="RunTasks">
+        <s:complexType />
+      </s:element>
+      <s:element name="RunTasksResponse">
+        <s:complexType />
+      </s:element>
+    </s:schema>
+    <s:schema elementFormDefault="qualified" targetNamespace="http://microsoft.com/wsdl/types/">
+      <s:simpleType name="guid">
+        <s:restriction base="s:string">
+          <s:pattern value="[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}" />
+        </s:restriction>
+      </s:simpleType>
+    </s:schema>
+  </wsdl:types>
+  <wsdl:message name="RunDynamicSoapIn">
+    <wsdl:part name="parameters" element="tns:RunDynamic" />
+  </wsdl:message>
+  <wsdl:message name="RunDynamicSoapOut">
+    <wsdl:part name="parameters" element="tns:RunDynamicResponse" />
+  </wsdl:message>
+  <wsdl:message name="RunDynamicUserCredentials">
+    <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
+  </wsdl:message>
+  <wsdl:message name="GetVersionRecordsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetVersionRecords" />
+  </wsdl:message>
+  <wsdl:message name="GetVersionRecordsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetVersionRecordsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetVersionRecordsUserCredentials">
+    <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
+  </wsdl:message>
+  <wsdl:message name="GetRecordSoapIn">
+    <wsdl:part name="parameters" element="tns:GetRecord" />
+  </wsdl:message>
+  <wsdl:message name="GetRecordSoapOut">
+    <wsdl:part name="parameters" element="tns:GetRecordResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetRecordUserCredentials">
+    <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
+  </wsdl:message>
+  <wsdl:message name="GetVersionRecordSoapIn">
+    <wsdl:part name="parameters" element="tns:GetVersionRecord" />
+  </wsdl:message>
+  <wsdl:message name="GetVersionRecordSoapOut">
+    <wsdl:part name="parameters" element="tns:GetVersionRecordResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetVersionRecordUserCredentials">
+    <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
+  </wsdl:message>
+  <wsdl:message name="GetFileContentSoapIn">
+    <wsdl:part name="parameters" element="tns:GetFileContent" />
+  </wsdl:message>
+  <wsdl:message name="GetFileContentSoapOut">
+    <wsdl:part name="parameters" element="tns:GetFileContentResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetFileContentUserCredentials">
+    <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
+  </wsdl:message>
+  <wsdl:message name="GetFileSoapIn">
+    <wsdl:part name="parameters" element="tns:GetFile" />
+  </wsdl:message>
+  <wsdl:message name="GetFileSoapOut">
+    <wsdl:part name="parameters" element="tns:GetFileResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetFileUserCredentials">
+    <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
+  </wsdl:message>
+  <wsdl:message name="GetReplicationObjectsSoapIn">
+    <wsdl:part name="parameters" element="tns:GetReplicationObjects" />
+  </wsdl:message>
+  <wsdl:message name="GetReplicationObjectsSoapOut">
+    <wsdl:part name="parameters" element="tns:GetReplicationObjectsResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetReplicationObjectsUserCredentials">
+    <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
+  </wsdl:message>
+  <wsdl:message name="ConfirmReplicationSoapIn">
+    <wsdl:part name="parameters" element="tns:ConfirmReplication" />
+  </wsdl:message>
+  <wsdl:message name="ConfirmReplicationSoapOut">
+    <wsdl:part name="parameters" element="tns:ConfirmReplicationResponse" />
+  </wsdl:message>
+  <wsdl:message name="ConfirmReplicationUserCredentials">
+    <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
+  </wsdl:message>
+  <wsdl:message name="ImportObjectSoapIn">
+    <wsdl:part name="parameters" element="tns:ImportObject" />
+  </wsdl:message>
+  <wsdl:message name="ImportObjectSoapOut">
+    <wsdl:part name="parameters" element="tns:ImportObjectResponse" />
+  </wsdl:message>
+  <wsdl:message name="ImportObjectUserCredentials">
+    <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
+  </wsdl:message>
+  <wsdl:message name="GetObjectsByPropertyValueSoapIn">
+    <wsdl:part name="parameters" element="tns:GetObjectsByPropertyValue" />
+  </wsdl:message>
+  <wsdl:message name="GetObjectsByPropertyValueSoapOut">
+    <wsdl:part name="parameters" element="tns:GetObjectsByPropertyValueResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetObjectsByPropertyValueUserCredentials">
+    <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
+  </wsdl:message>
+  <wsdl:message name="GetObjectsListSoapIn">
+    <wsdl:part name="parameters" element="tns:GetObjectsList" />
+  </wsdl:message>
+  <wsdl:message name="GetObjectsListSoapOut">
+    <wsdl:part name="parameters" element="tns:GetObjectsListResponse" />
+  </wsdl:message>
+  <wsdl:message name="GetObjectsListUserCredentials">
+    <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
+  </wsdl:message>
+  <wsdl:message name="RunTasksSoapIn">
+    <wsdl:part name="parameters" element="tns:RunTasks" />
+  </wsdl:message>
+  <wsdl:message name="RunTasksSoapOut">
+    <wsdl:part name="parameters" element="tns:RunTasksResponse" />
+  </wsdl:message>
+  <wsdl:message name="RunTasksUserCredentials">
+    <wsdl:part name="UserCredentials" element="tns:UserCredentials" />
+  </wsdl:message>
+  <wsdl:portType name="Replication">
+    <wsdl:operation name="RunDynamic">
+      <wsdl:input message="tns:RunDynamicSoapIn" />
+      <wsdl:output message="tns:RunDynamicSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetVersionRecords">
+      <wsdl:input message="tns:GetVersionRecordsSoapIn" />
+      <wsdl:output message="tns:GetVersionRecordsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetRecord">
+      <wsdl:input message="tns:GetRecordSoapIn" />
+      <wsdl:output message="tns:GetRecordSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetVersionRecord">
+      <wsdl:input message="tns:GetVersionRecordSoapIn" />
+      <wsdl:output message="tns:GetVersionRecordSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFileContent">
+      <wsdl:input message="tns:GetFileContentSoapIn" />
+      <wsdl:output message="tns:GetFileContentSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetFile">
+      <wsdl:input message="tns:GetFileSoapIn" />
+      <wsdl:output message="tns:GetFileSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetReplicationObjects">
+      <wsdl:input message="tns:GetReplicationObjectsSoapIn" />
+      <wsdl:output message="tns:GetReplicationObjectsSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmReplication">
+      <wsdl:input message="tns:ConfirmReplicationSoapIn" />
+      <wsdl:output message="tns:ConfirmReplicationSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="ImportObject">
+      <wsdl:input message="tns:ImportObjectSoapIn" />
+      <wsdl:output message="tns:ImportObjectSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByPropertyValue">
+      <wsdl:input message="tns:GetObjectsByPropertyValueSoapIn" />
+      <wsdl:output message="tns:GetObjectsByPropertyValueSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsList">
+      <wsdl:input message="tns:GetObjectsListSoapIn" />
+      <wsdl:output message="tns:GetObjectsListSoapOut" />
+    </wsdl:operation>
+    <wsdl:operation name="RunTasks">
+      <wsdl:input message="tns:RunTasksSoapIn" />
+      <wsdl:output message="tns:RunTasksSoapOut" />
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="Replication" type="tns:Replication">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RunDynamic">
+      <soap:operation soapAction="http://nephritetech.com/tessera/integration/1.0/RunDynamic" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:RunDynamicUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVersionRecords">
+      <soap:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetVersionRecords" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetVersionRecordsUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRecord">
+      <soap:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetRecord" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetRecordUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVersionRecord">
+      <soap:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetVersionRecord" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetVersionRecordUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFileContent">
+      <soap:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetFileContent" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetFileContentUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFile">
+      <soap:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetFile" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetFileUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetReplicationObjects">
+      <soap:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetReplicationObjects" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetReplicationObjectsUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmReplication">
+      <soap:operation soapAction="http://nephritetech.com/tessera/integration/1.0/ConfirmReplication" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:ConfirmReplicationUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ImportObject">
+      <soap:operation soapAction="http://nephritetech.com/tessera/integration/1.0/ImportObject" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:ImportObjectUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByPropertyValue">
+      <soap:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetObjectsByPropertyValue" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetObjectsByPropertyValueUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsList">
+      <soap:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetObjectsList" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:GetObjectsListUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RunTasks">
+      <soap:operation soapAction="http://nephritetech.com/tessera/integration/1.0/RunTasks" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+        <soap:header message="tns:RunTasksUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:binding name="Replication1" type="tns:Replication">
+    <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="RunDynamic">
+      <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/RunDynamic" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:RunDynamicUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVersionRecords">
+      <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetVersionRecords" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetVersionRecordsUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetRecord">
+      <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetRecord" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetRecordUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetVersionRecord">
+      <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetVersionRecord" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetVersionRecordUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFileContent">
+      <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetFileContent" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetFileContentUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetFile">
+      <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetFile" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetFileUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetReplicationObjects">
+      <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetReplicationObjects" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetReplicationObjectsUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ConfirmReplication">
+      <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/ConfirmReplication" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:ConfirmReplicationUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="ImportObject">
+      <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/ImportObject" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:ImportObjectUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsByPropertyValue">
+      <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetObjectsByPropertyValue" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetObjectsByPropertyValueUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="GetObjectsList">
+      <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/GetObjectsList" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:GetObjectsListUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+    <wsdl:operation name="RunTasks">
+      <soap12:operation soapAction="http://nephritetech.com/tessera/integration/1.0/RunTasks" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+        <soap12:header message="tns:RunTasksUserCredentials" part="UserCredentials" use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="Replication">
+    <wsdl:port name="Replication" binding="tns:Replication">
+      <soap:address location="http://localhost:51278/Replication/Replication.asmx" />
+    </wsdl:port>
+    <wsdl:port name="Replication1" binding="tns:Replication1">
+      <soap12:address location="http://localhost:51278/Replication/Replication.asmx" />
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

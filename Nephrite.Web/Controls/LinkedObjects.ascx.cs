@@ -78,7 +78,7 @@ namespace Nephrite.Web.Controls
                     }
                 }
             }
-			return list.OrderBy(o => o.Title).OrderBy(o => o.GetClassName()).ToList();
+			return list.OrderBy(o => o.Title).OrderBy(o => o.MetaClass.Caption).ToList();
         }
     }
 

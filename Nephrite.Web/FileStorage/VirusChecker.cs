@@ -8,10 +8,11 @@ using System.Diagnostics;
 using System.Threading;
 using System.Configuration;
 using System.Data.Linq;
-using Nephrite.Web.Model;
-using Nephrite.Web.SPM;
+using Nephrite.Identity;
+using Nephrite.SettingsManager;
 
-namespace Nephrite.Web
+
+namespace Nephrite.Web.FileStorage
 {
     /// <summary>
     /// Проверка на вирусы
@@ -34,7 +35,7 @@ namespace Nephrite.Web
 
 		public static SaveFileResult Check(string fileName, byte[] fileBytes)
         {
-            string enable = App.AppSettings.Get("EnableAntiViralCheck").ToLower();
+            string enable = AppSettings.Get("EnableAntiViralCheck").ToLower();
             if (enable != "true" && enable != "1")
 				return SaveFileResult.OK;
 			if (ConfigurationManager.AppSettings["SkipVirusCheck"] == "1")
@@ -56,10 +57,10 @@ namespace Nephrite.Web
 			}
 
             Process p = new Process();
-            p.StartInfo = new ProcessStartInfo(App.AppSettings.Get("AntiViralProgramPath"),
-                String.Format(App.AppSettings.Get("AntiViralProgramArgs"), path));
+            p.StartInfo = new ProcessStartInfo(AppSettings.Get("AntiViralProgramPath"),
+                String.Format(AppSettings.Get("AntiViralProgramArgs"), path));
             p.Start();
-            bool exit = p.WaitForExit(1000 * App.AppSettings.Get("AntiViralProgramTimeout").ToInt32(10));
+            bool exit = p.WaitForExit(1000 * AppSettings.Get("AntiViralProgramTimeout").ToInt32(10));
             if (File.Exists(path))
             {
                 try
@@ -82,13 +83,13 @@ namespace Nephrite.Web
             else
             {
 				Log(p.ExitCode, fileName);
-                if (App.AppSettings.Get("AntiViralSuccessCodes").Split(',', ' ', ';').Contains(p.ExitCode.ToString()))
+                if (AppSettings.Get("AntiViralSuccessCodes").Split(',', ' ', ';').Contains(p.ExitCode.ToString()))
                 {
 					return SaveFileResult.OK;
                 }
-                if (App.AppSettings.Get("AntiViralSuspicionCodes").Split(',', ' ', ';').Contains(p.ExitCode.ToString()))
+                if (AppSettings.Get("AntiViralSuspicionCodes").Split(',', ' ', ';').Contains(p.ExitCode.ToString()))
                 {
-                    enable = App.AppSettings.Get("AntiViralAllowSuspicionUpload").ToLower();
+                    enable = AppSettings.Get("AntiViralAllowSuspicionUpload").ToLower();
                     if (enable == "true" || enable == "1")
 						return SaveFileResult.OK;
 
@@ -100,17 +101,13 @@ namespace Nephrite.Web
 
         static void Log(int code, string fileName)
         {
-			using (var dc = new HCoreDataContext(AppWeb.DBConfig))
-            {
-                dc.N_VirusScanLogs.InsertOnSubmit(new Nephrite.Web.Model.N_VirusScanLog
-                {
-                    LastModifiedDate = DateTime.Now,
-                    LastModifiedUserID = Subject.Current.ID,
-                    ResultCode = code,
-                    Title = fileName
-                });
-                dc.SubmitChanges();
-            }
+			var dc = (IDC_FileStorage)A.Model;
+			var l = dc.NewIN_VirusScanLog();
+			l.LastModifiedDate = DateTime.Now;
+            l.LastModifiedUserID = Subject.Current.ID;
+            l.ResultCode = code;
+			l.Title = fileName;
+			dc.IN_VirusScanLog.InsertOnSubmit(l);
         }
     }
 }

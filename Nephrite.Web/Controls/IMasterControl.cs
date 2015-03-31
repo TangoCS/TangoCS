@@ -8,6 +8,6 @@ namespace Nephrite.Web.Controls
 	public interface IMasterControl
 	{
 		Toolbar GetToolbar();
-		ButtonBar GetButtonBar();
+		//ButtonBar GetButtonBar();
 	}
 }

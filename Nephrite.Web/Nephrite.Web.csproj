@@ -12,7 +12,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nephrite.Web</RootNamespace>
     <AssemblyName>Nephrite.Web</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Nephrite.Web.snk</AssemblyOriginatorKeyFile>
     <SccProjectName>
@@ -44,6 +44,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -53,17 +54,34 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="IBM.Data.DB2, Version=9.0.0.2, Culture=neutral, PublicKeyToken=7c307b91aa13d208, processorArchitecture=AMD64" />
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=c957c2ee7c0582f1, processorArchitecture=MSIL">
+    <Reference Include="DocumentFormat.OpenXml">
+      <HintPath>..\packages\DocumentFormat.OpenXml.2.5\lib\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="EPPlus">
+      <HintPath>..\packages\EPPlus.3.1.3.3\lib\net35\EPPlus.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.85.4.369, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>ExternalDll\ICSharpCode.SharpZipLib.dll</HintPath>
+      <HintPath>..\lib\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
-    <Reference Include="NHibernate">
-      <HintPath>ExternalDll\NHibernate.dll</HintPath>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.VisualStudio.TextTemplating, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>ExternalDll\Microsoft.VisualStudio.TextTemplating.dll</HintPath>
     </Reference>
-    <Reference Include="SgmlReaderDll, Version=1.7.2.22216, Culture=neutral, PublicKeyToken=fbce82624870dc0e, processorArchitecture=MSIL" />
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net35\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.104.4.0\lib\net35\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="SgmlReaderDll, Version=1.8.11.0, Culture=neutral, PublicKeyToken=46b2db9ca481831b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SgmlReader.1.8.11\lib\2.0\SgmlReaderDll.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -71,9 +89,11 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.DirectoryServices" />
-    <Reference Include="System.DirectoryServices.AccountManagement" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.ApplicationServices" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Drawing" />
@@ -85,42 +105,103 @@
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Web.Mobile" />
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Controls\excel.ascx" />
     <Content Include="Controls\word.ascx" />
-    <Content Include="ExternalDll\DocumentFormat.OpenXml.dll" />
-    <Content Include="ExternalDll\EPPlus.dll" />
-    <Content Include="ExternalDll\EPPlus.pdb" />
-    <Content Include="ExternalDll\Iesi.Collections.dll" />
-    <Content Include="ExternalDll\Iesi.Collections.pdb" />
-    <Content Include="ExternalDll\Iesi.Collections.xml" />
-    <Content Include="ExternalDll\NHibernate.dll" />
-    <Content Include="ExternalDll\NHibernate.pdb" />
-    <Content Include="ExternalDll\NHibernate.xml" />
+    <Content Include="ExternalDll\DotNetOpenAuth.dll" />
     <Content Include="js\knockout-2.2.1.js" />
     <Content Include="js\modalwindow.js" />
+    <Content Include="js\popup2.js" />
+    <Content Include="Replication\Replication.asmx" />
     <Content Include="View\Message\show.ascx" />
+    <Content Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </Content>
+    <Content Include="Web References\ReplicationService\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </Content>
+    <Content Include="Web References\ReplicationService\Replication.disco" />
     <Content Include="Web.config" />
+    <Content Include="Web References\ReplicationService\ReplicationObject.datasource">
+      <DependentUpon>Reference.map</DependentUpon>
+    </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ADSearcher.cs" />
-    <Compile Include="AppWeb.cs" />
-    <Compile Include="App\AppSettings.cs" />
-    <Compile Include="Cache.cs" />
-    <Compile Include="Controls\ActionLink.cs" />
+    <Compile Include="Controls\ListFilter.ascx.designer.cs">
+      <DependentUpon>ListFilter.ascx</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\NavMenu.cs" />
+    <Compile Include="FileStorage\FolderActionType.cs" />
+    <Compile Include="FormsEngine\MView.cs" />
+    <Compile Include="FormsGenerator\BaseControlsCode.cs" />
+    <Compile Include="FormsGenerator\ControlCode.cs" />
+    <Compile Include="FormsGenerator\EditCode.cs" />
+    <Compile Include="FormsGenerator\ListCode.cs" />
+    <Compile Include="FormsGenerator\SelectObjectCode.cs" />
+    <Compile Include="FormsGenerator\UploadControlsCode.cs" />
+    <Compile Include="FormsGenerator\ViewCode.cs" />
+    <Compile Include="Meta.Forms\WebFormRenderer.cs" />
+    <Compile Include="Meta.Forms\UIMetaModel.cs" />
+    <Compile Include="Meta.Forms\StandardOperations.cs" />
+    <Compile Include="Model\IMMObject.cs" />
+    <Compile Include="Model\IMMObjectMLView.cs" />
+    <Compile Include="Model\IMMObjectVersion.cs" />
+    <Compile Include="Model\Repository.cs" />
+    <Compile Include="MVC\AppWeb.cs" />
+    <Compile Include="Model\A.cs" />
+    <Compile Include="MVC\MasterControl.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Office\ExcelExportEx.cs" />
+    <Compile Include="Office\WordDocumentGenerator.cs" />
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Include="Replication\Replication.asmx.cs">
+      <DependentUpon>Replication.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Root\Settings.cs" />
+    <Compile Include="Root\SimpleTypeExtensionsWeb.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="View\StandardDelete.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="View\StandardUndelete.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web References\ReplicationService\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
+    <Compile Include="Web\CustomControlBase.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FileStorage\FileStorageModel.cs" />
+    <Compile Include="Reporting\Reporting.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="RSS\RssModel.cs" />
+    <Compile Include="Web\Cache.cs" />
+    <Compile Include="Controls.Html\ActionLink.cs" />
     <Compile Include="Controls\AutoComplete.cs" />
     <Compile Include="Controls\AutoComplete2.cs" />
     <Compile Include="Controls\AutoNumeric.cs" />
     <Compile Include="Controls\Button.cs" />
     <Compile Include="Controls\ButtonsBar.cs" />
-    <Compile Include="Controls\Cart.cs" />
     <Compile Include="Controls\CodeArea.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="CodifierValue.cs" />
-    <Compile Include="ConnectionManager.cs" />
-    <Compile Include="Controls\CaptchaImage.cs" />
+    <Compile Include="Web\ConnectionManager.cs" />
+    <Compile Include="Controls.Html\CaptchaImage.cs" />
     <Compile Include="Controllers\SimpleClassMover.cs" />
     <Compile Include="Controls\BackButton.cs" />
     <Compile Include="Controls\CodeMirror.cs">
@@ -173,8 +254,8 @@
     <Compile Include="Controls\LinkedObjects.ascx.designer.cs">
       <DependentUpon>LinkedObjects.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Controls\HtmlDateLists.cs" />
-    <Compile Include="Controls\HtmlDropDownList.cs" />
+    <Compile Include="Controls.Html\HtmlDateLists.cs" />
+    <Compile Include="Controls.Html\HtmlDropDownList.cs" />
     <Compile Include="Controls\List.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -182,16 +263,12 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\MultilingualField.cs" />
-    <Compile Include="Controls\NavMenu.cs" />
     <Compile Include="Controls\NumericBox.cs" />
     <Compile Include="Controls\Paging.cs" />
     <Compile Include="Controls\ParameterizedLinkManager.cs" />
     <Compile Include="Controls\ListFilter.ascx.cs">
       <DependentUpon>ListFilter.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\ListFilter.ascx.designer.cs">
-      <DependentUpon>ListFilter.ascx</DependentUpon>
     </Compile>
     <Compile Include="Controls\MultiObject.ascx.cs">
       <DependentUpon>MultiObject.ascx</DependentUpon>
@@ -275,83 +352,45 @@
       <DependentUpon>word.ascx</DependentUpon>
     </Compile>
     <Compile Include="Controls\ZoneCalendar.cs" />
-    <Compile Include="Cramb.cs" />
-    <Compile Include="ExcelExport.cs" />
-    <Compile Include="Features\FileStorage2\DbFileData.cs" />
-    <Compile Include="Features\FileStorage2\DbItemType.cs" />
-    <Compile Include="Features\FileStorage2\FileStorageManager.cs" />
-    <Compile Include="Features\FileStorage2\IDbFile.cs" />
-    <Compile Include="Features\FileStorage2\IDbFolder.cs" />
-    <Compile Include="Features\FileStorage2\IDbItem.cs" />
-    <Compile Include="Features\FileStorage2\IFileRepository.cs" />
-    <Compile Include="Features\FileStorage2\Samples.cs" />
-    <Compile Include="Features\FileStorage2\StorageTypes.cs" />
-    <Compile Include="Features\FileStorage2\TesseraVirtualDirectory.cs" />
-    <Compile Include="Features\FileStorage2\TesseraVirtualFile.cs" />
-    <Compile Include="Features\FileStorage2\TesseraVirtualPathProvider.cs" />
-    <Compile Include="Features\Layout\Helper.cs" />
-    <Compile Include="Features\Layout\LayoutTessera.cs" />
-    <Compile Include="Features\Layout\SimpleTags.cs" />
-    <Compile Include="Features\Layout\WinModal.cs" />
-    <Compile Include="Features\Meta.Database\DBScriptMSSQL.cs" />
-    <Compile Include="Features\Meta.Database\IDBScript.cs" />
-    <Compile Include="Features\Meta.Database\PrimitiveTypesExtensions.cs" />
-    <Compile Include="Features\Meta.Database\SchemaSync.cs" />
-    <Compile Include="Features\Meta.Database\UpdateScriptBuilder2.cs" />
-    <Compile Include="Features\Multilanguage\Language.cs" />
-    <Compile Include="Features\Reporting\AggregateColumn.cs" />
-    <Compile Include="Features\Reporting\Grouping.cs" />
-    <Compile Include="Features\Reporting\Report.cs">
+    <Compile Include="Web\Cramb.cs" />
+    <Compile Include="Web\CustomControlManager.cs" />
+    <Compile Include="Office\ExcelExport.cs" />
+    <Compile Include="LinkedObjects\ILinkedObjectsProvider.cs" />
+    <Compile Include="LinkedObjects\LinkedObjectsView.cs" />
+    <Compile Include="LinkedObjects\ObjectLink.cs" />
+    <Compile Include="Mailer\MailerModel.cs" />
+    <Compile Include="Mailer\MailManager.cs" />
+    <Compile Include="TaskManager\TaskManagerModel.cs" />
+    <Compile Include="Model\EntityAudit.cs" />
+    <Compile Include="Versioning\ClassVersion.cs" />
+    <Compile Include="Versioning\IClassVersion.cs" />
+    <Compile Include="FileStorage\DbItemType.cs" />
+    <Compile Include="FileStorage\FileStorageManager.cs" />
+    <Compile Include="FileStorage\IDbFile.cs" />
+    <Compile Include="FileStorage\IDbFolder.cs" />
+    <Compile Include="FileStorage\IDbItem.cs" />
+    <Compile Include="FileStorage\Samples.cs" />
+    <Compile Include="FileStorage\StorageTypes.cs" />
+    <Compile Include="Reporting\AggregateColumn.cs" />
+    <Compile Include="Reporting\Grouping.cs" />
+    <Compile Include="Reporting\Report.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Features\Reporting\Reporting.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Features\SPM2\ISPMContext.cs" />
-    <Compile Include="Features\SPM2\SPM2.cs" />
-    <Compile Include="Features\SPM2\SPMStereotype.cs" />
-    <Compile Include="Features\Validation\IValidatable.cs" />
-    <Compile Include="Features\Validation\ValidationMessage.cs" />
+    <Compile Include="RSS\RssLinker.cs" />
     <Compile Include="FileStorage\DataHandler.cs" />
-    <Compile Include="DebuggerWriter.cs" />
-    <Compile Include="ErrorLog\ErrorLogger.cs" />
+    <Compile Include="Web\DebuggerWriter.cs" />
     <Compile Include="FileStorage\FileHandler.cs" />
     <Compile Include="FileStorage\FileProvider.cs" />
     <Compile Include="FileStorage\FileTypeIcon.cs" />
     <Compile Include="FileStorage\FolderPacker.cs" />
-    <Compile Include="ICalendarObject.cs" />
+    <Compile Include="Model\ICalendarObject.cs" />
     <Compile Include="FileStorage\ImageHandler.cs" />
-    <Compile Include="IModelObject.cs" />
-    <Compile Include="Impersonation.cs" />
-    <Compile Include="Internals\CalendarDayCache.cs" />
-    <Compile Include="IRouteHandler.cs" />
-    <Compile Include="JqTreeNode.cs" />
-    <Compile Include="MacroManager.cs" />
-    <Compile Include="Features\Meta\Core.cs" />
-    <Compile Include="Features\Layout\LayoutBootstrap.cs" />
-    <Compile Include="Features\Layout\LayoutEmpty.cs" />
-    <Compile Include="Features\Layout\LayoutWSS2007.cs" />
-    <Compile Include="Features\Meta.Database\DataTypeMapper.cs" />
-    <Compile Include="Features\Meta.Database\DBMetaModel.cs" />
-    <Compile Include="Features\Meta\MetaLoad.cs" />
-    <Compile Include="Features\Meta.Database\SchemaGenerator.cs" />
-    <Compile Include="Features\Meta.Database\SchemaLoader.cs" />
-    <Compile Include="Features\Layout\SystemLayout.cs" />
-    <Compile Include="Features\Meta\Versioning.cs" />
-    <Compile Include="Features\Meta\PrimitiveTypes.cs" />
-    <Compile Include="Features\Layout\LayoutMetaModel.cs" />
-    <Compile Include="Model\HCoreDataContext.cs" />
-    <Compile Include="Model\Hibernate.cs" />
-    <Compile Include="Model\HMapping.cs" />
-    <Compile Include="Model\HModel.cs" />
+    <Compile Include="Model\IModelObject.cs" />
+    <Compile Include="Web\Impersonation.cs" />
+    <Compile Include="Web\JqTreeNode.cs" />
     <Compile Include="MVC\PageParser.cs" />
-    <Compile Include="ObjectPropertyChange.cs" />
-    <Compile Include="Result.cs" />
-    <Compile Include="SPM\SpmActionNameAttribute.cs" />
-    <Compile Include="Store.cs" />
-    <Compile Include="TableInfo.cs" />
-    <Compile Include="TaskManager\MailerTask.cs" />
-    <Compile Include="MVC\MainMenu.cs" />
+    <Compile Include="Web\ObjectPropertyChange.cs" />
+    <Compile Include="Mailer\MailerTask.cs" />
     <Compile Include="Controls\MaskedInput.cs" />
     <Compile Include="MVC\BaseController.cs" />
     <Compile Include="MVC\ControlDataBinder.cs" />
@@ -371,8 +410,8 @@
     <Compile Include="Controls\ModalDialog.ascx.designer.cs">
       <DependentUpon>ModalDialog.ascx</DependentUpon>
     </Compile>
-    <Compile Include="HtmlHelperWSS.cs" />
-    <Compile Include="HtmlHelperBase.cs" />
+    <Compile Include="Obsolete\HtmlHelperWSS.cs" />
+    <Compile Include="Controls.Html\HtmlHelperBase.cs" />
     <Compile Include="Controls\JSCalendar.cs" />
     <Compile Include="Controls\MessageBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -381,31 +420,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Features\Purifier\Purifier.cs" />
-    <Compile Include="Query.cs" />
-    <Compile Include="Resources\Common.Designer.cs">
-      <DependentUpon>Common.resx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="RouteTable.cs" />
-    <Compile Include="Features\RSS\RssFeed.cs" />
-    <Compile Include="Features\RSS\RssItem.cs" />
-    <Compile Include="RusNumber.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="SimpleTypeExtensions.cs" />
-    <Compile Include="SPM\SPM.cs" />
+    <Compile Include="Purifier\Purifier.cs" />
+    <Compile Include="Obsolete\Query.cs" />
+    <Compile Include="RSS\RssFeed.cs" />
+    <Compile Include="RSS\RssItem.cs" />
+    <Compile Include="Model\Extensions.cs" />
     <Compile Include="MVC\ViewControl.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MVC\SqlLog.cs" />
     <Compile Include="TaskManager\TaskManager.cs" />
-    <Compile Include="TaskManager\TaskManagerModule.cs" />
-    <Compile Include="TextResource.cs" />
-    <Compile Include="Transliteration.cs" />
-    <Compile Include="Url.cs" />
-    <Compile Include="UrlStack.cs" />
-    <Compile Include="Utils.cs" />
+    <Compile Include="MVC\Url.cs" />
+    <Compile Include="Web\Utils.cs" />
     <Compile Include="View\Message\show.ascx.cs">
       <DependentUpon>show.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -428,15 +454,10 @@
     <Compile Include="View\TinyMCEFileManager\upload.ascx.designer.cs">
       <DependentUpon>upload.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Word.cs" />
-    <Compile Include="MVC\Workspace.cs" />
-    <Compile Include="XMLSerializer.cs" />
-    <Compile Include="ZoneDateTime.cs" />
+    <Compile Include="Office\Word.cs" />
+    <Compile Include="Web\XMLSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ExternalDll\nhibernate-mapping.xsd">
-      <SubType>Designer</SubType>
-    </None>
     <None Include="Nephrite.Web.snk" />
     <Content Include="Controls\FileUpload.ascx" />
     <Content Include="Controls\FileUploadSimple.ascx" />
@@ -451,8 +472,6 @@
     <Content Include="Controls\SelectObjectHierarchic.ascx" />
     <Content Include="Controls\SingleObject.ascx" />
     <Content Include="Controls\TinyMCEFileManager.aspx" />
-    <Content Include="ExternalDll\ICSharpCode.SharpZipLib.dll" />
-    <None Include="ExternalDll\SgmlReaderDll.dll" />
     <Content Include="js\codearea.js" />
     <Content Include="js\declension.js" />
     <Content Include="js\homewindow.js" />
@@ -463,16 +482,13 @@
     <Content Include="js\tiny_mce\plugins\media\media.htm" />
     <Content Include="View\TinyMCEFileManager\list.ascx" />
     <Content Include="View\TinyMCEFileManager\upload.ascx" />
+    <Content Include="packages.config" />
+    <Content Include="Web References\ReplicationService\Replication.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Common.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Common.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
@@ -481,6 +497,33 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="FileStorage\DataBase\" />
+    <Folder Include="FileStorage\FileSystem\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferenceUrl Include="http://localhost:51278/Replication/Replication.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\ReplicationService\</RelPath>
+      <UpdateFromURL>http://localhost:51278/Replication/Replication.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>Nephrite_Web_ReplicationService_Replication</CachedSettingsPropName>
+    </WebReferenceUrl>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Nephrite\Nephrite.csproj">
+      <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
+      <Name>Nephrite</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -502,7 +545,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>17464</DevelopmentServerPort>
+          <DevelopmentServerPort>51278</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>
           </IISUrl>

@@ -9,15 +9,17 @@ using Nephrite.Web;
 using System.Data.SqlClient;
 using System.Configuration;
 using System.Globalization;
+using Nephrite.Web.Hibernate;
+using Nephrite.Web.CoreDataContext;
 
 namespace Nephrite.Metamodel
 {
 	public class AppMM
 	{
 		[ThreadStatic]
-		static modelDataContext context = null;
+		static MMDataContext context = null;
 
-		public static modelDataContext DataContext
+		public static MMDataContext DataContext
 		{
 			get
 			{
@@ -27,23 +29,21 @@ namespace Nephrite.Metamodel
 					{
 						if (HttpContext.Current.Items["MMmodelDataContext"] == null)
 						{
-							modelDataContext dc = new modelDataContext(ConnectionManager.Connection);
-							dc.CommandTimeout = 300;
+							MMDataContext dc = new MMDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString));
+							//dc.CommandTimeout = 300;
 							HttpContext.Current.Items["MMmodelDataContext"] = dc;
-							dc.Log = new DataContextLogWriter();
 						}
-						return (modelDataContext)HttpContext.Current.Items["MMmodelDataContext"];
+						return (MMDataContext)HttpContext.Current.Items["MMmodelDataContext"];
 					}
 					else
-						return new modelDataContext(ConnectionManager.Connection);
+						return new MMDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString));
 				}
 				else
 				{
 					if (context == null)
 					{
-						context = new modelDataContext(ConnectionManager.Connection);
-						context.Log = new DataContextLogWriter();
-						context.CommandTimeout = 300;
+						context = new MMDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString));
+						//context.CommandTimeout = 300;
 					}
 					return context;
 				}
@@ -68,70 +68,5 @@ namespace Nephrite.Metamodel
             SqlConnectionStringBuilder csb = new SqlConnectionStringBuilder(ConnectionManager.Connection.ConnectionString);
 			return csb.InitialCatalog;
 		}
-
-        static List<C_Language> _langs;
-        public static List<C_Language> Languages
-        {
-            get
-            {
-                if (_langs == null)
-                    _langs = DataContext.C_Languages.ToList();
-                return _langs;
-            }
-        }
-
-        static string defaultLanguage = null;
-        public static string DefaultLanguage
-        {
-            get
-            {
-                if (defaultLanguage == null)
-                    defaultLanguage = Languages.Single(o => o.IsDefault).LanguageCode;
-                return defaultLanguage;
-            }
-        }
-
-        public static C_Language CurrentLanguage
-        {
-            get
-            {
-                string lang = Query.GetString("lang");
-				if (HttpContext.Current != null)
-				{
-					if (HttpContext.Current.Request.Cookies["lcid"] != null)
-						lang = HttpContext.Current.Request.Cookies["lcid"].Value == "1033" ? "en" : "ru";
-					if (HttpContext.Current.Items["Lang"] != null)
-						lang = (string)HttpContext.Current.Items["Lang"];
-				}
-                var l = Languages.SingleOrDefault(o => o.LanguageCode == lang);
-                if (l == null)
-                    l = Languages.Single(o => o.IsDefault);
-                return l;
-            }
-        }
-
-		public static void WithLang(string lang, Action action)
-		{
-			string prevLang = (string)HttpContext.Current.Items["Lang"];
-			HttpContext.Current.Items["Lang"] = lang;
-			action();
-			HttpContext.Current.Items["Lang"] = prevLang;
-		}
-
-        public static CultureInfo CurrentCulture
-        {
-            get
-            {
-                switch (CurrentLanguage.LanguageCode.ToLower())
-                {
-                    case "en":
-                        return CultureInfo.GetCultureInfo("en-US");
-                    case "ru":
-                        return CultureInfo.GetCultureInfo("ru-RU");
-                    default:
-                        return CultureInfo.InvariantCulture;
-                }
-            }
-        }
 	}
 }

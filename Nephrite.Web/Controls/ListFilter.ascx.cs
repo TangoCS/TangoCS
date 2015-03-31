@@ -8,21 +8,32 @@ using System.Linq.Expressions;
 using System.Data.Linq;
 using System.Data.Linq.SqlClient;
 using System.Globalization;
-
 using System.IO;
 using System.Xml.Linq;
 using System.Xml;
-using Nephrite.Web.SPM;
+using Nephrite.Identity;
 using Nephrite.Web;
+using Nephrite.Multilanguage;
+using Nephrite.Meta;
+using Nephrite.AccessControl;
+using Nephrite.Http;
 
 namespace Nephrite.Web.Controls
 {
 	public partial class Filter : UserControl
 	{
+		IDC_ListFilter dc
+		{
+			get
+			{
+				return (IDC_ListFilter)A.Model;
+			}
+		}
+
 		public string Width { get; set; }
 		protected bool ViewEditMode { get; set; }
 
-		protected PersistentFilter filterObject = new PersistentFilter(Url.Current.Action);
+		protected PersistentFilter filterObject = new PersistentFilter(UrlHelper.Current().Action);
 		public PersistentFilter FilterObject { get { return filterObject; } }
 		public List<FilterItem> FilterList
 		{
@@ -46,7 +57,7 @@ namespace Nephrite.Web.Controls
 
 		protected List<Field> fieldList = new List<Field>();
 
-		string actionName = Url.Current.Action;
+		string actionName = UrlHelper.Current().Action;
 		public void SetActionName(string action)
 		{
 			actionName = action;
@@ -57,7 +68,7 @@ namespace Nephrite.Web.Controls
 		{
 			get
 			{
-				if (Url.Current.GetString("filterid").IsEmpty())
+				if (UrlHelper.Current().GetString("filterid").IsEmpty())
 					return false;
 				else
 					return !filterObject.Columns.IsEmpty() || !filterObject.Sort.IsEmpty() ||
@@ -67,11 +78,11 @@ namespace Nephrite.Web.Controls
 			}
 		}
 
-		public List<Nephrite.Web.Model.N_Filter> GetViews()
+		public List<IN_Filter> GetViews()
 		{
-			int subjectID = AppSPM.GetCurrentSubjectID();
-			var flist = (from f in AppWeb.DataContext.N_Filters
-						 where f.ListName == Url.Current.Mode + "_" + actionName &&
+			int subjectID = Subject.Current.ID;
+			var flist = (from f in dc.IN_Filter
+						 where f.ListName == UrlHelper.Current().Mode + "_" + actionName &&
 									(!f.SubjectID.HasValue || f.SubjectID.Value == subjectID) && f.FilterName != null
 						 select f).ToList();
 			int i = 0;
@@ -456,7 +467,7 @@ namespace Nephrite.Web.Controls
 			filterObject.Name = tbTitle.Text != "" ? tbTitle.Text : null;
 			filterObject.ListParms = tbParms.Text;
 			filterObject.IsDefault = cbDefault.Checked;
-			filterObject.ListName = Url.Current.Mode + "_" + Url.Current.Action;
+			filterObject.ListName = UrlHelper.Current().Mode + "_" + UrlHelper.Current().Action;
 			filterObject.editMode = filter.Argument.ToInt32(0) > 0;
 			filterObject.Columns = cblColumns.GetSelectedValues().Join(",");
 			filterObject.ItemsOnPage = tbItemsOnPage.Text.ToInt32(0);
@@ -481,10 +492,10 @@ namespace Nephrite.Web.Controls
 			}
 			filterObject.Sort = sortRes.Join(",");
 
-			if (!cbPersonal.Checked && ActionSPMContext.Current.Check("filter.managecommonviews", 1))
+			if (!cbPersonal.Checked && ActionAccessControl.Instance.Check("filter.managecommonviews"))
 				filterObject.SubjectID = null;
 			else
-				filterObject.SubjectID = AppSPM.GetCurrentSubjectID();
+				filterObject.SubjectID = Subject.Current.ID;
 
 			if (ddlGroup1Order.SelectedValue == "")
 			{
@@ -510,7 +521,7 @@ namespace Nephrite.Web.Controls
 
 			if (filterObject.IsDefault)
 			{
-				foreach (var ff in AppWeb.DataContext.N_Filters.Where(o => o.IsDefault && o.ListName.ToLower() == filterObject.ListName.ToLower() &&
+				foreach (var ff in dc.IN_Filter.Where(o => o.IsDefault && o.ListName.ToLower() == filterObject.ListName.ToLower() &&
 					o.FilterID != id))
 					ff.IsDefault = false;
 			}
@@ -529,7 +540,7 @@ namespace Nephrite.Web.Controls
 				item.Advanced = mode.Value == "A";
 
 			filterObject.Save(FilterList);
-			Response.Redirect(Url.Current.SetParameter("filterid", filterObject.FilterID.ToString()));
+			Response.Redirect(UrlHelper.Current().SetParameter("filterid", filterObject.FilterID.ToString()));
 		}
 
 		void StoreRepeater()
@@ -850,8 +861,8 @@ namespace Nephrite.Web.Controls
 		protected void del_Click(object sender, EventArgs e)
 		{
 			int id = filter.Argument.ToInt32(0);
-			AppWeb.DataContext.N_Filters.DeleteOnSubmit(AppWeb.DataContext.N_Filters.Single(o => o.FilterID == id));
-			AppWeb.DataContext.SubmitChanges();
+			dc.IN_Filter.DeleteOnSubmit(dc.IN_Filter.Single(o => o.FilterID == id));
+			dc.SubmitChanges();
 			Response.Redirect(Query.RemoveParameter("filter", "filterid", "group1", "group2"));
 		}
 
@@ -928,11 +939,17 @@ namespace Nephrite.Web.Controls
 			((List<object>)f.Column).Add(column);
 			f.Operator.Add(opname);
 		}
-		public void AddFieldBoolean<T>(string title, Expression<Func<T, object>> column)
+
+		public void AddFieldBoolean<T>(string title, Expression<Func<T, bool>> column)
 		{
-			AddFieldBoolean<T>(title, column, null);
+			fieldList.Add(new Field
+			{
+				Title = title,
+				Column = column,
+				FieldType = FieldType.Boolean
+			});
 		}
-		public void AddFieldBoolean<T>(string title, Expression<Func<T, object>> column, bool? defaultFilter)
+		public void AddFieldBoolean<T>(string title, Expression<Func<T, bool?>> column)
 		{
 			fieldList.Add(new Field
 			{
@@ -981,6 +998,40 @@ namespace Nephrite.Web.Controls
 			}
 			((List<object>)f.Column).Add(column);
 			f.Operator.Add(opname);
+		}
+		public void AddField<TClass, TValue>(MetaAttribute prop)
+		{
+			var f = new Field();
+			f.Title = prop.Caption;
+			f.Column = prop.GetValueExpression;
+
+			if (prop.Type is MetaStringType)
+				f.FieldType = FieldType.String;
+			else if (prop.Type is MetaDateType)
+				f.FieldType = FieldType.Date;
+			else if (prop.Type is MetaDateTimeType)
+				f.FieldType = FieldType.DateTime;
+			else if (prop.Type is IMetaNumericType)
+				f.FieldType = FieldType.Number;
+			else if (prop.Type is MetaBooleanType)
+				f.FieldType = FieldType.Boolean;
+			else
+				return;
+
+			fieldList.Add(f);
+		}
+		public void AddField<TClass, TValue>(MetaReference prop)
+		{
+			var f = new Field();
+			f.Title = prop.Caption;
+			f.Column = prop.GetValueExpression;
+			f.FieldType = FieldType.DDL;
+
+			f.DataSource = prop.AllObjects;
+			f.DisplayMember = prop.DataTextField;
+			f.ValueMember = prop.RefClass.Key.Name;
+
+			fieldList.Add(f);
 		}
 		#endregion
 
@@ -1123,7 +1174,7 @@ namespace Nephrite.Web.Controls
 						}
 						else
 						{
-							if (!DateTime.TryParseExact(item.Value, "d.MM.yyyy HH:mm", null, DateTimeStyles.None, out dt))
+							if (!DateTime.TryParseExact(item.Value, "d.MM.yyyy", null, DateTimeStyles.None, out dt))
 							{ DateTime? dtn = null; val = dtn; } // dt = DateTime.Today;
 							else
 								val = dt;
@@ -1141,12 +1192,25 @@ namespace Nephrite.Web.Controls
 					if (f.FieldType == FieldType.Boolean)
 					{
 						bool b;
+
 						if (!bool.TryParse(item.Value, out b))
 							b = false;
-						val = b;
-					}
 
-					if (f.FieldType == FieldType.String || f.FieldType == FieldType.DDL)
+						if (A.DBType == DBType.DB2)
+						{
+							val = b ? 1 : 0;
+							valType = typeof(int);
+						}
+						else
+						{	
+							val = b;
+						}
+						if (item.Condition == "=")
+							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);
+						if (item.Condition == "<>")
+							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);	
+					}
+					else if (f.FieldType == FieldType.String || f.FieldType == FieldType.DDL)
 					{
 						if (valType == typeof(Char) && val is string)
 							val = ((string)val)[0];
@@ -1432,19 +1496,27 @@ namespace Nephrite.Web.Controls
 
 	public class PersistentFilter
 	{
-		Nephrite.Web.Model.N_Filter _filter;
+		IDC_ListFilter dc
+		{
+			get
+			{
+				return (IDC_ListFilter)A.Model;
+			}
+		}
+
+		IN_Filter _filter;
 		List<FilterItem> _items;
 		public bool editMode = false;
 
 		public PersistentFilter(string action)
 		{
-			_filter = AppWeb.DataContext.N_Filters.SingleOrDefault(o => o.FilterID == Query.GetInt("filterid", 0) && o.ListName.ToLower() == Url.Current.Mode.ToLower() + "_" + action.ToLower());
+			_filter = dc.IN_Filter.SingleOrDefault(o => o.FilterID == Query.GetInt("filterid", 0) && o.ListName.ToLower() == UrlHelper.Current().Mode.ToLower() + "_" + action.ToLower());
 			_items = _filter != null && _filter.FilterValue != null ? XMLSerializer.Deserialize<List<FilterItem>>(_filter.FilterValue.Root) : new List<FilterItem>();
 		}
 
 		public PersistentFilter(int filterID)
 		{
-			_filter = AppWeb.DataContext.N_Filters.SingleOrDefault(o => o.FilterID == filterID);
+			_filter = dc.IN_Filter.SingleOrDefault(o => o.FilterID == filterID);
 			_items = _filter != null && _filter.FilterValue != null ? XMLSerializer.Deserialize<List<FilterItem>>(_filter.FilterValue.Root) : new List<FilterItem>();
 		}
 
@@ -1455,23 +1527,20 @@ namespace Nephrite.Web.Controls
 
 		public void NewFilter()
 		{
-			_filter = new Nephrite.Web.Model.N_Filter
-			{
-				
-				FilterValue = _filter != null ? _filter.FilterValue :
-					new XDocument(XMLSerializer.Serialize<List<FilterItem>>(new List<FilterItem>()))
-			};
-			AppWeb.DataContext.N_Filters.InsertOnSubmit(_filter);
+			_filter = dc.NewIN_Filter();
+			_filter.FilterValue = _filter != null ? _filter.FilterValue :
+					new XDocument(XMLSerializer.Serialize<List<FilterItem>>(new List<FilterItem>()));
+			dc.IN_Filter.InsertOnSubmit(_filter);
 		}
 
-		Nephrite.Web.Model.N_Filter Filter
+		IN_Filter Filter
 		{
 			get
 			{
 				if (_filter == null)
 				{
-					_filter = new Model.N_Filter();
-					AppWeb.DataContext.N_Filters.InsertOnSubmit(_filter);
+					_filter = dc.NewIN_Filter();
+					dc.IN_Filter.InsertOnSubmit(_filter);
 				}
 				return _filter;
 			}
@@ -1559,7 +1628,31 @@ namespace Nephrite.Web.Controls
 		{
 			_items = items;
 			Filter.FilterValue = new XDocument(XMLSerializer.Serialize<List<FilterItem>>(_items));
-			AppWeb.DataContext.SubmitChanges();
+			dc.SubmitChanges();
 		}
+	}
+
+	public interface IN_Filter : IEntity
+	{
+		int FilterID { get; set; }
+		int? SubjectID { get; set; }
+		string ListName { get; set; }
+		XDocument FilterValue { get; set; }
+		string FilterName { get; set; }
+		bool IsDefault { get; set; }
+		System.Nullable<int> Group1Column { get; set; }
+		string Group1Sort { get; set; }
+		System.Nullable<int> Group2Column { get; set; }
+		string Group2Sort { get; set; }
+		string ListParms { get; set; }
+		string Columns { get; set; }
+		string Sort { get; set; }
+		int ItemsOnPage { get; set; }
+	}
+
+	public interface IDC_ListFilter : IDataContext
+	{
+		ITable<IN_Filter> IN_Filter { get; }
+		IN_Filter NewIN_Filter();
 	}
 }

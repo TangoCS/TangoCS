@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.HtmlControls;
 using Nephrite.Web.FileStorage;
 using System.IO;
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Web.Controls
 {
@@ -109,11 +110,11 @@ function deleteFile(guid, ClientID)
 					rootFolder = FileStorageManager.CreateFolder(folderName, "ObjectFiles");
 					rootFolder.CheckValid();
 				}
-				Base.Model.SubmitChanges();
+				A.Model.SubmitChanges();
 				objFolder = FileStorageManager.CreateFolder(owner.ObjectID.ToString(), "ObjectFiles/" + folderName);
 				objFolder.CheckValid();
 				FolderGUID = objFolder.ID;
-				Base.Model.SubmitChanges();
+				A.Model.SubmitChanges();
 			}
 			var f = owner.GetType().GetField("propertyChanges", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 			Dictionary<string, ObjectPropertyChange> changes = null;
@@ -128,7 +129,7 @@ function deleteFile(guid, ClientID)
 				var guids = deleteGuids.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(o => new Guid(o));
 				foreach (var g in guids)
 					FileStorageManager.DeleteFile(g);
-				Base.Model.SubmitChanges();
+				A.Model.SubmitChanges();
 			}
 			for (int i = 0; i < HttpContext.Current.Request.Files.Count; i++)
 			{
@@ -142,7 +143,7 @@ function deleteFile(guid, ClientID)
 				dbFile.Write((new BinaryReader(file.InputStream)).ReadBytes(file.ContentLength));
 				dbFile.CheckValid();
 			}
-			Base.Model.SubmitChanges();
+			A.Model.SubmitChanges();
 			string newFileList = FileStorageManager.DbFiles.Where(o => o.ParentFolderID == FolderGUID).Select(o => o.Title).Join("\n");
 			changes[property.Name] = new ObjectPropertyChange(property.Name, property.Caption, "", oldFileList);
 			changes[property.Name].NewValueTitle = newFileList;

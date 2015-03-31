@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
-using Nephrite.Meta;
+using Nephrite.Layout;
+
 
 namespace Nephrite.Web.Controls
 {
@@ -14,7 +15,7 @@ namespace Nephrite.Web.Controls
 		protected override void Render(HtmlTextWriter writer)
 		{
 			base.Render(writer);
-			if (Layout == null) Layout = AppWeb.Layout.ToolbarDropdownCompact;
+			if (Layout == null) Layout = AppLayout.Current.ToolbarDropdownCompact;
 
 			if (Items != null && Items.Count > 0)
 			{

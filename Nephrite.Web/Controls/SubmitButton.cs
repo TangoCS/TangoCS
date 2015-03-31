@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
-using Nephrite.Meta;
+using Nephrite.Layout;
+
 
 namespace Nephrite.Web.Controls
 {
-	public class SubmitButton : Button, IBarItem
+	public class SubmitButton : Button//, IBarItem
 	{
-		public ButtonNextOption? Next { get; set; }
+		//public ButtonNextOption? Next { get; set; }
 		public ILayoutBarItem Layout { get; set; }
 		public string Image { get; set; }
 
 		public SubmitButton()
 		{
-			Layout = AppWeb.Layout.Button;
+			Layout = AppLayout.Current.Button;
 		}
 
 		protected override void Render(System.Web.UI.HtmlTextWriter writer)

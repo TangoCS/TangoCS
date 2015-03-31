@@ -7,6 +7,10 @@ using System.Web.UI.WebControls;
 using System.Linq.Expressions;
 using Nephrite.Meta;
 
+
+using Nephrite.Layout;
+using Nephrite.Http;
+
 namespace Nephrite.Web.Controls
 {
 	public class FormCriteria : System.Web.UI.UserControl
@@ -42,7 +46,7 @@ namespace Nephrite.Web.Controls
 			}
 			bOK.RenderControl(writer);
 
-			string url = Url.Current.RemoveParameter(_factory.Parameters.Keys.ToArray()).RemoveParameter("r");
+			string url = UrlHelper.Current().RemoveParameter(_factory.Parameters.Keys.ToArray()).RemoveParameter("r");
 			writer.Write("&nbsp;<input type='submit' value='Очистить' onclick='window.location=\"" + url + "\"; return false;'>");
 		}
 
@@ -51,7 +55,7 @@ namespace Nephrite.Web.Controls
 			var p = _factory.Prepare();
 			if (_factory.Messages.Count > 0) return;
 
-			Response.Redirect(Url.Current.RemoveParameter(p.Keys.ToArray()).RemoveParameter("r") + "&" + p.Select(o => o.Key + "=" + o.Value).Join("&") + "&r=1");
+			Response.Redirect(UrlHelper.Current().RemoveParameter(p.Keys.ToArray()).RemoveParameter("r") + "&" + p.Select(o => o.Key + "=" + o.Value).Join("&") + "&r=1");
 		}
 
 		/*public FormCriteriaFactory<T> CreateFactory<T>(IQueryable<T> viewData)
@@ -122,16 +126,16 @@ namespace Nephrite.Web.Controls
 
 		public void Render(HtmlTextWriter writer)
 		{
-			writer.Write(AppWeb.Layout.FormTableBegin(_form.TableStyle));
+			writer.Write(AppLayout.Current.FormTableBegin(_form.TableStyle));
 			foreach (Criteria<T> c in _criteries.Values)
 			{
 				if (!c.Visible()) continue;
 
-				writer.Write(AppWeb.Layout.FormRowBegin(c.Caption, c.Comment, c.IsRequired));
+				writer.Write(AppLayout.Current.FormRowBegin(c.Caption, c.Comment, c.IsRequired));
 				c.Render(writer);
-				writer.Write(AppWeb.Layout.FormRowEnd());
+				writer.Write(AppLayout.Current.FormRowEnd());
 			}
-			writer.Write(AppWeb.Layout.FormTableEnd());
+			writer.Write(AppLayout.Current.FormTableEnd());
 		}
 
 		public Dictionary<string, string> Prepare()

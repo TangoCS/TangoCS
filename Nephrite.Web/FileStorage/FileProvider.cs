@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using Nephrite.Web.Model;
 using System.IO;
 using System.Web.UI.WebControls;
 using System.Data.Linq;
-using Nephrite.Web.SPM;
-using Nephrite.Web.FileStorage;
+using Nephrite.Identity;
+using Nephrite.Multilanguage;
+using Nephrite.Http;
 
-namespace Nephrite.Web
+namespace Nephrite.Web.FileStorage
 {
 	public class FileProvider
 	{
@@ -23,55 +23,40 @@ namespace Nephrite.Web
 		}
 		public static bool GetFile(string query, string ip, bool logDownload, out byte[] data, out string fileName, out string contentType)
 		{
-			int id = query.GetQueryParameter("oid").ToInt32(0);
-			//N_File f = null;
-			Guid? g = null;
-			if (id > 0)
-			{
-				g = AppWeb.DataContext.N_Files.Where(f1 => f1.FileID == id).Select(o => o.Guid).SingleOrDefault();
-			}
-			string path = HttpUtility.UrlDecode(query.GetQueryParameter("path"));
-			if (!String.IsNullOrEmpty(path))
-			{
-				int i = path.LastIndexOf('/');
-				string dir = path.Substring(0, i);
-				string file = path.Substring(i + 1);
-
-				g = (from files in AppWeb.DataContext.N_Files
-					 where files.Title == file && files.N_Folder.FullPath == dir
-					 select files.Guid).SingleOrDefault();
-			}
-			IDbFile dbFile = null;
-			if (g != null)
-				dbFile = FileStorageManager.GetFile(g.Value);
-
 			string guid = query.GetQueryParameter("guid");
+			string path = HttpUtility.UrlDecode(query.GetQueryParameter("path"));
+			IDbFile dbFile = null;
+		
+			if (!String.IsNullOrEmpty(path))
+				dbFile = FileStorageManager.GetFile(path);
+			
 			if (!String.IsNullOrEmpty(guid))
 				dbFile = FileStorageManager.GetFile(guid.ToGuid());
 			
 			if (dbFile != null)
 			{
-				if (!N_FolderSPMContext.Current.Check(dbFile.SPMActionItemGUID, 2, dbFile, true))
+				//if (!N_FolderSPMContext.Current.Check(dbFile.SPMActionItemGUID, 2, dbFile, true))
 				//if (!SPM2.Check(2, dbFile.SPMActionItemGUID, dbFile, true))
-				{
-					contentType = N_FolderSPMContext.Current.GetLastMessage();
-					fileName = null;
-					data = null;
-					return false;
-				}
+				//{
+				//	contentType = N_FolderSPMContext.Current.GetLastMessage();
+				//	fileName = null;
+				//	data = null;
+				//	return false;
+				//}
 				fileName = dbFile.Title;
 				data = dbFile.GetBytes();
 				contentType = GetContentType(dbFile.Extension);
 
 				if (logDownload)
 				{
-					N_DownloadLog l = new N_DownloadLog();
-					AppWeb.DataContext.N_DownloadLogs.InsertOnSubmit(l);
+					IDC_FileStorage dc = (IDC_FileStorage)A.Model;
+					IN_DownloadLog l = dc.NewIN_DownloadLog();
+					dc.IN_DownloadLog.InsertOnSubmit(l);
 					l.LastModifiedDate = DateTime.Now;
 					l.LastModifiedUserID = Subject.Current.ID;
-					l.FileID = AppWeb.DataContext.N_Files.Where(o => o.Guid == dbFile.ID).Select(o => o.FileID).Single();
+					l.FileGUID = dbFile.ID;
 					l.IP = ip;
-					AppWeb.DataContext.SubmitChanges();
+					dc.SubmitChanges();
 				}
 
 				return true;

@@ -4,17 +4,15 @@ using System.Linq;
 using System.Web;
 using System.Data.Linq;
 
-namespace Nephrite.Web
+namespace Nephrite.Web.FileStorage
 {
 	public class DataHandler : IHttpHandler
 	{
 		class FileInfo
 		{
-			public int ID { get; set; }
+			public Guid ID { get; set; }
 			public DateTime LastModifiedDate { get; set; }
 		}
-
-		//static Func<Model.modelDataContext, string, string, FileInfo> getFileInfo;
 		
 		public bool IsReusable
 		{
@@ -23,11 +21,6 @@ namespace Nephrite.Web
 
 		public void ProcessRequest(HttpContext context)
 		{
-			//if (provider == null)
-			//{
-			//    provider = (IFileProvider)Activator.CreateInstance(Settings.FileProviderAssembly, Settings.FileProviderClass).Unwrap();
-			//}
-
 			byte[] data;
 			string fileName;
 			string contentType;
@@ -53,31 +46,23 @@ namespace Nephrite.Web
 			string dir = path.Substring(0, i);
 			string file = path.Substring(i + 1);
 
-			//if (getFileInfo == null)
-			//{
-			//	getFileInfo = CompiledQuery.Compile<Model.modelDataContext, string, string, FileInfo>((db, f, d) =>
-			//		(from files in db.N_Files
-			//		 where files.Title == f && files.N_Folder.FullPath == d
-			//		 select new FileInfo { ID = files.FileID, LastModifiedDate = files.LastModifiedDate }).SingleOrDefault());
-			//}
-
-			//var fi = getFileInfo(AppWeb.DataContext, file, dir);
-			var fi = (from files in AppWeb.DataContext.N_Files
-					  where files.Title == file && files.N_Folder.FullPath == dir
-					  select new FileInfo { ID = files.FileID, LastModifiedDate = files.LastModifiedDate }).SingleOrDefault();
+			var fi = (from files in FileStorageManager.DbFiles
+					  from folders in FileStorageManager.DbFolders
+					  where files.Title == file && files.ParentFolderID == folders.ID && folders.FullPath == dir
+					  select new FileInfo { ID = files.ID, LastModifiedDate = files.LastModifiedDate }).SingleOrDefault();
 			if (fi != null)
-				return String.Format("/Data.ashx?oid={0}&timestamp={1}", fi.ID, fi.LastModifiedDate.Ticks);
+				return String.Format("/Data.ashx?guid={0}&timestamp={1}", fi.ID, fi.LastModifiedDate.Ticks);
 			return "";
 		}
 
-		public static string GetDataUrl(int id)
+		public static string GetDataUrl(Guid id)
 		{
-			
-			var f = (from files in AppWeb.DataContext.N_Files
-					 where files.FileID == id
-					 select new { files.FileID, files.LastModifiedDate }).SingleOrDefault();
+
+			var f = (from files in FileStorageManager.DbFiles
+					 where files.ID == id
+					 select new { files.ID, files.LastModifiedDate }).SingleOrDefault();
 			if (f != null)
-				return String.Format("/Data.ashx?oid={0}&timestamp={1}", f.FileID, f.LastModifiedDate.Ticks);
+				return String.Format("/Data.ashx?guid={0}&timestamp={1}", f.ID, f.LastModifiedDate.Ticks);
 			return "";
 		}
 	}

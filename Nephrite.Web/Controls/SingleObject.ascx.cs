@@ -5,9 +5,9 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Linq.Expressions;
-using System.Web.UI.WebControls.WebParts;
 using System.Collections;
 using Nephrite.Web;
+
 
 namespace Nephrite.Web.Controls
 {
@@ -23,11 +23,11 @@ namespace Nephrite.Web.Controls
 		{
 		}
 
-		
+
 		protected override void CreateChildControls()
 		{
 			base.CreateChildControls();
-			
+
 		}
 
 		protected string RenderRun()
@@ -98,7 +98,7 @@ namespace Nephrite.Web.Controls
 			s = s.Substring(0, s.IndexOf("</span>"));
 			s = s.Substring(s.IndexOf('>') + 1);
 			int id = s.ToInt32(0);
-			var obj = id > 0 ? 
+			var obj = id > 0 ?
 				AllObjects.Cast<IModelObject>().Where(mo.FindByID<IModelObject>(id)).FirstOrDefault() :
 				AllObjects.Cast<IModelObject>().Where(mo.FindByGUID<IModelObject>(s.ToGuid())).FirstOrDefault();
 			if (obj != null)
@@ -165,7 +165,7 @@ namespace Nephrite.Web.Controls
 
 		public T GetObject<T>() where T : IModelObject
 		{
-			object empty = Activator.CreateInstance(Type);
+			T empty = default(T);
 			if (hfObjectID.Value.ToInt32(0) > 0)
 				return AllObjects.Cast<T>().SingleOrDefault(empty.FindByID<T>(hfObjectID.Value.ToInt32(0)));
 			if (hfObjectID.Value.ToGuid() != Guid.Empty)
@@ -178,10 +178,10 @@ namespace Nephrite.Web.Controls
 		public string DataValueField { get { return select.DataValueField; } set { select.DataValueField = value; } }
 		public string ParentField { get { return select.ParentField; } set { select.ParentField = value; } }
 		public string IDField { get { return select.IDField; } set { select.IDField = value; } }
-        public bool HighlightSearchResults { get { return select.HighlightSearchResults; } set { select.HighlightSearchResults = value; } }
+		public bool HighlightSearchResults { get { return select.HighlightSearchResults; } set { select.HighlightSearchResults = value; } }
 		public string NotFoundMessage { get { return select.GetNotFoundMessage(); } set { select.GetNotFoundMessage = () => value; } }
 		public Func<string> GetNotFoundMessage { get { return select.GetNotFoundMessage; } set { select.GetNotFoundMessage = value; } }
-		public Func<object, bool> CanSelectFunc { get; set; }
+		public Func<dynamic, bool> CanSelectFunc { get; set; }
 		public string Title { get; set; }
 		public string QuickFilterValue { get { return select.QuickFilterValue; } set { select.QuickFilterValue = value; } }
 		public int PageSize { get; set; }
@@ -191,9 +191,9 @@ namespace Nephrite.Web.Controls
 
 		public Unit Height { get; set; }
 
-		public IQueryable AllObjects { get; set; }
+		public IQueryable<dynamic> AllObjects { get; set; }
 
-		public Func<string, Expression<Func<object, bool>>> SearchExpression { get; set; }
+		public Func<string, Expression<Func<dynamic, bool>>> SearchExpression { get; set; }
 		public Func<string, int, int, IEnumerable> SearchQuery { get; set; }
 		public Func<string, int> SearchCountQuery { get; set; }
 
@@ -201,9 +201,9 @@ namespace Nephrite.Web.Controls
 
 		public event EventHandler<SelectObjectHierarchicEventArgs> Selected;
 		protected internal virtual void OnSelected(SelectObjectHierarchicEventArgs e)
-        {
-            if (Selected != null)
-            {
+		{
+			if (Selected != null)
+			{
 				Selected(this, e);
 				up.Update();
 			}
@@ -227,7 +227,7 @@ namespace Nephrite.Web.Controls
 		public bool Enabled
 		{
 			get { return tbObject.Enabled; }
-			set 
+			set
 			{
 				if (tbObject.Enabled != value)
 				{

@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Web.UI;
-using System.Web.UI.WebControls.WebParts;
 using System.Web;
 using System.Linq.Expressions;
 using System.Collections;
 
 using Nephrite.Web.Controls;
 using System.Web.UI.WebControls;
-using Nephrite.Web.Layout;
+
 using System.Text.RegularExpressions;
-using Nephrite.Web.App;
+using Nephrite.Http;
 using Nephrite.Meta;
+using Nephrite.SettingsManager;
+using Nephrite.Layout;
+using System.IO;
 
 namespace Nephrite.Web
 {
@@ -114,10 +116,10 @@ namespace Nephrite.Web
 			return AppWeb.MasterControl.GetToolbar();
 		}
 
-		public virtual ButtonBar GetButtonBar()
-		{
-			return AppWeb.MasterControl.GetButtonBar();
-		}
+		//public virtual ButtonBar GetButtonBar()
+		//{
+		//	return AppWeb.MasterControl.GetButtonBar();
+		//}
 
 	
 		
@@ -201,6 +203,10 @@ namespace Nephrite.Web
         {
 			return GetSorter().AddSortColumn(title, column, showArrows);
         }
+		public string AddSortColumn<T, TColumn>(MetaProperty prop, bool showArrows = true)
+		{
+			return GetSorter().AddSortColumn<T, TColumn>(prop, showArrows);
+		}
 		/*public string AddDefaultSortColumn<T, TColumn>(string title, Expression<Func<T, TColumn>> column)
         {
             if (!sortColumns.ContainsKey(1))
@@ -226,7 +232,7 @@ namespace Nephrite.Web
 		{
 			string result = String.Empty;
 			column = column.ToLower();
-			var baseUrl = Url.Current.SetQuickSearchQuery().SetParameter(param, column);
+			var baseUrl = UrlHelper.Current().SetQuickSearchQuery().SetParameter(param, column);
             if (Query.GetString(param).Replace("_desc", "") == column && !Query.GetString(param).ToLower().EndsWith("_desc"))
 			{
 				baseUrl = baseUrl.SetParameter(param, column + "_desc");
@@ -250,19 +256,30 @@ namespace Nephrite.Web
         {
             if (RenderMargin)
             {
-				writer.Write(AppWeb.Layout.AutoMargin.MarginBegin());
+				writer.Write(AppLayout.Current.AutoMargin.MarginBegin());
             }
-            base.RenderControl(writer);
+
+			try
+			{
+				StringWriter sw = new StringWriter();
+				HtmlTextWriter hw = new HtmlTextWriter(sw);
+				base.RenderControl(hw);
+				writer.Write(sw.ToString());
+			}
+			catch (Exception e)
+			{
+				e.Render(writer);
+			}
 			
             if (RenderMargin)
             {
-				writer.Write(AppWeb.Layout.AutoMargin.MarginEnd());
+				writer.Write(AppLayout.Current.AutoMargin.MarginEnd());
             }
         }
 
-		public ISystemLayout Layout
+		public AppLayout Layout
 		{
-			get { return AppWeb.Layout; }
+			get { return AppLayout.Current; }
 		}
     }
 

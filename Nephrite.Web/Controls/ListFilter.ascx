@@ -2,7 +2,7 @@
 <%@ Register Assembly="Nephrite.Web" TagPrefix="nw" Namespace="Nephrite.Web.Controls" %>
 <%@ Register src="ModalDialog.ascx" tagname="ModalDialog" tagprefix="uc1" %>
 <%@ Import Namespace="Nephrite.Web" %>
-<%@ Import Namespace="Nephrite.Web.SPM" %>
+
 
 <uc1:ModalDialog ID="filter" runat="server"  Width="650px" OnPopulate="filter_Populate" OnOKClick="filter_OKClick">
 <ContentTemplate>
@@ -14,25 +14,25 @@
 <nw:TabPage runat="server" ID="tp0">
 <ContentTemplate>
 
-<%=AppWeb.Layout.FormTableBegin() %>
-<%=AppWeb.Layout.FormRowBegin(TextResource.Get("System.Filter.Title", "Название"))%>
+<%=AppLayout.Current.FormTableBegin() %>
+<%=AppLayout.Current.FormRowBegin(TextResource.Get("System.Filter.Title", "Название"))%>
 <asp:TextBox ID="tbTitle" runat="server" Width="100%"></asp:TextBox>
-<%=AppWeb.Layout.FormRowEnd()%>
+<%=AppLayout.Current.FormRowEnd()%>
 
-<%=AppWeb.Layout.FormRowBegin(TextResource.Get("System.Filter.PropertiesOfVisibility", "Свойства видимости"))%>
-<% cbShared.Enabled = cbPersonal.Enabled = ActionSPMContext.Current.Check("filter.managecommonviews", 1);%>
+<%=AppLayout.Current.FormRowBegin(TextResource.Get("System.Filter.PropertiesOfVisibility", "Свойства видимости"))%>
+<% cbShared.Enabled = cbPersonal.Enabled = ActionAccessControl.Instance.Check("filter.managecommonviews", 1);%>
 
 <asp:RadioButton ID="cbPersonal" GroupName="isshared" runat="server"/><br />
 <asp:RadioButton ID="cbShared" GroupName="isshared" runat="server" /><br />
 <asp:CheckBox ID="cbDefault" runat="server" /><br />
 
-<%=AppWeb.Layout.FormRowEnd()%>
+<%=AppLayout.Current.FormRowEnd()%>
 
-<%=AppWeb.Layout.FormRowBegin(TextResource.Get("System.Filter.Tabs.Properties.TemplateParametersOfList", "Шаблон параметров списка"),
+<%=AppLayout.Current.FormRowBegin(TextResource.Get("System.Filter.Tabs.Properties.TemplateParametersOfList", "Шаблон параметров списка"),
                               TextResource.Get("System.Filter.Tabs.Properties.TemplateParametersComment", "Строка в формате параметр1=значение,параметр2=значение"), false)%>
 <asp:TextBox ID="tbParms" runat="server" Width="100%"></asp:TextBox>
-<%=AppWeb.Layout.FormRowEnd()%>
-<%=AppWeb.Layout.FormTableEnd()%>
+<%=AppLayout.Current.FormRowEnd()%>
+<%=AppLayout.Current.FormTableEnd()%>
 
 </ContentTemplate>
 </nw:TabPage>
@@ -105,19 +105,19 @@
 <fieldset>
 <legend><%=TextResource.Get("System.Filter.Criterion", "Критерий")%></legend>
 <div style="height:5px;"></div>
-<%=AppWeb.Layout.FormTableBegin(new { style = "width:100%"})%>
-<%=AppWeb.Layout.FormRowBegin(TextResource.Get("System.Filter.Field", "Поле"))%>
+<%=AppLayout.Current.FormTableBegin(new { style = "width:100%"})%>
+<%=AppLayout.Current.FormRowBegin(TextResource.Get("System.Filter.Field", "Поле"))%>
 <asp:DropDownList ID="ddlItem" runat="server" DataTextField="Title" DataValueField="Title" AutoPostBack="true" OnSelectedIndexChanged="ddlItem_SelectedIndexChanged" Width="100%" />
-<%=AppWeb.Layout.FormRowEnd()%>
-<%=AppWeb.Layout.FormRowBegin(TextResource.Get("System.Filter.Condition", "Условие"))%>
+<%=AppLayout.Current.FormRowEnd()%>
+<%=AppLayout.Current.FormRowBegin(TextResource.Get("System.Filter.Condition", "Условие"))%>
 <asp:DropDownList ID="ddlCondition" runat="server" OnSelectedIndexChanged="ddlCondition_SelectedIndexChanged" AutoPostBack="true" />
-<%=AppWeb.Layout.FormRowEnd()%>
-<%=AppWeb.Layout.FormRowBegin(TextResource.Get("System.Filter.Value", "Значение"))%>
+<%=AppLayout.Current.FormRowEnd()%>
+<%=AppLayout.Current.FormRowBegin(TextResource.Get("System.Filter.Value", "Значение"))%>
 <asp:TextBox ID="txtValue" runat="server" Width="100%"/>
 <nw:JSCalendar ID="calValue" runat="server"/>
 <asp:DropDownList ID="ddlValue" runat="server" Width="100%"/>
 <asp:CheckBox ID="cbxValue" runat="server" />
-<%=AppWeb.Layout.FormTableEnd()%>
+<%=AppLayout.Current.FormTableEnd()%>
 
 
 <div style="text-align:right">
@@ -138,11 +138,11 @@
 <asp:CheckBoxList runat="server" ID="cblColumns" />
 </fieldset>
 
-<%=AppWeb.Layout.FormTableBegin() %>
-<%=AppWeb.Layout.FormRowBegin(TextResource.Get("System.Filter.NumberRowsOnPage","Количество строк на странице"))%>
+<%=AppLayout.Current.FormTableBegin() %>
+<%=AppLayout.Current.FormRowBegin(TextResource.Get("System.Filter.NumberRowsOnPage","Количество строк на странице"))%>
 <asp:TextBox ID="tbItemsOnPage" runat="server" Width="100%"></asp:TextBox>
-<%=AppWeb.Layout.FormRowEnd()%>
-<%=AppWeb.Layout.FormTableEnd() %>
+<%=AppLayout.Current.FormRowEnd()%>
+<%=AppLayout.Current.FormTableEnd() %>
 
 </ContentTemplate>
 </nw:TabPage>
@@ -150,27 +150,27 @@
 <nw:TabPage runat="server" ID="tp3">
 <ContentTemplate>
 
-<%=AppWeb.Layout.ListTableBegin(new { id = "listsort", style = "width:100%" })%>
-<%=AppWeb.Layout.ListHeaderBegin()%>
-	<%=AppWeb.Layout.TH(TextResource.Get("System.Filter.Column","Столбец"), new { style = "width:100%" })%>
-	<%=AppWeb.Layout.TH(TextResource.Get("System.Filter.Mode","Способ"))%>
-	<%=AppWeb.Layout.TH("")%>
-<%=AppWeb.Layout.ListHeaderEnd()%>
-<%=AppWeb.Layout.ListRowBegin("", new { id = "listsort_1" })%>
-<%=AppWeb.Layout.TDBegin()%>
+<%=AppLayout.Current.ListTableBegin(new { id = "listsort", style = "width:100%" })%>
+<%=AppLayout.Current.ListHeaderBegin()%>
+	<%=AppLayout.Current.TH(TextResource.Get("System.Filter.Column","Столбец"), new { style = "width:100%" })%>
+	<%=AppLayout.Current.TH(TextResource.Get("System.Filter.Mode","Способ"))%>
+	<%=AppLayout.Current.TH("")%>
+<%=AppLayout.Current.ListHeaderEnd()%>
+<%=AppLayout.Current.ListRowBegin("", new { id = "listsort_1" })%>
+<%=AppLayout.Current.TDBegin()%>
 	<asp:DropDownList ID="ddlSortColumn" runat="server" Width="100%" DataTextField="Name" DataValueField="SeqNo"></asp:DropDownList>
-<%=AppWeb.Layout.TDEnd()%>
-<%=AppWeb.Layout.TDBegin()%>
+<%=AppLayout.Current.TDEnd()%>
+<%=AppLayout.Current.TDBegin()%>
 	<asp:DropDownList ID="ddlSortOrder" runat="server" >
 	</asp:DropDownList>
-<%=AppWeb.Layout.TDEnd()%>
-<%=AppWeb.Layout.TDBegin()%>
+<%=AppLayout.Current.TDEnd()%>
+<%=AppLayout.Current.TDBegin()%>
 	<a title="Удалить" href="#" onclick="delRow(this.parentNode.parentNode)" id="delBtn" style="display:none">
 		<img border="0" style="border: 0pt none; vertical-align: middle;" title="Удалить" alt="Удалить" src="/i/n/delete.gif"/>
 	</a>
-<%=AppWeb.Layout.TDEnd()%>
-<%=AppWeb.Layout.ListRowEnd()%>
-<%=AppWeb.Layout.ListTableEnd()%>
+<%=AppLayout.Current.TDEnd()%>
+<%=AppLayout.Current.ListRowEnd()%>
+<%=AppLayout.Current.ListTableEnd()%>
 
 <a href="#" onclick="addRow('listsort',1); return false;"><%=TextResource.Get("System.Filter.AddRow","Добавить строку")%></a>
 <script type="text/JavaScript">
@@ -226,30 +226,30 @@ c1.value = '<%=sort_val[0]%>';
 
 <nw:TabPage runat="server" ID="tpGrouping">
 <ContentTemplate>
-<%=AppWeb.Layout.ListTableBegin(new { style = "width:100%" })%>
-<%=AppWeb.Layout.ListHeaderBegin()%>
-    <%=AppWeb.Layout.TH(TextResource.Get("System.Filter.Column","Столбец"), new { style = "width:100%" })%>
-	<%=AppWeb.Layout.TH(TextResource.Get("System.Filter.Mode","Способ"))%>
-<%=AppWeb.Layout.ListHeaderEnd()%>
-<%=AppWeb.Layout.ListRowBegin("")%>
-<%=AppWeb.Layout.TDBegin()%>
+<%=AppLayout.Current.ListTableBegin(new { style = "width:100%" })%>
+<%=AppLayout.Current.ListHeaderBegin()%>
+    <%=AppLayout.Current.TH(TextResource.Get("System.Filter.Column","Столбец"), new { style = "width:100%" })%>
+	<%=AppLayout.Current.TH(TextResource.Get("System.Filter.Mode","Способ"))%>
+<%=AppLayout.Current.ListHeaderEnd()%>
+<%=AppLayout.Current.ListRowBegin("")%>
+<%=AppLayout.Current.TDBegin()%>
 <asp:DropDownList ID="ddlGroup1" runat="server" DataTextField="Name" DataValueField="SeqNo"  Width="100%" />
-<%=AppWeb.Layout.TDEnd()%>
-<%=AppWeb.Layout.TDBegin()%>
+<%=AppLayout.Current.TDEnd()%>
+<%=AppLayout.Current.TDBegin()%>
 	    <asp:DropDownList ID="ddlGroup1Order" runat="server">
 	    </asp:DropDownList>
-<%=AppWeb.Layout.TDEnd()%>
-<%=AppWeb.Layout.ListRowEnd()%>
-<%=AppWeb.Layout.ListRowBegin("")%>
-<%=AppWeb.Layout.TDBegin()%>
+<%=AppLayout.Current.TDEnd()%>
+<%=AppLayout.Current.ListRowEnd()%>
+<%=AppLayout.Current.ListRowBegin("")%>
+<%=AppLayout.Current.TDBegin()%>
 <asp:DropDownList ID="ddlGroup2" runat="server" DataTextField="Name" DataValueField="SeqNo"  Width="100%" />
-<%=AppWeb.Layout.TDEnd()%>
-<%=AppWeb.Layout.TDBegin()%>
+<%=AppLayout.Current.TDEnd()%>
+<%=AppLayout.Current.TDBegin()%>
         <asp:DropDownList ID="ddlGroup2Order" runat="server">
 	    </asp:DropDownList>
-<%=AppWeb.Layout.TDEnd()%>
-<%=AppWeb.Layout.ListRowEnd()%>
-<%=AppWeb.Layout.ListTableEnd()%>
+<%=AppLayout.Current.TDEnd()%>
+<%=AppLayout.Current.ListRowEnd()%>
+<%=AppLayout.Current.ListTableEnd()%>
 </ContentTemplate>
 </nw:TabPage>
 

@@ -5,7 +5,9 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Nephrite.Web;
+using Nephrite.Http;
 using System.Text.RegularExpressions;
+
 
 namespace Nephrite.Web.Controls
 {
@@ -55,17 +57,11 @@ namespace Nephrite.Web.Controls
 		public string RenderMenuItem(NavMenuItem menuItem)
 		{
 			if (menuItem.Control != null)
-				return menuItem.Control.RenderControl();
+				return menuItem.Control;
 			string img = "";
 			if (!String.IsNullOrEmpty(menuItem.Icon))
 				img = HtmlHelperBase.Instance.Image(menuItem.Icon, menuItem.Title);
-			return String.Format(@"<div class='ms-vb2'><a href='{0}'>{1}{2}</a></div>", menuItem.Url, img, menuItem.Title + (menuItem.Expression.IsEmpty() ? "" : (" " + menuItem.EvaluateExpression())));
+			return String.Format(@"<a href='{0}'>{1}{2}</a>", menuItem.Url, img, menuItem.Title + (menuItem.Expression.IsEmpty() ? "" : (" " + menuItem.EvaluateExpression())));
 		}
     }
-
-    public enum NavMenuButtonsMode
-	{
-		SmallButtons,
-		BigButtons
-	}
 }

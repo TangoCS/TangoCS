@@ -6,6 +6,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data.Linq;
 
+
 namespace Nephrite.Web.Controls
 {
 	public enum TableDnDSortDirection
@@ -17,7 +18,7 @@ namespace Nephrite.Web.Controls
 	[ParseChildren(true)]
 	[PersistChildren(false)]
 	public class TableDnD<T> : TableDnD
-		where T : class, IMovableObject, IModelObject, new()
+		where T : class, IWithSeqNo, IModelObject, new()
 	{
 		public IQueryable<T> ObjectList { get; set; }
 

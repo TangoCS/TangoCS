@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Text;
 
-namespace Nephrite.Web
+namespace Nephrite.Web.FileStorage
 {
 	public class FileHandler : IHttpHandler
 	{
@@ -28,7 +28,7 @@ namespace Nephrite.Web
 				context.Response.End();
 			}
 
-			if (context.Request.Browser.Browser == "IE")
+			if (context.Request.Browser.Browser == "IE" || context.Request.Browser.Browser == "InternetExplorer")
 			{
 				context.Response.HeaderEncoding = Encoding.Default;
 				context.Response.AppendHeader("content-disposition", "Attachment; FileName=\"" + HttpUtility.UrlPathEncode(fileName) + "\"");

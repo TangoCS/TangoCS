@@ -4,9 +4,10 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Nephrite.Web.Model;
 using System.IO;
 using Nephrite.Web.FileStorage;
+using Nephrite.Http;
+
 
 namespace Nephrite.Web.View
 {
@@ -17,10 +18,10 @@ namespace Nephrite.Web.View
 		protected void Page_Load(object sender, EventArgs e)
 		{
 			RenderMargin = true;
-			var p = FileStorageManager.GetFolder(Url.Current.GetGuid("parent"));
+			var p = FileStorageManager.GetFolder(UrlHelper.Current().GetGuid("parent"));
 			if (p != null)
 			{
-				Cramb.Add("Папки", Url.Current.RemoveParameter("parent"));
+				Cramb.Add("Папки", UrlHelper.Current().RemoveParameter("parent"));
 				SetTitle(p.Title + " - загрузка файлов");
 			}
 			else
@@ -34,7 +35,7 @@ namespace Nephrite.Web.View
 				if (f == null) return;
 				_root = f;
 				addCramb(f.GetParentFolder());
-				Cramb.Add(f.Title, Url.Current.SetParameter("parent", f.ID.ToString()));
+				Cramb.Add(f.Title, UrlHelper.Current().SetParameter("parent", f.ID.ToString()));
 			};
 			addCramb(p);
 
@@ -58,7 +59,7 @@ namespace Nephrite.Web.View
 			if (!Upload(fuFile4)) return;
 			if (!Upload(fuFile5)) return;
 			if (!Upload(fuFile6)) return;
-			Nephrite.Web.Base.Model.SubmitChanges();
+			Nephrite.Web.A.Model.SubmitChanges();
 			
 			Response.Redirect(Settings.BaseControlsPath + "TinyMCEFileManager.aspx" + Query.RemoveParameter("op"));
 		}
@@ -97,7 +98,7 @@ namespace Nephrite.Web.View
 			if (!fu.HasFile)
 				return true;
 
-			var folder = FileStorageManager.GetFolder(Url.Current.GetGuid("parent"));
+			var folder = FileStorageManager.GetFolder(UrlHelper.Current().GetGuid("parent"));
 			string fullPath = folder != null ? (folder.Path.IsEmpty() ? "" : folder.Path + "/") + folder.Title : "";
 			var file = FileStorageManager.CreateFile(Path.GetFileName(fu.FileName), fullPath);
 			file.Write(fu.FileBytes);

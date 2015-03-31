@@ -7,6 +7,8 @@ using System.Web.UI;
 using System.Text.RegularExpressions;
 using Nephrite.Meta;
 
+using Nephrite.Layout;
+
 namespace Nephrite.Web.Controls
 {
 	public class List : System.Web.UI.UserControl
@@ -100,14 +102,14 @@ namespace Nephrite.Web.Controls
 
 		public void Render(HtmlTextWriter writer)
 		{
-			writer.Write(AppWeb.Layout.ListTableBegin(TableStyle));
-			writer.Write(AppWeb.Layout.ListHeaderBegin(HeaderRowStyle));
+			writer.Write(AppLayout.Current.ListTableBegin(TableStyle));
+			writer.Write(AppLayout.Current.ListHeaderBegin(HeaderRowStyle));
 			foreach (ListColumn<T> c in _columns)
 			{
 				if (!c.Visible) continue;
 				c.RenderHeader(writer);
 			}
-			writer.Write(AppWeb.Layout.ListHeaderEnd());
+			writer.Write(AppLayout.Current.ListHeaderEnd());
 
 			ListColumn<T> gr1column = null;
 			ListColumn<T> gr2column = null;
@@ -143,9 +145,9 @@ namespace Nephrite.Web.Controls
 					if (gr1curvalue.IsEmpty()) gr1curvalue = "<значение не задано>";
 					if (gr1curvalue != gr1value)
 					{
-						writer.Write(AppWeb.Layout.ListRowBegin(""));
-						writer.Write(AppWeb.Layout.TD(gr1curvalue, new { style = "font-weight:bold", colspan = colscnt.ToString() }));
-						writer.Write(AppWeb.Layout.ListRowEnd());
+						writer.Write(AppLayout.Current.ListRowBegin(""));
+						writer.Write(AppLayout.Current.TD(gr1curvalue, new { style = "font-weight:bold", colspan = colscnt.ToString() }));
+						writer.Write(AppLayout.Current.ListRowEnd());
 						gr1value = gr1curvalue;
 						gr2value = "";
 					}
@@ -157,30 +159,30 @@ namespace Nephrite.Web.Controls
 					if (gr2curvalue.IsEmpty()) gr2curvalue = "<значение не задано>";
 					if (gr2curvalue != gr2value)
 					{
-						writer.Write(AppWeb.Layout.ListRowBegin(""));
-						writer.Write(AppWeb.Layout.TD(gr2curvalue, new { style = "font-weight:bold; padding-left: 30px", colspan = colscnt.ToString() }));
-						writer.Write(AppWeb.Layout.ListRowEnd());
+						writer.Write(AppLayout.Current.ListRowBegin(""));
+						writer.Write(AppLayout.Current.TD(gr2curvalue, new { style = "font-weight:bold; padding-left: 30px", colspan = colscnt.ToString() }));
+						writer.Write(AppLayout.Current.ListRowEnd());
 						gr2value = gr2curvalue;
 					}
 				}
 
-				writer.Write(AppWeb.Layout.ListRowBegin(RowStyle(o, i, (i % 2 == 0) ? "" : HtmlHelperWSS.CSSClassAlternating)));
+				writer.Write(AppLayout.Current.ListRowBegin(RowStyle(o, i, (i % 2 == 0) ? "" : HtmlHelperWSS.CSSClassAlternating)));
 				foreach (ListColumn<T> c in _columns)
 				{
 					if (!c.Visible) continue;
 
 					if (c.CellStyle != null)
-						writer.Write(AppWeb.Layout.TDBegin(c.CellStyle(o, i)));
+						writer.Write(AppLayout.Current.TDBegin(c.CellStyle(o, i)));
 					else
-						writer.Write(AppWeb.Layout.TDBegin());
+						writer.Write(AppLayout.Current.TDBegin());
 					c.Render(writer, o, i);
-					writer.Write(AppWeb.Layout.TDEnd());
+					writer.Write(AppLayout.Current.TDEnd());
 				}
-				writer.Write(AppWeb.Layout.ListRowEnd());
+				writer.Write(AppLayout.Current.ListRowEnd());
 				i++;
 			});
 
-			writer.Write(AppWeb.Layout.ListTableEnd());
+			writer.Write(AppLayout.Current.ListTableEnd());
 			writer.Write(_form.Paging.Render());
 		}
 
@@ -254,7 +256,7 @@ namespace Nephrite.Web.Controls
 
 		public virtual void RenderHeader(HtmlTextWriter writer)
 		{
-			writer.Write(AppWeb.Layout.TH(Caption, HeaderStyle));
+			writer.Write(AppLayout.Current.TH(Caption, HeaderStyle));
 		}
 
 		public virtual void Render(HtmlTextWriter writer, T obj, int index)

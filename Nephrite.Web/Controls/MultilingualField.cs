@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI.WebControls;
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Web.Controls
 {
@@ -12,13 +13,13 @@ namespace Nephrite.Web.Controls
 
 		protected override void OnInit(EventArgs e)
 		{
-			textBoxes = new TextBox[AppWeb.Languages.Count];
-			for (int i = 0; i < AppWeb.Languages.Count; i++)
+			textBoxes = new TextBox[Language.List.Count];
+			for (int i = 0; i < Language.List.Count; i++)
 			{
 				textBoxes[i] = new TextBox 
 				{ 
-					ID = "tb" + i.ToString(), 
-					ToolTip = AppWeb.Languages[i].Title, 
+					ID = "tb" + i.ToString(),
+					ToolTip = Language.List[i].Title, 
 					Width = Unit.Percentage(100), 
 					TextMode = TextMode,
 					Rows = Rows,
@@ -73,7 +74,7 @@ namespace Nephrite.Web.Controls
 			get { return textBoxes[0].Enabled; }
 			set 
 			{
-				for (int i = 0; i < AppWeb.Languages.Count; i++)
+				for (int i = 0; i < Language.List.Count; i++)
 					textBoxes[i].Enabled = value;
 			}
 		}
@@ -83,7 +84,7 @@ namespace Nephrite.Web.Controls
 			get { return textBoxes[0].ReadOnly; }
 			set
 			{
-				for (int i = 0; i < AppWeb.Languages.Count; i++)
+				for (int i = 0; i < Language.List.Count; i++)
 					textBoxes[i].ReadOnly = value;
 			}
 		}
@@ -95,11 +96,11 @@ namespace Nephrite.Web.Controls
 		protected override void Render(System.Web.UI.HtmlTextWriter writer)
 		{
 			writer.Write("<table style='border:0; width:100%' cellpadding='0' cellspacing='0'>");
-			for (int i = 0; i < AppWeb.Languages.Count; i++)
+			for (int i = 0; i < Language.List.Count; i++)
 			{
 				writer.Write("<tr><td style='width:10px; vertical-align:middle'>");
-				writer.Write(AppWeb.Languages[i].LanguageCode.ToUpper());
-				if ((Required ?? "").ToUpper().Contains(AppWeb.Languages[i].LanguageCode.ToUpper()))
+				writer.Write(Language.List[i].Code.ToUpper());
+				if ((Required ?? "").ToUpper().Contains(Language.List[i].Code.ToUpper()))
 					writer.Write("<span class='ms-formvalidation'>&nbsp;*&nbsp;</span></td><td>");
 				else
 					writer.Write("&nbsp;</td><td>");
@@ -111,9 +112,9 @@ namespace Nephrite.Web.Controls
 
 		public void SetValue(string languageCode, string value)
 		{
-			for (int i = 0; i < AppWeb.Languages.Count; i++)
+			for (int i = 0; i < Language.List.Count; i++)
 			{
-				if (AppWeb.Languages[i].LanguageCode == languageCode)
+				if (Language.List[i].Code == languageCode)
 				{
 					textBoxes[i].Text = value;
 					textBoxes[i].Attributes.Add("initialvalue", textBoxes[i].Text);
@@ -123,9 +124,9 @@ namespace Nephrite.Web.Controls
 
 		public string GetValue(string languageCode)
 		{
-			for (int i = 0; i < AppWeb.Languages.Count; i++)
+			for (int i = 0; i < Language.List.Count; i++)
 			{
-				if (AppWeb.Languages[i].LanguageCode == languageCode)
+				if (Language.List[i].Code == languageCode)
 					return textBoxes[i].Text;
 			}
 			return "";
@@ -133,18 +134,18 @@ namespace Nephrite.Web.Controls
 
 		public void LoadValues(Func<string, string> getValueFunc)
 		{
-			for (int i = 0; i < AppWeb.Languages.Count; i++)
+			for (int i = 0; i < Language.List.Count; i++)
 			{
-				textBoxes[i].Text = getValueFunc(AppWeb.Languages[i].LanguageCode);
+				textBoxes[i].Text = getValueFunc(Language.List[i].Code);
 				textBoxes[i].Attributes.Add("initialvalue", textBoxes[i].Text);
 			}
 		}
 
 		public void SaveValues(Action<string, string> setValueFunc)
 		{
-			for (int i = 0; i < AppWeb.Languages.Count; i++)
+			for (int i = 0; i < Language.List.Count; i++)
 			{
-				setValueFunc(AppWeb.Languages[i].LanguageCode, textBoxes[i].Text);
+				setValueFunc(Language.List[i].Code, textBoxes[i].Text);
 			}
 		}
 	}

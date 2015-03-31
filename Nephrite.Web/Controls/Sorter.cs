@@ -8,6 +8,9 @@ using System.Collections;
 using System.Linq.Expressions;
 using Nephrite.Web;
 
+using Nephrite.Meta;
+using Nephrite.Http;
+
 
 namespace Nephrite.Web.Controls
 {
@@ -58,8 +61,8 @@ namespace Nephrite.Web.Controls
 
 		string RenderSortPostBack(int column, string text, bool showArrows)
 		{
-			string iup = !showArrows ? "" : String.Format("<img src='{0}up.gif' style='border:0; vertical-align:middle;' />", Settings.ImagesPath);
-			string idown = !showArrows ? "" : String.Format("<img src='{0}down.gif' style='border:0; vertical-align:middle;' />", Settings.ImagesPath); 
+			string iup = !showArrows ? "" : String.Format("<img src='{0}' style='border:0; vertical-align:middle;' />", Settings.ImagesPath + IconSet.TitleSortasc.X16);
+			string idown = !showArrows ? "" : String.Format("<img src='{0}' style='border:0; vertical-align:middle;' />", Settings.ImagesPath + IconSet.TitleSortdesc.X16); 
 
 			if (_orderByColumns == null) _orderByColumns = hf.Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -79,10 +82,10 @@ namespace Nephrite.Web.Controls
 
 		string RenderSortLink(int column, string text, bool showArrows)
 		{
-			string iup = !showArrows ? "" : String.Format("<img src='{0}up.gif' style='border:0; vertical-align:middle;' />", Settings.ImagesPath);
-			string idown = !showArrows ? "" : String.Format("<img src='{0}down.gif' style='border:0; vertical-align:middle;' />", Settings.ImagesPath); 
+			string iup = !showArrows ? "" : String.Format("<img src='{0}' style='border:0; vertical-align:middle;' />", Settings.ImagesPath + IconSet.TitleSortasc.X16);
+			string idown = !showArrows ? "" : String.Format("<img src='{0}' style='border:0; vertical-align:middle;' />", Settings.ImagesPath + IconSet.TitleSortdesc.X16); 
 
-			Url baseUrl = Url.Current.SetQuickSearchQuery();
+			Url baseUrl = UrlHelper.Current().SetQuickSearchQuery();
 			string curSettings = baseUrl.GetString(ParameterName).ToLower();
 
 			if (curSettings == column.ToString())
@@ -139,6 +142,25 @@ namespace Nephrite.Web.Controls
 				return RenderSortLink(seqNo, title, showArrows);
 		}
 
+		public string AddSortColumn<T, TColumn>(MetaProperty prop, bool showArrows = true)
+		{
+			int seqNo = sortColumns.Count;
+			SortColumn<T> sc = new SortColumn<T>
+			{
+				Title = prop.CaptionShort,
+				//SeqNo = seqNo,
+				OrderAsc = q => q.OrderBy<T, TColumn>(prop.GetValueExpression as Expression<Func<T, TColumn>>),
+				OrderDesc = q => q.OrderByDescending<T, TColumn>(prop.GetValueExpression as Expression<Func<T, TColumn>>),
+				OrderAscOE = q => q.OrderBy<T, TColumn>(prop.GetValue as Func<T, TColumn>),
+				OrderDescOE = q => q.OrderByDescending<T, TColumn>(prop.GetValue as Func<T, TColumn>)
+			};
+			sortColumns.Add(seqNo, sc);
+			if (UsePostBack)
+				return RenderSortPostBack(seqNo, prop.CaptionShort, showArrows);
+			else
+				return RenderSortLink(seqNo, prop.CaptionShort, showArrows);
+		}
+
 		string[] _orderByColumns = null;
 		public void SetSortColumns(string columns)
 		{
@@ -147,8 +169,7 @@ namespace Nephrite.Web.Controls
 				hf.Value = "";
 				_orderByColumns = null;
 			}
-			else
-			if (hf.Value.IsEmpty() && _orderByColumns == null && !columns.IsEmpty())
+			else if (hf.Value.IsEmpty() && _orderByColumns == null && !columns.IsEmpty())
 			{
 				hf.Value = columns;
 				_orderByColumns = hf.Value.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
@@ -167,7 +188,7 @@ namespace Nephrite.Web.Controls
 			IQueryable<T> res = query;
 			if (!UsePostBack)
 			{
-				string s = Url.Current.GetString(ParameterName);
+				string s = UrlHelper.Current().GetString(ParameterName);
 				if (!s.IsEmpty())
 					_orderByColumns = s.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 			}
@@ -192,7 +213,7 @@ namespace Nephrite.Web.Controls
 			IOrderedEnumerable<T> res = query;
 			if (!UsePostBack)
 			{
-				string s = Url.Current.GetString(ParameterName);
+				string s = UrlHelper.Current().GetString(ParameterName);
 				if (!s.IsEmpty())
 					_orderByColumns = s.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 			}

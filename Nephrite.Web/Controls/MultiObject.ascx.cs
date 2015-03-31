@@ -6,8 +6,8 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Collections;
 using System.Linq.Expressions;
-using System.Data.Linq;
-using Nephrite.Web.App;
+
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Web.Controls
 {
@@ -140,9 +140,9 @@ namespace Nephrite.Web.Controls
         public bool HighlightSearchResults { get { return select.HighlightSearchResults; } set { select.HighlightSearchResults = value; } }
 		public string NotFoundMessage { get { return select.GetNotFoundMessage(); } set { select.GetNotFoundMessage = () => value; } }
 		public Func<string> GetNotFoundMessage { get { return select.GetNotFoundMessage; } set { select.GetNotFoundMessage = value; } }
-		public IQueryable AllObjects { get; set; }
+		public IQueryable<dynamic> AllObjects { get; set; }
 		public string QuickFilterValue { get { return select.QuickFilterValue; } set { select.QuickFilterValue = value; } }
-		public Func<string, Expression<Func<object, bool>>> SearchExpression { get; set; }
+		public Func<string, Expression<Func<dynamic, bool>>> SearchExpression { get; set; }
 		public Func<string, int, int, IEnumerable> SearchQuery { get; set; }
 		public Func<string, int> SearchCountQuery { get; set; }
 		public bool RemoveUnselected { get; set; }
@@ -243,15 +243,14 @@ namespace Nephrite.Web.Controls
 			Clear();
 		}
 
-		public List<T> GetSelected<T>() where T : class, IModelObject, new()
+		public List<T> GetSelected<T>() where T : class, IEntity
 		{
 			List<T> list = new List<T>();
-			var iq = (System.Web.HttpContext.Current.Items["SolutionDataContext"] as DataContext).GetTable<T>();
-			var s = new T();
+
 			foreach (int id in Objects)
-				list.Add(iq.Single(s.FindByID<T>(id)));
+				list.Add(A.Model.Get<T, int>(id));
 			foreach (Guid guid in GuidObjects)
-				list.Add(iq.Single(s.FindByGUID<T>(guid)));
+				list.Add(A.Model.Get<T, Guid>(guid));
 			
 			return list;
 		}

@@ -4,9 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using Nephrite.Web.Internals;
 using System.Configuration;
 using System.Web.UI.HtmlControls;
+using Nephrite.Html;
+using Nephrite.Html.Controls;
+
 
 namespace Nephrite.Web.Controls
 {

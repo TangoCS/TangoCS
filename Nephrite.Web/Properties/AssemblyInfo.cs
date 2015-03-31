@@ -14,7 +14,7 @@ using System.Security;
 [assembly: AssemblyCopyright("Copyright ©  2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: System.Security.AllowPartiallyTrustedCallers()]
+//[assembly: System.Security.AllowPartiallyTrustedCallers()]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
