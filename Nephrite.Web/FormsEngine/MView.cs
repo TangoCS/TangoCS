@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading;
 using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls.WebParts;
 using Nephrite.Web;
 using Nephrite.ErrorLog;
 using Nephrite.AccessControl;

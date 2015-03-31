@@ -59,8 +59,9 @@ namespace Nephrite.Meta.Forms
 			Control ctl = null;
 			try
 			{
-				
-				if (!File.Exists(String.Format("{0}\\{1}\\{2}\\{3}.ascx", AppDomain.CurrentDomain.BaseDirectory, Settings.ControlsPath, 
+
+				if (!File.Exists(String.Format("{1}{0}{2}{0}{3}{0}{4}.ascx", Path.DirectorySeparatorChar, 
+					AppDomain.CurrentDomain.BaseDirectory, Settings.ControlsPath, 
 					folder, viewName)))
 				{
 					if (viewName == "delete")

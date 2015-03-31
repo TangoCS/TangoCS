@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Web.UI.WebControls.WebParts;
 using System.IO;
 using System.Web;
 using System.Linq;
@@ -7,10 +6,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using Nephrite.Web.Controls;
 using System.Collections.Generic;
+using System.Web.UI;
 
 namespace Nephrite.Web
 {
-    public class SqlLog : WebPart
+	public class SqlLog : Control
     {
         protected override void Render(System.Web.UI.HtmlTextWriter writer)
         {
@@ -29,16 +29,6 @@ namespace Nephrite.Web
 				writer.Write("<span style='color:#FF3223'><b>Всего запросов: " + sqlcount.ToString() + "</b></span>");
 				writer.Write(sqlstr);
                 writer.Write("</pre>");
-				writer.Write("<b>Журнал проверок прав доступа</b>");
-				if(HttpContext.Current.Items["SpmLog"] != null)
-					writer.Write("<pre>" + (string)HttpContext.Current.Items["SpmLog"] + "</pre>");
-				else
-					writer.Write("<pre>нет записей</pre>");
-				if (HttpContext.Current.Items["RequestBeginDate"] != null)
-				{
-					TimeSpan ts = DateTime.Now.Subtract((DateTime)HttpContext.Current.Items["RequestBeginDate"]);
-					writer.Write("<br /><b>Время формирования страницы: {0}.{1} c</b>", Math.Floor(ts.TotalSeconds), ts.Milliseconds);
-				}
             }
         }
     }

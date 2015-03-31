@@ -32,6 +32,10 @@ namespace Nephrite.ErrorLog
             {
 				if (_exceptionFilter != null)
 					if (!_exceptionFilter()) return 0;
+
+				IRequest r = null;
+				if (_httpContext != null) r = _httpContext().Request;
+
 				//if (exception is HttpException)
 				//{
 				//	string errorCode = ((HttpException)exception).ErrorCode.ToString("X");
@@ -44,7 +48,6 @@ namespace Nephrite.ErrorLog
 				//if (HttpContext.Current != null && HttpContext.Current.Request.Url.ToString().ToLower().Contains("rss.aspx"))
 				//	return 0;
 
-				var r = _httpContext().Request;
 				// Проверить, не входит ли URL в список запрещенных к логированию
 				//string[] blockedUrlPatterns = AppSettings.Get("ErrorLoggingBlockedUrlPatterns").Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
 				//foreach (var pattern in blockedUrlPatterns)
@@ -69,25 +72,29 @@ namespace Nephrite.ErrorLog
                     l.Headers = "";
 
 					StringBuilder headers = new StringBuilder();
-                    for (int i = 0; i < r.Headers.Count; i++)
-						headers.AppendLine(r.Headers.GetKey(i) + ": " + r.Headers[i]);
+					if (r != null)
+						for (int i = 0; i < r.Headers.Count; i++)
+							headers.AppendLine(r.Headers.GetKey(i) + ": " + r.Headers[i]);
 					l.Headers = headers.ToString();
 					//l.RequestType = r.RequestType;
-					l.Url = r.Url.AbsoluteUri;
+					if (r != null) l.Url = r.Url.AbsoluteUri;
 					//l.UrlReferrer = r.UrlReferrer == null ? "" : r.UrlReferrer.AbsoluteUri;
-					l.UserName = _httpContext().User.Identity.Name;
+					if (_httpContext != null) l.UserName = _httpContext().User.Identity.Name;
 					//l.UserAgent = r.UserAgent;
 					//l.UserHostAddress = r.UserHostAddress;
 					//l.UserHostName = r.UserHostName;
 					l.SqlLog = "";
 
-					List<IDataContext> loggedDC = new List<IDataContext>();
-					foreach (var item in _httpContext().Items.Values.OfType<IDataContext>())
+					if (_httpContext != null)
 					{
-						if (loggedDC.Contains(item)) continue;
-						loggedDC.Add(item);
-						if (item.Log != null)
-							l.SqlLog += "\r\n\r\n>>>>> " + item.GetType().FullName + " <<<<<\r\n" + item.Log.ToString();
+						List<IDataContext> loggedDC = new List<IDataContext>();
+						foreach (var item in _httpContext().Items.Values.OfType<IDataContext>())
+						{
+							if (loggedDC.Contains(item)) continue;
+							loggedDC.Add(item);
+							if (item.Log != null)
+								l.SqlLog += "\r\n\r\n>>>>> " + item.GetType().FullName + " <<<<<\r\n" + item.Log.ToString();
+						}
 					}
 
 
@@ -107,18 +114,24 @@ namespace Nephrite.ErrorLog
             }
             catch(Exception errorException)
             {
-				try
-				{
-					string path = AppDomain.CurrentDomain.BaseDirectory + "\\App_Data\\Errors";
-					Directory.CreateDirectory(path);
-					errorInfo.AppendLine("[ErrorLog Error]").AppendLine(errorException.Message).AppendLine(errorException.StackTrace);
-					File.WriteAllText(Path.Combine(path, "error_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt"), errorInfo.ToString());
-				}
-				catch { }
+				WriteFile(errorInfo, errorException);
             }
 
 			return 0;
         }
+
+		static void WriteFile(StringBuilder errorInfo, Exception errorException)
+		{
+			try
+			{
+				string path = AppDomain.CurrentDomain.BaseDirectory + Path.DirectorySeparatorChar + "App_Data" + Path.DirectorySeparatorChar + "Errors";
+				Directory.CreateDirectory(path);
+				if (errorException != null)
+					errorInfo.AppendLine("[ErrorLog Error]").AppendLine(errorException.Message).AppendLine(errorException.StackTrace);
+				File.WriteAllText(Path.Combine(path, "error_" + DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss") + ".txt"), errorInfo.ToString());
+			}
+			catch { }
+		}
     }
 
 	public interface IDC_ErrorLog : IDataContext

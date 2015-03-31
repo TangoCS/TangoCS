@@ -212,7 +212,6 @@
     <Compile Include="TypeFactory.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
     <None Include="Nephrite.snk" />
     <None Include="packages.config" />
   </ItemGroup>

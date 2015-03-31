@@ -391,7 +391,6 @@
     <Compile Include="MVC\PageParser.cs" />
     <Compile Include="Web\ObjectPropertyChange.cs" />
     <Compile Include="Mailer\MailerTask.cs" />
-    <Compile Include="MVC\MainMenu.cs" />
     <Compile Include="Controls\MaskedInput.cs" />
     <Compile Include="MVC\BaseController.cs" />
     <Compile Include="MVC\ControlDataBinder.cs" />
