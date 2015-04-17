@@ -267,7 +267,7 @@ namespace Nephrite.Meta.Database
 
 		public void DeleteView(View currentView)
 		{
-			_MainScripts.Add(string.Format("DROP VIEW IF EXISTS {1}.{0};  ", currentView.Name.ToUpper(), _SchemaName));
+			_MainScripts.Add(string.Format("DROP VIEW IF EXISTS {1}.{0};", currentView.Name.ToUpper(), _SchemaName));
 		}
 
 		public void CreateView(View srcView)
@@ -277,7 +277,7 @@ namespace Nephrite.Meta.Database
 
 		public void DeleteProcedure(Procedure currentProcedure)
 		{
-			_MainScripts.Add(string.Format("DROP FUNCTION IF EXISTS {1}.{0}; ", currentProcedure.Name.ToLower(), _SchemaName));
+			_MainScripts.Add(string.Format("DROP FUNCTION IF EXISTS {1}.{0};", currentProcedure.Name.ToLower(), _SchemaName));
 		}
 
 		public void CreateProcedure(Procedure srcProcedure)
@@ -287,7 +287,7 @@ namespace Nephrite.Meta.Database
 
 		public void DeleteFunction(Function currentFunction)
 		{
-			_MainScripts.Add(string.Format("DROP FUNCTION IF EXISTS {1}.{0}; ", currentFunction.Name.ToLower(), _SchemaName));
+			_MainScripts.Add(string.Format("DROP FUNCTION IF EXISTS {1}.{0};", currentFunction.Name.ToLower(), _SchemaName));
 		}
 
 		public void CreateFunction(Function srcFunction)
@@ -297,7 +297,7 @@ namespace Nephrite.Meta.Database
 
 		public void DeleteTableFunction(TableFunction currentFunction)
 		{
-			_MainScripts.Add(string.Format("DROP FUNCTION IF EXISTS {1}.{0}", currentFunction.Name, _SchemaName));
+			_MainScripts.Add(string.Format("DROP FUNCTION IF EXISTS {1}.{0};", currentFunction.Name, _SchemaName));
 		}
 
 		public void CreateTableFunction(TableFunction srcFunction)
