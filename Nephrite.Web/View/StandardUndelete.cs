@@ -33,7 +33,7 @@ namespace Nephrite.Web.View
 			{
 				(ViewData as IWithLogicalDelete).IsDeleted = false;
 				A.Model.SubmitChanges();
-			}			
+			}
 			Query.RedirectBack();
 		}
 

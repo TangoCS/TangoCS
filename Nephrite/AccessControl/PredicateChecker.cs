@@ -11,40 +11,7 @@ namespace Nephrite.AccessControl
 		IPredicateLoader _predicateLoader { get; set; }
 		AccessControlOptions _options;
 
-		static PredicateChecker _instanceHolder;
-		static object LockObject = new object();
-
-		public static void Init(IPredicateLoader loader, AccessControlOptions options = null)
-		{
-			if (_instanceHolder == null)
-			{
-				lock (LockObject)
-				{
-					if (_instanceHolder == null)
-					{
-						_instanceHolder = new PredicateChecker(loader, options);
-						return;
-					}
-				}
-			}
-
-			throw new ApplicationException("PredicateChecker.Init() method should be called only once.");
-		}
-
-		public static PredicateChecker Instance
-		{
-			get
-			{
-				if (_instanceHolder == null)
-				{
-					throw new ApplicationException("PredicateChecker instance hasn't been initialized.");
-				}
-
-				return _instanceHolder;
-			}
-		}
-
-		PredicateChecker(IPredicateLoader loader, AccessControlOptions options = null)
+		public PredicateChecker(IPredicateLoader loader, AccessControlOptions options = null)
 		{
 			_options = options ?? new AccessControlOptions { Enabled = () => true };
 			_predicateLoader = loader;

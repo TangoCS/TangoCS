@@ -21,6 +21,8 @@ using Nephrite.Web.Hibernate.CoreMapping;
 using Nephrite.ErrorLog;
 using Nephrite.SettingsManager;
 using Nephrite.Html.Controls;
+using Nephrite.EntityAudit;
+using Nephrite.Data;
 
 namespace Nephrite.Web.CoreDataContext
 {

@@ -76,7 +76,7 @@ namespace Nephrite
 		static ItemIcon _Task = new ItemIcon { X16 = "", X32 = "" };
 		static ItemIcon _Workspace = new ItemIcon { X16 = "", X32 = "" };
 		static ItemIcon _Select = new ItemIcon { X16 = "", X32 = "" };
-		static ItemIcon _BoolTrue = new ItemIcon { X16 = "", X32 = "" };
+		static ItemIcon _BoolTrue = new ItemIcon { X16 = "fc16/tick.png", X32 = "" };
 
 		// Messages
 		static ItemIcon _Success = new ItemIcon { X16 = "", X32 = "" };

@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
+using Microsoft.Framework.Internal;
 
 namespace Nephrite.Http
 {
-	public static partial class QueryHelpers
+	public static class QueryHelpers
 	{
 		/// <summary>
 		/// Append the given query key and value to the URI.
@@ -93,41 +94,4 @@ namespace Nephrite.Http
 			return accumulator.GetResults();
 		}
 	}
-
-	public class HtmlParms : Dictionary<string, string>
-	{
-		public HtmlParms() : base() { }
-		public HtmlParms(IDictionary<string, string> dictionary) : base(dictionary) { }
-
-		public override string ToString()
-		{
-			return this.Select(o => o.Value.IsEmpty() ? "" : (o.Key + "=" + o.Value)).Join("&");
-		}
-
-		public HtmlParms(string key, string value)
-			: base()
-		{
-			Add(key, value);
-		}
-	}
-
-	public static partial class QueryHelpers
-	{
-		public static string CreateUrl(string route, HtmlParms parms = null)
-		{
-			string s = "/" + route;
-			HtmlParms p = new HtmlParms();
-			foreach (var parm in parms)
-			{
-				if (route.IndexOf("{" + parm.Key + "}") != -1)
-					s = s.Replace("{" + parm.Key + "}", parm.Value);
-				else
-					p.Add(parm.Key, parm.Value);
-			}
-			string ps = p.ToString();
-			return s + (ps.IsEmpty() ? "" : ("?" + ps));
-		}
-	}
-
-
 }

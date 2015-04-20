@@ -7,7 +7,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading;
 using System.Configuration;
-using System.Data.Linq;
+
 using Nephrite.Identity;
 using Nephrite.SettingsManager;
 

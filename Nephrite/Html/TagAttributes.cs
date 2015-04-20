@@ -103,10 +103,10 @@ namespace Nephrite.Html
 	{
 		public ImgTagAttributes(TagBuilder builder) : base(builder) { }
 
-		public string Alt { set { _builder.MergeAttribute("alt", value); } }
+		public string Alt { set { _builder.MergeAttribute("alt", value, true); } }
 		public int Height { set { _builder.MergeAttribute("height", value.ToString()); } }
 		public bool IsMap { set { if (value) _builder.MergeAttribute("ismap", "ismap"); } }
-		public string Src { set { _builder.MergeAttribute("src", value); } }
+		public string Src { set { _builder.MergeAttribute("src", value, true); } }
 		public string UseMap { set { _builder.MergeAttribute("usemap", value); } }
 		public int Width { set { _builder.MergeAttribute("width", value.ToString()); } }
 	}

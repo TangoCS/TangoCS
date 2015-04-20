@@ -14,6 +14,7 @@ using Nephrite.Web.FileStorage;
 using Nephrite.Meta;
 using Nephrite.ErrorLog;
 using Nephrite.SettingsManager;
+using Nephrite.Data;
 
 
 namespace Nephrite.Web.Replication
@@ -254,7 +255,7 @@ namespace Nephrite.Web.Replication
 			CheckCredentials();
 			var ot = A.Meta.GetClass(objectType);
             var instance = r.Empty(ot);
-			Type c = ControllerFactory.GetControllerType(objectType);
+			Type c = TypeFactory.GetType(objectType);
 			var m = c.GetMethod(controllerMethod);
 			if (m == null)
 				throw new Exception("Класс " + c.FullName + " не содержит метода " + controllerMethod);

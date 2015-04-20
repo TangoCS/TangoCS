@@ -18,6 +18,7 @@ using Nephrite.SettingsManager;
 
 using Nephrite.Web.TaskManager;
 using Nephrite.Html.Controls;
+using Nephrite.EntityAudit;
 
 namespace Nephrite.Web.CoreDataContext
 {

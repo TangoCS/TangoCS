@@ -11,9 +11,9 @@
     <%if (tbObject.Enabled)
 	  { %>
     <td>&nbsp;</td>
-    <td><%=HtmlHelperBase.Instance.InternalImageLink(RenderRun(), "Выбрать из списка", "list.gif")%></td>
+    <td><%=Html.InternalImage(RenderRun(), "Выбрать из списка", "list.gif")%></td>
     <td>&nbsp;</td>
-    <td><%=HtmlHelperBase.Instance.InternalImageLink("document.getElementById('" + hfObjectID.ClientID + "').value = ''; document.getElementById('" + tbObject.ClientID + "').value = ''; " + Page.ClientScript.GetPostBackEventReference(lbClear, ""), "Очистить", "delete.gif")%></td>
+    <td><%=Html.InternalImage("document.getElementById('" + hfObjectID.ClientID + "').value = ''; document.getElementById('" + tbObject.ClientID + "').value = ''; " + Page.ClientScript.GetPostBackEventReference(lbClear, ""), "Очистить", "delete.gif")%></td>
     <%} %>
 </tr>
 </table>

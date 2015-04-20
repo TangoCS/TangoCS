@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
 using System.Text;
+using Nephrite.Data;
 
 namespace Nephrite.Html.Controls
 {
@@ -12,9 +13,9 @@ namespace Nephrite.Html.Controls
 		{
 			string basePath = GlobalSettings.JSPath + "Calendar/";
 
-			c.Page.RegisterScript("calendar", basePath + "calendar_stripped.js");
-			c.Page.RegisterScript("calendar-ru", basePath + "lang/calendar-ru.js");
-			c.Page.RegisterScript("calendar-setup", basePath + "calendar-setup_stripped.js");
+			//c.Page.RegisterScript("calendar", basePath + "calendar_stripped.js");
+			//c.Page.RegisterScript("calendar-ru", basePath + "lang/calendar-ru.js");
+			//c.Page.RegisterScript("calendar-setup", basePath + "calendar-setup_stripped.js");
 
 			c.TextBox(name, showTime ? value.DateTimeToString() : value.DateToString(), (a) =>
 			{
@@ -61,28 +62,28 @@ namespace Nephrite.Html.Controls
                     }
                  );");
 				}
-				c.Page.RegisterStartupScript("calendar-" + name, init.ToString());
+//				c.Page.RegisterStartupScript("calendar-" + name, init.ToString());
 
-				if (ConfigurationManager.AppSettings["UseCalendarDaysInJSCalendar"] == "true")
-				{
-					c.Page.RegisterStartupScript("calendar-workdays", @"
-function jscal_calendarDate_c(arr, date) {
-	for(var i = 0; i < arr.length; i++)
-		if( arr[i].toString() == date.toString())
-			return true;
-	return false;
-}
-function jscal_calendarDate(date, y, m, d){" + CalendarDayCache.ToJSArray("w", "h") + @"
-	if (jscal_calendarDate_c(w, new Date(date.getFullYear(), date.getMonth(), d)))
-		return 'cal-workingday';
-	if (jscal_calendarDate_c(h, new Date(date.getFullYear(), date.getMonth(), d)))
-		return 'cal-holiday';
-	if (date.getDay() == 0 || date.getDay() == 6)
-		return 'cal-holiday';
-	else
-		return 'cal-workingday';
-}");
-				}
+//				if (ConfigurationManager.AppSettings["UseCalendarDaysInJSCalendar"] == "true")
+//				{
+//					c.Page.RegisterStartupScript("calendar-workdays", @"
+//function jscal_calendarDate_c(arr, date) {
+//	for(var i = 0; i < arr.length; i++)
+//		if( arr[i].toString() == date.toString())
+//			return true;
+//	return false;
+//}
+//function jscal_calendarDate(date, y, m, d){" + CalendarDayCache.ToJSArray("w", "h") + @"
+//	if (jscal_calendarDate_c(w, new Date(date.getFullYear(), date.getMonth(), d)))
+//		return 'cal-workingday';
+//	if (jscal_calendarDate_c(h, new Date(date.getFullYear(), date.getMonth(), d)))
+//		return 'cal-holiday';
+//	if (date.getDay() == 0 || date.getDay() == 6)
+//		return 'cal-holiday';
+//	else
+//		return 'cal-workingday';
+//}");
+//				}
 			}
 		}
 	}

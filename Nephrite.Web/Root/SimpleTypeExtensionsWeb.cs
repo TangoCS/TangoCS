@@ -10,6 +10,7 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
 using Nephrite.Http;
+using Nephrite.MVC;
 
 namespace Nephrite
 {
@@ -163,23 +164,6 @@ namespace Nephrite
 				writer.WriteBreak();
 				e = e.InnerException;
 			}
-		}
-	}
-
-	public static class UrlHelper
-	{
-		public static Url Current()
-		{
-			var request = HttpContext.Current.Request;
-			return new Url(
-				request.Url.PathAndQuery, 
-				//request.QueryString.AllKeys.ToDictionary(k => k, k => request.QueryString[k]), 
-				request.RequestContext.RouteData.Values);
-		}
-
-		public static void Go(this Url url)
-		{
-			HttpContext.Current.Response.Redirect(url);
 		}
 	}
 }

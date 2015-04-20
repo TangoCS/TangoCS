@@ -22,10 +22,6 @@ namespace Nephrite.Web.FormsEngine
 		public string PackageSysName { get; set; }
 		ViewControl ctl;
 		
-		public static void ResetCache()
-		{
-		}
-
 		static Dictionary<string, string> packageViewLocation = new Dictionary<string, string>();
 		string GetPath(object viewData)
 		{
@@ -61,68 +57,40 @@ namespace Nephrite.Web.FormsEngine
 
         public void SetViewData(object viewData)
         {
-			try
+			if (!loaded)
 			{
-				if (!loaded)
-				{
-					Page pg = new Page();
-					ctl = pg.LoadControl(GetPath(viewData)) as ViewControl;
-					Controls.Add(ctl);
-					loaded = true;
-				}
-				ctl.SetViewData(viewData);
+				Page pg = new Page();
+				ctl = pg.LoadControl(GetPath(viewData)) as ViewControl;
+				Controls.Add(ctl);
+				loaded = true;
 			}
-			catch (Exception ex)
-			{
-				error = ex;
-				int errorID = ErrorLogger.Log(ex);
-			}
-        }
+			ctl.SetViewData(viewData);
+		}
 
         public void SetViewData(string className, object viewData)
         {
-			try
+			if (!loaded)
 			{
-				if (!loaded)
-				{
-					ObjectTypeSysName = className;
-					Page pg = new Page();
-					ctl = pg.LoadControl(GetPath(viewData)) as ViewControl;
-					Controls.Add(ctl);
-					loaded = true;
-				}
-				ctl.SetViewData(viewData);
+				ObjectTypeSysName = className;
+				Page pg = new Page();
+				ctl = pg.LoadControl(GetPath(viewData)) as ViewControl;
+				Controls.Add(ctl);
+				loaded = true;
 			}
-			catch (Exception ex)
-			{
-				error = ex;
-				int errorID = ErrorLogger.Log(ex);
-			}
+			ctl.SetViewData(viewData);
         }
 
 		protected override void OnInit(EventArgs e)
 		{
 			base.OnInit(e);
-			try
+			if (!loaded && !String.IsNullOrEmpty(PackageViewFormSysName))
 			{
-				if (!loaded && !String.IsNullOrEmpty(PackageViewFormSysName))
+				if (!PackageViewFormSysName.IsEmpty())
 				{
-					if (!PackageViewFormSysName.IsEmpty())
-					{
-						ctl = Page.LoadControl(GetPath(null)) as ViewControl;
-						Controls.Add(ctl);
-					}
-					loaded = true;
+					ctl = Page.LoadControl(GetPath(null)) as ViewControl;
+					Controls.Add(ctl);
 				}
-			}
-			catch (ThreadAbortException)
-			{
-
-			}
-			catch (Exception ex)
-			{
-				error = ex;
-				int errorID = ErrorLogger.Log(ex);
+				loaded = true;
 			}
 		}
 
@@ -176,13 +144,6 @@ namespace Nephrite.Web.FormsEngine
 			}
 		}
 
-		#region IWebPart Members
-		public string CatalogIconImageUrl { get; set; }
-		public string Description { get; set; }
-		public string Subtitle { get; set; }
 		public string Title { get; set; }
-		public string TitleIconImageUrl { get; set; }
-		public string TitleUrl { get; set; }
-		#endregion
 	}
 }

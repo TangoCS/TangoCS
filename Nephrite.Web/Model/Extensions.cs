@@ -13,7 +13,6 @@ using Nephrite.Web;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Data.Linq.Mapping;
 using System.Text;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -22,72 +21,43 @@ using System.Collections;
 
 using Nephrite.Multilanguage;
 using Nephrite.Meta;
-using System.Data.Linq;
+
 using Nephrite.Identity;
+using Nephrite.Data;
 
 namespace Nephrite.Web
 {
-    public static partial class ModelExtensions
-    {
-       
-        public static string LastModifiedDateString(this IWithTimeStamp obj)
-        {
-            if (((IModelObject)obj).ObjectID > 0)
-                return obj.LastModifiedDate.ToString("dd.MM.yyyy HH:mm");
-            return String.Empty;
-        }
+	public static partial class ModelExtensions
+	{
 
-        public static Expression<Func<T, bool>> FindByID<T>(this T obj, int id)
-        {
-            // Найти свойство с первичным ключом
-            foreach (PropertyInfo pi in obj.GetType().GetProperties())
-            {
-                object[] attr = pi.GetCustomAttributes(typeof(ColumnAttribute), true);
-                if (attr.Length == 1 && ((ColumnAttribute)attr[0]).IsPrimaryKey == true)
-                {
-                    ParameterExpression pe_c = ParameterExpression.Parameter(typeof(T), "c");
-                    UnaryExpression ue_c = UnaryExpression.Convert(pe_c, obj.GetType());
-                    // Получение у объекта свойства с именем, соответствующим первичному ключу
-                    MemberExpression me_id = MemberExpression.Property(ue_c, pi.Name);
-                    // Константа, по которой будем искать объект
-                    ConstantExpression ce_val = ConstantExpression.Constant(id, typeof(int));
-                    // Сравнение первичного ключа с заданным идентификатором
-                    BinaryExpression be_eq = BinaryExpression.Equal(me_id, ce_val);
-                    // Само лямбда-выражение
-                    return Expression.Lambda<Func<T, bool>>(be_eq, pe_c);
-                }
-            }
-            throw new Exception("В классе " + obj.GetType().FullName + " не определён первичный ключ");
-        }
+		public static string LastModifiedDateString(this IWithTimeStamp obj)
+		{
+			if (((IModelObject)obj).ObjectID > 0)
+				return obj.LastModifiedDate.ToString("dd.MM.yyyy HH:mm");
+			return String.Empty;
+		}
 
-		public static Expression<Func<T, bool>> FindByID<T>(this T obj, object id)
+		public static Expression<Func<T, bool>> FindByID<T>(this T obj, int id) where T : IEntity
 		{
 			// Найти свойство с первичным ключом
-			foreach (PropertyInfo pi in obj.GetType().GetProperties())
-			{
-				object[] attr = pi.GetCustomAttributes(typeof(ColumnAttribute), true);
-				if (attr.Length == 1 && ((ColumnAttribute)attr[0]).IsPrimaryKey == true)
-				{
-					ParameterExpression pe_c = ParameterExpression.Parameter(typeof(T), "c");
-					UnaryExpression ue_c = UnaryExpression.Convert(pe_c, obj.GetType());
-					// Получение у объекта свойства с именем, соответствующим первичному ключу
-					MemberExpression me_id = MemberExpression.Property(ue_c, pi.Name);
-					// Константа, по которой будем искать объект
-					ConstantExpression ce_val = ConstantExpression.Constant(id, pi.PropertyType);
-					// Сравнение первичного ключа с заданным идентификатором
-					BinaryExpression be_eq = BinaryExpression.Equal(me_id, ce_val);
-					// Само лямбда-выражение
-					return Expression.Lambda<Func<T, bool>>(be_eq, pe_c);
-				}
-			}
-			throw new Exception("В классе " + obj.GetType().FullName + " не определён первичный ключ");
+			var pi = obj.GetMetaClass().Key;
+			ParameterExpression pe_c = ParameterExpression.Parameter(typeof(T), "c");
+			UnaryExpression ue_c = UnaryExpression.Convert(pe_c, obj.GetType());
+			// Получение у объекта свойства с именем, соответствующим первичному ключу
+			MemberExpression me_id = MemberExpression.Property(ue_c, pi.Name);
+			// Константа, по которой будем искать объект
+			ConstantExpression ce_val = ConstantExpression.Constant(id, typeof(int));
+			// Сравнение первичного ключа с заданным идентификатором
+			BinaryExpression be_eq = BinaryExpression.Equal(me_id, ce_val);
+			// Само лямбда-выражение
+			return Expression.Lambda<Func<T, bool>>(be_eq, pe_c);
 		}
 
 		public static Expression<Func<T, bool>> FindByProperty<T>(this T obj, string propertyName, object propertyValue)
 		{
 			Type t = obj.GetType();
 			PropertyInfo pi = t.GetProperty(propertyName);
-			
+
 			if (pi != null)
 			{
 				ParameterExpression pe_c = Expression.Parameter(typeof(T), "c");
@@ -99,7 +69,7 @@ namespace Nephrite.Web
 					MethodInfo method = typeof(Enumerable).GetMethods()
 					.Where(m => m.Name == "Contains" && m.GetParameters().Length == 2)
 					.Single().MakeGenericMethod(arrayElementType);
-					
+
 					var callContains = Expression.Call(
 						method,
 						Expression.Convert(Expression.Constant(propertyValue, propertyValue.GetType()),
@@ -117,88 +87,67 @@ namespace Nephrite.Web
 			throw new Exception("В классе " + t.FullName + " не найдено свойство " + propertyName);
 		}
 
-		public static Expression<Func<T, bool>> FindByIDs<T>(this T obj, IEnumerable<int> collection)
+		public static Expression<Func<T, bool>> FindByIDs<T>(this T obj, IEnumerable<int> collection) where T : IEntity
 		{
 			// Найти свойство с первичным ключом
-			foreach (PropertyInfo pi in obj.GetType().GetProperties())
-			{
-				object[] attr = pi.GetCustomAttributes(typeof(ColumnAttribute), true);
-				if (attr.Length == 1 && ((ColumnAttribute)attr[0]).IsPrimaryKey == true)
-				{
-					ParameterExpression pe_c = ParameterExpression.Parameter(typeof(T), "c");
-					UnaryExpression ue_c = UnaryExpression.Convert(pe_c, obj.GetType());
-					// Получение у объекта свойства с именем, соответствующим первичному ключу
-					MemberExpression me_id = MemberExpression.Property(ue_c, pi.Name);
+			var pi = obj.GetMetaClass().Key;
+			ParameterExpression pe_c = ParameterExpression.Parameter(typeof(T), "c");
+			UnaryExpression ue_c = UnaryExpression.Convert(pe_c, obj.GetType());
+			// Получение у объекта свойства с именем, соответствующим первичному ключу
+			MemberExpression me_id = MemberExpression.Property(ue_c, pi.Name);
 
-					IEnumerable<Expression> equals = collection.Select(value =>
-						(Expression)Expression.Equal(me_id, Expression.Constant(value, typeof(int))));
-					Expression body = equals.Aggregate((accumulate, equal) => Expression.Or(accumulate, equal));
-					return Expression.Lambda<Func<T, bool>>(body, pe_c);
-
-				}
-			}
-			throw new Exception("В классе " + obj.GetType().FullName + " не определён первичный ключ");
+			IEnumerable<Expression> equals = collection.Select(value =>
+				(Expression)Expression.Equal(me_id, Expression.Constant(value, typeof(int))));
+			Expression body = equals.Aggregate((accumulate, equal) => Expression.Or(accumulate, equal));
+			return Expression.Lambda<Func<T, bool>>(body, pe_c);
 		}
 
-		public static Expression<Func<T, bool>> FindByGUID<T>(this T obj, Guid guid)
+		public static Expression<Func<T, bool>> FindByGUID<T>(this T obj, Guid guid) where T : IEntity
 		{
 			// Найти свойство с первичным ключом
-			foreach (PropertyInfo pi in obj.GetType().GetProperties())
-			{
-				object[] attr = pi.GetCustomAttributes(typeof(ColumnAttribute), true);
-				if (attr.Length == 1 && ((ColumnAttribute)attr[0]).IsPrimaryKey == true)
-				{
-					ParameterExpression pe_c = ParameterExpression.Parameter(typeof(T), "c");
-					UnaryExpression ue_c = UnaryExpression.Convert(pe_c, obj.GetType());
-					// Получение у объекта свойства с именем, соответствующим первичному ключу
-					MemberExpression me_id = MemberExpression.Property(ue_c, pi.Name);
-					// Константа, по которой будем искать объект
-					ConstantExpression ce_val = ConstantExpression.Constant(guid, typeof(Guid));
-					// Сравнение первичного ключа с заданным идентификатором
-					BinaryExpression be_eq = BinaryExpression.Equal(me_id, ce_val);
-					// Само лямбда-выражение
-					return Expression.Lambda<Func<T, bool>>(be_eq, pe_c);
-				}
-			}
-			throw new Exception("В классе " + obj.GetType().FullName + " не определён первичный ключ");
+			var pi = obj.GetMetaClass().Key;
+			ParameterExpression pe_c = ParameterExpression.Parameter(typeof(T), "c");
+			UnaryExpression ue_c = UnaryExpression.Convert(pe_c, obj.GetType());
+			// Получение у объекта свойства с именем, соответствующим первичному ключу
+			MemberExpression me_id = MemberExpression.Property(ue_c, pi.Name);
+			// Константа, по которой будем искать объект
+			ConstantExpression ce_val = ConstantExpression.Constant(guid, typeof(Guid));
+			// Сравнение первичного ключа с заданным идентификатором
+			BinaryExpression be_eq = BinaryExpression.Equal(me_id, ce_val);
+			// Само лямбда-выражение
+			return Expression.Lambda<Func<T, bool>>(be_eq, pe_c);
+
 		}
 
-		public static Expression<Func<T, bool>> NotID<T>(this T obj, int id)
+		public static Expression<Func<T, bool>> NotID<T>(this T obj, int id) where T : IEntity
 		{
 			// Найти свойство с первичным ключом
-			foreach (PropertyInfo pi in obj.GetType().GetProperties())
-			{
-				object[] attr = pi.GetCustomAttributes(typeof(ColumnAttribute), true);
-				if (attr.Length == 1 && ((ColumnAttribute)attr[0]).IsPrimaryKey == true)
-				{
-					ParameterExpression pe_c = ParameterExpression.Parameter(typeof(T), "c");
-					UnaryExpression ue_c = UnaryExpression.Convert(pe_c, obj.GetType());
-					// Получение у объекта свойства с именем, соответствующим первичному ключу
-					MemberExpression me_id = MemberExpression.Property(ue_c, pi.Name);
-					// Константа, по которой будем искать объект
-					ConstantExpression ce_val = ConstantExpression.Constant(id, typeof(int));
-					// Сравнение первичного ключа с заданным идентификатором
-					BinaryExpression be_eq = BinaryExpression.NotEqual(me_id, ce_val);
-					// Само лямбда-выражение
-					return Expression.Lambda<Func<T, bool>>(be_eq, pe_c);
-				}
-			}
-			throw new Exception("В классе " + obj.GetType().FullName + " не определён первичный ключ");
+			var pi = obj.GetMetaClass().Key;
+			ParameterExpression pe_c = ParameterExpression.Parameter(typeof(T), "c");
+			UnaryExpression ue_c = UnaryExpression.Convert(pe_c, obj.GetType());
+			// Получение у объекта свойства с именем, соответствующим первичному ключу
+			MemberExpression me_id = MemberExpression.Property(ue_c, pi.Name);
+			// Константа, по которой будем искать объект
+			ConstantExpression ce_val = ConstantExpression.Constant(id, typeof(int));
+			// Сравнение первичного ключа с заданным идентификатором
+			BinaryExpression be_eq = BinaryExpression.NotEqual(me_id, ce_val);
+			// Само лямбда-выражение
+			return Expression.Lambda<Func<T, bool>>(be_eq, pe_c);
 		}
 
-        public static void InitSeqNo(this IWithSeqNo obj, IEnumerable<IWithSeqNo> sequenceContext)
-        {
-            if (sequenceContext == null)
-                obj.SeqNo = 1;
-            else
-            {
+		public static void InitSeqNo(this IWithSeqNo obj, IEnumerable<IWithSeqNo> sequenceContext)
+		{
+			if (sequenceContext == null)
+				obj.SeqNo = 1;
+			else
+			{
 				obj.SeqNo = (sequenceContext.Max(o => (int?)o.SeqNo) ?? 0) + 1;
-                /*if (sequenceContext.Count() == 0)
-                    obj.SeqNo = 1;
-                else
-                    obj.SeqNo = sequenceContext.Max(o => o.SeqNo) + 1;*/
-            }
-        }
+				/*if (sequenceContext.Count() == 0)
+					obj.SeqNo = 1;
+				else
+					obj.SeqNo = sequenceContext.Max(o => o.SeqNo) + 1;*/
+			}
+		}
 
 		public static Expression<Func<IMMObjectVersion, object>> GetIdentifierSelector(this IMMObjectVersion obj)
 		{
@@ -229,7 +178,7 @@ namespace Nephrite.Web
 		}
 
 
-    }
+	}
 
 	public static class EntityExtensions
 	{
@@ -242,7 +191,7 @@ namespace Nephrite.Web
 			return A.Meta.GetClass(obj.GetType().Name);
 		}
 
-		public static object GetID<T>(this T obj) where T : IWithKey, IEntity
+		public static object GetID<T>(this T obj) where T : IEntity
 		{
 			return (obj.GetMetaClass().Key.GetValue as Func<T, object>)(obj);
 		}

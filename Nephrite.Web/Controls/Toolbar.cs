@@ -10,13 +10,17 @@ using Nephrite.Meta;
 using System.Web.UI.WebControls;
 using Nephrite.Html;
 using Nephrite.Layout;
+using Nephrite.AccessControl;
 
 
 namespace Nephrite.Web.Controls
 {
 
-	public class Toolbar : Control
+	public class Toolbar : BaseControl
 	{
+		[Inject]
+		public IAccessControl AccessControl { get; set; }
+
 		protected List<ToolbarItem> items = new List<ToolbarItem>();
 		protected List<ToolbarItem> rightItems = new List<ToolbarItem>();
 
@@ -36,25 +40,25 @@ namespace Nephrite.Web.Controls
 			ItemsAlign = ToolbarItemsAlign.Left;
 		}
 
-		public void AddItem<T>(string image, string title, Expression<Action<T>> action) where T : BaseController, new()
-		{
-			AddItem<T>(image, title, null, action);
-		}
-		public void AddItem<T>(string image, string title, string onClick, Expression<Action<T>> action) where T : BaseController, new()
-		{
-			string url = HtmlHelperBase.Instance.ActionUrl<T>(action);
+		//public void AddItem<T>(string image, string title, Expression<Action<T>> action) where T : BaseController, new()
+		//{
+		//	AddItem<T>(image, title, null, action);
+		//}
+		//public void AddItem<T>(string image, string title, string onClick, Expression<Action<T>> action) where T : BaseController, new()
+		//{
+		//	string url = HtmlHelperBase.Instance.ActionUrl<T>(action);
 
-			if (url != "#")
-			{
-				items.Add(new ToolbarItemMethod
-				{
-					Image = image,
-					Title = title,
-					OnClick = onClick,
-					Url = url
-				});
-			}
-		}
+		//	if (url != "#")
+		//	{
+		//		items.Add(new ToolbarItemMethod
+		//		{
+		//			Image = image,
+		//			Title = title,
+		//			OnClick = onClick,
+		//			Url = url
+		//		});
+		//	}
+		//}
 		public void AddItem(string image, string title, string actionUrl)
 		{
 			AddItem(image, title, null, actionUrl, false);
@@ -79,25 +83,25 @@ namespace Nephrite.Web.Controls
 			});
 		}
 
-		public void AddItemImage<T>(string image, string title, Expression<Action<T>> action) where T : BaseController, new()
-		{
-			AddItemImage<T>(image, title, null, action);
-		}
-		public void AddItemImage<T>(string image, string title, string onClick, Expression<Action<T>> action) where T : BaseController, new()
-		{
-			string url = HtmlHelperBase.Instance.ActionUrl<T>(action);
+		//public void AddItemImage<T>(string image, string title, Expression<Action<T>> action) where T : BaseController, new()
+		//{
+		//	AddItemImage<T>(image, title, null, action);
+		//}
+		//public void AddItemImage<T>(string image, string title, string onClick, Expression<Action<T>> action) where T : BaseController, new()
+		//{
+		//	string url = HtmlHelperBase.Instance.ActionUrl<T>(action);
 
-			if (url != "#")
-			{
-				items.Add(new ToolbarImageMethod
-				{
-					Image = image,
-					Title = title,
-					OnClick = onClick,
-					Url = url
-				});
-			}
-		}
+		//	if (url != "#")
+		//	{
+		//		items.Add(new ToolbarImageMethod
+		//		{
+		//			Image = image,
+		//			Title = title,
+		//			OnClick = onClick,
+		//			Url = url
+		//		});
+		//	}
+		//}
 		public void AddItemImage(string image, string title, string actionUrl)
 		{
 			AddItemImage(image, title, null, actionUrl, false);
@@ -203,25 +207,25 @@ namespace Nephrite.Web.Controls
 			rightItems.Add(new ToolbarItemSeparator());
 		}
 
-		public void AddRightItem<T>(string image, string title, Expression<Action<T>> action) where T : BaseController, new()
-		{
-			AddRightItem<T>(image, title, null, action);
-		}
-		public void AddRightItem<T>(string image, string title, string onClick, Expression<Action<T>> action) where T : BaseController, new()
-		{
-			string url = HtmlHelperBase.Instance.ActionUrl<T>(action);
+		//public void AddRightItem<T>(string image, string title, Expression<Action<T>> action) where T : BaseController, new()
+		//{
+		//	AddRightItem<T>(image, title, null, action);
+		//}
+		//public void AddRightItem<T>(string image, string title, string onClick, Expression<Action<T>> action) where T : BaseController, new()
+		//{
+		//	string url = HtmlHelperBase.Instance.ActionUrl<T>(action);
 
-			if (url != "#")
-			{
-				rightItems.Add(new ToolbarItemMethod
-				{
-					Image = image,
-					Title = title,
-					OnClick = onClick,
-					Url = url
-				});
-			}
-		}
+		//	if (url != "#")
+		//	{
+		//		rightItems.Add(new ToolbarItemMethod
+		//		{
+		//			Image = image,
+		//			Title = title,
+		//			OnClick = onClick,
+		//			Url = url
+		//		});
+		//	}
+		//}
 		public void AddRightItem(string image, string title, string actionUrl)
 		{
 			AddRightItem(image, title, null, actionUrl, false);
@@ -246,25 +250,25 @@ namespace Nephrite.Web.Controls
 			});
 		}
 
-		public void AddRightItemImage<T>(string image, string title, Expression<Action<T>> action) where T : BaseController, new()
-		{
-			AddRightItemImage<T>(image, title, null, action);
-		}
-		public void AddRightItemImage<T>(string image, string title, string onClick, Expression<Action<T>> action) where T : BaseController, new()
-		{
-			string url = HtmlHelperBase.Instance.ActionUrl<T>(action);
+		//public void AddRightItemImage<T>(string image, string title, Expression<Action<T>> action) where T : BaseController, new()
+		//{
+		//	AddRightItemImage<T>(image, title, null, action);
+		//}
+		//public void AddRightItemImage<T>(string image, string title, string onClick, Expression<Action<T>> action) where T : BaseController, new()
+		//{
+		//	string url = HtmlHelperBase.Instance.ActionUrl<T>(action);
 
-			if (url != "#")
-			{
-				rightItems.Add(new ToolbarImageMethod
-				{
-					Image = image,
-					Title = title,
-					OnClick = onClick,
-					Url = url
-				});
-			}
-		}
+		//	if (url != "#")
+		//	{
+		//		rightItems.Add(new ToolbarImageMethod
+		//		{
+		//			Image = image,
+		//			Title = title,
+		//			OnClick = onClick,
+		//			Url = url
+		//		});
+		//	}
+		//}
 		public void AddRightItemImage(string image, string title, string actionUrl)
 		{
 			AddRightItemImage(image, title, null, actionUrl, false);

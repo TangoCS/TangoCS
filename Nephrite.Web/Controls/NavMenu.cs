@@ -6,6 +6,7 @@ namespace Nephrite.Web.Controls
 {
 	public class NavMenuItem
 	{
+		public string Name { get; set; }
 		public string Title { get; set; }
 		public string Url { get; set; }
 		public string Icon { get; set; }

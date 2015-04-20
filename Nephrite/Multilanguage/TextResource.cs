@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Nephrite.Data;
 using Nephrite.Http;
 
 namespace Nephrite.Multilanguage

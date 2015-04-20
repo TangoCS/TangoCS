@@ -10,6 +10,7 @@ using Nephrite.Web;
 
 using Nephrite.Meta;
 using Nephrite.Http;
+using Nephrite.MVC;
 
 
 namespace Nephrite.Web.Controls
@@ -85,23 +86,23 @@ namespace Nephrite.Web.Controls
 			string iup = !showArrows ? "" : String.Format("<img src='{0}' style='border:0; vertical-align:middle;' />", Settings.ImagesPath + IconSet.TitleSortasc.X16);
 			string idown = !showArrows ? "" : String.Format("<img src='{0}' style='border:0; vertical-align:middle;' />", Settings.ImagesPath + IconSet.TitleSortdesc.X16); 
 
-			Url baseUrl = UrlHelper.Current().SetQuickSearchQuery();
+			AbstractQueryString baseUrl = UrlHelper.Current().SetQuickSearchQuery();
 			string curSettings = baseUrl.GetString(ParameterName).ToLower();
 
 			if (curSettings == column.ToString())
 			{
-				baseUrl = baseUrl.SetParameter(ParameterName, column.ToString() + "_desc");
-				return String.Format("<a href='{0}' title='{1}'>{2}</a> {3}", baseUrl, Properties.Resources.SortDesc, text, iup);
+				return String.Format("<a href='{0}' title='{1}'>{2}</a> {3}", 
+					baseUrl.SetParameter(ParameterName, column.ToString() + "_desc"), Properties.Resources.SortDesc, text, iup);
 			}
 			else if (curSettings == column.ToString() + "_desc")
 			{
-				baseUrl = baseUrl.SetParameter(ParameterName, column.ToString());
-				return String.Format("<a href='{0}' title='{1}'>{2}</a> {3}", baseUrl, Properties.Resources.SortAsc, text, idown);
+				return String.Format("<a href='{0}' title='{1}'>{2}</a> {3}", 
+					baseUrl.SetParameter(ParameterName, column.ToString()), Properties.Resources.SortAsc, text, idown);
 			}
 			else
 			{
-				baseUrl = baseUrl.SetParameter(ParameterName, column.ToString());
-				return String.Format("<a href='{0}' title='{1}'>{2}</a>", baseUrl, Properties.Resources.SortAsc, text);
+				return String.Format("<a href='{0}' title='{1}'>{2}</a>", 
+					baseUrl.SetParameter(ParameterName, column.ToString()), Properties.Resources.SortAsc, text);
 			}
 			
 		}

@@ -1,8 +1,7 @@
 ﻿using System;
 using Nephrite.Web;
 using System.Linq;
-using Nephrite.Web.Controllers;
-using Nephrite.Meta.Forms;
+using Nephrite.Web.FormsEngine;
 
 public partial class Message_show : ViewControl<MessageViewData>
 {

@@ -116,10 +116,10 @@ function deleteFile(guid, ClientID)
 				FolderGUID = objFolder.ID;
 				A.Model.SubmitChanges();
 			}
-			var f = owner.GetType().GetField("propertyChanges", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-			Dictionary<string, ObjectPropertyChange> changes = null;
-			if (f != null)
-				changes = f.GetValue(owner) as Dictionary<string, ObjectPropertyChange>;
+			//var f = owner.GetType().GetField("propertyChanges", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			//Dictionary<string, ObjectPropertyChange> changes = null;
+			//if (f != null)
+			//	changes = f.GetValue(owner) as Dictionary<string, ObjectPropertyChange>;
 
 			string oldFileList = FileStorageManager.DbFiles.Where(o => o.ParentFolderID == FolderGUID).Select(o => o.Title).Join("\n");
 
@@ -145,8 +145,8 @@ function deleteFile(guid, ClientID)
 			}
 			A.Model.SubmitChanges();
 			string newFileList = FileStorageManager.DbFiles.Where(o => o.ParentFolderID == FolderGUID).Select(o => o.Title).Join("\n");
-			changes[property.Name] = new ObjectPropertyChange(property.Name, property.Caption, "", oldFileList);
-			changes[property.Name].NewValueTitle = newFileList;
+			//changes[property.Name] = new ObjectPropertyChange(property.Name, property.Caption, "", oldFileList);
+			//changes[property.Name].NewValueTitle = newFileList;
 			return "";
 		}
 	}

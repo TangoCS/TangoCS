@@ -85,9 +85,6 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data.Linq">
-      <RequiredTargetFramework>3.5</RequiredTargetFramework>
-    </Reference>
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Runtime.Serialization.Formatters.Soap" />
@@ -110,7 +107,6 @@
   <ItemGroup>
     <Content Include="Controls\excel.ascx" />
     <Content Include="Controls\word.ascx" />
-    <Content Include="ExternalDll\DotNetOpenAuth.dll" />
     <Content Include="js\knockout-2.2.1.js" />
     <Content Include="js\modalwindow.js" />
     <Content Include="js\popup2.js" />
@@ -131,6 +127,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\BaseControl.cs" />
     <Compile Include="Controls\ListFilter.ascx.designer.cs">
       <DependentUpon>ListFilter.ascx</DependentUpon>
     </Compile>
@@ -144,14 +141,18 @@
     <Compile Include="FormsGenerator\SelectObjectCode.cs" />
     <Compile Include="FormsGenerator\UploadControlsCode.cs" />
     <Compile Include="FormsGenerator\ViewCode.cs" />
-    <Compile Include="Meta.Forms\WebFormRenderer.cs" />
-    <Compile Include="Meta.Forms\UIMetaModel.cs" />
-    <Compile Include="Meta.Forms\StandardOperations.cs" />
+    <Compile Include="FormsEngine\WebFormRenderer.cs" />
     <Compile Include="Model\IMMObject.cs" />
     <Compile Include="Model\IMMObjectMLView.cs" />
     <Compile Include="Model\IMMObjectVersion.cs" />
     <Compile Include="Model\Repository.cs" />
-    <Compile Include="MVC\AppWeb.cs" />
+    <Compile Include="MVC\UrlHelper.cs" />
+    <Compile Include="Properties\Resources.en.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.en.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Web\AppWeb.cs" />
     <Compile Include="Model\A.cs" />
     <Compile Include="MVC\MasterControl.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -191,7 +192,6 @@
     </Compile>
     <Compile Include="RSS\RssModel.cs" />
     <Compile Include="Web\Cache.cs" />
-    <Compile Include="Controls.Html\ActionLink.cs" />
     <Compile Include="Controls\AutoComplete.cs" />
     <Compile Include="Controls\AutoComplete2.cs" />
     <Compile Include="Controls\AutoNumeric.cs" />
@@ -201,8 +201,7 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Web\ConnectionManager.cs" />
-    <Compile Include="Controls.Html\CaptchaImage.cs" />
-    <Compile Include="Controllers\SimpleClassMover.cs" />
+    <Compile Include="Controls\CaptchaImage.cs" />
     <Compile Include="Controls\BackButton.cs" />
     <Compile Include="Controls\CodeMirror.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -254,8 +253,8 @@
     <Compile Include="Controls\LinkedObjects.ascx.designer.cs">
       <DependentUpon>LinkedObjects.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Controls.Html\HtmlDateLists.cs" />
-    <Compile Include="Controls.Html\HtmlDropDownList.cs" />
+    <Compile Include="Controls\HtmlDateLists.cs" />
+    <Compile Include="Controls\HtmlDropDownList.cs" />
     <Compile Include="Controls\List.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -361,7 +360,6 @@
     <Compile Include="Mailer\MailerModel.cs" />
     <Compile Include="Mailer\MailManager.cs" />
     <Compile Include="TaskManager\TaskManagerModel.cs" />
-    <Compile Include="Model\EntityAudit.cs" />
     <Compile Include="Versioning\ClassVersion.cs" />
     <Compile Include="Versioning\IClassVersion.cs" />
     <Compile Include="FileStorage\DbItemType.cs" />
@@ -378,7 +376,6 @@
     </Compile>
     <Compile Include="RSS\RssLinker.cs" />
     <Compile Include="FileStorage\DataHandler.cs" />
-    <Compile Include="Web\DebuggerWriter.cs" />
     <Compile Include="FileStorage\FileHandler.cs" />
     <Compile Include="FileStorage\FileProvider.cs" />
     <Compile Include="FileStorage\FileTypeIcon.cs" />
@@ -387,15 +384,11 @@
     <Compile Include="FileStorage\ImageHandler.cs" />
     <Compile Include="Model\IModelObject.cs" />
     <Compile Include="Web\Impersonation.cs" />
-    <Compile Include="Web\JqTreeNode.cs" />
     <Compile Include="MVC\PageParser.cs" />
     <Compile Include="Web\ObjectPropertyChange.cs" />
     <Compile Include="Mailer\MailerTask.cs" />
     <Compile Include="Controls\MaskedInput.cs" />
     <Compile Include="MVC\BaseController.cs" />
-    <Compile Include="MVC\ControlDataBinder.cs" />
-    <Compile Include="MVC\ControllerControlsPathAttribute.cs" />
-    <Compile Include="MVC\ControllerFactory.cs" />
     <Compile Include="Controls\LetterFilter.ascx.cs">
       <DependentUpon>LetterFilter.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -411,7 +404,6 @@
       <DependentUpon>ModalDialog.ascx</DependentUpon>
     </Compile>
     <Compile Include="Obsolete\HtmlHelperWSS.cs" />
-    <Compile Include="Controls.Html\HtmlHelperBase.cs" />
     <Compile Include="Controls\JSCalendar.cs" />
     <Compile Include="Controls\MessageBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -421,7 +413,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Purifier\Purifier.cs" />
-    <Compile Include="Obsolete\Query.cs" />
     <Compile Include="RSS\RssFeed.cs" />
     <Compile Include="RSS\RssItem.cs" />
     <Compile Include="Model\Extensions.cs" />
@@ -430,7 +421,6 @@
     </Compile>
     <Compile Include="MVC\SqlLog.cs" />
     <Compile Include="TaskManager\TaskManager.cs" />
-    <Compile Include="MVC\Url.cs" />
     <Compile Include="Web\Utils.cs" />
     <Compile Include="View\Message\show.ascx.cs">
       <DependentUpon>show.ascx</DependentUpon>
@@ -491,17 +481,17 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.en.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.en.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="App_Data\" />
     <Folder Include="FileStorage\DataBase\" />
     <Folder Include="FileStorage\FileSystem\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References\" />

@@ -8,15 +8,12 @@ using Nephrite.Layout;
 
 namespace Nephrite.Web.Controls
 {
-	public class Paging : System.Web.UI.Control
+	public class Paging : BaseControl
 	{
 		LinkButton btn = new LinkButton();
 		HiddenField hf = new HiddenField();
 		public Paging()
 		{
-			PageIndex = Query.GetInt("page", 1);
-			if (PageIndex <= 0)
-				PageIndex = 1;
 			PageSize = Paging.DefaultPageSize;
 			Visible = false;
 		}
@@ -24,6 +21,10 @@ namespace Nephrite.Web.Controls
 		protected override void OnInit(EventArgs e)
 		{
 			base.OnInit(e);
+
+			PageIndex = Query.GetInt("page", 1);
+			if (PageIndex <= 0)
+				PageIndex = 1;
 
 			btn.ID = "btn" + ClientID;
 			Controls.Add(btn);

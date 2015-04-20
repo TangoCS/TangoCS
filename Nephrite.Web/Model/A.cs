@@ -5,6 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Xml;
 using System.Xml.Linq;
+using Nephrite.Data;
 using Nephrite.Meta;
 using Nephrite.Meta.Database;
 

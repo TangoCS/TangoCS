@@ -2,7 +2,7 @@
 <%@ Register TagPrefix="cc1" TagName="SelectObjectHierarchic" Src="SelectObjectHierarchic.ascx" %>
 <asp:UpdatePanel runat="server" ID="up" UpdateMode="Conditional">
 <ContentTemplate>
-<%=ReadOnly ? "" : HtmlHelperBase.Instance.InternalActionLink(select.RenderRun(), SelectLinkTitle, "list.gif", true)%>
+<%=ReadOnly ? "" : Html.InternalImageLink(select.RenderRun(), SelectLinkTitle, "list.gif")%>
 <% if (ShowMassOperations)
    { %>&nbsp;|&nbsp;<asp:LinkButton ID="lbSelectAll" runat="server" Text="выбрать все" OnClick="lbSelectAll_Click"/>
    <%if (Count() > 0)

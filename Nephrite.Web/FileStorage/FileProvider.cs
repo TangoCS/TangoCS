@@ -4,10 +4,11 @@ using System.Linq;
 using System.Web;
 using System.IO;
 using System.Web.UI.WebControls;
-using System.Data.Linq;
+
 using Nephrite.Identity;
 using Nephrite.Multilanguage;
 using Nephrite.Http;
+using Nephrite.MVC;
 
 namespace Nephrite.Web.FileStorage
 {
@@ -23,8 +24,9 @@ namespace Nephrite.Web.FileStorage
 		}
 		public static bool GetFile(string query, string ip, bool logDownload, out byte[] data, out string fileName, out string contentType)
 		{
-			string guid = query.GetQueryParameter("guid");
-			string path = HttpUtility.UrlDecode(query.GetQueryParameter("path"));
+			var q = QueryHelpers.ParseQuery(query);
+			string guid = q.Get("guid");
+			string path = HttpUtility.UrlDecode(q.Get("path"));
 			IDbFile dbFile = null;
 		
 			if (!String.IsNullOrEmpty(path))

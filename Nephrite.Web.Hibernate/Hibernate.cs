@@ -27,6 +27,7 @@ using Nephrite.SettingsManager;
 using NHibernate.Impl;
 using System.Linq.Expressions;
 using System.Diagnostics;
+using Nephrite.Data;
 
 
 

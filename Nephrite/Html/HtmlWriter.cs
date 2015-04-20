@@ -3,15 +3,7 @@ using System.IO;
 
 namespace Nephrite.Html
 {
-	public abstract partial class HtmlWriter : StringWriter
+	public partial class HtmlWriter : StringWriter
 	{
-		public HtmlPage Page { get; private set; }
-
-		public HtmlWriter(HtmlPage page)
-		{
-			Page = page;	
-		}
-
-		public abstract void Render();
 	}
 }

@@ -7,12 +7,17 @@ using System.Web.UI.WebControls;
 using System.Linq.Expressions;
 using System.Collections;
 using Nephrite.Web;
+using Nephrite.Data;
+using Nephrite.MVC;
 
 
 namespace Nephrite.Web.Controls
 {
-	public partial class SingleObject : System.Web.UI.UserControl
+	public partial class SingleObject : BaseUserControl
 	{
+		[Inject]
+		public HtmlHelper Html { get; set; }
+
 		public SingleObject()
 		{
 			//DataTextField = "Title";
@@ -87,7 +92,7 @@ namespace Nephrite.Web.Controls
 		protected void lbAutoComplete_Click(object sender, EventArgs e)
 		{
 			SelectObjectHierarchicEventArgs args = new SelectObjectHierarchicEventArgs();
-			IModelObject mo = Activator.CreateInstance(Type) as IModelObject;
+			object mo = Activator.CreateInstance(Type);
 			if (tbObject.Text.IndexOf("<span") < 0)
 			{
 				ScriptManager.RegisterStartupScript(up, up.GetType(), "alert", "alert('Необходимо выбрать элемент из списка!');", true);
@@ -99,8 +104,8 @@ namespace Nephrite.Web.Controls
 			s = s.Substring(s.IndexOf('>') + 1);
 			int id = s.ToInt32(0);
 			var obj = id > 0 ?
-				AllObjects.Cast<IModelObject>().Where(mo.FindByID<IModelObject>(id)).FirstOrDefault() :
-				AllObjects.Cast<IModelObject>().Where(mo.FindByGUID<IModelObject>(s.ToGuid())).FirstOrDefault();
+				AllObjects.Cast<object>().Where(mo.FindByProperty("DataValueField", id)).FirstOrDefault() as IModelObject :
+				AllObjects.Cast<object>().Where(mo.FindByProperty("DataValueField", id)).FirstOrDefault() as IModelObject;
 			if (obj != null)
 			{
 				SetObject(obj);
@@ -163,7 +168,7 @@ namespace Nephrite.Web.Controls
 			up.Update();
 		}
 
-		public T GetObject<T>() where T : IModelObject
+		public T GetObject<T>() where T : IEntity, IModelObject
 		{
 			T empty = default(T);
 			if (hfObjectID.Value.ToInt32(0) > 0)

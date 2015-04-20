@@ -6,7 +6,7 @@ namespace Nephrite.Html
 {
 	public class HtmlPage
 	{
-		ActionContext _context;
+		//ActionContext _context;
 
 		Dictionary<string, string> _css = new Dictionary<string, string>();
 		Dictionary<string, string> _js = new Dictionary<string, string>();
@@ -14,10 +14,10 @@ namespace Nephrite.Html
 
 		//public ActionContext ActionContext { get { return _context; } }
 
-		public HtmlPage(ActionContext context)
-		{
-			_context = context;
-		}
+		//public HtmlPage(ActionContext context)
+		//{
+		//	_context = context;
+		//}
 
 		public void RegisterCSS(string name, string path)
 		{

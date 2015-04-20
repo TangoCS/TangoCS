@@ -11,14 +11,14 @@ namespace Solution.Configuration
 {
 	public class DefaultHttpContext : IHttpContext
 	{
-		IRequest _request;
+		IHttpRequest _request;
 
 		public DefaultHttpContext()
 		{
 			_request = new DefaultAppRequest();
 		}
 
-		public IRequest Request
+		public IHttpRequest Request
 		{
 			get { return _request; }
 		}
@@ -64,9 +64,39 @@ namespace Solution.Configuration
 		{
 			throw new NotImplementedException();
 		}
+
+
+		public IHttpResponse Response
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public IServiceProvider ApplicationServices
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public IServiceProvider RequestServices
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 
-	public class DefaultAppRequest : IRequest
+	public class DefaultAppRequest : IHttpRequest
 	{
 		public NameValueCollection Query
 		{

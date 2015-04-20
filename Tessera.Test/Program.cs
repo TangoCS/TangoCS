@@ -23,6 +23,8 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 using NHibernate.Type;
+using Nephrite.EntityAudit;
+using Nephrite.Data;
 
 namespace Tessera.Test
 {

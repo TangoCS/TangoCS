@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using System.Data.Linq;
+using Nephrite.MVC;
+
 
 namespace Nephrite.Web.FileStorage
 {
@@ -32,7 +33,8 @@ namespace Nephrite.Web.FileStorage
 			}
 
 			context.Response.ContentType = contentType;
-			if (Query.GetString("timestamp") != "")
+
+			if (!context.Request.QueryString["timestamp"].IsEmpty())
 				context.Response.Expires = 50000;
 			//context.Response.AppendHeader("content-disposition", "Attachment; FileName=\"" + fileName + "\"");
 			context.Response.OutputStream.Write(data, 0, data.Length);

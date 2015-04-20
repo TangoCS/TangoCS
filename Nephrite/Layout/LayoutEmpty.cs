@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Nephrite.Html;
 using Nephrite.Http;
+using Nephrite.MVC;
 
 namespace Nephrite.Layout
 {
@@ -61,7 +62,7 @@ namespace Nephrite.Layout
 
 	public class PagingEmpty : ILayoutPaging
 	{
-		public string RenderPager(Url baseUrl, int pageIndex, int pageCount, int recordsCount)
+		public string RenderPager(AbstractQueryString baseUrl, int pageIndex, int pageCount, int recordsCount)
 		{
 			return "";
 		}

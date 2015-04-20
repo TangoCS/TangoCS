@@ -5,6 +5,7 @@ using System.Text;
 using System.Web;
 using Nephrite.Http;
 using Nephrite.Layout;
+using Nephrite.MVC;
 using Nephrite.Web.Controls;
 
 
@@ -45,7 +46,7 @@ namespace Nephrite.Web.LinkedObjects
 					{
 						HtmlParms p = new HtmlParms();
 						p.Add("oid", linkedobj.ObjectID > 0 ? linkedobj.ObjectID.ToString() : linkedobj.ObjectGUID.ToString());
-						sb1.Append(ActionLink.To(op).With(p, true).Link(linkedobj.Title));
+						//sb1.Append(ActionLink.To(op).With(p, true).Link(linkedobj.Title));
 					}
 					sb1.Append("<br />");
 					objectsExists = true;

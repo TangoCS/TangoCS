@@ -15,7 +15,7 @@ namespace Nephrite.Http
 	{
 		IServiceProvider ApplicationServices { get; set; }
 
-		IServerInformation Server { get; set; }
+		object Server { get; set; }
 
 		IDictionary<string, object> Properties { get; set; }
 
@@ -24,12 +24,6 @@ namespace Nephrite.Http
 		IApplicationBuilder New();
 
 		RequestDelegate Build();
-	}
-
-	// TODO: [AssemblyNeutral]
-	public interface IServerInformation
-	{
-		string Name { get; }
 	}
 
 	public delegate Task RequestDelegate(AbstractHttpContext context);

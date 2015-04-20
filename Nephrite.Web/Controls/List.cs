@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using Nephrite.Meta;
 
 using Nephrite.Layout;
+using Nephrite.MVC;
 
 namespace Nephrite.Web.Controls
 {
@@ -136,7 +137,7 @@ namespace Nephrite.Web.Controls
 
 			int i = (_form.Paging.PageIndex - 1) * _form.Paging.PageSize + 1;
 			int colscnt = _columns.Count(o => o.Visible);
-			HtmlHelperBase.Instance.Repeater(_form.Paging.ApplyPaging(_viewData), (o) =>
+			HtmlRepeaters.Repeater(_form.Paging.ApplyPaging(_viewData), (o) =>
 			{
 				
 				if (gr1column != null)

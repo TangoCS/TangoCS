@@ -8,11 +8,16 @@ using System.Collections;
 using System.Linq.Expressions;
 
 using Nephrite.Multilanguage;
+using Nephrite.Data;
+using Nephrite.MVC;
 
 namespace Nephrite.Web.Controls
 {
-	public partial class MultiObject : System.Web.UI.UserControl
+	public partial class MultiObject : BaseUserControl
 	{
+		[Inject]
+		public HtmlHelper Html { get; set; }
+
 		public bool ReadOnly { get; set; }
 		public MultiObject()
 		{

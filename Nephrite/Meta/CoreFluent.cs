@@ -120,6 +120,14 @@ namespace Nephrite.Meta.Fluent
 			return this;
 		}
 
+		public OperationBuilder InvokesCode()
+		{
+			_op.ViewClass = "";
+			_op.ViewName = "";
+			_op.DTOClassKind = DTOClassKind.None;
+			return this;
+		}
+
 		public OperationBuilder InvokesView(string viewClass, string viewName)
 		{
 			_op.ViewClass = viewClass;

@@ -10,7 +10,7 @@ using Nephrite.Layout;
 
 namespace Nephrite.Web.Controls
 {
-	public class BackButton : Control//, IBarItem
+	public class BackButton : BaseControl//, IBarItem
     {
 		public ILayoutBarItem Layout { get; set; }
 		public string AccessKey { get; set; }
@@ -25,7 +25,7 @@ namespace Nephrite.Web.Controls
         {
             base.OnInit(e);
 
-            Url = Query.GetReturnUrl();
+            Url = Query.ReturnUrl;
         }
 
         protected override void Render(HtmlTextWriter writer)

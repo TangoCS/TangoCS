@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Nephrite.Html;
 using Nephrite.Http;
+using Nephrite.MVC;
 
 namespace Nephrite.Layout
 {
@@ -190,7 +191,7 @@ namespace Nephrite.Layout
 			return Message.CustomMessage(str, image, attributes);
 		}
 
-		public string RenderPager(Url baseUrl, int pageIndex, int pageCount, int recordsCount)
+		public string RenderPager(AbstractQueryString baseUrl, int pageIndex, int pageCount, int recordsCount)
 		{
 			return Paging.RenderPager(baseUrl, pageIndex, pageCount, recordsCount);
 		}
@@ -205,17 +206,8 @@ namespace Nephrite.Layout
 			return Paging.RenderPager(gotoPageJSFunction, pageIndex, pageCount);
 		}
 
-		public StringBuilder Link(ILink link)
-		{
-			return SimpleTags.Link(link);
-		}
 
-		public StringBuilder ImageLink(ILink link)
-		{
-			return SimpleTags.ImageLink(link);
-		}
-
-		public StringBuilder Image(string src, string alt, object attributes)
+		public string Image(string src, string alt, object attributes)
 		{
 			return SimpleTags.Image(src, alt, attributes);
 		}

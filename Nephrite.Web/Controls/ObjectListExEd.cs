@@ -6,7 +6,8 @@ using System.Web.UI;
 using System.ComponentModel;
 using System.Web.UI.WebControls;
 using System.Drawing;
-using System.Data.Linq;
+using Nephrite.Data;
+
 
 
 namespace Nephrite.Web.Controls
@@ -26,7 +27,7 @@ namespace Nephrite.Web.Controls
         Label lMess = new Label { ID = "lMess", ForeColor = Color.Red };
         LinkButton go = new LinkButton { ID = "Go" };
 
-        public DataContext DataContext { get; set; }
+        public IDataContext DataContext { get; set; }
         public bool ReadOnly { get; set; }
 
         List<ObjectListObject<T>> Data
@@ -93,7 +94,7 @@ namespace Nephrite.Web.Controls
 					DataContext.GetTable<T>().InsertOnSubmit(item.Current);
 				else
 				{
-					DataContext.GetTable<T>().Attach(item.Current, item.Original);
+					//DataContext.GetTable<T>().Attach(item.Current, item.Original);
 				}
             }
 
@@ -101,7 +102,7 @@ namespace Nephrite.Web.Controls
             var list1 = DeletedData;
             foreach (var item in list1)
             {
-                DataContext.GetTable<T>().Attach(item);
+                //DataContext.GetTable<T>().Attach(item);
                 DataContext.GetTable<T>().DeleteOnSubmit(item);
             }
         }
@@ -300,14 +301,14 @@ namespace Nephrite.Web.Controls
 
             var list = Data;
 
-            foreach (var item in list)
-            {
-                try
-                {
-                    DataContext.GetTable<T>().Attach(item.Current);
-                }
-                catch { }
-            }
+			//foreach (var item in list)
+			//{
+			//	try
+			//	{
+			//		DataContext.GetTable<T>().Attach(item.Current);
+			//	}
+			//	catch { }
+			//}
             for (int i = 0; i < list.Count; i++)
             {
                 writer.Write("<tr" + ((i / 2) * 2 > 0 ? " class='ms-alternating'" : "") + ">");

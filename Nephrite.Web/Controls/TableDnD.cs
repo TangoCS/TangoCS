@@ -4,7 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Data.Linq;
+using Nephrite.Data;
+
 
 
 namespace Nephrite.Web.Controls
@@ -18,7 +19,7 @@ namespace Nephrite.Web.Controls
 	[ParseChildren(true)]
 	[PersistChildren(false)]
 	public class TableDnD<T> : TableDnD
-		where T : class, IWithSeqNo, IModelObject, new()
+		where T : class, IEntity, IWithSeqNo, IModelObject, new()
 	{
 		public IQueryable<T> ObjectList { get; set; }
 
@@ -146,7 +147,7 @@ $(document).ready( function() {
 				}
 
 				DataContext.SubmitChanges();
-				Query.Redirect();
+				HttpContext.Current.Response.Redirect(Query);
 			}
 		}
 	}
@@ -154,11 +155,11 @@ $(document).ready( function() {
 	[ControlBuilder(typeof(TableDnDControlBuilder))]
 	[ParseChildren(true)]
 	[PersistChildren(false)]
-	public class TableDnD : Control, INamingContainer
+	public class TableDnD : BaseControl, INamingContainer
 	{
 		public string Type { get; set; }
 		public string TableID { get; set; }
-		public DataContext DataContext { get; set; }
+		public IDataContext DataContext { get; set; }
 		public TableDnDSortDirection SortDirection { get; set; }
 	}
 

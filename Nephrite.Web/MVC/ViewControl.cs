@@ -16,23 +16,16 @@ using Nephrite.Meta;
 using Nephrite.SettingsManager;
 using Nephrite.Layout;
 using System.IO;
+using Nephrite.Data;
+using Nephrite.MVC;
 
 namespace Nephrite.Web
 {
 	[FileLevelControlBuilder(typeof(CustomViewUserControlControlBuilder))]
-	public abstract class ViewControl : UserControl, IMasterControl
+	public abstract class ViewControl : BaseUserControl, IMasterControl
     {
-		HtmlHelperBase html;
-		public HtmlHelperBase Html
-		{
-			get
-			{
-				//return html.Instance;
-				if (html == null)
-					html = new HtmlHelperWSS();
-				return html;
-			}
-		}
+		[Inject]
+		public HtmlHelper Html { get; set; }
 
 		public void EnsureHttps()
 		{
@@ -44,7 +37,7 @@ namespace Nephrite.Web
 			string httpsWarning = AppSettings.Get("httpsWarning");
 			string targetUrl = "https://" + host + (port == 443 ? "" : (":" + port.ToString())) + Request.Url.PathAndQuery;
 			if (httpsWarning != null)
-				Response.Redirect(httpsWarning.AddQueryParameter("returnurl", HttpUtility.UrlEncode(targetUrl)), true);
+				Response.Redirect(Url.From(httpsWarning).AddParameter("returnurl", HttpUtility.UrlEncode(targetUrl)), true);
 			else
 				Response.Redirect(targetUrl, true);
 		}
@@ -449,11 +442,11 @@ namespace Nephrite.Web
 			actionsStore.Add(() => { setProperty(selector, control.Date); });
 		}
 
-		public void Register(SingleObject control, Expression<Func<TViewData, IModelObject>> selector)
-		{
-			actionsRead.Add(() => { control.SetObject(selector.Compile().Invoke(ViewData)); });
-			actionsStore.Add(() => { setProperty(selector, control.GetObject<IModelObject>()); });
-		}
+		//public void Register(SingleObject control, Expression<Func<TViewData, IEntity>> selector)
+		//{
+		//	actionsRead.Add(() => { control.SetObject(selector.Compile().Invoke(ViewData)); });
+		//	actionsStore.Add(() => { setProperty(selector, control.GetObject<IEntity>()); });
+		//}
 		#endregion
 
 		#region Работа с контролами

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Nephrite.Html;
 using Nephrite.Http;
+using Nephrite.MVC;
 
 namespace Nephrite.Layout
 {
@@ -201,7 +202,7 @@ namespace Nephrite.Layout
 
 	public interface ILayoutPaging
 	{
-		string RenderPager(Url baseUrl, int pageIndex, int pageCount, int recordsCount);
+		string RenderPager(AbstractQueryString baseUrl, int pageIndex, int pageCount, int recordsCount);
 		string RenderPager(string gotoPageJSFunction, int pageIndex, int pageCount, int recordsCount);
 		string RenderPager(string gotoPageJSFunction, int pageIndex, int pageCount);
 	}
@@ -265,14 +266,12 @@ namespace Nephrite.Layout
 
 	public interface ILayoutSimpleTags
 	{
-		StringBuilder Link(ILink link);
-		StringBuilder ImageLink(ILink link);
-		StringBuilder Image(string src, string alt, object attributes);
+		string Image(string src, string alt, object attributes);
 	}
 
 	public static class LayoutSimpleTagsExtensions
 	{
-		public static StringBuilder Image(this ILayoutSimpleTags l, string src, string alt)
+		public static string Image(this ILayoutSimpleTags l, string src, string alt)
 		{
 			return l.Image(src, alt, null);
 		}

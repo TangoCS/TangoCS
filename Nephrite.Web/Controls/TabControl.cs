@@ -10,6 +10,7 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using System.Xml.Linq;
 using System.ComponentModel;
+using Nephrite.Layout;
 
 
 
@@ -56,7 +57,7 @@ namespace Nephrite.Web.Controls
 						writer.Write("' class='" + (i == SelectedTab ? "selected" : "") + "'>");
 						writer.Write(tp.Title);
 						if (!String.IsNullOrEmpty(tp.Image))
-							writer.Write("&nbsp;" + HtmlHelperBase.Instance.Image(tp.Image, ""));
+							writer.Write("&nbsp;" + AppLayout.Current.Image(tp.Image, ""));
 						writer.Write("</a>");
 						writer.Write("</li>");
 					}

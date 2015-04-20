@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Linq;
 using System.Linq;
+using Nephrite.Data;
 
 namespace Nephrite.Web.Mailer
 {

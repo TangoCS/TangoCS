@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Nephrite.EntityAudit;
 using Nephrite.Identity;
 using NHibernate;
 using NHibernate.Event;
@@ -198,7 +199,7 @@ namespace Nephrite.Web.Hibernate
 						{
 							var opc = dc.NewIN_ObjectPropertyChange();
 							opc.ObjectChange = oc;
-
+							
 							opc.PropertySysName = propertyNames[i];
 							opc.Title = "";
 							opc.NewValue = state[i].ToString();

@@ -3,6 +3,7 @@
 
 using System;
 using System.Linq;
+using Microsoft.Framework.Internal;
 using Nephrite.WebEncoders;
 
 namespace Nephrite.Http

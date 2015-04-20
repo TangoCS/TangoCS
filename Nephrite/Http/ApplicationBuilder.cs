@@ -35,15 +35,15 @@ namespace Nephrite.Http
 			}
 		}
 
-		public IServerInformation Server
+		public object Server
 		{
 			get
 			{
-				return GetProperty<IServerInformation>(Constants.BuilderProperties.ServerInformation);
+				return GetProperty<object>(Constants.BuilderProperties.ServerInformation);
 			}
 			set
 			{
-				SetProperty<IServerInformation>(Constants.BuilderProperties.ServerInformation, value);
+				SetProperty<object>(Constants.BuilderProperties.ServerInformation, value);
 			}
 		}
 

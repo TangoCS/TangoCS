@@ -6,11 +6,12 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using Nephrite.Web.Controls;
 using System.Linq.Expressions;
+using Nephrite.MVC;
 
 
 namespace Nephrite.Web.Reporting
 {
-	public class ReportTable<T> : System.Web.UI.UserControl	where T : class
+	public class ReportTable<T> : BaseUserControl	where T : class
 	{
 		public string ReportType { get; set; }
 
@@ -256,7 +257,7 @@ namespace Nephrite.Web.Reporting
 			var rep = ApplyOrderByGroup((ReportType == "D" && Sorter != null ? Sorter.ApplyOrderBy(ViewData) : ViewData));
 			if (Pager != null) rep = Pager.ApplyPaging(rep);
 			//HtmlHelperBase.Instance.Repeater<T>(ApplyOrderByGroup((ReportType == "D" && Sorter != null ? Sorter.ApplyOrderBy(ViewData) : ViewData)), "", "ms-alternating", (o, css) =>
-			HtmlHelperBase.Instance.Repeater<T>(rep, "", "ms-alternating", (o, css) =>
+			HtmlRepeaters.Repeater<T>(rep, "", "ms-alternating", (o, css) =>
 			{
 				bool printgr1 = false;
 				bool printgr2 = false;

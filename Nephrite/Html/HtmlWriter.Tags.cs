@@ -299,9 +299,9 @@ namespace Nephrite.Html
 		}
 		public void Img(Action<ImgTagAttributes> attributes = null)
 		{
-			TagBuilder tb = new TagBuilder("body");
+			TagBuilder tb = new TagBuilder("img");
 			if (attributes != null) attributes(new ImgTagAttributes(tb));
-			Write(tb);
+			Write(tb.Render(TagRenderMode.SelfClosing));
 		}
 		public void Label(Action<LabelTagAttributes> attributes = null, Action inner = null)
 		{

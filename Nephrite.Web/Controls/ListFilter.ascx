@@ -20,7 +20,7 @@
 <%=AppLayout.Current.FormRowEnd()%>
 
 <%=AppLayout.Current.FormRowBegin(TextResource.Get("System.Filter.PropertiesOfVisibility", "Свойства видимости"))%>
-<% cbShared.Enabled = cbPersonal.Enabled = ActionAccessControl.Instance.Check("filter.managecommonviews", 1);%>
+<% cbShared.Enabled = cbPersonal.Enabled = AccessControl.Check("filter.managecommonviews", 1);%>
 
 <asp:RadioButton ID="cbPersonal" GroupName="isshared" runat="server"/><br />
 <asp:RadioButton ID="cbShared" GroupName="isshared" runat="server" /><br />
@@ -59,7 +59,7 @@
 <ItemTemplate>
     <tr>
         <td style="width:100%"><%#Eval("Title") + " " + (Eval("Condition").ToString() == TextResource.Get("System.Filter.LastXDays", "последние x дней") ? String.Format(TextResource.Get("System.Filter.LastDays", "последние &quot;{0}&quot; дней"), Eval("ValueTitle").ToString()) : Eval("Condition") + " &quot;" + HttpUtility.HtmlEncode((string)Eval("ValueTitle")) + "&quot;")%></td>
-        <td><asp:ImageButton ID="ImageButton1" runat="server" OnClick="delItem_Click" ImageUrl="/i/n/delete.gif" /></td>
+        <td><asp:ImageButton ID="ImageButton1" runat="server" OnClick="delItem_Click" ImageUrl="/i/delete.gif" /></td>
     </tr>
 </ItemTemplate>
 </asp:Repeater>
@@ -87,12 +87,12 @@
 		</td>
 		<td style="white-space:nowrap">
 			<span style="visibility:<%#Container.ItemIndex>0?"visible":"hidden" %>">
-			<asp:ImageButton ID="up" runat="server" OnClick="upItem_Click" ImageUrl="/i/n/moveup.gif" />
+			<asp:ImageButton ID="up" runat="server" OnClick="upItem_Click" ImageUrl="/i/moveup.gif" />
 			</span>
 			<span style="visibility:<%#Container.ItemIndex<FilterList.Count - 1?"visible":"hidden" %>">
-			<asp:ImageButton ID="down" runat="server" OnClick="downItem_Click" ImageUrl="/i/n/movedown.gif" />
+			<asp:ImageButton ID="down" runat="server" OnClick="downItem_Click" ImageUrl="/i/movedown.gif" />
 			</span>
-			<asp:ImageButton ID="delItem" runat="server" OnClick="delItem_Click" ImageUrl="/i/n/delete.gif"/>
+			<asp:ImageButton ID="delItem" runat="server" OnClick="delItem_Click" ImageUrl="/i/delete.gif"/>
 		</td>
     </tr>
 </ItemTemplate>

@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.UI;
 using Nephrite.Identity;
 using Nephrite.Web.Controls;
-using Nephrite.Web.Controllers;
 
 namespace Nephrite.Web
 {
@@ -30,20 +29,12 @@ namespace Nephrite.Web
 			AppWeb.Keywords = node.Keywords;
 			AppWeb.MasterControl = this;
 
-			// проверим права на адрес (в будущем нужно переделать)
-			//if (!ActionSPMContext.Current.Check(node.FURL + ".View", 1, true))
-			//{
-			//	LiteralControl l = new LiteralControl("У вас нет прав просматривать данную страницу");
-			//	contents[0].Control.Controls.Add(l);
-			//	return;
-			//}
-
 			foreach (ContentPlaceHolderInfo content in contents)
 			{
-				HttpContext.Current.Items["ViewContainer"] = content.Control;
+				//HttpContext.Current.Items["ViewContainer"] = content.Control;
 				if (!node.ContentPlaceHolderRenderers.ContainsKey(content.Control.ID)) continue;
 				if (node.ContentPlaceHolderRenderers[content.Control.ID] == null) continue;
-				node.ContentPlaceHolderRenderers[content.Control.ID]();
+				node.ContentPlaceHolderRenderers[content.Control.ID](content.Control);
 			}
 		}
 

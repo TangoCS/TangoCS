@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Web.UI.WebControls;
 using System.Web;
 using System.Linq.Expressions;
-using System.Data.Linq;
-using System.Data.Linq.SqlClient;
 using System.Globalization;
 using System.IO;
 using System.Xml.Linq;
@@ -17,11 +15,15 @@ using Nephrite.Multilanguage;
 using Nephrite.Meta;
 using Nephrite.AccessControl;
 using Nephrite.Http;
+using Nephrite.Data;
 
 namespace Nephrite.Web.Controls
 {
-	public partial class Filter : UserControl
+	public partial class Filter : BaseUserControl
 	{
+		[Inject]
+		public IAccessControl AccessControl { get; set; }
+
 		IDC_ListFilter dc
 		{
 			get
@@ -82,7 +84,7 @@ namespace Nephrite.Web.Controls
 		{
 			int subjectID = Subject.Current.ID;
 			var flist = (from f in dc.IN_Filter
-						 where f.ListName == UrlHelper.Current().Mode + "_" + actionName &&
+						 where f.ListName == UrlHelper.Current().Controller + "_" + actionName &&
 									(!f.SubjectID.HasValue || f.SubjectID.Value == subjectID) && f.FilterName != null
 						 select f).ToList();
 			int i = 0;
@@ -467,7 +469,7 @@ namespace Nephrite.Web.Controls
 			filterObject.Name = tbTitle.Text != "" ? tbTitle.Text : null;
 			filterObject.ListParms = tbParms.Text;
 			filterObject.IsDefault = cbDefault.Checked;
-			filterObject.ListName = UrlHelper.Current().Mode + "_" + UrlHelper.Current().Action;
+			filterObject.ListName = UrlHelper.Current().Controller + "_" + UrlHelper.Current().Action;
 			filterObject.editMode = filter.Argument.ToInt32(0) > 0;
 			filterObject.Columns = cblColumns.GetSelectedValues().Join(",");
 			filterObject.ItemsOnPage = tbItemsOnPage.Text.ToInt32(0);
@@ -492,7 +494,7 @@ namespace Nephrite.Web.Controls
 			}
 			filterObject.Sort = sortRes.Join(",");
 
-			if (!cbPersonal.Checked && ActionAccessControl.Instance.Check("filter.managecommonviews"))
+			if (!cbPersonal.Checked && AccessControl.Check("filter.managecommonviews"))
 				filterObject.SubjectID = null;
 			else
 				filterObject.SubjectID = Subject.Current.ID;
@@ -1510,7 +1512,7 @@ namespace Nephrite.Web.Controls
 
 		public PersistentFilter(string action)
 		{
-			_filter = dc.IN_Filter.SingleOrDefault(o => o.FilterID == Query.GetInt("filterid", 0) && o.ListName.ToLower() == UrlHelper.Current().Mode.ToLower() + "_" + action.ToLower());
+			_filter = dc.IN_Filter.SingleOrDefault(o => o.FilterID == UrlHelper.Current().GetInt("filterid", 0) && o.ListName.ToLower() == UrlHelper.Current().Controller.ToLower() + "_" + action.ToLower());
 			_items = _filter != null && _filter.FilterValue != null ? XMLSerializer.Deserialize<List<FilterItem>>(_filter.FilterValue.Root) : new List<FilterItem>();
 		}
 

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using Nephrite.Meta;
-using Nephrite.Meta.Forms;
 
 namespace Nephrite.Web.FormsGenerator
 {

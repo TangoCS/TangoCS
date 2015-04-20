@@ -5,13 +5,13 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Linq.Expressions;
-using System.Data.Linq.SqlClient;
+
 using System.ComponentModel;
 using System.Text.RegularExpressions;
 using System.Collections;
 using System.Reflection;
-using System.Data.Linq.Mapping;
 using Nephrite.Multilanguage;
+using Nephrite.Data;
 
 namespace Nephrite.Web.Controls
 {
@@ -212,8 +212,8 @@ namespace Nephrite.Web.Controls
 			if (SearchExpression == null && mo is ISearchExpression)
 				SearchExpression = ((ISearchExpression)mo).SearchExpression;
 
-			if (SearchExpression == null && mo is IModelObject)
-				SearchExpression = s => (o => SqlMethods.Like((o as IModelObject).Title, "%" + s + "%"));
+			if (SearchExpression == null && mo is IWithTitle)
+				SearchExpression = s => (o => (o as IWithTitle).Title.Contains(s));
 
 			if (MultipleSelect && select.IsFirstPopulate)
 			{

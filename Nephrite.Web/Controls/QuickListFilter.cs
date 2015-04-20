@@ -7,12 +7,13 @@ using System.Web.UI.WebControls;
 using System.Web.UI;
 using Nephrite.Multilanguage;
 using Nephrite.Http;
+using Nephrite.MVC;
 
 namespace Nephrite.Web.Controls
 {
 	public static class QuickFilterUrlExtension
 	{
-		public static Url SetQuickSearchQuery(this Url url)
+		public static AbstractQueryString SetQuickSearchQuery(this AbstractQueryString url)
 		{
 			return QuickFilter.SetSearchQuery(url);
 		}
@@ -20,7 +21,7 @@ namespace Nephrite.Web.Controls
 
 	[ParseChildren(true)]
 	[PersistChildren(false)]
-	public class QuickFilter : Control, INamingContainer
+	public class QuickFilter : BaseControl, INamingContainer
 	{
 		HiddenField hQuickFilter = new HiddenField { ID = "hQuickFilter" };
 		LinkButton go = new LinkButton { ID = "Go" };
@@ -32,14 +33,14 @@ namespace Nephrite.Web.Controls
 				if (HttpContext.Current.Request.Form["qfind"] != null)
 					return HttpContext.Current.Request.Form["qfind"];
 
-				return HttpUtility.UrlDecode(Query.GetString("qfind"));
+				return HttpUtility.UrlDecode(UrlHelper.Current().GetString("qfind"));
 			}
 		}
-		public static Url SetSearchQuery()
+		public static AbstractQueryString SetSearchQuery()
 		{
 			return UrlHelper.Current().SetParameter("qfind", HttpUtility.UrlEncode(QuickFilter.SearchQuery));
 		}
-		public static Url SetSearchQuery(Url url)
+		public static AbstractQueryString SetSearchQuery(AbstractQueryString url)
 		{
 			return url.SetParameter("qfind", HttpUtility.UrlEncode(QuickFilter.SearchQuery));
 		}

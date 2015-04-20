@@ -4,14 +4,14 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI;
 using Nephrite.Web.Controls;
 using System.Text;
+using Nephrite.MVC;
 
 
 namespace Nephrite.Web
 {
-	public class HtmlHelperWSS : HtmlHelperBase
+	public class HtmlHelperWSS
 	{
 		public HtmlHelperWSS()
-			: base()
 		{
 			
 		}

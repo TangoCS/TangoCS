@@ -23,17 +23,20 @@ namespace Nephrite.Web.FileStorage
 
 		public void PackFolder(IDbFolder f)
 		{
-			MemoryStream ms = new MemoryStream();
-			ZipConstants.DefaultCodePage = 866;
-			using (ZipFile zf = ZipFile.Create(ms))
-			{
-				AddFiles(zf, f, "");
-				zf.Close();
-			}
 			var r = HttpContext.Current.Response;
 			r.AppendHeader("Content-Type", "application/x-zip-compressed");
 			r.AppendHeader("Content-disposition", "attachment; filename=" + f.Title + ".zip");
-			ms.WriteTo(r.OutputStream);
+
+			using (MemoryStream ms = new MemoryStream())
+			{
+				ZipConstants.DefaultCodePage = 866;
+				using (ZipFile zf = ZipFile.Create(ms))
+				{
+					AddFiles(zf, f, "");
+					zf.Close();
+				}				
+				ms.WriteTo(r.OutputStream);
+			}
 			r.End();
 		}
 

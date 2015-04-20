@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Linq;
 using System.Linq;
 using System.Text;
+using Nephrite.Data;
 
 namespace Nephrite.Linq2Sql
 {

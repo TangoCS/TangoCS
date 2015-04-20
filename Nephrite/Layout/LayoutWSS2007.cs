@@ -6,6 +6,7 @@ using System.Text;
 using Nephrite.Multilanguage;
 using Nephrite.Html;
 using Nephrite.Http;
+using Nephrite.MVC;
 
 
 namespace Nephrite.Layout
@@ -298,7 +299,7 @@ namespace Nephrite.Layout
 
 	public class PagingWSS2007 : ILayoutPaging
 	{
-		public string RenderPager(Url baseUrl, int pageIndex, int pageCount, int recordsCount)
+		public string RenderPager(AbstractQueryString baseUrl, int pageIndex, int pageCount, int recordsCount)
 		{
 			StringBuilder sb = new StringBuilder(1024);
 
@@ -308,15 +309,13 @@ namespace Nephrite.Layout
 				string s = @"<a href=""{0}""><img src=""{1}{2}page.png"" alt=""" + TextResource.Get("Common.Paging.Page", Resources.Common.PagerPage) + @" {3}"" style=""border:0;"" /></a>&nbsp;";
 				if (pageIndex > 2)
 				{
-					baseUrl = baseUrl.SetParameter("page", "1");
-					sb.AppendFormat(s, baseUrl, IconSet.RootPath, "first", 1);
+					sb.AppendFormat(s, baseUrl.SetParameter("page", "1"), IconSet.RootPath, "first", 1);
 				}
 				if (pageIndex > 1)
 				{
-					baseUrl = baseUrl.SetParameter("page", (pageIndex - 1).ToString());
-					sb.AppendFormat(s, baseUrl, IconSet.RootPath, "prev", pageIndex - 1);
+					sb.AppendFormat(s, baseUrl.SetParameter("page", (pageIndex - 1).ToString()), IconSet.RootPath, "prev", pageIndex - 1);
 				}
-				string bu = baseUrl.RemoveParameter("page");
+				string bu = baseUrl.RemoveParameter("page").ToString();
 				if (!bu.EndsWith("&") && !bu.EndsWith("?"))
 				{
 					if (bu.Contains('?'))
@@ -333,13 +332,11 @@ namespace Nephrite.Layout
 					TextResource.Get("Common.Paging.From", "из"));
 				if (pageIndex < pageCount)
 				{
-					baseUrl = baseUrl.SetParameter("page", (pageIndex + 1).ToString());
-					sb.AppendFormat(s, baseUrl, IconSet.RootPath, "next", pageIndex + 1);
+					sb.AppendFormat(s, baseUrl.SetParameter("page", (pageIndex + 1).ToString()), IconSet.RootPath, "next", pageIndex + 1);
 				}
 				if (pageIndex < pageCount - 1)
 				{
-					baseUrl = baseUrl.SetParameter("page", pageCount.ToString());
-					sb.AppendFormat(s, baseUrl, IconSet.RootPath, "last", pageCount);
+					sb.AppendFormat(s, baseUrl.SetParameter("page", pageCount.ToString()), IconSet.RootPath, "last", pageCount);
 				}
 			}
 			sb.AppendFormat(@"<b>{0}:</b> {1}</div>", TextResource.Get("Common.Paging.TotalRecords", "Всего записей"), recordsCount);

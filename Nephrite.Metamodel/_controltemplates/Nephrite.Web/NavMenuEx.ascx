@@ -20,7 +20,7 @@
       %>
 <div class="nav-button <%=cls %>" <%=evnts %> style="height:<%=h%>px;">
 <a style="line-height:<%=h%>px;" href="<%=Groups[i].Url%>">
-<%=Groups[i].Icon.IsEmpty() ? "" : HtmlHelperBase.Instance.Image(Groups[i].Icon, "")%>
+<%=Groups[i].Icon.IsEmpty() ? "" : AppLayout.Current.Image(Groups[i].Icon, "")%>
 <span style="line-height:<%=h%>px;">
     <%=Groups[i].Title + (Groups[i].Expression.IsEmpty() ? "" : (" " + Groups[i].EvaluateExpression()))%>
 </span></a>

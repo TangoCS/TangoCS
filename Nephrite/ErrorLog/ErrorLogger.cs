@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using Nephrite.Http;
+using Nephrite.Data;
 
 namespace Nephrite.ErrorLog
 {
@@ -33,7 +34,7 @@ namespace Nephrite.ErrorLog
 				if (_exceptionFilter != null)
 					if (!_exceptionFilter()) return 0;
 
-				IRequest r = null;
+				IHttpRequest r = null;
 				if (_httpContext != null) r = _httpContext().Request;
 
 				//if (exception is HttpException)

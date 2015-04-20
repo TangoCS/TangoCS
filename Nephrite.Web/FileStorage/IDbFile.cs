@@ -5,6 +5,7 @@ using System.Web;
 using System.Text;
 using System.Xml.Linq;
 using Nephrite.Identity;
+using Nephrite.Data;
 
 namespace Nephrite.Web.FileStorage
 {

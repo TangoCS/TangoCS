@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Framework.Internal;
 
 namespace Nephrite.Http
 {
@@ -45,8 +46,8 @@ namespace Nephrite.Http
 					return true;
 				}
 
-				var conentType = ContentType;
-				return HasApplicationFormContentType(conentType) || HasMultipartFormContentType(conentType);
+				var contentType = ContentType;
+				return HasApplicationFormContentType(contentType) || HasMultipartFormContentType(contentType);
 			}
 		}
 

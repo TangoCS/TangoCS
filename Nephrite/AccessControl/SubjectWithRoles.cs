@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Nephrite.Http;
 using Nephrite.Identity;
+using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.AccessControl
 {
@@ -93,17 +94,16 @@ namespace Nephrite.AccessControl
 		{
 			get
 			{
-				var ctx = IdentityManager<TKey>.Instance.HttpContext();
+				var identityManager = DI.RequestServices.GetService<IIdentityManager<TKey>>();
+				var dataContext = DI.RequestServices.GetService<IAccessControlDataContext<TKey>>();
+				var ctx = identityManager.HttpContext;
 				if (ctx.Items["CurrentSubjectWithRoles"] != null)
 					return ctx.Items["CurrentSubjectWithRoles"] as SubjectWithRoles<TKey>;
 
-				var curSubj = IdentityManager<TKey>.Instance.CurrentSubject;
+				var curSubj = identityManager.CurrentSubject;
 				if (curSubj == null) return null;
 
-				var s = new SubjectWithRoles<TKey>(
-					curSubj, 
-					ctx.User.Identity, 
-					ActionAccessControl<TKey>.Instance.DataContext);
+				var s = new SubjectWithRoles<TKey>(curSubj, ctx.User.Identity, dataContext);
 				ctx.Items["CurrentSubjectWithRoles"] = s;
 				return s;
 			}

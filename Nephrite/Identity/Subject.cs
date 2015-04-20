@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Principal;
 using System.Text;
+using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.Identity
 {
@@ -22,7 +23,7 @@ namespace Nephrite.Identity
 		{
 			get
 			{
-				return IdentityManager<TKey>.Instance.CurrentSubject;
+				return DI.RequestServices.GetService<IIdentityManager<TKey>>().CurrentSubject;
 			}
 		}
 
@@ -30,14 +31,14 @@ namespace Nephrite.Identity
 		{
 			get
 			{
-				return IdentityManager<TKey>.Instance.SystemSubject;
+				return DI.RequestServices.GetService<IIdentityManager<TKey>>().SystemSubject;
 			}
 		}
 
 		public void Run(Action action)
 		{
 			var oldSubject = Current;
-			var ctx = IdentityManager<TKey>.Instance.HttpContext();
+			var ctx = DI.RequestServices.GetService<IIdentityManager<TKey>>().HttpContext;
 			ctx.Items["CurrentSubject2"] = this;
 			action();
 			ctx.Items["CurrentSubject2"] = oldSubject;

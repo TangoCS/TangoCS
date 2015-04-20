@@ -13,7 +13,7 @@ using System.Linq.Expressions;
 
 namespace Nephrite.Web.Controls
 {
-	public partial class LetterFilter : System.Web.UI.UserControl
+	public partial class LetterFilter : BaseUserControl
 	{
 		object selector;
 

@@ -415,6 +415,13 @@ namespace Nephrite
 			return res;
 		}
 
+		public static string Get(this IDictionary<string, string[]> dict, string key)
+		{
+			string res = "";
+			if (dict.ContainsKey(key)) res = dict[key].Join(",");
+			return res;
+		}
+
 		public static StringBuilder AppendAttributes(this StringBuilder sb, object attributes, string defaultClass)
 		{
 			bool c = !defaultClass.IsEmpty();

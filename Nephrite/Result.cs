@@ -10,8 +10,8 @@ namespace Nephrite
 			Message = message;
 		}
 
-		public int Code { get; set; }
-		public string Message { get; set; }
+		public int Code { get; private set; }
+		public string Message { get; private set; }
 	}
 
 	public class BoolResult
@@ -28,8 +28,8 @@ namespace Nephrite
 			Message = message;
 		}
 
-		public bool Value { get; set; }
-		public string Message { get; set; }
+		public bool Value { get; private set; }
+		public string Message { get; private set; }
 	}
 
 	public class ValidationMessage

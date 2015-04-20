@@ -5,6 +5,7 @@ using System.Net.WebSockets;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Framework.Internal;
 
 namespace Nephrite.Http
 {

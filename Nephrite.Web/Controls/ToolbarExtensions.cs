@@ -13,6 +13,7 @@ using Nephrite.Identity;
 using Nephrite.Multilanguage;
 using Nephrite.AccessControl;
 using Nephrite.Http;
+using Nephrite.Html.Controls;
 
 namespace Nephrite.Web.Controls
 {
@@ -20,7 +21,7 @@ namespace Nephrite.Web.Controls
 	{
 		public static void AddItemFilter(this Toolbar toolbar, Filter filter)
 		{
-			string s = Query.GetString("filterid");
+			string s = toolbar.Query.GetString("filterid");
 			if (!filter.HasValue)
 				toolbar.AddItemJS(IconSet.Filter.X16, TextResource.Get("Common.Toolbar.Filter", "Фильтр"), filter.RenderMethod());
 			else
@@ -33,7 +34,7 @@ namespace Nephrite.Web.Controls
 
 			ToolbarPopupMenuCompact mc = toolbar.AddRightPopupMenuCompact();
 			string currentView = TextResource.Get("Common.Toolbar.AllItems", "Все записи");
-			int currentViewID = Query.GetInt("filterid", 0);
+			int currentViewID = toolbar.Query.GetInt("filterid", 0);
 
 
 			List<IN_Filter> views = filter.GetViews();
@@ -56,7 +57,7 @@ namespace Nephrite.Web.Controls
 				mc.AddItem(f.IsDefault ? "<b>" + f.FilterName + "</b>" : f.FilterName, UrlHelper.Current().RemoveParameter("filter").SetParameter("filterid", f.FilterID.ToString()));
 			}
 
-			if (defaultf != null && Query.GetString("filter") != "all")
+			if (defaultf != null && toolbar.Query.GetString("filter") != "all")
 			{
 				if (currentViewID == 0 || currentViewID == defaultf.FilterID)
 					currentView = defaultf.FilterName;
@@ -70,14 +71,14 @@ namespace Nephrite.Web.Controls
 
 			mc.AddSeparator();
 
-			if (currentViewID > 0 && (isPersonal || ActionAccessControl.Instance.Check("filter.managecommonviews", true)))
+			if (currentViewID > 0 && (isPersonal || toolbar.AccessControl.Check("filter.managecommonviews", true)))
 				mc.AddItemJS(TextResource.Get("Common.Toolbar.EditThisView", "Изменить это представление"), filter.RenderEditViewMethod(currentViewID), IconSet.Modifyview.X16);
 
 			mc.AddItemJS(TextResource.Get("Common.Toolbar.CreateView", "Создать представление"), filter.RenderCreateViewMethod(), IconSet.Createview.X16);
 
 
-			if (Query.GetInt("filterid", 0) > 0 && !views.Any(o => o.FilterID == Query.GetInt("filterid", 0)) &&
-				Query.GetString("filter") != "all")
+			if (toolbar.Query.GetInt("filterid", 0) > 0 && !views.Any(o => o.FilterID == toolbar.Query.GetInt("filterid", 0)) &&
+				toolbar.Query.GetString("filter") != "all")
 				currentView = TextResource.Get("Common.Toolbar.UserView", "Пользовательское");
 			mc.Title = "<b>" + currentView + "</b>";
 		}
@@ -106,26 +107,8 @@ Sys.WebForms.PageRequestManager.getInstance().add_endRequest(QF_EndRequest);", t
 
 		public static void AddItem(this Toolbar toolbar, ActionLink actionLink)
 		{
-			string img = actionLink.Image;
-			if (img.IsEmpty())
-			{
-				switch (actionLink.ActionName)
-				{
-					case "Edit":
-						img = "edititem.gif";
-						break;
-					case "Delete":
-						img = "delete.gif";
-						break;
-					case "CreateNew":
-						img = "add.png";
-						break;
-					case "ObjectChangeHistory":
-						img = "clock.gif";
-						break;
-				}
-			}
-			toolbar.AddItem(img, actionLink.Title, actionLink.Href, actionLink.TargetBlank);
+			if (!actionLink.Url.IsEmpty())
+				toolbar.AddItem(actionLink.ImageSrc, actionLink.Title, actionLink.Url);
 		}
 	}
 }

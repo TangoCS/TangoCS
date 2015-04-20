@@ -9,16 +9,16 @@ namespace Nephrite.Identity
 {
 	public class IdentityManager<TKey> : IIdentityManager<TKey>
 	{
-		static IIdentityManager<TKey> _instanceHolder;
-		static object LockObject = new object();
+		//static IIdentityManager<TKey> _instanceHolder;
+		//static object LockObject = new object();
 
-		public Func<IHttpContext> HttpContext { get; private set; }
-		public Func<IDC_Identity<TKey>> DataContext { get; private set; }
+		public IHttpContext HttpContext { get; private set; }
+		public IDC_Identity<TKey> DataContext { get; private set; }
 		public IdentityOptions Options { get; private set; }
 
 		public IdentityManager(
-			Func<IHttpContext> httpContext,
-			Func<IDC_Identity<TKey>> dataContext,
+			IHttpContext httpContext,
+			IDC_Identity<TKey> dataContext,
 			IdentityOptions options = null)
 		{
 			HttpContext = httpContext;
@@ -26,66 +26,66 @@ namespace Nephrite.Identity
 			Options = options ?? new IdentityOptions();
 		}
 
-		public static void Init(
-			Func<IHttpContext> httpContext,
-			Func<IDC_Identity<TKey>> dataContext,
-			IdentityOptions options = null
-			)
-		{
-			if (_instanceHolder == null)
-			{
-				lock (LockObject)
-				{
-					_instanceHolder = new IdentityManager<TKey>(httpContext, dataContext, options);
-					return;
-				}
-			}
+		//public static void Init(
+		//	Func<IHttpContext> httpContext,
+		//	Func<IDC_Identity<TKey>> dataContext,
+		//	IdentityOptions options = null
+		//	)
+		//{
+		//	if (_instanceHolder == null)
+		//	{
+		//		lock (LockObject)
+		//		{
+		//			_instanceHolder = new IdentityManager<TKey>(httpContext, dataContext, options);
+		//			return;
+		//		}
+		//	}
 
-			throw new ApplicationException("Initalize() method should be called only once.");
-		}
+		//	throw new ApplicationException("Initalize() method should be called only once.");
+		//}
 
-		public static IIdentityManager<TKey> Instance
-		{
-			get
-			{
-				if (_instanceHolder == null)
-				{
-					throw new ApplicationException("IdentityManager instance hasn't been initialized.");
-				}
+		//public static IIdentityManager<TKey> Instance
+		//{
+		//	get
+		//	{
+		//		if (_instanceHolder == null)
+		//		{
+		//			throw new ApplicationException("IdentityManager instance hasn't been initialized.");
+		//		}
 
-				return _instanceHolder;
-			}
-		}
+		//		return _instanceHolder;
+		//	}
+		//}
 
 		public Subject<TKey> CurrentSubject
 		{
 			get
 			{
-				var ctx = HttpContext();
+				var ctx = HttpContext;
 				if (ctx.Items["CurrentSubject2"] != null)
 					return ctx.Items["CurrentSubject2"] as Subject<TKey>;
 
 				Subject<TKey> s = null;
 				if (!Options.Enabled)
 				{
-					s = DataContext().SubjectFromName<Subject<TKey>>("anonymous");
+					s = DataContext.SubjectFromName<Subject<TKey>>("anonymous");
 				}
 				else
 				{
-					if (ctx.User == null) s = DataContext().SubjectFromName<Subject<TKey>>("anonymous");
+					if (ctx.User == null) s = DataContext.SubjectFromName<Subject<TKey>>("anonymous");
 
 					WindowsIdentity wi = ctx.User.Identity as WindowsIdentity;
 					if (wi != null && !wi.IsAnonymous)
 					{
-						s = DataContext().SubjectFromSID<Subject<TKey>>(wi.User.Value);
-						if (s == null) s = DataContext().SubjectFromName<Subject<TKey>>("anonymous");
+						s = DataContext.SubjectFromSID<Subject<TKey>>(wi.User.Value);
+						if (s == null) s = DataContext.SubjectFromName<Subject<TKey>>("anonymous");
 					}
 					else
 					{
 						if (ctx.User.Identity.AuthenticationType == "Forms")
-							s = DataContext().SubjectFromName<Subject<TKey>>(ctx.User.Identity.Name);
+							s = DataContext.SubjectFromName<Subject<TKey>>(ctx.User.Identity.Name);
 						else
-							s = DataContext().SubjectFromName<Subject<TKey>>("anonymous");
+							s = DataContext.SubjectFromName<Subject<TKey>>("anonymous");
 					}
 				}
 				ctx.Items["CurrentSubject2"] = s;
@@ -98,7 +98,7 @@ namespace Nephrite.Identity
 			get
 			{
 				var name = Options.SystemSubjectName;
-				var s = DataContext().SubjectFromName<Subject<TKey>>(name);
+				var s = DataContext.SubjectFromName<Subject<TKey>>(name);
 				if (s == null) throw new Exception(String.Format("Учетная запись {0} не зарегистрирована в системе", name));
 				return s;
 			}
@@ -107,9 +107,9 @@ namespace Nephrite.Identity
 		public void RunAs(TKey sid, Action action)
 		{
 			var oldSubject2 = Subject.Current;
-			HttpContext().Items["CurrentSubject2"] = DataContext().SubjectFromID<Subject<TKey>>(sid);
+			HttpContext.Items["CurrentSubject2"] = DataContext.SubjectFromID<Subject<TKey>>(sid);
 			action();
-			HttpContext().Items["CurrentSubject2"] = oldSubject2;
+			HttpContext.Items["CurrentSubject2"] = oldSubject2;
 		}
 	}
 

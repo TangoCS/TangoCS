@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Data.Linq.SqlClient;
+using Nephrite.MVC;
 using Nephrite.Web.View;
 
 
@@ -20,6 +20,9 @@ namespace Nephrite.Web.Controls
 
 			ModalDialogManager mdm = new ModalDialogManager();
 			ph.Controls.Add(mdm);
+
+			var request = HttpContext.Current.Request;
+			var Query = new Url(request.Url.PathAndQuery, request.RequestContext.RouteData.Values);
 
 			if (Query.GetString("op").IsEmpty())
 			{

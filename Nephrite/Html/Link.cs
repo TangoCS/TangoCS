@@ -27,6 +27,5 @@ namespace Nephrite.Html
 		public string AccessKey { get; set; }
 		public object Attributes { get; set; }
 		public string Href { get; set; }
-		public string SecurableObjectKey { get; set; }
 	}
 }

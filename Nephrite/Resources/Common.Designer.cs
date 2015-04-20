@@ -160,6 +160,15 @@ namespace Nephrite.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Test.
+        /// </summary>
+        public static string Test {
+            get {
+                return ResourceManager.GetString("Test", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Добро пожаловать в систему!.
         /// </summary>
         public static string Welcome {

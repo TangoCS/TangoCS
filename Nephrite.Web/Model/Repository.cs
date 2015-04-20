@@ -14,6 +14,7 @@ using Nephrite.Meta;
 using System.Data.SqlClient;
 using Nephrite.Web.Versioning;
 using Nephrite.Multilanguage;
+using Nephrite.Data;
 
 namespace Nephrite.Web
 { 

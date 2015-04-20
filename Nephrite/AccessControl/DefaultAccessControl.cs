@@ -15,14 +15,17 @@ namespace Nephrite.AccessControl
 		public AccessControlOptions Options { get; private set; }
 		public IDefaultAccessControlDataContext<TIdentityKey> DataContext { get; private set; }
 		public IIdentityManager<TIdentityKey> IdentityManager { get; private set; }
+		public IPredicateLoader PredicateLoader { get; private set; }
 
 		public DefaultAccessControl(
 			IDefaultAccessControlDataContext<TIdentityKey> dataContext,
 			IIdentityManager<TIdentityKey> identityManager,
+			IPredicateLoader predicateLoader,
 			AccessControlOptions options = null)
 		{
 			DataContext = dataContext;
 			IdentityManager = identityManager;
+			PredicateLoader = predicateLoader;
 			Options = options ?? new AccessControlOptions { Enabled = () => true };
 			Log = new StringBuilder();
 		}
@@ -46,6 +49,16 @@ namespace Nephrite.AccessControl
 		public bool CheckForRole(TIdentityKey roleID, string securableObjectKey)
 		{
 			throw new NotImplementedException();
+		}
+
+		public CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
+		{
+			var pc = new PredicateChecker(PredicateLoader, Options);
+			BoolResult res1 = pc.Check(securableObjectKey, predicateContext);
+			if (!res1.Value) return new CheckWithPredicateResult(res1.Value, CheckWithPredicateResultCode.Predicate, res1.Message);
+
+			bool res2 = Check(securableObjectKey, defaultAccess);
+			return new CheckWithPredicateResult(res2, res2 ? CheckWithPredicateResultCode.AccessGranted : CheckWithPredicateResultCode.Subject);
 		}
 
 		public virtual bool Check(string securableObjectKey, bool defaultAccess = false)
@@ -122,15 +135,18 @@ namespace Nephrite.AccessControl
 		public CacheableAccessControlOptions Options { get; private set; }
 		public ICacheableAccessControlDataContext<TIdentityKey> DataContext { get; private set; }
 		public IIdentityManager<TIdentityKey> IdentityManager { get; private set; }
+		public IPredicateLoader PredicateLoader { get; private set; }
 
 		public CacheableAccessControl(
 			ICacheableAccessControlDataContext<TIdentityKey> dataContext,
 			IIdentityManager<TIdentityKey> identityManager,
+			IPredicateLoader predicateLoader,
 			CacheableAccessControlOptions options = null)
 		{
 			DataContext = dataContext;
 			IdentityManager = identityManager;
-			Options = options ?? new CacheableAccessControlOptions { Enabled = () => true };
+			PredicateLoader = predicateLoader;
+			Options = options ?? new CacheableAccessControlOptions { Enabled = () => true, ClassName = GetType().Name };
 			Log = new StringBuilder();
 		}
 
@@ -167,6 +183,17 @@ namespace Nephrite.AccessControl
 				return false;
 			}
 		}
+
+		public CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
+		{
+			var pc = new PredicateChecker(PredicateLoader, Options);
+			BoolResult res1 = pc.Check(securableObjectKey, predicateContext);
+			if (!res1.Value) return new CheckWithPredicateResult(res1.Value, CheckWithPredicateResultCode.Predicate, res1.Message);
+
+			bool res2 = Check(securableObjectKey, defaultAccess);
+			return new CheckWithPredicateResult(res2, res2 ? CheckWithPredicateResultCode.AccessGranted : CheckWithPredicateResultCode.Subject);
+		}
+
 
 		public bool Check(string securableObjectKey, bool defaultAccess = false)
 		{
@@ -256,5 +283,22 @@ namespace Nephrite.AccessControl
 	public class CacheableAccessControlOptions : AccessControlOptions
 	{
 		public string ClassName { get; set; }
+	}
+
+	public class CheckWithPredicateResult : BoolResult
+	{
+		public CheckWithPredicateResultCode Code { get; private set; }
+		public CheckWithPredicateResult(bool value, CheckWithPredicateResultCode code, string message = "")
+			: base(value, message)
+		{
+			Code = code;
+		}
+	}
+
+	public enum CheckWithPredicateResultCode
+	{
+		Predicate = 2,
+		Subject = 1,
+		AccessGranted = 0
 	}
 }

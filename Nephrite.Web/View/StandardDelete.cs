@@ -6,6 +6,7 @@ using System.Web.UI.WebControls;
 using Nephrite.Web.Controls;
 
 using Nephrite.Layout;
+using Nephrite.MVC;
 
 namespace Nephrite.Web.View
 {

@@ -10,10 +10,11 @@ using Nephrite.Meta;
 
 using Nephrite.Layout;
 using Nephrite.Http;
+using Nephrite.Data;
 
 namespace Nephrite.Web.Controls
 {
-	public class FormCriteria : System.Web.UI.UserControl
+	public class FormCriteria : BaseUserControl
 	{
 		IFormCriteriaFactory _factory = null;
 		Button bOK = new Button();
@@ -117,7 +118,7 @@ namespace Nephrite.Web.Controls
 
 		public IQueryable<T> Apply(IQueryable<T> viewData)
 		{
-			bool b = Query.GetString("r") == "1";
+			bool b = UrlHelper.Current().GetString("r") == "1";
 			foreach (Criteria<T> c in _criteries.Values)
 				if (b && c.Visible() && c.Predicate != null && c.HasValue())
 					viewData = viewData.Where(c.Predicate());
@@ -212,14 +213,14 @@ namespace Nephrite.Web.Controls
 		}
 
 		public CriteriaSingleObject<T, ST> AddSingleObject<ST>(string name, string caption, bool isRequired)
-			where ST : IModelObject, new()
+			where ST : IEntity, IModelObject, new()
 		{
 			CriteriaSingleObject<T, ST> res = new CriteriaSingleObject<T, ST>(Form, name, caption, isRequired);
 			_criteries.Add(res.Name, res);
 			return res;
 		}
 		public CriteriaMultiObject<T, ST> AddMultiObject<ST>(string name, string caption, bool isRequired)
-			where ST : IModelObject, new()
+			where ST : IEntity, IModelObject, new()
 		{
 			CriteriaMultiObject<T, ST> res = new CriteriaMultiObject<T, ST>(Form, name, caption, isRequired);
 			_criteries.Add(res.Name, res);
@@ -586,7 +587,7 @@ namespace Nephrite.Web.Controls
 	}
 
 	public class CriteriaSingleObject<T, ST> : Criteria<T>
-		where ST : IModelObject, new()
+		where ST : IEntity, IModelObject, new()
 	{
 		public SingleObject SingleObject { get; set; }
 
@@ -647,7 +648,7 @@ namespace Nephrite.Web.Controls
 	}
 
 	public class CriteriaMultiObject<T, ST> : Criteria<T>
-	where ST : IModelObject, new()
+	where ST : IEntity, IModelObject, new()
 	{
 		public MultiObject MultiObject { get; set; }
 

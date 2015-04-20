@@ -6,12 +6,14 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using Nephrite.Web;
 using Nephrite.Http;
+using Nephrite.MVC;
 using System.Text.RegularExpressions;
+using Nephrite.Layout;
 
 
 namespace Nephrite.Web.Controls
 {
-    public partial class NavMenuEx : System.Web.UI.UserControl
+    public partial class NavMenuEx : BaseUserControl
     {
 		protected List<NavMenuItem> Groups { get; set; }
 		protected NavMenuItem CurrentGroup { get; set; }
@@ -31,7 +33,8 @@ namespace Nephrite.Web.Controls
             if (Groups == null) return;
             for (int i = Groups.Count - 1; i >= 0; i--)
             {
-                if (Groups[i].Url.GetQueryParameter("bgroup").ToLower() == Query.GetString("bgroup"))
+				var u = new Url(Groups[i].Url);
+                if (u.GetString("bgroup").ToLower() == Query.GetString("bgroup").ToLower())
                 {
                     CurrentGroup = Groups[i];
                     //Groups.RemoveAt(i);
@@ -60,7 +63,7 @@ namespace Nephrite.Web.Controls
 				return menuItem.Control;
 			string img = "";
 			if (!String.IsNullOrEmpty(menuItem.Icon))
-				img = HtmlHelperBase.Instance.Image(menuItem.Icon, menuItem.Title);
+				img = AppLayout.Current.Image(menuItem.Icon, menuItem.Title).ToString();
 			return String.Format(@"<a href='{0}'>{1}{2}</a>", menuItem.Url, img, menuItem.Title + (menuItem.Expression.IsEmpty() ? "" : (" " + menuItem.EvaluateExpression())));
 		}
     }
