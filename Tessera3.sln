@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Framework.Interna
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Framework.DependencyInjection", "Microsoft.Framework.DependencyInjection\Microsoft.Framework.DependencyInjection.csproj", "{C73E03EF-AC54-434F-8D40-41724AAB5FA7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportData2", "ImportData2\ImportData2.csproj", "{6729E69A-BB79-46DC-A576-F6C4DFE43360}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -198,6 +200,16 @@ Global
 		{C73E03EF-AC54-434F-8D40-41724AAB5FA7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{C73E03EF-AC54-434F-8D40-41724AAB5FA7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{C73E03EF-AC54-434F-8D40-41724AAB5FA7}.Release|x86.ActiveCfg = Release|Any CPU
+		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
