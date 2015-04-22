@@ -46,7 +46,7 @@ namespace Nephrite.Web.CoreDataContext
 					case Nephrite.Web.DBType.MSSQL: c.Dialect<MsSql2008Dialect>(); break;
 					case Nephrite.Web.DBType.DB2: c.Dialect<DB2Dialect>(); break;
 					case Nephrite.Web.DBType.ORACLE: c.Dialect<Oracle10gDialect>(); break;
-					case Nephrite.Web.DBType.POSTGRESQL: c.Dialect<PostgreSQLDialect>(); break;
+					case Nephrite.Web.DBType.POSTGRESQL: c.Dialect<PostgreSQL82Dialect>(); break;
 					default: c.Dialect<MsSql2008Dialect>(); break;
 				}
 

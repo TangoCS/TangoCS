@@ -83,7 +83,7 @@ namespace ImportData2
 			{
 				Console.WriteLine(@"Таблица " + table.Name + " start");
 
-				if (table.Name.ToLower() != "n_filedata")
+				//if (table.Name.ToLower() != "n_filedata")
 					ImportData(table, table.Columns.Any(t => t.Value.Identity), sqlCon, result);
 
 				File.AppendAllText(filePath, result.ToString());
@@ -163,7 +163,7 @@ namespace ImportData2
 					StringCollection sc = new StringCollection();
 					for (int i = 0; i < reader.FieldCount; i++)
 					{
-						sc.Add(GetStringValue(reader, i).Replace("\\", ""));
+						sc.Add(GetStringValue(reader, i));
 					}
 					sqlInsert.AppendFormat("INSERT INTO dbo.{0} ({1}) VALUES ({2});\r\n", t.Name.ToLower(), columns.ToLower().Replace("[", "").Replace("]", ""), string.Join(",", sc.Cast<string>().ToArray<string>()));
 				}
@@ -224,19 +224,19 @@ namespace ImportData2
 					case "bigint":
 						return reader.GetInt64(index).ToString();
 					case "nvarchar":
-						return ("N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'").CuttingText();
+						return ("N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'").CuttingText().Replace("\\", "");
 					case "varchar":
-						return ("N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'").CuttingText();
+						return ("N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'").CuttingText().Replace("\\", "");
 					case "bit":
 						return reader.GetBoolean(index) ? "true" : "false";
 					case "uniqueidentifier":
 						return String.Format("CAST('{0}' AS uuid)", reader.GetGuid(index).ToString());
 					case "char":
-						return "N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'";
+						return "N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ").Replace("\\", "") + "'";
 					case "nchar":
-						return ("N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'").CuttingText(); ;
+						return ("N'" + reader.GetString(index).Replace("'", "''").Replace("\0", " ") + "'").CuttingText().Replace("\\", ""); ;
 					case "text":
-						return ("N'" + reader.GetString(index).Replace("'", "''") + "'").CuttingText(); ;
+						return ("N'" + reader.GetString(index).Replace("'", "''") + "'").CuttingText().Replace("\\", "");
 					case "decimal":
 						return reader.GetDecimal(index).ToString(CultureInfo.InvariantCulture);
 					case "date":
@@ -248,15 +248,15 @@ namespace ImportData2
 						byte[] data = reader.GetSqlBytes(index).Value;
 						for (int x = 0; x < data.Length; x++)
 							result.Append(data[x].ToString("X2"));
-						return string.Format("bytea('{0}')", result.ToString());
+						return string.Format("bytea('\\x{0}')", result.ToString());
 					case "xml":
-						return String.Format("'{0}'", reader.GetSqlXml(index).Value.Replace("'", "''"));
+						return String.Format("'{0}'", reader.GetSqlXml(index).Value.Replace("'", "''").Replace("\\", ""));
 					case "varbinary":
 						StringBuilder result1 = new StringBuilder();
 						byte[] data1 = reader.GetSqlBytes(index).Value;
 						for (int x = 0; x < data1.Length; x++)
 							result1.Append(data1[x].ToString("X2"));
-						return string.Format("bytea('{0}')", result1.ToString());
+						return string.Format("bytea('\\x{0}')", result1.ToString());
 					default:
 						throw new Exception("unknown data type: " + reader.GetDataTypeName(index));
 				}
