@@ -187,7 +187,7 @@ namespace Nephrite.Meta.Database
 
 			}
 
-			_MainScripts.Add(string.Format("ALTER TABLE {3}.{0} DROP COLUMN IF EXISTS {1};", currentTable.Name.ToLower(), currentColumn.Name.ToLower(), _SchemaName));
+			_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP COLUMN IF EXISTS {1};", currentTable.Name.ToLower(), currentColumn.Name.ToLower(), _SchemaName));
 		}
 
 		public void AddColumn(Column srcColumn)
@@ -312,7 +312,8 @@ namespace Nephrite.Meta.Database
 
 		public void AddDefaultValue(Column srcColumn)
 		{
-			_MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} SET DEFAULT {3};", srcColumn.Name.ToLower(), srcColumn.Table.Name.ToLower(), _SchemaName, GetDefaultValue(srcColumn.DefaultValue, srcColumn.Type.GetDBType(this))));
+			if (!string.IsNullOrEmpty(srcColumn.DefaultValue)) 
+				_MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} SET DEFAULT {3};", srcColumn.Name.ToLower(), srcColumn.Table.Name.ToLower(), _SchemaName, GetDefaultValue(srcColumn.DefaultValue, srcColumn.Type.GetDBType(this))));
 		}
 
 		public void DeleteIndex(Index currentIndex)
