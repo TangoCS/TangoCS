@@ -42,6 +42,14 @@ namespace Nephrite.MVC
 			var t = _actionContext.RouteData.Values[MvcOptions.ControllerName].ToString() + "Controller";
 			var m = _actionContext.RouteData.Values[MvcOptions.ActionName].ToString();
 			Type controllerType = ControllersCache.Get(t);
+			if (controllerType == null)
+			{
+				res = new MessageResult(string.Format("Controller class {0} not found", t));
+				res.ExecuteResult(_actionContext);
+				return;
+			}
+
+
 			Controller controller = Activator.CreateInstance(controllerType) as Controller;
 
 			controller.ActionContext = _actionContext;

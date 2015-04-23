@@ -28,6 +28,7 @@ using NHibernate.Impl;
 using System.Linq.Expressions;
 using System.Diagnostics;
 using Nephrite.Data;
+using Nephrite.Identity;
 
 
 
@@ -237,7 +238,7 @@ namespace Nephrite.Web.Hibernate
 
 				foreach (var action in BeforeSaveActions) action();
 				foreach (object obj in ToDelete) _session.Delete(obj);
-				foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
+				foreach (object obj in ToInsert) { SetTimeStamp(obj); _session.SaveOrUpdate(obj); }
 				foreach (object obj in ToAttach) _session.Merge(obj);
 
 				ToDelete.Clear();
@@ -246,7 +247,7 @@ namespace Nephrite.Web.Hibernate
 
 				foreach (var action in AfterSaveActions) action();
 				foreach (object obj in ToDelete) _session.Delete(obj);
-				foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
+				foreach (object obj in ToInsert) { SetTimeStamp(obj); _session.SaveOrUpdate(obj); }
 				foreach (object obj in ToAttach) _session.Merge(obj);
 				
 				ToDelete.Clear();
@@ -266,6 +267,20 @@ namespace Nephrite.Web.Hibernate
 				//_session.FlushMode = FlushMode.Commit;
 				//_session.Close();
 				//_session.Dispose();
+			}
+		}
+
+		void SetTimeStamp(object obj)
+		{
+			int sid = -1;
+
+			if (obj is IWithTimeStamp)
+			{
+				if (sid == -1) sid = Subject.Current.ID;
+
+				var obj2 = obj as IWithTimeStamp;
+				obj2.LastModifiedDate = DateTime.Now;
+				obj2.LastModifiedUserID = sid;
 			}
 		}
 

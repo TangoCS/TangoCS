@@ -104,6 +104,9 @@ namespace Nephrite.Web.Controls
 			itemsCount = tquery.Count();
 			if (PageSize == 0)
 				return tquery;
+
+			if (!UsePostBack) PageIndex = Query.GetInt("page", 1);
+
 			if (PageIndex == 0) PageIndex = 1;
 			
 			int pageCount = (int)Math.Ceiling((float)itemsCount / (float)PageSize);

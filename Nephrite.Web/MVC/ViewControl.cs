@@ -81,7 +81,11 @@ namespace Nephrite.Web
 		Paging paging = null;
 		public Paging GetPaging()
 		{
-			if (paging == null) paging = new Paging();
+			if (paging == null)
+			{
+				paging = new Paging();
+				paging.Query = Query;
+			}
 			return paging;
 		}
 

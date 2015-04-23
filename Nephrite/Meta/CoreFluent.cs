@@ -148,7 +148,7 @@ namespace Nephrite.Meta.Fluent
 		{
 			_op.ViewClass = "ViewControl";
 			_op.ViewName = viewName;
-			WithDTOClass(DTOClassKind.Queryable);
+			WithDTOClass(_op.Parent.IsMultilingual ? ("V_" + _op.Parent.Name) : _op.Parent.Name, DTOClassKind.Queryable);
 			return this;
 		}
 
