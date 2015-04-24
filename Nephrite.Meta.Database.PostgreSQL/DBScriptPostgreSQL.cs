@@ -54,8 +54,7 @@ namespace Nephrite.Meta.Database
 														 srcColumn.Value.Identity ? "serial" : srcColumn.Value.Type.GetDBType(this),
 														 srcColumn.Value.Nullable ? "NULL" : "NOT NULL",
 														 (!srcColumn.Value.Identity && !string.IsNullOrEmpty(srcColumn.Value.DefaultValue) ? string.Format(" DEFAULT {0}", GetDefaultValue(srcColumn.Value.DefaultValue, srcColumn.Value.Type.GetDBType(this))) : "")
-														) : 
-														 string.Format("\t{0} GENERATED ALWAYS AS (\"{1}\"),\r\n", srcColumn.Value.Name.ToLower(), srcColumn.Value.ComputedText.Replace("getdate", "now"))
+														) : ""
 														 )).Trim().TrimEnd(',');
 
 			tableScript = string.Format(tableScript, columnsScript);
@@ -74,8 +73,11 @@ namespace Nephrite.Meta.Database
 													  string.Join(",", srcTable.PrimaryKey.Columns).ToLower(),
 													  _SchemaName);// {0)- TableName  {1} - Constraint Name, {2} - Columns,{3} - Ref Table ,{4} - Ref Columns
 			}
-
-
+			
+			foreach(var srcColumn in srcTable.Columns.Where(o => !string.IsNullOrEmpty(o.Value.ComputedText)).Select(o => o.Value))
+			{
+				AddComputedColumn(srcColumn);
+			}
 			_MainScripts.Add(tableScript);
 		}
 
@@ -120,6 +122,10 @@ namespace Nephrite.Meta.Database
 				currentTable.ForeignKeys.Clear();
 			}
 
+			foreach (var srcColumn in currentTable.Columns.Where(o => !string.IsNullOrEmpty(o.Value.ComputedText)).Select(o => o.Value))
+			{
+				DeleteComputedColumn(srcColumn);
+			}
 			_MainScripts.Add(string.Format("DROP TABLE IF EXISTS {1}.{0};", currentTable.Name.ToLower(), _SchemaName));
 		}
 
@@ -188,6 +194,10 @@ namespace Nephrite.Meta.Database
 			}
 
 			_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP COLUMN IF EXISTS {1};", currentTable.Name.ToLower(), currentColumn.Name.ToLower(), _SchemaName));
+			if (!string.IsNullOrEmpty(currentColumn.ComputedText))
+			{
+				DeleteComputedColumn(currentColumn);
+			}
 		}
 
 		public void AddColumn(Column srcColumn)
@@ -213,7 +223,8 @@ namespace Nephrite.Meta.Database
 			var srcTable = srcColumn.Table;
 			if (!string.IsNullOrEmpty(srcColumn.ComputedText))
 			{
-				DeleteColumn(srcColumn);
+				_MainScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP COLUMN IF EXISTS {1};", srcColumn.Table.Name.ToLower(), srcColumn.Name.ToLower(), _SchemaName));
+				DeleteComputedColumn(srcColumn);
 				AddComputedColumn(srcColumn);
 			}
 			else
@@ -250,9 +261,15 @@ namespace Nephrite.Meta.Database
 			}
 		}
 
+		public void DeleteComputedColumn(Column srcColumn)
+		{
+			_MainScripts.Add(string.Format("DROP FUNCTION IF EXISTS {2}.{0}({1});",	srcColumn.Name.ToLower(), srcColumn.Table.Name.ToLower(), _SchemaName));
+		}
+		
 		public void AddComputedColumn(Column srcColumn)
 		{
-			//throw new NotImplementedException();
+			_MainScripts.Add(string.Format("CREATE OR REPLACE FUNCTION {4}.{0}({1}) RETURNS {2} AS $BODY$ {3} $BODY$ LANGUAGE sql STABLE STRICT;",
+					srcColumn.Name.ToLower(), srcColumn.Table.Name.ToLower(), srcColumn.Type.GetDBType(this), srcColumn.ComputedText, _SchemaName));
 		}
 
 		public void DeleteTrigger(Trigger currentTrigger)
@@ -267,7 +284,7 @@ namespace Nephrite.Meta.Database
 
 		public void DeleteView(View currentView)
 		{
-			_MainScripts.Add(string.Format("DROP VIEW IF EXISTS {1}.{0};", currentView.Name.ToUpper(), _SchemaName));
+			_MainScripts.Add(string.Format("DROP VIEW IF EXISTS {1}.{0};", currentView.Name.ToLower(), _SchemaName));
 		}
 
 		public void CreateView(View srcView)
@@ -287,7 +304,7 @@ namespace Nephrite.Meta.Database
 
 		public void DeleteFunction(Function currentFunction)
 		{
-			_MainScripts.Add(string.Format("DROP FUNCTION IF EXISTS {1}.{0};", currentFunction.Name.ToLower(), _SchemaName));
+			_MainScripts.Add(string.Format("DROP FUNCTION IF EXISTS {2}.{0}({1});", currentFunction.Name.ToLower(), currentFunction.Parameters.Select(o => o.Value.Type.GetDBType(this).ToLower()).Join(","), _SchemaName));
 		}
 
 		public void CreateFunction(Function srcFunction)
@@ -297,7 +314,7 @@ namespace Nephrite.Meta.Database
 
 		public void DeleteTableFunction(TableFunction currentFunction)
 		{
-			_MainScripts.Add(string.Format("DROP FUNCTION IF EXISTS {1}.{0};", currentFunction.Name, _SchemaName));
+			_MainScripts.Add(string.Format("DROP FUNCTION IF EXISTS {2}.{0}({1});", currentFunction.Name.ToLower(), currentFunction.Parameters.Select(o => o.Value.Type.GetDBType(this).ToLower()).Join(","), _SchemaName));
 		}
 
 		public void CreateTableFunction(TableFunction srcFunction)
@@ -318,7 +335,7 @@ namespace Nephrite.Meta.Database
 
 		public void DeleteIndex(Index currentIndex)
 		{
-			_MainScripts.Add(string.Format("DROP INDEX IF EXISTS {1}.{0};", currentIndex.Name, _SchemaName));
+			_MainScripts.Add(string.Format("DROP INDEX IF EXISTS {1}.{0};", currentIndex.Name.ToLower(), _SchemaName));
 		}
 
 		public void SyncIdentityColumn(Column srcColumn)
