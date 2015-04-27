@@ -74,11 +74,11 @@ namespace Nephrite.Meta.Database
 													  _SchemaName);// {0)- TableName  {1} - Constraint Name, {2} - Columns,{3} - Ref Table ,{4} - Ref Columns
 			}
 			
-			foreach(var srcColumn in srcTable.Columns.Where(o => !string.IsNullOrEmpty(o.Value.ComputedText)).Select(o => o.Value))
+			_MainScripts.Add(tableScript);
+			foreach (var srcColumn in srcTable.Columns.Where(o => !string.IsNullOrEmpty(o.Value.ComputedText)).Select(o => o.Value))
 			{
 				AddComputedColumn(srcColumn);
 			}
-			_MainScripts.Add(tableScript);
 		}
 
 		public void DeleteTable(Table currentTable)
