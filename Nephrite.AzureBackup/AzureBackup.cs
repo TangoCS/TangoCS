@@ -37,7 +37,7 @@ namespace Nephrite.AzureBackup
 					lastblob.UploadFromStream(fileStream);
 				}
 
-				var curdate = DateTime.Now.ToUniversalTime();
+				var curdate = DateTime.Today.ToUniversalTime();
 				var onemonthdate = curdate.AddMonths(-1);
 				var sevendaydate = curdate.AddDays(-7);
 				var listblob = container.ListBlobs().Cast<CloudBlockBlob>();
@@ -48,73 +48,74 @@ namespace Nephrite.AzureBackup
 
 				int week2 = 1, week3 = 1, week4 = 1, week5 = 1;
 				foreach (var blob in listblob.Where(o => sevendaydate > o.Properties.LastModified.Value.DateTime &&
-						onemonthdate <= o.Properties.LastModified.Value.DateTime).OrderByDescending(o => o.Properties.LastModified))
+						onemonthdate <= o.Properties.LastModified.Value.DateTime).OrderBy(o => o.Properties.LastModified))
 				{
-					if (curdate <= blob.Properties.LastModified.Value.DateTime.AddDays(14))
+					if (curdate.AddDays(-14) <= blob.Properties.LastModified.Value.DateTime && blob.Properties.LastModified.Value.DateTime < sevendaydate)
 					{
 						if (week2 != 1) blob.Delete();
 						week2++;
 					}
 					else
-						if (curdate <= blob.Properties.LastModified.Value.DateTime.AddDays(21))
-						{
-							if (week3 != 1) blob.Delete();
-							week3++;
-						}
-						else
-							if (curdate <= blob.Properties.LastModified.Value.DateTime.AddDays(28))
-							{
-								if (week4 != 1) blob.Delete();
-								week4++;
-							}
-							else
-							{
-								if (week5 != 1) blob.Delete();
-								week5++;
-							}
-
+					if (curdate.AddDays(-21) <= blob.Properties.LastModified.Value.DateTime && blob.Properties.LastModified.Value.DateTime < curdate.AddDays(-14))
+					{
+						if (week3 != 1) blob.Delete();
+						week3++;
+					}
+					else
+					if (curdate.AddDays(-28) <= blob.Properties.LastModified.Value.DateTime && blob.Properties.LastModified.Value.DateTime < curdate.AddDays(-21))
+					{
+						if (week4 != 1) blob.Delete();
+						week4++;
+					}
+					else
+					if (onemonthdate <= blob.Properties.LastModified.Value.DateTime && blob.Properties.LastModified.Value.DateTime < curdate.AddDays(-28))
+					{
+						if (week5 != 1) blob.Delete();
+						week5++;
+					}
 				}
 
 				int day1 = 1, day2 = 1, day3 = 1, day4 = 1, day5 = 1, day6 = 1, day7 = 1;
 				foreach (var blob in listblob.Where(o => sevendaydate <= o.Properties.LastModified.Value.DateTime)
 											.OrderByDescending(o => o.Properties.LastModified))
 				{
-					if (curdate <= blob.Properties.LastModified.Value.DateTime.AddDays(1))
+					if (curdate.AddDays(-1) <= blob.Properties.LastModified.Value.DateTime && blob.Properties.LastModified.Value.DateTime < curdate)
 					{
 						if (day1 != 1) blob.Delete();
 						day1++;
 					}
 					else
-					if (curdate <= blob.Properties.LastModified.Value.DateTime.AddDays(2))
+					if (curdate.AddDays(-2) <= blob.Properties.LastModified.Value.DateTime && blob.Properties.LastModified.Value.DateTime < curdate.AddDays(-1))
 					{
 						if (day2 != 1) blob.Delete();
 						day2++;
 					}
 					else
-					if (curdate <= blob.Properties.LastModified.Value.DateTime.AddDays(3))
+					if (curdate.AddDays(-3) <= blob.Properties.LastModified.Value.DateTime && blob.Properties.LastModified.Value.DateTime < curdate.AddDays(-2))
 					{
 						if (day3 != 1) blob.Delete();
 						day3++;
 					}
 					else
-					if (curdate <= blob.Properties.LastModified.Value.DateTime.AddDays(4))
+					if (curdate.AddDays(-4) <= blob.Properties.LastModified.Value.DateTime && blob.Properties.LastModified.Value.DateTime < curdate.AddDays(-3))
 					{
 						if (day4 != 1) blob.Delete();
 						day4++;
 					}
 					else
-					if (curdate <= blob.Properties.LastModified.Value.DateTime.AddDays(5))
+					if (curdate.AddDays(-5) <= blob.Properties.LastModified.Value.DateTime && blob.Properties.LastModified.Value.DateTime < curdate.AddDays(-4))
 					{
 						if (day5 != 1) blob.Delete();
 						day5++;
 					}
 					else
-					if (curdate <= blob.Properties.LastModified.Value.DateTime.AddDays(6))
+					if (curdate.AddDays(-6) <= blob.Properties.LastModified.Value.DateTime && blob.Properties.LastModified.Value.DateTime < curdate.AddDays(-5))
 					{
 						if (day6 != 1) blob.Delete();
 						day6++;
 					}
 					else
+					if (curdate.AddDays(-7) <= blob.Properties.LastModified.Value.DateTime && blob.Properties.LastModified.Value.DateTime < curdate.AddDays(-6))
 					{
 						if (day7 != 1) blob.Delete();
 						day7++;

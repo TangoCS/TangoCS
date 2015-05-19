@@ -25,21 +25,20 @@ namespace Nephrite.AzureBackup
 				new ProcessStartInfo
 				{
 					FileName = "backup_pgsql.bat",
-					Arguments = string.Format("{0} {1} {2} {3} {4} {5}", b.Host, b.Port, b.UserName, Encoding.UTF8.GetString(b.PasswordAsByteArray), pathbackup, b.Database),
+					Arguments = string.Format("{0} {1} {2} {3} {4} {5}", b.Host, b.Port, b.UserName, 
+												Encoding.UTF8.GetString(b.PasswordAsByteArray), pathbackup, b.Database),
 					WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
 					WindowStyle = ProcessWindowStyle.Hidden,
 					CreateNoWindow = true,
 					UseShellExecute = false
 				});
 
-			p.WaitForExit(900000);
+			p.WaitForExit(600000);
 			p.Close();
 
 			string sharefile = Path.Combine(sharePath, filename);
 
 			fullpath = Path.Combine(fullpath, filename);
-
-			//File.Delete(fullpath);
 
 			if (!File.Exists(sharefile)) return;
 
@@ -65,9 +64,17 @@ namespace Nephrite.AzureBackup
 				zf.Close();
 			}
 
-			var azurebackup = new AzureBackup(connectionStringAzure);
-			azurebackup.Save(zipname, Path.GetFileName(zipname), "backup-pgsql-" + b.Database.ToLower());
-
+			try
+			{
+				var azurebackup = new AzureBackup(connectionStringAzure);
+				azurebackup.Save(zipname, Path.GetFileName(zipname), "backup-pgsql-" + b.Database.ToLower());
+			}
+			catch
+			{
+				File.Delete(fullpath);
+				File.Delete(zipname);
+				throw;
+			}
 			File.Delete(fullpath);
 			File.Delete(zipname);
 		}

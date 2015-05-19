@@ -75,9 +75,17 @@ namespace Nephrite.AzureBackup
 				zf.Close();
 			}
 
-			var azurebackup = new AzureBackup(connectionStringAzure);
-			azurebackup.Save(zipname, Path.GetFileName(zipname), "backup-db2-" + db.Database.ToLower());
-
+			try
+			{
+				var azurebackup = new AzureBackup(connectionStringAzure);
+				azurebackup.Save(zipname, Path.GetFileName(zipname), "backup-db2-" + db.Database.ToLower());
+			}
+			catch
+			{
+				File.Delete(fullpath);
+				File.Delete(zipname);
+				throw;
+			}
 			File.Delete(fullpath);
 			File.Delete(zipname);
 		}
