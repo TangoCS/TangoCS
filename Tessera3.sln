@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Framework.Depende
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportData2", "ImportData2\ImportData2.csproj", "{6729E69A-BB79-46DC-A576-F6C4DFE43360}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nephrite.AzureBackup", "Nephrite.AzureBackup\Nephrite.AzureBackup.csproj", "{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -210,6 +212,16 @@ Global
 		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Release|x86.ActiveCfg = Release|Any CPU
+		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
