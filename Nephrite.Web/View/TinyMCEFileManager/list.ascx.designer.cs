@@ -7,6 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
+using Nephrite.Web.Controls;
 namespace Nephrite.Web.View {
     
     
@@ -19,15 +20,6 @@ namespace Nephrite.Web.View {
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::Nephrite.Web.Controls.Toolbar toolbar;
-        
-        /// <summary>
-        /// filter control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::Nephrite.Web.Controls.Filter filter;
+        protected Toolbar toolbar;
     }
 }

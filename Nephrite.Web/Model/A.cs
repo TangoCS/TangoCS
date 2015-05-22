@@ -24,16 +24,6 @@ namespace Nephrite.Web
 				A.Items["SolutionDataContext"] = value;
 			}
 		}
-
-		[ThreadStatic]
-		static IDBScript script = null;
-
-		public static IDBScript DBScript
-		{
-			get { return script; }
-			set { script = value; }
-		}
-
 		public static MetaSolution Meta { get; set; }
 
 		public static IDictionary Items

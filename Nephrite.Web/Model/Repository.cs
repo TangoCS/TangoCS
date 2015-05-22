@@ -9,7 +9,7 @@ using System.Linq.Expressions;
 using System.ComponentModel;
 using System.IO;
 using System.Collections;
-using Nephrite.Web.FileStorage;
+using Nephrite.FileStorage;
 using Nephrite.Meta;
 using System.Data.SqlClient;
 using Nephrite.Web.Versioning;
@@ -170,11 +170,11 @@ namespace Nephrite.Web
 
         public XElement ExportObject(MetaClass objectType, object id)
         {
-			if (objectType.Name == "DbFile")
-			{
-				var f = FileStorageManager.GetFile((Guid)id);
-				return f == null ? null : f.SerializeToXml();
-			}
+			//if (objectType.Name == "DbFile")
+			//{
+			//	var f = FileStorageManager.GetFile((Guid)id);
+			//	return f == null ? null : f.SerializeToXml();
+			//}
             // Загрузить нужный объект
             IModelObject o = Get(objectType, id);
             if (o == null)
@@ -425,40 +425,40 @@ namespace Nephrite.Web
 				if (p.UpperBound == 1 || r == null)
 				{
 					string pname = r != null ? e.Name.LocalName.ToLower() + (r.RefClass != null && r.RefClass.Key.Type is MetaGuidType ? "guid" : "id") : e.Name.LocalName.ToLower();
-					if (p.Type is MetaFileType && (p.Type as MetaFileType).IdentifierType is MetaGuidType)
-					{
-						pname = pname + "FileGUID";
-						PropertyInfo pi1 = GetPropertyInfo(o, pname);
-						if (pi1 != null)
-						{
-							if (e.Value == "")
-							{
-								pi1.SetValue(o, null, null);
-							}
-							else
-							{
-								pi1.SetValue(o, FileStorageManager.DeserializeFromXml(e), null);
-							}
-						}
-						continue;
-					}
-					if (p.Type is MetaFileType && (p.Type as MetaFileType).IdentifierType is MetaIntType)
-					{
-						pname = pname + "FileID";
-						PropertyInfo pi1 = GetPropertyInfo(o, pname);
-						if (pi1 != null)
-						{
-							if (e.Value == "")
-							{
-								pi1.SetValue(o, null, null);
-							}
-							else
-							{
-								pi1.SetValue(o, TypeDescriptor.GetConverter(typeof(int)).ConvertFromInvariantString(e.Value), null);
-							}
-						}
-						continue;
-					}
+					//if (p.Type is MetaFileType && (p.Type as MetaFileType).IdentifierType is MetaGuidType)
+					//{
+					//	pname = pname + "FileGUID";
+					//	PropertyInfo pi1 = GetPropertyInfo(o, pname);
+					//	if (pi1 != null)
+					//	{
+					//		if (e.Value == "")
+					//		{
+					//			pi1.SetValue(o, null, null);
+					//		}
+					//		else
+					//		{
+					//			pi1.SetValue(o, FileStorageManager.DeserializeFromXml(e), null);
+					//		}
+					//	}
+					//	continue;
+					//}
+					//if (p.Type is MetaFileType && (p.Type as MetaFileType).IdentifierType is MetaIntType)
+					//{
+					//	pname = pname + "FileID";
+					//	PropertyInfo pi1 = GetPropertyInfo(o, pname);
+					//	if (pi1 != null)
+					//	{
+					//		if (e.Value == "")
+					//		{
+					//			pi1.SetValue(o, null, null);
+					//		}
+					//		else
+					//		{
+					//			pi1.SetValue(o, TypeDescriptor.GetConverter(typeof(int)).ConvertFromInvariantString(e.Value), null);
+					//		}
+					//	}
+					//	continue;
+					//}
 					if (p.Type is MetaZoneDateTimeType)
 					{
 						PropertyInfo pi1 = GetPropertyInfo(o, pname);
@@ -568,44 +568,44 @@ namespace Nephrite.Web
 				if (e == null)
 					continue;
 				string pname = r != null ? e.Name.LocalName.ToLower() + (r.RefClass.Key.Type is MetaGuidType ? "guid" : "id") : e.Name.LocalName.ToLower();
-				if (p.Type is MetaFileType && (p.Type as MetaFileType).IdentifierType is MetaIntType)
-				{
-					pname = pname + "FileID";
-					PropertyInfo pi1 = GetPropertyInfo(o, pname);
-					if (e.Value == "")
-					{
-						pi1.SetValue(o, null, null);
-					}
-					else if (e.Elements().Count() == 0)
-					{
-						try
-						{
-							// Guid
-							PropertyInfo pi2 = GetPropertyInfo(o, pname.Replace("FileID", ""));
-							var file = Activator.CreateInstance(pi2.PropertyType);
-							file.SetPropertyValue("Guid", new Guid(e.Value));
-							pi2.SetValue(o, file, null);
-						}
-						catch (Exception x)
-						{
-							throw new Exception("Ошибка установки свойства " + pname + " для класса " + objectType.Name + ", значение [" + e.Value + "]", x);
-						}
-					}
-					continue;
-				}
-				if (p.Type is MetaFileType && (p.Type as MetaFileType).IdentifierType is MetaIntType)
-				{
-					PropertyInfo pi1 = GetPropertyInfo(o, pname);
-					if (e.Elements().Count() == 0)
-					{
-						pi1.SetValue(o, null, null);
-					}
-					else
-					{
-						pi1.SetValue(o, FileStorageManager.DeserializeFromXml(e), null);
-					}
-					continue;
-				}
+				//if (p.Type is MetaFileType && (p.Type as MetaFileType).IdentifierType is MetaIntType)
+				//{
+				//	pname = pname + "FileID";
+				//	PropertyInfo pi1 = GetPropertyInfo(o, pname);
+				//	if (e.Value == "")
+				//	{
+				//		pi1.SetValue(o, null, null);
+				//	}
+				//	else if (e.Elements().Count() == 0)
+				//	{
+				//		try
+				//		{
+				//			// Guid
+				//			PropertyInfo pi2 = GetPropertyInfo(o, pname.Replace("FileID", ""));
+				//			var file = Activator.CreateInstance(pi2.PropertyType);
+				//			file.SetPropertyValue("Guid", new Guid(e.Value));
+				//			pi2.SetValue(o, file, null);
+				//		}
+				//		catch (Exception x)
+				//		{
+				//			throw new Exception("Ошибка установки свойства " + pname + " для класса " + objectType.Name + ", значение [" + e.Value + "]", x);
+				//		}
+				//	}
+				//	continue;
+				//}
+				//if (p.Type is MetaFileType && (p.Type as MetaFileType).IdentifierType is MetaIntType)
+				//{
+				//	PropertyInfo pi1 = GetPropertyInfo(o, pname);
+				//	if (e.Elements().Count() == 0)
+				//	{
+				//		pi1.SetValue(o, null, null);
+				//	}
+				//	else
+				//	{
+				//		pi1.SetValue(o, FileStorageManager.DeserializeFromXml(e), null);
+				//	}
+				//	continue;
+				//}
 				if (p.Type is MetaZoneDateTimeType)
 				{
 					PropertyInfo pi1 = GetPropertyInfo(o, pname);

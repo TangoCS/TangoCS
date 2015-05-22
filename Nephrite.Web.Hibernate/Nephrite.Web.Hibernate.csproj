@@ -73,8 +73,6 @@
     <Content Include="Web References\TaskManagerServiceRerefence\TaskManagerService.wsdl" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoreDataContext\FileStorage\DbFile.I.cs" />
-    <Compile Include="CoreDataContext\FileStorage\DbFolder.I.cs" />
     <Compile Include="CoreDataContext\HCoreDataContext.cs" />
     <Compile Include="CoreDataContext\HMapping.cs" />
     <Compile Include="CoreDataContext\HModel.cs" />
@@ -121,6 +119,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Framework.DependencyInjection.Interfaces\Microsoft.Framework.DependencyInjection.Interfaces.csproj">
+      <Project>{a2d88e47-20ef-45fe-9e59-adec44041ffa}</Project>
+      <Name>Microsoft.Framework.DependencyInjection.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.Framework.DependencyInjection\Microsoft.Framework.DependencyInjection.csproj">
+      <Project>{c73e03ef-ac54-434f-8d40-41724aab5fa7}</Project>
+      <Name>Microsoft.Framework.DependencyInjection</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
       <Project>{26a68254-0902-4499-8b5f-6b4b6341ba21}</Project>
       <Name>Nephrite.Web</Name>

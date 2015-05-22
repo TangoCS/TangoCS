@@ -174,7 +174,7 @@ namespace Nephrite.Html.Controls
 			switch (_type)
 			{
 				case ActionLinkRenderType.Link:
-					w.A(_aTagAttributes, () => w.Write(Title));
+					w.A(_aTagAttributes, Title);
 					return w.ToString();
 				case ActionLinkRenderType.Image:					
 					w.A(_aImgTagAttributes, () => w.Img(_imgTagAttributes));
@@ -182,7 +182,7 @@ namespace Nephrite.Html.Controls
 				case ActionLinkRenderType.ImageLink:
 					w.A(_aImgTagAttributes, () => w.Img(_imgTagAttributes));
 					w.Write("&nbsp;");
-					w.A(_aTagAttributes, () => w.Write(Title));
+					w.A(_aTagAttributes, Title);
 					return w.ToString();
 				default:
 					return "";

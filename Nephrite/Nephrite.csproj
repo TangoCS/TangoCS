@@ -63,6 +63,15 @@
     <Compile Include="DI.cs" />
     <Compile Include="EntityAudit\EntityAudit.cs" />
     <Compile Include="ErrorLog\ErrorLogger.cs" />
+    <Compile Include="FileStorage\DatabaseStorageProvider.cs" />
+    <Compile Include="FileStorage\DbFolders.cs" />
+    <Compile Include="FileStorage\FileStorageModel.cs" />
+    <Compile Include="FileStorage\FileTypeIcon.cs" />
+    <Compile Include="FileStorage\IStorageFile.cs" />
+    <Compile Include="FileStorage\IStorageProvider.cs" />
+    <Compile Include="FileStorage\LocalDiskStorageProvider.cs" />
+    <Compile Include="FileStorage\Samples.cs" />
+    <Compile Include="FileStorage\VirusChecker.cs" />
     <Compile Include="GlobalSettings.cs" />
     <Compile Include="Html.Controls\ActionLink.cs" />
     <Compile Include="Html.Controls\BackButton.cs" />
@@ -257,6 +266,7 @@
       <Name>Microsoft.Framework.Internal</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

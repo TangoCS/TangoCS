@@ -8,7 +8,6 @@ using Nephrite.Html;
 using Nephrite.Meta;
 using Nephrite.Web.Controls;
 using Nephrite.ErrorLog;
-using Nephrite.Web.FileStorage;
 using Nephrite.Web.FormsEngine;
 using Nephrite.Web.Hibernate;
 using Nephrite.Web.Mailer;
@@ -19,13 +18,14 @@ using Nephrite.SettingsManager;
 using Nephrite.Web.TaskManager;
 using Nephrite.Html.Controls;
 using Nephrite.EntityAudit;
+using Nephrite.FileStorage;
 
 namespace Nephrite.Web.CoreDataContext
 {
 	public class ErrorLog : IErrorLog, IWithKey<ErrorLog, int>, IWithoutEntityAudit
 	{
 		public virtual int ErrorLogID { get; set; }
-		public virtual System.DateTime ErrorDate { get; set; }
+		public virtual DateTime ErrorDate { get; set; }
 		public virtual string ErrorText { get; set; }
 		public virtual string Url { get; set; }
 		public virtual string UrlReferrer { get; set; }
@@ -37,7 +37,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string SqlLog { get; set; }
 		public virtual string UserName { get; set; }
 		public virtual byte[] Hash { get; set; }
-		public virtual System.Nullable<int> SimilarErrorID { get; set; }
+		public virtual Nullable<int> SimilarErrorID { get; set; }
 
 		public virtual Expression<Func<ErrorLog, bool>> KeySelector(int id)
 		{
@@ -47,7 +47,7 @@ namespace Nephrite.Web.CoreDataContext
 	public partial class CalendarDay : ICalendarDay
 	{
 		public virtual int CalendarDayID { get; set; }
-		public virtual System.DateTime Date { get; set; }
+		public virtual DateTime Date { get; set; }
 		public virtual bool IsWorkingDay { get; set; }
 	}
 	 
@@ -62,7 +62,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string AttachmentName { get; set; }
 		public virtual string Error { get; set; }
 		public virtual string CopyRecipients { get; set; }
-		public virtual System.Nullable<System.DateTime> LastSendAttemptDate { get; set; }
+		public virtual Nullable<DateTime> LastSendAttemptDate { get; set; }
 		public virtual int AttemptsToSendCount { get; set; }
 	}
 
@@ -91,7 +91,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual int TimeZoneID { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
 		public virtual bool IsDeleted { get; set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
+		public virtual DateTime LastModifiedDate { get; set; }
 		public virtual string Title { get; set; }
 		public virtual int GMTOffset { get; set; }
 		public virtual string Comment { get; set; }
@@ -124,9 +124,9 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual XDocument FilterValue { get; set; }
 		public virtual string FilterName { get; set; }
 		public virtual bool IsDefault { get; set; }
-		public virtual System.Nullable<int> Group1Column { get; set; }
+		public virtual Nullable<int> Group1Column { get; set; }
 		public virtual string Group1Sort { get; set; }
-		public virtual System.Nullable<int> Group2Column { get; set; }
+		public virtual Nullable<int> Group2Column { get; set; }
 		public virtual string Group2Sort { get; set; }
 		public virtual string ListParms { get; set; }
 		public virtual string Columns { get; set; }
@@ -142,11 +142,11 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual bool StartType { get; set; }
 		public virtual string Method { get; set; }
 		public virtual int Interval { get; set; }
-		public virtual System.Nullable<System.DateTime> LastStartDate { get; set; }
+		public virtual Nullable<DateTime> LastStartDate { get; set; }
 		public virtual bool IsSuccessfull { get; set; }
 		public virtual bool IsActive { get; set; }
 		public virtual bool StartFromService { get; set; }
-		public virtual System.Nullable<int> ErrorLogID { get; set; }
+		public virtual Nullable<int> ErrorLogID { get; set; }
 		public virtual int ExecutionTimeout { get; set; }
 	}
 
@@ -155,13 +155,13 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual int TaskExecutionID { get; set; }
 		public virtual int TaskID { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
-		public virtual System.DateTime StartDate { get; set; }
-		public virtual System.Nullable<System.DateTime> FinishDate { get; set; }
+		public virtual DateTime StartDate { get; set; }
+		public virtual Nullable<DateTime> FinishDate { get; set; }
 		public virtual bool IsSuccessfull { get; set; }
 		public virtual string MachineName { get; set; }
 		public virtual string ResultXml { get; set; }
 		public virtual string ExecutionLog { get; set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
+		public virtual DateTime LastModifiedDate { get; set; }
 	}
 
 	public partial class TM_TaskParameter : ITM_TaskParameter, IWithSeqNo, IWithKey<TM_TaskParameter, int>
@@ -186,100 +186,19 @@ namespace Nephrite.Web.CoreDataContext
 		//public virtual N_File N_File { get; set; }
 		public virtual Guid FileGUID { get; set; }
 		public virtual bool IsDeleted { get; set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
+		public virtual DateTime LastModifiedDate { get; set; }
 		public virtual string IP { get; set; }
-	}
-
-	public partial class V_DbFile : IDbFile, IWithTimeStamp
-	{
-		public V_DbFile()
-		{
-			ID = Guid.NewGuid();
-		}
-
-		public virtual string CheckedOutBy { get; set; }
-		public virtual string Creator { get; set; }
-		public virtual int CreatorID { get; set; }
-		public virtual DateTime? PublishDate { get; set; }
-		public virtual System.Nullable<int> CheckedOutByID { get; set; }
-		public virtual string LastModifiedUserName { get; set; }
-		public virtual int LastModifiedUserID { get; set; }
-		public virtual long Size { get; set; }
-		public virtual string Title { get; set; }
-		public virtual System.Guid ID { get; set; }
-		public virtual System.Guid SPMActionItemGUID { get;  set; }
-		public virtual Nullable<System.Guid> MainID { get;  set; }
-		public virtual string Extension { get; set; }
-		public virtual string Path { get; set; }
-		public virtual string FullPath { get;  set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
-		public virtual int VersionNumber { get;  set; }
-		public virtual int IsValid { get; set; }
-		public virtual System.Nullable<System.Guid> ParentFolderID { get; set; }
-		public virtual System.Nullable<System.Guid> FeatureGUID { get; set; }
-		public virtual bool IsDeleted { get;  set; }
-		public virtual string Tag { get; set; }
-	}
-
-	public partial class V_DbFolder : IDbFolder, IWithTimeStamp
-	{
-		public V_DbFolder()
-		{
-			ID = Guid.NewGuid();
-		}
-
-		public virtual string Title { get; set; }
-		public virtual string Tag { get; set; }
-		public virtual DateTime? PublishDate { get; set; }
-		public virtual string StorageType { get; set; }
-		public virtual string StorageParameter { get; set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
-		public virtual int LastModifiedUserID { get; set; }
-		public virtual int CreatorID { get; set; }
-		public virtual int FileCount { get; set; }
-		public virtual int IsValid { get; set; }
-		public virtual bool IsDeleted { get; set; }
-		public virtual long Size { get; set; }
-		public virtual string LastModifiedUserName { get; set; }
-		public virtual string Creator { get; set; }
-		public virtual System.Guid ID { get; set; }
-		public virtual System.Guid SPMActionItemGUID { get; set; }
-		public virtual string Path { get; set; }
-		public virtual string FullPath { get; set; }
-		public virtual System.Nullable<System.Guid> ParentFolderID { get; set; }
-		public virtual bool EnableVersioning { get; set; }
-	}
-
-	public partial class V_DbItem : IDbItem, IWithTimeStamp
-	{
-		public virtual string Title { get; set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
-		public virtual System.DateTime? PublishDate { get; set; }
-		public virtual int LastModifiedUserID { get; set; }
-		public virtual int CreatorID { get; set; }
-		public virtual System.Nullable<Guid> ParentID { get; set; }
-		public virtual bool IsDeleted { get; set; }
-		public virtual long Size { get; set; }
-		public virtual string Creator { get; set; }
-		public virtual string LastModifiedUserName { get; set; }
-		public virtual string Path { get; set; }
-		public virtual string Tag { get; set; }
-		public virtual string Extension { get; set; }
-		public virtual DbItemType Type { get; set; }
-		public virtual System.Guid ID { get; set; }
-		public virtual System.Guid SPMActionItemGUID { get;  set; }
-		public virtual bool EnableVersioning { get;  set; }
-		public virtual string FullPath { get;  set; }
-		public virtual int? CheckedOutByID { get;  set; }
-		public virtual string CheckedOutBy { get;  set; }
 	}
 
 	public partial class N_FileData : IDbFileData, IWithoutEntityAudit
 	{
 		public virtual byte[] Data { get; set; }
 		public virtual string Extension { get; set; }
-		public virtual System.Guid FileGUID { get; set; }
-
+		public virtual Guid FileGUID { get; set; }
+		public virtual int Size { get; set; }
+		public virtual DateTime LastModifiedDate { get; set; }
+		public virtual Guid? Owner { get; set; }
+		public virtual string Title { get; set; }
 	}
 
 	public partial class N_VirusScanLog : IN_VirusScanLog, IWithoutEntityAudit
@@ -287,7 +206,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual int VirusScanLogID { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
 		public virtual bool IsDeleted { get; set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
+		public virtual DateTime LastModifiedDate { get; set; }
 		public virtual string Title { get; set; }
 		public virtual int ResultCode { get; set; }
 	}
@@ -295,19 +214,19 @@ namespace Nephrite.Web.CoreDataContext
 	/*public partial class N_TableInfo
 	{
 		public virtual string TableName { get; set; }
-		public virtual System.DateTime LastDataModify { get; set; }
+		public virtual DateTime LastDataModify { get; set; }
 	}*/
 
 	public partial class N_Settings : IN_Settings
 	{
-		public virtual System.Guid SettingsGUID { get; set; }
+		public virtual Guid SettingsGUID { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
 		public virtual string SystemName { get; set; }
 		public virtual string Title { get; set; }
 		public virtual string Value { get; set; }
 		public virtual bool IsSystem { get; set; }
 		public virtual bool IsDeleted { get; set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
+		public virtual DateTime LastModifiedDate { get; set; }
 		public virtual string AcceptableValues { get; set; }
 
 		public virtual int? GroupID { get; set; }
@@ -317,7 +236,7 @@ namespace Nephrite.Web.CoreDataContext
 	{
 		public virtual int ObjectChangeID { get; set; }
 		public virtual int SubjectID { get; set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
+		public virtual DateTime LastModifiedDate { get; set; }
 		public virtual string Title { get; set; }
 		public virtual string ObjectKey { get; set; }
 		public virtual string ObjectTypeSysName { get; set; }
@@ -331,14 +250,14 @@ namespace Nephrite.Web.CoreDataContext
 
 	public partial class N_ObjectPropertyChange : IN_ObjectPropertyChange, IWithoutEntityAudit
 	{
-		public virtual System.Int32 ObjectPropertyChangeID { get; set; }
-		public virtual System.String Title { get; set; }
-		public virtual System.String PropertySysName { get; set; }
-		public virtual System.String OldValue { get; set; }
-		public virtual System.String NewValue { get; set; }
-		public virtual System.String OldValueTitle { get; set; }
-		public virtual System.String NewValueTitle { get; set; }
-		public virtual System.Int32 ObjectChangeID
+		public virtual Int32 ObjectPropertyChangeID { get; set; }
+		public virtual String Title { get; set; }
+		public virtual String PropertySysName { get; set; }
+		public virtual String OldValue { get; set; }
+		public virtual String NewValue { get; set; }
+		public virtual String OldValueTitle { get; set; }
+		public virtual String NewValueTitle { get; set; }
+		public virtual Int32 ObjectChangeID
 		{
 			get
 			{
@@ -373,7 +292,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string Copyright { get; set; }
 		public virtual string Description { get; set; }
 		public virtual bool IsDeleted { get; set; }
-		public virtual System.DateTime LastModifiedDate { get; set; }
+		public virtual DateTime LastModifiedDate { get; set; }
 		public virtual int LastModifiedUserID { get; set; }
 		public virtual string ObjectTypeSysName { get; set; }
 		public virtual string Predicate { get; set; }

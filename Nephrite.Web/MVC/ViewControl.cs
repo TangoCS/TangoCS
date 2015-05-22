@@ -27,6 +27,9 @@ namespace Nephrite.Web
 		[Inject]
 		public HtmlHelper Html { get; set; }
 
+		[Inject]
+		public IPersistentSettings AppSettings { get; set; }
+
 		public void EnsureHttps()
 		{
 			if (Request.IsSecureConnection)

@@ -623,5 +623,8 @@ namespace Nephrite.Html
 		public void Tr(Action inner) { Tr(null, inner); }
 		public void U(Action inner) { U(null, inner); }
 		public void Ul(Action inner) { Ul(null, inner); }
+
+		public void A(Action<ATagAttributes> attributes, string linkTitle) { A(attributes, () => Write(linkTitle)); }
+		public void A(string linkTitle) { A(null, () => Write(linkTitle)); }
 	}
 }

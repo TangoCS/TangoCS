@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Data.SqlClient;
 using System.Web;
 using System.Configuration;
 using System.Reflection;
@@ -47,31 +46,12 @@ namespace Nephrite.Web
 				}
 			}
 		}
-        public static SqlConnection Connection
-        {
-            get
-            {
-				if (HttpContext.Current != null)
-				{
-					if (HttpContext.Current.Items["Connection"] == null)
-						HttpContext.Current.Items["Connection"] = new SqlConnection(ConnectionString);
-					return (SqlConnection)HttpContext.Current.Items["Connection"];
-				}
-				else
-				{
-					if (connection == null)
-						connection = new SqlConnection(ConnectionString);
-					return connection;
-				}
-            }
-        }
+
 		[ThreadStatic]
 		static string connstr = null;
 		public static void SetConnectionString(string connectionString)
 		{
 			connstr = connectionString;
 		}
-		[ThreadStatic]
-		static SqlConnection connection;
 	}
 }

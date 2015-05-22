@@ -7,7 +7,7 @@ using System.Web.Services.Protocols;
 using Nephrite.Identity;
 using Nephrite.SettingsManager;
 using Nephrite.Web.CoreDataContext;
-
+using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.Web.TaskManager
 {
@@ -24,11 +24,12 @@ namespace Nephrite.Web.TaskManager
 
 		void CheckCredentials()
 		{
+			var settings = DI.RequestServices.GetService<IPersistentSettings>();
 			if (user == null)
 				throw new Exception("Аутентификация не пройдена");
-			if (user.Login != AppSettings.Get("ReplicationLogin"))
+			if (user.Login != settings.Get("ReplicationLogin"))
 				throw new Exception("Неправильный логин или пароль");
-			if (user.Password != AppSettings.Get("ReplicationPassword"))
+			if (user.Password != settings.Get("ReplicationPassword"))
 				throw new Exception("Неправильный логин или пароль");
 		}
 

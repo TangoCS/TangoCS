@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Nephrite.SettingsManager;
+using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.MVC
 {
@@ -81,6 +82,8 @@ namespace Nephrite.MVC
 	{
 		public override void ExecuteResult(ActionContext context)
 		{
+			var AppSettings = context.HttpContext.RequestServices.GetService<IPersistentSettings>();
+
 			if (AppSettings.Get("loginurl").IsEmpty())
 			{
 				var msg = new MessageResult("Недостаточно полномочий для доступа к информации");

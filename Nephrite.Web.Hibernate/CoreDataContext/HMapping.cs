@@ -103,29 +103,29 @@ namespace Nephrite.Web.CoreDataContext
 		}
 	}
 
-	public class IDbFileImplMap : SubclassMapping<V_DbFile>
-	{
-		public IDbFileImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
+	//public class IDbFileImplMap : SubclassMapping<V_DbFile>
+	//{
+	//	public IDbFileImplMap()
+	//	{
+	//		DiscriminatorValue("0");
+	//	}
+	//}
 
-	public class IDbFolderImplMap : SubclassMapping<V_DbFolder>
-	{
-		public IDbFolderImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
+	//public class IDbFolderImplMap : SubclassMapping<V_DbFolder>
+	//{
+	//	public IDbFolderImplMap()
+	//	{
+	//		DiscriminatorValue("0");
+	//	}
+	//}
 
-	public class IDbItemImplMap : SubclassMapping<V_DbItem>
-	{
-		public IDbItemImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
+	//public class IDbItemImplMap : SubclassMapping<V_DbItem>
+	//{
+	//	public IDbItemImplMap()
+	//	{
+	//		DiscriminatorValue("0");
+	//	}
+	//}
 
 	public class IDbFileDataImplMap : SubclassMapping<N_FileData>
 	{

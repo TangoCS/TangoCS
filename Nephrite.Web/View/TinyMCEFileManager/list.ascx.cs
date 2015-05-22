@@ -6,37 +6,49 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using Nephrite.Http;
 using Nephrite.Web.Controls;
-using Nephrite.Web.FileStorage;
+using Nephrite.FileStorage;
+using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.Web.View
 {
 	public partial class TinyMCEFileManager_list : ViewControl
 	{
-		public IQueryable<IDbItem> _data = null;
+		public IEnumerable<IStorageFolder> _folders = null;
+		public IEnumerable<IStorageFile> _files = null;
+
+		[Inject]
+		public DbFolders Storage { get; set; }
 
 		protected void Page_Load(object sender, EventArgs e)
 		{
 			string type = Query.GetString("type");
 			Guid parentid = Query.GetGuid("parent");
 
-			if (parentid == Guid.Empty)
-			{
-				_data = FileStorageManager.DbItems.Where(o => o.ParentID == null && o.Type == DbItemType.Folder);
-			}
-			else
-				_data = FileStorageManager.DbItems.Where(o => o.ParentID == parentid).OrderBy(o => o.Type);
-			
+			//if (parentid == Guid.Empty)
+			//{
+			//	_data = FileStorageManager.DbItems.Where(o => o.ParentID == null && o.Type == DbItemType.Folder);
+			//}
+			//else
+			//	_data = FileStorageManager.DbItems.Where(o => o.ParentID == parentid).OrderBy(o => o.Type);
 
-			/*N_Folder p = AppWeb.DataContext.N_Folders.SingleOrDefault(o => o.FolderID == parentid);
-			if (p != null)
+			IStorageFolder curFolder = null;
+			if (parentid != Guid.Empty)
 			{
-				//Cramb.Add("Файлы", Query.RemoveParameter("parent"));
-				//SetTitle(p.Title);
+				curFolder = Storage.GetFolder(parentid);
+				_files = curFolder.GetAllFiles();
+			}
+			_folders = Storage.GetFolders(curFolder);
+
+
+			if (curFolder != null)
+			{
+				Cramb.Add("Файлы", Query.RemoveParameter("parent"));
+				SetTitle(curFolder.Name);
 			}
 			else
 			{
-				//SetTitle("Файлы");
-			}*/
+				SetTitle("Файлы");
+			}
 
 			/*Action<N_Folder> addCramb = null;
 			addCramb = f =>
@@ -49,8 +61,7 @@ namespace Nephrite.Web.View
 
 			if (parentid != Guid.Empty)
 			{
-				var p = FileStorageManager.GetFolder(parentid);
-				toolbar.AddItem("back.gif", "На уровень выше", UrlHelper.Current().SetParameter("parent", p.ParentFolderID.ToString()).RemoveParameter("op"));
+				//toolbar.AddItem("back.gif", "На уровень выше", UrlHelper.Current().SetParameter("parent", p.ParentFolderID.ToString()).RemoveParameter("op"));
 				toolbar.AddItemSeparator();
 				toolbar.AddItem("upload.gif", "Загрузить файлы", UrlHelper.Current().SetParameter("op", "upload"));
 			}
@@ -60,11 +71,6 @@ namespace Nephrite.Web.View
 			//toolbar.AddItem<N_FolderController>("add.png", "Создать папку", c => c.CreateNew(parentid, Query.CreateReturnUrl()));
 			//if (parentid > 0)
 			//	toolbar.AddItem<N_FolderController>("upload.gif", "Загрузить файлы", c => c.Upload(Query.GetString("parent"), Query.CreateReturnUrl()));
-
-			filter.AddFieldString<IDbItem>("Наименование", o => o.Title);
-			filter.AddFieldDate<IDbItem>("Дата последнего изменения", o => o.LastModifiedDate, false);
-			filter.AddFieldString<IDbItem>("Последний редактировавший пользователь", o => o.LastModifiedUserName);
-			filter.AddFieldBoolean<IDbItem>("Удален", o => o.IsDeleted);
 		}
 	}
 }

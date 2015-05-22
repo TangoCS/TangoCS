@@ -5,27 +5,15 @@ using System.Web;
 using System.IO;
 using ICSharpCode.SharpZipLib.Zip;
 
-namespace Nephrite.Web.FileStorage
+namespace Nephrite.FileStorage
 {
 	public class FolderPacker
 	{
-		public void PackFolder(Guid folderID)
-		{
-			var folder = FileStorageManager.GetFolder(folderID);
-			PackFolder(folder);
-		}
-
-		public void PackFolder(string folderPath)
-		{
-			var folder = FileStorageManager.GetFolder(folderPath);
-			PackFolder(folder);
-		}
-
-		public void PackFolder(IDbFolder f)
+		public void PackFolder(IStorageFolder f)
 		{
 			var r = HttpContext.Current.Response;
 			r.AppendHeader("Content-Type", "application/x-zip-compressed");
-			r.AppendHeader("Content-disposition", "attachment; filename=" + f.Title + ".zip");
+			r.AppendHeader("Content-disposition", "attachment; filename=" + f.Name + ".zip");
 
 			using (MemoryStream ms = new MemoryStream())
 			{
@@ -40,21 +28,21 @@ namespace Nephrite.Web.FileStorage
 			r.End();
 		}
 
-		void AddFiles(ZipFile zf, IDbFolder f, string parent)
+		void AddFiles(ZipFile zf, IStorageFolder f, string parent)
 		{
-			foreach (var file in FileStorageManager.DbFiles.Where(o => o.ParentFolderID == f.ID).ToList())
+			foreach (var file in f.GetAllFiles())
 			{
-				using (var s = new MemoryStream(file.GetBytes()))
+				using (var s = new MemoryStream(file.ReadAllBytes()))
 				{
 					zf.BeginUpdate();
-					zf.Add(new MemoryDataStream(s), parent + f.Title + "\\" + file.Title);
+					zf.Add(new MemoryDataStream(s), parent + f.Name + "\\" + file.Name);
 					zf.CommitUpdate();
 				}
 			}
-			foreach (var folder in FileStorageManager.DbFolders.Where(o => o.ParentFolderID == f.ID).ToList())
-			{
-				AddFiles(zf, folder, parent + f.Title + "\\");
-			}
+			//foreach (var folder in FileStorageManager.DbFolders.Where(o => o.ParentFolderID == f.ID).ToList())
+			//{
+			//	AddFiles(zf, folder, parent + f.Title + "\\");
+			//}
 		}
 
 		public class MemoryDataStream : IStaticDataSource

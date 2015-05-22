@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace Nephrite
 {
@@ -49,6 +52,49 @@ namespace Nephrite
 		{
 			Message = message;
 			Severity = severity;
+		}
+	}
+
+	public class ValidationMessageCollection : ObservableCollection<ValidationMessage>
+	{
+		Dictionary<ValidationMessageSeverity, int> _messagesCount = new Dictionary<ValidationMessageSeverity, int>();
+
+		public ValidationMessageCollection()
+		{
+			CollectionChanged += OnCollectionChanged;
+			foreach (ValidationMessageSeverity s in Enum.GetValues(typeof(ValidationMessageSeverity)))
+			{
+				_messagesCount.Add(s, 0);
+			}
+		}
+
+		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			foreach (ValidationMessage m in e.NewItems)
+				_messagesCount[m.Severity]++;
+
+			foreach (ValidationMessage m in e.OldItems)
+				_messagesCount[m.Severity]--;
+		}
+
+		public void Add(string name, string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		{
+			Add(new ValidationMessage(name, message, severity));
+		}
+
+		public void Add(string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		{
+			Add(new ValidationMessage(message, severity));
+		}
+
+		public bool HasItems(params ValidationMessageSeverity[] types)
+		{
+			if (types == null) return Count > 0;
+
+			foreach (var s in types)
+				if (_messagesCount[s] > 0) return true;
+
+			return false;
 		}
 	}
 

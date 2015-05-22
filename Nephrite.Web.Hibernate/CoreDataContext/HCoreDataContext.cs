@@ -5,7 +5,6 @@ using System.Linq;
 using System.Web;
 using Nephrite.Html;
 using Nephrite.Web.Controls;
-using Nephrite.Web.FileStorage;
 using NHibernate;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Linq;
@@ -23,6 +22,7 @@ using Nephrite.SettingsManager;
 using Nephrite.Html.Controls;
 using Nephrite.EntityAudit;
 using Nephrite.Data;
+using Nephrite.FileStorage;
 
 namespace Nephrite.Web.CoreDataContext
 {
@@ -70,10 +70,10 @@ namespace Nephrite.Web.CoreDataContext
 			l.Add(typeof(IN_TextResourceMap));
 			l.Add(typeof(IC_LanguageMap));
 			l.Add(typeof(IN_VirusScanLogMap));
-			l.Add(typeof(IDbFolderMap));
-			l.Add(typeof(IDbItemMap));
-			l.Add(typeof(IDbFileMap));
-			l.Add(typeof(IDbFileDataMap));
+			//l.Add(typeof(IDbFolderMap));
+			//l.Add(typeof(IDbItemMap));
+			//l.Add(typeof(IDbFileMap));
+			//l.Add(typeof(IDbFileDataMap));
 			l.Add(typeof(IN_DownloadLogMap));
 			l.Add(typeof(ITM_TaskMap));
 			l.Add(typeof(ITM_TaskExecutionMap));
@@ -97,9 +97,9 @@ namespace Nephrite.Web.CoreDataContext
 			l.Add(typeof(IN_ObjectPropertyChangeImplMap));
 			l.Add(typeof(IN_RssFeedImplMap));
 			l.Add(typeof(IN_DownloadLogImplMap));
-			l.Add(typeof(IDbFileImplMap));
-			l.Add(typeof(IDbFolderImplMap));
-			l.Add(typeof(IDbItemImplMap));
+			//l.Add(typeof(IDbFileImplMap));
+			//l.Add(typeof(IDbFolderImplMap));
+			//l.Add(typeof(IDbItemImplMap));
 			l.Add(typeof(IDbFileDataImplMap));
 			l.Add(typeof(IN_VirusScanLogImplMap));
 			l.Add(typeof(ITM_TaskParameterImplMap));
@@ -120,15 +120,15 @@ namespace Nephrite.Web.CoreDataContext
 			return new N_VirusScanLog();
 		}
 
-		public IDbFolder NewIDbFolder(Guid id)
-		{
-			return new V_DbFolder { ID = id };
-		}
+		//public IDbFolder NewIDbFolder(Guid id)
+		//{
+		//	return new V_DbFolder { ID = id };
+		//}
 
-		public IDbFile NewIDbFile(Guid id)
-		{
-			return new V_DbFile { ID = id };
-		}
+		//public IDbFile NewIDbFile(Guid id)
+		//{
+		//	return new V_DbFile { ID = id };
+		//}
 
 		public IDbFileData NewIDbFileData(Guid id)
 		{
@@ -222,18 +222,18 @@ namespace Nephrite.Web.CoreDataContext
 		{
 			get { return new HTable<IN_DownloadLog>(this, Session.Query<IN_DownloadLog>()); }
 		}
-		public ITable<IDbFile> IDbFile
-		{
-			get { return new HTable<IDbFile>(this, Session.Query<IDbFile>()); }
-		}
-		public ITable<IDbFolder> IDbFolder
-		{
-			get { return new HTable<IDbFolder>(this, Session.Query<IDbFolder>()); }
-		}
-		public ITable<IDbItem> IDbItem
-		{
-			get { return new HTable<IDbItem>(this, Session.Query<IDbItem>()); }
-		}
+		//public ITable<IDbFile> IDbFile
+		//{
+		//	get { return new HTable<IDbFile>(this, Session.Query<IDbFile>()); }
+		//}
+		//public ITable<IDbFolder> IDbFolder
+		//{
+		//	get { return new HTable<IDbFolder>(this, Session.Query<IDbFolder>()); }
+		//}
+		//public ITable<IDbItem> IDbItem
+		//{
+		//	get { return new HTable<IDbItem>(this, Session.Query<IDbItem>()); }
+		//}
 		public ITable<IDbFileData> IDbFileData
 		{
 			get { return new HTable<IDbFileData>(this, Session.Query<IDbFileData>()); }

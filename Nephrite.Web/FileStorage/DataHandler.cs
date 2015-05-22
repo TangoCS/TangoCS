@@ -5,7 +5,7 @@ using System.Web;
 using Nephrite.MVC;
 
 
-namespace Nephrite.Web.FileStorage
+namespace Nephrite.FileStorage
 {
 	public class DataHandler : IHttpHandler
 	{
@@ -40,32 +40,6 @@ namespace Nephrite.Web.FileStorage
 			context.Response.OutputStream.Write(data, 0, data.Length);
 
 			context.Response.End();
-		}
-
-		public static string GetDataUrl(string path)
-		{
-			int i = path.LastIndexOf('/');
-			string dir = path.Substring(0, i);
-			string file = path.Substring(i + 1);
-
-			var fi = (from files in FileStorageManager.DbFiles
-					  from folders in FileStorageManager.DbFolders
-					  where files.Title == file && files.ParentFolderID == folders.ID && folders.FullPath == dir
-					  select new FileInfo { ID = files.ID, LastModifiedDate = files.LastModifiedDate }).SingleOrDefault();
-			if (fi != null)
-				return String.Format("/Data.ashx?guid={0}&timestamp={1}", fi.ID, fi.LastModifiedDate.Ticks);
-			return "";
-		}
-
-		public static string GetDataUrl(Guid id)
-		{
-
-			var f = (from files in FileStorageManager.DbFiles
-					 where files.ID == id
-					 select new { files.ID, files.LastModifiedDate }).SingleOrDefault();
-			if (f != null)
-				return String.Format("/Data.ashx?guid={0}&timestamp={1}", f.ID, f.LastModifiedDate.Ticks);
-			return "";
 		}
 	}
 }

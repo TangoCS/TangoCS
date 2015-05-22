@@ -8,7 +8,8 @@ using DocumentFormat.OpenXml.CustomProperties;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.VariantTypes;
 using DocumentFormat.OpenXml.Wordprocessing;
-using Nephrite.Web.FileStorage;
+using Nephrite.FileStorage;
+using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.Web.Office
 {
@@ -242,10 +243,12 @@ namespace Nephrite.Web.Office
 		{
 			WordDocumentGenerator gen = new WordDocumentGenerator();
 			gen.DataSource = data;
-			var file = Nephrite.Web.FileStorage.FileStorageManager.DbFiles.FirstOrDefault(o => o.FullPath == templateFullPath && !o.MainID.HasValue);
+
+			var storage = DI.RequestServices.GetService<IStorage<string>>();
+			var file = storage.GetFile(templateFullPath);
 			if (file == null)
 				throw new Exception("В файловом хранилище отсутствует файл " + templateFullPath);
-			gen.DocTemplate = file.GetBytes();
+			gen.DocTemplate = file.ReadAllBytes();
 			return gen.Generate();
 		}
 
@@ -255,10 +258,11 @@ namespace Nephrite.Web.Office
 			gen.DataSource = data;
 			gen.MacroEnabled = ismacroenabled;
 			gen.CustomProperties = custom;
-			var file = Nephrite.Web.FileStorage.FileStorageManager.DbFiles.FirstOrDefault(o => o.FullPath == templateFullPath && !o.MainID.HasValue);
+			var storage = DI.RequestServices.GetService<IStorage<string>>();
+			var file = storage.GetFile(templateFullPath);
 			if (file == null)
 				throw new Exception("В файловом хранилище отсутствует файл " + templateFullPath);
-			gen.DocTemplate = file.GetBytes();
+			gen.DocTemplate = file.ReadAllBytes();
 			return gen.Generate();
 		}
 

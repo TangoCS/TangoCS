@@ -10,11 +10,12 @@ using System.IO;
 using System.Web.Services.Protocols;
 using System.Linq.Expressions;
 using Nephrite.Identity;
-using Nephrite.Web.FileStorage;
+using Nephrite.FileStorage;
 using Nephrite.Meta;
 using Nephrite.ErrorLog;
 using Nephrite.SettingsManager;
 using Nephrite.Data;
+using Microsoft.Framework.DependencyInjection;
 
 
 namespace Nephrite.Web.Replication
@@ -72,9 +73,12 @@ namespace Nephrite.Web.Replication
 		{
 			if (user == null)
 				throw new Exception("Аутентификация не пройдена");
-			if (user.Login != AppSettings.Get("ReplicationLogin"))
+
+			var settings = DI.RequestServices.GetService<IPersistentSettings>();
+
+			if (user.Login != settings.Get("ReplicationLogin"))
 				throw new Exception("Неправильный логин или пароль");
-			if (user.Password != AppSettings.Get("ReplicationPassword"))
+			if (user.Password != settings.Get("ReplicationPassword"))
 				throw new Exception("Неправильный логин или пароль");
 		}
 
@@ -150,10 +154,11 @@ namespace Nephrite.Web.Replication
 		public byte[] GetFileContent(Guid fileGuid)
         {
 			CheckCredentials();
-			var file = FileStorageManager.GetFile(fileGuid);
+			var storage = DI.RequestServices.GetService<IStorage<string>>();
+			var file = storage.GetFile(fileGuid);
             if (file == null)
                 return new byte[0];
-            return file.GetBytes();
+            return file.ReadAllBytes();
         }
 
 		[WebMethod]
@@ -162,15 +167,16 @@ namespace Nephrite.Web.Replication
 		public string GetFile(Guid fileGuid)
 		{
 			CheckCredentials();
-			var file = FileStorageManager.GetFile(fileGuid);
+			var storage = DI.RequestServices.GetService<IStorage<string>>();
+			var file = storage.GetFile(fileGuid);
 			if (file == null)
 				return "";
 			XElement xe = new XElement("N_File");
-			xe.SetElementValue("Name", file.Title);
-			xe.SetElementValue("Title", file.Title);
+			xe.SetElementValue("Name", file.Name);
+			xe.SetElementValue("Title", file.Name);
 			xe.SetElementValue("Extension", file.Extension);
-			xe.SetElementValue("LastModifiedDate", file.LastModifiedDate);
-			xe.SetElementValue("Path", file.Path);
+			//xe.SetElementValue("LastModifiedDate", file.LastModifiedDate);
+			//xe.SetElementValue("Path", file.Path);
 			return xe.ToString(SaveOptions.DisableFormatting);
 		}
 
@@ -351,50 +357,50 @@ namespace Nephrite.Web.Replication
         {
 			XElement xe = XElement.Parse(data);
 			
-			if (objectType.Name == "N_Folder")
-			{
-				var folder = FileStorageManager.GetFolder(xe.Element("Guid").Value.ToGuid());
-				if (folder == null)
-				{
-					folder = FileStorageManager.CreateFolder(xe.Element("Title").Value, "");
-					folder.SetPropertyValue("ID", xe.Element("Guid").Value.ToGuid());
-				}
-				folder.Title = xe.Element("Title").Value;
-				folder.CheckValid();
-				A.Model.SubmitChanges();
-				return true;
-			}
+			//if (objectType.Name == "N_Folder")
+			//{
+			//	var folder = FileStorageManager.GetFolder(xe.Element("Guid").Value.ToGuid());
+			//	if (folder == null)
+			//	{
+			//		folder = FileStorageManager.CreateFolder(xe.Element("Title").Value, "");
+			//		folder.SetPropertyValue("ID", xe.Element("Guid").Value.ToGuid());
+			//	}
+			//	folder.Title = xe.Element("Title").Value;
+			//	folder.CheckValid();
+			//	A.Model.SubmitChanges();
+			//	return true;
+			//}
 
-			if (objectType.Name == "N_File")
-			{
-				IDbFolder folder = null;
-				string path = "";
-				if (xe.Element("FolderGUID") != null)
-				{
-					folder = FileStorageManager.GetFolder(xe.Element("FolderGUID").Value.ToGuid());
-					if (folder == null)
-						return false;
-					else
-						path = folder.FullPath;
-				}
-				if (xe.Element("Path") != null)
-					path = xe.Element("Path").Value;
+			//if (objectType.Name == "N_File")
+			//{
+			//	IDbFolder folder = null;
+			//	string path = "";
+			//	if (xe.Element("FolderGUID") != null)
+			//	{
+			//		folder = FileStorageManager.GetFolder(xe.Element("FolderGUID").Value.ToGuid());
+			//		if (folder == null)
+			//			return false;
+			//		else
+			//			path = folder.FullPath;
+			//	}
+			//	if (xe.Element("Path") != null)
+			//		path = xe.Element("Path").Value;
 
-				var file = FileStorageManager.GetFile(xe.Element("Guid").Value.ToGuid());
-				if (file == null)
-				{
-					file = FileStorageManager.CreateFile(xe.Element("Title").Value, path);
-					file.SetPropertyValue("ID", xe.Element("Guid").Value.ToGuid());
-				}
-				else
-				{
-					file.Title = xe.Element("Title").Value;
-				}
-				file.Write(Convert.FromBase64String(xe.Element("Data").Value));
-				file.CheckValid();
-				A.Model.SubmitChanges();
-				return true;
-			}
+			//	var file = FileStorageManager.GetFile(xe.Element("Guid").Value.ToGuid());
+			//	if (file == null)
+			//	{
+			//		file = FileStorageManager.CreateFile(xe.Element("Title").Value, path);
+			//		file.SetPropertyValue("ID", xe.Element("Guid").Value.ToGuid());
+			//	}
+			//	else
+			//	{
+			//		file.Title = xe.Element("Title").Value;
+			//	}
+			//	file.Write(Convert.FromBase64String(xe.Element("Data").Value));
+			//	file.CheckValid();
+			//	A.Model.SubmitChanges();
+			//	return true;
+			//}
 
             // Проверка наличия объектов, на который ссылается данный объект
             foreach (var prop in objectType.Properties.Where(o => o is MetaReference && o.UpperBound == 1))
@@ -437,40 +443,40 @@ namespace Nephrite.Web.Replication
             }
             
             // Если имеются ссылки на файлы, то сначала загрузить файлы
-            foreach (var fileProp in objectType.Properties.Where(o => o.Type is MetaFileType && o.UpperBound == 1))
-            {
-                var guid = xe.Element(fileProp.Name).Value;
-                if (guid != "")
-                {
-                    var g = new Guid(guid);
-					string fileinfo = ReplicationSourceServer.GetFile(g);
-					if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["LogImportObjects"]))
-						File.AppendAllText(ConfigurationManager.AppSettings["LogImportObjects"], DateTime.Now.ToString() + "\tGetFile" + Environment.NewLine + XElement.Parse(fileinfo).ToString(SaveOptions.None) + Environment.NewLine + Environment.NewLine);
+			//foreach (var fileProp in objectType.Properties.Where(o => o.Type is MetaFileType && o.UpperBound == 1))
+			//{
+			//	var guid = xe.Element(fileProp.Name).Value;
+			//	if (guid != "")
+			//	{
+			//		var g = new Guid(guid);
+			//		string fileinfo = ReplicationSourceServer.GetFile(g);
+			//		if (!String.IsNullOrEmpty(ConfigurationManager.AppSettings["LogImportObjects"]))
+			//			File.AppendAllText(ConfigurationManager.AppSettings["LogImportObjects"], DateTime.Now.ToString() + "\tGetFile" + Environment.NewLine + XElement.Parse(fileinfo).ToString(SaveOptions.None) + Environment.NewLine + Environment.NewLine);
             
-                    if (fileinfo != String.Empty)
-                    {
-                        var fx = XElement.Parse(fileinfo);
-						byte[] filedata = ReplicationSourceServer.GetFileContent(g);
-                        var file = FileStorageManager.GetFile(g);
-                        if (file == null)
-                        {
-							file = FileStorageManager.CreateFile(fx.Element("Name").Value, fx.Element("Path").Value);
-							file.Write(filedata);
-							file.CheckValid();
-							A.Model.SubmitChanges();
-                        }
-                        else
-                        {
-							file.Write(filedata);
-							file.CheckValid();
-							A.Model.SubmitChanges();
-                        }
+			//		if (fileinfo != String.Empty)
+			//		{
+			//			var fx = XElement.Parse(fileinfo);
+			//			byte[] filedata = ReplicationSourceServer.GetFileContent(g);
+			//			var file = FileStorageManager.GetFile(g);
+			//			if (file == null)
+			//			{
+			//				file = FileStorageManager.CreateFile(fx.Element("Name").Value, fx.Element("Path").Value);
+			//				file.Write(filedata);
+			//				file.CheckValid();
+			//				A.Model.SubmitChanges();
+			//			}
+			//			else
+			//			{
+			//				file.Write(filedata);
+			//				file.CheckValid();
+			//				A.Model.SubmitChanges();
+			//			}
 
-						var fid = A.Model.ExecuteQuery<int>("select FileID from N_File where Guid = ?", file.ID);
-						xe.SetElementValue(fileProp.Name, fid);						
-                    }
-                }
-            }
+			//			var fid = A.Model.ExecuteQuery<int>("select FileID from N_File where Guid = ?", file.ID);
+			//			xe.SetElementValue(fileProp.Name, fid);						
+			//		}
+			//	}
+			//}
 
             r.ImportObject(objectType, xe);
             r.SubmitChanges();

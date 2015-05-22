@@ -132,7 +132,6 @@
       <DependentUpon>ListFilter.ascx</DependentUpon>
     </Compile>
     <Compile Include="Controls\NavMenu.cs" />
-    <Compile Include="FileStorage\FolderActionType.cs" />
     <Compile Include="FormsEngine\MView.cs" />
     <Compile Include="FormsGenerator\BaseControlsCode.cs" />
     <Compile Include="FormsGenerator\ControlCode.cs" />
@@ -186,7 +185,6 @@
     <Compile Include="Web\CustomControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="FileStorage\FileStorageModel.cs" />
     <Compile Include="Reporting\Reporting.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -216,7 +214,6 @@
     <Compile Include="Controls\excel.ascx.designer.cs">
       <DependentUpon>excel.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Controls\FileList.cs" />
     <Compile Include="Controls\FileUpload.ascx.cs">
       <DependentUpon>FileUpload.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -362,13 +359,6 @@
     <Compile Include="TaskManager\TaskManagerModel.cs" />
     <Compile Include="Versioning\ClassVersion.cs" />
     <Compile Include="Versioning\IClassVersion.cs" />
-    <Compile Include="FileStorage\DbItemType.cs" />
-    <Compile Include="FileStorage\FileStorageManager.cs" />
-    <Compile Include="FileStorage\IDbFile.cs" />
-    <Compile Include="FileStorage\IDbFolder.cs" />
-    <Compile Include="FileStorage\IDbItem.cs" />
-    <Compile Include="FileStorage\Samples.cs" />
-    <Compile Include="FileStorage\StorageTypes.cs" />
     <Compile Include="Reporting\AggregateColumn.cs" />
     <Compile Include="Reporting\Grouping.cs" />
     <Compile Include="Reporting\Report.cs">
@@ -378,7 +368,6 @@
     <Compile Include="FileStorage\DataHandler.cs" />
     <Compile Include="FileStorage\FileHandler.cs" />
     <Compile Include="FileStorage\FileProvider.cs" />
-    <Compile Include="FileStorage\FileTypeIcon.cs" />
     <Compile Include="FileStorage\FolderPacker.cs" />
     <Compile Include="Model\ICalendarObject.cs" />
     <Compile Include="FileStorage\ImageHandler.cs" />
@@ -436,7 +425,6 @@
     <Compile Include="View\TinyMCEFileManager\list.ascx.designer.cs">
       <DependentUpon>list.ascx</DependentUpon>
     </Compile>
-    <Compile Include="FileStorage\VirusChecker.cs" />
     <Compile Include="View\TinyMCEFileManager\upload.ascx.cs">
       <DependentUpon>upload.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -489,10 +477,7 @@
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="FileStorage\DataBase\" />
-    <Folder Include="FileStorage\FileSystem\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <WebReferences Include="Web References\" />
   </ItemGroup>
@@ -510,6 +495,14 @@
     </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Microsoft.Framework.DependencyInjection.Interfaces\Microsoft.Framework.DependencyInjection.Interfaces.csproj">
+      <Project>{a2d88e47-20ef-45fe-9e59-adec44041ffa}</Project>
+      <Name>Microsoft.Framework.DependencyInjection.Interfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Microsoft.Framework.DependencyInjection\Microsoft.Framework.DependencyInjection.csproj">
+      <Project>{c73e03ef-ac54-434f-8d40-41724aab5fa7}</Project>
+      <Name>Microsoft.Framework.DependencyInjection</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nephrite\Nephrite.csproj">
       <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
       <Name>Nephrite</Name>

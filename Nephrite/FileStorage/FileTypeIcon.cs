@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Xml.Linq;
 using System.IO;
 
-namespace Nephrite.Web.FileStorage
+namespace Nephrite.FileStorage
 {
     public static class FileTypeIcon
     {

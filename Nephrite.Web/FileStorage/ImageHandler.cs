@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Drawing.Drawing2D;
 
 
-namespace Nephrite.Web.FileStorage
+namespace Nephrite.FileStorage
 {
     public class ImageHandler : IHttpHandler
     {

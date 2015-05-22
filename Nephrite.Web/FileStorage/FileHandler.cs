@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Text;
 
-namespace Nephrite.Web.FileStorage
+namespace Nephrite.FileStorage
 {
 	public class FileHandler : IHttpHandler
 	{

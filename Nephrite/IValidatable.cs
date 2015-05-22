@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Nephrite.Web
+namespace Nephrite
 {
 	public interface IValidatable
 	{

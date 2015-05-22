@@ -9,8 +9,10 @@ using Nephrite.Identity;
 using Nephrite.Multilanguage;
 using Nephrite.Http;
 using Nephrite.MVC;
+using Nephrite.Web;
+using Microsoft.Framework.DependencyInjection;
 
-namespace Nephrite.Web.FileStorage
+namespace Nephrite.FileStorage
 {
 	public class FileProvider
 	{
@@ -25,17 +27,25 @@ namespace Nephrite.Web.FileStorage
 		public static bool GetFile(string query, string ip, bool logDownload, out byte[] data, out string fileName, out string contentType)
 		{
 			var q = QueryHelpers.ParseQuery(query);
+			string ownerguid = q.Get("o");
 			string guid = q.Get("guid");
 			string path = HttpUtility.UrlDecode(q.Get("path"));
-			IDbFile dbFile = null;
-		
+			IStorageFile file = null;
+			IStorageFolder folder = null;
+			var c = DI.RequestServices.GetService<IStorage<string>>();
+
 			if (!String.IsNullOrEmpty(path))
-				dbFile = FileStorageManager.GetFile(path);
-			
-			if (!String.IsNullOrEmpty(guid))
-				dbFile = FileStorageManager.GetFile(guid.ToGuid());
-			
-			if (dbFile != null)
+			{
+				folder = c.GetFolder(path);
+			}
+
+			if (!String.IsNullOrEmpty(ownerguid))
+			{
+				folder = c.GetFolder(ownerguid);				
+			}
+			if (folder != null) file = folder.GetFile(guid.ToGuid());
+
+			if (file != null)
 			{
 				//if (!N_FolderSPMContext.Current.Check(dbFile.SPMActionItemGUID, 2, dbFile, true))
 				//if (!SPM2.Check(2, dbFile.SPMActionItemGUID, dbFile, true))
@@ -45,9 +55,9 @@ namespace Nephrite.Web.FileStorage
 				//	data = null;
 				//	return false;
 				//}
-				fileName = dbFile.Title;
-				data = dbFile.GetBytes();
-				contentType = GetContentType(dbFile.Extension);
+				fileName = file.Name;
+				data = file.ReadAllBytes();
+				contentType = GetContentType(file.Extension);
 
 				if (logDownload)
 				{
@@ -56,7 +66,7 @@ namespace Nephrite.Web.FileStorage
 					dc.IN_DownloadLog.InsertOnSubmit(l);
 					l.LastModifiedDate = DateTime.Now;
 					l.LastModifiedUserID = Subject.Current.ID;
-					l.FileGUID = dbFile.ID;
+					l.FileGUID = file.ID;
 					l.IP = ip;
 					dc.SubmitChanges();
 				}
@@ -87,30 +97,30 @@ namespace Nephrite.Web.FileStorage
 
 		}
 
-		public static string GetFileTemporary(string query)
-		{
-			byte[] data;
-			string fileName;
-			string contentType;
-			if (GetFile(query, "", false, out data, out fileName, out contentType))
-			{
-				string fn = Path.GetTempFileName() + Path.GetExtension(fileName);
-				File.WriteAllBytes(fn, data);
-				return fn;
-			}
-			return "";
-		}
+		//public static string GetFileTemporary(string query)
+		//{
+		//	byte[] data;
+		//	string fileName;
+		//	string contentType;
+		//	if (GetFile(query, "", false, out data, out fileName, out contentType))
+		//	{
+		//		string fn = Path.GetTempFileName() + Path.GetExtension(fileName);
+		//		File.WriteAllBytes(fn, data);
+		//		return fn;
+		//	}
+		//	return "";
+		//}
 
-		public static string GeneratePassword()
-		{
-			string chars = "1234567890abcdefghijklmnopqrstuvwxyz";
-			Random r = new Random();
-			string pass = "";
-			int length = 10 + r.Next(10);
-			for (int i = 0; i < length; i++)
-				pass += chars[r.Next(chars.Length)];
-			return pass;
-		}
+		//public static string GeneratePassword()
+		//{
+		//	string chars = "1234567890abcdefghijklmnopqrstuvwxyz";
+		//	Random r = new Random();
+		//	string pass = "";
+		//	int length = 10 + r.Next(10);
+		//	for (int i = 0; i < length; i++)
+		//		pass += chars[r.Next(chars.Length)];
+		//	return pass;
+		//}
 	}
 
 	public enum SaveFileResult

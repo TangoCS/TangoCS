@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Nephrite.SettingsManager;
 using Nephrite.Web.CoreDataContext;
+using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.Web.TaskManager
 {
@@ -28,10 +29,12 @@ namespace Nephrite.Web.TaskManager
 			A.DBType = dbtypeenum.Value;
 			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
 
-			var sl = AppSettings.Get("ReplicationLogin");
+			var settings = DI.RequestServices.GetService<IPersistentSettings>();
+
+			var sl = settings.Get("ReplicationLogin");
 			if (sl.IsEmpty())
 				throw new Exception("Системный параметр ReplicationLogin отсутствует или не задан");
-			var sp = AppSettings.Get("ReplicationPassword");
+			var sp = settings.Get("ReplicationPassword");
 			if (sp.IsEmpty())
 				throw new Exception("Системный параметр ReplicationPassword отсутствует или не задан");
 
