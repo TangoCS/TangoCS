@@ -10,9 +10,13 @@ using Nephrite.Layout;
 
 namespace Nephrite.Web.Controls
 {
-	public class BackButton : BaseControl//, IBarItem
+	public class BackButton : BaseControl
     {
 		public ILayoutBarItem Layout { get; set; }
+
+		[Inject]
+		public ITextResource TextResource { get; set; }
+
 		public string AccessKey { get; set; }
 		public string Image { get; set; }
 

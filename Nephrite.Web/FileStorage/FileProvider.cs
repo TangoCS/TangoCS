@@ -26,10 +26,9 @@ namespace Nephrite.FileStorage
 		}
 		public static bool GetFile(string query, string ip, bool logDownload, out byte[] data, out string fileName, out string contentType)
 		{
-			var q = QueryHelpers.ParseQuery(query);
-			string ownerguid = q.Get("o");
-			string guid = q.Get("guid");
-			string path = HttpUtility.UrlDecode(q.Get("path"));
+			string ownerguid = HttpContext.Current.Request.QueryString.Get("o");
+			string guid = HttpContext.Current.Request.QueryString.Get("guid");
+			string path = HttpUtility.UrlDecode(HttpContext.Current.Request.QueryString.Get("path"));
 			IStorageFile file = null;
 			IStorageFolder folder = null;
 			var c = DI.RequestServices.GetService<IStorage<string>>();
@@ -132,11 +131,11 @@ namespace Nephrite.FileStorage
 		AntiViralSuspicion
 	}
 
-	public static class SaveFileResultExtensionMethods
-	{
-		public static string ToText(this SaveFileResult r)
-		{
-			return TextResource.Get("SaveFileResult." + r.ToString());
-		}
-	}
+	//public static class SaveFileResultExtensionMethods
+	//{
+	//	public static string ToText(this SaveFileResult r)
+	//	{
+	//		return TextResource.Get("SaveFileResult." + r.ToString());
+	//	}
+	//}
 }

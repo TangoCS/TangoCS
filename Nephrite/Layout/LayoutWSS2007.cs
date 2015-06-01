@@ -7,7 +7,7 @@ using Nephrite.Multilanguage;
 using Nephrite.Html;
 using Nephrite.Http;
 using Nephrite.MVC;
-
+using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.Layout
 {
@@ -302,11 +302,12 @@ namespace Nephrite.Layout
 		public string RenderPager(AbstractQueryString baseUrl, int pageIndex, int pageCount, int recordsCount)
 		{
 			StringBuilder sb = new StringBuilder(1024);
+			var textResource = DI.RequestServices.GetService<ITextResource>();
 
 			sb.Append(@"<div style=""padding:3px 0px 8px 7px; vertical-align:middle"">");
 			if (pageCount > 1)
 			{
-				string s = @"<a href=""{0}""><img src=""{1}{2}page.png"" alt=""" + TextResource.Get("Common.Paging.Page", Resources.Common.PagerPage) + @" {3}"" style=""border:0;"" /></a>&nbsp;";
+				string s = @"<a href=""{0}""><img src=""{1}{2}page.png"" alt=""" + textResource.Get("Common.Paging.Page", Resources.Common.PagerPage) + @" {3}"" style=""border:0;"" /></a>&nbsp;";
 				if (pageIndex > 2)
 				{
 					sb.AppendFormat(s, baseUrl.SetParameter("page", "1"), IconSet.RootPath, "first", 1);
@@ -324,12 +325,12 @@ namespace Nephrite.Layout
 						bu += "?";
 				}
 				bu += "page=";
-				sb.AppendFormat(@"{0}&nbsp;<input name=""page"" type=""text"" value=""{1}"" style=""width:40px;"" onkeydown=""javascript:if(event.keyCode==13){{ document.location='{2}'+document.forms[0].page.value; return false;}}""/>&nbsp;{4}&nbsp;{3}&nbsp;", 
-					TextResource.Get("Common.Paging.Page", Resources.Common.PagerPage), 
+				sb.AppendFormat(@"{0}&nbsp;<input name=""page"" type=""text"" value=""{1}"" style=""width:40px;"" onkeydown=""javascript:if(event.keyCode==13){{ document.location='{2}'+document.forms[0].page.value; return false;}}""/>&nbsp;{4}&nbsp;{3}&nbsp;",
+					textResource.Get("Common.Paging.Page", Resources.Common.PagerPage), 
 					pageIndex, 
 					bu, 
-					pageCount, 
-					TextResource.Get("Common.Paging.From", "из"));
+					pageCount,
+					textResource.Get("Common.Paging.From", "из"));
 				if (pageIndex < pageCount)
 				{
 					sb.AppendFormat(s, baseUrl.SetParameter("page", (pageIndex + 1).ToString()), IconSet.RootPath, "next", pageIndex + 1);
@@ -339,13 +340,15 @@ namespace Nephrite.Layout
 					sb.AppendFormat(s, baseUrl.SetParameter("page", pageCount.ToString()), IconSet.RootPath, "last", pageCount);
 				}
 			}
-			sb.AppendFormat(@"<b>{0}:</b> {1}</div>", TextResource.Get("Common.Paging.TotalRecords", "Всего записей"), recordsCount);
+			sb.AppendFormat(@"<b>{0}:</b> {1}</div>", textResource.Get("Common.Paging.TotalRecords", "Всего записей"), recordsCount);
 			return sb.ToString();
 		}
 
 		public string RenderPager(string gotoPageJSFunction, int pageIndex, int pageCount, int recordsCount)
 		{
 			StringBuilder sb = new StringBuilder(1024);
+			var textResource = DI.RequestServices.GetService<ITextResource>();
+
 			string imgname = "pagerBusy_" + gotoPageJSFunction;
 			gotoPageJSFunction = String.Format("{0}.style.visibility = 'visible';{1}({2}); return false;", imgname, gotoPageJSFunction, "{0}");
 
@@ -353,7 +356,7 @@ namespace Nephrite.Layout
 			sb.Append(@"<div style=""padding:3px 0px 8px 7px; vertical-align:middle"">");
 			if (pageCount > 1)
 			{
-				string s = @"<a href=""#"" onclick=""{0}""><img src=""{1}{2}page.png"" alt=""" + TextResource.Get("Common.Paging.Page", Resources.Common.PagerPage) + @" {3}"" style=""border:0;"" /></a>&nbsp;";
+				string s = @"<a href=""#"" onclick=""{0}""><img src=""{1}{2}page.png"" alt=""" + textResource.Get("Common.Paging.Page", Resources.Common.PagerPage) + @" {3}"" style=""border:0;"" /></a>&nbsp;";
 				if (pageIndex > 2)
 				{
 					sb.AppendFormat(s, String.Format(gotoPageJSFunction, 1), IconSet.RootPath, "first", 1);
@@ -362,7 +365,10 @@ namespace Nephrite.Layout
 				{
 					sb.AppendFormat(s, String.Format(gotoPageJSFunction, pageIndex - 1), IconSet.RootPath, "prev", pageIndex - 1);
 				}
-				sb.AppendFormat(@"{0}&nbsp;<input name=""page"" type=""text"" value=""{1}"" style=""width:40px;"" onkeydown=""javascript:if(event.keyCode==13){{ {2} }}""/>&nbsp;{4}&nbsp;{3}&nbsp;", TextResource.Get("Common.Paging.Page", Resources.Common.PagerPage), pageIndex, String.Format(gotoPageJSFunction, "document.forms[0].page.value"), pageCount, TextResource.Get("Common.Paging.From", "из"));
+				sb.AppendFormat(@"{0}&nbsp;<input name=""page"" type=""text"" value=""{1}"" style=""width:40px;"" onkeydown=""javascript:if(event.keyCode==13){{ {2} }}""/>&nbsp;{4}&nbsp;{3}&nbsp;", 
+textResource.Get("Common.Paging.Page", Resources.Common.PagerPage), pageIndex, 
+String.Format(gotoPageJSFunction, "document.forms[0].page.value"), pageCount, 
+textResource.Get("Common.Paging.From", "из"));
 				if (pageIndex < pageCount)
 				{
 					sb.AppendFormat(s, String.Format(gotoPageJSFunction, pageIndex + 1), IconSet.RootPath, "next", pageIndex + 1);
@@ -373,17 +379,19 @@ namespace Nephrite.Layout
 				}
 			}
 
-			sb.AppendFormat(@"<img src=""{0}Wait_Animate.gif"" name=""{1}"" style=""visibility:hidden;border:0;"" class=""middle"" title=""{2}"" />", IconSet.RootPath, imgname, TextResource.Get("Common.Paging.Wait", "ждите..."));
-			sb.AppendFormat(@"<b>{0}:</b> {1}</div>", TextResource.Get("Common.Paging.TotalRecords", "Всего записей"), recordsCount);
+			sb.AppendFormat(@"<img src=""{0}Wait_Animate.gif"" name=""{1}"" style=""visibility:hidden;border:0;"" class=""middle"" title=""{2}"" />", IconSet.RootPath, imgname, textResource.Get("Common.Paging.Wait", "ждите..."));
+			sb.AppendFormat(@"<b>{0}:</b> {1}</div>", textResource.Get("Common.Paging.TotalRecords", "Всего записей"), recordsCount);
 			return sb.ToString();
 		}
 
 		public string RenderPager(string gotoPageJSFunction, int pageIndex, int pageCount)
 		{
 			StringBuilder sb = new StringBuilder(1024);
+			var textResource = DI.RequestServices.GetService<ITextResource>();
+
 			if (pageCount > 1)
 			{
-				string s = @"<a href=""#"" onclick=""{0}""><img src=""{1}{2}page.png"" alt=""" + TextResource.Get("Common.Paging.Page", Resources.Common.PagerPage) + @" {3}"" style=""border:0;"" /></a>&nbsp;";
+				string s = @"<a href=""#"" onclick=""{0}""><img src=""{1}{2}page.png"" alt=""" + textResource.Get("Common.Paging.Page", Resources.Common.PagerPage) + @" {3}"" style=""border:0;"" /></a>&nbsp;";
 				if (pageIndex > 2)
 				{
 					sb.AppendFormat(s, String.Format(gotoPageJSFunction, 1), IconSet.RootPath, "first", 1);
@@ -392,7 +400,7 @@ namespace Nephrite.Layout
 				{
 					sb.AppendFormat(s, String.Format(gotoPageJSFunction, pageIndex - 1), IconSet.RootPath, "prev", pageIndex - 1);
 				}
-				sb.AppendFormat(@"{0}&nbsp;<input name=""page"" type=""text"" value=""{1}"" style=""width:40px;"" onkeydown=""javascript:if(event.keyCode==13){{ {2} }}""/>&nbsp;{4}&nbsp;{3}&nbsp;", TextResource.Get("Common.Paging.Page", Resources.Common.PagerPage), pageIndex, String.Format(gotoPageJSFunction, "document.forms[0].page.value"), pageCount, TextResource.Get("Common.Paging.From", "из"));
+				sb.AppendFormat(@"{0}&nbsp;<input name=""page"" type=""text"" value=""{1}"" style=""width:40px;"" onkeydown=""javascript:if(event.keyCode==13){{ {2} }}""/>&nbsp;{4}&nbsp;{3}&nbsp;", textResource.Get("Common.Paging.Page", Resources.Common.PagerPage), pageIndex, String.Format(gotoPageJSFunction, "document.forms[0].page.value"), pageCount, textResource.Get("Common.Paging.From", "из"));
 				if (pageIndex < pageCount)
 				{
 					sb.AppendFormat(s, String.Format(gotoPageJSFunction, pageIndex + 1), IconSet.RootPath, "next", pageIndex + 1);

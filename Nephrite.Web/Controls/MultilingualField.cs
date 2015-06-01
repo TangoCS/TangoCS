@@ -7,8 +7,11 @@ using Nephrite.Multilanguage;
 
 namespace Nephrite.Web.Controls
 {
-	public class MultilingualField : CompositeControl
+	public class MultilingualField : BaseCompositeControl
 	{
+		[Inject]
+		public ILanguage Language { get; set; }
+
 		TextBox[] textBoxes;
 
 		protected override void OnInit(EventArgs e)

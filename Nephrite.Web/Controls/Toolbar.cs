@@ -11,7 +11,7 @@ using System.Web.UI.WebControls;
 using Nephrite.Html;
 using Nephrite.Layout;
 using Nephrite.AccessControl;
-
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Web.Controls
 {
@@ -20,6 +20,9 @@ namespace Nephrite.Web.Controls
 	{
 		[Inject]
 		public IAccessControl AccessControl { get; set; }
+
+		[Inject]
+		public ITextResource TextResource { get; set; }
 
 		protected List<ToolbarItem> items = new List<ToolbarItem>();
 		protected List<ToolbarItem> rightItems = new List<ToolbarItem>();

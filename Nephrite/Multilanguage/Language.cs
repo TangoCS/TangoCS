@@ -3,42 +3,53 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Nephrite.Http;
+using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.Multilanguage
 {
-	public static class Language
+	public interface ILanguage
 	{
-		static Func<IDC_Multilanguage> DataContext;
-		static Func<IHttpContext> HttpContext;
+		List<IC_Language> List { get; }
+		IC_Language Current { get; }
+		IC_Language DefaultLanguage { get; }
+		CultureInfo CurrentCulture { get; }
+
+        void WithLang(string lang, Action action);
+    }
+
+	public class Language : ILanguage
+	{
+		IDC_Multilanguage _dataContext;
+		IHttpContext _httpContext;
 
 		static List<IC_Language> _langs;
 
-		public static void Init(Func<IHttpContext> httpContext, Func<IDC_Multilanguage> dataContext)
+		public Language(IHttpContext httpContext, IDC_Multilanguage dataContext)
 		{
-			HttpContext = httpContext;
-			DataContext = dataContext;
+			_httpContext = httpContext;
+			_dataContext = dataContext;
 		}
 
-		public static List<IC_Language> List
+		public List<IC_Language> List
 		{
 			get
 			{
 				if (_langs == null)
-					_langs = DataContext().IC_Language.OrderByDescending(o => o.IsDefault).ToList();
+					_langs = _dataContext.IC_Language.OrderByDescending(o => o.IsDefault).ToList();
 				return _langs;
 			}
 		}
 
-		public static IC_Language Current
+		public IC_Language Current
 		{
 			get
 			{
-				string lang = HttpContext().Request.Query["lang"];
+				string lang = _httpContext.Request.Query["lang"];
 
-				if (HttpContext().Request.Cookies["lcid"] != null)
-					lang = HttpContext().Request.Cookies["lcid"] == "1033" ? "en" : "ru";
-				if (HttpContext().Items["Lang"] != null)
-					lang = (string)HttpContext().Items["Lang"];
+				if (_httpContext.Request.Cookies["lcid"] != null)
+					lang = _httpContext.Request.Cookies["lcid"] == "1033" ? "en" : "ru";
+				if (_httpContext.Items["Lang"] != null)
+					lang = (string)_httpContext.Items["Lang"];
 
 				lang = lang ?? "ru";
 			    var l = List.SingleOrDefault(o => o.Code == lang);
@@ -48,7 +59,7 @@ namespace Nephrite.Multilanguage
 			}
 		}
 
-		public static IC_Language DefaultLanguage
+		public IC_Language DefaultLanguage
 		{
 			get
 			{
@@ -56,15 +67,15 @@ namespace Nephrite.Multilanguage
 			}
 		}
 
-		public static void WithLang(string lang, Action action)
+		public void WithLang(string lang, Action action)
 		{
-			string prevLang = (string)HttpContext().Items["Lang"];
-			HttpContext().Items["Lang"] = lang;
+			string prevLang = (string)_httpContext.Items["Lang"];
+			_httpContext.Items["Lang"] = lang;
 			action();
-			HttpContext().Items["Lang"] = prevLang;
+			_httpContext.Items["Lang"] = prevLang;
 		}
 
-		public static CultureInfo CurrentCulture
+		public CultureInfo CurrentCulture
 		{
 			get
 			{
@@ -85,14 +96,17 @@ namespace Nephrite.Multilanguage
 	{
 		public static string MoneyToString(this decimal money)
 		{
-			return money.ToString("###,###,###,###,##0.00", Language.CurrentCulture);
+			var language = DI.RequestServices.GetService<ILanguage>();
+			return money.ToString("###,###,###,###,##0.00", language.CurrentCulture);
 		}
 
 		public static string MoneyToString(this decimal? money)
 		{
 			if (money == null)
 				return "";
-			return money.Value.ToString("###,###,###,###,##0.00", Language.CurrentCulture);
+
+			var language = DI.RequestServices.GetService<ILanguage>();
+			return money.Value.ToString("###,###,###,###,##0.00", language.CurrentCulture);
 		}
 	}
 }

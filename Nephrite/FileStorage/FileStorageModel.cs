@@ -64,7 +64,7 @@ namespace Nephrite.FileStorage
 		{
 			var file = new StorageFile(this);
 			int i = fullName.LastIndexOf(".");
-			file.Name = fullName.Substring(0, i);
+			file.Name = fullName;
 			file.Extension = fullName.Substring(i);
 			return file;
 		}
@@ -82,7 +82,7 @@ namespace Nephrite.FileStorage
 		}
 
 
-		public IEnumerable<IStorageFile> GetAllFiles()
+		public IQueryable<IStorageFile> GetAllFiles()
 		{
 			return Provider.GetAllMetadata(this);
 		}

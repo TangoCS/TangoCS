@@ -37,6 +37,7 @@ namespace Nephrite.Web.Hibernate.CoreMapping
 			Property(x => x.LastModifiedDate);
 			Property(x => x.Size);
 			Property(x => x.Owner);
+			Property(x => x.Title);
 		}
 	}
 

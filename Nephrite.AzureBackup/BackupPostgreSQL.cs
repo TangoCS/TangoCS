@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.Zip;
 using Npgsql;
+using Nephrite.Web;
 
 namespace Nephrite.AzureBackup
 {
@@ -48,7 +49,7 @@ namespace Nephrite.AzureBackup
 			}
 			else
 			{
-				using (new Nephrite.Core.Impersonation(domain, username, password))
+				using (new Impersonation(domain, username, password))
 				{
 					// Переместить бэкап из сетевой папки
 					File.Move(sharefile, fullpath);

@@ -5,18 +5,26 @@ using System.Web;
 using System.Web.UI.WebControls;
 using System.Globalization;
 using System.Web.UI;
-
+using Microsoft.Framework.DependencyInjection;
 using Nephrite.Multilanguage;
 
 namespace Nephrite.Web.Controls
 {
 	public class NumericBox : TextBox
 	{
+		public ILanguage Language { get; set; }
+
 		public int? Decimals { get; set; }
 		public decimal? MaxValue { get; set; }
 		public decimal? MinValue { get; set; }
 		public string ViewDataBind { get; set; }
-		
+
+		protected override void OnInit(EventArgs e)
+		{
+			base.OnInit(e);
+			Language = DI.RequestServices.GetService<ILanguage>();
+        }
+
 		protected override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);

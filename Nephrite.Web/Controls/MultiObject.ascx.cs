@@ -18,6 +18,9 @@ namespace Nephrite.Web.Controls
 		[Inject]
 		public HtmlHelper Html { get; set; }
 
+		[Inject]
+		public ITextResource TextResource { get; set; }
+
 		public bool ReadOnly { get; set; }
 		public MultiObject()
 		{

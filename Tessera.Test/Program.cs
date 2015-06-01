@@ -11,7 +11,7 @@ using Nephrite;
 using Nephrite.Web;
 using Nephrite.Web.Controls;
 using Nephrite.Web.CoreDataContext;
-using Nephrite.Web.FileStorage;
+
 using Nephrite.Web.Hibernate;
 using Nephrite.SettingsManager;
 

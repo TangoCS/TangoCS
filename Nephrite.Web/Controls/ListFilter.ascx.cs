@@ -16,6 +16,7 @@ using Nephrite.Meta;
 using Nephrite.AccessControl;
 using Nephrite.Http;
 using Nephrite.Data;
+using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.Web.Controls
 {
@@ -23,6 +24,9 @@ namespace Nephrite.Web.Controls
 	{
 		[Inject]
 		public IAccessControl AccessControl { get; set; }
+
+		[Inject]
+		public ITextResource TextResource { get; set; }
 
 		IDC_ListFilter dc
 		{
@@ -118,13 +122,13 @@ namespace Nephrite.Web.Controls
 
 		protected override void OnInit(EventArgs e)
 		{
+			base.OnInit(e);
+
 			tp0.Title = TextResource.Get("System.Filter.Tabs.Properties", "Свойства");
 			tp1.Title = TextResource.Get("System.Filter.Tabs.Filter", "Фильтр");
 			tp2.Title = TextResource.Get("System.Filter.Tabs.List", "Список");
 			tp3.Title = TextResource.Get("System.Filter.Tabs.Sorting", "Сортировка");
 			tpGrouping.Title = TextResource.Get("System.Filter.Tabs.Grouping", "Группировка");
-
-			base.OnInit(e);
 		}
 
 		protected void Page_Load(object sender, EventArgs e)
@@ -1462,7 +1466,11 @@ namespace Nephrite.Web.Controls
 
 		public override string ToString()
 		{
-			return Title + " " + (Condition == TextResource.Get("System.Filter.LastXDays", "последние x дней") ? String.Format(TextResource.Get("System.Filter.LastDays", "последние &quot;{0}&quot; дней"), ValueTitle) : Condition + " &quot;" + HttpUtility.HtmlEncode(ValueTitle) + "&quot;");
+			var textResource = DI.RequestServices.GetService<ITextResource>();
+
+			return Title + " " + (Condition == textResource.Get("System.Filter.LastXDays", "последние x дней") ? 
+				String.Format(textResource.Get("System.Filter.LastDays", "последние &quot;{0}&quot; дней"), ValueTitle) : 
+				Condition + " &quot;" + HttpUtility.HtmlEncode(ValueTitle) + "&quot;");
 		}
 	}
 

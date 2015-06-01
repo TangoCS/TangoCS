@@ -15,8 +15,11 @@ using Nephrite.Data;
 
 namespace Nephrite.Web.Controls
 {
-	public partial class SelectObjectHierarchic : System.Web.UI.UserControl
+	public partial class SelectObjectHierarchic : BaseUserControl
 	{
+		[Inject]
+		public ITextResource TextResource { get; set; }
+
 		public string Title { get; set; }
 		public string Width { get; set; }
 		public string Height { get; set; }
@@ -33,7 +36,7 @@ namespace Nephrite.Web.Controls
 		public object RootObjectID { get; set; }
 		public bool AllowSelectAll { get; set; }
 
-		protected string SearchText = TextResource.Get("Common.Controls.SelectObjectHierarchic.Search", "Поиск");
+		protected string SearchText = "";
 		public Func<string> GetNotFoundMessage;
 		public Func<object, bool> CanSelectFunc { get; set; }
 		string[] selectedObjects { get; set; }
@@ -82,7 +85,7 @@ namespace Nephrite.Web.Controls
 			DataValueField = "ObjectID";
 			RootObjectID = null;
 			GetNotFoundMessage = () => TextResource.Get("Common.Controls.SelectObjectHierarchic.NotFoundMessage", "В системе отсутствует информация по вашему запросу");
-			//SearchText = TextResource.Get("Common.Controls.SelectObjectHierarchic.Search", "Поиск");
+			SearchText = TextResource.Get("Common.Controls.SelectObjectHierarchic.Search", "Поиск");
 		}
 
 		List<string> ids = new List<string>();

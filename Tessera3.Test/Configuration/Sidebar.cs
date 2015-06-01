@@ -10,9 +10,9 @@ namespace Solution.Configuration
 	{
 		public static void Configure()
 		{
-			Navigation nav = new Navigation(ActionAccessControl.Instance);
-			nav.AddItem("Metadata", "");
-			nav.AddItem("Administration", "");
+			//Navigation nav = new Navigation(ActionAccessControl.Instance);
+			//nav.AddItem("Metadata", "");
+			//nav.AddItem("Administration", "");
 			
 		}
 	}

@@ -18,13 +18,17 @@ namespace Nephrite.FileStorage
 
 		public void SetData(IStorageFile file, byte[] bytes)
 		{
-			var fileData = _dc.IDbFileData.SingleOrDefault(o => o.FileGUID == file.ID);
-			if (fileData == null)
+			var fileData = _dc.NewIDbFileData(file.ID);
+
+			var exists = _dc.IDbFileData.Count(o => o.FileGUID == file.ID);
+			if (exists == 0)
 			{
-				fileData = _dc.NewIDbFileData(file.ID);
 				_dc.IDbFileData.InsertOnSubmit(fileData);
 			}
+			else
+				_dc.IDbFileData.AttachOnSubmit(fileData);
 
+			fileData.FileGUID = file.ID;
 			fileData.Title = file.Name;
 			fileData.Size = bytes.Length;
 			fileData.Data = bytes;
@@ -60,7 +64,7 @@ namespace Nephrite.FileStorage
 			return file;
 		}
 
-		public IEnumerable<IStorageFile> GetAllMetadata(IStorageFolder folder)
+		public IQueryable<IStorageFile> GetAllMetadata(IStorageFolder folder)
 		{
 			return from o in _dc.IDbFileData
 				   where o.Owner == folder.ID

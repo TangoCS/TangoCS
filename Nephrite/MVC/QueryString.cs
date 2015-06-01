@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using Nephrite.Http;
+using Microsoft.AspNet.WebUtilities;
 
 namespace Nephrite.MVC
 {
@@ -67,7 +68,7 @@ namespace Nephrite.MVC
 
 		public static AbstractQueryString From(string query, IDictionary<string, object> routeValues = null)
 		{
-			return new Url(query);
+			return new Url(query, routeValues);
 		}
 
 		public override string Controller { get { return GetString(MvcOptions.ControllerName); } }

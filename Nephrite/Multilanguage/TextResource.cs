@@ -7,28 +7,27 @@ using Nephrite.Http;
 
 namespace Nephrite.Multilanguage
 {
-	public static class TextResource
+	public interface ITextResource
 	{
-		static Func<IDC_TextResources> DataContext;
-		static Func<IHttpContext> HttpContext;
+		string Get(string sysName);
+        string Get(string sysName, string defaultText);
+		void ResetCache();
+    }
 
-		public static void Init(Func<IHttpContext> httpContext, Func<IDC_TextResources> dataContext)
+	public class TextResource : ITextResource
+	{
+		IDC_TextResources _dataContext;
+		IHttpContext _httpContext;
+		ILanguage _language;
+
+		public TextResource(IHttpContext httpContext, IDC_TextResources dataContext, ILanguage language)
 		{
-			HttpContext = httpContext;
-			DataContext = dataContext;
+			_httpContext = httpContext;
+			_dataContext = dataContext;
+			_language = language;
 		}
 
-		static bool EditMode
-		{
-			get
-			{
-				if (HttpContext().Items["reseditmode"] == null)
-					HttpContext().Items["reseditmode"] = HttpContext().Request.Cookies["resourceeditmode"] != null && HttpContext().Request.Cookies["resourceeditmode"] == "1";
-				return (bool)HttpContext().Items["reseditmode"];
-			}
-		}
-
-		public static string Get(string sysName)
+		public string Get(string sysName)
 		{
 			return Get(sysName, "");
 		}
@@ -38,15 +37,15 @@ namespace Nephrite.Multilanguage
 		/// </summary>
 		/// <param name="sysName">Системное имя текстового ресурса</param>
 		/// <returns></returns>
-		public static string Get(string sysName, string defaultText)
+		public string Get(string sysName, string defaultText)
 		{
-			string res = sysName + "-" + Language.Current.Code;
+			string res = sysName + "-" + _language.Current.Code;
 
 			if (!loaded)
 			{
 				lock (locker)
 				{
-					var nrs = DataContext().IN_TextResource.Select(o => new { Res = o.SysName + "-" + o.LanguageCode, ID = o.TextResourceID, Text = o.Text });
+					var nrs = _dataContext.IN_TextResource.Select(o => new { Res = o.SysName + "-" + o.LanguageCode, ID = o.TextResourceID, Text = o.Text });
 					foreach (var nr in nrs)
 					{
 						resources[nr.Res] = nr.Text;
@@ -62,7 +61,18 @@ namespace Nephrite.Multilanguage
 				return defaultText;
 		}
 
-		static string get(string res, string sysName)
+
+		bool EditMode
+		{
+			get
+			{
+				if (_httpContext.Items["reseditmode"] == null)
+					_httpContext.Items["reseditmode"] = _httpContext.Request.Cookies["resourceeditmode"] != null && _httpContext.Request.Cookies["resourceeditmode"] == "1";
+				return (bool)_httpContext.Items["reseditmode"];
+			}
+		}
+
+		string get(string res, string sysName)
 		{
 			if (EditMode)
 			{
@@ -82,17 +92,17 @@ namespace Nephrite.Multilanguage
 		/// <summary>
 		/// Сброс кэша
 		/// </summary>
-		public static void ResetCache()
+		public void ResetCache()
 		{
 			resources.Clear();
 			resourceids.Clear();
 			loaded = false;
 		}
 
-		static Dictionary<string, string> resources = new Dictionary<string, string>();
-		static Dictionary<string, string> resourceids = new Dictionary<string, string>();
-		static bool loaded = false;
-		static object locker = new object();
+		Dictionary<string, string> resources = new Dictionary<string, string>();
+		Dictionary<string, string> resourceids = new Dictionary<string, string>();
+		bool loaded = false;
+		object locker = new object();
 	}
 
 	public interface IN_TextResource

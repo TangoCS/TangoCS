@@ -6,6 +6,8 @@ using System.Linq;
 using System.Web;
 using Nephrite;
 using Nephrite.Http;
+using Microsoft.AspNet.Http.Internal;
+
 
 namespace Solution.Configuration
 {
@@ -103,20 +105,20 @@ namespace Solution.Configuration
 			get { return HttpContext.Current.Request.QueryString; }
 		}
 
-		RequestCookiesCollection _cookies;
-		public RequestCookiesCollection Cookies
+		Microsoft.AspNet.Http.IReadableStringCollection _cookies;
+		public Microsoft.AspNet.Http.IReadableStringCollection Cookies
 		{
 			get 
 			{ 
 				if (_cookies == null)
 				{
-					IDictionary<string, string> d = new Dictionary<string, string>();
-					var cookies = HttpContext.Current.Request.Cookies;
+					StringCollection d = new StringCollection();
+					HttpCookieCollection cookies = HttpContext.Current.Request.Cookies;
 
 					foreach (string c in cookies.AllKeys)
 						d.Add(c, cookies[c].Value);
 
-					_cookies = new RequestCookiesCollection(d);
+					_cookies = d;
 				}
 				return _cookies; 
 			}
@@ -155,6 +157,36 @@ namespace Solution.Configuration
 		public string UserHostAddress
 		{
 			get { return HttpContext.Current.Request.UserHostAddress; }
+		}
+	}
+
+	public class StringCollection : Dictionary<string, string>, Microsoft.AspNet.Http.IReadableStringCollection
+	{
+		ICollection<string> Microsoft.AspNet.Http.IReadableStringCollection.Keys
+		{
+			get
+			{
+				return Keys;
+			}
+		}
+
+		public string Get(string key)
+		{
+			return Get(key);
+		}
+
+		public IList<string> GetValues(string key)
+		{
+			string value;
+			return TryGetValue(key, out value) ? new[] { value } : null;
+		}
+
+		IEnumerator<KeyValuePair<string, string[]>> IEnumerable<KeyValuePair<string, string[]>>.GetEnumerator()
+		{
+			foreach (var pair in this)
+			{
+				yield return new KeyValuePair<string, string[]>(pair.Key, new[] { pair.Value });
+			}
 		}
 	}
 }

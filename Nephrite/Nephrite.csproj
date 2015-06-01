@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nephrite</RootNamespace>
     <AssemblyName>Nephrite</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -79,66 +79,6 @@
     <Compile Include="Html.Controls\CodeArea.cs" />
     <Compile Include="Html.Controls\Navigation.cs" />
     <Compile Include="Html\Link.cs" />
-    <Compile Include="Http\ApplicationBuilder.cs" />
-    <Compile Include="Http\AuthenticateContext.cs" />
-    <Compile Include="Http\AuthenticationDescription.cs" />
-    <Compile Include="Http\AuthenticationProperties.cs" />
-    <Compile Include="Http\AuthenticationResult.cs" />
-    <Compile Include="Http\BaseHeaderParser.cs" />
-    <Compile Include="Http\BufferedReadStream.cs" />
-    <Compile Include="Http\BufferingHelper.cs" />
-    <Compile Include="Http\ChallengeContext.cs" />
-    <Compile Include="Http\Constants.cs" />
-    <Compile Include="Http\ContentDispositionHeaderValue.cs" />
-    <Compile Include="Http\CookieOption.cs" />
-    <Compile Include="Http\DefaultHttpResponse.cs" />
-    <Compile Include="Http\DefaultHttpContext.cs" />
-    <Compile Include="Http\DefaultHttpRequest.cs" />
-    <Compile Include="Http\DescribeSchemesContext.cs" />
-    <Compile Include="Http\FeatureCollection.cs" />
-    <Compile Include="Http\FeatureReference.cs" />
-    <Compile Include="Http\CoreInterfaces.cs" />
-    <Compile Include="Http\FeaturesInterfaces.cs" />
-    <Compile Include="Http\FileBufferingReadStream.cs" />
-    <Compile Include="Http\FormCollection.cs" />
-    <Compile Include="Http\FormFeature.cs" />
-    <Compile Include="Http\FormFile.cs" />
-    <Compile Include="Http\FormFileCollection.cs" />
-    <Compile Include="Http\FormReader.cs" />
-    <Compile Include="Http\GenericHeaderParser.cs" />
-    <Compile Include="Http\HeaderDictionary.cs" />
-    <Compile Include="Http\HeaderNames.cs" />
-    <Compile Include="Http\HeaderUtilities.cs" />
-    <Compile Include="Http\HostString.cs" />
-    <Compile Include="Http\HttpAuthenticationFeature.cs" />
-    <Compile Include="Http\HttpContext.cs" />
-    <Compile Include="Http\HttpHeaderParser.cs" />
-    <Compile Include="Http\HttpRequest.cs" />
-    <Compile Include="Http\HttpRequestFeature.cs" />
-    <Compile Include="Http\HttpResponse.cs" />
-    <Compile Include="Http\HttpResponseFeature.cs" />
-    <Compile Include="Http\HttpRuleParser.cs" />
-    <Compile Include="Http\ItemsDictionary.cs" />
-    <Compile Include="Http\ItemsFeature.cs" />
-    <Compile Include="Http\KeyValueAccumulator.cs" />
-    <Compile Include="Http\MediaTypeHeaderValue.cs" />
-    <Compile Include="Http\MultipartReader.cs" />
-    <Compile Include="Http\MultipartReaderStream.cs" />
-    <Compile Include="Http\MultipartSection.cs" />
-    <Compile Include="Http\NameValueHeaderValue.cs" />
-    <Compile Include="Http\ObjectCollection.cs" />
-    <Compile Include="Http\PathString.cs" />
-    <Compile Include="Http\QueryFeature.cs" />
-    <Compile Include="Http\QueryString.cs" />
-    <Compile Include="Http\ReferenceReadStream.cs" />
-    <Compile Include="Http\RequestCookieFeature.cs" />
-    <Compile Include="Http\ResponseCookies.cs" />
-    <Compile Include="Http\ResponseCookiesFeature.cs" />
-    <Compile Include="Http\ServiceProvidersFeature.cs" />
-    <Compile Include="Http\SessionCollection.cs" />
-    <Compile Include="Http\SignInContext.cs" />
-    <Compile Include="Http\SignOutContext.cs" />
-    <Compile Include="Http\StreamHelperExtensions.cs" />
     <Compile Include="MVC\ActionContext.cs" />
     <Compile Include="MVC\ActionInvoker.cs" />
     <Compile Include="MVC\ActionResult.cs" />
@@ -146,7 +86,6 @@
     <Compile Include="MVC\IUrlHelper.cs" />
     <Compile Include="MVC\MvcOptions.cs" />
     <Compile Include="MVC\QueryString.cs" />
-    <Compile Include="Http\WebSocketAcceptContext.cs" />
     <Compile Include="Meta\UIMetaModel.cs" />
     <Compile Include="MVC\Controller.cs" />
     <Compile Include="MVC\IViewRenderer.cs" />
@@ -157,18 +96,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Common.en.resx</DependentUpon>
     </Compile>
-    <Compile Include="WebEncoders\AllowedCharsBitmap.cs" />
-    <Compile Include="WebEncoders\CodePointFilter.cs" />
-    <Compile Include="WebEncoders\EncoderCommon.cs" />
-    <Compile Include="WebEncoders\HexUtil.cs" />
-    <Compile Include="WebEncoders\ICodePointFilter.cs" />
-    <Compile Include="WebEncoders\IUrlEncoder.cs" />
-    <Compile Include="WebEncoders\UnicodeEncoderBase.cs" />
-    <Compile Include="WebEncoders\UnicodeHelpers.cs" />
-    <Compile Include="WebEncoders\UnicodeRange.cs" />
-    <Compile Include="WebEncoders\UnicodeRanges.cs" />
-    <Compile Include="WebEncoders\UnicodeRanges.generated.cs" />
-    <Compile Include="WebEncoders\UrlEncoder.cs" />
     <Compile Include="Identity\DefaultIdentityDataContext.cs" />
     <Compile Include="IValidatable.cs" />
     <Compile Include="Layout\Interfaces.cs" />
@@ -191,10 +118,6 @@
     <Compile Include="Html\HtmlPage.cs" />
     <Compile Include="Html\TagAttributes.cs" />
     <Compile Include="Html\TagBuilder.cs" />
-    <Compile Include="Http\ParsingHelpers.cs" />
-    <Compile Include="Http\QueryHelpers.cs" />
-    <Compile Include="Http\ReadableStringCollection.cs" />
-    <Compile Include="Http\RequestCookieCollection.cs" />
     <Compile Include="Http\IHttpContext.cs" />
     <Compile Include="Icons.cs" />
     <Compile Include="Data\IDataContext.cs" />
@@ -253,20 +176,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Microsoft.Framework.DependencyInjection.Interfaces\Microsoft.Framework.DependencyInjection.Interfaces.csproj">
-      <Project>{a2d88e47-20ef-45fe-9e59-adec44041ffa}</Project>
-      <Name>Microsoft.Framework.DependencyInjection.Interfaces</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Framework.DependencyInjection\Microsoft.Framework.DependencyInjection.csproj">
-      <Project>{c73e03ef-ac54-434f-8d40-41724aab5fa7}</Project>
-      <Name>Microsoft.Framework.DependencyInjection</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Microsoft.Framework.Internal\Microsoft.Framework.Internal.csproj">
-      <Project>{a016dfb3-97de-4216-adf5-6bdd8d3df753}</Project>
-      <Name>Microsoft.Framework.Internal</Name>
+    <ProjectReference Include="..\vNext\vNext.csproj">
+      <Project>{b836e522-1b0e-4fc4-8c81-d32433f97068}</Project>
+      <Name>vNext</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

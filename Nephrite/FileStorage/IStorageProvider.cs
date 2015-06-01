@@ -13,7 +13,7 @@ namespace Nephrite.FileStorage
 		byte[] GetData(IStorageFile file);
 		void DeleteData(IStorageFile file);
 		IStorageFile GetMetadata(IStorageFile file);
-		IEnumerable<IStorageFile> GetAllMetadata(IStorageFolder folder);
+		IQueryable<IStorageFile> GetAllMetadata(IStorageFolder folder);
 	}
 
 	public static class IFileStorageProviderExtensions

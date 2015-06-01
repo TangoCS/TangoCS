@@ -20,8 +20,11 @@ namespace Nephrite.Web.Controls
 {
 	[ParseChildren(true, "ContentTemplate")]
 	[PersistChildren(false)]
-	public partial class ModalDialog : System.Web.UI.UserControl, INamingContainer
+	public partial class ModalDialog : BaseUserControl, INamingContainer
 	{
+		[Inject]
+		public ITextResource TextResource { get; set; }
+
 		protected string width = "450px";
 		protected string top = "150px";
 		protected string close = Properties.Resources.Close;

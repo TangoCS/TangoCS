@@ -9,10 +9,14 @@ using System.IO;
 
 namespace Nephrite.FileStorage
 {
-	public interface IStorage<T>
+	public interface IStorage
 	{
-		IStorageFolder GetFolder(T folderKey);
 		IEnumerable<IStorageFolder> GetFolders(IStorageFolder parentFolder);
+	}
+
+	public interface IStorage<T> : IStorage
+	{
+		IStorageFolder GetFolder(T folderKey);	
 	}
 
 	public interface IStorageFolder
@@ -30,7 +34,7 @@ namespace Nephrite.FileStorage
 		IStorageFile CreateFile(string fullName);
 		IStorageFile GetFile(Guid id);
 		IStorageFile GetFile(string fullName);
-		IEnumerable<IStorageFile> GetAllFiles();
+		IQueryable<IStorageFile> GetAllFiles();
 	}
 
 	public interface IStorageFolderType

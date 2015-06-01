@@ -12,7 +12,8 @@ These are the projects in this solution:
     Tessera3.Test at C:\Projects\Tessera3\Tessera3.Test\Tessera3.Test.csproj
     Nephrite.Meta.Database.PostgreSQL at C:\Projects\Tessera3\Nephrite.Meta.Database.PostgreSQL\Nephrite.Meta.Database.PostgreSQL.csproj
     Nephrite at C:\Projects\Tessera3\Nephrite\Nephrite.csproj
-    Nephrite.Linq2Sql at C:\Projects\Tessera3\Nephrite.Linq2Sql\Nephrite.Linq2Sql.csproj
     Nephrite.Razor at C:\Projects\Tessera3\Nephrite.Razor\Nephrite.Razor.csproj
     Nephrite.Meta.Database.MSSQL at C:\Projects\Tessera3\Nephrite.Meta.Database.MSSQL\Nephrite.Meta.Database.MSSQL.csproj
-    Miscellaneous Files at 
+    Microsoft.Framework.Internal at C:\Projects\Tessera3\Microsoft.Framework.Internal\Microsoft.Framework.Internal.csproj
+    ImportData2 at C:\Projects\Tessera3\ImportData2\ImportData2.csproj
+    Nephrite.AzureBackup at C:\Projects\Tessera3\Nephrite.AzureBackup\Nephrite.AzureBackup.csproj

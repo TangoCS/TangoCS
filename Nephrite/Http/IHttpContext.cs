@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNet.Http;
+using Microsoft.AspNet.Http.Internal;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -28,7 +30,7 @@ namespace Nephrite.Http
 	public interface IHttpRequest
 	{
 		NameValueCollection Query { get; }
-		RequestCookiesCollection Cookies { get; }
+		IReadableStringCollection Cookies { get; }
 		Uri Url { get; }
 		NameValueCollection Headers { get; }
 		NameValueCollection Form { get; }

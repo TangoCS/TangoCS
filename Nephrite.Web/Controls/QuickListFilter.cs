@@ -23,6 +23,9 @@ namespace Nephrite.Web.Controls
 	[PersistChildren(false)]
 	public class QuickFilter : BaseControl, INamingContainer
 	{
+		[Inject]
+		public ITextResource TextResource { get; set; }
+
 		HiddenField hQuickFilter = new HiddenField { ID = "hQuickFilter" };
 		LinkButton go = new LinkButton { ID = "Go" };
 

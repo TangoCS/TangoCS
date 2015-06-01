@@ -22,18 +22,22 @@ namespace Nephrite.Web.Controls
 		public static void AddItemFilter(this Toolbar toolbar, Filter filter)
 		{
 			string s = toolbar.Query.GetString("filterid");
+			var textResource = toolbar.TextResource;
+
 			if (!filter.HasValue)
-				toolbar.AddItemJS(IconSet.Filter.X16, TextResource.Get("Common.Toolbar.Filter", "Фильтр"), filter.RenderMethod());
+				toolbar.AddItemJS(IconSet.Filter.X16, textResource.Get("Common.Toolbar.Filter", "Фильтр"), filter.RenderMethod());
 			else
-				toolbar.AddItemJS(IconSet.Filter.X16, "<b>" + TextResource.Get("Common.Toolbar.Filter", "Фильтр") + "</b>", filter.RenderMethod());
+				toolbar.AddItemJS(IconSet.Filter.X16, "<b>" + textResource.Get("Common.Toolbar.Filter", "Фильтр") + "</b>", filter.RenderMethod());
 		}
 
 		public static void EnableViews(this Toolbar toolbar, Filter filter)
 		{
-			toolbar.AddRightItemText(String.Format("<div>{0}</div>", TextResource.Get("Common.Toolbar.View", "Представление") + ":"));
+			var textResource = toolbar.TextResource;
+			
+			toolbar.AddRightItemText(String.Format("<div>{0}</div>", textResource.Get("Common.Toolbar.View", "Представление") + ":"));
 
 			ToolbarPopupMenuCompact mc = toolbar.AddRightPopupMenuCompact();
-			string currentView = TextResource.Get("Common.Toolbar.AllItems", "Все записи");
+			string currentView = textResource.Get("Common.Toolbar.AllItems", "Все записи");
 			int currentViewID = toolbar.Query.GetInt("filterid", 0);
 
 
@@ -45,7 +49,7 @@ namespace Nephrite.Web.Controls
 				mc.AddSeparator();
 				if (defaultf.FilterID == currentViewID) currentView = defaultf.FilterName;
 			}
-			mc.AddItem(TextResource.Get("Common.Toolbar.AllItems", "Все записи"), UrlHelper.Current().SetParameter("filter", "all").RemoveParameter("filterid"));
+			mc.AddItem(textResource.Get("Common.Toolbar.AllItems", "Все записи"), UrlHelper.Current().SetParameter("filter", "all").RemoveParameter("filterid"));
 			bool isPersonal = false;
 			foreach (IN_Filter f in views.Where(o => !o.IsDefault || (o.IsDefault && o.SubjectID == null && defaultf != null)).OrderBy(o => o.FilterName))
 			{
@@ -72,14 +76,14 @@ namespace Nephrite.Web.Controls
 			mc.AddSeparator();
 
 			if (currentViewID > 0 && (isPersonal || toolbar.AccessControl.Check("filter.managecommonviews", true)))
-				mc.AddItemJS(TextResource.Get("Common.Toolbar.EditThisView", "Изменить это представление"), filter.RenderEditViewMethod(currentViewID), IconSet.Modifyview.X16);
+				mc.AddItemJS(textResource.Get("Common.Toolbar.EditThisView", "Изменить это представление"), filter.RenderEditViewMethod(currentViewID), IconSet.Modifyview.X16);
 
-			mc.AddItemJS(TextResource.Get("Common.Toolbar.CreateView", "Создать представление"), filter.RenderCreateViewMethod(), IconSet.Createview.X16);
+			mc.AddItemJS(textResource.Get("Common.Toolbar.CreateView", "Создать представление"), filter.RenderCreateViewMethod(), IconSet.Createview.X16);
 
 
 			if (toolbar.Query.GetInt("filterid", 0) > 0 && !views.Any(o => o.FilterID == toolbar.Query.GetInt("filterid", 0)) &&
 				toolbar.Query.GetString("filter") != "all")
-				currentView = TextResource.Get("Common.Toolbar.UserView", "Пользовательское");
+				currentView = textResource.Get("Common.Toolbar.UserView", "Пользовательское");
 			mc.Title = "<b>" + currentView + "</b>";
 		}
 
@@ -102,7 +106,7 @@ Sys.WebForms.PageRequestManager.getInstance().add_endRequest(QF_EndRequest);", t
 
 		public static void AddBackButton(this Toolbar toolbar)
 		{
-			toolbar.AddItem(IconSet.Back.X16, TextResource.Get("Common.Toolbar.Back"), UrlHelper.Current().ReturnUrl);
+			toolbar.AddItem(IconSet.Back.X16, toolbar.TextResource.Get("Common.Toolbar.Back"), UrlHelper.Current().ReturnUrl);
 		}
 
 		public static void AddItem(this Toolbar toolbar, ActionLink actionLink)

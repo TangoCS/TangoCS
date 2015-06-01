@@ -111,8 +111,8 @@ namespace Nephrite.Web.Hibernate
 					_cfg = new Configuration();
 					_cfg.DataBaseIntegration(_dbConfig);
 
-					var sw = A.Items["Stopwatch"] as Stopwatch;
-					Log.WriteLine(String.Format("-- {1} create {0} DataBaseIntegration", ID, sw.Elapsed.ToString()));
+					//var sw = A.Items["Stopwatch"] as Stopwatch;
+					//Log.WriteLine(String.Format("-- {1} create {0} DataBaseIntegration", ID, sw.Elapsed.ToString()));
 
 					_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" } });
 					_cfg.SetInterceptor(new HDataContextInterceptor());
@@ -130,9 +130,9 @@ namespace Nephrite.Web.Hibernate
 							_cfg.EventListeners.SaveOrUpdateEventListeners = _listeners.SaveOrUpdateEventListeners.ToArray();
 					}
 
-					Log.WriteLine(String.Format("-- {1} create {0} Added Listeners", ID, sw.Elapsed.ToString()));
+					//Log.WriteLine(String.Format("-- {1} create {0} Added Listeners", ID, sw.Elapsed.ToString()));
 					_cfg.AddMapping(Mapping);
-					Log.WriteLine(String.Format("-- {1} create {0} Added Mapping", ID, sw.Elapsed.ToString())); 
+					//Log.WriteLine(String.Format("-- {1} create {0} Added Mapping", ID, sw.Elapsed.ToString())); 
 				}
 				return _cfg;
 			}
@@ -207,9 +207,9 @@ namespace Nephrite.Web.Hibernate
 			_dbConfig = dbConfig;
 			_listeners = listeners;
 
-			var sw = A.Items["Stopwatch"] as Stopwatch;
-			Log.WriteLine(String.Format("-- {1} create {0}", ID, sw.Elapsed.ToString())); 
-			Log.WriteLine();
+			//var sw = A.Items["Stopwatch"] as Stopwatch;
+			//Log.WriteLine(String.Format("-- {1} create {0}", ID, sw.Elapsed.ToString())); 
+			//Log.WriteLine();
 			//Log = new StringWriter();
 			ToInsert = new List<object>();
 			ToDelete = new List<object>();
