@@ -558,8 +558,14 @@ namespace Nephrite.Meta.Database
 				//	return new MetaZoneDateTimeType();
 				case "bigint":
 					return notNull ? MetaLongType.NotNull() : MetaLongType.Null();
+				case "char":
+					return string.IsNullOrEmpty(precision) ? new MetaStringType { Length = 1, NotNullable = notNull } : new MetaStringType() { Length = Int32.Parse(precision), NotNullable = notNull };
 				case "varbinary":
 					return new MetaByteArrayType() { Length = Int32.Parse(precision == "max" ? "-1" : precision), NotNullable = notNull };
+				case "image":
+					return new MetaByteArrayType() { NotNullable = notNull };
+				case "xml":
+					return notNull ? MetaXmlType.NotNull() : MetaXmlType.Null();
 				default:
 					return notNull ? MetaStringType.NotNull() : MetaStringType.Null();
 			}
