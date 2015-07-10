@@ -42,6 +42,13 @@ namespace Nephrite.Web.Replication
     // [System.Web.Script.Services.ScriptService]
     public class Replication : System.Web.Services.WebService
     {
+		IErrorLogger ErrorLogger { get; set; }
+
+		public Replication()
+		{
+			ErrorLogger = DI.RequestServices.GetService<IErrorLogger>(); 
+		}
+
 		public class UserCredentials : System.Web.Services.Protocols.SoapHeader
 		{
 			public string Login;

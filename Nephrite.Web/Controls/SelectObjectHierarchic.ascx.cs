@@ -36,7 +36,7 @@ namespace Nephrite.Web.Controls
 		public object RootObjectID { get; set; }
 		public bool AllowSelectAll { get; set; }
 
-		protected string SearchText = "";
+		protected Func<string> SearchText;
 		public Func<string> GetNotFoundMessage;
 		public Func<object, bool> CanSelectFunc { get; set; }
 		string[] selectedObjects { get; set; }
@@ -85,8 +85,8 @@ namespace Nephrite.Web.Controls
 			DataValueField = "ObjectID";
 			RootObjectID = null;
 			GetNotFoundMessage = () => TextResource.Get("Common.Controls.SelectObjectHierarchic.NotFoundMessage", "В системе отсутствует информация по вашему запросу");
-			SearchText = TextResource.Get("Common.Controls.SelectObjectHierarchic.Search", "Поиск");
-		}
+			SearchText = () => TextResource.Get("Common.Controls.SelectObjectHierarchic.Search", "Поиск");
+        }
 
 		List<string> ids = new List<string>();
 		Dictionary<string, string> titles = new Dictionary<string, string>();

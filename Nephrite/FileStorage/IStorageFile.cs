@@ -30,6 +30,7 @@ namespace Nephrite.FileStorage
 		int MaxFileSize { get; }
 		IStorageFolderType Type { get; }
 
+		IStorageFile CreateFile();
 		IStorageFile CreateFile(Guid id);
 		IStorageFile CreateFile(string fullName);
 		IStorageFile GetFile(Guid id);
@@ -93,7 +94,7 @@ namespace Nephrite.FileStorage
 		}
 	}
 
-	public static class IHierarchicStorageExtensions
+	public static class IStringKeyStorageExtensions
 	{
 		public static IStorageFile GetFile(this IStorage<string> storage, string pathAndFullName)
 		{
@@ -126,5 +127,14 @@ namespace Nephrite.FileStorage
 		}
 	}
 
-	
+	public static class IGuidKeyStorageExtensions
+	{
+		public static IStorageFile GetFile(this IStorage<Guid> storage, Guid id)
+		{
+			var folder = storage.GetFolder(Guid.Empty);
+			if (folder == null) return null;
+
+			return folder.GetFile(id);
+		}
+	}
 }

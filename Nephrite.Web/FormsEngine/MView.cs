@@ -9,11 +9,15 @@ using Nephrite.Web;
 using Nephrite.ErrorLog;
 using Nephrite.AccessControl;
 using System.IO;
+using Nephrite.Web.Controls;
 
 namespace Nephrite.Web.FormsEngine
 {
-    public class MView : Control
+    public class MView : BaseControl
     {
+		[Inject]
+		public IErrorLogger ErrorLogger { get; set; }
+
 		Exception error = null;
 		bool loaded = false;
         public string ViewFormSysName { get; set; }

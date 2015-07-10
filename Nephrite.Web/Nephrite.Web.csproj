@@ -189,7 +189,6 @@
     <Compile Include="Reporting\Reporting.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="RSS\RssModel.cs" />
     <Compile Include="Web\Cache.cs" />
     <Compile Include="Controls\AutoComplete.cs" />
     <Compile Include="Controls\AutoComplete2.cs" />
@@ -364,7 +363,6 @@
     <Compile Include="Reporting\Report.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="RSS\RssLinker.cs" />
     <Compile Include="FileStorage\DataHandler.cs" />
     <Compile Include="FileStorage\FileHandler.cs" />
     <Compile Include="FileStorage\FileProvider.cs" />
@@ -402,8 +400,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Purifier\Purifier.cs" />
-    <Compile Include="RSS\RssFeed.cs" />
-    <Compile Include="RSS\RssItem.cs" />
     <Compile Include="Model\Extensions.cs" />
     <Compile Include="MVC\ViewControl.cs">
       <SubType>ASPXCodeBehind</SubType>

@@ -9,9 +9,12 @@ using Nephrite.ErrorLog;
 
 namespace Nephrite.Web.Controls
 {
-    public class Tree : Control, ICallbackEventHandler
+    public class Tree : BaseControl, ICallbackEventHandler
     {
-        public List<NodeTemplate> Template { get; set; }
+		[Inject]
+		public IErrorLogger ErrorLogger { get; set; }
+
+		public List<NodeTemplate> Template { get; set; }
 
         protected override void OnInit(EventArgs e)
         {

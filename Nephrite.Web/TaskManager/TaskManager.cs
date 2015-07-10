@@ -7,7 +7,7 @@ using Nephrite.Identity;
 using System.IO;
 using System.Text;
 using Nephrite.ErrorLog;
-
+using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.Web.TaskManager
 {
@@ -61,6 +61,7 @@ namespace Nephrite.Web.TaskManager
 
 		public static void Run(int taskID)
 		{
+			var ErrorLogger = DI.RequestServices.GetService<IErrorLogger>();
 			bool isServiceRun = false;
 			string taskName = "";
 			try

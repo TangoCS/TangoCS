@@ -19,8 +19,8 @@ namespace Nephrite.FileStorage
 			_connection = connection;
 		}
 
-		string selectFolder = @"select f.Guid, f.Title, f.Path, fl.StorageType,
-fl.MaxFileSize, flt.Extensions, flt.ClassName as TypeName, flt.Title as TypeDescription
+		string selectFolder = @"select f.guid, f.title, f.path, fl.storagetype,
+fl.maxfilesize, flt.extensions, flt.classname as typename, flt.title as typedescription
 from n_folder f, n_filelibrary fl, n_filelibrarytype flt 
 where f.filelibraryid = fl.filelibraryid and fl.filelibrarytypeid = flt.filelibrarytypeid";
 
@@ -47,20 +47,20 @@ where f.filelibraryid = fl.filelibraryid and fl.filelibrarytypeid = flt.filelibr
 			if (res == null) return null;
 
 			VirtualFolder f = null;
-			string t = res.StorageType;
+			string t = res.storagetype;
 			if (t == "B") f = new VirtualFolder(new DatabaseStorageProvider(DI.RequestServices.GetService<IDC_FileDataStorage>()));
-			if (t == "D") f = new VirtualFolder(new LocalDiskStorageProvider(res.Path));
+			if (t == "D") f = new VirtualFolder(new LocalDiskStorageProvider(res.path));
 			if (f == null) return null;
 
-			f.ID = res.Guid;
-			f.Name = res.Title;
+			f.ID = res.guid;
+			f.Name = res.title;
 			f.Type = new StorageFolderType
 			{
-				Description = res.TypeDescription,
-				Name = res.TypeName,
-				AllowedExtensions = ((string)res.Extensions).Split(new char[] { ',' }).Select(o => o.Replace("*", "")).ToList()
+				Description = res.typedescription,
+				Name = res.typename,
+				AllowedExtensions = ((string)res.extensions).Split(new char[] { ',' }).Select(o => o.Replace("*", "")).ToList()
 			};
-			f.MaxFileSize = res.MaxFileSize;
+			f.MaxFileSize = res.maxfilesize;
 			
 
 			return f;
@@ -72,15 +72,15 @@ where f.filelibraryid = fl.filelibraryid and fl.filelibrarytypeid = flt.filelibr
 
 			if (parentFolder != null)
 			{
-				folders = _connection.Query(@"select f.Guid, f.Title, f.Path, fl.StorageType, 
-fl.MaxFileSize, flt.Extensions, flt.ClassName as TypeName, flt.Title as TypeDescription
+				folders = _connection.Query(@"select f.guid, f.title, f.path, fl.storagetype,
+fl.maxfilesize, flt.extensions, flt.classname as typename, flt.title as typedescription
 from n_folder f, n_filelibrary fl, n_filelibrarytype flt, n_folder p 
 where f.filelibraryid = fl.filelibraryid and fl.filelibrarytypeid = flt.filelibrarytypeid and f.parentid = p.folderid and p.guid = @p1", new { p1 = parentFolder.ID });
 			}
 			else
 			{
-				folders = _connection.Query(@"select f.Guid, f.Title, f.Path, fl.StorageType,
-fl.MaxFileSize, flt.Extensions, flt.ClassName as TypeName, flt.Title as TypeDescription
+				folders = _connection.Query(@"select f.guid, f.title, f.path, fl.storagetype,
+fl.maxfilesize, flt.extensions, flt.classname as typename, flt.title as typedescription
 from n_folder f, n_filelibrary fl, n_filelibrarytype flt
 where f.filelibraryid = fl.filelibraryid and fl.filelibrarytypeid = flt.filelibrarytypeid and f.parentid is null");
 			}

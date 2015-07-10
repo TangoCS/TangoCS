@@ -8,15 +8,20 @@ using Nephrite.Data;
 
 namespace Nephrite.ErrorLog
 {
-    public static class ErrorLogger
-    {
-		static Func<IHttpContext> _httpContext;
-		static Func<IDC_ErrorLog> _dataContext;
-		static Func<bool> _exceptionFilter;
+	public interface IErrorLogger
+	{
+		int Log(Exception exception);
+    }
 
-		public static void Init(
-			Func<IHttpContext> httpContext,
-			Func<IDC_ErrorLog> dataContext,
+	public class ErrorLogger : IErrorLogger
+    {
+		IHttpContext _httpContext;
+		IDC_ErrorLog _dataContext;
+		Func<bool> _exceptionFilter;
+
+		public ErrorLogger(
+			IHttpContext httpContext,
+			IDC_ErrorLog dataContext,
 			Func<bool> exceptionFilter = null
 			)
 		{
@@ -25,7 +30,7 @@ namespace Nephrite.ErrorLog
 			_exceptionFilter = exceptionFilter;
 		}
 
-		public static int Log(Exception exception)
+		public int Log(Exception exception)
         {
 			StringBuilder errorInfo = new StringBuilder();
 			errorInfo.AppendLine(DateTime.Now.ToString());
@@ -35,7 +40,7 @@ namespace Nephrite.ErrorLog
 					if (!_exceptionFilter()) return 0;
 
 				IHttpRequest r = null;
-				if (_httpContext != null) r = _httpContext().Request;
+				if (_httpContext != null) r = _httpContext.Request;
 
 				//if (exception is HttpException)
 				//{
@@ -65,7 +70,7 @@ namespace Nephrite.ErrorLog
 
 				errorInfo.Append(errortext.ToString());
 
-				using (var dc = _dataContext().NewDataContext() as IDC_ErrorLog)
+				using (var dc = _dataContext.NewDataContext() as IDC_ErrorLog)
                 {
                     IErrorLog l = dc.NewIErrorLog();
                     l.ErrorDate = DateTime.Now;
@@ -80,7 +85,7 @@ namespace Nephrite.ErrorLog
 					//l.RequestType = r.RequestType;
 					if (r != null) l.Url = r.Url.AbsoluteUri;
 					//l.UrlReferrer = r.UrlReferrer == null ? "" : r.UrlReferrer.AbsoluteUri;
-					if (_httpContext != null) l.UserName = _httpContext().User.Identity.Name;
+					if (_httpContext != null) l.UserName = _httpContext.User.Identity.Name;
 					//l.UserAgent = r.UserAgent;
 					//l.UserHostAddress = r.UserHostAddress;
 					//l.UserHostName = r.UserHostName;
@@ -89,7 +94,7 @@ namespace Nephrite.ErrorLog
 					if (_httpContext != null)
 					{
 						List<IDataContext> loggedDC = new List<IDataContext>();
-						foreach (var item in _httpContext().Items.Values.OfType<IDataContext>())
+						foreach (var item in _httpContext.Items.Values.OfType<IDataContext>())
 						{
 							if (loggedDC.Contains(item)) continue;
 							loggedDC.Add(item);

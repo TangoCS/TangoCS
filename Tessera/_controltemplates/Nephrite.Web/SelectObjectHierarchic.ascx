@@ -8,10 +8,10 @@
     <input
         style="width:100%"
         type="text"
-        onblur="if(this.value ==''){this.value='<%=SearchText %>';this.className = 'filterInput TextItalic';this.s=''}"
+        onblur="if(this.value ==''){this.value='<%=SearchText() %>';this.className = 'filterInput TextItalic';this.s=''}"
         onfocus="if(this.s!='t' && <%=hfQuickFilter.ClientID %>.value == ''){this.value='';this.className = 'filterInput filterInputActive';this.s='t';}"
         autocomplete="Off"
-        value="<%=hfQuickFilter.Value.IsEmpty() ? SearchText : hfQuickFilter.Value %>"
+        value="<%=hfQuickFilter.Value.IsEmpty() ? SearchText() : hfQuickFilter.Value %>"
         id="text_<%=ClientID %>"
         <%if(hfQuickFilter.Value.IsEmpty()) { %>class="filterInput TextItalic"<% } %>
         onkeyup="filter_<%=ClientID %>();"/>

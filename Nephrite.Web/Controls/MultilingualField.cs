@@ -16,6 +16,8 @@ namespace Nephrite.Web.Controls
 
 		protected override void OnInit(EventArgs e)
 		{
+			base.OnInit(e);
+
 			textBoxes = new TextBox[Language.List.Count];
 			for (int i = 0; i < Language.List.Count; i++)
 			{

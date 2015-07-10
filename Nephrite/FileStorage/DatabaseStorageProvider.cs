@@ -33,7 +33,7 @@ namespace Nephrite.FileStorage
 			fileData.Size = bytes.Length;
 			fileData.Data = bytes;
 			fileData.Extension = file.Extension;
-			fileData.Owner = file.Folder.ID;
+			if (file.Folder.ID != Guid.Empty) fileData.Owner = file.Folder.ID;
 			fileData.LastModifiedDate = DateTime.Now;
 		}
 
@@ -61,7 +61,7 @@ namespace Nephrite.FileStorage
 			file.Name = fd.Title;
 			file.Length = fd.Size;
 			file.LastModifiedDate = fd.LastModifiedDate;
-			return file;
+            return file;
 		}
 
 		public IQueryable<IStorageFile> GetAllMetadata(IStorageFolder folder)

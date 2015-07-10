@@ -148,6 +148,10 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Result.cs" />
+    <Compile Include="RSS\RssFeed.cs" />
+    <Compile Include="RSS\RssItem.cs" />
+    <Compile Include="RSS\RssLinker.cs" />
+    <Compile Include="RSS\RssModel.cs" />
     <Compile Include="RussianStrings\Prop.cs" />
     <Compile Include="RussianStrings\RussianDate.cs" />
     <Compile Include="RussianStrings\RussianNumber.cs" />

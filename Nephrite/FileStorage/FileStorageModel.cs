@@ -53,6 +53,11 @@ namespace Nephrite.FileStorage
 			Type = new StorageFolderType();
 		}
 
+		public IStorageFile CreateFile()
+		{
+			return CreateFile(Guid.NewGuid());
+		}
+
 		public IStorageFile CreateFile(Guid id)
 		{
 			var file = new StorageFile(this);
@@ -64,7 +69,8 @@ namespace Nephrite.FileStorage
 		{
 			var file = new StorageFile(this);
 			int i = fullName.LastIndexOf(".");
-			file.Name = fullName;
+			file.ID = Guid.NewGuid();
+            file.Name = fullName;
 			file.Extension = fullName.Substring(i);
 			return file;
 		}
