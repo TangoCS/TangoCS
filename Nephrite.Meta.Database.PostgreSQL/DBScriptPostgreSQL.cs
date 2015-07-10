@@ -60,7 +60,7 @@ namespace Nephrite.Meta.Database
 			tableScript = string.Format(tableScript, columnsScript);
 			if (srcTable.ForeignKeys.Count > 0)
 			{
-				var result = srcTable.ForeignKeys.Aggregate("", (current, key) => current + string.Format("ALTER TABLE {6}.{0} ADD CONSTRAINT {1} FOREIGN KEY({2}) REFERENCES {6}.{3} ({4}) {5};", srcTable.Name.ToLower(), key.Value.Name.ToLower(), string.Join(",", key.Value.Columns).ToLower(), key.Value.RefTable.ToLower(), string.Join(",", key.Value.RefTableColumns).ToLower(), "ON DELETE " + key.Value.DeleteOption.ToString().ToUpper(), _SchemaName));
+				var result = srcTable.ForeignKeys.Aggregate("", (current, key) => current + string.Format("\r\nALTER TABLE {6}.{0} ADD CONSTRAINT {1} FOREIGN KEY({2}) REFERENCES {6}.{3} ({4}) {5};", srcTable.Name.ToLower(), key.Value.Name.ToLower(), string.Join(",", key.Value.Columns).ToLower(), key.Value.RefTable.ToLower(), string.Join(",", key.Value.RefTableColumns).ToLower(), "ON DELETE " + key.Value.DeleteOption.ToString().ToUpper(), _SchemaName));
 				_FkScripts.Add(result);
 			}
 
@@ -437,6 +437,8 @@ namespace Nephrite.Meta.Database
 						return notNull ? MetaStringType.NotNull() : MetaStringType.Null();
 					else
 						return new MetaStringType() { Length = precision, NotNullable = notNull };
+				case "text":
+						return notNull ? MetaStringType.NotNull() : MetaStringType.Null();
 				case "numeric":
 					return new MetaDecimalType() { Precision = precision, Scale = scale, NotNullable = notNull };
 				case "timestamp":
