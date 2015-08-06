@@ -11,6 +11,7 @@ namespace Nephrite.Meta
 		string ID { get; }
 		string Name { get; set; }
 		string Description { get; set; }
+		string Caption { get; set; }
 	}
 
 	public partial interface IMetaClassifier : IMetaElement
@@ -45,15 +46,19 @@ namespace Nephrite.Meta
 		Dictionary<string, IMetaOperation>.KeyCollection OperationNames { get; }
 		Dictionary<string, IMetaOperation>.ValueCollection Operations { get; }
 		IMetaOperation GetOperation(string name);
+		void AddOperation(IMetaOperation metaOperation);
 
 		Dictionary<string, IMetaProperty>.ValueCollection Properties { get; }
 		Dictionary<string, IMetaProperty>.KeyCollection PropertyNames { get; }
 		IMetaProperty GetProperty(string name);
+		void AddProperty(IMetaProperty metaProperty);
 
 		string CaptionPlural { get; set; }
 		string LogicalDeleteExpressionString { get; set; }
 		string DefaultOrderByExpressionString { get; set; }
 		IMetaOperation DefaultOperation { get; set; }
+
+		List<Type> Interfaces { get; }
 	}
 
 	public interface IMetaProperty : IMetaElement
@@ -101,7 +106,10 @@ namespace Nephrite.Meta
 
 		string DataTextField { get; set; }
 		IQueryable AllObjects { get; set; }
-	}
+
+		void SetRefClass(string refClassName);
+		void SetInverseProperty(string inversePropertyName);
+    }
 
 	public interface IMetaOperation : IMetaElement
 	{

@@ -94,7 +94,7 @@ namespace Nephrite.Meta.Database
 						{
 							column.Name = "FileGUID";
 						}
-						column.ForeignKeyName = "FK_" + cls.Name + "_" + (prop as MetaReference).RefClassName;
+						column.ForeignKeyName = "FK_" + cls.Name + "_" + (prop as MetaReference).RefClass.Name;
 					}
 
 					if (prop.Type is MetaFileType)
@@ -125,11 +125,11 @@ namespace Nephrite.Meta.Database
 					{
 						var metaRef = f as MetaReference;
 						var fkcolumnname = metaRef.RefClass.CompositeKey.Select(o => o.ColumnName).First();
-						t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { Table = t, Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaRef.RefClassName, Columns = new[] { metaRef.RefClass.ColumnName(metaRef.Name) }, RefTableColumns = new[] { fkcolumnname } });
+						t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { Table = t, Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaRef.RefClass.Name, Columns = new[] { metaRef.RefClass.ColumnName(metaRef.Name) }, RefTableColumns = new[] { fkcolumnname } });
 
 						// Если референс на WF_Activity
 						var wf = new string[] {"wf_activity", "wf_workflow", "wf_transition" };
-						if (metaRef.RefClassName.ToLower() == "wf_activity" && !wf.Any(o => o == cls.Name.ToLower()))
+						if (metaRef.RefClass.Name.ToLower() == "wf_activity" && !wf.Any(o => o == cls.Name.ToLower()))
 						{
 							var ttr = new Table();
 							ttr.Schema = this;

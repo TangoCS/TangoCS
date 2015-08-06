@@ -7,10 +7,10 @@ namespace Nephrite.Meta.Fluent
 {
 	public class ReferenceBuilder
 	{
-		MetaReference _ref;
-		MetaClass _cls;
+		IMetaReference _ref;
+		IMetaClass _cls;
 
-		public ReferenceBuilder(MetaClass cls, MetaReference reference)
+		public ReferenceBuilder(IMetaClass cls, IMetaReference reference)
 		{
 			_cls = cls;
 			_ref = reference;
@@ -18,7 +18,7 @@ namespace Nephrite.Meta.Fluent
 
 		public ReferenceBuilder To(string refClassName)
 		{
-			_ref.RefClassName = refClassName;
+			_ref.SetRefClass(refClassName);
 			return this;
 		}
 
@@ -48,7 +48,7 @@ namespace Nephrite.Meta.Fluent
 
 		public ReferenceBuilder InverseProperty(string inverseProperty)
 		{
-			_ref.InversePropertyName = inverseProperty;
+			_ref.SetInverseProperty(inverseProperty);
 			return this;
 		}
 
@@ -61,9 +61,9 @@ namespace Nephrite.Meta.Fluent
 
 	public class ValuePropertyBuilder
 	{
-		MetaValueProperty _prop;
+		IMetaValueProperty _prop;
 
-		public ValuePropertyBuilder(MetaValueProperty property)
+		public ValuePropertyBuilder(IMetaValueProperty property)
 		{
 			_prop = property;
 		}
@@ -83,9 +83,9 @@ namespace Nephrite.Meta.Fluent
 
 	public class OperationBuilder
 	{
-		MetaOperation _op;
+		IMetaOperation _op;
 
-		public OperationBuilder(MetaOperation op)
+		public OperationBuilder(IMetaOperation op)
 		{
 			_op = op;
 		}
@@ -169,9 +169,9 @@ namespace Nephrite.Meta.Fluent
 
 	public class FunctionBuilder
 	{
-		MetaClass _cl;
+		IMetaClass _cl;
 
-		public FunctionBuilder(MetaClass cl)
+		public FunctionBuilder(IMetaClass cl)
 		{
 			_cl = cl;
 		}
@@ -207,32 +207,32 @@ namespace Nephrite.Meta.Fluent
 
 	public static class CoreFluent
 	{
-		public static MetaEnum Value(this MetaEnum cdf, string id, string name, string caption)
+		public static IMetaEnum Value(this IMetaEnum cdf, string id, string name, string caption)
 		{
 			cdf.Values.Add(new MetaEnumValue(id, name, caption));
 			return cdf;
 		}
 
-		public static MetaClass IntKey(this MetaClass cls, string name = "", string caption = "Ид", bool isIdentity = true)
+		public static IMetaClass IntKey(this IMetaClass cls, string name = "", string caption = "Ид", bool isIdentity = true)
 		{
 			var t = MetaIntType.NotNull();
 			int i = cls.Name.IndexOf('_'); if (i == -1) i = 0; else i++;
 			return cls.AttributeKey(name.IsEmpty() ? cls.Name.Substring(i) + t.ColumnSuffix : name, caption, t, isIdentity);
 		}
 
-		public static MetaClass GuidKey(this MetaClass cls, string name = "", string caption = "Ид")
+		public static IMetaClass GuidKey(this IMetaClass cls, string name = "", string caption = "Ид")
 		{
 			var t = MetaGuidType.NotNull();
 			int i = cls.Name.IndexOf('_'); if (i == -1) i = 0; else i++;
 			return cls.AttributeKey(name.IsEmpty() ? cls.Name.Substring(i) + t.ColumnSuffix : name, caption, t);
 		}
 
-		public static MetaClass NonPersistent(this MetaClass cls)
+		public static IMetaClass NonPersistent(this IMetaClass cls)
 		{
 			cls.Persistent = PersistenceType.None;
 			return cls;
 		}
-		public static MetaClass Persistent(this MetaClass cls, PersistenceType type, Action<FunctionBuilder> parameters = null)
+		public static IMetaClass Persistent(this IMetaClass cls, PersistenceType type, Action<FunctionBuilder> parameters = null)
 		{
 			cls.Persistent = type;
 			if (parameters != null)
@@ -242,7 +242,7 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass AttributeKey(this MetaClass cls, string name, string caption, IMetaIdentifierType type, bool isIdentity = false)
+		public static IMetaClass AttributeKey(this IMetaClass cls, string name, string caption, IMetaIdentifierType type, bool isIdentity = false)
 		{
 			MetaAttribute a = new MetaAttribute { Name = name, Caption = caption, Type = type, IsMultilingual = false, IsRequired = true, IsIdentity = isIdentity };
 			cls.AddProperty(a);
@@ -250,7 +250,7 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass Attribute(this MetaClass cls, string name, string caption, IMetaPrimitiveType type, Action<ValuePropertyBuilder> attributes = null)
+		public static IMetaClass Attribute(this IMetaClass cls, string name, string caption, IMetaPrimitiveType type, Action<ValuePropertyBuilder> attributes = null)
 		{
 			MetaAttribute a = new MetaAttribute { Name = name, Caption = caption, Type = type, IsMultilingual = false };
 			if (type.NotNullable) a.IsRequired = true;
@@ -259,7 +259,7 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass ComputedAttribute(this MetaClass cls, string name, string caption, IMetaPrimitiveType type)
+		public static IMetaClass ComputedAttribute(this IMetaClass cls, string name, string caption, IMetaPrimitiveType type)
 		{
 			MetaComputedAttribute a = new MetaComputedAttribute { Name = name, Caption = caption, Type = type};
 			if (type.NotNullable) a.IsRequired = true;
@@ -267,7 +267,7 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass PersistentComputedAttribute(this MetaClass cls, string name, string caption, IMetaPrimitiveType type, Action<ValuePropertyBuilder> attributes = null)
+		public static IMetaClass PersistentComputedAttribute(this IMetaClass cls, string name, string caption, IMetaPrimitiveType type, Action<ValuePropertyBuilder> attributes = null)
 		{
 			MetaPersistentComputedAttribute a = new MetaPersistentComputedAttribute { Name = name, Caption = caption, Type = type, IsMultilingual = false };
 			if (type.NotNullable) a.IsRequired = true;
@@ -276,14 +276,14 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass Reference<T>(this MetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes = null)
+		public static IMetaClass Reference<T>(this IMetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes = null)
 		{
 			MetaReference a = new MetaReference(name, caption, typeof(T).Name);
 			if (attributes != null) attributes(new ReferenceBuilder(cls, a));
 			cls.AddProperty(a);
 			return cls;
 		}
-		public static MetaClass ReferenceKey<T>(this MetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes = null)
+		public static IMetaClass ReferenceKey<T>(this IMetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes = null)
 		{
 			MetaReference a = new MetaReference(name, caption, typeof(T).Name);
 			if (attributes != null) attributes(new ReferenceBuilder(cls, a).Required());
@@ -292,14 +292,14 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass Title(this MetaClass cls, string caption = "Наименование")
+		public static IMetaClass Title(this IMetaClass cls, string caption = "Наименование")
 		{
 			cls.AddProperty(new MetaAttribute { Name = "Title", Caption = caption, IsRequired = true, Type = MetaStringType.NotNull() });
 			cls.Interfaces.Add(typeof(IWithTitle));
 			return cls;
 		}
 
-		public static MetaClass TimeStamp<T>(this MetaClass cls)
+		public static IMetaClass TimeStamp<T>(this IMetaClass cls)
 		{
 			cls.Attribute("LastModifiedDate", "Дата последней модификации", MetaDateTimeType.NotNull(), x => x.DefaultDBValue("(getdate())"));
 			cls.Reference<T>("LastModifiedUser", "Последний редактировавший пользователь", x => x.Required());
@@ -309,7 +309,7 @@ namespace Nephrite.Meta.Fluent
 
 
 
-		public static MetaClass OperationCreateNew(this MetaClass cls, Action<OperationBuilder> attributes = null)
+		public static IMetaClass OperationCreateNew(this IMetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "CreateNew", Caption = "Создать" };
 			cls.AddOperation(o);
@@ -324,7 +324,7 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass OperationEdit(this MetaClass cls, Action<OperationBuilder> attributes = null)
+		public static IMetaClass OperationEdit(this IMetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "Edit", Caption = "Редактировать" };
 			cls.AddOperation(o);
@@ -339,7 +339,7 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass OperationList(this MetaClass cls, Action<OperationBuilder> attributes = null)
+		public static IMetaClass OperationList(this IMetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "ViewList", Caption = "Список" };
 			cls.AddOperation(o);
@@ -351,7 +351,7 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass OperationView(this MetaClass cls, Action<OperationBuilder> attributes = null)
+		public static IMetaClass OperationView(this IMetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "View", Caption = "Свойства" };
 			cls.AddOperation(o);
@@ -366,7 +366,7 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass OperationDelete(this MetaClass cls, Action<OperationBuilder> attributes = null)
+		public static IMetaClass OperationDelete(this IMetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "Delete", Caption = "Удалить" };
 			cls.AddOperation(o);
@@ -381,7 +381,7 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass OperationUnDelete(this MetaClass cls, Action<OperationBuilder> attributes = null)
+		public static IMetaClass OperationUnDelete(this IMetaClass cls, Action<OperationBuilder> attributes = null)
 		{
 			var o = new MetaOperation { Name = "UnDelete", Caption = "Отменить удаление" };
 			cls.AddOperation(o);
@@ -396,7 +396,7 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static MetaClass Operation(this MetaClass cls, string name, string caption, Action<OperationBuilder> attributes = null)
+		public static IMetaClass Operation(this IMetaClass cls, string name, string caption, Action<OperationBuilder> attributes = null)
 		{
 			var op = new MetaOperation { Name = name, Caption = caption };
 			cls.AddOperation(op);
@@ -412,19 +412,19 @@ namespace Nephrite.Meta.Fluent
 		//	return pck;
 		//}
 
-		public static MetaClass Workflow(this MetaClass cls)
+		public static IMetaClass Workflow(this IMetaClass cls)
 		{
 			//cls.Reference("Activity", "Статус", x => x.To("WF_Activity"));
 			return cls;
 		}
 
-		public static MetaClass TCLED(this MetaClass cls)
+		public static IMetaClass TCLED(this IMetaClass cls)
 		{
 			cls.Title().
 				OperationCreateNew().OperationList().OperationEdit().OperationDelete().OperationUnDelete();
 			return cls;
 		}
-		public static MetaClass TCLEVD(this MetaClass cls)
+		public static IMetaClass TCLEVD(this IMetaClass cls)
 		{
 			cls.Title().
 				OperationCreateNew().OperationList().OperationEdit().OperationView().OperationDelete().OperationUnDelete();

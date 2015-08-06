@@ -120,6 +120,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Nephrite.Abstractions\Nephrite.Abstractions.csproj">
+      <Project>{08917986-6340-4d26-bb53-b1b69fd3c810}</Project>
+      <Name>Nephrite.Abstractions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
       <Project>{26a68254-0902-4499-8b5f-6b4b6341ba21}</Project>
       <Name>Nephrite.Web</Name>

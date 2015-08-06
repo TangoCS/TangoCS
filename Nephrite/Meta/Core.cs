@@ -591,14 +591,14 @@ namespace Nephrite.Meta
 	/// </summary>
 	public partial class MetaReference : MetaProperty, IMetaReference
 	{
-		public MetaReference(string name, string caption, string refClassName, bool isRequired = false, 
-			int upperBound = 1, AssociationType associationType = AssociationType.Default, 
+		public MetaReference(string name, string caption, string refClassName, bool isRequired = false,
+			int upperBound = 1, AssociationType associationType = AssociationType.Default,
 			string inversePropertyName = "", string description = "")
 		{
 			Name = name;
 			Caption = caption;
-			RefClassName = refClassName;
-			InversePropertyName = inversePropertyName;
+			_refClassName = refClassName;
+			_inversePropertyName = inversePropertyName;
 			Description = description;
 			UpperBound = upperBound;
 			IsRequired = isRequired;
@@ -610,7 +610,7 @@ namespace Nephrite.Meta
 		/// </summary>
 		public AssociationType AssociationType { get; set; }
 
-		internal string RefClassName { get; set; }
+		string _refClassName = null;
 		IMetaClass _refClass = null;
 		/// <summary>
 		/// На какой класс ссылается
@@ -619,10 +619,16 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				if (_refClass == null) _refClass = Parent.Parent.GetClass(RefClassName);
+				if (_refClass == null) _refClass = Parent.Parent.GetClass(_refClassName);
 				return _refClass;
 			}
 		}
+		public void SetRefClass(string refClassName)
+		{
+			_refClass = null;
+			_refClassName = refClassName;
+		}
+
 
 		IMetaPrimitiveType _type = null;
 		/// <summary>
@@ -634,7 +640,7 @@ namespace Nephrite.Meta
 			{
 				if (_type == null)
 				{
-					if (_refClass == null) _refClass = Parent.Parent.GetClass(RefClassName);
+					if (_refClass == null) _refClass = Parent.Parent.GetClass(_refClassName);
 					_type = _refClass.Key.Type.Clone(IsRequired);
 				}
 				return _type;
@@ -645,7 +651,7 @@ namespace Nephrite.Meta
 			}
 		}
 
-		internal string InversePropertyName { get; set; }
+		string _inversePropertyName = null;
 		IMetaReference _refInverseProperty = null;
 		/// <summary>
 		/// Является ли ссылка обратной (т.е. у класса, на который ссылается свойство есть тоже ссылка на данный класс)
@@ -654,11 +660,16 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				if (String.IsNullOrEmpty(InversePropertyName)) return null;
-				if (_refInverseProperty == null && RefClass != null) _refInverseProperty = RefClass.GetProperty(InversePropertyName) as MetaReference;
+				if (String.IsNullOrEmpty(_inversePropertyName)) return null;
+				if (_refInverseProperty == null && RefClass != null) _refInverseProperty = RefClass.GetProperty(_inversePropertyName) as MetaReference;
 				return _refInverseProperty;
 			}
 		}
+		public void SetInverseProperty(string inversePropertyName)
+		{
+			_refInverseProperty = null;
+			_inversePropertyName = inversePropertyName;
+        }
 
 		/// <summary>
 		/// Имя столбца в базе данных
