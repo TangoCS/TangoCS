@@ -60,7 +60,7 @@ namespace Nephrite.Web
 			defaultLanguage = language.DefaultLanguage.Code;
         }
 
-        public IModelObject Get(MetaClass objectType, object id)
+        public IModelObject Get(IMetaClass objectType, object id)
         {
 			try
 			{
@@ -86,7 +86,7 @@ namespace Nephrite.Web
 			}
         }
 
-        public IMMObjectVersion GetVersion(MetaClass objectType, object id)
+        public IMMObjectVersion GetVersion(IMetaClass objectType, object id)
         {
             Type T = assembly.GetType(ns + ".HST_" + objectType.Name, true, true);
             // Параметр лямбда-выражения типа T
@@ -111,7 +111,7 @@ namespace Nephrite.Web
             return db.GetTable(T).OfType<IMMObjectVersion>().SingleOrDefault(expr2);
         }
 
-        public IModelObject GetData(MetaClass objectType, int id, string languageCode)
+        public IModelObject GetData(IMetaClass objectType, int id, string languageCode)
         {
             Type T = assembly.GetType(ns + "." + objectType.Name + "Data", true, true);
             // Параметр лямбда-выражения типа Object
@@ -138,7 +138,7 @@ namespace Nephrite.Web
             return db.GetTable(T).OfType<IModelObject>().SingleOrDefault<IModelObject>(expr2);
         }
 
-        public XElement LoadObject(MetaClass objectType, int id, string languageCode)
+        public XElement LoadObject(IMetaClass objectType, int id, string languageCode)
         {
             // Загрузить нужный объект
             object o = Get(objectType, id);
@@ -148,7 +148,7 @@ namespace Nephrite.Web
             XElement xe = new XElement(objectType.Name);
             foreach (var p in objectType.Properties)
             {
-				if (p is MetaAttribute && (p as MetaAttribute).IsMultilingual) continue;
+				if (p is IMetaAttribute && (p as IMetaAttribute).IsMultilingual) continue;
                 PropertyInfo pi = o.GetType().GetProperties().Single(p1 => p1.Name.ToLower() == p.Name.ToLower());
                 xe.Add(new XElement(p.Name, TypeDescriptor.GetConverter(pi.PropertyType).ConvertToInvariantString(pi.GetValue(o, null))));
             }
@@ -156,7 +156,7 @@ namespace Nephrite.Web
             object odata = null;
 			foreach (var p in objectType.Properties)
             {
-				if (p is MetaAttribute && (p as MetaAttribute).IsMultilingual) continue;
+				if (p is IMetaAttribute && (p as IMetaAttribute).IsMultilingual) continue;
                 if (odata == null)
                 {
                     odata = GetData(objectType, id, languageCode ?? defaultLanguage);
@@ -170,7 +170,7 @@ namespace Nephrite.Web
             return xe;
         }
 
-        public XElement ExportObject(MetaClass objectType, object id)
+        public XElement ExportObject(IMetaClass objectType, object id)
         {
 			//if (objectType.Name == "DbFile")
 			//{
@@ -185,8 +185,8 @@ namespace Nephrite.Web
             XElement xe = new XElement(objectType.Name);
 			foreach (var p in objectType.Properties)
             {
-				MetaAttribute a = p as MetaAttribute;
-				MetaReference r = p as MetaReference;
+				IMetaAttribute a = p as IMetaAttribute;
+				IMetaReference r = p as IMetaReference;
 				if (a != null && a.IsMultilingual) continue;
 
                 string pname = p.Name.ToLower();
@@ -330,7 +330,7 @@ namespace Nephrite.Web
 			return db.GetTable(T).OfType<IClassVersion>().SingleOrDefault(expr2);
 		}
 
-        public XElement ExportObjectVersion(MetaClass objectType, object id)
+        public XElement ExportObjectVersion(IMetaClass objectType, object id)
         {
             // Загрузить нужный объект
             IMMObjectVersion o = GetVersion(objectType, id);
@@ -340,8 +340,8 @@ namespace Nephrite.Web
             XElement xe = new XElement(objectType.Name);
 			foreach (var p in objectType.Properties)
             {
-				if (p is MetaAttribute && (p as MetaAttribute).IsMultilingual) continue;
-				MetaReference r = p as MetaReference;
+				if (p is IMetaAttribute && (p as IMetaAttribute).IsMultilingual) continue;
+				IMetaReference r = p as IMetaReference;
 
                 string pname = p.Name.ToLower();
 				if (p.UpperBound == 1 || r == null)
@@ -380,13 +380,13 @@ namespace Nephrite.Web
             xe.Add(new XElement("VersionNumber", o.VersionNumber));
             xe.Add(new XElement("IsCurrentVersion", o.IsCurrentVersion));
 
-			var v = objectType.S<SVersioning>();
-			if (v.VersioningType == VersioningType.IdentifiersMiss ||
-				v.VersioningType == VersioningType.IdentifiersRetain)
-			{
-				IMMObjectVersion2 o2 = (IMMObjectVersion2)o;
-				xe.Add(new XElement("ClassVersionID", o2.ClassVersionID));
-			}
+			//var v = objectType.S<SVersioning>();
+			//if (v.VersioningType == VersioningType.IdentifiersMiss ||
+			//	v.VersioningType == VersioningType.IdentifiersRetain)
+			//{
+			//	IMMObjectVersion2 o2 = (IMMObjectVersion2)o;
+			//	xe.Add(new XElement("ClassVersionID", o2.ClassVersionID));
+			//}
 
             // Экспорт первичного ключа
 			string pkname = objectType.Key.ColumnName;
@@ -401,7 +401,7 @@ namespace Nephrite.Web
             return xe;
         }
 
-        public void ImportObject(MetaClass objectType, XElement obj)
+        public void ImportObject(IMetaClass objectType, XElement obj)
         {
             Type T = assembly.GetType(ns + "." + objectType.Name, true, true);
 			// Определить ид
@@ -416,8 +416,8 @@ namespace Nephrite.Web
 
             foreach (var p in objectType.Properties)
             {
-				MetaReference r = p as MetaReference;
-				MetaAttribute a = p as MetaAttribute;
+				IMetaReference r = p as IMetaReference;
+				IMetaAttribute a = p as IMetaAttribute;
 				if (a != null && a.IsMultilingual) continue;
 				if (a == null && r == null) continue;
 
@@ -550,7 +550,7 @@ namespace Nephrite.Web
             }
         }
 
-		public IModelObject DeserializeObject(MetaClass objectType, XElement obj)
+		public IModelObject DeserializeObject(IMetaClass objectType, XElement obj)
 		{
 			Type T = assembly.GetType(ns + "." + objectType.Name, true, true);
 
@@ -561,8 +561,8 @@ namespace Nephrite.Web
 
 			foreach (var p in objectType.Properties.Where(p1 => p1.UpperBound == 1))
 			{
-				MetaReference r = p as MetaReference;
-				MetaAttribute a = p as MetaAttribute;
+				IMetaReference r = p as IMetaReference;
+				IMetaAttribute a = p as IMetaAttribute;
 				if (a != null && a.IsMultilingual) continue;
 				if (a == null && r == null) continue;
 
@@ -790,7 +790,7 @@ namespace Nephrite.Web
 			}
 		}
 
-        public void ImportObjectVersion(MetaClass objectType, XElement obj)
+        public void ImportObjectVersion(IMetaClass objectType, XElement obj)
         {
             Type T = assembly.GetType(ns + ".HST_" + objectType.Name, true, true);
 
@@ -870,16 +870,16 @@ namespace Nephrite.Web
 				pi1.SetValue(o, TypeDescriptor.GetConverter(pi1.PropertyType).ConvertFromInvariantString(obj.Element("IsCurrentVersion").Value), null);
 			}
 
-			var v = objectType.S<SVersioning>();
-			if (v.VersioningType == VersioningType.IdentifiersMiss ||
-				v.VersioningType == VersioningType.IdentifiersRetain)
-			{
-				pi1 = GetPropertyInfo(o, "ClassVersionID");
-				if (pi1 != null)
-				{
-					pi1.SetValue(o, TypeDescriptor.GetConverter(pi1.PropertyType).ConvertFromInvariantString(obj.Element("ClassVersionID").Value), null);
-				}
-			}
+			//var v = objectType.S<SVersioning>();
+			//if (v.VersioningType == VersioningType.IdentifiersMiss ||
+			//	v.VersioningType == VersioningType.IdentifiersRetain)
+			//{
+			//	pi1 = GetPropertyInfo(o, "ClassVersionID");
+			//	if (pi1 != null)
+			//	{
+			//		pi1.SetValue(o, TypeDescriptor.GetConverter(pi1.PropertyType).ConvertFromInvariantString(obj.Element("ClassVersionID").Value), null);
+			//	}
+			//}
         }
 
         public static PropertyInfo GetPropertyInfo(IModelObject o, string propertyName)
@@ -955,7 +955,7 @@ namespace Nephrite.Web
             get { return db; }
         }
 
-		public IQueryable<IModelObject> GetList(MetaClass objectType)
+		public IQueryable<IModelObject> GetList(IMetaClass objectType)
         {
             string sn;
 			if (objectType.Properties.Any(o => o is MetaAttribute && (o as MetaAttribute).IsMultilingual))
@@ -972,7 +972,7 @@ namespace Nephrite.Web
             }
         }
 
-		public IQueryable<IMMObjectVersion> GetListHst(MetaClass objectType)
+		public IQueryable<IMMObjectVersion> GetListHst(IMetaClass objectType)
         {
             Type T = assembly.GetType(ns + ".HST_" + objectType.Name);
             return db.GetTable(T).OfType<IMMObjectVersion>();
@@ -990,7 +990,7 @@ namespace Nephrite.Web
             db.GetTable(obj.GetType()).DeleteOnSubmit(obj);
         }
 
-		public IModelObject Create(MetaClass objectType)
+		public IModelObject Create(IMetaClass objectType)
         {
             Type T = assembly.GetType(ns + "." + objectType.Name);
             object obj = Activator.CreateInstance(T);
@@ -998,7 +998,7 @@ namespace Nephrite.Web
             return (IModelObject)obj;
         }
 
-		public IModelObject Empty(MetaClass objectType)
+		public IModelObject Empty(IMetaClass objectType)
         {
 			if (objectType.Properties.Any(o => o is MetaAttribute && (o as MetaAttribute).IsMultilingual))
             {
@@ -1014,7 +1014,7 @@ namespace Nephrite.Web
             }
         }
 
-        public IMMObjectVersion EmptyHst(MetaClass objectType)
+        public IMMObjectVersion EmptyHst(IMetaClass objectType)
         {
             Type T = assembly.GetType(ns + ".HST_" + objectType.Name);
             object obj = Activator.CreateInstance(T);

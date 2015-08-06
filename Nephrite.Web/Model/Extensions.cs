@@ -182,7 +182,7 @@ namespace Nephrite.Web
 
 	public static class EntityExtensions
 	{
-		public static MetaClass GetMetaClass(this IEntity obj)
+		public static IMetaClass GetMetaClass(this IEntity obj)
 		{
 			if (obj is IMMObjectVersion)
 				return A.Meta.GetClass(obj.GetType().Name.Substring("HST_".Length));

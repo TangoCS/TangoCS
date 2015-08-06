@@ -4,25 +4,21 @@ using System.Globalization;
 using System.Linq;
 using Nephrite.Http;
 using Microsoft.Framework.DependencyInjection;
+using Nephrite.Data;
 
 namespace Nephrite.Multilanguage
 {
-	public interface ILanguage
+	public interface IDC_Multilanguage
 	{
-		List<IC_Language> List { get; }
-		IC_Language Current { get; }
-		IC_Language DefaultLanguage { get; }
-		CultureInfo CurrentCulture { get; }
-
-        void WithLang(string lang, Action action);
-    }
+		ITable<ILanguageObject> IC_Language { get; }
+	}
 
 	public class Language : ILanguage
 	{
 		IDC_Multilanguage _dataContext;
 		IHttpContext _httpContext;
 
-		static List<IC_Language> _langs;
+		static List<ILanguageObject> _langs;
 
 		public Language(IHttpContext httpContext, IDC_Multilanguage dataContext)
 		{
@@ -30,7 +26,7 @@ namespace Nephrite.Multilanguage
 			_dataContext = dataContext;
 		}
 
-		public List<IC_Language> List
+		public List<ILanguageObject> List
 		{
 			get
 			{
@@ -40,7 +36,7 @@ namespace Nephrite.Multilanguage
 			}
 		}
 
-		public IC_Language Current
+		public ILanguageObject Current
 		{
 			get
 			{
@@ -59,7 +55,7 @@ namespace Nephrite.Multilanguage
 			}
 		}
 
-		public IC_Language DefaultLanguage
+		public ILanguageObject DefaultLanguage
 		{
 			get
 			{

@@ -107,7 +107,7 @@ namespace Nephrite.Web.Replication
 			CheckCredentials();
             // Получить список версий строк
 
-			MetaClass ot = A.Meta.GetClass(objectType);
+			var ot = A.Meta.GetClass(objectType);
 			if (ot == null)
 				throw new Exception("Класс " + objectType + " не найден в модели");
 
@@ -148,7 +148,7 @@ namespace Nephrite.Web.Replication
 		public string GetVersionRecord(string objectType, string versionid)
         {
 			CheckCredentials();
-			MetaClass ot = A.Meta.GetClass(objectType);
+			var ot = A.Meta.GetClass(objectType);
 			var obj = r.ExportObjectVersion(ot, versionid.ToInt32(0) > 0 ? (object)versionid.ToInt32(0) : versionid.ToGuid());
 			if (obj == null)
 				throw new Exception("Версия объекта " + objectType + " " + versionid + " не найдена в БД");
@@ -339,7 +339,7 @@ namespace Nephrite.Web.Replication
 		}
 		*/
 
-        void ImportObjectVersion(MetaClass objectType, string verid)
+        void ImportObjectVersion(IMetaClass objectType, string verid)
         {
 			string versionData = ReplicationSourceServer.GetVersionRecord(objectType.Name, verid);
             XElement xeVer = XElement.Parse(versionData);
@@ -360,7 +360,7 @@ namespace Nephrite.Web.Replication
 			Subject.System.Run(() => Nephrite.Web.TaskManager.TaskManager.Run(HttpContext.Current == null));
 		}
 
-		public bool ImportObject(MetaClass objectType, string data)
+		public bool ImportObject(IMetaClass objectType, string data)
         {
 			XElement xe = XElement.Parse(data);
 			

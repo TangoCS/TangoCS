@@ -491,6 +491,10 @@
     </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Nephrite.Abstractions\Nephrite.Abstractions.csproj">
+      <Project>{08917986-6340-4d26-bb53-b1b69fd3c810}</Project>
+      <Name>Nephrite.Abstractions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nephrite\Nephrite.csproj">
       <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
       <Name>Nephrite</Name>

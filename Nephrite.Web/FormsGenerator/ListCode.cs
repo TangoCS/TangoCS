@@ -39,7 +39,7 @@ namespace Nephrite.Web.FormsGenerator
 					Append(@">(""").
 					Append(p.Caption).
 					Append(@""", o => o.").
-					Append(p.Type is MetaClass ? p.Name + ".Title" : p.Name).
+					Append(p.Type is IMetaClass ? p.Name + ".Title" : p.Name).
 					AppendLine("))%>");
 			}
 			res.AppendLine(@"<%=Layout.TH(""Действия"")%>");
@@ -47,13 +47,13 @@ namespace Nephrite.Web.FormsGenerator
 			res.AppendLine(@"<% Html.Repeater(ApplyPaging(ApplyOrderBy(filter.ApplyFilter(qfilter.ApplyFilter(ViewData, SearchExpression)))), """", HtmlHelperWSS.CSSClassAlternating, (o, css) => {  %>");
 			res.AppendLine("<%=Layout.ListRowBegin(o.IsDeleted ? \"deletedItem\": css) %>");
 
-			var idProp = (form.Type as MetaClass).Key;
+			var idProp = (form.Type as IMetaClass).Key;
 
 			var linkColumn = cols.FirstOrDefault(o => o.Type is MetaStringType);
 			string linkCol = linkColumn == null ? cols.First().Name : linkColumn.Name;
 			foreach (var p in cols)
 			{
-				res.Append("<%=Layout.TD(").Append(GetCellValue(form.Type as MetaClass, p, idProp, linkCol)).AppendLine(")%>");
+				res.Append("<%=Layout.TD(").Append(GetCellValue(form.Type as IMetaClass, p, idProp, linkCol)).AppendLine(")%>");
 			}
 
 			res.AppendLine(@"<%=Layout.TDBegin(new { style = ""text-align:center""})%>");
@@ -117,7 +117,7 @@ namespace Nephrite.Web.FormsGenerator
 			{
 				if (p.Type is IMetaNumericType)
 					s.Add(@"SqlMethods.Like(o." + p.Name + @".ToString(), ""%"" + s + ""%"")");
-				else if (p.Type is MetaClass)
+				else if (p.Type is IMetaClass)
 					s.Add(@"SqlMethods.Like(o." + p.Name + @".Title, ""%"" + s + ""%"")");
 				else
 					s.Add(@"SqlMethods.Like(o." + p.Name + @", ""%"" + s + ""%"")");
@@ -131,11 +131,11 @@ namespace Nephrite.Web.FormsGenerator
 			return res.ToString();
 		}
 
-		public static string GetCellValue(MetaClass t, FormElement p, MetaProperty idProp, string linkCol)
+		public static string GetCellValue(IMetaClass t, FormElement p, IMetaProperty idProp, string linkCol)
 		{
 			return GetCellValue(t, p, idProp, linkCol, false, "");
 		}
-		public static string GetCellValue(MetaClass t, FormElement p, MetaProperty idProp, string linkCol, bool internalLink, string modal)
+		public static string GetCellValue(IMetaClass t, FormElement p, IMetaProperty idProp, string linkCol, bool internalLink, string modal)
 		{
 			if (p.Type is MetaGuidType || p.Type is MetaStringType)
 			{
@@ -193,7 +193,7 @@ namespace Nephrite.Web.FormsGenerator
 			{
 				return @"String.Format(""<a href='/file.ashx?oid={0}'>{1}</a>"", o." + p.Name + ".FileID.ToString(), o." + p.Name + ".Title)";
 			}
-			else if (p.Type is MetaClass)
+			else if (p.Type is IMetaClass)
 			{
 				if (p.IsRequired)
 				{

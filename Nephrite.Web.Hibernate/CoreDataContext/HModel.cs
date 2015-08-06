@@ -106,7 +106,7 @@ namespace Nephrite.Web.CoreDataContext
 	}
 
 
-	public partial class C_Language : IC_Language
+	public partial class C_Language : ILanguageObject
 	{
 		public virtual string Code { get; set; }
 		public virtual string Title { get; set; }

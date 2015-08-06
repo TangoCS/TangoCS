@@ -190,9 +190,9 @@ namespace Nephrite.Web.CoreDataContext
 		{
 			get { return new HTable<IN_TimeZone>(this, Session.Query<IN_TimeZone>()); }
 		}
-		public ITable<IC_Language> IC_Language
+		public ITable<ILanguageObject> IC_Language
 		{
-			get { return new HTable<IC_Language>(this, Session.Query<IC_Language>()); }
+			get { return new HTable<ILanguageObject>(this, Session.Query<ILanguageObject>()); }
 		}
 		public ITable<IN_TextResource> IN_TextResource
 		{

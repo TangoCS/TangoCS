@@ -7,13 +7,6 @@ using Nephrite.Http;
 
 namespace Nephrite.Multilanguage
 {
-	public interface ITextResource
-	{
-		string Get(string sysName);
-        string Get(string sysName, string defaultText);
-		void ResetCache();
-    }
-
 	public class TextResource : ITextResource
 	{
 		IDC_TextResources _dataContext;
