@@ -34,7 +34,7 @@ namespace Nephrite.Web.Controls
 
         protected override void Render(HtmlTextWriter writer)
         {
-			if (Text.IsEmpty()) Text = TextResource.Get("Common.Buttons.Back", "Назад");
+			if (Text.IsEmpty()) Text = TextResource.Get("Common.Back", "Назад");
 			writer.Write(String.Format(@"<input class=""{2}"" type=""button"" value=""{0}"" onClick=""{1}"" style=""{3}"" />", Text, OnClientClick, Layout.CssClass, Layout.Style(Image)));
         }
 

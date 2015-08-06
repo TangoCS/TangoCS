@@ -157,12 +157,20 @@ namespace Nephrite.Identity
 		public string AnonymousSubjectName { get; set; }
 		public string SystemSubjectName { get; set; }
 		public bool Enabled { get; set; }
-
+		public IPasswordHash HashMethod { get; set; }
+		public bool AllowRegister { get; set; }
+		public bool AllowPasswordReset { get; set; }
+		public bool AllowRememberMe { get; set; }
+		
 		public IdentityOptions()
 		{
 			AnonymousSubjectName = "anonymous";
 			SystemSubjectName = "system";
 			Enabled = true;
-		}
+			HashMethod = new PasswordHash();
+			AllowRegister = false;
+			AllowPasswordReset = false;
+			AllowRememberMe = true;
+        }
 	}
 }

@@ -13,7 +13,7 @@ namespace Nephrite.Identity
 		public string Name { get; set; }
 		public string Title { get; set; }
 		public string Email { get; set; }
-		public byte[] PasswordHash { get; set; }
+		public string PasswordHash { get; set; }
 		public bool IsActive { get; set; }
 		public bool IsDeleted { get; set; }
 		public string SID { get; set; }

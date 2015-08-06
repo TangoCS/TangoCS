@@ -1,18 +1,8 @@
 ﻿using System;
 using System.Data;
-using System.Configuration;
 using System.Linq;
-using System.Web;
-using System.Web.Security;
-using System.Web.UI;
-using System.Web.UI.HtmlControls;
-using System.Web.UI.WebControls;
-using System.Xml.Linq;
 using System.Collections.Generic;
 using Nephrite.Identity;
-using Nephrite.Multilanguage;
-using Nephrite.AccessControl;
-using Nephrite.Http;
 using Nephrite.Html.Controls;
 
 namespace Nephrite.Web.Controls
@@ -25,9 +15,9 @@ namespace Nephrite.Web.Controls
 			var textResource = toolbar.TextResource;
 
 			if (!filter.HasValue)
-				toolbar.AddItemJS(IconSet.Filter.X16, textResource.Get("Common.Toolbar.Filter", "Фильтр"), filter.RenderMethod());
+				toolbar.AddItemJS(IconSet.Filter.X16, textResource.Get("Common.Filter", "Фильтр"), filter.RenderMethod());
 			else
-				toolbar.AddItemJS(IconSet.Filter.X16, "<b>" + textResource.Get("Common.Toolbar.Filter", "Фильтр") + "</b>", filter.RenderMethod());
+				toolbar.AddItemJS(IconSet.Filter.X16, "<b>" + textResource.Get("Common.Filter", "Фильтр") + "</b>", filter.RenderMethod());
 		}
 
 		public static void EnableViews(this Toolbar toolbar, Filter filter)
@@ -37,7 +27,7 @@ namespace Nephrite.Web.Controls
 			toolbar.AddRightItemText(String.Format("<div>{0}</div>", textResource.Get("Common.Toolbar.View", "Представление") + ":"));
 
 			ToolbarPopupMenuCompact mc = toolbar.AddRightPopupMenuCompact();
-			string currentView = textResource.Get("Common.Toolbar.AllItems", "Все записи");
+			string currentView = textResource.Get("Common.AllItems", "Все записи");
 			int currentViewID = toolbar.Query.GetInt("filterid", 0);
 
 
@@ -49,7 +39,7 @@ namespace Nephrite.Web.Controls
 				mc.AddSeparator();
 				if (defaultf.FilterID == currentViewID) currentView = defaultf.FilterName;
 			}
-			mc.AddItem(textResource.Get("Common.Toolbar.AllItems", "Все записи"), UrlHelper.Current().SetParameter("filter", "all").RemoveParameter("filterid"));
+			mc.AddItem(textResource.Get("Common.AllItems", "Все записи"), UrlHelper.Current().SetParameter("filter", "all").RemoveParameter("filterid"));
 			bool isPersonal = false;
 			foreach (IN_Filter f in views.Where(o => !o.IsDefault || (o.IsDefault && o.SubjectID == null && defaultf != null)).OrderBy(o => o.FilterName))
 			{
@@ -106,7 +96,7 @@ Sys.WebForms.PageRequestManager.getInstance().add_endRequest(QF_EndRequest);", t
 
 		public static void AddBackButton(this Toolbar toolbar)
 		{
-			toolbar.AddItem(IconSet.Back.X16, toolbar.TextResource.Get("Common.Toolbar.Back"), UrlHelper.Current().ReturnUrl);
+			toolbar.AddItem(IconSet.Back.X16, toolbar.TextResource.Get("Common.Back"), UrlHelper.Current().ReturnUrl);
 		}
 
 		public static void AddItem(this Toolbar toolbar, ActionLink actionLink)

@@ -12,7 +12,7 @@ using Nephrite.Web.FormsEngine;
 using Nephrite.Web.Hibernate;
 using Nephrite.Web.Mailer;
 using Nephrite.Multilanguage;
-using Nephrite.Web.RSS;
+using Nephrite.RSS;
 using Nephrite.SettingsManager;
 
 using Nephrite.Web.TaskManager;
@@ -38,6 +38,14 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string UserName { get; set; }
 		public virtual byte[] Hash { get; set; }
 		public virtual Nullable<int> SimilarErrorID { get; set; }
+
+		public int Id
+		{
+			get
+			{
+				return ErrorLogID;
+			}
+		}
 
 		public virtual Expression<Func<ErrorLog, bool>> KeySelector(int id)
 		{
@@ -172,6 +180,14 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string SysName { get; set; }
 		public virtual string Value { get; set; }
 		public virtual int SeqNo { get; set; }
+
+		public int Id
+		{
+			get
+			{
+				return TaskParameterID;
+			}
+		}
 
 		public virtual Expression<Func<TM_TaskParameter, bool>> KeySelector(int id)
 		{

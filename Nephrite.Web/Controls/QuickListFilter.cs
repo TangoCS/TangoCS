@@ -99,7 +99,7 @@ function run" + ClientID + @"filter()
 		{
 			get
 			{
-				string s = TextResource.Get("Common.Toolbar.QFind", "Поиск");
+				string s = TextResource.Get("Common.Search", "Поиск");
 				return SearchQuery.IsEmpty() ? "<input type=\"text\" onblur=\"if(this.value ==''){this.value='" + s + "';this.className = 'filterInput TextItalic';}\"" +
 		" onfocus=\"if(this.className!='filterInput filterInputActive'){this.value='';this.className = 'filterInput filterInputActive';}\" name=\"qfind\" autocomplete=\"Off\"" +
 		" value=\"" + s + "\" class=\"filterInput TextItalic\" id=\"qfind\" onkeydown=\"return event.keyCode != 13;\" onkeyup=\"" + ClientID + "filter();\"/>" :

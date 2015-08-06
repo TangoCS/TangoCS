@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Collections;
 using System.Linq.Expressions;
-using Nephrite.Web;
-
 using Nephrite.Meta;
-using Nephrite.Http;
 using Nephrite.MVC;
 
 
@@ -143,23 +138,36 @@ namespace Nephrite.Web.Controls
 				return RenderSortLink(seqNo, title, showArrows);
 		}
 
-		public string AddSortColumn<T, TColumn>(MetaProperty prop, bool showArrows = true)
+		public string AddSortColumn<T, TColumn>(MetaAttribute<T, TColumn> prop, bool showArrows = true)
+		{
+			return AddSortColumn(prop.CaptionShort, prop.GetValueExpression, prop.GetValue, showArrows);
+        }
+		public string AddSortColumn<T, TColumn>(MetaReference<T, TColumn> prop, bool showArrows = true)
+		{
+			return AddSortColumn(prop.CaptionShort, prop.GetValueExpression, prop.GetValue, showArrows);
+		}
+		public string AddSortColumn<T, TColumn>(MetaPersistentComputedAttribute<T, TColumn> prop, bool showArrows = true)
+		{
+			return AddSortColumn(prop.CaptionShort, prop.GetValueExpression, prop.GetValue, showArrows);
+		}
+
+		string AddSortColumn<T, TColumn>(string title, Expression<Func<T, TColumn>> expr, Func<T, TColumn> fn, bool showArrows = true)
 		{
 			int seqNo = sortColumns.Count;
 			SortColumn<T> sc = new SortColumn<T>
 			{
-				Title = prop.CaptionShort,
+				Title = title,
 				//SeqNo = seqNo,
-				OrderAsc = q => q.OrderBy<T, TColumn>(prop.GetValueExpression as Expression<Func<T, TColumn>>),
-				OrderDesc = q => q.OrderByDescending<T, TColumn>(prop.GetValueExpression as Expression<Func<T, TColumn>>),
-				OrderAscOE = q => q.OrderBy<T, TColumn>(prop.GetValue as Func<T, TColumn>),
-				OrderDescOE = q => q.OrderByDescending<T, TColumn>(prop.GetValue as Func<T, TColumn>)
+				OrderAsc = q => q.OrderBy<T, TColumn>(expr),
+				OrderDesc = q => q.OrderByDescending<T, TColumn>(expr),
+				OrderAscOE = q => q.OrderBy<T, TColumn>(fn),
+				OrderDescOE = q => q.OrderByDescending<T, TColumn>(fn)
 			};
 			sortColumns.Add(seqNo, sc);
 			if (UsePostBack)
-				return RenderSortPostBack(seqNo, prop.CaptionShort, showArrows);
+				return RenderSortPostBack(seqNo, title, showArrows);
 			else
-				return RenderSortLink(seqNo, prop.CaptionShort, showArrows);
+				return RenderSortLink(seqNo, title, showArrows);
 		}
 
 		string[] _orderByColumns = null;

@@ -4,29 +4,6 @@ using System.Linq;
 
 namespace Nephrite.Meta
 {
-	public interface IMetaPrimitiveType : IMetaClassifier
-	{
-		bool NotNullable { get; }
-		/// <summary>
-		/// Func &lt;TValue, string, IFormatProvider, string&gt;
-		/// </summary>
-		object GetStringValue { get; }
-
-		IMetaPrimitiveType Clone(bool notNullable);
-	}
-
-	public interface IMetaIdentifierType : IMetaPrimitiveType
-	{
-		string ColumnSuffix { get; }
-	}
-
-	public interface IMetaParameterType : IMetaPrimitiveType
-	{
-
-	}
-
-	public interface IMetaNumericType : IMetaPrimitiveType { }
-
 	public abstract class MetaPrimitiveType : MetaClassifier, IMetaPrimitiveType
 	{
 		public bool NotNullable { get; set; }

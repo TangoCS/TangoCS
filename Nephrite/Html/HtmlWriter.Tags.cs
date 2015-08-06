@@ -626,5 +626,7 @@ namespace Nephrite.Html
 
 		public void A(Action<ATagAttributes> attributes, string linkTitle) { A(attributes, () => Write(linkTitle)); }
 		public void A(string linkTitle) { A(null, () => Write(linkTitle)); }
+		public void Label(string labelFor, string lableTitle) { Label((a) => a.For = labelFor, () => Write(lableTitle));
+		}
 	}
 }

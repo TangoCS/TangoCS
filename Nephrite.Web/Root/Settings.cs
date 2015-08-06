@@ -27,11 +27,20 @@ namespace Nephrite
 		}
 
 		// Где лежат javascript
+		static string jsPath = "";
 		public static string JSPath
 		{
 			get
 			{
-				return (HttpRuntime.AppDomainAppVirtualPath + "/_controltemplates/Nephrite.Web/js/").Replace("//", "/");
+				if (jsPath.IsEmpty())
+				{
+					jsPath = ConfigurationManager.AppSettings["JSPath"];
+					if (jsPath.IsEmpty())
+						jsPath = "_controltemplates/Nephrite.Web/js";
+                }
+				var vp = HttpRuntime.AppDomainAppVirtualPath;
+				if (!vp.EndsWith("/")) vp += "/";
+                return vp + jsPath + "/";
 			}
 		}
 		// базовые контролы
@@ -91,9 +100,12 @@ namespace Nephrite
 				maxTotalFilesSize = 25;
 
             systemTitle = ConfigurationManager.AppSettings["SystemTitle"] ?? String.Empty;
-			ControlsPath = (HttpRuntime.AppDomainAppVirtualPath + ConfigurationManager.AppSettings["ControlsPath"]).Replace("//", "/");
 
-			imagespath = (HttpRuntime.AppDomainAppVirtualPath + (ConfigurationManager.AppSettings["ImagesPath"] ?? "/i/")).Replace("//", "/");
+			var vp = HttpRuntime.AppDomainAppVirtualPath;
+			if (!vp.EndsWith("/")) vp += "/";
+
+			ControlsPath = vp + (ConfigurationManager.AppSettings["ControlsPath"] ?? "Views");
+			imagespath = vp + (ConfigurationManager.AppSettings["ImagesPath"] ?? "i") + "/";
 
 			if (ConfigurationManager.AppSettings["NavMenuButtonsMode"] == "BigButtons")
 				navMenuButtonsMode = NavMenuButtonsMode.BigButtons;

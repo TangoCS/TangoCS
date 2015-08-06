@@ -12,7 +12,7 @@ using NHibernate.SqlCommand;
 using Nephrite.Web.Mailer;
 using Nephrite.Multilanguage;
 using Nephrite.Web.TaskManager;
-using Nephrite.Web.RSS;
+using Nephrite.RSS;
 using Nephrite.Web.Hibernate;
 using NHibernate.Dialect;
 using NHibernate.Cfg;

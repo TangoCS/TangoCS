@@ -213,18 +213,18 @@ namespace Nephrite.Meta.Fluent
 			return cdf;
 		}
 
-		public static MetaClass IntKey(this MetaClass cls, string name = "", bool isIdentity = true)
+		public static MetaClass IntKey(this MetaClass cls, string name = "", string caption = "Ид", bool isIdentity = true)
 		{
 			var t = MetaIntType.NotNull();
 			int i = cls.Name.IndexOf('_'); if (i == -1) i = 0; else i++;
-			return cls.AttributeKey(name.IsEmpty() ? cls.Name.Substring(i) + t.ColumnSuffix : name, "Ид", t, isIdentity);
+			return cls.AttributeKey(name.IsEmpty() ? cls.Name.Substring(i) + t.ColumnSuffix : name, caption, t, isIdentity);
 		}
 
-		public static MetaClass GuidKey(this MetaClass cls, string name = "")
+		public static MetaClass GuidKey(this MetaClass cls, string name = "", string caption = "Ид")
 		{
 			var t = MetaGuidType.NotNull();
 			int i = cls.Name.IndexOf('_'); if (i == -1) i = 0; else i++;
-			return cls.AttributeKey(name.IsEmpty() ? cls.Name.Substring(i) + t.ColumnSuffix : name, "Ид", t);
+			return cls.AttributeKey(name.IsEmpty() ? cls.Name.Substring(i) + t.ColumnSuffix : name, caption, t);
 		}
 
 		public static MetaClass NonPersistent(this MetaClass cls)
@@ -432,6 +432,6 @@ namespace Nephrite.Meta.Fluent
 		}
 
 
-	}
 
+	}
 }

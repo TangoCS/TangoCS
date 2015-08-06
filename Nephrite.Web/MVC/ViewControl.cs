@@ -203,9 +203,17 @@ namespace Nephrite.Web
         {
 			return GetSorter().AddSortColumn(title, column, showArrows);
         }
-		public string AddSortColumn<T, TColumn>(MetaProperty prop, bool showArrows = true)
+		public string AddSortColumn<T, TColumn>(MetaAttribute<T, TColumn> prop, bool showArrows = true)
 		{
-			return GetSorter().AddSortColumn<T, TColumn>(prop, showArrows);
+			return GetSorter().AddSortColumn(prop, showArrows);
+		}
+		public string AddSortColumn<T, TColumn>(MetaReference<T, TColumn> prop, bool showArrows = true)
+		{
+			return GetSorter().AddSortColumn(prop, showArrows);
+		}
+		public string AddSortColumn<T, TColumn>(MetaPersistentComputedAttribute<T, TColumn> prop, bool showArrows = true)
+		{
+			return GetSorter().AddSortColumn(prop, showArrows);
 		}
 		/*public string AddDefaultSortColumn<T, TColumn>(string title, Expression<Func<T, TColumn>> column)
         {
@@ -215,7 +223,7 @@ namespace Nephrite.Web
             return AddSortColumn<T, TColumn>(title, column);
         }*/
 
-        public IQueryable<T> ApplyOrderBy<T>(IQueryable<T> query)
+		public IQueryable<T> ApplyOrderBy<T>(IQueryable<T> query)
         {
             return GetSorter().ApplyOrderBy(query);
         }

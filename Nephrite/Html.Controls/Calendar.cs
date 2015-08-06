@@ -27,10 +27,12 @@ namespace Nephrite.Html.Controls
 			});
 			if (enabled)
 			{
-				c.Button("btn" + name, "Календарь", (a) =>
+				c.Input("btn" + name, (a) =>
 				{
 					a.ID = "btn" + name;
-					a.Src = basePath + "img.gif";
+					a.Type = InputType.Button;
+					a.Title = "Календарь";
+                    a.Src = basePath + "img.gif";
 				});
 			}
 

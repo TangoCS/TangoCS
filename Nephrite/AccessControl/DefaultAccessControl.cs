@@ -51,10 +51,15 @@ namespace Nephrite.AccessControl
 			throw new NotImplementedException();
 		}
 
-		public CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
+		public BoolResult CheckPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
 		{
 			var pc = new PredicateChecker(PredicateLoader, Options);
-			BoolResult res1 = pc.Check(securableObjectKey, predicateContext);
+			return pc.Check(securableObjectKey, predicateContext);
+		}
+
+		public CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
+		{
+			BoolResult res1 = CheckPredicate(securableObjectKey, predicateContext, defaultAccess);
 			if (!res1.Value) return new CheckWithPredicateResult(res1.Value, CheckWithPredicateResultCode.Predicate, res1.Message);
 
 			bool res2 = Check(securableObjectKey, defaultAccess);
@@ -184,10 +189,15 @@ namespace Nephrite.AccessControl
 			}
 		}
 
-		public CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
+		public BoolResult CheckPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
 		{
 			var pc = new PredicateChecker(PredicateLoader, Options);
-			BoolResult res1 = pc.Check(securableObjectKey, predicateContext);
+			return pc.Check(securableObjectKey, predicateContext);
+		}
+
+		public CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
+		{
+			BoolResult res1 = CheckPredicate(securableObjectKey, predicateContext, defaultAccess);
 			if (!res1.Value) return new CheckWithPredicateResult(res1.Value, CheckWithPredicateResultCode.Predicate, res1.Message);
 
 			bool res2 = Check(securableObjectKey, defaultAccess);

@@ -6,6 +6,13 @@ namespace Nephrite.Html
 {
 	public partial class HtmlWriter
 	{
+		public void Input(string name, Action<InputTagAttributes> attributes = null)
+		{
+			TagBuilder tb = new TagBuilder("input");
+			InputTagAttributes ta = new InputTagAttributes(tb) { Name = name };
+			if (attributes != null) attributes(ta);
+			Write(tb);
+		}
 		public void TextBox(string name, string value = null, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
@@ -33,7 +40,7 @@ namespace Nephrite.Html
 		public void CheckBox(string name, bool isChecked = false, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
-			InputTagAttributes ta = new InputTagAttributes(tb) { Type = InputType.Hidden, Name = name, Checked = isChecked };
+			InputTagAttributes ta = new InputTagAttributes(tb) { Type = InputType.Checkbox, Name = name, Checked = isChecked };
 			if (attributes != null) attributes(ta);
 			Write(tb);
 		}
@@ -54,28 +61,28 @@ namespace Nephrite.Html
 			Write(tb.Render(TagRenderMode.EndTag));
 		}
 
-		public void Button(string name, string title, Action<InputTagAttributes> attributes = null)
+		public void Button(string name, string title, Action<ButtonTagAttributes> attributes = null)
 		{
-			TagBuilder tb = new TagBuilder("input");
-			InputTagAttributes ta = new InputTagAttributes(tb) { Name = name, Type = InputType.Button };
+			TagBuilder tb = new TagBuilder("button");
+			ButtonTagAttributes ta = new ButtonTagAttributes(tb) { Name = name, Type = ButtonType.Button };
 			if (attributes != null) attributes(ta);
 			Write(tb.Render(TagRenderMode.StartTag));
 			Write(title);
 			Write(tb.Render(TagRenderMode.EndTag));
 		}
-		public void SubmitButton(string name, string title, Action<InputTagAttributes> attributes = null)
+		public void SubmitButton(string name, string title, Action<ButtonTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
-			InputTagAttributes ta = new InputTagAttributes(tb) { Name = name, Type = InputType.Submit };
+			ButtonTagAttributes ta = new ButtonTagAttributes(tb) { Name = name, Type = ButtonType.Submit };
 			if (attributes != null) attributes(ta);
 			Write(tb.Render(TagRenderMode.StartTag));
 			Write(title);
 			Write(tb.Render(TagRenderMode.EndTag));
 		}
-		public void ResetButton(string name, string title, Action<InputTagAttributes> attributes = null)
+		public void ResetButton(string name, string title, Action<ButtonTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
-			InputTagAttributes ta = new InputTagAttributes(tb) { Name = name, Type = InputType.Reset };
+			ButtonTagAttributes ta = new ButtonTagAttributes(tb) { Name = name, Type = ButtonType.Reset };
 			if (attributes != null) attributes(ta);
 			Write(tb.Render(TagRenderMode.StartTag));
 			Write(title);

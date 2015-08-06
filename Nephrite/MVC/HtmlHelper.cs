@@ -57,6 +57,11 @@ namespace Nephrite.MVC
 		{
 			return new ActionLink(UrlHelper, AccessControl).UseRoute("default").Link(title, customATagAttributes);
 		}
+		public ActionLink ActionOpenDialogLink(DialogOptions options, string title = null, Action<ATagAttributes> customATagAttributes = null)
+		{
+			return new ActionLink(UrlHelper, AccessControl).UseRoute("api").OpenDialogLink(options, title, customATagAttributes);
+		}
+
 		public ActionLink ActionImage(string title = null, string image = null,
 			Action<ATagAttributes> customAImgTagAttributes = null,
 			Action<ImgTagAttributes> customImgTagAttributes = null)

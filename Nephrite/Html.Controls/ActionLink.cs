@@ -10,6 +10,7 @@ using Nephrite.Layout;
 using Nephrite.Http;
 using Nephrite.MVC;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace Nephrite.Html.Controls
 {
@@ -125,6 +126,22 @@ namespace Nephrite.Html.Controls
 			_type = ActionLinkRenderType.Link;
 
 			return this;		
+		}
+
+		public ActionLink OpenDialogLink(DialogOptions options, string title = null, Action<ATagAttributes> customATagAttributes = null)
+		{
+			if (!title.IsEmpty()) Title = title;
+			
+
+			_aTagAttributes = a => {
+				options.Url = Url;
+				a.Href = "#";
+                a.OnClick = "dialog.show(this, " + JsonConvert.SerializeObject(options, Json.CamelCase) + ")";
+				if (customATagAttributes != null) customATagAttributes(a);
+			};
+			_type = ActionLinkRenderType.Link;
+
+			return this;
 		}
 
 		public ActionLink Image(string title = null, string image = null, 

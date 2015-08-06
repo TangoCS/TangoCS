@@ -1005,7 +1005,7 @@ namespace Nephrite.Web.Controls
 			((List<object>)f.Column).Add(column);
 			f.Operator.Add(opname);
 		}
-		public void AddField<TClass, TValue>(MetaAttribute prop)
+		public void AddField(MetaAttribute prop)
 		{
 			var f = new Field();
 			f.Title = prop.Caption;
@@ -1026,7 +1026,7 @@ namespace Nephrite.Web.Controls
 
 			fieldList.Add(f);
 		}
-		public void AddField<TClass, TValue>(MetaReference prop)
+		public void AddField(MetaReference prop)
 		{
 			var f = new Field();
 			f.Title = prop.Caption;

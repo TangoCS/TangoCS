@@ -141,6 +141,21 @@ namespace Nephrite.Html
 		public int Width { set { _builder.MergeAttribute("width", value.ToString()); } }
 	}
 
+	public class ButtonTagAttributes : TagAttributes
+	{
+		public ButtonTagAttributes(TagBuilder builder) : base(builder) { }
+
+		public bool Autofocus { set { if (value) _builder.MergeAttribute("autofocus", "autofocus"); } }
+		public bool Disabled { set { if (value) _builder.MergeAttribute("disabled", "disabled"); } }
+		public string Formaction { set { _builder.MergeAttribute("formaction", value); } }
+		public string Formenctype { set { _builder.MergeAttribute("formenctype", value); } }
+		public Method Formmethod { set { _builder.MergeAttribute("formmethod", value.ToString().ToLower()); } }
+		public Target Formtarget { set { _builder.MergeAttribute("formtarget", value.ToString().ToLower()); } }
+		public string Name { set { _builder.MergeAttribute("name", value); } }
+		public ButtonType Type { set { _builder.MergeAttribute("type", value.ToString().ToLower()); } }
+		public string Value { set { _builder.MergeAttribute("value", value); } }
+	}
+
 	public class LabelTagAttributes : TagAttributes
 	{
 		public LabelTagAttributes(TagBuilder builder) : base(builder) { }
@@ -255,5 +270,6 @@ namespace Nephrite.Html
 	public enum Method { Get, Post }
 	public enum Scope { Col, ColGroup, Row, RowGroup }
 	public enum InputType { Button, Checkbox, File, Hidden, Image, Number, Password, Radio, Range, Reset, Submit, Text }
+	public enum ButtonType { Button, Reset, Submit }
 	public enum Wrap { Hard, Soft}
 }

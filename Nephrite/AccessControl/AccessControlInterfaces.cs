@@ -8,6 +8,7 @@ namespace Nephrite.AccessControl
 	public interface IAccessControl
 	{
 		bool Check(string securableObjectKey, bool defaultAccess = false);
+		BoolResult CheckPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false);
 		CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false);
 		StringBuilder Log { get; }
 	}

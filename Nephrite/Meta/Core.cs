@@ -66,7 +66,7 @@ namespace Nephrite.Meta
 	/// <summary>
 	/// Модель предметной области
 	/// </summary>
-	public partial class MetaSolution : MetaElement
+	public partial class MetaSolution : MetaElement, IMetaSolution
 	{
 		public override string ID
 		{
@@ -76,9 +76,9 @@ namespace Nephrite.Meta
 			}
 		}
 
-		Dictionary<string, MetaClass> _classesbyname = new Dictionary<string, MetaClass>(255);
+		Dictionary<string, IMetaClass> _classesbyname = new Dictionary<string, IMetaClass>(255);
 		//Dictionary<string, MetaPackage> _packagesbyname = new Dictionary<string, MetaPackage>(32);
-		Dictionary<string, MetaEnum> _enumsbyname = new Dictionary<string, MetaEnum>(32);
+		Dictionary<string, IMetaEnum> _enumsbyname = new Dictionary<string, IMetaEnum>(32);
 
 		/// <summary>
 		/// Пакеты модели
@@ -87,13 +87,13 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// Классы модели
 		/// </summary>
-		public Dictionary<string, MetaClass>.ValueCollection Classes { get { return _classesbyname.Values; } }
+		public Dictionary<string, IMetaClass>.ValueCollection Classes { get { return _classesbyname.Values; } }
 		/// <summary>
 		/// Enums модели
 		/// </summary>
-		public Dictionary<string, MetaEnum>.ValueCollection Enums { get { return _enumsbyname.Values; } }
+		public Dictionary<string, IMetaEnum>.ValueCollection Enums { get { return _enumsbyname.Values; } }
 
-		public void AddClass(MetaClass metaClass)
+		public void AddClass(IMetaClass metaClass)
 		{
 			metaClass.Parent = this;
 			var key = metaClass.Name.ToLower();
@@ -102,9 +102,9 @@ namespace Nephrite.Meta
 			_classesbyname.Add(key, metaClass);
 		}
 
-		public MetaClass AddClass<T>(string caption = "", string description = "")
+		public IMetaClass AddClass<T>(string caption = "", string description = "")
 		{
-			MetaClass c = new MetaClass { Name = typeof(T).Name, Caption = caption, Description = description, Persistent = PersistenceType.Table };
+			IMetaClass c = new MetaClass { Name = typeof(T).Name, Caption = caption, Description = description, Persistent = PersistenceType.Table };
 			AddClass(c);
 			return c;
 		}
@@ -123,7 +123,7 @@ namespace Nephrite.Meta
 		//	return metaPackage;
 		//}
 
-		internal void AddEnum(MetaEnum metaEnum)
+		internal void AddEnum(IMetaEnum metaEnum)
 		{
 			var key = metaEnum.Name.ToLower();
 			if (_enumsbyname.ContainsKey(key))
@@ -131,9 +131,9 @@ namespace Nephrite.Meta
 			_enumsbyname.Add(key, metaEnum);
 		}
 
-		public MetaEnum AddEnum(string name, string caption = "", string description = "")
+		public IMetaEnum AddEnum(string name, string caption = "", string description = "")
 		{
-			MetaEnum c = new MetaEnum { Name = name, Caption = caption, Description = description };
+			IMetaEnum c = new MetaEnum { Name = name, Caption = caption, Description = description };
 			AddEnum(c);
 			return c;
 		}
@@ -145,15 +145,15 @@ namespace Nephrite.Meta
 		//	return p;
 		//}
 
-		public MetaClass GetClass(string name)
+		public IMetaClass GetClass(string name)
 		{
 			string s = name.ToLower();
 			return _classesbyname.ContainsKey(s) ? _classesbyname[s] : null;
 		}
 
-		public MetaOperation GetOperation(string className, string operationName)
+		public IMetaOperation GetOperation(string className, string operationName)
 		{
-			MetaClass c = GetClass(className);
+			IMetaClass c = GetClass(className);
 			if (c == null) return null;
 			return c.GetOperation(operationName);
 		}
@@ -164,7 +164,7 @@ namespace Nephrite.Meta
 		//	return _packagesbyname.ContainsKey(s) ? _packagesbyname[s] : null;
 		//}
 
-		public MetaEnum GetEnum(string name)
+		public IMetaEnum GetEnum(string name)
 		{
 			string s = name.ToLower();
 			return _enumsbyname.ContainsKey(s) ? _enumsbyname[s] : null;
@@ -305,18 +305,6 @@ namespace Nephrite.Meta
 	//	}
 	//}
 
-	public interface IMetaElement
-	{
-		string ID { get; }
-		string Name { get; set; }
-	}
-
-	public partial interface IMetaClassifier : IMetaElement
-	{
-		string CLRType { get; }
-		string ColumnName(string propName);
-	}
-
 	public abstract partial class MetaClassifier : MetaElement, IMetaClassifier
 	{
 		public abstract string CLRType { get; }
@@ -327,7 +315,7 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public partial class MetaClass : MetaClassifier
+	public partial class MetaClass : MetaClassifier, IMetaClass
 	{
 		public string CaptionPlural { get; set; }
 
@@ -342,20 +330,20 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// Модель, в которой располагается класс
 		/// </summary>
-		public MetaSolution Parent { get; set; }
+		public IMetaSolution Parent { get; set; }
 
-		Dictionary<string, MetaProperty> _properties = new Dictionary<string, MetaProperty>();
-		Dictionary<string, MetaProperty> _allproperties = null;
-		Dictionary<string, MetaOperation> _operations = new Dictionary<string, MetaOperation>();
-		List<MetaParameter> _parameters = null;
+		Dictionary<string, IMetaProperty> _properties = new Dictionary<string, IMetaProperty>();
+		Dictionary<string, IMetaProperty> _allproperties = null;
+		Dictionary<string, IMetaOperation> _operations = new Dictionary<string, IMetaOperation>();
+		List<IMetaParameter> _parameters = null;
 
 		internal string BaseClassName { get; set; }
-		MetaClass _baseClass = null;
+		IMetaClass _baseClass = null;
 
 		/// <summary>
 		/// От какого класса унаследован
 		/// </summary>
-		public MetaClass BaseClass
+		public IMetaClass BaseClass
 		{
 			get
 			{
@@ -376,11 +364,11 @@ namespace Nephrite.Meta
 		/// </summary>
 		public bool IsMultilingual { get { return _isMultilingual; } }
 
-		List<MetaProperty> _compositeKey = new List<MetaProperty>();
+		List<IMetaProperty> _compositeKey = new List<IMetaProperty>();
 		/// <summary>
 		/// Свойство класса, являющееся первичным ключом (если оно одно)
 		/// </summary>
-		public MetaProperty Key
+		public IMetaProperty Key
 		{
 			get
 			{
@@ -394,7 +382,7 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// Все свойства класса, входящие в первичный ключ
 		/// </summary>
-		public List<MetaProperty> CompositeKey
+		public List<IMetaProperty> CompositeKey
 		{
 			get { return _compositeKey; }
 		}
@@ -402,15 +390,15 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// Свойства класса
 		/// </summary>
-		public Dictionary<string, MetaProperty>.ValueCollection Properties { get { return _properties.Values; } }
-		public Dictionary<string, MetaProperty>.KeyCollection PropertyNames { get { return _properties.Keys; } }
-		public Dictionary<string, MetaProperty>.ValueCollection AllProperties
+		public Dictionary<string, IMetaProperty>.ValueCollection Properties { get { return _properties.Values; } }
+		public Dictionary<string, IMetaProperty>.KeyCollection PropertyNames { get { return _properties.Keys; } }
+		public Dictionary<string, IMetaProperty>.ValueCollection AllProperties
 		{
 			get
 			{
 				if (_allproperties == null)
 				{
-					Dictionary<string, MetaProperty> p = new Dictionary<string, MetaProperty>(_properties);
+					Dictionary<string, IMetaProperty> p = new Dictionary<string, IMetaProperty>(_properties);
 					if (BaseClass != null)
 						foreach (var kv in BaseClass.AllProperties)
 							p.Add(kv.Name, kv);
@@ -419,12 +407,12 @@ namespace Nephrite.Meta
 				return _allproperties.Values;
 			}
 		}
-		public List<MetaParameter> Parameters 
+		public List<IMetaParameter> Parameters 
 		{
 			get 
 			{
 				if (_parameters == null)
-					_parameters = new List<MetaParameter>() ;
+					_parameters = new List<IMetaParameter>() ;
 				return _parameters; 
 			} 
 		}
@@ -432,32 +420,32 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// Методы класса
 		/// </summary>
-		public Dictionary<string, MetaOperation>.ValueCollection Operations { get { return _operations.Values; } }
-		public Dictionary<string, MetaOperation>.KeyCollection OperationNames { get { return _operations.Keys; } }
+		public Dictionary<string, IMetaOperation>.ValueCollection Operations { get { return _operations.Values; } }
+		public Dictionary<string, IMetaOperation>.KeyCollection OperationNames { get { return _operations.Keys; } }
 
 		/// <summary>
 		/// Метод класса по умолчанию
 		/// </summary>
-		public MetaOperation DefaultOperation { get; set; }
+		public IMetaOperation DefaultOperation { get; set; }
 
-		public void AddProperty(MetaProperty metaProperty)
+		public void AddProperty(IMetaProperty metaProperty)
 		{
 			metaProperty.Parent = this;
 			_properties.Add(metaProperty.Name.ToLower(), metaProperty);
 			if (metaProperty is MetaAttribute && (metaProperty as MetaAttribute).IsMultilingual) _isMultilingual = true;
 		}
-		public void AddOperation(MetaOperation metaOperation)
+		public void AddOperation(IMetaOperation metaOperation)
 		{
 			metaOperation.Parent = this;
 			_operations.Add(metaOperation.Name.ToLower(), metaOperation);
 		}
 
-		public MetaProperty GetProperty(string name)
+		public IMetaProperty GetProperty(string name)
 		{
 			string s = name.ToLower();
 			return _properties.ContainsKey(s) ? _properties[s] : null;
 		}
-		public MetaOperation GetOperation(string name)
+		public IMetaOperation GetOperation(string name)
 		{
 			string s = name.ToLower();
 			return _operations.ContainsKey(s) ? _operations[s] : null;
@@ -494,7 +482,7 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public abstract partial class MetaProperty : MetaElement
+	public abstract partial class MetaProperty : MetaElement, IMetaProperty
 	{
 		string _captionShort = "";
 		public string CaptionShort { get { return String.IsNullOrEmpty(_captionShort) ? Caption : _captionShort; } set { _captionShort = value; } }
@@ -502,7 +490,7 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// Класс, к которому принадлежит свойство
 		/// </summary>
-		public MetaClass Parent { get; set; }
+		public IMetaClass Parent { get; set; }
 
 		public virtual string DefaultDBValue { get; set; }
 
@@ -547,7 +535,7 @@ namespace Nephrite.Meta
 
 	}
 
-	public partial class MetaValueProperty : MetaProperty
+	public partial class MetaValueProperty : MetaProperty, IMetaValueProperty
 	{
 		/// <summary>
 		/// Является мультиязычным
@@ -578,7 +566,7 @@ namespace Nephrite.Meta
 	/// <summary>
 	/// Вычислимое свойство класса
 	/// </summary>
-	public partial class MetaComputedAttribute : MetaValueProperty
+	public partial class MetaComputedAttribute : MetaValueProperty, IMetaComputedAttribute
 	{
 		public string GetExpressionString { get; set; }
 		public string SetExpressionString { get; set; }
@@ -587,7 +575,7 @@ namespace Nephrite.Meta
 	/// <summary>
 	/// Вычислимое на уровне базы данных свойство класса
 	/// </summary>
-	public partial class MetaPersistentComputedAttribute : MetaValueProperty
+	public partial class MetaPersistentComputedAttribute : MetaValueProperty, IMetaPersistentComputedAttribute
 	{
 		/// <summary>
 		/// Выражение
@@ -596,29 +584,12 @@ namespace Nephrite.Meta
 
 	}
 
-	/// <summary>
-	/// Тип ассоциации
-	/// </summary>
-	public enum AssociationType
-	{
-		/// <summary>
-		/// Агрегация
-		/// </summary>
-		Aggregation = 1,
-		/// <summary>
-		/// Композиция
-		/// </summary>
-		Composition = 2,
-		/// <summary>
-		/// Нет ни агрегации, ни композиции
-		/// </summary>
-		Default = 0
-	}
+
 
 	/// <summary>
 	/// Свойство класса - ссылка 
 	/// </summary>
-	public partial class MetaReference : MetaProperty
+	public partial class MetaReference : MetaProperty, IMetaReference
 	{
 		public MetaReference(string name, string caption, string refClassName, bool isRequired = false, 
 			int upperBound = 1, AssociationType associationType = AssociationType.Default, 
@@ -640,11 +611,11 @@ namespace Nephrite.Meta
 		public AssociationType AssociationType { get; set; }
 
 		internal string RefClassName { get; set; }
-		MetaClass _refClass = null;
+		IMetaClass _refClass = null;
 		/// <summary>
 		/// На какой класс ссылается
 		/// </summary>
-		public MetaClass RefClass
+		public IMetaClass RefClass
 		{
 			get
 			{
@@ -675,11 +646,11 @@ namespace Nephrite.Meta
 		}
 
 		internal string InversePropertyName { get; set; }
-		MetaReference _refInverseProperty = null;
+		IMetaReference _refInverseProperty = null;
 		/// <summary>
 		/// Является ли ссылка обратной (т.е. у класса, на который ссылается свойство есть тоже ссылка на данный класс)
 		/// </summary>
-		public MetaReference InverseProperty
+		public IMetaReference InverseProperty
 		{
 			get
 			{
@@ -726,7 +697,7 @@ namespace Nephrite.Meta
 	/// <summary>
 	/// Параметр метода
 	/// </summary>
-	public class MetaParameter : MetaElement
+	public class MetaParameter : MetaElement, IMetaParameter
 	{
 		/// <summary>
 		/// Тип данных
@@ -737,18 +708,18 @@ namespace Nephrite.Meta
 	/// <summary>
 	/// Метод класса
 	/// </summary>
-	public class MetaOperation : MetaElement
+	public class MetaOperation : MetaElement, IMetaOperation
 	{
-		List<MetaParameter> _parameters = new List<MetaParameter>();
+		List<IMetaParameter> _parameters = new List<IMetaParameter>();
 
 		/// <summary>
 		/// Класс, которому принадлежит метод
 		/// </summary>
-		public MetaClass Parent { get; set; }
+		public IMetaClass Parent { get; set; }
 		/// <summary>
 		/// Параметры метода
 		/// </summary>
-		public List<MetaParameter> Parameters { get { return _parameters; } set { _parameters = value; } }
+		public List<IMetaParameter> Parameters { get { return _parameters; } set { _parameters = value; } }
 		/// <summary>
 		/// Иконка
 		/// </summary>
@@ -781,17 +752,17 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public enum DTOClassKind { Single, Queryable, None }
+	
 
-	public class MetaEnum : MetaElement
+	public class MetaEnum : MetaElement, IMetaEnum
 	{
-		public MetaSolution Parent { get; set; }
+		public IMetaSolution Parent { get; set; }
 
-		List<MetaEnumValue> _values = new List<MetaEnumValue>();
-		public List<MetaEnumValue> Values { get { return _values; } }
+		List<IMetaEnumValue> _values = new List<IMetaEnumValue>();
+		public List<IMetaEnumValue> Values { get { return _values; } }
 	}
 
-	public class MetaEnumValue : MetaElement
+	public class MetaEnumValue : MetaElement, IMetaEnumValue
 	{
 		string _value = "";
 
@@ -823,17 +794,5 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public interface IWithMetadata
-	{
-		MetaClass MetaClass { get; }
-	}
-
-	public enum PersistenceType
-	{
-		None,
-		Table,
-		View,
-		TableFunction,
-		Procedure
-	}	
+	
 }

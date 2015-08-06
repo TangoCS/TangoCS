@@ -43,6 +43,10 @@
     <Reference Include="Dapper">
       <HintPath>..\packages\Dapper.StrongName.1.39\lib\net45\Dapper.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -53,9 +57,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccessControl\AccessControlInterfaces.cs" />
+    <Compile Include="AccessControl\Attributes.cs" />
     <Compile Include="AccessControl\DefaultAccessControl.cs" />
     <Compile Include="AccessControl\DefaultAccessControlDataContext.cs" />
-    <Compile Include="AccessControl\Interfaces.cs" />
     <Compile Include="AccessControl\ActionAccessControl.cs" />
     <Compile Include="AccessControl\PredicateChecker.cs" />
     <Compile Include="AccessControl\SubjectWithRoles.cs" />
@@ -77,12 +82,18 @@
     <Compile Include="Html.Controls\BackButton.cs" />
     <Compile Include="Html.Controls\Calendar.cs" />
     <Compile Include="Html.Controls\CodeArea.cs" />
+    <Compile Include="Html.Controls\Dialog.cs" />
     <Compile Include="Html.Controls\Navigation.cs" />
     <Compile Include="Html\Link.cs" />
+    <Compile Include="Identity\IPasswordHash.cs" />
+    <Compile Include="Identity\OldPasswordHash.cs" />
+    <Compile Include="Identity\PasswordHash.cs" />
+    <Compile Include="Json.cs" />
     <Compile Include="MVC\ActionContext.cs" />
     <Compile Include="MVC\ActionInvoker.cs" />
     <Compile Include="MVC\ActionResult.cs" />
     <Compile Include="MVC\HtmlHelper.cs" />
+    <Compile Include="MVC\HttpMethodAttributes.cs" />
     <Compile Include="MVC\IUrlHelper.cs" />
     <Compile Include="MVC\MvcOptions.cs" />
     <Compile Include="MVC\QueryString.cs" />
@@ -180,6 +191,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Nephrite.Abstractions\Nephrite.Abstractions.csproj">
+      <Project>{08917986-6340-4d26-bb53-b1b69fd3c810}</Project>
+      <Name>Nephrite.Abstractions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\vNext\vNext.csproj">
       <Project>{b836e522-1b0e-4fc4-8c81-d32433f97068}</Project>
       <Name>vNext</Name>

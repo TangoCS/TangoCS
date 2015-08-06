@@ -5,12 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Nephrite.SettingsManager;
 using Microsoft.Framework.DependencyInjection;
+using Newtonsoft.Json;
+using Nephrite.Http;
 
 namespace Nephrite.MVC
 {
 	public abstract class ActionResult
 	{
-		public abstract void ExecuteResult(ActionContext context); 
+		public abstract void ExecuteResult(ActionContext context);
 	}
 
 	public class ViewResult : ActionResult
@@ -98,4 +100,39 @@ namespace Nephrite.MVC
 		}
 	}
 
+	public class AjaxResult : ActionResult
+	{
+		public Dictionary<string, string> Messages { get; set; }
+		public Dictionary<string, object> Html { get; set; }
+
+		public AjaxResult()
+		{
+			Messages = new Dictionary<string, string>();
+			Html = new Dictionary<string, object>();
+		}
+
+		public override void ExecuteResult(ActionContext context)
+		{
+			var response = context.HttpContext.Response;
+			response.ContentType = "application/json";
+			context.HttpContext.Response.Write(JsonConvert.SerializeObject(this, Json.CamelCase));
+		}
+	}
+
+	public class AjaxRedirectResult : ActionResult
+	{
+		public string Url { get; set; }
+
+		public AjaxRedirectResult(string url)
+		{
+			Url = url;
+		}
+
+		public override void ExecuteResult(ActionContext context)
+		{
+			var response = context.HttpContext.Response;
+			response.ContentType = "application/json";
+			context.HttpContext.Response.Write(JsonConvert.SerializeObject(this, Json.CamelCase));
+		}
+	}
 }

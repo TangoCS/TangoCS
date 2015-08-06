@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNet.Http;
-using Microsoft.AspNet.Http.Internal;
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Linq;
 using System.Security.Principal;
 using System.Text;
+using System.IO;
 
 namespace Nephrite.Http
 {
@@ -35,6 +33,11 @@ namespace Nephrite.Http
 		NameValueCollection Headers { get; }
 		NameValueCollection Form { get; }
 
+		string ContentType { get; }
+		string Method { get; }
+
+		Stream Body { get; }
+
 		//Uri UrlReferrer { get; }
 		//string UserName { get; }
 		//string UserAgent { get; }
@@ -43,6 +46,17 @@ namespace Nephrite.Http
 
 	public interface IHttpResponse
 	{
-		void Redirect(string url);
+		string ContentType { get; set; }
+		Stream Body { get; }
+        void Redirect(string url);
 	}
+
+	public static class IHttpResponseExtensions
+	{
+		public static void Write(this IHttpResponse response, string text)
+		{
+			byte[] b = Encoding.UTF8.GetBytes(text);
+			response.Body.Write(b, 0, b.Length);
+		}
+    }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Nephrite.AccessControl;
 using Nephrite.Data;
+using Nephrite.Html.Controls;
 using Nephrite.Http;
 using Nephrite.SettingsManager;
 
@@ -31,7 +32,7 @@ namespace Nephrite.MVC
 		{
 			if (securableObjectKey.IsEmpty()) securableObjectKey = _controllerName + "." + viewName;
 			var res = Check(securableObjectKey, null);
-			if (!res.Item1) return res.Item2;
+			if (!res.Value) return new MessageResult(res.Message);
 
 			TDTO viewModel = new TDTO();
 			_dataContext.GetTable<TDTO>().InsertOnSubmit(viewModel);
@@ -53,7 +54,7 @@ namespace Nephrite.MVC
 
 			if (securableObjectKey.IsEmpty()) securableObjectKey = _controllerName + "." + viewName;
 			var res = Check(securableObjectKey, viewModel);
-			if (!res.Item1) return res.Item2;
+			if (!res.Value) return new MessageResult(res.Message);
 
 			if (!(viewModel is ICloneable))
 			{
@@ -67,7 +68,7 @@ namespace Nephrite.MVC
 		{
 			if (securableObjectKey.IsEmpty()) securableObjectKey = _controllerName + "." + viewName;
 			var res = Check(securableObjectKey, null);
-			if (!res.Item1) return res.Item2;
+			if (!res.Value) return new MessageResult(res.Message);
 
 			if (viewModel == null)
 			{
@@ -90,7 +91,7 @@ namespace Nephrite.MVC
 
 			if (securableObjectKey.IsEmpty()) securableObjectKey = _controllerName + "." + viewName;
 			var res = Check(securableObjectKey, viewModel);
-			if (!res.Item1) return res.Item2;
+			if (!res.Value) return new MessageResult(res.Message);
 
 
 			return new ViewResult(_controllerName, viewName, viewModel);
@@ -158,21 +159,20 @@ namespace Nephrite.MVC
 			return _dataContext.Filtered.GetTable<TDTO>().FirstOrDefault(viewModelWithKey.KeySelector(id));
 		}
 
-		Tuple<bool, ActionResult> Check(string securableObjectKey, object viewModel)
+		BoolResult Check(string securableObjectKey, object viewModel)
 		{
-			CheckWithPredicateResult res = _accessControl.CheckWithPredicate(securableObjectKey, viewModel);
-			if (!res.Value && res.Code == CheckWithPredicateResultCode.Predicate)
-			{
-				return new Tuple<bool, ActionResult>(false, new MessageResult("Недостаточно полномочий для выполнения операции" + (res.Message.IsEmpty() ? "" : (": " + res.Message))));
-			}
+			return _accessControl.CheckPredicate(securableObjectKey, viewModel);
+			//if (!res.Value)
+			//{
+			//	return new Tuple<bool, ActionResult>(false, new MessageResult("Недостаточно полномочий для выполнения операции" + (res.Message.IsEmpty() ? "" : (": " + res.Message))));
+			//}
 
-			if (!res.Value && res.Code == CheckWithPredicateResultCode.Subject)
-			{
-				return new Tuple<bool, ActionResult>(false, new RedirectToLoginResult());
-			}
+			//if (!res.Value && res.Code == CheckWithPredicateResultCode.Subject)
+			//{
+			//	return new Tuple<bool, ActionResult>(false, new RedirectToLoginResult());
+			//}
 
-			return new Tuple<bool, ActionResult>(true, null);
+			//return new Tuple<bool, ActionResult>(true, null);
 		}
-
 	}
 }

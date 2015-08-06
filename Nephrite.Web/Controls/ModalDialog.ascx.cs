@@ -85,7 +85,7 @@ namespace Nephrite.Web.Controls
 
 			DefaultFocus = btnOK.ClientID;
 
-			btnCancel.Text = TextResource.Get("Common.Buttons.Cancel", Properties.Resources.Cancel);
+			btnCancel.Text = TextResource.Get("Common.Cancel", "Cancel");
 			btnCancel.OnClientClick = String.Format("javascript:hide{0}();return false", ClientID);
             btnCancel.Attributes.Add("disabled", "disabled");
 

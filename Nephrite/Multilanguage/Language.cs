@@ -66,7 +66,6 @@ namespace Nephrite.Multilanguage
 				return List.Single(o => o.IsDefault);
 			}
 		}
-
 		public void WithLang(string lang, Action action)
 		{
 			string prevLang = (string)_httpContext.Items["Lang"];

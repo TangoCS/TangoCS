@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using Nephrite.Data;
 
-namespace Nephrite.Web.RSS
+namespace Nephrite.RSS
 {
 	public interface IDC_RSS : IDataContext
 	{

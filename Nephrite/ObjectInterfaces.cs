@@ -5,6 +5,7 @@ namespace Nephrite
 	public interface IWithKey<T, TKey>
 	{
 		Expression<Func<T, bool>> KeySelector(TKey id);
+		TKey Id { get; }
 	}
 
 	public interface IWithTitle
