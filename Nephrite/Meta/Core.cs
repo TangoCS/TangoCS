@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Meta
 {
@@ -17,10 +18,12 @@ namespace Nephrite.Meta
 			Description = description;
 		}
 
+		public string Namespace { get; set; } = "Nephrite";
+
 		/// <summary>
 		/// Уникальный идентификатор
 		/// </summary>
-		public virtual string ID { get { return "MetaElement." + Name; } }
+		public virtual string ID { get { return Namespace + "." + Name; } }
 		/// <summary>
 		/// Системное имя
 		/// </summary>
@@ -28,7 +31,7 @@ namespace Nephrite.Meta
 		/// <summary>
 		/// Название на локальном языке
 		/// </summary>
-		public string Caption { get; set; }
+		public virtual string Caption { get; set; }
 
 		/// <summary>
 		/// Описание
@@ -68,13 +71,12 @@ namespace Nephrite.Meta
 	/// </summary>
 	public partial class MetaSolution : MetaElement, IMetaSolution
 	{
-		public override string ID
+		public ITextResource TextResource { get; }
+
+		public MetaSolution(ITextResource textResource = null)
 		{
-			get
-			{
-				return Name;
-			}
-		}
+			TextResource = textResource;
+        }
 
 		Dictionary<string, IMetaClass> _classesbyname = new Dictionary<string, IMetaClass>(255);
 		//Dictionary<string, MetaPackage> _packagesbyname = new Dictionary<string, MetaPackage>(32);
@@ -317,7 +319,32 @@ namespace Nephrite.Meta
 
 	public partial class MetaClass : MetaClassifier, IMetaClass
 	{
-		public string CaptionPlural { get; set; }
+		public override string Caption
+		{
+			get
+			{
+				if (Parent.TextResource == null) return base.Caption;
+                return Parent.TextResource.Get(ID, base.Caption);
+			}
+			set
+			{
+				base.Caption = value;
+			}
+		}
+
+		string _captionPlural = "";
+		public string CaptionPlural
+		{
+			get
+			{
+				if (Parent.TextResource == null) return _captionPlural;
+				return Parent.TextResource.Get(ID + "-pl", _captionPlural);
+			}
+			set
+			{
+				_captionPlural = value;
+			}
+		}
 
 		public override string CLRType
 		{
@@ -451,14 +478,6 @@ namespace Nephrite.Meta
 			return _operations.ContainsKey(s) ? _operations[s] : null;
 		}
 
-		public override string ID
-		{
-			get
-			{
-				return Name;
-			}
-		}
-
 		public string LogicalDeleteExpressionString { get; set; }
 		public string DefaultOrderByExpressionString { get; set; }
 
@@ -484,8 +503,32 @@ namespace Nephrite.Meta
 
 	public abstract partial class MetaProperty : MetaElement, IMetaProperty
 	{
+		public override string Caption
+		{
+			get
+			{
+				if (Parent.Parent.TextResource == null) return base.Caption;
+				return Parent.Parent.TextResource.Get(ID, base.Caption);
+			}
+			set
+			{
+				base.Caption = value;
+			}
+		}
+
 		string _captionShort = "";
-		public string CaptionShort { get { return String.IsNullOrEmpty(_captionShort) ? Caption : _captionShort; } set { _captionShort = value; } }
+		public string CaptionShort
+		{
+			get
+			{
+				string res = _captionShort;
+                if (Parent.Parent.TextResource != null)
+					res = Parent.Parent.TextResource.Get(ID + "-s", res);
+
+				return String.IsNullOrEmpty(res) ? Caption : res;
+			}
+			set { _captionShort = value; }
+		}
 
 		/// <summary>
 		/// Класс, к которому принадлежит свойство
@@ -512,7 +555,7 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				return Parent.Name + "." + Name;
+				return Parent.ID + "." + Name;
 			}
 		}
 
@@ -740,7 +783,7 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				return Parent.Name + "." + Name;
+				return Parent.ID + "." + Name;
 			}
 		}
 
@@ -800,7 +843,7 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				return "Stereotype." + Name;
+				return Namespace + ".Stereotype." + Name;
 			}
 		}
 	}

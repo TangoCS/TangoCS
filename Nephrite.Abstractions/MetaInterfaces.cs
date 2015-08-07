@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Meta
 {
@@ -28,6 +29,8 @@ namespace Nephrite.Meta
 		IMetaClass GetClass(string name);
 		IMetaEnum GetEnum(string name);
 		IMetaOperation GetOperation(string className, string operationName);
+
+		ITextResource TextResource { get; }
 	}
 
 	public interface IMetaClass : IMetaClassifier

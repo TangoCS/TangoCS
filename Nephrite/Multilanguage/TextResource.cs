@@ -48,7 +48,7 @@ namespace Nephrite.Multilanguage
 				loaded = true;
 			}
 
-			if (resources.ContainsKey(res))
+			if (EditMode || resources.ContainsKey(res))
 				return get(res, sysName);
 			else
 				return defaultText;
@@ -77,7 +77,7 @@ namespace Nephrite.Multilanguage
 						return "<span class='resedit' onclick='EditTextResource(" + resourceids[res] + ");'>[" + sysName + "]</span>";
 				}
 				else
-					return "<span class=\"resedit\" onclick=\"EditTextResource('" + sysName + "', '" + WebUtility.HtmlEncode(resources[res]) + "');\">{" + sysName + "}</span>";
+					return "<span class=\"resedit\" onclick=\"EditTextResource('" + sysName + "', '');\">{" + sysName + "}</span>";
 			}
 			return resources[res];
 		}
@@ -92,10 +92,10 @@ namespace Nephrite.Multilanguage
 			loaded = false;
 		}
 
-		Dictionary<string, string> resources = new Dictionary<string, string>();
-		Dictionary<string, string> resourceids = new Dictionary<string, string>();
-		bool loaded = false;
-		object locker = new object();
+		static Dictionary<string, string> resources = new Dictionary<string, string>();
+		static Dictionary<string, string> resourceids = new Dictionary<string, string>();
+		static bool loaded = false;
+		static object locker = new object();
 	}
 
 	public interface IN_TextResource

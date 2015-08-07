@@ -6,7 +6,7 @@ namespace Nephrite.Meta.Database
 {
 	public partial class Schema
 	{
-		public void Generate(MetaClass cls)
+		public void Generate(IMetaClass cls)
 		{
 			if (cls.Persistent == PersistenceType.None) return;
 

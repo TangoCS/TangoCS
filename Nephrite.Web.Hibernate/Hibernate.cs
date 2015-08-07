@@ -86,7 +86,7 @@ namespace Nephrite.Web.Hibernate
 		{
 			get
 			{
-				if (_session == null)
+				if (_session == null || !_session.IsOpen)
 				{
 					_session = SessionFactory.OpenSession();
 					_session.FlushMode = FlushMode.Commit;
