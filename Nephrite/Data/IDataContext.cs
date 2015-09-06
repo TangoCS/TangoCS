@@ -27,8 +27,8 @@ namespace Nephrite.Data
 		List<Action> AfterSaveActions { get; }
 		List<Action> BeforeSaveActions { get; }
 
-		IDataContext All { get; }
-		IDataContext Filtered { get; }
+		//IDataContext All { get; }
+		//IDataContext Filtered { get; }
 	}
 
 	public interface ITable : IQueryable
@@ -77,6 +77,11 @@ namespace Nephrite.Data
 			foreach (var filter in tableFilters)
 				table = filter.Func(table);
 			return table;
+		}
+
+		public static IQueryable<T> Filtered<T>(this IQueryable<T> table)
+		{
+			return ApplyFor(table);
 		}
 	}
 

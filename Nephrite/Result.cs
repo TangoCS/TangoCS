@@ -70,11 +70,13 @@ namespace Nephrite
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			foreach (ValidationMessage m in e.NewItems)
-				_messagesCount[m.Severity]++;
+			if (e.NewItems != null)
+				foreach (ValidationMessage m in e.NewItems)
+					_messagesCount[m.Severity]++;
 
-			foreach (ValidationMessage m in e.OldItems)
-				_messagesCount[m.Severity]--;
+			if (e.OldItems != null)
+				foreach (ValidationMessage m in e.OldItems)
+					_messagesCount[m.Severity]--;
 		}
 
 		public void Add(string name, string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
@@ -89,7 +91,7 @@ namespace Nephrite
 
 		public bool HasItems(params ValidationMessageSeverity[] types)
 		{
-			if (types == null) return Count > 0;
+			if (types == null || types.Length == 0) return Count > 0;
 
 			foreach (var s in types)
 				if (_messagesCount[s] > 0) return true;

@@ -22,7 +22,7 @@
 <asp:RadioButtonList runat="server" ID="rblItems" />
 <asp:CheckBoxList runat="server" ID="cblItems" />
 </div>
-<%=AppLayout.Current.Paging.RenderPager("gotopage_" + ClientID, select.PageIndex, select.PageCount)  %>
+<%=AppLayout.Current.Paging.RenderPager("gotopage_" + ClientID + "({0})", select.PageIndex, select.PageCount)  %>
 <asp:LinkButton runat="server" ID="lbRefresh" />
 <asp:HiddenField runat="server" ID="hfQuickFilter" />
 <asp:HiddenField runat="server" ID="hfParentID" />

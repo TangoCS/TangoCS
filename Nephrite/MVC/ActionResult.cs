@@ -12,6 +12,8 @@ namespace Nephrite.MVC
 {
 	public abstract class ActionResult
 	{
+		[JsonIgnore]
+		public bool EndResponse { get; set; }
 		public abstract void ExecuteResult(ActionContext context);
 	}
 
@@ -54,6 +56,23 @@ namespace Nephrite.MVC
 		public override void ExecuteResult(ActionContext context)
 		{
 			context.Renderer.RenderMessage(Title, Message);
+		}
+	}
+
+	public class HtmlResult : ActionResult
+	{
+		public string Title { get; set; }
+		public string Html { get; set; }
+
+		public HtmlResult(string title, string html)
+		{
+			Title = title;
+			Html = html;
+		}
+
+		public override void ExecuteResult(ActionContext context)
+		{
+			context.Renderer.RenderHtml(Title, Html);
 		}
 	}
 
@@ -102,21 +121,23 @@ namespace Nephrite.MVC
 
 	public class AjaxResult : ActionResult
 	{
-		public Dictionary<string, string> Messages { get; set; }
+        public Dictionary<string, object> Data { get; set; }
 		public Dictionary<string, object> Html { get; set; }
 
 		public AjaxResult()
 		{
-			Messages = new Dictionary<string, string>();
+			EndResponse = true;
+			Data = new Dictionary<string, object>();
 			Html = new Dictionary<string, object>();
-		}
+			Data.Add("html", Html);
+        }
 
 		public override void ExecuteResult(ActionContext context)
 		{
 			var response = context.HttpContext.Response;
 			response.ContentType = "application/json";
-			context.HttpContext.Response.Write(JsonConvert.SerializeObject(this, Json.CamelCase));
-		}
+			context.HttpContext.Response.Write(JsonConvert.SerializeObject(Data, Json.CamelCase));
+        }
 	}
 
 	public class AjaxRedirectResult : ActionResult
@@ -125,6 +146,7 @@ namespace Nephrite.MVC
 
 		public AjaxRedirectResult(string url)
 		{
+			EndResponse = true;
 			Url = url;
 		}
 

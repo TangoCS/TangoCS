@@ -77,7 +77,7 @@ namespace Nephrite.Meta
 		IMetaPrimitiveType Type { get; set; }
 		int UpperBound { get; set; }
 
-		string GetStringValue<TClass, TValue>(TClass obj, string format = "", IFormatProvider provider = null);
+		string GetStringValue<TClass>(TClass obj, string format = "", IFormatProvider provider = null);
 	}
 
 	public interface IMetaValueProperty : IMetaProperty
@@ -127,7 +127,9 @@ namespace Nephrite.Meta
 		string PredicateString { get; set; }
 		string ViewClass { get; set; }
 		string ViewName { get; set; }
-	}
+		ViewEngineType ViewEngine { get; set; }
+		InteractionType InteractionType { get; set; }
+    }
 
 	public interface IMetaEnum : IMetaElement
 	{
@@ -174,6 +176,9 @@ namespace Nephrite.Meta
 	}
 
 	public enum DTOClassKind { Single, Queryable, None }
+	public enum ViewEngineType { WebForms, Razor }
+
+	public enum InteractionType { OneWayView, ViewWithSubmit, NoView }
 
 	/// <summary>
 	/// Тип ассоциации

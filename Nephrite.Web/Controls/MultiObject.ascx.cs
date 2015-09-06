@@ -25,11 +25,9 @@ namespace Nephrite.Web.Controls
 		public MultiObject()
 		{
 			DataTextField = "Title";
-			DataValueField = "ObjectID";
-			SelectLinkTitle = TextResource.Get("Common.Controls.MultiObject.SelectObjects", "Выбрать объекты");
+			DataValueField = "ObjectID";			
 			PageSize = 20;
 			RemoveUnselected = true;
-			Title = TextResource.Get("Common.Controls.MultiObject.ChooseObjects", "Выберите объекты");
 		}
 
 		protected string RenderRun()
@@ -46,6 +44,9 @@ namespace Nephrite.Web.Controls
 		protected void Page_Load(object sender, EventArgs e)
 		{
 			//select.OnSelect = "OnSelect_" + ClientID;
+			SelectLinkTitle = TextResource.Get("Common.Controls.MultiObject.SelectObjects", "Выбрать объекты");
+			Title = TextResource.Get("Common.Controls.MultiObject.ChooseObjects", "Выберите объекты");
+
 			select.Selected += new EventHandler<SelectObjectHierarchicEventArgs>(select_Selected);
 			select.AllObjects = AllObjects;
 			select.Type = Type;

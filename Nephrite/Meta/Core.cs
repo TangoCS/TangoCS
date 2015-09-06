@@ -574,7 +574,7 @@ namespace Nephrite.Meta
 		// Expression<Func<TClass, TValue>>
 		public object GetValueExpression { get; set; }
 
-		public abstract string GetStringValue<TClass, TValue>(TClass obj, string format = "", IFormatProvider provider = null);
+		public abstract string GetStringValue<TClass>(TClass obj, string format = "", IFormatProvider provider = null);
 
 	}
 
@@ -585,13 +585,15 @@ namespace Nephrite.Meta
 		/// </summary>
 		public bool IsMultilingual { get; set; }
 
-		public override string GetStringValue<TClass, TValue>(TClass obj, string format = "", IFormatProvider provider = null)
+		public override string GetStringValue<TClass>(TClass obj, string format = "", IFormatProvider provider = null)
 		{
 			var pt = Type;
 			if (pt.GetStringValue == null) return "";
-			var valueGetter = GetValue as Func<TClass, TValue>;
-			var getter = pt.GetStringValue as Func<TValue, string, IFormatProvider, string>;
-			return getter(valueGetter(obj), format, provider);
+			dynamic valueGetter = GetValue;
+			dynamic val = valueGetter(obj);
+			if (val == null) return "";
+			dynamic getter = pt.GetStringValue;
+			return getter(val, null, null).ToString();
 		}
 	}
 
@@ -737,10 +739,10 @@ namespace Nephrite.Meta
 		public object GetValueIDExpression { get; set; }
 
 
-		public override string GetStringValue<TClass, TValue>(TClass obj, string format = "", IFormatProvider provider = null)
+		public override string GetStringValue<TClass>(TClass obj, string format = "", IFormatProvider provider = null)
 		{
-			var valueGetter = GetValue as Func<TClass, TValue>;
-			TValue refObj = valueGetter(obj);
+			dynamic valueGetter = GetValue;
+			dynamic refObj = valueGetter(obj);
 			if (refObj != null && refObj is IWithTitle)
 				return (refObj as IWithTitle).Title;
 			else
@@ -765,6 +767,19 @@ namespace Nephrite.Meta
 	public class MetaOperation : MetaElement, IMetaOperation
 	{
 		List<IMetaParameter> _parameters = new List<IMetaParameter>();
+
+		public override string Caption
+		{
+			get
+			{
+				if (Parent.Parent.TextResource == null) return base.Caption;
+				return Parent.Parent.TextResource.Get(ID, base.Caption);
+			}
+			set
+			{
+				base.Caption = value;
+			}
+		}
 
 		/// <summary>
 		/// Класс, которому принадлежит метод
@@ -792,9 +807,13 @@ namespace Nephrite.Meta
 		public string ActionString { get; set; }
 		public string PredicateString { get; set; }
 
+		public ViewEngineType ViewEngine { get; set; }
 		public string ViewName { get; set; }
 		public string ViewClass { get; set; }
 		public string DTOClass { get; set; }
+
+		InteractionType _interactionType = InteractionType.OneWayView;
+        public InteractionType InteractionType { get { return _interactionType; } set { _interactionType = value; } }
 		public DTOClassKind DTOClassKind { get; set; }
 
 		public string ParametersString

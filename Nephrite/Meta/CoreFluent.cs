@@ -120,11 +120,24 @@ namespace Nephrite.Meta.Fluent
 			return this;
 		}
 
+		public OperationBuilder Razor()
+		{
+			_op.ViewEngine = ViewEngineType.Razor;
+			return this;
+		}
+
+		public OperationBuilder WithSubmit()
+		{
+			_op.InteractionType = InteractionType.ViewWithSubmit;
+			return this;
+		}
+
 		public OperationBuilder InvokesCode()
 		{
 			_op.ViewClass = "";
 			_op.ViewName = "";
 			_op.DTOClassKind = DTOClassKind.None;
+			_op.InteractionType = InteractionType.NoView;
 			return this;
 		}
 
@@ -299,10 +312,10 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static IMetaClass TimeStamp<T>(this IMetaClass cls)
+		public static IMetaClass TimeStamp<T>(this IMetaClass cls, string dateCaption = "Дата последней модификации", string userCaption = "Последний редактировавший пользователь")
 		{
-			cls.Attribute("LastModifiedDate", "Дата последней модификации", MetaDateTimeType.NotNull(), x => x.DefaultDBValue("(getdate())"));
-			cls.Reference<T>("LastModifiedUser", "Последний редактировавший пользователь", x => x.Required());
+			cls.Attribute("LastModifiedDate", dateCaption, MetaDateTimeType.NotNull(), x => x.DefaultDBValue("(getdate())"));
+			cls.Reference<T>("LastModifiedUser", userCaption, x => x.Required());
 			cls.Interfaces.Add(typeof(IWithTimeStamp));
 			return cls;
 		}

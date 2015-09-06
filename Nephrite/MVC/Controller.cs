@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Framework.DependencyInjection;
 using Nephrite.AccessControl;
 using Nephrite.Data;
 using Nephrite.Http;
@@ -13,9 +14,10 @@ namespace Nephrite.MVC
 	public class Controller
 	{
 		public ActionContext ActionContext { get; set; }
-		public IDataContext DataContext { get; set; }
-		public IIdentityManager<int> IdentityManager { get; set; }
-		public IAccessControl AccessControl { get; set; }
+
+		public IDataContext DataContext { get; private set; }
+		public IIdentityManager<int> IdentityManager { get; private set; }
+		public IAccessControl AccessControl { get; private set; }
 
 		public IHttpContext HttpContext { get { return ActionContext.HttpContext; } }
 		public Url Url { get { return ActionContext.Url; } }
@@ -40,6 +42,13 @@ namespace Nephrite.MVC
 				return IdentityManager.CurrentSubject; 
 			} 
 		}
+
+		public Controller()
+		{
+			DataContext = DI.RequestServices.GetService<IDataContext>();
+			IdentityManager = DI.RequestServices.GetService<IIdentityManager<int>>();
+			AccessControl = DI.RequestServices.GetService<IAccessControl>();
+        }
 
 		public string Name
 		{
@@ -73,7 +82,7 @@ namespace Nephrite.MVC
 		}
 	}
 
-	public class ControllersCache
+	public static class ControllersCache
 	{
 		static Dictionary<string, Type> _collection = new Dictionary<string, Type>();
 		public static void Add<T>() where T : Controller
@@ -88,6 +97,12 @@ namespace Nephrite.MVC
 		{
 			if (!_collection.ContainsKey(name.ToLower())) return null;
 			return _collection[name.ToLower()];
+		}
+
+		public static void AddController<T>(this IServiceCollection sc) where T : Controller
+		{
+			Add<T>();
+			sc.AddScoped<T>();
 		}
 	}
 }

@@ -19,12 +19,20 @@ namespace Nephrite.MVC
 	{
 		public IAccessControl AccessControl { get; set; }
 		public IUrlHelper UrlHelper { get; private set; }
+		public ITextResource TextResource { get; private set; }
+		public AbstractQueryString Query { get; private set; }
 
-		public HtmlHelper(IUrlHelper urlHelper, IAccessControl accessControl)
+		public HtmlHelper(
+			AbstractQueryString query, 
+			IUrlHelper urlHelper, 
+			IAccessControl accessControl, 
+			ITextResource textResource)
 		{
+			Query = query;
 			UrlHelper = urlHelper;
 			AccessControl = accessControl;
-		}
+			TextResource = textResource;
+        }
 
 		public void Repeater<T>(IEnumerable<T> items, Action<T> render)
 		{
@@ -55,58 +63,54 @@ namespace Nephrite.MVC
 
 		public ActionLink ActionLink(string title = null, Action<ATagAttributes> customATagAttributes = null)
 		{
-			return new ActionLink(UrlHelper, AccessControl).UseRoute("default").Link(title, customATagAttributes);
-		}
-		public ActionLink ActionOpenDialogLink(DialogOptions options, string title = null, Action<ATagAttributes> customATagAttributes = null)
-		{
-			return new ActionLink(UrlHelper, AccessControl).UseRoute("api").OpenDialogLink(options, title, customATagAttributes);
+			return new ActionSimpleLink(UrlHelper, AccessControl).Link(title, customATagAttributes).UseRoute("default");
 		}
 
 		public ActionLink ActionImage(string title = null, string image = null,
 			Action<ATagAttributes> customAImgTagAttributes = null,
 			Action<ImgTagAttributes> customImgTagAttributes = null)
 		{
-			return new ActionLink(UrlHelper, AccessControl).UseRoute("default").Image(title, image, customAImgTagAttributes, customImgTagAttributes);
+			return new ActionImage(UrlHelper, AccessControl).Image(title, image, customAImgTagAttributes, customImgTagAttributes).UseRoute("default");
 		}
 		public ActionLink ActionImageLink(string title = null, string image = null,
 			Action<ATagAttributes> customATagAttributes = null,
 			Action<ATagAttributes> customAImgTagAttributes = null,
 			Action<ImgTagAttributes> customImgTagAttributes = null)
 		{
-			return new ActionLink(UrlHelper, AccessControl).UseRoute("default").ImageLink(title, image, customATagAttributes, customAImgTagAttributes, customImgTagAttributes);
+			return new ActionImageLink(UrlHelper, AccessControl).ImageLink(title, image, customATagAttributes, customAImgTagAttributes, customImgTagAttributes).UseRoute("default");
 		}
 
 		public ActionLink RouteLink(string routeName, string title = null, Action<ATagAttributes> customATagAttributes = null)
 		{
-			return new ActionLink(UrlHelper, AccessControl).UseRoute(routeName).Link(title, customATagAttributes);
+			return new ActionSimpleLink(UrlHelper, AccessControl).Link(title, customATagAttributes).UseRoute(routeName);
 		}
 		public ActionLink RouteImage(string routeName, string title = null, string image = null,
 			Action<ATagAttributes> customAImgTagAttributes = null,
 			Action<ImgTagAttributes> customImgTagAttributes = null)
 		{
-			return new ActionLink(UrlHelper, AccessControl).UseRoute(routeName).Image(title, image, customAImgTagAttributes, customImgTagAttributes);
+			return new ActionImage(UrlHelper, AccessControl).Image(title, image, customAImgTagAttributes, customImgTagAttributes).UseRoute(routeName);
 		}
 		public ActionLink RouteImageLink(string routeName, string title = null, string image = null,
 			Action<ATagAttributes> customATagAttributes = null,
 			Action<ATagAttributes> customAImgTagAttributes = null,
 			Action<ImgTagAttributes> customImgTagAttributes = null)
 		{
-			return new ActionLink(UrlHelper, AccessControl).UseRoute(routeName).ImageLink(title, image, customATagAttributes, customAImgTagAttributes, customImgTagAttributes);
+			return new ActionImageLink(UrlHelper, AccessControl).ImageLink(title, image, customATagAttributes, customAImgTagAttributes, customImgTagAttributes).UseRoute(routeName);
 		}
 
 		public string InternalLink(string onClick, string linkText)
 		{
-			return String.Format("<a href='#' onclick='{0}'>{1}</a>", onClick, linkText);
+			return String.Format("<a href='#' onclick=\"{0}\">{1}</a>", onClick, linkText);
 		}
 
 		public string InternalImage(string onClick, string linkText, string image)
 		{
-			return String.Format("<a href='#' onclick='{0}'><img src='{3}{2}' alt='{1}' title='{1}' class='middle' /></a>", onClick, linkText, image, IconSet.RootPath);
+			return String.Format("<a href='#' onclick=\"{0}\"><img src='{3}{2}' alt='{1}' title='{1}' class='middle' /></a>", onClick, linkText, image, IconSet.RootPath);
 		}
 
 		public string InternalImageLink(string onClick, string linkText, string image)
 		{
-			return String.Format("<a href='#' onclick='{0}'><img src='{3}{2}' alt='{1}' title='{1}' class='middle' /></a>&nbsp;<a href='#' onclick='{0}'>{1}</a>", onClick, linkText, image, IconSet.RootPath);
+			return String.Format("<a href='#' onclick=\"{0}\"><img src='{3}{2}' alt='{1}' title='{1}' class='middle' /></a>&nbsp;<a href='#' onclick='{0}'>{1}</a>", onClick, linkText, image, IconSet.RootPath);
 		}
 
 		public ActionLink ActionImageConfirm(string linkText, string image, string confirmString)

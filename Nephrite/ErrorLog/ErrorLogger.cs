@@ -82,7 +82,7 @@ namespace Nephrite.ErrorLog
 						for (int i = 0; i < r.Headers.Count; i++)
 							headers.AppendLine(r.Headers.GetKey(i) + ": " + r.Headers[i]);
 					l.Headers = headers.ToString();
-					//l.RequestType = r.RequestType;
+					l.RequestType = r.Method;
 					if (r != null) l.Url = r.Url.AbsoluteUri;
 					//l.UrlReferrer = r.UrlReferrer == null ? "" : r.UrlReferrer.AbsoluteUri;
 					if (_httpContext != null) l.UserName = _httpContext.User.Identity.Name;

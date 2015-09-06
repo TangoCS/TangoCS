@@ -6,17 +6,22 @@ using System.Web.UI.WebControls;
 using Nephrite.Web.Controls;
 
 using Nephrite.Layout;
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Web.View
 {
 	public class StandardUndelete : ViewControl
 	{
-		Button bOK = new Button { Text = "Продолжить", CssClass = "ms-ButtonHeightWidth" };
+		[Inject]
+		public ITextResource TextResource { get; set; }
+
+		Button bOK = new Button { CssClass = "ms-ButtonHeightWidth" };
 		BackButton bBack = new BackButton();
 
 		protected override void OnInit(EventArgs e)
 		{
 			bOK.Click += bOK_Click;
+			bOK.Text = TextResource.Get("Common.Continue");
 
 			Controls.Add(bOK);
 			Controls.Add(bBack);
@@ -24,7 +29,7 @@ namespace Nephrite.Web.View
 
 		protected override void OnLoad(EventArgs e)
 		{
-			SetTitle((ViewData as IModelObject).Title + " &mdash; отмена удаления");
+			SetTitle((ViewData as IModelObject).Title + " &mdash; " + TextResource.Get("Common.Undelete.Undeletion"));
 		}
 
 		void bOK_Click(object sender, EventArgs e)
@@ -40,7 +45,8 @@ namespace Nephrite.Web.View
 		protected override void Render(System.Web.UI.HtmlTextWriter writer)
 		{
 			var vd = ViewData as IModelObject;
-			writer.Write(string.Format("<p>Вы уверены, что хотите отменить удаление {0} \"{1}\"</p>", vd.MetaClass.Caption, vd.Title));
+			string title = vd.Title.IsEmpty() ? (vd.ObjectID == 0 ? vd.ObjectGUID.ToString() : vd.ObjectID.ToString()) : vd.Title;
+			writer.Write(string.Format("<p>{2} {0} \"{1}\"</p>", vd.MetaClass.Caption.ToLower(), title, TextResource.Get("Common.Undelete.Confirm")));
 			writer.Write(Layout.ButtonsBarBegin());
 			writer.Write(Layout.ButtonsBarItemBegin());
 			bOK.RenderControl(writer);

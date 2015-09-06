@@ -247,15 +247,6 @@ namespace Nephrite.Layout
 		{
 			return String.Format(@"<td class=""ms-toolbar"" style=""border: none;"">{0}</td>", content);
 		}
-
-
-		//public void ToolbarItem(IBarItem content)
-		//{
-		//	writer.Write(@"<td class=""ms-toolbar"" style=""border: none;"">");
-		//	content.Layout = AppLayout.Current.ToolbarButton;
-		//	content.RenderControl(writer);
-		//	writer.Write("</td>");
-		//}
 	}
 
 	public class MessageWSS2007 : ILayoutMessage
@@ -603,5 +594,42 @@ textResource.Get("Common.Paging.From", "из"));
 			return "border-style:none;background-color:transparent;cursor:hand;";
 		}
 	}
-	
+
+	public class Toolbar2 : ILayoutToolbar2
+	{
+		public string ToolbarBegin()
+		{
+			return "<div class='ms-menutoolbar'>";
+		}
+
+		public string ToolbarEnd()
+		{
+			return "</div>";
+		}
+
+		public string ToolbarItem(string content)
+		{
+			return String.Format("<li>{0}</li>", content);
+		}
+
+		public string ToolbarPartBegin(string partName)
+		{
+			return String.Format("<ul class='{0}'>", partName);
+		}
+
+		public string ToolbarPartEnd()
+		{
+			return "</ul>";
+		}
+
+		public string ToolbarSeparator()
+		{
+			return "<li><div class='ms-separator'></div></li>";
+		}
+
+		public string ToolbarWhiteSpace()
+		{
+			return "";
+		}
+	}
 }

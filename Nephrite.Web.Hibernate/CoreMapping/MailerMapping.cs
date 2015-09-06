@@ -33,6 +33,7 @@ namespace Nephrite.Web.Hibernate.CoreMapping
 	{
 		public IMailTemplateMap()
 		{
+			Table("MailTemplate");
 			Lazy(true);
 			Id(x => x.MailTemplateID, map => map.Generator(Generators.Identity));
 			Discriminator(x => x.Formula("0"));

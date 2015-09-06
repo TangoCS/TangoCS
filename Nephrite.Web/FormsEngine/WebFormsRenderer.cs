@@ -17,14 +17,22 @@ using Nephrite.MVC;
 
 namespace Nephrite.Web.FormsEngine
 {
-	public class WebFormRenderer : IViewRenderer
+	public class WebFormsRenderer : IViewRenderer
 	{
 		[DefaultSettingValue("ViewList")]
 		public static string DefaultViewName { get; set; }
 
+		public bool IsStringResult
+		{
+			get
+			{
+				return false;
+			}
+		}
+
 		Control _container;
 
-		public WebFormRenderer(Control container)
+		public WebFormsRenderer(Control container)
 		{
 			_container = container;
 		}
@@ -42,11 +50,6 @@ namespace Nephrite.Web.FormsEngine
 			control.SetViewData(new MessageViewData { Title = title, Text = message });
 
 			_container.Controls.Add(control);
-		}
-
-		public void RenderView(string viewName, object viewData)
-		{
-			RenderView(UrlHelper.Current().GetString("mode"), viewName, viewData);
 		}
 
 		public void RenderView(string folder, string viewName, object viewData)
@@ -133,6 +136,13 @@ namespace Nephrite.Web.FormsEngine
 				}
 
 			}
+		}
+
+		public void RenderHtml(string title, string html)
+		{
+			HttpContext.Current.Items["title"] = title;
+			LiteralControl l = new LiteralControl(html);
+			_container.Controls.Add(l);
 		}
 	}
 

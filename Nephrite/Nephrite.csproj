@@ -65,6 +65,7 @@
     <Compile Include="AccessControl\PredicateChecker.cs" />
     <Compile Include="AccessControl\SubjectWithRoles.cs" />
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
+    <Compile Include="BusinessLogic.cs" />
     <Compile Include="DI.cs" />
     <Compile Include="EntityAudit\EntityAudit.cs" />
     <Compile Include="ErrorLog\ErrorLogger.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="MVC\Controller.cs" />
     <Compile Include="MVC\IViewRenderer.cs" />
     <Compile Include="MVC\StandardOperation.cs" />
+    <Compile Include="MVC\ViewEngineAttribute.cs" />
     <Compile Include="ObjectInterfaces.cs" />
     <Compile Include="Resources\Common.en.Designer.cs">
       <AutoGen>True</AutoGen>

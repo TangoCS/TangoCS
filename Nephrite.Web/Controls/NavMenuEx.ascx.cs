@@ -1,19 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using Nephrite.Web;
-using Nephrite.Http;
 using Nephrite.MVC;
-using System.Text.RegularExpressions;
 using Nephrite.Layout;
 
 
 namespace Nephrite.Web.Controls
 {
-    public partial class NavMenuEx : BaseUserControl
+	public partial class NavMenuEx : BaseUserControl
     {
 		protected List<NavMenuItem> Groups { get; set; }
 		protected NavMenuItem CurrentGroup { get; set; }

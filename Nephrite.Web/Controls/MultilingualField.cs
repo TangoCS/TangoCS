@@ -34,6 +34,7 @@ namespace Nephrite.Web.Controls
 					textBoxes[i].Attributes.Add("maxlength", MaxLength.ToString());
 				Controls.Add(textBoxes[i]);
 			}
+			/*
 			string autoClear = "";
 			foreach (var t in textBoxes)
 			{
@@ -69,7 +70,7 @@ namespace Nephrite.Web.Controls
 		}
 	});
 		
-});", true);
+});", true);*/
 		}
 
 		public TextBoxMode TextMode { get; set; }

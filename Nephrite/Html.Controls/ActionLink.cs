@@ -1,34 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Configuration;
-using System.Collections.Specialized;
-using Nephrite.Meta;
-using Nephrite.Identity;
 using Nephrite.AccessControl;
-using Nephrite.Layout;
-using Nephrite.Http;
 using Nephrite.MVC;
-using System.Text;
-using Newtonsoft.Json;
 
 namespace Nephrite.Html.Controls
 {
 	public class ActionLink
 	{
-		public IAccessControl AccessControl { get; private set; }
-		public IUrlHelper UrlHelper { get; private set; }
+		public IAccessControl AccessControl { get; protected set; }
+		public IUrlHelper UrlHelper { get; protected set; }
 
-		public string Title { get; private set; }
-		public string ImageSrc { get; private set; }
+		public string Title { get; protected set; }
+		public string ImageSrc { get; protected set; }
 
-		public string RouteName { get; private set; }
-		public string ControllerName { get; private set; }
-		public string ActionName { get; private set; }
+		public string RouteName { get; protected set; }
+		//public string ControllerName { get; private set; }
+		//public string ActionName { get; private set; }
 
-		public string SecurableObjectKey { get; private set; }
-		public object PredicateContext { get; private set; }
-		public bool CheckPredicateIfContextIsEmpty { get; private set; }
+		public string SecurableObjectKey { get; protected set; }
+		public object PredicateContext { get; protected set; }
+		public bool CheckPredicateIfContextIsEmpty { get; protected set; }
 		HtmlParms _parameters = new HtmlParms();
 
 		public ActionLink(IUrlHelper urlHelper, IAccessControl accessControl)
@@ -47,7 +37,7 @@ namespace Nephrite.Html.Controls
 
 				bool access = true;
 				if (!SecurableObjectKey.IsEmpty())
-					if (PredicateContext != null)
+					if (PredicateContext != null || CheckPredicateIfContextIsEmpty)
 						access = AccessControl.CheckWithPredicate(SecurableObjectKey, PredicateContext).Value;
 					else
 						access = AccessControl.Check(SecurableObjectKey);
@@ -77,12 +67,12 @@ namespace Nephrite.Html.Controls
 		public ActionLink To(string controllerName, string actionName)
 		{
 			if (SecurableObjectKey.IsEmpty()) SecurableObjectKey = controllerName + "." + actionName;
-			ControllerName = controllerName;
-			ActionName = actionName;
+			//ControllerName = controllerName;
+			//ActionName = actionName;
 
 			//_parameters.Add("bgroup", Url.GetString("bgroup"));
-			_parameters.Add(MvcOptions.ControllerName, ControllerName);
-			_parameters.Add(MvcOptions.ActionName, ActionName);
+			_parameters.Add(MvcOptions.ControllerName, controllerName);
+			_parameters.Add(MvcOptions.ActionName, actionName);
 			return this;
 		}
 
@@ -113,38 +103,80 @@ namespace Nephrite.Html.Controls
 			return this;
 		}
 
+		public static implicit operator string(ActionLink l)
+		{
+			if (l == null) return null;
+			return l.ToString();
+		}
+	}
+
+	public class ActionSimpleLink : ActionLink
+	{
+		Action<ATagAttributes> _aTagAttributes = null;
+
+		public ActionSimpleLink(IUrlHelper urlHelper, IAccessControl accessControl) : base(urlHelper, accessControl) { 	}
+
+		public ActionSimpleLink Link(string title = null, Action<ATagAttributes> customATagAttributes = null)
+		{
+			if (!title.IsEmpty()) Title = title;
+			_aTagAttributes = a => { a.Href = Url; if (customATagAttributes != null) customATagAttributes(a); };
+			return this;
+		}
+
+		public override string ToString()
+		{
+			HtmlWriter w = new HtmlWriter();
+			w.A(_aTagAttributes, Title);
+			return w.ToString();
+		}
+	}
+
+	public class ActionImageLink : ActionLink
+	{
 		Action<ATagAttributes> _aTagAttributes = null;
 		Action<ATagAttributes> _aImgTagAttributes = null;
 		Action<ImgTagAttributes> _imgTagAttributes = null;
-		ActionLinkRenderType _type = ActionLinkRenderType.Link;
 
-		public ActionLink Link(string title = null, Action<ATagAttributes> customATagAttributes = null)
+		public ActionImageLink(IUrlHelper urlHelper, IAccessControl accessControl) : base(urlHelper, accessControl) { }
+
+		public ActionImageLink ImageLink(string title = null, string image = null,
+			Action<ATagAttributes> customATagAttributes = null,
+			Action<ATagAttributes> customAImgTagAttributes = null,
+			Action<ImgTagAttributes> customImgTagAttributes = null)
 		{
 			if (!title.IsEmpty()) Title = title;
+			if (!image.IsEmpty()) ImageSrc = image;
 
 			_aTagAttributes = a => { a.Href = Url; if (customATagAttributes != null) customATagAttributes(a); };
-			_type = ActionLinkRenderType.Link;
-
-			return this;		
-		}
-
-		public ActionLink OpenDialogLink(DialogOptions options, string title = null, Action<ATagAttributes> customATagAttributes = null)
-		{
-			if (!title.IsEmpty()) Title = title;
-			
-
-			_aTagAttributes = a => {
-				options.Url = Url;
-				a.Href = "#";
-                a.OnClick = "dialog.show(this, " + JsonConvert.SerializeObject(options, Json.CamelCase) + ")";
-				if (customATagAttributes != null) customATagAttributes(a);
+			_aImgTagAttributes = a =>
+			{
+				a.Href = Url;
+				if (customATagAttributes != null && customAImgTagAttributes == null) customATagAttributes(a);
+				if (customAImgTagAttributes != null) customAImgTagAttributes(a);
 			};
-			_type = ActionLinkRenderType.Link;
+			_imgTagAttributes = a => { a.Src = IconSet.RootPath + ImageSrc; a.Alt = Title; if (customImgTagAttributes != null) customImgTagAttributes(a); };
 
 			return this;
 		}
 
-		public ActionLink Image(string title = null, string image = null, 
+		public override string ToString()
+		{
+			HtmlWriter w = new HtmlWriter();
+			w.A(_aImgTagAttributes, () => w.Img(_imgTagAttributes));
+			w.Write("&nbsp;");
+			w.A(_aTagAttributes, Title);
+			return w.ToString();
+		}
+	}
+
+	public class ActionImage : ActionLink
+	{
+		Action<ATagAttributes> _aImgTagAttributes = null;
+		Action<ImgTagAttributes> _imgTagAttributes = null;
+
+		public ActionImage(IUrlHelper urlHelper, IAccessControl accessControl) : base(urlHelper, accessControl) { }
+
+		public ActionLink Image(string title = null, string image = null,
 			Action<ATagAttributes> customAImgTagAttributes = null,
 			Action<ImgTagAttributes> customImgTagAttributes = null)
 		{
@@ -154,61 +186,14 @@ namespace Nephrite.Html.Controls
 			_aImgTagAttributes = a => { a.Href = Url; if (customAImgTagAttributes != null) customAImgTagAttributes(a); };
 			_imgTagAttributes = a => { a.Src = IconSet.RootPath + ImageSrc; if (customImgTagAttributes != null) customImgTagAttributes(a); };
 
-			_type = ActionLinkRenderType.Image;
-			return this;			
-		}
-
-		public ActionLink ImageLink(string title = null, string image = null, 
-			Action<ATagAttributes> customATagAttributes = null,
-			Action<ATagAttributes> customAImgTagAttributes = null,
-			Action<ImgTagAttributes> customImgTagAttributes = null)
-		{
-			if (!title.IsEmpty()) Title = title;
-			if (!image.IsEmpty()) ImageSrc = image;
-
-			_aTagAttributes = a => { a.Href = Url; if (customATagAttributes != null) customATagAttributes(a); };
-			_aImgTagAttributes = a => 
-			{
-				a.Href = Url;
-				if (customATagAttributes != null && customAImgTagAttributes == null) customATagAttributes(a);
-				if (customAImgTagAttributes != null) customAImgTagAttributes(a); 
-			};
-			_imgTagAttributes = a => { a.Src = IconSet.RootPath + ImageSrc; a.Alt = Title; if (customImgTagAttributes != null) customImgTagAttributes(a); };
-
-			_type = ActionLinkRenderType.ImageLink;
-			return this;		
-		}
-
-		public static implicit operator string(ActionLink l)
-		{
-			if (l == null) return null;
-			return l.ToString();
+			return this;
 		}
 
 		public override string ToString()
 		{
 			HtmlWriter w = new HtmlWriter();
-			switch (_type)
-			{
-				case ActionLinkRenderType.Link:
-					w.A(_aTagAttributes, Title);
-					return w.ToString();
-				case ActionLinkRenderType.Image:					
-					w.A(_aImgTagAttributes, () => w.Img(_imgTagAttributes));
-					return w.ToString();
-				case ActionLinkRenderType.ImageLink:
-					w.A(_aImgTagAttributes, () => w.Img(_imgTagAttributes));
-					w.Write("&nbsp;");
-					w.A(_aTagAttributes, Title);
-					return w.ToString();
-				default:
-					return "";
-			}
+			w.A(_aImgTagAttributes, () => w.Img(_imgTagAttributes));
+			return w.ToString();
 		}
-	}
-
-	public enum ActionLinkRenderType
-	{
-		Link, Image, ImageLink
 	}
 }

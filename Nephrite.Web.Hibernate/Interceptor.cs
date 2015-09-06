@@ -28,7 +28,7 @@ namespace Nephrite.Web.Hibernate
 
                 var dc = A.Model as IDC_EntityAudit;
                 string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
-                var oc = dc.NewIN_ObjectChange("Редактирование", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
+                var oc = dc.NewIN_ObjectChange("Modification", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
                 toInsert.Add(oc);
 
                 if (e.Entity is IWithPropertyAudit)
@@ -133,7 +133,7 @@ namespace Nephrite.Web.Hibernate
 
                 var dc = A.Model as IDC_EntityAudit;
                 string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
-                var oc = dc.NewIN_ObjectChange("Удаление", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
+                var oc = dc.NewIN_ObjectChange("Deletion", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
                 toInsert.Add(oc);
 
                 foreach (object obj in toInsert)
@@ -172,7 +172,7 @@ namespace Nephrite.Web.Hibernate
 				var dc = A.Model as IDC_EntityAudit;
 				var hdc = A.Model as HDataContext;
 				string title = entity is IWithTitle ? (entity as IWithTitle).Title : "";
-				var oc = dc.NewIN_ObjectChange("Создание", id != null ? id.ToString() : "", entity.GetType().Name, title);
+				var oc = dc.NewIN_ObjectChange("Creation", id != null ? id.ToString() : "", entity.GetType().Name, title);
 				//toInsert.Add(oc);
 				//dc.IN_ObjectChange.InsertOnSubmit(oc);
 				A.Model.AfterSaveActions.Add(() =>

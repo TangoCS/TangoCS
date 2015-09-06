@@ -6,31 +6,50 @@ using Nephrite.AccessControl;
 
 namespace Nephrite.Html.Controls
 {
-	//public class Navigation
-	//{
-	//	IAccessControl _accessControl;
-	//	List<SimpleLink> _items = new List<SimpleLink>();
-	//	public IEnumerable<SimpleLink> Items { get { return _items; } } 
+	public class Navigation
+	{
+		IAccessControl _accessControl;
 
-	//	public Navigation(IAccessControl accessControl)
-	//	{
-	//		_accessControl = accessControl;
-	//	}
+		public List<Group> Groups { get; private set; }
+		public Group CurrentGroup { get; set; }
 
-	//	public SimpleLink AddItem(string title, string href, string securableObjectKey = "", string image = "")
-	//	{
-	//		return AddItem(title, href, securableObjectKey, false, image);
-	//	}
+		public Group AddGroup(string title, string url, string icon)
+		{
+			Group g = new Group(this) { Title = title, Url = url, Icon = icon };
+			Groups.Add(g);
+			return g;
+		}
 
-	//	public SimpleLink AddItem(string title, string href, string securableObjectKey, bool defaultAccess, string image = "")
-	//	{
-	//		if (!securableObjectKey.IsEmpty())
-	//			if (!_accessControl.Check(securableObjectKey, defaultAccess))
-	//				return null;
+		public Navigation(IAccessControl accessControl)
+		{
+			_accessControl = accessControl;
+			Groups = new List<Group>();
+        }
 
-	//		var mi = new SimpleLink { Title = title, Href = href, Image = image, SecurableObjectKey = securableObjectKey };
-	//		_items.Add(mi);
-	//		return mi;
-	//	}
-	//}
+		public class Group
+		{
+			public Navigation Owner { get; private set; }
+			public string Title { get; set; }
+			public string Url { get; set; }
+			public string Icon { get; set; }
+			public bool Selected { get; set; }
+			public string Expression { get; set; }
+
+			List<string> _items = new List<string>();
+			List<Group> _groups;
+			public List<Group> Groups { get { if (_groups == null) _groups = new List<Group>(); return _groups; } }
+			public List<string> Items { get { return _items; } }
+
+			public Group(Navigation owner)
+			{
+				Owner = owner;
+			}
+			
+			public string EvaluateExpression()
+			{
+				if (Expression.IsEmpty()) return "";
+				return (string)MacroManager.Evaluate(Expression);
+			}
+		}
+	}
 }

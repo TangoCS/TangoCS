@@ -141,7 +141,7 @@
     <Compile Include="FormsGenerator\SelectObjectCode.cs" />
     <Compile Include="FormsGenerator\UploadControlsCode.cs" />
     <Compile Include="FormsGenerator\ViewCode.cs" />
-    <Compile Include="FormsEngine\WebFormRenderer.cs" />
+    <Compile Include="FormsEngine\WebFormsRenderer.cs" />
     <Compile Include="Model\IMMObject.cs" />
     <Compile Include="Model\IMMObjectMLView.cs" />
     <Compile Include="Model\IMMObjectVersion.cs" />

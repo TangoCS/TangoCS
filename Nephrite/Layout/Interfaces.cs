@@ -192,6 +192,17 @@ namespace Nephrite.Layout
 		//string ToolbarItem(IBarItem content);
 	}
 
+	public interface ILayoutToolbar2
+	{
+		string ToolbarBegin();
+		string ToolbarEnd();
+		string ToolbarPartBegin(string partName);
+		string ToolbarPartEnd();
+		string ToolbarSeparator();
+		string ToolbarWhiteSpace();
+		string ToolbarItem(string content);
+	}
+
 	public static class LayoutToolbarExtensions
 	{
 		public static string ToolbarBegin(this ILayoutToolbar l, ToolbarPosition? position, ToolbarMode? mode, ToolbarItemsAlign? itemsAlign)

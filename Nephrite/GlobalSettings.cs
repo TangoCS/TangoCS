@@ -11,5 +11,8 @@ namespace Nephrite
 	{
 		static Lazy<string> _jsPath = new Lazy<string>(() => ConfigurationManager.AppSettings["JSPath"] ?? "/js/");
 		public static string JSPath { get { return _jsPath.Value; } }
+
+		static Lazy<string> _controlsPath = new Lazy<string>(() => ConfigurationManager.AppSettings["ControlsPath"] ?? "Views");
+		public static string ControlsPath { get { return _controlsPath.Value; } }
 	}
 }

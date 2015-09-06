@@ -39,7 +39,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual byte[] Hash { get; set; }
 		public virtual Nullable<int> SimilarErrorID { get; set; }
 
-		public int Id
+		public int ID
 		{
 			get
 			{
@@ -181,7 +181,7 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual string Value { get; set; }
 		public virtual int SeqNo { get; set; }
 
-		public int Id
+		public int ID
 		{
 			get
 			{

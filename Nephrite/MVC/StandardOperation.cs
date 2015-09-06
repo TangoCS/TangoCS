@@ -72,7 +72,7 @@ namespace Nephrite.MVC
 
 			if (viewModel == null)
 			{
-				viewModel = _dataContext.Filtered.GetTable<TDTO>();
+				viewModel = _dataContext.GetTable<TDTO>().Filtered();
 			}
 			return new ViewResult(_controllerName, viewName, viewModel);
 		}
@@ -107,7 +107,7 @@ namespace Nephrite.MVC
 				return new MessageResult("Объект не существует");
 			}
 
-			var collection = _dataContext.Filtered.GetTable<TDTO>();
+			var collection = _dataContext.GetTable<TDTO>().Filtered();
 			var withKey = default(TDTO) as IWithKey<TDTO, TKey>;
 			var b = collection.SingleOrDefault<TDTO>(withKey.KeySelector(id)) as IWithSeqNo;
 
@@ -131,7 +131,7 @@ namespace Nephrite.MVC
 				return new MessageResult("Объект не существует");
 			}
 
-			var collection = _dataContext.Filtered.GetTable<TDTO>();
+			var collection = _dataContext.GetTable<TDTO>().Filtered();
 			var withKey = default(TDTO) as IWithKey<TDTO, TKey>;
 			var b = collection.SingleOrDefault<TDTO>(withKey.KeySelector(id)) as IWithSeqNo;
 
@@ -156,7 +156,7 @@ namespace Nephrite.MVC
 			}
 			var viewModelWithKey = viewModel as IWithKey<TDTO, TKey>;
 
-			return _dataContext.Filtered.GetTable<TDTO>().FirstOrDefault(viewModelWithKey.KeySelector(id));
+			return _dataContext.GetTable<TDTO>().Filtered().FirstOrDefault(viewModelWithKey.KeySelector(id));
 		}
 
 		BoolResult Check(string securableObjectKey, object viewModel)

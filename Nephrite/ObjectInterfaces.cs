@@ -2,10 +2,14 @@
 using System.Linq.Expressions;
 namespace Nephrite
 {
-	public interface IWithKey<T, TKey>
+	public interface IWithKey<TKey>
 	{
-		Expression<Func<T, bool>> KeySelector(TKey id);
-		TKey Id { get; }
+		TKey ID { get; }
+	}
+
+	public interface IWithKey<T, TKey> : IWithKey<TKey>
+	{
+		Expression<Func<T, bool>> KeySelector(TKey id);		
 	}
 
 	public interface IWithTitle
@@ -32,5 +36,10 @@ namespace Nephrite
 	{
 		DateTime LastModifiedDate { get; set; }
 		int LastModifiedUserID { get; set; }
+	}
+
+	public interface IWithTimeStamp<TUser> : IWithTimeStamp
+	{
+		TUser LastModifiedUser { get; set; }
 	}
 }

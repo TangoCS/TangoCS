@@ -4,20 +4,28 @@ using System.Linq;
 using Microsoft.Framework.DependencyInjection;
 using Nephrite.Multilanguage;
 using Nephrite.Layout;
+using Nephrite.MVC;
 
 namespace Nephrite.Html.Controls
 {
-	public static class BackButtonExtension
+	public static class ButtonsExtension
 	{
-		public static void BackButton(this HtmlWriter c, string title = null, string url = null)
+		public static string BackButton(this HtmlHelper c, string title = "", string url = null)
 		{
-			var textResource = DI.RequestServices.GetService<ITextResource>();
-			//if (url.IsEmpty()) url = Query.GetReturnUrl();
-			if (title.IsEmpty()) title = textResource.Get("Common.Buttons.Back", "Назад");
-			c.Button(null, title, (a) => {
-				a.OnClick = String.Format("document.location='{0}';return false;", url);
-				a.Class = AppLayout.Current.Button.CssClass;
-			});
+			if (url.IsEmpty()) url = c.Query.ReturnUrl;
+			if (title.IsEmpty()) title = c.TextResource.Get("Common.Back", "Назад");
+			return String.Format("<button class={0} onClick={1}>{2}</button>", 
+				AppLayout.Current.Button.CssClass.InQuot(),
+				String.Format("document.location='{0}';return false;", url).InQuot(),
+				title);
+		}
+
+		public static string SubmitButton(this HtmlHelper c, string title = "OK")
+		{
+			if (title.IsEmpty()) title = c.TextResource.Get("Common.OK");
+			return String.Format("<button class={0} type='submit'>{1}</button>",
+				AppLayout.Current.Button.CssClass.InQuot(),
+				title);
 		}
 	}
 }

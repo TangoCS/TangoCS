@@ -32,15 +32,22 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Nephrite.Razor.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
-    <Reference Include="RazorEngine">
-      <HintPath>..\packages\RazorEngine.3.5.3\lib\net40\RazorEngine.dll</HintPath>
+    <Reference Include="RazorEngine, Version=3.7.2.0, Culture=neutral, PublicKeyToken=9ee697374c7e744a, processorArchitecture=MSIL">
+      <HintPath>..\packages\RazorEngine.3.7.2\lib\net45\RazorEngine.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Microsoft.AspNet.Razor.3.0.0\lib\net45\System.Web.Razor.dll</HintPath>
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -49,18 +56,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DefaultTemplateManager.cs" />
-    <Compile Include="RazorFormRenderer.cs" />
+    <Compile Include="Html.Controls\Toolbar.cs" />
+    <Compile Include="RazorHtmlHelper.cs" />
+    <Compile Include="RazorHtmlHelperExtensions.cs" />
+    <Compile Include="RazorRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="Nephrite.Razor.snk" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Nephrite.Abstractions\Nephrite.Abstractions.csproj">
+      <Project>{08917986-6340-4d26-bb53-b1b69fd3c810}</Project>
+      <Name>Nephrite.Abstractions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nephrite\Nephrite.csproj">
       <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
       <Name>Nephrite</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\vNext\vNext.csproj">
+      <Project>{b836e522-1b0e-4fc4-8c81-d32433f97068}</Project>
+      <Name>vNext</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

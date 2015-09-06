@@ -127,6 +127,16 @@ namespace Nephrite
 			return null;
 		}
 
+		public static string InQuot(this string src)
+		{
+			return String.Concat("\"", src, "\"");
+		}
+
+		public static string InSingleQuot(this string src)
+		{
+			return String.Concat("'", src, "'");
+		}
+
 		public static string DateToString(this DateTime? src)
 		{
 			return src.DateToString(String.Empty);

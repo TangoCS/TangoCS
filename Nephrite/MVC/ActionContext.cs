@@ -9,14 +9,17 @@ namespace Nephrite.MVC
 {
 	public class ActionContext
 	{
-		public ActionContext()
+		public ActionContext(IHttpContext httpContext, RouteDataClass routeData)
 		{
-			RouteData = new RouteDataClass();
+			HttpContext = httpContext;
+			RouteData = routeData;
 		}
 
-		public IHttpContext HttpContext { get; set; }
-		public RouteDataClass RouteData { get; set; }
+		public IHttpContext HttpContext { get; private set; }
+		public RouteDataClass RouteData { get; private set; }
+
 		public IViewRenderer Renderer { get; set; }
+		public IUrlHelper UrlHelper { get; set; }
 
 		Url _current;
 		public Url Url 

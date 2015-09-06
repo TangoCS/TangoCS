@@ -16,98 +16,116 @@ using Newtonsoft.Json.Converters;
 
 namespace Nephrite.MVC
 {
+	/// <summary>
+	/// Пока у нас есть поддержка webforms, возващаем bool, чтобы можно было прекращать Response
+	/// </summary>
 	public interface IActionInvoker
 	{
-		void Invoke();
+		bool Invoke();
 	}
 
 	public class ControllerActionInvoker : IActionInvoker
 	{
 		ActionContext _actionContext;
-		IDataContext _dataContext;
-		IIdentityManager<int> _identityManager;
-		IAccessControl _accessControl;
+		//IDataContext _dataContext;
+		//IIdentityManager<int> _identityManager;
+		//IAccessControl _accessControl;
 
 		public ControllerActionInvoker(
-			ActionContext actionContext,
-			IDataContext dataContext,
-			IIdentityManager<int> identityManager,
-			IAccessControl accessControl)
+			ActionContext actionContext)
 		{
 			_actionContext = actionContext;
-			_dataContext = dataContext;
-			_identityManager = identityManager;
-			_accessControl = accessControl;
+			//_dataContext = dataContext;
+			//_identityManager = identityManager;
+			//_accessControl = accessControl;
 		}
 
-		public void Invoke()
+		public ActionContext ActionContext
+		{
+			get { return _actionContext; }
+		}
+
+        public bool Invoke()
 		{
 			ActionResult res = null;
 
 			var t = _actionContext.RouteData.Values[MvcOptions.ControllerName].ToString() + "Controller";
 			var m = _actionContext.RouteData.Values[MvcOptions.ActionName].ToString().ToLower();
-			Type controllerType = ControllersCache.Get(t);
+			Type controllerType =  ControllersCache.Get(t);
 			if (controllerType == null)
 			{
 				res = new MessageResult(string.Format("Controller class {0} not found", t));
 				res.ExecuteResult(_actionContext);
-				return;
+				return res.EndResponse;
 			}
 
-			Controller controller = Activator.CreateInstance(controllerType) as Controller;
+			Controller controller = DI.RequestServices.GetService(controllerType) as Controller;
+			//Activator.CreateInstance(controllerType) as Controller;
 
-			controller.ActionContext = _actionContext;
-			controller.DataContext = _dataContext;
-			controller.IdentityManager = _identityManager;
-			controller.AccessControl = _accessControl;
+			//controller.ActionContext = _actionContext;
+			//controller.DataContext = _dataContext;
+			//controller.IdentityManager = _identityManager;
+			//controller.AccessControl = _accessControl;
 
 			var methods = controllerType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
 			MethodInfo method = null;
 			var httpMethod = _actionContext.HttpContext.Request.Method;
-			bool methodFound = false;
 			for (int i = 0; i < methods.Length; i++)
 			{
-				method = methods[i];				
-                if (method.Name.ToLower() == m)
+				var curMethod = methods[i];				
+                if (curMethod.Name.ToLower() == m)
 				{
-					if (httpMethod == "GET" && !Attribute.IsDefined(method, typeof(HttpPostAttribute)))
+					if (httpMethod == "POST" && Attribute.IsDefined(curMethod, typeof(HttpPostAttribute)))
 					{
-						methodFound = true; break;
+						method = curMethod; break;
 					}
-					if (httpMethod == "POST" && !Attribute.IsDefined(method, typeof(HttpGetAttribute)))
+					if (httpMethod == "GET" && Attribute.IsDefined(curMethod, typeof(HttpGetAttribute)))
 					{
-						methodFound = true; break;
+						method = curMethod; break;
+					}
+					if (httpMethod == "GET" && !Attribute.IsDefined(curMethod, typeof(HttpPostAttribute)))
+					{
+						method = curMethod; continue;
+					}
+					if (httpMethod == "POST" && !Attribute.IsDefined(curMethod, typeof(HttpGetAttribute)))
+					{
+						method = curMethod; continue;
 					}
 				}
 			}
-			if (!methodFound)
+			if (method == null)
 			{
 				res = new MessageResult(string.Format("The method {0} was not found in the controller {1}", m, t));
 				res.ExecuteResult(_actionContext);
-				return;
+				return res.EndResponse;
 			}
 			//var method = controllerType.GetMethod(m, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+			var engine = method.GetCustomAttribute<ViewEngineAttribute>();
+			if (engine != null)
+			{
+				_actionContext.Renderer = Activator.CreateInstance(engine.ViewEngineType) as IViewRenderer;
+			}
 
-			object[] anon = method.GetCustomAttributes(typeof(AllowAnonymousAttribute), true);
-			if (anon == null || anon.Length == 0)
+			var anon = method.GetCustomAttribute<AllowAnonymousAttribute>();
+			if (anon == null)
 			{
 				string securableObjectKey = controller.Name + ".";
 
-				object[] so = method.GetCustomAttributes(typeof(SecurableObjectAttribute), true);
-				if (so != null && so.Length == 1)
+				var so = method.GetCustomAttribute<SecurableObjectAttribute>();
+				if (so != null)
 				{
-					securableObjectKey += (so[0] as SecurableObjectAttribute).Name;
+					securableObjectKey += so.Name;
 				}
 				else
 				{
 					securableObjectKey += method.Name;
 				}
 
-				if (!_accessControl.Check(securableObjectKey))
+				if (!controller.AccessControl.Check(securableObjectKey))
 				{
 					res = new MessageResult("Недостаточно полномочий для выполнения операции.");
 					res.ExecuteResult(_actionContext);
-					return;
+					return res.EndResponse;
 				}
 			}
 
@@ -156,6 +174,7 @@ namespace Nephrite.MVC
 
 			res = method.Invoke(controller, p) as ActionResult;
 			res.ExecuteResult(_actionContext);
+			return res.EndResponse;
 		}
 	}
 }

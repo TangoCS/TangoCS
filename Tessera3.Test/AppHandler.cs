@@ -62,7 +62,7 @@ namespace Solution
 
 			using (var ctx = new DefaultHttpContext())
 			{
-				r.Write(RazorFormRenderer.RenderView(
+				r.Write(RazorRenderer.RenderView(
 					ctx, 
 					Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Views"), 
 					"HomePage", 

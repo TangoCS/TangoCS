@@ -51,24 +51,24 @@ namespace Nephrite.Web.Hibernate
 		public List<Action> AfterSaveActions { get; private set; }
 		public List<Action> BeforeSaveActions { get; private set; }
 
-		protected bool EnableTableAutoFilter = true;
+		//protected bool EnableTableAutoFilter = true;
 
-		public IDataContext All
-		{
-			get
-			{
-				EnableTableAutoFilter = false;
-				return this;
-			}
-		}
-		public IDataContext Filtered
-		{
-			get
-			{
-				EnableTableAutoFilter = true;
-				return this;
-			}
-		}
+		//public IDataContext All
+		//{
+		//	get
+		//	{
+		//		EnableTableAutoFilter = false;
+		//		return this;
+		//	}
+		//}
+		//public IDataContext Filtered
+		//{
+		//	get
+		//	{
+		//		EnableTableAutoFilter = true;
+		//		return this;
+		//	}
+		//}
 
 		//public static DBType DBType
 		//{
@@ -418,9 +418,7 @@ namespace Nephrite.Web.Hibernate
 
 		public ITable<T> GetTable<T>()
 		{
-			return EnableTableAutoFilter ? 
-				new HTable<T>(this, DefaultTableFilters.ApplyFor<T>(Session.Query<T>())) : 
-				new HTable<T>(this, Session.Query<T>());
+			return new HTable<T>(this, Session.Query<T>());
 		}
 
 		public ITable GetTable(Type t)
