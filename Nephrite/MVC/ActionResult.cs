@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Nephrite.SettingsManager;
+﻿using System.Collections.Generic;
 using Microsoft.Framework.DependencyInjection;
 using Newtonsoft.Json;
 using Nephrite.Http;

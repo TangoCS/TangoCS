@@ -39,16 +39,16 @@ namespace Nephrite.Meta
 		public string Description { get; set; }
 		//public Dictionary<string, MetaTaggedValue> TaggedValues { get; set; }
 
-		protected Dictionary<Type, MetaStereotype> _stereotypes = new Dictionary<Type, MetaStereotype>();
+		protected Dictionary<Type, IMetaStereotype> _stereotypes = new Dictionary<Type, IMetaStereotype>();
 
-		public T S<T>() where T : MetaStereotype
+		public T Stereotype<T>() where T : IMetaStereotype
 		{
 			Type t = typeof(T);
-			if (!_stereotypes.ContainsKey(t)) return null;
+			if (!_stereotypes.ContainsKey(t)) return default(T);
 			return (T)_stereotypes[t];
 		}
 
-		public void AssignStereotype(MetaStereotype stereotype)
+		public void AssignStereotype(IMetaStereotype stereotype)
 		{
 			Type t = stereotype.GetType();
 			if (!_stereotypes.ContainsKey(t))
@@ -802,19 +802,19 @@ namespace Nephrite.Meta
 			}
 		}
 
-		public Action Invoke { get; set; }
+		//public Action Invoke { get; set; }
 
 		public string ActionString { get; set; }
 		public string PredicateString { get; set; }
 
-		public ViewEngineType ViewEngine { get; set; }
-		public string ViewName { get; set; }
-		public string ViewClass { get; set; }
-		public string DTOClass { get; set; }
+		//public ViewEngineType ViewEngine { get; set; }
+		//public string ViewName { get; set; }
+		//public string ViewClass { get; set; }
+		//public string DTOClass { get; set; }
 
-		InteractionType _interactionType = InteractionType.OneWayView;
-        public InteractionType InteractionType { get { return _interactionType; } set { _interactionType = value; } }
-		public DTOClassKind DTOClassKind { get; set; }
+		//InteractionType _interactionType = InteractionType.OneWayView;
+  //      public InteractionType InteractionType { get { return _interactionType; } set { _interactionType = value; } }
+		//public DTOClassKind DTOClassKind { get; set; }
 
 		public string ParametersString
 		{
@@ -854,9 +854,9 @@ namespace Nephrite.Meta
 		}
 	}	
 
-	public class MetaStereotype : MetaElement
+	public abstract class MetaStereotype : MetaElement, IMetaStereotype
 	{
-		public MetaElement Parent { get; set; }
+		public IMetaElement Parent { get; set; }
 
 		public override string ID
 		{

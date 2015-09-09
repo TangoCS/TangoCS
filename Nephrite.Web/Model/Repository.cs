@@ -757,7 +757,7 @@ namespace Nephrite.Web
 			pi3 = GetPropertyInfo(o, "IsCurrentVersion");
 			pi3.SetValue(o, TypeDescriptor.GetConverter(pi3.PropertyType).ConvertFromInvariantString(obj.Element("IsCurrentVersion").Value), null);
 
-			var v = objectType.S<SVersioning>();
+			var v = objectType.Stereotype<SVersioning>();
 			if (v.VersioningType == VersioningType.IdentifiersMiss ||
 				v.VersioningType == VersioningType.IdentifiersRetain)
 			{

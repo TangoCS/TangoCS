@@ -60,10 +60,10 @@ namespace Nephrite.AccessControl
 		public CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
 		{
 			BoolResult res1 = CheckPredicate(securableObjectKey, predicateContext, defaultAccess);
-			if (!res1.Value) return new CheckWithPredicateResult(res1.Value, CheckWithPredicateResultCode.Predicate, res1.Message);
+			if (!res1.Value) return new CheckWithPredicateResult(res1.Value, CheckWithPredicateResultCode.PredicateAccessDenied, res1.Message);
 
 			bool res2 = Check(securableObjectKey, defaultAccess);
-			return new CheckWithPredicateResult(res2, res2 ? CheckWithPredicateResultCode.AccessGranted : CheckWithPredicateResultCode.Subject);
+			return new CheckWithPredicateResult(res2, res2 ? CheckWithPredicateResultCode.AccessGranted : CheckWithPredicateResultCode.SubjectAccessDenied);
 		}
 
 		public virtual bool Check(string securableObjectKey, bool defaultAccess = false)
@@ -198,10 +198,10 @@ namespace Nephrite.AccessControl
 		public CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
 		{
 			BoolResult res1 = CheckPredicate(securableObjectKey, predicateContext, defaultAccess);
-			if (!res1.Value) return new CheckWithPredicateResult(res1.Value, CheckWithPredicateResultCode.Predicate, res1.Message);
+			if (!res1.Value) return new CheckWithPredicateResult(res1.Value, CheckWithPredicateResultCode.PredicateAccessDenied, res1.Message);
 
 			bool res2 = Check(securableObjectKey, defaultAccess);
-			return new CheckWithPredicateResult(res2, res2 ? CheckWithPredicateResultCode.AccessGranted : CheckWithPredicateResultCode.Subject);
+			return new CheckWithPredicateResult(res2, res2 ? CheckWithPredicateResultCode.AccessGranted : CheckWithPredicateResultCode.SubjectAccessDenied);
 		}
 
 
@@ -307,8 +307,8 @@ namespace Nephrite.AccessControl
 
 	public enum CheckWithPredicateResultCode
 	{
-		Predicate = 2,
-		Subject = 1,
+		PredicateAccessDenied = 2,
+		SubjectAccessDenied = 1,
 		AccessGranted = 0
 	}
 }

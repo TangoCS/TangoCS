@@ -33,7 +33,7 @@ namespace Nephrite.Meta.Database
             return value;
         }
     }
-    public class DBScriptDB2 : IDBScript
+    public class DBScriptDB2 : IDBScript, IDBTypeMapper
     {
         private List<string> _MainScripts { get; set; }
         private List<string> _FkScripts { get; set; }
@@ -617,7 +617,7 @@ namespace Nephrite.Meta.Database
         }
 
 
-		public MetaPrimitiveType GetType(string dataType, bool notNull)
+		public IMetaPrimitiveType GetType(string dataType, bool notNull)
         {
             var type = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(", System.StringComparison.Ordinal)) : dataType;
             int precision = -1;

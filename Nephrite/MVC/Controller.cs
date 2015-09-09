@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Framework.DependencyInjection;
 using Nephrite.AccessControl;
 using Nephrite.Data;
@@ -55,28 +52,32 @@ namespace Nephrite.MVC
 			get { return GetType().Name.Replace("Controller", ""); }
 		}
 
-		protected StandardOperation<T> StandardOperation<T>() where T : new()
-		{
-			return new StandardOperation<T>(Name, DataContext, AccessControl);
-		}
-
-		protected ActionResult View(string viewName, object viewData)
+		[NonAction]
+		public ActionResult View(string viewName, object viewData)
 		{
 			return new ViewResult(Name, viewName, viewData);
 		}
-		protected ActionResult RedirectBack()
+
+		[NonAction]
+		public ActionResult RedirectBack()
 		{
 			return new RedirectBackResult();
 		}
-		protected ActionResult Redirect(string url)
+
+		[NonAction]
+		public ActionResult Redirect(string url)
 		{
 			return new RedirectResult(url);
 		}
-		protected ActionResult Message(string message)
+
+		[NonAction]
+		public ActionResult Message(string message)
 		{
 			return new MessageResult(message);
 		}
-		protected ActionResult Message(string title, string message)
+
+		[NonAction]
+		public ActionResult Message(string title, string message)
 		{
 			return new MessageResult(title, message);
 		}

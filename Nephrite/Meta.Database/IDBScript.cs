@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Xml;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Nephrite.Meta.Database
@@ -38,19 +38,6 @@ namespace Nephrite.Meta.Database
 		void DeleteIndex(Index currentIndex);
 		void SyncIdentityColumn(Column srcColumn);
 
-		string GetIntType();
-		string GetGuidType();
-		string GetStringType(int length);
-		string GetDecimalType(int precision, int scale);
-		string GetDateTimeType();
-		string GetDateType();
-		string GetZoneDateTimeType();
-		string GetLongType();
-		string GetByteArrayType(int length);
-		string GetBooleanType();
-		string GetXmlType();
-		MetaPrimitiveType GetType(string dataType, bool notNull);
 		string ToString();
 	}
-
 }

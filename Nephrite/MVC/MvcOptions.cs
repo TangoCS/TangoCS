@@ -11,6 +11,5 @@ namespace Nephrite.MVC
 		public static string ControllerName = "mode";
 		public static string ActionName = "action";
 		public static string ReturnUrl = "returnurl";
-
 	}
 }

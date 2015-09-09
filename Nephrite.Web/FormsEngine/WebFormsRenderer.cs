@@ -1,25 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Routing;
 using System.Web.UI;
-using Nephrite.SettingsManager;
-using Nephrite.Http;
-using Nephrite.Web;
-using Nephrite.Identity;
 using Nephrite.Web.View;
-using Nephrite.AccessControl;
 using Nephrite.MVC;
 
 namespace Nephrite.Web.FormsEngine
 {
 	public class WebFormsRenderer : IViewRenderer
 	{
-		[DefaultSettingValue("ViewList")]
 		public static string DefaultViewName { get; set; }
 
 		public bool IsStringResult
@@ -32,11 +25,11 @@ namespace Nephrite.Web.FormsEngine
 
 		Control _container;
 
-		public WebFormsRenderer(Control container)
+		public void SetContainer(Control container)
 		{
 			_container = container;
 		}
-		
+
 		public void RenderMessage(string message)
 		{
 			RenderMessage("Внимание!", message);

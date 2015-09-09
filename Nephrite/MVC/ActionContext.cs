@@ -1,24 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Nephrite.Http;
 
 namespace Nephrite.MVC
 {
 	public class ActionContext
 	{
-		public ActionContext(IHttpContext httpContext, RouteDataClass routeData)
+		public ActionContext(IHttpContext httpContext, IViewRendererFactory viewRendererFactory, RouteDataClass routeData)
 		{
 			HttpContext = httpContext;
 			RouteData = routeData;
-		}
+			ViewRendererFactory = viewRendererFactory;
+        }
 
 		public IHttpContext HttpContext { get; private set; }
 		public RouteDataClass RouteData { get; private set; }
 
-		public IViewRenderer Renderer { get; set; }
+		public IViewRendererFactory ViewRendererFactory { get; private set; }
+		public Type RendererType {
+			get;
+			set;
+		}
+
+		IViewRenderer _renderer;
+		public IViewRenderer Renderer
+		{
+			get
+			{
+				if (_renderer == null)
+					_renderer = ViewRendererFactory.Create(RendererType);
+				return _renderer;
+            }
+			set
+			{
+				_renderer = value;
+			}
+		}
+
 		public IUrlHelper UrlHelper { get; set; }
 
 		Url _current;
@@ -31,7 +49,7 @@ namespace Nephrite.MVC
 					_current = new Url(HttpContext.Request.Url.PathAndQuery, RouteData.Values);
 				}
 				return _current;
-			} 
+			}
 		}
 
 		public class RouteDataClass

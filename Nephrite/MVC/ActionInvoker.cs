@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Nephrite.AccessControl;
-using Nephrite.Data;
-using Nephrite.Identity;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -27,17 +22,11 @@ namespace Nephrite.MVC
 	public class ControllerActionInvoker : IActionInvoker
 	{
 		ActionContext _actionContext;
-		//IDataContext _dataContext;
-		//IIdentityManager<int> _identityManager;
-		//IAccessControl _accessControl;
 
 		public ControllerActionInvoker(
 			ActionContext actionContext)
 		{
 			_actionContext = actionContext;
-			//_dataContext = dataContext;
-			//_identityManager = identityManager;
-			//_accessControl = accessControl;
 		}
 
 		public ActionContext ActionContext
@@ -54,56 +43,35 @@ namespace Nephrite.MVC
 			Type controllerType =  ControllersCache.Get(t);
 			if (controllerType == null)
 			{
-				res = new MessageResult(string.Format("Controller class {0} not found", t));
-				res.ExecuteResult(_actionContext);
-				return res.EndResponse;
+				return MessageResult(string.Format("Controller class {0} not found", t));
 			}
 
-			Controller controller = DI.RequestServices.GetService(controllerType) as Controller;
-			//Activator.CreateInstance(controllerType) as Controller;
-
-			//controller.ActionContext = _actionContext;
-			//controller.DataContext = _dataContext;
-			//controller.IdentityManager = _identityManager;
-			//controller.AccessControl = _accessControl;
-
-			var methods = controllerType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
-			MethodInfo method = null;
-			var httpMethod = _actionContext.HttpContext.Request.Method;
-			for (int i = 0; i < methods.Length; i++)
-			{
-				var curMethod = methods[i];				
-                if (curMethod.Name.ToLower() == m)
-				{
-					if (httpMethod == "POST" && Attribute.IsDefined(curMethod, typeof(HttpPostAttribute)))
-					{
-						method = curMethod; break;
-					}
-					if (httpMethod == "GET" && Attribute.IsDefined(curMethod, typeof(HttpGetAttribute)))
-					{
-						method = curMethod; break;
-					}
-					if (httpMethod == "GET" && !Attribute.IsDefined(curMethod, typeof(HttpPostAttribute)))
-					{
-						method = curMethod; continue;
-					}
-					if (httpMethod == "POST" && !Attribute.IsDefined(curMethod, typeof(HttpGetAttribute)))
-					{
-						method = curMethod; continue;
-					}
-				}
-			}
+			Controller controller = null;
+            var method = FindMethod(controllerType, m);
 			if (method == null)
 			{
-				res = new MessageResult(string.Format("The method {0} was not found in the controller {1}", m, t));
-				res.ExecuteResult(_actionContext);
-				return res.EndResponse;
+				var std = controllerType.GetCustomAttributes<HasStandardMvcActionAttribute>().FirstOrDefault(o => o.Name == m);
+                if (std != null)
+				{
+					controllerType = std.StdControllerType;
+					method = FindMethod(controllerType, std.StdControllerAction ?? m);
+					if (std.ViewEngineType != null)
+						_actionContext.RendererType = std.ViewEngineType;
+					controller = Activator.CreateInstance(controllerType) as Controller;
+				}	
 			}
-			//var method = controllerType.GetMethod(m, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+			else
+				controller = DI.RequestServices.GetService(controllerType) as Controller;
+
+			if (method == null)
+				return MessageResult(string.Format("The method {0} was not found in the controller {1}", m, t));
+
+			controller.ActionContext = _actionContext;
+
 			var engine = method.GetCustomAttribute<ViewEngineAttribute>();
 			if (engine != null)
 			{
-				_actionContext.Renderer = Activator.CreateInstance(engine.ViewEngineType) as IViewRenderer;
+				_actionContext.RendererType = engine.ViewEngineType;
 			}
 
 			var anon = method.GetCustomAttribute<AllowAnonymousAttribute>();
@@ -123,9 +91,7 @@ namespace Nephrite.MVC
 
 				if (!controller.AccessControl.Check(securableObjectKey))
 				{
-					res = new MessageResult("Недостаточно полномочий для выполнения операции.");
-					res.ExecuteResult(_actionContext);
-					return res.EndResponse;
+					return AccessDeniedResult();
 				}
 			}
 
@@ -136,7 +102,7 @@ namespace Nephrite.MVC
 			dynamic jsonObj = null;
             if (isJson)
 			{
-				var jsonString = String.Empty;
+				var jsonString = string.Empty;
 				_actionContext.HttpContext.Request.Body.Position = 0;
 				using (var inputStream = new StreamReader(_actionContext.HttpContext.Request.Body))
 				{
@@ -167,12 +133,61 @@ namespace Nephrite.MVC
 					if (mp[i].ParameterType == typeof(Guid))
 						p[i] = val.ToGuid();
                     else
+					{
 						p[i] = Convert.ChangeType(val, mp[i].ParameterType);
+					}
 				}
 			}
 
-
 			res = method.Invoke(controller, p) as ActionResult;
+			res.ExecuteResult(_actionContext);
+			return res.EndResponse;
+		}
+
+		MethodInfo FindMethod(Type controllerType, string methodName)
+		{
+			var methods = controllerType.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+			MethodInfo method = null;
+			var httpMethod = _actionContext.HttpContext.Request.Method;
+			for (int i = 0; i < methods.Length; i++)
+			{
+				var curMethod = methods[i];
+				if (Attribute.IsDefined(curMethod, typeof(NonActionAttribute))) continue;
+                if (curMethod.Name.ToLower() == methodName)
+				{
+					bool hasPost = Attribute.IsDefined(curMethod, typeof(HttpPostAttribute));
+					bool hasGet = Attribute.IsDefined(curMethod, typeof(HttpGetAttribute));
+
+					if (httpMethod == "POST" && hasPost)
+					{
+						method = curMethod; break;
+					}
+					if (httpMethod == "GET" && hasGet)
+					{
+						method = curMethod; break;
+					}
+					if (httpMethod == "GET" && !hasPost)
+					{
+						method = curMethod; continue;
+					}
+					if (httpMethod == "POST" && !hasGet)
+					{
+						method = curMethod; continue;
+					}
+				}
+			}
+			return method;
+		}
+
+
+		bool AccessDeniedResult()
+		{
+			return MessageResult("Недостаточно полномочий для выполнения операции.");
+		}
+
+		bool MessageResult(string message)
+		{
+			var res = new MessageResult(message);
 			res.ExecuteResult(_actionContext);
 			return res.EndResponse;
 		}

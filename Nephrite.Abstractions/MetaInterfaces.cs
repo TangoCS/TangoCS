@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Nephrite.Multilanguage;
 
 namespace Nephrite.Meta
@@ -13,6 +11,14 @@ namespace Nephrite.Meta
 		string Name { get; set; }
 		string Description { get; set; }
 		string Caption { get; set; }
+
+		T Stereotype<T>() where T : IMetaStereotype;
+		void AssignStereotype(IMetaStereotype stereotype);
+    }
+
+	public interface IMetaStereotype : IMetaElement
+	{
+		IMetaElement Parent { get; set; }
 	}
 
 	public partial interface IMetaClassifier : IMetaElement
@@ -116,19 +122,25 @@ namespace Nephrite.Meta
 
 	public interface IMetaOperation : IMetaElement
 	{
-		string ActionString { get; set; }
-		string DTOClass { get; set; }
-		DTOClassKind DTOClassKind { get; set; }
-		string Image { get; set; }
-		Action Invoke { get; set; }
-		List<IMetaParameter> Parameters { get; set; }
-		string ParametersString { get; }
 		IMetaClass Parent { get; set; }
+		
+		string Image { get; set; }
+		//Action Invoke { get; set; }
+		List<IMetaParameter> Parameters { get; set; }
+
+		[Obsolete]
+		string ActionString { get; set; }
+		[Obsolete]
+		string ParametersString { get; }
+		[Obsolete]
 		string PredicateString { get; set; }
-		string ViewClass { get; set; }
-		string ViewName { get; set; }
-		ViewEngineType ViewEngine { get; set; }
-		InteractionType InteractionType { get; set; }
+
+		//string ViewClass { get; set; }
+		//string ViewName { get; set; }
+		//DTOClassKind DTOClassKind { get; set; }
+		//string DTOClass { get; set; }
+		//ViewEngineType ViewEngine { get; set; }
+		//InteractionType InteractionType { get; set; }
     }
 
 	public interface IMetaEnum : IMetaElement
@@ -175,10 +187,9 @@ namespace Nephrite.Meta
 		Procedure
 	}
 
-	public enum DTOClassKind { Single, Queryable, None }
-	public enum ViewEngineType { WebForms, Razor }
-
-	public enum InteractionType { OneWayView, ViewWithSubmit, NoView }
+	//public enum DTOClassKind { Single, Queryable, None }
+	//public enum ViewEngineType { WebForms, Razor }
+	//public enum InteractionType { OneWayView, ViewWithSubmit, NoView }
 
 	/// <summary>
 	/// Тип ассоциации

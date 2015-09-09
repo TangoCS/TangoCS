@@ -242,8 +242,8 @@ namespace Nephrite.Meta
 			o.ActionString = xo.GetAttributeValue("ActionString");
 			o.PredicateString = xo.GetAttributeValue("PredicateString");
 
-			o.ViewName = xo.GetAttributeValue("ViewName");
-			o.ViewClass = xo.GetAttributeValue("ViewClass");
+			//o.ViewName = xo.GetAttributeValue("ViewName");
+			//o.ViewClass = xo.GetAttributeValue("ViewClass");
 
 			if (xo.GetAttributeValue("IsDefault").ToLower() == "true" && c is MetaClass)
 				(c as MetaClass).DefaultOperation = o;

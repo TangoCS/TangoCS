@@ -85,6 +85,8 @@ namespace Nephrite.Meta.Fluent
 	{
 		IMetaOperation _op;
 
+		public IMetaOperation Operation { get { return _op; } }
+
 		public OperationBuilder(IMetaOperation op)
 		{
 			_op = op;
@@ -117,65 +119,6 @@ namespace Nephrite.Meta.Fluent
 		public OperationBuilder Image(string name)
 		{
 			_op.Image = name;
-			return this;
-		}
-
-		public OperationBuilder Razor()
-		{
-			_op.ViewEngine = ViewEngineType.Razor;
-			return this;
-		}
-
-		public OperationBuilder WithSubmit()
-		{
-			_op.InteractionType = InteractionType.ViewWithSubmit;
-			return this;
-		}
-
-		public OperationBuilder InvokesCode()
-		{
-			_op.ViewClass = "";
-			_op.ViewName = "";
-			_op.DTOClassKind = DTOClassKind.None;
-			_op.InteractionType = InteractionType.NoView;
-			return this;
-		}
-
-		public OperationBuilder InvokesView(string viewClass, string viewName)
-		{
-			_op.ViewClass = viewClass;
-			_op.ViewName = viewName;
-			_op.DTOClassKind = DTOClassKind.None;
-			return this;
-		}
-
-		public OperationBuilder InvokesSingleObjectView(string viewName)
-		{
-			_op.ViewClass = "ViewControl";
-			_op.ViewName = viewName;
-			WithDTOClass(DTOClassKind.Single);
-			return this;
-		}
-
-		public OperationBuilder InvokesObjectListView(string viewName)
-		{
-			_op.ViewClass = "ViewControl";
-			_op.ViewName = viewName;
-			WithDTOClass(_op.Parent.IsMultilingual ? ("V_" + _op.Parent.Name) : _op.Parent.Name, DTOClassKind.Queryable);
-			return this;
-		}
-
-		public OperationBuilder WithDTOClass(string className, DTOClassKind kind = DTOClassKind.Single)
-		{
-			_op.DTOClass = className;
-			_op.DTOClassKind = kind;
-			return this;
-		}
-
-		public OperationBuilder WithDTOClass(DTOClassKind kind)
-		{
-			_op.DTOClass = _op.Parent.Name;
-			_op.DTOClassKind = kind;
 			return this;
 		}
 	}
@@ -320,95 +263,6 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-
-
-		public static IMetaClass OperationCreateNew(this IMetaClass cls, Action<OperationBuilder> attributes = null)
-		{
-			var o = new MetaOperation { Name = "CreateNew", Caption = "Создать" };
-			cls.AddOperation(o);
-
-			var ob = new OperationBuilder(o);
-			ob.Image("create").InvokesSingleObjectView("edit");
-			if (attributes != null) attributes(ob);
-
-			if (o.Parameters.Count == 0)
-				ob.ParmString("returnurl");
-
-			return cls;
-		}
-
-		public static IMetaClass OperationEdit(this IMetaClass cls, Action<OperationBuilder> attributes = null)
-		{
-			var o = new MetaOperation { Name = "Edit", Caption = "Редактировать" };
-			cls.AddOperation(o);
-
-			var ob = new OperationBuilder(o);
-			ob.Image("edit").InvokesSingleObjectView("edit");
-			if (attributes != null) attributes(ob);
-
-			if (o.Parameters.Count == 0)
-				ob.Parm(cls.Key.Type as IMetaParameterType, "id").ParmString("returnurl");
-
-			return cls;
-		}
-
-		public static IMetaClass OperationList(this IMetaClass cls, Action<OperationBuilder> attributes = null)
-		{
-			var o = new MetaOperation { Name = "ViewList", Caption = "Список" };
-			cls.AddOperation(o);
-
-			var ob = new OperationBuilder(o);
-			ob.Image("list").InvokesObjectListView("list");
-			if (attributes != null) attributes(ob);
-
-			return cls;
-		}
-
-		public static IMetaClass OperationView(this IMetaClass cls, Action<OperationBuilder> attributes = null)
-		{
-			var o = new MetaOperation { Name = "View", Caption = "Свойства" };
-			cls.AddOperation(o);
-
-			var ob = new OperationBuilder(o);
-			ob.Image("view").InvokesSingleObjectView("view");
-			if (attributes != null) attributes(ob);
-
-			if (o.Parameters.Count == 0)
-				ob.Parm(cls.Key.Type as IMetaParameterType, "id").ParmString("returnurl");
-
-			return cls;
-		}
-
-		public static IMetaClass OperationDelete(this IMetaClass cls, Action<OperationBuilder> attributes = null)
-		{
-			var o = new MetaOperation { Name = "Delete", Caption = "Удалить" };
-			cls.AddOperation(o);
-
-			var ob = new OperationBuilder(o);
-			ob.Image("delete").InvokesSingleObjectView("delete");
-			if (attributes != null) attributes(ob);
-
-			if (o.Parameters.Count == 0)
-				ob.Parm(cls.Key.Type as IMetaParameterType, "id").ParmString("returnurl");
-
-			return cls;
-		}
-
-		public static IMetaClass OperationUnDelete(this IMetaClass cls, Action<OperationBuilder> attributes = null)
-		{
-			var o = new MetaOperation { Name = "UnDelete", Caption = "Отменить удаление" };
-			cls.AddOperation(o);
-
-			var ob = new OperationBuilder(o);
-			ob.Image("undelete").InvokesSingleObjectView("undelete");
-			if (attributes != null) attributes(ob);
-
-			if (o.Parameters.Count == 0)
-				ob.Parm(cls.Key.Type as IMetaParameterType, "id").ParmString("returnurl");
-
-			return cls;
-		}
-
 		public static IMetaClass Operation(this IMetaClass cls, string name, string caption, Action<OperationBuilder> attributes = null)
 		{
 			var op = new MetaOperation { Name = name, Caption = caption };
@@ -416,35 +270,5 @@ namespace Nephrite.Meta.Fluent
 			if (attributes != null) attributes(new OperationBuilder(op));
 			return cls;
 		}
-
-		//public static MetaPackage Operation(this MetaPackage pck, string name, string caption, Action<OperationBuilder> attributes = null)
-		//{
-		//	var op = new MetaOperation { Name = name, Caption = caption };
-		//	pck.AddOperation(op);
-		//	if (attributes != null) attributes(new OperationBuilder(op));
-		//	return pck;
-		//}
-
-		public static IMetaClass Workflow(this IMetaClass cls)
-		{
-			//cls.Reference("Activity", "Статус", x => x.To("WF_Activity"));
-			return cls;
-		}
-
-		public static IMetaClass TCLED(this IMetaClass cls)
-		{
-			cls.Title().
-				OperationCreateNew().OperationList().OperationEdit().OperationDelete().OperationUnDelete();
-			return cls;
-		}
-		public static IMetaClass TCLEVD(this IMetaClass cls)
-		{
-			cls.Title().
-				OperationCreateNew().OperationList().OperationEdit().OperationView().OperationDelete().OperationUnDelete();
-			return cls;
-		}
-
-
-
 	}
 }

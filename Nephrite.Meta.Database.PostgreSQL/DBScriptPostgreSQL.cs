@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Nephrite.Meta.Database
 {
-	public class DBScriptPostgreSQL : IDBScript
+	public class DBScriptPostgreSQL : IDBScript, IDBTypeMapper
 	{
 		private List<string> _MainScripts { get; set; }
 		private List<string> _FkScripts { get; set; }
@@ -408,7 +408,7 @@ namespace Nephrite.Meta.Database
 			return "xml";
 		}
 
-		public MetaPrimitiveType GetType(string dataType, bool notNull)
+		public IMetaPrimitiveType GetType(string dataType, bool notNull)
 		{
 			var type = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(", System.StringComparison.Ordinal)) : dataType;
 			int precision = -1;

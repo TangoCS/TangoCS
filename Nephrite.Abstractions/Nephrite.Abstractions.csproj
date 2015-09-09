@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MetaDatabaseInterfaces.cs" />
     <Compile Include="MetaInterfaces.cs" />
     <Compile Include="MultilanguageInterfaces.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

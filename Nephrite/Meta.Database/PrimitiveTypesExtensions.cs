@@ -1,19 +1,11 @@
 ﻿using Nephrite.Meta.Database;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Nephrite.Meta
 {
-	public partial interface IMetaClassifier
-	{
-		string GetDBType(IDBScript script);
-	}
-
 	public abstract partial class MetaClassifier : MetaElement, IMetaClassifier
 	{
 
-		public virtual string GetDBType(IDBScript script)
+		public virtual string GetDBType(IDBTypeMapper mapper)
 		{
 			return "";
 		}
@@ -21,93 +13,93 @@ namespace Nephrite.Meta
 	}
 	public partial class MetaDecimalType
 	{
-		public override string GetDBType(IDBScript script)
+		public override string GetDBType(IDBTypeMapper mapper)
 		{
-			return script.GetDecimalType(Precision, Scale);
+			return mapper.GetDecimalType(Precision, Scale);
 		}
 	}
 
 	public partial class MetaBooleanType
 	{
-		public override string GetDBType(IDBScript script)
+		public override string GetDBType(IDBTypeMapper mapper)
 		{
-			return script.GetBooleanType();
+			return mapper.GetBooleanType();
 		}
 
 	}
     public partial class MetaXmlType
     {
-        public override string GetDBType(IDBScript script)
+        public override string GetDBType(IDBTypeMapper mapper)
         {
-            return script.GetXmlType();
+            return mapper.GetXmlType();
         }
 
     }
 	public partial class MetaStringType
 	{
-		public override string GetDBType(IDBScript script)
+		public override string GetDBType(IDBTypeMapper mapper)
 		{
-			return script.GetStringType(Length);
+			return mapper.GetStringType(Length);
 		}
 	}
 
 	public partial class MetaDateTimeType
 	{
-		public override string GetDBType(IDBScript script)
+		public override string GetDBType(IDBTypeMapper mapper)
 		{
-			return script.GetDateTimeType();
+			return mapper.GetDateTimeType();
 		}
 	}
 	public partial class MetaZoneDateTimeType
 	{
-		public override string GetDBType(IDBScript script)
+		public override string GetDBType(IDBTypeMapper mapper)
 		{
-			return script.GetZoneDateTimeType();
+			return mapper.GetZoneDateTimeType();
 		}
 	}
 
 	public partial class MetaDateType
 	{
-		public override string GetDBType(IDBScript script)
+		public override string GetDBType(IDBTypeMapper mapper)
 		{
-			return script.GetDateType();
+			return mapper.GetDateType();
 		}
 	}
 
 	public partial class MetaIntType
 	{
-		public override string GetDBType(IDBScript script)
+		public override string GetDBType(IDBTypeMapper mapper)
 		{
-			return script.GetIntType();
+			return mapper.GetIntType();
 		}
 	}
 
 	public partial class MetaLongType
 	{
-		public override string GetDBType(IDBScript script)
+		public override string GetDBType(IDBTypeMapper mapper)
 		{
-			return script.GetLongType();
+			return mapper.GetLongType();
 		}
 	}
 	public partial class MetaGuidType
 	{
-		public override string GetDBType(IDBScript script)
+		public override string GetDBType(IDBTypeMapper mapper)
 		{
-			return script.GetGuidType();
+			return mapper.GetGuidType();
 		}
 	}
 	public partial class MetaByteArrayType
 	{
-		public override string GetDBType(IDBScript script)
+		public override string GetDBType(IDBTypeMapper mapper)
 		{
-			return script.GetByteArrayType(Length);
+			return mapper.GetByteArrayType(Length);
 		}
 	}
 	public partial class MetaEnumType
 	{
-		public override string GetDBType(IDBScript script)
+		public override string GetDBType(IDBTypeMapper mapper)
 		{
-			return script.GetStringType(1);
+			return mapper.GetStringType(1);
 		}
 	}
 }
