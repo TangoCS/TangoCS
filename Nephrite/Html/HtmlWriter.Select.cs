@@ -9,15 +9,16 @@ namespace Nephrite.Html
 		public void DropDownList(string name, string value, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("select");
-			SelectTagAttributes ta = new SelectTagAttributes(tb) { Name = name };
+			SelectTagAttributes ta = new SelectTagAttributes(tb);
+			ta.Name(name);
 			if (attributes != null) attributes(ta);
 			Write(tb.Render(TagRenderMode.StartTag));
 
 			foreach (var item in items)
 			{
 				TagBuilder tb_o = new TagBuilder("option");
-				OptionTagAttributes oa = new OptionTagAttributes(tb_o) { Title = item.Text, Value = item.Value, 
-					Selected = item.Selected || item.Value == value };
+				OptionTagAttributes oa = new OptionTagAttributes(tb_o);
+				oa.Title(item.Text).Value(item.Value).Selected(item.Selected || item.Value == value);
 				Write(tb_o.Render(TagRenderMode.SelfClosing));
 			}
 			
@@ -27,19 +28,16 @@ namespace Nephrite.Html
 		public void ListBox(string name, IEnumerable<string> values, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("select");
-			SelectTagAttributes ta = new SelectTagAttributes(tb) { Name = name };
+			SelectTagAttributes ta = new SelectTagAttributes(tb);
+			ta.Name(name);
 			if (attributes != null) attributes(ta);
 			Write(tb.Render(TagRenderMode.StartTag));
 
 			foreach (var item in items)
 			{
 				TagBuilder tb_o = new TagBuilder("option");
-				OptionTagAttributes oa = new OptionTagAttributes(tb_o)
-				{
-					Title = item.Text,
-					Value = item.Value,
-					Selected = item.Selected || (values != null && values.Contains(item.Value))
-				};
+				OptionTagAttributes oa = new OptionTagAttributes(tb_o);
+				oa.Title(item.Text).Value(item.Value).Selected(item.Selected || (values != null && values.Contains(item.Value)));
 				Write(tb_o.Render(TagRenderMode.SelfClosing));
 			}
 

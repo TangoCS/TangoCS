@@ -8,26 +8,30 @@ namespace Nephrite.Meta
 	public interface IMetaElement
 	{
 		string ID { get; }
-		string Name { get; set; }
-		string Description { get; set; }
-		string Caption { get; set; }
 
 		T Stereotype<T>() where T : IMetaStereotype;
 		void AssignStereotype(IMetaStereotype stereotype);
+	}
+
+	public interface IMetaNamedElement : IMetaElement
+	{
+		string Name { get; set; }
+		string Description { get; set; }
+		string Caption { get; set; }
     }
 
-	public interface IMetaStereotype : IMetaElement
+	public interface IMetaStereotype : IMetaNamedElement
 	{
 		IMetaElement Parent { get; set; }
 	}
 
-	public partial interface IMetaClassifier : IMetaElement
+	public partial interface IMetaClassifier : IMetaNamedElement
 	{
 		string CLRType { get; }
 		string ColumnName(string propName);
 	}
 
-	public interface IMetaSolution : IMetaElement
+	public interface IMetaSolution : IMetaNamedElement
 	{
 		Dictionary<string, IMetaClass>.ValueCollection Classes { get; }
 		Dictionary<string, IMetaEnum>.ValueCollection Enums { get; }
@@ -70,7 +74,7 @@ namespace Nephrite.Meta
 		List<Type> Interfaces { get; }
 	}
 
-	public interface IMetaProperty : IMetaElement
+	public interface IMetaProperty : IMetaNamedElement
 	{
 		string CaptionShort { get; set; }
 		string ColumnName { get; }
@@ -120,12 +124,11 @@ namespace Nephrite.Meta
 		void SetInverseProperty(string inversePropertyName);
     }
 
-	public interface IMetaOperation : IMetaElement
+	public interface IMetaOperation : IMetaNamedElement
 	{
 		IMetaClass Parent { get; set; }
 		
 		string Image { get; set; }
-		//Action Invoke { get; set; }
 		List<IMetaParameter> Parameters { get; set; }
 
 		[Obsolete]
@@ -134,26 +137,19 @@ namespace Nephrite.Meta
 		string ParametersString { get; }
 		[Obsolete]
 		string PredicateString { get; set; }
-
-		//string ViewClass { get; set; }
-		//string ViewName { get; set; }
-		//DTOClassKind DTOClassKind { get; set; }
-		//string DTOClass { get; set; }
-		//ViewEngineType ViewEngine { get; set; }
-		//InteractionType InteractionType { get; set; }
     }
 
-	public interface IMetaEnum : IMetaElement
+	public interface IMetaEnum : IMetaNamedElement
 	{
 		IMetaSolution Parent { get; set; }
 		List<IMetaEnumValue> Values { get; }
 	}
 
-	public interface IMetaEnumValue : IMetaElement
+	public interface IMetaEnumValue : IMetaNamedElement
 	{
 	}
 
-	public interface IMetaParameter : IMetaElement
+	public interface IMetaParameter : IMetaNamedElement
 	{
 		IMetaParameterType Type { get; set; }
 	}

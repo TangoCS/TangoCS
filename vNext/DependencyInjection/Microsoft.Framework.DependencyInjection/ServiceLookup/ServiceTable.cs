@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Microsoft.Framework.DependencyInjection.ServiceLookup
@@ -26,6 +27,26 @@ namespace Microsoft.Framework.DependencyInjection.ServiceLookup
                 var serviceTypeInfo = descriptor.ServiceType.GetTypeInfo();
                 if (serviceTypeInfo.IsGenericTypeDefinition)
                 {
+                    var implementationTypeInfo = descriptor.ImplementationType?.GetTypeInfo();
+
+                    if (implementationTypeInfo == null ||
+                        !implementationTypeInfo.IsGenericTypeDefinition)
+                    {
+                        throw new ArgumentException(
+                            Resources.FormatOpenGenericServiceRequiresOpenGenericImplementation(
+                                descriptor.ServiceType),
+                            nameof(descriptors));
+                    }
+
+                    if (implementationTypeInfo.IsAbstract ||
+                        implementationTypeInfo.IsInterface)
+                    {
+                        throw new ArgumentException(
+                            Resources.FormatTypeCannotBeActivated(
+                                descriptor.ImplementationType,
+                                descriptor.ServiceType));
+                    }
+
                     Add(descriptor.ServiceType, new GenericService(descriptor));
                 }
                 else if (descriptor.ImplementationInstance != null)
@@ -38,6 +59,19 @@ namespace Microsoft.Framework.DependencyInjection.ServiceLookup
                 }
                 else
                 {
+                    Debug.Assert(descriptor.ImplementationType != null);
+                    var implementationTypeInfo = descriptor.ImplementationType.GetTypeInfo();
+
+                    if (implementationTypeInfo.IsGenericTypeDefinition ||
+                        implementationTypeInfo.IsAbstract ||
+                        implementationTypeInfo.IsInterface)
+                    {
+                        throw new ArgumentException(
+                            Resources.FormatTypeCannotBeActivated(
+                                descriptor.ImplementationType,
+                                descriptor.ServiceType));
+                    }
+
                     Add(descriptor.ServiceType, new Service(descriptor));
                 }
             }

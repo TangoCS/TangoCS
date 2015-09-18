@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web;
 using System.Configuration;
 using System.Reflection;
 using System.IO;
 using System.Xml;
-using System.Threading;
 
 namespace Nephrite.Web
 {
-    public static class ConnectionManager
+	public static class ConnectionManager
     {
 		public static string ConnectionString
 		{

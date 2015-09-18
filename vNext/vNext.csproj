@@ -56,6 +56,7 @@
     <Compile Include="Common\Microsoft.Framework.PropertyHelper.Sources\PropertyHelper.cs" />
     <Compile Include="Common\Microsoft.Framework.TypeNameHelper.Sources\TypeNameHelper.cs" />
     <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection.Abstractions\ActivatorUtilities.cs" />
+    <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection.Abstractions\Extensions\ServiceCollectionExtensions.cs" />
     <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection.Abstractions\IServiceCollection.cs" />
     <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection.Abstractions\IServiceScope.cs" />
     <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection.Abstractions\IServiceScopeFactory.cs" />
@@ -69,6 +70,9 @@
     <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection\ServiceCollection.cs" />
     <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection\ServiceCollectionExtensions.cs" />
     <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection\ServiceLookup\ClosedIEnumerableService.cs" />
+    <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection\ServiceLookup\ConstantCallSite.cs" />
+    <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection\ServiceLookup\ConstructorCallSite.cs" />
+    <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection\ServiceLookup\CreateInstanceCallSite.cs" />
     <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection\ServiceLookup\FactoryService.cs" />
     <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection\ServiceLookup\GenericService.cs" />
     <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection\ServiceLookup\IGenericService.cs" />
@@ -84,6 +88,21 @@
     <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection\ServiceLookup\ServiceScopeService.cs" />
     <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection\ServiceLookup\ServiceTable.cs" />
     <Compile Include="DependencyInjection\Microsoft.Framework.DependencyInjection\ServiceProvider.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging.Abstractions\ILogger.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging.Abstractions\ILoggerFactory.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging.Abstractions\ILoggerOfT.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging.Abstractions\ILoggerProvider.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging.Abstractions\ILogValues.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging.Abstractions\Internal\FormattedLogValues.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging.Abstractions\Internal\LogValuesFormatter.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging.Abstractions\LogFormatter.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging.Abstractions\LoggerExtensions.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging.Abstractions\LoggerFactoryExtensions.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging.Abstractions\LogLevel.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging\Logger.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging\LoggerFactory.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging\LoggerOfT.cs" />
+    <Compile Include="Logging\Microsoft.Framework.Logging\LoggingServiceCollectionExtensions.cs" />
     <Compile Include="HttpAbstractions\Microsoft.AspNet.FeatureModel\FeatureCollection.cs" />
     <Compile Include="HttpAbstractions\Microsoft.AspNet.FeatureModel\FeatureObject.cs" />
     <Compile Include="HttpAbstractions\Microsoft.AspNet.FeatureModel\FeatureReference.cs" />
@@ -266,23 +285,76 @@
     <Compile Include="Options\Microsoft.Framework.OptionsModel\OptionsServiceCollectionExtensions.cs" />
     <Compile Include="Properties\Microsoft.Framework.OptionsModel.Resources.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\BuilderExtensions.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\AlphaRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\BoolRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\CompositeRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\DateTimeRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\DecimalRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\DoubleRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\FloatRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\GuidRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\IntRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\LengthRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\LongRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\MaxLengthRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\MaxRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\MinLengthRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\MinRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\OptionalRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\RangeRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\RegexInlineRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\RegexRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Constraints\RequiredRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\DefaultInlineConstraintResolver.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\IInlineConstraintResolver.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\INamedRouter.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\InlineRouteParameterParser.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\IRouteBuilder.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\IRouteCollection.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\IRouteConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\IRouter.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Logging\LogFormatter.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Logging\LoggerExtensions.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Logging\StringBuilderHelpers.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Properties\Resources.Designer.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\RouteBuilder.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\RouteBuilderExtensions.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\RouteCollection.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\RouteConstraintBuilder.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\RouteConstraintMatcher.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\RouteContext.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\RouteData.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\RouteDirection.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\RouteOptions.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\RouterMiddleware.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\RouteValueDictionary.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\RoutingServices.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\ServiceCollectionExtensions.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Template\InlineConstraint.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Template\RouteTemplate.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Template\TemplateBinder.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Template\TemplateMatcher.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Template\TemplateParser.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Template\TemplatePart.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Template\TemplateRoute.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Template\TemplateSegment.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\Template\TemplateValuesResult.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\VirtualPathContext.cs" />
+    <Compile Include="Routing\Microsoft.AspNet.Routing\VirtualPathData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="HttpAbstractions\Microsoft.Framework.WebEncoders.Core\compiler\resources\unicode-7.0.0-defined-characters.bin" />
     <None Include="vNext.snk" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Properties\Microsoft.Framework.DependencyInjection.Abstractions.Resources.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Microsoft.Framework.DependencyInjection.Resources.resx">
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Microsoft.Framework.DependencyInjection.Abstractions.Resources.resx" />
+    <EmbeddedResource Include="Properties\Microsoft.Framework.DependencyInjection.Resources.resx" />
     <EmbeddedResource Include="Properties\Microsoft.AspNet.Http.Extensions.Resources.resx" />
     <EmbeddedResource Include="Properties\Microsoft.Framework.OptionsModel.Resources.resx" />
+    <EmbeddedResource Include="Routing\Microsoft.AspNet.Routing\Resources.resx" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DependencyInjection\Microsoft.Framework.DependencyInjection\Properties\" />
     <Folder Include="HttpAbstractions\Microsoft.AspNet.FeatureModel\Properties\" />
     <Folder Include="HttpAbstractions\Microsoft.AspNet.Http.Abstractions\Properties\" />
     <Folder Include="HttpAbstractions\Microsoft.AspNet.Http.Extensions\Properties\" />

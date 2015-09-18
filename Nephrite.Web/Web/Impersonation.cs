@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Security.Principal;
 using System.Security;
 using System.Runtime.InteropServices;
 
 namespace Nephrite.Web
 {
-    public class Impersonation : IDisposable
+	public class Impersonation : IDisposable
     {
         private IntPtr userToken = IntPtr.Zero;
         private WindowsImpersonationContext impersonatedUser = null;

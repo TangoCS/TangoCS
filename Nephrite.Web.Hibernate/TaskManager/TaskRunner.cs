@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Nephrite.SettingsManager;
 using Nephrite.Web.CoreDataContext;
 using Microsoft.Framework.DependencyInjection;
+using Nephrite.Data;
 
 namespace Nephrite.Web.TaskManager
 {

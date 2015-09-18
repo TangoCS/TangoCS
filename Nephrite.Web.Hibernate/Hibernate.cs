@@ -1,34 +1,25 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
-using NHibernate;
-using NHibernate.Cfg;
-using NHibernate.Linq.Functions;
-using NHibernate.SqlCommand;
-using NHibernate.Type;
-using NHibernate.Linq;
-using NHibernate.Dialect;
-using NHibernate.Cfg.MappingSchema;
-using NHibernate.Cfg.Loquacious;
-using NHibernate.Mapping.ByCode;
-using System.Text;
-using NHibernate.Engine;
-using NHibernate.Hql.Ast.ANTLR;
-using System.Data.Common;
-using System.Data;
-using System.Data.SqlClient;
-using NHibernate.Transform;
-using NHibernate.Event;
-using System.Reflection;
-using Nephrite.SettingsManager;
-
-using NHibernate.Impl;
 using System.Linq.Expressions;
-using System.Diagnostics;
+using System.Reflection;
 using Nephrite.Data;
 using Nephrite.Identity;
+using NHibernate;
+using NHibernate.Cfg;
+using NHibernate.Cfg.Loquacious;
+using NHibernate.Cfg.MappingSchema;
+using NHibernate.Engine;
+using NHibernate.Event;
+using NHibernate.Hql.Ast.ANTLR;
+using NHibernate.Impl;
+using NHibernate.Linq;
+using NHibernate.Mapping.ByCode;
+using NHibernate.Transform;
+using NHibernate.Type;
 
 
 

@@ -20,7 +20,7 @@
 <%=AppLayout.Current.FormRowEnd()%>
 
 <%=AppLayout.Current.FormRowBegin(TextResource.Get("System.Filter.PropertiesOfVisibility", "Свойства видимости"))%>
-<% cbShared.Enabled = cbPersonal.Enabled = AccessControl.Check("filter.managecommonviews", 1);%>
+<% cbShared.Enabled = cbPersonal.Enabled = AccessControl.Check("filter.managecommonviews");%>
 
 <asp:RadioButton ID="cbPersonal" GroupName="isshared" runat="server"/><br />
 <asp:RadioButton ID="cbShared" GroupName="isshared" runat="server" /><br />
@@ -204,9 +204,9 @@ function delRow(row) {
 function initsorttab() {
 var c1, c2;
 <% string[] sort = null; 
-if (filterObject.Sort != null)
+if (FilterObject.Sort != null)
 {
-	sort = filterObject.Sort.Split(new char[] {','}); %>
+	sort = FilterObject.Sort.Split(new char[] {','}); %>
 <% for (int i = 0; i < sort.Length; i++) { %>
 <% string[] sort_val = sort[i].Split(new char[] {'_'}); %>
 <% if (i > 0) { %>addRow('listsort',1);<% } %>

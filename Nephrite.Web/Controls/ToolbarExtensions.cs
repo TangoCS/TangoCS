@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using Nephrite.Identity;
 using Nephrite.Html.Controls;
+using Nephrite.Controls;
 
 namespace Nephrite.Web.Controls
 {
@@ -102,7 +103,7 @@ Sys.WebForms.PageRequestManager.getInstance().add_endRequest(QF_EndRequest);", t
 		public static void AddItem(this Toolbar toolbar, ActionLink actionLink)
 		{
 			if (!actionLink.Url.IsEmpty())
-				toolbar.AddItem(actionLink.ImageSrc, actionLink.Title, actionLink.Url);
+				toolbar.AddItem(actionLink.GetImage(), actionLink.GetTitle(), actionLink.Url);
 		}
 	}
 }

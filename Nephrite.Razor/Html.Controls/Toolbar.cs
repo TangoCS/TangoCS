@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Microsoft.Framework.DependencyInjection;
 using Nephrite.Layout;
 using Nephrite.Razor;
 using RazorEngine.Text;
@@ -11,7 +10,7 @@ namespace Nephrite.Html.Controls
 	{
 		public static Toolbar BeginToolbar(this RazorHtmlHelper c)
 		{
-			var layout = DI.RequestServices.GetService<ILayoutToolbar2>();
+			var layout = DI.GetService<ILayoutToolbar2>();
             var t = new Toolbar(c.Writer, layout);
 			c.Writer.Write(layout.ToolbarBegin());
 			return t;

@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Nephrite.Html;
-using Nephrite.Http;
 using Nephrite.MVC;
 
 namespace Nephrite.Layout
@@ -11,7 +7,6 @@ namespace Nephrite.Layout
 	public class AppLayout : ILayoutList, ILayoutForm,
 		ILayoutListRowDrag, ILayoutMessage, ILayoutPaging, ILayoutSimpleTags, ILayoutLabels
 	{
-		public List<ILayoutInit> Init { get; set; }
 		public ILayoutList List { get; set; }
 		public ILayoutForm Form { get; set; }
 		public ILayoutListRowDrag ListRowDrag { get; set; }
@@ -241,5 +236,23 @@ namespace Nephrite.Layout
 		{
 			return Labels.LabelInverse(text);
 		}
+	}
+
+
+	public class AppLayout2 : ISystemLayout
+	{
+		public ILayoutForm Form { get; private set; }
+		public ILayoutList List { get; private set; }
+		public ILayoutToolbar2 Toolbar { get; private set; }
+
+		public AppLayout2(
+			ILayoutForm form, 
+			ILayoutList list,
+			ILayoutToolbar2 toolbar)
+		{
+			Form = form;
+			List = list;
+			Toolbar = toolbar;
+        }
 	}
 }

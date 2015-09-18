@@ -201,7 +201,7 @@ namespace Nephrite.Web.Controls
 		int TimeZoneID { get; set; }
 		int LastModifiedUserID { get; set; }
 		bool IsDeleted { get; set; }
-		System.DateTime LastModifiedDate { get; set; }
+		DateTime LastModifiedDate { get; set; }
 		string Title { get; set; }
 		int GMTOffset { get; set; }
 		string Comment { get; set; }

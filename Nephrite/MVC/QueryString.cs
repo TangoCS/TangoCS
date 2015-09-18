@@ -185,21 +185,4 @@ namespace Nephrite.MVC
 			return _q;
 		}
 	}
-
-	public class HtmlParms : Dictionary<string, object>
-	{
-		public HtmlParms() : base() { }
-		public HtmlParms(IDictionary<string, object> dictionary) : base(dictionary) { }
-
-		public override string ToString()
-		{
-			return this.Select(o => o.Value == null ? "o.Key" : (o.Key + "=" + o.Value.ToString())).Join("&");
-		}
-
-		public HtmlParms(string key, object value)
-			: base()
-		{
-			Add(key, value);
-		}
-	}
 }

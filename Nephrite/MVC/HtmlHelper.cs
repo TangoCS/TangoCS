@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using Nephrite.Multilanguage;
-using Nephrite.AccessControl;
 using Nephrite.Html.Controls;
 using Nephrite.Html;
 
@@ -10,20 +9,14 @@ namespace Nephrite.MVC
 {
 	public class HtmlHelper
 	{
-		public IAccessControl AccessControl { get; set; }
-		public IUrlHelper UrlHelper { get; private set; }
 		public ITextResource TextResource { get; private set; }
 		public AbstractQueryString Query { get; private set; }
 
 		public HtmlHelper(
 			AbstractQueryString query, 
-			IUrlHelper urlHelper, 
-			IAccessControl accessControl, 
 			ITextResource textResource)
 		{
 			Query = query;
-			UrlHelper = urlHelper;
-			AccessControl = accessControl;
 			TextResource = textResource;
         }
 
@@ -56,39 +49,21 @@ namespace Nephrite.MVC
 
 		public ActionLink ActionLink(string title = null, Action<ATagAttributes> customATagAttributes = null)
 		{
-			return new ActionSimpleLink(UrlHelper, AccessControl).Link(title, customATagAttributes).UseRoute("default");
+			return new ActionSimpleLink().Attr(customATagAttributes).Title(title);
 		}
 
 		public ActionLink ActionImage(string title = null, string image = null,
 			Action<ATagAttributes> customAImgTagAttributes = null,
 			Action<ImgTagAttributes> customImgTagAttributes = null)
 		{
-			return new ActionImage(UrlHelper, AccessControl).Image(title, image, customAImgTagAttributes, customImgTagAttributes).UseRoute("default");
+			return new ActionImage().Attr(customAImgTagAttributes, customImgTagAttributes).Title(title).Image(image);
 		}
 		public ActionLink ActionImageLink(string title = null, string image = null,
 			Action<ATagAttributes> customATagAttributes = null,
 			Action<ATagAttributes> customAImgTagAttributes = null,
 			Action<ImgTagAttributes> customImgTagAttributes = null)
 		{
-			return new ActionImageLink(UrlHelper, AccessControl).ImageLink(title, image, customATagAttributes, customAImgTagAttributes, customImgTagAttributes).UseRoute("default");
-		}
-
-		public ActionLink RouteLink(string routeName, string title = null, Action<ATagAttributes> customATagAttributes = null)
-		{
-			return new ActionSimpleLink(UrlHelper, AccessControl).Link(title, customATagAttributes).UseRoute(routeName);
-		}
-		public ActionLink RouteImage(string routeName, string title = null, string image = null,
-			Action<ATagAttributes> customAImgTagAttributes = null,
-			Action<ImgTagAttributes> customImgTagAttributes = null)
-		{
-			return new ActionImage(UrlHelper, AccessControl).Image(title, image, customAImgTagAttributes, customImgTagAttributes).UseRoute(routeName);
-		}
-		public ActionLink RouteImageLink(string routeName, string title = null, string image = null,
-			Action<ATagAttributes> customATagAttributes = null,
-			Action<ATagAttributes> customAImgTagAttributes = null,
-			Action<ImgTagAttributes> customImgTagAttributes = null)
-		{
-			return new ActionImageLink(UrlHelper, AccessControl).ImageLink(title, image, customATagAttributes, customAImgTagAttributes, customImgTagAttributes).UseRoute(routeName);
+			return new ActionImageLink().Attr(customATagAttributes, customAImgTagAttributes, customImgTagAttributes).Title(title).Image(image);
 		}
 
 		public string InternalLink(string onClick, string linkText)
@@ -108,12 +83,12 @@ namespace Nephrite.MVC
 
 		public ActionLink ActionImageConfirm(string linkText, string image, string confirmString)
 		{
-			return ActionImage(linkText, image, a => a.OnClick = String.Format("javascript:return confirm('{0}')", confirmString));
+			return ActionImage(linkText, image, a => a.OnClick(String.Format("javascript:return confirm('{0}')", confirmString)));
 		}
 
 		public ActionLink ActionImageLinkConfirm(string linkText, string image, string confirmString)
 		{
-			return ActionImageLink(linkText, image, a => a.OnClick = String.Format("javascript:return confirm('{0}')", confirmString));
+			return ActionImageLink(linkText, image, a => a.OnClick(String.Format("javascript:return confirm('{0}')", confirmString)));
 		}
 
 		//public string ActionUrl<T>(Expression<Action<T>> action) where T : BaseController, new()

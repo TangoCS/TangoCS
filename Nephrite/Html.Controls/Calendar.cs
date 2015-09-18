@@ -17,23 +17,16 @@ namespace Nephrite.Html.Controls
 			//c.Page.RegisterScript("calendar-ru", basePath + "lang/calendar-ru.js");
 			//c.Page.RegisterScript("calendar-setup", basePath + "calendar-setup_stripped.js");
 
-			c.TextBox(name, showTime ? value.DateTimeToString() : value.DateToString(), (a) =>
-			{
-				a.ID = name;
-				a.Placeholder = "ДД.ММ.ГГГГ";
-				a.Style = "width:" + (showTime ? "130px" : "100px");
-				a.OnKeyPress = "return jscal_calendarHelper(event)";
-				a.Disabled = !enabled;
-			});
+			c.TextBox(name, showTime ? value.DateTimeToString() : value.DateToString(), a =>
+				a.ID(name).Placeholder("ДД.ММ.ГГГГ").Style("width:" + (showTime ? "130px" : "100px"))
+				.OnKeyPress("return jscal_calendarHelper(event)").Disabled(!enabled)
+			);
 			if (enabled)
 			{
-				c.Input("btn" + name, (a) =>
-				{
-					a.ID = "btn" + name;
-					a.Type = InputType.Button;
-					a.Title = "Календарь";
-                    a.Src = basePath + "img.gif";
-				});
+				c.Input(
+					"btn" + name, 
+					a => a.ID("btn" + name).Type(InputType.Button).Title("Календарь").Src(basePath + "img.gif")
+				);
 			}
 
 			if (enabled)

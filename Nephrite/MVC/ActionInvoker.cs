@@ -23,8 +23,7 @@ namespace Nephrite.MVC
 	{
 		ActionContext _actionContext;
 
-		public ControllerActionInvoker(
-			ActionContext actionContext)
+		public ControllerActionInvoker(ActionContext actionContext)
 		{
 			_actionContext = actionContext;
 		}
@@ -40,7 +39,7 @@ namespace Nephrite.MVC
 
 			var t = _actionContext.RouteData.Values[MvcOptions.ControllerName].ToString() + "Controller";
 			var m = _actionContext.RouteData.Values[MvcOptions.ActionName].ToString().ToLower();
-			Type controllerType =  ControllersCache.Get(t);
+			Type controllerType = _actionContext.TypeActivatorCache.Get(t);
 			if (controllerType == null)
 			{
 				return MessageResult(string.Format("Controller class {0} not found", t));

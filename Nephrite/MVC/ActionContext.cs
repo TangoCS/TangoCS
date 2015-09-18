@@ -6,21 +6,25 @@ namespace Nephrite.MVC
 {
 	public class ActionContext
 	{
-		public ActionContext(IHttpContext httpContext, IViewRendererFactory viewRendererFactory, RouteDataClass routeData)
+		public ActionContext(
+			IHttpContext httpContext,
+			ITypeActivatorCache typeActivatorCache,
+            IViewRendererFactory viewRendererFactory,
+			RouteDataClass routeData)
 		{
 			HttpContext = httpContext;
 			RouteData = routeData;
 			ViewRendererFactory = viewRendererFactory;
+			TypeActivatorCache = typeActivatorCache;
         }
 
 		public IHttpContext HttpContext { get; private set; }
 		public RouteDataClass RouteData { get; private set; }
 
+		public ITypeActivatorCache TypeActivatorCache { get; private set; }
+
 		public IViewRendererFactory ViewRendererFactory { get; private set; }
-		public Type RendererType {
-			get;
-			set;
-		}
+		public Type RendererType { get; set; }
 
 		IViewRenderer _renderer;
 		public IViewRenderer Renderer
@@ -36,8 +40,6 @@ namespace Nephrite.MVC
 				_renderer = value;
 			}
 		}
-
-		public IUrlHelper UrlHelper { get; set; }
 
 		Url _current;
 		public Url Url 

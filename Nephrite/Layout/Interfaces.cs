@@ -1,19 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Nephrite.Html;
-using Nephrite.Http;
 using Nephrite.MVC;
 
 namespace Nephrite.Layout
 {
-	public interface ILayoutInit
-	{
-		List<string> CSSLinks { get; }
-		void RegisterJS();
-	}
-
 	public interface ILayoutForm
 	{
 		string FormTableBegin(object attributes);
@@ -190,17 +181,6 @@ namespace Nephrite.Layout
 		string ToolbarImageLink(string title, string url, string image, string onclick, bool targetBlank);
 		string ToolbarItem(string content);
 		//string ToolbarItem(IBarItem content);
-	}
-
-	public interface ILayoutToolbar2
-	{
-		string ToolbarBegin();
-		string ToolbarEnd();
-		string ToolbarPartBegin(string partName);
-		string ToolbarPartEnd();
-		string ToolbarSeparator();
-		string ToolbarWhiteSpace();
-		string ToolbarItem(string content);
 	}
 
 	public static class LayoutToolbarExtensions

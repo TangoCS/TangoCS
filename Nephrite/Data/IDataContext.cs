@@ -96,4 +96,9 @@ namespace Nephrite.Data
 			Func = func;
 		}
 	}
+
+	public enum DBType
+	{
+		MSSQL, DB2, ORACLE, POSTGRESQL
+	}
 }

@@ -59,8 +59,5 @@ namespace Nephrite.Web
 		}
 	}
 
-	public enum DBType
-	{
-		MSSQL, DB2, ORACLE, POSTGRESQL
-	}
+	
 }

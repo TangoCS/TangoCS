@@ -6,6 +6,7 @@ using Nephrite.Multilanguage;
 using RazorEngine.Text;
 using System.IO;
 using System;
+using System.Collections.Generic;
 
 namespace Nephrite.Razor
 {
@@ -18,11 +19,9 @@ namespace Nephrite.Razor
 
 		public RazorHtmlHelper(
 			AbstractQueryString query,
-			IUrlHelper urlHelper, 
-			IAccessControl accessControl,
 			ITextResource textResource,
             ILayoutList list, 
-			ILayoutForm form) : base(query, urlHelper, accessControl, textResource)
+			ILayoutForm form) : base(query, textResource)
         {
 			List = list;
 			Form = form;
@@ -175,5 +174,7 @@ namespace Nephrite.Razor
 				_writer.Write(_list.ListTableEnd());
 			}
 		}
+
+
 	}
 }

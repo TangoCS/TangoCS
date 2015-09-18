@@ -5,39 +5,12 @@ using Nephrite.Multilanguage;
 
 namespace Nephrite.Meta
 {
-	/// <summary>
-	/// Абстрактный класс для всех сущностей модели
-	/// </summary>
 	public abstract class MetaElement : IMetaElement
 	{
-		public MetaElement() { }
-		public MetaElement(string name = "", string caption = "", string description = "")
-		{
-			Name = name;
-			Caption = caption;
-			Description = description;
-		}
-
-		public string Namespace { get; set; } = "Nephrite";
-
 		/// <summary>
 		/// Уникальный идентификатор
 		/// </summary>
-		public virtual string ID { get { return Namespace + "." + Name; } }
-		/// <summary>
-		/// Системное имя
-		/// </summary>
-		public string Name { get; set; }
-		/// <summary>
-		/// Название на локальном языке
-		/// </summary>
-		public virtual string Caption { get; set; }
-
-		/// <summary>
-		/// Описание
-		/// </summary>
-		public string Description { get; set; }
-		//public Dictionary<string, MetaTaggedValue> TaggedValues { get; set; }
+		public virtual string ID { get; protected set; }
 
 		protected Dictionary<Type, IMetaStereotype> _stereotypes = new Dictionary<Type, IMetaStereotype>();
 
@@ -55,21 +28,44 @@ namespace Nephrite.Meta
 				_stereotypes.Add(t, stereotype);
 			stereotype.Parent = this;
 		}
+	}
 
-		List<string> _tags = new List<string>();
-		public List<string> Tags
+
+	/// <summary>
+	/// Абстрактный класс для всех сущностей модели
+	/// </summary>
+	public abstract class MetaNamedElement : MetaElement, IMetaNamedElement
+	{
+		public MetaNamedElement() { }
+		public MetaNamedElement(string name = "", string caption = "", string description = "")
 		{
-			get
-			{
-				return _tags;
-			}
+			Name = name;
+			Caption = caption;
+			Description = description;
 		}
+
+		public string Namespace { get; set; } = "Nephrite";
+		public override string ID { get { return Namespace + "." + Name; } }
+
+		/// <summary>
+		/// Системное имя
+		/// </summary>
+		public string Name { get; set; }
+		/// <summary>
+		/// Название на локальном языке
+		/// </summary>
+		public virtual string Caption { get; set; }
+
+		/// <summary>
+		/// Описание
+		/// </summary>
+		public string Description { get; set; }
 	}
 
 	/// <summary>
 	/// Модель предметной области
 	/// </summary>
-	public partial class MetaSolution : MetaElement, IMetaSolution
+	public partial class MetaSolution : MetaNamedElement, IMetaSolution
 	{
 		public ITextResource TextResource { get; }
 
@@ -79,7 +75,6 @@ namespace Nephrite.Meta
         }
 
 		Dictionary<string, IMetaClass> _classesbyname = new Dictionary<string, IMetaClass>(255);
-		//Dictionary<string, MetaPackage> _packagesbyname = new Dictionary<string, MetaPackage>(32);
 		Dictionary<string, IMetaEnum> _enumsbyname = new Dictionary<string, IMetaEnum>(32);
 
 		/// <summary>
@@ -111,20 +106,6 @@ namespace Nephrite.Meta
 			return c;
 		}
 
-		//public MetaPackage AddPackage(MetaPackage metaPackage)
-		//{
-		//	metaPackage.Solution = this;
-		//	_packagesbyname.Add(metaPackage.Name.ToLower(), metaPackage);
-
-		//	foreach (var c in metaPackage.Classes)
-		//		AddClass(c);
-
-		//	foreach (var e in metaPackage.Enums)
-		//		AddEnum(e);
-
-		//	return metaPackage;
-		//}
-
 		internal void AddEnum(IMetaEnum metaEnum)
 		{
 			var key = metaEnum.Name.ToLower();
@@ -140,13 +121,6 @@ namespace Nephrite.Meta
 			return c;
 		}
 
-		//public MetaPackage AddPackage(string name, string caption = "", string description = "")
-		//{
-		//	MetaPackage p = new MetaPackage { Name = name, Caption = caption, Description = description };
-		//	AddPackage(p);
-		//	return p;
-		//}
-
 		public IMetaClass GetClass(string name)
 		{
 			string s = name.ToLower();
@@ -160,12 +134,6 @@ namespace Nephrite.Meta
 			return c.GetOperation(operationName);
 		}
 
-		//public MetaPackage GetPackage(string name)
-		//{
-		//	string s = name.ToLower();
-		//	return _packagesbyname.ContainsKey(s) ? _packagesbyname[s] : null;
-		//}
-
 		public IMetaEnum GetEnum(string name)
 		{
 			string s = name.ToLower();
@@ -173,141 +141,7 @@ namespace Nephrite.Meta
 		}
 	}
 
-	//public class MetaPackage : MetaElement, IMetaOperationContainer
-	//{
-	//	public MetaPackage(string name = "", string caption = "", string description = "") : base(name, caption, description) { }
-
-	//	public string ParentID { get; set; }
-	//	MetaPackage _parent = null;
-
-	//	/// <summary>
-	//	/// Родительский пакет
-	//	/// </summary>
-	//	public MetaPackage Parent
-	//	{
-	//		get
-	//		{
-	//			if (_parent == null && !String.IsNullOrEmpty(ParentID)) _parent = Solution.GetPackage(ParentID);
-	//			return _parent;
-	//		}
-	//	}
-
-	//	/// <summary>
-	//	/// Модель, которой принадлежит пакет
-	//	/// </summary>
-	//	public MetaSolution Solution { get; internal set; }
-	//	Dictionary<string, MetaPackage> _packages = new Dictionary<string, MetaPackage>(16);
-	//	Dictionary<string, MetaClass> _classes = new Dictionary<string, MetaClass>(64);
-	//	Dictionary<string, MetaOperation> _operations = new Dictionary<string, MetaOperation>(16);
-	//	Dictionary<string, MetaEnum> _enums = new Dictionary<string, MetaEnum>(32);
-
-	//	/// <summary>
-	//	/// Вложенные пакеты
-	//	/// </summary>
-	//	public Dictionary<string, MetaPackage>.ValueCollection Packages { get { return _packages.Values; } }
-	//	/// <summary>
-	//	/// Классы пакета
-	//	/// </summary>
-	//	public Dictionary<string, MetaClass>.ValueCollection Classes { get { return _classes.Values; } }
-	//	/// <summary>
-	//	/// Операции пакета
-	//	/// </summary>
-	//	public Dictionary<string, MetaOperation>.ValueCollection Operations { get { return _operations.Values; } }
-
-	//	public Dictionary<string, MetaEnum>.ValueCollection Enums { get { return _enums.Values; } }
-
-	//	public void AddClass(MetaClass metaClass)
-	//	{
-	//		if (Solution != null) Solution.AddClass(metaClass);
-	//		metaClass.Parent = this;
-	//		_classes.Add(metaClass.Name.ToLower(), metaClass);
-	//	}
-
-	//	public MetaClass AddClass(string name, string caption = "", string description = "")
-	//	{
-	//		MetaClass c = new MetaClass { Name = name, Caption = caption, Description = description, IsPersistent = true };
-	//		AddClass(c);
-	//		return c;
-	//	}
-
-	//	public MetaClass AddClass<T>(string caption = "", string description = "")
-	//	{
-	//		MetaClass c = new MetaClass { Name = typeof(T).Name, Caption = caption, Description = description, IsPersistent = true };
-	//		AddClass(c);
-	//		return c;
-	//	}
-
-	//	public MetaPackage AddPackage(MetaPackage metaPackage)
-	//	{
-	//		metaPackage.ParentID = this.ID;
-	//		//metaPackage.Solution = this.Solution;
-
-	//		//foreach (var c in metaPackage.Classes)
-	//		//	Solution.AddClass(c);
-
-	//		//foreach (var e in metaPackage.Enums)
-	//		//	Solution.AddEnum(e);
-
-	//		Solution.AddPackage(metaPackage);
-	//		_packages.Add(metaPackage.Name.ToLower(), metaPackage);
-	//		return metaPackage;
-	//	}
-
-	//	public void AddEnum(MetaEnum metaEnum)
-	//	{
-	//		if (Solution != null) Solution.AddEnum(metaEnum);
-	//		_enums.Add(metaEnum.Name.ToLower(), metaEnum);
-	//	}
-
-	//	public MetaEnum AddEnum(string name, string caption = "", string description = "")
-	//	{
-	//		MetaEnum c = new MetaEnum { Name = name, Caption = caption, Description = description };
-	//		AddEnum(c);
-	//		return c;
-	//	}
-
-
-	//	public MetaPackage AddPackage(string name, string caption = "", string description = "")
-	//	{
-	//		MetaPackage p = new MetaPackage { Name = name, Caption = caption, Description = description };
-	//		AddPackage(p);
-	//		return p;
-	//	}
-
-	//	public void AddOperation(MetaOperation metaOperation)
-	//	{
-	//		metaOperation.Parent = this;
-	//		_operations.Add(metaOperation.Name.ToLower(), metaOperation);
-	//	}
-
-	//	public MetaClass GetClass(string name)
-	//	{
-	//		string s = name.ToLower();
-	//		return _classes.ContainsKey(s) ? _classes[s] : null;
-	//	}
-
-	//	public MetaPackage GetPackage(string name)
-	//	{
-	//		string s = name.ToLower();
-	//		return _packages.ContainsKey(s) ? _packages[s] : null;
-	//	}
-
-	//	public MetaOperation GetOperation(string name)
-	//	{
-	//		string s = name.ToLower();
-	//		return _operations.ContainsKey(s) ? _operations[s] : null;
-	//	}
-
-	//	public override string ID
-	//	{
-	//		get
-	//		{
-	//			return Name;
-	//		}
-	//	}
-	//}
-
-	public abstract partial class MetaClassifier : MetaElement, IMetaClassifier
+	public abstract partial class MetaClassifier : MetaNamedElement, IMetaClassifier
 	{
 		public abstract string CLRType { get; }
 
@@ -501,7 +335,7 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public abstract partial class MetaProperty : MetaElement, IMetaProperty
+	public abstract partial class MetaProperty : MetaNamedElement, IMetaProperty
 	{
 		public override string Caption
 		{
@@ -753,7 +587,7 @@ namespace Nephrite.Meta
 	/// <summary>
 	/// Параметр метода
 	/// </summary>
-	public class MetaParameter : MetaElement, IMetaParameter
+	public class MetaParameter : MetaNamedElement, IMetaParameter
 	{
 		/// <summary>
 		/// Тип данных
@@ -764,7 +598,7 @@ namespace Nephrite.Meta
 	/// <summary>
 	/// Метод класса
 	/// </summary>
-	public class MetaOperation : MetaElement, IMetaOperation
+	public class MetaOperation : MetaNamedElement, IMetaOperation
 	{
 		List<IMetaParameter> _parameters = new List<IMetaParameter>();
 
@@ -802,20 +636,8 @@ namespace Nephrite.Meta
 			}
 		}
 
-		//public Action Invoke { get; set; }
-
 		public string ActionString { get; set; }
 		public string PredicateString { get; set; }
-
-		//public ViewEngineType ViewEngine { get; set; }
-		//public string ViewName { get; set; }
-		//public string ViewClass { get; set; }
-		//public string DTOClass { get; set; }
-
-		//InteractionType _interactionType = InteractionType.OneWayView;
-  //      public InteractionType InteractionType { get { return _interactionType; } set { _interactionType = value; } }
-		//public DTOClassKind DTOClassKind { get; set; }
-
 		public string ParametersString
 		{
 			get
@@ -827,7 +649,7 @@ namespace Nephrite.Meta
 
 	
 
-	public class MetaEnum : MetaElement, IMetaEnum
+	public class MetaEnum : MetaNamedElement, IMetaEnum
 	{
 		public IMetaSolution Parent { get; set; }
 
@@ -835,7 +657,7 @@ namespace Nephrite.Meta
 		public List<IMetaEnumValue> Values { get { return _values; } }
 	}
 
-	public class MetaEnumValue : MetaElement, IMetaEnumValue
+	public class MetaEnumValue : MetaNamedElement, IMetaEnumValue
 	{
 		string _value = "";
 
@@ -854,7 +676,7 @@ namespace Nephrite.Meta
 		}
 	}	
 
-	public abstract class MetaStereotype : MetaElement, IMetaStereotype
+	public abstract class MetaStereotype : MetaNamedElement, IMetaStereotype
 	{
 		public IMetaElement Parent { get; set; }
 

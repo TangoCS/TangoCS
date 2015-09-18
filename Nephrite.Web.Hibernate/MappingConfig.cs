@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nephrite.Data;
 using NHibernate.Mapping.ByCode;
 
 namespace Nephrite.Web.Hibernate

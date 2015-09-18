@@ -3,20 +3,12 @@ using System.Web.UI;
 using System.Linq;
 using System.Collections.Generic;
 using System.Web.UI.WebControls;
-using System.Web;
 using System.Linq.Expressions;
-using System.Globalization;
-using System.IO;
-using System.Xml.Linq;
-using System.Xml;
 using Nephrite.Identity;
-using Nephrite.Web;
 using Nephrite.Multilanguage;
 using Nephrite.Meta;
 using Nephrite.AccessControl;
-using Nephrite.Http;
-using Nephrite.Data;
-using Microsoft.Framework.DependencyInjection;
+using Nephrite.Controls;
 
 namespace Nephrite.Web.Controls
 {
@@ -36,17 +28,44 @@ namespace Nephrite.Web.Controls
 			}
 		}
 
+		ListFilterEngine _engine = null;
+		protected ListFilterEngine Engine
+		{
+			get
+			{
+				if (_engine == null)
+				{
+					_engine = new ListFilterEngine(TextResource, A.DBType, FilterList, new List<Field>());
+				}
+				return _engine;
+            }
+		}
+
 		public string Width { get; set; }
 		protected bool ViewEditMode { get; set; }
 
-		protected PersistentFilter filterObject = new PersistentFilter(UrlHelper.Current().Action);
-		public PersistentFilter FilterObject { get { return filterObject; } }
+		PersistentFilter _filterObject = null;
+		public PersistentFilter FilterObject
+		{
+			get
+			{
+				if (_filterObject == null)
+				{
+					_filterObject = new PersistentFilter(dc, Query);
+				}
+				return _filterObject;
+			}
+			private set
+			{
+				_filterObject = value;
+			}
+		}
 		public List<FilterItem> FilterList
 		{
 			get
 			{
 				if (ViewState["FilterItems"] == null)
-					return filterObject.Items;
+					return FilterObject.Items;
 				else
 					return (List<FilterItem>)ViewState["FilterItems"];
 			}
@@ -54,33 +73,33 @@ namespace Nephrite.Web.Controls
 
 		public IEnumerable<IListColumn> Columns { get; set; }
 
-		public string Sort { get { return filterObject.Sort; } }
-		public string Group1Sort { get { return filterObject.Group1Sort; } }
-		public string Group2Sort { get { return filterObject.Group2Sort; } }
-		public int? Group1Column { get { return filterObject.Group1Column; } }
-		public int? Group2Column { get { return filterObject.Group2Column; } }
-		public int ItemsOnPage { get { return filterObject.ItemsOnPage; } }
+		public string Sort { get { return FilterObject.Sort; } }
+		public string Group1Sort { get { return FilterObject.Group1Sort; } }
+		public string Group2Sort { get { return FilterObject.Group2Sort; } }
+		public int? Group1Column { get { return FilterObject.Group1Column; } }
+		public int? Group2Column { get { return FilterObject.Group2Column; } }
+		public int ItemsOnPage { get { return FilterObject.ItemsOnPage; } }
 
-		protected List<Field> fieldList = new List<Field>();
+		protected List<Field> fieldList { get { return Engine.FieldList; } }
 
-		string actionName = UrlHelper.Current().Action;
+		string actionName = null;
 		public void SetActionName(string action)
 		{
 			actionName = action;
-			filterObject = new PersistentFilter(action);
+			FilterObject = new PersistentFilter(dc, Query, action);
 		}
 
 		public bool HasValue
 		{
 			get
 			{
-				if (UrlHelper.Current().GetString("filterid").IsEmpty())
+				if (Query.GetString("filterid").IsEmpty())
 					return false;
 				else
-					return !filterObject.Columns.IsEmpty() || !filterObject.Sort.IsEmpty() ||
-					filterObject.Items.Count > 0 || filterObject.ItemsOnPage > 0 ||
-					filterObject.Group1Column.HasValue || filterObject.Group2Column.HasValue ||
-					!filterObject.Group1Sort.IsEmpty() || !filterObject.Group2Sort.IsEmpty();
+					return !FilterObject.Columns.IsEmpty() || !FilterObject.Sort.IsEmpty() ||
+					FilterObject.Items.Count > 0 || FilterObject.ItemsOnPage > 0 ||
+					FilterObject.Group1Column.HasValue || FilterObject.Group2Column.HasValue ||
+					!FilterObject.Group1Sort.IsEmpty() || !FilterObject.Group2Sort.IsEmpty();
 			}
 		}
 
@@ -88,7 +107,7 @@ namespace Nephrite.Web.Controls
 		{
 			int subjectID = Subject.Current.ID;
 			var flist = (from f in dc.IN_Filter
-						 where f.ListName == UrlHelper.Current().Controller + "_" + actionName &&
+						 where f.ListName == Query.Controller + "_" + (actionName ?? Query.Action) &&
 									(!f.SubjectID.HasValue || f.SubjectID.Value == subjectID) && f.FilterName != null
 						 select f).ToList();
 			int i = 0;
@@ -117,12 +136,15 @@ namespace Nephrite.Web.Controls
 		}
 		public void SetView(int filterID)
 		{
-			filterObject = new PersistentFilter(filterID);
+			FilterObject = new PersistentFilter(dc, Query, filterID);
 		}
 
 		protected override void OnInit(EventArgs e)
 		{
 			base.OnInit(e);
+
+			
+			
 
 			tp0.Title = TextResource.Get("System.Filter.Tabs.Properties", "Свойства");
 			tp1.Title = TextResource.Get("System.Filter.Tabs.Filter", "Фильтр");
@@ -163,10 +185,10 @@ namespace Nephrite.Web.Controls
 			if (!String.IsNullOrEmpty(Width))
 				filter.Width = Width;
 
-			if (Columns != null && !filterObject.Columns.IsEmpty())
+			if (Columns != null && !FilterObject.Columns.IsEmpty())
 			{
 				//lMsg2.Text = filterObject.Columns + "<br>";
-				var vc = filterObject.Columns.Split(new char[] { ',' }).Select(o => o.ToInt32(0));
+				var vc = FilterObject.Columns.Split(new char[] { ',' }).Select(o => o.ToInt32(0));
 				for (int i = 0; i < Columns.Count(); i++)
 					if (!Columns.ElementAt(i).Fixed)
 					{
@@ -255,18 +277,18 @@ namespace Nephrite.Web.Controls
 		{
 			int id = filter.Argument.ToInt32(0);
 			ViewEditMode = id > 0 || filter.Mode == "N";
-			filterObject.editMode = ViewEditMode;
+			FilterObject.editMode = ViewEditMode;
 			if (filter.IsFirstPopulate)
 			{
-				mode.Value = filterObject.Items.Any(o => o.Advanced) ? "A" : "S";
+				mode.Value = FilterObject.Items.Any(o => o.Advanced) ? "A" : "S";
 
 				if (id > 0 || HasValue)
 				{
 					if (id > 0)
 					{
-						tbTitle.Text = filterObject.Name;
-						cbDefault.Checked = filterObject.IsDefault;
-						cbPersonal.Checked = filterObject.SubjectID.HasValue;
+						tbTitle.Text = FilterObject.Name;
+						cbDefault.Checked = FilterObject.IsDefault;
+						cbPersonal.Checked = FilterObject.SubjectID.HasValue;
 					}
 					else
 					{
@@ -274,17 +296,17 @@ namespace Nephrite.Web.Controls
 						cbDefault.Checked = false;
 						cbPersonal.Checked = true;
 					}
-					tbParms.Text = filterObject.ListParms;
-					tbItemsOnPage.Text = filterObject.ItemsOnPage.ToString();
+					tbParms.Text = FilterObject.ListParms;
+					tbItemsOnPage.Text = FilterObject.ItemsOnPage.ToString();
 					cbShared.Checked = !cbPersonal.Checked;
-					if (!filterObject.Group1Sort.IsEmpty())
-						ddlGroup1Order.SelectedValue = filterObject.Group1Sort;
-					if (!filterObject.Group2Sort.IsEmpty())
-						ddlGroup2Order.SelectedValue = filterObject.Group2Sort;
-					if (filterObject.Group1Column.HasValue && Columns != null)
-						ddlGroup1.SelectedValue = filterObject.Group1Column.ToString();
-					if (filterObject.Group2Column.HasValue && Columns != null)
-						ddlGroup2.SelectedValue = filterObject.Group2Column.ToString();
+					if (!FilterObject.Group1Sort.IsEmpty())
+						ddlGroup1Order.SelectedValue = FilterObject.Group1Sort;
+					if (!FilterObject.Group2Sort.IsEmpty())
+						ddlGroup2Order.SelectedValue = FilterObject.Group2Sort;
+					if (FilterObject.Group1Column.HasValue && Columns != null)
+						ddlGroup1.SelectedValue = FilterObject.Group1Column.ToString();
+					if (FilterObject.Group2Column.HasValue && Columns != null)
+						ddlGroup2.SelectedValue = FilterObject.Group2Column.ToString();
 				}
 				else
 				{
@@ -296,13 +318,13 @@ namespace Nephrite.Web.Controls
 					rptFilter.DataBind();
 					rptAdvFilter.DataSource = null;
 					rptAdvFilter.DataBind();
-					filterObject = new PersistentFilter(actionName);
+					FilterObject = new PersistentFilter(dc, Query, actionName);
 				}
-				rptFilter.DataSource = filterObject.Items;
+				rptFilter.DataSource = FilterObject.Items;
 				rptFilter.DataBind();
-				rptAdvFilter.DataSource = filterObject.Items;
+				rptAdvFilter.DataSource = FilterObject.Items;
 				rptAdvFilter.DataBind();
-				ViewState["FilterItems"] = filterObject.Items;
+				ViewState["FilterItems"] = FilterObject.Items;
 
 				if (Columns != null)
 				{
@@ -467,16 +489,16 @@ namespace Nephrite.Web.Controls
 			lMsg.Text = "";
 
 			int id = filter.Argument.ToInt32(0);
-			filterObject = new PersistentFilter(id);
+			FilterObject = new PersistentFilter(dc, Query, id);
 			StoreRepeater();
 			addItem_Click(this, EventArgs.Empty);
-			filterObject.Name = tbTitle.Text != "" ? tbTitle.Text : null;
-			filterObject.ListParms = tbParms.Text;
-			filterObject.IsDefault = cbDefault.Checked;
-			filterObject.ListName = UrlHelper.Current().Controller + "_" + UrlHelper.Current().Action;
-			filterObject.editMode = filter.Argument.ToInt32(0) > 0;
-			filterObject.Columns = cblColumns.GetSelectedValues().Join(",");
-			filterObject.ItemsOnPage = tbItemsOnPage.Text.ToInt32(0);
+			FilterObject.Name = tbTitle.Text != "" ? tbTitle.Text : null;
+			FilterObject.ListParms = tbParms.Text;
+			FilterObject.IsDefault = cbDefault.Checked;
+			FilterObject.ListName = UrlHelper.Current().Controller + "_" + UrlHelper.Current().Action;
+			FilterObject.editMode = filter.Argument.ToInt32(0) > 0;
+			FilterObject.Columns = cblColumns.GetSelectedValues().Join(",");
+			FilterObject.ItemsOnPage = tbItemsOnPage.Text.ToInt32(0);
 
 			IEnumerable<string> qs = Request.Form.AllKeys.Where(o => o.StartsWith(ddlSortColumn.UniqueID));
 			List<string> sortRes = new List<string>();
@@ -496,45 +518,45 @@ namespace Nephrite.Web.Controls
 
 				sortRes.Add(s);
 			}
-			filterObject.Sort = sortRes.Join(",");
+			FilterObject.Sort = sortRes.Join(",");
 
 			if (!cbPersonal.Checked && AccessControl.Check("filter.managecommonviews"))
-				filterObject.SubjectID = null;
+				FilterObject.SubjectID = null;
 			else
-				filterObject.SubjectID = Subject.Current.ID;
+				FilterObject.SubjectID = Subject.Current.ID;
 
 			if (ddlGroup1Order.SelectedValue == "")
 			{
-				filterObject.Group1Sort = null;
-				filterObject.Group1Column = null;
+				FilterObject.Group1Sort = null;
+				FilterObject.Group1Column = null;
 			}
 			else
 			{
-				filterObject.Group1Sort = ddlGroup1Order.SelectedValue;
-				filterObject.Group1Column = ddlGroup1.SelectedValue.ToInt32();
+				FilterObject.Group1Sort = ddlGroup1Order.SelectedValue;
+				FilterObject.Group1Column = ddlGroup1.SelectedValue.ToInt32();
 			}
 
 			if (ddlGroup2Order.SelectedValue == "")
 			{
-				filterObject.Group2Sort = null;
-				filterObject.Group2Column = null;
+				FilterObject.Group2Sort = null;
+				FilterObject.Group2Column = null;
 			}
 			else
 			{
-				filterObject.Group2Sort = ddlGroup2Order.SelectedValue;
-				filterObject.Group2Column = ddlGroup2.SelectedValue.ToInt32();
+				FilterObject.Group2Sort = ddlGroup2Order.SelectedValue;
+				FilterObject.Group2Column = ddlGroup2.SelectedValue.ToInt32();
 			}
 
-			if (filterObject.IsDefault)
+			if (FilterObject.IsDefault)
 			{
-				foreach (var ff in dc.IN_Filter.Where(o => o.IsDefault && o.ListName.ToLower() == filterObject.ListName.ToLower() &&
+				foreach (var ff in dc.IN_Filter.Where(o => o.IsDefault && o.ListName.ToLower() == FilterObject.ListName.ToLower() &&
 					o.FilterID != id))
 					ff.IsDefault = false;
 			}
 
 			try
 			{
-				GetPolishNotation();
+				Engine.GetPolishNotation();
 			}
 			catch (Exception ex)
 			{
@@ -545,8 +567,8 @@ namespace Nephrite.Web.Controls
 			foreach (var item in FilterList)
 				item.Advanced = mode.Value == "A";
 
-			filterObject.Save(FilterList);
-			Response.Redirect(UrlHelper.Current().SetParameter("filterid", filterObject.FilterID.ToString()));
+			FilterObject.Save(FilterList);
+			Response.Redirect(UrlHelper.Current().SetParameter("filterid", FilterObject.FilterID.ToString()));
 		}
 
 		void StoreRepeater()
@@ -1041,387 +1063,6 @@ namespace Nephrite.Web.Controls
 		}
 		#endregion
 
-		#region Применение фильтра
-		List<object> GetPolishNotation()
-		{
-			// Преобразование в ОПН
-			Stack<object> stack = new Stack<object>();
-			List<object> pnlist = new List<object>();
-			foreach (FilterItem item in FilterList)
-			{
-				if (item.Not)
-					stack.Push('!');
-				for (int i = 0; i < item.OpenBracketCount; i++)
-					stack.Push('(');
-				pnlist.Add(item);
-				if (item.OpenBracketCount == 0 && item.Not)
-				{
-					pnlist.Add(stack.Pop());
-				}
-				for (int i = 0; i < item.CloseBracketCount; i++)
-				{
-					if (stack.Count == 0)
-						throw new Exception(TextResource.Get("System.Filter.Error.BracketsNotConsistent", "Скобки не согласованы"));
-					object obj = stack.Pop();
-					do
-					{
-						if ((char)obj == '(')
-							break;
-						pnlist.Add(obj);
-						if (stack.Count == 0)
-							throw new Exception(TextResource.Get("System.Filter.Error.BracketsNotConsistent", "Скобки не согласованы"));
-						obj = stack.Pop();
-					} while ((char)obj != '(');
-				}
-				if (item.Operation == FilterItemOperation.And)
-					stack.Push('&');
-				else
-					stack.Push('|');
-			}
-			if (stack.Count == 0)
-				return pnlist;
-			// Выкинуть последний символ
-			stack.Pop();
-			while (stack.Count() > 0)
-			{
-				object si = stack.Pop();
-				if (si is char && (char)si == '(')
-					throw new Exception(TextResource.Get("System.Filter.Error.BracketsNotConsistent", "Скобки не согласованы"));
-				pnlist.Add(si);
-			}
-
-			return pnlist;
-		}
-		public IQueryable<T> GetQuery<T>(IQueryable<T> query)
-		{
-			if (filter.IsVisible)
-				return query.Where(o => false);
-
-			IQueryable<T> newquery = query;
-
-			// Преобразование в ОПН
-			Stack<object> stack = new Stack<object>();
-			List<object> pnlist = new List<object>();
-			try
-			{
-				pnlist = GetPolishNotation();
-			}
-			catch { }
-
-			if (pnlist.Count == 0)
-				return query;
-
-			foreach (object it in pnlist)
-			{
-				if (it is FilterItem)
-				{
-					var item = it as FilterItem;
-
-					Expression<Func<T, bool>> expr = null;
-					Field f = fieldList.SingleOrDefault<Field>(f1 => f1.Title == item.Title);
-					if (f == null)
-						continue;
-
-					LambdaExpression column = f.Column as LambdaExpression;
-					if (column == null)
-						column = ((List<object>)f.Column)[0] as LambdaExpression;
-
-					if (item.Condition == TextResource.Get("System.Filter.Contains", "содержит") && f.FieldType == FieldType.String)
-					{
-						MethodCallExpression mc = Expression.Call(column.Body,
-							typeof(string).GetMethod("Contains", new Type[] { typeof(string) }),
-							Expression.Constant(item.Value.ToLower()));
-						expr = Expression.Lambda<Func<T, bool>>(mc, column.Parameters);
-					}
-
-					if (item.Condition == TextResource.Get("System.Filter.StartsWith", "начинается с") && f.FieldType == FieldType.String)
-					{
-						MethodCallExpression mc = Expression.Call(column.Body,
-							typeof(string).GetMethod("StartsWith", new Type[] { typeof(string) }),
-							Expression.Constant(item.Value.ToLower()));
-						expr = Expression.Lambda<Func<T, bool>>(mc, column.Parameters);
-					}
-
-					object val = item.Value.StartsWith("$") ?
-						MacroManager.Evaluate(item.Value.Substring(1)) : item.Value;
-					Type valType = column.Body is UnaryExpression ? ((UnaryExpression)column.Body).Operand.Type : column.Body.Type;
-
-					if (f.FieldType == FieldType.Date)
-					{
-						DateTime dt;
-						double d;
-
-						if (item.Condition == TextResource.Get("System.Filter.LastXDays", "последние x дней"))
-						{
-							if (!double.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out d))
-								d = 0;
-							val = DateTime.Now.AddDays(-d);
-						}
-						else
-						{
-							if (!DateTime.TryParseExact(item.Value, "d.MM.yyyy", null, DateTimeStyles.None, out dt))
-							{ DateTime? dtn = null; val = dtn; } // dt = DateTime.Today;
-							else
-								val = dt;
-						}
-					}
-
-					if (f.FieldType == FieldType.DateTime)
-					{
-						DateTime dt;
-						double d;
-
-
-						if (item.Condition == TextResource.Get("System.Filter.LastXDays", "последние x дней"))
-						{
-							if (!double.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out d))
-								d = 0;
-							val = DateTime.Now.AddDays(-d);
-						}
-						else
-						{
-							if (!DateTime.TryParseExact(item.Value, "d.MM.yyyy", null, DateTimeStyles.None, out dt))
-							{ DateTime? dtn = null; val = dtn; } // dt = DateTime.Today;
-							else
-								val = dt;
-						}
-					}
-
-					if (f.FieldType == FieldType.Number || f.FieldType == FieldType.CustomInt)
-					{
-						decimal d;
-						if (!decimal.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out d))
-							d = 0;
-						val = d;
-					}
-
-					if (f.FieldType == FieldType.Boolean)
-					{
-						bool b;
-
-						if (!bool.TryParse(item.Value, out b))
-							b = false;
-
-						if (A.DBType == DBType.DB2)
-						{
-							val = b ? 1 : 0;
-							valType = typeof(int);
-						}
-						else
-						{	
-							val = b;
-						}
-						if (item.Condition == "=")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);
-						if (item.Condition == "<>")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);	
-					}
-					else if (f.FieldType == FieldType.String || f.FieldType == FieldType.DDL)
-					{
-						if (valType == typeof(Char) && val is string)
-							val = ((string)val)[0];
-						if ((valType == typeof(int?) || valType == typeof(int)) && val is string)
-							val = int.Parse((string)val);
-
-						if (item.Condition == "=")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);
-
-						if (item.Condition == "<>")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);
-					}
-					else if (f.FieldType == FieldType.CustomInt)
-					{
-						int num = f.Operator.IndexOf(item.Condition);
-						// Взять Expression<Func<T, int, bool>> и подставить во второй параметр значение
-						Expression<Func<T, int, bool>> col2 = ((List<object>)f.Column)[num] as Expression<Func<T, int, bool>>;
-						val = Convert.ToInt32(val);
-						expr = Expression.Lambda<Func<T, bool>>(ReplaceParameterExpression(col2.Body, col2.Parameters[1].Name, val), col2.Parameters[0]);
-					}
-					else if (f.FieldType == FieldType.CustomString)
-					{
-						int num = f.Operator.IndexOf(item.Condition);
-						// Взять Expression<Func<T, int, bool>> и подставить во второй параметр значение
-						Expression<Func<T, string, bool>> col2 = ((List<object>)f.Column)[num] as Expression<Func<T, string, bool>>;
-						expr = Expression.Lambda<Func<T, bool>>(ReplaceParameterExpression(col2.Body, col2.Parameters[1].Name, val), col2.Parameters[0]);
-					}
-					else if (f.FieldType == FieldType.CustomObject)
-					{
-						if (valType == typeof(Char) && val is string)
-							val = ((string)val)[0];
-						if ((valType == typeof(int?) || valType == typeof(int)) && val is string)
-							val = int.Parse((string)val);
-
-						int num = f.Operator.IndexOf(item.Condition);
-						// Взять Expression<Func<T, int, bool>> и подставить во второй параметр значение
-						Expression<Func<T, object, bool>> col2 = ((List<object>)f.Column)[num] as Expression<Func<T, object, bool>>;
-						expr = Expression.Lambda<Func<T, bool>>(ReplaceParameterExpression(col2.Body, col2.Parameters[1].Name, val), col2.Parameters[0]);
-					}
-					else
-					{
-						if (item.Condition == "=")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
-
-						if (item.Condition == ">=" || item.Condition == TextResource.Get("System.Filter.LastXDays", "последние x дней"))
-							expr = Expression.Lambda<Func<T, bool>>(Expression.GreaterThanOrEqual(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
-
-						if (item.Condition == ">")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.GreaterThan(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
-
-						if (item.Condition == "<")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.LessThan(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
-
-						if (item.Condition == "<=")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.LessThanOrEqual(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
-
-						if (item.Condition == "<>")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
-					}
-					if (expr != null)
-					{
-						stack.Push(expr);
-					}
-				}
-				if (it is char)
-				{
-					var op = (char)it;
-					if (op == '!')
-					{
-						Expression<Func<T, bool>> operand = stack.Pop() as Expression<Func<T, bool>>;
-						var newop1 = Expression.Not(operand.Body);
-						stack.Push(Expression.Lambda<Func<T, bool>>(newop1, operand.Parameters));
-					}
-					if (op == '&')
-					{
-						Expression<Func<T, bool>> operand1 = stack.Pop() as Expression<Func<T, bool>>;
-						Expression<Func<T, bool>> operand2 = stack.Pop() as Expression<Func<T, bool>>;
-						stack.Push(And(operand1, operand2));
-						//var newop1 = Expression.And(operand1.Body, operand2.Body);
-						//stack.Push(Expression.Lambda<Func<T, bool>>(newop1, operand2.Parameters));
-					}
-					if (op == '|')
-					{
-						Expression<Func<T, bool>> operand1 = stack.Pop() as Expression<Func<T, bool>>;
-						Expression<Func<T, bool>> operand2 = stack.Pop() as Expression<Func<T, bool>>;
-						stack.Push(Or(operand1, operand2));
-						//var newop1 = Expression.Or(operand1.Body, operand2.Body);
-						//stack.Push(Expression.Lambda<Func<T, bool>>(newop1, operand2.Parameters));
-					}
-				}
-			}
-			if (stack.Count > 0)
-				newquery = newquery.Where<T>(stack.Pop() as Expression<Func<T, bool>>);
-
-			return newquery;
-		}
-
-		public IQueryable<T> ApplyFilter<T>(IQueryable<T> query)
-		{
-			return GetQuery<T>(query);
-		}
-
-		Expression<Func<T, bool>> Or<T>(Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
-		{
-			return Expression.Lambda<Func<T, bool>>
-			   (Expression.Or(expr1.Body, ReplaceParameterExpression(expr2.Body, expr1.Parameters[0])), expr1.Parameters);
-		}
-
-		Expression<Func<T, bool>> And<T>(Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
-		{
-			return Expression.Lambda<Func<T, bool>>
-			   (Expression.And(expr1.Body, ReplaceParameterExpression(expr2.Body, expr1.Parameters[0])), expr1.Parameters);
-		}
-
-		Expression ReplaceParameterExpression(Expression x, ParameterExpression o)
-		{
-			if (x == null)
-				return null;
-
-			if (x is ConstantExpression)
-				return x;
-
-			if (x is ParameterExpression)
-				return ((ParameterExpression)x).Name == "o" ? o : x;
-
-			if (x is MemberExpression)
-			{
-				var x1 = x as MemberExpression;
-				return Expression.MakeMemberAccess(ReplaceParameterExpression(x1.Expression, o), x1.Member);
-			}
-			if (x is UnaryExpression)
-			{
-				var x1 = x as UnaryExpression;
-				return Expression.MakeUnary(x1.NodeType, ReplaceParameterExpression(x1.Operand, o), x1.Type, x1.Method);
-			}
-			if (x is BinaryExpression)
-			{
-				var x1 = x as BinaryExpression;
-				return Expression.MakeBinary(x1.NodeType, ReplaceParameterExpression(x1.Left, o), ReplaceParameterExpression(x1.Right, o), x1.IsLiftedToNull, x1.Method, x1.Conversion);
-			}
-			if (x is ConditionalExpression)
-			{
-				var x1 = x as ConditionalExpression;
-				return Expression.Condition(ReplaceParameterExpression(x1.Test, o), ReplaceParameterExpression(x1.IfTrue, o), ReplaceParameterExpression(x1.IfFalse, o));
-			}
-			if (x is MethodCallExpression)
-			{
-				var x1 = x as MethodCallExpression;
-				return Expression.Call(ReplaceParameterExpression(x1.Object, o), x1.Method, x1.Arguments.Select(o1 => ReplaceParameterExpression(o1, o)));
-			}
-			if (x is LambdaExpression)
-			{
-				var x1 = x as LambdaExpression;
-				return Expression.Lambda(x1.Type, ReplaceParameterExpression(x1.Body, o), x1.Parameters);
-			}
-
-			throw new Exception(TextResource.Get("System.Filter.Error.UnsupportedTypeExpression", "Неподдерживаемый тип Expression:") + x.GetType().ToString() + " : " + x.GetType().BaseType.Name);
-		}
-
-		Expression ReplaceParameterExpression(Expression x, string name, object value)
-		{
-			if (x == null)
-				return null;
-
-			if (x is ConstantExpression)
-				return x;
-
-			if (x is ParameterExpression)
-				return ((ParameterExpression)x).Name == name ? Expression.Constant(value) : x;
-
-			if (x is MemberExpression)
-			{
-				var x1 = x as MemberExpression;
-				return Expression.MakeMemberAccess(ReplaceParameterExpression(x1.Expression, name, value), x1.Member);
-			}
-			if (x is UnaryExpression)
-			{
-				var x1 = x as UnaryExpression;
-				return Expression.MakeUnary(x1.NodeType, ReplaceParameterExpression(x1.Operand, name, value), x1.Type, x1.Method);
-			}
-			if (x is BinaryExpression)
-			{
-				var x1 = x as BinaryExpression;
-				return Expression.MakeBinary(x1.NodeType, ReplaceParameterExpression(x1.Left, name, value), ReplaceParameterExpression(x1.Right, name, value), x1.IsLiftedToNull, x1.Method, x1.Conversion);
-			}
-			if (x is ConditionalExpression)
-			{
-				var x1 = x as ConditionalExpression;
-				return Expression.Condition(ReplaceParameterExpression(x1.Test, name, value), ReplaceParameterExpression(x1.IfTrue, name, value), ReplaceParameterExpression(x1.IfFalse, name, value));
-			}
-			if (x is MethodCallExpression)
-			{
-				var x1 = x as MethodCallExpression;
-				return Expression.Call(ReplaceParameterExpression(x1.Object, name, value), x1.Method, x1.Arguments.Select(o1 => ReplaceParameterExpression(o1, name, value)));
-			}
-			if (x is LambdaExpression)
-			{
-				var x1 = x as LambdaExpression;
-				return Expression.Lambda(x1.Type, ReplaceParameterExpression(x1.Body, name, value), x1.Parameters);
-			}
-
-			throw new Exception(TextResource.Get("System.Filter.Error.UnsupportedTypeExpression", "Неподдерживаемый тип Expression:") + x.GetType().ToString() + " : " + x.GetType().BaseType.Name);
-		}
-		#endregion
-
 		public void SetDefaultView()
 		{
 			int currentViewID = Query.GetInt("filterid", 0);
@@ -1438,231 +1079,16 @@ namespace Nephrite.Web.Controls
 				}
 			}
 		}
-	}
 
-	[Serializable]
-	public class FilterItem
-	{
-		public string Title { get; set; }
-		public string Condition { get; set; }
-		public string Value { get; set; }
-		public string ValueTitle { get; set; }
-		public FieldType FieldType { get; set; }
-		public bool Not { get; set; }
-		public int OpenBracketCount { get; set; }
-		public int CloseBracketCount { get; set; }
-		public FilterItemOperation Operation { get; set; }
-		public bool Advanced { get; set; }
-
-		public string OpenBrackets
+		public IQueryable<T> ApplyFilter<T>(IQueryable<T> query)
 		{
-			get { return "".PadLeft(OpenBracketCount, '('); }
+			return Engine.ApplyFilter(query);
 		}
-
-		public string CloseBrackets
-		{
-			get { return "".PadLeft(CloseBracketCount, ')'); }
-		}
-
-		public override string ToString()
-		{
-			var textResource = DI.RequestServices.GetService<ITextResource>();
-
-			return Title + " " + (Condition == textResource.Get("System.Filter.LastXDays", "последние x дней") ? 
-				String.Format(textResource.Get("System.Filter.LastDays", "последние &quot;{0}&quot; дней"), ValueTitle) : 
-				Condition + " &quot;" + HttpUtility.HtmlEncode(ValueTitle) + "&quot;");
-		}
-	}
-
-	public class Field
-	{
-		public string Title { get; set; }
-		public object Column { get; set; }
-		public FieldType FieldType { get; set; }
-		public object DataSource { get; set; }
-		public string DisplayMember { get; set; }
-		public string ValueMember { get; set; }
-		public List<string> Operator { get; set; }
-	}
-
-	public enum FieldType
-	{
-		String,
-		Number,
-		Date,
-		DateTime,
-		DDL,
-		Boolean,
-		CustomInt,
-		CustomString,
-		CustomObject
-	}
-
-	public enum FilterItemOperation
-	{
-		And,
-		Or
-	}
-
-	public class PersistentFilter
-	{
-		IDC_ListFilter dc
-		{
-			get
-			{
-				return (IDC_ListFilter)A.Model;
-			}
-		}
-
-		IN_Filter _filter;
-		List<FilterItem> _items;
-		public bool editMode = false;
-
-		public PersistentFilter(string action)
-		{
-			_filter = dc.IN_Filter.SingleOrDefault(o => o.FilterID == UrlHelper.Current().GetInt("filterid", 0) && o.ListName.ToLower() == UrlHelper.Current().Controller.ToLower() + "_" + action.ToLower());
-			_items = _filter != null && _filter.FilterValue != null ? XMLSerializer.Deserialize<List<FilterItem>>(_filter.FilterValue.Root) : new List<FilterItem>();
-		}
-
-		public PersistentFilter(int filterID)
-		{
-			_filter = dc.IN_Filter.SingleOrDefault(o => o.FilterID == filterID);
-			_items = _filter != null && _filter.FilterValue != null ? XMLSerializer.Deserialize<List<FilterItem>>(_filter.FilterValue.Root) : new List<FilterItem>();
-		}
-
-		public List<FilterItem> Items
-		{
-			get { return _items; }
-		}
-
-		public void NewFilter()
-		{
-			_filter = dc.NewIN_Filter();
-			_filter.FilterValue = _filter != null ? _filter.FilterValue :
-					new XDocument(XMLSerializer.Serialize<List<FilterItem>>(new List<FilterItem>()));
-			dc.IN_Filter.InsertOnSubmit(_filter);
-		}
-
-		IN_Filter Filter
-		{
-			get
-			{
-				if (_filter == null)
-				{
-					_filter = dc.NewIN_Filter();
-					dc.IN_Filter.InsertOnSubmit(_filter);
-				}
-				return _filter;
-			}
-		}
-
-		public string Name
-		{
-			get { return Filter.FilterName; }
-			set { Filter.FilterName = value; }
-		}
-
-		public string ListParms
-		{
-			get { return Filter.ListParms; }
-			set { Filter.ListParms = value; }
-		}
-
-		public string Columns
-		{
-			get { return Filter.Columns; }
-			set { Filter.Columns = value; }
-		}
-		public string Sort
-		{
-			get { return Filter.Sort; }
-			set { Filter.Sort = value; }
-		}
-		public int ItemsOnPage
-		{
-			get { return Filter.ItemsOnPage < 1 ? Paging.DefaultPageSize : Filter.ItemsOnPage; }
-			set { Filter.ItemsOnPage = value; }
-		}
+    }
 
 
-		public string ListName
-		{
-			get { return Filter.ListName; }
-			set { Filter.ListName = value; }
-		}
 
-		public bool IsDefault
-		{
-			get { return Filter.IsDefault; }
-			set { Filter.IsDefault = value; }
-		}
 
-		public int FilterID
-		{
-			get { return Filter.FilterID; }
-		}
 
-		public int? SubjectID
-		{
-			get { return Filter.SubjectID; }
-			set { Filter.SubjectID = value; }
-		}
-
-		#region Группировки
-		public string Group1Sort
-		{
-			get { return Filter.Group1Sort; }
-			set { Filter.Group1Sort = value; }
-		}
-
-		public string Group2Sort
-		{
-			get { return Filter.Group2Sort; }
-			set { Filter.Group2Sort = value; }
-		}
-
-		public int? Group1Column
-		{
-			get { return Filter.Group1Column; }
-			set { Filter.Group1Column = value; }
-		}
-
-		public int? Group2Column
-		{
-			get { return Filter.Group2Column; }
-			set { Filter.Group2Column = value; }
-		}
-		#endregion
-
-		public void Save(List<FilterItem> items)
-		{
-			_items = items;
-			Filter.FilterValue = new XDocument(XMLSerializer.Serialize<List<FilterItem>>(_items));
-			dc.SubmitChanges();
-		}
-	}
-
-	public interface IN_Filter : IEntity
-	{
-		int FilterID { get; set; }
-		int? SubjectID { get; set; }
-		string ListName { get; set; }
-		XDocument FilterValue { get; set; }
-		string FilterName { get; set; }
-		bool IsDefault { get; set; }
-		System.Nullable<int> Group1Column { get; set; }
-		string Group1Sort { get; set; }
-		System.Nullable<int> Group2Column { get; set; }
-		string Group2Sort { get; set; }
-		string ListParms { get; set; }
-		string Columns { get; set; }
-		string Sort { get; set; }
-		int ItemsOnPage { get; set; }
-	}
-
-	public interface IDC_ListFilter : IDataContext
-	{
-		ITable<IN_Filter> IN_Filter { get; }
-		IN_Filter NewIN_Filter();
-	}
+	
 }

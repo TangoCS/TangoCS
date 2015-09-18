@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See License.txt in the project root for license information.
 
 using System;
+using Microsoft.Framework.DependencyInjection.Extensions;
 using Microsoft.Framework.Internal;
 using Microsoft.Framework.OptionsModel;
 using Microsoft.Framework.WebEncoders;
@@ -19,16 +20,16 @@ namespace Microsoft.Framework.DependencyInjection
         {
             services.AddOptions();
 
-            // Register the default encoders
-            // We want to call the 'Default' property getters lazily since they perform static caching
-            services.TryAdd(ServiceDescriptor.Singleton<IHtmlEncoder>(
-                CreateFactory(() => HtmlEncoder.Default, filter => new HtmlEncoder(filter))));
-            services.TryAdd(ServiceDescriptor.Singleton<IJavaScriptStringEncoder>(
-                CreateFactory(() => JavaScriptStringEncoder.Default, filter => new JavaScriptStringEncoder(filter))));
-            services.TryAdd(ServiceDescriptor.Singleton<IUrlEncoder>(
-                CreateFactory(() => UrlEncoder.Default, filter => new UrlEncoder(filter))));
+			// Register the default encoders
+			// We want to call the 'Default' property getters lazily since they perform static caching
+			services.TryAdd(ServiceDescriptor.Singleton<IHtmlEncoder>(
+				CreateFactory(() => HtmlEncoder.Default, filter => new HtmlEncoder(filter))));
+			services.TryAdd(ServiceDescriptor.Singleton<IJavaScriptStringEncoder>(
+				CreateFactory(() => JavaScriptStringEncoder.Default, filter => new JavaScriptStringEncoder(filter))));
+			services.TryAdd(ServiceDescriptor.Singleton<IUrlEncoder>(
+				CreateFactory(() => UrlEncoder.Default, filter => new UrlEncoder(filter))));
 
-            if (configureOptions != null)
+			if (configureOptions != null)
             {
                 services.Configure(configureOptions);
             }

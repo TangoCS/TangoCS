@@ -10,26 +10,26 @@ namespace Microsoft.Framework.DependencyInjection
         private static readonly ResourceManager _resourceManager
             = new ResourceManager("Microsoft.Framework.DependencyInjection.Resources", typeof(Resources).GetTypeInfo().Assembly);
 
-		/// <summary>
-		/// Multiple constructors accepting all given argument types have been found in type '{0}'. There should only be one applicable constructor.
-		/// </summary>
-		internal static string AmbiguousConstructorMatch
-		{
-			get { return GetString("AmbiguousConstructorMatch"); }
-		}
+        /// <summary>
+        /// Unable to activate type '{0}'. The following constructors are ambigious:
+        /// </summary>
+        internal static string AmbigiousConstructorException
+        {
+            get { return GetString("AmbigiousConstructorException"); }
+        }
 
-		/// <summary>
-		/// Multiple constructors accepting all given argument types have been found in type '{0}'. There should only be one applicable constructor.
-		/// </summary>
-		internal static string FormatAmbiguousConstructorMatch(object p0)
-		{
-			return string.Format(CultureInfo.CurrentCulture, GetString("AmbiguousConstructorMatch"), p0);
-		}
+        /// <summary>
+        /// Unable to activate type '{0}'. The following constructors are ambigious:
+        /// </summary>
+        internal static string FormatAmbigiousConstructorException(object p0)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("AmbigiousConstructorException"), p0);
+        }
 
-		/// <summary>
-		/// Unable to resolve service for type '{0}' while attempting to activate '{1}'.
-		/// </summary>
-		internal static string CannotResolveService
+        /// <summary>
+        /// Unable to resolve service for type '{0}' while attempting to activate '{1}'.
+        /// </summary>
+        internal static string CannotResolveService
         {
             get { return GetString("CannotResolveService"); }
         }
@@ -58,39 +58,55 @@ namespace Microsoft.Framework.DependencyInjection
             return string.Format(CultureInfo.CurrentCulture, GetString("CircularDependencyException"), p0);
         }
 
-		/// <summary>
-		/// Unable to locate suitable constructor for type '{0}'. Ensure the type is concrete and all parameters are accepted by a constructor.
-		/// </summary>
-		internal static string NoConstructorMatch
-		{
-			get { return GetString("NoConstructorMatch"); }
-		}
+        /// <summary>
+        /// No constructor for type '{0}' can be instantiated using services from the service container and default values.
+        /// </summary>
+        internal static string UnableToActivateTypeException
+        {
+            get { return GetString("UnableToActivateTypeException"); }
+        }
 
-		/// <summary>
-		/// Unable to locate suitable constructor for type '{0}'. Ensure the type is concrete and all parameters are accepted by a constructor.
-		/// </summary>
-		internal static string FormatNoConstructorMatch(object p0)
-		{
-			return string.Format(CultureInfo.CurrentCulture, GetString("NoConstructorMatch"), p0);
-		}
+        /// <summary>
+        /// No constructor for type '{0}' can be instantiated using services from the service container and default values.
+        /// </summary>
+        internal static string FormatUnableToActivateTypeException(object p0)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("UnableToActivateTypeException"), p0);
+        }
 
-		/// <summary>
-		/// No service for type '{0}' has been registered.
-		/// </summary>
-		internal static string NoServiceRegistered
-		{
-			get { return GetString("NoServiceRegistered"); }
-		}
+        /// <summary>
+        /// Open generic service type '{0}' requires registering an open generic implementation type.
+        /// </summary>
+        internal static string OpenGenericServiceRequiresOpenGenericImplementation
+        {
+            get { return GetString("OpenGenericServiceRequiresOpenGenericImplementation"); }
+        }
 
-		/// <summary>
-		/// No service for type '{0}' has been registered.
-		/// </summary>
-		internal static string FormatNoServiceRegistered(object p0)
-		{
-			return string.Format(CultureInfo.CurrentCulture, GetString("NoServiceRegistered"), p0);
-		}
+        /// <summary>
+        /// Open generic service type '{0}' requires registering an open generic implementation type.
+        /// </summary>
+        internal static string FormatOpenGenericServiceRequiresOpenGenericImplementation(object p0)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("OpenGenericServiceRequiresOpenGenericImplementation"), p0);
+        }
 
-		private static string GetString(string name, params string[] formatterNames)
+        /// <summary>
+        /// Cannot instantiate implementation type '{0}' for service type '{1}'.
+        /// </summary>
+        internal static string TypeCannotBeActivated
+        {
+            get { return GetString("TypeCannotBeActivated"); }
+        }
+
+        /// <summary>
+        /// Cannot instantiate implementation type '{0}' for service type '{1}'.
+        /// </summary>
+        internal static string FormatTypeCannotBeActivated(object p0, object p1)
+        {
+            return string.Format(CultureInfo.CurrentCulture, GetString("TypeCannotBeActivated"), p0, p1);
+        }
+
+        private static string GetString(string name, params string[] formatterNames)
         {
             var value = _resourceManager.GetString(name);
 

@@ -65,7 +65,7 @@ namespace Nephrite.Razor
 		public static string Render<T>(Func<T, ActionResult> action) where T : Controller
 		{
 			var actionContext = DI.RequestServices.GetService<ActionContext>();
-			var controller = DI.RequestServices.GetService<T>();
+			var controller = Activator.CreateInstance(typeof(T)) as T;
 			actionContext.Renderer = new RazorRenderer();
 			controller.ActionContext = actionContext;
 			

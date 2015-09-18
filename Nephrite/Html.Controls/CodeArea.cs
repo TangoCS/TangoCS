@@ -14,12 +14,9 @@ namespace Nephrite.Html.Controls
 			//c.Page.RegisterStartupScript("textareatab", "$(document).ready(function () { $('textarea').tabby();});");
 			//c.Page.RegisterStartupScript("initCodeArea" + name, "createCodeArea('" + name + "','" + height + "');");
 		
-			c.Div((a) => a.Style = "padding-left:30px;height:" + height, () =>
+			c.Div(a => a.Style("padding-left:30px;height:" + height), () =>
 			{
-				c.TextArea(name, value, (a) =>
-				{
-					a.ID = name; a.Wrap = Wrap.Hard; a.Class = "codearea"; a.Style = "height:" + height; a.Disabled = !enabled; 
-				});
+				c.TextArea(name, value, a => a.ID(name).Wrap(Wrap.Hard).Class("codearea").Style("height:" + height).Disabled(!enabled));
 			});
 		}
 	}

@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using NHibernate.Mapping.ByCode;
-using NHibernate.Mapping.ByCode.Conformist;
-using NHibernate.Type;
-using Nephrite.Web.Hibernate;
-using Nephrite.Web.TaskManager;
+﻿using NHibernate.Mapping.ByCode.Conformist;
 
 namespace Nephrite.Web.CoreDataContext
 {

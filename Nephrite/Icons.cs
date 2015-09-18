@@ -48,8 +48,8 @@ namespace Nephrite
 		static ItemIcon _Import = new ItemIcon { X16 = "", X32 = "" };
 		static ItemIcon _Export = new ItemIcon { X16 = "", X32 = "" };
 		static ItemIcon _Filter = new ItemIcon { X16 = "fc16/filter.png", X32 = "" };
-		static ItemIcon _Moveup = new ItemIcon { X16 = "", X32 = "" };
-		static ItemIcon _Movedown = new ItemIcon { X16 = "", X32 = "" };
+		static ItemIcon _MoveUp = new ItemIcon { X16 = "", X32 = "" };
+		static ItemIcon _MoveDown = new ItemIcon { X16 = "", X32 = "" };
 
 		// Navigation
 		static ItemIcon _Prev = new ItemIcon { X16 = "", X32 = "" };
@@ -114,8 +114,8 @@ namespace Nephrite
 		public static ItemIcon Import { get { return _Import; } }
 		public static ItemIcon Export { get { return _Export; } }
 		public static ItemIcon Filter { get { return _Filter; } }
-		public static ItemIcon Moveup { get { return _Moveup; } }
-		public static ItemIcon Movedown { get { return _Movedown; } }
+		public static ItemIcon MoveUp { get { return _MoveUp; } }
+		public static ItemIcon MoveDown { get { return _MoveDown; } }
 
 		// Navigation
 		public static ItemIcon Prev { get { return _Prev; } }

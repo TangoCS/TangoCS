@@ -146,6 +146,7 @@
     <Compile Include="Model\IMMObjectMLView.cs" />
     <Compile Include="Model\IMMObjectVersion.cs" />
     <Compile Include="Model\Repository.cs" />
+    <Compile Include="MVC\UrlResolvers.cs" />
     <Compile Include="MVC\UrlHelper.cs" />
     <Compile Include="Properties\Resources.en.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -429,7 +430,6 @@
       <DependentUpon>upload.ascx</DependentUpon>
     </Compile>
     <Compile Include="Office\Word.cs" />
-    <Compile Include="Web\XMLSerializer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Nephrite.Web.snk" />

@@ -5,7 +5,7 @@ using System.Xml.Linq;
 
 namespace Nephrite.Meta
 {
-	public partial class MetaSolution : MetaElement
+	public partial class MetaSolution : MetaNamedElement
 	{
 		public static MetaSolution Load(XElement metaData)
 		{

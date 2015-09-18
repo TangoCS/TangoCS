@@ -2,7 +2,7 @@
 
 namespace Nephrite.Meta
 {
-	public abstract partial class MetaClassifier : MetaElement, IMetaClassifier
+	public abstract partial class MetaClassifier : MetaNamedElement, IMetaClassifier
 	{
 
 		public virtual string GetDBType(IDBTypeMapper mapper)

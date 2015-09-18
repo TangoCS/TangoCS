@@ -1,21 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
 using System.Web.Services;
-using System.Xml.Linq;
-using System.Configuration;
-using System.EnterpriseServices;
-using System.IO;
 using System.Web.Services.Protocols;
-using System.Linq.Expressions;
-using Nephrite.Identity;
-using Nephrite.FileStorage;
-using Nephrite.Meta;
-using Nephrite.ErrorLog;
-using Nephrite.SettingsManager;
-using Nephrite.Data;
+using System.Xml.Linq;
 using Microsoft.Framework.DependencyInjection;
+using Nephrite.Data;
+using Nephrite.ErrorLog;
+using Nephrite.FileStorage;
+using Nephrite.Identity;
+using Nephrite.Meta;
 
 
 namespace Nephrite.Web.Replication

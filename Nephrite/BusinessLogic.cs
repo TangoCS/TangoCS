@@ -51,7 +51,7 @@ namespace Nephrite
 			return _collection[name.ToLower()];
 		}
 
-		public static void AddLogic<T>(this IServiceCollection sc) where T : ILogic
+		public static void AddLogic<T>(this IServiceCollection sc) where T : class, ILogic
 		{
 			Add<T>();
 			sc.AddScoped<T>();

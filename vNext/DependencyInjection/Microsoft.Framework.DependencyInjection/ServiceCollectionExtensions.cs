@@ -5,7 +5,7 @@ using System;
 
 namespace Microsoft.Framework.DependencyInjection
 {
-    public static class ServiceCollectionExtensions2
+    public static class ServiceCollectionExtensions
     {
         public static IServiceProvider BuildServiceProvider(this IServiceCollection services)
         {

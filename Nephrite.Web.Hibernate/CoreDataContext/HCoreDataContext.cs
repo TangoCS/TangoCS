@@ -1,28 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Web;
-using Nephrite.Html;
-using Nephrite.Web.Controls;
-using NHibernate;
-using NHibernate.Cfg.Loquacious;
-using NHibernate.Linq;
-using NHibernate.SqlCommand;
-using Nephrite.Web.Mailer;
-using Nephrite.Multilanguage;
-using Nephrite.Web.TaskManager;
-using Nephrite.RSS;
-using Nephrite.Web.Hibernate;
-using NHibernate.Dialect;
-using NHibernate.Cfg;
-using Nephrite.Web.Hibernate.CoreMapping;
-using Nephrite.ErrorLog;
-using Nephrite.SettingsManager;
-using Nephrite.Html.Controls;
-using Nephrite.EntityAudit;
+using Nephrite.Controls;
 using Nephrite.Data;
+using Nephrite.EntityAudit;
+using Nephrite.ErrorLog;
 using Nephrite.FileStorage;
+using Nephrite.Html.Controls;
+using Nephrite.Multilanguage;
+using Nephrite.RSS;
+using Nephrite.SettingsManager;
+using Nephrite.Web.Controls;
+using Nephrite.Web.Hibernate;
+using Nephrite.Web.Hibernate.CoreMapping;
+using Nephrite.Web.Mailer;
+using Nephrite.Web.TaskManager;
+using NHibernate.Cfg;
+using NHibernate.Cfg.Loquacious;
+using NHibernate.Dialect;
+using NHibernate.Linq;
 
 namespace Nephrite.Web.CoreDataContext
 {
@@ -43,10 +38,10 @@ namespace Nephrite.Web.CoreDataContext
 				if (dbType == null) dbType = A.DBType;
 				switch (dbType)
 				{
-					case Nephrite.Web.DBType.MSSQL: c.Dialect<MsSql2008Dialect>(); break;
-					case Nephrite.Web.DBType.DB2: c.Dialect<DB2Dialect>(); break;
-					case Nephrite.Web.DBType.ORACLE: c.Dialect<Oracle10gDialect>(); break;
-					case Nephrite.Web.DBType.POSTGRESQL: c.Dialect<PostgreSQL82Dialect>(); break;
+					case DBType.MSSQL: c.Dialect<MsSql2008Dialect>(); break;
+					case DBType.DB2: c.Dialect<DB2Dialect>(); break;
+					case DBType.ORACLE: c.Dialect<Oracle10gDialect>(); break;
+					case DBType.POSTGRESQL: c.Dialect<PostgreSQL82Dialect>(); break;
 					default: c.Dialect<MsSql2008Dialect>(); break;
 				}
 

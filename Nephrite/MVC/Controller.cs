@@ -42,9 +42,9 @@ namespace Nephrite.MVC
 
 		public Controller()
 		{
-			DataContext = DI.RequestServices.GetService<IDataContext>();
-			IdentityManager = DI.RequestServices.GetService<IIdentityManager<int>>();
-			AccessControl = DI.RequestServices.GetService<IAccessControl>();
+			DataContext = DI.GetService<IDataContext>();
+			IdentityManager = DI.GetService<IIdentityManager<int>>();
+			AccessControl = DI.GetService<IAccessControl>();
         }
 
 		public string Name
@@ -80,30 +80,6 @@ namespace Nephrite.MVC
 		public ActionResult Message(string title, string message)
 		{
 			return new MessageResult(title, message);
-		}
-	}
-
-	public static class ControllersCache
-	{
-		static Dictionary<string, Type> _collection = new Dictionary<string, Type>();
-		public static void Add<T>() where T : Controller
-		{
-			_collection.Add(typeof(T).Name.ToLower(), typeof(T));
-		}
-		public static void Add<T>(string name) where T : Controller
-		{
-			_collection.Add(name.ToLower(), typeof(T));
-		}
-		public static Type Get(string name)
-		{
-			if (!_collection.ContainsKey(name.ToLower())) return null;
-			return _collection[name.ToLower()];
-		}
-
-		public static void AddController<T>(this IServiceCollection sc) where T : Controller
-		{
-			Add<T>();
-			sc.AddScoped<T>();
 		}
 	}
 }

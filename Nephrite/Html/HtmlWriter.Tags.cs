@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace Nephrite.Html
 {
@@ -38,19 +39,7 @@ namespace Nephrite.Html
 			else
 				Write(tb);
 		}
-		public void Body(Action<TagAttributes> attributes = null, Action inner = null)
-		{
-			TagBuilder tb = new TagBuilder("body");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				Write(tb.Render(TagRenderMode.StartTag));
-				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
-			}
-			else
-				Write(tb);
-		}
+		
 		public void Br(Action<TagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("br");
@@ -258,32 +247,7 @@ namespace Nephrite.Html
 			else
 				Write(tb);
 		}
-		public void Head(Action<TagAttributes> attributes = null, Action inner = null)
-		{
-			TagBuilder tb = new TagBuilder("head");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				Write(tb.Render(TagRenderMode.StartTag));
-				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
-			}
-			else
-				Write(tb);
-		}
-		public void Html(Action<HtmlTagAttributes> attributes = null, Action inner = null)
-		{
-			TagBuilder tb = new TagBuilder("html");
-			if (attributes != null) attributes(new HtmlTagAttributes(tb));
-			if (inner != null)
-			{
-				Write(tb.Render(TagRenderMode.StartTag));
-				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
-			}
-			else
-				Write(tb);
-		}
+
 		public void I(Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("i");
@@ -328,18 +292,6 @@ namespace Nephrite.Html
 			}
 			else
 				Write(tb);
-		}
-		public void Link(Action<LinkTagAttributes> attributes = null)
-		{
-			TagBuilder tb = new TagBuilder("link");
-			if (attributes != null) attributes(new LinkTagAttributes(tb));
-			Write(tb);
-		}
-		public void Meta(Action<MetaTagAttributes> attributes = null)
-		{
-			TagBuilder tb = new TagBuilder("meta");
-			if (attributes != null) attributes(new MetaTagAttributes(tb));
-			Write(tb);
 		}
 		public void Ol(Action<OlTagAttributes> attributes = null, Action inner = null)
 		{
@@ -523,19 +475,7 @@ namespace Nephrite.Html
 			else
 				Write(tb);
 		}
-		public void Title(Action<TagAttributes> attributes = null, Action inner = null)
-		{
-			TagBuilder tb = new TagBuilder("title");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				Write(tb.Render(TagRenderMode.StartTag));
-				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
-			}
-			else
-				Write(tb);
-		}
+		
 		public void Tr(Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("tr");
@@ -576,10 +516,8 @@ namespace Nephrite.Html
 				Write(tb);
 		}
 
-
 		public void A(Action inner) { A(null, inner); }
-		public void B(Action inner) { B(null, inner); }
-		public void Body(Action inner) { Body(null, inner); }
+		public void B(Action inner) { B(null, inner); }		
 		public void Br() { Br(null); }
 		public void Canvas(Action inner) { Canvas(null, inner); }
 		public void Col() { Col(null); }
@@ -597,14 +535,10 @@ namespace Nephrite.Html
 		public void H4(Action inner) { H4(null, inner); }
 		public void H5(Action inner) { H5(null, inner); }
 		public void H6(Action inner) { H6(null, inner); }
-		public void Head(Action inner) { Head(null, inner); }
-		public void Html(Action inner) { Html(null, inner); }
 		public void I(Action inner) { I(null, inner); }
 		public void Img() { Img(null); }
 		public void Label(Action inner) { Label(null, inner); }
 		public void Li(Action inner) { Li(null, inner); }
-		public void Link(Action inner) { Li(null, inner); }
-		public void Meta() { Meta(null); }
 		public void Ol(Action inner) { Ol(null, inner); }
 		public void P(Action inner) { P(null, inner); }
 		public void Pre(Action inner) { Pre(null, inner); }
@@ -619,7 +553,7 @@ namespace Nephrite.Html
 		public void Td(Action inner) { Td(null, inner); }
 		public void Th(Action inner) { Th(null, inner); }
 		public void Thead(Action inner) { Thead(null, inner); }
-		public void Title(Action inner) { Title(null, inner); }
+		
 		public void Tr(Action inner) { Tr(null, inner); }
 		public void U(Action inner) { U(null, inner); }
 		public void Ul(Action inner) { Ul(null, inner); }
@@ -628,7 +562,95 @@ namespace Nephrite.Html
 		public void A(string linkTitle) { A(null, () => Write(linkTitle)); }
 		public void Label(string labelFor, string lableTitle)
 		{
-			Label((a) => a.For = labelFor, () => Write(lableTitle));
+			Label(a => a.For(labelFor), () => Write(lableTitle));
 		}
+		public void Span(Action<TagAttributes> attributes, string text) { Span(attributes, () => Write(text)); }
+		public void H1(Action<TagAttributes> attributes, string text) { H1(attributes, () => Write(text)); }
+		public void H2(Action<TagAttributes> attributes, string text) { H2(attributes, () => Write(text)); }
+		public void H3(Action<TagAttributes> attributes, string text) { H3(attributes, () => Write(text)); }
+		public void H4(Action<TagAttributes> attributes, string text) { H4(attributes, () => Write(text)); }
+		public void H5(Action<TagAttributes> attributes, string text) { H5(attributes, () => Write(text)); }
+		public void H6(Action<TagAttributes> attributes, string text) { H6(attributes, () => Write(text)); }
+	}
+
+	public class HtmlPageWriter : StringWriter
+	{
+		public HtmlPageWriter() { }
+		public HtmlPageWriter(StringBuilder sb) : base(sb) { }
+
+		public void Body(Action<TagAttributes> attributes = null, Action inner = null)
+		{
+			TagBuilder tb = new TagBuilder("body");
+			if (attributes != null) attributes(new TagAttributes(tb));
+			if (inner != null)
+			{
+				Write(tb.Render(TagRenderMode.StartTag));
+				inner();
+				Write(tb.Render(TagRenderMode.EndTag));
+			}
+			else
+				Write(tb);
+		}
+
+		public void Head(Action<TagAttributes> attributes = null, Action inner = null)
+		{
+			TagBuilder tb = new TagBuilder("head");
+			if (attributes != null) attributes(new TagAttributes(tb));
+			if (inner != null)
+			{
+				Write(tb.Render(TagRenderMode.StartTag));
+				inner();
+				Write(tb.Render(TagRenderMode.EndTag));
+			}
+			else
+				Write(tb);
+		}
+
+		public void Html(Action<HtmlTagAttributes> attributes = null, Action inner = null)
+		{
+			TagBuilder tb = new TagBuilder("html");
+			if (attributes != null) attributes(new HtmlTagAttributes(tb));
+			if (inner != null)
+			{
+				Write(tb.Render(TagRenderMode.StartTag));
+				inner();
+				Write(tb.Render(TagRenderMode.EndTag));
+			}
+			else
+				Write(tb);
+		}
+
+		public void Link(Action<LinkTagAttributes> attributes = null)
+		{
+			TagBuilder tb = new TagBuilder("link");
+			if (attributes != null) attributes(new LinkTagAttributes(tb));
+			Write(tb);
+		}
+
+		public void Meta(Action<MetaTagAttributes> attributes = null)
+		{
+			TagBuilder tb = new TagBuilder("meta");
+			if (attributes != null) attributes(new MetaTagAttributes(tb));
+			Write(tb);
+		}
+
+		public void Title(Action<TagAttributes> attributes = null, Action inner = null)
+		{
+			TagBuilder tb = new TagBuilder("title");
+			if (attributes != null) attributes(new TagAttributes(tb));
+			if (inner != null)
+			{
+				Write(tb.Render(TagRenderMode.StartTag));
+				inner();
+				Write(tb.Render(TagRenderMode.EndTag));
+			}
+			else
+				Write(tb);
+		}
+
+		public void Body(Action inner) { Body(null, inner); }
+		public void Head(Action inner) { Head(null, inner); }
+		public void Html(Action inner) { Html(null, inner); }
+		public void Title(Action inner) { Title(null, inner); }
 	}
 }

@@ -7,7 +7,7 @@
     <ProjectGuid>{08917986-6340-4D26-BB53-B1B69FD3C810}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Nephrite.Abstractions</RootNamespace>
+    <RootNamespace>Nephrite</RootNamespace>
     <AssemblyName>Nephrite.Abstractions</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IFMLInterfaces.cs" />
     <Compile Include="MetaDatabaseInterfaces.cs" />
     <Compile Include="MetaInterfaces.cs" />
     <Compile Include="MultilanguageInterfaces.cs" />
@@ -55,6 +56,7 @@
   <ItemGroup>
     <None Include="Nephrite.Abstractions.snk" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

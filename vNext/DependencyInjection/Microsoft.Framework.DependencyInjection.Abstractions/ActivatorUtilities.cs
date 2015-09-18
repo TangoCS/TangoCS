@@ -6,7 +6,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
-using Microsoft.Framework.DependencyInjection.Abstractions;
 
 namespace Microsoft.Framework.DependencyInjection
 {
@@ -50,7 +49,7 @@ namespace Microsoft.Framework.DependencyInjection
 
             if (bestMatcher == null)
             {
-                throw new InvalidOperationException(Resources.FormatNoConstructorMatch(instanceType));
+                throw new InvalidOperationException(Abstractions.Resources.FormatNoConstructorMatch(instanceType));
             }
 
             return bestMatcher.CreateInstance(provider);
@@ -199,7 +198,7 @@ namespace Microsoft.Framework.DependencyInjection
                 {
                     if (matchingConstructor != null)
                     {
-                        throw new InvalidOperationException(Resources.FormatAmbiguousConstructorMatch(instanceType));
+                        throw new InvalidOperationException(Abstractions.Resources.FormatAmbiguousConstructorMatch(instanceType));
                     }
 
                     matchingConstructor = constructor;
@@ -209,7 +208,7 @@ namespace Microsoft.Framework.DependencyInjection
 
             if (matchingConstructor == null)
             {
-                throw new InvalidOperationException(Resources.FormatNoConstructorMatch(instanceType));
+                throw new InvalidOperationException(Abstractions.Resources.FormatNoConstructorMatch(instanceType));
             }
         }
 
