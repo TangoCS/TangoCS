@@ -86,17 +86,17 @@ namespace Nephrite.Layout
 		{
 			l.ListHeader(new { Class = cssClass }, columns);
 		}
-		public static void TH(this LayoutWriter.ListTableWriter l, string title)
+		public static void ColumnHeader(this LayoutWriter.ListTableWriter l, string title, object attributes = null)
 		{
-			l.THBegin(null);
+			l.ColumnHeaderBegin(attributes);
 			l.Writer.Write(title);
-			l.THEnd();
+			l.ColumnHeaderEnd();
 		}
-		public static void TH(this LayoutWriter.ListTableWriter l, string title, object attributes)
+		public static void ColumnHeader(this LayoutWriter.ListTableWriter l, MetaProperty prop, object attributes = null)
 		{
-			l.THBegin(attributes);
-			l.Writer.Write(title);
-			l.THEnd();
+			l.ColumnHeaderBegin(attributes);
+			l.Writer.Write(prop.CaptionShort);
+			l.ColumnHeaderEnd();
 		}
 		public static void ListRow(this LayoutWriter.ListTableWriter l, string cssClass, Action content)
 		{

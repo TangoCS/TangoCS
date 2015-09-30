@@ -69,6 +69,7 @@
     <Compile Include="Controls\ListFilterEngine.cs" />
     <Compile Include="Controls\PersistentListFilter.cs" />
     <Compile Include="DI.cs" />
+    <Compile Include="DynamicDictionary.cs" />
     <Compile Include="EntityAudit\EntityAudit.cs" />
     <Compile Include="ErrorLog\ErrorLogger.cs" />
     <Compile Include="FileStorage\DatabaseStorageProvider.cs" />
@@ -99,6 +100,7 @@
     <Compile Include="Layout\Interfaces2.cs" />
     <Compile Include="Layout\LayoutWriter.cs" />
     <Compile Include="Layout\LayoutWriterExtensions.cs" />
+    <Compile Include="Layout\LayoutContext.cs" />
     <Compile Include="Meta.Database\IDBScript.cs" />
     <Compile Include="Meta.Database\MetaDatabaseModel.cs" />
     <Compile Include="Meta.Stereotypes\SMvcAction.cs" />

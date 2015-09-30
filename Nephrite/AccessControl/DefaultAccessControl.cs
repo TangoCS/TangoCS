@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Nephrite.Http;
 using Nephrite.Identity;
 
 namespace Nephrite.AccessControl

@@ -114,18 +114,28 @@ namespace Nephrite.MVC
 		}
 	}
 
+
+	public class ApiResponse
+	{
+		public Dictionary<string, object> Data { get; set; }
+		public Dictionary<string, object> Widgets { get; set; }
+
+		public ApiResponse()
+		{			
+			Data = new Dictionary<string, object>();
+			Widgets = new Dictionary<string, object>();
+			Data.Add("widgets", Widgets);
+		}
+	}
+
 	public class AjaxResult : ActionResult
 	{
-        public Dictionary<string, object> Data { get; set; }
-		public Dictionary<string, object> Html { get; set; }
-
-		public AjaxResult()
+		public ApiResponse Data { get; private set; }
+		public AjaxResult(ApiResponse data)
 		{
+			Data = data;
 			EndResponse = true;
-			Data = new Dictionary<string, object>();
-			Html = new Dictionary<string, object>();
-			Data.Add("html", Html);
-        }
+		}
 
 		public override void ExecuteResult(ActionContext context)
 		{

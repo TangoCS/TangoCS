@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Microsoft.Framework.DependencyInjection;
 using Nephrite.AccessControl;
 using Nephrite.Data;
 using Nephrite.Http;
@@ -17,7 +16,6 @@ namespace Nephrite.MVC
 		public IAccessControl AccessControl { get; private set; }
 
 		public IHttpContext HttpContext { get { return ActionContext.HttpContext; } }
-		public Url Url { get { return ActionContext.Url; } }
 		public IHttpRequest Request
 		{
 			get
@@ -32,6 +30,7 @@ namespace Nephrite.MVC
                 return HttpContext.Response;
             }
 		}
+		public Url Url { get { return ActionContext.Url; } }
 		public Subject<int> User 
 		{ 
 			get 

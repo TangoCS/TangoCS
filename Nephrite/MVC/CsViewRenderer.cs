@@ -47,6 +47,23 @@ namespace Nephrite.MVC
 		{
 			return _result;
 		}
+
+		public static string Render(string folder, string viewName, object viewData)
+		{
+			var r = new CsViewRenderer();
+			r.RenderView(folder, viewName, viewData);
+			return r.ToString();
+		}
+		public static string Render(string folder, string viewName)
+		{
+			return Render(folder, viewName, "");
+		}
+		public static ActionResult Render<T, TModel>(TModel viewData, string e = null) where T : ICsTemplate<TModel>, new()
+		{
+			T v = new T();
+			v.SetData(viewData);
+			return v.Execute(e);
+		}
 	}
 
 	public static class CsTemplateCache
@@ -65,39 +82,29 @@ namespace Nephrite.MVC
 			if (!_collection.ContainsKey(name.ToLower())) return null;
 			return _collection[name.ToLower()];
 		}
-
-		//public static void AddController<T>(this IServiceCollection sc) where T : Controller
-		//{
-		//	Add<T>();
-		//	sc.AddScoped<T>();
-		//}
 	}
 
 	public interface ICsTemplate
 	{
-        void SetData(object model);
-		void Execute();
+		ICsTemplate SetData(object model);
+		ActionResult Execute(string e = null);
 		string ToString();
 	}
 
 	public interface ICsTemplate<T> : ICsTemplate
 	{
-		T Model { get; set; }
+		T Model { get; }
 	}
 
 	public abstract class CsTemplate<T> : ICsTemplate<T>
 	{
 		public T Model { get; set; }
-		public abstract void Execute();
+		public abstract ActionResult Execute(string e = null);
 
-		public void SetData(object model)
+		public ICsTemplate SetData(object model)
 		{
 			Model = (T)model;
-		}
-
-		public override string ToString()
-		{
-			return "";
+			return this;
 		}
 	}
 }

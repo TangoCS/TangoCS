@@ -33,7 +33,6 @@ namespace Nephrite.MVC
 		}
 	}
 
-
 	public class Url : AbstractQueryString
 	{
 		string _q = "";

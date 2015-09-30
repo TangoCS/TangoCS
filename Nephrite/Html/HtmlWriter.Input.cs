@@ -4,71 +4,71 @@ using System.Linq;
 
 namespace Nephrite.Html
 {
-	public partial class HtmlWriter
+	public static class HtmlWriterInputExtensions
 	{
-		public void Input(string name, Action<InputTagAttributes> attributes = null)
+		public static void Input(this IHtmlWriter w, string name, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
 			InputTagAttributes ta = new InputTagAttributes(tb);
 			ta.Name(name);
 			if (attributes != null) attributes(ta);
-			Write(tb);
+			tb.Render(w);
 		}
-		public void TextBox(string name, string value = null, Action<InputTagAttributes> attributes = null)
+		public static void TextBox(this IHtmlWriter w, string name, string value = null, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
 			InputTagAttributes ta = new InputTagAttributes(tb);
 			ta.Name(name).Type(InputType.Text);
 			if (value != null) ta.Value(value);
 			if (attributes != null) attributes(ta);
-			Write(tb);
+			tb.Render(w);
 		}
-		public void Password(string name, string value = null, Action<InputTagAttributes> attributes = null)
+		public static void Password(this IHtmlWriter w, string name, string value = null, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
 			InputTagAttributes ta = new InputTagAttributes(tb);
 			ta.Name(name).Type(InputType.Password);
 			if (value != null) ta.Value(value);
 			if (attributes != null) attributes(ta);
-			Write(tb);
+			tb.Render(w);
 		}
-		public void Hidden(string name, string value = null, Action<InputTagAttributes> attributes = null)
+		public static void Hidden(this IHtmlWriter w, string name, string value = null, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
 			InputTagAttributes ta = new InputTagAttributes(tb);
 			ta.Name(name).Type(InputType.Hidden);
 			if (value != null) ta.Value(value);
 			if (attributes != null) attributes(ta);
-			Write(tb);
+			tb.Render(w);
 		}
-		public void CheckBox(string name, bool isChecked = false, Action<InputTagAttributes> attributes = null)
+		public static void CheckBox(this IHtmlWriter w, string name, bool isChecked = false, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
 			InputTagAttributes ta = new InputTagAttributes(tb);
 			ta.Name(name).Type(InputType.Checkbox).Checked(isChecked);
 			if (attributes != null) attributes(ta);
-			Write(tb);
+			tb.Render(w);
 		}
-		public void RadioButton(string name, bool isChecked = false, Action<InputTagAttributes> attributes = null)
+		public static void RadioButton(this IHtmlWriter w, string name, bool isChecked = false, Action<InputTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
 			InputTagAttributes ta = new InputTagAttributes(tb);
 			ta.Name(name).Type(InputType.Radio).Checked(isChecked);
 			if (attributes != null) attributes(ta);
-			Write(tb);
+			tb.Render(w);
 		}
-		public void TextArea(string name, string value = null, Action<TextAreaTagAttributes> attributes = null)
+		public static void TextArea(this IHtmlWriter w, string name, string value = null, Action<TextAreaTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("textarea");
 			TextAreaTagAttributes ta = new TextAreaTagAttributes(tb);
 			ta.Name(name);
 			if (attributes != null) attributes(ta);
-			Write(tb.Render(TagRenderMode.StartTag));
-			Write(value);
-			Write(tb.Render(TagRenderMode.EndTag));
+			tb.Render(w, TagRenderMode.StartTag);
+			w.Write(value);
+			tb.Render(w, TagRenderMode.EndTag);
 		}
 
-		public void Button(string name, Action<ButtonTagAttributes> attributes = null, Action inner = null)
+		public static void Button(this IHtmlWriter w, string name, Action<ButtonTagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("button");
 			ButtonTagAttributes ta = new ButtonTagAttributes(tb);
@@ -76,37 +76,37 @@ namespace Nephrite.Html
 			if (attributes != null) attributes(ta);
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
 
-        public void Button(string name, string title, Action<ButtonTagAttributes> attributes = null)
+        public static void Button(this IHtmlWriter w, string name, string title, Action<ButtonTagAttributes> attributes = null)
 		{
-			Button(name, attributes, () => Write(title));
+			w.Button(name, attributes, () => w.Write(title));
         }
-		public void SubmitButton(string name, string title, Action<ButtonTagAttributes> attributes = null)
+		public static void SubmitButton(this IHtmlWriter w, string name, string title, Action<ButtonTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
 			ButtonTagAttributes ta = new ButtonTagAttributes(tb);
 			ta.Name(name).Type(ButtonType.Submit);
 			if (attributes != null) attributes(ta);
-			Write(tb.Render(TagRenderMode.StartTag));
-			Write(title);
-			Write(tb.Render(TagRenderMode.EndTag));
+			tb.Render(w, TagRenderMode.StartTag);
+			w.Write(title);
+			tb.Render(w, TagRenderMode.EndTag);
 		}
-		public void ResetButton(string name, string title, Action<ButtonTagAttributes> attributes = null)
+		public static void ResetButton(this IHtmlWriter w, string name, string title, Action<ButtonTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("input");
 			ButtonTagAttributes ta = new ButtonTagAttributes(tb);
 			ta.Name(name).Type(ButtonType.Reset);
 			if (attributes != null) attributes(ta);
-			Write(tb.Render(TagRenderMode.StartTag));
-			Write(title);
-			Write(tb.Render(TagRenderMode.EndTag));
+			tb.Render(w, TagRenderMode.StartTag);
+			w.Write(title);
+			tb.Render(w, TagRenderMode.EndTag);
 		}
 
 	}

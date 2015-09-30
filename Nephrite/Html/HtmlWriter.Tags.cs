@@ -5,652 +5,654 @@ using System.Text;
 
 namespace Nephrite.Html
 {
-	public partial class HtmlWriter
+	public static class HtmlWriterTagsExtensions
 	{
-		public void DocType()
-		{
-			WriteLine("<!DOCTYPE html>");
-		}
-
-		public void A(Action<ATagAttributes> attributes = null, Action inner = null)
+		public static void A(this IHtmlWriter w, Action<ATagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("a");
 			if (attributes != null) attributes(new ATagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
 
-		public void B(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void B(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("b");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
 		
-		public void Br(Action<TagAttributes> attributes = null)
+		public static void Br(this IHtmlWriter w, Action<TagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("br");
 			if (attributes != null) attributes(new TagAttributes(tb));
-			Write(tb);
+			tb.Render(w);
 		}
-		public void Canvas(Action<CanvasTagAttributes> attributes = null, Action inner = null)
+		public static void Canvas(this IHtmlWriter w, Action<CanvasTagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("canvas");
 			if (attributes != null) attributes(new CanvasTagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Col(Action<ColTagAttributes> attributes = null)
+		public static void Col(this IHtmlWriter w, Action<ColTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("col");
 			if (attributes != null) attributes(new ColTagAttributes(tb));
-			Write(tb);
+			tb.Render(w);
 		}
-		public void Colgroup(Action<ColTagAttributes> attributes = null, Action inner = null)
+		public static void Colgroup(this IHtmlWriter w, Action<ColTagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("colgroup");
 			if (attributes != null) attributes(new ColTagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Dd(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Dd(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("dd");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Div(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Div(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("div");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Dl(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Dl(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("dl");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Dt(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Dt(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("dt");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Em(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Em(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("em");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Fieldset(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Fieldset(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("fieldset");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Form(Action<FormTagAttributes> attributes = null, Action inner = null)
+		public static void Form(this IHtmlWriter w, Action<FormTagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("form");
 			if (attributes != null) attributes(new FormTagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void H1(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void H1(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("h1");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void H2(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void H2(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("h2");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void H3(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void H3(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("h3");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void H4(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void H4(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("h4");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void H5(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void H5(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("h5");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void H6(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void H6(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("h6");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
 
-		public void I(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void I(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("i");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Img(Action<ImgTagAttributes> attributes = null)
+		public static void Img(this IHtmlWriter w, Action<ImgTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("img");
 			if (attributes != null) attributes(new ImgTagAttributes(tb));
-			Write(tb.Render(TagRenderMode.SelfClosing));
+			tb.Render(w, TagRenderMode.SelfClosing);
 		}
-		public void Label(Action<LabelTagAttributes> attributes = null, Action inner = null)
+		public static void Label(this IHtmlWriter w, Action<LabelTagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("label");
 			if (attributes != null) attributes(new LabelTagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Li(Action<LiTagAttributes> attributes = null, Action inner = null)
+		public static void Li(this IHtmlWriter w, Action<LiTagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("li");
 			if (attributes != null) attributes(new LiTagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Ol(Action<OlTagAttributes> attributes = null, Action inner = null)
+		public static void Ol(this IHtmlWriter w, Action<OlTagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("ol");
 			if (attributes != null) attributes(new OlTagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void P(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void P(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("p");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Pre(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Pre(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("pre");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Q(Action<QTagAttributes> attributes = null, Action inner = null)
+		public static void Q(this IHtmlWriter w, Action<QTagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("q");
 			if (attributes != null) attributes(new QTagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void S(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void S(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("s");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Small(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Small(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("small");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Span(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Span(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("span");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Sub(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Sub(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("sub");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Sup(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Sup(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("sup");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Table(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Table(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("table");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Tbody(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Tbody(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("tbody");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Td(Action<TdTagAttributes> attributes = null, Action inner = null)
+		public static void Td(this IHtmlWriter w, Action<TdTagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("td");
 			if (attributes != null) attributes(new TdTagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Th(Action<ThTagAttributes> attributes = null, Action inner = null)
+		public static void Th(this IHtmlWriter w, Action<ThTagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("th");
 			if (attributes != null) attributes(new ThTagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Thead(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Thead(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("thead");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
 		
-		public void Tr(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Tr(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("tr");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void U(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void U(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("u");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
-		public void Ul(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Ul(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("ul");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
 
-		public void A(Action inner) { A(null, inner); }
-		public void B(Action inner) { B(null, inner); }		
-		public void Br() { Br(null); }
-		public void Canvas(Action inner) { Canvas(null, inner); }
-		public void Col() { Col(null); }
-		public void Colgroup(Action inner) { Colgroup(null, inner); }
-		public void Dd(Action inner) { Dd(null, inner); }
-		public void Div(Action inner) { Div(null, inner); }
-		public void Dl(Action inner) { Dl(null, inner); }
-		public void Dt(Action inner) { Dt(null, inner); }
-		public void Em(Action inner) { Em(null, inner); }
-		public void Fieldset(Action inner) { Fieldset(null, inner); }
-		public void Form(Action inner) { Form(null, inner); }
-		public void H1(Action inner) { H1(null, inner); }
-		public void H2(Action inner) { H2(null, inner); }
-		public void H3(Action inner) { H3(null, inner); }
-		public void H4(Action inner) { H4(null, inner); }
-		public void H5(Action inner) { H5(null, inner); }
-		public void H6(Action inner) { H6(null, inner); }
-		public void I(Action inner) { I(null, inner); }
-		public void Img() { Img(null); }
-		public void Label(Action inner) { Label(null, inner); }
-		public void Li(Action inner) { Li(null, inner); }
-		public void Ol(Action inner) { Ol(null, inner); }
-		public void P(Action inner) { P(null, inner); }
-		public void Pre(Action inner) { Pre(null, inner); }
-		public void Q(Action inner) { Q(null, inner); }
-		public void S(Action inner) { S(null, inner); }
-		public void Small(Action inner) { Small(null, inner); }
-		public void Span(Action inner) { Span(null, inner); }
-		public void Sub(Action inner) { Sub(null, inner); }
-		public void Sup(Action inner) { Sup(null, inner); }
-		public void Table(Action inner) { Table(null, inner); }
-		public void Tbody(Action inner) { Tbody(null, inner); }
-		public void Td(Action inner) { Td(null, inner); }
-		public void Th(Action inner) { Th(null, inner); }
-		public void Thead(Action inner) { Thead(null, inner); }
+		public static void A(this IHtmlWriter w, Action inner) { w.A(null, inner); }
+		public static void B(this IHtmlWriter w, Action inner) { w.B(null, inner); }		
+		public static void Br(this IHtmlWriter w) { w.Br(null); }
+		public static void Canvas(this IHtmlWriter w, Action inner) { w.Canvas(null, inner); }
+		public static void Col(this IHtmlWriter w) { w.Col(null); }
+		public static void Colgroup(this IHtmlWriter w, Action inner) { w.Colgroup(null, inner); }
+		public static void Dd(this IHtmlWriter w, Action inner) { w.Dd(null, inner); }
+		public static void Div(this IHtmlWriter w, Action inner) { w.Div(null, inner); }
+		public static void Dl(this IHtmlWriter w, Action inner) { w.Dl(null, inner); }
+		public static void Dt(this IHtmlWriter w, Action inner) { w.Dt(null, inner); }
+		public static void Em(this IHtmlWriter w, Action inner) { w.Em(null, inner); }
+		public static void Fieldset(this IHtmlWriter w, Action inner) { w.Fieldset(null, inner); }
+		public static void Form(this IHtmlWriter w, Action inner) { w.Form(null, inner); }
+		public static void H1(this IHtmlWriter w, Action inner) { w.H1(null, inner); }
+		public static void H2(this IHtmlWriter w, Action inner) { w.H2(null, inner); }
+		public static void H3(this IHtmlWriter w, Action inner) { w.H3(null, inner); }
+		public static void H4(this IHtmlWriter w, Action inner) { w.H4(null, inner); }
+		public static void H5(this IHtmlWriter w, Action inner) { w.H5(null, inner); }
+		public static void H6(this IHtmlWriter w, Action inner) { w.H6(null, inner); }
+		public static void I(this IHtmlWriter w, Action inner) { w.I(null, inner); }
+		public static void Img(this IHtmlWriter w) { w.Img(null); }
+		public static void Label(this IHtmlWriter w, Action inner) { w.Label(null, inner); }
+		public static void Li(this IHtmlWriter w, Action inner) { w.Li(null, inner); }
+		public static void Ol(this IHtmlWriter w, Action inner) { w.Ol(null, inner); }
+		public static void P(this IHtmlWriter w, Action inner) { w.P(null, inner); }
+		public static void Pre(this IHtmlWriter w, Action inner) { w.Pre(null, inner); }
+		public static void Q(this IHtmlWriter w, Action inner) { w.Q(null, inner); }
+		public static void S(this IHtmlWriter w, Action inner) { w.S(null, inner); }
+		public static void Small(this IHtmlWriter w, Action inner) { w.Small(null, inner); }
+		public static void Span(this IHtmlWriter w, Action inner) { w.Span(null, inner); }
+		public static void Sub(this IHtmlWriter w, Action inner) { w.Sub(null, inner); }
+		public static void Sup(this IHtmlWriter w, Action inner) { w.Sup(null, inner); }
+		public static void Table(this IHtmlWriter w, Action inner) { w.Table(null, inner); }
+		public static void Tbody(this IHtmlWriter w, Action inner) { w.Tbody(null, inner); }
+		public static void Td(this IHtmlWriter w, Action inner) { w.Td(null, inner); }
+		public static void Th(this IHtmlWriter w, Action inner) { w.Th(null, inner); }
+		public static void Thead(this IHtmlWriter w, Action inner) { w.Thead(null, inner); }
 		
-		public void Tr(Action inner) { Tr(null, inner); }
-		public void U(Action inner) { U(null, inner); }
-		public void Ul(Action inner) { Ul(null, inner); }
+		public static void Tr(this IHtmlWriter w, Action inner) { w.Tr(null, inner); }
+		public static void U(this IHtmlWriter w, Action inner) { w.U(null, inner); }
+		public static void Ul(this IHtmlWriter w, Action inner) { w.Ul(null, inner); }
 
-		public void A(Action<ATagAttributes> attributes, string linkTitle) { A(attributes, () => Write(linkTitle)); }
-		public void A(string linkTitle) { A(null, () => Write(linkTitle)); }
-		public void Label(string labelFor, string lableTitle)
+		public static void A(this IHtmlWriter w, Action<ATagAttributes> attributes, string linkTitle) { w.A(attributes, () => w.Write(linkTitle)); }
+		public static void A(this IHtmlWriter w, string linkTitle) { w.A(null, () => w.Write(linkTitle)); }
+		public static void B(this IHtmlWriter w, string text) { w.B(null, () => w.Write(text)); }
+		public static void Label(this IHtmlWriter w, string labelFor, string lableTitle)
 		{
-			Label(a => a.For(labelFor), () => Write(lableTitle));
+			w.Label(a => a.For(labelFor), () => w.Write(lableTitle));
 		}
-		public void Span(Action<TagAttributes> attributes, string text) { Span(attributes, () => Write(text)); }
-		public void H1(Action<TagAttributes> attributes, string text) { H1(attributes, () => Write(text)); }
-		public void H2(Action<TagAttributes> attributes, string text) { H2(attributes, () => Write(text)); }
-		public void H3(Action<TagAttributes> attributes, string text) { H3(attributes, () => Write(text)); }
-		public void H4(Action<TagAttributes> attributes, string text) { H4(attributes, () => Write(text)); }
-		public void H5(Action<TagAttributes> attributes, string text) { H5(attributes, () => Write(text)); }
-		public void H6(Action<TagAttributes> attributes, string text) { H6(attributes, () => Write(text)); }
+		public static void Span(this IHtmlWriter w, string text) { w.Span(null, () => w.Write(text)); }
+		public static void Span(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.Span(attributes, () => w.Write(text)); }
+		public static void H1(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H1(attributes, () => w.Write(text)); }
+		public static void H2(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H2(attributes, () => w.Write(text)); }
+		public static void H3(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H3(attributes, () => w.Write(text)); }
+		public static void H4(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H4(attributes, () => w.Write(text)); }
+		public static void H5(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H5(attributes, () => w.Write(text)); }
+		public static void H6(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H6(attributes, () => w.Write(text)); }
 	}
 
-	public class HtmlPageWriter : StringWriter
-	{
-		public HtmlPageWriter() { }
-		public HtmlPageWriter(StringBuilder sb) : base(sb) { }
 
-		public void Body(Action<TagAttributes> attributes = null, Action inner = null)
+	public interface IHtmlPageWriter : IHtmlWriter { }
+
+	public static class HtmlPageWriterExtensions
+	{
+		public static void DocType(this IHtmlPageWriter w)
+		{
+			w.Write("<!DOCTYPE html>");
+		}
+
+		public static void Body(this IHtmlPageWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("body");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
 
-		public void Head(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Head(this IHtmlPageWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("head");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
 
-		public void Html(Action<HtmlTagAttributes> attributes = null, Action inner = null)
+		public static void Html(this IHtmlPageWriter w, Action<HtmlTagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("html");
 			if (attributes != null) attributes(new HtmlTagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
 
-		public void Link(Action<LinkTagAttributes> attributes = null)
+		public static void Link(this IHtmlPageWriter w, Action<LinkTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("link");
 			if (attributes != null) attributes(new LinkTagAttributes(tb));
-			Write(tb);
+			tb.Render(w);
 		}
 
-		public void Meta(Action<MetaTagAttributes> attributes = null)
+		public static void Meta(this IHtmlPageWriter w, Action<MetaTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("meta");
 			if (attributes != null) attributes(new MetaTagAttributes(tb));
-			Write(tb);
+			tb.Render(w);
 		}
 
-		public void Title(Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Title(this IHtmlPageWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			TagBuilder tb = new TagBuilder("title");
 			if (attributes != null) attributes(new TagAttributes(tb));
 			if (inner != null)
 			{
-				Write(tb.Render(TagRenderMode.StartTag));
+				tb.Render(w, TagRenderMode.StartTag);
 				inner();
-				Write(tb.Render(TagRenderMode.EndTag));
+				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				Write(tb);
+				tb.Render(w);
 		}
 
-		public void Body(Action inner) { Body(null, inner); }
-		public void Head(Action inner) { Head(null, inner); }
-		public void Html(Action inner) { Html(null, inner); }
-		public void Title(Action inner) { Title(null, inner); }
+		public static void Body(this IHtmlPageWriter w, Action inner) { w.Body(null, inner); }
+		public static void Head(this IHtmlPageWriter w, Action inner) { w.Head(null, inner); }
+		public static void Html(this IHtmlPageWriter w, Action inner) { w.Html(null, inner); }
+		public static void Title(this IHtmlPageWriter w, Action inner) { w.Title(null, inner); }
 	}
 }

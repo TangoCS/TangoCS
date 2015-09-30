@@ -10,28 +10,28 @@ using Nephrite.Html;
 
 namespace Nephrite.Web
 {
-	public class RouteUrlResolver : IUrlResolver
+	public class RouteUrlResolver : AbstractUrlResolver
 	{
 		protected string _routeName;
 
-		public RouteUrlResolver UseRoute(string routeName)
+		public virtual RouteUrlResolver UseRoute(string routeName)
 		{
 			_routeName = routeName;
 			return this;
 		}
 
-		public virtual string Resolve(IDictionary<string, object> parameters)
+		public override StringBuilder Resolve(IDictionary<string, object> parameters, bool isHashPart = false)
 		{
-			return GeneratePathAndQueryFromRoute(_routeName, parameters) ?? "";
+			return GeneratePathAndQueryFromRoute(_routeName, parameters, isHashPart) ?? new StringBuilder();
 		}
 
-		public string GeneratePathAndQueryFromRoute(string routeName, IDictionary<string, object> values)
+		public StringBuilder GeneratePathAndQueryFromRoute(string routeName, IDictionary<string, object> values, bool isHashPart)
 		{
 			if (routeName != null)
 			{
 				var route = RouteTable.Routes[routeName];
 				if (route == null) return null;
-				return CreateUrl((route as Route).Url, values);
+				return CreateUrl((route as Route).Url, values, isHashPart);
 			}
 			else
 			{
@@ -39,42 +39,9 @@ namespace Nephrite.Web
 				var r = HttpContext.Current.Request.RequestContext;
 				VirtualPathData virtualPathData = RouteTable.Routes.GetVirtualPath(r, d);
 				if (virtualPathData == null) return null;
-				return CreateUrl((virtualPathData.Route as Route).Url, values);
+				return CreateUrl((virtualPathData.Route as Route).Url, values, isHashPart);
 			}
-		}
-
-		public string CreateUrl(string url, IDictionary<string, object> parms)
-		{
-			string[] parts = url.Split(new char[] { '/' });
-			StringBuilder res = new StringBuilder();
-
-			foreach (string part in parts)
-			{
-				if (part.StartsWith("{"))
-				{
-					string key = part.Substring(1, part.Length - 2);
-					if (parms.ContainsKey(key))
-					{
-						res.Append("/").Append(parms[key]);
-						parms.Remove(key);
-					}
-				}
-				else
-					res.Append("/").Append(part);
-			}
-
-			if (parms.Count > 0) res.Append("?");
-			bool first = true;
-			foreach (var parm in parms)
-			{
-				if (!first) res.Append("&");
-				res.Append(parm.Key);
-				if (parm.Value != null) res.Append("=").Append(parm.Value);
-				first = false;
-			}
-
-			return res.ToString();
-		}
+		}	
 	}
 
 	public class SecurableUrlResolver : RouteUrlResolver
@@ -102,7 +69,7 @@ namespace Nephrite.Web
 			return this;
 		}
 
-		public override string Resolve(IDictionary<string, object> parameters)
+		public override StringBuilder Resolve(IDictionary<string, object> parameters, bool isHashPart = false)
 		{
 			bool access = true;
 			if (!_securableObjectKey.IsEmpty())
@@ -112,9 +79,9 @@ namespace Nephrite.Web
 					access = _accessControl.Check(_securableObjectKey);
 
 			if (access)
-				return base.Resolve(parameters);
+				return base.Resolve(parameters, isHashPart);
 			else
-				return "";
+				return new StringBuilder();
 		}
 	}
 }

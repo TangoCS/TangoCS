@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Text;
 using Nephrite.Html;
 using Nephrite.Html.Controls;
 using Nephrite.Multilanguage;
+using Nephrite.MVC;
 
 namespace Nephrite.Layout
 {
@@ -10,18 +10,14 @@ namespace Nephrite.Layout
 	{
 		public ISystemLayout Layout { get; private set; }
 		public ITextResource TextResource { get; private set; }
+		public LayoutContext Context { get; private set; }
 
-		public LayoutWriter()
+		public LayoutWriter(LayoutContext context, ISystemLayout layout, ITextResource textResource)
         {
-			Layout = DI.GetService<ISystemLayout>();
-			TextResource = DI.GetService<ITextResource>();
+			Layout = layout;
+			TextResource = textResource;
+			Context = context;
         }
-		public LayoutWriter(StringBuilder sb) : base(sb)
-		{
-			Layout = DI.GetService<ISystemLayout>();
-			TextResource = DI.GetService<ITextResource>();
-		}
-
 
 		public void FormTable(object attributes, Action<FormTableWriter> inner)
 		{
@@ -87,11 +83,11 @@ namespace Nephrite.Layout
 		public class FormTableWriter : IDisposable
 		{
 			ILayoutForm _form;
-			HtmlWriter _writer;
+			LayoutWriter _writer;
 
-			public HtmlWriter Writer { get { return _writer; } }
+			public LayoutWriter Writer { get { return _writer; } }
 
-			public FormTableWriter(HtmlWriter writer, ILayoutForm form)
+			public FormTableWriter(LayoutWriter writer, ILayoutForm form)
 			{
 				_form = form;
 				_writer = writer;
@@ -117,11 +113,11 @@ namespace Nephrite.Layout
 		public class ButtonsBarWriter : IDisposable
 		{
 			ILayoutForm _form;
-			HtmlWriter _writer;
+			LayoutWriter _writer;
 
-			public HtmlWriter Writer { get { return _writer; } }
+			public LayoutWriter Writer { get { return _writer; } }
 
-			public ButtonsBarWriter(HtmlWriter writer, ILayoutForm form)
+			public ButtonsBarWriter(LayoutWriter writer, ILayoutForm form)
 			{
 				_form = form;
 				_writer = writer;
@@ -151,11 +147,11 @@ namespace Nephrite.Layout
 		public class ListTableWriter : IDisposable
 		{
 			ILayoutList _list;
-			HtmlWriter _writer;
+			LayoutWriter _writer;
 
-			public HtmlWriter Writer { get { return _writer; } }
+			public LayoutWriter Writer { get { return _writer; } }
 
-			public ListTableWriter(HtmlWriter writer, ILayoutList list)
+			public ListTableWriter(LayoutWriter writer, ILayoutList list)
 			{
 				_list = list;
 				_writer = writer;
@@ -168,12 +164,12 @@ namespace Nephrite.Layout
                 _writer.Write(_list.ListHeaderEnd());
 			}
 
-			public void THBegin(object attributes)
+			public void ColumnHeaderBegin(object attributes)
 			{
 				_writer.Write(_list.THBegin(attributes));
 			}
 
-			public void THEnd()
+			public void ColumnHeaderEnd()
 			{
 				_writer.Write(_list.THEnd());
 			}
@@ -210,15 +206,15 @@ namespace Nephrite.Layout
 			int _partStatus = 0;
 
 			ILayoutToolbar2 _layout;
-			HtmlWriter _writer;
+			LayoutWriter _writer;
 
-			public ToolbarWriter(HtmlWriter writer, ILayoutToolbar2 layout)
+			public ToolbarWriter(LayoutWriter writer, ILayoutToolbar2 layout)
 			{
 				_layout = layout;
 				_writer = writer;
 			}
 
-			public void Item(string content)
+			public void Item(Action inner)
 			{
 				_canAddSeparator = true;
 				if (_partStatus == 0)
@@ -231,7 +227,12 @@ namespace Nephrite.Layout
 					_writer.Write(_layout.ToolbarPartBegin("ms-toolbar-right"));
 				}
 				_partStatus++;
-				_writer.Write(_layout.ToolbarItem(content));
+				inner();
+			}
+
+			public void Item(string content)
+			{
+				Item(() => _writer.Write(content));
 			}
 
 			public void ItemSeparator()

@@ -4,47 +4,45 @@ using System.Linq;
 
 namespace Nephrite.Html
 {
-	public partial class HtmlWriter
+	public static class HtmlWriterSelectExtensions
 	{
-		public void DropDownList(string name, string value, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
+		public static void DropDownList(this IHtmlWriter w, string name, string value, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("select");
 			SelectTagAttributes ta = new SelectTagAttributes(tb);
 			ta.Name(name);
 			if (attributes != null) attributes(ta);
-			Write(tb.Render(TagRenderMode.StartTag));
+			tb.Render(w, TagRenderMode.StartTag);
 
 			foreach (var item in items)
 			{
 				TagBuilder tb_o = new TagBuilder("option");
 				OptionTagAttributes oa = new OptionTagAttributes(tb_o);
 				oa.Title(item.Text).Value(item.Value).Selected(item.Selected || item.Value == value);
-				Write(tb_o.Render(TagRenderMode.SelfClosing));
+				tb_o.Render(w, TagRenderMode.SelfClosing);
 			}
 			
-			Write(tb.Render(TagRenderMode.EndTag));
+			tb.Render(w, TagRenderMode.EndTag);
 		}
 
-		public void ListBox(string name, IEnumerable<string> values, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
+		public static void ListBox(this IHtmlWriter w, string name, IEnumerable<string> values, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
 		{
 			TagBuilder tb = new TagBuilder("select");
 			SelectTagAttributes ta = new SelectTagAttributes(tb);
 			ta.Name(name);
 			if (attributes != null) attributes(ta);
-			Write(tb.Render(TagRenderMode.StartTag));
+			tb.Render(w, TagRenderMode.StartTag);
 
 			foreach (var item in items)
 			{
 				TagBuilder tb_o = new TagBuilder("option");
 				OptionTagAttributes oa = new OptionTagAttributes(tb_o);
 				oa.Title(item.Text).Value(item.Value).Selected(item.Selected || (values != null && values.Contains(item.Value)));
-				Write(tb_o.Render(TagRenderMode.SelfClosing));
+				tb_o.Render(w, TagRenderMode.SelfClosing);
 			}
 
-			Write(tb.Render(TagRenderMode.EndTag));
+			tb.Render(w, TagRenderMode.EndTag);
 		}
-
-
 	}
 
 	public class SelectListItem

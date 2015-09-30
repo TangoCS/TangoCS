@@ -4,14 +4,22 @@ using System.Text;
 
 namespace Nephrite.Html
 {
-	public partial class HtmlWriter : StringWriter
+	public interface IHtmlWriter
 	{
-		public HtmlWriter() { }
-		public HtmlWriter(StringBuilder sb) : base(sb) { }
+		void Write(string value);
+		void Write(char value);
+	}
 
+	public class HtmlWriter : StringWriter, IHtmlWriter
+	{
 		public static implicit operator string (HtmlWriter w)
 		{
 			return w.ToString();
 		}
+	}
+
+	public class HtmlStreamWriter : StreamWriter, IHtmlWriter
+	{
+		public HtmlStreamWriter(Stream stream) : base(stream) { }
 	}
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
-using System.Text;
 
 namespace Nephrite.Html
 {
@@ -26,17 +25,17 @@ namespace Nephrite.Html
 
 		public string TagName { get; private set; }
 
-		private void AppendAttributes(StringBuilder sb)
+		private void AppendAttributes(IHtmlWriter w)
 		{
 			foreach (var attribute in Attributes)
 			{
 				string key = attribute.Key;
 				string value = WebUtility.HtmlEncode(attribute.Value);
-				sb.Append(' ')
-					.Append(key)
-					.Append("=\"")
-					.Append(value)
-					.Append('"');
+				w.Write(' ');
+				w.Write(key);
+				w.Write("=\"");
+				w.Write(value);
+				w.Write('"');
 			}
 		}
 
@@ -66,51 +65,49 @@ namespace Nephrite.Html
 			InnerHtml = WebUtility.HtmlEncode(innerText);
 		}
 
-		public override string ToString()
-		{
-			return ToString(TagRenderMode.Normal);
-		}
+		//public override string ToString()
+		//{
+		//	return ToString(TagRenderMode.Normal);
+		//}
 
-		public StringBuilder Render(TagRenderMode renderMode = TagRenderMode.Normal)
+		public void Render(IHtmlWriter w, TagRenderMode renderMode = TagRenderMode.Normal)
 		{
-			StringBuilder sb = new StringBuilder(255);
 			switch (renderMode)
 			{
 				case TagRenderMode.StartTag:
-					sb.Append('<')
-						.Append(TagName);
-					AppendAttributes(sb);
-					sb.Append('>');
+					w.Write('<');
+                    w.Write(TagName);
+					AppendAttributes(w);
+					w.Write('>');
 					break;
 				case TagRenderMode.EndTag:
-					sb.Append("</")
-						.Append(TagName)
-						.Append('>');
+					w.Write("</");
+                    w.Write(TagName);
+                    w.Write('>');
 					break;
 				case TagRenderMode.SelfClosing:
-					sb.Append('<')
-						.Append(TagName);
-					AppendAttributes(sb);
-					sb.Append(" />");
+					w.Write('<');
+                    w.Write(TagName);
+					AppendAttributes(w);
+					w.Write(" />");
 					break;
 				default:
-					sb.Append('<')
-						.Append(TagName);
-					AppendAttributes(sb);
-					sb.Append('>')
-						.Append(InnerHtml)
-						.Append("</")
-						.Append(TagName)
-						.Append('>');
+					w.Write('<');
+                    w.Write(TagName);
+					AppendAttributes(w);
+					w.Write('>');
+                    w.Write(InnerHtml);
+                    w.Write("</");
+                    w.Write(TagName);
+                    w.Write('>');
 					break;
 			}
-			return sb;
 		}
 
-		public string ToString(TagRenderMode renderMode)
-		{
-			return Render(renderMode).ToString();
-		}
+		//public string ToString(TagRenderMode renderMode)
+		//{
+		//	return Render(renderMode).ToString();
+		//}
 	}
 
 	public enum TagRenderMode

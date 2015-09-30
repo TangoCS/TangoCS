@@ -1,16 +1,19 @@
 ﻿using System;
-using Nephrite.MVC;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Nephrite.Html.Controls
 {
 	public class ActionLink
 	{
 		protected IUrlResolver _urlResolver;
+		protected IUrlResolver _eventUrlResolver;
 
 		protected string _title;
 		protected string _imageSrc;
 
-		HtmlParms _parameters = new HtmlParms();
+		IDictionary<string, object> _args = new Dictionary<string, object>();
+		IDictionary<string, object> _eventArgs = new Dictionary<string, object>();
 
 		string _url = null;
 		public string Url
@@ -19,7 +22,13 @@ namespace Nephrite.Html.Controls
 			{
 				if (_url == null)
 				{
-					_url = _urlResolver == null ? "" : _urlResolver.Resolve(_parameters);
+					StringBuilder sb = _urlResolver == null ? new StringBuilder() : _urlResolver.Resolve(_args);
+					if (_eventArgs.Count > 0 && _eventUrlResolver != null)
+					{
+						sb.Append("#");
+						sb.Append(_eventUrlResolver.Resolve(_eventArgs, true));
+					}
+                    _url = sb.ToString();
 				}
 
 				return _url;
@@ -43,16 +52,33 @@ namespace Nephrite.Html.Controls
 			_urlResolver = urlResolver;
 			return this;
 		}
-
-		public ActionLink With(HtmlParms parametersValues)
+		public ActionLink UseEventUrlResolver(IUrlResolver eventUrlResolver)
 		{
-			foreach (var p in parametersValues)
-				_parameters.Add(p.Key, p.Value);
+			_eventUrlResolver = eventUrlResolver;
 			return this;
 		}
-		public ActionLink With(string key, string value)
+
+		public ActionLink WithArgs(IDictionary<string, object> args)
 		{
-			_parameters.Add(key, value);
+			foreach (var p in args)
+				_args.Add(p.Key, p.Value);
+			return this;
+		}
+		public ActionLink WithEventArgs(IDictionary<string, object> args)
+		{
+			foreach (var p in args)
+				_eventArgs.Add(p.Key, p.Value);
+			return this;
+		}
+
+		public ActionLink WithArg(string key, string value)
+		{
+			_args.Add(key, value);
+			return this;
+		}
+		public ActionLink WithEventArg(string key, string value)
+		{
+			_eventArgs[key] = value;
 			return this;
 		}
 

@@ -60,7 +60,7 @@ namespace Nephrite.MVC
 				}	
 			}
 			else
-				controller = DI.RequestServices.GetService(controllerType) as Controller;
+				controller = Activator.CreateInstance(controllerType) as Controller;
 
 			if (method == null)
 				return MessageResult(string.Format("The method {0} was not found in the controller {1}", m, t));
