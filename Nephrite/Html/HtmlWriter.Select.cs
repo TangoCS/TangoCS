@@ -18,10 +18,12 @@ namespace Nephrite.Html
 			{
 				TagBuilder tb_o = new TagBuilder("option");
 				OptionTagAttributes oa = new OptionTagAttributes(tb_o);
-				oa.Title(item.Text).Value(item.Value).Selected(item.Selected || item.Value == value);
-				tb_o.Render(w, TagRenderMode.SelfClosing);
+				oa.Value(item.Value).Selected(item.Selected || item.Value == value);
+				tb_o.Render(w, TagRenderMode.StartTag);
+				w.Write(item.Text);
+				tb_o.Render(w, TagRenderMode.EndTag);
 			}
-			
+
 			tb.Render(w, TagRenderMode.EndTag);
 		}
 
@@ -37,8 +39,10 @@ namespace Nephrite.Html
 			{
 				TagBuilder tb_o = new TagBuilder("option");
 				OptionTagAttributes oa = new OptionTagAttributes(tb_o);
-				oa.Title(item.Text).Value(item.Value).Selected(item.Selected || (values != null && values.Contains(item.Value)));
-				tb_o.Render(w, TagRenderMode.SelfClosing);
+				oa.Value(item.Value).Selected(item.Selected || (values != null && values.Contains(item.Value)));
+				tb_o.Render(w, TagRenderMode.StartTag);
+				w.Write(item.Text);
+				tb_o.Render(w, TagRenderMode.EndTag);
 			}
 
 			tb.Render(w, TagRenderMode.EndTag);

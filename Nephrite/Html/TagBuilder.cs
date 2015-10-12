@@ -30,12 +30,15 @@ namespace Nephrite.Html
 			foreach (var attribute in Attributes)
 			{
 				string key = attribute.Key;
-				string value = WebUtility.HtmlEncode(attribute.Value);
-				w.Write(' ');
-				w.Write(key);
-				w.Write("=\"");
-				w.Write(value);
-				w.Write('"');
+				if (!attribute.Value.IsEmpty())
+				{
+					string value = WebUtility.HtmlEncode(attribute.Value);
+					w.Write(' ');
+					w.Write(key);
+					w.Write("=\"");
+					w.Write(value);
+					w.Write('"');
+				}
 			}
 		}
 

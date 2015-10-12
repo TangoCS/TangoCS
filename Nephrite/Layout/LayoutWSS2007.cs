@@ -4,7 +4,6 @@ using System.Text;
 using Nephrite.Multilanguage;
 using Nephrite.Html;
 using Nephrite.MVC;
-using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.Layout
 {
@@ -290,7 +289,7 @@ namespace Nephrite.Layout
 		public string RenderPager(AbstractQueryString baseUrl, int pageIndex, int pageCount, int recordsCount)
 		{
 			StringBuilder sb = new StringBuilder(1024);
-			var textResource = DI.RequestServices.GetService<ITextResource>();
+			var textResource = DI.GetService<ITextResource>();
 
 			sb.Append(@"<div style=""padding:3px 0px 8px 7px; vertical-align:middle"">");
 			if (pageCount > 1)
@@ -335,7 +334,7 @@ namespace Nephrite.Layout
 		public string RenderPager(string gotoPageJSFunction, int pageIndex, int pageCount, int recordsCount)
 		{
 			StringBuilder sb = new StringBuilder(1024);
-			var textResource = DI.RequestServices.GetService<ITextResource>();
+			var textResource = DI.GetService<ITextResource>();
 
 			string imgname = "pagerBusy_" + gotoPageJSFunction;
 			gotoPageJSFunction = String.Format("{0}.style.visibility = 'visible';{1}({2}); return false;", imgname, gotoPageJSFunction, "{0}");
@@ -375,7 +374,7 @@ textResource.Get("Common.Paging.From", "из"));
 		public string RenderPager(string gotoPageJSFunction, int pageIndex, int pageCount)
 		{
 			StringBuilder sb = new StringBuilder(1024);
-			var textResource = DI.RequestServices.GetService<ITextResource>();
+			var textResource = DI.GetService<ITextResource>();
 
 			if (pageCount > 1)
 			{
@@ -592,41 +591,5 @@ textResource.Get("Common.Paging.From", "из"));
 		}
 	}
 
-	public class Toolbar2 : ILayoutToolbar2
-	{
-		public string ToolbarBegin()
-		{
-			return "<div class='ms-menutoolbar'>";
-		}
-
-		public string ToolbarEnd()
-		{
-			return "</div>";
-		}
-
-		public string ToolbarItem(string content)
-		{
-			return String.Format("<li>{0}</li>", content);
-		}
-
-		public string ToolbarPartBegin(string partName)
-		{
-			return String.Format("<ul class='{0}'>", partName);
-		}
-
-		public string ToolbarPartEnd()
-		{
-			return "</ul>";
-		}
-
-		public string ToolbarSeparator()
-		{
-			return "<li><div class='ms-separator'></div></li>";
-		}
-
-		public string ToolbarWhiteSpace()
-		{
-			return "";
-		}
-	}
+	
 }

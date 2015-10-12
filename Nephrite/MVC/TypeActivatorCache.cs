@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.MVC
 {
@@ -50,8 +45,9 @@ namespace Nephrite.MVC
 					{
 						if (filter(t))
 						{
-							if (!_typeActivatorCache.ContainsKey(t.Name))
-								_typeActivatorCache.Add(t.Name, t);
+							var key = t.Name.ToLower();
+							if (!_typeActivatorCache.ContainsKey(key))
+								_typeActivatorCache.Add(key, t);
 							break;
 						}
 					}
@@ -62,7 +58,7 @@ namespace Nephrite.MVC
 		public Type Get(string typeName)
 		{
 			Type ret = null;
-			_typeActivatorCache.TryGetValue(typeName, out ret);
+			_typeActivatorCache.TryGetValue(typeName.ToLower(), out ret);
 			return ret;
         }
 	}

@@ -15,7 +15,7 @@ namespace Nephrite.Html
 
 		public T AccessKey(string value) { _builder.MergeAttribute("accesskey", value); return _this; }
 		public T Aria(string key, string value) { _builder.MergeAttribute("aria-" + key.ToLower(), value); return _this; }
-		public T Class(string value) { _builder.MergeAttribute("class", value); return _this; }
+		public T Class(string value, bool replaceExisting = false) { _builder.MergeAttribute("class", value, replaceExisting); return _this; }
 		public T Contenteditable(bool value) { if (value) _builder.MergeAttribute("contenteditable", "Contenteditable"); return _this; }
 		public T Data(string key, string value) { _builder.MergeAttribute("data-" + key.ToLower(), value); return _this; }
 		public T Dir(Dir value) { _builder.MergeAttribute("dir", value.ToString().ToLower()); return _this; }
@@ -23,7 +23,7 @@ namespace Nephrite.Html
 		public T ID(string value) { _builder.MergeAttribute("id", value); return _this; }
 		public T Lang(string value) { _builder.MergeAttribute("lang", value); return _this; }
 		public T Role(string value) { _builder.MergeAttribute("role", value); return _this; }
-		public T Style(string value) { _builder.MergeAttribute("style", value); return _this; }
+		public T Style(string value, bool replaceExisting = false) { _builder.MergeAttribute("style", value, replaceExisting); return _this; }
 		public T TabIndex(int value) { _builder.MergeAttribute("tabindex", value.ToString()); return _this; }
 		public T Title(string value) { _builder.MergeAttribute("title", value); return _this; }
 

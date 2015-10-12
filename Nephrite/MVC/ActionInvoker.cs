@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Dynamic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using Nephrite.AccessControl;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace Nephrite.MVC
 {
@@ -97,35 +92,10 @@ namespace Nephrite.MVC
 			ParameterInfo[] mp = method.GetParameters();
 			object[] p = new object[mp.Length];
 
-			bool isJson = _actionContext.HttpContext.Request.ContentType.ToLower() == "application/json; charset=utf-8";
-			dynamic jsonObj = null;
-            if (isJson)
-			{
-				var jsonString = string.Empty;
-				_actionContext.HttpContext.Request.Body.Position = 0;
-				using (var inputStream = new StreamReader(_actionContext.HttpContext.Request.Body))
-				{
-					jsonString = inputStream.ReadToEnd();
-				}
-				var converter = new ExpandoObjectConverter();
-				jsonObj = JsonConvert.DeserializeObject<ExpandoObject>(jsonString, converter);
-            }
-
 			for (int i = 0; i < mp.Length; i++)
 			{
-				if (isJson && mp[i].GetCustomAttributes(typeof(DynamicAttribute), true).Length > 0)
-				{
-					p[i] = jsonObj;
-					continue;
-                }
-
 				string parmName = mp[i].Name.ToLower() == "id" ? "oid" : mp[i].Name.ToLower();
 				string val = WebUtility.UrlDecode(_actionContext.Url.GetString(parmName));
-
-				if (!isJson && val.IsEmpty())
-				{
-					val = _actionContext.HttpContext.Request.Form.Get(mp[i].Name);
-				}
 
 				if (!val.IsEmpty())
 				{
@@ -177,7 +147,6 @@ namespace Nephrite.MVC
 			}
 			return method;
 		}
-
 
 		bool AccessDeniedResult()
 		{

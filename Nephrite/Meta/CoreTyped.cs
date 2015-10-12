@@ -6,7 +6,7 @@ using System.Linq.Expressions;
 
 namespace Nephrite.Meta
 {
-	public partial class MetaClass<T> : MetaClass
+	public partial class MetaClass<T, TKey> : MetaClass
 	{
 		public new IQueryable<T> AllObjects
 		{

@@ -4,13 +4,14 @@ using System.Text;
 
 namespace Nephrite.Html.Controls
 {
-	public class ActionLink
+	public abstract class AbstractActionLink<T>
 	{
 		protected IUrlResolver _urlResolver;
 		protected IUrlResolver _eventUrlResolver;
 
 		protected string _title;
 		protected string _imageSrc;
+		protected T _this;
 
 		IDictionary<string, object> _args = new Dictionary<string, object>();
 		IDictionary<string, object> _eventArgs = new Dictionary<string, object>();
@@ -35,51 +36,81 @@ namespace Nephrite.Html.Controls
 			}
 		}
 
-		public ActionLink Title(string title)
+		protected IHtmlWriter _writer;
+
+		public T Title(string title)
 		{
 			if (_title.IsEmpty()) _title = title;
-			return this;
+			return _this;
 		}
 
-		public ActionLink Image(string image)
+		public T Image(string image)
 		{
 			if (_imageSrc.IsEmpty()) _imageSrc = image;
-			return this;
+			return _this;
 		}
 
-		public ActionLink UseUrlResolver(IUrlResolver urlResolver)
+		public T UseUrlResolver(IUrlResolver urlResolver)
 		{
 			_urlResolver = urlResolver;
-			return this;
+			return _this;
 		}
-		public ActionLink UseEventUrlResolver(IUrlResolver eventUrlResolver)
+		public T UseEventUrlResolver(IUrlResolver eventUrlResolver)
 		{
 			_eventUrlResolver = eventUrlResolver;
-			return this;
+			return _this;
 		}
 
-		public ActionLink WithArgs(IDictionary<string, object> args)
+		public T WithArgs(IDictionary<string, object> args)
 		{
 			foreach (var p in args)
-				_args.Add(p.Key, p.Value);
-			return this;
+				if (p.Value != null)
+					_args[p.Key] = p.Value;
+				else
+					_args.Remove(p.Key);
+			return _this;
 		}
-		public ActionLink WithEventArgs(IDictionary<string, object> args)
+		public T WithEventArgs(IDictionary<string, object> args)
 		{
 			foreach (var p in args)
-				_eventArgs.Add(p.Key, p.Value);
-			return this;
+				if (p.Value != null)
+					_eventArgs[p.Key] = p.Value;
+				else
+					_eventArgs.Remove(p.Key);
+			return _this;
 		}
 
-		public ActionLink WithArg(string key, string value)
+		public T WithArg(string key, string value)
 		{
-			_args.Add(key, value);
-			return this;
+			if (value != null)
+				_args[key] = value;
+			else
+				_args.Remove(key);
+			return _this;
 		}
-		public ActionLink WithEventArg(string key, string value)
+		public T WithEventArg(string key, string value)
 		{
-			_eventArgs[key] = value;
-			return this;
+			if (value != null)
+				_eventArgs[key] = value;
+			else
+				_eventArgs.Remove(key);
+			return _this;
+		}
+
+		public T SetWriter(IHtmlWriter writer)
+		{
+			_writer = writer;
+			return _this;
+		}
+
+		public abstract void Render();
+
+		public override string ToString()
+		{
+			var w = new HtmlWriter();
+			SetWriter(w);
+			Render();
+			return w.ToString();
 		}
 
 		[Obsolete]
@@ -93,82 +124,44 @@ namespace Nephrite.Html.Controls
 			return _imageSrc;
 		}
 
-		public static implicit operator string(ActionLink l)
+		public static implicit operator string(AbstractActionLink<T> l)
 		{
 			if (l == null) return null;
 			return l.ToString();
 		}
 	}
 
-	public class ActionSimpleLink : ActionLink
+	public class ActionLink : AbstractActionLink<ActionLink>
 	{
-		Action<ATagAttributes> _aTagAttributes = null;
+		Action<ATagAttributes> _attrs = null;
 
-		public ActionSimpleLink Attr(Action<ATagAttributes> customATagAttributes)
+		public ActionLink()
 		{
-			_aTagAttributes = customATagAttributes;
+			_this = this;		
+		}
+
+		public ActionLink Attr(Action<ATagAttributes> aTagAttributes)
+		{
+			_attrs = aTagAttributes;
 			return this;
 		}
 
-		public override string ToString()
+		public override void Render()
 		{
-			HtmlWriter w = new HtmlWriter();
-			w.A(a => { a.Href(Url); if (_aTagAttributes != null) _aTagAttributes(a); }, _title);
-			return w.ToString();
-		}
-	}
-
-	public class ActionImageLink : ActionLink
-	{
-		Action<ATagAttributes> _aTagAttributes = null;
-		Action<ATagAttributes> _aImgTagAttributes = null;
-		Action<ImgTagAttributes> _imgTagAttributes = null;
-
-		public ActionImageLink Attr(Action<ATagAttributes> customATagAttributes = null,
-			Action<ATagAttributes> customAImgTagAttributes = null,
-			Action<ImgTagAttributes> customImgTagAttributes = null)
-		{
-			_aTagAttributes = customATagAttributes;
-			_aImgTagAttributes = customAImgTagAttributes;
-			_imgTagAttributes = customImgTagAttributes;
-			return this;
-		}
-
-		public override string ToString()
-		{
-			Action<ATagAttributes> a1Attr = a => { a.Href(Url); if (_aImgTagAttributes != null) _aImgTagAttributes(a); };
-			Action<ImgTagAttributes> imgAttr = a => { a.Src(IconSet.RootPath + _imageSrc).Alt(_title); if (_imgTagAttributes != null) _imgTagAttributes(a); };
-			Action<ATagAttributes> a2Attr = a => { a.Href(Url); if (_aTagAttributes != null) _aTagAttributes(a); };
-
-			HtmlWriter w = new HtmlWriter();
-			w.A(a1Attr, () => w.Img(imgAttr));
-			w.Write("&nbsp;");
-			w.A(a2Attr, _title);
-			return w.ToString();
+			if (_writer != null)
+				_writer.A(a => { a.Href(Url); if(_attrs != null) _attrs(a); }, () => {
+					if (!_imageSrc.IsEmpty()) _writer.Img(a => a.Src(IconSet.RootPath + _imageSrc).Alt(_title).Class("linkicon"));
+					_writer.Write(_title);
+				});
 		}
 	}
 
 	public class ActionImage : ActionLink
 	{
-		Action<ATagAttributes> _aImgTagAttributes = null;
-		Action<ImgTagAttributes> _imgTagAttributes = null;
-
-		public ActionLink Attr(
-			Action<ATagAttributes> customAImgTagAttributes = null,
-			Action<ImgTagAttributes> customImgTagAttributes = null)
+		public override void Render()
 		{
-			_aImgTagAttributes = customAImgTagAttributes;
-			_imgTagAttributes = customImgTagAttributes;
-
-			return this;
-		}
-
-		public override string ToString()
-		{
-			HtmlWriter w = new HtmlWriter();
-			w.A(a => { a.Href(Url); if (_aImgTagAttributes != null) _aImgTagAttributes(a); }, 
-				() => w.Img(a => { a.Src(IconSet.RootPath + _imageSrc); if (_imgTagAttributes != null) _imgTagAttributes(a); }));
-			return w.ToString();
+			if (_writer != null)
+				_writer.A(a => a.Href(Url), () => _writer.Img(a => a.Src(IconSet.RootPath + _imageSrc)));
 		}
 	}
 }

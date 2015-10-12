@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Framework.DependencyInjection;
@@ -15,6 +16,15 @@ namespace Nephrite
 		{
 			return RequestServices.GetService<T>();
         }
+
+		public static T InjectProperties<T>(this T obj)
+		{
+			var props = obj.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+				.Where(prop => Attribute.IsDefined(prop, typeof(InjectAttribute)));
+			foreach (var prop in props)
+				prop.SetValue(obj, DI.RequestServices.GetService(prop.PropertyType));
+			return obj;
+		}
 	}
 
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]

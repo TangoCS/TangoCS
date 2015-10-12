@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using Microsoft.Framework.DependencyInjection;
+﻿using Microsoft.Framework.DependencyInjection;
 using Newtonsoft.Json;
 using Nephrite.Http;
+using Nephrite.Templating;
 
 namespace Nephrite.MVC
 {
@@ -114,26 +114,12 @@ namespace Nephrite.MVC
 		}
 	}
 
-
-	public class ApiResponse
-	{
-		public Dictionary<string, object> Data { get; set; }
-		public Dictionary<string, object> Widgets { get; set; }
-
-		public ApiResponse()
-		{			
-			Data = new Dictionary<string, object>();
-			Widgets = new Dictionary<string, object>();
-			Data.Add("widgets", Widgets);
-		}
-	}
-
 	public class AjaxResult : ActionResult
 	{
-		public ApiResponse Data { get; private set; }
+		public ApiResponse ApiResponse { get; private set; }
 		public AjaxResult(ApiResponse data)
 		{
-			Data = data;
+			ApiResponse = data;
 			EndResponse = true;
 		}
 
@@ -141,7 +127,7 @@ namespace Nephrite.MVC
 		{
 			var response = context.HttpContext.Response;
 			response.ContentType = "application/json";
-			context.HttpContext.Response.Write(JsonConvert.SerializeObject(Data, Json.CamelCase));
+			context.HttpContext.Response.Write(JsonConvert.SerializeObject(ApiResponse.Data, Json.CamelCase));
         }
 	}
 
