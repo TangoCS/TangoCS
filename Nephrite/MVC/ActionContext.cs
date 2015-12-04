@@ -16,7 +16,11 @@ namespace Nephrite.MVC
 			RouteData = routeData;
 			ViewRendererFactory = viewRendererFactory;
 			TypeActivatorCache = typeActivatorCache;
-        }
+
+			ActionArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
+			EventArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
+			PostData = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
+		}
 
 		public IHttpContext HttpContext { get; private set; }
 		public RouteDataClass RouteData { get; private set; }
@@ -59,5 +63,16 @@ namespace Nephrite.MVC
 			public IDictionary<string, object> DataTokens { get; set; }
 			public IDictionary<string, object> Values { get; set; }
 		}
+
+		public string Service { get; set; }
+		public string Action { get; set; }
+		public string Event { get; set; }
+		public string EventReceiver { get; set; }
+
+		public dynamic ActionArgs { get; set; }
+		public dynamic EventArgs { get; set; }
+
+		public dynamic PostBag { get { return PostData; } }
+		public DynamicDictionary PostData { get; set; }
 	}
 }

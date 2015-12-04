@@ -7,10 +7,17 @@ namespace Nephrite.Html
 {
 	public static class HtmlWriterTagsExtensions
 	{
-		public static void A(this IHtmlWriter w, Action<ATagAttributes> attributes = null, Action inner = null)
+		public static void WriteTag<T>(this IHtmlWriter w, string name, Action<T> attrs, Action inner, bool selfClosing = false)
+			where T : TagAttributes<T>, new()
 		{
-			TagBuilder tb = new TagBuilder("a");
-			if (attributes != null) attributes(new ATagAttributes(tb));
+			TagBuilder tb = new TagBuilder(name);	
+			if (attrs != null)
+			{
+				T ta = new T();
+				ta.IDPrefix = w.IDPrefix;
+				attrs(ta);
+				tb.SetAttributes(ta.Attributes);
+			}
 			if (inner != null)
 			{
 				tb.Render(w, TagRenderMode.StartTag);
@@ -18,497 +25,185 @@ namespace Nephrite.Html
 				tb.Render(w, TagRenderMode.EndTag);
 			}
 			else
-				tb.Render(w);
+				tb.Render(w, selfClosing ? TagRenderMode.SelfClosing : TagRenderMode.Normal);
 		}
 
+		public static void UsingIDPrefix(this IHtmlWriter w, string id, Action content)
+		{
+			var current = w.IDPrefix;
+			w.IDPrefix = current.IsEmpty() ? id : (current + "_" + id);
+			content();
+			w.IDPrefix = current;
+		}
+
+		public static string GetID(this IHtmlWriter w, string id)
+		{
+			return w.IDPrefix.IsEmpty() ? id : (w.IDPrefix + "_" + id);
+		}
+
+		public static void A(this IHtmlWriter w, Action<ATagAttributes> attributes = null, Action inner = null)
+		{
+			w.WriteTag("a", attributes, inner);
+		}
 		public static void B(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("b");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
-		}
-		
+			w.WriteTag("b", attributes, inner);
+		}		
 		public static void Br(this IHtmlWriter w, Action<TagAttributes> attributes = null)
 		{
-			TagBuilder tb = new TagBuilder("br");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			tb.Render(w);
+			w.WriteTag("br", attributes, null, true);
 		}
 		public static void Canvas(this IHtmlWriter w, Action<CanvasTagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("canvas");
-			if (attributes != null) attributes(new CanvasTagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("canvas", attributes, inner);
 		}
 		public static void Col(this IHtmlWriter w, Action<ColTagAttributes> attributes = null)
 		{
-			TagBuilder tb = new TagBuilder("col");
-			if (attributes != null) attributes(new ColTagAttributes(tb));
-			tb.Render(w);
+			w.WriteTag("col", attributes, null, true);
 		}
 		public static void Colgroup(this IHtmlWriter w, Action<ColTagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("colgroup");
-			if (attributes != null) attributes(new ColTagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("colgroup", attributes, inner);
 		}
 		public static void Dd(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("dd");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("dd", attributes, inner);
 		}
 		public static void Div(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("div");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("div", attributes, inner);
 		}
 		public static void Dl(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("dl");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("dl", attributes, inner);
 		}
 		public static void Dt(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("dt");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("dt", attributes, inner);
 		}
 		public static void Em(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("em");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("em", attributes, inner);
 		}
 		public static void Fieldset(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("fieldset");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("fieldset", attributes, inner);
 		}
 		public static void Form(this IHtmlWriter w, Action<FormTagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("form");
-			if (attributes != null) attributes(new FormTagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("form", attributes, inner);
 		}
 		public static void H1(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("h1");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("h1", attributes, inner);
 		}
 		public static void H2(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("h2");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("h2", attributes, inner);
 		}
 		public static void H3(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("h3");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("h3", attributes, inner);
 		}
 		public static void H4(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("h4");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("h4", attributes, inner);
 		}
 		public static void H5(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("h5");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("h5", attributes, inner);
 		}
 		public static void H6(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("h6");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("h6", attributes, inner);
 		}
-
 		public static void I(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("i");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("i", attributes, inner);
 		}
 		public static void Img(this IHtmlWriter w, Action<ImgTagAttributes> attributes = null)
 		{
-			TagBuilder tb = new TagBuilder("img");
-			if (attributes != null) attributes(new ImgTagAttributes(tb));
-			tb.Render(w, TagRenderMode.SelfClosing);
+			w.WriteTag("img", attributes, null, true);
 		}
 		public static void Label(this IHtmlWriter w, Action<LabelTagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("label");
-			if (attributes != null) attributes(new LabelTagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("label", attributes, inner);
+		}
+		public static void Legend(this IHtmlWriter w, Action<TagAttributes> attributes, string text)
+		{
+			w.WriteTag("legend", attributes, () => w.Write(text));
 		}
 		public static void Li(this IHtmlWriter w, Action<LiTagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("li");
-			if (attributes != null) attributes(new LiTagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("li", attributes, inner);
 		}
 		public static void Ol(this IHtmlWriter w, Action<OlTagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("ol");
-			if (attributes != null) attributes(new OlTagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("ol", attributes, inner);
 		}
 		public static void P(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("p");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("p", attributes, inner);
 		}
 		public static void Pre(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("pre");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("pre", attributes, inner);
 		}
 		public static void Q(this IHtmlWriter w, Action<QTagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("q");
-			if (attributes != null) attributes(new QTagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("q", attributes, inner);
 		}
 		public static void S(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("s");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("s", attributes, inner);
 		}
 		public static void Small(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("small");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("small", attributes, inner);
 		}
 		public static void Span(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("span");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("span", attributes, inner);
 		}
 		public static void Sub(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("sub");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("sub", attributes, inner);
 		}
 		public static void Sup(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("sup");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("sup", attributes, inner);
 		}
 		public static void Table(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("table");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("table", attributes, inner);
 		}
 		public static void Tbody(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("tbody");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("tbody", attributes, inner);
 		}
 		public static void Td(this IHtmlWriter w, Action<TdTagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("td");
-			if (attributes != null) attributes(new TdTagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("td", attributes, inner);
 		}
 		public static void Th(this IHtmlWriter w, Action<ThTagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("th");
-			if (attributes != null) attributes(new ThTagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("th", attributes, inner);
 		}
 		public static void Thead(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("thead");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
-		}
-		
+			w.WriteTag("thead", attributes, inner);
+		}		
 		public static void Tr(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("tr");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("tr", attributes, inner);
 		}
 		public static void U(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("u");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("u", attributes, inner);
 		}
 		public static void Ul(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("ul");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("ul", attributes, inner);
 		}
 
 		public static void A(this IHtmlWriter w, Action inner) { w.A(null, inner); }
@@ -568,6 +263,8 @@ namespace Nephrite.Html
 		public static void H4(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H4(attributes, () => w.Write(text)); }
 		public static void H5(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H5(attributes, () => w.Write(text)); }
 		public static void H6(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H6(attributes, () => w.Write(text)); }
+		public static void Legend(this IHtmlWriter w, string text) { w.Legend(null, text); }
+
 	}
 
 
@@ -582,72 +279,27 @@ namespace Nephrite.Html
 
 		public static void Body(this IHtmlPageWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("body");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("body", attributes, inner);
 		}
-
 		public static void Head(this IHtmlPageWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("head");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("head", attributes, inner);
 		}
-
 		public static void Html(this IHtmlPageWriter w, Action<HtmlTagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("html");
-			if (attributes != null) attributes(new HtmlTagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("html", attributes, inner);
 		}
-
 		public static void Link(this IHtmlPageWriter w, Action<LinkTagAttributes> attributes = null)
 		{
-			TagBuilder tb = new TagBuilder("link");
-			if (attributes != null) attributes(new LinkTagAttributes(tb));
-			tb.Render(w);
+			w.WriteTag("link", attributes, null, true);
 		}
-
 		public static void Meta(this IHtmlPageWriter w, Action<MetaTagAttributes> attributes = null)
 		{
-			TagBuilder tb = new TagBuilder("meta");
-			if (attributes != null) attributes(new MetaTagAttributes(tb));
-			tb.Render(w);
+			w.WriteTag("meta", attributes, null, true);
 		}
-
 		public static void Title(this IHtmlPageWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
-			TagBuilder tb = new TagBuilder("title");
-			if (attributes != null) attributes(new TagAttributes(tb));
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w);
+			w.WriteTag("title", attributes, inner);
 		}
 
 		public static void Body(this IHtmlPageWriter w, Action inner) { w.Body(null, inner); }

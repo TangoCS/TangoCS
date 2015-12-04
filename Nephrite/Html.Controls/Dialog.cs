@@ -13,33 +13,31 @@ namespace Nephrite.Html.Controls
 
 	public static class DialogExtensions
 	{
-		public static ActionLink ActionOpenDialogLink(this HtmlHelper html, DialogOptions options, string title = null, Action<ATagAttributes> customATagAttributes = null)
+		public static ActionLink ActionOpenDialogLink(this IHtmlWriter w, DialogOptions options, string title = null, Action<ATagAttributes> customATagAttributes = null)
 		{
 			return new OpenDialogLink().Link(options, title, customATagAttributes);
 		}
 
-		public static void Dialog(this HtmlWriter w, string id, string title, Action body, Action footer)
+		public static void Dialog(this IHtmlWriter w, string id, string title, Action body, Action footer)
 		{
-			w.Div(a => a.ID(id).Class("modal-dialog").Role("dialog").Style("display: none"), () => 
-			{
-				w.Div(a => a.Class("modal-header"), () =>
-				{
-					w.Button(null, a => a.Class("close").Aria("label", "Close").OnClick("dialog.hide(this)"), () => {
+			w.Div(a => a.ID("dialog").Class("modal-dialog").Role("dialog").Style("display: none"), () => {
+				w.Div(a => a.Class("modal-header"), () => {
+					w.Button(a => a.Class("close").Aria("label", "Close").OnClick($"dialog.hide('{id}')"), () => {
 						w.Span(a => a.Aria("hidden", "true"), "x");
 					});
-					w.H3(a => a.Class("modal-title"), title);
+					w.H3(a => a.ID("title").Class("modal-title"), title);
 				});
-				w.Div(a => a.Class("modal-body"), body);
-				w.Div(a => a.Class("modal-footer"), footer);
+				w.Div(a => a.ID("body").Class("modal-body"), body);
+				w.Div(a => a.ID("footer").Class("modal-footer"), footer);
 			});
 		}
 
-		public static void Dialog_Footer_OKCancelButtons(this HtmlWriter w)
-		{
-			w.Button(null, "ОК", a => a.Class("ms-ButtonHeightWidth").OnClick("dialog.submit(this)"));
-			w.Write("&nbsp;");
-			w.Button(null, "Отмена", a => a.Class("ms-ButtonHeightWidth").OnClick("dialog.hide(this)"));
-		}
+		//public static void Dialog_Footer_OKCancelButtons(this IHtmlWriter w)
+		//{
+		//	w.Button(a => a.Class("ms-ButtonHeightWidth").OnClick("dialog.submit(this)"), "OK");
+		//	w.Write("&nbsp;");
+		//	w.Button(a => a.Class("ms-ButtonHeightWidth").OnClick("dialog.hide(this)"), "Отмена");
+		//}
     }
 
 	public class OpenDialogLink : ActionLink

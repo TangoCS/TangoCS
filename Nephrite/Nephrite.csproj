@@ -191,9 +191,11 @@
     </Compile>
     <Compile Include="Multilanguage\TextResource.cs" />
     <Compile Include="TypeFactory.cs" />
+    <Compile Include="Validation.cs" />
     <Compile Include="XmlHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Html.Layout\LayoutWriter.ClientActions.cs" />
     <None Include="Nephrite.snk" />
     <None Include="packages.config" />
   </ItemGroup>

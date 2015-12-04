@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Nephrite.Multilanguage;
+using Nephrite.MVC;
 using Nephrite.Templating;
 
 namespace Nephrite.Html.Layout
@@ -7,44 +9,15 @@ namespace Nephrite.Html.Layout
 	public class LayoutWriter : HtmlWriter
 	{
 		public ITextResource TextResource { get; private set; }
-		public CsTemplateContext Context { get; private set; }
+		public ActionContext Context { get; private set; }
+		public List<ClientAction> ClientActions { get; set; }
 
-		public LayoutWriter(CsTemplateContext context, ITextResource textResource)
+		public LayoutWriter(ActionContext context, ITextResource textResource)
         {
 			TextResource = textResource;
 			Context = context;
-        }
-
-		public void FormTable(Action<TagAttributes> attributes, Action content)
-		{
-			this.Table(a => { a.Class("ms-formtable"); if (attributes != null) attributes(a); }, content);
+			ClientActions = new List<ClientAction>();
 		}
-
-		public void FormRow(string id, string title, string comment, bool required, Action content)
-		{
-			this.Tr(a => a.ID(id), () => {
-				this.Td(a => a.Class("ms-formlabel").Style("width:190px"), () => {
-					Write(title);
-					if (required)
-						this.Span(a => a.Class("ms-formvalidation"), "&nbsp;*");
-					if (!comment.IsEmpty())
-						this.Div(
-							a => a.Class("ms-descriptiontext").Style("font-weight:normal; margin:3px 0 0 1px"),
-							() => Write(comment)
-						);
-				});
-				this.Td(a => a.Class("ms-formbody"), content);
-			});
-		}
-
-		public void FormRow(string id, string title, string comment, bool required, object content)
-		{
-			FormRow(id, title, comment, required, () =>
-				Write(content == null || (content is string && (string)content == "") ? "&nbsp;" : content.ToString())
-			);
-		}
-
-
 
 		public void ListTable(Action<TagAttributes> attributes, Action<ListTableWriter> content)
 		{
@@ -54,16 +27,6 @@ namespace Nephrite.Html.Layout
 		public void ButtonsBar(Action<TagAttributes> attributes, Action<ButtonsBarWriter> content)
 		{
 			new ButtonsBarWriter(this, attributes, content);
-		}
-
-		public void GroupTitle(Action<TagAttributes> attributes, Action content)
-		{
-			this.Div(a => { a.Class("tabletitle"); attributes(a); }, content);
-		}
-
-		public void FormMargin(Action inner)
-		{
-			this.Div(a => a.Style("padding:8px"), inner);
 		}
 
 		public class ButtonsBarWriter
@@ -125,7 +88,5 @@ namespace Nephrite.Html.Layout
 			}
 		}
 
-	}
-
-	
+	}	
 }

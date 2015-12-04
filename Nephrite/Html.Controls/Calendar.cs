@@ -4,12 +4,13 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using Nephrite.Data;
+using Nephrite.Html.Layout;
 
 namespace Nephrite.Html.Controls
 {
 	public static class CalendarExtension
 	{
-		public static void Calendar(this HtmlWriter c, string name, DateTime? value = null, bool enabled = true, bool showTime = false)
+		public static void Calendar(this LayoutWriter c, string name, DateTime? value = null, bool enabled = true, bool showTime = false)
 		{
 			string basePath = GlobalSettings.JSPath + "Calendar/";
 
@@ -23,41 +24,20 @@ namespace Nephrite.Html.Controls
 			);
 			if (enabled)
 			{
-				c.Input(
-					"btn" + name, 
-					a => a.ID("btn" + name).Type(InputType.Button).Title("Календарь").Src(basePath + "img.gif")
-				);
+				c.Img(a => a.ID("btn" + name).Title("Календарь").Src(basePath + "img.gif"));
 			}
 
 			if (enabled)
-			{
-				StringBuilder init = new StringBuilder();
-				init.AppendFormat(@"if (document.getElementById('{0}') != null) Calendar.setup(
-                    {
-                      inputField  : ""{0}"",
-                      button      : ""btn{0}"",
-                      showOthers  : true,
-                      weekNumbers : false,", name);
-				if (ConfigurationManager.AppSettings["UseCalendarDaysInJSCalendar"] == "true")
-					init.Append("dateStatusFunc : jscal_calendarDate,");
-
-				if (showTime)
-				{
-					init.Append(@"
-                      ifFormat    : ""%d.%m.%Y %H:%M"",
-                      showsTime   : true,
-                      timeFormat  : ""24""
-                    }
-                 );");
-				}
-				else
-				{
-					init.Append(@"
-                      ifFormat    : ""%d.%m.%Y""
-                    }
-                 );");
-				}
-//				c.Page.RegisterStartupScript("calendar-" + name, init.ToString());
+				c.AddClientAction("Calendar", "setup", new {
+					inputField = c.GetID(name),
+					button = c.GetID("btn" + name),
+					showOthers = true,
+					weekNumbers = false,
+					showTime = showTime,
+					ifFormat = showTime ? "%d.%m.%Y %H:%M" : "%d.%m.%Y",
+					timeFormat = "24",
+					dateStatusFunc = ConfigurationManager.AppSettings["UseCalendarDaysInJSCalendar"] == "true" ? "jscal_calendarDate" : null
+				});
 
 //				if (ConfigurationManager.AppSettings["UseCalendarDaysInJSCalendar"] == "true")
 //				{
@@ -79,7 +59,7 @@ namespace Nephrite.Html.Controls
 //		return 'cal-workingday';
 //}");
 //				}
-			}
+			
 		}
 	}
 

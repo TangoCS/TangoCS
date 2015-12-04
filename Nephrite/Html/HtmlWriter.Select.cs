@@ -8,44 +8,34 @@ namespace Nephrite.Html
 	{
 		public static void DropDownList(this IHtmlWriter w, string name, string value, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
 		{
-			TagBuilder tb = new TagBuilder("select");
-			SelectTagAttributes ta = new SelectTagAttributes(tb);
-			ta.Name(name);
-			if (attributes != null) attributes(ta);
-			tb.Render(w, TagRenderMode.StartTag);
-
-			foreach (var item in items)
-			{
-				TagBuilder tb_o = new TagBuilder("option");
-				OptionTagAttributes oa = new OptionTagAttributes(tb_o);
-				oa.Value(item.Value).Selected(item.Selected || item.Value == value);
-				tb_o.Render(w, TagRenderMode.StartTag);
-				w.Write(item.Text);
-				tb_o.Render(w, TagRenderMode.EndTag);
-			}
-
-			tb.Render(w, TagRenderMode.EndTag);
+			Action<SelectTagAttributes> a = ta => {
+				ta.Name(name).ID(name);
+				if (attributes != null) attributes(ta);
+			};
+			w.WriteTag("select", a, () => {
+				foreach (var item in items)
+				{
+					w.WriteTag<OptionTagAttributes>("option", 
+						oa => oa.Value(item.Value).Selected(item.Selected || item.Value == value), 
+						() => w.Write(item.Text));
+				}
+			});
 		}
 
-		public static void ListBox(this IHtmlWriter w, string name, IEnumerable<string> values, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
+		public static void ListBox(this IHtmlWriter w, string name, int size, IEnumerable<string> values, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
 		{
-			TagBuilder tb = new TagBuilder("select");
-			SelectTagAttributes ta = new SelectTagAttributes(tb);
-			ta.Name(name);
-			if (attributes != null) attributes(ta);
-			tb.Render(w, TagRenderMode.StartTag);
-
-			foreach (var item in items)
-			{
-				TagBuilder tb_o = new TagBuilder("option");
-				OptionTagAttributes oa = new OptionTagAttributes(tb_o);
-				oa.Value(item.Value).Selected(item.Selected || (values != null && values.Contains(item.Value)));
-				tb_o.Render(w, TagRenderMode.StartTag);
-				w.Write(item.Text);
-				tb_o.Render(w, TagRenderMode.EndTag);
-			}
-
-			tb.Render(w, TagRenderMode.EndTag);
+			Action<SelectTagAttributes> a = ta => {
+				ta.Name(name).ID(name).Size(size);
+				if (attributes != null) attributes(ta);
+			};
+			w.WriteTag("select", a, () => {
+				foreach (var item in items)
+				{
+					w.WriteTag<OptionTagAttributes>("option",
+						oa => oa.Value(item.Value).Selected(item.Selected || (values != null && values.Contains(item.Value))),
+						() => w.Write(item.Text));
+				}
+			});
 		}
 	}
 
@@ -54,5 +44,16 @@ namespace Nephrite.Html
 		public string Text { get; set; }
 		public string Value { get; set; }
 		public bool Selected { get; set; }
+
+		public SelectListItem()
+		{
+		}
+
+		public SelectListItem(string text, string value, bool selected = false)
+		{
+			Text = text;
+			Value = value;
+			Selected = selected;
+		}
 	}
 }

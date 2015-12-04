@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Nephrite.Html.Layout;
 using Nephrite.MVC;
 
 namespace Nephrite.Templating
@@ -24,39 +25,20 @@ namespace Nephrite.Templating
 
 	public interface ICsTemplate
 	{
-		CsTemplateContext Context { get; }
-		CsTemplate SetContext(CsTemplateContext context);
-		ActionResult Execute();
+		string ID { get; }
+		ActionContext Context { get; set; }
 		string ToString();
+		LayoutWriter CreateLayoutWriter();
 	}
 
 	public abstract class CsTemplate : ICsTemplate
 	{
-		public CsTemplateContext Context { get; private set; }
+		public string ID { get; set; }
+		public ActionContext Context { get; set; }
 		public abstract ActionResult Execute();
+		public abstract LayoutWriter CreateLayoutWriter();
 
-		public CsTemplate SetContext(CsTemplateContext context)
-		{
-			Context = context;
-			return this;
-		}
-	}
-
-	public class CsTemplateContext
-	{
-		public string Service { get; set; }
-		public string Action { get; set; }
-		public string Event { get; set; }
-
-		public dynamic ActionArgs { get; set; }
-		public dynamic EventArgs { get; set; }
-
-		public dynamic Data { get; set; }
-
-		public CsTemplateContext()
-		{
-			ActionArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
-			EventArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
-		}
+		protected dynamic PostBag { get { return Context.PostData; } }
+		protected DynamicDictionary PostData { get { return Context.PostData; } }
 	}
 }

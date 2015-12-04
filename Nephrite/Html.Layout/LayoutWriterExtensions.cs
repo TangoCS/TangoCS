@@ -64,6 +64,22 @@ namespace Nephrite.Html.Layout
 
 	public static class FormTableExtensions
 	{
+		public static void FormTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+		{
+			w.Table(a => { a.Class("ms-formtable"); if (attributes != null) attributes(a); }, content);
+		}
+
+		public static void GroupTitle(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+		{
+			w.Div(a => { a.Class("tabletitle"); attributes(a); }, content);
+		}
+
+		public static void FormMargin(this LayoutWriter w, Action inner)
+		{
+			w.Div(a => a.Style("padding:8px"), inner);
+		}
+
+
 		public static void FormTable(this LayoutWriter w, Action content)
 		{
 			w.FormTable(null, content);
@@ -82,44 +98,6 @@ namespace Nephrite.Html.Layout
 		public static void GroupTitle(this LayoutWriter w, string content)
 		{
 			w.GroupTitle(null, content);
-		}
-
-		public static void FormRow(this LayoutWriter w, string title, string comment, bool required, Action content)
-		{
-			w.FormRow(null, title, comment, required, content);
-		}
-		public static void FormRow(this LayoutWriter w, string title, string comment, bool required, object content)
-		{
-			w.FormRow(null, title, comment, required, content);
-		}
-
-		public static void FormRow(this LayoutWriter w, string title, bool required, Action content)
-		{
-			w.FormRow(title, "", required, content);
-		}
-		public static void FormRow(this LayoutWriter w, string title, Action content)
-		{
-			w.FormRow(title, "", false, content);
-		}
-
-		public static void FormRow(this LayoutWriter w, string title, object content)
-		{
-			w.FormRow(title, "", false, content);
-		}
-
-		public static void FormRow(this LayoutWriter w, MetaProperty prop, object content)
-		{
-			w.FormRow(prop.Caption, content);
-		}
-
-		public static void FormRow(this LayoutWriter w, MetaAttribute attr, string value)
-		{
-			w.FormRow(attr.Caption, value);
-		}
-
-		public static void FormRow<T>(this LayoutWriter w, MetaAttribute attr, T model)
-		{
-			w.FormRow(attr.Caption, attr.GetStringValue(model));
 		}
 	}
 }

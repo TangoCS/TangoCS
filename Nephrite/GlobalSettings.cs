@@ -9,7 +9,11 @@ namespace Nephrite
 {
 	public static class GlobalSettings
 	{
-		static Lazy<string> _jsPath = new Lazy<string>(() => ConfigurationManager.AppSettings["JSPath"] ?? "/js/");
+		static Lazy<string> _jsPath = new Lazy<string>(() => {
+			var s = ConfigurationManager.AppSettings["JSPath"] ?? "/js";
+			if (!s.EndsWith("/")) s += "/";
+			return s;
+		});
 		public static string JSPath { get { return _jsPath.Value; } }
 
 		static Lazy<string> _controlsPath = new Lazy<string>(() => ConfigurationManager.AppSettings["ControlsPath"] ?? "Views");

@@ -12,7 +12,6 @@ namespace Nephrite.Html
 		public TagBuilder(string tagName)
 		{
 			TagName = tagName;
-			Attributes = new SortedDictionary<string, string>(StringComparer.Ordinal);
 		}
 
 		public IDictionary<string, string> Attributes { get; private set; }
@@ -27,6 +26,7 @@ namespace Nephrite.Html
 
 		private void AppendAttributes(IHtmlWriter w)
 		{
+			if (Attributes == null) return;
 			foreach (var attribute in Attributes)
 			{
 				string key = attribute.Key;
@@ -42,36 +42,15 @@ namespace Nephrite.Html
 			}
 		}
 
-		public void MergeAttribute(string key, string value, bool replaceExisting = false)
+		public void SetAttributes(IDictionary<string, string> attributes)
 		{
-			if (replaceExisting || !Attributes.ContainsKey(key))
-			{
-				Attributes[key] = value;
-			}
-		}
-
-		public void MergeAttributes<TKey, TValue>(IDictionary<TKey, TValue> attributes, bool replaceExisting = false)
-		{
-			if (attributes != null)
-			{
-				foreach (var entry in attributes)
-				{
-					string key = Convert.ToString(entry.Key, CultureInfo.InvariantCulture);
-					string value = Convert.ToString(entry.Value, CultureInfo.InvariantCulture);
-					MergeAttribute(key, value, replaceExisting);
-				}
-			}
+			Attributes = attributes;
 		}
 
 		public void SetInnerText(string innerText)
 		{
 			InnerHtml = WebUtility.HtmlEncode(innerText);
 		}
-
-		//public override string ToString()
-		//{
-		//	return ToString(TagRenderMode.Normal);
-		//}
 
 		public void Render(IHtmlWriter w, TagRenderMode renderMode = TagRenderMode.Normal)
 		{
@@ -106,11 +85,6 @@ namespace Nephrite.Html
 					break;
 			}
 		}
-
-		//public string ToString(TagRenderMode renderMode)
-		//{
-		//	return Render(renderMode).ToString();
-		//}
 	}
 
 	public enum TagRenderMode

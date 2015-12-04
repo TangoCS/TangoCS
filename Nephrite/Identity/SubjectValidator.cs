@@ -88,7 +88,7 @@ namespace Nephrite.Identity
 
 			if (_options.RequireEmail && String.IsNullOrEmpty(email))
 			{
-				res.Add(new ValidationMessage("Необходимо ввести имя email!"));
+				res.Add(new ValidationMessage("Необходимо ввести email!"));
 			}
 
 			if (_options.RequireUniqueEmail && _dc.SubjectFromEmail<Subject<TKey>>(email) != null)
