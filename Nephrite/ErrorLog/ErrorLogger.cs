@@ -16,17 +16,18 @@ namespace Nephrite.ErrorLog
 	public class ErrorLogger : IErrorLogger
     {
 		IHttpContext _httpContext;
-		IDC_ErrorLog _dataContext;
+		IDataContextActivator _dcActivator;
 		Func<bool> _exceptionFilter;
 
 		public ErrorLogger(
 			IHttpContext httpContext,
-			IDC_ErrorLog dataContext,
+			IDataContextActivator dcActivator,
+			//IDC_ErrorLog dataContext,
 			Func<bool> exceptionFilter = null
 			)
 		{
 			_httpContext = httpContext;
-			_dataContext = dataContext;
+			_dcActivator = dcActivator;
 			_exceptionFilter = exceptionFilter;
 		}
 
@@ -70,20 +71,20 @@ namespace Nephrite.ErrorLog
 
 				errorInfo.Append(errortext.ToString());
 
-				using (var dc = _dataContext.NewDataContext() as IDC_ErrorLog)
+				using (var dc = _dcActivator.CreateInstance<IDC_ErrorLog>())
                 {
                     IErrorLog l = dc.NewIErrorLog();
                     l.ErrorDate = DateTime.Now;
                     l.ErrorText = errortext.ToString();
                     l.Headers = "";
 
-					StringBuilder headers = new StringBuilder();
-					if (r != null)
-						for (int i = 0; i < r.Headers.Count; i++)
-							headers.AppendLine(r.Headers.GetKey(i) + ": " + r.Headers[i]);
-					l.Headers = headers.ToString();
+					//StringBuilder headers = new StringBuilder();
+					//if (r != null)
+					//	for (int i = 0; i < r.Headers.Count; i++)
+					//		headers.AppendLine(r.Headers.GetKey(i) + ": " + r.Headers[i]);
+					//l.Headers = headers.ToString();
 					l.RequestType = r.Method;
-					if (r != null) l.Url = r.Url.AbsoluteUri;
+					if (r != null) l.Url = r.QueryString;
 					//l.UrlReferrer = r.UrlReferrer == null ? "" : r.UrlReferrer.AbsoluteUri;
 					if (_httpContext != null) l.UserName = _httpContext.User.Identity.Name;
 					//l.UserAgent = r.UserAgent;

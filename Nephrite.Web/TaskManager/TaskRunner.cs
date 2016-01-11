@@ -1,6 +1,4 @@
 ﻿using System;
-using Nephrite.Web.CoreDataContext;
-using Microsoft.Framework.DependencyInjection;
 using Nephrite.Data;
 
 namespace Nephrite.Web.TaskManager
@@ -9,23 +7,24 @@ namespace Nephrite.Web.TaskManager
 	{
 		public static void RunTasks(string interopServiceUrl, string connectionString, string dbType)
 		{
-			Nephrite.Web.Hibernate.TaskManagerServiceRerefence.TaskManagerService svc =
-				new Nephrite.Web.Hibernate.TaskManagerServiceRerefence.TaskManagerService();
+			TaskManagerServiceReference.TaskManagerService svc = new TaskManagerServiceReference.TaskManagerService();
 			svc.Url = interopServiceUrl;
 			svc.AllowAutoRedirect = true;
 			svc.UseDefaultCredentials = true;
 			svc.PreAuthenticate = true;
 			svc.Timeout = 1000 * 60 * 30; // 30 минут
 
-			ConnectionManager.SetConnectionString(connectionString);
+			ConnectionManager.ConnectionString = connectionString;
 
 			DBType? dbtypeenum = Enum.Parse(typeof(DBType), dbType.ToUpper()) as DBType?;
 			if (dbtypeenum == null) throw new Exception("Incorrect DBType parameter");
 
-			A.DBType = dbtypeenum.Value;
-			A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
+			ConnectionManager.DBType = dbtypeenum.Value;
+			var dca = A.RequestServices.GetService<IDataContextActivator>();
+			A.Model = dca.CreateInstance(ConnectionManager.ConnectionString);
+			//A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
 
-			var settings = DI.RequestServices.GetService<IPersistentSettings>();
+			var settings = A.RequestServices.GetService<IPersistentSettings>();
 
 			var sl = settings.Get("ReplicationLogin");
 			if (sl.IsEmpty())
@@ -34,9 +33,9 @@ namespace Nephrite.Web.TaskManager
 			if (sp.IsEmpty())
 				throw new Exception("Системный параметр ReplicationPassword отсутствует или не задан");
 
-			svc.UserCredentialsValue = new Nephrite.Web.Hibernate.TaskManagerServiceRerefence.UserCredentials { Login = sl, Password = sp };
+			svc.UserCredentialsValue = new TaskManagerServiceReference.UserCredentials { Login = sl, Password = sp };
 
-			Nephrite.Web.TaskManager.TaskManager.RunService(connectionString);
+			TaskManager.RunService(connectionString);
 			A.Model.Dispose();
 
 			svc.RunTasks();

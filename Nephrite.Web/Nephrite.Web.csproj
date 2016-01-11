@@ -112,20 +112,27 @@
     <Content Include="js\modalwindow.js" />
     <Content Include="js\popup2.js" />
     <Content Include="Replication\Replication.asmx" />
+    <Content Include="TaskManager\TaskManagerService.asmx" />
     <Content Include="View\Message\show.ascx" />
     <Content Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </Content>
-    <Content Include="Web References\ReplicationService\Reference.map">
+    <Content Include="Web References\ReplicationServiceReference\Reference.map">
       <Generator>MSDiscoCodeGenerator</Generator>
       <LastGenOutput>Reference.cs</LastGenOutput>
     </Content>
-    <Content Include="Web References\ReplicationService\Replication.disco" />
-    <Content Include="Web.config" />
-    <Content Include="Web References\ReplicationService\ReplicationObject.datasource">
+    <Content Include="Web References\ReplicationServiceReference\Replication.disco" />
+    <Content Include="Web References\ReplicationServiceReference\ReplicationObject1.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
+    <None Include="Web References\TaskManagerServiceReference\Reference.map">
+      <Generator>MSDiscoCodeGenerator</Generator>
+      <LastGenOutput>Reference.cs</LastGenOutput>
+    </None>
+    <None Include="Web References\TaskManagerServiceReference\TaskManagerService.disco" />
+    <Content Include="Web.config" />
+    <None Include="Web References\TaskManagerServiceReference\TaskManagerService.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\BaseControl.cs" />
@@ -153,6 +160,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.en.resx</DependentUpon>
     </Compile>
+    <Compile Include="TaskManager\TaskManagerService.asmx.cs">
+      <DependentUpon>TaskManagerService.asmx</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="TaskManager\TaskRunner.cs" />
+    <Compile Include="Web References\TaskManagerServiceReference\Reference.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Reference.map</DependentUpon>
+    </Compile>
     <Compile Include="Web\AppWeb.cs" />
     <Compile Include="Model\A.cs" />
     <Compile Include="MVC\MasterControl.cs">
@@ -179,7 +196,7 @@
     <Compile Include="View\StandardUndelete.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Web References\ReplicationService\Reference.cs">
+    <Compile Include="Web References\ReplicationServiceReference\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Reference.map</DependentUpon>
@@ -197,7 +214,6 @@
     <Compile Include="Controls\CodeArea.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Web\ConnectionManager.cs" />
     <Compile Include="Controls\CaptchaImage.cs" />
     <Compile Include="Controls\BackButton.cs" />
     <Compile Include="Controls\CodeMirror.cs">
@@ -334,9 +350,7 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\Tree.cs" />
-    <Compile Include="Controls\TreeView.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
+    <Compile Include="Controls\TreeView.cs" />
     <Compile Include="Controls\UpdatePanel.cs" />
     <Compile Include="Controls\UpdatePanelEx.cs" />
     <Compile Include="Controls\word.ascx.cs">
@@ -370,6 +384,7 @@
     <Compile Include="Model\ICalendarObject.cs" />
     <Compile Include="FileStorage\ImageHandler.cs" />
     <Compile Include="Model\IModelObject.cs" />
+    <Compile Include="Web\DefaultAppContext.cs" />
     <Compile Include="Web\Impersonation.cs" />
     <Compile Include="MVC\PageParser.cs" />
     <Compile Include="Web\ObjectPropertyChange.cs" />
@@ -456,7 +471,7 @@
     <Content Include="View\TinyMCEFileManager\list.ascx" />
     <Content Include="View\TinyMCEFileManager\upload.ascx" />
     <Content Include="packages.config" />
-    <Content Include="Web References\ReplicationService\Replication.wsdl" />
+    <Content Include="Web References\ReplicationServiceReference\Replication.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -472,14 +487,16 @@
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
+  </ItemGroup>
   <ItemGroup>
     <WebReferences Include="Web References\" />
   </ItemGroup>
   <ItemGroup>
     <WebReferenceUrl Include="http://localhost:51278/Replication/Replication.asmx">
       <UrlBehavior>Dynamic</UrlBehavior>
-      <RelPath>Web References\ReplicationService\</RelPath>
+      <RelPath>Web References\ReplicationServiceReference\</RelPath>
       <UpdateFromURL>http://localhost:51278/Replication/Replication.asmx</UpdateFromURL>
       <ServiceLocationURL>
       </ServiceLocationURL>
@@ -487,6 +504,17 @@
       </CachedDynamicPropName>
       <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
       <CachedSettingsPropName>Nephrite_Web_ReplicationService_Replication</CachedSettingsPropName>
+    </WebReferenceUrl>
+    <WebReferenceUrl Include="http://localhost:51278/TaskManager/TaskManagerService.asmx">
+      <UrlBehavior>Dynamic</UrlBehavior>
+      <RelPath>Web References\TaskManagerServiceReference\</RelPath>
+      <UpdateFromURL>http://localhost:51278/TaskManager/TaskManagerService.asmx</UpdateFromURL>
+      <ServiceLocationURL>
+      </ServiceLocationURL>
+      <CachedDynamicPropName>
+      </CachedDynamicPropName>
+      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
+      <CachedSettingsPropName>Nephrite_Web_TaskManagerService_TaskManagerService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>
@@ -497,10 +525,6 @@
     <ProjectReference Include="..\Nephrite\Nephrite.csproj">
       <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
       <Name>Nephrite</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\vNext\vNext.csproj">
-      <Project>{b836e522-1b0e-4fc4-8c81-d32433f97068}</Project>
-      <Name>vNext</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

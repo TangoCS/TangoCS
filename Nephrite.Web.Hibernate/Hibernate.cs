@@ -7,7 +7,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Nephrite.Data;
-using Nephrite.Identity;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
@@ -20,8 +19,6 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Transform;
 using NHibernate.Type;
-
-
 
 namespace Nephrite.Web.Hibernate
 {
@@ -98,7 +95,6 @@ namespace Nephrite.Web.Hibernate
 					_cfg = _configs[t];
 				else
 				{
-					_cfg = new NHibernate.Cfg.Configuration();
 					_cfg = new Configuration();
 					_cfg.DataBaseIntegration(_dbConfig);
 
@@ -106,10 +102,12 @@ namespace Nephrite.Web.Hibernate
 					//Log.WriteLine(String.Format("-- {1} create {0} DataBaseIntegration", ID, sw.Elapsed.ToString()));
 
 					_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" } });
-					_cfg.SetInterceptor(new HDataContextInterceptor());
+					
 
 					if (_listeners != null)
 					{
+						if (_listeners.Interceptor != null) _cfg.SetInterceptor(_listeners.Interceptor);
+
 						_cfg.EventListeners.PreDeleteEventListeners = _listeners.PreDeleteEventListeners.ToArray();
 						_cfg.EventListeners.PreInsertEventListeners = _listeners.PreInsertEventListeners.ToArray();
 						_cfg.EventListeners.PreUpdateEventListeners = _listeners.PreUpdateEventListeners.ToArray();
@@ -229,7 +227,7 @@ namespace Nephrite.Web.Hibernate
 
 				foreach (var action in BeforeSaveActions) action();
 				foreach (object obj in ToDelete) _session.Delete(obj);
-				foreach (object obj in ToInsert) { SetTimeStamp(obj); _session.SaveOrUpdate(obj); }
+				foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
 				foreach (object obj in ToAttach) _session.Merge(obj);
 
 				ToDelete.Clear();
@@ -238,7 +236,7 @@ namespace Nephrite.Web.Hibernate
 
 				foreach (var action in AfterSaveActions) action();
 				foreach (object obj in ToDelete) _session.Delete(obj);
-				foreach (object obj in ToInsert) { SetTimeStamp(obj); _session.SaveOrUpdate(obj); }
+				foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
 				foreach (object obj in ToAttach) _session.Merge(obj);
 				
 				ToDelete.Clear();
@@ -261,19 +259,19 @@ namespace Nephrite.Web.Hibernate
 			}
 		}
 
-		void SetTimeStamp(object obj)
-		{
-			int sid = -1;
+		//void SetTimeStamp(object obj)
+		//{
+		//	int sid = -1;
 
-			if (obj is IWithTimeStamp)
-			{
-				if (sid == -1) sid = Subject.Current.ID;
+		//	if (obj is IWithTimeStamp)
+		//	{
+		//		if (sid == -1) sid = Subject.Current.ID;
 
-				var obj2 = obj as IWithTimeStamp;
-				obj2.LastModifiedDate = DateTime.Now;
-				obj2.LastModifiedUserID = sid;
-			}
-		}
+		//		var obj2 = obj as IWithTimeStamp;
+		//		obj2.LastModifiedDate = DateTime.Now;
+		//		obj2.LastModifiedUserID = sid;
+		//	}
+		//}
 
 		public void Dispose()
 		{
@@ -324,8 +322,8 @@ namespace Nephrite.Web.Hibernate
 			}
 		}
 
-		abstract public IDataContext NewDataContext();
-		abstract public IDataContext NewDataContext(string connectionString);
+		//abstract public IDataContext NewDataContext();
+		//abstract public IDataContext NewDataContext(string connectionString);
 
 		public int ExecuteCommand(string command, params object[] parameters)
 		{
@@ -456,22 +454,20 @@ namespace Nephrite.Web.Hibernate
 		List<IPostDeleteEventListener> _postDeleteEventListeners = new List<IPostDeleteEventListener>();
 		List<IPostInsertEventListener> _postInsertEventListeners = new List<IPostInsertEventListener>();
 		List<IPostUpdateEventListener> _postUpdateEventListeners = new List<IPostUpdateEventListener>();
-
 		List<ISaveOrUpdateEventListener> _saveOrUpdateEventListeners = new List<ISaveOrUpdateEventListener>();
 
+		public IInterceptor Interceptor { get; set; }
 
 		public List<IPreDeleteEventListener> PreDeleteEventListeners { get { return _preDeleteEventListeners; } }
 		public List<IPreInsertEventListener> PreInsertEventListeners { get { return _preInsertEventListeners; } }
 		public List<IPreUpdateEventListener> PreUpdateEventListeners { get { return _preUpdateEventListeners; } }
-
 		public List<IPostDeleteEventListener> PostDeleteEventListeners { get { return _postDeleteEventListeners; } }
 		public List<IPostInsertEventListener> PostInsertEventListeners { get { return _postInsertEventListeners; } }
 		public List<IPostUpdateEventListener> PostUpdateEventListeners { get { return _postUpdateEventListeners; } }
-
 		public List<ISaveOrUpdateEventListener> SaveOrUpdateEventListeners { get { return _saveOrUpdateEventListeners; } }
 	}
 
-	public class HTable : IQueryable, ITable
+	public class HTable : ITable
 	{
 		protected HDataContext _dataContext;
 		protected IQueryable _query;

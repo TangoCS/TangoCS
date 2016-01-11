@@ -1,16 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
-using System.IO;
-using System.Web.UI.WebControls;
-
 using Nephrite.Identity;
-using Nephrite.Multilanguage;
-using Nephrite.Http;
-using Nephrite.MVC;
 using Nephrite.Web;
-using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.FileStorage
 {
@@ -18,20 +9,16 @@ namespace Nephrite.FileStorage
 	{
 		public static bool GetFile(HttpContext context, out byte[] data, out string fileName, out string contentType)
 		{
-			return GetFile(context.Request.Url.Query, context.Request.UserHostAddress, false, out data, out fileName, out contentType);
+			return GetFile(context.Request.Url.Query, context.Request.UserHostAddress, out data, out fileName, out contentType);
 		}
-		public static bool GetFile(HttpContext context, bool logDownload, out byte[] data, out string fileName, out string contentType)
-		{
-			return GetFile(context.Request.Url.Query, context.Request.UserHostAddress, logDownload, out data, out fileName, out contentType);
-		}
-		public static bool GetFile(string query, string ip, bool logDownload, out byte[] data, out string fileName, out string contentType)
+		public static bool GetFile(string query, string ip, out byte[] data, out string fileName, out string contentType)
 		{
 			string ownerguid = HttpContext.Current.Request.QueryString.Get("o");
 			string guid = HttpContext.Current.Request.QueryString.Get("guid");
 			string path = HttpUtility.UrlDecode(HttpContext.Current.Request.QueryString.Get("path"));
 			IStorageFile file = null;
 			IStorageFolder folder = null;
-			var c = DI.RequestServices.GetService<IStorage<string>>();
+			var c = A.RequestServices.GetService<IStorage<string>>();
 
 			if (!String.IsNullOrEmpty(path))
 			{
@@ -58,17 +45,17 @@ namespace Nephrite.FileStorage
 				data = file.ReadAllBytes();
 				contentType = GetContentType(file.Extension);
 
-				if (logDownload)
-				{
-					IDC_FileStorage dc = (IDC_FileStorage)A.Model;
-					IN_DownloadLog l = dc.NewIN_DownloadLog();
-					dc.IN_DownloadLog.InsertOnSubmit(l);
-					l.LastModifiedDate = DateTime.Now;
-					l.LastModifiedUserID = Subject.Current.ID;
-					l.FileGUID = file.ID;
-					l.IP = ip;
-					dc.SubmitChanges();
-				}
+				//if (logDownload)
+				//{
+				//	IDC_FileStorage dc = (IDC_FileStorage)A.Model;
+				//	IN_DownloadLog l = dc.NewIN_DownloadLog();
+				//	dc.IN_DownloadLog.InsertOnSubmit(l);
+				//	l.LastModifiedDate = DateTime.Now;
+				//	l.LastModifiedUserID = Subject.Current.ID;
+				//	l.FileGUID = file.ID;
+				//	l.IP = ip;
+				//	dc.SubmitChanges();
+				//}
 
 				return true;
 			}

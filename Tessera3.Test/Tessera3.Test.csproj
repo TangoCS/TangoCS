@@ -76,7 +76,6 @@
   <ItemGroup>
     <Compile Include="Api\UtilsController.cs" />
     <Compile Include="AppHandler.cs" />
-    <Compile Include="Configuration\DefaultAppContext.cs" />
     <Compile Include="Configuration\Sidebar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Configuration\Routes.cs" />
@@ -101,10 +100,6 @@
     <ProjectReference Include="..\Nephrite\Nephrite.csproj">
       <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
       <Name>Nephrite</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\vNext\vNext.csproj">
-      <Project>{b836e522-1b0e-4fc4-8c81-d32433f97068}</Project>
-      <Name>vNext</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

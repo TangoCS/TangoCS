@@ -8,23 +8,24 @@ namespace Nephrite.Multilanguage
 	{
 		string Get(string sysName);
 		string Get(string sysName, string defaultText);
-		void ResetCache();
+		void Init(bool editMode);
+		//void ResetCache();
 	}
 
 	public interface ILanguage
 	{
-		List<ILanguageObject> List { get; }
-		ILanguageObject Current { get; }
-		ILanguageObject DefaultLanguage { get; }
+		IReadOnlyList<LanguageObject> List { get; }
+		LanguageObject Current { get; }
+		LanguageObject Default { get; }
 		CultureInfo CurrentCulture { get; }
 
+		void Init(LanguageObject currentLanguage);
 		void WithLang(string lang, Action action);
 	}
 
-	public interface ILanguageObject
+	public class LanguageObject
 	{
-		string Code { get; set; }
-		string Title { get; set; }
-		bool IsDefault { get; set; }
+		public string Code { get; set; }
+		public string Title { get; set; }
 	}
 }

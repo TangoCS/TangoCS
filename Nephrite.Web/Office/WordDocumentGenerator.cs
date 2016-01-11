@@ -9,7 +9,6 @@ using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.VariantTypes;
 using DocumentFormat.OpenXml.Wordprocessing;
 using Nephrite.FileStorage;
-using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.Web.Office
 {
@@ -244,7 +243,7 @@ namespace Nephrite.Web.Office
 			WordDocumentGenerator gen = new WordDocumentGenerator();
 			gen.DataSource = data;
 
-			var storage = DI.RequestServices.GetService<IStorage<string>>();
+			var storage = A.RequestServices.GetService<IStorage<string>>();
 			var file = storage.GetFile(templateFullPath);
 			if (file == null)
 				throw new Exception("В файловом хранилище отсутствует файл " + templateFullPath);
@@ -258,7 +257,7 @@ namespace Nephrite.Web.Office
 			gen.DataSource = data;
 			gen.MacroEnabled = ismacroenabled;
 			gen.CustomProperties = custom;
-			var storage = DI.RequestServices.GetService<IStorage<string>>();
+			var storage = A.RequestServices.GetService<IStorage<string>>();
 			var file = storage.GetFile(templateFullPath);
 			if (file == null)
 				throw new Exception("В файловом хранилище отсутствует файл " + templateFullPath);

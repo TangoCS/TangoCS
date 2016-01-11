@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNet.Http;
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Security.Principal;
 using System.Text;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Nephrite.Http
 {
@@ -15,23 +15,16 @@ namespace Nephrite.Http
 		IDictionary Items { get; }
 		//IPersistentSettings Settings { get; } 
 		IPrincipal User { get; }
-
-		//object GetFeature(Type type);
-		//void SetFeature(Type type, object instance);
-		IServiceProvider ApplicationServices { get; set; }
-		IServiceProvider RequestServices { get; set; }
-
-		T GetFeature<T>();
-		void SetFeature<T>(T instance);
 	}
 
 	public interface IHttpRequest
 	{
+		string QueryString { get; }
 		NameValueCollection Query { get; }
-		IReadableStringCollection Cookies { get; }
-		Uri Url { get; }
-		NameValueCollection Headers { get; }
-		NameValueCollection Form { get; }
+		IReadOnlyDictionary<string, string> Cookies { get; }
+		//Uri Url { get; }
+		//NameValueCollection Headers { get; }
+		//NameValueCollection Form { get; }
 
 		string ContentType { get; }
 		string Method { get; }

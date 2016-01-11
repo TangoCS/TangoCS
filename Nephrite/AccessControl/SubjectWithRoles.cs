@@ -1,27 +1,27 @@
 ﻿using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Security.Principal;
 using Nephrite.Identity;
-using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.AccessControl
 {
 	public class SubjectWithRoles<TKey>
 	{
 		IIdentity _identity;
-		IAccessControlDataContext<TKey> _dataContext;
+		AccessControlDataContext<TKey> _dataContext;
 		Subject<TKey> _subject;
 		AccessControlOptions _options;
 
 		public SubjectWithRoles(
+			IDbConnection conn,
 			Subject<TKey> subject,
 			IIdentity identity,
-			IAccessControlDataContext<TKey> dataContext,
 			AccessControlOptions options = null)
 		{
 			_subject = subject;
 			_identity = identity;
-			_dataContext = dataContext;
+			_dataContext = new AccessControlDataContext<TKey>(conn);
 			_options = options ?? new AccessControlOptions();
 		}
 
@@ -85,33 +85,14 @@ namespace Nephrite.AccessControl
 				return _disallowItems;
 			}
 		}
-
-		public static SubjectWithRoles<TKey> Current
-		{
-			get
-			{
-				var identityManager = DI.RequestServices.GetService<IIdentityManager<TKey>>();
-				var dataContext = DI.RequestServices.GetService<IAccessControlDataContext<TKey>>();
-				var ctx = identityManager.HttpContext;
-				if (ctx.Items["CurrentSubjectWithRoles"] != null)
-					return ctx.Items["CurrentSubjectWithRoles"] as SubjectWithRoles<TKey>;
-
-				var curSubj = identityManager.CurrentSubject;
-				if (curSubj == null) return null;
-
-				var s = new SubjectWithRoles<TKey>(curSubj, ctx.User.Identity, dataContext);
-				ctx.Items["CurrentSubjectWithRoles"] = s;
-				return s;
-			}
-		}
 	}
 
 	public class SubjectWithRoles : SubjectWithRoles<int>
 	{
-		public SubjectWithRoles(Subject<int> subject,
+		public SubjectWithRoles(IDbConnection conn,
+			Subject<int> subject,
 			IIdentity identity,
-			IAccessControlDataContext<int> dataContext,
-			AccessControlOptions options = null) : base(subject, identity, dataContext, options)
+			AccessControlOptions options = null) : base(conn, subject, identity, options)
 		{
 
 		}

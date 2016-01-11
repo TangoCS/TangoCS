@@ -22,10 +22,10 @@ namespace Tessera.Test
 
 			//GetDict(App.DataContext.SPM_Subject);
 	
-			Listeners l = new Listeners();
-			var ael = new AuditEventListener();
-			l.PreDeleteEventListeners.Add(ael);
-			l.PreUpdateEventListeners.Add(ael);
+			//Listeners l = new Listeners();
+			//var ael = new AuditEventListener();
+			//l.PreDeleteEventListeners.Add(ael);
+			//l.PreUpdateEventListeners.Add(ael);
 
 			//l.PostDeleteEventListeners.Add(ael);
 			//l.PostInsertEventListeners.Add(ael);

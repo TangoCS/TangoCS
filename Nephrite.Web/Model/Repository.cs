@@ -15,7 +15,6 @@ using System.Data.SqlClient;
 using Nephrite.Web.Versioning;
 using Nephrite.Multilanguage;
 using Nephrite.Data;
-using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.Web
 { 
@@ -56,8 +55,8 @@ namespace Nephrite.Web
 			db.CommandTimeout = 300;*/
 			db = A.Model;
 
-			var language = DI.RequestServices.GetService<ILanguage>();
-			defaultLanguage = language.DefaultLanguage.Code;
+			var language = A.RequestServices.GetService<ILanguage>();
+			defaultLanguage = language.Default.Code;
         }
 
         public IModelObject Get(IMetaClass objectType, object id)
@@ -690,8 +689,8 @@ namespace Nephrite.Web
 							// Guid
 							PropertyInfo pi2 = GetPropertyInfo(o, pname.Replace("FileID", ""));
 							var file = Activator.CreateInstance(pi2.PropertyType);
-							file.SetPropertyValue("Guid", new Guid(e.Value));
-							pi2.SetValue(o, file, null);
+							pi2.PropertyType.GetProperty("Guid").SetValue(file, new Guid(e.Value));
+							pi2.SetValue(o, file);
 						}
 						catch (Exception x)
 						{
@@ -980,7 +979,7 @@ namespace Nephrite.Web
 
 		public static IQueryable<IModelObject> GetCurrentLang(IQueryable<IMMObjectMLView> data)
 		{
-			var language = DI.RequestServices.GetService<ILanguage>();
+			var language = A.RequestServices.GetService<ILanguage>();
 			string langCode = language.Current.Code.ToLower();
 			return data.Where(o => o.LanguageCode == langCode).OfType<IModelObject>();
 		}

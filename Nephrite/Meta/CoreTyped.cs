@@ -3,11 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using Nephrite.Multilanguage;
 
 namespace Nephrite.Meta
 {
 	public partial class MetaClass<T, TKey> : MetaClass
 	{
+		public MetaClass(ITextResource textResource = null) : base(textResource)
+		{
+		}
+
 		public new IQueryable<T> AllObjects
 		{
 			get { return base.AllObjects as IQueryable<T>; }
@@ -21,9 +26,9 @@ namespace Nephrite.Meta
 
 	public partial class MetaReference<TClass, TValue> : MetaReference
 	{
-		public MetaReference(string name, string caption, string refClassName, bool isRequired = false,
+		public MetaReference(string name, string caption, string refClassName, ITextResource textResource = null, bool isRequired = false,
 			int upperBound = 1, AssociationType associationType = AssociationType.Default,
-			string inversePropertyName = "", string description = "") : base(name, caption, refClassName, isRequired,
+			string inversePropertyName = "", string description = "") : base(name, caption, refClassName, textResource, isRequired,
 			upperBound, associationType, inversePropertyName, description)
 		{
 		}
@@ -71,6 +76,10 @@ namespace Nephrite.Meta
 
 	public partial class MetaAttribute<TClass, TValue> : MetaAttribute
 	{
+		public MetaAttribute(ITextResource textResource = null) : base(textResource)
+		{
+		}
+
 		public new Expression<Func<TClass, TValue>> GetValueExpression 
 		{ 
 			get { return base.GetValueExpression as Expression<Func<TClass, TValue>>; }
@@ -90,6 +99,10 @@ namespace Nephrite.Meta
 
 	public partial class MetaComputedAttribute<TClass, TValue> : MetaComputedAttribute
 	{
+		public MetaComputedAttribute(ITextResource textResource = null) : base(textResource)
+		{
+		}
+
 		public new Func<TClass, TValue> GetValue
 		{
 			get { return base.GetValue as Func<TClass, TValue>; }
@@ -105,6 +118,10 @@ namespace Nephrite.Meta
 
 	public partial class MetaPersistentComputedAttribute<TClass, TValue> : MetaPersistentComputedAttribute
 	{
+		public MetaPersistentComputedAttribute(ITextResource textResource = null) : base(textResource)
+		{
+		}
+
 		public new Expression<Func<TClass, TValue>> GetValueExpression
 		{
 			get { return base.GetValueExpression as Expression<Func<TClass, TValue>>; }
@@ -122,8 +139,8 @@ namespace Nephrite.Meta
 		}
 	}
 
-	public partial class MetaOperation<TDelegate> : MetaOperation
-	{
-		public TDelegate Delegate { get; set; }
-	}
+	//public partial class MetaOperation<TDelegate> : MetaOperation
+	//{
+	//	public TDelegate Delegate { get; set; }
+	//}
 }

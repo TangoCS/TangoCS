@@ -18,6 +18,12 @@ namespace Nephrite.Web.Hibernate
     {
 		object inProcess = null;
 		List<object> toInsert = new List<object>();
+		Subject<int> subject;
+
+		public AuditEventListener(Subject<int> currentSubject)
+		{
+			subject = currentSubject;
+		}
 
         public bool OnPreUpdate(PreUpdateEvent e)
         {
@@ -28,7 +34,7 @@ namespace Nephrite.Web.Hibernate
 
                 var dc = A.Model as IDC_EntityAudit;
                 string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
-                var oc = dc.NewIN_ObjectChange("Modification", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
+                var oc = dc.NewIN_ObjectChange(subject, "Modification", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
                 toInsert.Add(oc);
 
                 if (e.Entity is IWithPropertyAudit)
@@ -133,7 +139,7 @@ namespace Nephrite.Web.Hibernate
 
                 var dc = A.Model as IDC_EntityAudit;
                 string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
-                var oc = dc.NewIN_ObjectChange("Deletion", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
+                var oc = dc.NewIN_ObjectChange(subject, "Deletion", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
                 toInsert.Add(oc);
 
                 foreach (object obj in toInsert)
@@ -145,19 +151,22 @@ namespace Nephrite.Web.Hibernate
 
     public class HDataContextInterceptor : EmptyInterceptor
     {
-        public override void PreFlush(ICollection entitites)
-        {
-            int sid = -1;
+		Subject<int> subject;
 
+		public HDataContextInterceptor(Subject<int> currentSubject)
+		{
+			subject = currentSubject;
+		}
+
+		public override void PreFlush(ICollection entitites)
+        {
             foreach (object obj in entitites)
             {
                 if (obj is IWithTimeStamp)
                 {
-                    if (sid == -1) sid = Subject.Current.ID;
-
                     var obj2 = obj as IWithTimeStamp;
                     obj2.LastModifiedDate = DateTime.Now;
-                    obj2.LastModifiedUserID = sid;
+                    obj2.LastModifiedUserID = subject.ID;
                 }
             }
         }
@@ -172,7 +181,7 @@ namespace Nephrite.Web.Hibernate
 				var dc = A.Model as IDC_EntityAudit;
 				var hdc = A.Model as HDataContext;
 				string title = entity is IWithTitle ? (entity as IWithTitle).Title : "";
-				var oc = dc.NewIN_ObjectChange("Creation", id != null ? id.ToString() : "", entity.GetType().Name, title);
+				var oc = dc.NewIN_ObjectChange(subject, "Creation", id != null ? id.ToString() : "", entity.GetType().Name, title);
 				//toInsert.Add(oc);
 				//dc.IN_ObjectChange.InsertOnSubmit(oc);
 				A.Model.AfterSaveActions.Add(() =>
@@ -222,14 +231,18 @@ namespace Nephrite.Web.Hibernate
 			return false;
 		}
 
-
         public override SqlString OnPrepareStatement(SqlString sql)
         {
-			var hdc = A.Model as HDataContext;
-			var sw = A.Items["Stopwatch"] as Stopwatch;
-			hdc.Log.WriteLine(String.Format("-- {1}, datacontext {0}", hdc.ID, sw.Elapsed));
-			hdc.Log.WriteLine(sql.ToString());
-			hdc.Log.WriteLine();
+			//var hdc = A.Model as HDataContext;
+			//var sw = A.Items["Stopwatch"] as Stopwatch;
+			//hdc.Log.WriteLine(String.Format("-- {1}, datacontext {0}", hdc.ID, sw.Elapsed));
+			//hdc.Log.WriteLine(sql.ToString());
+			//foreach (Parameter p in sql.GetParameters())
+			//{
+			//	hdc.Log.Write("--");
+			//	hdc.Log.WriteLine(p.ToString());
+			//}
+			//hdc.Log.WriteLine();
             return sql;
         }
 

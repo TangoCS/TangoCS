@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Microsoft.AspNet.WebUtilities;
+using Nephrite.Templating;
 
 namespace Nephrite.MVC
 {
@@ -47,7 +47,7 @@ namespace Nephrite.MVC
 				{
 					int i = _q.IndexOf("?");
 					if (i >= 0)
-						_parsedQuery = QueryHelpers.ParseQuery(_q.Substring(i));
+						_parsedQuery = ParseQuery(_q.Substring(i));
 					else
 						_parsedQuery = new Dictionary<string, string[]>();
 				}
@@ -66,9 +66,9 @@ namespace Nephrite.MVC
 			return new Url(query, routeValues);
 		}
 
-		public override string Controller { get { return GetString(MvcOptions.ControllerName); } }
-		public override string Action { get { return GetString(MvcOptions.ActionName); } }
-		public override string ReturnUrl { get { return GetString(MvcOptions.ReturnUrl); } }
+		public override string Controller { get { return GetString(TemplatingConstants.ServiceName); } }
+		public override string Action { get { return GetString(TemplatingConstants.ActionName); } }
+		public override string ReturnUrl { get { return GetString(TemplatingConstants.ReturnUrl); } }
 
 		public override int GetInt(string parametername, int defaultValue)
 		{
@@ -163,14 +163,14 @@ namespace Nephrite.MVC
 			{
 				Stack<string> urlStack = new Stack<string>();
 
-				while (url.GetString(MvcOptions.ReturnUrl) != "")
+				while (url.GetString(TemplatingConstants.ReturnUrl) != "")
 				{
-					urlStack.Push(url.RemoveParameter(MvcOptions.ReturnUrl));
-					url = new Url(WebUtility.UrlDecode(url.GetString(MvcOptions.ReturnUrl)));
+					urlStack.Push(url.RemoveParameter(TemplatingConstants.ReturnUrl));
+					url = new Url(WebUtility.UrlDecode(url.GetString(TemplatingConstants.ReturnUrl)));
 				}
 				url = new Url(urlStack.Pop());
 				while (urlStack.Count > 0)
-					url = new Url(urlStack.Pop()).AddParameter(MvcOptions.ReturnUrl, WebUtility.UrlEncode(url));
+					url = new Url(urlStack.Pop()).AddParameter(TemplatingConstants.ReturnUrl, WebUtility.UrlEncode(url));
 				returnurl = WebUtility.UrlEncode(url);
 			}
 			_returnUrl = returnurl;
@@ -182,6 +182,91 @@ namespace Nephrite.MVC
 		public override string ToString()
 		{
 			return _q;
+		}
+
+		/// <summary>
+		/// Parse a query string into its component key and value parts.
+		/// </summary>
+		/// <param name="text">The raw query string value, with or without the leading '?'.</param>
+		/// <returns>A collection of parsed keys and values.</returns>
+		static IDictionary<string, string[]> ParseQuery(string queryString)
+		{
+			if (!string.IsNullOrEmpty(queryString) && queryString[0] == '?')
+			{
+				queryString = queryString.Substring(1);
+			}
+			var accumulator = new KeyValueAccumulator<string, string>(StringComparer.OrdinalIgnoreCase);
+
+			int textLength = queryString.Length;
+			int equalIndex = queryString.IndexOf('=');
+			if (equalIndex == -1)
+			{
+				equalIndex = textLength;
+			}
+			int scanIndex = 0;
+			while (scanIndex < textLength)
+			{
+				int delimiterIndex = queryString.IndexOf('&', scanIndex);
+				if (delimiterIndex == -1)
+				{
+					delimiterIndex = textLength;
+				}
+				if (equalIndex < delimiterIndex)
+				{
+					while (scanIndex != equalIndex && char.IsWhiteSpace(queryString[scanIndex]))
+					{
+						++scanIndex;
+					}
+					string name = queryString.Substring(scanIndex, equalIndex - scanIndex);
+					string value = queryString.Substring(equalIndex + 1, delimiterIndex - equalIndex - 1);
+					accumulator.Append(
+						Uri.UnescapeDataString(name.Replace('+', ' ')),
+						Uri.UnescapeDataString(value.Replace('+', ' ')));
+					equalIndex = queryString.IndexOf('=', delimiterIndex);
+					if (equalIndex == -1)
+					{
+						equalIndex = textLength;
+					}
+				}
+				scanIndex = delimiterIndex + 1;
+			}
+
+			return accumulator.GetResults();
+		}
+	}
+
+	public class KeyValueAccumulator<TKey, TValue>
+	{
+		private Dictionary<TKey, List<TValue>> _accumulator;
+		IEqualityComparer<TKey> _comparer;
+
+		public KeyValueAccumulator(IEqualityComparer<TKey> comparer)
+		{
+			_comparer = comparer;
+			_accumulator = new Dictionary<TKey, List<TValue>>(comparer);
+		}
+
+		public void Append(TKey key, TValue value)
+		{
+			List<TValue> values;
+			if (_accumulator.TryGetValue(key, out values))
+			{
+				values.Add(value);
+			}
+			else
+			{
+				_accumulator[key] = new List<TValue>(1) { value };
+			}
+		}
+
+		public IDictionary<TKey, TValue[]> GetResults()
+		{
+			var results = new Dictionary<TKey, TValue[]>(_comparer);
+			foreach (var kv in _accumulator)
+			{
+				results.Add(kv.Key, kv.Value.ToArray());
+			}
+			return results;
 		}
 	}
 }

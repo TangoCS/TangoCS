@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Xml.Linq;
-using Nephrite.Http;
-using Nephrite.MVC;
-using Microsoft.Framework.DependencyInjection;
+using Nephrite.Web;
 
 namespace Nephrite
 {
@@ -175,7 +170,7 @@ namespace Nephrite.Multilanguage
 	{
 		public static string Lang(this System.Web.UI.Control ctrl, string lang, string data)
 		{
-			var language = DI.RequestServices.GetService<ILanguage>();
+			var language = A.RequestServices.GetService<ILanguage>();
 			if (language.Current.Code.ToUpper() == lang.ToUpper())
 				return data;
 			return String.Empty;
@@ -183,7 +178,7 @@ namespace Nephrite.Multilanguage
 
 		public static string Lang(this System.Web.UI.Control ctrl, string lang, string data, params string[] otherLang)
 		{
-			var language = DI.RequestServices.GetService<ILanguage>();
+			var language = A.RequestServices.GetService<ILanguage>();
 			string lc = language.Current.Code.ToUpper();
 			if (lc == lang.ToUpper())
 				return data;

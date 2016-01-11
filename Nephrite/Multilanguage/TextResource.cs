@@ -1,23 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using Nephrite.Data;
-using Nephrite.Http;
+﻿using System.Collections.Generic;
 
 namespace Nephrite.Multilanguage
 {
+	public class TextResourceOptions
+	{
+		public IReadOnlyDictionary<string, TextResourceObject> Resources { get; set; }
+	}
+
+	public class TextResourceObject
+	{
+		public int ID { get; set; }
+		/// <summary>
+		/// Format: ResourceName-LanguageCode
+		/// </summary>
+		public string Name { get; set; }
+		public string Text { get; set; }
+	}
+
 	public class TextResource : ITextResource
 	{
-		IDC_TextResources _dataContext;
-		IHttpContext _httpContext;
 		ILanguage _language;
+		public static TextResourceOptions Options { get; set; }
 
-		public TextResource(IHttpContext httpContext, IDC_TextResources dataContext, ILanguage language)
+		public TextResource(ILanguage language)
 		{
-			_httpContext = httpContext;
-			_dataContext = dataContext;
 			_language = language;
+		}
+
+		public void Init(bool editMode)
+		{
+			_editMode = editMode;
 		}
 
 		public string Get(string sysName)
@@ -34,81 +46,81 @@ namespace Nephrite.Multilanguage
 		{
 			string res = sysName + "-" + _language.Current.Code;
 
-			if (!loaded)
-			{
-				lock (locker)
-				{
-					var nrs = _dataContext.IN_TextResource.Select(o => new { Res = o.SysName + "-" + o.LanguageCode, ID = o.TextResourceID, Text = o.Text });
-					foreach (var nr in nrs)
-					{
-						resources[nr.Res] = nr.Text;
-						resourceids[nr.Res] = nr.ID.ToString();
-					}
-				}
-				loaded = true;
-			}
+			//if (!loaded)
+			//{
+			//	lock (locker)
+			//	{
+			//		var nrs = _dataContext.IN_TextResource.Select(o => new { Name = o.SysName + "-" + o.LanguageCode, ID = o.TextResourceID, Text = o.Text });
+			//		foreach (var nr in nrs)
+			//		{
+			//			resources[nr.Name] = nr.Text;
+			//			resourceids[nr.Name] = nr.ID.ToString();
+			//		}
+			//	}
+			//	loaded = true;
+			//}
 
-			if (EditMode || resources.ContainsKey(res))
+			if (_editMode || Options.Resources.ContainsKey(res))
 				return get(res, sysName);
 			else
 				return defaultText;
 		}
 
 
-		bool EditMode
-		{
-			get
-			{
-				if (_httpContext.Items["reseditmode"] == null)
-					_httpContext.Items["reseditmode"] = _httpContext.Request.Cookies["resourceeditmode"] != null && _httpContext.Request.Cookies["resourceeditmode"] == "1";
-				return (bool)_httpContext.Items["reseditmode"];
-			}
-		}
+		bool _editMode = false;
+		//{
+		//	get
+		//	{
+		//		if (_httpContext.Items["reseditmode"] == null)
+		//			_httpContext.Items["reseditmode"] = _httpContext.Request.Cookies["resourceeditmode"] != null && _httpContext.Request.Cookies["resourceeditmode"] == "1";
+		//		return (bool)_httpContext.Items["reseditmode"];
+		//	}
+		//}
 
 		string get(string res, string sysName)
 		{
-			if (EditMode)
+			if (_editMode)
 			{
-				if (resources.ContainsKey(res))
+				if (Options.Resources.ContainsKey(res))
 				{
-					if (!resources[res].IsEmpty())
-						return "<span class='resedit' onclick='EditTextResource(" + resourceids[res] + ");'>" + resources[res] + "</span>";
+					if (!Options.Resources[res].Text.IsEmpty())
+						return "<span class='resedit' onclick='EditTextResource(" + Options.Resources[res].ID + ");'>" + Options.Resources[res].Text + "</span>";
 					else
-						return "<span class='resedit' onclick='EditTextResource(" + resourceids[res] + ");'>[" + sysName + "]</span>";
+						return "<span class='resedit' onclick='EditTextResource(" + Options.Resources[res].ID + ");'>[" + sysName + "]</span>";
 				}
 				else
 					return "<span class=\"resedit\" onclick=\"EditTextResource('" + sysName + "', '');\">{" + sysName + "}</span>";
 			}
-			return resources[res];
+			return Options.Resources[res].Text;
 		}
 
 		/// <summary>
 		/// Сброс кэша
 		/// </summary>
-		public void ResetCache()
-		{
-			resources.Clear();
-			resourceids.Clear();
-			loaded = false;
-		}
+		//public void ResetCache()
+		//{
+		//	resources.Clear();
+		//	resourceids.Clear();
+		//	loaded = false;
+		//}
 
-		static Dictionary<string, string> resources = new Dictionary<string, string>();
-		static Dictionary<string, string> resourceids = new Dictionary<string, string>();
-		static bool loaded = false;
-		static object locker = new object();
+		//static Dictionary<string, string> resources = new Dictionary<string, string>();
+		//static Dictionary<string, string> resourceids = new Dictionary<string, string>();
+		//static bool loaded = false;
+		//static object locker = new object();
 	}
 
-	public interface IN_TextResource
-	{
-		int TextResourceID { get; set; }
-		string Title { get; set; }
-		string SysName { get; set; }
-		string Text { get; set; }
-		string LanguageCode { get; set; }
-	}
+	//public interface IN_TextResource
+	//{
+	//	int TextResourceID { get; set; }
+	//	string Title { get; set; }
+	//	string SysName { get; set; }
+	//	string Text { get; set; }
+	//	string LanguageCode { get; set; }
+	//}
 
-	public interface IDC_TextResources
-	{
-		ITable<IN_TextResource> IN_TextResource { get; }
-	}
+	//public interface IDC_TextResources
+	//{
+	//	ITable<IN_TextResource> IN_TextResource { get; }
+	//}
 }

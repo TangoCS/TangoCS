@@ -5,18 +5,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
-using Microsoft.Framework.DependencyInjection;
 using Nephrite.Data;
 
 namespace Nephrite.FileStorage
 {
 	public class DbFolders : IStorage<Guid>, IStorage<string>, IStorage<int>
 	{
-		IDbConnection _connection;		 
+		IDbConnection _connection;
+		IDC_FileDataStorage _dc;
 
-		public DbFolders(IDbConnection connection)
+		public DbFolders(IDbConnection connection, IDC_FileDataStorage dc)
 		{
 			_connection = connection;
+			_dc = dc;
 		}
 
 		string selectFolder = @"select f.guid, f.title, f.path, fl.storagetype,
@@ -48,7 +49,7 @@ where f.filelibraryid = fl.filelibraryid and fl.filelibrarytypeid = flt.filelibr
 
 			VirtualFolder f = null;
 			string t = res.storagetype;
-			if (t == "B") f = new VirtualFolder(new DatabaseStorageProvider(DI.RequestServices.GetService<IDC_FileDataStorage>()));
+			if (t == "B") f = new VirtualFolder(new DatabaseStorageProvider(_dc));
 			if (t == "D") f = new VirtualFolder(new LocalDiskStorageProvider(res.path));
 			if (f == null) return null;
 

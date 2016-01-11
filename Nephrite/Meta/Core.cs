@@ -153,12 +153,18 @@ namespace Nephrite.Meta
 
 	public partial class MetaClass : MetaClassifier, IMetaClass
 	{
+		public ITextResource TextResource { get; }
+		public MetaClass(ITextResource textResource = null)
+		{
+			TextResource = textResource;
+		}
+
 		public override string Caption
 		{
 			get
 			{
-				if (Parent.TextResource == null) return base.Caption;
-                return Parent.TextResource.Get(ID, base.Caption);
+				if (TextResource == null) return base.Caption;
+                return TextResource.Get(ID, base.Caption);
 			}
 			set
 			{
@@ -171,8 +177,8 @@ namespace Nephrite.Meta
 		{
 			get
 			{
-				if (Parent.TextResource == null) return _captionPlural;
-				return Parent.TextResource.Get(ID + "-pl", _captionPlural);
+				if (TextResource == null) return _captionPlural;
+				return TextResource.Get(ID + "-pl", _captionPlural);
 			}
 			set
 			{
@@ -337,12 +343,14 @@ namespace Nephrite.Meta
 
 	public abstract partial class MetaProperty : MetaNamedElement, IMetaProperty
 	{
+		public ITextResource TextResource { get; protected set; }
+
 		public override string Caption
 		{
 			get
 			{
-				if (Parent.Parent.TextResource == null) return base.Caption;
-				return Parent.Parent.TextResource.Get(ID, base.Caption);
+				if (TextResource == null) return base.Caption;
+				return TextResource.Get(ID, base.Caption);
 			}
 			set
 			{
@@ -356,8 +364,8 @@ namespace Nephrite.Meta
 			get
 			{
 				string res = _captionShort;
-                if (Parent.Parent.TextResource != null)
-					res = Parent.Parent.TextResource.Get(ID + "-s", res);
+                if (TextResource != null)
+					res = TextResource.Get(ID + "-s", res);
 
 				return String.IsNullOrEmpty(res) ? Caption : res;
 			}
@@ -412,7 +420,7 @@ namespace Nephrite.Meta
 
 	}
 
-	public partial class MetaValueProperty : MetaProperty, IMetaValueProperty
+	public abstract partial class MetaValueProperty : MetaProperty, IMetaValueProperty
 	{
 		/// <summary>
 		/// явл€етс€ мульти€зычным
@@ -435,7 +443,11 @@ namespace Nephrite.Meta
 	/// јтрибут класса
 	/// </summary>
 	public partial class MetaAttribute : MetaValueProperty
-	{		
+	{
+		public MetaAttribute(ITextResource textResource = null)
+		{
+			TextResource = textResource;
+		}
 		/// <summary>
 		/// явл€етс€ автоинкрементным
 		/// </summary>
@@ -447,6 +459,11 @@ namespace Nephrite.Meta
 	/// </summary>
 	public partial class MetaComputedAttribute : MetaValueProperty, IMetaComputedAttribute
 	{
+		public MetaComputedAttribute(ITextResource textResource = null)
+		{
+			TextResource = textResource;
+		}
+
 		public string GetExpressionString { get; set; }
 		public string SetExpressionString { get; set; }
 	}
@@ -456,6 +473,10 @@ namespace Nephrite.Meta
 	/// </summary>
 	public partial class MetaPersistentComputedAttribute : MetaValueProperty, IMetaPersistentComputedAttribute
 	{
+		public MetaPersistentComputedAttribute(ITextResource textResource = null)
+		{
+			TextResource = textResource;
+		}
 		/// <summary>
 		/// ¬ыражение
 		/// </summary>
@@ -470,10 +491,11 @@ namespace Nephrite.Meta
 	/// </summary>
 	public partial class MetaReference : MetaProperty, IMetaReference
 	{
-		public MetaReference(string name, string caption, string refClassName, bool isRequired = false,
+		public MetaReference(string name, string caption, string refClassName, ITextResource textResource = null, bool isRequired = false,
 			int upperBound = 1, AssociationType associationType = AssociationType.Default,
 			string inversePropertyName = "", string description = "")
 		{
+			TextResource = textResource;
 			Name = name;
 			Caption = caption;
 			_refClassName = refClassName;
@@ -600,14 +622,20 @@ namespace Nephrite.Meta
 	/// </summary>
 	public class MetaOperation : MetaNamedElement, IMetaOperation
 	{
+		public ITextResource TextResource { get; set; }
 		List<IMetaParameter> _parameters = new List<IMetaParameter>();
+
+		public MetaOperation(ITextResource textResource = null)
+		{
+			TextResource = textResource;
+		}
 
 		public override string Caption
 		{
 			get
 			{
-				if (Parent.Parent.TextResource == null) return base.Caption;
-				return Parent.Parent.TextResource.Get(ID, base.Caption);
+				if (TextResource == null) return base.Caption;
+				return TextResource.Get(ID, base.Caption);
 			}
 			set
 			{

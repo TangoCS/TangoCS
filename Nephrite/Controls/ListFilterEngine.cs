@@ -4,8 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Nephrite.Data;
 using Nephrite.Multilanguage;
 
@@ -260,7 +258,7 @@ namespace Nephrite.Controls
 		Expression<Func<T, bool>> And<T>(Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
 		{
 			return Expression.Lambda<Func<T, bool>>
-			   (Expression.And(expr1.Body, ReplaceParameterExpression(expr2.Body, expr1.Parameters[0])), expr1.Parameters);
+			   (Expression.AndAlso(expr1.Body, ReplaceParameterExpression(expr2.Body, expr1.Parameters[0])), expr1.Parameters);
 		}
 
 		Expression ReplaceParameterExpression(Expression x, ParameterExpression o)
@@ -432,11 +430,12 @@ namespace Nephrite.Controls
 
 		public override string ToString()
 		{
-			var textResource = DI.GetService<ITextResource>();
+			return "";
+			//var textResource = DI.GetService<ITextResource>();
 
-			return Title + " " + (Condition == textResource.Get("System.Filter.LastXDays", "последние x дней") ?
-				String.Format(textResource.Get("System.Filter.LastDays", "последние &quot;{0}&quot; дней"), ValueTitle) :
-				Condition + " &quot;" + WebUtility.HtmlEncode(ValueTitle) + "&quot;");
+			//return Title + " " + (Condition == textResource.Get("System.Filter.LastXDays", "последние x дней") ?
+			//	String.Format(textResource.Get("System.Filter.LastDays", "последние &quot;{0}&quot; дней"), ValueTitle) :
+			//	Condition + " &quot;" + WebUtility.HtmlEncode(ValueTitle) + "&quot;");
 		}
 	}
 

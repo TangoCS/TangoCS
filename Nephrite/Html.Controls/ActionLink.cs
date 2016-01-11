@@ -1,63 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Nephrite.Multilanguage;
+using Nephrite.Templating;
 
 namespace Nephrite.Html.Controls
 {
-	public abstract class AbstractActionLink<T>
+	public abstract class ActionUrl<T>
 	{
-		protected IUrlResolver _urlResolver;
-		protected IUrlResolver _eventUrlResolver;
-
-		protected string _title;
-		protected string _imageSrc;
 		protected T _this;
+		protected IUrlResolver _resolver;
 
-		IDictionary<string, object> _args = new Dictionary<string, object>();
-		IDictionary<string, object> _eventArgs = new Dictionary<string, object>();
+		IDictionary<string, string> _args = new Dictionary<string, string>();
+		IDictionary<string, string> _eventArgs = new Dictionary<string, string>();
 
 		string _url = null;
-		public string Url
+
+		public ActionContext Context { get; private set; }
+
+		public ActionUrl(ActionContext context)
 		{
-			get
+			Context = context;
+		}
+
+		public override string ToString()
+		{
+			if (_resolver == null) return "";
+			if (_url == null)
 			{
-				if (_url == null)
+				StringBuilder sb = _resolver.Resolve(_args);
+				if (_eventArgs.Count > 0)
 				{
-					StringBuilder sb = _urlResolver == null ? new StringBuilder() : _urlResolver.Resolve(_args);
-					if (_eventArgs.Count > 0 && _eventUrlResolver != null)
-					{
-						sb.Append("#");
-						sb.Append(_eventUrlResolver.Resolve(_eventArgs, true));
-					}
-                    _url = sb.ToString();
+					sb.Append("#").Append(_resolver.Resolve(_eventArgs, true));
 				}
-
-				return _url;
+				_url = sb.ToString();
 			}
+
+			return _url;
 		}
 
-		protected IHtmlWriter _writer;
-
-		public T Title(string title)
+		public static implicit operator string(ActionUrl<T> l)
 		{
-			if (_title.IsEmpty()) _title = title;
-			return _this;
+			if (l == null) return null;
+			return l.ToString();
 		}
 
-		public T Image(string image)
+		public T UseResolver(IUrlResolver resolver)
 		{
-			if (_imageSrc.IsEmpty()) _imageSrc = image;
-			return _this;
-		}
-
-		public T UseUrlResolver(IUrlResolver urlResolver)
-		{
-			_urlResolver = urlResolver;
-			return _this;
-		}
-		public T UseEventUrlResolver(IUrlResolver eventUrlResolver)
-		{
-			_eventUrlResolver = eventUrlResolver;
+			_resolver = resolver;
 			return _this;
 		}
 
@@ -65,16 +55,17 @@ namespace Nephrite.Html.Controls
 		{
 			foreach (var p in args)
 				if (p.Value != null)
-					_args[p.Key] = p.Value;
+					_args[p.Key] = p.Value.ToString();
 				else
 					_args.Remove(p.Key);
 			return _this;
 		}
+
 		public T WithEventArgs(IDictionary<string, object> args)
 		{
 			foreach (var p in args)
 				if (p.Value != null)
-					_eventArgs[p.Key] = p.Value;
+					_eventArgs[p.Key] = p.Value.ToString();
 				else
 					_eventArgs.Remove(p.Key);
 			return _this;
@@ -88,6 +79,7 @@ namespace Nephrite.Html.Controls
 				_args.Remove(key);
 			return _this;
 		}
+
 		public T WithEventArg(string key, string value)
 		{
 			if (value != null)
@@ -96,72 +88,202 @@ namespace Nephrite.Html.Controls
 				_eventArgs.Remove(key);
 			return _this;
 		}
+	}
 
-		public T SetWriter(IHtmlWriter writer)
+	public class ActionUrl : ActionUrl<ActionUrl>
+	{
+		
+		public ActionUrl(ActionContext context) : base(context)
 		{
-			_writer = writer;
-			return _this;
-		}
-
-		public abstract void Render();
-
-		public override string ToString()
-		{
-			var w = new HtmlWriter();
-			SetWriter(w);
-			Render();
-			return w.ToString();
-		}
-
-		[Obsolete]
-		public string GetTitle()
-		{
-			return _title;
-		}
-		[Obsolete]
-		public string GetImage()
-		{
-			return _imageSrc;
-		}
-
-		public static implicit operator string(AbstractActionLink<T> l)
-		{
-			if (l == null) return null;
-			return l.ToString();
+			_this = this;
 		}
 	}
 
-	public class ActionLink : AbstractActionLink<ActionLink>
+	public class ActionLink : ActionUrl<ActionLink>
 	{
-		Action<ATagAttributes> _attrs = null;
+		string _title;
+		string _imageSrc;
 
-		public ActionLink()
+		public string GetTitle() => _title;
+		public string GetImageSrc() => _imageSrc;
+		public ITextResource TextResource { get; private set; }
+
+		public ActionLink(ActionContext context, ITextResource textResource) : base(context)
 		{
-			_this = this;		
+			TextResource = textResource;
+			_this = this;
 		}
 
-		public ActionLink Attr(Action<ATagAttributes> aTagAttributes)
+		public ActionLink Title(string title)
 		{
-			_attrs = aTagAttributes;
+			_title = title;
 			return this;
 		}
 
-		public override void Render()
+		public ActionLink Image(string imageSrc)
 		{
-			if (_writer != null)
-				_writer.A(a => { a.Href(Url); if(_attrs != null) _attrs(a); }, () => {
-					if (!_imageSrc.IsEmpty()) _writer.Img(a => a.Src(IconSet.RootPath + _imageSrc).Alt(_title).Class("linkicon"));
-					_writer.Write(_title);
-				});
+			_imageSrc = imageSrc;
+			return this;
 		}
 	}
 
-	public class ActionImage : ActionLink
-	{
-		public override void Render()
-		{
-			if (_writer != null)
-				_writer.A(a => a.Href(Url), () => _writer.Img(a => a.Src(IconSet.RootPath + _imageSrc)));
-		}
-	}
+
+
+
+
+	//public abstract class AbstractActionLink<T>
+	//{
+	//	protected IUrlResolver _urlResolver;
+
+	//	protected string _title;
+	//	protected string _imageSrc;
+	//	protected T _this;
+
+	//	IDictionary<string, string> _args = new Dictionary<string, string>();
+	//	IDictionary<string, string> _eventArgs = new Dictionary<string, string>();
+
+	//	string _url = null;
+	//	public string Url
+	//	{
+	//		get
+	//		{
+	//			if (_urlResolver == null) return "";
+	//			if (_url == null)
+	//			{
+	//				StringBuilder sb = _urlResolver.Resolve(_args);
+	//				if (_eventArgs.Count > 0)
+	//				{
+	//					sb.Append("#").Append(_urlResolver.Resolve(_eventArgs, true));
+	//				}
+ //                   _url = sb.ToString();
+	//			}
+
+	//			return _url;
+	//		}
+	//	}
+
+	//	protected IHtmlWriter _writer;
+
+	//	public T Title(string title)
+	//	{
+	//		if (_title.IsEmpty()) _title = title;
+	//		return _this;
+	//	}
+
+	//	public T Image(string image)
+	//	{
+	//		if (_imageSrc.IsEmpty()) _imageSrc = image;
+	//		return _this;
+	//	}
+
+	//	public T UseUrlResolver(IUrlResolver urlResolver)
+	//	{
+	//		_urlResolver = urlResolver;
+	//		return _this;
+	//	}
+
+
+	//	public T WithArgs(IDictionary<string, object> args)
+	//	{
+	//		foreach (var p in args)
+	//			if (p.Value != null)
+	//				_args[p.Key] = p.Value.ToString();
+	//			else
+	//				_args.Remove(p.Key);
+	//		return _this;
+	//	}
+	//	public T WithEventArgs(IDictionary<string, object> args)
+	//	{
+	//		foreach (var p in args)
+	//			if (p.Value != null)
+	//				_eventArgs[p.Key] = p.Value.ToString();
+	//			else
+	//				_eventArgs.Remove(p.Key);
+	//		return _this;
+	//	}
+
+	//	public T WithArg(string key, string value)
+	//	{
+	//		if (value != null)
+	//			_args[key] = value;
+	//		else
+	//			_args.Remove(key);
+	//		return _this;
+	//	}
+	//	public T WithEventArg(string key, string value)
+	//	{
+	//		if (value != null)
+	//			_eventArgs[key] = value;
+	//		else
+	//			_eventArgs.Remove(key);
+	//		return _this;
+	//	}
+
+	//	public T SetWriter(IHtmlWriter writer)
+	//	{
+	//		_writer = writer;
+	//		return _this;
+	//	}
+
+	//	public abstract void Render();
+
+	//	public override string ToString()
+	//	{
+	//		var w = new HtmlWriter();
+	//		SetWriter(w);
+	//		Render();
+	//		return w.ToString();
+	//	}
+
+	//	[Obsolete]
+	//	public string GetTitle()
+	//	{
+	//		return _title;
+	//	}
+	//	[Obsolete]
+	//	public string GetImage()
+	//	{
+	//		return _imageSrc;
+	//	}
+
+	//	public static implicit operator string(AbstractActionLink<T> l)
+	//	{
+	//		if (l == null) return null;
+	//		return l.ToString();
+	//	}
+	//}
+
+	//public class ActionLink : AbstractActionLink<ActionLink>
+	//{
+	//	Action<ATagAttributes> _attrs = null;
+
+	//	public ActionLink()
+	//	{
+	//		_this = this;		
+	//	}
+
+	//	public ActionLink Attr(Action<ATagAttributes> aTagAttributes)
+	//	{
+	//		_attrs = aTagAttributes;
+	//		return this;
+	//	}
+
+	//	public override void Render()
+	//	{
+	//		if (_writer != null)
+	//			_writer.A(a => { a.Href(Url); if(_attrs != null) _attrs(a); }, () => {
+	//				if (!_imageSrc.IsEmpty()) _writer.Img(a => a.Src(IconSet.RootPath + _imageSrc).Alt(_title).Class("linkicon"));
+	//				_writer.Write(_title);
+	//			});
+	//	}
+	//}
+
+	//public class ActionImage : ActionLink
+	//{
+	//	public override void Render()
+	//	{
+	//		if (_writer != null)
+	//			_writer.A(a => a.Href(Url), () => _writer.Img(a => a.Src(IconSet.RootPath + _imageSrc)));
+	//	}
+	//}
 }

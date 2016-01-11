@@ -7,7 +7,6 @@ using System.Web;
 using System.Web.Services;
 using System.Web.Services.Protocols;
 using System.Xml.Linq;
-using Microsoft.Framework.DependencyInjection;
 using Nephrite.Data;
 using Nephrite.ErrorLog;
 using Nephrite.FileStorage;
@@ -39,11 +38,17 @@ namespace Nephrite.Web.Replication
     // [System.Web.Script.Services.ScriptService]
     public class Replication : System.Web.Services.WebService
     {
-		IErrorLogger ErrorLogger { get; set; }
+		IErrorLogger _errorLogger;
+		IIdentityManager<int> _identity;
+		IPersistentSettings _setting;
+		IStorage<string> _storage;
 
 		public Replication()
 		{
-			ErrorLogger = DI.RequestServices.GetService<IErrorLogger>(); 
+			_errorLogger = A.RequestServices.GetService<IErrorLogger>();
+			_identity = A.RequestServices.GetService<IIdentityManager<int>>();
+			_setting = A.RequestServices.GetService<IPersistentSettings>();
+			_storage = A.RequestServices.GetService<IStorage<string>>();
 		}
 
 		public class UserCredentials : System.Web.Services.Protocols.SoapHeader
@@ -55,19 +60,19 @@ namespace Nephrite.Web.Replication
 		public UserCredentials user;
 
         Repository r = new Repository();
-		ReplicationService.Replication svc;
-		ReplicationService.Replication ReplicationSourceServer
+		ReplicationServiceReference.Replication svc;
+		ReplicationServiceReference.Replication ReplicationSourceServer
 		{
 			get
 			{
 				if (svc == null)
 				{
-					svc = new ReplicationService.Replication();
+					svc = new ReplicationServiceReference.Replication();
 					svc.Url = ConfigurationManager.AppSettings["ReplicationSourceUrl"];
 					svc.AllowAutoRedirect = true;
 					svc.UseDefaultCredentials = true;
 					svc.PreAuthenticate = true;
-					svc.UserCredentialsValue = new ReplicationService.UserCredentials { Login = user.Login, Password = user.Password };
+					svc.UserCredentialsValue = new ReplicationServiceReference.UserCredentials { Login = user.Login, Password = user.Password };
 				}
 				return svc;
 			}
@@ -78,11 +83,9 @@ namespace Nephrite.Web.Replication
 			if (user == null)
 				throw new Exception("Аутентификация не пройдена");
 
-			var settings = DI.RequestServices.GetService<IPersistentSettings>();
-
-			if (user.Login != settings.Get("ReplicationLogin"))
+			if (user.Login != _setting.Get("ReplicationLogin"))
 				throw new Exception("Неправильный логин или пароль");
-			if (user.Password != settings.Get("ReplicationPassword"))
+			if (user.Password != _setting.Get("ReplicationPassword"))
 				throw new Exception("Неправильный логин или пароль");
 		}
 
@@ -158,8 +161,7 @@ namespace Nephrite.Web.Replication
 		public byte[] GetFileContent(Guid fileGuid)
         {
 			CheckCredentials();
-			var storage = DI.RequestServices.GetService<IStorage<string>>();
-			var file = storage.GetFile(fileGuid);
+			var file = _storage.GetFile(fileGuid);
             if (file == null)
                 return new byte[0];
             return file.ReadAllBytes();
@@ -171,8 +173,7 @@ namespace Nephrite.Web.Replication
 		public string GetFile(Guid fileGuid)
 		{
 			CheckCredentials();
-			var storage = DI.RequestServices.GetService<IStorage<string>>();
-			var file = storage.GetFile(fileGuid);
+			var file = _storage.GetFile(fileGuid);
 			if (file == null)
 				return "";
 			XElement xe = new XElement("N_File");
@@ -240,7 +241,7 @@ namespace Nephrite.Web.Replication
 			}
 			catch (Exception e)
 			{
-				ErrorLogger.Log(e);
+				_errorLogger.Log(e);
 				throw e;
 			}
         }
@@ -354,7 +355,7 @@ namespace Nephrite.Web.Replication
 		[SoapHeader("user")]
 		public void RunTasks()
 		{
-			Subject.System.Run(() => Nephrite.Web.TaskManager.TaskManager.Run(HttpContext.Current == null));
+			_identity.RunAs(_identity.SystemSubject, () => Nephrite.Web.TaskManager.TaskManager.Run(HttpContext.Current == null));
 		}
 
 		public bool ImportObject(IMetaClass objectType, string data)
@@ -435,7 +436,7 @@ namespace Nephrite.Web.Replication
 								string refdata = ReplicationSourceServer.GetRecord(ref_ot.Name, propID);
                                 if (refdata == "")
                                 {
-                                    ErrorLogger.Log(new Exception("Передача не удалась, т.к. сервер не вернул объект " + ref_ot.Name + ", ID=" +
+                                    _errorLogger.Log(new Exception("Передача не удалась, т.к. сервер не вернул объект " + ref_ot.Name + ", ID=" +
                                         propID.ToString() + ", необходимый для импорта свойства " + prop.Name + " объекта " + data));
                                     return false;
                                 }
@@ -502,7 +503,7 @@ namespace Nephrite.Web.Replication
             
                     if (refdata == "")
                     {
-                        ErrorLogger.Log(new Exception("Передача не удалась, т.к. сервер не вернул агрегируемый объект " + ref_ot.Name + ", ID=" +
+                        _errorLogger.Log(new Exception("Передача не удалась, т.к. сервер не вернул агрегируемый объект " + ref_ot.Name + ", ID=" +
                             objid.ToString() + ", необходимый для импорта свойства " + prop.Name + " объекта " + data));
 
                         return false;

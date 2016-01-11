@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Claims;
 using System.Security.Principal;
 using Nephrite.Http;
 
@@ -9,17 +10,20 @@ namespace Nephrite.Identity
 		//static IIdentityManager<TKey> _instanceHolder;
 		//static object LockObject = new object();
 
-		public IHttpContext HttpContext { get; private set; }
-		public IDC_Identity<TKey> DataContext { get; private set; }
+		//public IHttpContext HttpContext { get; private set; }
+		IDC_Identity<TKey> _dataContext;
+		IIdentity _user;
 		public IdentityOptions Options { get; private set; }
 
 		public IdentityManager(
-			IHttpContext httpContext,
+			//IHttpContext httpContext,
+			IIdentity user,
 			IDC_Identity<TKey> dataContext,
 			IdentityOptions options = null)
 		{
-			HttpContext = httpContext;
-			DataContext = dataContext;
+			//HttpContext = httpContext;
+			_user = user;
+			_dataContext = dataContext;
 			Options = options ?? new IdentityOptions();
 		}
 
@@ -53,39 +57,49 @@ namespace Nephrite.Identity
 		//		return _instanceHolder;
 		//	}
 		//}
+		public IIdentity CurrentIdentity
+		{
+			get
+			{
+				return _user;
+			}
+		}
 
+		Subject<TKey> _currentSubject = null;
 		public Subject<TKey> CurrentSubject
 		{
 			get
 			{
-				var ctx = HttpContext;
-				if (ctx.Items["CurrentSubject2"] != null)
-					return ctx.Items["CurrentSubject2"] as Subject<TKey>;
+				
+				if (_currentSubject != null) return _currentSubject;
 
 				Subject<TKey> s = null;
+				string name;
 				if (!Options.Enabled)
 				{
-					s = DataContext.SubjectFromName<Subject<TKey>>("anonymous");
+					name = Options.AnonymousSubjectName;
 				}
 				else
 				{
-					if (ctx.User == null) s = DataContext.SubjectFromName<Subject<TKey>>("anonymous");
-
-					WindowsIdentity wi = ctx.User.Identity as WindowsIdentity;
-					if (wi != null && !wi.IsAnonymous)
-					{
-						s = DataContext.SubjectFromSID<Subject<TKey>>(wi.User.Value);
-						if (s == null) s = DataContext.SubjectFromName<Subject<TKey>>("anonymous");
-					}
+					if (_user == null)
+						name = Options.AnonymousSubjectName;
 					else
 					{
-						if (ctx.User.Identity.AuthenticationType == "Forms")
-							s = DataContext.SubjectFromName<Subject<TKey>>(ctx.User.Identity.Name);
+						WindowsIdentity wi = _user as WindowsIdentity;
+						if (wi != null && !wi.IsAnonymous)
+						{
+							name = wi.User.Value;
+							if (s == null) name = Options.AnonymousSubjectName;
+						}
 						else
-							s = DataContext.SubjectFromName<Subject<TKey>>("anonymous");
+						{
+							name = _user.Name;
+						}
 					}
 				}
-				ctx.Items["CurrentSubject2"] = s;
+				s = _dataContext.SubjectFromName<Subject<TKey>>(name);
+				if (s == null) throw new Exception(String.Format("User {0} does not exist in the database", name));
+				_currentSubject = s;
 				return s;
 			}
 		}
@@ -95,18 +109,25 @@ namespace Nephrite.Identity
 			get
 			{
 				var name = Options.SystemSubjectName;
-				var s = DataContext.SubjectFromName<Subject<TKey>>(name);
-				if (s == null) throw new Exception(String.Format("Учетная запись {0} не зарегистрирована в системе", name));
+				var s = _dataContext.SubjectFromName<Subject<TKey>>(name);
+				if (s == null) throw new Exception(String.Format("User {0} does not exist in the database", name));
 				return s;
 			}
 		}
 
 		public void RunAs(TKey sid, Action action)
 		{
-			var oldSubject2 = Subject.Current;
-			HttpContext.Items["CurrentSubject2"] = DataContext.SubjectFromID<Subject<TKey>>(sid);
+			var oldSubject = _currentSubject;
+			_currentSubject = _dataContext.SubjectFromID<Subject<TKey>>(sid);
 			action();
-			HttpContext.Items["CurrentSubject2"] = oldSubject2;
+			_currentSubject = oldSubject;
+		}
+		public void RunAs(Subject<TKey> subject, Action action)
+		{
+			var oldSubject = _currentSubject;
+			_currentSubject = subject;
+			action();
+			_currentSubject = oldSubject;
 		}
 	}
 

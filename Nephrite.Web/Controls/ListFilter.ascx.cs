@@ -9,6 +9,7 @@ using Nephrite.Multilanguage;
 using Nephrite.Meta;
 using Nephrite.AccessControl;
 using Nephrite.Controls;
+using Nephrite.Data;
 
 namespace Nephrite.Web.Controls
 {
@@ -19,6 +20,9 @@ namespace Nephrite.Web.Controls
 
 		[Inject]
 		public ITextResource TextResource { get; set; }
+
+		[Inject]
+		public IdentityManager<int> Identity { get; set; }
 
 		IDC_ListFilter dc
 		{
@@ -35,7 +39,7 @@ namespace Nephrite.Web.Controls
 			{
 				if (_engine == null)
 				{
-					_engine = new ListFilterEngine(TextResource, A.DBType, FilterList, new List<Field>());
+					_engine = new ListFilterEngine(TextResource, ConnectionManager.DBType, FilterList, new List<Field>());
 				}
 				return _engine;
             }
@@ -51,7 +55,7 @@ namespace Nephrite.Web.Controls
 			{
 				if (_filterObject == null)
 				{
-					_filterObject = new PersistentFilter(dc, Query);
+					_filterObject = new PersistentFilter(dc, Query.GetInt("filterid", 0));
 				}
 				return _filterObject;
 			}
@@ -65,7 +69,7 @@ namespace Nephrite.Web.Controls
 			get
 			{
 				if (ViewState["FilterItems"] == null)
-					return FilterObject.Items;
+					return FilterObject.Criteria;
 				else
 					return (List<FilterItem>)ViewState["FilterItems"];
 			}
@@ -86,7 +90,7 @@ namespace Nephrite.Web.Controls
 		public void SetActionName(string action)
 		{
 			actionName = action;
-			FilterObject = new PersistentFilter(dc, Query, action);
+			FilterObject = new PersistentFilter(dc, Query.GetInt("filterid", 0));
 		}
 
 		public bool HasValue
@@ -97,7 +101,7 @@ namespace Nephrite.Web.Controls
 					return false;
 				else
 					return !FilterObject.Columns.IsEmpty() || !FilterObject.Sort.IsEmpty() ||
-					FilterObject.Items.Count > 0 || FilterObject.ItemsOnPage > 0 ||
+					FilterObject.Criteria.Count > 0 || FilterObject.ItemsOnPage > 0 ||
 					FilterObject.Group1Column.HasValue || FilterObject.Group2Column.HasValue ||
 					!FilterObject.Group1Sort.IsEmpty() || !FilterObject.Group2Sort.IsEmpty();
 			}
@@ -105,7 +109,7 @@ namespace Nephrite.Web.Controls
 
 		public List<IN_Filter> GetViews()
 		{
-			int subjectID = Subject.Current.ID;
+			int subjectID = Identity.CurrentSubject.ID;
 			var flist = (from f in dc.IN_Filter
 						 where f.ListName == Query.Controller + "_" + (actionName ?? Query.Action) &&
 									(!f.SubjectID.HasValue || f.SubjectID.Value == subjectID) && f.FilterName != null
@@ -136,7 +140,7 @@ namespace Nephrite.Web.Controls
 		}
 		public void SetView(int filterID)
 		{
-			FilterObject = new PersistentFilter(dc, Query, filterID);
+			FilterObject = new PersistentFilter(dc, filterID);
 		}
 
 		protected override void OnInit(EventArgs e)
@@ -280,7 +284,7 @@ namespace Nephrite.Web.Controls
 			FilterObject.editMode = ViewEditMode;
 			if (filter.IsFirstPopulate)
 			{
-				mode.Value = FilterObject.Items.Any(o => o.Advanced) ? "A" : "S";
+				mode.Value = FilterObject.Criteria.Any(o => o.Advanced) ? "A" : "S";
 
 				if (id > 0 || HasValue)
 				{
@@ -318,13 +322,13 @@ namespace Nephrite.Web.Controls
 					rptFilter.DataBind();
 					rptAdvFilter.DataSource = null;
 					rptAdvFilter.DataBind();
-					FilterObject = new PersistentFilter(dc, Query, actionName);
+					FilterObject = new PersistentFilter(dc, Query.GetInt("filterid", 0));
 				}
-				rptFilter.DataSource = FilterObject.Items;
+				rptFilter.DataSource = FilterObject.Criteria;
 				rptFilter.DataBind();
-				rptAdvFilter.DataSource = FilterObject.Items;
+				rptAdvFilter.DataSource = FilterObject.Criteria;
 				rptAdvFilter.DataBind();
-				ViewState["FilterItems"] = FilterObject.Items;
+				ViewState["FilterItems"] = FilterObject.Criteria;
 
 				if (Columns != null)
 				{
@@ -489,7 +493,7 @@ namespace Nephrite.Web.Controls
 			lMsg.Text = "";
 
 			int id = filter.Argument.ToInt32(0);
-			FilterObject = new PersistentFilter(dc, Query, id);
+			FilterObject = new PersistentFilter(dc, id);
 			StoreRepeater();
 			addItem_Click(this, EventArgs.Empty);
 			FilterObject.Name = tbTitle.Text != "" ? tbTitle.Text : null;
@@ -523,7 +527,7 @@ namespace Nephrite.Web.Controls
 			if (!cbPersonal.Checked && AccessControl.Check("filter.managecommonviews"))
 				FilterObject.SubjectID = null;
 			else
-				FilterObject.SubjectID = Subject.Current.ID;
+				FilterObject.SubjectID = Identity.CurrentSubject.ID;
 
 			if (ddlGroup1Order.SelectedValue == "")
 			{

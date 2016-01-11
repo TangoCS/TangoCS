@@ -1,5 +1,6 @@
 ﻿using System;
 using Nephrite.Html.Layout;
+using Nephrite.Templating;
 
 namespace Nephrite.Html.Controls
 {
@@ -7,7 +8,7 @@ namespace Nephrite.Html.Controls
 	{
 		public static void BackButton(this LayoutWriter c, string title = "", string url = null)
 		{
-			if (url.IsEmpty()) url = c.Context.ActionArgs.ReturnUrl;
+			if (url.IsEmpty()) url = c.Context.GetArg("returnurl");
 			if (title.IsEmpty()) title = c.TextResource.Get("Common.Back", "Назад");
 			c.Write(String.Format("<button class='btn' type='button' onClick={0}>{1}</button>", 
 				String.Format("document.location='{0}';return false;", url).InQuot(),

@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite
 {
@@ -21,7 +17,7 @@ namespace Nephrite
 			var logicType = LogicCache.Get(obj.GetType().Name + "Logic");
 			if (logicType == null) return null;
 
-			var logic = DI.RequestServices.GetService(logicType);
+			object logic = null; // A.RequestServices.GetService(logicType);
 			var method = logicType.GetMethod(name);
 			if (method == null) return null;
 
@@ -51,10 +47,10 @@ namespace Nephrite
 			return _collection[name.ToLower()];
 		}
 
-		public static void AddLogic<T>(this IServiceCollection sc) where T : class, ILogic
-		{
-			Add<T>();
-			sc.AddScoped<T>();
-		}
+		//public static void AddLogic<T>(this IServiceCollection sc) where T : class, ILogic
+		//{
+		//	Add<T>();
+		//	sc.AddScoped<T>();
+		//}
 	}
 }

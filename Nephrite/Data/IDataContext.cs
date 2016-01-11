@@ -2,17 +2,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace Nephrite.Data
 {
+	public interface IDataContextActivator
+	{
+		IDataContext CreateInstance(string connectionString = null);
+	}
+
+	public static class DataContextActivatorExtensions
+	{
+		public static T CreateInstance<T>(this IDataContextActivator activator, string connectionString = null)
+			where T : class, IDataContext
+		{
+			return activator.CreateInstance(connectionString) as T;
+		}
+	}
+
 	public interface IDataContext : IDisposable
 	{
-		IDataContext NewDataContext();
-		IDataContext NewDataContext(string connectionString);
+		//IDataContext NewDataContext();
+		//IDataContext NewDataContext(string connectionString);
 
 		int ExecuteCommand(string command, params object[] parameters);
 		IEnumerable<TResult> ExecuteQuery<TResult>(string query, params object[] parameters);

@@ -47,7 +47,7 @@ namespace Nephrite.Web.Controls
 				if (f.FilterID == currentViewID)
 				{
 					currentView = f.FilterName;
-					isPersonal = f.SubjectID == Subject.Current.ID;
+					isPersonal = f.SubjectID == filter.Identity.CurrentSubject.ID;
 				}
 				mc.AddItem(f.IsDefault ? "<b>" + f.FilterName + "</b>" : f.FilterName, UrlHelper.Current().RemoveParameter("filter").SetParameter("filterid", f.FilterID.ToString()));
 			}
@@ -100,10 +100,10 @@ Sys.WebForms.PageRequestManager.getInstance().add_endRequest(QF_EndRequest);", t
 			toolbar.AddItem(IconSet.Back.X16, toolbar.TextResource.Get("Common.Back"), UrlHelper.Current().ReturnUrl);
 		}
 
-		public static void AddItem(this Toolbar toolbar, ActionLink actionLink)
-		{
-			if (!actionLink.Url.IsEmpty())
-				toolbar.AddItem(actionLink.GetImage(), actionLink.GetTitle(), actionLink.Url);
-		}
+		//public static void AddItem(this Toolbar toolbar, ActionLink actionLink)
+		//{
+		//	if (!actionLink.Url.IsEmpty())
+		//		toolbar.AddItem(actionLink.GetImage(), actionLink.GetTitle(), actionLink.Url);
+		//}
 	}
 }

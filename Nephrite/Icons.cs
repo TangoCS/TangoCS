@@ -33,7 +33,7 @@ namespace Nephrite
 		static ItemIcon _TitleSortdesc = new ItemIcon { X16 = "pd/down.png", X32 = "" };
 
 		// Operations
-		static ItemIcon _Create = new ItemIcon { X16 = "", X32 = "" };
+		static ItemIcon _Create = new ItemIcon { X16 = "additem.png", X32 = "" };
 		static ItemIcon _Add = new ItemIcon { X16 = "", X32 = "" };
 		static ItemIcon _Delete = new ItemIcon { X16 = "fc16/cross.png", X32 = "" };
 		static ItemIcon _Undelete = new ItemIcon { X16 = "", X32 = "" };

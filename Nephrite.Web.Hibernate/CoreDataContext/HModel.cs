@@ -99,22 +99,22 @@ namespace Nephrite.Web.CoreDataContext
 	}
 
 
-	public partial class C_Language : ILanguageObject
-	{
-		public virtual string Code { get; set; }
-		public virtual string Title { get; set; }
-		public virtual bool IsDefault { get; set; }
-	}
+	//public partial class C_Language : ILanguageObject
+	//{
+	//	public virtual string Code { get; set; }
+	//	public virtual string Title { get; set; }
+	//	public virtual bool IsDefault { get; set; }
+	//}
 
-	public partial class V_N_TextResource : IN_TextResource
-	{
+	//public partial class V_N_TextResource : IN_TextResource
+	//{
  
-		public virtual int TextResourceID { get; set; }
-		public virtual string Title { get; set; }
-		public virtual string SysName { get; set; }
-		public virtual string Text { get; set; }
-		public virtual string LanguageCode { get; set; }
-	}
+	//	public virtual int TextResourceID { get; set; }
+	//	public virtual string Title { get; set; }
+	//	public virtual string SysName { get; set; }
+	//	public virtual string Text { get; set; }
+	//	public virtual string LanguageCode { get; set; }
+	//}
 
 
 	public partial class N_Filter : IN_Filter, IWithoutEntityAudit

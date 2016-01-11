@@ -65,6 +65,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Nephrite.Abstractions\Nephrite.Abstractions.csproj">
+      <Project>{08917986-6340-4d26-bb53-b1b69fd3c810}</Project>
+      <Name>Nephrite.Abstractions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Nephrite.Meta.Database.DB2\Nephrite.Meta.Database.DB2.csproj">
       <Project>{2b25a041-ff5e-4308-a25a-aa60d097f009}</Project>
       <Name>Nephrite.Meta.Database.DB2</Name>

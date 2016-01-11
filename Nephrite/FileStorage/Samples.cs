@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Nephrite.Data;
-using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.FileStorage
 {
@@ -37,9 +32,9 @@ namespace Nephrite.FileStorage
 
 		public void Test3()
 		{
-			var storage = DI.RequestServices.GetService<IStorage<string>>();
-			var file = storage.GetFile("test/test.txt");
-			var data = file.ReadAllBytes();
+			//var storage = DI.GetService<IStorage<string>>();
+			//var file = storage.GetFile("test/test.txt");
+			//var data = file.ReadAllBytes();
 		}
 
 

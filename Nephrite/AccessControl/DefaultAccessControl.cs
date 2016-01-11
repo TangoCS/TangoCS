@@ -1,47 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using Nephrite.Identity;
 
 namespace Nephrite.AccessControl
 {
+	public class AbstractAccessControl<TIdentityKey>
+	{
+		
+	}
+
 	public class DefaultAccessControl<TIdentityKey> : IAccessControl, IAccessControlForRole<TIdentityKey>
 	{
-		//string _message = "";
 		public StringBuilder Log { get; set; }
 
 		public AccessControlOptions Options { get; private set; }
-		public IDefaultAccessControlDataContext<TIdentityKey> DataContext { get; private set; }
-		public IIdentityManager<TIdentityKey> IdentityManager { get; private set; }
+		AccessControlDataContext<TIdentityKey> _dataContext;
+		IIdentityManager<TIdentityKey> _identityManager;
+		IDbConnection _conn;
 		public IPredicateLoader PredicateLoader { get; private set; }
 
 		public DefaultAccessControl(
-			IDefaultAccessControlDataContext<TIdentityKey> dataContext,
+			IDbConnection conn,
 			IIdentityManager<TIdentityKey> identityManager,
 			IPredicateLoader predicateLoader,
 			AccessControlOptions options = null)
 		{
-			DataContext = dataContext;
-			IdentityManager = identityManager;
+			_dataContext = new AccessControlDataContext<TIdentityKey>(conn);
+			_identityManager = identityManager;
+			_conn = conn;
 			PredicateLoader = predicateLoader;
 			Options = options ?? new AccessControlOptions { Enabled = () => true };
 			Log = new StringBuilder();
 		}
 
+		SubjectWithRoles<TIdentityKey> _current = null;
+		public SubjectWithRoles<TIdentityKey> CurrentSubject
+		{
+			get
+			{
+				if (_current != null) return _current;
+				var curSubj = _identityManager.CurrentSubject;
+				if (curSubj == null) return null;
 
-		//public bool Enabled
-		//{
-		//	get
-		//	{
-		//		string se = Url.Current.GetString("spmenabled");
-		//		if (se == "0" || se.ToLower() == "false")
-		//		{
-		//			return !Subject.Current.IsAdministrator;
-		//		}
-		//		return true;
-		//	}
-		//}
+				_current = new SubjectWithRoles<TIdentityKey>(_conn, curSubj, _identityManager.CurrentIdentity);
+				return _current;
+			}
+		}
 
 		protected static object _lock = new object();
 
@@ -67,13 +74,13 @@ namespace Nephrite.AccessControl
 
 		public virtual bool Check(string securableObjectKey, bool defaultAccess = false)
 		{
-			var s = SubjectWithRoles<TIdentityKey>.Current;
+			var s = CurrentSubject;
 
 			string key = securableObjectKey.ToUpper();
 			if (s.AllowItems.Contains(key)) return true;
 			if (s.DisallowItems.Contains(key)) return false;
 
-			List<TIdentityKey> _access = DataContext.GetAccessInfo(securableObjectKey).ToList();
+			List<TIdentityKey> _access = _dataContext.GetAccessInfo(securableObjectKey).ToList();
 
 			if (_access.Count == 0)
 			{
@@ -137,26 +144,44 @@ namespace Nephrite.AccessControl
 		static object _lock = new object();
 
 		public CacheableAccessControlOptions Options { get; private set; }
-		public ICacheableAccessControlDataContext<TIdentityKey> DataContext { get; private set; }
-		public IIdentityManager<TIdentityKey> IdentityManager { get; private set; }
+		AccessControlDataContext<TIdentityKey> _dataContext;
+		IIdentityManager<TIdentityKey> _identityManager;
+		IDbConnection _conn;
 		public IPredicateLoader PredicateLoader { get; private set; }
 
 		public CacheableAccessControl(
-			ICacheableAccessControlDataContext<TIdentityKey> dataContext,
+			IDbConnection conn,
 			IIdentityManager<TIdentityKey> identityManager,
 			IPredicateLoader predicateLoader,
 			CacheableAccessControlOptions options = null)
 		{
-			DataContext = dataContext;
-			IdentityManager = identityManager;
+			_dataContext = new AccessControlDataContext<TIdentityKey>(conn);
+			_identityManager = identityManager;
+			_conn = conn;
 			PredicateLoader = predicateLoader;
-			Options = options ?? new CacheableAccessControlOptions { Enabled = () => true, ClassName = GetType().Name };
+			Options = options ?? new CacheableAccessControlOptions { Enabled = () => true };
+			if (Options.ClassName == null) Options.ClassName = GetType().Name;
 			Log = new StringBuilder();
+		}
+
+		SubjectWithRoles<TIdentityKey> _current = null;
+		public SubjectWithRoles<TIdentityKey> CurrentSubject
+		{
+			get
+			{
+				if (_current != null) return _current;
+				var curSubj = _identityManager.CurrentSubject;
+				if (curSubj == null) return null;
+
+				_current = new SubjectWithRoles<TIdentityKey>(_conn, curSubj, _identityManager.CurrentIdentity);
+				return _current;
+			}
 		}
 
 		public bool CheckForRole(TIdentityKey roleID, string securableObjectKey)
 		{
-			List<TIdentityKey> anc = DataContext.RoleAncestors(roleID);
+			if (!Options.Enabled()) return true;
+			List<TIdentityKey> anc = _dataContext.RoleAncestors(roleID);
 			string key = securableObjectKey.ToUpper();
 
 			HashSet<string> _access = null;
@@ -166,7 +191,7 @@ namespace Nephrite.AccessControl
 			{
 				lock (_lock)
 				{
-					_access = new HashSet<string>(DataContext.GetRolesAccess());
+					_access = new HashSet<string>(_dataContext.GetRolesAccess());
 					if (!AccessControlCache.AccessCache.ContainsKey(cacheName)) AccessControlCache.AccessCache.Add(cacheName, _access);
 				}
 			}
@@ -190,12 +215,14 @@ namespace Nephrite.AccessControl
 
 		public BoolResult CheckPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
 		{
+			if (!Options.Enabled()) return new BoolResult(true);
 			var pc = new PredicateChecker(PredicateLoader, Options);
 			return pc.Check(securableObjectKey, predicateContext);
 		}
 
 		public CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
 		{
+			if (!Options.Enabled()) return new CheckWithPredicateResult(true, CheckWithPredicateResultCode.AccessGranted);
 			BoolResult res1 = CheckPredicate(securableObjectKey, predicateContext, defaultAccess);
 			if (!res1.Value) return new CheckWithPredicateResult(res1.Value, CheckWithPredicateResultCode.PredicateAccessDenied, res1.Message);
 
@@ -206,10 +233,11 @@ namespace Nephrite.AccessControl
 
 		public bool Check(string securableObjectKey, bool defaultAccess = false)
 		{
+			if (!Options.Enabled()) return true;
 			string cacheName = Options.ClassName;
 			string key = securableObjectKey.ToUpper();
 
-			var s = SubjectWithRoles<TIdentityKey>.Current;
+			var s = CurrentSubject;
 
 			if (s.AllowItems.Contains(key)) return true;
 			if (s.DisallowItems.Contains(key)) return false;
@@ -221,8 +249,8 @@ namespace Nephrite.AccessControl
 			{
 				lock (_lock)
 				{
-					_access = new HashSet<string>(DataContext.GetRolesAccess());
-					_items = new HashSet<string>(DataContext.GetKeys());
+					_access = new HashSet<string>(_dataContext.GetRolesAccess());
+					_items = new HashSet<string>(_dataContext.GetKeys());
 
 					if (!AccessControlCache.AccessCache.ContainsKey(cacheName)) AccessControlCache.AccessCache.Add(cacheName, _access);
 					if (!AccessControlCache.ItemsCache.ContainsKey(cacheName)) AccessControlCache.ItemsCache.Add(cacheName, _items);

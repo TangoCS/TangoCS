@@ -60,7 +60,7 @@
     <Compile Include="AccessControl\AccessControlInterfaces.cs" />
     <Compile Include="AccessControl\Attributes.cs" />
     <Compile Include="AccessControl\DefaultAccessControl.cs" />
-    <Compile Include="AccessControl\DefaultAccessControlDataContext.cs" />
+    <Compile Include="AccessControl\AccessControlDataContext.cs" />
     <Compile Include="AccessControl\ActionAccessControl.cs" />
     <Compile Include="AccessControl\PredicateChecker.cs" />
     <Compile Include="AccessControl\SubjectWithRoles.cs" />
@@ -68,6 +68,7 @@
     <Compile Include="BusinessLogic.cs" />
     <Compile Include="Controls\ListFilterEngine.cs" />
     <Compile Include="Controls\PersistentListFilter.cs" />
+    <Compile Include="Data\ConnectionManager.cs" />
     <Compile Include="DI.cs" />
     <Compile Include="DynamicDictionary.cs" />
     <Compile Include="EntityAudit\EntityAudit.cs" />
@@ -99,26 +100,27 @@
     <Compile Include="IFML\AbstractClasses.cs" />
     <Compile Include="IFML\Impl.cs" />
     <Compile Include="Json.cs" />
+    <Compile Include="Templating\AllowAnonymousAttribute.cs" />
     <Compile Include="Templating\ApiResponse.cs" />
     <Compile Include="Html.Layout\LayoutWriter.cs" />
     <Compile Include="Html.Layout\LayoutWriterExtensions.cs" />
     <Compile Include="Meta.Database\IDBScript.cs" />
     <Compile Include="Meta.Database\MetaDatabaseModel.cs" />
     <Compile Include="Meta.Stereotypes\SMvcAction.cs" />
-    <Compile Include="MVC\ActionContext.cs" />
-    <Compile Include="MVC\ActionInvoker.cs" />
-    <Compile Include="MVC\ActionResult.cs" />
-    <Compile Include="MVC\TypeActivatorCache.cs" />
+    <Compile Include="Templating\ActionContext.cs" />
+    <Compile Include="Templating\ActionInvoker.cs" />
+    <Compile Include="Templating\ActionResult.cs" />
+    <Compile Include="Templating\TypeActivation.cs" />
     <Compile Include="Templating\CsTemplate.cs" />
-    <Compile Include="MVC\HasStandardMvcActionAttribute.cs" />
+    <Compile Include="Templating\HasStandardActionAttribute.cs" />
     <Compile Include="MVC\HtmlHelper.cs" />
-    <Compile Include="MVC\HttpMethodAttributes.cs" />
+    <Compile Include="Templating\HttpMethodAttributes.cs" />
     <Compile Include="MVC\IViewRendererFactory.cs" />
-    <Compile Include="MVC\MvcOptions.cs" />
-    <Compile Include="MVC\NonActionAttribute.cs" />
+    <Compile Include="Templating\Constants.cs" />
+    <Compile Include="Templating\NonActionAttribute.cs" />
     <Compile Include="MVC\QueryString.cs" />
     <Compile Include="Meta\UIMetaModel.cs" />
-    <Compile Include="MVC\Controller.cs" />
+    <Compile Include="Templating\Controller.cs" />
     <Compile Include="MVC\IViewRenderer.cs" />
     <Compile Include="MVC\ViewEngineAttribute.cs" />
     <Compile Include="ObjectInterfaces.cs" />
@@ -190,6 +192,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Multilanguage\TextResource.cs" />
+    <Compile Include="Templating\CsFormInvoker.cs" />
     <Compile Include="TypeFactory.cs" />
     <Compile Include="Validation.cs" />
     <Compile Include="XmlHelper.cs" />
@@ -214,10 +217,6 @@
     <ProjectReference Include="..\Nephrite.Abstractions\Nephrite.Abstractions.csproj">
       <Project>{08917986-6340-4d26-bb53-b1b69fd3c810}</Project>
       <Name>Nephrite.Abstractions</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\vNext\vNext.csproj">
-      <Project>{b836e522-1b0e-4fc4-8c81-d32433f97068}</Project>
-      <Name>vNext</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

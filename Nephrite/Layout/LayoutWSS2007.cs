@@ -289,7 +289,7 @@ namespace Nephrite.Layout
 		public string RenderPager(AbstractQueryString baseUrl, int pageIndex, int pageCount, int recordsCount)
 		{
 			StringBuilder sb = new StringBuilder(1024);
-			var textResource = DI.GetService<ITextResource>();
+			ITextResource textResource = null; // DI.GetService<ITextResource>();
 
 			sb.Append(@"<div style=""padding:3px 0px 8px 7px; vertical-align:middle"">");
 			if (pageCount > 1)
@@ -334,7 +334,7 @@ namespace Nephrite.Layout
 		public string RenderPager(string gotoPageJSFunction, int pageIndex, int pageCount, int recordsCount)
 		{
 			StringBuilder sb = new StringBuilder(1024);
-			var textResource = DI.GetService<ITextResource>();
+			ITextResource textResource = null; // DI.GetService<ITextResource>();
 
 			string imgname = "pagerBusy_" + gotoPageJSFunction;
 			gotoPageJSFunction = String.Format("{0}.style.visibility = 'visible';{1}({2}); return false;", imgname, gotoPageJSFunction, "{0}");
@@ -374,7 +374,7 @@ textResource.Get("Common.Paging.From", "из"));
 		public string RenderPager(string gotoPageJSFunction, int pageIndex, int pageCount)
 		{
 			StringBuilder sb = new StringBuilder(1024);
-			var textResource = DI.GetService<ITextResource>();
+			ITextResource textResource = null; // DI.GetService<ITextResource>();
 
 			if (pageCount > 1)
 			{

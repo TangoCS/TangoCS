@@ -117,6 +117,10 @@ namespace Nephrite.Html
 		{
 			w.WriteTag("h6", attributes, inner);
 		}
+		public static void Header(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
+		{
+			w.WriteTag("header", attributes, inner);
+		}
 		public static void I(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			w.WriteTag("i", attributes, inner);
@@ -137,6 +141,10 @@ namespace Nephrite.Html
 		{
 			w.WriteTag("li", attributes, inner);
 		}
+		public static void Nav(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
+		{
+			w.WriteTag("nav", attributes, inner);
+		}
 		public static void Ol(this IHtmlWriter w, Action<OlTagAttributes> attributes = null, Action inner = null)
 		{
 			w.WriteTag("ol", attributes, inner);
@@ -156,6 +164,10 @@ namespace Nephrite.Html
 		public static void S(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			w.WriteTag("s", attributes, inner);
+		}
+		public static void Script(this IHtmlWriter w, Action<ScriptTagAttributes> attributes = null)
+		{
+			w.WriteTag("script", attributes, () => w.Write(""));
 		}
 		public static void Small(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
@@ -225,10 +237,12 @@ namespace Nephrite.Html
 		public static void H4(this IHtmlWriter w, Action inner) { w.H4(null, inner); }
 		public static void H5(this IHtmlWriter w, Action inner) { w.H5(null, inner); }
 		public static void H6(this IHtmlWriter w, Action inner) { w.H6(null, inner); }
+		public static void Header(this IHtmlWriter w, Action inner) { w.Header(null, inner); }
 		public static void I(this IHtmlWriter w, Action inner) { w.I(null, inner); }
 		public static void Img(this IHtmlWriter w) { w.Img(null); }
 		public static void Label(this IHtmlWriter w, Action inner) { w.Label(null, inner); }
 		public static void Li(this IHtmlWriter w, Action inner) { w.Li(null, inner); }
+		public static void Nav(this IHtmlWriter w, Action inner) { w.Nav(null, inner); }
 		public static void Ol(this IHtmlWriter w, Action inner) { w.Ol(null, inner); }
 		public static void P(this IHtmlWriter w, Action inner) { w.P(null, inner); }
 		public static void Pre(this IHtmlWriter w, Action inner) { w.Pre(null, inner); }
@@ -263,48 +277,54 @@ namespace Nephrite.Html
 		public static void H4(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H4(attributes, () => w.Write(text)); }
 		public static void H5(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H5(attributes, () => w.Write(text)); }
 		public static void H6(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H6(attributes, () => w.Write(text)); }
+		public static void H1(this IHtmlWriter w, string text) { w.H1(null, () => w.Write(text)); }
+		public static void H2(this IHtmlWriter w, string text) { w.H2(null, () => w.Write(text)); }
+		public static void H3(this IHtmlWriter w, string text) { w.H3(null, () => w.Write(text)); }
+		public static void H4(this IHtmlWriter w, string text) { w.H4(null, () => w.Write(text)); }
+		public static void H5(this IHtmlWriter w, string text) { w.H5(null, () => w.Write(text)); }
+		public static void H6(this IHtmlWriter w, string text) { w.H6(null, () => w.Write(text)); }
 		public static void Legend(this IHtmlWriter w, string text) { w.Legend(null, text); }
+		public static void Script(this IHtmlWriter w, string path) { w.Script(a => a.Type("text/javascript").Src(path)); }
 
 	}
 
-
-	public interface IHtmlPageWriter : IHtmlWriter { }
-
 	public static class HtmlPageWriterExtensions
 	{
-		public static void DocType(this IHtmlPageWriter w)
+		public static void DocType(this IHtmlWriter w)
 		{
 			w.Write("<!DOCTYPE html>");
 		}
 
-		public static void Body(this IHtmlPageWriter w, Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Body(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			w.WriteTag("body", attributes, inner);
 		}
-		public static void Head(this IHtmlPageWriter w, Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Head(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			w.WriteTag("head", attributes, inner);
 		}
-		public static void Html(this IHtmlPageWriter w, Action<HtmlTagAttributes> attributes = null, Action inner = null)
+		public static void Html(this IHtmlWriter w, Action<HtmlTagAttributes> attributes = null, Action inner = null)
 		{
 			w.WriteTag("html", attributes, inner);
 		}
-		public static void Link(this IHtmlPageWriter w, Action<LinkTagAttributes> attributes = null)
+		public static void HeadLink(this IHtmlWriter w, Action<LinkTagAttributes> attributes = null)
 		{
 			w.WriteTag("link", attributes, null, true);
 		}
-		public static void Meta(this IHtmlPageWriter w, Action<MetaTagAttributes> attributes = null)
+		public static void HeadMeta(this IHtmlWriter w, Action<MetaTagAttributes> attributes = null)
 		{
 			w.WriteTag("meta", attributes, null, true);
 		}
-		public static void Title(this IHtmlPageWriter w, Action<TagAttributes> attributes = null, Action inner = null)
+		public static void HeadTitle(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			w.WriteTag("title", attributes, inner);
 		}
 
-		public static void Body(this IHtmlPageWriter w, Action inner) { w.Body(null, inner); }
-		public static void Head(this IHtmlPageWriter w, Action inner) { w.Head(null, inner); }
-		public static void Html(this IHtmlPageWriter w, Action inner) { w.Html(null, inner); }
-		public static void Title(this IHtmlPageWriter w, Action inner) { w.Title(null, inner); }
+		public static void Body(this IHtmlWriter w, Action inner) { w.Body(null, inner); }
+		public static void Head(this IHtmlWriter w, Action inner) { w.Head(null, inner); }
+		public static void Html(this IHtmlWriter w, Action inner) { w.Html(null, inner); }
+		public static void HeadTitle(this IHtmlWriter w, Action inner) { w.HeadTitle(null, inner); }
+		public static void HeadTitle(this IHtmlWriter w, string title) { w.HeadTitle(() => w.Write(title)); }
+		public static void HeadLinkCss(this IHtmlWriter w, string path) { w.HeadLink(a => a.Rel(LinkRel.Stylesheet).Type("text/css").Href(path)); }
 	}
 }

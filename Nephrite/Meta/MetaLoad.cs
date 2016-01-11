@@ -221,7 +221,7 @@ namespace Nephrite.Meta
 			//if (xp.GetAttributeValue("IsReferenceToVersion") != null && xp.GetAttributeValue("IsReferenceToVersion").ToLower() == "true")
 			//	a = new MetaReferenceToVersion();
 			//else
-			a = new MetaReference(xp.GetAttributeValue("Name"), xp.GetAttributeValue("Caption"), xp.GetAttributeValue("RefClass"),
+			a = new MetaReference(xp.GetAttributeValue("Name"), xp.GetAttributeValue("Caption"), xp.GetAttributeValue("RefClass"), null,
 				xp.GetAttributeValue("IsRequired").ToLower() == "true", xp.GetAttributeValue("UpperBound").ToInt32(1),
  				(AssociationType)xp.GetAttributeValue("AssociationType").ToInt32(0),
 				xp.GetAttributeValue("InverseProperty"), xp.GetAttributeValue("Description"));

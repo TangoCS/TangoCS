@@ -5,7 +5,6 @@ using System.Web;
 using System.Web.UI.WebControls;
 using System.Globalization;
 using System.Web.UI;
-using Microsoft.Framework.DependencyInjection;
 using Nephrite.Multilanguage;
 
 namespace Nephrite.Web.Controls
@@ -22,7 +21,7 @@ namespace Nephrite.Web.Controls
 		protected override void OnInit(EventArgs e)
 		{
 			base.OnInit(e);
-			Language = DI.RequestServices.GetService<ILanguage>();
+			Language = A.RequestServices.GetService<ILanguage>();
         }
 
 		protected override void OnLoad(EventArgs e)

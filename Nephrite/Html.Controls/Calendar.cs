@@ -10,27 +10,26 @@ namespace Nephrite.Html.Controls
 {
 	public static class CalendarExtension
 	{
-		public static void Calendar(this LayoutWriter c, string name, DateTime? value = null, bool enabled = true, bool showTime = false)
+		public static void Calendar(this LayoutWriter w, string name, DateTime? value = null, bool enabled = true, bool showTime = false)
 		{
 			string basePath = GlobalSettings.JSPath + "Calendar/";
 
-			//c.Page.RegisterScript("calendar", basePath + "calendar_stripped.js");
-			//c.Page.RegisterScript("calendar-ru", basePath + "lang/calendar-ru.js");
 			//c.Page.RegisterScript("calendar-setup", basePath + "calendar-setup_stripped.js");
 
-			c.TextBox(name, showTime ? value.DateTimeToString() : value.DateToString(), a =>
+			w.TextBox(name, showTime ? value.DateTimeToString() : value.DateToString(), a =>
 				a.ID(name).Placeholder("ДД.ММ.ГГГГ").Style("width:" + (showTime ? "130px" : "100px"))
 				.OnKeyPress("return jscal_calendarHelper(event)").Disabled(!enabled)
 			);
 			if (enabled)
 			{
-				c.Img(a => a.ID("btn" + name).Title("Календарь").Src(basePath + "img.gif"));
-			}
+				w.Img(a => a.ID("btn" + name).Title("Календарь").Src(basePath + "img.gif"));
 
-			if (enabled)
-				c.AddClientAction("Calendar", "setup", new {
-					inputField = c.GetID(name),
-					button = c.GetID("btn" + name),
+				w.Includes.Add(GlobalSettings.JSPath + "calendar/calendar_stripped.js");
+				w.Includes.Add(GlobalSettings.JSPath + "calendar/lang/calendar-en.js");	
+
+				w.AddClientAction("Calendar", "setup", new {
+					inputField = w.GetID(name),
+					button = w.GetID("btn" + name),
 					showOthers = true,
 					weekNumbers = false,
 					showTime = showTime,
@@ -38,6 +37,7 @@ namespace Nephrite.Html.Controls
 					timeFormat = "24",
 					dateStatusFunc = ConfigurationManager.AppSettings["UseCalendarDaysInJSCalendar"] == "true" ? "jscal_calendarDate" : null
 				});
+			}
 
 //				if (ConfigurationManager.AppSettings["UseCalendarDaysInJSCalendar"] == "true")
 //				{

@@ -37,20 +37,20 @@ namespace Nephrite.Web.CoreDataContext
 			DiscriminatorValue("0");
 		}
 	}
-	public class IC_LanguageImplMap : SubclassMapping<C_Language>
-	{
-		public IC_LanguageImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
-	public class IN_TextResourceImplMap : SubclassMapping<V_N_TextResource>
-	{
-		public IN_TextResourceImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
+	//public class IC_LanguageImplMap : SubclassMapping<C_Language>
+	//{
+	//	public IC_LanguageImplMap()
+	//	{
+	//		DiscriminatorValue("0");
+	//	}
+	//}
+	//public class IN_TextResourceImplMap : SubclassMapping<V_N_TextResource>
+	//{
+	//	public IN_TextResourceImplMap()
+	//	{
+	//		DiscriminatorValue("0");
+	//	}
+	//}
 	public class IN_FilterImplMap : SubclassMapping<N_Filter>
 	{
 		public IN_FilterImplMap()

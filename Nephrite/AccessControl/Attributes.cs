@@ -21,9 +21,4 @@ namespace Nephrite.AccessControl
 			get { return _name; }
 		}
 	}
-
-	[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
-	public sealed class AllowAnonymousAttribute : Attribute
-	{
-	}
 }

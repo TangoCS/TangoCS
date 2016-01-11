@@ -7,7 +7,7 @@ using Nephrite.Identity;
 using System.IO;
 using System.Text;
 using Nephrite.ErrorLog;
-using Microsoft.Framework.DependencyInjection;
+using Nephrite.Data;
 
 namespace Nephrite.Web.TaskManager
 {
@@ -17,7 +17,8 @@ namespace Nephrite.Web.TaskManager
 
 		public static void Run(bool startFromService)
 		{
-			using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
+			var dca = A.RequestServices.GetService<IDataContextActivator>();
+			using (var dc = dca.CreateInstance<IDC_TaskManager>())
 			{
 				// Задачи, которые не успели завершиться, пометить как завершенные
 				foreach (var t in 
@@ -61,14 +62,17 @@ namespace Nephrite.Web.TaskManager
 
 		public static void Run(int taskID)
 		{
-			var ErrorLogger = DI.RequestServices.GetService<IErrorLogger>();
+			var errorLogger = A.RequestServices.GetService<IErrorLogger>();
+			var identity = A.RequestServices.GetService<IIdentityManager<int>>();
+			var dca = A.RequestServices.GetService<IDataContextActivator>();
+
 			bool isServiceRun = false;
 			string taskName = "";
 			try
 			{
 				List<ITM_TaskParameter> taskparms = new List<ITM_TaskParameter>();
 
-				using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
+				using (var dc = dca.CreateInstance<IDC_TaskManager>())
 				{
 					//dc.Log = new StringWriter();
 					task = dc.ITM_Task.Single(o => o.TaskID == taskID);
@@ -80,7 +84,7 @@ namespace Nephrite.Web.TaskManager
 					taskexec.StartDate = DateTime.Now;
 					taskexec.MachineName = Environment.MachineName;
 					taskexec.TaskID = taskID;
-					taskexec.LastModifiedUserID = Subject.Current.ID;
+					taskexec.LastModifiedUserID = identity.CurrentSubject.ID;
 
 					dc.ITM_TaskExecution.InsertOnSubmit(taskexec);
 					dc.SubmitChanges();
@@ -124,9 +128,9 @@ namespace Nephrite.Web.TaskManager
 							}
 						}
 					}
-					Subject.System.Run(() => mi.Invoke(null, p));
+					identity.RunAs(identity.SystemSubject, () => mi.Invoke(null, p));
 
-					using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
+					using (var dc = dca.CreateInstance<IDC_TaskManager>())
 					{
 						try
 						{
@@ -151,15 +155,15 @@ namespace Nephrite.Web.TaskManager
 				}
 				catch (Exception e)
 				{
-					int errid = ErrorLogger.Log(e);
-					using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
+					int errid = errorLogger.Log(e);
+					using (var dc = dca.CreateInstance<IDC_TaskManager>())
 					{
 						//dc.Log = new StringWriter();
 						var t = dc.ITM_Task.Single(o => o.TaskID == taskID);
 						if (isServiceRun)
 							LogError(e, taskName, dc.Log.ToString());
 						else
-							ErrorLogger.Log(e);
+							errorLogger.Log(e);
 						t.IsSuccessfull = false;
 						t.LastStartDate = DateTime.Now;
 						t.ErrorLogID = errid;
@@ -175,15 +179,17 @@ namespace Nephrite.Web.TaskManager
 			{
 				if (isServiceRun)
 					LogError(e, taskName, "");
-				ErrorLogger.Log(e);
+				errorLogger.Log(e);
 			}
 		}
 
 		public static void RunService(string connectionString)
 		{
-			ConnectionManager.SetConnectionString(connectionString);
+			var identity = A.RequestServices.GetService<IIdentityManager<int>>();
+			var dca = A.RequestServices.GetService<IDataContextActivator>();
+			ConnectionManager.ConnectionString = connectionString;
 			List<ITM_Task> tasks;
-			using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
+			using (var dc = dca.CreateInstance<IDC_TaskManager>())
 			{
 				// Задачи, которые не успели завершиться, пометить как завершенные
 				foreach (var t in
@@ -201,6 +207,7 @@ namespace Nephrite.Web.TaskManager
 				dc.SubmitChanges();
 				tasks = dc.ITM_Task.Where(o => o.IsActive && o.StartFromService && !!dc.ITM_TaskExecution.Any(o1 => o1.TaskID == o.TaskID && o1.FinishDate == null)).ToList();
 			}
+
 			foreach (var task in tasks)
 			{
 				if (task.LastStartDate.HasValue)
@@ -218,13 +225,14 @@ namespace Nephrite.Web.TaskManager
 							continue; // Ещё не прошло нужное количество минут
 					}
 				}
-				Subject.System.Run(() => Run(task.TaskID));
+				identity.RunAs(identity.SystemSubject, () => Run(task.TaskID));
 			}
 		}
 
 		public static void Log(string text)
 		{
-			using (var dc = (A.Model.NewDataContext()) as IDC_TaskManager)
+			var dca = A.RequestServices.GetService<IDataContextActivator>();
+			using (var dc = dca.CreateInstance<IDC_TaskManager>())
 			{
 				var te = dc.ITM_TaskExecution.SingleOrDefault(o => o.TaskExecutionID == taskexecid);
 				te.ExecutionLog += text += Environment.NewLine;

@@ -10,7 +10,7 @@ namespace Tessera3.Api
 	{
 		public void ClearCache()
 		{
-			RazorRenderer.Configure("Views");
+			//RazorRenderer.Configure("Views");
 			HttpContext.Current.Response.Redirect("/");
 		}
 

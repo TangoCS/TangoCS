@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.UI;
 using Nephrite.MVC;
 using System.Web.UI.WebControls;
@@ -17,7 +15,7 @@ namespace Nephrite.Web.Controls
 		{
 			var props = GetType().GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(InjectAttribute)));
 			foreach (var prop in props)
-				prop.SetValue(this, DI.RequestServices.GetService(prop.PropertyType));
+				prop.SetValue(this, A.RequestServices.GetService(prop.PropertyType));
 
 			base.OnInit(e);
 		}
@@ -32,7 +30,7 @@ namespace Nephrite.Web.Controls
 		{
 			var props = GetType().GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(InjectAttribute)));
 			foreach (var prop in props)
-				prop.SetValue(this, DI.RequestServices.GetService(prop.PropertyType));
+				prop.SetValue(this, A.RequestServices.GetService(prop.PropertyType));
 
 			base.OnInit(e);
 		}
@@ -47,7 +45,7 @@ namespace Nephrite.Web.Controls
 		{
 			var props = GetType().GetProperties().Where(prop => Attribute.IsDefined(prop, typeof(InjectAttribute)));
 			foreach (var prop in props)
-				prop.SetValue(this, DI.RequestServices.GetService(prop.PropertyType));
+				prop.SetValue(this, A.RequestServices.GetService(prop.PropertyType));
 
 			base.OnInit(e);
 		}

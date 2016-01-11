@@ -76,10 +76,6 @@
       <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
       <Name>Nephrite</Name>
     </ProjectReference>
-    <ProjectReference Include="..\vNext\vNext.csproj">
-      <Project>{b836e522-1b0e-4fc4-8c81-d32433f97068}</Project>
-      <Name>vNext</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

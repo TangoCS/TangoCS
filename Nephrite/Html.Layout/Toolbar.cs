@@ -4,8 +4,7 @@ namespace Nephrite.Html.Layout
 {
 	public static class ToolbarExtensions
 	{
-		public static void Toolbar(this LayoutWriter w,
-			Action<ToolbarContentWriter> leftPart, Action<ToolbarContentWriter> rightPart = null)
+		public static void Toolbar(this LayoutWriter w, Action<ToolbarContentWriter> leftPart, Action<ToolbarContentWriter> rightPart = null)
 		{
 			w.Div(a => a.Class("ms-menutoolbar"), () =>
 			{

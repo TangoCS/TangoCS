@@ -54,11 +54,13 @@ namespace Nephrite.FileStorage
 
 		IPersistentSettings _settings;
 		IDC_VirusScan _dataContext;
+		IIdentityManager<int> _identity;
 
-		public DefaultVirusChecker(IPersistentSettings settings, IDC_VirusScan dataContext)
+		public DefaultVirusChecker(IIdentityManager<int> identity,  IPersistentSettings settings, IDC_VirusScan dataContext)
 		{
 			_settings = settings;
 			_dataContext = dataContext;
+			_identity = identity;
 		}
 
 		public VirusCheckResult Check(string fileName, byte[] fileBytes)
@@ -131,7 +133,7 @@ namespace Nephrite.FileStorage
         {
 			var l = _dataContext.NewIN_VirusScanLog();
 			l.LastModifiedDate = DateTime.Now;
-            l.LastModifiedUserID = Subject.Current.ID;
+            l.LastModifiedUserID = _identity.CurrentSubject.ID;
             l.ResultCode = code;
 			l.Title = fileName;
 			_dataContext.IN_VirusScanLog.InsertOnSubmit(l);

@@ -1,5 +1,4 @@
 ﻿using System;
-using Microsoft.Framework.DependencyInjection;
 
 namespace Nephrite.Identity
 {
@@ -14,31 +13,6 @@ namespace Nephrite.Identity
 		public bool IsDeleted { get; set; }
 		public string SID { get; set; }
 		public bool MustChangePassword { get; set; }
-
-		public static Subject<TKey> Current
-		{
-			get
-			{
-				return DI.RequestServices.GetService<IIdentityManager<TKey>>().CurrentSubject;
-			}
-		}
-
-		public static Subject<TKey> System
-		{
-			get
-			{
-				return DI.RequestServices.GetService<IIdentityManager<TKey>>().SystemSubject;
-			}
-		}
-
-		public void Run(Action action)
-		{
-			var oldSubject = Current;
-			var ctx = DI.RequestServices.GetService<IIdentityManager<TKey>>().HttpContext;
-			ctx.Items["CurrentSubject2"] = this;
-			action();
-			ctx.Items["CurrentSubject2"] = oldSubject;
-		}
 	}
 
 	public class Subject : Subject<int>

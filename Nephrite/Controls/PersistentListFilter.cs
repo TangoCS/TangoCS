@@ -1,42 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using Nephrite.Data;
-using Nephrite.MVC;
 
 namespace Nephrite.Controls
 {
 	public class PersistentFilter
 	{
 		IDC_ListFilter _dc;
-		AbstractQueryString _query;
+		//AbstractQueryString _query;
 		IN_Filter _filter;
 		List<FilterItem> _items;
 		public bool editMode = false;
 
 
-		public PersistentFilter(IDC_ListFilter dc, AbstractQueryString query, string action = null)
+		//public PersistentFilter(IDC_ListFilter dc, AbstractQueryString query, string action = null)
+		//{
+		//	_dc = dc;
+		//	//_query = query;
+		//	_filter = _dc.IN_Filter.SingleOrDefault(o => o.FilterID == _query.GetInt("filterid", 0));
+		//	_items = _filter != null && _filter.FilterValue != null ? XmlHelper.Deserialize<List<FilterItem>>(_filter.FilterValue.Root) : new List<FilterItem>();
+		//}
+
+		public PersistentFilter(IDC_ListFilter dc, int? filterID)
 		{
-			var a = action ?? query.Action;
 			_dc = dc;
-			_query = query;
-			var listName = _query.Controller.ToLower() + "_" + a.ToLower();
-            _filter = _dc.IN_Filter.SingleOrDefault(o => o.FilterID == _query.GetInt("filterid", 0) && o.ListName.ToLower() == listName);
+			//_query = query;
+			if (filterID.HasValue) _filter = _dc.IN_Filter.SingleOrDefault(o => o.FilterID == filterID);
 			_items = _filter != null && _filter.FilterValue != null ? XmlHelper.Deserialize<List<FilterItem>>(_filter.FilterValue.Root) : new List<FilterItem>();
 		}
 
-		public PersistentFilter(IDC_ListFilter dc, AbstractQueryString query, int filterID)
-		{
-			_dc = dc;
-			_query = query;
-			_filter = _dc.IN_Filter.SingleOrDefault(o => o.FilterID == filterID);
-			_items = _filter != null && _filter.FilterValue != null ? XmlHelper.Deserialize<List<FilterItem>>(_filter.FilterValue.Root) : new List<FilterItem>();
-		}
-
-		public List<FilterItem> Items
+		public List<FilterItem> Criteria
 		{
 			get { return _items; }
 		}
@@ -56,7 +50,6 @@ namespace Nephrite.Controls
 				if (_filter == null)
 				{
 					_filter = _dc.NewIN_Filter();
-					_dc.IN_Filter.InsertOnSubmit(_filter);
 				}
 				return _filter;
 			}
@@ -144,6 +137,7 @@ namespace Nephrite.Controls
 		{
 			_items = items;
 			Filter.FilterValue = new XDocument(XmlHelper.Serialize<List<FilterItem>>(_items));
+			if (Filter.FilterID == 0) _dc.IN_Filter.InsertOnSubmit(Filter);
 			_dc.SubmitChanges();
 		}
 	}

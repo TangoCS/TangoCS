@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Nephrite.AccessControl;
+﻿using System.Collections.Generic;
 
 namespace Nephrite.Html.Controls
 {
 	public class Navigation
 	{
-		IAccessControl _accessControl;
-
 		public List<Group> Groups { get; private set; }
 		public Group CurrentGroup { get; set; }
 
@@ -20,9 +14,8 @@ namespace Nephrite.Html.Controls
 			return g;
 		}
 
-		public Navigation(IAccessControl accessControl)
+		public Navigation()
 		{
-			_accessControl = accessControl;
 			Groups = new List<Group>();
         }
 

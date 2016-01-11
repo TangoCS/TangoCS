@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
-using System.Xml;
-using System.Xml.Linq;
 using Nephrite.Data;
 using Nephrite.Meta;
-using Nephrite.Meta.Database;
 
 namespace Nephrite.Web
 {
@@ -24,6 +19,19 @@ namespace Nephrite.Web
 				A.Items["SolutionDataContext"] = value;
 			}
 		}
+
+		public static IServiceProvider RequestServices
+		{
+			get
+			{
+				return A.Items["RequestServices"] as IServiceProvider;
+			}
+			set
+			{
+				A.Items["RequestServices"] = value;
+			}
+		}
+
 		public static MetaSolution Meta { get; set; }
 
 		public static IDictionary Items
@@ -42,20 +50,13 @@ namespace Nephrite.Web
 
 			}
 		}
+	}
 
-		static DBType? _dbType = null;
-		public static DBType DBType
+	public static class DIExtensions
+	{
+		public static T GetService<T>(this IServiceProvider provider)
 		{
-			get
-			{
-				if (_dbType == null) _dbType = (DBType?)Enum.Parse(typeof(DBType), System.Configuration.ConfigurationManager.AppSettings["DBType"].ToUpper());
-				if (_dbType == null) throw new Exception("DBType parameter not found in your app's config");
-				return _dbType.Value;
-			}
-			set
-			{
-				_dbType = value;
-			}
+			return (T)provider.GetService(typeof(T));
 		}
 	}
 

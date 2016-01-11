@@ -18,7 +18,7 @@ namespace Nephrite.FileStorage
 			byte[] data;
 			string fileName;
 			string contentType;
-			bool flag = FileProvider.GetFile(context, true, out data, out fileName, out contentType);
+			bool flag = FileProvider.GetFile(context, out data, out fileName, out contentType);
 			if (!flag)
 			{
 				if (!contentType.IsEmpty())

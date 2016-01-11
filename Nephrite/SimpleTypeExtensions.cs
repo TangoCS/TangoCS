@@ -413,10 +413,10 @@ namespace Nephrite
 			return args[index];
 		}
 
-		public static void SetPropertyValue(this object obj, string propertyName, object value)
-		{
-			obj.GetType().GetProperty(propertyName).SetValue(obj, value, null);
-		}
+		//public static void SetPropertyValue(this object obj, string propertyName, object value)
+		//{
+		//	obj.GetType().GetProperty(propertyName).SetValue(obj, value, null);
+		//}
 
 		public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key)
 		{

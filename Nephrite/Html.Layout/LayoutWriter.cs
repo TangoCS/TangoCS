@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Nephrite.Multilanguage;
-using Nephrite.MVC;
 using Nephrite.Templating;
 
 namespace Nephrite.Html.Layout
@@ -10,83 +9,76 @@ namespace Nephrite.Html.Layout
 	{
 		public ITextResource TextResource { get; private set; }
 		public ActionContext Context { get; private set; }
+
 		public List<ClientAction> ClientActions { get; set; }
+		public HashSet<string> Includes { get; set; }
 
 		public LayoutWriter(ActionContext context, ITextResource textResource)
         {
 			TextResource = textResource;
 			Context = context;
 			ClientActions = new List<ClientAction>();
+			Includes = new HashSet<string>();
 		}
+	}
 
-		public void ListTable(Action<TagAttributes> attributes, Action<ListTableWriter> content)
+	public static class LayoutWriterMainExtensions
+	{
+		public static void ListTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
-			new ListTableWriter(this, attributes, content);
+			w.Table(a => { a.Class("ms-listviewtable"); if (attributes != null) attributes(a); }, content);
 		}
 
-		public void ButtonsBar(Action<TagAttributes> attributes, Action<ButtonsBarWriter> content)
+		public static void ListHeader(this LayoutWriter w, Action<TagAttributes> attributes, Action columns)
 		{
-			new ButtonsBarWriter(this, attributes, content);
+			w.Tr(a => { a.Class("ms-viewheadertr"); if (attributes != null) attributes(a); }, columns);
 		}
 
-		public class ButtonsBarWriter
+		public static void ColumnHeader(this LayoutWriter w, Action<ThTagAttributes> attributes, Action content)
 		{
-			LayoutWriter _w;
-
-			public LayoutWriter Writer { get { return _w; } }
-
-			public ButtonsBarWriter(LayoutWriter writer, Action<TagAttributes> attributes, Action<ButtonsBarWriter> content)
-			{
-				_w = writer;
-				_w.Table(a => { a.Class("ms-formtoolbar"); if (attributes != null) attributes(a); }, () => content(this));
-			}
-
-			public void WhiteSpace()
-			{
-				_w.Td(a => a.Style("width:100%"));
-			}
-
-			public void Item(Action content)
-			{
-				_w.Td(a => a.Style("vertical-align:middle"), content);
-			}
+			w.Th(a => { a.Class("ms-vh2"); if (attributes != null) attributes(a); },
+				() => w.Div(a => a.Class("ms-vb"), content)
+			);
 		}
 
-		public class ListTableWriter
+		public static void ListRow(this LayoutWriter w, Action<TagAttributes> attributes, Action cells)
 		{
-			LayoutWriter _w;
-
-			public LayoutWriter Writer { get { return _w; } }
-
-			public ListTableWriter(LayoutWriter writer, Action<TagAttributes> attributes, Action<ListTableWriter> content)
-			{
-				_w = writer;
-				_w.Table(a => { a.Class("ms-listviewtable"); if (attributes != null) attributes(a); }, () => content(this));
-			}
-
-			public void ListHeader(Action<TagAttributes> attributes, Action columns)
-			{
-				_w.Tr(a => { a.Class("ms-viewheadertr"); if (attributes != null) attributes(a); }, columns);
-			}
-
-			public void ColumnHeader(Action<ThTagAttributes> attributes, Action content)
-			{
-				_w.Th(a => {
-					a.Class("ms-vh2"); if (attributes != null) attributes(a); }, 
-					() => _w.Div(a => a.Class("ms-vb"), content)
-				);
-			}
-
-			public void ListRow(Action<TagAttributes> attributes, Action cells)
-			{
-				_w.Tr(attributes, cells);
-			}
-
-			public void Cell(Action<TdTagAttributes> attributes, Action content)
-			{
-				_w.Td(a => { a.Class("ms-vb2"); if (attributes != null) attributes(a); }, content);
-			}
+			w.Tr(attributes, cells);
 		}
 
+		public static void Cell(this LayoutWriter w, Action<TdTagAttributes> attributes, Action content)
+		{
+			w.Td(a => { a.Class("ms-vb2"); if (attributes != null) attributes(a); }, content);
+		}
+
+		public static void FormTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+		{
+			w.Table(a => { a.Class("ms-formtable"); if (attributes != null) attributes(a); }, content);
+		}
+
+		public static void GroupTitle(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+		{
+			w.Div(a => { a.Class("tabletitle"); attributes(a); }, content);
+		}
+
+		public static void FormMargin(this LayoutWriter w, Action inner)
+		{
+			w.Div(a => a.Style("padding:8px"), inner);
+		}
+
+		public static void ButtonsBar(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+		{
+			w.Table(a => { a.Class("ms-formtoolbar"); if (attributes != null) attributes(a); }, content);
+		}
+
+		public static void ButtonsBarWhiteSpace(this LayoutWriter w)
+		{
+			w.Td(a => a.Style("width:100%"));
+		}
+
+		public static void ButtonsBarItem(this LayoutWriter w, Action content)
+		{
+			w.Td(a => a.Style("vertical-align:middle"), content);
+		}
 	}	
 }

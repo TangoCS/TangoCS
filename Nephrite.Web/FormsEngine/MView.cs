@@ -17,6 +17,8 @@ namespace Nephrite.Web.FormsEngine
     {
 		[Inject]
 		public IErrorLogger ErrorLogger { get; set; }
+		[Inject]
+		public IAccessControlForRole<int> AccessControl { get; set; }
 
 		Exception error = null;
 		bool loaded = false;
@@ -49,7 +51,7 @@ namespace Nephrite.Web.FormsEngine
 
 		void addToUtils(string fv)
 		{
-			if (SubjectWithRoles.Current.IsAdministrator)
+			if (AccessControl.CurrentSubject.IsAdministrator)
 			{
 				if (HttpContext.Current.Items["MViewList"] == null)
 					HttpContext.Current.Items["MViewList"] = new List<string>();

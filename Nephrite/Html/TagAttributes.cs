@@ -36,7 +36,7 @@ namespace Nephrite.Html
 		public T AccessKey(string value) { MergeAttribute("accesskey", value); return _this; }
 		public T Aria(string key, string value) { MergeAttribute("aria-" + key.ToLower(), value); return _this; }
 		public T Class(string value, bool replaceExisting = false) { MergeAttribute("class", value, replaceExisting); return _this; }
-		public T Contenteditable(bool value) { if (value) MergeAttribute("contenteditable", "Contenteditable"); return _this; }
+		public T ContentEditable(bool value) { if (value) MergeAttribute("contenteditable", "Contenteditable"); return _this; }
 		public T Data(string key, string value) { MergeAttribute("data-" + key.ToLower(), value); return _this; }
 		public T Dir(Dir value) { MergeAttribute("dir", value.ToString().ToLower()); return _this; }
 		public T Draggable(bool value) { if (value) MergeAttribute("draggable", "Draggable"); return _this; }
@@ -137,13 +137,13 @@ namespace Nephrite.Html
 		public InputTagAttributes Autofocus(bool value) { if (value) MergeAttribute("autofocus", "autofocus"); return this; }
 		public InputTagAttributes Checked(bool value) { if (value) MergeAttribute("checked", "checked"); return this; }
 		public InputTagAttributes Disabled(bool value) { if (value) MergeAttribute("disabled", "disabled"); return this; }
-		public InputTagAttributes Formaction(string value) { MergeAttribute("formaction", value); return this; }
-		public InputTagAttributes Formenctype(string value) { MergeAttribute("formenctype", value); return this; }
-		public InputTagAttributes Formmethod(Method value) { MergeAttribute("formmethod", value.ToString().ToLower()); return this; }
-		public InputTagAttributes Formtarget(Target value) { MergeAttribute("formtarget", value.ToString().ToLower()); return this; }
+		public InputTagAttributes FormAction(string value) { MergeAttribute("formaction", value); return this; }
+		public InputTagAttributes FormEnctype(string value) { MergeAttribute("formenctype", value); return this; }
+		public InputTagAttributes FormMethod(Method value) { MergeAttribute("formmethod", value.ToString().ToLower()); return this; }
+		public InputTagAttributes FormTarget(Target value) { MergeAttribute("formtarget", value.ToString().ToLower()); return this; }
 		public InputTagAttributes Height(int value) { MergeAttribute("height", value.ToString()); return this; }
 		public InputTagAttributes Max(string value) { MergeAttribute("max", value); return this; }
-		public InputTagAttributes Maxlength(int value) { MergeAttribute("maxlength", value.ToString()); return this; }
+		public InputTagAttributes MaxLength(int value) { MergeAttribute("maxlength", value.ToString()); return this; }
 		public InputTagAttributes Min(string value) { MergeAttribute("min", value); return this; }
 		public InputTagAttributes Multiple(bool value) { if (value) MergeAttribute("multiple", "multiple"); return this; }
 		public InputTagAttributes Placeholder(string value) { MergeAttribute("placeholder", value); return this; }
@@ -160,10 +160,10 @@ namespace Nephrite.Html
 	{
 		public ButtonTagAttributes Autofocus(bool value) { if (value) MergeAttribute("autofocus", "autofocus"); return this; }
 		public ButtonTagAttributes Disabled(bool value) { if (value) MergeAttribute("disabled", "disabled"); return this; }
-		public ButtonTagAttributes Formaction(string value) { MergeAttribute("formaction", value); return this; }
-		public ButtonTagAttributes Formenctype(string value) { MergeAttribute("formenctype", value); return this; }
-		public ButtonTagAttributes Formmethod(Method value) { MergeAttribute("formmethod", value.ToString().ToLower()); return this; }
-		public ButtonTagAttributes Formtarget(Target value) { MergeAttribute("formtarget", value.ToString().ToLower()); return this; }
+		public ButtonTagAttributes FormAction(string value) { MergeAttribute("formaction", value); return this; }
+		public ButtonTagAttributes FormEnctype(string value) { MergeAttribute("formenctype", value); return this; }
+		public ButtonTagAttributes FormMethod(Method value) { MergeAttribute("formmethod", value.ToString().ToLower()); return this; }
+		public ButtonTagAttributes FormTarget(Target value) { MergeAttribute("formtarget", value.ToString().ToLower()); return this; }
 		public ButtonTagAttributes Name(string value) { MergeAttribute("name", value); return this; }
 		public ButtonTagAttributes Type(ButtonType value) { MergeAttribute("type", value.ToString().ToLower()); return this; }
 		public ButtonTagAttributes Value(string value) { MergeAttribute("value", value); return this; }
@@ -192,7 +192,7 @@ namespace Nephrite.Html
 
 	public class MetaTagAttributes : TagAttributes<MetaTagAttributes>
 	{
-		public MetaTagAttributes Charset(string value) { MergeAttribute("charset", value); return this; }
+		public MetaTagAttributes CharSet(string value) { MergeAttribute("charset", value); return this; }
 		public MetaTagAttributes Content(string value) { MergeAttribute("content", value); return this; }
 		public MetaTagAttributes HttpEquiv(string value) { MergeAttribute("http-equiv", value); return this; }
 		public MetaTagAttributes Name(string value) { MergeAttribute("name", value); return this; }
@@ -225,6 +225,13 @@ namespace Nephrite.Html
 		public SelectTagAttributes Disabled(bool value) { if (value) MergeAttribute("disabled", "disabled"); return this; }
 		public SelectTagAttributes Multiple(bool value) { if (value) MergeAttribute("multiple", "multiple"); return this; }
 		public SelectTagAttributes Size(int value) { MergeAttribute("size", value.ToString()); return this; }
+	}
+
+	public class ScriptTagAttributes : TagAttributes<ScriptTagAttributes>
+	{
+		public ScriptTagAttributes CharSet(string value) { MergeAttribute("type", value); return this; }
+		public ScriptTagAttributes Src(string value) { MergeAttribute("src", value); return this; }
+		public ScriptTagAttributes Type(string value) { MergeAttribute("type", value); return this; }
 	}
 
 	public class TdTagAttributes : TagAttributes<TdTagAttributes>

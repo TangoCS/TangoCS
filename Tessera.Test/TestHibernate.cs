@@ -230,15 +230,15 @@ namespace Tessera.Test
 		}
 
 
-		public override IDataContext NewDataContext()
-		{
-			return new HibernateDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
-		}
+		//public override IDataContext NewDataContext()
+		//{
+		//	return new HibernateDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
+		//}
 
-		public override IDataContext NewDataContext(string connectionString)
-		{
-			return new HibernateDataContext(HCoreDataContext.DefaultDBConfig(connectionString), null);
-		}
+		//public override IDataContext NewDataContext(string connectionString)
+		//{
+		//	return new HibernateDataContext(HCoreDataContext.DefaultDBConfig(connectionString), null);
+		//}
 	}
 
 	public partial class F_DocTask

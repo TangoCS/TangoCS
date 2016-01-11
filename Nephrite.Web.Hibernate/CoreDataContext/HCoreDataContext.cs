@@ -24,7 +24,7 @@ namespace Nephrite.Web.CoreDataContext
 
 	public class HCoreDataContext : HDataContext,  IDC_ErrorLog,
 		IDC_TimeZone, IDC_ListFilter, IDC_FileStorage, IDC_CalendarDays, IDC_Mailer,
-		IDC_TextResources, IDC_Multilanguage, IDC_TaskManager, IDC_Settings, IDC_RSS, IDC_EntityAudit
+		IDC_TaskManager, IDC_Settings, IDC_RSS, IDC_EntityAudit
 	{
 		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Listeners listeners)
 			: base(dbConfig, listeners)
@@ -35,7 +35,7 @@ namespace Nephrite.Web.CoreDataContext
 		{
 			return c =>
 			{
-				if (dbType == null) dbType = A.DBType;
+				if (dbType == null) dbType = ConnectionManager.DBType;
 				switch (dbType)
 				{
 					case DBType.MSSQL: c.Dialect<MsSql2008Dialect>(); break;
@@ -62,8 +62,8 @@ namespace Nephrite.Web.CoreDataContext
 			l.Add(typeof(ICalendarDayMap));
 			l.Add(typeof(IMailMessageMap));
 			l.Add(typeof(IMailTemplateMap));
-			l.Add(typeof(IN_TextResourceMap));
-			l.Add(typeof(IC_LanguageMap));
+			//l.Add(typeof(IN_TextResourceMap));
+			//l.Add(typeof(IC_LanguageMap));
 			l.Add(typeof(IN_VirusScanLogMap));
 			//l.Add(typeof(IDbFolderMap));
 			//l.Add(typeof(IDbItemMap));
@@ -84,8 +84,8 @@ namespace Nephrite.Web.CoreDataContext
 			l.Add(typeof(IMailMessageImplMap));
 			l.Add(typeof(IMailTemplateImplMap));
 			l.Add(typeof(IN_TimeZoneImplMap));
-			l.Add(typeof(IC_LanguageImplMap));
-			l.Add(typeof(IN_TextResourceImplMap));
+			//l.Add(typeof(IC_LanguageImplMap));
+			//l.Add(typeof(IN_TextResourceImplMap));
 			l.Add(typeof(IN_FilterImplMap));
 			l.Add(typeof(IN_SettingsImplMap));
 			l.Add(typeof(IN_ObjectChangeImplMap));
@@ -185,14 +185,14 @@ namespace Nephrite.Web.CoreDataContext
 		{
 			get { return new HTable<IN_TimeZone>(this, Session.Query<IN_TimeZone>()); }
 		}
-		public ITable<ILanguageObject> IC_Language
-		{
-			get { return new HTable<ILanguageObject>(this, Session.Query<ILanguageObject>()); }
-		}
-		public ITable<IN_TextResource> IN_TextResource
-		{
-			get { return new HTable<IN_TextResource>(this, Session.Query<IN_TextResource>()); }
-		}
+		//public ITable<ILanguageObject> IC_Language
+		//{
+		//	get { return new HTable<ILanguageObject>(this, Session.Query<ILanguageObject>()); }
+		//}
+		//public ITable<IN_TextResource> IN_TextResource
+		//{
+		//	get { return new HTable<IN_TextResource>(this, Session.Query<IN_TextResource>()); }
+		//}
 		public ITable<IN_Filter> IN_Filter
 		{
 			get { return new HTable<IN_Filter>(this, Session.Query<IN_Filter>()); }
@@ -252,15 +252,15 @@ namespace Nephrite.Web.CoreDataContext
 
 
 
-		public override IDataContext NewDataContext()
-		{
-			return new HCoreDataContext(DefaultDBConfig(ConnectionManager.ConnectionString), null);
-		}
+		//public override IDataContext NewDataContext()
+		//{
+		//	return new HCoreDataContext(DefaultDBConfig(ConnectionManager.ConnectionString), null);
+		//}
 
-		public override IDataContext NewDataContext(string connectionString)
-		{
-			return new HCoreDataContext(DefaultDBConfig(connectionString), null);
-		}
+		//public override IDataContext NewDataContext(string connectionString)
+		//{
+		//	return new HCoreDataContext(DefaultDBConfig(connectionString), null);
+		//}
 	}
 
 }

@@ -1,36 +1,161 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Nephrite.Html.Layout;
+using Newtonsoft.Json;
 
 namespace Nephrite.Templating
 {
-	public class ApiResponse
+	public interface IJsonResponse
 	{
-		public Dictionary<string, object> Data { get; set; }
+		string Serialize();
+	}
+
+	public class ArrayResponse : IJsonResponse
+	{
+		public List<object> Data { get; set; } = new List<object>();
+		public string Serialize()
+		{
+			return JsonConvert.SerializeObject(Data, Json.CamelCase);
+		}
+	}
+
+	public class ObjectResponse : IJsonResponse
+	{
+		public Dictionary<string, object> Data { get; set; } = new Dictionary<string, object>();
+		public virtual string Serialize()
+		{
+			return JsonConvert.SerializeObject(Data, Json.CamelCase);
+		}
+	}
+
+	public class ApiResponse : ObjectResponse
+	{
 		public Dictionary<string, object> Widgets { get; set; }
 		public List<ClientAction> ClientActions { get; set; }
-		public ICsTemplate Template { get; private set; }
-
-		void Init()
-		{
-			Data = new Dictionary<string, object>();
-			Widgets = new Dictionary<string, object>();
-			ClientActions = new List<ClientAction>();
-			Data.Add("widgets", Widgets);
-			Data.Add("clientactions", ClientActions);
-		}
+		public HashSet<string> Includes { get; set; }
 
 		public ApiResponse()
 		{
-			Init();
+			Widgets = new Dictionary<string, object>();
+			ClientActions = new List<ClientAction>();
+			Includes = new HashSet<string>();
 		}
-		public ApiResponse(ICsTemplate template)
+
+		public virtual void BindEvent(string elementId, string clientEvent, string serverEvent, string serverEventReceiver = null)
 		{
-			Init();
-			Template = template;
+			ClientActions.Add(new ClientAction("ajaxUtils", "bindevent", new {
+				Id = elementId, ClientEvent = clientEvent,
+				ServerEvent = serverEvent, ServerEventReceiver = serverEventReceiver
+			}));
+		}
+
+		public void AddClientAction(string service, string method, object args)
+		{
+			ClientActions.Add(new ClientAction(service, method, args));
+		}
+
+		public virtual void AddWidget(string name, string content)
+		{
+			Widgets.Add(name, content);
+		}
+
+		public virtual void AddRootWidget(string name, string content)
+		{
+			AddChildWidget(null, name, content);
+		}
+
+		public virtual void AddChildWidget(string parent, string name, string content)
+		{
+			Widgets.Add(name, new { Parent = parent, Content = content });
+		}
+
+		public void AddWidget(string name, LayoutWriter content)
+		{
+			ClientActions.AddRange(content.ClientActions);
+			foreach (var i in content.Includes) Includes.Add(i);
+			AddWidget(name, content.ToString());
+		}
+
+		public void AddRootWidget(string name, LayoutWriter content)
+		{
+			AddChildWidget(null, name, content);
+		}
+
+		public void AddChildWidget(string parent, string name, LayoutWriter content)
+		{
+			ClientActions.AddRange(content.ClientActions);
+			foreach (var i in content.Includes) Includes.Add(i);
+			AddChildWidget(parent, name, content.ToString());
+		}
+
+		public override string Serialize()
+		{
+			if (Widgets.Count > 0)
+				Data.Add("widgets", Widgets);
+			if (ClientActions.Count > 0)
+				Data.Add("clientactions", ClientActions);
+			if (Includes.Count > 0)
+				Data.Add("includes", Includes);
+
+			return JsonConvert.SerializeObject(Data, Json.CamelCase);
+		}
+	}
+
+	public class ViewElementResponse : ApiResponse
+	{
+		Func<string, string> _getID;
+		Func<LayoutWriter> _createWriter;
+
+		public ViewElementResponse(Func<string, string> getID, Func<LayoutWriter> createWriter) : base()
+		{
+			_getID = getID;
+			_createWriter = createWriter;
+		}
+
+		public override void BindEvent(string elementId, string clientEvent, string serverEvent, string serverEventReceiver = null)
+		{
+			base.BindEvent(_getID(elementId), clientEvent, serverEvent, serverEventReceiver);
+		}
+
+		public override void AddWidget(string name, string content)
+		{
+			base.AddWidget(_getID(name), content);
+		}
+
+		public override void AddRootWidget(string name, string content)
+		{
+			base.AddRootWidget(_getID(name), content);
+		}
+
+		public override void AddChildWidget(string parent, string name, string content)
+		{
+			base.AddChildWidget(parent, _getID(name), content);
+		}
+
+		public void AddWidget(string name, Action<LayoutWriter> content)
+		{
+			var w = _createWriter();
+			content(w);
+			AddWidget(name, w);
+		}
+
+		public void AddRootWidget(string name, Action<LayoutWriter> content)
+		{
+			var w = _createWriter();
+			content(w);
+			AddRootWidget(name, w);
+		}
+
+		public void AddChildWidget(string parent, string name, Action<LayoutWriter> content)
+		{
+			var w = _createWriter();
+			content(w);
+			AddChildWidget(parent, name, w);
 		}
 	}
 
@@ -48,39 +173,11 @@ namespace Nephrite.Templating
 		}
 	}
 
-	public static class ApiResponseExtensions
-	{
-		static string GetTrueName(ApiResponse r, string name)
-		{
-			return r.Template != null && !r.Template.ID.IsEmpty() ? r.Template.ID + "_" + name : name;
-		}
-
-		public static void AddWidget(this ApiResponse r, string name, string content)
-		{
-			r.Widgets.Add(GetTrueName(r, name), content);
-		}
-
-		public static void AddRootWidget(this ApiResponse r, string name, string content)
-		{
-			r.AddChildWidget(null, GetTrueName(r, name), content);
-		}
-
-		public static void AddChildWidget(this ApiResponse r, string parent, string name, string content)
-		{
-			r.Widgets.Add(GetTrueName(r, name), new { Parent = parent, Content = content });
-		}
-
-		public static void AddClientAction(this ApiResponse r, string service, string method, object args)
-		{
-			r.ClientActions.Add(new ClientAction(service, method, args));
-		}
-
-		public static void BindEvent(this ApiResponse r, string elementId, string clientEvent, string serverEvent, string serverEventReceiver = null)
-		{
-			r.ClientActions.Add(new ClientAction("ajaxUtils", "bindevent", new {
-				Id = GetTrueName(r, elementId), ClientEvent = clientEvent,
-				ServerEvent = serverEvent, ServerEventReceiver = serverEventReceiver
-			}));
-		}
-	}
+	//public static class ApiResponseExtensions
+	//{
+	//	public static void Add(this List<KeyValuePair<string, object>> list, string name, object value)
+	//	{
+	//		list.Add(new KeyValuePair<string, object>(name, value));
+	//	}
+	//}
 }

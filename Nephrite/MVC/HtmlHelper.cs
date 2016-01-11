@@ -47,25 +47,25 @@ namespace Nephrite.MVC
 			HtmlRepeaters.GroupingRepeater(items, className, classNameAlt, GroupBy1Property, GroupBy2Property, Group1Asc, Group2Asc, renderItems, renderGroup1, renderGroup2);
 		}
 
-		public ActionLink ActionLink(string title = null, string image = null, Action<ATagAttributes> aTagAttributes = null)
-		{
-			return new ActionLink().Title(title).Image(image).Attr(aTagAttributes);
-		}
+		//public ActionLink ActionLink(string title = null, string image = null, Action<ATagAttributes> aTagAttributes = null)
+		//{
+		//	return new ActionLink().Title(title).Image(image).Attr(aTagAttributes);
+		//}
 
-		public ActionLink ActionImage(string title = null, string image = null, Action<ATagAttributes> aTagAttributes = null)
-		{
-			return new ActionImage().Title(title).Image(image).Attr(aTagAttributes);
-		}
+		//public ActionLink ActionImage(string title = null, string image = null, Action<ATagAttributes> aTagAttributes = null)
+		//{
+		//	return new ActionImage().Title(title).Image(image).Attr(aTagAttributes);
+		//}
 
-		public ActionLink ActionImageConfirm(string linkTitle, string image, string confirmString)
-		{
-			return ActionImage(linkTitle, image, a => a.OnClick("return confirm('{0}')" + confirmString));
-		}
+		//public ActionLink ActionImageConfirm(string linkTitle, string image, string confirmString)
+		//{
+		//	return ActionImage(linkTitle, image, a => a.OnClick("return confirm('{0}')" + confirmString));
+		//}
 
-		public ActionLink ActionLinkConfirm(string linkTitle, string image, string confirmString)
-		{
-			return ActionLink(linkTitle, image, a => a.OnClick("return confirm('{0}')" + confirmString));
-		}
+		//public ActionLink ActionLinkConfirm(string linkTitle, string image, string confirmString)
+		//{
+		//	return ActionLink(linkTitle, image, a => a.OnClick("return confirm('{0}')" + confirmString));
+		//}
 
 		public string InternalLink(string onClick, string linkText)
 		{
