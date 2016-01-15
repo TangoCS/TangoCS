@@ -268,7 +268,7 @@ namespace Nephrite.Meta.Database
 		
 		public void AddComputedColumn(Column srcColumn)
 		{
-			_MainScripts.Add(string.Format("CREATE OR REPLACE FUNCTION {4}.{0}({1}) RETURNS {2} AS $BODY$ {3} $BODY$ LANGUAGE sql STABLE STRICT;",
+			_MainScripts.Add(string.Format("CREATE OR REPLACE FUNCTION {4}.{0}({4}.{1}) RETURNS {2} AS $BODY$ {3} $BODY$ LANGUAGE sql STABLE STRICT;",
 					srcColumn.Name.ToLower(), srcColumn.Table.Name.ToLower(), srcColumn.Type.GetDBType(this), srcColumn.ComputedText, _SchemaName));
 		}
 
@@ -365,7 +365,8 @@ namespace Nephrite.Meta.Database
 
 		public string GetStringType(int length)
 		{
-			return string.Format("varchar({0})", length == -1 ? "2048" : length == 0 ? "1" : length.ToString());
+			//return string.Format("varchar({0})", length == -1 ? "2048" : length == 0 ? "1" : length.ToString());
+			return "text";
 		}
 
 		public string GetDecimalType(int precision, int scale)

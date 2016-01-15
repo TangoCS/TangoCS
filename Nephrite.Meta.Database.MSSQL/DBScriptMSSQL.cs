@@ -477,6 +477,8 @@ namespace Nephrite.Meta.Database
 						return String.Format("CAST('{0}' AS Date)", reader.GetDateTime(index).ToString("yyyy-MM-dd"));
 					case "datetime":
 						return String.Format("CAST(0x{0}{1} AS DateTime)", reader.GetSqlDateTime(index).DayTicks.ToString("X8"), reader.GetSqlDateTime(index).TimeTicks.ToString("X8"));
+					case "datetime2":
+						return String.Format("CAST(0x{0}{1} AS DateTime2)", reader.GetSqlDateTime(index).DayTicks.ToString("X8"), reader.GetSqlDateTime(index).TimeTicks.ToString("X8"));
 					case "image":
 						StringBuilder result = new StringBuilder("0x");
 						byte[] data = reader.GetSqlBytes(index).Value;
@@ -543,12 +545,14 @@ namespace Nephrite.Meta.Database
 				case "int":
 					return notNull ? MetaIntType.NotNull() : MetaIntType.Null();
 				case "nvarchar":
+				case "varchar":
 					return string.IsNullOrEmpty(precision) ? new MetaStringType { NotNullable = notNull } : new MetaStringType() { Length = Int32.Parse(precision == "max" ? "-1" : precision), NotNullable = notNull };
 				case "decimal":
 					return new MetaDecimalType() { Precision = Int32.Parse(precision), Scale = Int32.Parse(scale), NotNullable = notNull };
 				case "uniqueidentifier":
 					return notNull ? MetaGuidType.NotNull() : MetaGuidType.Null();
 				case "datetime":
+				case "datetime2":
 					return notNull ? MetaDateTimeType.NotNull() : MetaDateTimeType.Null();
 				case "date":
 					return notNull ? MetaDateType.NotNull() : MetaDateType.Null();
