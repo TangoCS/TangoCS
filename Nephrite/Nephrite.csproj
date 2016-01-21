@@ -100,6 +100,7 @@
     <Compile Include="IFML\AbstractClasses.cs" />
     <Compile Include="IFML\Impl.cs" />
     <Compile Include="Json.cs" />
+    <Compile Include="Multilanguage\IMultilingual.cs" />
     <Compile Include="Templating\AllowAnonymousAttribute.cs" />
     <Compile Include="Templating\ApiResponse.cs" />
     <Compile Include="Html.Layout\LayoutWriter.cs" />
@@ -110,6 +111,7 @@
     <Compile Include="Templating\ActionContext.cs" />
     <Compile Include="Templating\ActionInvoker.cs" />
     <Compile Include="Templating\ActionResult.cs" />
+    <Compile Include="Templating\OnActionAttribute.cs" />
     <Compile Include="Templating\TypeActivation.cs" />
     <Compile Include="Templating\CsTemplate.cs" />
     <Compile Include="Templating\HasStandardActionAttribute.cs" />

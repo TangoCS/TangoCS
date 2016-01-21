@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Nephrite.Html.Layout;
 using Newtonsoft.Json;
 
@@ -61,7 +56,7 @@ namespace Nephrite.Templating
 
 		public virtual void AddWidget(string name, string content)
 		{
-			Widgets.Add(name, content);
+			Widgets.Add(name.ToLower(), content);
 		}
 
 		public virtual void AddRootWidget(string name, string content)
@@ -71,7 +66,7 @@ namespace Nephrite.Templating
 
 		public virtual void AddChildWidget(string parent, string name, string content)
 		{
-			Widgets.Add(name, new { Parent = parent, Content = content });
+			Widgets.Add(name.ToLower(), new { Parent = parent, Content = content });
 		}
 
 		public void AddWidget(string name, LayoutWriter content)

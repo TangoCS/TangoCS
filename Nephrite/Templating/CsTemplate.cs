@@ -14,6 +14,8 @@ namespace Nephrite.Templating
 	public abstract class ViewElement : InteractionFlowElement, IWithPropertyInjection
 	{
 		public string ID { get; protected set; }
+		public ViewContainer Container { get; set; }
+
 		public ITextResource TextResource { get; protected set; }
 
 		public void Init(string id, ActionContext context, ITextResource textResource)
@@ -32,14 +34,14 @@ namespace Nephrite.Templating
 
 		public virtual bool UsePropertyInjection { get { return false; } }
 
-		protected dynamic PostBag { get { return Context.PostData; } }
-		protected DynamicDictionary PostData { get { return Context.PostData; } }
+		protected dynamic FormBag { get { return Context.FormData; } }
+		protected DynamicDictionary FormData { get { return Context.FormData; } }
 
 		public virtual void CreateChildControls() { }
 
 		protected T GetPosted<T>(string name, T defaultValue = default(T))
 		{
-			return Context.PostData.Parse<T>(GetElementID(name), defaultValue);
+			return Context.FormData.Parse<T>(GetElementID(name), defaultValue);
 		}
 
 		protected T GetPostedJson<T>(string name, Func<T> defaultValue = null)
@@ -53,12 +55,12 @@ namespace Nephrite.Templating
 
 		protected string GetSenderArgs()
 		{
-			return Context.PostData.Parse<string>(GetElementID("_senderArgs"));
+			return Context.FormData.Parse<string>(GetElementID("_senderArgs"));
 		}
 
 		public string GetElementID(string id)
 		{
-			return !ID.IsEmpty() ? ID + "_" + id : id;
+			return !ID.IsEmpty() ? ID + (!id.IsEmpty() ? "_" + id : "") : id;
 		}
 
 
@@ -66,12 +68,12 @@ namespace Nephrite.Templating
 
 	public abstract class ViewComponent : ViewElement
 	{
-		public ViewContainer Container { get; set; }
-
+		public ViewElement Component { get; set; }
+		
 		public T CreateControl<T>(string id, Action<T> init = null)
 			where T : ViewComponent, new()
 		{
-			return Container.CreateControl<T>(GetElementID(id), init);
+			return Container.CreateControl(this, id, init);
 		}
 	}
 
@@ -79,34 +81,30 @@ namespace Nephrite.Templating
 	{
 		public string Title { get; set; }
 
-		protected Dictionary<string, ViewComponent> _controls = new Dictionary<string, ViewComponent>(StringComparer.OrdinalIgnoreCase);
+		protected Dictionary<string, ViewElement> _controls = new Dictionary<string, ViewElement>(StringComparer.OrdinalIgnoreCase);
+		public IDictionary<string, ViewElement> Controls { get { return _controls; } }
 
-		public T CreateControl<T>(string id, Action<T> init = null)
+		internal T CreateControl<T>(ViewElement component, string id, Action<T> init = null)
 			where T : ViewComponent, new()
 		{
 			T c = new T();
 			if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
-			c.Init(id, Context, TextResource);
+			c.Init(GetElementID(id), Context, TextResource);
 			c.Container = this;
+			this.Controls.Add(c.ID, c);
+
+			c.Component = component;
 			if (init != null) init(c);
-			_controls.Add(c.ID, c);
 			c.CreateChildControls();
 			return c;
 		}
 
-		public abstract ActionResult Execute();
-	}
-
-	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-	public class OnActionAttribute : Attribute
-	{
-		public string Service { get; }
-		public string Action { get; }
-
-		public OnActionAttribute(string service, string action)
+		public T CreateControl<T>(string id, Action<T> init = null)
+			where T : ViewComponent, new()
 		{
-			Service = service;
-			Action = action;
+			return CreateControl(this, id, init);
 		}
+
+		public abstract ActionResult Execute();
 	}
 }

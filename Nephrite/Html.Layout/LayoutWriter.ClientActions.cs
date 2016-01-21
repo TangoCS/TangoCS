@@ -19,7 +19,7 @@ namespace Nephrite.Html.Layout
 
 		static string GetTrueName(LayoutWriter w, string name)
 		{
-			return !w.IDPrefix.IsEmpty() ? w.IDPrefix + "_" + name : name;
+			return (!w.IDPrefix.IsEmpty() ? w.IDPrefix + "_" + name : name).ToLower();
 		}
 	}
 }

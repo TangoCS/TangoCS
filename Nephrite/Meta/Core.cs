@@ -36,14 +36,6 @@ namespace Nephrite.Meta
 	/// </summary>
 	public abstract class MetaNamedElement : MetaElement, IMetaNamedElement
 	{
-		public MetaNamedElement() { }
-		public MetaNamedElement(string name = "", string caption = "", string description = "")
-		{
-			Name = name;
-			Caption = caption;
-			Description = description;
-		}
-
 		public string Namespace { get; set; } = "Nephrite";
 		public override string ID { get { return Namespace + "." + Name; } }
 
@@ -55,6 +47,10 @@ namespace Nephrite.Meta
 		/// Название на локальном языке
 		/// </summary>
 		public virtual string Caption { get; set; }
+		public virtual string CaptionFor(string suffix)
+		{
+			return "";
+		}
 
 		/// <summary>
 		/// Описание
@@ -184,6 +180,12 @@ namespace Nephrite.Meta
 			{
 				_captionPlural = value;
 			}
+		}
+
+		public override string CaptionFor(string suffix)
+		{
+			if (TextResource == null) return "";
+			return TextResource.Get(ID + "-" + suffix);
 		}
 
 		public override string CLRType
@@ -371,6 +373,13 @@ namespace Nephrite.Meta
 			}
 			set { _captionShort = value; }
 		}
+
+		public override string CaptionFor(string suffix)
+		{
+			if (TextResource == null) return "";
+			return TextResource.Get(ID + "-" + suffix);
+		}
+
 
 		/// <summary>
 		/// Класс, к которому принадлежит свойство
@@ -643,6 +652,13 @@ namespace Nephrite.Meta
 			}
 		}
 
+		public override string CaptionFor(string suffix)
+		{
+			if (TextResource == null) return "";
+			return TextResource.Get(ID + "-" + suffix);
+		}
+
+
 		/// <summary>
 		/// Класс, которому принадлежит метод
 		/// </summary>
@@ -690,8 +706,9 @@ namespace Nephrite.Meta
 		string _value = "";
 
 		public MetaEnumValue(string id, string name, string caption)
-			: base(name, caption)
 		{
+			Name = name;
+			Caption = caption;
 			_value = id;
 		}
 

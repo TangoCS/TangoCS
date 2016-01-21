@@ -24,7 +24,7 @@ namespace Nephrite.Meta
 		public Func<IQueryable<T>, IOrderedQueryable<T>> DefaultOrderBy { get; set; }
 	}
 
-	public partial class MetaReference<TClass, TValue> : MetaReference
+	public partial class MetaReference<TClass, TValue, TKey> : MetaReference
 	{
 		public MetaReference(string name, string caption, string refClassName, ITextResource textResource = null, bool isRequired = false,
 			int upperBound = 1, AssociationType associationType = AssociationType.Default,
@@ -57,19 +57,19 @@ namespace Nephrite.Meta
 			set { base.SetValue = value; }
 		}
 
-		public new Expression<Func<TClass, TValue>> GetValueIDExpression
+		public new Expression<Func<TClass, TKey>> GetValueIDExpression
 		{
-			get { return base.GetValueIDExpression as Expression<Func<TClass, TValue>>; }
+			get { return base.GetValueIDExpression as Expression<Func<TClass, TKey>>; }
 			set { base.GetValueIDExpression = value; }
 		}
-		public new Func<TClass, TValue> GetValueID
+		public new Func<TClass, TKey> GetValueID
 		{
-			get { return base.GetValueID as Func<TClass, TValue>; }
+			get { return base.GetValueID as Func<TClass, TKey>; }
 			set { base.GetValueID = value; }
 		}
-		public new Action<TClass, TValue> SetValueID
+		public new Action<TClass, TKey> SetValueID
 		{
-			get { return base.SetValueID as Action<TClass, TValue>; }
+			get { return base.SetValueID as Action<TClass, TKey>; }
 			set { base.SetValueID = value; }
 		}
 	}

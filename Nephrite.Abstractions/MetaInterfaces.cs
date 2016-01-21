@@ -17,6 +17,7 @@ namespace Nephrite.Meta
 		string Name { get; set; }
 		string Description { get; set; }
 		string Caption { get; set; }
+		string CaptionFor(string suffix);
     }
 
 	public interface IMetaStereotype : IMetaNamedElement

@@ -49,11 +49,37 @@ namespace Nephrite.Html
 		{
 		}
 
-		public SelectListItem(string text, string value, bool selected = false)
+		public SelectListItem(object text, object value, bool selected)
 		{
-			Text = text;
-			Value = value;
+			Text = text.ToString();
+			Value = value.ToString();
 			Selected = selected;
+		}
+
+		public SelectListItem(object text, object value)
+		{
+			Text = text.ToString();
+			Value = value.ToString();
+		}
+
+		public SelectListItem(object text)
+		{
+			Text = text.ToString();
+			Value = text.ToString();
+		}
+	}
+
+	public static class SelectListItemExtensions
+	{
+		public static List<SelectListItem> AddEmptyItem(this List<SelectListItem> list)
+		{
+			list.Insert(0, new SelectListItem());
+			return list;
+		}
+
+		public static List<SelectListItem> AddEmptyItem(this IEnumerable<SelectListItem> list)
+		{
+			return list.ToList().AddEmptyItem();
 		}
 	}
 }

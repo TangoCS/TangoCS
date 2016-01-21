@@ -21,7 +21,7 @@ namespace Nephrite.Templating
 			AllArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			ActionArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			EventArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
-			PostData = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
+			FormData = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 		}
 
 		public IServiceProvider RequestServices { get; private set; }
@@ -107,7 +107,7 @@ namespace Nephrite.Templating
 				var postData = JsonConvert.DeserializeObject<DynamicDictionary>(jsonData, converter);
 
 				if (postData != null)
-					PostData = postData;
+					FormData = postData;
 			}
 		}
 
@@ -150,8 +150,8 @@ namespace Nephrite.Templating
 		public DynamicDictionary ActionArgs { get; set; }
 		public DynamicDictionary EventArgs { get; set; }
 
-		public dynamic PostBag { get { return PostData; } }
-		public DynamicDictionary PostData { get; set; }
+		public dynamic FormBag { get { return FormData; } }
+		public DynamicDictionary FormData { get; set; }
 
 		public ResponseInfo Response { get; set; } = new ResponseInfo();
 	}
