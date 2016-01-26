@@ -69,21 +69,22 @@ namespace Nephrite.Web.Hibernate
 
 					_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" } });
 
-					var listeners = GetListeners();
-					if (listeners != null)
-					{
-						if (listeners.Interceptor != null) _cfg.SetInterceptor(listeners.Interceptor);
 
-						_cfg.EventListeners.PreDeleteEventListeners = listeners.PreDeleteEventListeners.ToArray();
-						_cfg.EventListeners.PreInsertEventListeners = listeners.PreInsertEventListeners.ToArray();
-						_cfg.EventListeners.PreUpdateEventListeners = listeners.PreUpdateEventListeners.ToArray();
-						_cfg.EventListeners.PostDeleteEventListeners = listeners.PostDeleteEventListeners.ToArray();
-						_cfg.EventListeners.PostInsertEventListeners = listeners.PostInsertEventListeners.ToArray();
-						_cfg.EventListeners.PostUpdateEventListeners = listeners.PostUpdateEventListeners.ToArray();
+					if (ConfigurationExtensions != null) ConfigurationExtensions(_cfg);
+					//{
+					//	var listeners = ConfigurationExtensions();
+					//	if (listeners.Interceptor != null) _cfg.SetInterceptor(listeners.Interceptor);
 
-						if (listeners.SaveOrUpdateEventListeners.Count > 0)
-							_cfg.EventListeners.SaveOrUpdateEventListeners = listeners.SaveOrUpdateEventListeners.ToArray();
-					}
+					//	_cfg.EventListeners.PreDeleteEventListeners = listeners.PreDeleteEventListeners.ToArray();
+					//	_cfg.EventListeners.PreInsertEventListeners = listeners.PreInsertEventListeners.ToArray();
+					//	_cfg.EventListeners.PreUpdateEventListeners = listeners.PreUpdateEventListeners.ToArray();
+					//	_cfg.EventListeners.PostDeleteEventListeners = listeners.PostDeleteEventListeners.ToArray();
+					//	_cfg.EventListeners.PostInsertEventListeners = listeners.PostInsertEventListeners.ToArray();
+					//	_cfg.EventListeners.PostUpdateEventListeners = listeners.PostUpdateEventListeners.ToArray();
+
+					//	if (listeners.SaveOrUpdateEventListeners.Count > 0)
+					//		_cfg.EventListeners.SaveOrUpdateEventListeners = listeners.SaveOrUpdateEventListeners.ToArray();
+					//}
 
 					//Log.WriteLine(String.Format("-- {1} create {0} Added Listeners", ID, sw.Elapsed.ToString()));
 					_cfg.AddMapping(Mapping);
@@ -92,6 +93,7 @@ namespace Nephrite.Web.Hibernate
 				return _cfg;
 			}
 		}
+		public Action<Configuration> ConfigurationExtensions { get; set; }
 
 		public ISessionFactory SessionFactory
 		{
@@ -154,7 +156,7 @@ namespace Nephrite.Web.Hibernate
 
 		public abstract IEnumerable<Type> GetEntitiesTypes();
 		public virtual IEnumerable<Type> GetTableFunctionsTypes() { return new List<Type>(); }
-		public virtual Listeners GetListeners() { return null; }
+		
 
 		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig)
 		{
@@ -406,26 +408,26 @@ namespace Nephrite.Web.Hibernate
 		}
 	}
 
-	public class Listeners
-	{
-		List<IPreDeleteEventListener> _preDeleteEventListeners = new List<IPreDeleteEventListener>();
-		List<IPreInsertEventListener> _preInsertEventListeners = new List<IPreInsertEventListener>();
-		List<IPreUpdateEventListener> _preUpdateEventListeners = new List<IPreUpdateEventListener>();
-		List<IPostDeleteEventListener> _postDeleteEventListeners = new List<IPostDeleteEventListener>();
-		List<IPostInsertEventListener> _postInsertEventListeners = new List<IPostInsertEventListener>();
-		List<IPostUpdateEventListener> _postUpdateEventListeners = new List<IPostUpdateEventListener>();
-		List<ISaveOrUpdateEventListener> _saveOrUpdateEventListeners = new List<ISaveOrUpdateEventListener>();
+	//public class Listeners
+	//{
+	//	List<IPreDeleteEventListener> _preDeleteEventListeners = new List<IPreDeleteEventListener>();
+	//	List<IPreInsertEventListener> _preInsertEventListeners = new List<IPreInsertEventListener>();
+	//	List<IPreUpdateEventListener> _preUpdateEventListeners = new List<IPreUpdateEventListener>();
+	//	List<IPostDeleteEventListener> _postDeleteEventListeners = new List<IPostDeleteEventListener>();
+	//	List<IPostInsertEventListener> _postInsertEventListeners = new List<IPostInsertEventListener>();
+	//	List<IPostUpdateEventListener> _postUpdateEventListeners = new List<IPostUpdateEventListener>();
+	//	List<ISaveOrUpdateEventListener> _saveOrUpdateEventListeners = new List<ISaveOrUpdateEventListener>();
 
-		public IInterceptor Interceptor { get; set; }
+	//	public IInterceptor Interceptor { get; set; }
 
-		public List<IPreDeleteEventListener> PreDeleteEventListeners { get { return _preDeleteEventListeners; } }
-		public List<IPreInsertEventListener> PreInsertEventListeners { get { return _preInsertEventListeners; } }
-		public List<IPreUpdateEventListener> PreUpdateEventListeners { get { return _preUpdateEventListeners; } }
-		public List<IPostDeleteEventListener> PostDeleteEventListeners { get { return _postDeleteEventListeners; } }
-		public List<IPostInsertEventListener> PostInsertEventListeners { get { return _postInsertEventListeners; } }
-		public List<IPostUpdateEventListener> PostUpdateEventListeners { get { return _postUpdateEventListeners; } }
-		public List<ISaveOrUpdateEventListener> SaveOrUpdateEventListeners { get { return _saveOrUpdateEventListeners; } }
-	}
+	//	public List<IPreDeleteEventListener> PreDeleteEventListeners { get { return _preDeleteEventListeners; } }
+	//	public List<IPreInsertEventListener> PreInsertEventListeners { get { return _preInsertEventListeners; } }
+	//	public List<IPreUpdateEventListener> PreUpdateEventListeners { get { return _preUpdateEventListeners; } }
+	//	public List<IPostDeleteEventListener> PostDeleteEventListeners { get { return _postDeleteEventListeners; } }
+	//	public List<IPostInsertEventListener> PostInsertEventListeners { get { return _postInsertEventListeners; } }
+	//	public List<IPostUpdateEventListener> PostUpdateEventListeners { get { return _postUpdateEventListeners; } }
+	//	public List<ISaveOrUpdateEventListener> SaveOrUpdateEventListeners { get { return _saveOrUpdateEventListeners; } }
+	//}
 
 	public class HTable : ITable
 	{
