@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nephrite.Templating
+namespace Nephrite.UI
 {
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 	public class HasStandardActionAttribute : Attribute

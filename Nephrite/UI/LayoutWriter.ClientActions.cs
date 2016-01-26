@@ -1,6 +1,4 @@
-﻿using Nephrite.Templating;
-
-namespace Nephrite.Html.Layout
+﻿namespace Nephrite.UI
 {
 	public static class LayoutWriterClientActionsExtensions
 	{

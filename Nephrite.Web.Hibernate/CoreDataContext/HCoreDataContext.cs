@@ -5,7 +5,7 @@ using Nephrite.Data;
 using Nephrite.EntityAudit;
 using Nephrite.ErrorLog;
 using Nephrite.FileStorage;
-using Nephrite.Html.Controls;
+using Nephrite.UI.Controls;
 using Nephrite.Multilanguage;
 using Nephrite.RSS;
 using Nephrite.SettingsManager;
@@ -26,8 +26,8 @@ namespace Nephrite.Web.CoreDataContext
 		IDC_TimeZone, IDC_ListFilter, IDC_FileStorage, IDC_CalendarDays, IDC_Mailer,
 		IDC_TaskManager, IDC_Settings, IDC_RSS, IDC_EntityAudit
 	{
-		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Listeners listeners)
-			: base(dbConfig, listeners)
+		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig)
+			: base(dbConfig)
 		{
 		}
 

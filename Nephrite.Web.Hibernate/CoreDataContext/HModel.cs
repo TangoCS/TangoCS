@@ -8,7 +8,7 @@ using Nephrite.Multilanguage;
 using Nephrite.RSS;
 using Nephrite.SettingsManager;
 using Nephrite.Web.TaskManager;
-using Nephrite.Html.Controls;
+using Nephrite.UI.Controls;
 using Nephrite.EntityAudit;
 using Nephrite.FileStorage;
 using Nephrite.Controls;

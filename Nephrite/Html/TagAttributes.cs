@@ -27,7 +27,8 @@ namespace Nephrite.Html
 
 		protected string GetID(string id)
 		{
-			if (!IDPrefix.IsEmpty() && IDPrefix != id) return IDPrefix + (!id.IsEmpty() ? "_" + id : "");
+			if (!IDPrefix.IsEmpty() && IDPrefix != id)
+				return (IDPrefix + (!id.IsEmpty() ? "_" + id : "")).ToLower();
 			return id.ToLower();
 		}
 

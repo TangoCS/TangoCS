@@ -1,4 +1,4 @@
-﻿namespace Nephrite.Templating
+﻿namespace Nephrite.UI
 {
 	public static class TemplatingConstants
 	{

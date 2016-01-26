@@ -1,8 +1,7 @@
 ﻿using System;
-using Nephrite.Html.Layout;
-using Nephrite.Templating;
+using Nephrite.Html;
 
-namespace Nephrite.Html.Controls
+namespace Nephrite.UI.Controls
 {
 	public static class ButtonsExtension
 	{

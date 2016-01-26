@@ -83,16 +83,16 @@
     <Compile Include="FileStorage\Samples.cs" />
     <Compile Include="FileStorage\VirusChecker.cs" />
     <Compile Include="GlobalSettings.cs" />
-    <Compile Include="Html.Controls\ActionLink.cs" />
-    <Compile Include="Html.Controls\BackButton.cs" />
-    <Compile Include="Html.Controls\Calendar.cs" />
-    <Compile Include="Html.Controls\CodeArea.cs" />
-    <Compile Include="Html.Controls\Dialog.cs" />
-    <Compile Include="Html.Layout\Toolbar.cs" />
+    <Compile Include="UI\Controls\ActionLink.cs" />
+    <Compile Include="UI\Controls\BackButton.cs" />
+    <Compile Include="UI\Controls\Calendar.cs" />
+    <Compile Include="UI\Controls\CodeArea.cs" />
+    <Compile Include="UI\Controls\Dialog.cs" />
+    <Compile Include="UI\Toolbar.cs" />
     <Compile Include="Html\HtmlParms.cs" />
     <Compile Include="Html\HtmlWriter.Links.cs" />
     <Compile Include="Html\IUrlResolver.cs" />
-    <Compile Include="Html.Controls\Navigation.cs" />
+    <Compile Include="UI\Controls\Navigation.cs" />
     <Compile Include="Html\Link.cs" />
     <Compile Include="Identity\IPasswordHash.cs" />
     <Compile Include="Identity\OldPasswordHash.cs" />
@@ -101,28 +101,28 @@
     <Compile Include="IFML\Impl.cs" />
     <Compile Include="Json.cs" />
     <Compile Include="Multilanguage\IMultilingual.cs" />
-    <Compile Include="Templating\AllowAnonymousAttribute.cs" />
-    <Compile Include="Templating\ApiResponse.cs" />
-    <Compile Include="Html.Layout\LayoutWriter.cs" />
-    <Compile Include="Html.Layout\LayoutWriterExtensions.cs" />
+    <Compile Include="UI\AllowAnonymousAttribute.cs" />
+    <Compile Include="UI\ApiResponse.cs" />
+    <Compile Include="UI\LayoutWriter.cs" />
+    <Compile Include="UI\LayoutWriterExtensions.cs" />
     <Compile Include="Meta.Database\IDBScript.cs" />
     <Compile Include="Meta.Database\MetaDatabaseModel.cs" />
     <Compile Include="Meta.Stereotypes\SMvcAction.cs" />
-    <Compile Include="Templating\ActionContext.cs" />
-    <Compile Include="Templating\ActionInvoker.cs" />
-    <Compile Include="Templating\ActionResult.cs" />
-    <Compile Include="Templating\OnActionAttribute.cs" />
-    <Compile Include="Templating\TypeActivation.cs" />
-    <Compile Include="Templating\CsTemplate.cs" />
-    <Compile Include="Templating\HasStandardActionAttribute.cs" />
+    <Compile Include="UI\ActionContext.cs" />
+    <Compile Include="UI\ActionInvoker.cs" />
+    <Compile Include="UI\ActionResult.cs" />
+    <Compile Include="UI\OnActionAttribute.cs" />
+    <Compile Include="UI\TypeActivation.cs" />
+    <Compile Include="UI\CsTemplate.cs" />
+    <Compile Include="UI\HasStandardActionAttribute.cs" />
     <Compile Include="MVC\HtmlHelper.cs" />
-    <Compile Include="Templating\HttpMethodAttributes.cs" />
+    <Compile Include="UI\HttpMethodAttributes.cs" />
     <Compile Include="MVC\IViewRendererFactory.cs" />
-    <Compile Include="Templating\Constants.cs" />
-    <Compile Include="Templating\NonActionAttribute.cs" />
+    <Compile Include="UI\Constants.cs" />
+    <Compile Include="UI\NonActionAttribute.cs" />
     <Compile Include="MVC\QueryString.cs" />
     <Compile Include="Meta\UIMetaModel.cs" />
-    <Compile Include="Templating\Controller.cs" />
+    <Compile Include="UI\Controller.cs" />
     <Compile Include="MVC\IViewRenderer.cs" />
     <Compile Include="MVC\ViewEngineAttribute.cs" />
     <Compile Include="ObjectInterfaces.cs" />
@@ -194,13 +194,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Multilanguage\TextResource.cs" />
-    <Compile Include="Templating\CsFormInvoker.cs" />
+    <Compile Include="UI\CsFormInvoker.cs" />
     <Compile Include="TypeFactory.cs" />
     <Compile Include="Validation.cs" />
     <Compile Include="XmlHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Html.Layout\LayoutWriter.ClientActions.cs" />
+    <Compile Include="UI\LayoutWriter.ClientActions.cs" />
     <None Include="Nephrite.snk" />
     <None Include="packages.config" />
   </ItemGroup>

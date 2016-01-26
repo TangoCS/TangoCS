@@ -4,9 +4,9 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using Nephrite.Data;
-using Nephrite.Html.Layout;
+using Nephrite.Html;
 
-namespace Nephrite.Html.Controls
+namespace Nephrite.UI.Controls
 {
 	public static class CalendarExtension
 	{

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Nephrite.Templating;
+using Nephrite.UI;
 
 namespace Nephrite.MVC
 {

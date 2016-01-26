@@ -200,7 +200,7 @@ namespace Nephrite.Web
 		{
 			return GetSorter().AddSortColumn(prop, showArrows);
 		}
-		public string AddSortColumn<T, TColumn>(MetaReference<T, TColumn> prop, bool showArrows = true)
+		public string AddSortColumn<T, TColumn, TKey>(MetaReference<T, TColumn, TKey> prop, bool showArrows = true)
 		{
 			return GetSorter().AddSortColumn(prop, showArrows);
 		}

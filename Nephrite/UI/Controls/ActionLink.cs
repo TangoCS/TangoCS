@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Nephrite.Html;
 using Nephrite.Multilanguage;
-using Nephrite.Templating;
 
-namespace Nephrite.Html.Controls
+namespace Nephrite.UI.Controls
 {
 	public abstract class ActionUrl<T>
 	{

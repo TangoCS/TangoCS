@@ -691,8 +691,6 @@ namespace Nephrite.Meta
 		}
 	}
 
-	
-
 	public class MetaEnum : MetaNamedElement, IMetaEnum
 	{
 		public IMetaSolution Parent { get; set; }
@@ -732,7 +730,5 @@ namespace Nephrite.Meta
 				return Namespace + ".Stereotype." + Name;
 			}
 		}
-	}
-
-	
+	}	
 }

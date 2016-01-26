@@ -1,7 +1,8 @@
 ﻿using System;
+using Nephrite.Html;
 using Nephrite.Meta;
 
-namespace Nephrite.Html.Layout
+namespace Nephrite.UI
 {
 	public static class LayoutWriterTablesExtensions
 	{

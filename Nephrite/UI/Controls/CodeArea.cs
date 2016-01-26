@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Nephrite.Html;
 
-namespace Nephrite.Html.Controls
+namespace Nephrite.UI.Controls
 {
 	public static class CodeAreaExtension
 	{
-		public static void CodeArea(this HtmlWriter c, string name, string value = null, bool enabled = true, string height = "500px")
+		public static void CodeArea(this IHtmlWriter c, string name, string value = null, bool enabled = true, string height = "500px")
 		{
 			//c.Page.RegisterScript("codearea", GlobalSettings.JSPath + "codearea.js");
 			//c.Page.RegisterScript("jquery.textarea", GlobalSettings.JSPath + "jquery.textarea.js");

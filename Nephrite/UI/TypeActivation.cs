@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
-namespace Nephrite.Templating
+namespace Nephrite.UI
 {
 	public interface ITypeActivatorCache
 	{

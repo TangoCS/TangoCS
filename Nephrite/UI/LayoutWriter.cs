@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using Nephrite.Html;
 using Nephrite.Multilanguage;
-using Nephrite.Templating;
 
-namespace Nephrite.Html.Layout
+namespace Nephrite.UI
 {
-	public class LayoutWriter : HtmlWriter
+	public class LayoutWriter : StringWriter, IHtmlWriter
 	{
+		public string IDPrefix { get; set; }
+
 		public ITextResource TextResource { get; private set; }
 		public ActionContext Context { get; private set; }
 

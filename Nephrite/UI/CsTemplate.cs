@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nephrite.Html.Layout;
 using Nephrite.Multilanguage;
 using Newtonsoft.Json;
 
-namespace Nephrite.Templating
+namespace Nephrite.UI
 {
 	public abstract class InteractionFlowElement
 	{

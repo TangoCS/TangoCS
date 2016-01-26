@@ -2,8 +2,6 @@
 using System.Data;
 using System.Linq;
 using System.Collections.Generic;
-using Nephrite.Identity;
-using Nephrite.Html.Controls;
 using Nephrite.Controls;
 
 namespace Nephrite.Web.Controls

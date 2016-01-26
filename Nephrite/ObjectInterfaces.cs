@@ -39,6 +39,7 @@ namespace Nephrite
 	}
 
 	public interface IWithTimeStamp<TUser> : IWithTimeStamp
+		where TUser : IWithTitle
 	{
 		TUser LastModifiedUser { get; set; }
 	}

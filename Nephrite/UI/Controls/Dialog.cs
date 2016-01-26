@@ -1,8 +1,7 @@
 ﻿using System;
-using Nephrite.Html.Layout;
-using Newtonsoft.Json;
+using Nephrite.Html;
 
-namespace Nephrite.Html.Controls
+namespace Nephrite.UI.Controls
 {
 	public class DialogOptions
 	{
@@ -49,29 +48,4 @@ namespace Nephrite.Html.Controls
 		//	w.Button(a => a.Class("ms-ButtonHeightWidth").OnClick("dialog.hide(this)"), "Отмена");
 		//}
     }
-
-	//public class OpenDialogLink : ActionLink
-	//{
-	//	Action<ATagAttributes> _aTagAttributes = null;
-
-	//	public OpenDialogLink Link(DialogOptions options, string title = null, Action<ATagAttributes> customATagAttributes = null)
-	//	{
-	//		if (!title.IsEmpty()) _title = title;
-
-	//		_aTagAttributes = a => {
-	//			options.Url = Url;
-	//			a.Href("#");
-	//			a.OnClick("dialog.show(this, " + JsonConvert.SerializeObject(options, Json.CamelCase) + ")");
-	//			if (customATagAttributes != null) customATagAttributes(a);
-	//		};
-	//		return this;
-	//	}
-
-	//	public override string ToString()
-	//	{
-	//		HtmlWriter w = new HtmlWriter();
-	//		w.A(_aTagAttributes, _title);
-	//		return w.ToString();
-	//	}
-	//}
 }

@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Nephrite.Templating
+namespace Nephrite.UI
 {
 	public abstract class Controller : InteractionFlowElement, IWithPropertyInjection
 	{

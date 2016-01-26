@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nephrite.Templating
+namespace Nephrite.UI
 {
 	[AttributeUsage(AttributeTargets.Method)]
 	public class HttpPostAttribute : Attribute

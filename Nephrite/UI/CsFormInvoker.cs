@@ -1,7 +1,7 @@
 ﻿using System;
 using Nephrite.Multilanguage;
 
-namespace Nephrite.Templating
+namespace Nephrite.UI
 {
 	public class CsFormInvoker : IActionInvoker
 	{

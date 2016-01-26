@@ -25,50 +25,16 @@ namespace Nephrite.Web.Hibernate
 
 	public abstract class HDataContext : IDisposable, IDataContext
 	{
-		//[ThreadStatic]
 		static Dictionary<string, ISessionFactory> _sessionFactories = new Dictionary<string, ISessionFactory>();
 		static Dictionary<string, HbmMapping> _mappings = new Dictionary<string, HbmMapping>();
 		static Dictionary<string, Configuration> _configs = new Dictionary<string, Configuration>();
-		//ISessionFactory _sessionFactory;
 		ISession _session;
-		//Configuration _cfg = null;
 
 		public List<object> ToInsert { get; private set; }
 		public List<object> ToDelete { get; private set; }
 		public List<object> ToAttach { get; private set; }
 		public List<Action> AfterSaveActions { get; private set; }
 		public List<Action> BeforeSaveActions { get; private set; }
-
-		//protected bool EnableTableAutoFilter = true;
-
-		//public IDataContext All
-		//{
-		//	get
-		//	{
-		//		EnableTableAutoFilter = false;
-		//		return this;
-		//	}
-		//}
-		//public IDataContext Filtered
-		//{
-		//	get
-		//	{
-		//		EnableTableAutoFilter = true;
-		//		return this;
-		//	}
-		//}
-
-		//public static DBType DBType
-		//{
-		//	get
-		//	{
-		//		return A.DBType;
-		//	}
-		//	set
-		//	{
-		//		A.DBType = value;
-		//	}
-		//}
 
 		public ISession Session
 		{
@@ -102,21 +68,21 @@ namespace Nephrite.Web.Hibernate
 					//Log.WriteLine(String.Format("-- {1} create {0} DataBaseIntegration", ID, sw.Elapsed.ToString()));
 
 					_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" } });
-					
 
-					if (_listeners != null)
+					var listeners = GetListeners();
+					if (listeners != null)
 					{
-						if (_listeners.Interceptor != null) _cfg.SetInterceptor(_listeners.Interceptor);
+						if (listeners.Interceptor != null) _cfg.SetInterceptor(listeners.Interceptor);
 
-						_cfg.EventListeners.PreDeleteEventListeners = _listeners.PreDeleteEventListeners.ToArray();
-						_cfg.EventListeners.PreInsertEventListeners = _listeners.PreInsertEventListeners.ToArray();
-						_cfg.EventListeners.PreUpdateEventListeners = _listeners.PreUpdateEventListeners.ToArray();
-						_cfg.EventListeners.PostDeleteEventListeners = _listeners.PostDeleteEventListeners.ToArray();
-						_cfg.EventListeners.PostInsertEventListeners = _listeners.PostInsertEventListeners.ToArray();
-						_cfg.EventListeners.PostUpdateEventListeners = _listeners.PostUpdateEventListeners.ToArray();
+						_cfg.EventListeners.PreDeleteEventListeners = listeners.PreDeleteEventListeners.ToArray();
+						_cfg.EventListeners.PreInsertEventListeners = listeners.PreInsertEventListeners.ToArray();
+						_cfg.EventListeners.PreUpdateEventListeners = listeners.PreUpdateEventListeners.ToArray();
+						_cfg.EventListeners.PostDeleteEventListeners = listeners.PostDeleteEventListeners.ToArray();
+						_cfg.EventListeners.PostInsertEventListeners = listeners.PostInsertEventListeners.ToArray();
+						_cfg.EventListeners.PostUpdateEventListeners = listeners.PostUpdateEventListeners.ToArray();
 
-						if (_listeners.SaveOrUpdateEventListeners.Count > 0)
-							_cfg.EventListeners.SaveOrUpdateEventListeners = _listeners.SaveOrUpdateEventListeners.ToArray();
+						if (listeners.SaveOrUpdateEventListeners.Count > 0)
+							_cfg.EventListeners.SaveOrUpdateEventListeners = listeners.SaveOrUpdateEventListeners.ToArray();
 					}
 
 					//Log.WriteLine(String.Format("-- {1} create {0} Added Listeners", ID, sw.Elapsed.ToString()));
@@ -185,16 +151,15 @@ namespace Nephrite.Web.Hibernate
 		public string ID { get; set; }
 
 		Action<IDbIntegrationConfigurationProperties> _dbConfig;
-		Listeners _listeners;
 
 		public abstract IEnumerable<Type> GetEntitiesTypes();
 		public virtual IEnumerable<Type> GetTableFunctionsTypes() { return new List<Type>(); }
+		public virtual Listeners GetListeners() { return null; }
 
-		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Listeners listeners = null)
+		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig)
 		{
 			ID = GetType().Name + "-" + Guid.NewGuid().ToString();
 			_dbConfig = dbConfig;
-			_listeners = listeners;
 
 			//var sw = A.Items["Stopwatch"] as Stopwatch;
 			//Log.WriteLine(String.Format("-- {1} create {0}", ID, sw.Elapsed.ToString())); 
@@ -205,8 +170,6 @@ namespace Nephrite.Web.Hibernate
 			ToAttach = new List<object>();
 			AfterSaveActions = new List<Action>();
 			BeforeSaveActions = new List<Action>();
-
-			
 
 			//_session = SessionFactory.OpenSession();
 			//_session.FlushMode = FlushMode.Commit;
@@ -321,9 +284,6 @@ namespace Nephrite.Web.Hibernate
 				tx.Rollback();
 			}
 		}
-
-		//abstract public IDataContext NewDataContext();
-		//abstract public IDataContext NewDataContext(string connectionString);
 
 		public int ExecuteCommand(string command, params object[] parameters)
 		{

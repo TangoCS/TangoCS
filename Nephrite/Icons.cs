@@ -37,7 +37,7 @@ namespace Nephrite
 		static ItemIcon _Add = new ItemIcon { X16 = "", X32 = "" };
 		static ItemIcon _Delete = new ItemIcon { X16 = "fc16/cross.png", X32 = "" };
 		static ItemIcon _Undelete = new ItemIcon { X16 = "", X32 = "" };
-		static ItemIcon _Edit = new ItemIcon { X16 = "", X32 = "" };
+		static ItemIcon _Edit = new ItemIcon { X16 = "edititem.gif", X32 = "" };
 		static ItemIcon _Properties = new ItemIcon { X16 = "", X32 = "" };
 		static ItemIcon _Save = new ItemIcon { X16 = "", X32 = "" };
 		static ItemIcon _Print = new ItemIcon { X16 = "fc16/printer.png", X32 = "fc32/printer.png" };

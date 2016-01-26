@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Configuration;
-using System.Web.UI.HtmlControls;
-using Nephrite.Html;
-using Nephrite.Html.Controls;
-
+using Nephrite.UI.Controls;
 
 namespace Nephrite.Web.Controls
 {
-    public class JSCalendar : CompositeControl
+	public class JSCalendar : CompositeControl
     {
         string BasePath = Settings.JSPath + "Calendar";
 

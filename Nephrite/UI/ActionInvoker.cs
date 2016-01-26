@@ -3,7 +3,7 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 
-namespace Nephrite.Templating
+namespace Nephrite.UI
 {
 	public interface IActionInvoker
 	{

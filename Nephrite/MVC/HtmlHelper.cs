@@ -2,8 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 using Nephrite.Multilanguage;
-using Nephrite.Html.Controls;
-using Nephrite.Html;
 
 namespace Nephrite.MVC
 {

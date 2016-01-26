@@ -3,7 +3,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace Nephrite.Templating
+namespace Nephrite.UI
 {
 	public abstract class ActionResult
 	{

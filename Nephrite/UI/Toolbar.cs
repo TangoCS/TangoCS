@@ -1,6 +1,7 @@
 ﻿using System;
+using Nephrite.Html;
 
-namespace Nephrite.Html.Layout
+namespace Nephrite.UI
 {
 	public static class ToolbarExtensions
 	{

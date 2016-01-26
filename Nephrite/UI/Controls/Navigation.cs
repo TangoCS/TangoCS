@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Nephrite.Html.Controls
+namespace Nephrite.UI.Controls
 {
 	public class Navigation
 	{
