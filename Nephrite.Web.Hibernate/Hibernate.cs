@@ -29,6 +29,7 @@ namespace Nephrite.Web.Hibernate
 		static Dictionary<string, HbmMapping> _mappings = new Dictionary<string, HbmMapping>();
 		static Dictionary<string, Configuration> _configs = new Dictionary<string, Configuration>();
 		ISession _session;
+		IDbConnection _connection;
 
 		public List<object> ToInsert { get; private set; }
 		public List<object> ToDelete { get; private set; }
@@ -42,7 +43,9 @@ namespace Nephrite.Web.Hibernate
 			{
 				if (_session == null || !_session.IsOpen)
 				{
-					_session = SessionFactory.OpenSession();
+					if (_connection.State != ConnectionState.Open)
+						_connection.Open();
+					_session = SessionFactory.OpenSession(_connection);
 					_session.FlushMode = FlushMode.Commit;
 				}
 				return _session;
@@ -63,32 +66,9 @@ namespace Nephrite.Web.Hibernate
 				{
 					_cfg = new Configuration();
 					_cfg.DataBaseIntegration(_dbConfig);
-
-					//var sw = A.Items["Stopwatch"] as Stopwatch;
-					//Log.WriteLine(String.Format("-- {1} create {0} DataBaseIntegration", ID, sw.Elapsed.ToString()));
-
 					_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" } });
-
-
 					if (ConfigurationExtensions != null) ConfigurationExtensions(_cfg);
-					//{
-					//	var listeners = ConfigurationExtensions();
-					//	if (listeners.Interceptor != null) _cfg.SetInterceptor(listeners.Interceptor);
-
-					//	_cfg.EventListeners.PreDeleteEventListeners = listeners.PreDeleteEventListeners.ToArray();
-					//	_cfg.EventListeners.PreInsertEventListeners = listeners.PreInsertEventListeners.ToArray();
-					//	_cfg.EventListeners.PreUpdateEventListeners = listeners.PreUpdateEventListeners.ToArray();
-					//	_cfg.EventListeners.PostDeleteEventListeners = listeners.PostDeleteEventListeners.ToArray();
-					//	_cfg.EventListeners.PostInsertEventListeners = listeners.PostInsertEventListeners.ToArray();
-					//	_cfg.EventListeners.PostUpdateEventListeners = listeners.PostUpdateEventListeners.ToArray();
-
-					//	if (listeners.SaveOrUpdateEventListeners.Count > 0)
-					//		_cfg.EventListeners.SaveOrUpdateEventListeners = listeners.SaveOrUpdateEventListeners.ToArray();
-					//}
-
-					//Log.WriteLine(String.Format("-- {1} create {0} Added Listeners", ID, sw.Elapsed.ToString()));
 					_cfg.AddMapping(Mapping);
-					//Log.WriteLine(String.Format("-- {1} create {0} Added Mapping", ID, sw.Elapsed.ToString())); 
 				}
 				return _cfg;
 			}
@@ -158,10 +138,11 @@ namespace Nephrite.Web.Hibernate
 		public virtual IEnumerable<Type> GetTableFunctionsTypes() { return new List<Type>(); }
 		
 
-		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig)
+		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, IDbConnection connection)
 		{
 			ID = GetType().Name + "-" + Guid.NewGuid().ToString();
 			_dbConfig = dbConfig;
+			_connection = connection;
 
 			//var sw = A.Items["Stopwatch"] as Stopwatch;
 			//Log.WriteLine(String.Format("-- {1} create {0}", ID, sw.Elapsed.ToString())); 

@@ -18,6 +18,7 @@ using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Dialect;
 using NHibernate.Linq;
+using System.Data;
 
 namespace Nephrite.Web.CoreDataContext
 {
@@ -26,8 +27,8 @@ namespace Nephrite.Web.CoreDataContext
 		IDC_TimeZone, IDC_ListFilter, IDC_FileStorage, IDC_CalendarDays, IDC_Mailer,
 		IDC_TaskManager, IDC_Settings, IDC_RSS, IDC_EntityAudit
 	{
-		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig)
-			: base(dbConfig)
+		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, IDbConnection connection)
+			: base(dbConfig, connection)
 		{
 		}
 
