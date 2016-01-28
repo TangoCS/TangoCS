@@ -53,6 +53,11 @@ namespace Nephrite.UI
 			l.Cell(attributes, () => l.Write(content == null ? "&nbsp;" : content.ToString()));
 		}
 
+		public static void GroupTitleCell(this LayoutWriter w, int colSpan, string value)
+		{
+			w.Cell(a => a.Style("font-weight:bold; colspan:" + colSpan.ToString()), () => w.Write(value));
+		}
+
 		public static void FormTable(this LayoutWriter w, Action content)
 		{
 			w.FormTable(null, content);
