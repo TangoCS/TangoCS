@@ -30,13 +30,7 @@ namespace Nephrite.Web.CoreDataContext
 			DiscriminatorValue("0");
 		}
 	}
-	public class IN_TimeZoneImplMap : SubclassMapping<N_TimeZone>
-	{
-		public IN_TimeZoneImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
+
 	//public class IC_LanguageImplMap : SubclassMapping<C_Language>
 	//{
 	//	public IC_LanguageImplMap()

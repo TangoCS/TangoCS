@@ -153,7 +153,6 @@
     <Compile Include="Html\HtmlPage.cs" />
     <Compile Include="Html\TagAttributes.cs" />
     <Compile Include="Html\TagBuilder.cs" />
-    <Compile Include="Http\IHttpContext.cs" />
     <Compile Include="Icons.cs" />
     <Compile Include="Data\IDataContext.cs" />
     <Compile Include="Identity\IdentityManager.cs" />

@@ -23,9 +23,6 @@ namespace Nephrite.Data
 
 	public interface IDataContext : IDisposable
 	{
-		//IDataContext NewDataContext();
-		//IDataContext NewDataContext(string connectionString);
-
 		int ExecuteCommand(string command, params object[] parameters);
 		IEnumerable<TResult> ExecuteQuery<TResult>(string query, params object[] parameters);
 		IDbCommand GetCommand(IQueryable query);
@@ -38,9 +35,6 @@ namespace Nephrite.Data
 
 		List<Action> AfterSaveActions { get; }
 		List<Action> BeforeSaveActions { get; }
-
-		//IDataContext All { get; }
-		//IDataContext Filtered { get; }
 	}
 
 	public interface ITable : IQueryable

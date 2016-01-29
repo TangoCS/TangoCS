@@ -1,62 +1,25 @@
 ﻿using System;
 using System.Security.Claims;
 using System.Security.Principal;
-using Nephrite.Http;
 
 namespace Nephrite.Identity
 {
 	public class IdentityManager<TKey> : IIdentityManager<TKey>
 	{
-		//static IIdentityManager<TKey> _instanceHolder;
-		//static object LockObject = new object();
-
-		//public IHttpContext HttpContext { get; private set; }
 		IDC_Identity<TKey> _dataContext;
 		IIdentity _user;
 		public IdentityOptions Options { get; private set; }
 
 		public IdentityManager(
-			//IHttpContext httpContext,
 			IIdentity user,
 			IDC_Identity<TKey> dataContext,
 			IdentityOptions options = null)
 		{
-			//HttpContext = httpContext;
 			_user = user;
 			_dataContext = dataContext;
 			Options = options ?? new IdentityOptions();
 		}
 
-		//public static void Init(
-		//	Func<IHttpContext> httpContext,
-		//	Func<IDC_Identity<TKey>> dataContext,
-		//	IdentityOptions options = null
-		//	)
-		//{
-		//	if (_instanceHolder == null)
-		//	{
-		//		lock (LockObject)
-		//		{
-		//			_instanceHolder = new IdentityManager<TKey>(httpContext, dataContext, options);
-		//			return;
-		//		}
-		//	}
-
-		//	throw new ApplicationException("Initalize() method should be called only once.");
-		//}
-
-		//public static IIdentityManager<TKey> Instance
-		//{
-		//	get
-		//	{
-		//		if (_instanceHolder == null)
-		//		{
-		//			throw new ApplicationException("IdentityManager instance hasn't been initialized.");
-		//		}
-
-		//		return _instanceHolder;
-		//	}
-		//}
 		public IIdentity CurrentIdentity
 		{
 			get
@@ -137,37 +100,6 @@ namespace Nephrite.Identity
 		TSubject SubjectFromSID<TSubject>(string sid);
 		TSubject SubjectFromID<TSubject>(TKey id);
 		TSubject SubjectFromEmail<TSubject>(string email);
-
-		//public static List<Role> GetList()
-		//{
-		//	if (_allRoles != null) return _allRoles;
-		//	_allRoles = A.Model.ExecuteQuery<Role>("select RoleID as \"RoleID\", Title as \"Title\", lower(SysName) as \"SysName\" from SPM_Role").ToList();
-		//	return _allRoles;
-		//}
-
-		//public static Role RoleFromID(int id)
-		//{
-		//	return GetList().FirstOrDefault(o => o.RoleID == id);
-		//}
-
-		//static List<RoleAsso> AllRoleAsso()
-		//{
-		//	if (_allRoleAsso != null) return _allRoleAsso;
-		//	_allRoleAsso = A.Model.ExecuteQuery<RoleAsso>(@"select ""ParentRoleID"", ""RoleID"" from dbo.""V_SPM_AllRoleAsso""").ToList();
-		//	return _allRoleAsso;
-		//}
-
-		//public List<int> RoleAncestors
-		//{
-		//	get
-		//	{
-		//		return AllRoleAsso().Where(o => o.RoleID == RoleID).Select(o => o.ParentRoleID).ToList();
-		//	}
-		//	private set { ;}
-		//}
-
-		//string GetRolesAccessQuery { get; }
-		//string GetItemsQuery { get; }
 	}
 
 	public class IdentityOptions

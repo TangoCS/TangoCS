@@ -12,7 +12,6 @@ using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Cfg.MappingSchema;
 using NHibernate.Engine;
-using NHibernate.Event;
 using NHibernate.Hql.Ast.ANTLR;
 using NHibernate.Impl;
 using NHibernate.Linq;
@@ -22,7 +21,6 @@ using NHibernate.Type;
 
 namespace Nephrite.Web.Hibernate
 {
-
 	public abstract class HDataContext : IDisposable, IDataContext
 	{
 		static Dictionary<string, ISessionFactory> _sessionFactories = new Dictionary<string, ISessionFactory>();
@@ -181,13 +179,13 @@ namespace Nephrite.Web.Hibernate
 				ToAttach.Clear();
 
 				foreach (var action in AfterSaveActions) action();
-				foreach (object obj in ToDelete) _session.Delete(obj);
-				foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
-				foreach (object obj in ToAttach) _session.Merge(obj);
+				//foreach (object obj in ToDelete) _session.Delete(obj);
+				//foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
+				//foreach (object obj in ToAttach) _session.Merge(obj);
 				
-				ToDelete.Clear();
-				ToInsert.Clear();
-				ToAttach.Clear();
+				//ToDelete.Clear();
+				//ToInsert.Clear();
+				//ToAttach.Clear();
 
 				transaction.Commit();
 
@@ -196,28 +194,8 @@ namespace Nephrite.Web.Hibernate
 
 				BeforeSaveActions.Clear();
 				AfterSaveActions.Clear();
-
-				//_session.Clear();
-				//_session = SessionFactory.OpenSession();
-				//_session.FlushMode = FlushMode.Commit;
-				//_session.Close();
-				//_session.Dispose();
 			}
 		}
-
-		//void SetTimeStamp(object obj)
-		//{
-		//	int sid = -1;
-
-		//	if (obj is IWithTimeStamp)
-		//	{
-		//		if (sid == -1) sid = Subject.Current.ID;
-
-		//		var obj2 = obj as IWithTimeStamp;
-		//		obj2.LastModifiedDate = DateTime.Now;
-		//		obj2.LastModifiedUserID = sid;
-		//	}
-		//}
 
 		public void Dispose()
 		{
@@ -389,27 +367,6 @@ namespace Nephrite.Web.Hibernate
 		}
 	}
 
-	//public class Listeners
-	//{
-	//	List<IPreDeleteEventListener> _preDeleteEventListeners = new List<IPreDeleteEventListener>();
-	//	List<IPreInsertEventListener> _preInsertEventListeners = new List<IPreInsertEventListener>();
-	//	List<IPreUpdateEventListener> _preUpdateEventListeners = new List<IPreUpdateEventListener>();
-	//	List<IPostDeleteEventListener> _postDeleteEventListeners = new List<IPostDeleteEventListener>();
-	//	List<IPostInsertEventListener> _postInsertEventListeners = new List<IPostInsertEventListener>();
-	//	List<IPostUpdateEventListener> _postUpdateEventListeners = new List<IPostUpdateEventListener>();
-	//	List<ISaveOrUpdateEventListener> _saveOrUpdateEventListeners = new List<ISaveOrUpdateEventListener>();
-
-	//	public IInterceptor Interceptor { get; set; }
-
-	//	public List<IPreDeleteEventListener> PreDeleteEventListeners { get { return _preDeleteEventListeners; } }
-	//	public List<IPreInsertEventListener> PreInsertEventListeners { get { return _preInsertEventListeners; } }
-	//	public List<IPreUpdateEventListener> PreUpdateEventListeners { get { return _preUpdateEventListeners; } }
-	//	public List<IPostDeleteEventListener> PostDeleteEventListeners { get { return _postDeleteEventListeners; } }
-	//	public List<IPostInsertEventListener> PostInsertEventListeners { get { return _postInsertEventListeners; } }
-	//	public List<IPostUpdateEventListener> PostUpdateEventListeners { get { return _postUpdateEventListeners; } }
-	//	public List<ISaveOrUpdateEventListener> SaveOrUpdateEventListeners { get { return _saveOrUpdateEventListeners; } }
-	//}
-
 	public class HTable : ITable
 	{
 		protected HDataContext _dataContext;
@@ -422,10 +379,6 @@ namespace Nephrite.Web.Hibernate
 		}
 
 		public IEnumerator GetEnumerator()
-		{
-			return _query.GetEnumerator();
-		}
-		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return _query.GetEnumerator();
 		}
@@ -454,15 +407,9 @@ namespace Nephrite.Web.Hibernate
 		{
 			_dataContext.ToDelete.AddRange(objs.Cast<object>());
 		}
-
 		public void AttachOnSubmit(object entity)
 		{
 			_dataContext.ToAttach.Add(entity);
-		}
-
-		public bool IsReadOnly
-		{
-			get { return false; }
 		}
 	}
 
@@ -531,17 +478,4 @@ namespace Nephrite.Web.Hibernate
 			invalidUpdates.Add(msg);
 		}
 	}
-
-	//public class DataContextLogWriter : StringWriter
-	//{
-	//	public override void Write(char[] buffer, int index, int count)
-	//	{
-	//		base.Write(buffer, index, count);
-	//		if ((new string(buffer)).StartsWith("-- Context:"))
-	//		{
-	//			char[] buff = ("-- Execute start: " + DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss.fff") + System.Environment.NewLine).ToCharArray();
-	//			base.Write(buff, 0, buff.Length);
-	//		}
-	//	}
-	//}
 }

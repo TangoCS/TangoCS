@@ -7,7 +7,6 @@ using Nephrite.ErrorLog;
 using Nephrite.FileStorage;
 using Nephrite.UI.Controls;
 using Nephrite.RSS;
-using Nephrite.Web.Controls;
 using Nephrite.Web.Hibernate;
 using Nephrite.Web.Hibernate.CoreMapping;
 using Nephrite.Web.Mailer;
@@ -22,7 +21,7 @@ namespace Nephrite.Web.CoreDataContext
 {
 
 	public class HCoreDataContext : HDataContext,  IDC_ErrorLog,
-		IDC_TimeZone, IDC_ListFilter, IDC_FileStorage, IDC_CalendarDays, IDC_Mailer,
+		IDC_ListFilter, IDC_FileStorage, IDC_CalendarDays, IDC_Mailer,
 		IDC_TaskManager, IDC_RSS, IDC_EntityAudit
 	{
 		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, IDbConnection connection)
@@ -57,7 +56,6 @@ namespace Nephrite.Web.CoreDataContext
 		{
 			List<Type> l = new List<Type>();
 			l.Add(typeof(IErrorLogMap));
-			l.Add(typeof(IN_TimeZoneMap));
 			l.Add(typeof(ICalendarDayMap));
 			l.Add(typeof(IMailMessageMap));
 			l.Add(typeof(IMailTemplateMap));
@@ -82,7 +80,6 @@ namespace Nephrite.Web.CoreDataContext
 			l.Add(typeof(ICalendarDayImplMap));
 			l.Add(typeof(IMailMessageImplMap));
 			l.Add(typeof(IMailTemplateImplMap));
-			l.Add(typeof(IN_TimeZoneImplMap));
 			//l.Add(typeof(IC_LanguageImplMap));
 			//l.Add(typeof(IN_TextResourceImplMap));
 			l.Add(typeof(IN_FilterImplMap));
@@ -177,10 +174,7 @@ namespace Nephrite.Web.CoreDataContext
 		{
 			get { return new HTable<IMailTemplate>(this, Session.Query<IMailTemplate>()); }
 		}
-		public ITable<IN_TimeZone> IN_TimeZone
-		{
-			get { return new HTable<IN_TimeZone>(this, Session.Query<IN_TimeZone>()); }
-		}
+
 		//public ITable<ILanguageObject> IC_Language
 		//{
 		//	get { return new HTable<ILanguageObject>(this, Session.Query<ILanguageObject>()); }

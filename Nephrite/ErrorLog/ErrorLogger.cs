@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using Nephrite.Http;
 using Nephrite.Data;
 
 namespace Nephrite.ErrorLog
@@ -15,18 +14,18 @@ namespace Nephrite.ErrorLog
 
 	public class ErrorLogger : IErrorLogger
     {
-		IHttpContext _httpContext;
+		//IHttpContext _httpContext;
 		IDataContextActivator _dcActivator;
 		Func<bool> _exceptionFilter;
 
 		public ErrorLogger(
-			IHttpContext httpContext,
+			//IHttpContext httpContext,
 			IDataContextActivator dcActivator,
 			//IDC_ErrorLog dataContext,
 			Func<bool> exceptionFilter = null
 			)
 		{
-			_httpContext = httpContext;
+			//_httpContext = httpContext;
 			_dcActivator = dcActivator;
 			_exceptionFilter = exceptionFilter;
 		}
@@ -40,20 +39,8 @@ namespace Nephrite.ErrorLog
 				if (_exceptionFilter != null)
 					if (!_exceptionFilter()) return 0;
 
-				IHttpRequest r = null;
-				if (_httpContext != null) r = _httpContext.Request;
-
-				//if (exception is HttpException)
-				//{
-				//	string errorCode = ((HttpException)exception).ErrorCode.ToString("X");
-				//	if (errorCode == "0x800703E3" || errorCode == "0x800704CD" || errorCode == "0x80070040")
-				//		return 0;
-				//}
-
-				//if (exception.Message == "This is an invalid webresource request." || exception.Message == "This is an invalid script resource request.")
-				//	return 0;
-				//if (HttpContext.Current != null && HttpContext.Current.Request.Url.ToString().ToLower().Contains("rss.aspx"))
-				//	return 0;
+				//IHttpRequest r = null;
+				//if (_httpContext != null) r = _httpContext.Request;
 
 				// Проверить, не входит ли URL в список запрещенных к логированию
 				//string[] blockedUrlPatterns = AppSettings.Get("ErrorLoggingBlockedUrlPatterns").Split(new char[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -83,26 +70,26 @@ namespace Nephrite.ErrorLog
 					//	for (int i = 0; i < r.Headers.Count; i++)
 					//		headers.AppendLine(r.Headers.GetKey(i) + ": " + r.Headers[i]);
 					//l.Headers = headers.ToString();
-					l.RequestType = r.Method;
-					if (r != null) l.Url = r.QueryString;
+					//l.RequestType = r.Method;
+					//if (r != null) l.Url = r.QueryString;
 					//l.UrlReferrer = r.UrlReferrer == null ? "" : r.UrlReferrer.AbsoluteUri;
-					if (_httpContext != null) l.UserName = _httpContext.User.Identity.Name;
+					//if (_httpContext != null) l.UserName = _httpContext.User.Identity.Name;
 					//l.UserAgent = r.UserAgent;
 					//l.UserHostAddress = r.UserHostAddress;
 					//l.UserHostName = r.UserHostName;
-					l.SqlLog = "";
+					//l.SqlLog = "";
 
-					if (_httpContext != null)
-					{
-						List<IDataContext> loggedDC = new List<IDataContext>();
-						foreach (var item in _httpContext.Items.Values.OfType<IDataContext>())
-						{
-							if (loggedDC.Contains(item)) continue;
-							loggedDC.Add(item);
-							if (item.Log != null)
-								l.SqlLog += "\r\n\r\n>>>>> " + item.GetType().FullName + " <<<<<\r\n" + item.Log.ToString();
-						}
-					}
+					//if (_httpContext != null)
+					//{
+					//	List<IDataContext> loggedDC = new List<IDataContext>();
+					//	foreach (var item in _httpContext.Items.Values.OfType<IDataContext>())
+					//	{
+					//		if (loggedDC.Contains(item)) continue;
+					//		loggedDC.Add(item);
+					//		if (item.Log != null)
+					//			l.SqlLog += "\r\n\r\n>>>>> " + item.GetType().FullName + " <<<<<\r\n" + item.Log.ToString();
+					//	}
+					//}
 
 
 					errorInfo.AppendLine("[Headers]").AppendLine(l.Headers ?? "");

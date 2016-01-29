@@ -1,206 +1,80 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using Nephrite.EntityAudit;
 using Nephrite.Identity;
 using NHibernate;
 using NHibernate.Event;
-using NHibernate.Event.Default;
+using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace Nephrite.Web.Hibernate
 {
-    public class AuditEventListener :
-		IPreUpdateEventListener, IPreDeleteEventListener //, IPreInsertEventListener
-    {
-		object inProcess = null;
+	public class AuditEventListener : IPreInsertEventListener, IPostInsertEventListener, IPostUpdateEventListener, IPostDeleteEventListener
+	{
 		List<object> toInsert = new List<object>();
-		Subject<int> subject;
+		Func<Subject<int>> subject;
 
-		public AuditEventListener(Subject<int> currentSubject)
+		public AuditEventListener(Func<Subject<int>> getCurrentSubject)
 		{
-			subject = currentSubject;
+			subject = getCurrentSubject;
 		}
 
-        public bool OnPreUpdate(PreUpdateEvent e)
-        {
-            if (!(e.Entity is IWithoutEntityAudit))
-            {
-                
-                List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
-
-                var dc = A.Model as IDC_EntityAudit;
-                string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
-                var oc = dc.NewIN_ObjectChange(subject, "Modification", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
-                toInsert.Add(oc);
-
-                if (e.Entity is IWithPropertyAudit)
-                {
-                    for (int i = 0; i < e.Persister.PropertyNames.Length; i++)
-                    {
-                        if (!object.Equals(e.OldState[i], e.State[i]))
-                        {
-                            if (e.Persister.PropertyTypes[i] is ManyToOneType)
-                            {
-                                foreach (var opc in readOnlyColumns)
-                                    if (opc.PropertySysName == e.Persister.PropertyNames[i] + "ID" || opc.PropertySysName == e.Persister.PropertyNames[i] + "GUID")
-                                    {
-                                        opc.PropertySysName = e.Persister.PropertyNames[i];
-                                        break;
-                                    }
-                            }
-                            else
-                            {
-                                var opc = dc.NewIN_ObjectPropertyChange();
-                                opc.ObjectChange = oc;
-
-                                opc.PropertySysName = e.Persister.PropertyNames[i];
-                                opc.Title = "";
-                                opc.OldValue = e.OldState[i].ToString();
-                                opc.NewValue = e.State[i].ToString();
-                                opc.OldValueTitle = e.OldState[i].ToString();
-                                opc.NewValueTitle = e.State[i].ToString();
-
-                                if (!e.Persister.EntityMetamodel.PropertyUpdateability[i])
-                                    readOnlyColumns.Add(opc);
-
-                                toInsert.Add(opc);
-                            }
-
-                        }
-                    }
-                }
-
-                foreach (object obj in toInsert)
-                    e.Session.SaveOrUpdate(obj);
-            }
-            return false;
-        }
-
-        /*public bool OnPreInsert(PreInsertEvent e)
-        {
-            if (!(e.Entity is IWithoutEntityAudit) && !(e.Entity == inProcess))
-            {
-                //List<object> toInsert = new List<object>();
-                List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
-
-                var dc = A.Model as IDC_EntityAudit;
-                string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).GetTitle() : "";
-                var oc = dc.NewIN_ObjectChange("Создание", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
-                toInsert.Add(oc);
-
-                if (e.Entity is IWithPropertyAudit)
-                {
-                    for (int i = 0; i < e.Persister.PropertyNames.Length; i++)
-                    {
-                        if (e.Persister.PropertyTypes[i] is ManyToOneType)
-                        {
-                            foreach (var opc in readOnlyColumns)
-                                if (opc.PropertySysName == e.Persister.PropertyNames[i] + "ID" || opc.PropertySysName == e.Persister.PropertyNames[i] + "GUID")
-                                {
-                                    opc.PropertySysName = e.Persister.PropertyNames[i];
-                                    break;
-                                }
-                        }
-                        else
-                        {
-                            var opc = dc.NewIN_ObjectPropertyChange();
-                            opc.IObjectChange = oc;
-
-                            opc.PropertySysName = e.Persister.PropertyNames[i];
-                            opc.Title = "";
-                            opc.NewValue = e.State[i].ToString();
-                            opc.NewValueTitle = e.State[i].ToString();
-
-                            if (!e.Persister.EntityMetamodel.PropertyUpdateability[i])
-                                readOnlyColumns.Add(opc);
-
-                            toInsert.Add(opc);
-                        }
-                    }
-                }
-
-				foreach (object obj in toInsert)
-					e.Session.SaveOrUpdate(obj);
-
-            }
-            return false;
-        }*/
-
-        public bool OnPreDelete(PreDeleteEvent e)
-        {
-            if (!(e.Entity is IWithoutEntityAudit))
-            {
-                //List<object> toInsert = new List<object>();
-                List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
-
-                var dc = A.Model as IDC_EntityAudit;
-                string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
-                var oc = dc.NewIN_ObjectChange(subject, "Deletion", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
-                toInsert.Add(oc);
-
-                foreach (object obj in toInsert)
-                    e.Session.SaveOrUpdate(obj);
-            }
-            return false;
-        }
-	}
-
-    public class HDataContextInterceptor : EmptyInterceptor
-    {
-		Subject<int> subject;
-
-		public HDataContextInterceptor(Subject<int> currentSubject)
+		public bool OnPreInsert(PreInsertEvent e)
 		{
-			subject = currentSubject;
-		}
-
-		public override void PreFlush(ICollection entitites)
-        {
-            foreach (object obj in entitites)
-            {
-                if (obj is IWithTimeStamp)
-                {
-                    var obj2 = obj as IWithTimeStamp;
-                    obj2.LastModifiedDate = DateTime.Now;
-                    obj2.LastModifiedUserID = subject.ID;
-                }
-            }
-        }
-
-		public override bool OnSave(object entity, object id, object[] state, string[] propertyNames, IType[] types)
-		{
-			if (!(entity is IWithoutEntityAudit))
+			if (e.Entity is IWithTimeStamp)
 			{
+				var obj2 = e.Entity as IWithTimeStamp;
+				var subj = subject();
+
+				obj2.LastModifiedDate = DateTime.Now;
+				obj2.LastModifiedUserID = subj.ID;
+
+				Set(e.Persister, e.State, "LastModifiedDate", DateTime.Now);
+				Set(e.Persister, e.State, "LastModifiedUserID", subj.ID);
+				RefreshSet(e.Persister, e.State, "LastModifiedUser", obj2);
+			}
+			return false;
+		}
+
+		private void Set(IEntityPersister persister, object[] state, string propertyName, object value)
+		{
+			var index = Array.IndexOf(persister.PropertyNames, propertyName);
+			if (index == -1)
+				return;
+			state[index] = value;
+		}
+
+		private void RefreshSet(IEntityPersister persister, object[] state, string propertyName, object obj)
+		{
+			var index = Array.IndexOf(persister.PropertyNames, propertyName);
+			if (index == -1)
+				return;
+			state[index] = persister.GetPropertyValue(obj, index, EntityMode.Poco);
+		}
+
+		public void OnPostInsert(PostInsertEvent e)
+		{
+			if (!(e.Entity is IWithoutEntityAudit))
+			{
+				List<object> toInsert = new List<object>();
 				List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
-				//List<object> toInsert = new List<object>();
 
 				var dc = A.Model as IDC_EntityAudit;
-				var hdc = A.Model as HDataContext;
-				string title = entity is IWithTitle ? (entity as IWithTitle).Title : "";
-				var oc = dc.NewIN_ObjectChange(subject, "Creation", id != null ? id.ToString() : "", entity.GetType().Name, title);
-				//toInsert.Add(oc);
-				//dc.IN_ObjectChange.InsertOnSubmit(oc);
-				A.Model.AfterSaveActions.Add(() =>
-				{
-					hdc.Session.SaveOrUpdate(oc);
-				});
+				string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
+				var oc = dc.NewIN_ObjectChange(subject(), "New", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
+				toInsert.Add(oc);
 
-				if (entity is IWithPropertyAudit)
+				if (e.Entity is IWithPropertyAudit)
 				{
-					var persister = hdc.Session.GetSessionImplementation().GetEntityPersister(entity.GetType().Name, entity);
-
-					for (int i = 0; i < propertyNames.Length; i++)
+					for (int i = 0; i < e.Persister.PropertyNames.Length; i++)
 					{
-						if (types[i] is ManyToOneType)
+						if (e.Persister.PropertyTypes[i] is ManyToOneType)
 						{
 							foreach (var opc in readOnlyColumns)
-								if (opc.PropertySysName == propertyNames[i] + "ID" || opc.PropertySysName == propertyNames[i] + "GUID")
+								if (opc.PropertySysName == e.Persister.PropertyNames[i] + "ID" || opc.PropertySysName == e.Persister.PropertyNames[i] + "GUID")
 								{
-									opc.PropertySysName = propertyNames[i];
+									opc.PropertySysName = e.Persister.PropertyNames[i];
 									break;
 								}
 						}
@@ -208,34 +82,108 @@ namespace Nephrite.Web.Hibernate
 						{
 							var opc = dc.NewIN_ObjectPropertyChange();
 							opc.ObjectChange = oc;
-							
-							opc.PropertySysName = propertyNames[i];
-							opc.Title = "";
-							opc.NewValue = state[i].ToString();
-							opc.NewValueTitle = state[i].ToString();
 
-							if (!persister.EntityMetamodel.PropertyUpdateability[i])
+							opc.PropertySysName = e.Persister.PropertyNames[i];
+							opc.Title = "";
+							opc.NewValue = e.State[i].ToString();
+							opc.NewValueTitle = e.State[i].ToString();
+
+							if (!e.Persister.EntityMetamodel.PropertyUpdateability[i])
 								readOnlyColumns.Add(opc);
 
-							//toInsert.Add(opc);
-							A.Model.AfterSaveActions.Add(() =>
-							{
-								hdc.Session.SaveOrUpdate(opc);
-							});
-							//dc.IN_ObjectPropertyChange.InsertOnSubmit(opc);
+							toInsert.Add(opc);
 						}
 					}
 				}
-			}
 
-			return false;
+				using (var newSession = e.Session.GetSession(EntityMode.Poco))
+				{
+					foreach (object obj in toInsert)
+						newSession.SaveOrUpdate(obj);
+				}
+
+			}
 		}
 
+		public void OnPostUpdate(PostUpdateEvent e)
+		{
+			if (!(e.Entity is IWithoutEntityAudit))
+			{
+				List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
+				var dc = A.Model as IDC_EntityAudit;
+				string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
+				var oc = dc.NewIN_ObjectChange(subject(), "Modification", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
+				toInsert.Add(oc);
+
+				if (e.Entity is IWithPropertyAudit)
+				{
+					for (int i = 0; i < e.Persister.PropertyNames.Length; i++)
+					{
+						if (!object.Equals(e.OldState[i], e.State[i]))
+						{
+							if (e.Persister.PropertyTypes[i] is ManyToOneType)
+							{
+								foreach (var opc in readOnlyColumns)
+									if (opc.PropertySysName == e.Persister.PropertyNames[i] + "ID" || opc.PropertySysName == e.Persister.PropertyNames[i] + "GUID")
+									{
+										opc.PropertySysName = e.Persister.PropertyNames[i];
+										break;
+									}
+							}
+							else
+							{
+								var opc = dc.NewIN_ObjectPropertyChange();
+								opc.ObjectChange = oc;
+
+								opc.PropertySysName = e.Persister.PropertyNames[i];
+								opc.Title = "";
+								opc.OldValue = e.OldState[i].ToString();
+								opc.NewValue = e.State[i].ToString();
+								opc.OldValueTitle = e.OldState[i].ToString();
+								opc.NewValueTitle = e.State[i].ToString();
+
+								if (!e.Persister.EntityMetamodel.PropertyUpdateability[i])
+									readOnlyColumns.Add(opc);
+
+								toInsert.Add(opc);
+							}
+						}
+					}
+				}
+
+				using (var newSession = e.Session.GetSession(EntityMode.Poco))
+				{
+					foreach (object obj in toInsert)
+						newSession.SaveOrUpdate(obj);
+				}
+			}
+		}
+
+		public void OnPostDelete(PostDeleteEvent e)
+		{
+			if (!(e.Entity is IWithoutEntityAudit))
+			{
+				List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
+
+				var dc = A.Model as IDC_EntityAudit;
+				string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
+				var oc = dc.NewIN_ObjectChange(subject(), "Deletion", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
+				toInsert.Add(oc);
+
+				using (var newSession = e.Session.GetSession(EntityMode.Poco))
+				{
+					foreach (object obj in toInsert)
+						newSession.SaveOrUpdate(obj);
+				}
+			}
+		}
+	}
+
+    public class HDataContextInterceptor : EmptyInterceptor
+    {
         public override SqlString OnPrepareStatement(SqlString sql)
         {
 			//var hdc = A.Model as HDataContext;
-			//var sw = A.Items["Stopwatch"] as Stopwatch;
-			//hdc.Log.WriteLine(String.Format("-- {1}, datacontext {0}", hdc.ID, sw.Elapsed));
 			//hdc.Log.WriteLine(sql.ToString());
 			//foreach (Parameter p in sql.GetParameters())
 			//{
@@ -247,6 +195,7 @@ namespace Nephrite.Web.Hibernate
         }
 
     }
+
 
 
 }

@@ -7,7 +7,6 @@ using Nephrite.ErrorLog;
 using Nephrite.FileStorage;
 using Nephrite.RSS;
 using Nephrite.UI.Controls;
-using Nephrite.Web.Controls;
 using Nephrite.Web.Mailer;
 using Nephrite.Web.TaskManager;
 
@@ -85,16 +84,6 @@ namespace Nephrite.Web.CoreDataContext
 		}
 	}
 
-	public partial class N_TimeZone : IN_TimeZone
-	{
-		public virtual int TimeZoneID { get; set; }
-		public virtual int LastModifiedUserID { get; set; }
-		public virtual bool IsDeleted { get; set; }
-		public virtual DateTime LastModifiedDate { get; set; }
-		public virtual string Title { get; set; }
-		public virtual int GMTOffset { get; set; }
-		public virtual string Comment { get; set; }
-	}
 
 
 	//public partial class C_Language : ILanguageObject

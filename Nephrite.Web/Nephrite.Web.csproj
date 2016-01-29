@@ -378,13 +378,11 @@
     <Compile Include="Model\ICalendarObject.cs" />
     <Compile Include="FileStorage\ImageHandler.cs" />
     <Compile Include="Model\IModelObject.cs" />
-    <Compile Include="Web\DefaultAppContext.cs" />
     <Compile Include="Web\Impersonation.cs" />
     <Compile Include="MVC\PageParser.cs" />
     <Compile Include="Web\ObjectPropertyChange.cs" />
     <Compile Include="Mailer\MailerTask.cs" />
     <Compile Include="Controls\MaskedInput.cs" />
-    <Compile Include="MVC\BaseController.cs" />
     <Compile Include="Controls\LetterFilter.ascx.cs">
       <DependentUpon>LetterFilter.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
