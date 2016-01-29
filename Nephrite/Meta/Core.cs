@@ -97,7 +97,15 @@ namespace Nephrite.Meta
 
 		public IMetaClass AddClass<T>(string caption = "", string description = "")
 		{
-			IMetaClass c = new MetaClass { Name = typeof(T).Name, Caption = caption, Description = description, Persistent = PersistenceType.Table };
+			IMetaClass c = null;
+			if (typeof(T).BaseType != null)
+				c = new MetaClass(typeof(T).BaseType.Name);
+			else
+				c = new MetaClass();
+			c.Name = typeof(T).Name;
+			c.Caption = caption;
+			c.Description = description;
+			c.Persistent = PersistenceType.Table;
 			AddClass(c);
 			return c;
 		}
@@ -149,6 +157,12 @@ namespace Nephrite.Meta
 
 	public partial class MetaClass : MetaClassifier, IMetaClass
 	{
+		public MetaClass() { }
+		public MetaClass(string baseClassName)
+		{
+			BaseClassName = baseClassName;
+		}
+
 		public ITextResource TextResource { get; }
 		public MetaClass(ITextResource textResource = null)
 		{
@@ -242,7 +256,10 @@ namespace Nephrite.Meta
 			get
 			{
 				if (_compositeKey.Count != 1)
-					throw new Exception(String.Format("Error while getting single key property for class {0}. Length of the key properties array: {1}", Name, _compositeKey.Count()));
+					if (BaseClass != null)
+						return BaseClass.Key;
+					else
+						throw new Exception(String.Format("Error while getting single key property for class {0}. Length of the key properties array: {1}", Name, _compositeKey.Count()));
 				else
 					return _compositeKey.First();
 			}

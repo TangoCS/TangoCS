@@ -79,7 +79,6 @@
     <Compile Include="CoreMapping\MultilanguageMapping.cs" />
     <Compile Include="CoreMapping\ReplicationMapping.cs" />
     <Compile Include="CoreMapping\RSSMapping.cs" />
-    <Compile Include="CoreMapping\SettingsManagerMapping.cs" />
     <Compile Include="CoreMapping\TaskManagerMapping.cs" />
     <Compile Include="Hibernate.cs" />
     <Compile Include="IntBackedBoolUserType.cs" />

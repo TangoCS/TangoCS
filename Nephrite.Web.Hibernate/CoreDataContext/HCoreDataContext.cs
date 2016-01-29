@@ -6,9 +6,7 @@ using Nephrite.EntityAudit;
 using Nephrite.ErrorLog;
 using Nephrite.FileStorage;
 using Nephrite.UI.Controls;
-using Nephrite.Multilanguage;
 using Nephrite.RSS;
-using Nephrite.SettingsManager;
 using Nephrite.Web.Controls;
 using Nephrite.Web.Hibernate;
 using Nephrite.Web.Hibernate.CoreMapping;
@@ -25,7 +23,7 @@ namespace Nephrite.Web.CoreDataContext
 
 	public class HCoreDataContext : HDataContext,  IDC_ErrorLog,
 		IDC_TimeZone, IDC_ListFilter, IDC_FileStorage, IDC_CalendarDays, IDC_Mailer,
-		IDC_TaskManager, IDC_Settings, IDC_RSS, IDC_EntityAudit
+		IDC_TaskManager, IDC_RSS, IDC_EntityAudit
 	{
 		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, IDbConnection connection)
 			: base(dbConfig, connection)
@@ -75,7 +73,7 @@ namespace Nephrite.Web.CoreDataContext
 			l.Add(typeof(ITM_TaskExecutionMap));
 			l.Add(typeof(ITM_TaskParameterMap));
 			l.Add(typeof(IN_FilterMap));
-			l.Add(typeof(IN_SettingsMap));
+			//l.Add(typeof(IN_SettingsMap));
 			l.Add(typeof(IN_ObjectChangeMap));
 			l.Add(typeof(IN_ObjectPropertyChangeMap));
 			l.Add(typeof(IN_RssFeedMap));
@@ -88,7 +86,7 @@ namespace Nephrite.Web.CoreDataContext
 			//l.Add(typeof(IC_LanguageImplMap));
 			//l.Add(typeof(IN_TextResourceImplMap));
 			l.Add(typeof(IN_FilterImplMap));
-			l.Add(typeof(IN_SettingsImplMap));
+			//l.Add(typeof(IN_SettingsImplMap));
 			l.Add(typeof(IN_ObjectChangeImplMap));
 			l.Add(typeof(IN_ObjectPropertyChangeImplMap));
 			l.Add(typeof(IN_RssFeedImplMap));
@@ -146,10 +144,7 @@ namespace Nephrite.Web.CoreDataContext
 			return new TM_TaskExecution();
 		}
 
-		public IN_Settings NewIN_Settings()
-		{
-			return new N_Settings();
-		}
+		
 
 		public IN_ObjectChange NewIN_ObjectChange()
 		{
@@ -198,10 +193,10 @@ namespace Nephrite.Web.CoreDataContext
 		{
 			get { return new HTable<IN_Filter>(this, Session.Query<IN_Filter>()); }
 		}
-		public ITable<IN_Settings> IN_Settings
-		{
-			get { return new HTable<IN_Settings>(this, Session.Query<IN_Settings>()); }
-		}
+		//public ITable<IN_Settings> IN_Settings
+		//{
+		//	get { return new HTable<IN_Settings>(this, Session.Query<IN_Settings>()); }
+		//}
 		public ITable<IN_ObjectChange> IN_ObjectChange
 		{
 			get { return new HTable<IN_ObjectChange>(this, Session.Query<IN_ObjectChange>()); }

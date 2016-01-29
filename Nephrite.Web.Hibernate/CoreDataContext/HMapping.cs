@@ -58,13 +58,13 @@ namespace Nephrite.Web.CoreDataContext
 			DiscriminatorValue("0");
 		}
 	}
-	public class IN_SettingsImplMap : SubclassMapping<N_Settings>
-	{
-		public IN_SettingsImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
+	//public class IN_SettingsImplMap : SubclassMapping<N_Settings>
+	//{
+	//	public IN_SettingsImplMap()
+	//	{
+	//		DiscriminatorValue("0");
+	//	}
+	//}
 	public class IN_ObjectChangeImplMap : SubclassMapping<N_ObjectChange>
 	{
 		public IN_ObjectChangeImplMap()

@@ -9,8 +9,6 @@ namespace Nephrite
 	{
 		string Get(string name);
 		bool GetBool(string name);
-		void SetBool(string name, bool value);
-		void Set(string name, string value);
 
 		string this[string name] { get; }
 	}

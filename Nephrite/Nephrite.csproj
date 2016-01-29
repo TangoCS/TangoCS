@@ -70,6 +70,7 @@
     <Compile Include="Controls\ListFilterEngine.cs" />
     <Compile Include="Controls\PersistentListFilter.cs" />
     <Compile Include="Data\ConnectionManager.cs" />
+    <Compile Include="Date.cs" />
     <Compile Include="DI.cs" />
     <Compile Include="DynamicDictionary.cs" />
     <Compile Include="EntityAudit\EntityAudit.cs" />
@@ -98,8 +99,6 @@
     <Compile Include="Identity\IPasswordHash.cs" />
     <Compile Include="Identity\OldPasswordHash.cs" />
     <Compile Include="Identity\PasswordHash.cs" />
-    <Compile Include="IFML\AbstractClasses.cs" />
-    <Compile Include="IFML\Impl.cs" />
     <Compile Include="Json.cs" />
     <Compile Include="Multilanguage\IMultilingual.cs" />
     <Compile Include="UI\AllowAnonymousAttribute.cs" />
@@ -190,7 +189,6 @@
     <Compile Include="RussianStrings\RussianNumber.cs" />
     <Compile Include="RussianStrings\Transliteration.cs" />
     <Compile Include="SettingsManager\AppSettings.cs" />
-    <Compile Include="SettingsManager\AppSettingsModel.cs" />
     <Compile Include="SimpleTypeExtensions.cs">
       <SubType>Code</SubType>
     </Compile>

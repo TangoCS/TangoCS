@@ -142,13 +142,6 @@
     </Compile>
     <Compile Include="Controls\NavMenu.cs" />
     <Compile Include="FormsEngine\MView.cs" />
-    <Compile Include="FormsGenerator\BaseControlsCode.cs" />
-    <Compile Include="FormsGenerator\ControlCode.cs" />
-    <Compile Include="FormsGenerator\EditCode.cs" />
-    <Compile Include="FormsGenerator\ListCode.cs" />
-    <Compile Include="FormsGenerator\SelectObjectCode.cs" />
-    <Compile Include="FormsGenerator\UploadControlsCode.cs" />
-    <Compile Include="FormsGenerator\ViewCode.cs" />
     <Compile Include="FormsEngine\WebFormsRenderer.cs" />
     <Compile Include="Model\IMMObject.cs" />
     <Compile Include="Model\IMMObjectMLView.cs" />

@@ -26,111 +26,58 @@ namespace Nephrite.Meta
 		public static MetaEnumType NotNull(string enumName) { return new MetaEnumType { NotNullable = true, Name = enumName }; }
 		public static MetaEnumType Null(string enumName) { return new MetaEnumType { NotNullable = false, Name = enumName }; }
 
-		public override string CLRType
-		{
-			get
-			{
-				return "string";
-			}
-		}
+		public override string CLRType => "string";
 	}
 
 	public partial class MetaZoneDateTimeType : MetaPrimitiveType
 	{
-		public override string CLRType
-		{
-			get { return ""; }
-		}
+		public override string CLRType => "";
 	}
 
 	public partial class MetaDecimalType : MetaPrimitiveType, IMetaNumericType
 	{
-		static MetaDecimalType _t = new MetaDecimalType { Precision = 18, Scale = 5, NotNullable = true, GetStringValue = ToStringConverter.Decimal };
-		static MetaDecimalType _t_n = new MetaDecimalType { Precision = 18, Scale = 5, NotNullable = false, GetStringValue = ToStringConverter.NullableDecimal };
-		public static MetaDecimalType NotNull() { return _t; }
-		public static MetaDecimalType Null() { return _t_n; }
+		public static MetaDecimalType NotNull() { return new MetaDecimalType { Precision = 18, Scale = 5, NotNullable = true, GetStringValue = ToStringConverter.Decimal }; }
+		public static MetaDecimalType Null() { return new MetaDecimalType { Precision = 18, Scale = 5, NotNullable = false, GetStringValue = ToStringConverter.NullableDecimal }; }
 
 		public int Precision { get; set; }
 		public int Scale { get; set; }
 
-		public override string CLRType
-		{
-			get
-			{
-				return NotNullable ? "decimal" : "decimal?";
-			}
-		}
+		public override string CLRType => NotNullable ? "decimal" : "decimal?";
 	}
 
 	public partial class MetaStringType : MetaPrimitiveType, IMetaIdentifierType, IMetaParameterType
 	{
-		static MetaStringType _t = new MetaStringType { Length = -1, NotNullable = true, GetStringValue = ToStringConverter.String };
-		static MetaStringType _t_n = new MetaStringType { Length = -1, NotNullable = false, GetStringValue = ToStringConverter.String };
-		public static MetaStringType NotNull() { return _t; }
-		public static MetaStringType Null() { return _t_n; }
+		public static MetaStringType NotNull() { return new MetaStringType { Length = -1, NotNullable = true, GetStringValue = ToStringConverter.String }; }
+		public static MetaStringType Null() { return new MetaStringType { Length = -1, NotNullable = false, GetStringValue = ToStringConverter.String }; }
 
 		public int Length { get; set; }
 
-		public string ColumnSuffix
-		{
-			get { return ""; }
-		}
-
-		public override string CLRType
-		{
-			get
-			{
-				return "string";
-			}
-		}
+		public string ColumnSuffix => "";
+		public override string CLRType => "string";
 	}
 
 	public partial class MetaDateTimeType : MetaPrimitiveType, IMetaParameterType
 	{
-		static MetaDateTimeType _t = new MetaDateTimeType { NotNullable = true, GetStringValue = ToStringConverter.DateTime };
-		static MetaDateTimeType _t_n = new MetaDateTimeType { NotNullable = false, GetStringValue = ToStringConverter.NullableDateTime };
-		public static MetaDateTimeType NotNull() { return _t; }
-		public static MetaDateTimeType Null() { return _t_n; }
+		public static MetaDateTimeType NotNull() { return new MetaDateTimeType { NotNullable = true, GetStringValue = ToStringConverter.DateTime }; }
+		public static MetaDateTimeType Null() { return new MetaDateTimeType { NotNullable = false, GetStringValue = ToStringConverter.NullableDateTime }; }
 
-		public override string CLRType
-		{
-			get
-			{
-				return NotNullable ? "DateTime" : "DateTime?";
-			}
-		}
+		public override string CLRType => NotNullable ? "DateTime" : "DateTime?";
 	}
 
 	public partial class MetaDateType : MetaPrimitiveType
 	{
-		static MetaDateType _t = new MetaDateType { NotNullable = true, GetStringValue = ToStringConverter.Date };
-		static MetaDateType _t_n = new MetaDateType { NotNullable = false, GetStringValue = ToStringConverter.NullableDate };
-		public static MetaDateType NotNull() { return _t; }
-		public static MetaDateType Null() { return _t_n; }
+		public static MetaDateType NotNull() { return new MetaDateType { NotNullable = true, GetStringValue = ToStringConverter.Date }; }
+		public static MetaDateType Null() { return new MetaDateType { NotNullable = false, GetStringValue = ToStringConverter.NullableDate }; }
 
-		public override string CLRType
-		{
-			get
-			{
-				return NotNullable ? "DateTime" : "DateTime?";
-			}
-		}
+		public override string CLRType => NotNullable ? "DateTime" : "DateTime?";
 	}
 
     public partial class MetaXmlType : MetaPrimitiveType
     {
-		static MetaXmlType _t = new MetaXmlType { NotNullable = true, GetStringValue = ToStringConverter.Xml };
-		static MetaXmlType _t_n = new MetaXmlType { NotNullable = false, GetStringValue = ToStringConverter.Xml };
-		public static MetaXmlType NotNull() { return _t; }
-		public static MetaXmlType Null() { return _t_n; }
+		public static MetaXmlType NotNull() { return new MetaXmlType { NotNullable = true, GetStringValue = ToStringConverter.Xml }; }
+		public static MetaXmlType Null() { return new MetaXmlType { NotNullable = false, GetStringValue = ToStringConverter.Xml }; }
 
-        public override string CLRType
-        {
-            get
-            {
-                return "XDocument";
-            }
-        }
+        public override string CLRType => "XDocument";
     }
 
 	public partial class MetaZoneDateTimeType : MetaPrimitiveType
@@ -142,109 +89,57 @@ namespace Nephrite.Meta
 
 	public partial class MetaIntType : MetaPrimitiveType, IMetaIdentifierType, IMetaNumericType, IMetaParameterType
 	{
-		static MetaIntType _t = new MetaIntType { NotNullable = true, GetStringValue = ToStringConverter.Int };
-		static MetaIntType _t_n = new MetaIntType { NotNullable = false, GetStringValue = ToStringConverter.NullableInt };
-		public static MetaIntType NotNull() { return _t; }
-		public static MetaIntType Null() { return _t_n; }
+		public static MetaIntType NotNull() { return new MetaIntType { NotNullable = true, GetStringValue = ToStringConverter.Int }; }
+		public static MetaIntType Null() { return new MetaIntType { NotNullable = false, GetStringValue = ToStringConverter.NullableInt }; }
 
-		public string ColumnSuffix
-		{
-			get { return "ID"; }
-		}
-
-		public override string CLRType
-		{
-			get
-			{
-				return NotNullable ? "int" : "int?";
-			}
-		}
+		public string ColumnSuffix => "ID";
+		public override string CLRType => NotNullable ? "int" : "int?";
 	}
 
 	public partial class MetaLongType : MetaPrimitiveType, IMetaNumericType
 	{
-		static MetaLongType _t = new MetaLongType { NotNullable = true, GetStringValue = ToStringConverter.Long };
-		static MetaLongType _t_n = new MetaLongType { NotNullable = false, GetStringValue = ToStringConverter.NullableLong };
-		public static MetaLongType NotNull() { return _t; }
-		public static MetaLongType Null() { return _t_n; }
+		public static MetaLongType NotNull() { return new MetaLongType { NotNullable = true, GetStringValue = ToStringConverter.Long }; }
+		public static MetaLongType Null() { return new MetaLongType { NotNullable = false, GetStringValue = ToStringConverter.NullableLong }; }
 
-		public override string CLRType
-		{
-			get
-			{
-				return NotNullable ? "long" : "long?";
-			}
-		}
+		public override string CLRType => NotNullable ? "long" : "long?";
 	}
 
 	public partial class MetaByteArrayType : MetaPrimitiveType
 	{
-		static MetaByteArrayType _t = new MetaByteArrayType { NotNullable = true };
-		static MetaByteArrayType _t_n = new MetaByteArrayType { NotNullable = false };
-		public static MetaByteArrayType NotNull() { return _t; }
-		public static MetaByteArrayType Null() { return _t_n; }
+		public static MetaByteArrayType NotNull() { return new MetaByteArrayType { NotNullable = true }; }
+		public static MetaByteArrayType Null() { return new MetaByteArrayType { NotNullable = false }; }
 
 		public int Length { get; set; }
-		public override string CLRType
-		{
-			get
-			{
-				return "byte[]";
-			}
-		}
+		public override string CLRType => "byte[]";
 	}
 
 	public partial class MetaBooleanType : MetaPrimitiveType
 	{
-		static MetaBooleanType _t = new MetaBooleanType { NotNullable = true, GetStringValue = ToStringConverter.Bool };
-		static MetaBooleanType _t_n = new MetaBooleanType { NotNullable = false, GetStringValue = ToStringConverter.NullableBool };
-		public static MetaBooleanType NotNull() { return _t; }
-		public static MetaBooleanType Null() { return _t_n; }
+		public static MetaBooleanType NotNull() { return new MetaBooleanType { NotNullable = true, GetStringValue = ToStringConverter.Bool }; }
+		public static MetaBooleanType Null() { return new MetaBooleanType { NotNullable = false, GetStringValue = ToStringConverter.NullableBool }; }
 
-		public override string CLRType
-		{
-			get
-			{
-				return NotNullable ? "bool" : "bool?";
-			}
-		}
+		public override string CLRType => NotNullable ? "bool" : "bool?";
 	}
 
 
 
 	public partial class MetaGuidType : MetaPrimitiveType, IMetaIdentifierType, IMetaParameterType
 	{
-		static MetaGuidType _t = new MetaGuidType { NotNullable = true, GetStringValue = ToStringConverter.Guid };
-		static MetaGuidType _t_n = new MetaGuidType { NotNullable = false, GetStringValue = ToStringConverter.NullableGuid };
-		public static MetaGuidType NotNull() { return _t; }
-		public static MetaGuidType Null() { return _t_n; }
+		public static MetaGuidType NotNull() { return new MetaGuidType { NotNullable = true, GetStringValue = ToStringConverter.Guid }; }
+		public static MetaGuidType Null() { return new MetaGuidType { NotNullable = false, GetStringValue = ToStringConverter.NullableGuid }; }
 
-		public string ColumnSuffix
-		{
-			get { return "GUID"; }
-		}
-		public override string CLRType
-		{
-			get
-			{
-				return NotNullable ? "Guid" : "Guid?";
-			}
-		}
+		public string ColumnSuffix => "GUID";
+		public override string CLRType => NotNullable ? "Guid" : "Guid?";
 	}
 
 	public class MetaFileType : MetaPrimitiveType
 	{
-		static MetaFileType _ti = new MetaFileType { IdentifierType = MetaIntType.NotNull(), NotNullable = true };
-		static MetaFileType _tg = new MetaFileType { IdentifierType = MetaGuidType.NotNull(), NotNullable = true };
-		static MetaFileType _ti_n = new MetaFileType { IdentifierType = MetaIntType.Null(), NotNullable = false };
-		static MetaFileType _tg_n = new MetaFileType { IdentifierType = MetaGuidType.Null(), NotNullable = false };
-
-		public static MetaFileType IntKeyNotNull() { return _ti; }
-		public static MetaFileType IntKeyNull() { return _ti_n; }
-		public static MetaFileType GuidKeyNotNull() { return _tg; }
-		public static MetaFileType GuidKeyNull() { return _tg_n; }
-		public static MetaFileType NotNull() { return _tg; }
-		public static MetaFileType Null() { return _tg_n; }
+		public static MetaFileType IntKeyNotNull() { return new MetaFileType { IdentifierType = MetaIntType.NotNull(), NotNullable = true }; }
+		public static MetaFileType IntKeyNull() { return new MetaFileType { IdentifierType = MetaIntType.Null(), NotNullable = false }; }
+		public static MetaFileType GuidKeyNotNull() { return new MetaFileType { IdentifierType = MetaGuidType.NotNull(), NotNullable = true }; }
+		public static MetaFileType GuidKeyNull() { return new MetaFileType { IdentifierType = MetaGuidType.Null(), NotNullable = false }; }
+		public static MetaFileType NotNull() { return GuidKeyNotNull(); }
+		public static MetaFileType Null() { return GuidKeyNull(); }
 
 
 		public IMetaIdentifierType IdentifierType { get; set; }

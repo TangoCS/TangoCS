@@ -206,8 +206,9 @@ namespace Nephrite.Meta.Fluent
 			return cls;
 		}
 
-		public static IMetaClass Attribute(this IMetaClass cls, string name, string caption, IMetaPrimitiveType type, Action<ValuePropertyBuilder> attributes = null)
+		public static IMetaClass Attribute(this IMetaClass cls, string name, string caption, IMetaPrimitiveType type = null, Action<ValuePropertyBuilder> attributes = null)
 		{
+			if (type == null) type = MetaStringType.Null();
 			MetaAttribute a = new MetaAttribute { Name = name, Caption = caption, Type = type, IsMultilingual = false };
 			if (type.NotNullable) a.IsRequired = true;
 			if (attributes != null) attributes(new ValuePropertyBuilder(a));

@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Linq.Expressions;
 using System.Xml.Linq;
-using Nephrite.Web.Controls;
-using Nephrite.ErrorLog;
-using Nephrite.Web.Mailer;
-using Nephrite.Multilanguage;
-using Nephrite.RSS;
-using Nephrite.SettingsManager;
-using Nephrite.Web.TaskManager;
-using Nephrite.UI.Controls;
-using Nephrite.EntityAudit;
-using Nephrite.FileStorage;
 using Nephrite.Controls;
+using Nephrite.EntityAudit;
+using Nephrite.ErrorLog;
+using Nephrite.FileStorage;
+using Nephrite.RSS;
+using Nephrite.UI.Controls;
+using Nephrite.Web.Controls;
+using Nephrite.Web.Mailer;
+using Nephrite.Web.TaskManager;
 
 namespace Nephrite.Web.CoreDataContext
 {
@@ -226,20 +224,20 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual DateTime LastDataModify { get; set; }
 	}*/
 
-	public partial class N_Settings : IN_Settings
-	{
-		public virtual Guid SettingsGUID { get; set; }
-		public virtual int LastModifiedUserID { get; set; }
-		public virtual string SystemName { get; set; }
-		public virtual string Title { get; set; }
-		public virtual string Value { get; set; }
-		public virtual bool IsSystem { get; set; }
-		public virtual bool IsDeleted { get; set; }
-		public virtual DateTime LastModifiedDate { get; set; }
-		public virtual string AcceptableValues { get; set; }
+	//public partial class N_Settings : IN_Settings
+	//{
+	//	public virtual Guid SettingsGUID { get; set; }
+	//	public virtual int LastModifiedUserID { get; set; }
+	//	public virtual string SystemName { get; set; }
+	//	public virtual string Title { get; set; }
+	//	public virtual string Value { get; set; }
+	//	public virtual bool IsSystem { get; set; }
+	//	public virtual bool IsDeleted { get; set; }
+	//	public virtual DateTime LastModifiedDate { get; set; }
+	//	public virtual string AcceptableValues { get; set; }
 
-		public virtual int? GroupID { get; set; }
-	}
+	//	public virtual int? GroupID { get; set; }
+	//}
 
 	public partial class N_ObjectChange : IN_ObjectChange, IWithoutEntityAudit
 	{
