@@ -75,6 +75,8 @@ namespace Nephrite.Html
 		public T OnMouseOut(string value) { MergeAttribute("onmouseout", value); return _this; }
 		public T OnMouseOver(string value) { MergeAttribute("onmouseover", value); return _this; }
 		public T OnMouseUp(string value) { MergeAttribute("onmouseup", value); return _this; }
+
+		public T Set(Action<T> attrs) { if (attrs != null) attrs(_this); return _this; }
 	}
 
 	public class TagAttributes : TagAttributes<TagAttributes>

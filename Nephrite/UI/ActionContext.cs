@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -9,63 +10,16 @@ namespace Nephrite.UI
 	public class ActionContext
 	{
 		public ActionContext()
-			//IHttpContext httpContext,
-			//ITypeActivatorCache typeActivatorCache)
-   //         IViewRendererFactory viewRendererFactory)
 		{
-			//HttpContext = httpContext;
-			//RouteData = new RouteDataClass();
-			//ViewRendererFactory = viewRendererFactory;
-			//TypeActivatorCache = typeActivatorCache;
-
 			AllArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			ActionArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			EventArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			FormData = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
+			EventReceivers = new Dictionary<string, InteractionFlowElement>(StringComparer.OrdinalIgnoreCase);
 		}
 
 		public IServiceProvider RequestServices { get; private set; }
-		//public IHttpContext HttpContext { get; private set; }
-		//public RouteDataClass RouteData { get; private set; }
 
-		//public ITypeActivatorCache TypeActivatorCache { get; private set; }
-
-		//public IViewRendererFactory ViewRendererFactory { get; private set; }
-		//public Type RendererType { get; set; }
-
-		//IViewRenderer _renderer;
-		//public IViewRenderer Renderer
-		//{
-		//	get
-		//	{
-		//		if (_renderer == null)
-		//			_renderer = ViewRendererFactory.Create(RendererType);
-		//		return _renderer;
-		//          }
-		//	set
-		//	{
-		//		_renderer = value;
-		//	}
-		//}
-
-		//Url _current;
-		//public Url Url { get; set; }
-		//{ 
-		//	get
-		//	{
-		//		if (_current == null)
-		//		{
-		//			_current = new Url(HttpContext.Request.QueryString, RouteData.Values);
-		//		}
-		//		return _current;
-		//	}
-		//}
-
-		//public class RouteDataClass
-		//{
-		//	public IDictionary<string, object> DataTokens { get; set; }
-		//	public IDictionary<string, object> Values { get; set; }
-		//}
 		public void Init(IServiceProvider requestServices, IDictionary<string, string> args, string jsonData)
 		{
 			RequestServices = requestServices;
@@ -80,19 +34,14 @@ namespace Nephrite.UI
 					Service = value.ToString();
 				else if (key == TemplatingConstants.ActionName)
 					Action = value.ToString();
-				else if (key == "e")
+				else if (key == TemplatingConstants.EventName)
 				{
 					curArgsCollection = EventArgs;
 					Event = value.ToString().ToLower();
 				}
-				else if (key == "r")
+				else if (key == TemplatingConstants.EventReceiverName)
 				{
 					EventReceiver = value.ToString().ToLower();
-				}
-				else if (key == "oid")
-				{
-					curArgsCollection.Add("id", value);
-					AllArgs.Add(key, value);
 				}
 				else
 				{
@@ -153,6 +102,8 @@ namespace Nephrite.UI
 		public dynamic FormBag { get { return FormData; } }
 		public DynamicDictionary FormData { get; set; }
 
+		public IDictionary<string, InteractionFlowElement> EventReceivers { get; private set; }
+
 		public ResponseInfo Response { get; set; } = new ResponseInfo();
 	}
 
@@ -163,7 +114,7 @@ namespace Nephrite.UI
 		{
 			object s = null;
 			bool b = ctx.AllArgs.TryGetValue(name, out s);
-			if (b) return s.ToString();
+			if (b) return WebUtility.UrlDecode(s.ToString());
 			return null;
 		}
 		public static int GetIntArg(this ActionContext ctx, string name, int defaultValue)
@@ -193,6 +144,10 @@ namespace Nephrite.UI
 			bool b = ctx.AllArgs.TryGetValue(name, out s);
 			if (b) return Guid.Parse(s.ToString());
 			return null;
+		}
+		public static T GetArg<T>(this ActionContext ctx, string name)
+		{
+			return ctx.AllArgs.Parse<T>(name);
 		}
 	}
 }

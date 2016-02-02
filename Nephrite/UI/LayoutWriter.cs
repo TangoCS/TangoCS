@@ -61,7 +61,7 @@ namespace Nephrite.UI
 
 		public static void GroupTitle(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
-			w.Div(a => { a.Class("tabletitle"); attributes(a); }, content);
+			w.Div(a => a.Class("tabletitle").Set(attributes), content);
 		}
 
 		public static void FormMargin(this LayoutWriter w, Action inner)

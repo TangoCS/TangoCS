@@ -30,12 +30,14 @@ namespace Nephrite.UI
 	public class ApiResponse : ObjectResponse
 	{
 		public Dictionary<string, object> Widgets { get; set; }
+		public List<string> WidgetsForRemove { get; set; }
 		public List<ClientAction> ClientActions { get; set; }
 		public HashSet<string> Includes { get; set; }
 
 		public ApiResponse()
 		{
 			Widgets = new Dictionary<string, object>();
+			WidgetsForRemove = new List<string>();
 			ClientActions = new List<ClientAction>();
 			Includes = new HashSet<string>();
 		}
@@ -56,6 +58,11 @@ namespace Nephrite.UI
 		public virtual void AddWidget(string name, string content)
 		{
 			Widgets.Add(name.ToLower(), content);
+		}
+
+		public virtual void RemoveWidget(string name)
+		{
+			WidgetsForRemove.Add(name.ToLower());
 		}
 
 		public virtual void AddRootWidget(string name, string content)
@@ -91,6 +98,8 @@ namespace Nephrite.UI
 		{
 			if (Widgets.Count > 0)
 				Data.Add("widgets", Widgets);
+			if (WidgetsForRemove.Count > 0)
+				Data.Add("widgetsforremove", WidgetsForRemove);
 			if (ClientActions.Count > 0)
 				Data.Add("clientactions", ClientActions);
 			if (Includes.Count > 0)
@@ -119,6 +128,11 @@ namespace Nephrite.UI
 		public override void AddWidget(string name, string content)
 		{
 			base.AddWidget(_getID(name), content);
+		}
+
+		public override void RemoveWidget(string name)
+		{
+			base.RemoveWidget(_getID(name));
 		}
 
 		public override void AddRootWidget(string name, string content)

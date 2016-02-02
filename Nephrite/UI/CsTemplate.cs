@@ -7,14 +7,12 @@ namespace Nephrite.UI
 {
 	public abstract class InteractionFlowElement
 	{
+		public string ID { get; protected set; }
 		public ActionContext Context { get; protected set; }
 	}
 
 	public abstract class ViewElement : InteractionFlowElement, IWithPropertyInjection
 	{
-		public string ID { get; protected set; }
-		public ViewContainer Container { get; set; }
-
 		public ITextResource TextResource { get; protected set; }
 
 		public void Init(string id, ActionContext context, ITextResource textResource)
@@ -32,11 +30,30 @@ namespace Nephrite.UI
 		}
 
 		public virtual bool UsePropertyInjection { get { return false; } }
+		public virtual void CreateChildControls() { }
+
+		public string GetElementID(string id)
+		{
+			return !ID.IsEmpty() ? ID + (!id.IsEmpty() ? "_" + id : "") : id;
+		}
+
+		public T CreateControl<T>(string id, Action<T> init = null)
+			where T : ViewComponent, new()
+		{
+			T c = new T();
+			if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
+			c.Init(GetElementID(id), Context, TextResource);
+
+			Context.EventReceivers.Add(c.ID, c);
+
+			if (init != null) init(c);
+			c.CreateChildControls();
+			return c;
+		}
+
 
 		protected dynamic FormBag { get { return Context.FormData; } }
 		protected DynamicDictionary FormData { get { return Context.FormData; } }
-
-		public virtual void CreateChildControls() { }
 
 		protected T GetPosted<T>(string name, T defaultValue = default(T))
 		{
@@ -56,54 +73,15 @@ namespace Nephrite.UI
 		{
 			return Context.FormData.Parse<string>(GetElementID("_senderArgs"));
 		}
-
-		public string GetElementID(string id)
-		{
-			return !ID.IsEmpty() ? ID + (!id.IsEmpty() ? "_" + id : "") : id;
-		}
-
-
 	}
 
 	public abstract class ViewComponent : ViewElement
 	{
-		public ViewElement Component { get; set; }
-		
-		public T CreateControl<T>(string id, Action<T> init = null)
-			where T : ViewComponent, new()
-		{
-			return Container.CreateControl(this, id, init);
-		}
+
 	}
 
-	public abstract class ViewContainer : ViewElement
+	public abstract class ViewContainer : ViewComponent
 	{
-		public string Title { get; set; }
-
-		protected Dictionary<string, ViewElement> _controls = new Dictionary<string, ViewElement>(StringComparer.OrdinalIgnoreCase);
-		public IDictionary<string, ViewElement> Controls { get { return _controls; } }
-
-		internal T CreateControl<T>(ViewElement component, string id, Action<T> init = null)
-			where T : ViewComponent, new()
-		{
-			T c = new T();
-			if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
-			c.Init(GetElementID(id), Context, TextResource);
-			c.Container = this;
-			this.Controls.Add(c.ID, c);
-
-			c.Component = component;
-			if (init != null) init(c);
-			c.CreateChildControls();
-			return c;
-		}
-
-		public T CreateControl<T>(string id, Action<T> init = null)
-			where T : ViewComponent, new()
-		{
-			return CreateControl(this, id, init);
-		}
-
-		public abstract ActionResult Execute();
+		public abstract ActionResult Execute();	
 	}
 }

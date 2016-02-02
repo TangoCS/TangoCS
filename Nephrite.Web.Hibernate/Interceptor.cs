@@ -62,7 +62,7 @@ namespace Nephrite.Web.Hibernate
 
 				var dc = A.Model as IDC_EntityAudit;
 				string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
-				var oc = dc.NewIN_ObjectChange(subject(), "New", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
+				var oc = dc.NewIN_ObjectChange(subject(), "Creation", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
 				toInsert.Add(oc);
 
 				if (e.Entity is IWithPropertyAudit)

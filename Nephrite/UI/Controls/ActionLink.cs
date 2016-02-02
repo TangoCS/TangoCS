@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using Nephrite.Html;
 using Nephrite.Multilanguage;
@@ -55,7 +56,7 @@ namespace Nephrite.UI.Controls
 		{
 			foreach (var p in args)
 				if (p.Value != null)
-					_args[p.Key] = p.Value.ToString();
+					_args[p.Key] = WebUtility.UrlEncode(p.Value.ToString());
 				else
 					_args.Remove(p.Key);
 			return _this;
@@ -65,7 +66,7 @@ namespace Nephrite.UI.Controls
 		{
 			foreach (var p in args)
 				if (p.Value != null)
-					_eventArgs[p.Key] = p.Value.ToString();
+					_eventArgs[p.Key] = WebUtility.UrlEncode(p.Value.ToString());
 				else
 					_eventArgs.Remove(p.Key);
 			return _this;
@@ -74,7 +75,7 @@ namespace Nephrite.UI.Controls
 		public T WithArg(string key, string value)
 		{
 			if (value != null)
-				_args[key] = value;
+				_args[key] = WebUtility.UrlEncode(value);
 			else
 				_args.Remove(key);
 			return _this;
@@ -83,7 +84,7 @@ namespace Nephrite.UI.Controls
 		public T WithEventArg(string key, string value)
 		{
 			if (value != null)
-				_eventArgs[key] = value;
+				_eventArgs[key] = WebUtility.UrlEncode(value);
 			else
 				_eventArgs.Remove(key);
 			return _this;
