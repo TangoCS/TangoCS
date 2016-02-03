@@ -26,8 +26,7 @@ namespace Nephrite.AzureBackup
 				new ProcessStartInfo
 				{
 					FileName = "backup_pgsql.bat",
-					Arguments = string.Format("{0} {1} {2} {3} {4} {5}", b.Host, b.Port, b.UserName, 
-												Encoding.UTF8.GetString(b.PasswordAsByteArray), pathbackup, b.Database),
+					Arguments = string.Format("{0} {1} {2} {3} {4} {5}", b.Host, b.Port, b.Username, b.Password, pathbackup, b.Database),
 					WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
 					WindowStyle = ProcessWindowStyle.Hidden,
 					CreateNoWindow = true,

@@ -23,6 +23,8 @@ namespace Nephrite.Meta.Database
 				if (t.Identity && cls.CompositeKey.Any(c => c.Type is MetaGuidType))
 					throw new Exception(string.Format("Class {0}. Поле не может быть Identity с типом uniqueidentifier", t.Name));
 
+				var primaryColumn = new Column();
+
 				if (cls.BaseClass != null)
 				{
 					var column = new Column();
@@ -47,6 +49,7 @@ namespace Nephrite.Meta.Database
 						RefTableColumns = new[] { cls.BaseClass.Key.ColumnName }
 					});
 
+					primaryColumn = column;
 					t.Columns.Add(column.Name, column);
 
 				}
@@ -61,7 +64,7 @@ namespace Nephrite.Meta.Database
 				}
 				Tables.Add(t.Name, t);
 
-				var primaryColumn = new Column();
+				//var primaryColumn = new Column();
 
 				foreach (var prop in cls.Properties)
 				{
@@ -121,10 +124,10 @@ namespace Nephrite.Meta.Database
 				foreach (var f in cls.Properties.Where(o => o is MetaReference))
 				{
 					//Если у свойства мощность 0..1 или 1..1 Создаём FK
+					var metaRef = f as MetaReference;
 					if (f.UpperBound == 1)
 					{
-						var metaRef = f as MetaReference;
-						var fkcolumnname = metaRef.RefClass.CompositeKey.Select(o => o.ColumnName).First();
+						var fkcolumnname = metaRef.RefClass.BaseClass != null ? metaRef.RefClass.BaseClass.Key.ColumnName : metaRef.RefClass.CompositeKey.Select(o => o.ColumnName).First();
 						t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { Table = t, Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaRef.RefClass.Name, Columns = new[] { metaRef.RefClass.ColumnName(metaRef.Name) }, RefTableColumns = new[] { fkcolumnname } });
 
 						// Если референс на WF_Activity
