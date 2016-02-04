@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.IO;
 using Nephrite.FileStorage;
-using Nephrite.Http;
 
 
 namespace Nephrite.Web.View

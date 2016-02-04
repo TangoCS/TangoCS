@@ -27,19 +27,30 @@ namespace Nephrite.UI
 
 	public static class LayoutWriterMainExtensions
 	{
+		public static void AjaxForm(this LayoutWriter w, string name, Action content)
+		{
+			w.AjaxForm(name, null, content);
+		}
+
+		public static void AjaxForm(this LayoutWriter w, string name, Action<FormTagAttributes> attributes, Action content)
+		{
+			w.Form(a => a.ID(name).Set(attributes), content);
+			w.AddClientAction("ajaxUtils", "initForm", new { ID = w.GetID(name) });
+		}
+
 		public static void ListTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
-			w.Table(a => { a.Class("ms-listviewtable"); if (attributes != null) attributes(a); }, content);
+			w.Table(a => a.Class("ms-listviewtable").Set(attributes), content);
 		}
 
 		public static void ListHeader(this LayoutWriter w, Action<TagAttributes> attributes, Action columns)
 		{
-			w.Tr(a => { a.Class("ms-viewheadertr"); if (attributes != null) attributes(a); }, columns);
+			w.Tr(a => a.Class("ms-viewheadertr").Set(attributes), columns);
 		}
 
 		public static void ColumnHeader(this LayoutWriter w, Action<ThTagAttributes> attributes, Action content)
 		{
-			w.Th(a => { a.Class("ms-vh2"); if (attributes != null) attributes(a); },
+			w.Th(a => a.Class("ms-vh2").Set(attributes),
 				() => w.Div(a => a.Class("ms-vb"), content)
 			);
 		}
@@ -51,12 +62,12 @@ namespace Nephrite.UI
 
 		public static void Cell(this LayoutWriter w, Action<TdTagAttributes> attributes, Action content)
 		{
-			w.Td(a => { a.Class("ms-vb2"); if (attributes != null) attributes(a); }, content);
+			w.Td(a => a.Class("ms-vb2").Set(attributes), content);
 		}
 
 		public static void FormTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
-			w.Table(a => { a.Class("ms-formtable"); if (attributes != null) attributes(a); }, content);
+			w.Table(a => a.Class("ms-formtable").Set(attributes), content);
 		}
 
 		public static void GroupTitle(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
@@ -71,7 +82,7 @@ namespace Nephrite.UI
 
 		public static void ButtonsBar(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
-			w.Table(a => { a.Class("ms-formtoolbar"); if (attributes != null) attributes(a); }, content);
+			w.Table(a => a.Class("ms-formtoolbar").Set(attributes), content);
 		}
 
 		public static void ButtonsBarWhiteSpace(this LayoutWriter w)
