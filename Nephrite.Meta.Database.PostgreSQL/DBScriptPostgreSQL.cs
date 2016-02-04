@@ -132,9 +132,10 @@ namespace Nephrite.Meta.Database
 		public void CreateForeignKey(ForeignKey srcforeignKey)
 		{
 			var srcTable = srcforeignKey.Table;
+			var fkname = srcforeignKey.Name.Length > 63 ? srcforeignKey.Name.Remove(63) : srcforeignKey.Name;
 			_FkScripts.Add(
 				string.Format(
-					"ALTER TABLE {6}.{0} ADD CONSTRAINT {1} FOREIGN KEY({2}) REFERENCES {6}.{3} ({4}) {5};", srcTable.Name.ToLower(), srcforeignKey.Name.ToLower(), string.Join(",", srcforeignKey.Columns).ToLower(),
+					"ALTER TABLE {6}.{0} ADD CONSTRAINT {1} FOREIGN KEY({2}) REFERENCES {6}.{3} ({4}) {5};", srcTable.Name.ToLower(), fkname.ToLower(), string.Join(",", srcforeignKey.Columns).ToLower(),
 					srcforeignKey.RefTable.ToLower(), string.Join(",", srcforeignKey.RefTableColumns).ToLower(), "ON DELETE " + srcforeignKey.DeleteOption.ToString().ToUpper(),
 					_SchemaName));
 		}
@@ -142,7 +143,8 @@ namespace Nephrite.Meta.Database
 		public void DeleteForeignKey(ForeignKey currentForeignKey)
 		{
 			var currentTable = currentForeignKey.Table;
-			_FkScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP CONSTRAINT IF EXISTS {1};", currentTable.Name.ToLower(), currentForeignKey.Name.ToLower(), _SchemaName));
+			var fkname = currentForeignKey.Name.Length > 63 ? currentForeignKey.Name.Remove(63) : currentForeignKey.Name;
+			_FkScripts.Add(string.Format("ALTER TABLE {2}.{0} DROP CONSTRAINT IF EXISTS {1};", currentTable.Name.ToLower(), fkname.ToLower(), _SchemaName));
 		}
 
 		public void DeletePrimaryKey(PrimaryKey currentPrimaryKey)
