@@ -12,7 +12,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Nephrite.Web</RootNamespace>
     <AssemblyName>Nephrite.Web</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Nephrite.Web.snk</AssemblyOriginatorKeyFile>
     <SccProjectName>
@@ -137,9 +137,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\BaseControl.cs" />
-    <Compile Include="Controls\ListFilter.ascx.designer.cs">
-      <DependentUpon>ListFilter.ascx</DependentUpon>
-    </Compile>
     <Compile Include="Controls\NavMenu.cs" />
     <Compile Include="FormsEngine\MView.cs" />
     <Compile Include="FormsEngine\WebFormsRenderer.cs" />
@@ -237,51 +234,14 @@
     <Compile Include="Controls\FileUploadSimple.ascx.designer.cs">
       <DependentUpon>FileUploadSimple.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Controls\FormCriteria.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\ICartItem.cs" />
     <Compile Include="Controls\ImageUploadSimple.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\IMasterControl.cs" />
-    <Compile Include="Controls\InputMultiStrings.ascx.cs">
-      <DependentUpon>InputMultiStrings.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\InputMultiStrings.ascx.designer.cs">
-      <DependentUpon>InputMultiStrings.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\LinkedObjects.ascx.cs">
-      <DependentUpon>LinkedObjects.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\LinkedObjects.ascx.designer.cs">
-      <DependentUpon>LinkedObjects.ascx</DependentUpon>
-    </Compile>
     <Compile Include="Controls\HtmlDateLists.cs" />
-    <Compile Include="Controls\HtmlDropDownList.cs" />
-    <Compile Include="Controls\List.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\ModalDialogManager.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Controls\MultilingualField.cs" />
     <Compile Include="Controls\NumericBox.cs" />
     <Compile Include="Controls\Paging.cs" />
-    <Compile Include="Controls\ParameterizedLinkManager.cs" />
-    <Compile Include="Controls\ListFilter.ascx.cs">
-      <DependentUpon>ListFilter.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\MultiObject.ascx.cs">
-      <DependentUpon>MultiObject.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\MultiObject.ascx.designer.cs">
-      <DependentUpon>MultiObject.ascx</DependentUpon>
-    </Compile>
     <Compile Include="Controls\NavMenu.ascx.cs">
       <DependentUpon>NavMenu.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -296,22 +256,7 @@
     <Compile Include="Controls\NavMenuEx.ascx.designer.cs">
       <DependentUpon>NavMenuEx.ascx</DependentUpon>
     </Compile>
-    <Compile Include="Controls\ObjectListExEd.cs" />
     <Compile Include="Controls\QuickListFilter.cs">
-    </Compile>
-    <Compile Include="Controls\SelectObjectHierarchic.ascx.cs">
-      <DependentUpon>SelectObjectHierarchic.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\SelectObjectHierarchic.ascx.designer.cs">
-      <DependentUpon>SelectObjectHierarchic.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\SingleObject.ascx.cs">
-      <DependentUpon>SingleObject.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\SingleObject.ascx.designer.cs">
-      <DependentUpon>SingleObject.ascx</DependentUpon>
     </Compile>
     <Compile Include="Controls\Sorter.cs" />
     <Compile Include="Controls\SubmitButton.cs" />
@@ -325,28 +270,16 @@
     <Compile Include="Controls\TinyMCEEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Controls\TinyMCEFileManager.aspx.cs">
-      <DependentUpon>TinyMCEFileManager.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\TinyMCEFileManager.aspx.designer.cs">
-      <DependentUpon>TinyMCEFileManager.aspx</DependentUpon>
-    </Compile>
     <Compile Include="Controls\PopupMenu.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\Toolbar.cs" />
-    <Compile Include="Controls\ToolbarExtensions.cs" />
     <Compile Include="Controls\ToolbarPopupMenuCompact.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\ToolbarPopupMenuLarge.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Controls\Tree.cs" />
-    <Compile Include="Controls\TreeView.cs" />
-    <Compile Include="Controls\UpdatePanel.cs" />
-    <Compile Include="Controls\UpdatePanelEx.cs" />
     <Compile Include="Controls\word.ascx.cs">
       <DependentUpon>word.ascx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -383,20 +316,6 @@
     <Compile Include="Web\ObjectPropertyChange.cs" />
     <Compile Include="Mailer\MailerTask.cs" />
     <Compile Include="Controls\MaskedInput.cs" />
-    <Compile Include="Controls\LetterFilter.ascx.cs">
-      <DependentUpon>LetterFilter.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\LetterFilter.ascx.designer.cs">
-      <DependentUpon>LetterFilter.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\ModalDialog.ascx.cs">
-      <DependentUpon>ModalDialog.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\ModalDialog.ascx.designer.cs">
-      <DependentUpon>ModalDialog.ascx</DependentUpon>
-    </Compile>
     <Compile Include="Obsolete\HtmlHelperWSS.cs" />
     <Compile Include="Controls\JSCalendar.cs" />
     <Compile Include="Controls\MessageBox.cs" />
@@ -441,17 +360,8 @@
     <None Include="Nephrite.Web.snk" />
     <Content Include="Controls\FileUpload.ascx" />
     <Content Include="Controls\FileUploadSimple.ascx" />
-    <Content Include="Controls\InputMultiStrings.ascx" />
-    <Content Include="Controls\LetterFilter.ascx" />
-    <Content Include="Controls\LinkedObjects.ascx" />
-    <Content Include="Controls\ListFilter.ascx" />
-    <Content Include="Controls\ModalDialog.ascx" />
-    <Content Include="Controls\MultiObject.ascx" />
     <Content Include="Controls\NavMenu.ascx" />
     <Content Include="Controls\NavMenuEx.ascx" />
-    <Content Include="Controls\SelectObjectHierarchic.ascx" />
-    <Content Include="Controls\SingleObject.ascx" />
-    <Content Include="Controls\TinyMCEFileManager.aspx" />
     <Content Include="js\codearea.js" />
     <Content Include="js\declension.js" />
     <Content Include="js\homewindow.js" />
