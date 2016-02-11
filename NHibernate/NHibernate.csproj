@@ -37,13 +37,13 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug-2.0\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Debug-2.0\</IntermediateOutputPath>
     <DefineConstants>NET_4_0</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug-2.0\NHibernate.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\NHibernate.XML</DocumentationFile>
     <NoWarn>1591%3b3001%3b3002%3b3003%3b3004%3b3005</NoWarn>
     <WarningsAsErrors>1717;1574</WarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
@@ -52,7 +52,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release-2.0\</OutputPath>
+    <OutputPath>bin\Release\</OutputPath>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>obj\Release-2.0\</IntermediateOutputPath>
     <DefineConstants>TRACE;NET_2_0;NET_4_0</DefineConstants>
@@ -76,7 +76,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Iesi.Collections.4.0.1.4000\lib\net40\Iesi.Collections.dll</HintPath>
     </Reference>
-    <Reference Include="Remotion.Linq">
+    <Reference Include="Remotion.Linq, Version=1.13.171.1, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\Remotion.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -564,6 +565,7 @@
     <Compile Include="Param\QueryTakeParameterSpecification.cs" />
     <Compile Include="PersistentObjectException.cs" />
     <Compile Include="Persister\PersisterFactory.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\CamelCaseMUnderscoreStrategy.cs" />
     <Compile Include="PropertyAccessException.cs" />
     <Compile Include="PropertyNotFoundException.cs" />
@@ -1835,6 +1837,7 @@
     <None Include="Hql\Ast\ANTLR\Hql.g" />
     <None Include="Hql\Ast\ANTLR\HqlSqlWalker.g" />
     <None Include="Hql\Ast\ANTLR\SqlGenerator.g" />
+    <None Include="nuget.nuspec" />
     <None Include="NHibernate.build" />
     <None Include="NHibernate.nuspec.template" />
     <None Include="NHibernate.snk" />
@@ -1865,6 +1868,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

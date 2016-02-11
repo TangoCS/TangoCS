@@ -119,13 +119,14 @@ namespace Nephrite.Web.Hibernate
 		{ 
 			get 
 			{
-				if (A.Items["SqlLog"] == null)
-				{
-					TextWriter log = new StringWriter();
-					A.Items["SqlLog"] = log;
-					return log;
-				}
-				return A.Items["SqlLog"] as TextWriter;
+				return null;
+				//if (A.Items["SqlLog"] == null)
+				//{
+				//	TextWriter log = new StringWriter();
+				//	A.Items["SqlLog"] = log;
+				//	return log;
+				//}
+				//return A.Items["SqlLog"] as TextWriter;
 			} 
 		}
 		public string ID { get; set; }

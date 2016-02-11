@@ -7,8 +7,8 @@ using Nephrite.ErrorLog;
 using Nephrite.FileStorage;
 using Nephrite.RSS;
 using Nephrite.UI.Controls;
-using Nephrite.Web.Mailer;
-using Nephrite.Web.TaskManager;
+//using Nephrite.Web.Mailer;
+//using Nephrite.Web.TaskManager;
 
 namespace Nephrite.Web.CoreDataContext
 {
@@ -49,40 +49,40 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual bool IsWorkingDay { get; set; }
 	}
 	 
-	public partial class MailMessage : IMailMessage
-	{
-		public virtual int MailMessageID { get; set; }
-		public virtual string Recipients { get; set; }
-		public virtual string Subject { get; set; }
-		public virtual string Body { get; set; }
-		public virtual bool IsSent { get; set; }
-		public virtual byte[] Attachment { get; set; }
-		public virtual string AttachmentName { get; set; }
-		public virtual string Error { get; set; }
-		public virtual string CopyRecipients { get; set; }
-		public virtual Nullable<DateTime> LastSendAttemptDate { get; set; }
-		public virtual int AttemptsToSendCount { get; set; }
-	}
+	//public partial class MailMessage : IMailMessage
+	//{
+	//	public virtual int MailMessageID { get; set; }
+	//	public virtual string Recipients { get; set; }
+	//	public virtual string Subject { get; set; }
+	//	public virtual string Body { get; set; }
+	//	public virtual bool IsSent { get; set; }
+	//	public virtual byte[] Attachment { get; set; }
+	//	public virtual string AttachmentName { get; set; }
+	//	public virtual string Error { get; set; }
+	//	public virtual string CopyRecipients { get; set; }
+	//	public virtual Nullable<DateTime> LastSendAttemptDate { get; set; }
+	//	public virtual int AttemptsToSendCount { get; set; }
+	//}
 
-	public class MailTemplate : IMailTemplate, IWithTitle
-	{
-		public virtual int MailTemplateID { get; set; }
-		public virtual string Title { get; set; }
-		public virtual string TemplateSubject { get; set; }
-		public virtual string TemplateBody { get; set; }
-		public virtual string Comment { get; set; }
-		public virtual bool IsSystem { get; set; }
+	//public class MailTemplate : IMailTemplate, IWithTitle
+	//{
+	//	public virtual int MailTemplateID { get; set; }
+	//	public virtual string Title { get; set; }
+	//	public virtual string TemplateSubject { get; set; }
+	//	public virtual string TemplateBody { get; set; }
+	//	public virtual string Comment { get; set; }
+	//	public virtual bool IsSystem { get; set; }
 
-		public virtual string GetTitle()
-		{
-			return Title;
-		}
+	//	public virtual string GetTitle()
+	//	{
+	//		return Title;
+	//	}
 
-		public virtual Func<MailTemplate, string> OrderByTitle()
-		{
-			return o => o.Title;
-		}
-	}
+	//	public virtual Func<MailTemplate, string> OrderByTitle()
+	//	{
+	//		return o => o.Title;
+	//	}
+	//}
 
 
 
@@ -122,58 +122,58 @@ namespace Nephrite.Web.CoreDataContext
 		public virtual int ItemsOnPage { get; set; }
 	}
 
-	public partial class TM_Task : ITM_Task
-	{
-		public virtual int TaskID { get; set; }
-		public virtual string Title { get; set; }
-		public virtual string Class { get; set; }
-		public virtual bool StartType { get; set; }
-		public virtual string Method { get; set; }
-		public virtual int Interval { get; set; }
-		public virtual Nullable<DateTime> LastStartDate { get; set; }
-		public virtual bool IsSuccessfull { get; set; }
-		public virtual bool IsActive { get; set; }
-		public virtual bool StartFromService { get; set; }
-		public virtual Nullable<int> ErrorLogID { get; set; }
-		public virtual int ExecutionTimeout { get; set; }
-	}
+	//public partial class TM_Task : ITM_Task
+	//{
+	//	public virtual int TaskID { get; set; }
+	//	public virtual string Title { get; set; }
+	//	public virtual string Class { get; set; }
+	//	public virtual bool StartType { get; set; }
+	//	public virtual string Method { get; set; }
+	//	public virtual int Interval { get; set; }
+	//	public virtual Nullable<DateTime> LastStartDate { get; set; }
+	//	public virtual bool IsSuccessfull { get; set; }
+	//	public virtual bool IsActive { get; set; }
+	//	public virtual bool StartFromService { get; set; }
+	//	public virtual Nullable<int> ErrorLogID { get; set; }
+	//	public virtual int ExecutionTimeout { get; set; }
+	//}
 
-	public partial class TM_TaskExecution : ITM_TaskExecution, IWithoutEntityAudit
-	{
-		public virtual int TaskExecutionID { get; set; }
-		public virtual int TaskID { get; set; }
-		public virtual int LastModifiedUserID { get; set; }
-		public virtual DateTime StartDate { get; set; }
-		public virtual Nullable<DateTime> FinishDate { get; set; }
-		public virtual bool IsSuccessfull { get; set; }
-		public virtual string MachineName { get; set; }
-		public virtual string ResultXml { get; set; }
-		public virtual string ExecutionLog { get; set; }
-		public virtual DateTime LastModifiedDate { get; set; }
-	}
+	//public partial class TM_TaskExecution : ITM_TaskExecution, IWithoutEntityAudit
+	//{
+	//	public virtual int TaskExecutionID { get; set; }
+	//	public virtual int TaskID { get; set; }
+	//	public virtual int LastModifiedUserID { get; set; }
+	//	public virtual DateTime StartDate { get; set; }
+	//	public virtual Nullable<DateTime> FinishDate { get; set; }
+	//	public virtual bool IsSuccessfull { get; set; }
+	//	public virtual string MachineName { get; set; }
+	//	public virtual string ResultXml { get; set; }
+	//	public virtual string ExecutionLog { get; set; }
+	//	public virtual DateTime LastModifiedDate { get; set; }
+	//}
 
-	public partial class TM_TaskParameter : ITM_TaskParameter, IWithSeqNo, IWithKey<TM_TaskParameter, int>
-	{
-		public virtual int TaskParameterID { get; set; }
-		public virtual int ParentID { get; set; }
-		public virtual string Title { get; set; }
-		public virtual string SysName { get; set; }
-		public virtual string Value { get; set; }
-		public virtual int SeqNo { get; set; }
+	//public partial class TM_TaskParameter : ITM_TaskParameter, IWithSeqNo, IWithKey<TM_TaskParameter, int>
+	//{
+	//	public virtual int TaskParameterID { get; set; }
+	//	public virtual int ParentID { get; set; }
+	//	public virtual string Title { get; set; }
+	//	public virtual string SysName { get; set; }
+	//	public virtual string Value { get; set; }
+	//	public virtual int SeqNo { get; set; }
 
-		public int ID
-		{
-			get
-			{
-				return TaskParameterID;
-			}
-		}
+	//	public int ID
+	//	{
+	//		get
+	//		{
+	//			return TaskParameterID;
+	//		}
+	//	}
 
-		public virtual Expression<Func<TM_TaskParameter, bool>> KeySelector(int id)
-		{
-			return o => o.TaskParameterID == id;
-		}
-	}
+	//	public virtual Expression<Func<TM_TaskParameter, bool>> KeySelector(int id)
+	//	{
+	//		return o => o.TaskParameterID == id;
+	//	}
+	//}
 
 	public partial class N_DownloadLog : IN_DownloadLog, IWithoutEntityAudit
 	{

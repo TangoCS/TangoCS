@@ -9,8 +9,8 @@ using Nephrite.UI.Controls;
 using Nephrite.RSS;
 using Nephrite.Web.Hibernate;
 using Nephrite.Web.Hibernate.CoreMapping;
-using Nephrite.Web.Mailer;
-using Nephrite.Web.TaskManager;
+//using Nephrite.Web.Mailer;
+//using Nephrite.Web.TaskManager;
 using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
 using NHibernate.Dialect;
@@ -21,8 +21,10 @@ namespace Nephrite.Web.CoreDataContext
 {
 
 	public class HCoreDataContext : HDataContext,  IDC_ErrorLog,
-		IDC_ListFilter, IDC_FileStorage, IDC_CalendarDays, IDC_Mailer,
-		IDC_TaskManager, IDC_RSS, IDC_EntityAudit
+		IDC_ListFilter, IDC_FileStorage, IDC_CalendarDays, 
+		//IDC_Mailer,
+		//IDC_TaskManager, 
+		IDC_RSS, IDC_EntityAudit
 	{
 		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, IDbConnection connection)
 			: base(dbConfig, connection)
@@ -57,8 +59,8 @@ namespace Nephrite.Web.CoreDataContext
 			List<Type> l = new List<Type>();
 			l.Add(typeof(IErrorLogMap));
 			l.Add(typeof(ICalendarDayMap));
-			l.Add(typeof(IMailMessageMap));
-			l.Add(typeof(IMailTemplateMap));
+			//l.Add(typeof(IMailMessageMap));
+			//l.Add(typeof(IMailTemplateMap));
 			//l.Add(typeof(IN_TextResourceMap));
 			//l.Add(typeof(IC_LanguageMap));
 			l.Add(typeof(IN_VirusScanLogMap));
@@ -67,9 +69,9 @@ namespace Nephrite.Web.CoreDataContext
 			//l.Add(typeof(IDbFileMap));
 			//l.Add(typeof(IDbFileDataMap));
 			l.Add(typeof(IN_DownloadLogMap));
-			l.Add(typeof(ITM_TaskMap));
-			l.Add(typeof(ITM_TaskExecutionMap));
-			l.Add(typeof(ITM_TaskParameterMap));
+			//l.Add(typeof(ITM_TaskMap));
+			//l.Add(typeof(ITM_TaskExecutionMap));
+			//l.Add(typeof(ITM_TaskParameterMap));
 			l.Add(typeof(IN_FilterMap));
 			//l.Add(typeof(IN_SettingsMap));
 			l.Add(typeof(IN_ObjectChangeMap));
@@ -78,8 +80,8 @@ namespace Nephrite.Web.CoreDataContext
 
 			l.Add(typeof(IErrorLogImplMap));
 			l.Add(typeof(ICalendarDayImplMap));
-			l.Add(typeof(IMailMessageImplMap));
-			l.Add(typeof(IMailTemplateImplMap));
+			//l.Add(typeof(IMailMessageImplMap));
+			//l.Add(typeof(IMailTemplateImplMap));
 			//l.Add(typeof(IC_LanguageImplMap));
 			//l.Add(typeof(IN_TextResourceImplMap));
 			l.Add(typeof(IN_FilterImplMap));
@@ -93,9 +95,9 @@ namespace Nephrite.Web.CoreDataContext
 			//l.Add(typeof(IDbItemImplMap));
 			l.Add(typeof(IDbFileDataImplMap));
 			l.Add(typeof(IN_VirusScanLogImplMap));
-			l.Add(typeof(ITM_TaskParameterImplMap));
-			l.Add(typeof(ITM_TaskExecutionImplMap));
-			l.Add(typeof(ITM_TaskImplMap));
+			//l.Add(typeof(ITM_TaskParameterImplMap));
+			//l.Add(typeof(ITM_TaskExecutionImplMap));
+			//l.Add(typeof(ITM_TaskImplMap));
 
 
 			return l;
@@ -131,15 +133,15 @@ namespace Nephrite.Web.CoreDataContext
 			return new N_Filter();
 		}
 
-		public IMailMessage NewIMailMessage()
-		{
-			return new MailMessage();
-		}
+		//public IMailMessage NewIMailMessage()
+		//{
+		//	return new MailMessage();
+		//}
 
-		public ITM_TaskExecution NewITM_TaskExecution()
-		{
-			return new TM_TaskExecution();
-		}
+		//public ITM_TaskExecution NewITM_TaskExecution()
+		//{
+		//	return new TM_TaskExecution();
+		//}
 
 		
 
@@ -166,14 +168,14 @@ namespace Nephrite.Web.CoreDataContext
 		{
 			get { return new HTable<ICalendarDay>(this, Session.Query<ICalendarDay>()); }
 		}
-		public ITable<IMailMessage> IMailMessage
-		{
-			get { return new HTable<IMailMessage>(this, Session.Query<IMailMessage>()); }
-		}
-		public ITable<IMailTemplate> IMailTemplate
-		{
-			get { return new HTable<IMailTemplate>(this, Session.Query<IMailTemplate>()); }
-		}
+		//public ITable<IMailMessage> IMailMessage
+		//{
+		//	get { return new HTable<IMailMessage>(this, Session.Query<IMailMessage>()); }
+		//}
+		//public ITable<IMailTemplate> IMailTemplate
+		//{
+		//	get { return new HTable<IMailTemplate>(this, Session.Query<IMailTemplate>()); }
+		//}
 
 		//public ITable<ILanguageObject> IC_Language
 		//{
@@ -227,18 +229,18 @@ namespace Nephrite.Web.CoreDataContext
 		{
 			get { return new HTable<IN_VirusScanLog>(this, Session.Query<IN_VirusScanLog>()); }
 		}
-		public ITable<ITM_TaskParameter> ITM_TaskParameter
-		{
-			get { return new HTable<ITM_TaskParameter>(this, Session.Query<ITM_TaskParameter>()); }
-		}
-		public ITable<ITM_TaskExecution> ITM_TaskExecution
-		{
-			get { return new HTable<ITM_TaskExecution>(this, Session.Query<ITM_TaskExecution>()); }
-		}
-		public ITable<ITM_Task> ITM_Task
-		{
-			get { return new HTable<ITM_Task>(this, Session.Query<ITM_Task>()); }
-		}
+		//public ITable<ITM_TaskParameter> ITM_TaskParameter
+		//{
+		//	get { return new HTable<ITM_TaskParameter>(this, Session.Query<ITM_TaskParameter>()); }
+		//}
+		//public ITable<ITM_TaskExecution> ITM_TaskExecution
+		//{
+		//	get { return new HTable<ITM_TaskExecution>(this, Session.Query<ITM_TaskExecution>()); }
+		//}
+		//public ITable<ITM_Task> ITM_Task
+		//{
+		//	get { return new HTable<ITM_Task>(this, Session.Query<ITM_Task>()); }
+		//}
 
 
 

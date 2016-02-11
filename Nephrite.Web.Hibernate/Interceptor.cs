@@ -14,10 +14,12 @@ namespace Nephrite.Web.Hibernate
 	{
 		List<object> toInsert = new List<object>();
 		Func<Subject<int>> subject;
+		Func<IDC_EntityAudit> auditDc;
 
-		public AuditEventListener(Func<Subject<int>> getCurrentSubject)
+		public AuditEventListener(Func<Subject<int>> getCurrentSubject, Func<IDC_EntityAudit> getDc)
 		{
 			subject = getCurrentSubject;
+			auditDc = getDc;
 		}
 
 		public bool OnPreInsert(PreInsertEvent e)
@@ -53,6 +55,13 @@ namespace Nephrite.Web.Hibernate
 			state[index] = persister.GetPropertyValue(obj, index, EntityMode.Poco);
 		}
 
+		ISession newSession = null;
+		ISession GetSession(ISession parent)
+		{
+			if (newSession == null || !newSession.IsOpen) newSession = parent.GetSession(EntityMode.Poco);
+			return newSession;
+		}
+
 		public void OnPostInsert(PostInsertEvent e)
 		{
 			if (!(e.Entity is IWithoutEntityAudit))
@@ -60,7 +69,7 @@ namespace Nephrite.Web.Hibernate
 				List<object> toInsert = new List<object>();
 				List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
 
-				var dc = A.Model as IDC_EntityAudit;
+				var dc = auditDc();
 				string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
 				var oc = dc.NewIN_ObjectChange(subject(), "Creation", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
 				toInsert.Add(oc);
@@ -96,12 +105,8 @@ namespace Nephrite.Web.Hibernate
 					}
 				}
 
-				using (var newSession = e.Session.GetSession(EntityMode.Poco))
-				{
-					foreach (object obj in toInsert)
-						newSession.SaveOrUpdate(obj);
-				}
-
+				foreach (object obj in toInsert)
+					GetSession(e.Session).SaveOrUpdate(obj);
 			}
 		}
 
@@ -110,7 +115,7 @@ namespace Nephrite.Web.Hibernate
 			if (!(e.Entity is IWithoutEntityAudit))
 			{
 				List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
-				var dc = A.Model as IDC_EntityAudit;
+				var dc = auditDc();
 				string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
 				var oc = dc.NewIN_ObjectChange(subject(), "Modification", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
 				toInsert.Add(oc);
@@ -151,11 +156,8 @@ namespace Nephrite.Web.Hibernate
 					}
 				}
 
-				using (var newSession = e.Session.GetSession(EntityMode.Poco))
-				{
-					foreach (object obj in toInsert)
-						newSession.SaveOrUpdate(obj);
-				}
+				foreach (object obj in toInsert)
+					GetSession(e.Session).SaveOrUpdate(obj);
 			}
 		}
 
@@ -165,16 +167,13 @@ namespace Nephrite.Web.Hibernate
 			{
 				List<IN_ObjectPropertyChange> readOnlyColumns = new List<IN_ObjectPropertyChange>();
 
-				var dc = A.Model as IDC_EntityAudit;
+				var dc = auditDc();
 				string title = e.Entity is IWithTitle ? (e.Entity as IWithTitle).Title : "";
 				var oc = dc.NewIN_ObjectChange(subject(), "Deletion", e.Id != null ? e.Id.ToString() : "", e.Entity.GetType().Name, title);
 				toInsert.Add(oc);
 
-				using (var newSession = e.Session.GetSession(EntityMode.Poco))
-				{
-					foreach (object obj in toInsert)
-						newSession.SaveOrUpdate(obj);
-				}
+				foreach (object obj in toInsert)
+					GetSession(e.Session).SaveOrUpdate(obj);
 			}
 		}
 	}

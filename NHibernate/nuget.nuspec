@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>NHibernate</id>
+        <version>999.0</version>
+        <authors>Nephrite Technologies</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>NHibernate</description>
+			<dependencies>
+				<dependency id="Antlr" version="[3.5,)" />
+				<dependency id="Iesi.Collections" version="[4,)" />
+				<dependency id="Remotion.Linq" version="[1.13.171,)" />
+			</dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Debug\NHibernate.dll" target="lib\net451\NHibernate.dll" />
+        <file src="bin\Debug\NHibernate.pdb" target="lib\net451\NHibernate.pdb" />
+    </files>
+</package>

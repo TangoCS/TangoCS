@@ -16,20 +16,20 @@ namespace Nephrite.Web.CoreDataContext
 			DiscriminatorValue("0");
 		}
 	}
-	public class IMailMessageImplMap : SubclassMapping<MailMessage>
-	{
-		public IMailMessageImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
-	public class IMailTemplateImplMap : SubclassMapping<MailTemplate>
-	{
-		public IMailTemplateImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
+	//public class IMailMessageImplMap : SubclassMapping<MailMessage>
+	//{
+	//	public IMailMessageImplMap()
+	//	{
+	//		DiscriminatorValue("0");
+	//	}
+	//}
+	//public class IMailTemplateImplMap : SubclassMapping<MailTemplate>
+	//{
+	//	public IMailTemplateImplMap()
+	//	{
+	//		DiscriminatorValue("0");
+	//	}
+	//}
 
 	//public class IC_LanguageImplMap : SubclassMapping<C_Language>
 	//{
@@ -129,29 +129,29 @@ namespace Nephrite.Web.CoreDataContext
 		}
 	}
 
-	public class ITM_TaskParameterImplMap : SubclassMapping<TM_TaskParameter>
-	{
-		public ITM_TaskParameterImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
+	//public class ITM_TaskParameterImplMap : SubclassMapping<TM_TaskParameter>
+	//{
+	//	public ITM_TaskParameterImplMap()
+	//	{
+	//		DiscriminatorValue("0");
+	//	}
+	//}
 
-	public class ITM_TaskExecutionImplMap : SubclassMapping<TM_TaskExecution>
-	{
-		public ITM_TaskExecutionImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
+	//public class ITM_TaskExecutionImplMap : SubclassMapping<TM_TaskExecution>
+	//{
+	//	public ITM_TaskExecutionImplMap()
+	//	{
+	//		DiscriminatorValue("0");
+	//	}
+	//}
 
-	public class ITM_TaskImplMap : SubclassMapping<TM_Task>
-	{
-		public ITM_TaskImplMap()
-		{
-			DiscriminatorValue("0");
-		}
-	}
+	//public class ITM_TaskImplMap : SubclassMapping<TM_Task>
+	//{
+	//	public ITM_TaskImplMap()
+	//	{
+	//		DiscriminatorValue("0");
+	//	}
+	//}
 
 
 }

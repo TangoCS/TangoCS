@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Nephrite.Abstractions</id>
+        <version>1.0</version>
+        <authors>Nephrite Technologies</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Nephrite.Abstractions</description>
+    </metadata>
+    <files>
+        <file src="bin\Debug\Nephrite.Abstractions.dll" target="lib\net451\Nephrite.Abstractions.dll" />
+        <file src="bin\Debug\Nephrite.Abstractions.pdb" target="lib\net451\Nephrite.Abstractions.pdb" />
+    </files>
+</package>
