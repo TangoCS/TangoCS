@@ -5,11 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("NHibernate")]
+[assembly: AssemblyTitle("NHibernate.Properties")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Nephrite Technologies")]
-[assembly: AssemblyProduct("NHibernate")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("NHibernate.Properties")]
+[assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("371d786a-4274-4d71-b567-d9d0c97ccbb0")]
+[assembly: Guid("79d5323c-90f0-4c08-b59c-673ba653effd")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -28,7 +29,5 @@ using System.Runtime.InteropServices;
 //      Build Number
 //      Revision
 //
-// You can specify all the values or you can default the Build and Revision Numbers 
-// by using the '*' as shown below:
-// [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("999.0.0.0")]
+

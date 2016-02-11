@@ -6,9 +6,9 @@ using NHibernate.Dialect.Function;
 using NHibernate.Dialect.Schema;
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
+using NHibernate.SqlTypes;
 using NHibernate.Type;
 using Environment = NHibernate.Cfg.Environment;
-using NHibernate.SqlTypes;
 
 namespace NHibernate.Dialect
 {
@@ -322,6 +322,11 @@ namespace NHibernate.Dialect
 			RegisterFunction("str", new SQLFunctionTemplate(NHibernateUtil.String, "cast(?1 as VARCHAR(255))"));
 			RegisterFunction("sysdate", new CastedFunction("today", NHibernateUtil.Date));
 			RegisterFunction("date", new SQLFunctionTemplate(NHibernateUtil.Date, "cast(?1 as date)"));
+			// Bitwise operations
+			RegisterFunction("band", new BitwiseFunctionOperation("bin_and"));
+			RegisterFunction("bor", new BitwiseFunctionOperation("bin_or"));
+			RegisterFunction("bxor", new BitwiseFunctionOperation("bin_xor"));
+			RegisterFunction("bnot", new BitwiseFunctionOperation("bin_not"));
 		}
 
 		private void RegisterFirebirdServerEmbeddedFunctions()
@@ -349,9 +354,6 @@ namespace NHibernate.Dialect
 		private void RegisterMathematicalFunctions()
 		{
 			RegisterFunction("abs", new StandardSQLFunction("abs", NHibernateUtil.Double));
-			RegisterFunction("bin_and", new StandardSQLFunction("bin_and", NHibernateUtil.Int32));
-			RegisterFunction("bin_or", new StandardSQLFunction("bin_or", NHibernateUtil.Int32));
-			RegisterFunction("bin_xor", new StandardSQLFunction("bin_xor", NHibernateUtil.Int32));
 			RegisterFunction("ceiling", new StandardSQLFunction("ceiling", NHibernateUtil.Double));
 			RegisterFunction("div", new StandardSQLFunction("div", NHibernateUtil.Double));
 			RegisterFunction("dpower", new StandardSQLFunction("dpower", NHibernateUtil.Double));
@@ -396,6 +398,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("substrlen", new StandardSQLFunction("substrlen", NHibernateUtil.Int16));
 			RegisterFunction("locate", new PositionFunction());
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
+			RegisterFunction("left", new StandardSQLFunction("left"));
 		}
 
 		private void RegisterBlobFunctions()

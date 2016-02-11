@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -15,7 +15,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -62,23 +62,16 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
-  </PropertyGroup>
-  <PropertyGroup>
-    <AssemblyOriginatorKeyFile>NHibernate.snk</AssemblyOriginatorKeyFile>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Antlr3.Runtime">
       <HintPath>..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Iesi.Collections">
       <HintPath>..\packages\Iesi.Collections.4.0.1.4000\lib\net40\Iesi.Collections.dll</HintPath>
     </Reference>
-    <Reference Include="Remotion.Linq, Version=1.13.171.1, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\lib\Remotion.Linq.dll</HintPath>
+    <Reference Include="Remotion.Linq, Version=1.13.183.0, Culture=neutral, PublicKeyToken=fee00910d6e5f53b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Remotion.Linq.1.13.183.0\lib\net35\Remotion.Linq.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -144,7 +137,7 @@
     <Compile Include="Connection\DriverConnectionProvider.cs" />
     <Compile Include="Connection\IConnectionProvider.cs" />
     <Compile Include="Connection\UserSuppliedConnectionProvider.cs" />
-    <Compile Include="Criterion\IEnhancedProjection.cs" />
+    <Compile Include="Dialect\BitwiseFunctionOperation.cs" />
     <Compile Include="Dialect\DB2Dialect.cs" />
     <Compile Include="Dialect\Dialect.cs" />
     <Compile Include="Dialect\FirebirdDialect.cs" />
@@ -160,7 +153,12 @@
     <Compile Include="Dialect\MsSql2012Dialect.cs" />
     <Compile Include="Dialect\MsSql7Dialect.cs" />
     <Compile Include="Dialect\MsSqlAzure2008Dialect.cs" />
+    <Compile Include="Dialect\MySQL55Dialect.cs" />
+    <Compile Include="Dialect\MySQL55InnoDBDialect.cs" />
+    <Compile Include="Dialect\MySQL5InnoDBDialect.cs" />
     <Compile Include="Dialect\MySQLDialect.cs" />
+    <Compile Include="Dialect\BitwiseNativeOperation.cs" />
+    <Compile Include="Dialect\Oracle12cDialect.cs" />
     <Compile Include="Dialect\PostgreSQLDialect.cs" />
     <Compile Include="Dialect\Schema\PostgreSQLMetadata.cs" />
     <Compile Include="Dialect\Schema\SchemaHelper.cs" />
@@ -197,13 +195,6 @@
     <Compile Include="Engine\ISessionFactoryImplementor.cs" />
     <Compile Include="Engine\ISessionImplementor.cs" />
     <Compile Include="Engine\QueryParameters.cs" />
-    <Compile Include="Engine\Query\Sql\INativeSQLQueryReturn.cs" />
-    <Compile Include="Engine\Query\Sql\NativeSQLQueryCollectionReturn.cs" />
-    <Compile Include="Engine\Query\Sql\NativeSQLQueryJoinReturn.cs" />
-    <Compile Include="Engine\Query\Sql\NativeSQLQueryNonScalarReturn.cs" />
-    <Compile Include="Engine\Query\Sql\NativeSQLQueryRootReturn.cs" />
-    <Compile Include="Engine\Query\Sql\NativeSQLQueryScalarReturn.cs" />
-    <Compile Include="Engine\Query\Sql\NativeSQLQuerySpecification.cs" />
     <Compile Include="Engine\RowSelection.cs" />
     <Compile Include="Engine\TypedValue.cs" />
     <Compile Include="Engine\UnsavedValueFactory.cs" />
@@ -239,6 +230,8 @@
     <Compile Include="FetchMode.cs" />
     <Compile Include="FlushMode.cs" />
     <Compile Include="HibernateException.cs" />
+    <Compile Include="Hql\Ast\ANTLR\HqlFilterPreprocessor.cs" />
+    <Compile Include="Hql\Ast\ANTLR\Tree\ResultVariableRefNode.cs" />
     <Compile Include="Hql\StringQueryExpression.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\ComponentJoin.cs" />
     <Compile Include="Hql\ParserHelper.cs" />
@@ -296,6 +289,8 @@
     <Compile Include="Linq\Clauses\NhHavingClause.cs" />
     <Compile Include="Linq\Clauses\NhJoinClause.cs" />
     <Compile Include="Linq\Clauses\NhWithClause.cs" />
+    <Compile Include="Linq\ExpressionExtensions.cs" />
+    <Compile Include="Linq\Expressions\NhNominatedExpression.cs" />
     <Compile Include="Linq\ExpressionTransformers\RemoveCharToIntConversion.cs" />
     <Compile Include="Linq\ExpressionTransformers\RemoveRedundantCast.cs" />
     <Compile Include="Linq\Functions\ConvertGenerator.cs" />
@@ -303,11 +298,17 @@
     <Compile Include="Linq\Functions\MathGenerator.cs" />
     <Compile Include="Linq\Functions\DictionaryGenerator.cs" />
     <Compile Include="Linq\Functions\EqualsGenerator.cs" />
+    <Compile Include="Linq\GroupBy\GroupKeyNominator.cs" />
+    <Compile Include="Linq\GroupBy\KeySelectorVisitor.cs" />
     <Compile Include="Linq\GroupBy\PagingRewriter.cs" />
+    <Compile Include="Linq\GroupResultOperatorExtensions.cs" />
     <Compile Include="Linq\NestedSelects\NestedSelectDetector.cs" />
     <Compile Include="Linq\NestedSelects\Tuple.cs" />
     <Compile Include="Linq\NestedSelects\SelectClauseRewriter.cs" />
     <Compile Include="Linq\NestedSelects\ExpressionHolder.cs" />
+    <Compile Include="Linq\ReWriters\ArrayIndexExpressionFlattener.cs" />
+    <Compile Include="Linq\Visitors\IQueryModelRewriterFactory.cs" />
+    <Compile Include="Linq\QueryProviderFactory.cs" />
     <Compile Include="Linq\Visitors\LeftJoinRewriter.cs" />
     <Compile Include="Linq\Functions\CompareGenerator.cs" />
     <Compile Include="Linq\ExpressionTransformers\SimplifyCompareTransformer.cs" />
@@ -322,26 +323,17 @@
     <Compile Include="Linq\Visitors\JoinBuilder.cs" />
     <Compile Include="Linq\Visitors\PagingRewriterSelectClauseVisitor.cs" />
     <Compile Include="Linq\Visitors\PossibleValueSet.cs" />
+    <Compile Include="Linq\Visitors\QueryExpressionSourceIdentifer.cs" />
     <Compile Include="Linq\Visitors\QuerySourceIdentifier.cs" />
-    <Compile Include="Linq\Visitors\ResultOperatorAndOrderByJoinDetector.cs" />
+    <Compile Include="Linq\Visitors\MemberExpressionJoinDetector.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessTimeout.cs" />
     <Compile Include="Linq\Visitors\ResultOperatorProcessors\ProcessAggregateFromSeed.cs" />
     <Compile Include="Linq\NestedSelects\NestedSelectRewriter.cs" />
-    <Compile Include="Linq\Visitors\SelectJoinDetector.cs" />
     <Compile Include="Linq\Visitors\SelectClauseNominator.cs" />
     <Compile Include="Linq\Visitors\SimplifyConditionalVisitor.cs" />
     <Compile Include="Linq\Visitors\SubQueryFromClauseFlattener.cs" />
     <Compile Include="Linq\Visitors\VisitorUtil.cs" />
     <Compile Include="Linq\Visitors\WhereJoinDetector.cs" />
-    <Compile Include="Loader\Custom\Sql\SQLCustomQuery.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Loader\Custom\Sql\SQLQueryParser.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Loader\Custom\Sql\SQLQueryReturnProcessor.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Loader\TopologicalSorter.cs" />
     <Compile Include="Loader\Loader.cs" />
     <Compile Include="Loader\OuterJoinLoader.cs" />
@@ -374,7 +366,9 @@
     <Compile Include="Mapping\ByCode\Impl\CustomizersImpl\ManyToAnyCustomizer.cs" />
     <Compile Include="Mapping\ByCode\Impl\DynamicComponentMapper.cs" />
     <Compile Include="Mapping\ByCode\Impl\ManyToAnyMapper.cs" />
+    <Compile Include="Mapping\ByCode\OptimisticLockMode.cs" />
     <Compile Include="Mapping\ByCode\Import.cs" />
+    <Compile Include="Mapping\ByCode\PolymorphismType.cs" />
     <Compile Include="Mapping\ByCode\PropertyGeneration.cs" />
     <Compile Include="Mapping\ByCode\PropertyToField.cs" />
     <Compile Include="Mapping\ByCode\SimpleModelInspector.cs" />
@@ -519,6 +513,7 @@
     <Compile Include="Mapping\ByCode\NotFoundMode.cs" />
     <Compile Include="Mapping\ByCode\SchemaAction.cs" />
     <Compile Include="Mapping\ByCode\TypeExtensions.cs" />
+    <Compile Include="Mapping\ByCode\UnsavedValueType.cs" />
     <Compile Include="Mapping\ByCode\VersionGeneration.cs" />
     <Compile Include="Mapping\Collection.cs" />
     <Compile Include="Mapping\Column.cs" />
@@ -544,6 +539,7 @@
     <Compile Include="Mapping\PrimaryKey.cs" />
     <Compile Include="Mapping\PrimitiveArray.cs" />
     <Compile Include="Mapping\Property.cs" />
+    <Compile Include="Mapping\ReferenceDependantValue.cs" />
     <Compile Include="Mapping\RootClass.cs" />
     <Compile Include="Mapping\Set.cs" />
     <Compile Include="Mapping\SimpleValue.cs" />
@@ -558,6 +554,8 @@
     <Compile Include="NonUniqueResultException.cs" />
     <Compile Include="ObjectDeletedException.cs" />
     <Compile Include="ObjectNotFoundException.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlCommand\BackTrackCacheParameterList.cs" />
     <Compile Include="Param\CriteriaNamedParameterSpecification.cs" />
     <Compile Include="Param\IPageableParameterSpecification.cs" />
     <Compile Include="Param\ParametersBackTrackExtensions.cs" />
@@ -565,7 +563,6 @@
     <Compile Include="Param\QueryTakeParameterSpecification.cs" />
     <Compile Include="PersistentObjectException.cs" />
     <Compile Include="Persister\PersisterFactory.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\CamelCaseMUnderscoreStrategy.cs" />
     <Compile Include="PropertyAccessException.cs" />
     <Compile Include="PropertyNotFoundException.cs" />
@@ -666,18 +663,17 @@
     <Compile Include="Transaction\AdoTransaction.cs" />
     <Compile Include="Transaction\AfterTransactionCompletes.cs" />
     <Compile Include="Transaction\ITransactionFactory.cs" />
-    <Compile Include="Transform\AliasedTupleSubsetResultTransformer.cs" />
     <Compile Include="Transform\AliasToEntityMapResultTransformer.cs" />
     <Compile Include="Transform\CacheableResultTransformer.cs" />
+    <Compile Include="Transform\AliasedTupleSubsetResultTransformer.cs" />
+    <Compile Include="Transform\ITupleSubsetResultTransformer.cs" />
     <Compile Include="Transform\DistinctRootEntityResultTransformer.cs" />
     <Compile Include="Transform\IResultTransformer.cs" />
-    <Compile Include="Transform\ITupleSubsetResultTransformer.cs" />
     <Compile Include="Transform\RootEntityResultTransformer.cs" />
     <Compile Include="TransientObjectException.cs" />
     <Compile Include="Type\AbstractType.cs" />
     <Compile Include="Type\AnsiStringType.cs" />
     <Compile Include="Type\ArrayType.cs" />
-    <Compile Include="Type\BagType.cs" />
     <Compile Include="Type\BinaryBlobType.cs" />
     <Compile Include="Type\BinaryType.cs" />
     <Compile Include="Type\BooleanType.cs" />
@@ -697,7 +693,6 @@
     <Compile Include="Type\GuidType.cs" />
     <Compile Include="Type\IAbstractComponentType.cs" />
     <Compile Include="Type\IAssociationType.cs" />
-    <Compile Include="Type\IdentifierBagType.cs" />
     <Compile Include="Type\IDiscriminatorType.cs" />
     <Compile Include="Type\IIdentifierType.cs" />
     <Compile Include="Type\ILiteralType.cs" />
@@ -707,9 +702,7 @@
     <Compile Include="Type\Int64Type.cs" />
     <Compile Include="Type\IType.cs" />
     <Compile Include="Type\IVersionType.cs" />
-    <Compile Include="Type\ListType.cs" />
     <Compile Include="Type\ManyToOneType.cs" />
-    <Compile Include="Type\MapType.cs" />
     <Compile Include="Type\MetaType.cs" />
     <Compile Include="Type\MutableType.cs" />
     <Compile Include="Type\NullableType.cs" />
@@ -719,7 +712,6 @@
     <Compile Include="Type\SerializableType.cs" />
     <Compile Include="Type\SerializationException.cs" />
     <Compile Include="Type\SingleType.cs" />
-    <Compile Include="Type\SortedMapType.cs" />
     <Compile Include="Type\StringClobType.cs" />
     <Compile Include="Type\StringType.cs" />
     <Compile Include="Type\TicksType.cs" />
@@ -1108,7 +1100,6 @@
     <Compile Include="Hql\Ast\ANTLR\Tree\FromReferenceNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerTreeAdapter.cs" />
-    <Compile Include="Hql\Ast\ANTLR\Tree\HqlSqlWalkerTreeNodeStream.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\IASTFactory.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\IASTNode.cs" />
     <Compile Include="Hql\Ast\ANTLR\Tree\IBinaryOperatorNode.cs" />
@@ -1280,10 +1271,6 @@
     </Compile>
     <Compile Include="Collection\Generic\PersistentGenericIdentifierBag.cs" />
     <Compile Include="Collection\PersistentArrayHolder.cs" />
-    <Compile Include="Collection\PersistentBag.cs" />
-    <Compile Include="Collection\PersistentIdentifierBag.cs" />
-    <Compile Include="Collection\PersistentList.cs" />
-    <Compile Include="Collection\PersistentMap.cs" />
     <Compile Include="ConnectionReleaseMode.cs" />
     <Compile Include="Context\CallSessionContext.cs" />
     <Compile Include="Context\CurrentSessionContext.cs" />
@@ -1360,6 +1347,12 @@
     <Compile Include="Engine\Query\QueryPlanCache.cs" />
     <Compile Include="Engine\Query\ReturnMetadata.cs" />
     <Compile Include="Engine\Query\FilterQueryPlan.cs" />
+    <Compile Include="Engine\Query\Sql\INativeSQLQueryReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryCollectionReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryJoinReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryNonScalarReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryRootReturn.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQueryScalarReturn.cs" />
     <Compile Include="Engine\StatefulPersistenceContext.cs" />
     <Compile Include="Engine\TransactionHelper.cs" />
     <Compile Include="Engine\Transaction\IIsolatedWork.cs" />
@@ -1597,6 +1590,7 @@
     <Compile Include="Engine\JoinHelper.cs" />
     <Compile Include="Engine\NamedQueryDefinition.cs" />
     <Compile Include="Engine\NamedSQLQueryDefinition.cs" />
+    <Compile Include="Engine\Query\Sql\NativeSQLQuerySpecification.cs" />
     <Compile Include="Engine\Query\ParameterParser.cs" />
     <Compile Include="Engine\ResultSetMappingDefinition.cs">
       <SubType>Code</SubType>
@@ -1655,6 +1649,9 @@
     <Compile Include="Loader\Custom\NonScalarReturn.cs" />
     <Compile Include="Loader\Custom\RootReturn.cs" />
     <Compile Include="Loader\Custom\ScalarReturn.cs" />
+    <Compile Include="Loader\Custom\Sql\SQLCustomQuery.cs" />
+    <Compile Include="Loader\Custom\Sql\SQLQueryParser.cs" />
+    <Compile Include="Loader\Custom\Sql\SQLQueryReturnProcessor.cs" />
     <Compile Include="Loader\DefaultEntityAliases.cs" />
     <Compile Include="Loader\Entity\AbstractEntityLoader.cs" />
     <Compile Include="Loader\Entity\BatchingEntityLoader.cs" />
@@ -1783,7 +1780,6 @@
     <Compile Include="Type\EnumCharType.cs" />
     <Compile Include="Type\GenericOrderedSetType.cs" />
     <Compile Include="Type\ICacheAssembler.cs" />
-    <Compile Include="Type\OrderedMapType.cs" />
     <Compile Include="Type\GenericSortedDictionaryType.cs" />
     <Compile Include="Type\GenericIdentifierBagType.cs" />
     <Compile Include="Type\GenericSortedListType.cs" />
@@ -1837,10 +1833,10 @@
     <None Include="Hql\Ast\ANTLR\Hql.g" />
     <None Include="Hql\Ast\ANTLR\HqlSqlWalker.g" />
     <None Include="Hql\Ast\ANTLR\SqlGenerator.g" />
-    <None Include="nuget.nuspec" />
     <None Include="NHibernate.build" />
     <None Include="NHibernate.nuspec.template" />
     <None Include="NHibernate.snk" />
+    <None Include="nuget.nuspec" />
     <None Include="packages.config" />
     <None Include="Type\IType.cs.xmldoc" />
   </ItemGroup>
@@ -1867,11 +1863,8 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
