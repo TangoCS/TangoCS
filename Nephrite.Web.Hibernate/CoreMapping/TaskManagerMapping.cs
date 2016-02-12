@@ -5,7 +5,7 @@ using System.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 
-namespace Nephrite.Web.Hibernate.CoreMapping
+namespace Nephrite.Hibernate.CoreMapping
 {
 	//public class ITM_TaskParameterMap : ClassMapping<ITM_TaskParameter>
 	//{

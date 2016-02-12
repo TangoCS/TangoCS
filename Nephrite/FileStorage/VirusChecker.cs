@@ -133,7 +133,7 @@ namespace Nephrite.FileStorage
         {
 			var l = _dataContext.NewIN_VirusScanLog();
 			l.LastModifiedDate = DateTime.Now;
-            l.LastModifiedUserID = _identity.CurrentSubject.ID;
+            l.LastModifiedUserID = _identity.CurrentUser.Id;
             l.ResultCode = code;
 			l.Title = fileName;
 			_dataContext.IN_VirusScanLog.InsertOnSubmit(l);

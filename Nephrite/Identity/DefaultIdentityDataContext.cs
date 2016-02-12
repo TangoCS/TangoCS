@@ -5,7 +5,8 @@ using Dapper;
 
 namespace Nephrite.Identity
 {
-	public class DefaultIdentityDataContext : IDC_Identity<int>
+	public class DefaultIdentityDataContext<TUser, TKey> : IDC_Identity<TUser, TKey>
+		where TKey : IEquatable<TKey>
 	{
 		IDbConnection _dc;
 
@@ -14,26 +15,27 @@ namespace Nephrite.Identity
 			_dc = dc;
 		}
 
-		string subjSelect = @"select ID, Name, Title, PasswordHash, IsActive, IsDeleted, SID, MustChangePassword, Email from V_Identity_Subject where {0}";
+		string subjSelect = @"select ID, UserName, Title, PasswordHash, LockoutEnabled, MustChangePassword, Email, SecurityStamp from V_IdentityUser";
 
-		public TSubject SubjectFromName<TSubject>(string name)
+		public TUser UserFromName(string name)
 		{
-			return _dc.Query<TSubject>(String.Format(subjSelect, "lower(Name) = @p1"), new { p1 = name.ToLower() }).FirstOrDefault();
+			return _dc.Query<TUser>(subjSelect + " where lower(UserName) = @p1", new { p1 = name.ToLower() }).FirstOrDefault();
 		}
 
-		public TSubject SubjectFromSID<TSubject>(string sid)
+		public TUser UserFromProviderKey(string providerName, string providerKey)
 		{
-			return _dc.Query<TSubject>(String.Format(subjSelect, "lower(SID) = @p1"), new { p1 = sid.ToLower() }).FirstOrDefault();
+			string provSelect = subjSelect + "u join V_IdentityUser_{0} l on u.ID = l.ID where lower(ProviderKey) = @p1";
+			return _dc.Query<TUser>(string.Format(provSelect, providerName), new { p1 = providerKey.ToLower() }).FirstOrDefault();
 		}
 
-		public TSubject SubjectFromID<TSubject>(int id)
+		public TUser UserFromID(TKey id)
 		{
-			return _dc.Query<TSubject>(String.Format(subjSelect, "ID = @p1"), new { p1 = id }).FirstOrDefault();
+			return _dc.Query<TUser>(subjSelect + " where ID = @p1", new { p1 = id }).FirstOrDefault();
 		}
 
-		public TSubject SubjectFromEmail<TSubject>(string email)
+		public TUser UserFromEmail(string email)
 		{
-			return _dc.Query<TSubject>(String.Format(subjSelect, "lower(Email) = @p1"), new { p1 = email.ToLower() }).FirstOrDefault();
+			return _dc.Query<TUser>(subjSelect + " where lower(Email) = @p1", new { p1 = email.ToLower() }).FirstOrDefault();
 		}
 	}
 }

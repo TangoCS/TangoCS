@@ -14,8 +14,9 @@ namespace Nephrite.AccessControl
 	}
 
 	public interface IAccessControlForRole<TIdentityKey>
+		where TIdentityKey : IEquatable<TIdentityKey>
 	{
-		SubjectWithRoles<TIdentityKey> CurrentSubject { get; }
+		IdentityUserWithRoles<TIdentityKey> CurrentSubject { get; }
 		bool CheckForRole(TIdentityKey roleID, string securableObjectKey);
 	}
 }

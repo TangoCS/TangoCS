@@ -59,19 +59,19 @@ namespace Nephrite.EntityAudit
 
 	public static class IDC_UserActivityExtension
 	{
-		public static IN_ObjectChange NewIN_ObjectChange(this IDC_EntityAudit dc, Subject<int> subj, string action, string objectKey, string className, string objectTitle)
+		public static IN_ObjectChange NewIN_ObjectChange(this IDC_EntityAudit dc, IdentityUser<int> subj, string action, string objectKey, string className, string objectTitle)
 		{
 			var ua = dc.NewIN_ObjectChange();
 			ua.Title = action;
 			ua.IP = ""; //HttpContext.Current == null ? "" : HttpContext.Current.Request.UserHostAddress;
 			ua.LastModifiedDate = DateTime.Now;
-			ua.SubjectID = subj.ID;
+			ua.SubjectID = subj.Id;
 			ua.ObjectKey = objectKey;
 			ua.ObjectTypeSysName = className;
 			ua.ObjectTypeTitle = "";
 			ua.ObjectTitle = objectTitle;
 			ua.UserTitle = subj.Title;
-			ua.UserLogin = subj.Name;
+			ua.UserLogin = subj.UserName;
 			ua.Details = "";
 			return ua;
 		}

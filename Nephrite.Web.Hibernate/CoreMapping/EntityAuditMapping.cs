@@ -5,7 +5,7 @@ using Nephrite.EntityAudit;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 
-namespace Nephrite.Web.Hibernate.CoreMapping
+namespace Nephrite.Hibernate.CoreMapping
 {
 	public class IN_ObjectChangeMap : ClassMapping<IN_ObjectChange>
 	{

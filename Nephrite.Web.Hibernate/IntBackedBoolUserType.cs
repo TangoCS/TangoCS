@@ -5,7 +5,7 @@ using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
 
-namespace Nephrite.Web.Hibernate
+namespace Nephrite.Hibernate
 {
 	public class IntBackedBoolUserType : BooleanType, IUserType
 	{

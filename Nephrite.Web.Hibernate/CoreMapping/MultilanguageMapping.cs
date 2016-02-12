@@ -5,7 +5,7 @@ using Nephrite.Multilanguage;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 
-namespace Nephrite.Web.Hibernate.CoreMapping
+namespace Nephrite.Hibernate.CoreMapping
 {
 	//public class IC_LanguageMap : ClassMapping<ILanguageObject>
 	//{

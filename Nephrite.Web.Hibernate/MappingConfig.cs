@@ -4,7 +4,7 @@ using System.Linq;
 using Nephrite.Data;
 using NHibernate.Mapping.ByCode;
 
-namespace Nephrite.Web.Hibernate
+namespace Nephrite.Hibernate
 {
 	public static class MappingConfig
 	{

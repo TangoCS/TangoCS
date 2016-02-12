@@ -48,7 +48,7 @@ namespace Nephrite.Web.TaskManager
 		{
 			//A.Model = new HCoreDataContext(HCoreDataContext.DefaultDBConfig(ConnectionManager.ConnectionString), null);
 			A.Model = _dcActivator.CreateInstance();
-			_identity.RunAs(_identity.SystemSubject, () => TaskManager.Run(HttpContext.Current == null));
+			_identity.RunAs(_identity.SystemUser, () => TaskManager.Run(HttpContext.Current == null));
 		}
 	}
 }

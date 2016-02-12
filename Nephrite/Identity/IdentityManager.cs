@@ -5,54 +5,53 @@ using System.Security.Principal;
 namespace Nephrite.Identity
 {
 	public class IdentityManager<TKey> : IIdentityManager<TKey>
+		where TKey : IEquatable<TKey>
 	{
-		IDC_Identity<TKey> _dataContext;
+		IDC_Identity<IdentityUser<TKey>, TKey> _dataContext;
 		IIdentity _user;
-		public IdentityOptions Options { get; private set; }
+		IPasswordHasher _passwordHasher;
+		public IIdentityOptions Options { get; private set; }
 
 		public IdentityManager(
 			IIdentity user,
-			IDC_Identity<TKey> dataContext,
-			IdentityOptions options = null)
+			IDC_Identity<IdentityUser<TKey>, TKey> dataContext,
+			IPasswordHasher passwordHasher,
+			IIdentityOptions options)
 		{
 			_user = user;
+			_passwordHasher = passwordHasher;
 			_dataContext = dataContext;
 			Options = options ?? new IdentityOptions();
 		}
 
-		public IIdentity CurrentIdentity
-		{
-			get
-			{
-				return _user;
-			}
-		}
+		public IIdentity CurrentIdentity => _user;
+		public IPasswordHasher PasswordHasher => _passwordHasher;
 
-		Subject<TKey> _currentSubject = null;
-		public Subject<TKey> CurrentSubject
+		IdentityUser<TKey> _currentUser = null;
+		public IdentityUser<TKey> CurrentUser
 		{
 			get
 			{
 				
-				if (_currentSubject != null) return _currentSubject;
+				if (_currentUser != null) return _currentUser;
 
-				Subject<TKey> s = null;
+				IdentityUser<TKey> s = null;
 				string name;
 				if (!Options.Enabled)
 				{
-					name = Options.AnonymousSubjectName;
+					name = Options.AnonymousUserName;
 				}
 				else
 				{
 					if (_user == null)
-						name = Options.AnonymousSubjectName;
+						name = Options.AnonymousUserName;
 					else
 					{
 						WindowsIdentity wi = _user as WindowsIdentity;
 						if (wi != null && !wi.IsAnonymous)
 						{
 							name = wi.User.Value;
-							if (s == null) name = Options.AnonymousSubjectName;
+							if (s == null) name = Options.AnonymousUserName;
 						}
 						else
 						{
@@ -60,19 +59,19 @@ namespace Nephrite.Identity
 						}
 					}
 				}
-				s = _dataContext.SubjectFromName<Subject<TKey>>(name);
+				s = _dataContext.UserFromName(name);
 				if (s == null) throw new Exception(String.Format("User {0} does not exist in the database", name));
-				_currentSubject = s;
+				_currentUser = s;
 				return s;
 			}
 		}
 
-		public Subject<TKey> SystemSubject
+		public IdentityUser<TKey> SystemUser
 		{
 			get
 			{
-				var name = Options.SystemSubjectName;
-				var s = _dataContext.SubjectFromName<Subject<TKey>>(name);
+				var name = Options.SystemUserName;
+				var s = _dataContext.UserFromName(name);
 				if (s == null) throw new Exception(String.Format("User {0} does not exist in the database", name));
 				return s;
 			}
@@ -80,47 +79,26 @@ namespace Nephrite.Identity
 
 		public void RunAs(TKey sid, Action action)
 		{
-			var oldSubject = _currentSubject;
-			_currentSubject = _dataContext.SubjectFromID<Subject<TKey>>(sid);
+			var oldSubject = _currentUser;
+			_currentUser = _dataContext.UserFromID(sid);
 			action();
-			_currentSubject = oldSubject;
+			_currentUser = oldSubject;
 		}
-		public void RunAs(Subject<TKey> subject, Action action)
+		public void RunAs(IdentityUser<TKey> subject, Action action)
 		{
-			var oldSubject = _currentSubject;
-			_currentSubject = subject;
+			var oldSubject = _currentUser;
+			_currentUser = subject;
 			action();
-			_currentSubject = oldSubject;
+			_currentUser = oldSubject;
 		}
 	}
 
-	public interface IDC_Identity<TKey>
+	public interface IDC_Identity<TUser, TKey>
+		where TKey : IEquatable<TKey>
 	{
-		TSubject SubjectFromName<TSubject>(string name);
-		TSubject SubjectFromSID<TSubject>(string sid);
-		TSubject SubjectFromID<TSubject>(TKey id);
-		TSubject SubjectFromEmail<TSubject>(string email);
-	}
-
-	public class IdentityOptions
-	{
-		public string AnonymousSubjectName { get; set; }
-		public string SystemSubjectName { get; set; }
-		public bool Enabled { get; set; }
-		public IPasswordHash HashMethod { get; set; }
-		public bool AllowRegister { get; set; }
-		public bool AllowPasswordReset { get; set; }
-		public bool AllowRememberMe { get; set; }
-		
-		public IdentityOptions()
-		{
-			AnonymousSubjectName = "anonymous";
-			SystemSubjectName = "system";
-			Enabled = true;
-			HashMethod = new PasswordHash();
-			AllowRegister = false;
-			AllowPasswordReset = false;
-			AllowRememberMe = true;
-        }
+		TUser UserFromName(string name);
+		TUser UserFromProviderKey(string providerName, string providerKey);
+		TUser UserFromID(TKey id);
+		TUser UserFromEmail(string email);
 	}
 }

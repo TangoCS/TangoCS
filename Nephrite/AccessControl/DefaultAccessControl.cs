@@ -8,11 +8,13 @@ using Nephrite.Identity;
 namespace Nephrite.AccessControl
 {
 	public class AbstractAccessControl<TIdentityKey>
+		where TIdentityKey : IEquatable<TIdentityKey>
 	{
 		
 	}
 
 	public class DefaultAccessControl<TIdentityKey> : IAccessControl, IAccessControlForRole<TIdentityKey>
+		where TIdentityKey : IEquatable<TIdentityKey>
 	{
 		public StringBuilder Log { get; set; }
 
@@ -36,16 +38,16 @@ namespace Nephrite.AccessControl
 			Log = new StringBuilder();
 		}
 
-		SubjectWithRoles<TIdentityKey> _current = null;
-		public SubjectWithRoles<TIdentityKey> CurrentSubject
+		IdentityUserWithRoles<TIdentityKey> _current = null;
+		public IdentityUserWithRoles<TIdentityKey> CurrentSubject
 		{
 			get
 			{
 				if (_current != null) return _current;
-				var curSubj = _identityManager.CurrentSubject;
+				var curSubj = _identityManager.CurrentUser;
 				if (curSubj == null) return null;
 
-				_current = new SubjectWithRoles<TIdentityKey>(_conn, curSubj, _identityManager.CurrentIdentity);
+				_current = new IdentityUserWithRoles<TIdentityKey>(_conn, curSubj, _identityManager.CurrentIdentity);
 				return _current;
 			}
 		}
@@ -139,6 +141,7 @@ namespace Nephrite.AccessControl
 
 	public class CacheableAccessControl<TIdentityKey>
 		: IAccessControl, IAccessControlForRole<TIdentityKey>
+		where TIdentityKey : IEquatable<TIdentityKey>
 	{
 		public StringBuilder Log { get; set; }
 		static object _lock = new object();
@@ -164,16 +167,16 @@ namespace Nephrite.AccessControl
 			Log = new StringBuilder();
 		}
 
-		SubjectWithRoles<TIdentityKey> _current = null;
-		public SubjectWithRoles<TIdentityKey> CurrentSubject
+		IdentityUserWithRoles<TIdentityKey> _current = null;
+		public IdentityUserWithRoles<TIdentityKey> CurrentSubject
 		{
 			get
 			{
 				if (_current != null) return _current;
-				var curSubj = _identityManager.CurrentSubject;
+				var curSubj = _identityManager.CurrentUser;
 				if (curSubj == null) return null;
 
-				_current = new SubjectWithRoles<TIdentityKey>(_conn, curSubj, _identityManager.CurrentIdentity);
+				_current = new IdentityUserWithRoles<TIdentityKey>(_conn, curSubj, _identityManager.CurrentIdentity);
 				return _current;
 			}
 		}

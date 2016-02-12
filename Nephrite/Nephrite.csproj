@@ -85,6 +85,14 @@
     <Compile Include="FileStorage\Samples.cs" />
     <Compile Include="FileStorage\VirusChecker.cs" />
     <Compile Include="GlobalSettings.cs" />
+    <Compile Include="Identity\IdentityUserClaim.cs" />
+    <Compile Include="Identity\IdentityUserLogin.cs" />
+    <Compile Include="Identity\IdentityOptions.cs" />
+    <Compile Include="Identity\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="UI\Controls\ActionLink.cs" />
     <Compile Include="UI\Controls\BackButton.cs" />
     <Compile Include="UI\Controls\Calendar.cs" />
@@ -96,9 +104,9 @@
     <Compile Include="Html\IUrlResolver.cs" />
     <Compile Include="UI\Controls\Navigation.cs" />
     <Compile Include="Html\Link.cs" />
-    <Compile Include="Identity\IPasswordHash.cs" />
-    <Compile Include="Identity\OldPasswordHash.cs" />
-    <Compile Include="Identity\PasswordHash.cs" />
+    <Compile Include="Identity\IPasswordHasher.cs" />
+    <Compile Include="Identity\OldPasswordHasher.cs" />
+    <Compile Include="Identity\PasswordHasher.cs" />
     <Compile Include="Json.cs" />
     <Compile Include="Multilanguage\IMultilingual.cs" />
     <Compile Include="UI\AllowAnonymousAttribute.cs" />
@@ -144,7 +152,7 @@
     <Compile Include="MacroManager.cs" />
     <Compile Include="Identity\IIdentityManager.cs" />
     <Compile Include="AccessControl\Role.cs" />
-    <Compile Include="Identity\Subject.cs" />
+    <Compile Include="Identity\IdentityUser.cs" />
     <Compile Include="CodifierValue.cs" />
     <Compile Include="Html\HtmlWriter.cs" />
     <Compile Include="Html\HtmlWriter.Input.cs" />
@@ -156,7 +164,7 @@
     <Compile Include="Icons.cs" />
     <Compile Include="Data\IDataContext.cs" />
     <Compile Include="Identity\IdentityManager.cs" />
-    <Compile Include="Identity\SubjectValidator.cs" />
+    <Compile Include="Identity\UserValidator.cs" />
     <Compile Include="Data\IEntity.cs" />
     <Compile Include="IPersistentSettings.cs" />
     <Compile Include="Meta.Database\DataTypeMapper.cs" />
@@ -204,6 +212,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Identity\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\Common.en.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Common.en.Designer.cs</LastGenOutput>

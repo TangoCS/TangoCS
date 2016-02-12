@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Nephrite.Identity
 {
-	public class OldPasswordHash : IPasswordHash
+	public class OldPasswordHasher : IPasswordHasher
 	{
 		public string CreateHash(string password) 
 		{

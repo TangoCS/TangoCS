@@ -355,7 +355,7 @@ namespace Nephrite.Web.Replication
 		[SoapHeader("user")]
 		public void RunTasks()
 		{
-			_identity.RunAs(_identity.SystemSubject, () => Nephrite.Web.TaskManager.TaskManager.Run(HttpContext.Current == null));
+			_identity.RunAs(_identity.SystemUser, () => Nephrite.Web.TaskManager.TaskManager.Run(HttpContext.Current == null));
 		}
 
 		public bool ImportObject(IMetaClass objectType, string data)

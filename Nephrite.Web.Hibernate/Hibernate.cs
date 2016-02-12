@@ -19,7 +19,7 @@ using NHibernate.Mapping.ByCode;
 using NHibernate.Transform;
 using NHibernate.Type;
 
-namespace Nephrite.Web.Hibernate
+namespace Nephrite.Hibernate
 {
 	public abstract class HDataContext : IDisposable, IDataContext
 	{

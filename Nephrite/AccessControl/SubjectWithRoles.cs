@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Security.Principal;
@@ -6,16 +7,17 @@ using Nephrite.Identity;
 
 namespace Nephrite.AccessControl
 {
-	public class SubjectWithRoles<TKey>
+	public class IdentityUserWithRoles<TKey>
+		where TKey : IEquatable<TKey>
 	{
 		IIdentity _identity;
 		AccessControlDataContext<TKey> _dataContext;
-		Subject<TKey> _subject;
+		IdentityUser<TKey> _subject;
 		AccessControlOptions _options;
 
-		public SubjectWithRoles(
+		public IdentityUserWithRoles(
 			IDbConnection conn,
-			Subject<TKey> subject,
+			IdentityUser<TKey> subject,
 			IIdentity identity,
 			AccessControlOptions options = null)
 		{
@@ -37,10 +39,10 @@ namespace Nephrite.AccessControl
 					if (wi != null && !wi.IsAnonymous)
 					{
 						var groupNames = wi.Groups.Select(x => "'" + x.Value + "'");
-						r = _dataContext.SubjectRoles(_subject.ID, groupNames);
+						r = _dataContext.SubjectRoles(_subject.Id, groupNames);
 					}
 					else
-						r = _dataContext.SubjectRoles(_subject.ID);
+						r = _dataContext.SubjectRoles(_subject.Id);
 
 					_roles = _dataContext.GetAllRoles().Where(o => r.Contains(o.RoleID));
 				}
@@ -87,10 +89,10 @@ namespace Nephrite.AccessControl
 		}
 	}
 
-	public class SubjectWithRoles : SubjectWithRoles<int>
+	public class IdentityUserRoles : IdentityUserWithRoles<int>
 	{
-		public SubjectWithRoles(IDbConnection conn,
-			Subject<int> subject,
+		public IdentityUserRoles(IDbConnection conn,
+			IdentityUser<int> subject,
 			IIdentity identity,
 			AccessControlOptions options = null) : base(conn, subject, identity, options)
 		{

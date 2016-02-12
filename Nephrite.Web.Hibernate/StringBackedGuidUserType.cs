@@ -6,7 +6,7 @@ using NHibernate.Type;
 using NHibernate.UserTypes;
 using NHibernate.Mapping.ByCode.Impl;
 
-namespace Nephrite.Web.Hibernate
+namespace Nephrite.Hibernate
 {
 	public class StringBackedGuidUserType : PrimitiveType, IDiscriminatorType, IUserType
 	{

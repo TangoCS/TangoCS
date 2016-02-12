@@ -8,15 +8,15 @@ using NHibernate.Persister.Entity;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
-namespace Nephrite.Web.Hibernate
+namespace Nephrite.Hibernate
 {
 	public class AuditEventListener : IPreInsertEventListener, IPostInsertEventListener, IPostUpdateEventListener, IPostDeleteEventListener
 	{
 		List<object> toInsert = new List<object>();
-		Func<Subject<int>> subject;
+		Func<IdentityUser<int>> subject;
 		Func<IDC_EntityAudit> auditDc;
 
-		public AuditEventListener(Func<Subject<int>> getCurrentSubject, Func<IDC_EntityAudit> getDc)
+		public AuditEventListener(Func<IdentityUser<int>> getCurrentSubject, Func<IDC_EntityAudit> getDc)
 		{
 			subject = getCurrentSubject;
 			auditDc = getDc;
@@ -30,10 +30,10 @@ namespace Nephrite.Web.Hibernate
 				var subj = subject();
 
 				obj2.LastModifiedDate = DateTime.Now;
-				obj2.LastModifiedUserID = subj.ID;
+				obj2.LastModifiedUserID = subj.Id;
 
 				Set(e.Persister, e.State, "LastModifiedDate", DateTime.Now);
-				Set(e.Persister, e.State, "LastModifiedUserID", subj.ID);
+				Set(e.Persister, e.State, "LastModifiedUserID", subj.Id);
 				RefreshSet(e.Persister, e.State, "LastModifiedUser", obj2);
 			}
 			return false;

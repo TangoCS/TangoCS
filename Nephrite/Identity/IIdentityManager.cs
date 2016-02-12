@@ -4,15 +4,16 @@ using System.Security.Principal;
 namespace Nephrite.Identity
 {
 	public interface IIdentityManager<TKey>
+		where TKey : IEquatable<TKey>
 	{
-		//IHttpContext HttpContext { get; }
-		Subject<TKey> CurrentSubject { get; }
-		Subject<TKey> SystemSubject { get; }
-		IIdentity CurrentIdentity { get; }
-		//IDC_Identity<TKey> DataContext { get; }
-		IdentityOptions Options { get; }
+		IIdentityOptions Options { get; }
+		IPasswordHasher PasswordHasher { get; }
+
+		IdentityUser<TKey> CurrentUser { get; }
+		IdentityUser<TKey> SystemUser { get; }
+		IIdentity CurrentIdentity { get; }	
 
 		void RunAs(TKey sid, Action action);
-		void RunAs(Subject<TKey> subject, Action action);
+		void RunAs(IdentityUser<TKey> user, Action action);
 	}
 }

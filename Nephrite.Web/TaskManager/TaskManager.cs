@@ -84,7 +84,7 @@ namespace Nephrite.Web.TaskManager
 					taskexec.StartDate = DateTime.Now;
 					taskexec.MachineName = Environment.MachineName;
 					taskexec.TaskID = taskID;
-					taskexec.LastModifiedUserID = identity.CurrentSubject.ID;
+					taskexec.LastModifiedUserID = identity.CurrentUser.ID;
 
 					dc.ITM_TaskExecution.InsertOnSubmit(taskexec);
 					dc.SubmitChanges();
@@ -128,7 +128,7 @@ namespace Nephrite.Web.TaskManager
 							}
 						}
 					}
-					identity.RunAs(identity.SystemSubject, () => mi.Invoke(null, p));
+					identity.RunAs(identity.SystemUser, () => mi.Invoke(null, p));
 
 					using (var dc = dca.CreateInstance<IDC_TaskManager>())
 					{
@@ -225,7 +225,7 @@ namespace Nephrite.Web.TaskManager
 							continue; // Ещё не прошло нужное количество минут
 					}
 				}
-				identity.RunAs(identity.SystemSubject, () => Run(task.TaskID));
+				identity.RunAs(identity.SystemUser, () => Run(task.TaskID));
 			}
 		}
 

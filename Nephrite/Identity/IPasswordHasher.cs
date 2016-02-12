@@ -1,6 +1,6 @@
 ﻿namespace Nephrite.Identity
 {
-	public interface IPasswordHash
+	public interface IPasswordHasher
 	{
 		string CreateHash(string password);
 		bool ValidatePassword(string password, string correctHash);
