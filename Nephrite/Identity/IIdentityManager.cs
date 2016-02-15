@@ -3,17 +3,16 @@ using System.Security.Principal;
 
 namespace Nephrite.Identity
 {
-	public interface IIdentityManager<TKey>
-		where TKey : IEquatable<TKey>
+	public interface IIdentityManager<TUser>
+		where TUser : class
 	{
 		IIdentityOptions Options { get; }
 		IPasswordHasher PasswordHasher { get; }
 
-		IdentityUser<TKey> CurrentUser { get; }
-		IdentityUser<TKey> SystemUser { get; }
+		TUser CurrentUser { get; }
+		TUser SystemUser { get; }
 		IIdentity CurrentIdentity { get; }	
 
-		void RunAs(TKey sid, Action action);
-		void RunAs(IdentityUser<TKey> user, Action action);
+		void RunAs(TUser user, Action action);
 	}
 }

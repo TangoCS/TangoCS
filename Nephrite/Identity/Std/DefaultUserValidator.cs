@@ -1,24 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace Nephrite.Identity
+namespace Nephrite.Identity.Std
 {
-	public interface IUserValidator
-	{
-		List<ValidationMessage> CheckPassword(string password1, string password2);
-		List<ValidationMessage> CheckName(string name);
-		List<ValidationMessage> CheckEmail(string email);
-	}
-
-	public class DefaultUserValidator<TKey> : IUserValidator
+	public class DefaultUserValidator<TUser, TKey> : IUserValidator
 		where TKey : IEquatable<TKey>
+		where TUser : class
 	{
 		UserOptions _options;
-		IDC_Identity<IdentityUser<TKey>, TKey> _dc;
+		IIdentityStore<TUser, TKey> _dc;
 
-		public DefaultUserValidator(IDC_Identity<IdentityUser<TKey>, TKey> dataContext, UserOptions options = null)
+		public DefaultUserValidator(IIdentityStore<TUser, TKey> dataContext, UserOptions options = null)
 		{
 			_options = options ?? new UserOptions();
 			_dc = dataContext;
@@ -126,33 +119,6 @@ namespace Nephrite.Identity
 		public virtual bool IsLetterOrDigit(char c)
 		{
 			return IsUpper(c) || IsLower(c) || IsDigit(c);
-		}
-	}
-
-	public class UserOptions
-	{
-		public int MinPasswordLength { get; set; }
-		//public string AllowedPasswordChars { get; set; }
-
-		public bool RequireNonAlphanumericInPassword { get; set; } = false;
-		public bool RequireLowercaseInPassword { get; set; } = false;
-		public bool RequireUppercaseInPassword { get; set; } = false;
-		public bool RequireDigitInPassword { get; set; } = false;
-
-		public string AllowedLoginChars { get; set; }
-		public int MaxLoginLength { get; set; }
-
-		public bool RequireEmail { get; set; }
-		public bool RequireUniqueEmail { get; set; }
-
-		public UserOptions()
-		{
-			MinPasswordLength = 6;
-			//AllowedPasswordChars = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890~!@#$%^&*()-=\\][{}|+_`';:/?.>,<";
-			AllowedLoginChars = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890_";
-			MaxLoginLength = 12;
-			RequireEmail = true;
-			RequireUniqueEmail = true;
 		}
 	}
 }

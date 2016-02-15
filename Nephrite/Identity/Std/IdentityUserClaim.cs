@@ -5,7 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Nephrite.Identity
+namespace Nephrite.Identity.Std
 {
 	/// <summary>
 	/// Represents a claim that a user possesses. 

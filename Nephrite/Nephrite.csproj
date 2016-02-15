@@ -58,13 +58,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AccessControl\AccessControlInterfaces.cs" />
+    <Compile Include="AccessControl\AccessControlOptions.cs" />
+    <Compile Include="AccessControl\IAccessControl.cs" />
     <Compile Include="AccessControl\Attributes.cs" />
-    <Compile Include="AccessControl\DefaultAccessControl.cs" />
-    <Compile Include="AccessControl\AccessControlDataContext.cs" />
-    <Compile Include="AccessControl\ActionAccessControl.cs" />
-    <Compile Include="AccessControl\PredicateChecker.cs" />
-    <Compile Include="AccessControl\SubjectWithRoles.cs" />
+    <Compile Include="AccessControl\Std\RoleBasedAccessControl.cs" />
+    <Compile Include="AccessControl\Std\RoleBasedAccessControlStore.cs" />
+    <Compile Include="AccessControl\IRoleBasedAccessControl.cs" />
+    <Compile Include="AccessControl\Std\IRoleBasedAccessControlStore.cs" />
+    <Compile Include="AccessControl\Std\PredicateChecker.cs" />
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
     <Compile Include="BusinessLogic.cs" />
     <Compile Include="Controls\ListFilterEngine.cs" />
@@ -85,19 +86,24 @@
     <Compile Include="FileStorage\Samples.cs" />
     <Compile Include="FileStorage\VirusChecker.cs" />
     <Compile Include="GlobalSettings.cs" />
-    <Compile Include="Identity\IdentityUserClaim.cs" />
-    <Compile Include="Identity\IdentityUserLogin.cs" />
+    <Compile Include="AccessControl\IPredicateChecker.cs" />
+    <Compile Include="Identity\Std\DefaultUserValidator.cs" />
+    <Compile Include="Identity\Std\IdentityUserClaim.cs" />
+    <Compile Include="Identity\Std\IdentityUserLogin.cs" />
     <Compile Include="Identity\IdentityOptions.cs" />
     <Compile Include="Identity\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Identity\UserOptions.cs" />
+    <Compile Include="ITypeObserver.cs" />
     <Compile Include="UI\Controls\ActionLink.cs" />
     <Compile Include="UI\Controls\BackButton.cs" />
     <Compile Include="UI\Controls\Calendar.cs" />
     <Compile Include="UI\Controls\CodeArea.cs" />
     <Compile Include="UI\Controls\Dialog.cs" />
+    <Compile Include="UI\DefaultTypeActivatorCache.cs" />
     <Compile Include="UI\Toolbar.cs" />
     <Compile Include="Html\HtmlParms.cs" />
     <Compile Include="Html\HtmlWriter.Links.cs" />
@@ -120,7 +126,7 @@
     <Compile Include="UI\ActionInvoker.cs" />
     <Compile Include="UI\ActionResult.cs" />
     <Compile Include="UI\OnActionAttribute.cs" />
-    <Compile Include="UI\TypeActivation.cs" />
+    <Compile Include="UI\ITypeActivatorCache.cs" />
     <Compile Include="UI\CsTemplate.cs" />
     <Compile Include="UI\HasStandardActionAttribute.cs" />
     <Compile Include="MVC\HtmlHelper.cs" />
@@ -139,7 +145,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Common.en.resx</DependentUpon>
     </Compile>
-    <Compile Include="Identity\DefaultIdentityDataContext.cs" />
+    <Compile Include="Identity\Std\DefaultIdentityStore.cs" />
     <Compile Include="IValidatable.cs" />
     <Compile Include="Layout\Interfaces.cs" />
     <Compile Include="Layout\LayoutBootstrap.cs" />
@@ -151,8 +157,8 @@
     <Compile Include="Layout\WinModal.cs" />
     <Compile Include="MacroManager.cs" />
     <Compile Include="Identity\IIdentityManager.cs" />
-    <Compile Include="AccessControl\Role.cs" />
-    <Compile Include="Identity\IdentityUser.cs" />
+    <Compile Include="AccessControl\Std\IdentityRole.cs" />
+    <Compile Include="Identity\Std\IdentityUser.cs" />
     <Compile Include="CodifierValue.cs" />
     <Compile Include="Html\HtmlWriter.cs" />
     <Compile Include="Html\HtmlWriter.Input.cs" />
@@ -164,7 +170,7 @@
     <Compile Include="Icons.cs" />
     <Compile Include="Data\IDataContext.cs" />
     <Compile Include="Identity\IdentityManager.cs" />
-    <Compile Include="Identity\UserValidator.cs" />
+    <Compile Include="Identity\IUserValidator.cs" />
     <Compile Include="Data\IEntity.cs" />
     <Compile Include="IPersistentSettings.cs" />
     <Compile Include="Meta.Database\DataTypeMapper.cs" />

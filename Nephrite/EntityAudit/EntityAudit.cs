@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Nephrite.Data;
-using Nephrite.Identity;
+using Nephrite.Identity.Std;
 
 namespace Nephrite.EntityAudit
 {

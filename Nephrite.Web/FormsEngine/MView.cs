@@ -51,7 +51,7 @@ namespace Nephrite.Web.FormsEngine
 
 		void addToUtils(string fv)
 		{
-			if (AccessControl.CurrentSubject.IsAdministrator)
+			if (AccessControl.CurrentUser.IsAdministrator)
 			{
 				if (HttpContext.Current.Items["MViewList"] == null)
 					HttpContext.Current.Items["MViewList"] = new List<string>();

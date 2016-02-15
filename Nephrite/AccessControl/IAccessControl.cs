@@ -10,13 +10,22 @@ namespace Nephrite.AccessControl
 		bool Check(string securableObjectKey, bool defaultAccess = false);
 		BoolResult CheckPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false);
 		CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false);
-		StringBuilder Log { get; }
 	}
 
-	public interface IAccessControlForRole<TIdentityKey>
-		where TIdentityKey : IEquatable<TIdentityKey>
+	public class CheckWithPredicateResult : BoolResult
 	{
-		IdentityUserWithRoles<TIdentityKey> CurrentSubject { get; }
-		bool CheckForRole(TIdentityKey roleID, string securableObjectKey);
+		public CheckWithPredicateResultCode Code { get; private set; }
+		public CheckWithPredicateResult(bool value, CheckWithPredicateResultCode code, string message = "")
+			: base(value, message)
+		{
+			Code = code;
+		}
+	}
+
+	public enum CheckWithPredicateResultCode
+	{
+		PredicateAccessDenied = 2,
+		UserAccessDenied = 1,
+		AccessGranted = 0
 	}
 }

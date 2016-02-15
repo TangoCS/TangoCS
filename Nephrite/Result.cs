@@ -33,5 +33,19 @@ namespace Nephrite
 
 		public bool Value { get; private set; }
 		public string Message { get; private set; }
+
+		public static implicit operator bool(BoolResult b) => b.Value;
+		public static bool operator true(BoolResult b) => b.Value;
+		public static bool operator false(BoolResult b) => !b.Value;
+
+		public static BoolResult operator &(BoolResult left, BoolResult right)
+		{
+			return new BoolResult(left && right);
+		}
+
+		public static BoolResult operator |(BoolResult left, BoolResult right)
+		{
+			return new BoolResult(left || right);
+		}
 	}
 }

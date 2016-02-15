@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Diagnostics;
 using System.Threading;
 using System.Configuration;
 using Nephrite.Identity;
-using Nephrite.SettingsManager;
 using Nephrite.Data;
-
+using Nephrite.Identity.Std;
 
 namespace Nephrite.FileStorage
 {
@@ -54,9 +52,9 @@ namespace Nephrite.FileStorage
 
 		IPersistentSettings _settings;
 		IDC_VirusScan _dataContext;
-		IIdentityManager<int> _identity;
+		IIdentityManager<IdentityUser<int>> _identity;
 
-		public DefaultVirusChecker(IIdentityManager<int> identity,  IPersistentSettings settings, IDC_VirusScan dataContext)
+		public DefaultVirusChecker(IIdentityManager<IdentityUser<int>> identity,  IPersistentSettings settings, IDC_VirusScan dataContext)
 		{
 			_settings = settings;
 			_dataContext = dataContext;

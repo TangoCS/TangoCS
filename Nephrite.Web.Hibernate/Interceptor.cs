@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Nephrite.EntityAudit;
-using Nephrite.Identity;
+using Nephrite.Identity.Std;
 using NHibernate;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
@@ -10,7 +10,8 @@ using NHibernate.Type;
 
 namespace Nephrite.Hibernate
 {
-	public class AuditEventListener : IPreInsertEventListener, IPostInsertEventListener, IPostUpdateEventListener, IPostDeleteEventListener
+	public class AuditEventListener : IPreInsertEventListener, IPostInsertEventListener, 
+		IPostUpdateEventListener, IPostDeleteEventListener
 	{
 		List<object> toInsert = new List<object>();
 		Func<IdentityUser<int>> subject;

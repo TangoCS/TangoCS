@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Nephrite.Identity
+namespace Nephrite.Identity.Std
 {
 	/// <summary>
 	/// Represents a login and its associated provider for a user.

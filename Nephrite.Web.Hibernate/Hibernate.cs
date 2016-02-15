@@ -114,12 +114,12 @@ namespace Nephrite.Hibernate
 			}
 		}
 
-
+		TextWriter _log = new StringWriter();
 		public TextWriter Log 
 		{ 
 			get 
 			{
-				return null;
+				return _log;
 				//if (A.Items["SqlLog"] == null)
 				//{
 				//	TextWriter log = new StringWriter();

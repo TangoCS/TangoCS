@@ -2,7 +2,7 @@
 
 namespace Nephrite.UI
 {
-	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
 	public class OnActionAttribute : Attribute
 	{
 		public string Service { get; }

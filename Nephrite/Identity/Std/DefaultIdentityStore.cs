@@ -3,14 +3,14 @@ using System.Data;
 using System.Linq;
 using Dapper;
 
-namespace Nephrite.Identity
+namespace Nephrite.Identity.Std
 {
-	public class DefaultIdentityDataContext<TUser, TKey> : IDC_Identity<TUser, TKey>
+	public class DefaultIdentityStore<TUser, TKey> : IIdentityStore<TUser, TKey>
 		where TKey : IEquatable<TKey>
 	{
 		IDbConnection _dc;
 
-		public DefaultIdentityDataContext(IDbConnection dc)
+		public DefaultIdentityStore(IDbConnection dc)
 		{
 			_dc = dc;
 		}

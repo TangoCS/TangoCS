@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Nephrite.Identity
+namespace Nephrite.Identity.Std
 {
-	public class IdentityUser : IdentityUser<int>
-	{
-
-	}
-
 	/// <summary>
 	/// Represents a user in the identity system
 	/// </summary>

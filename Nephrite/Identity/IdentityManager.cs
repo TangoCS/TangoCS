@@ -4,17 +4,18 @@ using System.Security.Principal;
 
 namespace Nephrite.Identity
 {
-	public class IdentityManager<TKey> : IIdentityManager<TKey>
+	public class IdentityManager<TUser, TKey> : IIdentityManager<TUser>
 		where TKey : IEquatable<TKey>
+		where TUser : class
 	{
-		IDC_Identity<IdentityUser<TKey>, TKey> _dataContext;
+		IIdentityStore<TUser, TKey> _dataContext;
 		IIdentity _user;
 		IPasswordHasher _passwordHasher;
 		public IIdentityOptions Options { get; private set; }
 
 		public IdentityManager(
 			IIdentity user,
-			IDC_Identity<IdentityUser<TKey>, TKey> dataContext,
+			IIdentityStore<TUser, TKey> dataContext,
 			IPasswordHasher passwordHasher,
 			IIdentityOptions options)
 		{
@@ -27,15 +28,14 @@ namespace Nephrite.Identity
 		public IIdentity CurrentIdentity => _user;
 		public IPasswordHasher PasswordHasher => _passwordHasher;
 
-		IdentityUser<TKey> _currentUser = null;
-		public IdentityUser<TKey> CurrentUser
+		TUser _currentUser = null;
+		public TUser CurrentUser
 		{
 			get
-			{
-				
+			{				
 				if (_currentUser != null) return _currentUser;
 
-				IdentityUser<TKey> s = null;
+				TUser s = null;
 				string name;
 				if (!Options.Enabled)
 				{
@@ -66,7 +66,7 @@ namespace Nephrite.Identity
 			}
 		}
 
-		public IdentityUser<TKey> SystemUser
+		public TUser SystemUser
 		{
 			get
 			{
@@ -77,14 +77,7 @@ namespace Nephrite.Identity
 			}
 		}
 
-		public void RunAs(TKey sid, Action action)
-		{
-			var oldSubject = _currentUser;
-			_currentUser = _dataContext.UserFromID(sid);
-			action();
-			_currentUser = oldSubject;
-		}
-		public void RunAs(IdentityUser<TKey> subject, Action action)
+		public void RunAs(TUser subject, Action action)
 		{
 			var oldSubject = _currentUser;
 			_currentUser = subject;
@@ -93,7 +86,7 @@ namespace Nephrite.Identity
 		}
 	}
 
-	public interface IDC_Identity<TUser, TKey>
+	public interface IIdentityStore<TUser, TKey>
 		where TKey : IEquatable<TKey>
 	{
 		TUser UserFromName(string name);
