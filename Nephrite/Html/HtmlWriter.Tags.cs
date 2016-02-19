@@ -38,6 +38,7 @@ namespace Nephrite.Html
 
 		public static string GetID(this IHtmlWriter w, string id)
 		{
+			id = id.ToLower();
 			return w.IDPrefix.IsEmpty() ? id : (w.IDPrefix + "_" + id);
 		}
 

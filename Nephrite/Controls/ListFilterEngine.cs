@@ -3,31 +3,27 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Net;
-using Nephrite.Data;
 using Nephrite.Multilanguage;
 
 namespace Nephrite.Controls
 {
 	public class ListFilterEngine
 	{
+		public static bool BoolAsInt = false;
+
 		ITextResource TextResource { get; set; }
-		DBType DbType { get; set; }
 
-		public List<Field> FieldList { get; private set; }
-		List<FilterItem> _filterList;
+		List<Field> _fieldList;
+		List<FilterItem> _criteria;
   
-
 		public ListFilterEngine(
 			ITextResource textResource, 
-			DBType dbType,
-			List<FilterItem> filterList,
+			List<FilterItem> criteria,
 			List<Field> fieldList)
 		{
 			TextResource = textResource;
-			DbType = dbType;
-			_filterList = filterList;
-			FieldList = fieldList;
+			_criteria = criteria;
+			_fieldList = fieldList;
         }
 
 		public IQueryable<T> ApplyFilter<T>(IQueryable<T> query)
@@ -37,11 +33,7 @@ namespace Nephrite.Controls
 			// Преобразование в ОПН
 			Stack<object> stack = new Stack<object>();
 			List<object> pnlist = new List<object>();
-			try
-			{
-				pnlist = GetPolishNotation();
-			}
-			catch { }
+			pnlist = GetPolishNotation();
 
 			if (pnlist.Count == 0)
 				return query;
@@ -53,7 +45,7 @@ namespace Nephrite.Controls
 					var item = it as FilterItem;
 
 					Expression<Func<T, bool>> expr = null;
-					Field f = FieldList.SingleOrDefault<Field>(f1 => f1.Title == item.Title);
+					Field f = _fieldList.SingleOrDefault<Field>(f1 => f1.Title == item.Title);
 					if (f == null)
 						continue;
 
@@ -77,8 +69,12 @@ namespace Nephrite.Controls
 						expr = Expression.Lambda<Func<T, bool>>(mc, column.Parameters);
 					}
 
-					object val = item.Value.StartsWith("$") ?
-						MacroManager.Evaluate(item.Value.Substring(1)) : item.Value;
+					object val = null;
+					if (item.Value != null && item.Value.StartsWith("$"))
+						val = MacroManager.Evaluate(item.Value.Substring(1));
+					else
+						val = item.Value;
+
 					Type valType = column.Body is UnaryExpression ? ((UnaryExpression)column.Body).Operand.Type : column.Body.Type;
 
 					if (f.FieldType == FieldType.Date)
@@ -95,7 +91,10 @@ namespace Nephrite.Controls
 						else
 						{
 							if (!DateTime.TryParseExact(item.Value, "d.MM.yyyy", null, DateTimeStyles.None, out dt))
-							{ DateTime? dtn = null; val = dtn; } // dt = DateTime.Today;
+							{
+								DateTime? dtn = null;
+								val = dtn;
+							} // dt = DateTime.Today;
 							else
 								val = dt;
 						}
@@ -116,7 +115,10 @@ namespace Nephrite.Controls
 						else
 						{
 							if (!DateTime.TryParseExact(item.Value, "d.MM.yyyy", null, DateTimeStyles.None, out dt))
-							{ DateTime? dtn = null; val = dtn; } // dt = DateTime.Today;
+							{
+								DateTime? dtn = null;
+								val = dtn;
+							} // dt = DateTime.Today;
 							else
 								val = dt;
 						}
@@ -137,7 +139,7 @@ namespace Nephrite.Controls
 						if (!bool.TryParse(item.Value, out b))
 							b = false;
 
-						if (DbType == DBType.DB2)
+						if (BoolAsInt)
 						{
 							val = b ? 1 : 0;
 							valType = typeof(int);
@@ -356,7 +358,7 @@ namespace Nephrite.Controls
 			// Преобразование в ОПН
 			Stack<object> stack = new Stack<object>();
 			List<object> pnlist = new List<object>();
-			foreach (FilterItem item in _filterList)
+			foreach (FilterItem item in _criteria)
 			{
 				if (item.Not)
 					stack.Push('!');
@@ -416,7 +418,7 @@ namespace Nephrite.Controls
 		public int OpenBracketCount { get; set; }
 		public int CloseBracketCount { get; set; }
 		public FilterItemOperation Operation { get; set; }
-		public bool Advanced { get; set; }
+		//public bool Advanced { get; set; }
 
 		public string OpenBrackets
 		{
@@ -426,6 +428,11 @@ namespace Nephrite.Controls
 		public string CloseBrackets
 		{
 			get { return "".PadLeft(CloseBracketCount, ')'); }
+		}
+
+		public override int GetHashCode()
+		{
+			return (Title + Condition + Value).GetHashCode();
 		}
 
 		public override string ToString()

@@ -34,7 +34,7 @@ namespace Nephrite.UI
 
 		public string GetElementID(string id)
 		{
-			return !ID.IsEmpty() ? ID + (!id.IsEmpty() ? "_" + id : "") : id;
+			return (!ID.IsEmpty() ? ID + (!id.IsEmpty() ? "_" + id : "") : id).ToLower();
 		}
 
 		public T CreateControl<T>(string id, Action<T> init = null)

@@ -13,6 +13,7 @@ namespace Nephrite.Html
 				if (attributes != null) attributes(ta);
 			};
 			w.WriteTag("select", a, () => {
+				if (items == null) return;
 				foreach (var item in items)
 				{
 					w.WriteTag<OptionTagAttributes>("option", 
@@ -29,6 +30,7 @@ namespace Nephrite.Html
 				if (attributes != null) attributes(ta);
 			};
 			w.WriteTag("select", a, () => {
+				if (items == null) return;
 				foreach (var item in items)
 				{
 					w.WriteTag<OptionTagAttributes>("option",

@@ -27,7 +27,7 @@ namespace Nephrite.UI
 					foreach (var m in methods)
 					{
 						var attrs = m.GetCustomAttributes<OnActionAttribute>();
-						if (attrs == null)
+						if (attrs.Count() == 0)
 							res.Add(s + "." + m.Name);
 						else
 							res.AddRange(attrs.Select(a => a.Service + "." + a.Action).ToList());
@@ -55,7 +55,7 @@ namespace Nephrite.UI
 				{
 					var keys = info.Keys(t);
 					if (keys == null) continue;
-					foreach (var key in info.Keys(t))
+					foreach (var key in keys)
 					{
 						if (!_typeActivatorCache.ContainsKey(key))
 							_typeActivatorCache.Add(key, new Tuple<Type, IActionInvoker>(t, info.Invoker));

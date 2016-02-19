@@ -186,14 +186,14 @@ namespace Nephrite
 		public static string Icon(this bool src)
 		{
 			if (src)
-				return "<img src='" + IconSet.RootPath + IconSet.BoolTrue + "' />";
+				return "<i class='icon flaticon-true'></i>";
 			return String.Empty;
 		}
 
 		public static string Icon(this bool? src)
 		{
 			if (src.HasValue)
-				return src.Value ? "<img src='" + IconSet.RootPath + IconSet.BoolTrue + "' />" : "";
+				return src.Value ? "<i class='icon flaticon-true'></i>" : "";
 			return String.Empty;
 		}
 

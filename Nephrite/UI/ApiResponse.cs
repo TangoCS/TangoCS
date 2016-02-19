@@ -55,6 +55,11 @@ namespace Nephrite.UI
 			ClientActions.Add(new ClientAction(service, method, args));
 		}
 
+		public virtual void SetFieldValue(string name, string value)
+		{
+			AddClientAction("commonUtils", "setValue", new { elName = name, value = value });
+		}
+
 		public virtual void AddWidget(string name, string content)
 		{
 			Widgets.Add(name.ToLower(), content);
@@ -114,10 +119,20 @@ namespace Nephrite.UI
 		Func<string, string> _getID;
 		Func<LayoutWriter> _createWriter;
 
-		public ViewElementResponse(Func<string, string> getID, Func<LayoutWriter> createWriter) : base()
+		public ViewElementResponse(ViewElement element) : base()
 		{
-			_getID = getID;
-			_createWriter = createWriter;
+			SetViewElement(element);
+		}
+
+		public void SetViewElement(ViewElement element)
+		{
+			_getID = element.GetElementID;
+			_createWriter = element.CreateLayoutWriter;
+		}
+
+		public override void SetFieldValue(string name, string value)
+		{
+			base.SetFieldValue(_getID(name), value);
 		}
 
 		public override void BindEvent(string elementId, string clientEvent, string serverEvent, string serverEventReceiver = null)
@@ -148,21 +163,21 @@ namespace Nephrite.UI
 		public void AddWidget(string name, Action<LayoutWriter> content)
 		{
 			var w = _createWriter();
-			content(w);
+			if (content != null) content(w);
 			AddWidget(name, w);
 		}
 
 		public void AddRootWidget(string name, Action<LayoutWriter> content)
 		{
 			var w = _createWriter();
-			content(w);
+			if (content != null) content(w);
 			AddRootWidget(name, w);
 		}
 
 		public void AddChildWidget(string parent, string name, Action<LayoutWriter> content)
 		{
 			var w = _createWriter();
-			content(w);
+			if (content != null) content(w);
 			AddChildWidget(parent, name, w);
 		}
 	}
