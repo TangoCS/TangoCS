@@ -4321,7 +4321,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(224, 16);
 				if (state.backtracking == 0)
 				{
-					 Out(" like "); 
+					 OutLike(); 
 				}
 				DebugLocation(224, 35);
 				PushFollow(Follow._expr_in_exoticComparisonExpression1181);
@@ -4356,7 +4356,7 @@ public partial class SqlGenerator : Antlr.Runtime.Tree.TreeParser
 				DebugLocation(225, 20);
 				if (state.backtracking == 0)
 				{
-					 Out(" not like "); 
+					 OutNotLike(); 
 				}
 				DebugLocation(225, 43);
 				PushFollow(Follow._expr_in_exoticComparisonExpression1197);

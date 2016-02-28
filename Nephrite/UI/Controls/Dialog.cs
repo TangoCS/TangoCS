@@ -28,7 +28,7 @@ namespace Nephrite.UI.Controls
 		public static void Dialog(this LayoutWriter w, string id, string title, Action body, Action footer)
 		{
 			w.Div(a => a.ID("dialog").Class("modal-dialog").Role("dialog").Style("display: none"), () => {
-				w.Form(a => a.ID("form"), () => {
+				w.AjaxForm("form", () => {
 					w.Div(a => a.Class("modal-header"), () => {
 						w.Button(a => a.Class("close").Aria("label", "Close").OnClick($"dialog.hide('{id}')"), () => {
 							w.Span(a => a.Aria("hidden", "true"), "x");
@@ -39,6 +39,7 @@ namespace Nephrite.UI.Controls
 					w.Div(a => a.ID("footer").Class("modal-footer"), footer);
 				});
 			});
+			
 		}
 
 		//public static void Dialog_Footer_OKCancelButtons(this IHtmlWriter w)

@@ -31,9 +31,9 @@ namespace Nephrite.Html
 			Action<InputTagAttributes> a = ta => ta.Name(name).ID(name).Type(InputType.Checkbox).Checked(isChecked).Set(attributes);
 			w.WriteTag("input", a, null, true);
 		}
-		public static void RadioButton(this IHtmlWriter w, string name, bool isChecked = false, Action<InputTagAttributes> attributes = null)
+		public static void RadioButton(this IHtmlWriter w, string name, string id, string value = null, bool isChecked = false, Action<InputTagAttributes> attributes = null)
 		{
-			Action<InputTagAttributes> a = ta => ta.Name(name).ID(name).Type(InputType.Radio).Checked(isChecked).Set(attributes);
+			Action<InputTagAttributes> a = ta => ta.Name(name).ID(id).Type(InputType.Radio).Value(value).Checked(isChecked).Set(attributes);
 			w.WriteTag("input", a, null, true);
 		}
 		public static void TextArea(this IHtmlWriter w, string name, string value = null, Action<TextAreaTagAttributes> attributes = null)

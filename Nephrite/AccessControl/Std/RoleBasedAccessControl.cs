@@ -6,28 +6,29 @@ using System.Security.Principal;
 using System.Text;
 using Nephrite.Identity;
 using Nephrite.Identity.Std;
+using Nephrite.Logger;
 
 namespace Nephrite.AccessControl.Std
 {
 	public abstract class AbstractAccessControl<TKey> : IRoleBasedAccessControl<TKey>
 		where TKey : IEquatable<TKey>
 	{
-		public StringBuilder Log { get; set; }
-		
 		protected static object _lock = new object();
 		
 		protected IIdentity _identity;
 		protected TKey _userId;
 		protected IPredicateChecker _predicateChecker;
 		protected AccessControlOptions _options;
+		protected IRequestLogger _logger;
 
-		public AbstractAccessControl(IIdentityManager<IdentityUser<TKey>> identityManager, IPredicateChecker predicateChecker, AccessControlOptions options)
+		public AbstractAccessControl(IIdentityManager<IdentityUser<TKey>> identityManager, IPredicateChecker predicateChecker, 
+			IRequestLoggerProvider loggerProvider, AccessControlOptions options)
 		{
 			_identity = identityManager.CurrentIdentity;
 			_userId = identityManager.CurrentUser.Id;
 			_predicateChecker = predicateChecker;
 			_options = options;
-			Log = new StringBuilder();
+			_logger = loggerProvider.GetLogger("accesscontrol");
 		}
 
 		protected abstract IRoleBasedAccessControlStoreBase<TKey> _baseDataContext { get; }
@@ -81,7 +82,8 @@ namespace Nephrite.AccessControl.Std
 			IRoleBasedAccessControlStore<TKey> dataContext,
 			IIdentityManager<IdentityUser<TKey>> identityManager,
 			IPredicateChecker predicateLoader,
-			AccessControlOptions options) : base(identityManager, predicateLoader, options)
+			IRequestLoggerProvider loggerProvider,
+			AccessControlOptions options) : base(identityManager, predicateLoader, loggerProvider, options)
 		{
 			_dataContext = dataContext;
 		}
@@ -107,7 +109,7 @@ namespace Nephrite.AccessControl.Std
 					{
 						lock (_lock) { if (!AllowItems.Contains(key)) AllowItems.Add(key); }
 					}
-					Log.AppendLine(key + " v3: true (default/admin access)");
+					_logger.Write(key + ": true (default/admin access)");
 				}
 				else
 				{
@@ -115,7 +117,7 @@ namespace Nephrite.AccessControl.Std
 					{
 						lock (_lock) { if (!DisallowItems.Contains(key)) DisallowItems.Add(key); }
 					}
-					Log.AppendLine(key + " v3: false (default/admin access denied)");
+					_logger.Write(key + ": false (default/admin access denied)");
 				}
 				return defaultAccess || HasRole(_options.AdminRoleName);
 			}
@@ -126,7 +128,7 @@ namespace Nephrite.AccessControl.Std
 				{
 					lock (_lock) { if (!AllowItems.Contains(key)) AllowItems.Add(key); }
 				}
-				Log.AppendLine(key + " v3: true (explicit access)"); 
+				_logger.Write(key + ": true (explicit access)"); 
 				return true;
 			}
 			else
@@ -135,7 +137,7 @@ namespace Nephrite.AccessControl.Std
 				{
 					lock (_lock) { if (!DisallowItems.Contains(key)) DisallowItems.Add(key); }
 				}
-				Log.AppendLine(key + " v3: false (explicit access denied)");
+				_logger.Write(key + ": false (explicit access denied)");
 				return false;
 			}
 		}
@@ -152,7 +154,8 @@ namespace Nephrite.AccessControl.Std
 			ICacheableRoleBasedAccessControlStore<TKey> dataContext,
 			IIdentityManager<IdentityUser<TKey>> identityManager,
 			IPredicateChecker predicateChecker,
-			AccessControlOptions options) : base(identityManager, predicateChecker, options)
+			IRequestLoggerProvider loggerProvider,
+			AccessControlOptions options) : base(identityManager, predicateChecker, loggerProvider, options)
 		{
 			_dataContext = dataContext;
 			_cacheName = GetType().Name;
@@ -182,12 +185,12 @@ namespace Nephrite.AccessControl.Std
 			HashSet<string> _checking = new HashSet<string>(anc.Select(o => key + "-" + o.ToString()));
 			if (_access.Overlaps(_checking))
 			{
-				Log.AppendLine("ROLE: " + roleID.ToString() + ", " + key + " v3: true");
+				_logger.Write("ROLE: " + roleID.ToString() + ", " + key + ": true");
 				return true;
 			}
 			else
 			{
-				Log.AppendLine("ROLE: " + roleID.ToString() + ", " + key + " v3: false");
+				_logger.Write("ROLE: " + roleID.ToString() + ", " + key + ": false");
 				return false;
 			}
 		}
@@ -228,7 +231,7 @@ namespace Nephrite.AccessControl.Std
 					{
 						lock (_lock) { if (!AllowItems.Contains(key)) AllowItems.Add(key); }
 					}
-					Log.AppendLine(key + " v3: true (default/admin access)");
+					_logger.Write(key + ": true (default/admin access)");
 				}
 				else
 				{
@@ -236,7 +239,7 @@ namespace Nephrite.AccessControl.Std
 					{
 						lock (_lock) { if (!DisallowItems.Contains(key)) DisallowItems.Add(key); }
 					}
-					Log.AppendLine(key + " v3: false (default/admin access denied)");
+					_logger.Write(key + ": false (default/admin access denied)");
 				}
 				return defaultAccess || HasRole(_options.AdminRoleName);
 			}
@@ -248,7 +251,7 @@ namespace Nephrite.AccessControl.Std
 				{
 					lock (_lock) { if (!AllowItems.Contains(key)) AllowItems.Add(key); }
 				}
-				Log.AppendLine(key + " v3: true (explicit access)");
+				_logger.Write(key + ": true (explicit access)");
 				return true;
 			}
 			else
@@ -257,7 +260,7 @@ namespace Nephrite.AccessControl.Std
 				{
 					lock (_lock) { if (!DisallowItems.Contains(key)) DisallowItems.Add(key); }
 				}
-				Log.AppendLine(key + " v3: false (explicit access denied)");
+				_logger.Write(key + ": false (explicit access denied)");
 				return false;
 			}
 		}

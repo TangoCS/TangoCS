@@ -50,6 +50,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IFMLInterfaces.cs" />
+    <Compile Include="Logger\IRequestLogger.cs" />
+    <Compile Include="Logger\IRequestLoggerProvider.cs" />
     <Compile Include="MetaDatabaseInterfaces.cs" />
     <Compile Include="MetaInterfaces.cs" />
     <Compile Include="MultilanguageInterfaces.cs" />

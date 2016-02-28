@@ -16,6 +16,7 @@ using NHibernate.Cfg.Loquacious;
 using NHibernate.Dialect;
 using NHibernate.Linq;
 using System.Data;
+using Nephrite.Logger;
 
 namespace Nephrite.Web.CoreDataContext
 {
@@ -26,8 +27,8 @@ namespace Nephrite.Web.CoreDataContext
 		//IDC_TaskManager, 
 		IDC_RSS, IDC_EntityAudit
 	{
-		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, IDbConnection connection)
-			: base(dbConfig, connection)
+		public HCoreDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, IDbConnection connection, IRequestLoggerProvider loggerProvider)
+			: base(dbConfig, connection, loggerProvider)
 		{
 		}
 

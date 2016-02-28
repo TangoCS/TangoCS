@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Data;
 using NHibernate.SqlCommand;
 using NHibernate.Type;
 
@@ -93,6 +94,11 @@ namespace NHibernate
 		public virtual SqlString OnPrepareStatement(SqlString sql)
 		{
 			return sql;
+		}
+
+		public virtual void OnPrepareCommand(IDbCommand command)
+		{
+			
 		}
 	}
 }

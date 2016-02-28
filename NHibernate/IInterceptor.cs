@@ -184,6 +184,8 @@ namespace NHibernate
 		/// <returns> original or modified sql </returns>
 		SqlString OnPrepareStatement(SqlString sql);
 
+		void OnPrepareCommand(IDbCommand command);
+
 		#region NH specific
 
 		/// <summary>

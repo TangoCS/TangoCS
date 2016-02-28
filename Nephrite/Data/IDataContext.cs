@@ -31,8 +31,6 @@ namespace Nephrite.Data
 		T Get<T, TKey>(TKey id);
 		void SubmitChanges();
 
-		TextWriter Log { get; }
-
 		List<Action> AfterSaveActions { get; }
 		List<Action> BeforeSaveActions { get; }
 	}

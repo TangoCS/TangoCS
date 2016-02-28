@@ -7,6 +7,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using Nephrite.Data;
+using Nephrite.Logger;
 using NHibernate;
 using NHibernate.Cfg;
 using NHibernate.Cfg.Loquacious;
@@ -28,13 +29,15 @@ namespace Nephrite.Hibernate
 		static Dictionary<string, Configuration> _configs = new Dictionary<string, Configuration>();
 		ISession _session;
 		IDbConnection _connection;
+		IRequestLoggerProvider _loggerProvider;
+		IRequestLogger _logger;
 
 		public List<object> ToInsert { get; private set; }
 		public List<object> ToDelete { get; private set; }
 		public List<object> ToAttach { get; private set; }
 		public List<Action> AfterSaveActions { get; private set; }
 		public List<Action> BeforeSaveActions { get; private set; }
-
+		
 		public ISession Session
 		{
 			get
@@ -43,7 +46,10 @@ namespace Nephrite.Hibernate
 				{
 					if (_connection.State != ConnectionState.Open)
 						_connection.Open();
-					_session = SessionFactory.OpenSession(_connection);
+					if (_logger.Enabled)
+						_session = SessionFactory.OpenSession(_connection, new LogInterceptor(_logger));
+					else
+						_session = SessionFactory.OpenSession(_connection);
 					_session.FlushMode = FlushMode.Commit;
 				}
 				return _session;
@@ -114,21 +120,6 @@ namespace Nephrite.Hibernate
 			}
 		}
 
-		TextWriter _log = new StringWriter();
-		public TextWriter Log 
-		{ 
-			get 
-			{
-				return _log;
-				//if (A.Items["SqlLog"] == null)
-				//{
-				//	TextWriter log = new StringWriter();
-				//	A.Items["SqlLog"] = log;
-				//	return log;
-				//}
-				//return A.Items["SqlLog"] as TextWriter;
-			} 
-		}
 		public string ID { get; set; }
 
 		Action<IDbIntegrationConfigurationProperties> _dbConfig;
@@ -137,24 +128,19 @@ namespace Nephrite.Hibernate
 		public virtual IEnumerable<Type> GetTableFunctionsTypes() { return new List<Type>(); }
 		
 
-		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, IDbConnection connection)
+		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, IDbConnection connection, IRequestLoggerProvider loggerProvider)
 		{
 			ID = GetType().Name + "-" + Guid.NewGuid().ToString();
 			_dbConfig = dbConfig;
 			_connection = connection;
+			_loggerProvider = loggerProvider;
+			_logger = _loggerProvider.GetLogger("sql");
 
-			//var sw = A.Items["Stopwatch"] as Stopwatch;
-			//Log.WriteLine(String.Format("-- {1} create {0}", ID, sw.Elapsed.ToString())); 
-			//Log.WriteLine();
-			//Log = new StringWriter();
 			ToInsert = new List<object>();
 			ToDelete = new List<object>();
 			ToAttach = new List<object>();
 			AfterSaveActions = new List<Action>();
 			BeforeSaveActions = new List<Action>();
-
-			//_session = SessionFactory.OpenSession();
-			//_session.FlushMode = FlushMode.Commit;
 		}
 
 		~HDataContext()
@@ -164,11 +150,9 @@ namespace Nephrite.Hibernate
 
 		public void SubmitChanges()
 		{
-
 			using (var transaction = Session.BeginTransaction())
 			{
-				Log.WriteLine("BEGIN TRANSACTION");
-				Log.WriteLine();
+				_logger.Write("BEGIN TRANSACTION");
 
 				foreach (var action in BeforeSaveActions) action();
 				foreach (object obj in ToDelete) _session.Delete(obj);
@@ -190,8 +174,7 @@ namespace Nephrite.Hibernate
 
 				transaction.Commit();
 
-				Log.WriteLine("COMMIT TRANSACTION");
-				Log.WriteLine();
+				_logger.Write("COMMIT TRANSACTION");
 
 				BeforeSaveActions.Clear();
 				AfterSaveActions.Clear();
@@ -357,14 +340,14 @@ namespace Nephrite.Hibernate
 		public T Value { get; set; }
 		public string Name { get; set; }
 
-		public static SqlParameter<T> Set<T>(T value)
+		public static SqlParameter<T> Set(T value)
 		{
 			return new SqlParameter<T> { Value = value };
 		}
 
 		public void SetQueryParameter(IQuery q, int position)
 		{
-			q.SetParameter<T>(position, Value);
+			q.SetParameter(position, Value);
 		}
 	}
 

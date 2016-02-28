@@ -5,7 +5,6 @@ using Nephrite.Identity.Std;
 using NHibernate;
 using NHibernate.Event;
 using NHibernate.Persister.Entity;
-using NHibernate.SqlCommand;
 using NHibernate.Type;
 
 namespace Nephrite.Hibernate
@@ -178,24 +177,4 @@ namespace Nephrite.Hibernate
 			}
 		}
 	}
-
-    public class HDataContextInterceptor : EmptyInterceptor
-    {
-        public override SqlString OnPrepareStatement(SqlString sql)
-        {
-			//var hdc = A.Model as HDataContext;
-			//hdc.Log.WriteLine(sql.ToString());
-			//foreach (Parameter p in sql.GetParameters())
-			//{
-			//	hdc.Log.Write("--");
-			//	hdc.Log.WriteLine(p.ToString());
-			//}
-			//hdc.Log.WriteLine();
-            return sql;
-        }
-
-    }
-
-
-
 }

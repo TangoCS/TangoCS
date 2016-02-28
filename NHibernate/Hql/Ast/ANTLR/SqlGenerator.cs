@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
+using NHibernate.Dialect;
 using NHibernate.Dialect.Function;
 using NHibernate.Engine;
 using NHibernate.Hql.Ast.ANTLR.Tree;
@@ -86,6 +87,21 @@ namespace NHibernate.Hql.Ast.ANTLR
 		private void Out(string s)
 		{
 			writer.Clause(s);
+		}
+
+		private void OutLike()
+		{
+			if (sessionFactory.Dialect is PostgreSQLDialect)
+				writer.Clause(" ilike ");
+			else
+				writer.Clause(" like ");
+		}
+		private void OutNotLike()
+		{
+			if (sessionFactory.Dialect is PostgreSQLDialect)
+				writer.Clause(" not ilike ");
+			else
+				writer.Clause(" not like ");
 		}
 
 		private void Out(SqlString s)

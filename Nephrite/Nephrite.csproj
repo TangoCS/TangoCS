@@ -68,6 +68,7 @@
     <Compile Include="AccessControl\Std\PredicateChecker.cs" />
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
     <Compile Include="BusinessLogic.cs" />
+    <Compile Include="ByteArrayToHex.cs" />
     <Compile Include="Controls\ListFilterEngine.cs" />
     <Compile Include="Controls\PersistentListFilter.cs" />
     <Compile Include="Data\ConnectionManager.cs" />
@@ -98,6 +99,8 @@
     </Compile>
     <Compile Include="Identity\UserOptions.cs" />
     <Compile Include="ITypeObserver.cs" />
+    <Compile Include="Logger.Std\RequestLogger.cs" />
+    <Compile Include="Logger.Std\RequestLoggerProvider.cs" />
     <Compile Include="UI\Controls\ActionLink.cs" />
     <Compile Include="UI\Controls\BackButton.cs" />
     <Compile Include="UI\Controls\Calendar.cs" />

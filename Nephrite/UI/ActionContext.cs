@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Nephrite.UI
 {
-	public class ActionContext
+	public abstract class ActionContext
 	{
 		public ActionContext()
 		{
@@ -18,65 +18,25 @@ namespace Nephrite.UI
 			EventReceivers = new Dictionary<string, InteractionFlowElement>(StringComparer.OrdinalIgnoreCase);
 		}
 
-		public IServiceProvider RequestServices { get; private set; }
-
-		public void Init(IServiceProvider requestServices, IDictionary<string, string> args, string jsonData)
-		{
-			RequestServices = requestServices;
-			var curArgsCollection = ActionArgs;
-
-			foreach (var arg in args)
-			{
-				var key = arg.Key;
-				var value = arg.Value;
-
-				if (key == TemplatingConstants.ServiceName)
-					Service = value.ToString();
-				else if (key == TemplatingConstants.ActionName)
-					Action = value.ToString();
-				else if (key == TemplatingConstants.EventName)
-				{
-					curArgsCollection = EventArgs;
-					Event = value.ToString().ToLower();
-				}
-				else if (key == TemplatingConstants.EventReceiverName)
-				{
-					EventReceiver = value.ToString().ToLower();
-				}
-				else
-				{
-					curArgsCollection.Add(key, value);
-					AllArgs.Add(key, value);
-				}
-			}
-
-			if (!jsonData.IsEmpty())
-			{
-				var converter = new DynamicDictionaryConverter();
-				var postData = JsonConvert.DeserializeObject<DynamicDictionary>(jsonData, converter);
-
-				if (postData != null)
-					FormData = postData;
-			}
-		}
-
+		public IServiceProvider RequestServices { get; protected set; }
 
 		public class ResponseInfo
 		{
 			StringWriter w = new StringWriter();
 
+			public string CsrfToken { get; set; }
 			public string ContentType { get; set; }
-			public int StatusCode { get; set; } = 200;
-			public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
+			//public int StatusCode { get; set; } = 200;
+			//public IDictionary<string, string> Headers { get; } = new Dictionary<string, string>();
 
-			public void Redirect(string location, bool permanent = false)
-			{
-				if (permanent)
-					StatusCode = 301;
-				else
-					StatusCode = 302;
-				Headers["Location"] = location;
-			}
+			//public void Redirect(string location, bool permanent = false)
+			//{
+			//	if (permanent)
+			//		StatusCode = 301;
+			//	else
+			//		StatusCode = 302;
+			//	Headers["Location"] = location;
+			//}
 
 			public void Write(string text)
 			{
@@ -94,6 +54,7 @@ namespace Nephrite.UI
 		public string RequestMethod { get; set; }
 		public string Event { get; set; }
 		public string EventReceiver { get; set; }
+		
 
 		public DynamicDictionary AllArgs { get; set; }
 		public DynamicDictionary ActionArgs { get; set; }

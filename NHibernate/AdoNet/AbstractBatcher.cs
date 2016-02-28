@@ -463,6 +463,7 @@ namespace NHibernate.AdoNet
 
 		protected void LogCommand(IDbCommand command)
 		{
+			_interceptor.OnPrepareCommand(command);
 			_factory.Settings.SqlStatementLogger.LogCommand(command, FormatStyle.Basic);
 		}
 
