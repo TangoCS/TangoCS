@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Text;
-using Newtonsoft.Json;
 
 namespace Nephrite.UI
 {
@@ -16,6 +14,7 @@ namespace Nephrite.UI
 			EventArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			FormData = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			EventReceivers = new Dictionary<string, InteractionFlowElement>(StringComparer.OrdinalIgnoreCase);
+			Files = new List<FileInfo>();
 		}
 
 		public IServiceProvider RequestServices { get; protected set; }
@@ -49,12 +48,18 @@ namespace Nephrite.UI
 			}
 		}
 
+		public class FileInfo
+		{
+			public string FileName { get; set; }
+			public byte[] FileBytes { get; set; }
+		}
+
 		public string Service { get; set; }
 		public string Action { get; set; }
 		public string RequestMethod { get; set; }
 		public string Event { get; set; }
 		public string EventReceiver { get; set; }
-		
+		public List<FileInfo> Files { get; set; }
 
 		public DynamicDictionary AllArgs { get; set; }
 		public DynamicDictionary ActionArgs { get; set; }

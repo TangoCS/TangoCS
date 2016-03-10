@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Linq;
 
 namespace Nephrite.UI
 {
@@ -108,7 +109,7 @@ namespace Nephrite.UI
 			if (ClientActions.Count > 0)
 				Data.Add("clientactions", ClientActions);
 			if (Includes.Count > 0)
-				Data.Add("includes", Includes);
+				Data.Add("includes", Includes.Select(o => GlobalSettings.JSPath + o));
 
 			return JsonConvert.SerializeObject(Data, Json.CamelCase);
 		}

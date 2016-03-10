@@ -40,7 +40,7 @@ namespace Nephrite.Controls
 			_filter = _dc.NewIN_Filter();
 			_filter.FilterValue = _filter != null ? _filter.FilterValue :
 					new XDocument(XmlHelper.Serialize<List<FilterItem>>(new List<FilterItem>()));
-			_dc.IN_Filter.InsertOnSubmit(_filter);
+			_dc.InsertOnSubmit(_filter);
 		}
 
 		IN_Filter Filter
@@ -137,7 +137,7 @@ namespace Nephrite.Controls
 		{
 			_items = items;
 			Filter.FilterValue = new XDocument(XmlHelper.Serialize<List<FilterItem>>(_items));
-			if (Filter.FilterID == 0) _dc.IN_Filter.InsertOnSubmit(Filter);
+			if (Filter.FilterID == 0) _dc.InsertOnSubmit(Filter);
 			_dc.SubmitChanges();
 		}
 	}
@@ -162,7 +162,7 @@ namespace Nephrite.Controls
 
 	public interface IDC_ListFilter : IDataContext
 	{
-		ITable<IN_Filter> IN_Filter { get; }
+		IQueryable<IN_Filter> IN_Filter { get; }
 		IN_Filter NewIN_Filter();
 	}
 }

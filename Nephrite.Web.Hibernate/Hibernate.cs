@@ -28,7 +28,6 @@ namespace Nephrite.Hibernate
 		static Dictionary<string, HbmMapping> _mappings = new Dictionary<string, HbmMapping>();
 		static Dictionary<string, Configuration> _configs = new Dictionary<string, Configuration>();
 		ISession _session;
-		IDbConnection _connection;
 		IRequestLoggerProvider _loggerProvider;
 		IRequestLogger _logger;
 
@@ -37,19 +36,21 @@ namespace Nephrite.Hibernate
 		public List<object> ToAttach { get; private set; }
 		public List<Action> AfterSaveActions { get; private set; }
 		public List<Action> BeforeSaveActions { get; private set; }
-		
+
+		public IDbConnection Connection { get; private set; }
+
 		public ISession Session
 		{
 			get
 			{
 				if (_session == null || !_session.IsOpen)
 				{
-					if (_connection.State != ConnectionState.Open)
-						_connection.Open();
+					if (Connection.State != ConnectionState.Open)
+						Connection.Open();
 					if (_logger.Enabled)
-						_session = SessionFactory.OpenSession(_connection, new LogInterceptor(_logger));
+						_session = SessionFactory.OpenSession(Connection, new LogInterceptor(_logger));
 					else
-						_session = SessionFactory.OpenSession(_connection);
+						_session = SessionFactory.OpenSession(Connection);
 					_session.FlushMode = FlushMode.Commit;
 				}
 				return _session;
@@ -132,7 +133,7 @@ namespace Nephrite.Hibernate
 		{
 			ID = GetType().Name + "-" + Guid.NewGuid().ToString();
 			_dbConfig = dbConfig;
-			_connection = connection;
+			Connection = connection;
 			_loggerProvider = loggerProvider;
 			_logger = _loggerProvider.GetLogger("sql");
 
@@ -164,13 +165,6 @@ namespace Nephrite.Hibernate
 				ToAttach.Clear();
 
 				foreach (var action in AfterSaveActions) action();
-				//foreach (object obj in ToDelete) _session.Delete(obj);
-				//foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
-				//foreach (object obj in ToAttach) _session.Merge(obj);
-				
-				//ToDelete.Clear();
-				//ToInsert.Clear();
-				//ToAttach.Clear();
 
 				transaction.Commit();
 
@@ -310,21 +304,37 @@ namespace Nephrite.Hibernate
 			return command;
 		}
 
-		public ITable<T> GetTable<T>()
+		public IQueryable<T> GetTable<T>()
 		{
-			return new HTable<T>(this, Session.Query<T>());
+			return Session.Query<T>();
 		}
 
-		public ITable GetTable(Type t)
+		public IQueryable GetTable(Type t)
 		{
 			MethodInfo mi = typeof(LinqExtensionMethods).GetMethods().FirstOrDefault(tp => tp.GetParameters().Any(p => p.ParameterType == typeof(ISession))).MakeGenericMethod(new Type[] { t });
-			var q = mi.Invoke(Session, new object[] { Session }) as IQueryable;
-			return new HTable(this, q);
+			return mi.Invoke(Session, new object[] { Session }) as IQueryable;
 		}
 
 		public T Get<T, TKey>(TKey id)
 		{
 			return Session.Get<T>(id);
+		}
+
+		public void InsertOnSubmit(object obj)
+		{
+			ToInsert.Add(obj);
+		}
+		public void DeleteOnSubmit(object obj)
+		{
+			ToDelete.Add(obj);
+		}
+		public void DeleteAllOnSubmit(IEnumerable objs)
+		{
+			ToDelete.AddRange(objs.Cast<object>());
+		}
+		public void AttachOnSubmit(object entity)
+		{
+			ToAttach.Add(entity);
 		}
 	}
 
@@ -348,88 +358,6 @@ namespace Nephrite.Hibernate
 		public void SetQueryParameter(IQuery q, int position)
 		{
 			q.SetParameter(position, Value);
-		}
-	}
-
-	public class HTable : ITable
-	{
-		protected HDataContext _dataContext;
-		protected IQueryable _query;
-
-		public HTable(HDataContext dataContext, IQueryable query)
-		{
-			_dataContext = dataContext;
-			_query = query;
-		}
-
-		public IEnumerator GetEnumerator()
-		{
-			return _query.GetEnumerator();
-		}
-		public Type ElementType
-		{
-			get { return _query.ElementType; }
-		}
-		public Expression Expression
-		{
-			get { return _query.Expression; }
-		}
-		public IQueryProvider Provider
-		{
-			get { return _query.Provider; }
-		}
-
-		public void InsertOnSubmit(object obj)
-		{
-			_dataContext.ToInsert.Add(obj);
-		}
-		public void DeleteOnSubmit(object obj)
-		{
-			_dataContext.ToDelete.Add(obj);
-		}
-		public void DeleteAllOnSubmit(IEnumerable objs)
-		{
-			_dataContext.ToDelete.AddRange(objs.Cast<object>());
-		}
-		public void AttachOnSubmit(object entity)
-		{
-			_dataContext.ToAttach.Add(entity);
-		}
-	}
-
-	public class HTable<T> : HTable, ITable<T>
-	{
-		protected IQueryable<T> _query2;
-
-		public HTable(HDataContext dataContext, IQueryable<T> query)
-			: base(dataContext, query)
-		{
-			_query2 = query;
-		}
-
-		public new IEnumerator<T> GetEnumerator()
-		{
-			return _query2.GetEnumerator();
-		}
-
-		public void InsertOnSubmit(T obj)
-		{
-			base.InsertOnSubmit(obj);
-		}
-
-		public void DeleteOnSubmit(T obj)
-		{
-			base.DeleteOnSubmit(obj);
-		}
-
-		public void DeleteAllOnSubmit(IEnumerable<T> objs)
-		{
-			base.DeleteAllOnSubmit(objs);
-		}
-
-		public void AttachOnSubmit(T obj)
-		{
-			base.AttachOnSubmit(obj);
 		}
 	}
 

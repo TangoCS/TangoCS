@@ -77,14 +77,14 @@
     <Compile Include="DynamicDictionary.cs" />
     <Compile Include="EntityAudit\EntityAudit.cs" />
     <Compile Include="ErrorLog\ErrorLogger.cs" />
-    <Compile Include="FileStorage\DatabaseStorageProvider.cs" />
-    <Compile Include="FileStorage\DbFolders.cs" />
-    <Compile Include="FileStorage\FileStorageModel.cs" />
+    <Compile Include="FileStorage\Std\DatabaseFolder.cs" />
     <Compile Include="FileStorage\FileTypeIcon.cs" />
     <Compile Include="FileStorage\IStorageFile.cs" />
-    <Compile Include="FileStorage\IStorageProvider.cs" />
-    <Compile Include="FileStorage\LocalDiskStorageProvider.cs" />
+    <Compile Include="FileStorage\IStorageFolder.cs" />
     <Compile Include="FileStorage\Samples.cs" />
+    <Compile Include="FileStorage\Std\MixedDatabaseFolder.cs" />
+    <Compile Include="FileStorage\Std\DownloadLog.cs" />
+    <Compile Include="FileStorage\Std\LocalDiskFolder.cs" />
     <Compile Include="FileStorage\VirusChecker.cs" />
     <Compile Include="GlobalSettings.cs" />
     <Compile Include="AccessControl\IPredicateChecker.cs" />
@@ -101,6 +101,7 @@
     <Compile Include="ITypeObserver.cs" />
     <Compile Include="Logger.Std\RequestLogger.cs" />
     <Compile Include="Logger.Std\RequestLoggerProvider.cs" />
+    <Compile Include="MimeMapping.cs" />
     <Compile Include="UI\Controls\ActionLink.cs" />
     <Compile Include="UI\Controls\BackButton.cs" />
     <Compile Include="UI\Controls\Calendar.cs" />

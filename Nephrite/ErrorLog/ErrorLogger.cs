@@ -101,7 +101,7 @@ namespace Nephrite.ErrorLog
                     errorInfo.AppendLine("[UserHostAddress]").AppendLine(l.UserHostAddress);
 					errorInfo.AppendLine("[SqlLog]").AppendLine(l.SqlLog);
 
-					dc.IErrorLog.InsertOnSubmit(l);
+					dc.InsertOnSubmit(l);
                     dc.SubmitChanges();
 					return l.ErrorLogID;
                 }
@@ -130,7 +130,7 @@ namespace Nephrite.ErrorLog
 
 	public interface IDC_ErrorLog : IDataContext
 	{
-		ITable<IErrorLog> IErrorLog { get; }
+		IQueryable<IErrorLog> IErrorLog { get; }
 		IErrorLog NewIErrorLog();
 	}
 

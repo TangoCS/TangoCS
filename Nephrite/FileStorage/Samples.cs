@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace Nephrite.FileStorage
+namespace Nephrite.FileStorage.Std
 {
 	public class Samples
 	{
 		// работа с файлом на диске через виртуальный каталог
 		public void Test1()
 		{			
-			IStorageFolder folder = new VirtualFolder(new LocalDiskStorageProvider("~/Temp"));
+			IStorageFolder folder = new LocalDiskFolder("~/Temp");
 			var file = folder.GetFile("test.txt");
 			file.WriteAllText("abcdef");
 			var data = file.ReadAllBytes();
@@ -16,15 +16,13 @@ namespace Nephrite.FileStorage
 
 		// работа с файлом в базе через виртуальный каталог
 		public void Test2(IDC_FileDataStorage dataContext)
-		{
-			Guid id = Guid.Parse("db0e2a2f-43f1-4b00-bbee-940483c3e35b");
-			
-			IStorageFolder folder = new VirtualFolder(new DatabaseStorageProvider(dataContext));
-			var file = folder.CreateFile(id);
-			file.WriteAllText("abcdef");
+		{	
+			IStorageFolder folder = new DatabaseFolder(dataContext);
+
+			folder.CreateFile("db0e2a2f-43f1-4b00-bbee-940483c3e35b").WriteAllText("abcdef");
 			dataContext.SubmitChanges();
 
-			file = folder.GetFile(id);
+			var file = folder.GetFile("db0e2a2f-43f1-4b00-bbee-940483c3e35b");
 			var data = file.ReadAllBytes();
 			file.Delete();
 			dataContext.SubmitChanges();

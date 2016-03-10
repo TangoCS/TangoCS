@@ -23,32 +23,24 @@ namespace Nephrite.Data
 
 	public interface IDataContext : IDisposable
 	{
+		IDbConnection Connection { get; }
+
 		int ExecuteCommand(string command, params object[] parameters);
 		IEnumerable<TResult> ExecuteQuery<TResult>(string query, params object[] parameters);
 		IDbCommand GetCommand(IQueryable query);
-		ITable<T> GetTable<T>();
-		ITable GetTable(Type t);
+		IQueryable<T> GetTable<T>();
+		IQueryable GetTable(Type t);
 		T Get<T, TKey>(TKey id);
-		void SubmitChanges();
 
-		List<Action> AfterSaveActions { get; }
-		List<Action> BeforeSaveActions { get; }
-	}
-
-	public interface ITable : IQueryable
-	{
 		void InsertOnSubmit(object obj);
 		void DeleteOnSubmit(object obj);
 		void DeleteAllOnSubmit(IEnumerable obj);
 		void AttachOnSubmit(object obj);
-	}
 
-	public interface ITable<T> : IQueryable<T>
-	{
-		void InsertOnSubmit(T obj);
-		void DeleteOnSubmit(T obj);
-		void DeleteAllOnSubmit(IEnumerable<T> obj);
-		void AttachOnSubmit(T obj);
+		void SubmitChanges();
+
+		List<Action> AfterSaveActions { get; }
+		List<Action> BeforeSaveActions { get; }
 	}
 
 	public static class DefaultTableFilters

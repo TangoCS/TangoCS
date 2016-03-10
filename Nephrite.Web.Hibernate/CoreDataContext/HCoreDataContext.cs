@@ -17,12 +17,14 @@ using NHibernate.Dialect;
 using NHibernate.Linq;
 using System.Data;
 using Nephrite.Logger;
+using Nephrite.FileStorage.Std;
+using System.Linq;
 
 namespace Nephrite.Web.CoreDataContext
 {
 
 	public class HCoreDataContext : HDataContext,  IDC_ErrorLog,
-		IDC_ListFilter, IDC_FileStorage, IDC_CalendarDays, 
+		IDC_ListFilter, IDC_FileDataStorage, IDC_CalendarDays, 
 		//IDC_Mailer,
 		//IDC_TaskManager, 
 		IDC_RSS, IDC_EntityAudit
@@ -161,13 +163,13 @@ namespace Nephrite.Web.CoreDataContext
 			return new ErrorLog();
 		}
 
-		public ITable<IErrorLog> IErrorLog
+		public IQueryable<IErrorLog> IErrorLog
 		{
-			get { return new HTable<IErrorLog>(this, Session.Query<IErrorLog>()); }
+			get { return Session.Query<IErrorLog>(); }
 		}
-		public ITable<ICalendarDay> ICalendarDay
+		public IQueryable<ICalendarDay> ICalendarDay
 		{
-			get { return new HTable<ICalendarDay>(this, Session.Query<ICalendarDay>()); }
+			get { return Session.Query<ICalendarDay>(); }
 		}
 		//public ITable<IMailMessage> IMailMessage
 		//{
@@ -186,29 +188,29 @@ namespace Nephrite.Web.CoreDataContext
 		//{
 		//	get { return new HTable<IN_TextResource>(this, Session.Query<IN_TextResource>()); }
 		//}
-		public ITable<IN_Filter> IN_Filter
+		public IQueryable<IN_Filter> IN_Filter
 		{
-			get { return new HTable<IN_Filter>(this, Session.Query<IN_Filter>()); }
+			get { return Session.Query<IN_Filter>(); }
 		}
 		//public ITable<IN_Settings> IN_Settings
 		//{
 		//	get { return new HTable<IN_Settings>(this, Session.Query<IN_Settings>()); }
 		//}
-		public ITable<IN_ObjectChange> IN_ObjectChange
+		public IQueryable<IN_ObjectChange> IN_ObjectChange
 		{
-			get { return new HTable<IN_ObjectChange>(this, Session.Query<IN_ObjectChange>()); }
+			get { return Session.Query<IN_ObjectChange>(); }
 		}
-		public ITable<IN_ObjectPropertyChange> IN_ObjectPropertyChange
+		public IQueryable<IN_ObjectPropertyChange> IN_ObjectPropertyChange
 		{
-			get { return new HTable<IN_ObjectPropertyChange>(this, Session.Query<IN_ObjectPropertyChange>()); }
+			get { return Session.Query<IN_ObjectPropertyChange>(); }
 		}
-		public ITable<IN_RssFeed> IN_RssFeed
+		public IQueryable<IN_RssFeed> IN_RssFeed
 		{
-			get { return new HTable<IN_RssFeed>(this, Session.Query<IN_RssFeed>()); }
+			get { return Session.Query<IN_RssFeed>(); }
 		}
-		public ITable<IN_DownloadLog> IN_DownloadLog
+		public IQueryable<IN_DownloadLog> IN_DownloadLog
 		{
-			get { return new HTable<IN_DownloadLog>(this, Session.Query<IN_DownloadLog>()); }
+			get { return Session.Query<IN_DownloadLog>(); }
 		}
 		//public ITable<IDbFile> IDbFile
 		//{
@@ -222,13 +224,13 @@ namespace Nephrite.Web.CoreDataContext
 		//{
 		//	get { return new HTable<IDbItem>(this, Session.Query<IDbItem>()); }
 		//}
-		public ITable<IDbFileData> IDbFileData
+		public IQueryable<IDbFileData> IDbFileData
 		{
-			get { return new HTable<IDbFileData>(this, Session.Query<IDbFileData>()); }
+			get { return Session.Query<IDbFileData>(); }
 		}
-		public ITable<IN_VirusScanLog> IN_VirusScanLog
+		public IQueryable<IN_VirusScanLog> IN_VirusScanLog
 		{
-			get { return new HTable<IN_VirusScanLog>(this, Session.Query<IN_VirusScanLog>()); }
+			get { return Session.Query<IN_VirusScanLog>(); }
 		}
 		//public ITable<ITM_TaskParameter> ITM_TaskParameter
 		//{

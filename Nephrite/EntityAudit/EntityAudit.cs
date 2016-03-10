@@ -1,6 +1,7 @@
 ﻿using System;
 using Nephrite.Data;
 using Nephrite.Identity.Std;
+using System.Linq;
 
 namespace Nephrite.EntityAudit
 {
@@ -16,8 +17,8 @@ namespace Nephrite.EntityAudit
 
 	public interface IDC_EntityAudit : IDataContext
 	{
-		ITable<IN_ObjectChange> IN_ObjectChange { get; }
-		ITable<IN_ObjectPropertyChange> IN_ObjectPropertyChange { get; }
+		IQueryable<IN_ObjectChange> IN_ObjectChange { get; }
+		IQueryable<IN_ObjectPropertyChange> IN_ObjectPropertyChange { get; }
 		IN_ObjectChange NewIN_ObjectChange();
 		IN_ObjectPropertyChange NewIN_ObjectPropertyChange();
 	}

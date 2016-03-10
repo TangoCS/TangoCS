@@ -7,6 +7,7 @@ using Nephrite.ErrorLog;
 using Nephrite.FileStorage;
 using Nephrite.RSS;
 using Nephrite.UI.Controls;
+using Nephrite.FileStorage.Std;
 //using Nephrite.Web.Mailer;
 //using Nephrite.Web.TaskManager;
 

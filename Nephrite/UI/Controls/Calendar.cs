@@ -24,8 +24,8 @@ namespace Nephrite.UI.Controls
 			{
 				w.Img(a => a.ID("btn" + name).Title("Календарь").Src(basePath + "img.gif"));
 
-				w.Includes.Add(GlobalSettings.JSPath + "calendar/calendar_stripped.js");
-				w.Includes.Add(GlobalSettings.JSPath + "calendar/lang/calendar-en.js");	
+				w.Includes.Add("calendar/calendar_stripped.js");
+				w.Includes.Add("calendar/lang/calendar-en.js");	
 
 				w.AddClientAction("Calendar", "setup", new {
 					inputField = w.GetID(name),
@@ -129,7 +129,7 @@ namespace Nephrite.UI.Controls
 
 	public interface IDC_CalendarDays : IDataContext
 	{
-		ITable<ICalendarDay> ICalendarDay { get; }
+		IQueryable<ICalendarDay> ICalendarDay { get; }
 	}
 
 	public interface ICalendarDay : IEntity

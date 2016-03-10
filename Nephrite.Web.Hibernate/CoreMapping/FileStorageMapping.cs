@@ -5,6 +5,7 @@ using Nephrite.FileStorage;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 using NHibernate.Type;
+using Nephrite.FileStorage.Std;
 
 namespace Nephrite.Hibernate.CoreMapping
 {

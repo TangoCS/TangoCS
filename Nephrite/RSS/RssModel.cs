@@ -1,10 +1,11 @@
 ﻿using Nephrite.Data;
+using System.Linq;
 
 namespace Nephrite.RSS
 {
 	public interface IDC_RSS : IDataContext
 	{
-		ITable<IN_RssFeed> IN_RssFeed { get; } 
+		IQueryable<IN_RssFeed> IN_RssFeed { get; } 
 	}
 
 

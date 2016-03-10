@@ -23,7 +23,7 @@ namespace Nephrite.FileStorage
 	public interface IDC_VirusScan : IDataContext
 	{
 		IN_VirusScanLog NewIN_VirusScanLog();
-		ITable<IN_VirusScanLog> IN_VirusScanLog { get; }
+		IQueryable<IN_VirusScanLog> IN_VirusScanLog { get; }
 	}
 
 	public interface IN_VirusScanLog : IEntity
@@ -41,15 +41,6 @@ namespace Nephrite.FileStorage
     /// </summary>
 	public class DefaultVirusChecker : IVirusChecker
     {
-		//public static SaveFileResult Check(FileUpload fileUpload)
-		//{
-		//	return Check(fileUpload.FileName, fileUpload.FileBytes);
-		//}
-		//public static SaveFileResult Check(HttpPostedFile postedFile)
-		//{
-		//	return Check(postedFile.FileName, ((MemoryStream)postedFile.InputStream).ToArray());
-		//}
-
 		IPersistentSettings _settings;
 		IDC_VirusScan _dataContext;
 		IIdentityManager<IdentityUser<int>> _identity;
@@ -134,7 +125,7 @@ namespace Nephrite.FileStorage
             l.LastModifiedUserID = _identity.CurrentUser.Id;
             l.ResultCode = code;
 			l.Title = fileName;
-			_dataContext.IN_VirusScanLog.InsertOnSubmit(l);
+			_dataContext.InsertOnSubmit(l);
         }
     }
 }
