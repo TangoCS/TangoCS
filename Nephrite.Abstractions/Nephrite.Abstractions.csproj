@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Cache\ICache.cs" />
     <Compile Include="IFMLInterfaces.cs" />
     <Compile Include="Logger\IRequestLogger.cs" />
     <Compile Include="Logger\IRequestLoggerProvider.cs" />

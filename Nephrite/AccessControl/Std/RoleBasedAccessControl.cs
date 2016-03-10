@@ -7,14 +7,14 @@ using System.Text;
 using Nephrite.Identity;
 using Nephrite.Identity.Std;
 using Nephrite.Logger;
+using Nephrite.Cache;
+using System.Collections.Concurrent;
 
 namespace Nephrite.AccessControl.Std
 {
 	public abstract class AbstractAccessControl<TKey> : IRoleBasedAccessControl<TKey>
 		where TKey : IEquatable<TKey>
-	{
-		protected static object _lock = new object();
-		
+	{	
 		protected IIdentity _identity;
 		protected TKey _userId;
 		protected IPredicateChecker _predicateChecker;
@@ -67,8 +67,8 @@ namespace Nephrite.AccessControl.Std
 			return Roles.Select(o => o.Name.ToLower()).Intersect(roleName.Select(o => o.ToLower())).Count() > 0;
 		}
 
-		protected HashSet<string> AllowItems { get; } = new HashSet<string>();
-		protected HashSet<string> DisallowItems { get; } = new HashSet<string>();
+		protected ConcurrentBag<string> AllowItems { get; } = new ConcurrentBag<string>();
+		protected ConcurrentBag<string> DisallowItems { get; } = new ConcurrentBag<string>();
 	}
 
 	public class DefaultAccessControl<TKey> : AbstractAccessControl<TKey>
@@ -107,7 +107,7 @@ namespace Nephrite.AccessControl.Std
 				{
 					if (!AllowItems.Contains(key))
 					{
-						lock (_lock) { if (!AllowItems.Contains(key)) AllowItems.Add(key); }
+						if (!AllowItems.Contains(key)) AllowItems.Add(key);
 					}
 					_logger.Write(key + ": true (default/admin access)");
 				}
@@ -115,7 +115,7 @@ namespace Nephrite.AccessControl.Std
 				{
 					if (!DisallowItems.Contains(key))
 					{
-						lock (_lock) { if (!DisallowItems.Contains(key)) DisallowItems.Add(key); }
+						if (!DisallowItems.Contains(key)) DisallowItems.Add(key);
 					}
 					_logger.Write(key + ": false (default/admin access denied)");
 				}
@@ -126,7 +126,7 @@ namespace Nephrite.AccessControl.Std
 			{
 				if (!AllowItems.Contains(key))
 				{
-					lock (_lock) { if (!AllowItems.Contains(key)) AllowItems.Add(key); }
+					if (!AllowItems.Contains(key)) AllowItems.Add(key);
 				}
 				_logger.Write(key + ": true (explicit access)"); 
 				return true;
@@ -135,7 +135,7 @@ namespace Nephrite.AccessControl.Std
 			{
 				if (!DisallowItems.Contains(key))
 				{
-					lock (_lock) { if (!DisallowItems.Contains(key)) DisallowItems.Add(key); }
+					if (!DisallowItems.Contains(key)) DisallowItems.Add(key);
 				}
 				_logger.Write(key + ": false (explicit access denied)");
 				return false;
@@ -143,22 +143,25 @@ namespace Nephrite.AccessControl.Std
 		}
 	}
 
-	public class CacheableAccessControl<TKey> : AbstractAccessControl<TKey>
+	public class CacheableAccessControl<TKey> : AbstractAccessControl<TKey>, ICacheable
 		where TKey : IEquatable<TKey>
 	{
 		protected ICacheableRoleBasedAccessControlStore<TKey> _dataContext;
 		protected override IRoleBasedAccessControlStoreBase<TKey> _baseDataContext => _dataContext;
 		string _cacheName;
+		ICache _cache;
 
 		public CacheableAccessControl(
 			ICacheableRoleBasedAccessControlStore<TKey> dataContext,
 			IIdentityManager<IdentityUser<TKey>> identityManager,
 			IPredicateChecker predicateChecker,
+			ICache cache,
 			IRequestLoggerProvider loggerProvider,
 			AccessControlOptions options) : base(identityManager, predicateChecker, loggerProvider, options)
 		{
 			_dataContext = dataContext;
 			_cacheName = GetType().Name;
+			_cache = cache;			
 		}
 
 		public override bool CheckForRole(TKey roleID, string securableObjectKey)
@@ -167,23 +170,12 @@ namespace Nephrite.AccessControl.Std
 			var anc = _dataContext.RoleAncestors(roleID);
 			string key = securableObjectKey.ToUpper();
 
-			HashSet<string> _access = null;
+			ConcurrentBag<string> _access = null;
+			_access = _cache.GetOrAdd(_cacheName + "-access", () => new ConcurrentBag<string>(_dataContext.GetRolesAccess()));
 
-			if (!AccessControlCache.AccessCache.ContainsKey(_cacheName))
-			{
-				lock (_lock)
-				{
-					_access = new HashSet<string>(_dataContext.GetRolesAccess());
-					if (!AccessControlCache.AccessCache.ContainsKey(_cacheName)) AccessControlCache.AccessCache.Add(_cacheName, _access);
-				}
-			}
-			else
-			{
-				_access = AccessControlCache.AccessCache[_cacheName];
-			}
-
-			HashSet<string> _checking = new HashSet<string>(anc.Select(o => key + "-" + o.ToString()));
-			if (_access.Overlaps(_checking))
+			ConcurrentBag<string> _checking = new ConcurrentBag<string>(anc.Select(o => key + "-" + o.ToString()));
+			
+			if (_checking.Any(o => _access.Contains(o)))
 			{
 				_logger.Write("ROLE: " + roleID.ToString() + ", " + key + ": true");
 				return true;
@@ -203,25 +195,11 @@ namespace Nephrite.AccessControl.Std
 			if (AllowItems.Contains(key)) return true;
 			if (DisallowItems.Contains(key)) return false;
 
-			HashSet<string> _access = null;
-			HashSet<string> _items = null;
+			ConcurrentBag<string> _access = null;
+			ConcurrentBag<string> _items = null;
 
-			if (!AccessControlCache.AccessCache.ContainsKey(_cacheName) || !AccessControlCache.ItemsCache.ContainsKey(_cacheName))
-			{
-				lock (_lock)
-				{
-					_access = new HashSet<string>(_dataContext.GetRolesAccess());
-					_items = new HashSet<string>(_dataContext.GetKeys());
-
-					if (!AccessControlCache.AccessCache.ContainsKey(_cacheName)) AccessControlCache.AccessCache.Add(_cacheName, _access);
-					if (!AccessControlCache.ItemsCache.ContainsKey(_cacheName)) AccessControlCache.ItemsCache.Add(_cacheName, _items);
-				}
-			}
-			else
-			{
-				_access = AccessControlCache.AccessCache[_cacheName];
-				_items = AccessControlCache.ItemsCache[_cacheName];
-			}
+			_access = _cache.GetOrAdd(_cacheName + "-access", () => new ConcurrentBag<string>(_dataContext.GetRolesAccess()));
+			_items = _cache.GetOrAdd(_cacheName + "-items", () => new ConcurrentBag<string>(_dataContext.GetKeys()));
 
 			if (!_items.Contains(key))
 			{
@@ -229,7 +207,7 @@ namespace Nephrite.AccessControl.Std
 				{
 					if (!AllowItems.Contains(key))
 					{
-						lock (_lock) { if (!AllowItems.Contains(key)) AllowItems.Add(key); }
+						if (!AllowItems.Contains(key)) AllowItems.Add(key);
 					}
 					_logger.Write(key + ": true (default/admin access)");
 				}
@@ -237,7 +215,7 @@ namespace Nephrite.AccessControl.Std
 				{
 					if (!DisallowItems.Contains(key))
 					{
-						lock (_lock) { if (!DisallowItems.Contains(key)) DisallowItems.Add(key); }
+						if (!DisallowItems.Contains(key)) DisallowItems.Add(key);
 					}
 					_logger.Write(key + ": false (default/admin access denied)");
 				}
@@ -245,11 +223,11 @@ namespace Nephrite.AccessControl.Std
 			}
 
 			HashSet<string> _checking = new HashSet<string>(Roles.Select(o => key + "-" + o.Id.ToString()));
-			if (_access.Overlaps(_checking))
+			if (_checking.Any(o => _access.Contains(o)))
 			{
 				if (!AllowItems.Contains(key))
 				{
-					lock (_lock) { if (!AllowItems.Contains(key)) AllowItems.Add(key); }
+					if (!AllowItems.Contains(key)) AllowItems.Add(key);
 				}
 				_logger.Write(key + ": true (explicit access)");
 				return true;
@@ -258,23 +236,17 @@ namespace Nephrite.AccessControl.Std
 			{
 				if (!DisallowItems.Contains(key))
 				{
-					lock (_lock) { if (!DisallowItems.Contains(key)) DisallowItems.Add(key); }
+					if (!DisallowItems.Contains(key)) DisallowItems.Add(key);
 				}
 				_logger.Write(key + ": false (explicit access denied)");
 				return false;
 			}
 		}
-	}
 
-	public class AccessControlCache
-	{
-		public static Dictionary<string, HashSet<string>> AccessCache = new Dictionary<string, HashSet<string>>();
-		public static Dictionary<string, HashSet<string>> ItemsCache = new Dictionary<string, HashSet<string>>();
-
-		public static void ResetCache()
+		public void ResetCache()
 		{
-			AccessCache.Clear();
-			ItemsCache.Clear();
+			_cache.Reset(_cacheName + "-access");
+			_cache.Reset(_cacheName + "-items");
 		}
 	}
 
