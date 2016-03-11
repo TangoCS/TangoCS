@@ -67,12 +67,6 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Nephrite.Web\Nephrite.Web.csproj">
-      <Project>{26a68254-0902-4499-8b5f-6b4b6341ba21}</Project>
-      <Name>Nephrite.Web</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
