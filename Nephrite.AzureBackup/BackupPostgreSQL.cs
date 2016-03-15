@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using ICSharpCode.SharpZipLib.Zip;
 using Npgsql;
-using Nephrite.Web;
 
 namespace Nephrite.AzureBackup
 {
