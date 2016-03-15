@@ -4,14 +4,13 @@ using System.Linq;
 
 namespace Nephrite.Identity.Std
 {
-	public class DefaultUserValidator<TUser, TKey> : IUserValidator
+	public class DefaultUserValidator<TKey> : IUserValidator<TKey>
 		where TKey : IEquatable<TKey>
-		where TUser : class
 	{
 		UserOptions _options;
-		IIdentityStore<TUser, TKey> _dc;
+		IIdentityStore<IdentityUser<TKey>, TKey> _dc;
 
-		public DefaultUserValidator(IIdentityStore<TUser, TKey> dataContext, UserOptions options = null)
+		public DefaultUserValidator(IIdentityStore<IdentityUser<TKey>, TKey> dataContext, UserOptions options = null)
 		{
 			_options = options ?? new UserOptions();
 			_dc = dataContext;
@@ -52,7 +51,7 @@ namespace Nephrite.Identity.Std
 			return res;
 		}
 
-		public virtual List<ValidationMessage> CheckName(string name)
+		public virtual List<ValidationMessage> CheckName(TKey userId, string name)
 		{
 			List<ValidationMessage> res = new List<ValidationMessage>();
 			char[] loginChars = _options.AllowedLoginChars.ToCharArray();
@@ -84,7 +83,7 @@ namespace Nephrite.Identity.Std
 			return res;
 		}
 
-		public virtual List<ValidationMessage> CheckEmail(string email)
+		public virtual List<ValidationMessage> CheckEmail(TKey userId, string email)
 		{
 			List<ValidationMessage> res = new List<ValidationMessage>();
 
@@ -93,7 +92,8 @@ namespace Nephrite.Identity.Std
 				res.Add(new ValidationMessage(Resources.EmptyEmail));
 			}
 
-			if (_options.RequireUniqueEmail && _dc.UserFromEmail(email) != null)
+			var owner = _dc.UserFromEmail(email);
+			if (_options.RequireUniqueEmail && owner != null && !owner.Id.Equals(userId))
 			{
 				res.Add(new ValidationMessage(string.Format(Resources.DuplicateEmail, email)));
 			}

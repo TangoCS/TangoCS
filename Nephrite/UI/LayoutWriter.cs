@@ -23,6 +23,11 @@ namespace Nephrite.UI
 			ClientActions = new List<ClientAction>();
 			Includes = new HashSet<string>();
 		}
+
+		public void Write(object v)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	public static class LayoutWriterMainExtensions

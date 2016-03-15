@@ -266,6 +266,8 @@ namespace Nephrite.Html
 		public static void A(this IHtmlWriter w, Action<ATagAttributes> attributes, string linkTitle) { w.A(attributes, () => w.Write(linkTitle)); }
 		public static void A(this IHtmlWriter w, string linkTitle) { w.A(null, () => w.Write(linkTitle)); }
 		public static void B(this IHtmlWriter w, string text) { w.B(null, () => w.Write(text)); }
+		public static void Div(this IHtmlWriter w, string text) { w.Div(null, () => w.Write(text)); }
+		public static void Div(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.Div(attributes, () => w.Write(text)); }
 		public static void Label(this IHtmlWriter w, string labelFor, string lableTitle)
 		{
 			w.Label(a => a.For(labelFor), () => w.Write(lableTitle));
@@ -286,7 +288,6 @@ namespace Nephrite.Html
 		public static void H6(this IHtmlWriter w, string text) { w.H6(null, () => w.Write(text)); }
 		public static void Legend(this IHtmlWriter w, string text) { w.Legend(null, text); }
 		public static void Script(this IHtmlWriter w, string path) { w.Script(a => a.Type("text/javascript").Src(path)); }
-
 	}
 
 	public static class HtmlPageWriterExtensions
