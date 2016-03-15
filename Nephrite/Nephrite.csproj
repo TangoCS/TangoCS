@@ -102,6 +102,7 @@
     <Compile Include="Logger.Std\RequestLogger.cs" />
     <Compile Include="Logger.Std\RequestLoggerProvider.cs" />
     <Compile Include="MimeMapping.cs" />
+    <Compile Include="StringUtils.cs" />
     <Compile Include="UI\Controls\ActionLink.cs" />
     <Compile Include="UI\Controls\BackButton.cs" />
     <Compile Include="UI\Controls\Calendar.cs" />
