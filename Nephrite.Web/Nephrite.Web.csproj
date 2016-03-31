@@ -114,7 +114,6 @@
     <Content Include="js\modalwindow.js" />
     <Content Include="js\popup2.js" />
     <Content Include="Replication\Replication.asmx" />
-    <Content Include="TaskManager\TaskManagerService.asmx" />
     <Content Include="View\Message\show.ascx" />
     <Content Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -128,17 +127,10 @@
     <Content Include="Web References\ReplicationServiceReference\ReplicationObject1.datasource">
       <DependentUpon>Reference.map</DependentUpon>
     </Content>
-    <None Include="Web References\TaskManagerServiceReference\Reference.map">
-      <Generator>MSDiscoCodeGenerator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <None Include="Web References\TaskManagerServiceReference\TaskManagerService.disco" />
     <Content Include="Web.config" />
-    <None Include="Web References\TaskManagerServiceReference\TaskManagerService.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\BaseControl.cs" />
-    <Compile Include="Controls\NavMenu.cs" />
     <Compile Include="FormsEngine\MView.cs" />
     <Compile Include="FormsEngine\WebFormsRenderer.cs" />
     <Compile Include="Model\IMMObject.cs" />
@@ -151,16 +143,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.en.resx</DependentUpon>
-    </Compile>
-    <Compile Include="TaskManager\TaskManagerService.asmx.cs">
-      <DependentUpon>TaskManagerService.asmx</DependentUpon>
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TaskManager\TaskRunner.cs" />
-    <Compile Include="Web References\TaskManagerServiceReference\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.map</DependentUpon>
     </Compile>
     <Compile Include="Web\AppWeb.cs" />
     <Compile Include="Model\A.cs" />
@@ -182,12 +164,6 @@
     <Compile Include="Root\SimpleTypeExtensionsWeb.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="View\StandardDelete.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="View\StandardUndelete.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Web References\ReplicationServiceReference\Reference.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -201,13 +177,10 @@
     </Compile>
     <Compile Include="Web\Cache.cs" />
     <Compile Include="Controls\AutoComplete.cs" />
-    <Compile Include="Controls\AutoComplete2.cs" />
-    <Compile Include="Controls\Button.cs" />
     <Compile Include="Controls\CodeArea.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\CaptchaImage.cs" />
-    <Compile Include="Controls\BackButton.cs" />
     <Compile Include="Controls\CodeMirror.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -240,34 +213,8 @@
     </Compile>
     <Compile Include="Controls\IMasterControl.cs" />
     <Compile Include="Controls\HtmlDateLists.cs" />
-    <Compile Include="Controls\MultilingualField.cs" />
     <Compile Include="Controls\NumericBox.cs" />
-    <Compile Include="Controls\Paging.cs" />
-    <Compile Include="Controls\NavMenu.ascx.cs">
-      <DependentUpon>NavMenu.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\NavMenu.ascx.designer.cs">
-      <DependentUpon>NavMenu.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\NavMenuEx.ascx.cs">
-      <DependentUpon>NavMenuEx.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="Controls\NavMenuEx.ascx.designer.cs">
-      <DependentUpon>NavMenuEx.ascx</DependentUpon>
-    </Compile>
-    <Compile Include="Controls\QuickListFilter.cs">
-    </Compile>
-    <Compile Include="Controls\Sorter.cs" />
-    <Compile Include="Controls\SubmitButton.cs" />
-    <Compile Include="Controls\TabControl.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Controls\TableDnD.cs" />
-    <Compile Include="Controls\TabPage.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Controls\TinyMCEEditor.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
@@ -295,9 +242,6 @@
     <Compile Include="LinkedObjects\ILinkedObjectsProvider.cs" />
     <Compile Include="LinkedObjects\LinkedObjectsView.cs" />
     <Compile Include="LinkedObjects\ObjectLink.cs" />
-    <Compile Include="Mailer\MailerModel.cs" />
-    <Compile Include="Mailer\MailManager.cs" />
-    <Compile Include="TaskManager\TaskManagerModel.cs" />
     <Compile Include="Versioning\ClassVersion.cs" />
     <Compile Include="Versioning\IClassVersion.cs" />
     <Compile Include="Reporting\AggregateColumn.cs" />
@@ -315,11 +259,9 @@
     <Compile Include="Web\Impersonation.cs" />
     <Compile Include="MVC\PageParser.cs" />
     <Compile Include="Web\ObjectPropertyChange.cs" />
-    <Compile Include="Mailer\MailerTask.cs" />
     <Compile Include="Controls\MaskedInput.cs" />
     <Compile Include="Obsolete\HtmlHelperWSS.cs" />
     <Compile Include="Controls\JSCalendar.cs" />
-    <Compile Include="Controls\MessageBox.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -332,7 +274,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="MVC\SqlLog.cs" />
-    <Compile Include="TaskManager\TaskManager.cs" />
     <Compile Include="Web\Utils.cs" />
     <Compile Include="View\Message\show.ascx.cs">
       <DependentUpon>show.ascx</DependentUpon>
@@ -361,8 +302,6 @@
     <None Include="Nephrite.Web.snk" />
     <Content Include="Controls\FileUpload.ascx" />
     <Content Include="Controls\FileUploadSimple.ascx" />
-    <Content Include="Controls\NavMenu.ascx" />
-    <Content Include="Controls\NavMenuEx.ascx" />
     <Content Include="js\codearea.js" />
     <Content Include="js\declension.js" />
     <Content Include="js\homewindow.js" />
@@ -407,17 +346,6 @@
       </CachedDynamicPropName>
       <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
       <CachedSettingsPropName>Nephrite_Web_ReplicationService_Replication</CachedSettingsPropName>
-    </WebReferenceUrl>
-    <WebReferenceUrl Include="http://localhost:51278/TaskManager/TaskManagerService.asmx">
-      <UrlBehavior>Dynamic</UrlBehavior>
-      <RelPath>Web References\TaskManagerServiceReference\</RelPath>
-      <UpdateFromURL>http://localhost:51278/TaskManager/TaskManagerService.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
-      <CachedSettingsPropName>Nephrite_Web_TaskManagerService_TaskManagerService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>

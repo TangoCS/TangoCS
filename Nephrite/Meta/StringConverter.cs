@@ -68,7 +68,7 @@ namespace Nephrite.Meta
 			get { return (val, format, provider) => val.Icon(); }
 		}
 
-		public static Func<XDocument, string, IFormatProvider, string> Xml
+		public static Func<XDocument, string, IFormatProvider, string> XDocument
 		{
 			get { return (val, format, provider) => val.ToString(); }
 		}

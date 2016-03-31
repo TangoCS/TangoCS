@@ -5,8 +5,5 @@
     <Setting Name="Nephrite_Web_ReplicationService_Replication" Type="(Web Service URL)" Scope="Application">
       <Value Profile="(Default)">http://localhost:51278/Replication/Replication.asmx</Value>
     </Setting>
-    <Setting Name="Nephrite_Web_TaskManagerService_TaskManagerService" Type="(Web Service URL)" Scope="Application">
-      <Value Profile="(Default)">http://localhost:51278/TaskManager/TaskManagerService.asmx</Value>
-    </Setting>
   </Settings>
 </SettingsFile>

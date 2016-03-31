@@ -19,6 +19,7 @@ using NHibernate.Linq;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Transform;
 using NHibernate.Type;
+using NHibernate.Mapping.ByCode.Conformist;
 
 namespace Nephrite.Hibernate
 {
@@ -30,10 +31,9 @@ namespace Nephrite.Hibernate
 		ISession _session;
 		IRequestLoggerProvider _loggerProvider;
 		IRequestLogger _logger;
+		IClassMappingList _mappingList;
 
-		public List<object> ToInsert { get; private set; }
-		public List<object> ToDelete { get; private set; }
-		public List<object> ToAttach { get; private set; }
+		List<Action<ITransaction>> SaveActions = new List<Action<ITransaction>>();
 		public List<Action> AfterSaveActions { get; private set; }
 		public List<Action> BeforeSaveActions { get; private set; }
 
@@ -112,8 +112,9 @@ namespace Nephrite.Hibernate
 				else
 				{
 					var mapper = new ModelMapper();
-					mapper.AddMappings(GetEntitiesTypes());
-					mapper.AddMappings(GetTableFunctionsTypes());
+					mapper.AddMappings(_mappingList.GetTypes());
+					//mapper.AddMappings(GetEntitiesTypes());
+					//mapper.AddMappings(GetTableFunctionsTypes());
 					f = mapper.CompileMappingForAllExplicitlyAddedEntities();
 					_mappings.Add(t, f);
 				}
@@ -125,21 +126,19 @@ namespace Nephrite.Hibernate
 
 		Action<IDbIntegrationConfigurationProperties> _dbConfig;
 
-		public abstract IEnumerable<Type> GetEntitiesTypes();
-		public virtual IEnumerable<Type> GetTableFunctionsTypes() { return new List<Type>(); }
+		//public abstract IEnumerable<Type> GetEntitiesTypes();
+		//public virtual IEnumerable<Type> GetTableFunctionsTypes() { return new List<Type>(); }
 		
 
-		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, IDbConnection connection, IRequestLoggerProvider loggerProvider)
+		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, IDbConnection connection, IClassMappingList mappingList, IRequestLoggerProvider loggerProvider)
 		{
 			ID = GetType().Name + "-" + Guid.NewGuid().ToString();
 			_dbConfig = dbConfig;
 			Connection = connection;
 			_loggerProvider = loggerProvider;
 			_logger = _loggerProvider.GetLogger("sql");
+			_mappingList = mappingList;
 
-			ToInsert = new List<object>();
-			ToDelete = new List<object>();
-			ToAttach = new List<object>();
 			AfterSaveActions = new List<Action>();
 			BeforeSaveActions = new List<Action>();
 		}
@@ -156,14 +155,7 @@ namespace Nephrite.Hibernate
 				_logger.Write("BEGIN TRANSACTION");
 
 				foreach (var action in BeforeSaveActions) action();
-				foreach (object obj in ToDelete) _session.Delete(obj);
-				foreach (object obj in ToInsert) _session.SaveOrUpdate(obj);
-				foreach (object obj in ToAttach) _session.Merge(obj);
-
-				ToDelete.Clear();
-				ToInsert.Clear();
-				ToAttach.Clear();
-
+				foreach (var action in SaveActions) action(transaction);
 				foreach (var action in AfterSaveActions) action();
 
 				transaction.Commit();
@@ -171,7 +163,9 @@ namespace Nephrite.Hibernate
 				_logger.Write("COMMIT TRANSACTION");
 
 				BeforeSaveActions.Clear();
+				SaveActions.Clear();
 				AfterSaveActions.Clear();
+
 			}
 		}
 
@@ -320,21 +314,38 @@ namespace Nephrite.Hibernate
 			return Session.Get<T>(id);
 		}
 
-		public void InsertOnSubmit(object obj)
+		public void InsertOnSubmit<T>(T obj) where T : class
 		{
-			ToInsert.Add(obj);
+			SaveActions.Add(t => _session.SaveOrUpdate(obj));
 		}
-		public void DeleteOnSubmit(object obj)
+		public void DeleteOnSubmit<T>(T obj) where T : class
 		{
-			ToDelete.Add(obj);
+			SaveActions.Add(t => _session.Delete(obj));
 		}
-		public void DeleteAllOnSubmit(IEnumerable objs)
+		public void DeleteAllOnSubmit<T>(IEnumerable<T> objs) where T : class
 		{
-			ToDelete.AddRange(objs.Cast<object>());
+			SaveActions.Add(t => {
+				foreach (var obj in objs)
+					_session.Delete(obj);
+			});
 		}
-		public void AttachOnSubmit(object entity)
+		public void AttachOnSubmit<T>(T obj) where T : class
 		{
-			ToAttach.Add(entity);
+			SaveActions.Add(t => _session.Merge(obj));
+		}
+
+		public void CommandOnSubmit(string query, params object[] parms)
+		{
+			SaveActions.Add(t => {
+				using (var comm = _session.Connection.CreateCommand())
+				{
+					comm.CommandText = query;
+					t.Enlist(comm);
+					foreach (var parm in parms)
+						comm.Parameters.Add(parm);
+					comm.ExecuteNonQuery();
+				}
+			});
 		}
 	}
 
@@ -388,6 +399,33 @@ namespace Nephrite.Hibernate
 		{
 			string msg = " Delete     :" + entity.GetType().FullName;
 			invalidUpdates.Add(msg);
+		}
+	}
+
+
+	public interface IClassMappingList
+	{
+		IEnumerable<Type> GetTypes();
+	}
+
+	public class DefaultClassMappingList : IClassMappingList, ITypeObserver
+	{
+		static List<Type> _mappings = new List<Type>();
+
+		public IEnumerable<Type> GetTypes() => _mappings;
+
+		public void LookOver(Type t)
+		{
+			if (t.BaseType.IsGenericType)
+			{
+				var gt = t.BaseType.GetGenericTypeDefinition();
+				if (gt == typeof(ClassMapping<>) ||
+					gt == typeof(JoinedSubclassMapping<>) ||
+					gt == typeof(SubclassMapping<>))
+				{
+					_mappings.Add(t);
+				}
+			}
 		}
 	}
 }

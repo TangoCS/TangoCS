@@ -141,7 +141,7 @@ namespace Nephrite.FileStorage.Std
 	public interface IDbFileData : IEntity
 	{
 		byte[] Data { get; set; }
-		int Size { get; set; }
+		long Size { get; set; }
 		string Title { get; set; }
 		string Extension { get; set; }
 		Guid FileGUID { get; set; }

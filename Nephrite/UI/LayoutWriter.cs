@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Nephrite.Html;
-using Nephrite.Multilanguage;
+using Nephrite.Localization;
 
 namespace Nephrite.UI
 {
@@ -22,11 +22,6 @@ namespace Nephrite.UI
 			Context = context;
 			ClientActions = new List<ClientAction>();
 			Includes = new HashSet<string>();
-		}
-
-		public void Write(object v)
-		{
-			throw new NotImplementedException();
 		}
 	}
 

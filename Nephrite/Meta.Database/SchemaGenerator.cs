@@ -17,8 +17,8 @@ namespace Nephrite.Meta.Database
 				Table t = new Table();
 				t.Schema = this;
 				t.Name = cls.Name;
-				t.Description = cls.Caption;
-				t.Identity = cls.CompositeKey.Count > 0 ? (cls.CompositeKey.Count > 1 ? cls.CompositeKey.Where(c => c is MetaAttribute).Any(a => (a as MetaAttribute).IsIdentity) : cls.Key is MetaAttribute && (cls.Key as MetaAttribute).IsIdentity) : false;
+				//t.Description = cls.Caption;
+				t.Identity = cls.CompositeKey.Count == 1 && cls.Key is ICanBeIdentity && (cls.Key as ICanBeIdentity).IsIdentity;
 
 				if (t.Identity && cls.CompositeKey.Any(c => c.Type is MetaGuidType))
 					throw new Exception(string.Format("Class {0}. Поле не может быть Identity с типом uniqueidentifier", t.Name));
@@ -68,12 +68,11 @@ namespace Nephrite.Meta.Database
 
 				foreach (var prop in cls.Properties)
 				{
-					if (prop is MetaComputedAttribute)
+					if (prop is IMetaComputedAttribute)
 						continue;
-					if (prop is MetaReference && prop.UpperBound == -1)
+					if (prop is IMetaReference && prop.UpperBound == -1)
 						continue;
-					if ((prop is MetaAttribute && (prop as MetaAttribute).IsMultilingual) || 
-						(prop is MetaPersistentComputedAttribute && (prop as MetaPersistentComputedAttribute).IsMultilingual))
+					if (prop is ICanBeMultilingual && (prop as ICanBeMultilingual).IsMultilingual)
 						continue;
 
 					var column = new Column();
@@ -81,23 +80,25 @@ namespace Nephrite.Meta.Database
 					column.Table = t;
 					column.Type = prop.Type;
 					column.DefaultValue = prop.DefaultDBValue;
-					if (prop is MetaPersistentComputedAttribute)
+					if (prop is IMetaPersistentComputedAttribute)
 					{
-						column.ComputedText = (prop as MetaPersistentComputedAttribute).Expression;
+						column.ComputedText = (prop as IMetaPersistentComputedAttribute).Expression;
 					}
 
 					//Если у свойства мощность 0..1 или 1..1
-					if (prop is MetaReference && prop.UpperBound == 1)
+					if (prop is IMetaReference && prop.UpperBound == 1)
 					{
-						if ((prop as MetaReference).RefClass.Key.Type is MetaIntType || (prop as MetaReference).RefClass.Key.Type is MetaGuidType)
+						var r = prop as IMetaReference;
+						if (r.RefClass.Key.Type is MetaIntType || 
+							r.RefClass.Key.Type is MetaGuidType)
 						{
-							column.Name = (prop as MetaReference).RefClass.ColumnName(prop.Name);
+							column.Name = prop.ColumnName;
 						}
-						if ((prop as MetaReference).RefClass.Key.Type is MetaFileType)
+						if (r.RefClass.Key.Type is MetaFileType)
 						{
 							column.Name = "FileGUID";
 						}
-						column.ForeignKeyName = "FK_" + cls.Name + "_" + (prop as MetaReference).RefClass.Name;
+						column.ForeignKeyName = "FK_" + cls.Name + "_" + r.RefClass.Name;
 					}
 
 					if (prop.Type is MetaFileType)
@@ -116,19 +117,19 @@ namespace Nephrite.Meta.Database
 						primaryColumn = column;
 					}
 
-					column.Identity = prop is MetaAttribute ? (prop as MetaAttribute).IsIdentity : false;
+					column.Identity = prop is ICanBeIdentity ? (prop as ICanBeIdentity).IsIdentity : false;
 
 					t.Columns.Add(column.Name, column);
 				}
 
-				foreach (var f in cls.Properties.Where(o => o is MetaReference))
+				foreach (var f in cls.Properties.Where(o => o is IMetaReference))
 				{
 					//Если у свойства мощность 0..1 или 1..1 Создаём FK
-					var metaRef = f as MetaReference;
+					var metaRef = f as IMetaReference;
 					if (f.UpperBound == 1)
 					{
 						var fkcolumnname = metaRef.RefClass.BaseClass != null ? metaRef.RefClass.BaseClass.Key.ColumnName : metaRef.RefClass.CompositeKey.Select(o => o.ColumnName).First();
-						t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { Table = t, Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaRef.RefClass.Name, Columns = new[] { metaRef.RefClass.ColumnName(metaRef.Name) }, RefTableColumns = new[] { fkcolumnname } });
+						t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { Table = t, Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaRef.RefClass.Name, Columns = new[] { metaRef.ColumnName }, RefTableColumns = new[] { fkcolumnname } });
 
 						// Если референс на WF_Activity
 						var wf = new string[] {"wf_activity", "wf_workflow", "wf_transition" };
@@ -141,7 +142,7 @@ namespace Nephrite.Meta.Database
 							// Добавляем PK
 							var trPk = new Column();
 							trPk.Name = ttr.Name + "ID";
-							trPk.Type = MetaIntType.NotNull();
+							trPk.Type = TypeFactory.Int;
 							trPk.IsPrimaryKey = true;
 							trPk.Nullable = false;
 							trPk.Table = ttr;
@@ -156,30 +157,30 @@ namespace Nephrite.Meta.Database
 
 							ttr.Columns.Add(trPk.Name, trPk);
 
-							ttr.Columns.Add("CreateDate", new Column() { Table = ttr, Name = "CreateDate", Type = MetaDateTimeType.NotNull() });
-							ttr.Columns.Add("Comment", new Column() { Table = ttr, Name = "Comment", Nullable = true, Type = MetaStringType.Null() });
-							ttr.Columns.Add("IsCurrent", new Column() { Table = ttr, Name = "IsCurrent", Type = MetaBooleanType.NotNull() });
-							ttr.Columns.Add("IsLast", new Column() { Table = ttr, Name = "IsLast", Type = MetaBooleanType.NotNull() });
-							ttr.Columns.Add("SeqNo", new Column() { Table = ttr, Name = "SeqNo", Type = MetaIntType.NotNull() });
+							ttr.Columns.Add("CreateDate", new Column() { Table = ttr, Name = "CreateDate", Type = TypeFactory.DateTime });
+							ttr.Columns.Add("Comment", new Column() { Table = ttr, Name = "Comment", Nullable = true, Type = TypeFactory.String });
+							ttr.Columns.Add("IsCurrent", new Column() { Table = ttr, Name = "IsCurrent", Type = TypeFactory.Boolean });
+							ttr.Columns.Add("IsLast", new Column() { Table = ttr, Name = "IsLast", Type = TypeFactory.Boolean });
+							ttr.Columns.Add("SeqNo", new Column() { Table = ttr, Name = "SeqNo", Type = TypeFactory.Int });
 
 							var fknm = "FK_" + ttr.Name + "_Parent";
-							ttr.Columns.Add("ParentID", new Column() { Table = ttr, Name = "ParentID", ForeignKeyName = fknm, Type = MetaIntType.NotNull() });
+							ttr.Columns.Add("ParentID", new Column() { Table = ttr, Name = "ParentID", ForeignKeyName = fknm, Type = TypeFactory.Int });
 							ttr.ForeignKeys.Add(fknm, new ForeignKey() { Table = ttr, Name = fknm, RefTable = t.Name, Columns = new[] { "ParentID" }, RefTableColumns = new[] { metaRef.RefClass.Key.Name } });
 
 							fknm = "FK_" + ttr.Name + "_Subject";
-							ttr.Columns.Add("SubjectID", new Column() { Table = ttr, Name = "SubjectID", ForeignKeyName = fknm, Type = MetaIntType.NotNull() });
+							ttr.Columns.Add("SubjectID", new Column() { Table = ttr, Name = "SubjectID", ForeignKeyName = fknm, Type = TypeFactory.Int });
 							ttr.ForeignKeys.Add(fknm, new ForeignKey() { Table = ttr, Name = fknm, RefTable = "SPM_Subject", Columns = new[] { "SubjectID" }, RefTableColumns = new[] { "SubjectID" } });
 
 							fknm = "FK_" + ttr.Name + "_Workflow";
-							ttr.Columns.Add("WorkflowID", new Column() { Table = ttr, Name = "WorkflowID", ForeignKeyName = fknm, Type = MetaIntType.NotNull() });
+							ttr.Columns.Add("WorkflowID", new Column() { Table = ttr, Name = "WorkflowID", ForeignKeyName = fknm, Type = TypeFactory.Int });
 							ttr.ForeignKeys.Add(fknm, new ForeignKey() { Table = ttr, Name = fknm, RefTable = "WF_Workflow", Columns = new[] { "WorkflowID" }, RefTableColumns = new[] { "WorkflowID" } });
 
 							fknm = "FK_" + ttr.Name + "_Activity";
-							ttr.Columns.Add("ActivityID", new Column() { Table = ttr, Name = "ActivityID", ForeignKeyName = fknm, Type = MetaIntType.NotNull() });
+							ttr.Columns.Add("ActivityID", new Column() { Table = ttr, Name = "ActivityID", ForeignKeyName = fknm, Type = TypeFactory.Int });
 							ttr.ForeignKeys.Add(fknm, new ForeignKey() { Table = ttr, Name = fknm, RefTable = "WF_Activity", Columns = new[] { "ActivityID" }, RefTableColumns = new[] { "ActivityID" } });
 
 							fknm = "FK_" + ttr.Name + "_Transition";
-							ttr.Columns.Add("TransitionID", new Column() { Table = ttr, Name = "TransitionID", ForeignKeyName = fknm, Type = MetaIntType.NotNull() });
+							ttr.Columns.Add("TransitionID", new Column() { Table = ttr, Name = "TransitionID", ForeignKeyName = fknm, Type = TypeFactory.Int });
 							ttr.ForeignKeys.Add(fknm, new ForeignKey() { Table = ttr, Name = fknm, RefTable = "WF_Transition", Columns = new[] { "TransitionID" }, RefTableColumns = new[] { "TransitionID" } });
 							
 							Tables.Add(ttr.Name, ttr);
@@ -187,7 +188,7 @@ namespace Nephrite.Meta.Database
 					}
 
 					//Если у свойства мощность 0..* или 1..* Кроме случая, когда есть обратное свойство с мощностью 0..1 Создаём третью таблицу с двумя колонками
-					if (f.UpperBound == -1 && (f as MetaReference).InverseProperty == null)
+					if (f.UpperBound == -1 && metaRef.InverseProperty == null)
 					{
 						if (!tempListJoinTables.Contains(t.Name + f.Name) && !tempListJoinTables.Contains(f.Name + t.Name))
 						{
@@ -196,8 +197,16 @@ namespace Nephrite.Meta.Database
 							tj.Name = t.Name + f.Name;
 							var columnNameLeft = primaryColumn.Name;
 							var columnNameRight = f.ColumnName;
-							tj.Columns.Add(columnNameLeft, new Column() { Table = tj, Name = columnNameLeft, IsPrimaryKey = true, ForeignKeyName = "FK_" + tj.Name + "_" + t.Name, Type = primaryColumn.Type });
-							tj.Columns.Add(columnNameRight, new Column() { Table = tj, Name = columnNameRight, IsPrimaryKey = true, ForeignKeyName = "FK_" + tj.Name + "_" + f.Name, Type = (f as MetaReference).RefClass.Key.Type });
+							tj.Columns.Add(columnNameLeft, new Column() { 
+								Table = tj, Name = columnNameLeft, IsPrimaryKey = true, 
+								ForeignKeyName = "FK_" + tj.Name + "_" + t.Name, 
+								Type = primaryColumn.Type 
+							});
+							tj.Columns.Add(columnNameRight, new Column() { 
+								Table = tj, Name = columnNameRight, IsPrimaryKey = true, 
+								ForeignKeyName = "FK_" + tj.Name + "_" + f.Name, 
+								Type = metaRef.RefClass.Key.Type 
+							});
 
 							PrimaryKey joinPk = new PrimaryKey();
 							joinPk.Name = "PK_" + tj.Name;
@@ -205,8 +214,16 @@ namespace Nephrite.Meta.Database
 							joinPk.Table = tj;
 							tj.PrimaryKey = joinPk;
 
-							tj.ForeignKeys.Add("FK_" + tj.Name + "_" + t.Name, new ForeignKey() { Table = tj, Name = "FK_" + tj.Name + "_" + t.Name, RefTable = t.Name, Columns = new[] { columnNameLeft }, RefTableColumns = new[] { primaryColumn.Name } });
-							tj.ForeignKeys.Add("FK_" + tj.Name + "_" + f.Name, new ForeignKey() { Table = tj, Name = "FK_" + tj.Name + "_" + f.Name, RefTable = (f as MetaReference).RefClass.Name, Columns = new[] { columnNameRight }, RefTableColumns = new[] { (f as MetaReference).RefClass.Key.Name } });
+							tj.ForeignKeys.Add("FK_" + tj.Name + "_" + t.Name, new ForeignKey() { 
+								Table = tj, Name = "FK_" + tj.Name + "_" + t.Name, RefTable = t.Name, 
+								Columns = new[] { columnNameLeft }, 
+								RefTableColumns = new[] { primaryColumn.Name } 
+							});
+							tj.ForeignKeys.Add("FK_" + tj.Name + "_" + f.Name, new ForeignKey() { 
+								Table = tj, Name = "FK_" + tj.Name + "_" + f.Name, RefTable = metaRef.RefClass.Name, 
+								Columns = new[] { columnNameRight }, 
+								RefTableColumns = new[] { metaRef.RefClass.Key.Name } 
+							});
 
 							Tables.Add(tj.Name, tj);
 							tempListJoinTables.Add(tj.Name);
@@ -265,16 +282,15 @@ namespace Nephrite.Meta.Database
 
 					tdata.ForeignKeys.Add(languageColumn.ForeignKeyName, new ForeignKey() { Table = tdata, Name = languageColumn.ForeignKeyName, RefTable = "C_Language", Columns = new[] { "LanguageCode" }, RefTableColumns = new[] { "LanguageCode" } });
 
-					foreach (var prop in cls.Properties.Where(o => (o is MetaAttribute && (o as MetaAttribute).IsMultilingual) ||
-								(o is MetaPersistentComputedAttribute && (o as MetaPersistentComputedAttribute).IsMultilingual)))
+					foreach (var prop in cls.Properties.Where(o => o is ICanBeMultilingual && (o as ICanBeMultilingual).IsMultilingual))
 					{
 						var column = new Column();
 						column.Name = prop.ColumnName;
 						column.Table = tdata;
 						column.DefaultValue = prop.DefaultDBValue;
-						if (prop is MetaPersistentComputedAttribute)
+						if (prop is IMetaPersistentComputedAttribute)
 						{
-							column.ComputedText = (prop as MetaPersistentComputedAttribute).Expression;
+							column.ComputedText = (prop as IMetaPersistentComputedAttribute).Expression;
 						}
 
 						column.Type = prop.Type;
@@ -377,7 +393,7 @@ namespace Nephrite.Meta.Database
 					column.Name = prop.ColumnName;
 					column.Type = prop.Type;
 					column.Nullable = !prop.IsRequired;
-					column.Description = prop.Description;
+					//column.Description = prop.Description;
 
 					function.Columns.Add(column.Name, column);
 				}

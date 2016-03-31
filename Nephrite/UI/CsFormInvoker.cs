@@ -1,5 +1,5 @@
 ﻿using System;
-using Nephrite.Multilanguage;
+using Nephrite.Localization;
 
 namespace Nephrite.UI
 {

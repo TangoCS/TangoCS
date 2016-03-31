@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 
-namespace Nephrite.Multilanguage
+namespace Nephrite.Localization
 {
 	public interface ITextResource
 	{

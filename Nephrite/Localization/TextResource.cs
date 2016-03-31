@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Nephrite.Multilanguage
+namespace Nephrite.Localization
 {
 	public class TextResourceOptions
 	{

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using Nephrite.Html;
-using Nephrite.Multilanguage;
+using Nephrite.Localization;
 
 namespace Nephrite.UI.Controls
 {

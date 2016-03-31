@@ -432,6 +432,65 @@ namespace Nephrite
 			return res;
 		}
 
+		public static string GetFriendlyName(this Type type)
+		{
+			if (type == typeof(int))
+				return "int";
+			else if (type == typeof(short))
+				return "short";
+			else if (type == typeof(byte))
+				return "byte";
+			else if (type == typeof(bool))
+				return "bool";
+			else if (type == typeof(long))
+				return "long";
+			else if (type == typeof(float))
+				return "float";
+			else if (type == typeof(double))
+				return "double";
+			else if (type == typeof(decimal))
+				return "decimal";
+			else if (type == typeof(string))
+				return "string";
+			else if (type.IsGenericType)
+				return type.Name.Split('`')[0] + "<" + string.Join(", ", type.GetGenericArguments().Select(x => GetFriendlyName(x)).ToArray()) + ">";
+			else
+				return type.Name;
+			//string friendlyName = type.Name;
+			//if (type.IsGenericType)
+			//{
+			//	int iBacktick = friendlyName.IndexOf('`');
+			//	if (iBacktick > 0)
+			//	{
+			//		friendlyName = friendlyName.Remove(iBacktick);
+			//	}
+			//	friendlyName += "<";
+			//	Type[] typeParameters = type.GetGenericArguments();
+			//	for (int i = 0; i < typeParameters.Length; ++i)
+			//	{
+			//		string typeParamName = typeParameters[i].Name;
+			//		friendlyName += (i == 0 ? typeParamName : "," + typeParamName);
+			//	}
+			//	friendlyName += ">";
+			//}
+
+			//return friendlyName;
+		}
+
+		public static bool IsSubclassOfRawGeneric(this Type toCheck, Type generic)
+		{
+			while (toCheck != null && toCheck != typeof(object))
+			{
+				var cur = toCheck.IsGenericType ? toCheck.GetGenericTypeDefinition() : toCheck;
+				if (generic == cur)
+				{
+					return true;
+				}
+				toCheck = toCheck.BaseType;
+			}
+			return false;
+		}
+
 		public static StringBuilder AppendAttributes(this StringBuilder sb, object attributes, string defaultClass)
 		{
 			bool c = !defaultClass.IsEmpty();

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
-namespace Nephrite.Multilanguage
+namespace Nephrite.Localization
 {
 	public class LanguageOptions
 	{

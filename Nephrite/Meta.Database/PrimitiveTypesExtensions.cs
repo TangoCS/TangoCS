@@ -2,14 +2,12 @@
 
 namespace Nephrite.Meta
 {
-	public abstract partial class MetaClassifier : MetaNamedElement, IMetaClassifier
+	public abstract partial class MetaPrimitiveType
 	{
-
 		public virtual string GetDBType(IDBTypeMapper mapper)
 		{
 			return "";
 		}
-		//public bool NotNullable { get; set; }
 	}
 	public partial class MetaDecimalType
 	{

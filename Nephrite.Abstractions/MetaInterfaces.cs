@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Nephrite.Meta
 {
@@ -15,26 +16,26 @@ namespace Nephrite.Meta
 	public interface IMetaNamedElement : IMetaElement
 	{
 		string Name { get; set; }
-		string Description { get; set; }
-		string Caption { get; set; }
-		string CaptionFor(string suffix);
-    }
+		string Namespace { get; set; }
+		//string Description { get; set; }
+		//string Caption { get; set; }
+	}
 
 	public interface IMetaStereotype : IMetaNamedElement
 	{
 		IMetaElement Parent { get; set; }
 	}
 
-	public partial interface IMetaClassifier : IMetaNamedElement
-	{
-		string CLRType { get; }
-		string ColumnName(string propName);
-	}
+	//public partial interface IMetaClassifier : IMetaNamedElement
+	//{
+	//	string CLRType { get; }
+	//	string ColumnName(string propName);
+	//}
 
 	public interface IMetaSolution : IMetaNamedElement
 	{
-		Dictionary<string, IMetaClass>.ValueCollection Classes { get; }
-		Dictionary<string, IMetaEnum>.ValueCollection Enums { get; }
+		IEnumerable<IMetaClass> Classes { get; }
+		IEnumerable<IMetaEnum> Enums { get; }
 
 		IMetaClass GetClass(string name);
 		IMetaEnum GetEnum(string name);
@@ -43,9 +44,9 @@ namespace Nephrite.Meta
 		//ITextResource TextResource { get; }
 	}
 
-	public interface IMetaClass : IMetaClassifier
+	public interface IMetaClass : IMetaNamedElement//IMetaClassifier
 	{
-		Dictionary<string, IMetaProperty>.ValueCollection AllProperties { get; }
+		IEnumerable<IMetaProperty> AllProperties { get; }
 		IMetaClass BaseClass { get; }
 		IMetaSolution Parent { get; set; }
 		PersistenceType Persistent { get; set; }
@@ -56,13 +57,13 @@ namespace Nephrite.Meta
 		bool IsMultilingual { get; }
 		List<IMetaParameter> Parameters { get; }
 
-		Dictionary<string, IMetaOperation>.KeyCollection OperationNames { get; }
-		Dictionary<string, IMetaOperation>.ValueCollection Operations { get; }
+		IEnumerable<IMetaOperation> Operations { get; }
+		IEnumerable<string> OperationNames { get; }
 		IMetaOperation GetOperation(string name);
 		void AddOperation(IMetaOperation metaOperation);
 
-		Dictionary<string, IMetaProperty>.ValueCollection Properties { get; }
-		Dictionary<string, IMetaProperty>.KeyCollection PropertyNames { get; }
+		IEnumerable<IMetaProperty> Properties { get; }
+		IEnumerable<string> PropertyNames { get; }
 		IMetaProperty GetProperty(string name);
 		void AddProperty(IMetaProperty metaProperty);
 
@@ -76,37 +77,37 @@ namespace Nephrite.Meta
 
 	public interface IMetaProperty : IMetaNamedElement
 	{
-		string CaptionShort { get; set; }
+		//string CaptionShort { get; set; }
 		string ColumnName { get; }
 		string DefaultDBValue { get; set; }
-		object GetValue { get; set; }
-		object GetValueExpression { get; set; }
 		bool IsRequired { get; set; }
 		IMetaClass Parent { get; set; }
-		object SetValue { get; set; }
 		IMetaPrimitiveType Type { get; set; }
 		int UpperBound { get; set; }
-
-		string GetStringValue<TClass>(TClass obj, string format = "", IFormatProvider provider = null);
 	}
 
-	public interface IMetaValueProperty : IMetaProperty
+	public interface IMetaProperty<TClass, TValue> : IMetaProperty
+	{
+		Func<TClass, TValue> GetValue { get; set; }
+		Action<TClass, TValue> SetValue { get; set; }
+		Expression<Func<TClass, TValue>> GetValueExpression { get; set; }
+
+		string GetStringValue(TClass obj, string format = "", IFormatProvider provider = null);
+	}
+
+	public interface ICanBeMultilingual
 	{
 		bool IsMultilingual { get; set; }
 	}
 
-	public interface IMetaAttribute : IMetaValueProperty
+	public interface ICanBeIdentity
 	{
 		bool IsIdentity { get; set; }
 	}
 
-	public interface IMetaComputedAttribute : IMetaValueProperty
-	{
-		string GetExpressionString { get; set; }
-		string SetExpressionString { get; set; }
-	}
-
-	public interface IMetaPersistentComputedAttribute : IMetaValueProperty
+	public interface IMetaValueProperty : IMetaProperty { }
+	public interface IMetaComputedAttribute : IMetaValueProperty { }
+	public interface IMetaPersistentComputedAttribute : IMetaValueProperty, ICanBeMultilingual
 	{
 		string Expression { get; set; }
 	}
@@ -114,15 +115,23 @@ namespace Nephrite.Meta
 	public interface IMetaReference : IMetaProperty
 	{
 		AssociationType AssociationType { get; set; }
-		IMetaReference InverseProperty { get; }
+		IMetaProperty InverseProperty { get; }
 		IMetaClass RefClass { get; }
-
-		string DataTextField { get; set; }
-		IQueryable AllObjects { get; set; }
 
 		void SetRefClass(string refClassName);
 		void SetInverseProperty(string inversePropertyName);
-    }
+	}
+
+	public interface IMetaReference<TClass, TRefClass> : IMetaReference, IMetaProperty<TClass, IQueryable<TRefClass>>
+	{
+	}
+
+	public interface IMetaReference<TClass, TRefClass, TKey> : IMetaReference, IMetaProperty<TClass, TRefClass>
+	{
+		Func<TClass, TKey> GetValueID { get; set; }
+		Action<TClass, TKey> SetValueID { get; set; }
+		Expression<Func<TClass, TKey>> GetValueIDExpression { get; set; }
+	}
 
 	public interface IMetaOperation : IMetaNamedElement
 	{
@@ -154,24 +163,27 @@ namespace Nephrite.Meta
 		IMetaParameterType Type { get; set; }
 	}
 
-	public interface IMetaPrimitiveType : IMetaClassifier
+	public interface IMetaPrimitiveType //: IMetaClassifier
 	{
-		bool NotNullable { get; }
-		/// <summary>
-		/// Func &lt;TValue, string, IFormatProvider, string&gt;
-		/// </summary>
-		object GetStringValue { get; }
+		//bool NotNullable { get; }
 
-		IMetaPrimitiveType Clone(bool notNullable);
+
+		//string ColumnSuffix { get; }
+
+		string ToCSharpType(bool nullable);
+		//IMetaPrimitiveType Clone(bool notNullable);
 	}
 
-	public interface IMetaIdentifierType : IMetaPrimitiveType
+	//public interface IMetaPrimitiveType<T>
+	//{
+	//	Func<T, string, IFormatProvider, string> GetStringValue { get; }
+	//}
+
+	public interface IMetaIdentifierType : IMetaPrimitiveType 
 	{
 		string ColumnSuffix { get; }
 	}
-
 	public interface IMetaParameterType : IMetaPrimitiveType { }
-
 	public interface IMetaNumericType : IMetaPrimitiveType { }
 
 	public enum PersistenceType
@@ -182,10 +194,6 @@ namespace Nephrite.Meta
 		TableFunction,
 		Procedure
 	}
-
-	//public enum DTOClassKind { Single, Queryable, None }
-	//public enum ViewEngineType { WebForms, Razor }
-	//public enum InteractionType { OneWayView, ViewWithSubmit, NoView }
 
 	/// <summary>
 	/// Тип ассоциации

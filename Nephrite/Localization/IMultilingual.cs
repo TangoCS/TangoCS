@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq.Expressions;
 
-namespace Nephrite.Multilanguage
+namespace Nephrite.Localization
 {
 	public interface IMultilingual
 	{

@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
 
 namespace Nephrite.Data
@@ -32,10 +30,11 @@ namespace Nephrite.Data
 		IQueryable GetTable(Type t);
 		T Get<T, TKey>(TKey id);
 
-		void InsertOnSubmit(object obj);
-		void DeleteOnSubmit(object obj);
-		void DeleteAllOnSubmit(IEnumerable obj);
-		void AttachOnSubmit(object obj);
+		void InsertOnSubmit<T>(T obj) where T : class;
+		void DeleteOnSubmit<T>(T obj) where T : class;
+		void DeleteAllOnSubmit<T>(IEnumerable<T> obj) where T : class;
+		void AttachOnSubmit<T>(T obj) where T : class;
+		void CommandOnSubmit(string query, params object[] parms);
 
 		void SubmitChanges();
 

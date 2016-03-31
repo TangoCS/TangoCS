@@ -1,77 +1,26 @@
 ﻿using System;
 using System.IO;
-using Nephrite.MVC;
 using RazorEngine;
 using RazorEngine.Templating;
 
 namespace Nephrite.Razor
 {
-	public class RazorRenderer : IViewRenderer
-    {
-		string _result;
-
-		public bool IsStringResult
+	public class RazorRenderer
+	{
+		public string Render(string fileName, object viewData)
 		{
-			get
-			{
-				return true;
-			}
+			var key = fileName.ToLower() + "?" + File.GetLastWriteTime(fileName).ToString();
+			return Render(key, () => File.ReadAllText(fileName), viewData);
 		}
 
-		public void RenderHtml(string title, string html)
+		public string Render(string key, Func<string> template, object viewData)
 		{
-			throw new NotImplementedException();
-		}
-
-		public void RenderMessage(string message)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void RenderView(string folder, string viewName, object viewData)
-		{
-			var templatePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, GlobalSettings.ControlsPath, folder, viewName + ".cshtml");
-			var templateKey = Path.Combine(folder.ToLower(), viewName.ToLower() + ".cshtml") + File.GetLastWriteTime(templatePath).ToString();
-
-			if (Engine.Razor.IsTemplateCached(templateKey, viewData.GetType()))
-				_result = Engine.Razor.Run(templateKey, viewData.GetType(), viewData);
+			if (Engine.Razor.IsTemplateCached(key, viewData.GetType()))
+				return Engine.Razor.Run(key, viewData.GetType(), viewData);
 			else
 			{
-				_result = Engine.Razor.RunCompile(File.ReadAllText(templatePath), templateKey, viewData.GetType(), viewData);
+				return Engine.Razor.RunCompile(template(), key, viewData.GetType(), viewData);
 			}
 		}
-
-		public void RenderMessage(string title, string message)
-		{
-			throw new NotImplementedException();
-		}
-
-		public override string ToString()
-		{
-			return _result;
-		}
-
-		//public static string Render(string folder, string viewName, object viewData)
-		//{
-		//	var r = new RazorRenderer();
-		//	r.RenderView(folder, viewName, viewData);
-		//	return r.ToString();
-  //      }
-		//public static string Render(string folder, string viewName)
-		//{
-		//	return Render(folder, viewName, "");
-		//}
-		//public static string Render<T>(Func<T, ActionResult> action) where T : Controller
-		//{
-		//	var actionContext = DI.GetService<ActionContext>();
-		//	var controller = Activator.CreateInstance(typeof(T)) as T;
-		//	actionContext.Renderer = new RazorRenderer();
-		//	controller.ActionContext = actionContext;
-			
-		//	var res = action(controller);
-		//	res.ExecuteResult(actionContext);
-
-		//	return actionContext.Renderer.ToString();
-		//}
 	}
 }

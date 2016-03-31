@@ -1,6 +1,7 @@
 ﻿using System;
 using Nephrite.Html;
 using Nephrite.Meta;
+using Nephrite.Localization;
 
 namespace Nephrite.UI
 {
@@ -28,14 +29,14 @@ namespace Nephrite.UI
 			l.ColumnHeader(null, () => l.Write(title));
 		}
 
-		public static void ColumnHeader(this LayoutWriter l, Action<ThTagAttributes> attributes, MetaProperty prop)
+		public static void ColumnHeader(this LayoutWriter l, Action<ThTagAttributes> attributes, IMetaProperty prop)
 		{
-			l.ColumnHeader(attributes, prop.CaptionShort);
+			l.ColumnHeader(attributes, prop.CaptionShort(l.TextResource));
 		}
 
-		public static void ColumnHeader(this LayoutWriter l, MetaProperty prop)
+		public static void ColumnHeader(this LayoutWriter l, IMetaProperty prop)
 		{
-			l.ColumnHeader(prop.CaptionShort);
+			l.ColumnHeader(prop.CaptionShort(l.TextResource));
 		}
 
 		public static void Cell(this LayoutWriter l, object content)

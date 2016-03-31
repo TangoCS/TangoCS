@@ -11,7 +11,7 @@ using Nephrite.MVC;
 
 namespace Nephrite.Web.FormsEngine
 {
-	public class WebFormsRenderer : IViewRenderer
+	public class WebFormsRenderer
 	{
 		public static string DefaultViewName { get; set; }
 

@@ -101,7 +101,9 @@
     <Compile Include="ITypeObserver.cs" />
     <Compile Include="Logger.Std\RequestLogger.cs" />
     <Compile Include="Logger.Std\RequestLoggerProvider.cs" />
+    <Compile Include="Meta\LocalizationExtensions.cs" />
     <Compile Include="MimeMapping.cs" />
+    <Compile Include="StringUtils.cs" />
     <Compile Include="UI\Controls\ActionLink.cs" />
     <Compile Include="UI\Controls\BackButton.cs" />
     <Compile Include="UI\Controls\Calendar.cs" />
@@ -118,7 +120,7 @@
     <Compile Include="Identity\OldPasswordHasher.cs" />
     <Compile Include="Identity\PasswordHasher.cs" />
     <Compile Include="Json.cs" />
-    <Compile Include="Multilanguage\IMultilingual.cs" />
+    <Compile Include="Localization\IMultilingual.cs" />
     <Compile Include="UI\AllowAnonymousAttribute.cs" />
     <Compile Include="UI\ApiResponse.cs" />
     <Compile Include="UI\LayoutWriter.cs" />
@@ -135,15 +137,10 @@
     <Compile Include="UI\HasStandardActionAttribute.cs" />
     <Compile Include="MVC\HtmlHelper.cs" />
     <Compile Include="UI\HttpMethodAttributes.cs" />
-    <Compile Include="MVC\IViewRendererFactory.cs" />
     <Compile Include="UI\Constants.cs" />
     <Compile Include="UI\NonActionAttribute.cs" />
     <Compile Include="MVC\QueryString.cs" />
-    <Compile Include="Meta\UIMetaModel.cs" />
     <Compile Include="UI\Controller.cs" />
-    <Compile Include="MVC\IViewRenderer.cs" />
-    <Compile Include="MVC\ViewEngineAttribute.cs" />
-    <Compile Include="ObjectInterfaces.cs" />
     <Compile Include="Resources\Common.en.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -177,19 +174,17 @@
     <Compile Include="Identity\IUserValidator.cs" />
     <Compile Include="Data\IEntity.cs" />
     <Compile Include="IPersistentSettings.cs" />
-    <Compile Include="Meta.Database\DataTypeMapper.cs" />
     <Compile Include="Meta.Database\IDatabaseMetadataReader.cs" />
     <Compile Include="Meta.Database\PrimitiveTypesExtensions.cs" />
     <Compile Include="Meta.Database\SchemaGenerator.cs" />
     <Compile Include="Meta.Database\SchemaSync.cs" />
     <Compile Include="Meta\Core.cs" />
     <Compile Include="Meta\CoreFluent.cs" />
-    <Compile Include="Meta\CoreTyped.cs" />
     <Compile Include="Meta\MetaLoad.cs" />
     <Compile Include="Meta\PrimitiveTypes.cs" />
     <Compile Include="Meta\StringConverter.cs" />
     <Compile Include="Meta.Stereotypes\SVersioning.cs" />
-    <Compile Include="Multilanguage\Language.cs" />
+    <Compile Include="Localization\Language.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\Common.Designer.cs">
       <DependentUpon>Common.resx</DependentUpon>
@@ -209,7 +204,7 @@
     <Compile Include="SimpleTypeExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Multilanguage\TextResource.cs" />
+    <Compile Include="Localization\TextResource.cs" />
     <Compile Include="UI\CsFormInvoker.cs" />
     <Compile Include="TypeFactory.cs" />
     <Compile Include="Validation.cs" />

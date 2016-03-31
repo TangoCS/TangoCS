@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using Nephrite.Multilanguage;
+using Nephrite.Localization;
 
 namespace Nephrite.Controls
 {

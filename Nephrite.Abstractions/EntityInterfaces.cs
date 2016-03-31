@@ -43,4 +43,8 @@ namespace Nephrite
 	{
 		TUser LastModifiedUser { get; set; }
 	}
+
+	public interface IEnum
+	{
+	}
 }

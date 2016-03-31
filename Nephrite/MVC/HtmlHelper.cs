@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using Nephrite.Multilanguage;
+using Nephrite.Localization;
 
 namespace Nephrite.MVC
 {

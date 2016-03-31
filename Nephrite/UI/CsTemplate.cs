@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Nephrite.Multilanguage;
+using Nephrite.Localization;
 using Newtonsoft.Json;
 
 namespace Nephrite.UI

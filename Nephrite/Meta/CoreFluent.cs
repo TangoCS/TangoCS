@@ -1,275 +1,349 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Nephrite.UI;
+using System;
 using System.Linq;
-using System.Linq.Expressions;
 
 namespace Nephrite.Meta.Fluent
 {
-	public class ReferenceBuilder
+	public static class FluentExtensions
 	{
-		IMetaReference _ref;
-		IMetaClass _cls;
-
-		public ReferenceBuilder(IMetaClass cls, IMetaReference reference)
+		public static IMetaOperation Parm(this IMetaOperation op, IMetaParameterType type, string name)
 		{
-			_cls = cls;
-			_ref = reference;
-		}
-
-		public ReferenceBuilder To(string refClassName)
-		{
-			_ref.SetRefClass(refClassName);
-			return this;
-		}
-
-		public ReferenceBuilder Required()
-		{
-			_ref.IsRequired = true;
-			return this;
-		}
-
-		public ReferenceBuilder Multiple()
-		{
-			_ref.UpperBound = -1;
-			return this;
-		}
-
-		public ReferenceBuilder Aggregation()
-		{
-			_ref.AssociationType = AssociationType.Aggregation;
-			return this;
-		}
-
-		public ReferenceBuilder Composition()
-		{
-			_ref.AssociationType = AssociationType.Composition;
-			return this;
-		}
-
-		public ReferenceBuilder InverseProperty(string inverseProperty)
-		{
-			_ref.SetInverseProperty(inverseProperty);
-			return this;
-		}
-
-		public ReferenceBuilder DefaultDBValue(string value)
-		{
-			_ref.DefaultDBValue = value;
-			return this;
-		}
-	}
-
-	public class ValuePropertyBuilder
-	{
-		IMetaValueProperty _prop;
-
-		public ValuePropertyBuilder(IMetaValueProperty property)
-		{
-			_prop = property;
-		}
-
-		public ValuePropertyBuilder Multilingual()
-		{
-			_prop.IsMultilingual = true;
-			return this;
-		}
-
-		public ValuePropertyBuilder DefaultDBValue(string value)
-		{
-			_prop.DefaultDBValue = value;
-			return this;
-		}
-	}
-
-	public class OperationBuilder
-	{
-		IMetaOperation _op;
-
-		public IMetaOperation Operation { get { return _op; } }
-
-		public OperationBuilder(IMetaOperation op)
-		{
-			_op = op;
-		}
-
-		public OperationBuilder Parm(IMetaParameterType type, string name)
-		{
-			var parm = _op.Parameters.FirstOrDefault(o => o.Name.ToLower() == name.ToLower());
+			var parm = op.Parameters.FirstOrDefault(o => o.Name.ToLower() == name.ToLower());
 			if (parm == null)
 			{
 				parm = new MetaParameter { Name = name, Type = type };
-				_op.Parameters.Add(parm);
+				op.Parameters.Add(parm);
 			}
-			return this;
+			return op;
 		}
 
-		public OperationBuilder ParmString(string name)
+		public static IMetaOperation ParmString(this IMetaOperation op, string name)
 		{
-			return Parm(MetaStringType.NotNull(), name);
+			return op.Parm(TypeFactory.String, name);
 		}
-		public OperationBuilder ParmInt(string name)
+		public static IMetaOperation ParmInt(this IMetaOperation op, string name)
 		{
-			return Parm(MetaIntType.NotNull(), name);
+			return op.Parm(TypeFactory.Int, name);
 		}
-		public OperationBuilder ParmGuid(string name)
+		public static IMetaOperation ParmGuid(this IMetaOperation op, string name)
 		{
-			return Parm(MetaGuidType.NotNull(), name);
+			return op.Parm(TypeFactory.Guid, name);
+		}
+		public static IMetaOperation ParmGuidId(this IMetaOperation op)
+		{
+			return op.ParmGuid(TemplatingConstants.Id);
+		}
+		public static IMetaOperation ParmIntId(this IMetaOperation op)
+		{
+			return op.ParmInt(TemplatingConstants.Id);
+		}
+		public static IMetaOperation ParmReturnUrl(this IMetaOperation op)
+		{
+			return op.ParmString(TemplatingConstants.ReturnUrl);
 		}
 
-		public OperationBuilder Image(string name)
+		public static IMetaOperation WithImage(this IMetaOperation op, string name)
 		{
-			_op.Image = name;
-			return this;
+			op.Image = name;
+			return op;
+		}
+
+
+		public static IMetaReference<TClass, TRefClass> Aggregation<TClass, TRefClass>(this IMetaReference<TClass, TRefClass> r)
+		{
+			r.AssociationType = AssociationType.Aggregation;
+			return r;
+		}
+
+		public static IMetaReference<TClass, TRefClass> Composition<TClass, TRefClass>(this IMetaReference<TClass, TRefClass> r)
+		{
+			r.AssociationType = AssociationType.Composition;
+			return r;
+		}
+
+		public static ICanBeMultilingual Multilingual(this ICanBeMultilingual a)
+		{
+			a.IsMultilingual = true;
+			return a;
 		}
 	}
 
-	public class FunctionBuilder
+	//public class FunctionBuilder
+	//{
+	//	IMetaClass _cl;
+
+	//	public FunctionBuilder(IMetaClass cl)
+	//	{
+	//		_cl = cl;
+	//	}
+
+	//	public FunctionBuilder Parm(IMetaParameterType type, string name)
+	//	{
+	//		var parm = _cl.Parameters.FirstOrDefault(o => o.Name.ToLower() == name.ToLower());
+	//		if (parm == null)
+	//		{
+	//			parm = new MetaParameter { Name = name, Type = type };
+	//			_cl.Parameters.Add(parm);
+	//		}
+	//		return this;
+	//	}
+
+	//	public FunctionBuilder ParmString(string name)
+	//	{
+	//		return Parm(TypeFactory.String, name);
+	//	}
+	//	public FunctionBuilder ParmInt(string name)
+	//	{
+	//		return Parm(TypeFactory.Int, name);
+	//	}
+	//	public FunctionBuilder ParmGuid(string name)
+	//	{
+	//		return Parm(TypeFactory.Guid, name);
+	//	}
+	//	public FunctionBuilder ParmDateTime(string name)
+	//	{
+	//		return Parm(TypeFactory.DateTime, name);
+	//	}
+	//}
+
+	public class SolutionBuilder
 	{
-		IMetaClass _cl;
-
-		public FunctionBuilder(IMetaClass cl)
+		public MetaClassBuilder<TClass> Class<TClass>(IMetaClass cls)
 		{
-			_cl = cl;
+			return new MetaClassBuilder<TClass>(cls);
 		}
 
-		public FunctionBuilder Parm(IMetaParameterType type, string name)
+		public MetaClassBuilder<TClass, TClassData> Class<TClass, TClassData>(IMetaClass cls)
 		{
-			var parm = _cl.Parameters.FirstOrDefault(o => o.Name.ToLower() == name.ToLower());
-			if (parm == null)
-			{
-				parm = new MetaParameter { Name = name, Type = type };
-				_cl.Parameters.Add(parm);
-			}
-			return this;
-		}
-
-		public FunctionBuilder ParmString(string name)
-		{
-			return Parm(MetaStringType.NotNull(), name);
-		}
-		public FunctionBuilder ParmInt(string name)
-		{
-			return Parm(MetaIntType.NotNull(), name);
-		}
-		public FunctionBuilder ParmGuid(string name)
-		{
-			return Parm(MetaGuidType.NotNull(), name);
-		}
-		public FunctionBuilder ParmDateTime(string name)
-		{
-			return Parm(MetaDateTimeType.NotNull(), name);
+			return new MetaClassBuilder<TClass, TClassData>(cls);
 		}
 	}
 
-	public static class CoreFluent
+	public abstract class AbstractMetaClassBuilder<T, TClass>
+		where T : AbstractMetaClassBuilder<T, TClass>
 	{
-		public static IMetaEnum Value(this IMetaEnum cdf, string id, string name, string caption)
+		protected T _this;
+
+		public IMetaClass MetaClass { get; private set; }
+
+		public AbstractMetaClassBuilder(IMetaClass cls)
 		{
-			cdf.Values.Add(new MetaEnumValue(id, name, caption));
-			return cdf;
+			MetaClass = cls;
+			_this = this as T;
 		}
 
-		public static IMetaClass IntKey(this IMetaClass cls, string name = "", string caption = "Ид", bool isIdentity = true)
+		public T IntKey(bool isIdentity = true) => Key<int>(TypeFactory.Int, a => a.IsIdentity = isIdentity);
+		public T IntKey(string name, bool isIdentity = true) => Key<int>(name, TypeFactory.Int, a => a.IsIdentity = isIdentity);
+		public T LongKey(bool isIdentity = true) => Key<long>(TypeFactory.Long, a => a.IsIdentity = isIdentity);
+		public T LongKey(string name, bool isIdentity = true) => Key<long>(name, TypeFactory.Long, a => a.IsIdentity = isIdentity);
+		public T GuidKey() => Key<Guid>(TypeFactory.Guid);
+		public T GuidKey(string name) => Key<Guid>(name, TypeFactory.Guid);
+		public T StringKey() => Key<string>(TypeFactory.String);
+		public T StringKey(string name) => Key<string>(name, TypeFactory.String);
+
+		public T Persistence(PersistenceType type)
 		{
-			var t = MetaIntType.NotNull();
-			int i = cls.Name.IndexOf('_'); if (i == -1) i = 0; else i++;
-			return cls.AttributeKey(name.IsEmpty() ? cls.Name.Substring(i) + t.ColumnSuffix : name, caption, t, isIdentity);
+			MetaClass.Persistent = type;
+			return _this;
 		}
 
-		public static IMetaClass GuidKey(this IMetaClass cls, string name = "", string caption = "Ид")
+		public T Key<TKey>(IMetaIdentifierType type, Action<MetaAttribute<TClass, TKey>> attribute = null)
 		{
-			var t = MetaGuidType.NotNull();
-			int i = cls.Name.IndexOf('_'); if (i == -1) i = 0; else i++;
-			return cls.AttributeKey(name.IsEmpty() ? cls.Name.Substring(i) + t.ColumnSuffix : name, caption, t);
+			int i = MetaClass.Name.LastIndexOf('_'); if (i == -1) i = 0; else i++;
+			string name = MetaClass.Name.Substring(i) + type.ColumnSuffix;
+			return Key(name, type, attribute);
 		}
 
-		public static IMetaClass NonPersistent(this IMetaClass cls)
+		public T Key<TKey>(string name, IMetaIdentifierType type, Action<MetaAttribute<TClass, TKey>> attribute = null)
 		{
-			cls.Persistent = PersistenceType.None;
-			return cls;
-		}
-		public static IMetaClass Persistent(this IMetaClass cls, PersistenceType type, Action<FunctionBuilder> parameters = null)
-		{
-			cls.Persistent = type;
-			if (parameters != null)
-			{
-				parameters(new FunctionBuilder(cls));
-			}
-			return cls;
+			MetaAttribute<TClass, TKey> a = new MetaAttribute<TClass, TKey> {
+				Name = name, IsMultilingual = false, IsRequired = true, Type = type
+			};
+			MetaClass.AddProperty(a);
+			MetaClass.CompositeKey.Add(a);
+			return _this;
 		}
 
-		public static IMetaClass AttributeKey(this IMetaClass cls, string name, string caption, IMetaIdentifierType type, bool isIdentity = false)
+		public T ReferenceKey<TRefClass, TKey>(string name, Action<MetaReference<TClass, TRefClass, TKey>> attributes = null)
 		{
-			MetaAttribute a = new MetaAttribute { Name = name, Caption = caption, Type = type, IsMultilingual = false, IsRequired = true, IsIdentity = isIdentity };
-			cls.AddProperty(a);
-			cls.CompositeKey.Add(a);
-			return cls;
+			MetaReference<TClass, TRefClass, TKey> a = new MetaReference<TClass, TRefClass, TKey> {
+				Name = name, IsRequired = true
+			};
+			a.SetRefClass(typeof(TRefClass).Name);
+			if (attributes != null) attributes(a);
+			MetaClass.AddProperty(a);
+			MetaClass.CompositeKey.Add(a);
+			return _this;
 		}
 
-		public static IMetaClass Attribute(this IMetaClass cls, string name, string caption, IMetaPrimitiveType type = null, Action<ValuePropertyBuilder> attributes = null)
+		public T Attribute<TValue>(string name, IMetaPrimitiveType type, Action<MetaAttribute<TClass, TValue>> attributes = null)
 		{
-			if (type == null) type = MetaStringType.Null();
-			MetaAttribute a = new MetaAttribute { Name = name, Caption = caption, Type = type, IsMultilingual = false };
-			if (type.NotNullable) a.IsRequired = true;
-			if (attributes != null) attributes(new ValuePropertyBuilder(a));
-			cls.AddProperty(a);
-			return cls;
+			if (type == null) type = TypeFactory.String;
+			MetaAttribute<TClass, TValue> a = new MetaAttribute<TClass, TValue> {
+				Name = name, Type = type, IsRequired = Nullable.GetUnderlyingType(typeof(TValue)) == null
+			};
+			if (attributes != null) attributes(a);
+			MetaClass.AddProperty(a);
+			return _this;
 		}
 
-		public static IMetaClass ComputedAttribute(this IMetaClass cls, string name, string caption, IMetaPrimitiveType type)
+		public T Reference<TRefClass>(string name, Action<MetaReference<TClass, TRefClass>> attributes = null)
 		{
-			MetaComputedAttribute a = new MetaComputedAttribute { Name = name, Caption = caption, Type = type};
-			if (type.NotNullable) a.IsRequired = true;
-			cls.AddProperty(a);
-			return cls;
+			return Reference(name, false, attributes);
 		}
 
-		public static IMetaClass PersistentComputedAttribute(this IMetaClass cls, string name, string caption, IMetaPrimitiveType type, Action<ValuePropertyBuilder> attributes = null)
+		public T Reference<TRefClass>(string name, bool isRequired, Action<MetaReference<TClass, TRefClass>> attributes = null)
 		{
-			MetaPersistentComputedAttribute a = new MetaPersistentComputedAttribute { Name = name, Caption = caption, Type = type, IsMultilingual = false };
-			if (type.NotNullable) a.IsRequired = true;
-			if (attributes != null) attributes(new ValuePropertyBuilder(a));
-			cls.AddProperty(a);
-			return cls;
+			MetaReference<TClass, TRefClass> a = new MetaReference<TClass, TRefClass> {
+				Name = name, IsRequired = isRequired
+			};
+			a.SetRefClass(typeof(TRefClass).Name);
+			if (attributes != null) attributes(a);
+			MetaClass.AddProperty(a);
+			return _this;
 		}
 
-		public static IMetaClass Reference<T>(this IMetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes = null)
+		public T Reference<TRefClass, TKey>(string name, Action<MetaReference<TClass, TRefClass, TKey>> attributes = null)
 		{
-			MetaReference a = new MetaReference(name, caption, typeof(T).Name);
-			if (attributes != null) attributes(new ReferenceBuilder(cls, a));
-			cls.AddProperty(a);
-			return cls;
-		}
-		public static IMetaClass ReferenceKey<T>(this IMetaClass cls, string name, string caption, Action<ReferenceBuilder> attributes = null)
-		{
-			MetaReference a = new MetaReference(name, caption, typeof(T).Name);
-			if (attributes != null) attributes(new ReferenceBuilder(cls, a).Required());
-			cls.AddProperty(a);
-			cls.CompositeKey.Add(a);
-			return cls;
+			return Reference(name, Nullable.GetUnderlyingType(typeof(TKey)) == null, attributes);
 		}
 
-		public static IMetaClass Title(this IMetaClass cls, string caption = "Наименование")
+		public T Reference<TRefClass, TKey>(string name, bool isRequired, Action<MetaReference<TClass, TRefClass, TKey>> attributes = null)
 		{
-			cls.AddProperty(new MetaAttribute { Name = "Title", Caption = caption, IsRequired = true, Type = MetaStringType.NotNull() });
-			cls.Interfaces.Add(typeof(IWithTitle));
-			return cls;
+			MetaReference<TClass, TRefClass, TKey> a = new MetaReference<TClass, TRefClass, TKey> {
+				Name = name, IsRequired = isRequired
+			};
+			a.SetRefClass(typeof(TRefClass).Name);
+			if (attributes != null) attributes(a);
+			MetaClass.AddProperty(a);
+			return _this;
 		}
 
-		public static IMetaClass TimeStamp<T>(this IMetaClass cls, string dateCaption = "Дата последней модификации", string userCaption = "Последний редактировавший пользователь")
+		public T ComputedAttribute<TValue>(string name, IMetaPrimitiveType type)
 		{
-			cls.Attribute("LastModifiedDate", dateCaption, MetaDateTimeType.NotNull(), x => x.DefaultDBValue("(getdate())"));
-			cls.Reference<T>("LastModifiedUser", userCaption, x => x.Required());
-			cls.Interfaces.Add(typeof(IWithTimeStamp));
-			return cls;
+			MetaComputedAttribute<TClass, TValue> a = new MetaComputedAttribute<TClass, TValue> {
+				Name = name, Type = type, IsRequired = Nullable.GetUnderlyingType(typeof(TValue)) == null
+			};
+			MetaClass.AddProperty(a);
+			return _this;
 		}
 
-		public static IMetaClass Operation(this IMetaClass cls, string name, string caption, Action<OperationBuilder> attributes = null)
+		public T ComputedAttribute<TValue>(string name)
 		{
-			var op = new MetaOperation { Name = name, Caption = caption };
-			cls.AddOperation(op);
-			if (attributes != null) attributes(new OperationBuilder(op));
-			return cls;
+			MetaComputedAttribute<TClass, TValue> a = new MetaComputedAttribute<TClass, TValue> {
+				Name = name, Type = TypeFactory.FromCSharpType(typeof(TValue)),
+				IsRequired = Nullable.GetUnderlyingType(typeof(TValue)) == null
+			};
+			MetaClass.AddProperty(a);
+			return _this;
+		}
+
+		public T PersistentComputedAttribute<TValue>(string name, IMetaPrimitiveType type, Action<MetaPersistentComputedAttribute<TClass, TValue>> attributes = null)
+		{
+			MetaPersistentComputedAttribute<TClass, TValue> a = new MetaPersistentComputedAttribute<TClass, TValue> {
+				Name = name, Type = type, IsMultilingual = false,
+				IsRequired = Nullable.GetUnderlyingType(typeof(TValue)) == null
+			};
+			if (attributes != null) attributes(a);
+			MetaClass.AddProperty(a);
+			return _this;
+		}
+
+		public T PersistentComputedAttribute<TValue>(string name, Action<MetaPersistentComputedAttribute<TClass, TValue>> attributes = null)
+		{
+			MetaPersistentComputedAttribute<TClass, TValue> a = new MetaPersistentComputedAttribute<TClass, TValue> {
+				Name = name, IsMultilingual = false,
+				Type = TypeFactory.FromCSharpType(typeof(TValue)),
+				IsRequired = Nullable.GetUnderlyingType(typeof(TValue)) == null
+			};
+			if (attributes != null) attributes(a);
+			MetaClass.AddProperty(a);
+			return _this;
+		}
+
+		public T PersistentComputedAttribute<TValue>(string name, bool isRequired, Action<MetaPersistentComputedAttribute<TClass, TValue>> attributes = null)
+		{
+			Action<MetaPersistentComputedAttribute<TClass, TValue>> a = x => { x.IsRequired = isRequired; if (attributes != null) attributes(x); };
+			return PersistentComputedAttribute<TValue>(name, TypeFactory.FromCSharpType(typeof(TValue)), a);
+		}
+
+		public T Operation(string name, Action<IMetaOperation> attributes = null)
+		{
+			var op = new MetaOperation { Name = name };
+			MetaClass.AddOperation(op);
+			if (attributes != null) attributes(op);
+			return _this;
+		}
+
+		public T Attribute<TValue>(string name, Action<MetaAttribute<TClass, TValue>> attributes = null)
+		{
+			return Attribute<TValue>(name, TypeFactory.FromCSharpType(typeof(TValue)), attributes);
+		}
+
+		public T Attribute<TValue>(string name, bool isRequired, Action<MetaAttribute<TClass, TValue>> attributes = null)
+		{
+			Action<MetaAttribute<TClass, TValue>> a = x => { x.IsRequired = isRequired; if (attributes != null) attributes(x); };
+			return Attribute<TValue>(name, TypeFactory.FromCSharpType(typeof(TValue)), a);
+		}
+
+		public T Attribute<TValue>(string name, IMetaPrimitiveType type, bool isRequired, Action<MetaAttribute<TClass, TValue>> attributes = null)
+		{
+			Action<MetaAttribute<TClass, TValue>> a = x => { x.IsRequired = isRequired; if (attributes != null) attributes(x); };
+			return Attribute<TValue>(name, type, a);
+		}
+
+		public T TimeStamp<TUser, TKey>()
+		{
+			Attribute<DateTime>("LastModifiedDate", x => x.DefaultDBValue = "(getdate())");
+			Reference<TUser, TKey>("LastModifiedUser");
+			MetaClass.Interfaces.Add(typeof(IWithTimeStamp));
+			return _this;
+		}
+
+		public T Title(bool isRequired = true)
+		{
+			Attribute<string>("Title", x => x.IsRequired = isRequired);
+			MetaClass.Interfaces.Add(typeof(IWithTitle));
+			return _this;
+		}
+
+		public T IsDeleted()
+		{
+			Attribute<bool>("IsDeleted", x => x.DefaultDBValue = "(0)");
+			MetaClass.Interfaces.Add(typeof(IWithTitle));
+			return _this;
+		}
+	}
+
+	public class MetaClassBuilder<TClass> : AbstractMetaClassBuilder<MetaClassBuilder<TClass>, TClass>
+	{
+		public MetaClassBuilder(IMetaClass cls) : base(cls) { }
+	}
+
+	public class MetaClassBuilder<TClass, TClassData> : AbstractMetaClassBuilder<MetaClassBuilder<TClass, TClassData>, TClass>
+	{
+		public MetaClassBuilder(IMetaClass cls) : base(cls) { }
+
+		public MetaClassBuilder<TClass, TClassData> MultilingualAttribute<TValue>(string name, IMetaPrimitiveType type, Action<MetaAttribute<TClassData, TValue>> attributes = null)
+		{
+			if (type == null) type = TypeFactory.String;
+			MetaAttribute<TClassData, TValue> a = new MetaAttribute<TClassData, TValue> {
+				Name = name, Type = type, IsRequired = Nullable.GetUnderlyingType(typeof(TValue)) == null, IsMultilingual = true
+			};
+			if (attributes != null) attributes(a);
+			MetaClass.AddProperty(a);
+			return _this;
+		}
+
+		public MetaClassBuilder<TClass, TClassData> MultilingualAttribute<TValue>(string name, Action<MetaAttribute<TClassData, TValue>> attributes = null)
+		{
+			return MultilingualAttribute<TValue>(name, TypeFactory.FromCSharpType(typeof(TValue)), attributes);
+		}
+
+		public MetaClassBuilder<TClass, TClassData> MultilingualAttribute<TValue>(string name, bool isRequired, Action<MetaAttribute<TClassData, TValue>> attributes = null)
+		{
+			Action<MetaAttribute<TClassData, TValue>> a = x => { x.IsRequired = isRequired; if (attributes != null) attributes(x); };
+			return MultilingualAttribute<TValue>(name, TypeFactory.FromCSharpType(typeof(TValue)), a);
 		}
 	}
 }

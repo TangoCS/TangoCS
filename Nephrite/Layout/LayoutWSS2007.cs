@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using Nephrite.Multilanguage;
+using Nephrite.Localization;
 using Nephrite.Html;
 using Nephrite.MVC;
 
