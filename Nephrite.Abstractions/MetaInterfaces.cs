@@ -67,7 +67,7 @@ namespace Nephrite.Meta
 		IMetaProperty GetProperty(string name);
 		void AddProperty(IMetaProperty metaProperty);
 
-		string CaptionPlural { get; set; }
+		//string CaptionPlural { get; set; }
 		string LogicalDeleteExpressionString { get; set; }
 		string DefaultOrderByExpressionString { get; set; }
 		IMetaOperation DefaultOperation { get; set; }
