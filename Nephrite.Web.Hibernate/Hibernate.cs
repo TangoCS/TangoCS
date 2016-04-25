@@ -37,7 +37,8 @@ namespace Nephrite.Hibernate
 		public List<Action> AfterSaveActions { get; private set; }
 		public List<Action> BeforeSaveActions { get; private set; }
 
-		public IDbConnection Connection { get; private set; }
+		Func<IDbConnection> _connection;
+		public IDbConnection Connection => Session.Connection;
 
 		public ISession Session
 		{
@@ -45,12 +46,11 @@ namespace Nephrite.Hibernate
 			{
 				if (_session == null || !_session.IsOpen)
 				{
-					if (Connection.State != ConnectionState.Open)
-						Connection.Open();
+					var conn = _connection();
 					if (_logger.Enabled)
-						_session = SessionFactory.OpenSession(Connection, new LogInterceptor(_logger));
+						_session = SessionFactory.OpenSession(conn, new LogInterceptor(_logger));
 					else
-						_session = SessionFactory.OpenSession(Connection);
+						_session = SessionFactory.OpenSession(conn);
 					_session.FlushMode = FlushMode.Commit;
 				}
 				return _session;
@@ -130,11 +130,11 @@ namespace Nephrite.Hibernate
 		//public virtual IEnumerable<Type> GetTableFunctionsTypes() { return new List<Type>(); }
 		
 
-		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, IDbConnection connection, IClassMappingList mappingList, IRequestLoggerProvider loggerProvider)
+		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Func<IDbConnection> connection, IClassMappingList mappingList, IRequestLoggerProvider loggerProvider)
 		{
 			ID = GetType().Name + "-" + Guid.NewGuid().ToString();
 			_dbConfig = dbConfig;
-			Connection = connection;
+			_connection = connection;
 			_loggerProvider = loggerProvider;
 			_logger = _loggerProvider.GetLogger("sql");
 			_mappingList = mappingList;

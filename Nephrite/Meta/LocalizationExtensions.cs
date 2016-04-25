@@ -4,31 +4,31 @@ namespace Nephrite.Localization
 {
 	public static class LocalizationExtensions
 	{
-		public static string Caption(this IMetaNamedElement el, ITextResource textResource)
+		public static string Caption(this ITextResource textResource, IMetaNamedElement el)
 		{
 			return textResource.Get(el.ID, el.Name);
 		}
 
-		public static string CaptionFor(this IMetaNamedElement el, ITextResource textResource, string suffix)
+		public static string CaptionFor(this ITextResource textResource, IMetaNamedElement el, string suffix)
 		{
 			return textResource.Get(el.ID + "-" + suffix);
 		}
 
-		public static string Description(this IMetaNamedElement el, ITextResource textResource)
+		public static string Description(this ITextResource textResource, IMetaNamedElement el)
 		{
-			return el.CaptionFor(textResource, "description");
+			return textResource.CaptionFor(el, "description");
 		}
 
-		public static string CaptionShort(this IMetaProperty el, ITextResource textResource)
+		public static string CaptionShort(this ITextResource textResource, IMetaProperty el)
 		{
-			var s = el.CaptionFor(textResource, "s");
-			if (s.IsEmpty()) s = el.Caption(textResource);
+			var s = textResource.CaptionFor(el, "s");
+			if (s.IsEmpty()) s = textResource.Caption(el);
 			return s;
 		}
 
-		public static string CaptionPlural(this IMetaClass el, ITextResource textResource)
+		public static string CaptionPlural(this ITextResource textResource, IMetaClass el)
 		{
-			return el.CaptionFor(textResource, "pl");
+			return textResource.CaptionFor(el, "pl");
 		}
 	}
 }

@@ -2,6 +2,7 @@
 using System.Linq;
 using Nephrite.Data;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Nephrite.FileStorage.Std
 {
@@ -29,7 +30,7 @@ namespace Nephrite.FileStorage.Std
 			if (!ID.IsEmpty())
 			{
 				id = ID.ToGuid();
-				data.Where(o => o.Owner == id);
+				data = data.Where(o => o.Owner == id);
 			}
 			return from o in data
 				   select new DatabaseFile(_dc, id) {
@@ -50,16 +51,16 @@ namespace Nephrite.FileStorage.Std
 			if (!ID.IsEmpty())
 			{
 				owner = ID.ToGuid();
-				data.Where(o => o.Owner == owner);
+				data = data.Where(o => o.Owner == owner);
 			}
 
 			if (Guid.TryParse(id, out guid))
 			{
-				data.Where(o => o.FileGUID == guid);
+				data = data.Where(o => o.FileGUID == guid);
 			}
 			else
 			{
-				data.Where(o => o.Title.ToLower() == id.ToLower());
+				data = data.Where(o => o.Title.ToLower() == id.ToLower());
 			}
 
 			return (from o in data
@@ -75,6 +76,28 @@ namespace Nephrite.FileStorage.Std
 		public IEnumerable<IStorageFolder> GetFolders()
 		{
 			throw new NotSupportedException();
+		}
+
+		public IStorageFile GetOrCreateFile(string id)
+		{
+			var file = GetFile(id);
+			if (file == null)
+			{
+				
+				Guid guid;
+				if (Guid.TryParse(id, out guid))
+				{
+					file = CreateFile(id);
+				}
+				else
+				{
+					file = CreateFile(Guid.NewGuid().ToString());
+					file.Name = id;
+					file.Extension = Path.GetExtension(id);
+					file.LastModifiedDate = DateTime.Now;
+				}
+			}
+			return file;
 		}
 	}
 

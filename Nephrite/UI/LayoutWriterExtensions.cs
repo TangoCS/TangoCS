@@ -31,12 +31,12 @@ namespace Nephrite.UI
 
 		public static void ColumnHeader(this LayoutWriter l, Action<ThTagAttributes> attributes, IMetaProperty prop)
 		{
-			l.ColumnHeader(attributes, prop.CaptionShort(l.TextResource));
+			l.ColumnHeader(attributes, l.TextResource.CaptionShort(prop));
 		}
 
 		public static void ColumnHeader(this LayoutWriter l, IMetaProperty prop)
 		{
-			l.ColumnHeader(prop.CaptionShort(l.TextResource));
+			l.ColumnHeader(l.TextResource.CaptionShort(prop));
 		}
 
 		public static void Cell(this LayoutWriter l, object content)

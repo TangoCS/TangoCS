@@ -14,7 +14,7 @@ namespace Nephrite.UI
 			EventArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			FormData = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			EventReceivers = new Dictionary<string, InteractionFlowElement>(StringComparer.OrdinalIgnoreCase);
-			Files = new List<FileInfo>();
+			//Files = new List<FileInfo>();
 		}
 
 		public IServiceProvider RequestServices { get; protected set; }
@@ -59,7 +59,7 @@ namespace Nephrite.UI
 		public string RequestMethod { get; set; }
 		public string Event { get; set; }
 		public string EventReceiver { get; set; }
-		public List<FileInfo> Files { get; set; }
+		//public List<FileInfo> Files { get; set; }
 
 		public DynamicDictionary AllArgs { get; set; }
 		public DynamicDictionary ActionArgs { get; set; }
