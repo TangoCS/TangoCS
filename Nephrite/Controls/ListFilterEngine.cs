@@ -452,10 +452,10 @@ namespace Nephrite.Controls
 		public string Title { get; set; }
 		public object Column { get; set; }
 		public FieldType FieldType { get; set; }
-		public IEnumerable<SelectListItem> Values { get; set; }
-		//public object DataSource { get; set; }
-		//public string DisplayMember { get; set; }
-		//public string ValueMember { get; set; }
+		//public IQueryable<SelectListItem> Values { get; set; }
+		public IQueryable<object> DataSource { get; set; }
+		public string DisplayMember { get; set; }
+		public string ValueMember { get; set; }
 		public List<string> Operator { get; set; }
 	}
 
