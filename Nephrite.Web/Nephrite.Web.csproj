@@ -110,7 +110,6 @@
   <ItemGroup>
     <Content Include="Controls\excel.ascx" />
     <Content Include="Controls\word.ascx" />
-    <Content Include="js\knockout-2.2.1.js" />
     <Content Include="js\modalwindow.js" />
     <Content Include="js\popup2.js" />
     <Content Include="Replication\Replication.asmx" />
@@ -118,14 +117,6 @@
     <Content Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </Content>
-    <Content Include="Web References\ReplicationServiceReference\Reference.map">
-      <Generator>MSDiscoCodeGenerator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </Content>
-    <Content Include="Web References\ReplicationServiceReference\Replication.disco" />
-    <Content Include="Web References\ReplicationServiceReference\ReplicationObject1.datasource">
-      <DependentUpon>Reference.map</DependentUpon>
     </Content>
     <Content Include="Web.config" />
   </ItemGroup>
@@ -137,7 +128,6 @@
     <Compile Include="Model\IMMObjectMLView.cs" />
     <Compile Include="Model\IMMObjectVersion.cs" />
     <Compile Include="Model\Repository.cs" />
-    <Compile Include="MVC\UrlResolvers.cs" />
     <Compile Include="MVC\UrlHelper.cs" />
     <Compile Include="Properties\Resources.en.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -163,11 +153,6 @@
     <Compile Include="Root\Settings.cs" />
     <Compile Include="Root\SimpleTypeExtensionsWeb.cs">
       <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Web References\ReplicationServiceReference\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.map</DependentUpon>
     </Compile>
     <Compile Include="Web\CustomControlBase.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -212,7 +197,6 @@
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Controls\IMasterControl.cs" />
-    <Compile Include="Controls\HtmlDateLists.cs" />
     <Compile Include="Controls\NumericBox.cs" />
     <Compile Include="Controls\TableDnD.cs" />
     <Compile Include="Controls\TinyMCEEditor.cs">
@@ -242,8 +226,6 @@
     <Compile Include="LinkedObjects\ILinkedObjectsProvider.cs" />
     <Compile Include="LinkedObjects\LinkedObjectsView.cs" />
     <Compile Include="LinkedObjects\ObjectLink.cs" />
-    <Compile Include="Versioning\ClassVersion.cs" />
-    <Compile Include="Versioning\IClassVersion.cs" />
     <Compile Include="Reporting\AggregateColumn.cs" />
     <Compile Include="Reporting\Grouping.cs" />
     <Compile Include="Reporting\Report.cs">
@@ -313,7 +295,6 @@
     <Content Include="View\TinyMCEFileManager\list.ascx" />
     <Content Include="View\TinyMCEFileManager\upload.ascx" />
     <Content Include="packages.config" />
-    <Content Include="Web References\ReplicationServiceReference\Replication.wsdl" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -328,25 +309,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{3259AA49-8AA1-44D3-9025-A0B520596A8C}" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WebReferences Include="Web References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WebReferenceUrl Include="http://localhost:51278/Replication/Replication.asmx">
-      <UrlBehavior>Dynamic</UrlBehavior>
-      <RelPath>Web References\ReplicationServiceReference\</RelPath>
-      <UpdateFromURL>http://localhost:51278/Replication/Replication.asmx</UpdateFromURL>
-      <ServiceLocationURL>
-      </ServiceLocationURL>
-      <CachedDynamicPropName>
-      </CachedDynamicPropName>
-      <CachedAppSettingsObjectName>Settings</CachedAppSettingsObjectName>
-      <CachedSettingsPropName>Nephrite_Web_ReplicationService_Replication</CachedSettingsPropName>
-    </WebReferenceUrl>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nephrite.Abstractions\Nephrite.Abstractions.csproj">
