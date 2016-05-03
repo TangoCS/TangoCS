@@ -54,19 +54,8 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CoreDataContext\HCoreDataContext.cs" />
-    <Compile Include="CoreDataContext\HMapping.cs" />
-    <Compile Include="CoreDataContext\HModel.cs" />
-    <Compile Include="CoreMapping\CalendarDaysMapping.cs" />
-    <Compile Include="CoreMapping\ControlsMapping.cs" />
-    <Compile Include="CoreMapping\EntityAuditMapping.cs" />
-    <Compile Include="CoreMapping\ErrorLogMapping.cs" />
-    <Compile Include="CoreMapping\FileStorageMapping.cs" />
-    <Compile Include="CoreMapping\MultilanguageMapping.cs" />
-    <Compile Include="CoreMapping\RSSMapping.cs" />
     <Compile Include="Hibernate.cs" />
     <Compile Include="IntBackedBoolUserType.cs" />
-    <Compile Include="AuditEventListener.cs" />
     <Compile Include="LogInterceptor.cs" />
     <Compile Include="MappingConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

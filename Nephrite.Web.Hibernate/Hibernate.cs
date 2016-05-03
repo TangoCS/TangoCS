@@ -23,7 +23,7 @@ using NHibernate.Mapping.ByCode.Conformist;
 
 namespace Nephrite.Hibernate
 {
-	public abstract class HDataContext : IDisposable, IDataContext
+	public class HDataContext : IDisposable, IDataContext
 	{
 		static Dictionary<string, ISessionFactory> _sessionFactories = new Dictionary<string, ISessionFactory>();
 		static Dictionary<string, HbmMapping> _mappings = new Dictionary<string, HbmMapping>();

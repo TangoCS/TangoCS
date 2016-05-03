@@ -4,9 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using Nephrite.Localization;
-using Nephrite.Html;
 
-namespace Nephrite.Controls
+namespace Nephrite.UI.Controls
 {
 	public class ListFilterEngine
 	{
@@ -476,5 +475,14 @@ namespace Nephrite.Controls
 	{
 		And,
 		Or
+	}
+
+	public interface IPersistentFilter<TKey>
+	{
+		void Load(TKey id);
+		void Save();
+
+		TKey ID { get; }
+		List<FilterItem> Criteria { get; set; }
 	}
 }

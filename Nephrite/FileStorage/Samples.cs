@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Nephrite.Data;
+using System;
 
 namespace Nephrite.FileStorage.Std
 {
@@ -15,18 +16,18 @@ namespace Nephrite.FileStorage.Std
 		}
 
 		// работа с файлом в базе через виртуальный каталог
-		public void Test2(IDC_FileDataStorage dataContext)
-		{	
-			IStorageFolder folder = new DatabaseFolder(dataContext);
+		//public void Test2(IDataContext dataContext)
+		//{	
+		//	IStorageFolder folder = new DatabaseFolder(dataContext);
 
-			folder.CreateFile("db0e2a2f-43f1-4b00-bbee-940483c3e35b").WriteAllText("abcdef");
-			dataContext.SubmitChanges();
+		//	folder.CreateFile("db0e2a2f-43f1-4b00-bbee-940483c3e35b").WriteAllText("abcdef");
+		//	dataContext.SubmitChanges();
 
-			var file = folder.GetFile("db0e2a2f-43f1-4b00-bbee-940483c3e35b");
-			var data = file.ReadAllBytes();
-			file.Delete();
-			dataContext.SubmitChanges();
-		}
+		//	var file = folder.GetFile("db0e2a2f-43f1-4b00-bbee-940483c3e35b");
+		//	var data = file.ReadAllBytes();
+		//	file.Delete();
+		//	dataContext.SubmitChanges();
+		//}
 
 		public void Test3()
 		{

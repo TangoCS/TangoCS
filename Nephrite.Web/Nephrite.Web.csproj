@@ -113,7 +113,6 @@
     <Content Include="js\modalwindow.js" />
     <Content Include="js\popup2.js" />
     <Content Include="Replication\Replication.asmx" />
-    <Content Include="View\Message\show.ascx" />
     <Content Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -122,23 +121,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\BaseControl.cs" />
-    <Compile Include="FormsEngine\MView.cs" />
-    <Compile Include="FormsEngine\WebFormsRenderer.cs" />
-    <Compile Include="Model\IMMObject.cs" />
-    <Compile Include="Model\IMMObjectMLView.cs" />
-    <Compile Include="Model\IMMObjectVersion.cs" />
     <Compile Include="Model\Repository.cs" />
-    <Compile Include="MVC\UrlHelper.cs" />
     <Compile Include="Properties\Resources.en.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.en.resx</DependentUpon>
     </Compile>
-    <Compile Include="Web\AppWeb.cs" />
     <Compile Include="Model\A.cs" />
-    <Compile Include="MVC\MasterControl.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Office\ExcelExportEx.cs" />
     <Compile Include="Office\WordDocumentGenerator.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
@@ -150,17 +139,9 @@
       <DependentUpon>Replication.asmx</DependentUpon>
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Root\Settings.cs" />
-    <Compile Include="Root\SimpleTypeExtensionsWeb.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Web\CustomControlBase.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
     <Compile Include="Reporting\Reporting.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Web\Cache.cs" />
     <Compile Include="Controls\AutoComplete.cs" />
     <Compile Include="Controls\CodeArea.cs">
       <SubType>ASPXCodeBehind</SubType>
@@ -196,7 +177,6 @@
     <Compile Include="Controls\ImageUploadSimple.cs">
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Controls\IMasterControl.cs" />
     <Compile Include="Controls\NumericBox.cs" />
     <Compile Include="Controls\TableDnD.cs" />
     <Compile Include="Controls\TinyMCEEditor.cs">
@@ -221,7 +201,6 @@
     </Compile>
     <Compile Include="Controls\ZoneCalendar.cs" />
     <Compile Include="Web\Cramb.cs" />
-    <Compile Include="Web\CustomControlManager.cs" />
     <Compile Include="Office\ExcelExport.cs" />
     <Compile Include="LinkedObjects\ILinkedObjectsProvider.cs" />
     <Compile Include="LinkedObjects\LinkedObjectsView.cs" />
@@ -235,15 +214,9 @@
     <Compile Include="FileStorage\FileHandler.cs" />
     <Compile Include="FileStorage\FileProvider.cs" />
     <Compile Include="FileStorage\FolderPacker.cs" />
-    <Compile Include="Model\ICalendarObject.cs" />
     <Compile Include="FileStorage\ImageHandler.cs" />
-    <Compile Include="Model\IModelObject.cs" />
     <Compile Include="Web\Impersonation.cs" />
-    <Compile Include="MVC\PageParser.cs" />
-    <Compile Include="Web\ObjectPropertyChange.cs" />
     <Compile Include="Controls\MaskedInput.cs" />
-    <Compile Include="Obsolete\HtmlHelperWSS.cs" />
-    <Compile Include="Controls\JSCalendar.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -252,28 +225,15 @@
     </Compile>
     <Compile Include="Purifier\Purifier.cs" />
     <Compile Include="Model\Extensions.cs" />
-    <Compile Include="MVC\ViewControl.cs">
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="MVC\SqlLog.cs" />
     <Compile Include="Web\Utils.cs" />
-    <Compile Include="View\Message\show.ascx.cs">
-      <DependentUpon>show.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="View\Message\show.ascx.designer.cs">
-      <DependentUpon>show.ascx</DependentUpon>
-    </Compile>
     <Compile Include="View\TinyMCEFileManager\list.ascx.cs">
       <DependentUpon>list.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="View\TinyMCEFileManager\list.ascx.designer.cs">
       <DependentUpon>list.ascx</DependentUpon>
     </Compile>
     <Compile Include="View\TinyMCEFileManager\upload.ascx.cs">
       <DependentUpon>upload.ascx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="View\TinyMCEFileManager\upload.ascx.designer.cs">
       <DependentUpon>upload.ascx</DependentUpon>
