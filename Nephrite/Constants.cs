@@ -1,6 +1,6 @@
-﻿namespace Nephrite.UI
+﻿namespace Nephrite
 {
-	public static class TemplatingConstants
+	public static class Constants
 	{
 		public static string ServiceName = "mode";
 		public static string ActionName = "action";

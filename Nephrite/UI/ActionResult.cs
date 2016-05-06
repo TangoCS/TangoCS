@@ -145,7 +145,7 @@ namespace Nephrite.UI
 		public string Url { get; set; }
 		public override void ExecuteResult(ActionContext context)
 		{
-			Url = context.GetArg(TemplatingConstants.ReturnUrl);
+			Url = context.GetArg(Constants.ReturnUrl);
 			context.Response.ContentType = "application/json";
 			context.Response.Write(JsonConvert.SerializeObject(this, Json.CamelCase));			
 		}

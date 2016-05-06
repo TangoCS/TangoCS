@@ -22,13 +22,9 @@ namespace Nephrite.Localization
 		ILanguage _language;
 		public static TextResourceOptions Options { get; set; }
 
-		public TextResource(ILanguage language)
+		public TextResource(ILanguage language, bool editMode)
 		{
 			_language = language;
-		}
-
-		public void Init(bool editMode)
-		{
 			_editMode = editMode;
 		}
 
@@ -45,20 +41,6 @@ namespace Nephrite.Localization
 		public string Get(string sysName, string defaultText)
 		{
 			string res = sysName + "-" + _language.Current.Code;
-
-			//if (!loaded)
-			//{
-			//	lock (locker)
-			//	{
-			//		var nrs = _dataContext.IN_TextResource.Select(o => new { Name = o.SysName + "-" + o.LanguageCode, ID = o.TextResourceID, Text = o.Text });
-			//		foreach (var nr in nrs)
-			//		{
-			//			resources[nr.Name] = nr.Text;
-			//			resourceids[nr.Name] = nr.ID.ToString();
-			//		}
-			//	}
-			//	loaded = true;
-			//}
 
 			if (_editMode || Options.Resources.ContainsKey(res))
 				return get(res, sysName);
@@ -93,34 +75,5 @@ namespace Nephrite.Localization
 			}
 			return Options.Resources[res].Text;
 		}
-
-		/// <summary>
-		/// Сброс кэша
-		/// </summary>
-		//public void ResetCache()
-		//{
-		//	resources.Clear();
-		//	resourceids.Clear();
-		//	loaded = false;
-		//}
-
-		//static Dictionary<string, string> resources = new Dictionary<string, string>();
-		//static Dictionary<string, string> resourceids = new Dictionary<string, string>();
-		//static bool loaded = false;
-		//static object locker = new object();
 	}
-
-	//public interface IN_TextResource
-	//{
-	//	int TextResourceID { get; set; }
-	//	string Title { get; set; }
-	//	string SysName { get; set; }
-	//	string Text { get; set; }
-	//	string LanguageCode { get; set; }
-	//}
-
-	//public interface IDC_TextResources
-	//{
-	//	ITable<IN_TextResource> IN_TextResource { get; }
-	//}
 }

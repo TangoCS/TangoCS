@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using Nephrite.UI;
 
-namespace Nephrite.MVC
+namespace Nephrite
 {
 	public abstract class AbstractQueryString
 	{
@@ -66,9 +65,9 @@ namespace Nephrite.MVC
 			return new Url(query, routeValues);
 		}
 
-		public override string Controller { get { return GetString(TemplatingConstants.ServiceName); } }
-		public override string Action { get { return GetString(TemplatingConstants.ActionName); } }
-		public override string ReturnUrl { get { return GetString(TemplatingConstants.ReturnUrl); } }
+		public override string Controller { get { return GetString(Constants.ServiceName); } }
+		public override string Action { get { return GetString(Constants.ActionName); } }
+		public override string ReturnUrl { get { return GetString(Constants.ReturnUrl); } }
 
 		public override int GetInt(string parametername, int defaultValue)
 		{
@@ -163,14 +162,14 @@ namespace Nephrite.MVC
 			{
 				Stack<string> urlStack = new Stack<string>();
 
-				while (url.GetString(TemplatingConstants.ReturnUrl) != "")
+				while (url.GetString(Constants.ReturnUrl) != "")
 				{
-					urlStack.Push(url.RemoveParameter(TemplatingConstants.ReturnUrl));
-					url = new Url(WebUtility.UrlDecode(url.GetString(TemplatingConstants.ReturnUrl)));
+					urlStack.Push(url.RemoveParameter(Constants.ReturnUrl));
+					url = new Url(WebUtility.UrlDecode(url.GetString(Constants.ReturnUrl)));
 				}
 				url = new Url(urlStack.Pop());
 				while (urlStack.Count > 0)
-					url = new Url(urlStack.Pop()).AddParameter(TemplatingConstants.ReturnUrl, WebUtility.UrlEncode(url));
+					url = new Url(urlStack.Pop()).AddParameter(Constants.ReturnUrl, WebUtility.UrlEncode(url));
 				returnurl = WebUtility.UrlEncode(url);
 			}
 			_returnUrl = returnurl;

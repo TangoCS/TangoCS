@@ -131,9 +131,9 @@
     <Compile Include="UI\HasStandardActionAttribute.cs" />
     <Compile Include="MVC\HtmlHelper.cs" />
     <Compile Include="UI\HttpMethodAttributes.cs" />
-    <Compile Include="UI\Constants.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="UI\NonActionAttribute.cs" />
-    <Compile Include="MVC\QueryString.cs" />
+    <Compile Include="QueryString.cs" />
     <Compile Include="UI\Controller.cs" />
     <Compile Include="Resources\Common.en.Designer.cs">
       <AutoGen>True</AutoGen>

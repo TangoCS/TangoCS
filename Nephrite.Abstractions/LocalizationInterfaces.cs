@@ -8,7 +8,7 @@ namespace Nephrite.Localization
 	{
 		string Get(string sysName);
 		string Get(string sysName, string defaultText);
-		void Init(bool editMode);
+		//void Init(bool editMode);
 		//void ResetCache();
 	}
 
@@ -19,7 +19,7 @@ namespace Nephrite.Localization
 		LanguageObject Default { get; }
 		CultureInfo CurrentCulture { get; }
 
-		void Init(LanguageObject currentLanguage);
+		//void Init(LanguageObject currentLanguage);
 		void WithLang(string lang, Action action);
 	}
 

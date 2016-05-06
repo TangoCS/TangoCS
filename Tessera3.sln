@@ -17,7 +17,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nephrite.Meta.Database.DB2"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportData", "ImportData\ImportData.csproj", "{911F430A-7ACE-43F7-9654-CE34D2BE0664}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nephrite.Web.Hibernate", "Nephrite.Web.Hibernate\Nephrite.Web.Hibernate.csproj", "{307C0353-867B-4942-B448-52635A6BC321}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nephrite.Hibernate", "Nephrite.Hibernate\Nephrite.Hibernate.csproj", "{307C0353-867B-4942-B448-52635A6BC321}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tessera3.Test", "Tessera3.Test\Tessera3.Test.csproj", "{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}"
 EndProject

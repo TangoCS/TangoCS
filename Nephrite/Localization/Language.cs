@@ -16,9 +16,13 @@ namespace Nephrite.Localization
 		public static LanguageOptions Options { get; set; }
 		LanguageObject _current;
 
-		public void Init(LanguageObject currentLanguage)
+		public Language()
 		{
-			_current = currentLanguage;
+			_current = Options.DefaultLanguage;
+		}
+		public Language(string currentLanguageCode)
+		{
+			_current = currentLanguageCode == null ? Options.DefaultLanguage : new LanguageObject { Code = currentLanguageCode };
 		}
 
 		public IReadOnlyList<LanguageObject> List

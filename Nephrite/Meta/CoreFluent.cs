@@ -31,15 +31,15 @@ namespace Nephrite.Meta.Fluent
 		}
 		public static IMetaOperation ParmGuidId(this IMetaOperation op)
 		{
-			return op.ParmGuid(TemplatingConstants.Id);
+			return op.ParmGuid(Constants.Id);
 		}
 		public static IMetaOperation ParmIntId(this IMetaOperation op)
 		{
-			return op.ParmInt(TemplatingConstants.Id);
+			return op.ParmInt(Constants.Id);
 		}
 		public static IMetaOperation ParmReturnUrl(this IMetaOperation op)
 		{
-			return op.ParmString(TemplatingConstants.ReturnUrl);
+			return op.ParmString(Constants.ReturnUrl);
 		}
 
 		public static IMetaOperation WithImage(this IMetaOperation op, string name)

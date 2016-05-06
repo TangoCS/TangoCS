@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
 using Nephrite.Data;
 using Nephrite.Logger;
@@ -113,8 +110,6 @@ namespace Nephrite.Hibernate
 				{
 					var mapper = new ModelMapper();
 					mapper.AddMappings(_mappingList.GetTypes());
-					//mapper.AddMappings(GetEntitiesTypes());
-					//mapper.AddMappings(GetTableFunctionsTypes());
 					f = mapper.CompileMappingForAllExplicitlyAddedEntities();
 					_mappings.Add(t, f);
 				}
@@ -123,12 +118,7 @@ namespace Nephrite.Hibernate
 		}
 
 		public string ID { get; set; }
-
 		Action<IDbIntegrationConfigurationProperties> _dbConfig;
-
-		//public abstract IEnumerable<Type> GetEntitiesTypes();
-		//public virtual IEnumerable<Type> GetTableFunctionsTypes() { return new List<Type>(); }
-		
 
 		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Func<IDbConnection> connection, IClassMappingList mappingList, IRequestLoggerProvider loggerProvider)
 		{
