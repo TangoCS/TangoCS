@@ -1,14 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace Nephrite.SettingsManager
 {
-	public class PersistentSetting
-	{
-		public string SystemName { get; set; }
-		public string Value { get; set; }
-	}
-
 	public class AppSettings : IPersistentSettings
 	{
         public static void ResetCache()
@@ -16,15 +9,13 @@ namespace Nephrite.SettingsManager
 			Settings = null;
         }
 
-		public static List<PersistentSetting> Settings { get; set; }
+		public static Dictionary<string, string> Settings { get; set; }
 
-		public string Get(string name)
+		public string Get(string name, string defaultValue = "")
 		{
-			var s = Settings.Where(o => o.SystemName == name).SingleOrDefault();
-			if (s == null)
-				return "";
-			else
-				return s.Value;
+			string s;
+			Settings.TryGetValue(name, out s);
+			return s ?? defaultValue;
 		}
 
 		public bool GetBool(string name)

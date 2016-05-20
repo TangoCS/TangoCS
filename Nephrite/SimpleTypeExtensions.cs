@@ -333,14 +333,10 @@ namespace Nephrite
 					case State.ExpectingComma:
 						if (sourceCharArray[i] != delimiter)
 							throw new Exception("Expecting comma. String: " + source + ". Position " + i.ToString());
-						string stringWithSlashes =
-							source.Substring(tokenStart, i - tokenStart);
+						string stringWithSlashes = source.Substring(tokenStart, i - tokenStart);
 						foreach (int item in slashesToRemove.Reverse<int>())
-							stringWithSlashes =
-								stringWithSlashes.Remove(item, 1);
-						splitString.Add(
-							stringWithSlashes.Substring(1,
-								stringWithSlashes.Length - 2));
+							stringWithSlashes = stringWithSlashes.Remove(item, 1);
+						splitString.Add(stringWithSlashes.Substring(1, stringWithSlashes.Length - 2));
 						state = State.AtBeginningOfToken;
 						tokenStart = i + 1;
 						continue;
@@ -355,20 +351,15 @@ namespace Nephrite
 					splitString.Add("");
 					return splitString.ToArray();
 				case State.InNonQuotedToken:
-					splitString.Add(
-						source.Substring(tokenStart,
-							source.Length - tokenStart));
+					splitString.Add(source.Substring(tokenStart, source.Length - tokenStart));
 					return splitString.ToArray();
 				case State.InQuotedToken:
 					throw new Exception("Expecting ending quote. String: " + source);
 				case State.ExpectingComma:
-					string stringWithSlashes =
-						source.Substring(tokenStart, source.Length - tokenStart);
+					string stringWithSlashes = source.Substring(tokenStart, source.Length - tokenStart);
 					foreach (int item in slashesToRemove.Reverse<int>())
 						stringWithSlashes = stringWithSlashes.Remove(item, 1);
-					splitString.Add(
-						stringWithSlashes.Substring(1,
-							stringWithSlashes.Length - 2));
+					splitString.Add(stringWithSlashes.Substring(1, stringWithSlashes.Length - 2));
 					return splitString.ToArray();
 				case State.InEscapedCharacter:
 					throw new Exception("Expecting escaped character. String: " + source);

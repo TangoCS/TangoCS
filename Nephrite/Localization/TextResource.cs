@@ -4,17 +4,7 @@ namespace Nephrite.Localization
 {
 	public class TextResourceOptions
 	{
-		public IReadOnlyDictionary<string, TextResourceObject> Resources { get; set; }
-	}
-
-	public class TextResourceObject
-	{
-		public int ID { get; set; }
-		/// <summary>
-		/// Format: ResourceName-LanguageCode
-		/// </summary>
-		public string Name { get; set; }
-		public string Text { get; set; }
+		public IReadOnlyDictionary<string, string> Resources { get; set; }
 	}
 
 	public class TextResource : ITextResource
@@ -65,15 +55,15 @@ namespace Nephrite.Localization
 			{
 				if (Options.Resources.ContainsKey(res))
 				{
-					if (!Options.Resources[res].Text.IsEmpty())
-						return "<span class='resedit' onclick='EditTextResource(" + Options.Resources[res].ID + ");'>" + Options.Resources[res].Text + "</span>";
+					if (!Options.Resources[res].IsEmpty())
+						return "<span class='resedit' onclick='EditTextResource(" + sysName + ");'>" + Options.Resources[res] + "</span>";
 					else
-						return "<span class='resedit' onclick='EditTextResource(" + Options.Resources[res].ID + ");'>[" + sysName + "]</span>";
+						return "<span class='resedit' onclick='EditTextResource(" + sysName + ");'>[" + sysName + "]</span>";
 				}
 				else
 					return "<span class=\"resedit\" onclick=\"EditTextResource('" + sysName + "', '');\">{" + sysName + "}</span>";
 			}
-			return Options.Resources[res].Text;
+			return Options.Resources[res];
 		}
 	}
 }
