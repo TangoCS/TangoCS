@@ -432,33 +432,33 @@ namespace Nephrite.Meta.Database
 			switch (type.ToLower())
 			{
 				case "integer":
-					return notNull ? MetaIntType.NotNull() : MetaIntType.Null();
+					return TypeFactory.Int;
 				case "uuid":
-					return notNull ? MetaGuidType.NotNull() : MetaGuidType.Null();
+					return TypeFactory.Guid;
 				case "varchar":
 					if (precision == -1)
-						return notNull ? MetaStringType.NotNull() : MetaStringType.Null();
+						return TypeFactory.String;
 					else
-						return new MetaStringType() { Length = precision, NotNullable = notNull };
+						return TypeFactory.CustomString(precision);
 				case "text":
-						return notNull ? MetaStringType.NotNull() : MetaStringType.Null();
+						return TypeFactory.String;
 				case "numeric":
-					return new MetaDecimalType() { Precision = precision, Scale = scale, NotNullable = notNull };
+					return TypeFactory.CustomDecimal(precision, scale);
 				case "timestamp":
 				case "timestamptz":
-					return notNull ? MetaDateTimeType.NotNull() : MetaDateTimeType.Null();
+					return TypeFactory.DateTime;
 				case "date":
-					return notNull ? MetaDateType.NotNull() : MetaDateType.Null();
+					return TypeFactory.Date;
 				case "bigint":
-					return notNull ? MetaLongType.NotNull() : MetaLongType.Null();
+					return TypeFactory.Long;
 				case "bytea":
-					return notNull ? MetaByteArrayType.NotNull() : MetaByteArrayType.Null();
+					return TypeFactory.ByteArray;
 				case "boolean":
-					return notNull ? MetaBooleanType.NotNull() : MetaBooleanType.Null();
+					return TypeFactory.Boolean;
 				case "xml":
-					return notNull ? MetaXmlType.NotNull() : MetaXmlType.Null();
+					return TypeFactory.Xml;
 				default:
-					return new MetaStringType();
+					return TypeFactory.String;
 			}
 		}
 

@@ -90,7 +90,7 @@
       <Project>{2b3754dc-5507-4046-a135-bced1c161acf}</Project>
       <Name>Nephrite.Meta.Database.PostgreSQL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Nephrite.Web.Hibernate\Nephrite.Web.Hibernate.csproj">
+    <ProjectReference Include="..\Nephrite.Hibernate\Nephrite.Hibernate.csproj">
       <Project>{307c0353-867b-4942-b448-52635a6bc321}</Project>
       <Name>Nephrite.Web.Hibernate</Name>
     </ProjectReference>

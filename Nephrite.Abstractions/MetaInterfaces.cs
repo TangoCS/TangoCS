@@ -163,7 +163,7 @@ namespace Nephrite.Meta
 		IMetaParameterType Type { get; set; }
 	}
 
-	public interface IMetaPrimitiveType //: IMetaClassifier
+	public partial interface IMetaPrimitiveType //: IMetaClassifier
 	{
 		//bool NotNullable { get; }
 

@@ -543,35 +543,37 @@ namespace Nephrite.Meta.Database
 			switch (type)
 			{
 				case "int":
-					return notNull ? MetaIntType.NotNull() : MetaIntType.Null();
+					return TypeFactory.Int;
 				case "nvarchar":
 				case "varchar":
-					return string.IsNullOrEmpty(precision) ? new MetaStringType { NotNullable = notNull } : new MetaStringType() { Length = Int32.Parse(precision == "max" ? "-1" : precision), NotNullable = notNull };
+					return string.IsNullOrEmpty(precision) ?
+							TypeFactory.String :
+							TypeFactory.CustomString(Int32.Parse(precision == "max" ? "-1" : precision));
 				case "decimal":
-					return new MetaDecimalType() { Precision = Int32.Parse(precision), Scale = Int32.Parse(scale), NotNullable = notNull };
+					return TypeFactory.CustomDecimal(Int32.Parse(precision), Int32.Parse(scale));
 				case "uniqueidentifier":
-					return notNull ? MetaGuidType.NotNull() : MetaGuidType.Null();
+					return TypeFactory.Guid;
 				case "datetime":
 				case "datetime2":
-					return notNull ? MetaDateTimeType.NotNull() : MetaDateTimeType.Null();
+					return TypeFactory.DateTime;
 				case "date":
-					return notNull ? MetaDateType.NotNull() : MetaDateType.Null();
+					return TypeFactory.Date;
 				case "bit":
-					return notNull ? MetaBooleanType.NotNull() : MetaBooleanType.Null();
+					return TypeFactory.Boolean;
 				//case "datetimeoffset":
 				//	return new MetaZoneDateTimeType();
 				case "bigint":
-					return notNull ? MetaLongType.NotNull() : MetaLongType.Null();
+					return TypeFactory.Long;
 				case "char":
-					return string.IsNullOrEmpty(precision) ? new MetaStringType { Length = 1, NotNullable = notNull } : new MetaStringType() { Length = Int32.Parse(precision), NotNullable = notNull };
+					return TypeFactory.CustomString(precision.IsEmpty() ? 1 : Int32.Parse(precision));
 				case "varbinary":
-					return new MetaByteArrayType() { Length = Int32.Parse(precision == "max" ? "-1" : precision), NotNullable = notNull };
+					return TypeFactory.CustomByteArray(Int32.Parse(precision == "max" ? "-1" : precision));
 				case "image":
-					return new MetaByteArrayType() { NotNullable = notNull };
+					return TypeFactory.ByteArray;
 				case "xml":
-					return notNull ? MetaXmlType.NotNull() : MetaXmlType.Null();
+					return TypeFactory.Xml;
 				default:
-					return notNull ? MetaStringType.NotNull() : MetaStringType.Null();
+					return TypeFactory.String;
 			}
 
 		}

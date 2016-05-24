@@ -1,20 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Linq;
-using Nephrite.Meta.Database;
-
-namespace Nephrite.Meta
+﻿namespace Nephrite.Meta
 {
-	public partial interface IMetaClassifier
+	public partial interface IMetaPrimitiveType
 	{
 		string GetDBType(IDBTypeMapper mapper);
 	}
-}
 
-namespace Nephrite.Meta.Database
-{
 	public interface IDBTypeMapper
 	{
 		string GetIntType();
