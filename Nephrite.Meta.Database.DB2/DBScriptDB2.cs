@@ -635,34 +635,34 @@ namespace Nephrite.Meta.Database
                 }
             }
 
-            switch (type)
+            switch (type.ToLower())
             {
-                case "INTEGER":
-					return notNull ? MetaIntType.NotNull() : MetaIntType.Null();
-                case "VARCHAR":
+                case "integer":
+					return TypeFactory.Int;
+                case "varchar":
 					if (precision == 36)
-						return notNull ? MetaGuidType.NotNull() : MetaGuidType.Null();
+						return TypeFactory.Guid;
 					else if (precision == -1)
-						return notNull ? MetaStringType.NotNull() : MetaStringType.Null();
+						return TypeFactory.String;
 					else
-						return new MetaStringType() { Length = precision, NotNullable = notNull };
-                case "DECIMAL":
-					return new MetaDecimalType() { Precision = precision, Scale = scale, NotNullable = notNull };
-                case "TIMESTAMP":
-					return notNull ? MetaDateTimeType.NotNull() : MetaDateTimeType.Null();
-                case "DATE":
-					return notNull ? MetaDateType.NotNull() : MetaDateType.Null();
-                case "BIGINT":
-					return notNull ? MetaLongType.NotNull() : MetaLongType.Null();
-                case "BLOB":
-					return notNull ? MetaByteArrayType.NotNull() : MetaByteArrayType.Null();
-                case "SMALLINT":
-					return notNull ? MetaBooleanType.NotNull() : MetaBooleanType.Null();
-                case "XML":
-					return notNull ? MetaXmlType.NotNull() : MetaXmlType.Null();
-                default:
-                    return new MetaStringType();
-            }
+						return TypeFactory.CustomString(precision);
+				case "decimal":
+					return TypeFactory.CustomDecimal(precision, scale);
+				case "timestamp":
+					return TypeFactory.DateTime;
+				case "date":
+					return TypeFactory.Date;
+				case "bigint":
+					return TypeFactory.Long;
+				case "blob":
+					return TypeFactory.ByteArray;
+				case "smallint":
+					return TypeFactory.Boolean;
+				case "xml":
+					return TypeFactory.Xml;
+				default:
+                    return TypeFactory.String;
+			}
 
         }
 
