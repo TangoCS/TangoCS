@@ -53,6 +53,11 @@ namespace Nephrite.Html
 			Action<ButtonTagAttributes> a = ta => ta.Type(ButtonType.Submit).Set(attributes);
 			w.WriteTag("button", a, inner);
 		}
+		public static void SubmitButton(this IHtmlWriter w, Action<ButtonTagAttributes> attributes = null, string text = "OK")
+		{
+			w.SubmitButton(a => a.Class("btn").Set(attributes), () => w.Write(text));
+		}
+
 		public static void ResetButton(this IHtmlWriter w, Action<ButtonTagAttributes> attributes, Action inner)
 		{
 			Action<ButtonTagAttributes> a = ta => ta.Type(ButtonType.Reset).Set(attributes);
@@ -62,11 +67,6 @@ namespace Nephrite.Html
 		public static void Button(this IHtmlWriter w, Action<ButtonTagAttributes> attributes = null, string text = "OK")
 		{
 			w.Button(a => a.Class("btn").Set(attributes), () => w.Write(text));
-		}
-
-		public static void SubmitButton(this IHtmlWriter w, Action<ButtonTagAttributes> attributes = null, string text = "OK")
-		{
-			w.SubmitButton(a => a.Class("btn").Set(attributes), () => w.Write(text));
 		}
 
 		public static void ResetButton(this IHtmlWriter w, Action<ButtonTagAttributes> attributes = null, string text = "Reset")

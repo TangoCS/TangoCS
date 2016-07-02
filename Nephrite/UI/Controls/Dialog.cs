@@ -16,14 +16,15 @@ namespace Nephrite.UI.Controls
 		//{
 		//	return new OpenDialogLink().Link(options, title, customATagAttributes);
 		//}
-		public static ATagAttributes OpenDialogOnClick(this ATagAttributes a, string serverEvent, string id, string callBack = null)
+
+		public static T OpenDialogOnClick<T>(this T a, Action<ApiResponse> serverEvent, string id, string callBack = null)
+			where T : TagAttributes<T>
 		{
 			var open = callBack.IsEmpty() ?
-				string.Format("dialog.open(this, '{0}', '{1}')", serverEvent, id) :
-				string.Format("dialog.open(this, '{0}', '{1}', {2})", serverEvent, id, callBack);
+				string.Format("dialog.open(this, '{0}', '{1}')", serverEvent.Method.Name, id) :
+				string.Format("dialog.open(this, '{0}', '{1}', {2})", serverEvent.Method.Name, id, callBack);
 			return a.OnClick(open);
 		}
-
 
 		public static void Dialog(this LayoutWriter w, string id, string title, Action body, Action footer)
 		{

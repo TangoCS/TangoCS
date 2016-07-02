@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Nephrite.Html
 {
 	public abstract class TagAttributes<T>
-		where T : class
+		where T : TagAttributes<T>
 	{
 		protected T _this;
 
@@ -27,6 +27,7 @@ namespace Nephrite.Html
 
 		protected string GetID(string id)
 		{
+			if (id == null) return null;
 			if (!IDPrefix.IsEmpty() && IDPrefix != id)
 				return (IDPrefix + (!id.IsEmpty() ? "_" + id : "")).ToLower();
 			return id.ToLower();
@@ -38,7 +39,7 @@ namespace Nephrite.Html
 		public T Aria(string key, string value) { MergeAttribute("aria-" + key.ToLower(), value); return _this; }
 		public T Class(string value, bool replaceExisting = false) { MergeAttribute("class", value, replaceExisting); return _this; }
 		public T ContentEditable(bool value) { if (value) MergeAttribute("contenteditable", "Contenteditable"); return _this; }
-		public T Data(string key, string value) { MergeAttribute("data-" + key.ToLower(), value); return _this; }
+		public T Data(string key, object value) { MergeAttribute("data-" + key.ToLower(), value.ToString()); return _this; }
 		public T Dir(Dir value) { MergeAttribute("dir", value.ToString().ToLower()); return _this; }
 		public T Draggable(bool value) { if (value) MergeAttribute("draggable", "Draggable"); return _this; }
 		public T Lang(string value) { MergeAttribute("lang", value); return _this; }
@@ -77,6 +78,16 @@ namespace Nephrite.Html
 		public T OnMouseUp(string value) { MergeAttribute("onmouseup", value); return _this; }
 
 		public T Set(Action<T> attrs) { if (attrs != null) attrs(_this); return _this; }
+		
+		public T DataParm(string key, object value) { MergeAttribute("data-p-" + key.ToLower(), value.ToString()); return _this; }
+		public T DataRef(string id) { MergeAttribute("data-ref-" + id.ToLower(), ""); return _this; }
+		public T Data(DataCollection d) 
+		{
+			if (d != null) 
+				foreach (var v in d.Value) 
+					Data(v.Key, v.Value); 
+			return _this; 
+		}
 	}
 
 	public class TagAttributes : TagAttributes<TagAttributes>
@@ -132,7 +143,7 @@ namespace Nephrite.Html
 
 	public class InputTagAttributes : TagAttributes<InputTagAttributes>
 	{
-		public InputTagAttributes Name(string value) { MergeAttribute("name", GetID(value)); return _this; }
+		public InputTagAttributes Name(string value) { MergeAttribute("name", value?.ToLower()); return _this; }
 
 		public InputTagAttributes Accept(string value) { MergeAttribute("accept", value); return this; }
 		public InputTagAttributes Alt(string value) { MergeAttribute("alt", value); return this; }
@@ -222,7 +233,7 @@ namespace Nephrite.Html
 
 	public class SelectTagAttributes : TagAttributes<SelectTagAttributes>
 	{
-		public SelectTagAttributes Name(string value) { MergeAttribute("name", GetID(value)); return _this; }
+		public SelectTagAttributes Name(string value) { MergeAttribute("name", value?.ToLower()); return _this; }
 
 		public SelectTagAttributes Autofocus(bool value) { if (value) MergeAttribute("autofocus", "autofocus"); return this; }
 		public SelectTagAttributes Disabled(bool value) { if (value) MergeAttribute("disabled", "disabled"); return this; }
@@ -246,7 +257,7 @@ namespace Nephrite.Html
 
 	public class TextAreaTagAttributes : TagAttributes<TextAreaTagAttributes>
 	{
-		public TextAreaTagAttributes Name(string value) { MergeAttribute("name", GetID(value)); return _this; }
+		public TextAreaTagAttributes Name(string value) { MergeAttribute("name", value?.ToLower()); return _this; }
 
 		public TextAreaTagAttributes Autofocus(bool value) { if (value) MergeAttribute("autofocus", "autofocus"); return this; }
 		public TextAreaTagAttributes Cols(int value) { MergeAttribute("cols", value.ToString()); return this; }
@@ -275,4 +286,33 @@ namespace Nephrite.Html
 	public enum InputType { Button, Checkbox, File, Hidden, Image, Number, Password, Radio, Range, Reset, Submit, Text }
 	public enum ButtonType { Button, Reset, Submit }
 	public enum Wrap { Hard, Soft }
+
+	public class DataCollection
+	{
+		public Dictionary<string, string> Value = new Dictionary<string, string>();
+		public DataCollection Add(string key, string value)
+		{
+			Value.Add(key, value);
+			return this;
+		}
+
+		public DataCollection Ref(string id)
+		{
+			Value.Add("ref-" + id, "");
+			return this;
+		}
+
+		public DataCollection Parm(string key, string value)
+		{
+			Value.Add("p-" + key, value);
+			return this;
+		}
+
+		public DataCollection Data(DataCollection source)
+		{
+			foreach(var d in source.Value)
+				Value.Add(d.Key, d.Value);
+			return this;
+		}
+	}
 }

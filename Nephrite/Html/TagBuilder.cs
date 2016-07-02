@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Net;
 
 namespace Nephrite.Html
@@ -29,14 +28,12 @@ namespace Nephrite.Html
 			if (Attributes == null) return;
 			foreach (var attribute in Attributes)
 			{
-				string key = attribute.Key;
-				if (!attribute.Value.IsEmpty())
+				if (attribute.Value != null)
 				{
-					string value = WebUtility.HtmlEncode(attribute.Value);
 					w.Write(' ');
-					w.Write(key);
+					w.Write(attribute.Key);
 					w.Write("=\"");
-					w.Write(value);
+					w.Write(WebUtility.HtmlEncode(attribute.Value));
 					w.Write('"');
 				}
 			}

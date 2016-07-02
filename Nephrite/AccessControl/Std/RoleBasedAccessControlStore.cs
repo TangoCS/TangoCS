@@ -69,7 +69,7 @@ namespace Nephrite.AccessControl.Std
 		List<RoleAsso<T>> AllRoleAsso()
 		{
 			if (_allRoleAsso != null) return _allRoleAsso;
-			_allRoleAsso = _dc.Query<RoleAsso<T>>(@"select ParentRoleID, RoleID from dbo.V_AccessControl_RoleAsso").ToList();
+			_allRoleAsso = _dc.Query<RoleAsso<T>>(@"select ParentRoleID, RoleID from V_AccessControl_RoleAsso").ToList();
 			return _allRoleAsso;
 		}
 

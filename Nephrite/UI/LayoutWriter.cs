@@ -6,10 +6,8 @@ using Nephrite.Localization;
 
 namespace Nephrite.UI
 {
-	public class LayoutWriter : StringWriter, IHtmlWriter
+	public class LayoutWriter : HtmlWriter
 	{
-		public string IDPrefix { get; set; }
-
 		public ITextResource TextResource { get; private set; }
 		public ActionContext Context { get; private set; }
 
@@ -29,13 +27,27 @@ namespace Nephrite.UI
 	{
 		public static void AjaxForm(this LayoutWriter w, string name, Action content)
 		{
-			w.AjaxForm(name, null, content);
+			w.AjaxForm(name, false, null, content);
 		}
 
-		public static void AjaxForm(this LayoutWriter w, string name, Action<FormTagAttributes> attributes, Action content)
+        public static void AjaxForm(this LayoutWriter w, string name, bool submitOnEnter, Action content)
+        {
+            w.AjaxForm(name, submitOnEnter, null, content);
+        }
+
+        public static void AjaxForm(this LayoutWriter w, string name, Action<FormTagAttributes> attributes, Action content)
+        {
+            w.AjaxForm(name, false, attributes, content);
+        }
+
+        public static void AjaxForm(this LayoutWriter w, string name, bool submitOnEnter, Action<FormTagAttributes> attributes, Action content)
 		{
-			w.Form(a => a.ID(name).Set(attributes), content);
-			w.AddClientAction("ajaxUtils", "initForm", new { ID = w.GetID(name) });
+			w.Form(a => a.ID(name).Set(attributes), () => {
+                content();
+                // Workaround to avoid corrupted XHR2 request body in IE10 / IE11
+                w.Hidden("__dontcare", null);
+            });
+			w.AddClientAction("ajaxUtils", "initForm", new { ID = w.GetID(name), SubmitOnEnter = submitOnEnter });
 		}
 
 		public static void ListTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)

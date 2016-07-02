@@ -15,7 +15,8 @@ namespace Nephrite.FileStorage.Std
 			_virtualPath = virtialPath;
 		}
 
-		public string ID { get; set; }
+		public string Name { get; set; }
+		public string FullPath { get; set; }
 		public int MaxFileSize { get; set; }
 
 		public IStorageFile CreateFile(string id)
@@ -50,7 +51,7 @@ namespace Nephrite.FileStorage.Std
 		public IEnumerable<IStorageFolder> GetFolders()
 		{
 			return Directory.GetDirectories(LocalDiskUtils.GetLocalPath(_virtualPath)).Select(o => 
-				new LocalDiskFolder(_virtualPath + Path.DirectorySeparatorChar.ToString() + o) { ID = o }
+				new LocalDiskFolder(_virtualPath + Path.DirectorySeparatorChar.ToString() + o)
 			);
 		}
 	}

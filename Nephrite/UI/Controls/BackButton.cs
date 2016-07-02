@@ -5,13 +5,11 @@ namespace Nephrite.UI.Controls
 {
 	public static class ButtonsExtension
 	{
-		public static void BackButton(this LayoutWriter c, string title = "", string url = null)
+		public static void BackButton(this LayoutWriter c, Action<ButtonTagAttributes> attrs = null, string title = "", string url = null)
 		{
 			if (url.IsEmpty()) url = c.Context.GetArg("returnurl");
 			if (title.IsEmpty()) title = c.TextResource.Get("Common.Back", "Назад");
-			c.Write(String.Format("<button class='btn' type='button' onClick={0}>{1}</button>", 
-				String.Format("document.location='{0}';return false;", url).InQuot(),
-				title));
+			c.Button(a => a.Class("btn").OnClick($"document.location='{url}';return false;").Set(attrs), title);
 		}
 
 		public static void SubmitButton(this LayoutWriter c)

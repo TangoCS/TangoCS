@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 
 namespace Nephrite.Html
 {
@@ -26,14 +23,6 @@ namespace Nephrite.Html
 			}
 			else
 				tb.Render(w, selfClosing ? TagRenderMode.SelfClosing : TagRenderMode.Normal);
-		}
-
-		public static void UsingIDPrefix(this IHtmlWriter w, string id, Action content)
-		{
-			var current = w.IDPrefix;
-			w.IDPrefix = current.IsEmpty() ? id : (current + "_" + id);
-			content();
-			w.IDPrefix = current;
 		}
 
 		public static string GetID(this IHtmlWriter w, string id)
@@ -288,6 +277,7 @@ namespace Nephrite.Html
 		public static void H6(this IHtmlWriter w, string text) { w.H6(null, () => w.Write(text)); }
 		public static void Legend(this IHtmlWriter w, string text) { w.Legend(null, text); }
 		public static void Script(this IHtmlWriter w, string path) { w.Script(a => a.Type("text/javascript").Src(path)); }
+		public static void Td(this IHtmlWriter w, string text) { w.Td(null, () => w.Write(text)); }
 	}
 
 	public static class HtmlPageWriterExtensions

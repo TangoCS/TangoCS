@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Nephrite.MVC;
-
-namespace Nephrite.Layout
+﻿namespace Nephrite.Layout
 {
 	public class AppLayout : ILayoutList, ILayoutForm,
 		ILayoutListRowDrag, ILayoutMessage, ILayoutPaging, ILayoutSimpleTags, ILayoutLabels

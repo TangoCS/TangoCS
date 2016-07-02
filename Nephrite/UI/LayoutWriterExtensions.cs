@@ -83,5 +83,35 @@ namespace Nephrite.UI
 		{
 			l.ButtonsBar(null, a);
 		}
+
+		public static void LabelDefault(this LayoutWriter w, string text)
+		{
+			w.Span(a => a.Class("label"), text);
+		}
+
+		public static void LabelSuccess(this LayoutWriter w, string text)
+		{
+			w.Span(a => a.Class("label label-success"), text);
+		}
+
+		public static void LabelWarning(this LayoutWriter w, string text)
+		{
+			w.Span(a => a.Class("label label-warning"), text);
+		}
+
+		public static void LabelImportant(this LayoutWriter w, string text)
+		{
+			w.Span(a => a.Class("label label-important"), text);
+		}
+
+		public static void LabelInfo(this LayoutWriter w, string text)
+		{
+			w.Span(a => a.Class("label label-info"), text);
+		}
+
+		public static void LabelInverse(this LayoutWriter w, string text)
+		{
+			w.Span(a => a.Class("label label-inverse"), text);
+		}
 	}
 }

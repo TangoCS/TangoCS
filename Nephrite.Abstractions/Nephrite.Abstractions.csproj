@@ -51,7 +51,7 @@
   <ItemGroup>
     <Compile Include="Cache\ICache.cs" />
     <Compile Include="IFMLInterfaces.cs" />
-    <Compile Include="IHostingEnvironment.cs" />
+    <Compile Include="Environment.cs" />
     <Compile Include="Logger\IErrorLogger.cs" />
     <Compile Include="Logger\IRequestLogger.cs" />
     <Compile Include="Logger\IRequestLoggerProvider.cs" />

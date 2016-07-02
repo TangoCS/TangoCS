@@ -9,8 +9,6 @@ namespace Nephrite.FileStorage
 {
 	public interface IStorageFile
 	{
-		string ID { get; }
-
 		string Name { get; set; }
 		string Extension { get; set; }
 		long Length { get; }
@@ -19,6 +17,11 @@ namespace Nephrite.FileStorage
 		byte[] ReadAllBytes();
 		void WriteAllBytes(byte[] bytes);
 		void Delete();
+	}
+
+	public interface IStorageFile<TKey> : IStorageFile
+	{
+		TKey ID { get; }
 	}
 
 	public static class IStorageFileExtensions

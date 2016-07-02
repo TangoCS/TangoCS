@@ -3,7 +3,6 @@ using System.Linq;
 using System.Text;
 using Nephrite.Localization;
 using Nephrite.Html;
-using Nephrite.MVC;
 
 namespace Nephrite.Layout
 {

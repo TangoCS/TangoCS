@@ -43,22 +43,71 @@ namespace Nephrite.UI
 			Includes = new HashSet<string>();
 		}
 
-		public virtual void BindEvent(string elementId, string clientEvent, string serverEvent, string serverEventReceiver = null)
-		{
-			ClientActions.Add(new ClientAction("ajaxUtils", "bindevent", new {
-				Id = elementId, ClientEvent = clientEvent,
-				ServerEvent = serverEvent, ServerEventReceiver = serverEventReceiver
-			}));
-		}
+		//public virtual void BindEvent(string elementId, string clientEvent, string serverEvent, string serverEventReceiver = null)
+		//{
+		//	ClientActions.Add(new ClientAction("ajaxUtils", "bindevent", new {
+		//		Id = elementId, ClientEvent = clientEvent,
+		//		ServerEvent = serverEvent, ServerEventReceiver = serverEventReceiver
+		//	}));
+		//}
 
 		public void AddClientAction(string service, string method, object args)
 		{
 			ClientActions.Add(new ClientAction(service, method, args));
 		}
 
-		public virtual void SetFieldValue(string name, string value)
+		public virtual void SetElementValue(string name, string value)
 		{
-			AddClientAction("commonUtils", "setValue", new { elName = name, value = value });
+			AddClientAction("domActions", "setValue", new { elName = name.ToLower(), value = value });
+		}
+		public void SetElementValue(ViewElement elementOwner, string name, string value)
+		{
+			SetElementValue(elementOwner.GetElementID(name), value);
+		}
+
+		public virtual void SetElementVisibility(string name, bool visible)
+		{
+			AddClientAction("domActions", "setVisible", new { elName = name.ToLower(), visible = visible });
+		}
+		public virtual void SetElementVisibility(ViewElement elementOwner, string name, bool visible)
+		{
+			SetElementVisibility(elementOwner.GetElementID(name), visible);
+		}
+
+		public virtual void SetElementAttribute(string name, string attrName, string attrValue)
+		{
+			AddClientAction("domActions", "setAttribute", new { elName = name.ToLower(), attrName = attrName, attrValue = attrValue });
+		}
+		public virtual void SetElementAttribute(ViewElement elementOwner, string name, string attrName, string attrValue)
+		{
+			SetElementAttribute(elementOwner.GetElementID(name), attrName, attrValue);
+		}
+
+		public virtual void RemoveElementAttribute(string name, string attrName)
+		{
+			AddClientAction("domActions", "removeAttribute", new { elName = name.ToLower(), attrName = attrName });
+		}
+		public virtual void RemoveElementAttribute(ViewElement elementOwner, string name, string attrName)
+		{
+			RemoveElementAttribute(elementOwner.GetElementID(name), attrName);
+		}
+
+		public virtual void SetElementClass(string name, string clsName)
+		{
+			AddClientAction("domActions", "setClass", new { elName = name.ToLower(), clsName = clsName });
+		}
+		public virtual void SetElementClass(ViewElement elementOwner, string name, string clsName)
+		{
+			SetElementClass(elementOwner.GetElementID(name), clsName);
+		}
+
+		public virtual void RemoveElementClass(string name, string clsName)
+		{
+			AddClientAction("domActions", "removeClass", new { elName = name.ToLower(), clsName = clsName });
+		}
+		public virtual void RemoveElementClass(ViewElement elementOwner, string name, string clsName)
+		{
+			RemoveElementClass(elementOwner.GetElementID(name), clsName);
 		}
 
 		public virtual void AddWidget(string name, string content)
@@ -100,6 +149,11 @@ namespace Nephrite.UI
 			AddChildWidget(parent, name, content.ToString());
 		}
 
+		public void RedirectBack(ActionContext context)
+		{
+			Data.Add("url", context.GetArg(Constants.ReturnUrl));
+		}
+
 		public override string Serialize()
 		{
 			if (Widgets.Count > 0)
@@ -113,73 +167,51 @@ namespace Nephrite.UI
 
 			return JsonConvert.SerializeObject(Data, Json.CamelCase);
 		}
-	}
 
-	public class ViewElementResponse : ApiResponse
-	{
-		Func<string, string> _getID;
-		Func<LayoutWriter> _createWriter;
+		//public override void BindEvent(string elementId, string clientEvent, string serverEvent, string serverEventReceiver = null)
+		//{
+		//	base.BindEvent(_getID(elementId), clientEvent, serverEvent, serverEventReceiver);
+		//}
 
-		public ViewElementResponse(ViewElement element) : base()
+		public void AddWidget(ViewElement elementOwner, string name, string content)
 		{
-			SetViewElement(element);
+			AddWidget(elementOwner.GetElementID(name), content);
 		}
 
-		public void SetViewElement(ViewElement element)
+		public void RemoveWidget(ViewElement elementOwner, string name)
 		{
-			_getID = element.GetElementID;
-			_createWriter = element.CreateLayoutWriter;
+			RemoveWidget(elementOwner.GetElementID(name));
 		}
 
-		public override void SetFieldValue(string name, string value)
+		public void AddRootWidget(ViewElement elementOwner, string name, string content)
 		{
-			base.SetFieldValue(_getID(name), value);
+			AddRootWidget(elementOwner.GetElementID(name), content);
 		}
 
-		public override void BindEvent(string elementId, string clientEvent, string serverEvent, string serverEventReceiver = null)
+		public void AddChildWidget(ViewElement elementOwner, string parent, string name, string content)
 		{
-			base.BindEvent(_getID(elementId), clientEvent, serverEvent, serverEventReceiver);
+			AddChildWidget(parent, elementOwner.GetElementID(name), content);
 		}
 
-		public override void AddWidget(string name, string content)
+		public void AddWidget(ViewElement elementOwner, string name, Action<LayoutWriter> content)
 		{
-			base.AddWidget(_getID(name), content);
+			var w = elementOwner.CreateLayoutWriter();
+			content?.Invoke(w);
+			AddWidget(elementOwner.GetElementID(name), w);
 		}
 
-		public override void RemoveWidget(string name)
+		public void AddRootWidget(ViewElement elementOwner, string name, Action<LayoutWriter> content)
 		{
-			base.RemoveWidget(_getID(name));
+			var w = elementOwner.CreateLayoutWriter();
+			content?.Invoke(w);
+			AddRootWidget(elementOwner.GetElementID(name), w);
 		}
 
-		public override void AddRootWidget(string name, string content)
+		public void AddChildWidget(ViewElement elementOwner, string parent, string name, Action<LayoutWriter> content)
 		{
-			base.AddRootWidget(_getID(name), content);
-		}
-
-		public override void AddChildWidget(string parent, string name, string content)
-		{
-			base.AddChildWidget(parent, _getID(name), content);
-		}
-
-		public void AddWidget(string name, Action<LayoutWriter> content)
-		{
-			var w = _createWriter();
-			if (content != null) content(w);
-			AddWidget(name, w);
-		}
-
-		public void AddRootWidget(string name, Action<LayoutWriter> content)
-		{
-			var w = _createWriter();
-			if (content != null) content(w);
-			AddRootWidget(name, w);
-		}
-
-		public void AddChildWidget(string parent, string name, Action<LayoutWriter> content)
-		{
-			var w = _createWriter();
-			if (content != null) content(w);
-			AddChildWidget(parent, name, w);
+			var w = elementOwner.CreateLayoutWriter();
+			content?.Invoke(w);
+			AddChildWidget(parent, elementOwner.GetElementID(name), w);
 		}
 	}
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Nephrite.Html;
-using Nephrite.MVC;
 
 namespace Nephrite.Layout
 {

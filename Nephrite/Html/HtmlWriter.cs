@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 
 namespace Nephrite.Html
 {
@@ -7,5 +8,10 @@ namespace Nephrite.Html
 		string IDPrefix { get; set; }
 		void Write(string value);
 		void Write(char value);
+	}
+
+	public class HtmlWriter : StringWriter, IHtmlWriter
+	{
+		public string IDPrefix { get; set; }
 	}
 }
