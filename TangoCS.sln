@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportData", "ImportData\Im
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Hibernate", "Tango.Hibernate\Tango.Hibernate.csproj", "{307C0353-867B-4942-B448-52635A6BC321}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Test", "Tessera3.Test\Tango.Test.csproj", "{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Test", "Tango.Test\Tango.Test.csproj", "{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Meta.Database.PostgreSQL", "Tango.Meta.Database.PostgreSQL\Tango.Meta.Database.PostgreSQL.csproj", "{2B3754DC-5507-4046-A135-BCED1C161ACF}"
 EndProject
