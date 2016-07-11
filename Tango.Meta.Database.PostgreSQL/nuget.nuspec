@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+	<metadata>
+		<id>Tango.Meta.Database.PostgreSQL</id>
+		<version>1.0</version>
+		<authors>TangoCS team</authors>
+		<requireLicenseAcceptance>false</requireLicenseAcceptance>
+		<description>Tango.Meta.Database.PostgreSQL</description>
+		<dependencies>
+			<dependency id="Npgsql" version="[3.0,)" />
+		</dependencies>
+	</metadata>
+	<files>
+		<file src="bin\Debug\Tango.Meta.Database.PostgreSQL.dll" target="lib\net451\Tango.Meta.Database.PostgreSQL.dll" />
+		<file src="bin\Debug\Tango.Meta.Database.PostgreSQL.pdb" target="lib\net451\Tango.Meta.Database.PostgreSQL.pdb" />
+	</files>
+</package>

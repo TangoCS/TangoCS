@@ -8,8 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using IBM.Data.DB2;
-using Nephrite.Meta.Database;
-using Nephrite;
+using Tango.Meta.Database;
+using Tango;
 
 namespace ImportData
 {

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Tango.Hibernate</id>
+        <version>1.0</version>
+        <authors>TangoCS team</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Tango.Hibernate</description>
+    </metadata>
+    <files>
+        <file src="bin\Debug\Tango.Hibernate.dll" target="lib\net451\Tango.Hibernate.dll" />
+        <file src="bin\Debug\Tango.Hibernate.pdb" target="lib\net451\Tango.Hibernate.pdb" />
+    </files>
+</package>

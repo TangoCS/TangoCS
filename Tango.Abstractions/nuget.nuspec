@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Tango.Abstractions</id>
+        <version>1.0</version>
+        <authors>TangoCS team</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Tango.Abstractions</description>
+    </metadata>
+    <files>
+        <file src="bin\Debug\Tango.Abstractions.dll" target="lib\net451\Tango.Abstractions.dll" />
+        <file src="bin\Debug\Tango.Abstractions.pdb" target="lib\net451\Tango.Abstractions.pdb" />
+    </files>
+</package>

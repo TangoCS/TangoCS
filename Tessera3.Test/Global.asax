@@ -5,7 +5,7 @@
 <script RunAt="server">
 	protected void Application_Start(object sender, EventArgs e)
 	{
-		Nephrite.Razor.RazorFormRenderer.Configure("Views");
+		Tango.Razor.RazorFormRenderer.Configure("Views");
 		Routes.Register(RouteTable.Routes);
 	}
 </script>

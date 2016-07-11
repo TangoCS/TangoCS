@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Nephrite.AccessControl;
-using Nephrite.Html.Controls;
+using Tango.AccessControl;
+using Tango.Html.Controls;
 
 namespace Solution.Configuration
 {

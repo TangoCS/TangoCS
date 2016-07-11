@@ -3,7 +3,7 @@
     <metadata>
         <id>NHibernate</id>
         <version>999.0</version>
-        <authors>Nephrite Technologies</authors>
+        <authors>TangoCS team</authors>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>NHibernate</description>
 			<dependencies>

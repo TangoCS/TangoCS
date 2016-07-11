@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Tango.Razor</id>
+        <version>1.0</version>
+        <authors>TangoCS team</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Tango.Razor</description>
+			<dependencies>
+				<dependency id="Microsoft.AspNet.Razor" version="(3.2,)" />
+				<dependency id="RazorEngine" version="(3.7,)" />
+			</dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Debug\Tango.Razor.dll" target="lib\net451\Tango.Razor.dll" />
+        <file src="bin\Debug\Tango.Razor.pdb" target="lib\net451\Tango.Razor.pdb" />
+    </files>
+</package>

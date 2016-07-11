@@ -1,0 +1,107 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Tango
+{
+	public class ValidationMessage
+	{
+		public string Name { get; set; }
+		public ValidationMessageSeverity Severity { get; private set; }
+		public string Message { get; private set; }
+
+		public ValidationMessage(string name, string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		{
+			Name = name;
+			Message = message;
+			Severity = severity;
+		}
+
+		public ValidationMessage(string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		{
+			Message = message;
+			Severity = severity;
+		}
+	}
+
+	public class ValidationMessageCollection : ObservableCollection<ValidationMessage>
+	{
+		Dictionary<ValidationMessageSeverity, int> _messagesCount = new Dictionary<ValidationMessageSeverity, int>();
+
+		public ValidationMessageCollection()
+		{
+			CollectionChanged += OnCollectionChanged;
+			foreach (ValidationMessageSeverity s in Enum.GetValues(typeof(ValidationMessageSeverity)))
+			{
+				_messagesCount.Add(s, 0);
+			}
+		}
+
+		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (e.NewItems != null)
+				foreach (ValidationMessage m in e.NewItems)
+					_messagesCount[m.Severity]++;
+
+			if (e.OldItems != null)
+				foreach (ValidationMessage m in e.OldItems)
+					_messagesCount[m.Severity]--;
+		}
+
+		public void AddRange(IEnumerable<ValidationMessage> collection)
+		{
+			foreach (var i in collection)
+				Add(i);
+		}
+
+		public void Add(string name, string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		{
+			Add(new ValidationMessage(name, message, severity));
+		}
+
+		public void Add(string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		{
+			Add(new ValidationMessage(message, severity));
+		}
+
+		public bool HasItems(params ValidationMessageSeverity[] types)
+		{
+			if (types == null || types.Length == 0) return Count > 0;
+
+			foreach (var s in types)
+				if (_messagesCount[s] > 0) return true;
+
+			return false;
+		}
+
+		public ValidationBuilder<T> Check<T>(string name, T value)
+		{
+			return new ValidationBuilder<T>(this, name, value);
+		}
+	}
+
+	public class ValidationBuilder<T>
+	{
+		public string Name { get; private set; }
+		public T Value { get; set; }
+		public ValidationMessageCollection Collection { get; private set; }
+
+		public ValidationBuilder(ValidationMessageCollection c, string name, T value)
+		{
+			Collection = c;
+			Name = name;
+			Value = value;
+		}
+	}
+
+	public enum ValidationMessageSeverity
+	{
+		Error,
+		Warning,
+		Information
+	}
+}

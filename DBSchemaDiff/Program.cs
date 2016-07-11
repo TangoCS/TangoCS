@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using IBM.Data.DB2;
-using Nephrite.Meta.Database;
+using Tango.Meta.Database;
 using Npgsql;
 
 namespace DBSchemaDiff

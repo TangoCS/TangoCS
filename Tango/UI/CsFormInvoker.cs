@@ -1,0 +1,14 @@
+﻿using System;
+
+namespace Tango.UI
+{
+	public class CsFormInvoker : IActionInvoker
+	{
+		public ActionResult Invoke(ActionContext actionContext, Type t)
+		{
+			var template = Activator.CreateInstance(t) as ViewContainer;
+			template.Init(null, actionContext);
+			return template.InjectProperties(actionContext.RequestServices).Execute();
+		}
+	}
+}

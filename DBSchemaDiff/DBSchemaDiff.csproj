@@ -36,9 +36,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="IBM.Data.DB2, Version=9.7.4.4, Culture=neutral, PublicKeyToken=7c307b91aa13d208, processorArchitecture=AMD64" />
-    <Reference Include="Nephrite">
-      <HintPath>..\Nephrite\bin\Debug\Nephrite.dll</HintPath>
-    </Reference>
     <Reference Include="Npgsql, Version=3.1.2.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
       <HintPath>..\packages\Npgsql.3.1.2\lib\net451\Npgsql.dll</HintPath>
       <Private>True</Private>
@@ -61,21 +58,25 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Nephrite.Abstractions\Nephrite.Abstractions.csproj">
+    <ProjectReference Include="..\Tango.Abstractions\Tango.Abstractions.csproj">
       <Project>{08917986-6340-4d26-bb53-b1b69fd3c810}</Project>
-      <Name>Nephrite.Abstractions</Name>
+      <Name>Tango.Abstractions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Nephrite.Meta.Database.DB2\Nephrite.Meta.Database.DB2.csproj">
+    <ProjectReference Include="..\Tango.Meta.Database.DB2\Tango.Meta.Database.DB2.csproj">
       <Project>{2b25a041-ff5e-4308-a25a-aa60d097f009}</Project>
-      <Name>Nephrite.Meta.Database.DB2</Name>
+      <Name>Tango.Meta.Database.DB2</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Nephrite.Meta.Database.MSSQL\Nephrite.Meta.Database.MSSQL.csproj">
+    <ProjectReference Include="..\Tango.Meta.Database.MSSQL\Tango.Meta.Database.MSSQL.csproj">
       <Project>{de61160e-44db-40cd-82c9-ba812dce4812}</Project>
-      <Name>Nephrite.Meta.Database.MSSQL</Name>
+      <Name>Tango.Meta.Database.MSSQL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Nephrite.Meta.Database.PostgreSQL\Nephrite.Meta.Database.PostgreSQL.csproj">
+    <ProjectReference Include="..\Tango.Meta.Database.PostgreSQL\Tango.Meta.Database.PostgreSQL.csproj">
       <Project>{2b3754dc-5507-4046-a135-bced1c161acf}</Project>
-      <Name>Nephrite.Meta.Database.PostgreSQL</Name>
+      <Name>Tango.Meta.Database.PostgreSQL</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Tango\Tango.csproj">
+      <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
+      <Name>Tango</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

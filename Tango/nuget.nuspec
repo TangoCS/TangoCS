@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Tango</id>
+        <version>1.0</version>
+        <authors>TangoCS team</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Tango</description>
+        <dependencies>
+          <dependency id="Dapper.StrongName" version="[1.40,)" />
+          <dependency id="Newtonsoft.Json" version="[8.0,)" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Debug\Tango.dll" target="lib\net451\Tango.dll" />
+        <file src="bin\Debug\Tango.pdb" target="lib\net451\Tango.pdb" />
+    </files>
+</package>

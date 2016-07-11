@@ -57,17 +57,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Nephrite.Meta.Database.DB2\Nephrite.Meta.Database.DB2.csproj">
+    <ProjectReference Include="..\Tango.Meta.Database.DB2\Tango.Meta.Database.DB2.csproj">
       <Project>{2b25a041-ff5e-4308-a25a-aa60d097f009}</Project>
-      <Name>Nephrite.Meta.Database.DB2</Name>
+      <Name>Tango.Meta.Database.DB2</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Nephrite.Meta.Database.MSSQL\Nephrite.Meta.Database.MSSQL.csproj">
+    <ProjectReference Include="..\Tango.Meta.Database.MSSQL\Tango.Meta.Database.MSSQL.csproj">
       <Project>{de61160e-44db-40cd-82c9-ba812dce4812}</Project>
-      <Name>Nephrite.Meta.Database.MSSQL</Name>
+      <Name>Tango.Meta.Database.MSSQL</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Nephrite\Nephrite.csproj">
+    <ProjectReference Include="..\Tango\Tango.csproj">
       <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
-      <Name>Nephrite</Name>
+      <Name>Tango</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
