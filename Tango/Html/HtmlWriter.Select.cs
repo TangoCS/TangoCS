@@ -53,21 +53,21 @@ namespace Tango.Html
 
 		public SelectListItem(object text, object value, bool selected)
 		{
-			Text = text.ToString();
-			Value = value.ToString();
+			Text = text?.ToString();
+			Value = value?.ToString();
 			Selected = selected;
 		}
 
 		public SelectListItem(object text, object value)
 		{
-			Text = text.ToString();
-			Value = value.ToString();
+			Text = text?.ToString();
+			Value = value?.ToString();
 		}
 
 		public SelectListItem(object text)
 		{
-			Text = text.ToString();
-			Value = text.ToString();
+			Text = text?.ToString();
+			Value = text?.ToString();
 		}
 	}
 

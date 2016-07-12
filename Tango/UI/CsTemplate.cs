@@ -28,14 +28,14 @@ namespace Tango.UI
 		}
 
 		public virtual bool UsePropertyInjection { get { return false; } }
-		public virtual void CreateChildControls() { }
+		public virtual void OnInit() { }
 
 		public string GetElementID(string id)
 		{
 			return (!ID.IsEmpty() ? ID + (!id.IsEmpty() ? "_" + id : "") : id).ToLower();
 		}
 
-		public T CreateControl<T>(string id, Action<T> init = null)
+		public T CreateControl<T>(string id, Action<T> setProperties = null)
 			where T : ViewComponent, new()
 		{
 			T c = new T();
@@ -44,8 +44,8 @@ namespace Tango.UI
 
 			Context.EventReceivers.Add(c.ID, c);
 
-			init?.Invoke(c);
-			c.CreateChildControls();
+			setProperties?.Invoke(c);
+			c.OnInit();
 			return c;
 		}
 

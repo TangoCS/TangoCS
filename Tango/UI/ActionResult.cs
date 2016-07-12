@@ -92,7 +92,7 @@ namespace Tango.UI
 		}
 	}
 
-	public class UserLoginResult : ActionResult
+	public class UserLoginResult : RedirectBackResult
 	{
 		IIdentity _user;
 		public UserLoginResult(IIdentity user)
@@ -102,10 +102,10 @@ namespace Tango.UI
 
 		public override Task ExecuteResultAsync(ActionContext context)
 		{
-			return new RedirectBackResult().ExecuteResultAsync(context).ContinueWith(t => {
-				var executor = context.RequestServices.GetService(typeof(IUserSignInExecutor)) as IUserSignInExecutor;
-				return executor.Execute(_user);
-			});
+			var executor = context.RequestServices.GetService(typeof(IUserSignInExecutor)) as IUserSignInExecutor;
+			executor.Execute(_user);
+
+			return base.ExecuteResultAsync(context);
 		}
 	}
 
