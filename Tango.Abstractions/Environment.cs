@@ -62,5 +62,10 @@ namespace Tango
 			var userAgent = requestEnv.UserAgent;
 			return userAgent.Contains("MSIE") || userAgent.Contains("Trident");
 		}
+
+		public static bool IsFirefox(this IRequestEnvironment requestEnv)
+		{
+			return requestEnv.UserAgent.Contains("Firefox");
+		}
 	}
 }

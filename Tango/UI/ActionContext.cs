@@ -1,7 +1,6 @@
 ﻿using Tango.Localization;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
 
 namespace Tango.UI
@@ -15,6 +14,7 @@ namespace Tango.UI
 			EventArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			FormData = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			EventReceivers = new Dictionary<string, InteractionFlowElement>(StringComparer.OrdinalIgnoreCase);
+			PersistentArgs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 		}
 
 		public IServiceProvider RequestServices { get; protected set; }
@@ -29,6 +29,7 @@ namespace Tango.UI
 		public DynamicDictionary AllArgs { get; set; }
 		public DynamicDictionary ActionArgs { get; set; }
 		public DynamicDictionary EventArgs { get; set; }
+		public IDictionary<string, string> PersistentArgs { get; }
 
 		public dynamic FormBag { get { return FormData; } }
 		public DynamicDictionary FormData { get; set; }

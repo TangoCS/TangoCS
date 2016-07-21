@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Tango.Localization;
 using Newtonsoft.Json;
 using Tango.Html;
@@ -58,6 +57,11 @@ namespace Tango.UI
 			return Context.FormData.Parse<T>(name, defaultValue);
 		}
 
+		public DateTime? GetPostedDateTime(string name, string format, DateTime? defaultValue = null)
+		{
+			return Context.FormData.ParseDateTime(name, format, defaultValue);
+		}
+
 		public T GetPostedJson<T>(string name, Func<T> defaultValue = null)
 		{
 			var s = GetPosted<string>(name);
@@ -82,18 +86,6 @@ namespace Tango.UI
 	{
 		public DataCollection DataCollection { get; set; } = new DataCollection();
 	}
-	public abstract class ViewComponent<T> : ViewComponent
-		where T : ViewComponent
-	{
-		public Action<T> InitFunc { get; set; }
-
-		public ViewComponent() { }
-		public ViewComponent(Action<T> initFunc)
-		{
-			InitFunc = initFunc;
-		}
-	}
-
 
 	public abstract class ViewContainer : ViewComponent
 	{

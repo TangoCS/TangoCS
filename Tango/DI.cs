@@ -6,12 +6,6 @@ namespace Tango
 {
 	public static class DI
 	{
-		//public static IServiceProvider RequestServices { get; set; }
-		//public static T GetService<T>()
-		//{
-		//	return (T)RequestServices.GetService(typeof(T));
-  //      }
-
 		public static T InjectProperties<T>(this T obj, IServiceProvider provider)
 			where T : IWithPropertyInjection
 		{

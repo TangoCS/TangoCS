@@ -129,6 +129,7 @@ namespace Tango.Html
 	{
 		public HtmlTagAttributes Manifest(string value) { MergeAttribute("manifest", value); return this; }
 		public HtmlTagAttributes Xmlns(string value) { MergeAttribute("xmlns", value); return this; }
+		public HtmlTagAttributes Xmlns(string prefix, string value) { MergeAttribute("xmlns:" + prefix, value); return this; }
 	}
 
 	public class ImgTagAttributes : TagAttributes<ImgTagAttributes>

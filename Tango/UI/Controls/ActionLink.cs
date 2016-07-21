@@ -24,26 +24,34 @@ namespace Tango.UI.Controls
 			Context = context;
 		}
 
+		public string Url {
+			get {
+				if (_resolver == null) return null;
+				if (_url == null)
+				{
+					foreach (var arg in Context.PersistentArgs)
+						_args.Add(arg.Key, arg.Value);
+
+					StringBuilder sb = _resolver.Resolve(_args);
+					if (_eventArgs.Count > 0)
+					{
+						sb.Append("#").Append(_resolver.Resolve(_eventArgs, true));
+					}
+					_url = sb.ToString();
+				}
+				return _url;
+			}
+		}
+
 		public override string ToString()
 		{
-			if (_resolver == null) return "";
-			if (_url == null)
-			{
-				StringBuilder sb = _resolver.Resolve(_args);
-				if (_eventArgs.Count > 0)
-				{
-					sb.Append("#").Append(_resolver.Resolve(_eventArgs, true));
-				}
-				_url = sb.ToString();
-			}
-
-			return _url;
+			return Url;
 		}
 
 		public static implicit operator string(ActionUrl<T> l)
 		{
 			if (l == null) return null;
-			return l.ToString();
+			return l.Url;
 		}
 
 		public T UseResolver(IUrlResolver resolver)
@@ -92,8 +100,7 @@ namespace Tango.UI.Controls
 	}
 
 	public class ActionUrl : ActionUrl<ActionUrl>
-	{
-		
+	{		
 		public ActionUrl(ActionContext context) : base(context)
 		{
 			_this = this;
@@ -107,11 +114,10 @@ namespace Tango.UI.Controls
 
 		public string GetTitle() => _title;
 		public string GetImageSrc() => _imageSrc;
-		public ITextResource TextResource { get; private set; }
+		public ITextResource TextResource => Context.TextResource;
 
-		public ActionLink(ActionContext context, ITextResource textResource) : base(context)
+		public ActionLink(ActionContext context) : base(context)
 		{
-			TextResource = textResource;
 			_this = this;
 		}
 

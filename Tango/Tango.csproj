@@ -40,8 +40,8 @@
     <AssemblyOriginatorKeyFile>Tango.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper, Version=1.40.0.0, Culture=neutral, PublicKeyToken=e3e8412083d25dd3, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.StrongName.1.40\lib\net45\Dapper.dll</HintPath>
+    <Reference Include="Dapper.StrongName, Version=1.50.0.0, Culture=neutral, PublicKeyToken=e3e8412083d25dd3, processorArchitecture=MSIL">
+      <HintPath>..\..\FinHub\packages\Dapper.StrongName.1.50.0\lib\net451\Dapper.StrongName.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -72,7 +72,7 @@
     <Compile Include="ByteArrayToHex.cs" />
     <Compile Include="FileStorage\Std\LocalDiskFolder.cs" />
     <Compile Include="Identity\Std\Tessera2IdentityStore.cs" />
-    <Compile Include="Lazy2.cs" />
+    <Compile Include="TreeNode.cs" />
     <Compile Include="UI\Controls\ListFilterEngine.cs" />
     <Compile Include="Data\ConnectionManager.cs" />
     <Compile Include="Date.cs" />
@@ -107,7 +107,6 @@
     <Compile Include="UI\Controls\CodeArea.cs" />
     <Compile Include="UI\Controls\Dialog.cs" />
     <Compile Include="UI\DefaultTypeActivatorCache.cs" />
-    <Compile Include="UI\Toolbar.cs" />
     <Compile Include="Html\HtmlParms.cs" />
     <Compile Include="Html\HtmlWriter.Links.cs" />
     <Compile Include="Html\IUrlResolver.cs" />
@@ -181,7 +180,6 @@
     </Compile>
     <Compile Include="Localization\TextResource.cs" />
     <Compile Include="UI\CsFormInvoker.cs" />
-    <Compile Include="TypeFactory.cs" />
     <Compile Include="Validation.cs" />
     <Compile Include="XmlHelper.cs" />
   </ItemGroup>

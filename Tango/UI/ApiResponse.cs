@@ -43,23 +43,21 @@ namespace Tango.UI
 			Includes = new HashSet<string>();
 		}
 
-		//public virtual void BindEvent(string elementId, string clientEvent, string serverEvent, string serverEventReceiver = null)
-		//{
-		//	ClientActions.Add(new ClientAction("ajaxUtils", "bindevent", new {
-		//		Id = elementId, ClientEvent = clientEvent,
-		//		ServerEvent = serverEvent, ServerEventReceiver = serverEventReceiver
-		//	}));
-		//}
-
 		public void AddClientAction(string service, string method, object args)
 		{
 			ClientActions.Add(new ClientAction(service, method, args));
+		}
+
+		public void AddClientAction(ClientAction action)
+		{
+			ClientActions.Add(action);
 		}
 
 		public virtual void SetElementValue(string name, string value)
 		{
 			AddClientAction("domActions", "setValue", new { elName = name.ToLower(), value = value });
 		}
+
 		public void SetElementValue(ViewElement elementOwner, string name, string value)
 		{
 			SetElementValue(elementOwner.GetElementID(name), value);
@@ -168,11 +166,6 @@ namespace Tango.UI
 			return JsonConvert.SerializeObject(Data, Json.CamelCase);
 		}
 
-		//public override void BindEvent(string elementId, string clientEvent, string serverEvent, string serverEventReceiver = null)
-		//{
-		//	base.BindEvent(_getID(elementId), clientEvent, serverEvent, serverEventReceiver);
-		//}
-
 		public void AddWidget(ViewElement elementOwner, string name, string content)
 		{
 			AddWidget(elementOwner.GetElementID(name), content);
@@ -218,22 +211,33 @@ namespace Tango.UI
 	public class ClientAction
 	{
 		public string Service { get; set; }
-		public string Method { get; set; }
-		public object Args { get; set; }
+		public List<ChainElement> CallChain { get; set; } = new List<ChainElement>();
 
 		public ClientAction(string service, string method, object args)
 		{
 			Service = service;
-			Method = method;
-			Args = args;
+			CallChain.Add(new ChainElement { Method = method, Args = args });
+		}
+		public ClientAction(string service, params object[] args) : this(service, "apply", args)
+		{
+
+		}
+
+		public ClientAction Then(string method, object args = null)
+		{
+			CallChain.Add(new ChainElement { Method = method, Args = args });
+			return this;
+		}
+
+		public ClientAction CallWith(params object[] args)
+		{
+			return Then("apply", args);
+		}
+
+		public class ChainElement
+		{
+			public string Method { get; set; }
+			public object Args { get; set; }
 		}
 	}
-
-	//public static class ApiResponseExtensions
-	//{
-	//	public static void Add(this List<KeyValuePair<string, object>> list, string name, object value)
-	//	{
-	//		list.Add(new KeyValuePair<string, object>(name, value));
-	//	}
-	//}
 }

@@ -250,6 +250,7 @@ namespace Tango.Html
 		
 		public static void Tr(this IHtmlWriter w, Action inner) { w.Tr(null, inner); }
 		public static void U(this IHtmlWriter w, Action inner) { w.U(null, inner); }
+		public static void U(this IHtmlWriter w, string text) { w.U(null, () => w.Write(text)); }
 		public static void Ul(this IHtmlWriter w, Action inner) { w.Ul(null, inner); }
 
 		public static void A(this IHtmlWriter w, Action<ATagAttributes> attributes, string linkTitle) { w.A(attributes, () => w.Write(linkTitle)); }
@@ -276,8 +277,12 @@ namespace Tango.Html
 		public static void H5(this IHtmlWriter w, string text) { w.H5(null, () => w.Write(text)); }
 		public static void H6(this IHtmlWriter w, string text) { w.H6(null, () => w.Write(text)); }
 		public static void Legend(this IHtmlWriter w, string text) { w.Legend(null, text); }
+		public static void P(this IHtmlWriter w, string text) { w.P(null, () => w.Write(text)); }
+		public static void P(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.P(attributes, () => w.Write(text)); }
 		public static void Script(this IHtmlWriter w, string path) { w.Script(a => a.Type("text/javascript").Src(path)); }
 		public static void Td(this IHtmlWriter w, string text) { w.Td(null, () => w.Write(text)); }
+		public static void Td(this IHtmlWriter w, Action<TdTagAttributes> attributes, string text) { w.Td(attributes, () => w.Write(text)); }
+
 	}
 
 	public static class HtmlPageWriterExtensions

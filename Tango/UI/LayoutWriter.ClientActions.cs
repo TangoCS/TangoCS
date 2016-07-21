@@ -9,6 +9,11 @@ namespace Tango.UI
 			w.ClientActions.Add(new ClientAction(service, method, args));
 		}
 
+		public static void AddClientAction(this LayoutWriter w, ClientAction action)
+		{
+			w.ClientActions.Add(action);
+		}
+
 		public static void BindEventGet(this LayoutWriter w, string elementId, string clientEvent, Action<ApiResponse> serverEvent, string serverEventReceiver = null)
 		{
 			w.BindEvent(elementId, clientEvent, serverEvent.Method.Name, "get", serverEventReceiver);
