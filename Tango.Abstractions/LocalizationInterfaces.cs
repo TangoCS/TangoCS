@@ -6,10 +6,9 @@ namespace Tango.Localization
 {
 	public interface ITextResource
 	{
-		string Get(string sysName);
-		string Get(string sysName, string defaultText);
-		//void Init(bool editMode);
-		//void ResetCache();
+		string Get(string key);
+		string Get(string key, string defaultText);
+		string GetImageName(string key);
 	}
 
 	public interface ILanguage
@@ -19,7 +18,6 @@ namespace Tango.Localization
 		LanguageObject Default { get; }
 		CultureInfo CurrentCulture { get; }
 
-		//void Init(LanguageObject currentLanguage);
 		void WithLang(string lang, Action action);
 	}
 

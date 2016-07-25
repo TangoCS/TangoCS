@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace Tango
 {
-	public class DynamicDictionary : DynamicObject, IDictionary<string, object>
+	public class DynamicDictionary : DynamicObject, IDictionary<string, object>, IReadOnlyDictionary<string, object>
 	{
 		protected IDictionary<string, object> internalDictionary;
 
@@ -116,6 +116,9 @@ namespace Tango
 			get { return internalDictionary.Count; }
 		}
 
+		IEnumerable<string> IReadOnlyDictionary<string, object>.Keys => internalDictionary.Keys;
+		IEnumerable<object> IReadOnlyDictionary<string, object>.Values => internalDictionary.Values;
+
 		public bool Remove(KeyValuePair<string, object> item)
 		{
 			return internalDictionary.Remove(item);
@@ -126,12 +129,11 @@ namespace Tango
 			return internalDictionary.GetEnumerator();
 		}
 
-		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return internalDictionary.GetEnumerator();
 		}
 		#endregion
-
 	}
 
 	public static class DynamicDictionaryExtensions

@@ -7,19 +7,26 @@ using Tango.Localization;
 
 namespace Tango.UI.Controls
 {
-	public abstract class ActionUrl<T>
+	public class ActionLink
 	{
-		protected T _this;
 		protected IUrlResolver _resolver;
 
-		IDictionary<string, string> _args = new Dictionary<string, string>();
-		IDictionary<string, string> _eventArgs = new Dictionary<string, string>();
+		Dictionary<string, string> _args = new Dictionary<string, string>();
+		Dictionary<string, string> _eventArgs = new Dictionary<string, string>();
 
 		string _url = null;
+		string _title;
+		string _imageSrc;
+		string _description;
+
+		public string Title => _title;
+		public string Image => _imageSrc;
+		public string Description => _description;
 
 		public ActionContext Context { get; private set; }
+		public ITextResource TextResource => Context.TextResource;
 
-		public ActionUrl(ActionContext context)
+		public ActionLink(ActionContext context)
 		{
 			Context = context;
 		}
@@ -48,88 +55,72 @@ namespace Tango.UI.Controls
 			return Url;
 		}
 
-		public static implicit operator string(ActionUrl<T> l)
+		public static implicit operator string(ActionLink l)
 		{
 			if (l == null) return null;
 			return l.Url;
 		}
 
-		public T UseResolver(IUrlResolver resolver)
+		public ActionLink UseResolver(IUrlResolver resolver)
 		{
 			_resolver = resolver;
-			return _this;
+			return this;
 		}
 
-		public T WithArgs(IDictionary<string, object> args)
+		public ActionLink WithArgs(IDictionary<string, object> args)
 		{
 			foreach (var p in args)
 				if (p.Value != null)
 					_args[p.Key] = WebUtility.UrlEncode(p.Value.ToString());
 				else
 					_args.Remove(p.Key);
-			return _this;
+			return this;
 		}
 
-		public T WithEventArgs(IDictionary<string, object> args)
+		public ActionLink WithEventArgs(IDictionary<string, object> args)
 		{
 			foreach (var p in args)
 				if (p.Value != null)
 					_eventArgs[p.Key] = WebUtility.UrlEncode(p.Value.ToString());
 				else
 					_eventArgs.Remove(p.Key);
-			return _this;
+			return this;
 		}
 
-		public T WithArg(string key, string value)
+		public ActionLink WithArg(string key, string value)
 		{
 			if (value != null)
 				_args[key] = WebUtility.UrlEncode(value);
 			else
 				_args.Remove(key);
-			return _this;
+			return this;
 		}
 
-		public T WithEventArg(string key, string value)
+		public ActionLink WithEventArg(string key, string value)
 		{
 			if (value != null)
 				_eventArgs[key] = WebUtility.UrlEncode(value);
 			else
 				_eventArgs.Remove(key);
-			return _this;
-		}
-	}
-
-	public class ActionUrl : ActionUrl<ActionUrl>
-	{		
-		public ActionUrl(ActionContext context) : base(context)
-		{
-			_this = this;
-		}
-	}
-
-	public class ActionLink : ActionUrl<ActionLink>
-	{
-		string _title;
-		string _imageSrc;
-
-		public string GetTitle() => _title;
-		public string GetImageSrc() => _imageSrc;
-		public ITextResource TextResource => Context.TextResource;
-
-		public ActionLink(ActionContext context) : base(context)
-		{
-			_this = this;
+			return this;
 		}
 
-		public ActionLink Title(string title)
+
+		public ActionLink WithTitle(string title)
 		{
 			_title = title;
 			return this;
 		}
 
-		public ActionLink Image(string imageSrc)
+		public ActionLink WithImage(string imageSrc)
 		{
 			_imageSrc = imageSrc;
+			return this;
+		}
+
+		public ActionLink WithDescription(string description)
+		{
+			_description = description;
 			return this;
 		}
 	}

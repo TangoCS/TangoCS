@@ -6,6 +6,21 @@ namespace Tango.Html
 {
 	public interface IUrlResolver
 	{
-		StringBuilder Resolve(IDictionary<string, string> parameters, bool isHashPart = false);
+		StringBuilder Resolve(IReadOnlyDictionary<string, string> parameters, bool isHashPart = false);
+	}
+
+	public class RouteUrlResolver : IUrlResolver
+	{
+		protected string _routeTemplate = "";
+
+		public RouteUrlResolver(string routeTemplate)
+		{
+			_routeTemplate = routeTemplate;
+		}
+
+		public virtual StringBuilder Resolve(IReadOnlyDictionary<string, string> parameters, bool isHashPart = false)
+		{
+			return RouteUtils.Resolve(_routeTemplate, parameters, notMatchedParmsBeginWith: isHashPart ? "/" : "?");
+		}
 	}
 }

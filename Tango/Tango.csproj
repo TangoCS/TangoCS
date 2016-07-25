@@ -72,6 +72,7 @@
     <Compile Include="ByteArrayToHex.cs" />
     <Compile Include="FileStorage\Std\LocalDiskFolder.cs" />
     <Compile Include="Identity\Std\Tessera2IdentityStore.cs" />
+    <Compile Include="RouteUtils.cs" />
     <Compile Include="TreeNode.cs" />
     <Compile Include="UI\Controls\ListFilterEngine.cs" />
     <Compile Include="Data\ConnectionManager.cs" />

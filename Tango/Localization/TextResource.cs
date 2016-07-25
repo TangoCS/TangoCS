@@ -5,6 +5,7 @@ namespace Tango.Localization
 	public class TextResourceOptions
 	{
 		public IReadOnlyDictionary<string, string> Resources { get; set; }
+		public IReadOnlyDictionary<string, string> Images { get; set; }
 	}
 
 	public class TextResource : ITextResource
@@ -12,15 +13,14 @@ namespace Tango.Localization
 		ILanguage _language;
 		public static TextResourceOptions Options { get; set; }
 
-		public TextResource(ILanguage language, bool editMode)
+		public TextResource(ILanguage language)
 		{
 			_language = language;
-			_editMode = editMode;
 		}
 
-		public string Get(string sysName)
+		public string Get(string key)
 		{
-			return Get(sysName, "");
+			return Get(key, "");
 		}
 		
 		/// <summary>
@@ -28,42 +28,24 @@ namespace Tango.Localization
 		/// </summary>
 		/// <param name="sysName">Системное имя текстового ресурса</param>
 		/// <returns></returns>
-		public string Get(string sysName, string defaultText)
+		public string Get(string key, string defaultText)
 		{
-			string res = sysName + "-" + _language.Current.Code;
+			string res = key + "-" + _language.Current.Code;
 
-			if (_editMode || Options.Resources.ContainsKey(res))
-				return get(res, sysName);
+			var text = "";
+			if (Options.Resources.TryGetValue(res, out text))
+				return text;
 			else
 				return defaultText;
 		}
 
-
-		bool _editMode = false;
-		//{
-		//	get
-		//	{
-		//		if (_httpContext.Items["reseditmode"] == null)
-		//			_httpContext.Items["reseditmode"] = _httpContext.Request.Cookies["resourceeditmode"] != null && _httpContext.Request.Cookies["resourceeditmode"] == "1";
-		//		return (bool)_httpContext.Items["reseditmode"];
-		//	}
-		//}
-
-		string get(string res, string sysName)
+		public string GetImageName(string key)
 		{
-			if (_editMode)
-			{
-				if (Options.Resources.ContainsKey(res))
-				{
-					if (!Options.Resources[res].IsEmpty())
-						return "<span class='resedit' onclick='EditTextResource(" + sysName + ");'>" + Options.Resources[res] + "</span>";
-					else
-						return "<span class='resedit' onclick='EditTextResource(" + sysName + ");'>[" + sysName + "]</span>";
-				}
-				else
-					return "<span class=\"resedit\" onclick=\"EditTextResource('" + sysName + "', '');\">{" + sysName + "}</span>";
-			}
-			return Options.Resources[res];
+			var text = "";
+			if (Options.Images.TryGetValue(key, out text))
+				return text;
+			else
+				return "";
 		}
 	}
 }

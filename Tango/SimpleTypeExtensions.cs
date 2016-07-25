@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -513,5 +514,30 @@ namespace Tango
 			return sb;
 		}
 
+		public static string GetMemberString<TIn, TOut>(this Expression<Func<TIn, TOut>> member)
+		{
+			if (member == null) throw new ArgumentNullException("member");
+
+			var propertyRefExpr = member.Body;
+			var memberExpr = propertyRefExpr as MemberExpression;
+
+			if (memberExpr == null)
+			{
+				var unaryExpr = propertyRefExpr as UnaryExpression;
+				if (unaryExpr != null && unaryExpr.NodeType == ExpressionType.Convert)
+				{
+					memberExpr = unaryExpr.Operand as MemberExpression;
+					if (memberExpr != null) return memberExpr.Member.Name;
+				}
+			}
+			else
+			{
+				//gets something line "m.Field1.Field2.Field3", from here we just remove the prefix "m."
+				string body = member.Body.ToString();
+				return body.Substring(body.IndexOf('.') + 1);
+			}
+
+			throw new ArgumentException("No property reference expression was found.", "member");
+		}
 	}
 }

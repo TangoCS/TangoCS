@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Tango.Logger.Std
@@ -43,5 +44,9 @@ namespace Tango.Logger.Std
 		{
 			return "";
 		}
+	}
+
+	public class RequestLoggerList : List<string>
+	{
 	}
 }

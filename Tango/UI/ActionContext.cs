@@ -7,7 +7,7 @@ namespace Tango.UI
 {
 	public abstract class ActionContext
 	{
-		public ActionContext()
+		public ActionContext(IServiceProvider requestServices)
 		{
 			AllArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			ActionArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
@@ -15,10 +15,15 @@ namespace Tango.UI
 			FormData = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			EventReceivers = new Dictionary<string, InteractionFlowElement>(StringComparer.OrdinalIgnoreCase);
 			PersistentArgs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+			RequestServices = requestServices;
+			TextResource = RequestServices.GetService(typeof(ITextResource)) as ITextResource;
+			Routes = RequestServices.GetService(typeof(RoutesCollection)) as RoutesCollection;
 		}
 
 		public IServiceProvider RequestServices { get; protected set; }
 		public ITextResource TextResource { get; protected set; }
+		public RoutesCollection Routes { get; protected set; }
 
 		public string Service { get; set; }
 		public string Action { get; set; }
@@ -42,6 +47,8 @@ namespace Tango.UI
 		public string FileName { get; set; }
 		public byte[] FileBytes { get; set; }
 	}
+
+	public class RoutesCollection : Dictionary<string, string> { }
 
 	public static class ActionContextExtensions
 	{
