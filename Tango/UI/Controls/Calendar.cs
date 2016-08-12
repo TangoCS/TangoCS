@@ -15,6 +15,7 @@ namespace Tango.UI.Controls
 			string basePath = GlobalSettings.JSPath + "Calendar/";
 
 			//c.Page.RegisterScript("calendar-setup", basePath + "calendar-setup_stripped.js");
+			if (value == DateTime.MinValue) value = null;
 
 			w.TextBox(name, showTime ? value.DateTimeToString() : value.DateToString(), a =>
 				a.ID(name).Placeholder("ДД.ММ.ГГГГ").Style("width:" + (showTime ? "130px" : "100px"))
@@ -24,8 +25,8 @@ namespace Tango.UI.Controls
 			{
 				w.Img(a => a.ID("btn" + name).Title("Календарь").Src(basePath + "img.gif"));
 
-				w.Includes.Add("calendar/calendar_stripped.js");
-				w.Includes.Add("calendar/lang/calendar-en.js");	
+				//w.Includes.Add("calendar/calendar_stripped.js");
+				//w.Includes.Add("calendar/lang/calendar-ru.js");	
 
 				w.AddClientAction("Calendar", "setup", new {
 					inputField = w.GetID(name),

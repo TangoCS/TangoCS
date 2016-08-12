@@ -8,7 +8,7 @@ namespace Tango.UI
 	public abstract class InteractionFlowElement
 	{
 		public string ID { get; protected set; }
-		protected ActionContext Context { get; set; }
+		public ActionContext Context { get; protected set; }
 	}
 
 	public abstract class ViewElement : InteractionFlowElement, IWithPropertyInjection
@@ -44,6 +44,18 @@ namespace Tango.UI
 			Context.EventReceivers.Add(c.ID, c);
 
 			setProperties?.Invoke(c);
+			c.OnInit();
+			return c;
+		}
+
+		public T CreateControl<T>(Func<T> constr)
+			where T : ViewComponent, new()
+		{
+			T c = constr();
+			if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
+			c.Init(GetElementID(c.ID), Context);
+
+			Context.EventReceivers.Add(c.ID, c);
 			c.OnInit();
 			return c;
 		}

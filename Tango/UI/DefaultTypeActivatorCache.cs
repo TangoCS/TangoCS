@@ -12,7 +12,7 @@ namespace Tango.UI
 		static readonly Dictionary<string, Tuple<Type, IActionInvoker>> _typeActivatorCache
 			= new Dictionary<string, Tuple<Type, IActionInvoker>>(StringComparer.OrdinalIgnoreCase);
 
-		List<InvokeableTypeInfo> typeInfos = new List<InvokeableTypeInfo>();
+		protected List<InvokeableTypeInfo> typeInfos = new List<InvokeableTypeInfo>();
 
 		public DefaultTypeActivatorCache()
 		{
@@ -54,11 +54,10 @@ namespace Tango.UI
 				if (info.Filter(t))
 				{
 					var keys = info.Keys(t);
-					if (keys == null) continue;
+					if (keys == null || keys.Count == 0) continue;
 					foreach (var key in keys)
 					{
-						if (!_typeActivatorCache.ContainsKey(key))
-							_typeActivatorCache.Add(key, new Tuple<Type, IActionInvoker>(t, info.Invoker));
+						_typeActivatorCache[key] = new Tuple<Type, IActionInvoker>(t, info.Invoker);
 					}
 					break;
 				}

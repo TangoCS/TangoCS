@@ -12,16 +12,15 @@ using System.Collections.Concurrent;
 
 namespace Tango.AccessControl.Std
 {
-	public abstract class AbstractAccessControl<TKey> : IRoleBasedAccessControl<TKey>
-		where TKey : IEquatable<TKey>
+	public abstract class AbstractAccessControl : IRoleBasedAccessControl<int>
 	{	
 		protected IIdentity _identity;
-		protected TKey _userId;
+		protected int _userId;
 		protected IPredicateChecker _predicateChecker;
 		protected AccessControlOptions _options;
 		protected IRequestLogger _logger;
 
-		public AbstractAccessControl(IIdentityManager<IdentityUser<TKey>> identityManager, IPredicateChecker predicateChecker, 
+		public AbstractAccessControl(IIdentityManager identityManager, IPredicateChecker predicateChecker, 
 			IRequestLoggerProvider loggerProvider, AccessControlOptions options)
 		{
 			_identity = identityManager.CurrentIdentity;
@@ -31,9 +30,9 @@ namespace Tango.AccessControl.Std
 			_logger = loggerProvider.GetLogger("accesscontrol");
 		}
 
-		protected abstract IRoleBasedAccessControlStoreBase<TKey> _baseDataContext { get; }
+		protected abstract IRoleBasedAccessControlStoreBase<int> _baseDataContext { get; }
 		public abstract bool Check(string securableObjectKey, bool defaultAccess = false);
-		public abstract bool CheckForRole(TKey roleID, string securableObjectKey);
+		public abstract bool CheckForRole(int roleID, string securableObjectKey);
 
 		public BoolResult CheckPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
 		{
@@ -52,8 +51,8 @@ namespace Tango.AccessControl.Std
 			return new CheckWithPredicateResult(res2, res2 ? CheckWithPredicateResultCode.AccessGranted : CheckWithPredicateResultCode.UserAccessDenied);
 		}
 
-		IEnumerable<IdentityRole<TKey>> _roles = null;
-		public IEnumerable<IdentityRole<TKey>> Roles
+		IEnumerable<IdentityRole<int>> _roles = null;
+		public IEnumerable<IdentityRole<int>> Roles
 		{
 			get
 			{
@@ -71,16 +70,15 @@ namespace Tango.AccessControl.Std
 		protected ConcurrentBag<string> DisallowItems { get; } = new ConcurrentBag<string>();
 	}
 
-	public class DefaultAccessControl<TKey> : AbstractAccessControl<TKey>
-		where TKey : IEquatable<TKey>
+	public class DefaultAccessControl : AbstractAccessControl
 	{
 		
-		protected IRoleBasedAccessControlStore<TKey> _dataContext;
-		protected override IRoleBasedAccessControlStoreBase<TKey> _baseDataContext => _dataContext;
+		protected IRoleBasedAccessControlStore<int> _dataContext;
+		protected override IRoleBasedAccessControlStoreBase<int> _baseDataContext => _dataContext;
 
 		public DefaultAccessControl(
-			IRoleBasedAccessControlStore<TKey> dataContext,
-			IIdentityManager<IdentityUser<TKey>> identityManager,
+			IRoleBasedAccessControlStore<int> dataContext,
+			IIdentityManager identityManager,
 			IPredicateChecker predicateLoader,
 			IRequestLoggerProvider loggerProvider,
 			AccessControlOptions options) : base(identityManager, predicateLoader, loggerProvider, options)
@@ -88,7 +86,7 @@ namespace Tango.AccessControl.Std
 			_dataContext = dataContext;
 		}
 
-		public override bool CheckForRole(TKey roleID, string securableObjectKey)
+		public override bool CheckForRole(int roleID, string securableObjectKey)
 		{
 			throw new NotImplementedException();
 		}
@@ -99,7 +97,7 @@ namespace Tango.AccessControl.Std
 			if (AllowItems.Contains(key)) return true;
 			if (DisallowItems.Contains(key)) return false;
 
-			List<TKey> _access = _dataContext.GetAccessInfo(securableObjectKey).ToList();
+			List<int> _access = _dataContext.GetAccessInfo(securableObjectKey).ToList();
 
 			if (_access.Count == 0)
 			{
@@ -143,17 +141,16 @@ namespace Tango.AccessControl.Std
 		}
 	}
 
-	public class CacheableAccessControl<TKey> : AbstractAccessControl<TKey>, ICacheable
-		where TKey : IEquatable<TKey>
+	public class CacheableAccessControl : AbstractAccessControl, ICacheable
 	{
-		protected ICacheableRoleBasedAccessControlStore<TKey> _dataContext;
-		protected override IRoleBasedAccessControlStoreBase<TKey> _baseDataContext => _dataContext;
+		protected ICacheableRoleBasedAccessControlStore<int> _dataContext;
+		protected override IRoleBasedAccessControlStoreBase<int> _baseDataContext => _dataContext;
 		string _cacheName;
 		ICache _cache;
 
 		public CacheableAccessControl(
-			ICacheableRoleBasedAccessControlStore<TKey> dataContext,
-			IIdentityManager<IdentityUser<TKey>> identityManager,
+			ICacheableRoleBasedAccessControlStore<int> dataContext,
+			IIdentityManager identityManager,
 			IPredicateChecker predicateChecker,
 			ICache cache,
 			IRequestLoggerProvider loggerProvider,
@@ -164,7 +161,7 @@ namespace Tango.AccessControl.Std
 			_cache = cache;			
 		}
 
-		public override bool CheckForRole(TKey roleID, string securableObjectKey)
+		public override bool CheckForRole(int roleID, string securableObjectKey)
 		{
 			if (!_options.Enabled()) return true;
 			var anc = _dataContext.RoleAncestors(roleID);

@@ -8,13 +8,13 @@ namespace Tango.UI.Controls
 		public static void BackButton(this LayoutWriter c, Action<ButtonTagAttributes> attrs = null, string title = "", string url = null)
 		{
 			if (url.IsEmpty()) url = c.Context.GetArg("returnurl");
-			if (title.IsEmpty()) title = c.TextResource.Get("Common.Back", "Назад");
+			if (title.IsEmpty()) title = c.TextResource.Get("Common.Back");
 			c.Button(a => a.Class("btn").OnClick($"document.location='{url}';return false;").Set(attrs), title);
 		}
 
 		public static void SubmitButton(this LayoutWriter c)
 		{
-			c.SubmitButton(a => a.Class("btn"), c.TextResource.Get("Common.OK", "OK"));
+			c.SubmitButton(a => a.Class("btn"), c.TextResource.Get("Common.OK"));
 		}
 	}
 }

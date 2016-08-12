@@ -15,4 +15,13 @@ namespace Tango.Identity
 
 		void RunAs(TUser user, Action action);
 	}
+
+	public interface IIdentityStore<TUser, TKey>
+		where TKey : IEquatable<TKey>
+	{
+		TUser UserFromName(string name);
+		TUser UserFromProviderKey(string providerName, string providerKey);
+		TUser UserFromID(TKey id);
+		TUser UserFromEmail(string email);
+	}
 }

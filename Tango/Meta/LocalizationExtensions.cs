@@ -6,7 +6,7 @@ namespace Tango.Localization
 	{
 		public static string Caption(this ITextResource textResource, IMetaNamedElement el)
 		{
-			return textResource.Get(el.ID, el.Name);
+			return textResource.Get(el.ID);
 		}
 
 		public static string CaptionFor(this ITextResource textResource, IMetaNamedElement el, string suffix)
@@ -16,7 +16,9 @@ namespace Tango.Localization
 
 		public static string Description(this ITextResource textResource, IMetaNamedElement el)
 		{
-			return textResource.CaptionFor(el, "description");
+			var res = "";
+			if (textResource.TryGet($"{el.ID}-description", out res)) return res;
+			return "";
 		}
 
 		public static string CaptionShort(this ITextResource textResource, IMetaProperty el)

@@ -13,6 +13,4 @@ namespace Tango.Data
 	{
 		string GetPath();
 	}
-
-
 }

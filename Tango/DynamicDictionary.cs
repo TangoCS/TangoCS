@@ -140,7 +140,9 @@ namespace Tango
 	{
 		public static T Parse<T>(this DynamicDictionary dd, string name, T defaultValue = default(T))
 		{
-			return Parse(dd[name], defaultValue);
+			var d = dd[name];
+			if (d == null) return defaultValue;
+			return Parse(d, defaultValue);
 		}
 
 		public static DateTime? ParseDateTime(this DynamicDictionary dd, string name, string format, DateTime? defaultValue = null)
@@ -153,19 +155,21 @@ namespace Tango
 			return DateTime.ParseExact(ds, format, CultureInfo.InvariantCulture);
 		}
 
+		public static decimal ParseDecimal(this DynamicDictionary dd, string name, decimal defaultValue = 0)
+		{
+			var d = dd[name];		
+			return d.ToString().ToDecimal(defaultValue);
+		}
+
 		static T Parse<T>(object d, T defaultValue = default(T))
 		{
-			if (d != null)
+			if (typeof(T) == d.GetType()) return (T)d;
+
+			var typeConverter = TypeDescriptor.GetConverter(typeof(T));
+			if (typeConverter != null && typeConverter.CanConvertFrom(d.GetType()) && typeConverter.IsValid(d))
 			{
-				if (typeof(T) == d.GetType()) return (T)d;
-
-				var typeConverter = TypeDescriptor.GetConverter(typeof(T));
-				if (typeConverter != null && typeConverter.CanConvertFrom(d.GetType()) && typeConverter.IsValid(d))
-				{
-					return (T)typeConverter.ConvertFrom(d);
-				}
+				return (T)typeConverter.ConvertFrom(d);
 			}
-
 			return defaultValue;
 		}
 

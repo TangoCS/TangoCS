@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Xml.Linq;
 
-namespace Tango.Meta
+namespace Tango
 {
 	public static class ToStringConverter
 	{
+		public static Func<TValue, string, IFormatProvider, string> Generic<TValue>()
+		{
+			return (val, format, provider) => val.ToString();
+		}
 		public static Func<decimal, string, IFormatProvider, string> Decimal
 		{
 			get { return (val, format, provider) => val.ToString(format, provider); }

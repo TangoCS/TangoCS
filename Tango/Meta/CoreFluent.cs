@@ -1,6 +1,8 @@
 ﻿using Tango.UI;
 using System;
 using System.Linq;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace Tango.Meta.Fluent
 {
@@ -143,6 +145,12 @@ namespace Tango.Meta.Fluent
 		public T DateKey() => Key<DateTime>(TypeFactory.Date);
 		public T DateKey(string name) => Key<DateTime>(name, TypeFactory.Date);
 
+		bool CheckRequired(Type t)
+		{
+			return t != typeof(string) && t != typeof(byte[]) && t != typeof(XmlDocument) && t != typeof(XDocument) &&
+				Nullable.GetUnderlyingType(t) == null;
+		}
+
 		public T Persistence(PersistenceType type)
 		{
 			MetaClass.Persistent = type;
@@ -182,11 +190,17 @@ namespace Tango.Meta.Fluent
 		{
 			if (type == null) type = TypeFactory.String;
 			MetaAttribute<TClass, TValue> a = new MetaAttribute<TClass, TValue> {
-				Name = name, Type = type, IsRequired = Nullable.GetUnderlyingType(typeof(TValue)) == null
+				Name = name, Type = type, IsRequired = CheckRequired(typeof(TValue))
 			};
 			if (attributes != null) attributes(a);
 			MetaClass.AddProperty(a);
 			return _this;
+		}
+
+		public T Reference<TRefClass>(Action<MetaReference<TClass, TRefClass>> attributes = null)
+		{
+			int i = typeof(TRefClass).Name.LastIndexOf('_'); if (i == -1) i = 0; else i++;
+			return Reference(typeof(TRefClass).Name.Substring(i), false, attributes);
 		}
 
 		public T Reference<TRefClass>(string name, Action<MetaReference<TClass, TRefClass>> attributes = null)
@@ -205,9 +219,15 @@ namespace Tango.Meta.Fluent
 			return _this;
 		}
 
+		public T Reference<TRefClass, TKey>(Action<MetaReference<TClass, TRefClass, TKey>> attributes = null)
+		{
+			int i = typeof(TRefClass).Name.LastIndexOf('_'); if (i == -1) i = 0; else i++;
+			return Reference(typeof(TRefClass).Name.Substring(i), CheckRequired(typeof(TKey)), attributes);
+		}
+
 		public T Reference<TRefClass, TKey>(string name, Action<MetaReference<TClass, TRefClass, TKey>> attributes = null)
 		{
-			return Reference(name, Nullable.GetUnderlyingType(typeof(TKey)) == null, attributes);
+			return Reference(name, CheckRequired(typeof(TKey)), attributes);
 		}
 
 		public T Reference<TRefClass, TKey>(string name, bool isRequired, Action<MetaReference<TClass, TRefClass, TKey>> attributes = null)
@@ -224,7 +244,7 @@ namespace Tango.Meta.Fluent
 		public T ComputedAttribute<TValue>(string name, IMetaPrimitiveType type)
 		{
 			MetaComputedAttribute<TClass, TValue> a = new MetaComputedAttribute<TClass, TValue> {
-				Name = name, Type = type, IsRequired = Nullable.GetUnderlyingType(typeof(TValue)) == null
+				Name = name, Type = type, IsRequired = CheckRequired(typeof(TValue))
 			};
 			MetaClass.AddProperty(a);
 			return _this;
@@ -234,7 +254,7 @@ namespace Tango.Meta.Fluent
 		{
 			MetaComputedAttribute<TClass, TValue> a = new MetaComputedAttribute<TClass, TValue> {
 				Name = name, Type = TypeFactory.FromCSharpType(typeof(TValue)),
-				IsRequired = Nullable.GetUnderlyingType(typeof(TValue)) == null
+				IsRequired = CheckRequired(typeof(TValue))
 			};
 			MetaClass.AddProperty(a);
 			return _this;
@@ -244,7 +264,7 @@ namespace Tango.Meta.Fluent
 		{
 			MetaPersistentComputedAttribute<TClass, TValue> a = new MetaPersistentComputedAttribute<TClass, TValue> {
 				Name = name, Type = type, IsMultilingual = false,
-				IsRequired = Nullable.GetUnderlyingType(typeof(TValue)) == null
+				IsRequired = CheckRequired(typeof(TValue))
 			};
 			if (attributes != null) attributes(a);
 			MetaClass.AddProperty(a);
@@ -256,7 +276,7 @@ namespace Tango.Meta.Fluent
 			MetaPersistentComputedAttribute<TClass, TValue> a = new MetaPersistentComputedAttribute<TClass, TValue> {
 				Name = name, IsMultilingual = false,
 				Type = TypeFactory.FromCSharpType(typeof(TValue)),
-				IsRequired = Nullable.GetUnderlyingType(typeof(TValue)) == null
+				IsRequired = CheckRequired(typeof(TValue))
 			};
 			if (attributes != null) attributes(a);
 			MetaClass.AddProperty(a);
@@ -296,7 +316,7 @@ namespace Tango.Meta.Fluent
 
 		public T TimeStamp<TUser, TKey>()
 		{
-			Attribute<DateTime>("LastModifiedDate", x => x.DefaultDBValue = "(getdate())");
+			Attribute<DateTime>("LastModifiedDate", x => x.DefaultDBValue = "now()");
 			Reference<TUser, TKey>("LastModifiedUser");
 			MetaClass.Interfaces.Add(typeof(IWithTimeStamp));
 			return _this;
@@ -311,7 +331,7 @@ namespace Tango.Meta.Fluent
 
 		public T IsDeleted()
 		{
-			Attribute<bool>("IsDeleted", x => x.DefaultDBValue = "(0)");
+			Attribute<bool>("IsDeleted", x => x.DefaultDBValue = "false");
 			MetaClass.Interfaces.Add(typeof(IWithTitle));
 			return _this;
 		}

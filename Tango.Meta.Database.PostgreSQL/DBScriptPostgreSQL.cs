@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Tango.Meta.Database
 {
@@ -44,18 +46,17 @@ namespace Tango.Meta.Database
 
 		public void CreateTable(Table srcTable)
 		{
-			var tableScript = string.Format("CREATE TABLE {2}.{0} ({1});", srcTable.Name.ToLower(), "{0}", _SchemaName);// {0}- Название таблицы, {1}- Список колонок, {2} - ON [PRIMARY]
-			var columnsScript =
-				srcTable.Columns.Aggregate(string.Empty,
-										   (current, srcColumn) =>
-										   current +
-										   (string.IsNullOrEmpty(srcColumn.Value.ComputedText) ? string.Format("\t{0} {1} {2} {3},\r\n",
-														 srcColumn.Value.Name.ToLower(),
-														 srcColumn.Value.Identity ? "serial" : srcColumn.Value.Type.GetDBType(this),
-														 srcColumn.Value.Nullable ? "NULL" : "NOT NULL",
-														 (!srcColumn.Value.Identity && !string.IsNullOrEmpty(srcColumn.Value.DefaultValue) ? string.Format(" DEFAULT {0}", GetDefaultValue(srcColumn.Value.DefaultValue, srcColumn.Value.Type.GetDBType(this))) : "")
-														) : ""
-														 )).Trim().TrimEnd(',');
+			var tableScript = string.Format("CREATE TABLE {2}.{0} ({1});", srcTable.Name.ToLower(), "{0}", _SchemaName); // {0}- Название таблицы, {1}- Список колонок, {2} - ON [PRIMARY]
+			var columnsScript = srcTable.Columns.Aggregate(string.Empty, (current, srcColumn) => current +
+								(srcColumn.Value.ComputedText.IsEmpty() ? string.Format("\t{0} {1} {2}{3},\r\n",
+								srcColumn.Value.Name.ToLower(),
+								srcColumn.Value.Identity ? "serial" : srcColumn.Value.Type.GetDBType(this),
+								srcColumn.Value.Nullable ? "NULL" : "NOT NULL",
+								(!srcColumn.Value.Identity && !srcColumn.Value.DefaultValue.IsEmpty() ? 
+									string.Format(" DEFAULT {0}", GetDefaultValue(srcColumn.Value.DefaultValue, srcColumn.Value.Type.GetDBType(this))) : 
+									"")
+								) : ""
+								)).Trim().TrimEnd(',');
 
 			tableScript = string.Format(tableScript, columnsScript);
 			if (srcTable.ForeignKeys.Count > 0)
@@ -67,8 +68,7 @@ namespace Tango.Meta.Database
 			if (srcTable.PrimaryKey != null)
 			{
 
-				tableScript += string.Format(
-								   "\r\nALTER TABLE {3}.{0} ADD CONSTRAINT {1} PRIMARY KEY ({2});", srcTable.Name.ToLower(),
+				tableScript += string.Format("\r\nALTER TABLE {3}.{0} ADD CONSTRAINT {1} PRIMARY KEY ({2});", srcTable.Name.ToLower(),
 													  srcTable.PrimaryKey.Name.ToLower(),
 													  string.Join(",", srcTable.PrimaryKey.Columns).ToLower(),
 													  _SchemaName);// {0)- TableName  {1} - Constraint Name, {2} - Columns,{3} - Ref Table ,{4} - Ref Columns
@@ -350,9 +350,26 @@ namespace Tango.Meta.Database
 			throw new NotImplementedException();
 		}
 
-		public System.Xml.Linq.XElement GetMeta(string connectionString)
+		public XDocument GetSchemaFromDatabase(string connectionString)
 		{
-			throw new NotImplementedException();
+			XDocument doc = null;
+			using (NpgsqlConnection con = new NpgsqlConnection(connectionString))
+			{
+				using (NpgsqlCommand cmd = new NpgsqlCommand("select dbo.usp_dbschema(:s)", con))
+				{
+					con.Open();
+					cmd.Parameters.Add(new NpgsqlParameter("s", _SchemaName));
+					using (var reader = cmd.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							string s = reader.GetString(0);
+							doc = XDocument.Parse(s);
+						}
+					}
+				}
+			}
+			return doc;
 		}
 
 		public string GetIntType()
@@ -413,7 +430,8 @@ namespace Tango.Meta.Database
 
 		public IMetaPrimitiveType GetType(string dataType, bool notNull)
 		{
-			var type = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(", System.StringComparison.Ordinal)) : dataType;
+			if (dataType.IsEmpty()) return TypeFactory.String;
+			var type = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(")) : dataType;
 			int precision = -1;
 			int scale = -1;
 			var match = Regex.Match(dataType, @"\((.*?)\)");
@@ -462,25 +480,26 @@ namespace Tango.Meta.Database
 			}
 		}
 
-		private string GetDefaultValue(string Value, string Type)
+		private string GetDefaultValue(string value, string type)
 		{
-			var match = Regex.Match(Value, @"(?<=\(').*(?='\))");
-			var defValue = match.Groups[0].Value;
-			if (string.IsNullOrEmpty(defValue))
-			{
-				var match1 = Regex.Match(Value, @"\((.*)\)");
-				defValue = match1.Groups[1].Value;
-			}
-			string retvalue;
-			if (Value == "(getdate())")
-				retvalue = (Type.ToLower() == "date" ? "current_date" : "current_timestamp");
-			else
-				if (Value == "(newid())")
-					retvalue = "newid()";
-				else
-					retvalue = "'" + defValue.Replace("'", "").Replace("(", "").Replace(")", "").Replace("\"", "") + "'";
+			return value;
+			//var match = Regex.Match(value, @"(?<=\(').*(?='\))");
+			//var defValue = match.Groups[0].Value;
+			//if (string.IsNullOrEmpty(defValue))
+			//{
+			//	var match1 = Regex.Match(value, @"\((.*)\)");
+			//	defValue = match1.Groups[1].Value;
+			//}
+			//string retvalue;
+			//if (value == "(getdate())")
+			//	retvalue = "now()"; //(Type.ToLower() == "date" ? "current_date" : "current_timestamp");
+			//else
+			//	if (value == "(newid())")
+			//		retvalue = "newid()";
+			//	else
+			//		retvalue = "'" + defValue.Replace("'", "").Replace("(", "").Replace(")", "").Replace("\"", "") + "'";
  
-			return retvalue;
+			//return retvalue;
 		}
 	}
 }

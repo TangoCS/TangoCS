@@ -25,20 +25,21 @@ namespace Tango.UI
 		public ITextResource TextResource { get; protected set; }
 		public RoutesCollection Routes { get; protected set; }
 
+		public string RequestMethod { get; set; }
+		public string RootReceiver { get; set; }
 		public string Service { get; set; }
 		public string Action { get; set; }
-		public string RequestMethod { get; set; }
 		public string Event { get; set; }
 		public string EventReceiver { get; set; }
 
 		public DynamicDictionary AllArgs { get; set; }
 		public DynamicDictionary ActionArgs { get; set; }
 		public DynamicDictionary EventArgs { get; set; }
-		public IDictionary<string, string> PersistentArgs { get; }
 
 		public dynamic FormBag { get { return FormData; } }
 		public DynamicDictionary FormData { get; set; }
 
+		public IDictionary<string, string> PersistentArgs { get; }
 		public IDictionary<string, InteractionFlowElement> EventReceivers { get; private set; }
 	}
 

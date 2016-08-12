@@ -10,6 +10,7 @@ namespace Tango.UI.Controls
 	public class ActionLink
 	{
 		protected IUrlResolver _resolver;
+		protected IUrlResolver _hashPartResolver = new RouteUrlResolver("", "/");
 
 		Dictionary<string, string> _args = new Dictionary<string, string>();
 		Dictionary<string, string> _eventArgs = new Dictionary<string, string>();
@@ -37,12 +38,15 @@ namespace Tango.UI.Controls
 				if (_url == null)
 				{
 					foreach (var arg in Context.PersistentArgs)
-						_args.Add(arg.Key, arg.Value);
+					{
+						if (!_args.ContainsKey(arg.Key))
+							_args.Add(arg.Key, arg.Value);
+					}
 
 					StringBuilder sb = _resolver.Resolve(_args);
 					if (_eventArgs.Count > 0)
 					{
-						sb.Append("#").Append(_resolver.Resolve(_eventArgs, true));
+						sb.Append("#").Append(_hashPartResolver.Resolve(_eventArgs));
 					}
 					_url = sb.ToString();
 				}
@@ -64,6 +68,11 @@ namespace Tango.UI.Controls
 		public ActionLink UseResolver(IUrlResolver resolver)
 		{
 			_resolver = resolver;
+			return this;
+		}
+		public ActionLink UseHashPartResolver(IUrlResolver resolver)
+		{
+			_hashPartResolver = resolver;
 			return this;
 		}
 

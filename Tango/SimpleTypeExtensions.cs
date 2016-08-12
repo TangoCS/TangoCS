@@ -209,6 +209,11 @@ namespace Tango
 			return String.Join(separator, str.Where(s => !String.IsNullOrEmpty(s)).ToArray());
 		}
 
+		public static bool In<T>(this T obj, params T[] values)
+		{
+			return values.Contains(obj);
+		}
+
 		public static StringBuilder Append(this StringBuilder sb, StringBuilder value)
 		{
 			sb.EnsureCapacity(sb.Length + value.Length);
@@ -242,11 +247,6 @@ namespace Tango
 			if (n >= 4) return "IV" + GetRomanString(n - 4);
 			if (n >= 1) return "I" + GetRomanString(n - 1);
 			throw new ArgumentOutOfRangeException("Value must be between 1 and 3999");
-		}
-
-		public static bool In(this string str, params string[] items)
-		{
-			return items.Contains(str);
 		}
 
 		public static bool IsEmpty(this string str)

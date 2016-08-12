@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Security.Principal;
 
-namespace Tango.Identity
+namespace Tango.Identity.Std
 {
-	public class IdentityManager<TUser, TKey> : IIdentityManager<TUser>
-		where TKey : IEquatable<TKey>
-		where TUser : class
+	public class IdentityManager : IIdentityManager
 	{
-		IIdentityStore<TUser, TKey> _dataContext;
+		IIdentityStore _dataContext;
 		IIdentity _user;
 		IPasswordHasher _passwordHasher;
 		public IIdentityOptions Options { get; private set; }
 
 		public IdentityManager(
 			IIdentity user,
-			IIdentityStore<TUser, TKey> dataContext,
+			IIdentityStore dataContext,
 			IPasswordHasher passwordHasher,
 			IIdentityOptions options)
 		{
@@ -27,14 +25,14 @@ namespace Tango.Identity
 		public IIdentity CurrentIdentity => _user;
 		public IPasswordHasher PasswordHasher => _passwordHasher;
 
-		TUser _currentUser = null;
-		public TUser CurrentUser
+		IdentityUser _currentUser = null;
+		public IdentityUser CurrentUser
 		{
 			get
 			{				
 				if (_currentUser != null) return _currentUser;
 
-				TUser s = null;
+				IdentityUser s = null;
 				string name;
 				if (!Options.Enabled)
 				{
@@ -65,7 +63,7 @@ namespace Tango.Identity
 			}
 		}
 
-		public TUser SystemUser
+		public IdentityUser SystemUser
 		{
 			get
 			{
@@ -76,7 +74,7 @@ namespace Tango.Identity
 			}
 		}
 
-		public void RunAs(TUser subject, Action action)
+		public void RunAs(IdentityUser subject, Action action)
 		{
 			var oldSubject = _currentUser;
 			_currentUser = subject;
@@ -85,12 +83,5 @@ namespace Tango.Identity
 		}
 	}
 
-	public interface IIdentityStore<TUser, TKey>
-		where TKey : IEquatable<TKey>
-	{
-		TUser UserFromName(string name);
-		TUser UserFromProviderKey(string providerName, string providerKey);
-		TUser UserFromID(TKey id);
-		TUser UserFromEmail(string email);
-	}
+
 }

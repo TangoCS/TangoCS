@@ -131,7 +131,7 @@ namespace Tango.Meta
 			Name = t.Name;
 			Namespace = t.Namespace;
 			Persistent = PersistenceType.Table;
-			if (t.BaseType != null && t.BaseType.Namespace == t.Namespace)
+			if (t.BaseType != null /*&& t.BaseType.Namespace == t.Namespace*/)
 				BaseClassName = t.BaseType.Name;
 		}
 
@@ -244,6 +244,8 @@ namespace Tango.Meta
 		public void AddProperty(IMetaProperty metaProperty)
 		{
 			metaProperty.Parent = this;
+			if (_properties.ContainsKey(metaProperty.Name.ToLower()))
+				throw new Exception(String.Format("Property {0} already exists in the class {1}", metaProperty.Name, Name));
 			_properties.Add(metaProperty.Name.ToLower(), metaProperty);
 			if (metaProperty is ICanBeMultilingual && (metaProperty as ICanBeMultilingual).IsMultilingual) _isMultilingual = true;
 		}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using Tango.Html;
 using Tango.Localization;
 
 namespace Tango.UI.Controls
@@ -53,7 +54,7 @@ namespace Tango.UI.Controls
 					if (column == null)
 						column = ((List<object>)f.Column)[0] as LambdaExpression;
 
-					if (item.Condition == TextResource.Get("System.Filter.Contains", "содержит") && f.FieldType == FieldType.String)
+					if (item.Condition == TextResource.Get("System.Filter.Contains") && f.FieldType == FieldType.String)
 					{
 						MethodCallExpression mc = Expression.Call(column.Body,
 							typeof(string).GetMethod("Contains", new Type[] { typeof(string) }),
@@ -61,7 +62,7 @@ namespace Tango.UI.Controls
 						expr = Expression.Lambda<Func<T, bool>>(mc, column.Parameters);
 					}
 
-					if (item.Condition == TextResource.Get("System.Filter.StartsWith", "начинается с") && f.FieldType == FieldType.String)
+					if (item.Condition == TextResource.Get("System.Filter.StartsWith") && f.FieldType == FieldType.String)
 					{
 						MethodCallExpression mc = Expression.Call(column.Body,
 							typeof(string).GetMethod("StartsWith", new Type[] { typeof(string) }),
@@ -82,7 +83,7 @@ namespace Tango.UI.Controls
 						DateTime dt;
 						double d;
 
-						if (item.Condition == TextResource.Get("System.Filter.LastXDays", "последние x дней"))
+						if (item.Condition == TextResource.Get("System.Filter.LastXDays"))
 						{
 							if (!double.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out d))
 								d = 0;
@@ -106,7 +107,7 @@ namespace Tango.UI.Controls
 						double d;
 
 
-						if (item.Condition == TextResource.Get("System.Filter.LastXDays", "последние x дней"))
+						if (item.Condition == TextResource.Get("System.Filter.LastXDays"))
 						{
 							if (!double.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out d))
 								d = 0;
@@ -198,7 +199,7 @@ namespace Tango.UI.Controls
 						if (item.Condition == "=")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
 
-						if (item.Condition == ">=" || item.Condition == TextResource.Get("System.Filter.LastXDays", "последние x дней"))
+						if (item.Condition == ">=" || item.Condition == TextResource.Get("System.Filter.LastXDays"))
 							expr = Expression.Lambda<Func<T, bool>>(Expression.GreaterThanOrEqual(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
 
 						if (item.Condition == ">")
@@ -305,7 +306,7 @@ namespace Tango.UI.Controls
 				return Expression.Lambda(x1.Type, ReplaceParameterExpression(x1.Body, o), x1.Parameters);
 			}
 
-			throw new Exception(TextResource.Get("System.Filter.Error.UnsupportedTypeExpression", "Неподдерживаемый тип Expression:") + x.GetType().ToString() + " : " + x.GetType().BaseType.Name);
+			throw new Exception(TextResource.Get("System.Filter.Error.UnsupportedTypeExpression") + x.GetType().ToString() + " : " + x.GetType().BaseType.Name);
 		}
 
 		Expression ReplaceParameterExpression(Expression x, string name, object value)
@@ -350,7 +351,7 @@ namespace Tango.UI.Controls
 				return Expression.Lambda(x1.Type, ReplaceParameterExpression(x1.Body, name, value), x1.Parameters);
 			}
 
-			throw new Exception(TextResource.Get("System.Filter.Error.UnsupportedTypeExpression", "Неподдерживаемый тип Expression:") + x.GetType().ToString() + " : " + x.GetType().BaseType.Name);
+			throw new Exception(TextResource.Get("System.Filter.Error.UnsupportedTypeExpression") + x.GetType().ToString() + " : " + x.GetType().BaseType.Name);
 		}
 
 		public List<object> GetPolishNotation()
@@ -372,7 +373,7 @@ namespace Tango.UI.Controls
 				for (int i = 0; i < item.CloseBracketCount; i++)
 				{
 					if (stack.Count == 0)
-						throw new Exception(TextResource.Get("System.Filter.Error.BracketsNotConsistent", "Скобки не согласованы"));
+						throw new Exception(TextResource.Get("System.Filter.Error.BracketsNotConsistent"));
 					object obj = stack.Pop();
 					do
 					{
@@ -380,7 +381,7 @@ namespace Tango.UI.Controls
 							break;
 						pnlist.Add(obj);
 						if (stack.Count == 0)
-							throw new Exception(TextResource.Get("System.Filter.Error.BracketsNotConsistent", "Скобки не согласованы"));
+							throw new Exception(TextResource.Get("System.Filter.Error.BracketsNotConsistent"));
 						obj = stack.Pop();
 					} while ((char)obj != '(');
 				}
@@ -397,7 +398,7 @@ namespace Tango.UI.Controls
 			{
 				object si = stack.Pop();
 				if (si is char && (char)si == '(')
-					throw new Exception(TextResource.Get("System.Filter.Error.BracketsNotConsistent", "Скобки не согласованы"));
+					throw new Exception(TextResource.Get("System.Filter.Error.BracketsNotConsistent"));
 				pnlist.Add(si);
 			}
 
@@ -451,10 +452,7 @@ namespace Tango.UI.Controls
 		public string Title { get; set; }
 		public object Column { get; set; }
 		public FieldType FieldType { get; set; }
-		//public IQueryable<SelectListItem> Values { get; set; }
-		public IQueryable<object> DataSource { get; set; }
-		public string DisplayMember { get; set; }
-		public string ValueMember { get; set; }
+		public IEnumerable<SelectListItem> Values { get; set; }
 		public List<string> Operator { get; set; }
 	}
 

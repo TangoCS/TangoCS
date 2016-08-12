@@ -40,8 +40,8 @@
     <AssemblyOriginatorKeyFile>Tango.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper.StrongName, Version=1.50.0.0, Culture=neutral, PublicKeyToken=e3e8412083d25dd3, processorArchitecture=MSIL">
-      <HintPath>..\..\FinHub\packages\Dapper.StrongName.1.50.0\lib\net451\Dapper.StrongName.dll</HintPath>
+    <Reference Include="Dapper.StrongName, Version=1.50.2.0, Culture=neutral, PublicKeyToken=e3e8412083d25dd3, processorArchitecture=MSIL">
+      <HintPath>..\..\Welfare\packages\Dapper.StrongName.1.50.2\lib\net451\Dapper.StrongName.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -71,6 +71,8 @@
     <Compile Include="BusinessLogic.cs" />
     <Compile Include="ByteArrayToHex.cs" />
     <Compile Include="FileStorage\Std\LocalDiskFolder.cs" />
+    <Compile Include="Identity\Std\IdentityUser.cs" />
+    <Compile Include="Identity\Std\InterfacesStd.cs" />
     <Compile Include="Identity\Std\Tessera2IdentityStore.cs" />
     <Compile Include="RouteUtils.cs" />
     <Compile Include="TreeNode.cs" />
@@ -141,7 +143,7 @@
     <Compile Include="MacroManager.cs" />
     <Compile Include="Identity\IIdentityManager.cs" />
     <Compile Include="AccessControl\Std\IdentityRole.cs" />
-    <Compile Include="Identity\Std\IdentityUser.cs" />
+    <Compile Include="Identity\IdentityUser.cs" />
     <Compile Include="CodifierValue.cs" />
     <Compile Include="Html\HtmlWriter.cs" />
     <Compile Include="Html\HtmlWriter.Input.cs" />
@@ -152,7 +154,7 @@
     <Compile Include="Html\TagBuilder.cs" />
     <Compile Include="Icons.cs" />
     <Compile Include="Data\IDataContext.cs" />
-    <Compile Include="Identity\IdentityManager.cs" />
+    <Compile Include="Identity\Std\IdentityManager.cs" />
     <Compile Include="Identity\IUserValidator.cs" />
     <Compile Include="Data\IEntity.cs" />
     <Compile Include="IPersistentSettings.cs" />
@@ -164,7 +166,7 @@
     <Compile Include="Meta\CoreFluent.cs" />
     <Compile Include="Meta\MetaLoad.cs" />
     <Compile Include="Meta\PrimitiveTypes.cs" />
-    <Compile Include="Meta\StringConverter.cs" />
+    <Compile Include="StringConverter.cs" />
     <Compile Include="Meta.Stereotypes\SVersioning.cs" />
     <Compile Include="Localization\Language.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

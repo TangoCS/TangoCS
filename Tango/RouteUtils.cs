@@ -6,7 +6,9 @@ namespace Tango
 {
 	public static class RouteUtils
 	{
-		public static StringBuilder Resolve(string template, IReadOnlyDictionary<string, string> parameters, bool ignoreNotMachedParms = false, string notMatchedParmsBeginWith = "?")
+		public static StringBuilder Resolve(string template, 
+			IReadOnlyDictionary<string, string> parameters, 
+			bool ignoreNotMachedParms = false, string notMatchedParmsBeginWith = "?")
 		{
 			StringBuilder sb = new StringBuilder();
 			List<string> processedKeys = new List<string>();

@@ -7,7 +7,11 @@ namespace Tango.Localization
 	public interface ITextResource
 	{
 		string Get(string key);
-		string Get(string key, string defaultText);
+		bool TryGet(string key, out string result);
+
+		void SetNotFound(string key);
+		IEnumerable<string> GetNotFound();
+
 		string GetImageName(string key);
 	}
 

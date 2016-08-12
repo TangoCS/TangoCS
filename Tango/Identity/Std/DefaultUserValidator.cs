@@ -4,13 +4,12 @@ using System.Linq;
 
 namespace Tango.Identity.Std
 {
-	public class DefaultUserValidator<TKey> : IUserValidator<TKey>
-		where TKey : IEquatable<TKey>
+	public class DefaultUserValidator : IUserValidator
 	{
 		UserOptions _options;
-		IIdentityStore<IdentityUser<TKey>, TKey> _dc;
+		IIdentityStore _dc;
 
-		public DefaultUserValidator(IIdentityStore<IdentityUser<TKey>, TKey> dataContext, UserOptions options = null)
+		public DefaultUserValidator(IIdentityStore dataContext, UserOptions options = null)
 		{
 			_options = options ?? new UserOptions();
 			_dc = dataContext;
@@ -51,7 +50,7 @@ namespace Tango.Identity.Std
 			return res;
 		}
 
-		public virtual List<ValidationMessage> CheckName(TKey userId, string name)
+		public virtual List<ValidationMessage> CheckName(int userId, string name)
 		{
 			List<ValidationMessage> res = new List<ValidationMessage>();
 			char[] loginChars = _options.AllowedLoginChars.ToCharArray();
@@ -83,7 +82,7 @@ namespace Tango.Identity.Std
 			return res;
 		}
 
-		public virtual List<ValidationMessage> CheckEmail(TKey userId, string email)
+		public virtual List<ValidationMessage> CheckEmail(int userId, string email)
 		{
 			List<ValidationMessage> res = new List<ValidationMessage>();
 

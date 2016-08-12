@@ -5,8 +5,7 @@ using System.Linq;
 
 namespace Tango.Identity.Std
 {
-	public class Tessera2IdentityStore<TUser, TKey> : IIdentityStore<TUser, TKey>
-		where TKey : IEquatable<TKey>
+	public class Tessera2IdentityStore : IIdentityStore
 	{
 		IDbConnection _dc;
 
@@ -17,26 +16,26 @@ namespace Tango.Identity.Std
 
 		string subjSelect = @"select SubjectID as ID, SystemName as UserName, Title, CONVERT(VARCHAR(MAX), PasswordHash, 2) as PasswordHash, ~IsActive as LockoutEnabled, MustChangePassword, Email, RegMagicString as SecurityStamp from SPM_Subject";
 
-		public TUser UserFromName(string name)
+		public IdentityUser UserFromName(string name)
 		{
-			return _dc.Query<TUser>(subjSelect + " where lower(SystemName) = @p1", new { p1 = name.ToLower() }).FirstOrDefault();
+			return _dc.Query<IdentityUser>(subjSelect + " where lower(SystemName) = @p1", new { p1 = name.ToLower() }).FirstOrDefault();
 		}
 
-		public TUser UserFromProviderKey(string providerName, string providerKey)
+		public IdentityUser UserFromProviderKey(string providerName, string providerKey)
 		{
 			throw new NotSupportedException();
 			//string provSelect = subjSelect + "u join V_IdentityUser_{0} l on u.ID = l.ID where lower(ProviderKey) = @p1";
 			//return _dc.Query<TUser>(string.Format(provSelect, providerName), new { p1 = providerKey.ToLower() }).FirstOrDefault();
 		}
 
-		public TUser UserFromID(TKey id)
+		public IdentityUser UserFromID(int id)
 		{
-			return _dc.Query<TUser>(subjSelect + " where SubjectID = @p1", new { p1 = id }).FirstOrDefault();
+			return _dc.Query<IdentityUser>(subjSelect + " where SubjectID = @p1", new { p1 = id }).FirstOrDefault();
 		}
 
-		public TUser UserFromEmail(string email)
+		public IdentityUser UserFromEmail(string email)
 		{
-			return _dc.Query<TUser>(subjSelect + " where lower(Email) = @p1", new { p1 = email.ToLower() }).FirstOrDefault();
+			return _dc.Query<IdentityUser>(subjSelect + " where lower(Email) = @p1", new { p1 = email.ToLower() }).FirstOrDefault();
 		}
 	}
 }

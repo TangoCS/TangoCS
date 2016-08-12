@@ -21,24 +21,11 @@ namespace Tango.Meta.Database
 		{
 			var returnSchema = new Schema();
 			returnSchema.Name = name;
-			//var DbScript = new DBScriptPostgreSQL(name);
-			using (NpgsqlConnection con = new NpgsqlConnection(_connectionString))
-			{
-				using (NpgsqlCommand cmd = new NpgsqlCommand("select dbo.usp_dbschema('dbo')", con))
-				{
-					con.Open();
 
-					using (var reader = cmd.ExecuteReader())
-					{
-						while (reader.Read())
-						{
-							string s = reader.GetString(0);
-							XDocument doc = XDocument.Parse(s);
-							GenerateSchema(returnSchema, doc);
-						}
-					}
-				}
-			}
+			
+			var dbScript = new DBScriptPostgreSQL(name);
+			var doc = dbScript.GetSchemaFromDatabase(_connectionString);
+			GenerateSchema(dbScript, returnSchema, doc);
 			return returnSchema;
 		}
 
@@ -46,25 +33,20 @@ namespace Tango.Meta.Database
 		{
 			var returnSchema = new Schema();
 			returnSchema.Name = name;
-			GenerateSchema(returnSchema, doc);
+			var dbScript = new DBScriptPostgreSQL(name);
+
+			GenerateSchema(dbScript, returnSchema, doc);
 
 			return returnSchema;
 		}
 
-		static void GenerateSchema(Schema returnSchema, XDocument doc)
-		{
-			var DbScript = new DBScriptPostgreSQL(returnSchema.Name);
-			
+		static void GenerateSchema(DBScriptPostgreSQL dbScript, Schema returnSchema, XDocument doc)
+		{	
 			doc.Descendants("Table").ToList().ForEach(t =>
 			{
-				if (t.GetAttributeValue("NAME") == "N_FILTER")
-				{
-
-				}
 				var tabArray = !string.IsNullOrEmpty(t.GetAttributeValue("DESCRIPTION")) ? t.GetAttributeValue("DESCRIPTION").Split('|') : new string[] { };
 				var tableName = tabArray.Length > 1 ? tabArray[1] : "";
 				var tableDescription = tabArray.Length > 0 ? tabArray[0] : "";
-				// Проверяем наличие описания и отсутствие мени в нижнем регистре( происходит когда коментарий не записалса с др бд а старый остался написанный кирилицей)
 
 				var table = new Table();
 				table.Name = string.IsNullOrEmpty(tableName) ? t.GetAttributeValue("NAME") : tableName;
@@ -79,15 +61,11 @@ namespace Tango.Meta.Database
 						var columnName = columnArray.Length > 1 ? columnArray[1] : "";
 						var columnDescription = columnArray.Length > 0 ? columnArray[0] : "";
 
-
-						// Проверяем наличие описания и отсутствие имени в нижнем регистре( происходит когда коментарий не записалса с др бд а старый остался написанный кирилицей)
-
-
 						var column = new Column();
 						column.Identity = !string.IsNullOrEmpty(c.GetAttributeValue("IDENTITY")) && c.GetAttributeValue("IDENTITY") == "1";
 						column.Name = string.IsNullOrEmpty(columnName) ? c.GetAttributeValue("NAME") : columnName;
 						column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
-						column.Type = DbScript.GetType(c.GetAttributeValue("TYPE"), !column.Nullable);
+						column.Type = dbScript.GetType(c.GetAttributeValue("TYPE"), !column.Nullable);
 						column.ComputedText = c.GetAttributeValue("COMPUTEDTEXT");
 						column.Description = columnDescription;
 						column.DefaultValue = c.GetAttributeValue("DEFAULTVALUE");
@@ -101,19 +79,17 @@ namespace Tango.Meta.Database
 				var xForeignKeysElement = t.Element("ForeignKeys");
 				if (xForeignKeysElement != null)
 				{
-
 					xForeignKeysElement.Descendants("ForeignKey").ToList().ForEach(c =>
 					{
 						var fkColumns = c.Descendants("Column")
-													.Select(pc => pc.GetAttributeValue("NAME").ToUpper())
-													.ToArray();
+										.Select(pc => pc.GetAttributeValue("NAME").ToUpper())
+										.ToArray();
 
 						var refkColumns = c.Descendants("RefTableColumn")
-												   .Select(pc =>
-													   pc.GetAttributeValue("REFTABLECOLUMNDESCRIPTION") == null ? pc.GetAttributeValue("NAME") :
-														pc.GetAttributeValue("REFTABLECOLUMNDESCRIPTION").Split('|').Length > 1 ? pc.GetAttributeValue("REFTABLECOLUMNDESCRIPTION").Split('|')[1] : pc.GetAttributeValue("REFTABLECOLUMNDESCRIPTION")
-													   )
-												   .ToArray();
+									   .Select(pc =>
+											pc.GetAttributeValue("REFTABLECOLUMNDESCRIPTION") == null ? pc.GetAttributeValue("NAME") :
+											pc.GetAttributeValue("REFTABLECOLUMNDESCRIPTION").Split('|').Length > 1 ? pc.GetAttributeValue("REFTABLECOLUMNDESCRIPTION").Split('|')[1] : pc.GetAttributeValue("REFTABLECOLUMNDESCRIPTION")
+										).ToArray();
 
 						var foreignKey = new ForeignKey();
 						foreignKey.Name = c.GetAttributeValue("NAME");
@@ -126,8 +102,7 @@ namespace Tango.Meta.Database
 												  ? c.GetAttributeValue("REFTABLE")
 												  : refTableName;
 						foreignKey.IsEnabled = !string.IsNullOrEmpty(c.GetAttributeValue("ISENABLED")) && c.GetAttributeValue("ISENABLED") == "1";
-						foreignKey.Columns =
-							table.Columns.Where(pk => fkColumns.Any(fk => fk == pk.Key.ToUpper()))
+						foreignKey.Columns = table.Columns.Where(pk => fkColumns.Any(fk => fk == pk.Key.ToUpper()))
 								 .Select(cr => cr.Value.Name)
 								 .ToArray();
 
@@ -161,8 +136,8 @@ namespace Tango.Meta.Database
 				if (xPrimaryKeyElement != null)
 				{
 					var pkColumns = xPrimaryKeyElement.Descendants("Column")
-												  .Select(pc => pc.GetAttributeValue("NAME").ToUpper())
-												  .ToArray();
+									  .Select(pc => pc.GetAttributeValue("NAME").ToUpper())
+									  .ToArray();
 					table.PrimaryKey = new PrimaryKey()
 					{
 						Name = xPrimaryKeyElement.GetAttributeValue("NAME"),
@@ -208,7 +183,7 @@ namespace Tango.Meta.Database
 						var column = new ViewColumn();
 						column.Name = c.GetAttributeValue("NAME");
 						column.Nullable = !string.IsNullOrEmpty(c.GetAttributeValue("NULLABLE")) && c.GetAttributeValue("NULLABLE") == "1";
-						column.Type = DbScript.GetType(c.GetAttributeValue("TYPE"), !column.Nullable);
+						column.Type = dbScript.GetType(c.GetAttributeValue("TYPE"), !column.Nullable);
 						view.Columns.Add(column.Name, column);
 					});
 
@@ -257,7 +232,7 @@ namespace Tango.Meta.Database
 					{
 						var Parameter = new Parameter();
 						Parameter.Name = c.GetAttributeValue("NAME");
-						Parameter.Type = DbScript.GetType(c.GetAttributeValue("TYPE"), true);
+						Parameter.Type = dbScript.GetType(c.GetAttributeValue("TYPE"), true);
 						if (!string.IsNullOrEmpty(Parameter.Name) && !function.Parameters.ContainsKey(Parameter.Name))
 							function.Parameters.Add(Parameter.Name, Parameter);
 					});
