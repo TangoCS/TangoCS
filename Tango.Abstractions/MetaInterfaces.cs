@@ -40,8 +40,6 @@ namespace Tango.Meta
 		IMetaClass GetClass(string name);
 		IMetaEnum GetEnum(string name);
 		IMetaOperation GetOperation(string className, string operationName);
-
-		//ITextResource TextResource { get; }
 	}
 
 	public interface IMetaClass : IMetaNamedElement//IMetaClassifier

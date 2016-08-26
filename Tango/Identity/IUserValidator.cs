@@ -7,7 +7,7 @@ namespace Tango.Identity
 {
 	public interface IUserValidator<TKey>
 	{
-		List<ValidationMessage> CheckPassword(string password1, string password2);
+		List<ValidationMessage> CheckPassword(string password);
 		List<ValidationMessage> CheckName(TKey userId, string name);
 		List<ValidationMessage> CheckEmail(TKey userId, string email);
 	}

@@ -31,12 +31,12 @@ namespace Tango.UI
 
 		public static void ColumnHeader(this LayoutWriter l, Action<ThTagAttributes> attributes, IMetaProperty prop)
 		{
-			l.ColumnHeader(attributes, l.TextResource.CaptionShort(prop));
+			l.ColumnHeader(attributes, l.Resources.CaptionShort(prop));
 		}
 
 		public static void ColumnHeader(this LayoutWriter l, IMetaProperty prop)
 		{
-			l.ColumnHeader(l.TextResource.CaptionShort(prop));
+			l.ColumnHeader(l.Resources.CaptionShort(prop));
 		}
 
 		public static void Cell(this LayoutWriter l, object content)

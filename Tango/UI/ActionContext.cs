@@ -17,12 +17,12 @@ namespace Tango.UI
 			PersistentArgs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 			RequestServices = requestServices;
-			TextResource = RequestServices.GetService(typeof(ITextResource)) as ITextResource;
+			Resources = RequestServices.GetService(typeof(IResourceManager)) as IResourceManager;
 			Routes = RequestServices.GetService(typeof(RoutesCollection)) as RoutesCollection;
 		}
 
 		public IServiceProvider RequestServices { get; protected set; }
-		public ITextResource TextResource { get; protected set; }
+		public IResourceManager Resources { get; protected set; }
 		public RoutesCollection Routes { get; protected set; }
 
 		public string RequestMethod { get; set; }

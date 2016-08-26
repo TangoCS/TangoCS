@@ -25,7 +25,7 @@ namespace Tango.UI.Controls
 		public string Description => _description;
 
 		public ActionContext Context { get; private set; }
-		public ITextResource TextResource => Context.TextResource;
+		public IResourceManager Resources => Context.Resources;
 
 		public ActionLink(ActionContext context)
 		{

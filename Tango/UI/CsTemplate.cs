@@ -2,71 +2,79 @@
 using Tango.Localization;
 using Newtonsoft.Json;
 using Tango.Html;
+using System.Collections.Generic;
 
 namespace Tango.UI
 {
 	public abstract class InteractionFlowElement
 	{
-		public string ID { get; protected set; }
-		public ActionContext Context { get; protected set; }
+		public virtual string ID { get; set; }
+		public string ClientID { get; set; }
+		public ActionContext Context { get; set; }
+
+		public IResourceManager Resources => Context.Resources;
+		protected dynamic FormBag { get { return Context.FormData; } }
+		protected DynamicDictionary FormData { get { return Context.FormData; } }
 	}
 
 	public abstract class ViewElement : InteractionFlowElement, IWithPropertyInjection
 	{
-		public void Init(string id, ActionContext context)
-		{
-			ID = id;
-			Context = context;
-		}
+		public DataCollection DataCollection { get; set; } = new DataCollection();
+		public ViewElement ParentElement { get; set; }
 
 		public virtual LayoutWriter CreateLayoutWriter()
 		{
 			var w = new LayoutWriter(Context);
-			w.IDPrefix = ID;
+			w.IDPrefix = ClientID;
 			return w;
 		}
 
 		public virtual bool UsePropertyInjection { get { return false; } }
 		public virtual void OnInit() { }
 
-		public string GetElementID(string id)
+		public string GetClientID(string id)
 		{
-			return (!ID.IsEmpty() ? ID + (!id.IsEmpty() ? "_" + id : "") : id).ToLower();
+			return (!ClientID.IsEmpty() ? ClientID + (!id.IsEmpty() ? "_" + id : "") : id).ToLower();
 		}
 
 		public T CreateControl<T>(string id, Action<T> setProperties = null)
-			where T : ViewComponent, new()
+			where T : ViewElement, new()
 		{
-			T c = new T();
+			T c = new T() { Context = Context };
 			if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
-			c.Init(GetElementID(id), Context);
+			c.ID = id;
+			c.ClientID = GetClientID(id);
+			c.ParentElement = this;
 
-			Context.EventReceivers.Add(c.ID, c);
+			Context.EventReceivers.Add(c.ClientID, c);
 
 			setProperties?.Invoke(c);
 			c.OnInit();
 			return c;
 		}
 
-		public T CreateControl<T>(Func<T> constr)
-			where T : ViewComponent, new()
-		{
-			T c = constr();
-			if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
-			c.Init(GetElementID(c.ID), Context);
+		//public T AddControl<T>(T c)
+		//	where T : ViewElement
+		//{
+		//	if (Context.EventReceivers.ContainsKey(c.ID)) return c;
 
-			Context.EventReceivers.Add(c.ID, c);
-			c.OnInit();
-			return c;
-		}
+		//	c.Context = Context;
+		//	if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
+		//	c.ID = GetElementID(c.ID);
 
-		protected ITextResource TextResource => Context.TextResource;
-		protected dynamic FormBag { get { return Context.FormData; } }
-		protected DynamicDictionary FormData { get { return Context.FormData; } }
+		//	Context.EventReceivers.Add(c.ID, c);
+		//	c.OnInit();
+		//	return c;
+		//}
 
 		public T GetPosted<T>(string name, T defaultValue = default(T))
 		{
 			return Context.FormData.Parse<T>(name, defaultValue);
+		}
+
+		public List<T> GetPostedList<T>(string name)
+		{
+			return Context.FormData.ParseList<T>(name);
 		}
 
 		public DateTime? GetPostedDateTime(string name, string format, DateTime? defaultValue = null)
@@ -96,10 +104,10 @@ namespace Tango.UI
 
 	public abstract class ViewComponent : ViewElement
 	{
-		public DataCollection DataCollection { get; set; } = new DataCollection();
+		
 	}
 
-	public abstract class ViewContainer : ViewComponent
+	public abstract class ViewContainer : ViewElement
 	{
 		public abstract ActionResult Execute();	
 	}

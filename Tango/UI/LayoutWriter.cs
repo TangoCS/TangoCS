@@ -9,7 +9,7 @@ namespace Tango.UI
 	public class LayoutWriter : HtmlWriter
 	{	
 		public ActionContext Context { get; private set; }
-		public ITextResource TextResource => Context.TextResource;
+		public IResourceManager Resources => Context.Resources;
 
 		public List<ClientAction> ClientActions { get; set; }
 		public HashSet<string> Includes { get; set; }
@@ -79,6 +79,16 @@ namespace Tango.UI
 		public static void FormTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
 			w.Table(a => a.Class("ms-formtable").Set(attributes), content);
+		}
+
+		public static void FormTableStd(this LayoutWriter w, Action content)
+		{
+			w.FormTable(a => a.Style("width:700px"), content);
+		}
+
+		public static void FormTable100Percent(this LayoutWriter w, Action content)
+		{
+			w.FormTable(a => a.Style("width:100%"), content);
 		}
 
 		public static void GroupTitle(this LayoutWriter w, Action<TagAttributes> attributes, Action content)

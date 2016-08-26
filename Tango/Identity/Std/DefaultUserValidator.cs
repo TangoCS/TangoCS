@@ -15,36 +15,31 @@ namespace Tango.Identity.Std
 			_dc = dataContext;
 		}
 
-		public virtual List<ValidationMessage> CheckPassword(string password1, string password2)
+		public virtual List<ValidationMessage> CheckPassword(string password)
 		{
 			List<ValidationMessage> res = new List<ValidationMessage>();
 			//char[] pwdChars = _options.AllowedPasswordChars.ToCharArray();
 
-			if (password1 != password2)
+			if (password.Length < _options.MinPasswordLength)
 			{
-				res.Add(new ValidationMessage(Resources.PasswordsAreDifferent));
+				res.Add(new ValidationMessage("password", string.Format(Resources.PasswordTooShort, _options.MinPasswordLength.ToString())));
 			}
 
-			if (password1.Length < _options.MinPasswordLength)
+			if (_options.RequireNonAlphanumericInPassword && password.All(IsLetterOrDigit))
 			{
-				res.Add(new ValidationMessage(string.Format(Resources.PasswordTooShort, _options.MinPasswordLength.ToString())));
+				res.Add(new ValidationMessage("password", Resources.PasswordRequiresNonAlphanumeric));
 			}
-
-			if (_options.RequireNonAlphanumericInPassword && password1.All(IsLetterOrDigit))
+			if (_options.RequireDigitInPassword && !password.Any(IsDigit))
 			{
-				res.Add(new ValidationMessage(Resources.PasswordRequiresNonAlphanumeric));
+				res.Add(new ValidationMessage("password", Resources.PasswordRequiresDigit));
 			}
-			if (_options.RequireDigitInPassword && !password1.Any(IsDigit))
+			if (_options.RequireLowercaseInPassword && !password.Any(IsLower))
 			{
-				res.Add(new ValidationMessage(Resources.PasswordRequiresDigit));
+				res.Add(new ValidationMessage("password", Resources.PasswordRequiresLower));
 			}
-			if (_options.RequireLowercaseInPassword && !password1.Any(IsLower))
+			if (_options.RequireUppercaseInPassword && !password.Any(IsUpper))
 			{
-				res.Add(new ValidationMessage(Resources.PasswordRequiresLower));
-			}
-			if (_options.RequireUppercaseInPassword && !password1.Any(IsUpper))
-			{
-				res.Add(new ValidationMessage(Resources.PasswordRequiresUpper));
+				res.Add(new ValidationMessage("password", Resources.PasswordRequiresUpper));
 			}
 
 			return res;
@@ -57,26 +52,26 @@ namespace Tango.Identity.Std
 
 			if (String.IsNullOrEmpty(name))
 			{
-				res.Add(new ValidationMessage(Resources.EmptyUserName));
+				res.Add(new ValidationMessage("username", Resources.EmptyUserName));
 			}
 
 			if (name.Length > _options.MaxLoginLength)
 			{
-				res.Add(new ValidationMessage(string.Format(Resources.InvalidUserNameLength, _options.MaxLoginLength.ToString())));
+				res.Add(new ValidationMessage("username", string.Format(Resources.InvalidUserNameLength, _options.MaxLoginLength.ToString())));
 			}
 
 			foreach (char c in name.ToCharArray())
 			{
 				if (!loginChars.Contains(c))
 				{
-					res.Add(new ValidationMessage(Resources.InvalidUserName));
+					res.Add(new ValidationMessage("username", Resources.InvalidUserName));
 					break;
 				}
 			}
 
 			if (_dc.UserFromName(name) != null)
 			{
-				res.Add(new ValidationMessage(Resources.LoginAlreadyAssociated));
+				res.Add(new ValidationMessage("username", Resources.LoginAlreadyAssociated));
 			}
 
 			return res;
@@ -88,13 +83,13 @@ namespace Tango.Identity.Std
 
 			if (_options.RequireEmail && String.IsNullOrEmpty(email))
 			{
-				res.Add(new ValidationMessage(Resources.EmptyEmail));
+				res.Add(new ValidationMessage("email", Resources.EmptyEmail));
 			}
 
 			var owner = _dc.UserFromEmail(email);
 			if (_options.RequireUniqueEmail && owner != null && !owner.Id.Equals(userId))
 			{
-				res.Add(new ValidationMessage(string.Format(Resources.DuplicateEmail, email)));
+				res.Add(new ValidationMessage("email", string.Format(Resources.DuplicateEmail, email)));
 			}
 
 			return res;

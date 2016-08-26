@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Tango.Localization;
 
 namespace Tango
 {
@@ -21,11 +22,11 @@ namespace Tango
 			Severity = severity;
 		}
 
-		public ValidationMessage(string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
-		{
-			Message = message;
-			Severity = severity;
-		}
+		//public ValidationMessage(string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		//{
+		//	Message = message;
+		//	Severity = severity;
+		//}
 	}
 
 	public class ValidationMessageCollection : ObservableCollection<ValidationMessage>
@@ -63,10 +64,10 @@ namespace Tango
 			Add(new ValidationMessage(name, message, severity));
 		}
 
-		public void Add(string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
-		{
-			Add(new ValidationMessage(message, severity));
-		}
+		//public void Add(string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		//{
+		//	Add(new ValidationMessage(message, severity));
+		//}
 
 		public bool HasItems(params ValidationMessageSeverity[] types)
 		{
@@ -78,23 +79,29 @@ namespace Tango
 			return false;
 		}
 
-		public ValidationBuilder<T> Check<T>(string name, T value)
+		public ValidationBuilder<T> Check<T>(IResourceManager resources, string id, string name, T value)
 		{
-			return new ValidationBuilder<T>(this, name, value);
+			return new ValidationBuilder<T>(resources, this, id, name, value);
 		}
 	}
 
 	public class ValidationBuilder<T>
 	{
-		public string Name { get; private set; }
-		public T Value { get; set; }
-		public ValidationMessageCollection Collection { get; private set; }
+		public string ElementID { get; private set; }
+		public string ElementName { get; set; }
+		public T Value { get; private set; }
 
-		public ValidationBuilder(ValidationMessageCollection c, string name, T value)
+
+		public ValidationMessageCollection Collection { get; private set; }
+		public IResourceManager Resources { get; private set; }
+
+		public ValidationBuilder(IResourceManager resources, ValidationMessageCollection c, string id, string name, T value)
 		{
 			Collection = c;
-			Name = name;
+			ElementID = id;
+			ElementName = name;
 			Value = value;
+			Resources = resources;
 		}
 	}
 

@@ -5,7 +5,7 @@ using Tango.Data;
 
 namespace Tango.Localization
 {
-	public class TextResourceOptions
+	public class DefaultResourceManagerOptions
 	{
 		public SortedSet<string> NotFoundResources { get; } = new SortedSet<string>();
 
@@ -13,12 +13,12 @@ namespace Tango.Localization
 		public IReadOnlyDictionary<string, string> Images { get; set; }
 	}
 
-	public class TextResource : ITextResource
+	public class DefaultResourceManager : IResourceManager
 	{
 		ILanguage _language;
-		public static TextResourceOptions Options { get; set; }
+		public static DefaultResourceManagerOptions Options { get; set; }
 
-		public TextResource(ILanguage language)
+		public DefaultResourceManager(ILanguage language)
 		{
 			_language = language;
 		}
@@ -64,12 +64,16 @@ namespace Tango.Localization
 		}
 	}
 
-	public interface IWithResourceKey
+	public class ResourceTypeAttribute : Attribute
 	{
-		Type GetResourceKey();
+		public Type Type { get; set; }
+		public ResourceTypeAttribute(Type type)
+		{
+			Type = type;
+		}
 	}
 
-	public class RecourceKeyInfo
+	public class ResourceKeyInfo
 	{
 		public Stack<string> Parts { get; set; } = new Stack<string>(4);
 		public Type Type { get; set; }
@@ -77,40 +81,36 @@ namespace Tango.Localization
 		public bool SuffixIsOptional { get; set; }
 	}
 
-	public static class TextResourceExtensions
+	public static class ResourceManagerExtensions
 	{
-		public static string Get<T>(this ITextResource textResource, Expression<Func<T, object>> exp)
-			where T : IWithResourceKey
+		public static string Get<T>(this IResourceManager textResource, Expression<Func<T, object>> exp)
 		{
 			return textResource.Get(exp.GetResourceKey());
 		}
 
-		public static string Get<T, TValue>(this ITextResource textResource, Expression<Func<T, TValue>> exp)
-			where T : IWithResourceKey
-		{
-			return textResource.Get(exp.GetResourceKey());
-		}
-
-		public static string Get<T>(this ITextResource textResource, Expression<Func<T, object>> exp, string suffix)
-			where T : IWithResourceKey
+		public static string Get<T>(this IResourceManager textResource, Expression<Func<T, object>> exp, string suffix)
 		{
 			var k = exp.GetResourceKey();
 			k.Suffix = suffix;
 			return textResource.Get(k);
 		}
 
-		public static string Get(this ITextResource textResource, string key, string suffix)
+		public static string Get(this IResourceManager textResource, string key, string suffix)
 		{
 			return textResource.Get(key + "-" + suffix);
 		}
 
-		public static string Get<T>(this ITextResource textResource, string suffix)
-			where T : IEntity
+		public static string Get<T>(this IResourceManager textResource, string suffix)
 		{
 			return textResource.Get(typeof(T).FullName, suffix);
 		}
 
-		public static string Get(this ITextResource textResource, RecourceKeyInfo k)
+		public static string Get<T>(this IResourceManager textResource, string key, string suffix)
+		{
+			return textResource.Get(typeof(T).FullName + "." + key, suffix);
+		}
+
+		public static string Get(this IResourceManager textResource, ResourceKeyInfo k)
 		{
 			var p = k.Parts.Join(".");
 			var t = k.Type.FullName;
@@ -136,28 +136,38 @@ namespace Tango.Localization
 		}
 
 
-		public static RecourceKeyInfo GetResourceKey<TIn, TOut>(this Expression<Func<TIn, TOut>> exp)
-			where TIn : IWithResourceKey
+		public static ResourceKeyInfo GetResourceKey<TFunc>(this Expression<TFunc> exp)
 		{
 			if (exp == null) throw new ArgumentNullException("exp");
-			RecourceKeyInfo res = new RecourceKeyInfo();
+			ResourceKeyInfo res = new ResourceKeyInfo();
 			GetResourceKeyInt(exp.Body, res);
 			return res;
 		}
 
-		static void GetResourceKeyInt(Expression exp, RecourceKeyInfo res)
+		static void GetResourceKeyInt(Expression exp, ResourceKeyInfo res)
 		{
-			if (typeof(MethodCallExpression).IsAssignableFrom(exp.GetType()))
+			var t = exp.GetType();
+			if (typeof(MethodCallExpression).IsAssignableFrom(t))
 			{
 				var methodExp = exp as MethodCallExpression;
 				GetResourceKeyInt(methodExp.Object ?? methodExp.Arguments[0], res);
 				return;
 			}
-			if (typeof(ParameterExpression).IsAssignableFrom(exp.GetType()))
+			else if (typeof(ParameterExpression).IsAssignableFrom(t))
 			{
 				res.Type = exp.Type;
+				var attr = res.Type.GetCustomAttributes(typeof(ResourceTypeAttribute), false);
+				if (attr != null && attr.Length > 0)
+					res.Type = (attr[0] as ResourceTypeAttribute).Type;
 				return;
 			}
+			else if (t == typeof(UnaryExpression))
+			{
+				var uExp = exp as UnaryExpression;
+				GetResourceKeyInt(uExp.Operand, res);
+				return;
+			}
+
 			var memberExp = exp as MemberExpression;
 			if (memberExp == null)
 				throw new Exception("Wrong format of the expression");
@@ -168,34 +178,32 @@ namespace Tango.Localization
 		}
 	}
 
-	public static class TextResourceSpecialExtensions
+	public static class ResourceManagerSpecialExtensions
 	{
-		public static string Description<T, TValue>(this ITextResource textResource, Expression<Func<T, TValue>> exp)
-			where T : IWithResourceKey
+		public static string Description<T>(this IResourceManager textResource, Expression<Func<T, object>> exp)
 		{
 			return textResource.Description(exp.GetResourceKey());
 		}
 
-		public static string CaptionShort<T, TValue>(this ITextResource textResource, Expression<Func<T, TValue>> exp)
-			where T : IWithResourceKey
+		public static string CaptionShort<T>(this IResourceManager textResource, Expression<Func<T, object>> exp)
 		{
 			return textResource.CaptionShort(exp.GetResourceKey());
 		}
 
-		public static string Description(this ITextResource textResource, RecourceKeyInfo k)
+		public static string Description(this IResourceManager textResource, ResourceKeyInfo k)
 		{
 			k.Suffix = "description";
 			return textResource.Get(k);
 		}
 
-		public static string CaptionShort(this ITextResource textResource, RecourceKeyInfo k)
+		public static string CaptionShort(this IResourceManager textResource, ResourceKeyInfo k)
 		{
 			k.Suffix = "s";
 			k.SuffixIsOptional = true;
 			return textResource.Get(k);
 		}
 
-		public static string CaptionPlural<T>(this ITextResource textResource)
+		public static string CaptionPlural<T>(this IResourceManager textResource)
 			where T : IEntity
 		{
 			return textResource.Get(typeof(T).FullName, "pl");

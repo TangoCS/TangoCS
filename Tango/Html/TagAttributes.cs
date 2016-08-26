@@ -39,7 +39,7 @@ namespace Tango.Html
 		public T Aria(string key, string value) { MergeAttribute("aria-" + key.ToLower(), value); return _this; }
 		public T Class(string value, bool replaceExisting = false) { MergeAttribute("class", value, replaceExisting); return _this; }
 		public T ContentEditable(bool value) { if (value) MergeAttribute("contenteditable", "Contenteditable"); return _this; }
-		public T Data(string key, object value) { MergeAttribute("data-" + key.ToLower(), value.ToString()); return _this; }
+		public T Data(string key, object value) { MergeAttribute("data-" + key.ToLower(), value?.ToString()); return _this; }
 		public T Dir(Dir value) { MergeAttribute("dir", value.ToString().ToLower()); return _this; }
 		public T Draggable(bool value) { if (value) MergeAttribute("draggable", "Draggable"); return _this; }
 		public T Lang(string value) { MergeAttribute("lang", value); return _this; }
@@ -303,13 +303,13 @@ namespace Tango.Html
 			return this;
 		}
 
-		public DataCollection Parm(string key, string value)
+		public DataCollection Parm<T>(string key, T value)
 		{
-			Value.Add("p-" + key, value);
+			Value.Add("p-" + key, value?.ToString());
 			return this;
 		}
 
-		public DataCollection Data(DataCollection source)
+		public DataCollection Add(DataCollection source)
 		{
 			foreach(var d in source.Value)
 				Value.Add(d.Key, d.Value);

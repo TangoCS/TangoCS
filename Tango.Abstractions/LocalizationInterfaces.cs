@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace Tango.Localization
 {
-	public interface ITextResource
+	public interface IResourceManager
 	{
 		string Get(string key);
 		bool TryGet(string key, out string result);

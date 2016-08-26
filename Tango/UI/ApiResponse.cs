@@ -60,7 +60,7 @@ namespace Tango.UI
 
 		public void SetElementValue(ViewElement elementOwner, string name, string value)
 		{
-			SetElementValue(elementOwner.GetElementID(name), value);
+			SetElementValue(elementOwner.GetClientID(name), value);
 		}
 
 		public virtual void SetElementVisibility(string name, bool visible)
@@ -69,7 +69,7 @@ namespace Tango.UI
 		}
 		public virtual void SetElementVisibility(ViewElement elementOwner, string name, bool visible)
 		{
-			SetElementVisibility(elementOwner.GetElementID(name), visible);
+			SetElementVisibility(elementOwner.GetClientID(name), visible);
 		}
 
 		public virtual void SetElementAttribute(string name, string attrName, string attrValue)
@@ -78,7 +78,7 @@ namespace Tango.UI
 		}
 		public virtual void SetElementAttribute(ViewElement elementOwner, string name, string attrName, string attrValue)
 		{
-			SetElementAttribute(elementOwner.GetElementID(name), attrName, attrValue);
+			SetElementAttribute(elementOwner.GetClientID(name), attrName, attrValue);
 		}
 
 		public virtual void RemoveElementAttribute(string name, string attrName)
@@ -87,7 +87,7 @@ namespace Tango.UI
 		}
 		public virtual void RemoveElementAttribute(ViewElement elementOwner, string name, string attrName)
 		{
-			RemoveElementAttribute(elementOwner.GetElementID(name), attrName);
+			RemoveElementAttribute(elementOwner.GetClientID(name), attrName);
 		}
 
 		public virtual void SetElementClass(string name, string clsName)
@@ -96,7 +96,7 @@ namespace Tango.UI
 		}
 		public virtual void SetElementClass(ViewElement elementOwner, string name, string clsName)
 		{
-			SetElementClass(elementOwner.GetElementID(name), clsName);
+			SetElementClass(elementOwner.GetClientID(name), clsName);
 		}
 
 		public virtual void RemoveElementClass(string name, string clsName)
@@ -105,7 +105,7 @@ namespace Tango.UI
 		}
 		public virtual void RemoveElementClass(ViewElement elementOwner, string name, string clsName)
 		{
-			RemoveElementClass(elementOwner.GetElementID(name), clsName);
+			RemoveElementClass(elementOwner.GetClientID(name), clsName);
 		}
 
 		public virtual void AddWidget(string name, string content)
@@ -168,43 +168,43 @@ namespace Tango.UI
 
 		public void AddWidget(ViewElement elementOwner, string name, string content)
 		{
-			AddWidget(elementOwner.GetElementID(name), content);
+			AddWidget(elementOwner.GetClientID(name), content);
 		}
 
 		public void RemoveWidget(ViewElement elementOwner, string name)
 		{
-			RemoveWidget(elementOwner.GetElementID(name));
+			RemoveWidget(elementOwner.GetClientID(name));
 		}
 
 		public void AddRootWidget(ViewElement elementOwner, string name, string content)
 		{
-			AddRootWidget(elementOwner.GetElementID(name), content);
+			AddRootWidget(elementOwner.GetClientID(name), content);
 		}
 
 		public void AddChildWidget(ViewElement elementOwner, string parent, string name, string content)
 		{
-			AddChildWidget(parent, elementOwner.GetElementID(name), content);
+			AddChildWidget(parent, elementOwner.GetClientID(name), content);
 		}
 
 		public void AddWidget(ViewElement elementOwner, string name, Action<LayoutWriter> content)
 		{
 			var w = elementOwner.CreateLayoutWriter();
 			content?.Invoke(w);
-			AddWidget(elementOwner.GetElementID(name), w);
+			AddWidget(elementOwner.GetClientID(name), w);
 		}
 
 		public void AddRootWidget(ViewElement elementOwner, string name, Action<LayoutWriter> content)
 		{
 			var w = elementOwner.CreateLayoutWriter();
 			content?.Invoke(w);
-			AddRootWidget(elementOwner.GetElementID(name), w);
+			AddRootWidget(elementOwner.GetClientID(name), w);
 		}
 
 		public void AddChildWidget(ViewElement elementOwner, string parent, string name, Action<LayoutWriter> content)
 		{
 			var w = elementOwner.CreateLayoutWriter();
 			content?.Invoke(w);
-			AddChildWidget(parent, elementOwner.GetElementID(name), w);
+			AddChildWidget(parent, elementOwner.GetClientID(name), w);
 		}
 	}
 
