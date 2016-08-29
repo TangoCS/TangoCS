@@ -1,0 +1,22 @@
+﻿name;ru;en
+Abc.Model.ErrorLog;Ошибка системы;Error
+Abc.Model.ErrorLog-pl;Журнал ошибок системы;Error log
+Abc.Model.ErrorLog.ClearLog;Очистка журнала ошибок;Clear error log
+Abc.Model.ErrorLog.Clear;Очистить;Clear
+Abc.Model.ErrorLog.DeleteAllRecordsBefore;Удалить все записи до;Delete all records before
+Abc.Model.ErrorLog.ErrorDate;Дата ошибки;Error date
+Abc.Model.ErrorLog.ErrorLogID;№;#
+Abc.Model.ErrorLog.ErrorText;Текст ошибки;Error text
+Abc.Model.ErrorLog.Hash;Хэш;
+Abc.Model.ErrorLog.Headers;Заголовки запроса;Headers
+Abc.Model.ErrorLog.RequestType;Тип запроса;Request type
+Abc.Model.ErrorLog.SimilarErrorID;Похожая ошибка;
+Abc.Model.ErrorLog.SqlLog;Протокол SQL;Sql log
+Abc.Model.ErrorLog.Title;Наименование;Title
+Abc.Model.ErrorLog.Url;Url запроса;Url
+Abc.Model.ErrorLog.UrlReferrer;Url, с которого перешли;Url referrer
+Abc.Model.ErrorLog.UserAgent;Клиент;User agent
+Abc.Model.ErrorLog.UserHostAddress;Адрес хоста;User host address
+Abc.Model.ErrorLog.UserHostName;Имя хоста;User host name
+Abc.Model.ErrorLog.UserName;Пользователь;User name
+Abc.Model.ErrorLog.ViewList;Журнал ошибок системы;Error log

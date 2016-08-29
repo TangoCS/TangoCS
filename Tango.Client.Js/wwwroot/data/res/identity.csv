@@ -1,0 +1,27 @@
+﻿name;ru;en
+Abc.Model.SPM_Subject;Субъект доступа;Access subject
+Abc.Model.SPM_Subject-pl;Пользователи;Users
+Abc.Model.SPM_Subject.Activate;Активировать;
+Abc.Model.SPM_Subject.ChangePassword;Изменить пароль;
+Abc.Model.SPM_Subject.ChangePassword-val-badconfirmation;Новый пароль и подтверждение пароля не совпадают;Your password and confirmation password do not match
+Abc.Model.SPM_Subject.ChangePassword-val-badnew;Новый пароль и текущий пароль совпадают;New password should not be same as old password
+Abc.Model.SPM_Subject.ChangePassword-val-badold;Старый пароль неверен;Your new password cannot be accepted because the old password provided is not correct
+Abc.Model.SPM_Subject.Deactivate;Деактивировать;
+Abc.Model.SPM_Subject.EMail;Е-мейл;Email
+Abc.Model.SPM_Subject.IsActive;Активен;Active
+Abc.Model.SPM_Subject.IsDeleted;Удален;Deleted
+Abc.Model.SPM_Subject.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.SPM_Subject.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.SPM_Subject.MustChangePassword;MustChangePassword;Must change password
+Abc.Model.SPM_Subject.PasswordExpDate;PasswordExpDate;Password expiration date
+Abc.Model.SPM_Subject.PasswordHash;Пароль;Password
+Abc.Model.SPM_Subject.PasswordHash-confirmation;Подтверждение;Password confirmation
+Abc.Model.SPM_Subject.PasswordHash-new;Новый пароль;New password
+Abc.Model.SPM_Subject.PasswordHash-new-title;Введите новый пароль для пользователя;Enter new password
+Abc.Model.SPM_Subject.RegDate;Дата регистрации;Registration date
+Abc.Model.SPM_Subject.RegMagicString;RegMagicString;Magic string
+Abc.Model.SPM_Subject.RestorePassword;Восстановить пароль;Restore password
+Abc.Model.SPM_Subject.SID;SID;SID
+Abc.Model.SPM_Subject.SystemName;Системное имя;System name
+Abc.Model.SPM_Subject.Title;Наименование;Title
+Abc.Model.SPM_Subject.ViewList;Пользователи;Users

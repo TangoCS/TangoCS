@@ -56,14 +56,12 @@ namespace Tango.UI
 
 		public static void ListHeader(this LayoutWriter w, Action<TagAttributes> attributes, Action columns)
 		{
-			w.Tr(a => a.Class("ms-viewheadertr").Set(attributes), columns);
+			w.Tr(a => a.Set(attributes), columns);
 		}
 
 		public static void ColumnHeader(this LayoutWriter w, Action<ThTagAttributes> attributes, Action content)
 		{
-			w.Th(a => a.Class("ms-vh2").Set(attributes),
-				() => w.Div(a => a.Class("ms-vb"), content)
-			);
+			w.Th(a => a.Set(attributes), content);
 		}
 
 		public static void ListRow(this LayoutWriter w, Action<TagAttributes> attributes, Action cells)
@@ -73,7 +71,7 @@ namespace Tango.UI
 
 		public static void Cell(this LayoutWriter w, Action<TdTagAttributes> attributes, Action content)
 		{
-			w.Td(a => a.Class("ms-vb2").Set(attributes), content);
+			w.Td(a => a.Set(attributes), content);
 		}
 
 		public static void FormTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)

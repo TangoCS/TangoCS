@@ -1,0 +1,307 @@
+﻿name;ru;en
+Abc.Model.ApplicationDomain;Предметная область;Domain model
+Abc.Model.ApplicationDomain.DisableSPM;Отключить настройку прав доступа;
+Abc.Model.ApplicationDomain.EditRights;Редактировать права доступа;
+Abc.Model.ApplicationDomain.EnableSPM;Включить настройку прав доступа;
+Abc.Model.ApplicationDomain.GenerateEditControl;Сгенерировать edit;
+Abc.Model.ApplicationDomain.GenerateListControl;Сгенерировать list;
+Abc.Model.ApplicationDomain.GenerateViewControl;Сгенерировать view;
+Abc.Model.ApplicationDomain.ViewClass;Свойства класса;
+Abc.Model.ApplicationDomain.ViewList;Модель предметной области;
+Abc.Model.C_Language;Язык;Language
+Abc.Model.C_Language.IsDefault;Значение по умолчанию;
+Abc.Model.C_Language.LanguageCode;Код языка;
+Abc.Model.C_Language.Title;Наименование;Title
+Abc.Model.MailMessage;Письмо;Mail message
+Abc.Model.MailMessage-pl;Журнал почтовых уведомлений;Sent mail log
+Abc.Model.MailMessage.Attachment;Вложение;Attachment
+Abc.Model.MailMessage.AttachmentName;Наименование вложения;Attachment name
+Abc.Model.MailMessage.AttemptsToSendCount;Количество попыток отправки;Amount of send attempts
+Abc.Model.MailMessage.Body;Сообщение;Body
+Abc.Model.MailMessage.CopyRecipients;Получатели копии;CC
+Abc.Model.MailMessage.Error;Ошибка;Error
+Abc.Model.MailMessage.IsSent;Отправлено;Is sent
+Abc.Model.MailMessage.LastSendAttemptDate;Последняя попытка отправки;Last send attempt
+Abc.Model.MailMessage.Recipients;Получатели;Recipients
+Abc.Model.MailMessage.Subject;Тема;Subject
+Abc.Model.MailMessage.Title;Название;Title
+Abc.Model.MailTemplate;Шаблон почтового уведомления;Mail template
+Abc.Model.MailTemplate-pl;Шаблоны почтовых уведомлений;Mail templates
+Abc.Model.MailTemplate.Comment;Комментарий;Comments
+Abc.Model.MailTemplate.IsSystem;Системное;Is system
+Abc.Model.MailTemplate.TemplateBody;Сообщение;Body
+Abc.Model.MailTemplate.TemplateSubject;Тема;Subject
+Abc.Model.MailTemplate.Title;Имя;Name
+Abc.Model.N_DDL;Журнал модификации структуры БД;DDL
+Abc.Model.N_DDL.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.N_DDL.Title;Команда;Statement
+Abc.Model.N_DownloadLog;Журнал скачивания файлов;Download log
+Abc.Model.N_DownloadLog-pl;Журнал скачивания файлов;Download log
+Abc.Model.N_DownloadLog.File;Файл;
+Abc.Model.N_DownloadLog.FileGUID;ИД Файла;
+Abc.Model.N_DownloadLog.IP;IP;IP
+Abc.Model.N_DownloadLog.IsDeleted;Удален;Deleted
+Abc.Model.N_DownloadLog.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.N_DownloadLog.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.N_DownloadLog.Title;Наименование;Title
+Abc.Model.N_File;Файл;File
+Abc.Model.N_File-pl;Файлы;Files
+Abc.Model.N_File.BeginDate;Дата начала действия;
+Abc.Model.N_File.CheckedOutBy;Кем извлечено;
+Abc.Model.N_File.CreateNew-folderlist;Создать файл;New file
+Abc.Model.N_File.Creator;Создавший пользователь;
+Abc.Model.N_File.EndDate;Дата окончания действия;
+Abc.Model.N_File.Extension;Расширение;
+Abc.Model.N_File.FeatureGUID;Guid элемента;
+Abc.Model.N_File.Folder;Папка;Folder
+Abc.Model.N_File.Guid;Guid;
+Abc.Model.N_File.GuidPath;Путь Guid;
+Abc.Model.N_File.IsDeleted;Признак Удалено;
+Abc.Model.N_File.IsDiskStorage;Хранится на диске;
+Abc.Model.N_File.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.N_File.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.N_File.Length;Размер, байт;
+Abc.Model.N_File.MainGUID;Guid основной версии;
+Abc.Model.N_File.Password;Password;
+Abc.Model.N_File.Path;Путь;
+Abc.Model.N_File.PublishDate;Дата публикации;
+Abc.Model.N_File.StorageParameter;Параметр хранения;
+Abc.Model.N_File.StorageType;Тип хранения;
+Abc.Model.N_File.Tag;Tag;
+Abc.Model.N_File.Title;Наименование;Title
+Abc.Model.N_File.VersionNumber;Номер версии;
+Abc.Model.N_FileData;Данные для файла;File data
+Abc.Model.N_FileData.Data;Данные;
+Abc.Model.N_FileData.Extension;Расширение;
+Abc.Model.N_FileData.LastModifiedDate;Дата последнего изменения;
+Abc.Model.N_FileData.Owner;Владелец;
+Abc.Model.N_FileData.Size;Размер;
+Abc.Model.N_FileData.Title;Наименование;Title
+Abc.Model.N_FileData.Upload;Загрузить файлы;Upload files
+Abc.Model.N_FileData.Upload-extensions;Допустимые расширения файлов;Allowed file types
+Abc.Model.N_FileData.Upload-extensionsmsg;Расширение файла {0} запрещено для загрузки в данную папку.;File {0} can't be uploaded to the current folder because of extension restrictions
+Abc.Model.N_FileData.Upload-file1;Файл 1;File 1
+Abc.Model.N_FileData.Upload-file2;Файл 2;File 2
+Abc.Model.N_FileData.Upload-file3;Файл 3;File 3
+Abc.Model.N_FileData.Upload-file4;Файл 4;File 4
+Abc.Model.N_FileData.Upload-file5;Файл 5;File 5
+Abc.Model.N_FileData.Upload-file6;Файл 6;File 6
+Abc.Model.N_FileData.Upload-maxfilesize;Максимальный размер загружаемых файлов;File size limit
+Abc.Model.N_FileData.Upload-maxfilesizemsg;Размер файла {0} превышает максимальный разрешенный.;File {0} size exceeds the allowable limit
+Abc.Model.N_FileData.Upload-unzip;Распаковывать zip архивы;Unzip archieves
+Abc.Model.N_FileLibrary;Библиотека;File library
+Abc.Model.N_FileLibrary-pl;Библиотеки файлов;File libraries
+Abc.Model.N_FileLibrary.FileLibraryType;Тип;File library type
+Abc.Model.N_FileLibrary.MaxFileSize;Максимальный размер файла;File size limit
+Abc.Model.N_FileLibrary.StorageParameter;Параметр хранения;
+Abc.Model.N_FileLibrary.StorageType;Тип хранения;Storage type
+Abc.Model.N_FileLibraryType;Тип библиотеки файлов;File library type
+Abc.Model.N_FileLibraryType-pl;Типы библиотек файлов;File library types
+Abc.Model.N_FileLibraryType.ClassName;Имя класса;System name
+Abc.Model.N_FileLibraryType.Extensions;Расширения;Extensions
+Abc.Model.N_FileLibraryType.IsDeleted;Удален;Deleted
+Abc.Model.N_FileLibraryType.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.N_FileLibraryType.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.N_FileLibraryType.Title;Наименование;Title
+Abc.Model.N_Filter;Фильтр;Filter
+Abc.Model.N_Filter.FilterName;Наименование фильтра;
+Abc.Model.N_Filter.FilterValue;Значение;
+Abc.Model.N_Filter.IsDefault;Удален;Deleted
+Abc.Model.N_Filter.ListName;Наименование;Title
+Abc.Model.N_Filter.Subject;Пользователь;
+Abc.Model.N_Folder;Папка;Folder
+Abc.Model.N_Folder-pl;Папки;Folders
+Abc.Model.N_Folder.CreateNew;Создать папку;
+Abc.Model.N_Folder.CreateNew-folderlist;Создать папку;New folder
+Abc.Model.N_Folder.Delete-confirm;"Вы уверены, что хотите удалить папку \"{0}\" вместе со всеми файлами?";"Are you sure you want to delete the folder \"{0}\" and all its content?"
+Abc.Model.N_Folder.FileLibrary;Библиотека;
+Abc.Model.N_Folder.Files;Файлы;
+Abc.Model.N_Folder.Folders;Папки;
+Abc.Model.N_Folder.Guid;Гуид;
+Abc.Model.N_Folder.GuidPath;Путь Гуид;
+Abc.Model.N_Folder.IsDeleted;Удален;Deleted
+Abc.Model.N_Folder.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.N_Folder.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.N_Folder.PackAndDownload;Упаковать и скачать;Zip and download
+Abc.Model.N_Folder.Parent;Родительская папка;
+Abc.Model.N_Folder.Path;Полный путь;Path
+Abc.Model.N_Folder.Predicates;Права доступа;
+Abc.Model.N_Folder.SPMActionItemGUID;Гуид объекта проверки прав;
+Abc.Model.N_Folder.Title;Наименование;Title
+Abc.Model.N_Navig;Меню навигации;Navigation
+Abc.Model.N_Navig-pl;Меню навигации;Navigation
+Abc.Model.N_Navig.CreateNew;Создать меню;Create new menu
+Abc.Model.N_Navig.CreateNew-list;Создать меню;New menu
+Abc.Model.N_Navig.IsDeleted;Удален;Deleted
+Abc.Model.N_Navig.Items;Элементы;
+Abc.Model.N_Navig.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.N_Navig.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.N_Navig.MaxLevels;Максимальное количество уровней;Nesting depth limit
+Abc.Model.N_Navig.SysName;Системное имя;System name
+Abc.Model.N_Navig.Title;Наименование;Title
+Abc.Model.N_NavigItem;Элемент меню;Menu item
+Abc.Model.N_NavigItem.Child;Дочерние элементы;
+Abc.Model.N_NavigItem.CreateNew;Добавить пункт меню;Create new item
+Abc.Model.N_NavigItem.CreateNew-list;Создать пункт меню;New menu item
+Abc.Model.N_NavigItem.EditRights;Редактировать права;Edit access rights
+Abc.Model.N_NavigItem.Expression;Вычисляемая часть наименования;Expression
+Abc.Model.N_NavigItem.FURL;Friendly URL;
+Abc.Model.N_NavigItem.ImageURL;URL картинки;Image
+Abc.Model.N_NavigItem.IsDeleted;Удален;Disabled
+Abc.Model.N_NavigItem.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.N_NavigItem.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.N_NavigItem.MoveDown;Переместить вниз;Move down
+Abc.Model.N_NavigItem.MoveUp;Переместить вверх;Move up
+Abc.Model.N_NavigItem.Navig;Меню;
+Abc.Model.N_NavigItem.OldID;Старый ИД;
+Abc.Model.N_NavigItem.Parent;Родительский элемент;Parent
+Abc.Model.N_NavigItem.SeqNo;Порядковый номер;Seq no
+Abc.Model.N_NavigItem.SortChildren;Отсортировать дочерние элементы;
+Abc.Model.N_NavigItem.SPMActionGUID;Защищаемая операция;
+Abc.Model.N_NavigItem.Tag;Дополнительные данные;Tag
+Abc.Model.N_NavigItem.Title;Наименование;Title
+Abc.Model.N_NavigItem.Tooltip;Подсказка;Tooltip
+Abc.Model.N_NavigItem.Type;Тип;Type
+Abc.Model.N_NavigItem.URL;Реальный URL;Url
+Abc.Model.N_ObjectChange;Изменение объекта;Object change log
+Abc.Model.N_ObjectChange-pl;Журнал действий пользователей;User activity log
+Abc.Model.N_ObjectChange.Details;Событие / Изменения;Details
+Abc.Model.N_ObjectChange.IP;IP;IP
+Abc.Model.N_ObjectChange.LastModifiedDate;Дата, время;Date
+Abc.Model.N_ObjectChange.ObjectKey;Ид объекта;Object ID
+Abc.Model.N_ObjectChange.ObjectTitle;Название объекта;Object
+Abc.Model.N_ObjectChange.ObjectTypeSysName;Системное имя типа объекта;Class
+Abc.Model.N_ObjectChange.ObjectTypeTitle;Тип объекта;Class
+Abc.Model.N_ObjectChange.PropertyChanges;Изменения свойств;Changed properties
+Abc.Model.N_ObjectChange.SubjectID;Ид субъекта доступа;Subject ID
+Abc.Model.N_ObjectChange.Title;Действие;Operation
+Abc.Model.N_ObjectChange.UserLogin;Логин пользователя;User login
+Abc.Model.N_ObjectChange.UserTitle;Имя пользователя;User
+Abc.Model.N_ObjectPropertyChange;Изменение свойства;Object property change log
+Abc.Model.N_ObjectPropertyChange.NewValue;Новое значение;New value
+Abc.Model.N_ObjectPropertyChange.NewValueTitle;Отображаемый текст нового значения;New value
+Abc.Model.N_ObjectPropertyChange.ObjectChange;Изменение объекта;Changed object
+Abc.Model.N_ObjectPropertyChange.OldValue;Старое значение;Old value
+Abc.Model.N_ObjectPropertyChange.OldValueTitle;Отображаемый текст старого значения;Old value
+Abc.Model.N_ObjectPropertyChange.PropertySysName;Системное имя свойства;Property
+Abc.Model.N_ObjectPropertyChange.Title;Наименование свойства;Property
+Abc.Model.N_Settings;Параметр системы;System setting
+Abc.Model.N_Settings-pl;Параметры системы;System settings
+Abc.Model.N_Settings.AcceptableValues;Список разрешенных значений;Acceptable values
+Abc.Model.N_Settings.Group;Группа параметра;Group
+Abc.Model.N_Settings.IsDeleted;Удален;Deleted
+Abc.Model.N_Settings.IsSystem;Свойство является системным;Is system
+Abc.Model.N_Settings.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.N_Settings.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.N_Settings.ObjectChangeHistory;История изменений;
+Abc.Model.N_Settings.SystemName;Системное имя;System name
+Abc.Model.N_Settings.Title;Наименование;Title
+Abc.Model.N_Settings.Value;Значение;Value
+Abc.Model.N_SettingsGroup;Группа параметров;Setting group
+Abc.Model.N_SettingsGroup-pl;Группы параметров системы;Setting groups
+Abc.Model.N_SettingsGroup.CreateNewForSettings;Создать группу;New group
+Abc.Model.N_SettingsGroup.IsDeleted;Удален;Deleted
+Abc.Model.N_SettingsGroup.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.N_SettingsGroup.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.N_SettingsGroup.Settings;Параметры системы;
+Abc.Model.N_SettingsGroup.Title;Наименование;Title
+Abc.Model.N_SqlStatementLog;Элемент журнала SQL-запросов;Sql execution log
+Abc.Model.N_SqlStatementLog-pl;Журнал sql запросов;Sql execution log
+Abc.Model.N_SqlStatementLog.Execute;Выполнение SQL;Execute
+Abc.Model.N_SqlStatementLog.ExecuteHistory;Выполнить из журнала;
+Abc.Model.N_SqlStatementLog.IP;IP-адрес;IP
+Abc.Model.N_SqlStatementLog.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.N_SqlStatementLog.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.N_SqlStatementLog.Title;Текст запроса;Query text
+Abc.Model.N_TextResource;Текстовый ресурс;Text resource
+Abc.Model.N_TextResource-pl;Текстовые ресурсы;Text resources
+Abc.Model.N_TextResource.SysName;Системное имя;System name
+Abc.Model.N_TextResource.Text;Текст;Text
+Abc.Model.N_TextResource.Title;Название;Title
+Abc.Model.N_VirusScanLog;Проверка загружаемого файла на вирусы;Antivirus log
+Abc.Model.N_VirusScanLog-pl;Журнал проверок на вирусы;Antivirus log
+Abc.Model.N_VirusScanLog.IsDeleted;Удален;Deleted
+Abc.Model.N_VirusScanLog.LastModifiedDate;Дата проверки;Check date
+Abc.Model.N_VirusScanLog.LastModifiedUser;Загрузивший пользователь;User
+Abc.Model.N_VirusScanLog.ResultCode;Код результата;Result code
+Abc.Model.N_VirusScanLog.Title;Имя файла;File name
+Abc.Model.TM_Task;Задача;Task
+Abc.Model.TM_Task-pl;Задачи;Tasks
+Abc.Model.TM_Task.Class;Класс;Class
+Abc.Model.TM_Task.ErrorLogID;Ид ошибки в журнале;Error
+Abc.Model.TM_Task.ExecutionTimeout;Таймаут выполнения задачи, мин;Execution timeout
+Abc.Model.TM_Task.Interval;Интервал;
+Abc.Model.TM_Task.Interval-False;Интервал запуска;Invoke interval
+Abc.Model.TM_Task.Interval-True;Время запуска;Run time
+Abc.Model.TM_Task.IsActive;Активна;Is active
+Abc.Model.TM_Task.IsSuccessfull;Признак успешности;Last run was successful
+Abc.Model.TM_Task.LastStartDate;Последний запуск;Last start date
+Abc.Model.TM_Task.Method;Метод;Method
+Abc.Model.TM_Task.Parameters;Параметры;
+Abc.Model.TM_Task.Start;Запуск;Run
+Abc.Model.TM_Task.StartFromService;Старт службой;Start from service
+Abc.Model.TM_Task.StartType;Тип старта;Start type
+Abc.Model.TM_Task.StartType-False;С заданным интервалом;At a specific intervals
+Abc.Model.TM_Task.StartType-True;В определенное время;At a specific time
+Abc.Model.TM_Task.Title;Название;Title
+Abc.Model.TM_Task.ViewList;Список задач;Task list
+Abc.Model.TM_TaskExecution;Запуск задачи;Task execution log
+Abc.Model.TM_TaskExecution-pl;Лог запуска задач;Task execution log
+Abc.Model.TM_TaskExecution.ExecutionLog;Журнал выполнения;Execution log
+Abc.Model.TM_TaskExecution.FinishDate;Дата/время окончания;Finish date
+Abc.Model.TM_TaskExecution.IsSuccessfull;Результат;Is successful
+Abc.Model.TM_TaskExecution.LastModifiedDate;Дата записи;Last modified date
+Abc.Model.TM_TaskExecution.LastModifiedUser;Пользователь;Last modified by
+Abc.Model.TM_TaskExecution.MachineName;Имя машины;Host name
+Abc.Model.TM_TaskExecution.ResultXml;Результат XML;Result
+Abc.Model.TM_TaskExecution.StartDate;Дата/время запуска;Start date
+Abc.Model.TM_TaskExecution.Task;Задача;Task
+Abc.Model.TM_TaskExecution.Title;Наименование;Title
+Abc.Model.TM_TaskExecution.ViewList;Лог запуска задач;Execution log
+Abc.Model.TM_TaskParameter;Параметр задачи;Task parameter
+Abc.Model.TM_TaskParameter-pl;Параметры задачи;Task parameters
+Abc.Model.TM_TaskParameter.MoveDown;Переместить вниз;Move down
+Abc.Model.TM_TaskParameter.MoveUp;Переместить вверх;Move up
+Abc.Model.TM_TaskParameter.Parent;Задача;
+Abc.Model.TM_TaskParameter.SeqNo;Порядковый номер;Seq no
+Abc.Model.TM_TaskParameter.SysName;Системное имя;System name
+Abc.Model.TM_TaskParameter.Title;Название;Title
+Abc.Model.TM_TaskParameter.Value;Значение;Value
+Abc.Model.WF_Activity;Активность;Activity
+Abc.Model.WF_Activity-pl;Состояния;Activities
+Abc.Model.WF_Activity.ChildActivities;Дочерние активности;
+Abc.Model.WF_Activity.IsActive;Действующее;Active
+Abc.Model.WF_Activity.IsDeleted;Удален;Deleted
+Abc.Model.WF_Activity.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.WF_Activity.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.WF_Activity.MoveDown;Переместить вниз;Move down
+Abc.Model.WF_Activity.MoveUp;Переместить вверх;Move up
+Abc.Model.WF_Activity.ParentActivity;Родительская активность;
+Abc.Model.WF_Activity.SeqNo;Порядковый номер;Seq no
+Abc.Model.WF_Activity.SysName;Системное имя;System name
+Abc.Model.WF_Activity.Title;Наименование;Title
+Abc.Model.WF_Activity.Workflow;Рабочий процесс;
+Abc.Model.WF_Transition;Переход;Transition
+Abc.Model.WF_Transition-pl;Переходы;Transitions
+Abc.Model.WF_Transition.IsActive;Действующий;Active
+Abc.Model.WF_Transition.IsDeleted;Удален;Deleted
+Abc.Model.WF_Transition.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.WF_Transition.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.WF_Transition.MoveDown;Переместить вниз;Move down
+Abc.Model.WF_Transition.MoveUp;Переместить вверх;Move up
+Abc.Model.WF_Transition.Parent;Исходная активность;Source activity
+Abc.Model.WF_Transition.SeqNo;Порядковый номер;Seq no
+Abc.Model.WF_Transition.TargetActivity;Целевая активность;Destination activity
+Abc.Model.WF_Transition.Title;Наименование;Title
+Abc.Model.WF_Workflow;Рабочий процесс;Workflow
+Abc.Model.WF_Workflow-pl;Рабочие процессы;Workflows
+Abc.Model.WF_Workflow.Activities;Активности;
+Abc.Model.WF_Workflow.ClassName;Класс;Class
+Abc.Model.WF_Workflow.Generate;Сгенерировать методы;
+Abc.Model.WF_Workflow.IsActive;Действующий;Active
+Abc.Model.WF_Workflow.IsDeleted;Удален;Deleted
+Abc.Model.WF_Workflow.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.WF_Workflow.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.WF_Workflow.SysName;Системное имя;System name
+Abc.Model.WF_Workflow.Title;Наименование;Title
+abc.model.utils.notfoundresources;Отсутствующие ресурсы;Not found resources

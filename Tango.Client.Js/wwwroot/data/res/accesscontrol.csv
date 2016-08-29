@@ -1,0 +1,64 @@
+﻿name;ru;en
+Abc.Model.SPM_Action;Защищаемая операция;Securable operation
+Abc.Model.SPM_Action-pl;Защищаемые операции;Securable operations
+Abc.Model.SPM_Action.ActionTypeID;Тип операции;Operation type
+Abc.Model.SPM_Action.CategoryID;CategoryID;
+Abc.Model.SPM_Action.ClassGUID;Ид класса;
+Abc.Model.SPM_Action.ItemGUID;Ид объекта;
+Abc.Model.SPM_Action.SubCategoryGUID;SubCategoryGUID;
+Abc.Model.SPM_Action.SystemName;SystemName;System name
+Abc.Model.SPM_Action.Title;Title;Title
+Abc.Model.SPM_Action.Type;Type (устарело);Type
+Abc.Model.SPM_Action.ViewListTree;Список - дерево;
+Abc.Model.SPM_Action.ViewList;Защищаемые операции;Securable operations
+
+Abc.Model.SPM_C_RoleType;Тип роли;Role type
+Abc.Model.SPM_C_RoleType-pl;Типы ролей;Role types
+Abc.Model.SPM_C_RoleType.IsDeleted;Удален;Deleted
+Abc.Model.SPM_C_RoleType.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.SPM_C_RoleType.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.SPM_C_RoleType.SysName;Системное имя;System name
+Abc.Model.SPM_C_RoleType.Title;Наименование;Title
+
+Abc.Model.SPM_Role;Роль;Role
+Abc.Model.SPM_Role-pl;Роли;Roles
+Abc.Model.SPM_Role.CreateNew;Создать роль;Create new role
+Abc.Model.SPM_Role.Description;Описание;Description
+Abc.Model.SPM_Role.EditRoles;Редактировать роли для назначения пользователям;Edit role list
+Abc.Model.SPM_Role.IsDeleted;Удален;Deleted
+Abc.Model.SPM_Role.LastModifiedDate;Дата последней модификации;Last modified date
+Abc.Model.SPM_Role.LastModifiedUser;Последний редактировавший пользователь;Last modified by
+Abc.Model.SPM_Role.MoveDown;Переместить вниз;Move down
+Abc.Model.SPM_Role.MoveUp;Переместить вверх;Move up
+Abc.Model.SPM_Role.RemoveSubject;Отвязять пользователя;
+Abc.Model.SPM_Role.RoleForGrantCondition;Условие выбора ролей для назначения пользователям;
+Abc.Model.SPM_Role.RoleGroup;Группа ролей;Role group
+Abc.Model.SPM_Role.RoleType;Тип роли;Role type
+Abc.Model.SPM_Role.SeqNo;Порядковый номер;Seq no
+Abc.Model.SPM_Role.SID;SID группы AD;
+Abc.Model.SPM_Role.SubjectsList;Список пользователей;Users and groups
+Abc.Model.SPM_Role.SysName;Системное имя;System name
+Abc.Model.SPM_Role.Title;Наименование;Title
+Abc.Model.SPM_Role.ViewList;Роли и полномочия;Roles and access rights 
+
+Abc.Model.SPM_Role-deletesubjectconfirm;Вы уверены, что хотите удалить субъект?;Are you sure you want to delete the object?
+Abc.Model.SPM_Role-subjectslisttitle;Пользователи и группы;Users and groups
+Abc.Model.SPM_Role-roleslist;Роли;Roles
+Abc.Model.SPM_Role-editrolestitle;роли, которые может назначать пользователям владелец текущей роли;choose roles, which current role owner can grant to other users
+Abc.Model.SPM_Role-cyclicinheritancemessage;Нельзя наследовать полномочия от роли, так как она сама наследует полномочия от роли;Error: cyclic inheritance found
+Abc.Model.SPM_Role-grantroles;Роли, которые может назначать пользователям владелец текущей роли;Roles, that can be assigned to users by current role owner
+Abc.Model.SPM_Role-inheritroles;Наследует полномочия ролей;Inherits permissions from
+Abc.Model.SPM_Role-menu;Меню;Menu items
+Abc.Model.SPM_Role-operations;Операции;Operations
+Abc.Model.SPM_Role-savesettings;Сохранить полномочия;Save settings
+Abc.Model.SPM_Role-settingsdescription;Роль имеет полномочия на выполнение операции, если у нее или у одной из наследуемых ролей установлен флаг разрешения;The role has permissions to perform the operation if it itself or one of the parent roles has permission flag
+Abc.Model.SPM_Role-settingstitle;Полномочия;Permissions
+
+Abc.Model.SPM_RoleGroup;Группа ролей;Role group
+Abc.Model.SPM_RoleGroup-pl;Группы ролей;Role groups
+Abc.Model.SPM_RoleGroup.CreateNew;Создать группу ролей;Create new group
+Abc.Model.SPM_RoleGroup.MoveDown;Переместить вниз;Move down
+Abc.Model.SPM_RoleGroup.MoveUp;Переместить вверх;Move up
+Abc.Model.SPM_RoleGroup.Roles;Роли;
+Abc.Model.SPM_RoleGroup.SeqNo;Порядковый номер;Seq no
+Abc.Model.SPM_RoleGroup.Title;Название;Title
