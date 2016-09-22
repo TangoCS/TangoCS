@@ -6,66 +6,16 @@ using System.Collections.Generic;
 
 namespace Tango.UI
 {
-	public abstract class InteractionFlowElement
+	public abstract class InteractionFlowElement : IWithPropertyInjection
 	{
 		public virtual string ID { get; set; }
-		public string ClientID { get; set; }
 		public ActionContext Context { get; set; }
+
+		public virtual bool UsePropertyInjection { get { return false; } }
 
 		public IResourceManager Resources => Context.Resources;
 		protected dynamic FormBag { get { return Context.FormData; } }
 		protected DynamicDictionary FormData { get { return Context.FormData; } }
-	}
-
-	public abstract class ViewElement : InteractionFlowElement, IWithPropertyInjection
-	{
-		public DataCollection DataCollection { get; set; } = new DataCollection();
-		public ViewElement ParentElement { get; set; }
-
-		public virtual LayoutWriter CreateLayoutWriter()
-		{
-			var w = new LayoutWriter(Context);
-			w.IDPrefix = ClientID;
-			return w;
-		}
-
-		public virtual bool UsePropertyInjection { get { return false; } }
-		public virtual void OnInit() { }
-
-		public string GetClientID(string id)
-		{
-			return (!ClientID.IsEmpty() ? ClientID + (!id.IsEmpty() ? "_" + id : "") : id).ToLower();
-		}
-
-		public T CreateControl<T>(string id, Action<T> setProperties = null)
-			where T : ViewElement, new()
-		{
-			T c = new T() { Context = Context };
-			if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
-			c.ID = id;
-			c.ClientID = GetClientID(id);
-			c.ParentElement = this;
-
-			Context.EventReceivers.Add(c.ClientID, c);
-
-			setProperties?.Invoke(c);
-			c.OnInit();
-			return c;
-		}
-
-		//public T AddControl<T>(T c)
-		//	where T : ViewElement
-		//{
-		//	if (Context.EventReceivers.ContainsKey(c.ID)) return c;
-
-		//	c.Context = Context;
-		//	if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
-		//	c.ID = GetElementID(c.ID);
-
-		//	Context.EventReceivers.Add(c.ID, c);
-		//	c.OnInit();
-		//	return c;
-		//}
 
 		public T GetPosted<T>(string name, T defaultValue = default(T))
 		{
@@ -99,6 +49,59 @@ namespace Tango.UI
 		public T GetArg<T>(string name)
 		{
 			return Context.GetArg<T>(name);
+		}
+	}
+
+	public abstract class ViewElement : InteractionFlowElement
+	{
+		public DataCollection DataCollection { get; set; } = new DataCollection();
+
+		public string ClientID { get; set; }
+		public ViewElement ParentElement { get; set; }
+
+		public virtual LayoutWriter CreateLayoutWriter()
+		{
+			var w = new LayoutWriter(Context);
+			w.IDPrefix = ClientID;
+			return w;
+		}
+
+		public virtual void OnInit() { }
+
+		public string GetClientID(string id)
+		{
+			return (!ClientID.IsEmpty() ? ClientID + (!id.IsEmpty() ? "_" + id : "") : id).ToLower();
+		}
+
+		public T CreateControl<T>(string id, Action<T> setProperties = null)
+			where T : ViewElement, new()
+		{
+			T c = new T() { Context = Context };
+			if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
+			c.ID = id;
+			c.ClientID = GetClientID(id);
+			c.ParentElement = this;
+
+			Context.EventReceivers.Add(c.ClientID, c);
+
+			setProperties?.Invoke(c);
+			c.OnInit();
+			return c;
+		}
+
+		public T AddControl<T>(T c)
+			where T : ViewElement
+		{
+			if (Context.EventReceivers.ContainsKey(c.ID)) return c;
+
+			c.Context = Context;
+			if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
+			c.ClientID = GetClientID(c.ID);
+			c.ParentElement = this;
+
+			Context.EventReceivers.Add(c.ClientID, c);
+			c.OnInit();
+			return c;
 		}
 	}
 

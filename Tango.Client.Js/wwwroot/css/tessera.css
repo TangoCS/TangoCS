@@ -1,0 +1,787 @@
+﻿a { cursor: pointer; }
+.resedit {
+	background-color: yellow;
+}
+
+/* popup **********************************************************************************/
+#overlay1 {
+	top: 0;
+	left: 0;
+	position: fixed;
+	//position: absolute;
+	width: 100%;
+	height: 100%;
+	background: #FFF;
+	opacity: 0.65;
+	filter: alpha(opacity=65);
+	z-index: 50;
+}
+
+/* js calendar  **********************************************************************************/
+/* Distributed as part of The Coolest DHTML Calendar
+   Author: Mihai Bazon, www.bazon.net/mishoo
+   Copyright Dynarch.com 2005, www.dynarch.com
+*/
+
+/* The main calendar widget.  DIV containing a table. */
+div.calendar {
+	position: relative;
+	z-index: 99;
+}
+
+.calendar, .calendar table {
+	border: 1px solid #bdb2bf;
+	/*font-size: 11px;*/
+	color: #000;
+	cursor: default;
+	background: url("/i/JSCalendar/normal-bg.gif");
+	/*font-family: "trebuchet ms",verdana,tahoma,sans-serif;*/
+}
+
+.calendar {
+	border-color: #797979;
+}
+
+/* Header part -- contains navigation buttons and day names. */
+.calendar .button { /* "<<", "<", ">", ">>" buttons have this class */
+	text-align: center; /* They are the navigation buttons */
+	padding: 2px; /* Make the buttons seem like they're pressing */
+	background: url("/i/JSCalendar/title-bg.gif") repeat-x 0 100%;
+	color: #000;
+	font-weight: bold;
+}
+
+.calendar .nav {
+	width: 2.5em;
+	/*font-family: verdana,tahoma,sans-serif;*/
+}
+
+.calendar .nav div {
+	background: transparent url("/i/JSCalendar/menuarrow.gif") no-repeat 100% 100%;
+}
+
+.calendar thead tr {
+	background: url("/i/JSCalendar/title-bg.gif") repeat-x 0 100%;
+	color: #000;
+}
+
+.calendar thead .title { /* This holds the current "month, year" */
+	font-weight: bold; /* Pressing it will take you to the current date */
+	text-align: center;
+	padding: 2px;
+	background: url("/i/JSCalendar/title-bg.gif") repeat-x 0 100%;
+	color: #000;
+}
+
+.calendar thead .headrow { /* Row <TR> containing navigation buttons */
+}
+
+.calendar thead .name { /* Cells <TD> containing the day names */
+	border-bottom: 1px solid #797979;
+	padding: 2px;
+	text-align: center;
+	color: #000;
+}
+
+.calendar thead .weekend { /* How a weekend day name shows in header */
+	color: #c44;
+}
+
+.calendar thead .hilite { /* How do the buttons in header appear when hover */
+	background: url("/i/JSCalendar/hover-bg.gif");
+	/*border-bottom: 1px solid #797979;*/
+	/*padding: 2px 2px 1px 2px;*/
+}
+
+.calendar thead .active { /* Active (pressed) buttons in header */
+	background: url("active-bg.gif");
+	color: #fff;
+	padding: 3px 1px 0px 3px;
+	border-bottom: 1px solid #797979;
+}
+
+.calendar thead .daynames { /* Row <TR> containing the day names */
+	background: url("/i/JSCalendar/dark-bg.gif");
+}
+
+/* The body part -- contains all the days in month. */
+.calendar tbody .day { /* Cells <TD> containing month days dates */
+	/*font-family: verdana,tahoma,sans-serif;*/
+	width: 2.5em;
+	color: #000;
+	text-align: right;
+	/*padding: 2px 4px 2px 2px;*/
+	padding: 1px 3px 1px 1px;
+}
+
+.calendar tbody .day.othermonth {
+	font-size: 80%;
+	color: #999;
+}
+
+.calendar tbody .day.othermonth.oweekend {
+	color: #f99;
+}
+
+.calendar table .wn {
+	/*padding: 2px 3px 2px 2px;*/
+	/*border-right: 1px solid #797979;*/
+	background: url("/i/JSCalendar/dark-bg.gif");
+}
+
+.calendar tbody .rowhilite td,
+.calendar tbody .rowhilite td.wn {
+	background: url("/i/JSCalendar/rowhover-bg.gif");
+}
+
+.calendar tbody td.today {
+	font-weight: bold; /* background: url("today-bg.gif") no-repeat 70% 50%; */
+}
+
+.calendar tbody td.hilite { /* Hovered cells <TD> */
+	background: url("/i/JSCalendar/hover-bg.gif");
+	/* padding: 1px 3px 1px 1px;*/
+	/*border: 1px solid #bbb;*/
+}
+
+.calendar tbody td.active { /* Active (pressed) cells <TD> */
+	/*padding: 2px 2px 0px 2px;*/
+}
+
+.calendar tbody td.weekend { /* Cells showing weekend days */
+	color: #c44;
+}
+
+.calendar tbody td.selected { /* Cell showing selected date */
+	font-weight: bold;
+	/*border: 1px solid #797979;*/
+	/*padding: 1px 3px 1px 1px;*/
+	background: url("/i/JSCalendar/active-bg.gif");
+	color: #fff;
+}
+
+.calendar tbody .disabled {
+	color: #999;
+}
+
+.calendar tbody .emptycell { /* Empty cells (the best is to hide them) */
+	visibility: hidden;
+}
+
+.calendar tbody .emptyrow { /* Empty row (some months need less than 6 rows) */
+	display: none;
+}
+
+/* The footer part -- status bar and "Close" button */
+.calendar tfoot .footrow { /* The <TR> in footer (only one right now) */
+	text-align: center;
+	background: #565;
+	color: #fff;
+}
+
+.calendar tfoot .ttip { /* Tooltip (status bar) cell <TD> */
+	padding: 2px;
+	background: url("/i/JSCalendar/status-bg.gif") repeat-x 0 0;
+	color: #000;
+}
+
+.calendar tfoot .hilite { /* Hover style for buttons in footer */
+	background: #afa;
+	/*border: 1px solid #084;*/
+	color: #000;
+	/*padding: 1px;*/
+}
+
+.calendar tfoot .active { /* Active (pressed) style for buttons in footer */
+	background: #7c7;
+	padding: 2px 0px 0px 2px;
+}
+
+/* Combo boxes (menus that display months/years for direct selection) */
+.calendar .combo {
+	position: absolute;
+	display: none;
+	top: 0px;
+	left: 0px;
+	width: 4em;
+	cursor: default;
+	border-width: 0 1px 1px 1px;
+	border-style: solid;
+	border-color: #797979;
+	background: url("/i/JSCalendar/normal-bg.gif");
+	color: #000;
+	z-index: 100;
+	font-size: 90%;
+}
+
+.calendar .combo .label,
+.calendar .combo .label-IEfix {
+	text-align: center;
+	padding: 1px;
+}
+
+.calendar .combo .label-IEfix {
+	width: 4em;
+}
+
+.calendar .combo .hilite {
+	background: url("/i/JSCalendar/hover-bg.gif");
+	color: #000;
+}
+
+.calendar .combo .active {
+	background: url("/i/JSCalendar/active-bg.gif");
+	color: #fff;
+	font-weight: bold;
+}
+
+.calendar td.time {
+	border-top: 1px solid #797979;
+	padding: 1px 0px;
+	text-align: center;
+	background: url("/i/JSCalendar/dark-bg.gif");
+}
+
+.calendar td.time .hour,
+.calendar td.time .minute,
+.calendar td.time .ampm {
+	padding: 0px 5px 0px 6px;
+	font-weight: bold;
+	background: url("/i/JSCalendar/normal-bg.gif");
+	color: #000;
+}
+
+.calendar td.time .hour,
+.calendar td.time .minute {
+	font-family: monospace;
+}
+
+.calendar td.time .ampm {
+	text-align: center;
+}
+
+.calendar td.time .colon {
+	padding: 0px 2px 0px 3px;
+	font-weight: bold;
+}
+
+.calendar td.time span.hilite {
+	background: url("/i/JSCalendar/hover-bg.gif");
+	color: #000;
+}
+
+.calendar td.time span.active {
+	background: url("/i/JSCalendar/active-bg.gif");
+	color: #fff;
+}
+
+/* autocomplete **********************************************************************************/
+.ac_results {
+	padding: 0px;
+	border: 1px solid black;
+	background-color: white;
+	overflow: hidden;
+	z-index: 99999;
+}
+
+.ac_results ul {
+	width: 100%;
+	list-style-position: outside;
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.ac_results li {
+	margin: 0px;
+	padding: 2px 5px;
+	cursor: default;
+	display: block;
+	/* 
+	if width will be 100% horizontal scrollbar will apear 
+	when scroll mode will be used
+	*/
+	/*width: 100%;*/
+	font: menu;
+	font-size: 12px;
+	/* 
+	it is very important, if line-height not setted or setted 
+	in relative units scroll will be broken in firefox
+	*/
+	line-height: 16px;
+	overflow: hidden;
+}
+
+.ac_loading {
+	background: white url('/i/AutoComplete/indicator.gif') right center no-repeat;
+}
+
+.ac_odd {
+	background-color: #eee;
+}
+
+.ac_over {
+	background-color: #0A246A;
+	color: white;
+}
+
+
+/* td drag'n'drop */
+td.showDragHandle {
+	background-image: url(/i/dnd/updown2.gif);
+	background-position: left;
+	background-repeat: no-repeat;
+	cursor: move;
+}
+
+/* tessera **********************************************************************************/
+.deletedItem {
+	background-color: #ccc;
+	text-decoration: line-through;
+}
+
+.CodeArea {
+	padding-left: 3px;
+	width: 100%;
+	height: 500px;
+	font-family: Consolas,Courier New Cyr;
+	font-size: 14px;
+	border: 1px solid #666;
+}
+
+.textAreaWithLines {
+	display: block;
+	margin: 0;
+	border: 1px solid #666;
+	border-right: none;
+	background: #ddd;
+	color: #000;
+	/*padding-right:5px;*/
+}
+
+
+
+
+/* other */
+.tabletitle {
+	margin: 15px 0px 5px 0px;
+	font-weight: bold;
+	font-size: 1.2em;
+	display: table;
+	background-color: #FFF0C6;
+	padding: 0px 4px;
+}
+
+/* Twitter bootstrap labels */
+.label {
+	display: inline;
+	padding: .2em .6em .3em;
+	/*font-size: 75%;
+  font-weight: 700;*/
+	line-height: 1;
+	color: #fff;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: baseline;
+	border-radius: .25em;
+}
+
+.label-danger {
+	background-color: #d9534f;
+}
+
+.label-warning {
+	background-color: #f0ad4e;
+}
+
+.label-info {
+	background-color: #5bc0de;
+}
+
+.label-success {
+	background-color: #5cb85c;
+}
+
+.label-primary {
+	background-color: #337ab7;
+}
+
+.label-default {
+	background-color: #777;
+}
+
+
+
+
+
+/*home*/
+#container {
+	display: block;
+	position: absolute;
+	height: auto;
+	bottom: 0;
+	top: 35px;
+	left: 0;
+	right: 0;
+}
+
+#splitter {
+	width: 8px;
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	height: auto;
+	display: block;
+	border-left: solid 1px #ccc;
+	border-right: solid 1px #ccc;
+	cursor: pointer;
+	margin-left: 240px;
+	background: url('/i/splo.gif') no-repeat center;
+}
+
+#content {
+	margin-left: 248px;
+}
+
+#sidebar {
+	width: 240px;
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	height: auto;
+	display: block;
+}
+
+#contentbody {
+	overflow-x: auto; 
+	overflow-y: auto; 
+	position: relative; 
+	display:block;
+	width:100%;
+}
+
+/* new modal */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	outline: 0;
+	background-color: rgba(255, 255, 255, 0.67);
+	z-index: 100;
+}
+
+.modal-dialog {
+	position: fixed;
+	top: 40px;
+	bottom: 40px;
+	left: 0;
+	right: 0;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: rgba(255, 255, 255, 1);
+	width: 600px;
+	background-color: #fff;
+	-webkit-background-clip: padding-box;
+	background-clip: padding-box;
+	border: 1px solid rgba(0,0,0,.2);
+	border-radius: 6px;
+	outline: 0;
+	-webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
+	box-shadow: 0 3px 9px rgba(0,0,0,.5);
+	height: 80%;
+}
+
+.modal-dialog form {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
+
+@media (min-width: 768px) {
+	.modal-dialog {
+		-webkit-box-shadow: 0 5px 15px rgba(0,0,0,.5);
+		box-shadow: 0 5px 15px rgba(0,0,0,.5);
+	}
+}
+
+.modal-header {
+	height: 30px;
+	padding: 0px 10px;
+	border-bottom: 1px solid #e5e5e5;
+	background-color: #f3f3f3;
+	display:flex;
+    flex-direction: row;
+}
+
+.modal-header h3 {
+	padding-top: 4px;
+	font-size: 0.9em;
+	font-weight: normal;
+	text-transform:uppercase;
+	width:100%;
+}
+
+.modal-title {
+	margin: 0;
+}
+
+.modal-body {
+	padding: 15px;
+	overflow-y: auto;
+	height: 100%;
+	display:flex;
+    flex-direction: column;
+}
+
+
+.modal-footer {
+	padding: 8px 15px;
+	text-align: right;
+	border-top: 1px solid #e5e5e5;
+	background-color: #f3f3f3;
+	/*display:flex;
+    flex-direction: row;*/
+}
+
+.modal-header .close {
+	/*margin-top: -2px;*/
+}
+
+button.close {
+	-webkit-appearance: none;
+	padding: 0;
+	cursor: pointer;
+	background: 0 0;
+	border: 0;
+}
+
+.close {
+	/*float: right;*/
+	font-size: 1.2em;
+	line-height: 1;
+	color: #777;
+}
+
+.modal-open .modal {
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+
+.paging {
+	padding:0px 8px;
+}
+.paging a {
+	line-height: 20px;	
+	border: 1px solid #aaa;
+	padding:0px 5px;
+	margin: 0px 5px 0px 0px;
+}
+
+.paging a:hover {
+	text-decoration:none;
+	background-color: #ffe6a0;
+	border: 1px solid #797979;
+}
+
+.linkicon {
+	margin-right: 4px;
+}
+
+
+
+
+.tabs2 ul {
+    width: 700px;
+}    
+ 
+.tabs2 ul {
+    margin: 0;
+    padding: 0 0 0 16px;
+    list-style: none;
+	box-sizing: border-box;
+    border-bottom: 1px solid #ccc;
+    display: inline-block;
+}
+.tabs2 li {
+	margin: 0;
+    padding: 0;
+	display: block;
+    float: left;
+    margin: 5px 0 0 -1px;
+}
+ 
+.tabs2 li > div
+{
+    top: 33px;
+    bottom: 0;
+    left: 0;
+    /*width: 100%;*/
+    padding: 8px;
+    /*overflow: auto;*/
+    /*background: #fff;*/
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+ 
+.tabs2 input[type="radio"] + label
+{
+	/*box-sizing: border-box;
+    margin: 0 0px 0px 0;
+    padding: 0 18px;
+    line-height: 32px;
+    background: #f1f1f1;
+    text-align: center;
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;*/
+	display: block;
+    border: 1px solid #ccc;
+    margin-bottom: -1px;
+    padding: 4px 10px 3px 10px;
+	background: #f1f1f1;
+	border-radius: 5px 5px 0 0;
+}
+ 
+.tabs2 input[type="radio"]:checked + label
+{
+    z-index: 1;
+    background: #fff;
+    border-bottom-color: #fff;
+	font-weight:bold;
+    cursor: default;
+}
+ 
+.tabs2 input[type="radio"]
+{
+    opacity: 0;
+	display: none;
+}
+ 
+.tabs2 > div
+{
+    display: none;
+}
+.tabs2 > div.selected
+{
+    display: block;
+}
+
+
+.tabs2 input[type="radio"]:disabled + label
+{
+    opacity: .5;
+    cursor: no-drop;
+}
+
+
+/* Tipso Bubble Styles */
+.tipso_bubble, .tipso_bubble > .tipso_arrow{
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing:    border-box;
+	box-sizing:         border-box;
+}
+.tipso_bubble {
+    position: absolute;
+	text-align: left;
+	border-radius: 6px;
+	z-index: 9999;
+	/*display: inline-block;*/
+}
+.tipso_style{
+	cursor: help;
+	border-bottom: 1px dotted;
+}
+.tipso_title {
+	border-radius: 6px 6px 0 0;
+}
+.tipso_content {
+  	word-wrap: break-word;
+	padding: 0.5em;
+}
+
+/* Tipso Bubble size classes - Similar to Foundation's syntax*/
+.tipso_bubble.tiny {
+	font-size: 0.6rem;
+}
+.tipso_bubble.small {
+	font-size: 0.8rem;
+}
+.tipso_bubble.default {
+	font-size: 1rem;
+}
+.tipso_bubble.large {
+	font-size: 1.2rem;
+	width: 100%;
+}
+
+/* Tipso Bubble Div */
+.tipso_bubble > .tipso_arrow{
+	position: absolute;
+	width: 0; height: 0;
+	border: 8px solid;
+	pointer-events: none;
+}
+.tipso_bubble.top > .tipso_arrow {
+	border-top-color: #000;
+	border-right-color: transparent;
+	border-left-color: transparent;
+	border-bottom-color: transparent;
+	top: 100%;
+	left: 50%;
+	margin-left: -8px;
+}
+.tipso_bubble.bottom > .tipso_arrow {
+	border-bottom-color: #000;
+	border-right-color: transparent;
+	border-left-color: transparent;
+	border-top-color: transparent;
+	bottom: 100%;
+	left: 50%;
+	margin-left: -8px;
+}
+.tipso_bubble.left > .tipso_arrow {
+	border-left-color: #000;
+	border-top-color: transparent;
+	border-bottom-color: transparent;
+	border-right-color: transparent;
+	top: 50%;
+	left: 100%;
+	margin-top: -8px;
+}
+.tipso_bubble.right > .tipso_arrow {
+	border-right-color: #000;
+	border-top-color: transparent;
+	border-bottom-color: transparent;
+	border-left-color: transparent;
+	top: 50%;
+	right: 100%;
+	margin-top: -8px;
+}
+
+.tipso_bubble .top_right_corner, 
+.tipso_bubble.top_right_corner {
+	border-bottom-left-radius: 0;
+}
+
+.tipso_bubble .bottom_right_corner, 
+.tipso_bubble.bottom_right_corner  {
+	border-top-left-radius: 0;
+}
+
+.tipso_bubble .top_left_corner, 
+.tipso_bubble.top_left_corner {
+	border-bottom-right-radius: 0;
+}
+
+.tipso_bubble .bottom_left_corner, 
+.tipso_bubble.bottom_left_corner  {
+	border-top-right-radius: 0;
+}

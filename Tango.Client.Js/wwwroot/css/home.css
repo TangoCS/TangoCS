@@ -1,0 +1,102 @@
+#navigation ul, #navigation li {
+list-style: none;
+margin: 0;
+padding: 0;
+}
+
+.navmenutitle
+{
+font-size: 18px;
+font-weight: lighter;
+}
+
+
+
+.box-content div:first-child {
+ margin-top: 10px;
+}
+
+.box-content ul {
+margin-left: 20px;
+}
+
+.box-content ul li {
+list-style: none outside none;
+}
+
+
+#Home {
+ background: url("/i/home.png") repeat scroll 0 0 transparent;
+    float: left;
+    height: 24px;
+    width: 24px;
+}
+
+.top_menu {
+ background: url("/i/top_menu_bg.jpg") repeat-x scroll 0 0 transparent;
+    color: White;
+    font-weight: bold;
+    padding: 3px 10px 7px 8px;
+    width: 100%;
+	font: 14px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
+}
+
+.top_menu a {
+color: #FFFFFF;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+
+.box {
+margin-bottom: 8px;
+}
+
+#navigation::after {
+clear: both;
+content: ".";
+display: block;
+height: 0;
+visibility: hidden;
+}
+
+.box > .title-bar, .box > .title-bar a {
+color: white;
+background-color: #224272;
+background-image: -webkit-linear-gradient(top,#5B6E8D 0,#576B8B 12%,#4C6386 24%,#39547D 35%,#35517B 37%,#2C4A77 47%,#244473 64%,#224272 100%);
+background-repeat: repeat-x;
+background-size: 1px 45px;
+text-decoration: none;
+display: block;
+}
+
+.box > .title-bar a:hover {
+background: #2b4f82;
+
+
+}
+
+.box > .title-bar h2 {
+font-weight: bold;
+font-size: 13px;
+ padding: 2px 0 2px 12px;
+text-shadow: 1px 1px 1px #224272;
+margin: 0;
+}
+.box > .box-content {
+background: white;
+border: 1px solid #ddd;
+line-height: 17px;
+}
+.box-content a {
+display: block;
+padding: 2px 12px;
+color: #333;
+font-size: 8pt;
+text-decoration:none;
+font-family: "Lucida Grande",Helvetica,Arial,Verdana,sans-serif;
+}
+.box-content a:hover {
+color: #1577b5;
+background-color: #e6f5fc;
+}

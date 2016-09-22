@@ -69,7 +69,8 @@ namespace Tango.Identity.Std
 				}
 			}
 
-			if (_dc.UserFromName(name) != null)
+			var u = _dc.UserFromName(name);
+			if (u != null && u.Id != userId)
 			{
 				res.Add(new ValidationMessage("username", Resources.LoginAlreadyAssociated));
 			}

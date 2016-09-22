@@ -1,24 +1,19 @@
-﻿var dialog = function () {
+﻿var dialog = function (au) {
 	var instance = {
 		instances : {},
 		open: function (caller, serverEvent, id, callBack) {
-			return ajaxUtils.runEventWithApiResponse(serverEvent, id).then(function () {
+			return au.runEventWithApiResponse({ e: serverEvent, r: id }).then(function () {
 				$('#modalOverlay').css('display', 'block');
 
-				var modal = $('#' + id + "_dialog");
-				var modalBody = modal.find('.modal-body');
+				var modal = $('#' + id + "_dialog");				
 				modal.css('display', 'block');
-
-				if (modalBody.height() > $(window).height() - 200)
-					modalBody.css("height", ($(window).height() - 200) + "px");
 				modal.css('zIndex', 101);
-
-				dialog.instances[id] = {};
+				instance.instances[id] = {};
 
 				var parent = getParent(caller);
 				if (parent) {
 					parent.css('zIndex', 99);
-					dialog.instances[id].parentDialog = parent.id;
+					instance.instances[id].parentDialog = parent.id;
 				}
 
 				if (callBack) callBack(caller, id);
@@ -32,22 +27,20 @@
 			modalBody.css('height', '');
 			modal.css('display', 'none');
 
-			if (dialog.instances[id].parentDialog) {
-				var p = $('#' + dialog.instances[id].parentDialog);
+			if (instance.instances[id].parentDialog) {
+				var p = $('#' + instance.instances[id].parentDialog);
 				p.css('zIndex', 101);
 			}
 			else {
 				objOverlay.css('display', 'none');
 			}
-			dialog.instances[id].parentDialog = undefined;
+			instance.instances[id].parentDialog = undefined;
 		},
-
-		
 
 		getDialog: function (caller) {
 			var d = getParent(caller);
 			if (d)
-				return dialog.instances[d.id];
+				return instance.instances[d.id];
 			else
 				return undefined;
 		}
@@ -63,4 +56,4 @@
 	};
 
 	return instance;
-}();
+}(ajaxUtils);

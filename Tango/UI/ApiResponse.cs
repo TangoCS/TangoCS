@@ -120,12 +120,12 @@ namespace Tango.UI
 
 		public virtual void AddRootWidget(string name, string content)
 		{
-			AddChildWidget(null, name, content);
+			AddAdjacentWidget(null, name, content);
 		}
 
-		public virtual void AddChildWidget(string parent, string name, string content)
+		public virtual void AddAdjacentWidget(string parent, string name, string content, string position = "beforeend")
 		{
-			Widgets.Add(name.ToLower(), new { Parent = parent, Content = content });
+			Widgets.Add(name.ToLower(), new { Parent = parent, Content = content, Position = position });
 		}
 
 		public void AddWidget(string name, LayoutWriter content)
@@ -137,14 +137,14 @@ namespace Tango.UI
 
 		public void AddRootWidget(string name, LayoutWriter content)
 		{
-			AddChildWidget(null, name, content);
+			AddAdjacentWidget(null, name, content);
 		}
 
-		public void AddChildWidget(string parent, string name, LayoutWriter content)
+		public void AddAdjacentWidget(string parent, string name, LayoutWriter content, string position = "beforeend")
 		{
 			ClientActions.AddRange(content.ClientActions);
 			foreach (var i in content.Includes) Includes.Add(i);
-			AddChildWidget(parent, name, content.ToString());
+			AddAdjacentWidget(parent, name, content.ToString(), position);
 		}
 
 		public void RedirectBack(ActionContext context)
@@ -178,12 +178,12 @@ namespace Tango.UI
 
 		public void AddRootWidget(ViewElement elementOwner, string name, string content)
 		{
-			AddRootWidget(elementOwner.GetClientID(name), content);
+			AddAdjacentWidget(null, elementOwner.GetClientID(name), content);
 		}
 
-		public void AddChildWidget(ViewElement elementOwner, string parent, string name, string content)
+		public void AddAdjacentWidget(ViewElement elementOwner, string parent, string name, string content, string position = "beforeend")
 		{
-			AddChildWidget(parent, elementOwner.GetClientID(name), content);
+			AddAdjacentWidget(parent, elementOwner.GetClientID(name), content, position);
 		}
 
 		public void AddWidget(ViewElement elementOwner, string name, Action<LayoutWriter> content)
@@ -197,14 +197,21 @@ namespace Tango.UI
 		{
 			var w = elementOwner.CreateLayoutWriter();
 			content?.Invoke(w);
-			AddRootWidget(elementOwner.GetClientID(name), w);
+			AddAdjacentWidget(null, elementOwner.GetClientID(name), w);
 		}
 
 		public void AddChildWidget(ViewElement elementOwner, string parent, string name, Action<LayoutWriter> content)
 		{
 			var w = elementOwner.CreateLayoutWriter();
 			content?.Invoke(w);
-			AddChildWidget(parent, elementOwner.GetClientID(name), w);
+			AddAdjacentWidget(parent, elementOwner.GetClientID(name), w);
+		}
+
+		public void AddAdjacentWidget(ViewElement elementOwner, string parent, string name, string position, Action<LayoutWriter> content)
+		{
+			var w = elementOwner.CreateLayoutWriter();
+			content?.Invoke(w);
+			AddAdjacentWidget(parent, elementOwner.GetClientID(name), w, position);
 		}
 	}
 

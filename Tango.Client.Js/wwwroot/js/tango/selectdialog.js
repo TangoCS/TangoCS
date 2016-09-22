@@ -1,14 +1,14 @@
 ﻿/// <reference path="homewindow.js"/>
 /// <reference path="dialog.js"/>
 /// ver. 26-08-2016
-var selectSingleObjectDialog = function () {
+var selectSingleObjectDialog = function (au, cu, dialog) {
 	var instance = {
 		submit: function (id) {
 			var d = dialog.instances[id];
 			var el = $("#" + $("#" + id).attr('data-value-id'));
 			el.val(d.selectedObj);
 			dialog.hide(id);
-			ajaxUtils.runEventFromElementWithApiResponse(el[0], 'submitdialog', id);
+			au.runEventFromElementWithApiResponse(el[0], { e: 'submitdialog', r: id });
 		},
 		setupItems: function (caller, id) {
 			var d = dialog.instances[id];
@@ -26,26 +26,26 @@ var selectSingleObjectDialog = function () {
 			});
 
 			$("#" + id + "_filter").on('keyup', { id: id }, function (e) {
-				ajaxUtils.delay(this, function (caller) {
-					ajaxUtils.runEventFromElementWithApiResponse(caller, 'renderlist', id)
-						.done(function () { selectSingleObjectDialog.setupItems(caller, id); });
+				au.delay(this, function (caller) {
+					au.runEventFromElementWithApiResponse(caller, { e: 'renderlist', r: id })
+						.done(function () { instance.setupItems(caller, id); });
 				});
 			});
 
-			commonUtils.setFocus(id + "_filter");
+			cu.setFocus(id + "_filter");
 		},
 		pagingEvent: function (caller, id) {
-			ajaxUtils.runEventFromElementWithApiResponse(caller, 'renderlist', id).done(function () {
-				selectSingleObjectDialog.setupItems(caller, id);
+			au.runEventFromElementWithApiResponse(caller, { e: 'renderlist', r: id }).done(function () {
+				instance.setupItems(caller, id);
 			});
 		}
 	}
 
 	return instance;
-}();
+}(ajaxUtils, commonUtils, dialog);
 
 
-var selectMultipleObjectsDialog = function () {
+var selectMultipleObjectsDialog = function (au, cu, dialog) {
 	var instance = {
 		submit: function (id) {
 			var d = dialog.instances[id];
@@ -55,7 +55,7 @@ var selectMultipleObjectsDialog = function () {
 
 			var data = {};
 			data[valueelid] = d.selectedObjs;
-			ajaxUtils.postEventWithApiResponse('submitdialog', id, data);
+			au.postEventWithApiResponse({ e: 'submitdialog', r: id }, data);
 		},
 		setupItems: function (caller, id) {
 			var d = dialog.instances[id];
@@ -79,20 +79,20 @@ var selectMultipleObjectsDialog = function () {
 			});
 
 			$("#" + id + "_filter").on('keyup', { id: id }, function (e) {
-				ajaxUtils.delay(this, function (caller) {
-					ajaxUtils.runEventFromElementWithApiResponse(caller, 'renderlist', id)
-						.done(function () { selectMultipleObjectsDialog.setupItems(caller, id); });
+				au.delay(this, function (caller) {
+					au.runEventFromElementWithApiResponse(caller, { e: 'renderlist', r: id })
+						.done(function () { instance.setupItems(caller, id); });
 				});
 			});
 
-			commonUtils.setFocus(id + "_filter");
+			cu.setFocus(id + "_filter");
 		},
 		pagingEvent: function (caller, id) {
-			ajaxUtils.runEventFromElementWithApiResponse(caller, 'renderlist', id).done(function () {
-				selectMultipleObjectsDialog.setupItems(caller, id);
+			au.runEventFromElementWithApiResponse(caller, { e: 'renderlist', r: id }).done(function () {
+				instance.setupItems(caller, id);
 			});
 		}
 	}
 
 	return instance;
-}();
+}(ajaxUtils, commonUtils, dialog);

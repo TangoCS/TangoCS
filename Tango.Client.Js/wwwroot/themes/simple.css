@@ -1,3 +1,15 @@
+body {
+	background-color: #FFFFFF;
+	font-size: 14px;
+	font-family: Segoe UI, 'Open Sans', Trebuchet MS;
+	color: #000000;
+}
+
+input, textarea, keygen, select, button {
+	font-size: 14px;	
+	font-family: Segoe UI, 'Open Sans', Trebuchet MS;
+}
+
 header {
 	background: #205081;
 	color: #fff;

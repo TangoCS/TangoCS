@@ -5,7 +5,7 @@ var treeView = function () {
 			$('#' + args.id).jstree({
 				'core': {
 					'data': {
-						'url': ajaxUtils.prepareUrl('ongetnode', args.id),
+						'url': ajaxUtils.prepareUrl({ e: 'ongetnode', r: args.id }),
 						'data': function (node) {
 							return { 'nodeid': node.id };
 						}
@@ -30,7 +30,7 @@ var treeView = function () {
 
 	function getMenu(node) {
 		if (_menuCache[node.id]) return _menuCache[node.id];	
-		ajaxUtils.postEvent('ongetmenu', _tvId, {
+		ajaxUtils.postEvent({ e: 'ongetmenu', r: _tvId }, {
 			id: node.id,
 			data: node.data,
 			children: !node.state.loaded || node.children.length > 0

@@ -54,26 +54,6 @@ namespace Tango.UI
 			w.Table(a => a.Class("ms-listviewtable").Set(attributes), content);
 		}
 
-		public static void ListHeader(this LayoutWriter w, Action<TagAttributes> attributes, Action columns)
-		{
-			w.Tr(a => a.Set(attributes), columns);
-		}
-
-		public static void ColumnHeader(this LayoutWriter w, Action<ThTagAttributes> attributes, Action content)
-		{
-			w.Th(a => a.Set(attributes), content);
-		}
-
-		public static void ListRow(this LayoutWriter w, Action<TagAttributes> attributes, Action cells)
-		{
-			w.Tr(attributes, cells);
-		}
-
-		public static void Cell(this LayoutWriter w, Action<TdTagAttributes> attributes, Action content)
-		{
-			w.Td(a => a.Set(attributes), content);
-		}
-
 		public static void FormTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
 			w.Table(a => a.Class("ms-formtable").Set(attributes), content);

@@ -100,9 +100,14 @@ namespace Tango.Localization
 			return textResource.Get(key + "-" + suffix);
 		}
 
-		public static string Get<T>(this IResourceManager textResource, string suffix)
+		public static string GetExt<T>(this IResourceManager textResource, string suffix)
 		{
 			return textResource.Get(typeof(T).FullName, suffix);
+		}
+
+		public static string Get<T>(this IResourceManager textResource, string key)
+		{
+			return textResource.Get(typeof(T).FullName + "." + key);
 		}
 
 		public static string Get<T>(this IResourceManager textResource, string key, string suffix)
@@ -204,9 +209,12 @@ namespace Tango.Localization
 		}
 
 		public static string CaptionPlural<T>(this IResourceManager textResource)
-			where T : IEntity
 		{
-			return textResource.Get(typeof(T).FullName, "pl");
+			var t = typeof(T);
+			var attr = t.GetCustomAttributes(typeof(ResourceTypeAttribute), false);
+			if (attr != null && attr.Length > 0)
+				t = (attr[0] as ResourceTypeAttribute).Type;
+			return textResource.Get(t.FullName, "pl");
 		}
 	}
 }

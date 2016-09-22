@@ -31,10 +31,10 @@ namespace Tango.UI.Controls
 			w.Div(a => a.ID("dialog").Class("modal-dialog").Role("dialog").Style("display: none"), () => {
 				w.AjaxForm("form", () => {
 					w.Div(a => a.Class("modal-header"), () => {
-						w.Button(a => a.Class("close").Aria("label", "Close").OnClick($"dialog.hide('{id}')"), () => {
-							w.Span(a => a.Aria("hidden", "true"), "x");
-						});
 						w.H3(a => a.ID("title").Class("modal-title"), title);
+						w.Button(a => a.Class("close").Aria("label", "Close").OnClick($"dialog.hide('{id}')"), () => {
+							w.Span(a => a.Aria("hidden", "true"), "X");
+						});
 					});
 					w.Div(a => a.ID("body").Class("modal-body"), body);
 					w.Div(a => a.ID("footer").Class("modal-footer"), footer);

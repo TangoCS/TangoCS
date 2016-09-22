@@ -1,6 +1,6 @@
 ﻿/// <reference path="/js/jquery-1.11.0.min.js"/>
-/// ver. 26-08-2016
-var commonUtils = function () {
+/// ver. 29-08-2016
+var commonUtils = function ($) {
 	var instance = {
 		getHashParams: function () {
 			var hashParams = {};
@@ -33,9 +33,9 @@ var commonUtils = function () {
 	}
 
 	return instance;
-}();
+}($);
 
-var domActions = function () {
+var domActions = function ($) {
 	var instance = {
 		setValue: function (args) {
 			var e = document.getElementById(args.elName);
@@ -69,16 +69,16 @@ var domActions = function () {
 	}
 
 	return instance;
-}();
+}($);
 
-var ajaxUtils = function () {
+var ajaxUtils = function ($, cu) {
 	var timer = null;
 
 	var instance = {
 		initForm: function (args) {
 			var form = $('#' + args.id);
 			form.on('submit', { el: form[0] }, function (e) {
-				return ajaxUtils.formSubmit(e.data.el);
+				return instance.formSubmit(e.data.el);
 			});
 			if (!args.submitOnEnter) {
 			    form.on("keypress", ":input:not(textarea):not([type=submit])", function (e) {
@@ -87,9 +87,7 @@ var ajaxUtils = function () {
 			}
 		},
 		formSubmit: function (form) {
-			if (form.action) _baseUrl = form.action;
-			var data = new FormData(form);
-			ajaxUtils.postEventWithApiResponse('onsubmit', null, data);
+			instance.postEventWithApiResponse({ e: 'onsubmit', url: form.action }, new FormData(form));
 			return false;
 		},
 		error: function (xhr, status, e) {
@@ -100,7 +98,7 @@ var ajaxUtils = function () {
 			else
 				document.documentElement.innerHTML = xhr.responseText;
 		},
-		delay(caller, func) {
+		delay: function(caller, func) {
 			if (timer) {
 				window.clearTimeout(timer);
 				timer = null;
@@ -109,7 +107,7 @@ var ajaxUtils = function () {
 		},
 		setHash: function (e, args) {
 			if (e) _event = e;
-			ajaxUtils.setHashParms(args);
+			instance.setHashParms(args);
 		},
 		setHashFromElement: function (el, e, r) {
 			var data = {};
@@ -118,7 +116,7 @@ var ajaxUtils = function () {
 				data[el.name] = el.value;
 			if (e) _event = e;
 			if (r) _eventReceiver = r;
-			ajaxUtils.setHashParms(data);
+			instance.setHashParms(data);
 		},
 		setHashParms: function (args) {
 			if (args) {
@@ -136,53 +134,82 @@ var ajaxUtils = function () {
 		bindevent: function (args) {
 			$('#' + args.id).on(args.clientEvent, { serverEvent: args.serverEvent, receiver: args.serverEventReceiver, method: args.method }, function (e) {
 				if (e.data.method && e.data.method == 'get')
-					ajaxUtils.runEventFromElementWithApiResponse(this, e.data.serverEvent, e.data.receiver);
+					instance.runEventFromElementWithApiResponse(this, { e: e.data.serverEvent, r: e.data.receiver });
 				else
-					ajaxUtils.postEventFromElementWithApiResponse(this, e.data.serverEvent, e.data.receiver);
+					instance.postEventFromElementWithApiResponse(this, { e: e.data.serverEvent, r: e.data.receiver });
 			});
 		},
-		runEvent: function (e, r, args) {
+		runEvent: function (target, args) {
 			return $.ajax({
-				url: ajaxUtils.prepareUrl(e, r, args),
+				url: instance.prepareUrl(target, args),
 				type: 'GET'
-			}).fail(ajaxUtils.error).then(onRequestResult);
+			}).fail(instance.error).then(onRequestResult);
 		},
-		runEventWithApiResponse: function (e, r, args) {
-			return ajaxUtils.runEvent(e, r, args).then(loadScripts).then(processApiResponse);
+		runEventWithApiResponse: function (target, args) {
+			return instance.runEvent(target, args).then(instance.loadScripts).then(processApiResponse);
 		},
-		runEventFromElementWithApiResponse: function (el, e, r) {
+		runEventFromElementWithApiResponse: function (el, target) {
 			var data = {};
 			processElementData(el, data);
 			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)
 				data[el.name] = el.value;
-			return ajaxUtils.runEventWithApiResponse(e, r, data);
+			return instance.runEventWithApiResponse(target, data);
 		},
-		postEvent: function (e, r, args) {
+		postEvent: function (target, args) {
 			var isForm = args instanceof FormData;
 			return $.ajax({
-				url: ajaxUtils.prepareUrl(e, r),
+				url: instance.prepareUrl(target),
 				type: 'POST',
 				processData: !isForm,
 				contentType: isForm ? false : "application/json; charset=utf-8",
 				dataType: 'json',
 				data: isForm ? args : JSON.stringify(args)
-			}).fail(ajaxUtils.error).then(onRequestResult);
+			}).fail(instance.error).then(onRequestResult);
 		},
-		postEventWithApiResponse: function (e, r, args) {
-			return ajaxUtils.postEvent(e, r, args).then(loadScripts).then(processApiResponse);
+		postEventWithApiResponse: function (target, args) {
+			return instance.postEvent(target, args).then(instance.loadScripts).then(processApiResponse);
 		},
-		postEventFromElementWithApiResponse: function (el, e, r) {	
+		postEventFromElementWithApiResponse: function (el, target) {
 			var form = $(el).closest('form')[0];
 			var data = {};
 			if (form) data = $(form).serializeObject();
 			processElementData(el, data);
-			return ajaxUtils.postEventWithApiResponse(e, r, data);
+			return instance.postEventWithApiResponse(target, data);
 		},
-		prepareUrl: function(e, r, args) {
-			_event = e;
+		loadScripts: function (apiResult) {
+			if (!apiResult) return $.Deferred().resolve(apiResult);
+			var deferreds = [];
+			var toLoad = apiResult instanceof Array ? apiResult : apiResult.includes;
+
+			if (toLoad && toLoad.length > 0) {
+				for (i = 0; i < toLoad.length; i++) {
+					var s = toLoad[i];
+					if ($.inArray(s, _requestedJs) < 0) {
+						deferreds.push(
+							$.ajax({
+								type: "GET",
+								url: s,
+								dataType: "script",
+								//cache: true,
+								crossDomain: true
+							})
+						);
+						_requestedJs.push(s);
+						console.log('requested ' + s);
+					}
+				}
+			}
+
+			if (deferreds.length == 0) 
+				return $.Deferred().resolve(apiResult);
+			else
+				return $.when.apply($, deferreds).then(function () { return $.Deferred().resolve(apiResult); });
+		},
+		prepareUrl: function (target, args) {
+			_event = target.e;
 			if (!_event) _event = 'onload';
 
-			var url = _baseUrl ? _baseUrl : '/api' + window.location.pathname;
+			var url = target.url ? target.url : '/api' + window.location.pathname;
 			if (window.location.search == '')
 				url += '?';
 			else
@@ -197,30 +224,29 @@ var ajaxUtils = function () {
 				if (key != 'e' && key != 'r' && key != 'p' && _hash[key])
 					url += '&' + key + '=' + _hash[key];
 				else if (key == 'r')
-					r = _hash[key];
+					target.r = _hash[key];
 			}
 			for (key in args) {
 				url += '&' + key + '=' + args[key];
 			}
-			if (r) url += '&r=' + r;
+			if (target.r) url += '&r=' + target.r;
 
 			_event = null;
 			return url;
 		}
 	};
 
-	var _hash = commonUtils.getHashParams();
+	var _requestInProcess = null;
+	var _requestedJs = [];
+
+	var _hash = cu.getHashParams();
 	var _event = null;
 	var _eventReceiver = null;
-	var _baseUrl = null;
-	var _loadedJs = [];
-	var _apiResponse = null;
 
 	var _topMessage = $("#topmessagecontainer");
-	var _requestInProcess = null;
 
 	function beforeRequest(event, xhr, settings) {
-		_requestInProcess = commonUtils.createGuid();
+		_requestInProcess = cu.createGuid();
 		xhr.setRequestHeader('x-request-guid', _requestInProcess)
 		xhr.setRequestHeader('x-csrf-token', document.head.getAttribute('data-x-csrf-token'))
 		setTimeout(function () {
@@ -228,39 +254,14 @@ var ajaxUtils = function () {
 		}, 100);
 	}
 
-	function onRequestResult(data, status, xhr) {
-		if (xhr.getResponseHeader('X-Request-Guid') == _requestInProcess) {
-			_apiResponse = data;
-			return $.Deferred().resolve(data);
-		}
-	}
-
 	function requestCompleted() {
 		_requestInProcess = null;
 		_topMessage.css('display', 'none')
 	}
 
-	function loadScript(url) {
-		return $.ajax({
-			type: "GET",
-			url: url,
-			dataType: "script",
-			//cache: true,
-			crossDomain: true
-		});
-	}
-
-	function loadScripts() {
-		if (_apiResponse && _apiResponse.includes && _apiResponse.includes.length > 0) {
-			for (i = 0; i < _apiResponse.includes.length; i++) {
-				var s = _apiResponse.includes[i];				
-				if ($.inArray(s, _loadedJs) < 0) {
-					loadScript(s);
-					_loadedJs.push(s);
-					console.log('loaded ' + s);
-				}
-			}
-		}
+	function onRequestResult(data, status, xhr) {
+		return xhr.getResponseHeader('X-Request-Guid') == _requestInProcess ?
+			$.Deferred().resolve(data) : $.when();
 	}
 
 	function processElementData(el, data) {
@@ -275,25 +276,25 @@ var ajaxUtils = function () {
 		}
 	}
 
-	function processApiResponse() {
-		if (!_apiResponse) return;
+	function processApiResponse(apiResult) {
+		if (!apiResult) return;
 
-		if (_apiResponse.url) {
-			window.location = _apiResponse.url;
+		if (apiResult.url) {
+			window.location = apiResult.url;
 			return;
 		}
 
-		if (_apiResponse.widgets) {
-			for (var w in _apiResponse.widgets) {
+		if (apiResult.widgets) {
+			for (var w in apiResult.widgets) {
 				var el = w == 'body' ? document.body : document.getElementById(w);
-				var obj = _apiResponse.widgets[w];
+				var obj = apiResult.widgets[w];
 				if (obj != null && typeof (obj) == "object") {
 					var el2 = document.body;
 					if (obj.parent && obj.parent != 'body') el2 = document.getElementById(obj.parent);
 					if (el)
 						el.outerHTML = obj.content;
 					else
-						el2.insertAdjacentHTML('beforeend', obj.content);
+						el2.insertAdjacentHTML(obj.position, obj.content);
 				}
 				else {
 					if (el) el.innerHTML = obj;
@@ -301,17 +302,17 @@ var ajaxUtils = function () {
 			}
 		}
 
-		if (_apiResponse.widgetsforremove) {
-			for (var w in _apiResponse.widgetsforremove) {
-				var el = document.getElementById(_apiResponse.widgetsforremove[w]);
+		if (apiResult.widgetsforremove) {
+			for (var w in apiResult.widgetsforremove) {
+				var el = document.getElementById(apiResult.widgetsforremove[w]);
 				if (el) el.remove();
 			}
 		}
 
-		if (_apiResponse.clientactions) {
+		if (apiResult.clientactions) {
 			var ca;
-			for (var i = 0; i < _apiResponse.clientactions.length; i++) {
-				ca = _apiResponse.clientactions[i];
+			for (var i = 0; i < apiResult.clientactions.length; i++) {
+				ca = apiResult.clientactions[i];
 				runClientAction(ca.service, ca.callChain, 0);
 			}
 		}
@@ -341,8 +342,8 @@ var ajaxUtils = function () {
 
 		$(window).on('hashchange', function () {
 			if (!window.location.hash.startsWith('#/')) return;
-			_hash = commonUtils.getHashParams();
-			ajaxUtils.runEventWithApiResponse(_event, _eventReceiver);
+			_hash = cu.getHashParams();
+			instance.runEventWithApiResponse({ e: _event, r: _eventReceiver });
 		});
 
 		$(document).ajaxSend(beforeRequest);
@@ -350,16 +351,17 @@ var ajaxUtils = function () {
 
 		var __load = document.getElementById('__load');
 		if (__load) {
+			var target = {};
 		    if (window.location.pathname == '/') {
 		        var defAction = __load.getAttribute('data-default');
-		        if (defAction) _baseUrl = '/api' + defAction;
+		        if (defAction) target.url = '/api' + defAction;
 		    }
-			ajaxUtils.runEventWithApiResponse();
+		    instance.runEventWithApiResponse(target);
 		}
 	});
 
 	return instance;
-}();
+}($, commonUtils);
 
 if (!String.prototype.endsWith) {
 	String.prototype.endsWith = function (searchString, position) {

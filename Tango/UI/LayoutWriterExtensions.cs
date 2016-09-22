@@ -11,47 +11,45 @@ namespace Tango.UI
 		{
 			l.ListTable(null, a);
 		}
-		public static void ListHeader(this LayoutWriter l, Action content)
+
+		public static void Th(this LayoutWriter l, Action content)
 		{
-			l.ListHeader(null, content);
+			l.Th(null, content);
 		}
-		public static void ColumnHeader(this LayoutWriter l, Action content)
+		public static void Th(this LayoutWriter l, Action<ThTagAttributes> attributes, string title)
 		{
-			l.ColumnHeader(null, content);
-		}
-		public static void ColumnHeader(this LayoutWriter l, Action<ThTagAttributes> attributes, string title)
-		{
-			l.ColumnHeader(attributes, () => l.Write(title));
+			l.Th(attributes, () => l.Write(title));
 		}
 
-		public static void ColumnHeader(this LayoutWriter l, string title)
+		public static void Th(this LayoutWriter l, string title)
 		{
-			l.ColumnHeader(null, () => l.Write(title));
+			l.Th(null, () => l.Write(title));
 		}
 
-		public static void ColumnHeader(this LayoutWriter l, Action<ThTagAttributes> attributes, IMetaProperty prop)
+		public static void Th(this LayoutWriter l, Action<ThTagAttributes> attributes, IMetaProperty prop)
 		{
-			l.ColumnHeader(attributes, l.Resources.CaptionShort(prop));
+			l.Th(attributes, l.Resources.CaptionShort(prop));
 		}
 
-		public static void ColumnHeader(this LayoutWriter l, IMetaProperty prop)
+		public static void Th(this LayoutWriter l, IMetaProperty prop)
 		{
-			l.ColumnHeader(l.Resources.CaptionShort(prop));
+			l.Th(l.Resources.CaptionShort(prop));
 		}
 
-		public static void Cell(this LayoutWriter l, object content)
+		public static void Td(this LayoutWriter l, Action content)
 		{
-			l.Cell(null, () => l.Write(content == null ? "&nbsp;" : content.ToString()));
+			l.Td(null, content);
 		}
 
-		public static void Cell(this LayoutWriter l, Action content)
-		{
-			l.Cell(null, content);
-		}
+		public static void Td(this LayoutWriter l, int content) => l.Td(null, content.ToString());
+		public static void Td(this LayoutWriter l, decimal content) => l.Td(null, content.ToString());
+		public static void Td(this LayoutWriter l, int? content) => l.Td(null, content?.ToString());
+		public static void Td(this LayoutWriter l, decimal? content) => l.Td(null, content?.ToString());
 
-		public static void Cell(this LayoutWriter l, Action<TdTagAttributes> attributes, object content)
+		public static void Td<T>(this LayoutWriter l, Action<TdTagAttributes> attributes, T? content)
+			where T : struct
 		{
-			l.Cell(attributes, () => l.Write(content == null ? "&nbsp;" : content.ToString()));
+			l.Td(attributes, () => l.Write(content?.ToString() ?? "&nbsp;"));
 		}
 
 		public static void GroupTitleCell(this LayoutWriter w, int colSpan, string value)

@@ -155,8 +155,8 @@ namespace Tango.Hibernate
 				BeforeSaveActions.Clear();
 				SaveActions.Clear();
 				AfterSaveActions.Clear();
-
 			}
+			Session.Clear();
 		}
 
 		public void Dispose()
