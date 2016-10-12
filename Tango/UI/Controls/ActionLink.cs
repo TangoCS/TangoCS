@@ -96,10 +96,10 @@ namespace Tango.UI.Controls
 			return this;
 		}
 
-		public ActionLink WithArg(string key, string value)
+		public ActionLink WithArg<T>(string key, T value)
 		{
 			if (value != null)
-				_args[key] = WebUtility.UrlEncode(value);
+				_args[key] = WebUtility.UrlEncode(value.ToString());
 			else
 				_args.Remove(key);
 			return this;

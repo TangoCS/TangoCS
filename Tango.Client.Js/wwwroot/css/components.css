@@ -414,53 +414,7 @@ td.showDragHandle {
 
 
 
-/*home*/
-#container {
-	display: block;
-	position: absolute;
-	height: auto;
-	bottom: 0;
-	top: 35px;
-	left: 0;
-	right: 0;
-}
 
-#splitter {
-	width: 8px;
-	position: absolute;
-	left: 0;
-	top: 0;
-	bottom: 0;
-	height: auto;
-	display: block;
-	border-left: solid 1px #ccc;
-	border-right: solid 1px #ccc;
-	cursor: pointer;
-	margin-left: 240px;
-	background: url('/i/splo.gif') no-repeat center;
-}
-
-#content {
-	margin-left: 248px;
-}
-
-#sidebar {
-	width: 240px;
-	position: absolute;
-	left: 0;
-	top: 0;
-	bottom: 0;
-	height: auto;
-	display: block;
-}
-
-#contentbody {
-	overflow-x: auto; 
-	overflow-y: auto; 
-	position: relative; 
-	display:block;
-	width:100%;
-}
 
 /* new modal */
 .modal-overlay {
@@ -477,22 +431,13 @@ td.showDragHandle {
 .modal-dialog {
 	position: fixed;
 	top: 40px;
-	bottom: 40px;
 	left: 0;
 	right: 0;
 	margin-left: auto;
 	margin-right: auto;
-	background-color: rgba(255, 255, 255, 1);
 	width: 600px;
-	background-color: #fff;
-	-webkit-background-clip: padding-box;
-	background-clip: padding-box;
-	border: 1px solid rgba(0,0,0,.2);
-	border-radius: 6px;
-	outline: 0;
-	-webkit-box-shadow: 0 3px 9px rgba(0,0,0,.5);
-	box-shadow: 0 3px 9px rgba(0,0,0,.5);
-	height: 80%;
+	height: 100%;
+	max-height: 80%;
 }
 
 .modal-dialog form {
@@ -501,20 +446,30 @@ td.showDragHandle {
 	flex-direction: column;
 }
 
+.modal-header, .modal-body, .modal-footer {
+	background-color: #fff;
+	background-clip: padding-box;
+	box-shadow: 0 3px 9px rgba(0,0,0,.5);
+	border-left: 1px solid rgba(0,0,0,.2);
+	border-right: 1px solid rgba(0,0,0,.2);
+}
+.modal-header {
+	border-top: 1px solid rgba(0,0,0,.2);
+}
+.modal-footer {
+	border-bottom: 1px solid rgba(0,0,0,.2);
+}
+
 @media (min-width: 768px) {
-	.modal-dialog {
-		-webkit-box-shadow: 0 5px 15px rgba(0,0,0,.5);
+	.modal-header, .modal-body, .modal-footer  {
 		box-shadow: 0 5px 15px rgba(0,0,0,.5);
 	}
 }
 
 .modal-header {
-	height: 30px;
-	padding: 0px 10px;
+	padding: 3px 10px;
 	border-bottom: 1px solid #e5e5e5;
 	background-color: #f3f3f3;
-	display:flex;
-    flex-direction: row;
 }
 
 .modal-header h3 {
@@ -522,7 +477,7 @@ td.showDragHandle {
 	font-size: 0.9em;
 	font-weight: normal;
 	text-transform:uppercase;
-	width:100%;
+	display: inline-block;
 }
 
 .modal-title {
@@ -532,23 +487,15 @@ td.showDragHandle {
 .modal-body {
 	padding: 15px;
 	overflow-y: auto;
-	height: 100%;
 	display:flex;
     flex-direction: column;
 }
-
 
 .modal-footer {
 	padding: 8px 15px;
 	text-align: right;
 	border-top: 1px solid #e5e5e5;
 	background-color: #f3f3f3;
-	/*display:flex;
-    flex-direction: row;*/
-}
-
-.modal-header .close {
-	/*margin-top: -2px;*/
 }
 
 button.close {
@@ -560,7 +507,7 @@ button.close {
 }
 
 .close {
-	/*float: right;*/
+	float: right;
 	font-size: 1.2em;
 	line-height: 1;
 	color: #777;

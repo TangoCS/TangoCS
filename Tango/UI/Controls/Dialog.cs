@@ -40,7 +40,7 @@ namespace Tango.UI.Controls
 					w.Div(a => a.ID("footer").Class("modal-footer"), footer);
 				});
 			});
-			
+
 		}
 
 		//public static void Dialog_Footer_OKCancelButtons(this IHtmlWriter w)
