@@ -19,6 +19,8 @@ namespace Tango.UI.Controls
 		string _title;
 		string _imageSrc;
 		string _description;
+		bool _enabled = false;
+		bool _condition = true;
 
 		public string Title => _title;
 		public string Image => _imageSrc;
@@ -34,23 +36,51 @@ namespace Tango.UI.Controls
 
 		public string Url {
 			get {
-				if (_resolver == null) return null;
-				if (_url == null)
-				{
-					foreach (var arg in Context.PersistentArgs)
-					{
-						if (!_args.ContainsKey(arg.Key))
-							_args.Add(arg.Key, arg.Value);
-					}
+				Resolve();
+				return _url;
+			}
+		}
 
-					StringBuilder sb = _resolver.Resolve(_args);
+		public bool Enabled {
+			get {
+				Resolve();
+				return _enabled;
+			}
+		}
+
+		void Resolve()
+		{
+			if (_resolver == null)
+			{
+				_enabled = false;
+				return;
+			}
+			if (_url == null)
+			{
+				if (!_condition)
+				{
+					_enabled = false;
+					return;
+				}
+
+				foreach (var arg in Context.PersistentArgs)
+				{
+					if (!_args.ContainsKey(arg.Key))
+						_args.Add(arg.Key, arg.Value);
+				}
+
+				var r = _resolver.Resolve(_args);
+				if (r.Resolved)
+				{
 					if (_eventArgs.Count > 0)
 					{
-						sb.Append("#").Append(_hashPartResolver.Resolve(_eventArgs));
+						var hr = _hashPartResolver.Resolve(_eventArgs);
+						if (hr.Resolved)
+							r.Result.Append("#").Append(hr.Result);
 					}
-					_url = sb.ToString();
+					_url = r.Result.ToString();
 				}
-				return _url;
+				_enabled = r.Resolved;
 			}
 		}
 
@@ -114,7 +144,6 @@ namespace Tango.UI.Controls
 			return this;
 		}
 
-
 		public ActionLink WithTitle(string title)
 		{
 			_title = title;
@@ -130,6 +159,12 @@ namespace Tango.UI.Controls
 		public ActionLink WithDescription(string description)
 		{
 			_description = description;
+			return this;
+		}
+
+		public ActionLink WithCondition(bool cond)
+		{
+			_condition = cond;
 			return this;
 		}
 	}

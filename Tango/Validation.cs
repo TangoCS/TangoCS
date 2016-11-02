@@ -11,12 +11,14 @@ namespace Tango
 {
 	public class ValidationMessage
 	{
+		public string Group { get; set; }
 		public string Name { get; set; }
 		public ValidationMessageSeverity Severity { get; private set; }
 		public string Message { get; private set; }
 
-		public ValidationMessage(string name, string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		public ValidationMessage(string group, string name, string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
 		{
+			Group = group;
 			Name = name;
 			Message = message;
 			Severity = severity;
@@ -59,9 +61,9 @@ namespace Tango
 				Add(i);
 		}
 
-		public void Add(string name, string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		public void Add(string group, string name, string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
 		{
-			Add(new ValidationMessage(name, message, severity));
+			Add(new ValidationMessage(group, name, message, severity));
 		}
 
 		//public void Add(string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)

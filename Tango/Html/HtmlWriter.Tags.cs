@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Tango.Html
 {
@@ -283,6 +284,8 @@ namespace Tango.Html
 		public static void Td(this IHtmlWriter w, string text) { w.Td(null, () => w.Write(text)); }
 		public static void Td(this IHtmlWriter w, Action<TdTagAttributes> attributes, string text) { w.Td(attributes, () => w.Write(text)); }
 
+		public static void WriteLine(this IHtmlWriter w, string text) { w.Write(text); w.Br(); }
+		public static void WriteLines(this IHtmlWriter w, IEnumerable<string> textLines) { if (textLines != null) w.Write(textLines.Join("<br />")); }
 	}
 
 	public static class HtmlPageWriterExtensions

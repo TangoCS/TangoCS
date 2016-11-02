@@ -200,10 +200,11 @@ var ajaxUtils = function ($, cu) {
 				}
 			}
 
-			if (deferreds.length == 0) 
+			if (deferreds.length == 0)
 				return $.Deferred().resolve(apiResult);
-			else
+			else {
 				return $.when.apply($, deferreds).then(function () { return $.Deferred().resolve(apiResult); });
+			}
 		},
 		prepareUrl: function (target, args) {
 			_event = target.e;
@@ -333,7 +334,7 @@ var ajaxUtils = function ($, cu) {
 		}
 		else {
 			console.log("wait for " + service);
-			setTimeout(function () { runClientAction(service, method, args, iter++); }, 50);
+			setTimeout(function () { runClientAction(service, callChain, iter++); }, 50);
 		}
 	}
 

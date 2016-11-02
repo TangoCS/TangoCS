@@ -26,7 +26,7 @@ namespace Tango.UI.Controls
 				w.Img(a => a.ID("btn" + name).Title("Календарь").Src(basePath + "img.gif"));
 
 				//w.Includes.Add("calendar/calendar_stripped.js");
-				//w.Includes.Add("calendar/lang/calendar-ru.js");	
+				//w.Includes.Add("calendar/lang/calendar-ru.js");
 
 				w.AddClientAction("Calendar", "setup", new {
 					inputField = w.GetID(name),

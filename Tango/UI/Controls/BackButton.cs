@@ -9,12 +9,14 @@ namespace Tango.UI.Controls
 		{
 			if (url.IsEmpty()) url = c.Context.GetArg("returnurl");
 			if (title.IsEmpty()) title = c.Resources.Get("Common.Back");
-			c.Button(a => a.Class("btn").OnClick($"document.location='{url}';return false;").Set(attrs), title);
+			//c.Button(a => a.OnClick($"document.location='{url}';return false;").Set(attrs), title);
+			c.Button(a => a.OnClick($"window.location.href='{url}';return false;").Set(attrs), title);
+			
 		}
 
 		public static void SubmitButton(this LayoutWriter c)
 		{
-			c.SubmitButton(a => a.Class("btn"), c.Resources.Get("Common.OK"));
+			c.SubmitButton(null, c.Resources.Get("Common.OK"));
 		}
 	}
 }

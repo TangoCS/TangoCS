@@ -420,6 +420,7 @@ namespace Tango.Meta
 				{
 					if (_refClassName == null) throw new Exception(ID + " doesn't have a name of RefClass");
 					if (_refClass == null) _refClass = Parent.Parent.GetClass(_refClassName);
+					if (_refClass == null) throw new Exception(ID + ": can't get class for " + _refClassName);
 					if (_refClass.Key == null) throw new Exception(_refClass.ID + " doesn't have a key");
 					_type = _refClass.Key.Type;
 				}

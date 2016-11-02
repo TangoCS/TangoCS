@@ -22,24 +22,24 @@ namespace Tango.Identity.Std
 
 			if (password.Length < _options.MinPasswordLength)
 			{
-				res.Add(new ValidationMessage("password", string.Format(Resources.PasswordTooShort, _options.MinPasswordLength.ToString())));
+				res.Add(new ValidationMessage("entitycheck", "password", string.Format(Resources.PasswordTooShort, _options.MinPasswordLength.ToString())));
 			}
 
 			if (_options.RequireNonAlphanumericInPassword && password.All(IsLetterOrDigit))
 			{
-				res.Add(new ValidationMessage("password", Resources.PasswordRequiresNonAlphanumeric));
+				res.Add(new ValidationMessage("entitycheck", "password", Resources.PasswordRequiresNonAlphanumeric));
 			}
 			if (_options.RequireDigitInPassword && !password.Any(IsDigit))
 			{
-				res.Add(new ValidationMessage("password", Resources.PasswordRequiresDigit));
+				res.Add(new ValidationMessage("entitycheck", "password", Resources.PasswordRequiresDigit));
 			}
 			if (_options.RequireLowercaseInPassword && !password.Any(IsLower))
 			{
-				res.Add(new ValidationMessage("password", Resources.PasswordRequiresLower));
+				res.Add(new ValidationMessage("entitycheck", "password", Resources.PasswordRequiresLower));
 			}
 			if (_options.RequireUppercaseInPassword && !password.Any(IsUpper))
 			{
-				res.Add(new ValidationMessage("password", Resources.PasswordRequiresUpper));
+				res.Add(new ValidationMessage("entitycheck", "password", Resources.PasswordRequiresUpper));
 			}
 
 			return res;
@@ -52,19 +52,19 @@ namespace Tango.Identity.Std
 
 			if (String.IsNullOrEmpty(name))
 			{
-				res.Add(new ValidationMessage("username", Resources.EmptyUserName));
+				res.Add(new ValidationMessage("entitycheck", "username", Resources.EmptyUserName));
 			}
 
 			if (name.Length > _options.MaxLoginLength)
 			{
-				res.Add(new ValidationMessage("username", string.Format(Resources.InvalidUserNameLength, _options.MaxLoginLength.ToString())));
+				res.Add(new ValidationMessage("entitycheck", "username", string.Format(Resources.InvalidUserNameLength, _options.MaxLoginLength.ToString())));
 			}
 
 			foreach (char c in name.ToCharArray())
 			{
 				if (!loginChars.Contains(c))
 				{
-					res.Add(new ValidationMessage("username", Resources.InvalidUserName));
+					res.Add(new ValidationMessage("entitycheck", "username", Resources.InvalidUserName));
 					break;
 				}
 			}
@@ -72,7 +72,7 @@ namespace Tango.Identity.Std
 			var u = _dc.UserFromName(name);
 			if (u != null && u.Id != userId)
 			{
-				res.Add(new ValidationMessage("username", Resources.LoginAlreadyAssociated));
+				res.Add(new ValidationMessage("entitycheck", "username", Resources.LoginAlreadyAssociated));
 			}
 
 			return res;
@@ -84,13 +84,13 @@ namespace Tango.Identity.Std
 
 			if (_options.RequireEmail && String.IsNullOrEmpty(email))
 			{
-				res.Add(new ValidationMessage("email", Resources.EmptyEmail));
+				res.Add(new ValidationMessage("entitycheck", "email", Resources.EmptyEmail));
 			}
 
 			var owner = _dc.UserFromEmail(email);
 			if (_options.RequireUniqueEmail && owner != null && !owner.Id.Equals(userId))
 			{
-				res.Add(new ValidationMessage("email", string.Format(Resources.DuplicateEmail, email)));
+				res.Add(new ValidationMessage("entitycheck", "email", string.Format(Resources.DuplicateEmail, email)));
 			}
 
 			return res;

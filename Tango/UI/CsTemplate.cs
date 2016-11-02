@@ -6,7 +6,13 @@ using System.Collections.Generic;
 
 namespace Tango.UI
 {
-	public abstract class InteractionFlowElement : IWithPropertyInjection
+	public interface IInteractionFlowElement
+	{
+		string ID { get; set; }
+		ActionContext Context { get; set; }
+	}
+
+	public abstract class InteractionFlowElement : IInteractionFlowElement, IWithPropertyInjection
 	{
 		public virtual string ID { get; set; }
 		public ActionContext Context { get; set; }

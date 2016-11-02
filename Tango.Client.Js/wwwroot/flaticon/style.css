@@ -1,0 +1,258 @@
+@font-face {
+  font-family: 'flaticon';
+  src:  url('fonts/flaticon.eot?4v0sa2');
+  src:  url('fonts/flaticon.eot?4v0sa2#iefix') format('embedded-opentype'),
+    url('fonts/flaticon.ttf?4v0sa2') format('truetype'),
+    url('fonts/flaticon.woff?4v0sa2') format('woff'),
+    url('fonts/flaticon.svg?4v0sa2#flaticon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="flaticon-"], [class*=" flaticon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'flaticon' !important;
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.flaticon-calendar:before {
+  content: "\f106";
+}
+.flaticon-edit:before {
+  content: "\f110";
+}
+.flaticon-folder:before {
+  content: "\f11c";
+}
+.flaticon-library:before {
+  content: "\f11d";
+}
+.flaticon-form:before {
+  content: "\f13c";
+}
+.flaticon-shield:before {
+  content: "\f135";
+}
+.flaticon-collapsed:before {
+  content: "\f108";
+}
+.flaticon-expanded:before {
+  content: "\e900";
+}
+.flaticon-true:before {
+  content: "\f13e";
+}
+.flaticon-approval:before {
+  content: "\e901";
+}
+.flaticon-a-square:before {
+  content: "\e902";
+}
+.flaticon-a-three:before {
+  content: "\e903";
+}
+.flaticon-back:before {
+  content: "\e904";
+}
+.flaticon-calc:before {
+  content: "\e905";
+}
+.flaticon-changehistory:before {
+  content: "\e906";
+}
+.flaticon-delete:before {
+  content: "\e907";
+}
+.flaticon-documents:before {
+  content: "\e908";
+}
+.flaticon-docx:before {
+  content: "\e909";
+}
+.flaticon-done:before {
+  content: "\e90a";
+}
+.flaticon-download:before {
+  content: "\e90b";
+}
+.flaticon-downloadzip:before {
+  content: "\e90c";
+}
+.flaticon-egg1:before {
+  content: "\e90d";
+}
+.flaticon-egg2:before {
+  content: "\e90e";
+}
+.flaticon-excel:before {
+  content: "\e90f";
+}
+.flaticon-filter:before {
+  content: "\e910";
+}
+.flaticon-hie:before {
+  content: "\e911";
+}
+.flaticon-home:before {
+  content: "\e912";
+}
+.flaticon-warning:before {
+  content: "\e913";
+}
+.flaticon-information:before {
+  content: "\e914";
+}
+.flaticon-help:before {
+  content: "\e915";
+}
+.flaticon-error:before {
+  content: "\e916";
+}
+.flaticon-import:before {
+  content: "\e917";
+}
+.flaticon-key:before {
+  content: "\e918";
+}
+.flaticon-keys:before {
+  content: "\e919";
+}
+.flaticon-begin:before {
+  content: "\e91a";
+}
+.flaticon-left:before {
+  content: "\e91b";
+}
+.flaticon-right:before {
+  content: "\e91c";
+}
+.flaticon-end:before {
+  content: "\e91d";
+}
+.flaticon-lock:before {
+  content: "\e91e";
+}
+.flaticon-mail:before {
+  content: "\e91f";
+}
+.flaticon-report:before {
+  content: "\f12d";
+}
+.flaticon-new:before {
+  content: "\e920";
+}
+.flaticon-new2:before {
+  content: "\e921";
+}
+.flaticon-objects:before {
+  content: "\e922";
+}
+.flaticon-print:before {
+  content: "\e923";
+}
+.flaticon-role:before {
+  content: "\e924";
+}
+.flaticon-rss:before {
+  content: "\e925";
+}
+.flaticon-save31:before {
+  content: "\e926";
+}
+.flaticon-search:before {
+  content: "\e927";
+}
+.flaticon-tools:before {
+  content: "\e928";
+}
+.flaticon-settings2:before {
+  content: "\e929";
+}
+.flaticon-settings3:before {
+  content: "\e92a";
+}
+.flaticon-shield2:before {
+  content: "\e92b";
+}
+.flaticon-sign:before {
+  content: "\e92c";
+}
+.flaticon-sortasc:before {
+  content: "\e92d";
+}
+.flaticon-sortdesc:before {
+  content: "\e92e";
+}
+.flaticon-star:before {
+  content: "\e92f";
+}
+.flaticon-table:before {
+  content: "\e930";
+}
+.flaticon-tables:before {
+  content: "\e931";
+}
+.flaticon-unlock:before {
+  content: "\e932";
+}
+.flaticon-upload:before {
+  content: "\e933";
+}
+.flaticon-userwoman:before {
+  content: "\f145";
+}
+.flaticon-user:before {
+  content: "\e934";
+}
+.flaticon-userman:before {
+  content: "\e935";
+}
+.flaticon-users:before {
+  content: "\e936";
+}
+.flaticon-users2:before {
+  content: "\e937";
+}
+.flaticon-zip:before {
+  content: "\e938";
+}
+.flaticon-exportexcel:before {
+  content: "\e939";
+}
+.flaticon-exportexcel2:before {
+  content: "\e93a";
+}
+.flaticon-exportword:before {
+  content: "\e93b";
+}
+.flaticon-exportword2:before {
+  content: "\e93c";
+}
+.flaticon-word:before {
+  content: "\e93d";
+}
+.flaticon-pdf:before {
+  content: "\e93e";
+}
+.flaticon-exportpdf:before {
+  content: "\e93f";
+}
+.flaticon-doc:before {
+  content: "\e940";
+}
+.flaticon-xlsx:before {
+  content: "\e941";
+}
+.flaticon-money:before {
+  content: "\e942";
+}
+

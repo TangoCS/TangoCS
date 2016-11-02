@@ -118,7 +118,6 @@ hr {
 .ms-formbody {
 	vertical-align: top;
 	background: #ebf3ff;
-	/*border-top: 1px solid #d8d8d8;*/
 	padding: 3px 6px 4px 6px;
 }
 
@@ -131,7 +130,6 @@ hr {
 
 .ms-formlabel {
 	text-align: left;
-	/*border-top: 1px solid #d8d8d8;*/
 	padding-top: 3px;
 	padding-right: 8px;
 	padding-bottom: 6px;

@@ -208,6 +208,16 @@ namespace Tango.Localization
 			return textResource.Get(k);
 		}
 
+		public static string CaptionShort<T>(this IResourceManager textResource, string key)
+		{
+			var k = new ResourceKeyInfo();
+			k.Type = typeof(T);
+			k.Parts.Push(key);
+			k.Suffix = "s";
+			k.SuffixIsOptional = true;
+			return textResource.Get(k);
+		}
+
 		public static string CaptionPlural<T>(this IResourceManager textResource)
 		{
 			var t = typeof(T);
