@@ -499,24 +499,46 @@ namespace Tango.Meta.Database
 			}
 		}
 
-		public XElement GetMeta(string connectionString)
+		//public XElement GetMeta(string connectionString)
+		//{
+		//	using (var con = new SqlConnection(connectionString))
+		//	{
+		//		using (var cmd = new SqlCommand("EXEC [dbo].[usp_model]", con))
+		//		{
+		//			con.Open();
+		//			using (XmlReader reader = cmd.ExecuteXmlReader())
+		//			{
+		//				while (reader.Read())
+		//				{
+		//					var s = reader.ReadOuterXml();
+		//					return XElement.Parse(s);
+		//				}
+		//			}
+		//		}
+		//	}
+		//	return null;
+		//}
+
+		public XDocument GetSchemaFromDatabase(string connectionString)
 		{
+			XDocument doc = null;
 			using (var con = new SqlConnection(connectionString))
 			{
-				using (var cmd = new SqlCommand("EXEC [dbo].[usp_model]", con))
+				using (var cmd = new SqlCommand("EXEC dbo.usp_dbschema(:s)", con))
 				{
 					con.Open();
-					using (XmlReader reader = cmd.ExecuteXmlReader())
+					cmd.Parameters.Add(new SqlParameter("s", _SchemaName));
+					using (var reader = cmd.ExecuteReader())
 					{
 						while (reader.Read())
 						{
-							var s = reader.ReadOuterXml();
-							return XElement.Parse(s);
+							string s = reader.GetString(0);
+							doc = XDocument.Parse(s);
 						}
 					}
 				}
 			}
-			return null;
+			return doc;
 		}
 
 
