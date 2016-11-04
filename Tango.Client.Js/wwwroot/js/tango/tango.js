@@ -181,30 +181,16 @@ var ajaxUtils = function ($, cu) {
 			var deferreds = [];
 			var toLoad = apiResult instanceof Array ? apiResult : apiResult.includes;
 
+			var r = $.Deferred();
 			if (toLoad && toLoad.length > 0) {
-				for (i = 0; i < toLoad.length; i++) {
-					var s = toLoad[i];
-					if ($.inArray(s, _requestedJs) < 0) {
-						deferreds.push(
-							$.ajax({
-								type: "GET",
-								url: s,
-								dataType: "script",
-								//cache: true,
-								crossDomain: true
-							})
-						);
-						_requestedJs.push(s);
-						console.log('requested ' + s);
-					}
-				}
+				loadScript(r, toLoad, 0);
+				return r.then(function () {
+					console.log('loadScripts done');
+					return $.Deferred().resolve(apiResult);
+				});
 			}
-
-			if (deferreds.length == 0)
-				return $.Deferred().resolve(apiResult);
-			else {
-				return $.when.apply($, deferreds).then(function () { return $.Deferred().resolve(apiResult); });
-			}
+			else
+				return r.resolve(apiResult);
 		},
 		prepareUrl: function (target, args) {
 			_event = target.e;
@@ -246,6 +232,30 @@ var ajaxUtils = function ($, cu) {
 
 	var _topMessage = $("#topmessagecontainer");
 
+	function loadScript(def, toLoad, cur) {
+		if ($.inArray(toLoad[cur], _requestedJs) >= 0) {
+			if (toLoad.length - 1 > cur)
+				return loadScript(def, toLoad, cur + 1);
+			else
+				return def.resolve();
+		}
+		_requestedJs.push(toLoad[cur]);
+		return $.ajax({
+			type: "GET",
+			url: toLoad[cur],
+			dataType: "script",
+			beforeSend: function () { console.log('requested ' + this.url); },
+			success: function () {
+				console.log('loaded ' + this.url);
+				if (toLoad.length - 1 > cur)
+					loadScript(def, toLoad, cur + 1);
+				else
+					def.resolve();
+			},
+			crossDomain: true
+		});
+	}
+
 	function beforeRequest(event, xhr, settings) {
 		_requestInProcess = cu.createGuid();
 		xhr.setRequestHeader('x-request-guid', _requestInProcess)
@@ -278,6 +288,7 @@ var ajaxUtils = function ($, cu) {
 	}
 
 	function processApiResponse(apiResult) {
+		console.log('processApiResponse');
 		if (!apiResult) return;
 
 		if (apiResult.url) {

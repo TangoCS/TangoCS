@@ -370,6 +370,19 @@ td.showDragHandle {
 	display: table;
 	background-color: #FFF0C6;
 	padding: 0px 4px;
+	display: inline-block;
+}
+.grouptoolbar {
+	display: inline-block;
+}
+.grouptoolbar a {
+	margin-left: 4px;
+    padding: 3px 9px;
+	border: 1px solid #fff;
+}
+.grouptoolbar a:hover {
+	background-color: #fcfcfc;
+	border: 1px solid #aaa;
 }
 
 /* Twitter bootstrap labels */

@@ -164,7 +164,7 @@ namespace Tango.UI.Controls
 
 		public ActionLink WithCondition(bool cond)
 		{
-			_condition = cond;
+			_condition = _condition && cond;
 			return this;
 		}
 	}
