@@ -73,6 +73,7 @@ namespace Tango.UI
 		}
 
 		public virtual void OnInit() { }
+		public virtual void AfterInit() { }
 
 		public string GetClientID(string id)
 		{
@@ -92,6 +93,7 @@ namespace Tango.UI
 
 			setProperties?.Invoke(c);
 			c.OnInit();
+			c.AfterInit();
 			return c;
 		}
 
@@ -107,6 +109,7 @@ namespace Tango.UI
 
 			Context.EventReceivers.Add(c.ClientID, c);
 			c.OnInit();
+			c.AfterInit();
 			return c;
 		}
 	}
