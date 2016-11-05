@@ -1,1 +1,1 @@
-xcopy /Y /S /D "C:\Projects\TangoCS\Tango.Client.Js\wwwroot" "%1\wwwroot\"
+xcopy /Y /S /D "..\..\TangoCS\Tango.Client.Js\wwwroot" "%1\wwwroot\"
