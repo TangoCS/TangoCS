@@ -19,7 +19,7 @@ namespace Tango.UI.Controls
 
 			w.TextBox(name, showTime ? value.DateTimeToString() : value.DateToString(), a =>
 				a.ID(name).Placeholder("ДД.ММ.ГГГГ").Style("width:" + (showTime ? "130px" : "100px"))
-				.OnKeyPress("return jscal_calendarHelper(event)").Disabled(!enabled)
+				.OnKeyPress("return calendarcontrol.keypress(event)").Disabled(!enabled)
 			);
 			if (enabled)
 			{
@@ -27,6 +27,7 @@ namespace Tango.UI.Controls
 
 				w.Includes.Add("calendar/calendar_stripped.js");
 				w.Includes.Add("calendar/lang/calendar-ru.js");
+				w.Includes.Add("calendar/calendarcontrol.js");
 
 				w.AddClientAction("Calendar", "setup", new {
 					inputField = w.GetID(name),
