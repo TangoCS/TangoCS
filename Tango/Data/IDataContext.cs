@@ -30,11 +30,12 @@ namespace Tango.Data
 		IQueryable GetTable(Type t);
 		T Get<T, TKey>(TKey id);
 
-		void InsertOnSubmit<T>(T obj) where T : class;
-		void DeleteOnSubmit<T>(T obj) where T : class;
-		void DeleteAllOnSubmit<T>(IEnumerable<T> obj) where T : class;
-		void AttachOnSubmit<T>(T obj) where T : class;
+		void InsertOnSubmit<T>(T obj, int? index = null) where T : class;
+		void DeleteOnSubmit<T>(T obj, int? index = null) where T : class;
+		void DeleteAllOnSubmit<T>(IEnumerable<T> obj, int? index = null) where T : class;
+		void AttachOnSubmit<T>(T obj, int? index = null) where T : class;
 		void CommandOnSubmit(string query, params object[] parms);
+		void CommandOnSubmit(string query, int index, params object[] parms);
 
 		void SubmitChanges();
 

@@ -304,29 +304,58 @@ namespace Tango.Hibernate
 			return Session.Get<T>(id);
 		}
 
-		public void InsertOnSubmit<T>(T obj) where T : class
+		public void InsertOnSubmit<T>(T obj, int? index = null) where T : class
 		{
-			SaveActions.Add(t => _session.SaveOrUpdate(obj));
+			if (index == null)
+				SaveActions.Add(t => _session.SaveOrUpdate(obj));
+			else
+				SaveActions.Insert(index.Value, t => _session.SaveOrUpdate(obj));
 		}
-		public void DeleteOnSubmit<T>(T obj) where T : class
+		public void DeleteOnSubmit<T>(T obj, int? index = null) where T : class
 		{
-			SaveActions.Add(t => _session.Delete(obj));
+			if (index == null)
+				SaveActions.Add(t => _session.Delete(obj));
+			else
+				SaveActions.Insert(index.Value, t => _session.Delete(obj));
 		}
-		public void DeleteAllOnSubmit<T>(IEnumerable<T> objs) where T : class
+		public void DeleteAllOnSubmit<T>(IEnumerable<T> objs, int? index = null) where T : class
 		{
-			SaveActions.Add(t => {
-				foreach (var obj in objs)
-					_session.Delete(obj);
-			});
+			if (index == null)
+				SaveActions.Add(t => {
+					foreach (var obj in objs)
+						_session.Delete(obj);
+				});
+			else
+				SaveActions.Insert(index.Value, t => {
+					foreach (var obj in objs)
+						_session.Delete(obj);
+				});
 		}
-		public void AttachOnSubmit<T>(T obj) where T : class
+		public void AttachOnSubmit<T>(T obj, int? index = null) where T : class
 		{
-			SaveActions.Add(t => _session.Merge(obj));
+			if (index == null)
+				SaveActions.Add(t => _session.Merge(obj));
+			else
+				SaveActions.Insert(index.Value, t => _session.Merge(obj));
 		}
 
 		public void CommandOnSubmit(string query, params object[] parms)
 		{
 			SaveActions.Add(t => {
+				using (var comm = _session.Connection.CreateCommand())
+				{
+					comm.CommandText = query;
+					t.Enlist(comm);
+					foreach (var parm in parms)
+						comm.Parameters.Add(parm);
+					comm.ExecuteNonQuery();
+				}
+			});
+		}
+
+		public void CommandOnSubmit(string query, int index, params object[] parms)
+		{
+			SaveActions.Insert(index, t => {
 				using (var comm = _session.Connection.CreateCommand())
 				{
 					comm.CommandText = query;
