@@ -142,6 +142,12 @@ namespace Tango
 		{
 			var d = dd[name];
 			if (d == null) return defaultValue;
+			if (typeof(T) == typeof(DateTime?) || typeof(T) == typeof(DateTime))
+			{
+				var ds = d.ToString();
+				if (ds.IsEmpty()) return defaultValue;
+				return (T)(object)DateTime.ParseExact(ds, dd["__format_" + name]?.ToString() ?? "yyyy-MM-dd", CultureInfo.InvariantCulture);
+			}
 			return Parse(d, defaultValue);
 		}
 

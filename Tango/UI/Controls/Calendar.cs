@@ -18,7 +18,7 @@ namespace Tango.UI.Controls
 			if (value == DateTime.MinValue) value = null;
 
 			w.TextBox(name, showTime ? value.DateTimeToString() : value.DateToString(), a =>
-				a.ID(name).Placeholder("ДД.ММ.ГГГГ").Style("width:" + (showTime ? "130px" : "100px"))
+				a.ID(name).Data("format", "dd.MM.yyyy").Placeholder("ДД.ММ.ГГГГ").Style("width:" + (showTime ? "130px" : "100px"))
 				.OnKeyPress("return calendarcontrol.keypress(event)").Disabled(!enabled)
 			);
 			if (enabled)
