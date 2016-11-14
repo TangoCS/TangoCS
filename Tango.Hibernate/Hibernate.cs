@@ -89,8 +89,16 @@ namespace Tango.Hibernate
 					f = _sessionFactories[t];
 				else
 				{
-					f = Configuration.BuildSessionFactory();
-					_sessionFactories.Add(t, f);
+					lock (_sessionFactories)
+					{
+						if (_sessionFactories.ContainsKey(t))
+							f = _sessionFactories[t];
+						else
+						{
+							f = Configuration.BuildSessionFactory();
+							_sessionFactories.Add(t, f);
+						}
+					}
 				}
 				return f;
 			}
