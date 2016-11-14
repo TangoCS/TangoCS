@@ -145,7 +145,17 @@ namespace Tango
 			return Parse(d, defaultValue);
 		}
 
-		public static DateTime? ParseDateTime(this DynamicDictionary dd, string name, string format, DateTime? defaultValue = null)
+		public static DateTime? ParseDateTime(this DynamicDictionary dd, string name, string format)
+		{
+			var d = dd[name];
+			if (d == null) return null;
+			var ds = d.ToString();
+			if (ds.IsEmpty()) return null;
+
+			return DateTime.ParseExact(ds, format, CultureInfo.InvariantCulture);
+		}
+
+		public static DateTime ParseDateTime(this DynamicDictionary dd, string name, string format, DateTime defaultValue)
 		{
 			var d = dd[name];
 			if (d == null) return defaultValue;

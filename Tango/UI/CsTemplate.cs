@@ -35,6 +35,11 @@ namespace Tango.UI
 
 		public DateTime? GetPostedDateTime(string name, string format, DateTime? defaultValue = null)
 		{
+			return Context.FormData.ParseDateTime(name, format);
+		}
+
+		public DateTime GetPostedDateTime(string name, string format, DateTime defaultValue)
+		{
 			return Context.FormData.ParseDateTime(name, format, defaultValue);
 		}
 
