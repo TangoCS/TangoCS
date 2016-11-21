@@ -84,7 +84,7 @@ namespace Tango.UI
 
 		public static void LabelDefault(this LayoutWriter w, string text)
 		{
-			w.Span(a => a.Class("label"), text);
+			w.Span(a => a.Class("label label-default"), text);
 		}
 
 		public static void LabelSuccess(this LayoutWriter w, string text)
