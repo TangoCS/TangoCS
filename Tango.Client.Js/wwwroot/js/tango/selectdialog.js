@@ -8,7 +8,7 @@ var selectSingleObjectDialog = function (au, cu, dialog) {
 			var el = $("#" + $("#" + id).attr('data-value-id'));
 			el.val(d.selectedObj);
 			dialog.hide(id);
-			au.runEventFromElementWithApiResponse(el[0], { e: 'submitdialog', r: id });
+			au.postEventFromElementWithApiResponse(el[0], { e: 'submitdialog', r: id });
 		},
 		setupItems: function (caller, id) {
 			var d = dialog.instances[id];
@@ -59,9 +59,13 @@ var selectMultipleObjectsDialog = function (au, cu, dialog) {
 		},
 		setupItems: function (caller, id) {
 			var d = dialog.instances[id];
-			if (!d.selectedObjs)
-				d.selectedObjs = $("#" + $("#" + id).attr('data-value-id')).val().split(",");
-
+			if (!d.selectedObjs) {
+				var val = $("#" + $("#" + id).attr('data-value-id')).val();
+				if (val != '')
+					d.selectedObjs = val.split(",");
+				else
+					d.selectedObjs = [];
+			}
 			$("#" + id + "_list :input").each(function () {
 				var el = $(this);
 				if ($.inArray(el.val(), d.selectedObjs) >= 0) {
