@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Globalization;
 
 namespace Tango.UI
 {
@@ -88,6 +89,34 @@ namespace Tango.UI
 			if (b) return Guid.Parse(s.ToString());
 			return null;
 		}
+
+		public static DateTime GetDateTimeArg(this ActionContext ctx, string name, DateTime defaultValue)
+		{
+			return ctx.GetDateTimeArg(name) ?? defaultValue;
+		}
+
+		public static DateTime GetDateTimeArg(this ActionContext ctx, string name, string format, DateTime defaultValue)
+		{
+			return ctx.GetDateTimeArg(name, format) ?? defaultValue;
+		}
+
+		public static DateTime? GetDateTimeArg(this ActionContext ctx, string name, string format = "yyyyMMdd")
+		{
+			object s = null;
+			bool b = ctx.AllArgs.TryGetValue(name, out s);
+			if (b)
+			{
+				DateTime dt;
+				b = DateTime.TryParseExact(s.ToString(), format, null, DateTimeStyles.None, out dt);
+				if (b)
+					return dt;
+				else
+					return null;
+			}
+			return null;
+		}
+
+
 		public static T GetArg<T>(this ActionContext ctx, string name)
 		{
 			return ctx.AllArgs.Parse<T>(name);
