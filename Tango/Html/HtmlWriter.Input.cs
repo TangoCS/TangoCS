@@ -55,7 +55,7 @@ namespace Tango.Html
 		}
 		public static void SubmitButton(this IHtmlWriter w, Action<ButtonTagAttributes> attributes = null, string text = "OK")
 		{
-			w.SubmitButton(a => a.Class("btn").Set(attributes), () => w.Write(text));
+			w.SubmitButton(a => a.Class("btn btn-primary").Set(attributes), () => w.Write(text));
 		}
 
 		public static void ResetButton(this IHtmlWriter w, Action<ButtonTagAttributes> attributes, Action inner)

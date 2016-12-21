@@ -10,11 +10,13 @@ namespace Tango.AccessControl
 	{
 		public string AdminRoleName { get; set; }
 		public Func<bool> Enabled { get; set; }
+		public Func<bool> DefaultAccess { get; set; }
 
 		public AccessControlOptions()
 		{
 			AdminRoleName = "Administrator";
 			Enabled = () => true;
+			DefaultAccess = () => false;
 		}
 	}
 }

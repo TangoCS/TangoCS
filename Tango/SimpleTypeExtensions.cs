@@ -28,6 +28,14 @@ namespace Tango
 			return defaultValue;
 		}
 
+		public static long? ToInt64(this string src)
+		{
+			long x;
+			if (long.TryParse(src, out x))
+				return x;
+			return null;
+		}
+
 		public static int? ToInt32(this string src)
 		{
 			int x;

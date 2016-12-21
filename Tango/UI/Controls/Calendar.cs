@@ -12,7 +12,7 @@ namespace Tango.UI.Controls
 	{
 		public static void Calendar(this LayoutWriter w, string name, DateTime? value = null, bool enabled = true, bool showTime = false)
 		{
-			string basePath = GlobalSettings.JSPath + "Calendar/";
+			string basePath = GlobalSettings.JSPath + "calendar/";
 
 			//c.Page.RegisterScript("calendar-setup", basePath + "calendar-setup_stripped.js");
 			if (value == DateTime.MinValue) value = null;

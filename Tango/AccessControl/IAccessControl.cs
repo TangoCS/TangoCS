@@ -7,9 +7,9 @@ namespace Tango.AccessControl
 {
 	public interface IAccessControl
 	{
-		bool Check(string securableObjectKey, bool defaultAccess = false);
-		BoolResult CheckPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false);
-		CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false);
+		bool Check(string securableObjectKey, bool? defaultAccess = null);
+		BoolResult CheckPredicate(string securableObjectKey, object predicateContext, bool? defaultAccess = null);
+		CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool? defaultAccess = null);
 	}
 
 	public class CheckWithPredicateResult : BoolResult
