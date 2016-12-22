@@ -11,30 +11,22 @@ namespace Tango.UI.Controls
 	public class ListFilterEngine
 	{
 		public static bool BoolAsInt = false;
+		public static StringContainsMapStrategy StringContainsMapStrategy = StringContainsMapStrategy.Contains;
 
 		IResourceManager Resources { get; set; }
-
-		List<Field> _fieldList;
-		List<FilterItem> _criteria;
-  
-		public ListFilterEngine(
-			IResourceManager resources, 
-			List<FilterItem> criteria,
-			List<Field> fieldList)
+		public ListFilterEngine(IResourceManager resources)
 		{
 			Resources = resources;
-			_criteria = criteria;
-			_fieldList = fieldList;
         }
 
-		public IQueryable<T> ApplyFilter<T>(IQueryable<T> query)
+		public IQueryable<T> ApplyFilter<T>(IQueryable<T> query, List<Field> fieldList, List<FilterItem> criteria)
 		{
 			IQueryable<T> newquery = query;
 
 			// Преобразование в ОПН
 			Stack<object> stack = new Stack<object>();
 			List<object> pnlist = new List<object>();
-			pnlist = GetPolishNotation();
+			pnlist = ListFieldEngineHelper.GetPolishNotation(Resources, criteria);
 
 			if (pnlist.Count == 0)
 				return query;
@@ -46,7 +38,7 @@ namespace Tango.UI.Controls
 					var item = it as FilterItem;
 
 					Expression<Func<T, bool>> expr = null;
-					Field f = _fieldList.SingleOrDefault<Field>(f1 => f1.Title == item.Title);
+					Field f = fieldList.SingleOrDefault<Field>(f1 => f1.Title == item.Title);
 					if (f == null)
 						continue;
 
@@ -56,10 +48,22 @@ namespace Tango.UI.Controls
 
 					if (item.Condition == Resources.Get("System.Filter.Contains") && f.FieldType == FieldType.String)
 					{
-						MethodCallExpression mc = Expression.Call(column.Body,
-							typeof(string).GetMethod("Contains", new Type[] { typeof(string) }),
-							Expression.Constant(item.Value.ToLower()));
-						expr = Expression.Lambda<Func<T, bool>>(mc, column.Parameters);
+						if (StringContainsMapStrategy == StringContainsMapStrategy.Contains)
+						{
+							MethodCallExpression mc = Expression.Call(column.Body,
+								typeof(string).GetMethod("Contains", new Type[] { typeof(string) }),
+								Expression.Constant(item.Value.ToLower()));
+							expr = Expression.Lambda<Func<T, bool>>(mc, column.Parameters);
+						}
+						else if (StringContainsMapStrategy == StringContainsMapStrategy.IndexOfWithOrdinalIgnoreCase)
+						{
+							var mc = Expression.GreaterThanOrEqual(
+								Expression.Call(column.Body,
+								typeof(string).GetMethod("IndexOf", new Type[] { typeof(string), typeof(StringComparison) }),
+								Expression.Constant(item.Value.ToLower()), Expression.Constant(StringComparison.OrdinalIgnoreCase)),
+								Expression.Constant(0));
+							expr = Expression.Lambda<Func<T, bool>>(mc, column.Parameters);
+						}
 					}
 
 					if (item.Condition == Resources.Get("System.Filter.StartsWith") && f.FieldType == FieldType.String)
@@ -353,13 +357,16 @@ namespace Tango.UI.Controls
 
 			throw new Exception(Resources.Get("System.Filter.Error.UnsupportedTypeExpression") + x.GetType().ToString() + " : " + x.GetType().BaseType.Name);
 		}
+	}
 
-		public List<object> GetPolishNotation()
+	public static class ListFieldEngineHelper
+	{
+		public static List<object> GetPolishNotation(IResourceManager resources, List<FilterItem> criteria)
 		{
 			// Преобразование в ОПН
 			Stack<object> stack = new Stack<object>();
 			List<object> pnlist = new List<object>();
-			foreach (FilterItem item in _criteria)
+			foreach (FilterItem item in criteria)
 			{
 				if (item.Not)
 					stack.Push('!');
@@ -373,7 +380,7 @@ namespace Tango.UI.Controls
 				for (int i = 0; i < item.CloseBracketCount; i++)
 				{
 					if (stack.Count == 0)
-						throw new Exception(Resources.Get("System.Filter.Error.BracketsNotConsistent"));
+						throw new Exception(resources.Get("System.Filter.Error.BracketsNotConsistent"));
 					object obj = stack.Pop();
 					do
 					{
@@ -381,7 +388,7 @@ namespace Tango.UI.Controls
 							break;
 						pnlist.Add(obj);
 						if (stack.Count == 0)
-							throw new Exception(Resources.Get("System.Filter.Error.BracketsNotConsistent"));
+							throw new Exception(resources.Get("System.Filter.Error.BracketsNotConsistent"));
 						obj = stack.Pop();
 					} while ((char)obj != '(');
 				}
@@ -398,7 +405,7 @@ namespace Tango.UI.Controls
 			{
 				object si = stack.Pop();
 				if (si is char && (char)si == '(')
-					throw new Exception(Resources.Get("System.Filter.Error.BracketsNotConsistent"));
+					throw new Exception(resources.Get("System.Filter.Error.BracketsNotConsistent"));
 				pnlist.Add(si);
 			}
 
@@ -473,6 +480,12 @@ namespace Tango.UI.Controls
 	{
 		And,
 		Or
+	}
+
+	public enum StringContainsMapStrategy
+	{
+		Contains,
+		IndexOfWithOrdinalIgnoreCase
 	}
 
 	public interface IPersistentFilter<TKey>
