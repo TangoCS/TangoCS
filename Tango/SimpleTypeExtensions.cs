@@ -192,6 +192,12 @@ namespace Tango
 			return defaultValue;
 		}
 
+		static int[] quarters = new int[] { 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4 };
+		public static int Quarter(this DateTime date)
+		{
+			return quarters[date.Month - 1];
+		}
+
 		public static string Icon(this bool src)
 		{
 			if (src)
