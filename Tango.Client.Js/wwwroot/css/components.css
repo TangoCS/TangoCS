@@ -555,11 +555,11 @@ button.close {
 
 
 
-.tabs2 ul {
-    width: 700px;
+.tabs2 > ul {
+    width: 100%;
 }    
  
-.tabs2 ul {
+.tabs2 > ul {
     margin: 0;
     padding: 0 0 0 16px;
     list-style: none;
