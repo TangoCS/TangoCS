@@ -28,6 +28,14 @@ namespace Tango
 			return defaultValue;
 		}
 
+		public static long? ToInt64(this string src)
+		{
+			long x;
+			if (long.TryParse(src, out x))
+				return x;
+			return null;
+		}
+
 		public static int? ToInt32(this string src)
 		{
 			int x;
@@ -182,6 +190,12 @@ namespace Tango
 			if (src.HasValue)
 				return src.Value.ToString("dd.MM.yyyy HH:mm");
 			return defaultValue;
+		}
+
+		static int[] quarters = new int[] { 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4 };
+		public static int Quarter(this DateTime date)
+		{
+			return quarters[date.Month - 1];
 		}
 
 		public static string Icon(this bool src)

@@ -110,8 +110,9 @@ var ajaxUtils = function ($, cu) {
 			}
 			timer = window.setTimeout(function () { func(caller); }, 400);
 		},
-		setHash: function (e, args) {
-			if (e) _event = e;
+		setHash: function (target, args) {
+			if (target.e) _event = target.e;
+			if (target.r) _eventReceiver = target.r;
 			instance.setHashParms(args);
 		},
 		setHashFromElement: function (el, e, r) {
@@ -200,6 +201,7 @@ var ajaxUtils = function ($, cu) {
 		prepareUrl: function (target, args) {
 			_event = target.e;
 			if (!_event) _event = 'onload';
+			_hash = cu.getHashParams();
 
 			var url = target.url ? target.url : '/api' + window.location.pathname;
 			if (window.location.search == '')
@@ -370,8 +372,7 @@ var ajaxUtils = function ($, cu) {
 
 		$(window).on('hashchange', function () {
 			if (!window.location.hash.startsWith('#/')) return;
-			_hash = cu.getHashParams();
-			instance.runEventWithApiResponse({ e: _event, r: _eventReceiver });
+			if (_event) instance.runEventWithApiResponse({ e: _event, r: _eventReceiver });
 		});
 
 		$(document).ajaxSend(beforeRequest);

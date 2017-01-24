@@ -13,5 +13,11 @@ namespace Tango.Html
 	public class HtmlWriter : StringWriter, IHtmlWriter
 	{
 		public string IDPrefix { get; set; }
+
+		public override void WriteLine(string value)
+		{
+			Write(value);
+			Write("<br/>");
+		}
 	}
 }

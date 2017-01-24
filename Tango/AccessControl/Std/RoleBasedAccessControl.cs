@@ -31,16 +31,16 @@ namespace Tango.AccessControl.Std
 		}
 
 		protected abstract IRoleBasedAccessControlStoreBase<int> _baseDataContext { get; }
-		public abstract bool Check(string securableObjectKey, bool defaultAccess = false);
+		public abstract bool Check(string securableObjectKey, bool? defaultAccess = null);
 		public abstract bool CheckForRole(int roleID, string securableObjectKey);
 
-		public BoolResult CheckPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
+		public BoolResult CheckPredicate(string securableObjectKey, object predicateContext, bool? defaultAccess = null)
 		{
 			if (!_options.Enabled()) return BoolResult.True;
 			return _predicateChecker.Check(securableObjectKey, predicateContext);
 		}
 
-		public CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool defaultAccess = false)
+		public CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool? defaultAccess = null)
 		{
 			if (!_options.Enabled()) return new CheckWithPredicateResult(true, CheckWithPredicateResultCode.AccessGranted);
 
@@ -91,9 +91,10 @@ namespace Tango.AccessControl.Std
 			throw new NotImplementedException();
 		}
 
-		public override bool Check(string securableObjectKey, bool defaultAccess = false)
+		public override bool Check(string securableObjectKey, bool? defaultAccess = null)
 		{
 			string key = securableObjectKey.ToUpper();
+			if (defaultAccess == null) defaultAccess = _options.DefaultAccess();
 			if (AllowItems.Contains(key)) return true;
 			if (DisallowItems.Contains(key)) return false;
 
@@ -101,7 +102,7 @@ namespace Tango.AccessControl.Std
 
 			if (_access.Count == 0)
 			{
-				if (defaultAccess || HasRole(_options.AdminRoleName))
+				if (defaultAccess.Value || HasRole(_options.AdminRoleName))
 				{
 					if (!AllowItems.Contains(key))
 					{
@@ -117,7 +118,7 @@ namespace Tango.AccessControl.Std
 					}
 					_logger.Write(key + ": false (default/admin access denied)");
 				}
-				return defaultAccess || HasRole(_options.AdminRoleName);
+				return defaultAccess.Value || HasRole(_options.AdminRoleName);
 			}
 
 			if (Roles.Select(o => o.Id).Intersect(_access).Count() > 0)
@@ -184,10 +185,11 @@ namespace Tango.AccessControl.Std
 			}
 		}
 
-		public override bool Check(string securableObjectKey, bool defaultAccess = false)
+		public override bool Check(string securableObjectKey, bool? defaultAccess = null)
 		{
 			if (!_options.Enabled()) return true;
 			string key = securableObjectKey.ToUpper();
+			if (defaultAccess == null) defaultAccess = _options.DefaultAccess();
 
 			if (AllowItems.Contains(key)) return true;
 			if (DisallowItems.Contains(key)) return false;
@@ -200,7 +202,7 @@ namespace Tango.AccessControl.Std
 
 			if (!_items.Contains(key))
 			{
-				if (defaultAccess || HasRole(_options.AdminRoleName))
+				if (defaultAccess.Value || HasRole(_options.AdminRoleName))
 				{
 					if (!AllowItems.Contains(key))
 					{
@@ -216,7 +218,7 @@ namespace Tango.AccessControl.Std
 					}
 					_logger.Write(key + ": false (default/admin access denied)");
 				}
-				return defaultAccess || HasRole(_options.AdminRoleName);
+				return defaultAccess.Value || HasRole(_options.AdminRoleName);
 			}
 
 			HashSet<string> _checking = new HashSet<string>(Roles.Select(o => key + "-" + o.Id.ToString()));

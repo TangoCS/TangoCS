@@ -86,7 +86,7 @@ namespace Tango.UI
 
 		public static void ButtonsBarWhiteSpace(this LayoutWriter w)
 		{
-			w.Td(a => a.Style("width:100%"));
+			w.Td(a => a.Class("buttonbarwhitespace"));
 		}
 
 		public static void ButtonsBarItem(this LayoutWriter w, Action content)

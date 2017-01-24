@@ -17,7 +17,7 @@ namespace Tango.Identity.Std
 	{
 		public static string GetClaim(this IdentityUser user, string claimType)
 		{
-			return user.Claims.FirstOrDefault(o => o.ClaimType == claimType).ClaimValue;
+			return user.Claims.FirstOrDefault(o => o.ClaimType == claimType)?.ClaimValue;
 		}
 	}
 }

@@ -561,7 +561,7 @@ button.close {
  
 .tabs2 > ul {
     margin: 0;
-    padding: 0 0 0 16px;
+    padding: 5px 0 0 16px;
     list-style: none;
 	box-sizing: border-box;
     border-bottom: 1px solid #ccc;
@@ -572,7 +572,7 @@ button.close {
     padding: 0;
 	display: block;
     float: left;
-    margin: 5px 0 0 -1px;
+    margin: 0 0 0 -1px;
 }
  
 .tabs2 li > div
@@ -580,10 +580,7 @@ button.close {
     top: 33px;
     bottom: 0;
     left: 0;
-    /*width: 100%;*/
     padding: 8px;
-    /*overflow: auto;*/
-    /*background: #fff;*/
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
@@ -591,23 +588,14 @@ button.close {
  
 .tabs2 input[type="radio"] + label
 {
-	/*box-sizing: border-box;
-    margin: 0 0px 0px 0;
-    padding: 0 18px;
-    line-height: 32px;
-    background: #f1f1f1;
-    text-align: center;
-    border-radius: 5px 5px 0 0;
-    cursor: pointer;
-    -moz-user-select: none;
-    -webkit-user-select: none;
-    user-select: none;*/
 	display: block;
     border: 1px solid #ccc;
     margin-bottom: -1px;
     padding: 4px 10px 3px 10px;
 	background: #f1f1f1;
 	border-radius: 5px 5px 0 0;
+	cursor: pointer;
+	user-select: none;
 }
  
 .tabs2 input[type="radio"]:checked + label

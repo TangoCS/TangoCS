@@ -46,6 +46,9 @@ namespace Tango.UI
 		public static void Td(this LayoutWriter l, int? content) => l.Td(null, content?.ToString());
 		public static void Td(this LayoutWriter l, decimal? content) => l.Td(null, content?.ToString());
 
+		public static void Td(this LayoutWriter l, Action<TdTagAttributes> attributes, int content) => l.Td(attributes, content.ToString());
+		public static void Td(this LayoutWriter l, Action<TdTagAttributes> attributes, decimal content) => l.Td(attributes, content.ToString());
+
 		public static void Td<T>(this LayoutWriter l, Action<TdTagAttributes> attributes, T? content)
 			where T : struct
 		{

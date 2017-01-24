@@ -10,7 +10,7 @@ namespace Tango.UI.Controls
 			if (url.IsEmpty()) url = c.Context.GetArg("returnurl");
 			if (title.IsEmpty()) title = c.Resources.Get("Common.Back");
 			//c.Button(a => a.OnClick($"document.location='{url}';return false;").Set(attrs), title);
-			c.Button(a => a.OnClick($"window.location.href='{url}';return false;").Set(attrs), title);
+			c.Button(a => a.Class("btn-default").OnClick($"window.location.href='{url}';return false;").Set(attrs), title);
 			
 		}
 

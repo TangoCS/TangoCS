@@ -157,6 +157,10 @@ hr {
 	height: 2.1em;
 }
 
+.buttonbarwhitespace {
+	width: 100%;
+}
+
 
 /* lists */
 .ms-listviewtable th {
