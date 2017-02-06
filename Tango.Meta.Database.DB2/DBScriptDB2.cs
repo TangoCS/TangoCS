@@ -425,7 +425,6 @@ namespace Tango.Meta.Database
             return "XML";
         }
 
-
         public string GetStringValue(DB2DataReader reader, int index)
         {
             if (reader.IsDBNull(index))
@@ -565,8 +564,6 @@ namespace Tango.Meta.Database
 			_MainScripts.Add(string.Format("SET INTEGRITY FOR {1}.{0} IMMEDIATE CHECKED FORCE GENERATED;", currentTable.Name.ToUpper(), _SchemaName));
         }
 
-
-
         public void DeleteDefaultValue(Column currentColumn)
         {
             _MainScripts.Add(string.Format("ALTER TABLE {2}.{1} ALTER COLUMN {0} DROP DEFAULT;", currentColumn.Name.ToUpper(), currentColumn.Table.Name.ToUpper(), _SchemaName));
@@ -580,22 +577,22 @@ namespace Tango.Meta.Database
             //_MainScripts.Add(Checked(srcColumn.CurrentTable.Name.ToUpper()));
         }
 
-
-
         public void DeleteIndex(Index currentIndex)
         {
             _MainScripts.Add(string.Format("DROP INDEX {0};", currentIndex.Name));
         }
-
 
         public void SyncIdentity(Table srcTable)
         {
 
         }
 
+		public XDocument GetSchemaFromDatabase(string connectionString)
+		{
+			throw new NotImplementedException();
+		}
 
-
-        public XElement GetMeta(string connectionString)
+		public XElement GetMeta(string connectionString)
         {
 			using (var con = new DB2Connection(connectionString))
             {
@@ -690,5 +687,5 @@ namespace Tango.Meta.Database
 				 SET INTEGRITY FOR DBO." + tableName + @" IMMEDIATE CHECKED; 
 					";
         }
-    }
+	}
 }
