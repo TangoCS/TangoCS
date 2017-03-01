@@ -29,6 +29,14 @@ var commonUtils = function ($) {
 				var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
 				return v.toString(16);
 			});
+		},
+		hideShow: function(id) {
+			var x = document.getElementById(id);
+			if (x.style.display === 'none') {
+				x.style.display = 'block';
+			} else {
+				x.style.display = 'none';
+			}
 		}
 	}
 
@@ -81,9 +89,9 @@ var ajaxUtils = function ($, cu) {
 				return instance.formSubmit(e.data.el);
 			});
 			if (!args.submitOnEnter) {
-			    form.on("keypress", ":input:not(textarea):not([type=submit])", function (e) {
-			        return e.keyCode != 13;
-			    });
+				form.on("keypress", ":input:not(textarea):not([type=submit])", function (e) {
+					return e.keyCode != 13;
+				});
 			}
 		},
 		formSubmit: function (form) {
@@ -97,13 +105,13 @@ var ajaxUtils = function ($, cu) {
 		},
 		error: function (xhr, status, e) {
 			if (e && e.message)
-				document.documentElement.innerHTML = 'Javascript error<br>' + e.message + '<br>' + e.stack;
+				document.documentElement.innerHTML = 'Javascript error<br/>' + e.message + '<br>' + e.stack;
 			else if (e && this.url && xhr.status != '500')
-				document.documentElement.innerHTML = 'Ajax error<br>' + this.url + '<br>' + xhr.status + ' ' + e;
+				document.documentElement.innerHTML = 'Ajax error<br/>' + this.url + '<br>' + xhr.status + ' ' + e;
 			else
 				document.documentElement.innerHTML = xhr.responseText;
 		},
-		delay: function(caller, func) {
+		delay: function (caller, func) {
 			if (timer) {
 				window.clearTimeout(timer);
 				timer = null;
@@ -111,23 +119,27 @@ var ajaxUtils = function ($, cu) {
 			timer = window.setTimeout(function () { func(caller); }, 400);
 		},
 		setHash: function (target, args) {
-			if (target.e) _event = target.e;
+			if (target.e)
+				_event = target.e;
+			else
+				_event = '#';
 			if (target.r) _eventReceiver = target.r;
 			instance.setHashParms(args);
 		},
-		setHashFromElement: function (el, e, r) {
+		setHashFromElement: function (el) {
 			var data = {};
-			processElementData(el, data);
+			processElementDataOnAction(el, data);
 			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)
 				data[el.name] = el.value;
-			if (e) _event = e;
-			if (r) _eventReceiver = r;
 			instance.setHashParms(data);
 		},
 		setHashParms: function (args) {
 			if (args) {
 				for (key in args) {
-					_hash[key] = args[key];
+					if (key == 'e')
+						_event = args[key];
+					else
+						_hash[key] = args[key];
 				}
 			}
 			var hashUrl = '/';
@@ -156,7 +168,7 @@ var ajaxUtils = function ($, cu) {
 		},
 		runEventFromElementWithApiResponse: function (el, target) {
 			var data = {};
-			processElementData(el, data);
+			processElementDataOnEvent(el, data);
 			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)
 				data[el.name] = el.value;
 			return instance.runEventWithApiResponse(target, data);
@@ -179,7 +191,7 @@ var ajaxUtils = function ($, cu) {
 			var form = $(el).closest('form')[0];
 			var data = {};
 			if (form) data = $(form).serializeObject();
-			processElementData(el, data);
+			processElementDataOnEvent(el, data);
 			return instance.postEventWithApiResponse(target, data);
 		},
 		loadScripts: function (apiResult) {
@@ -282,7 +294,7 @@ var ajaxUtils = function ($, cu) {
 			$.Deferred().resolve(data) : $.when();
 	}
 
-	function processElementData(el, data) {
+	function processElementDataOnEvent(el, data) {
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
 			attr = attrs[i];
 			if (attr.name.startsWith('data-p-')) {
@@ -296,8 +308,24 @@ var ajaxUtils = function ($, cu) {
 		}
 	}
 
+	function processElementDataOnAction(el, data) {
+		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
+			attr = attrs[i];
+			if (attr.name.startsWith('data-p-')) {
+				data[attr.name.replace('data-p-', '')] = attr.value;
+			} else if (attr.name == 'data-e') {
+				_event = attr.value;
+			} else if (attr.name == 'data-r') {
+				_eventReceiver = attr.value;
+			} else if (attr.name.startsWith('data-ref-')) {
+				var refEl = document.getElementById(attr.name.replace('data-ref-', ''));
+				if (refEl) data[refEl.name] = refEl.value;
+			}
+		}
+	}
+
 	function processElementDataOnFormSubmit(el, data) {
-		for(var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length: 0; i < n; i++) {
+		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
 			attr = attrs[i];
 			if (attr.name.startsWith('data-format')) {
 				data.append('__format_' + el.name, attr.value);
@@ -308,6 +336,11 @@ var ajaxUtils = function ($, cu) {
 	function processApiResponse(apiResult) {
 		console.log('processApiResponse');
 		if (!apiResult) return;
+
+		if (apiResult.error) {
+			document.documentElement.innerHTML = 'Server error<br/>' + apiResult.error;
+			return;
+		}
 
 		if (apiResult.url) {
 			window.location = apiResult.url;
@@ -359,7 +392,7 @@ var ajaxUtils = function ($, cu) {
 					caller = caller[step.method](caller, step.args);
 				else
 					caller = caller[step.method](step.args);
-			}		
+			}
 		}
 		else {
 			console.log("wait for " + service);
@@ -372,7 +405,8 @@ var ajaxUtils = function ($, cu) {
 
 		$(window).on('hashchange', function () {
 			if (!window.location.hash.startsWith('#/')) return;
-			if (_event) instance.runEventWithApiResponse({ e: _event, r: _eventReceiver });
+			if (!_event) _event = 'onload';
+			if (_event != '#') instance.runEventWithApiResponse({ e: _event, r: _eventReceiver });
 		});
 
 		$(document).ajaxSend(beforeRequest);
@@ -381,11 +415,11 @@ var ajaxUtils = function ($, cu) {
 		var __load = document.getElementById('__load');
 		if (__load) {
 			var target = {};
-		    if (window.location.pathname == '/') {
-		        var defAction = __load.getAttribute('data-default');
-		        if (defAction) target.url = '/api' + defAction;
-		    }
-		    instance.runEventWithApiResponse(target);
+			if (window.location.pathname == '/') {
+				var defAction = __load.getAttribute('data-default');
+				if (defAction) target.url = '/api' + defAction;
+			}
+			instance.runEventWithApiResponse(target);
 		}
 	});
 

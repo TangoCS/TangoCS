@@ -1,4 +1,4 @@
-﻿a { cursor: pointer; }
+﻿a, .actionbtn { cursor: pointer; }
 .resedit {
 	background-color: yellow;
 }

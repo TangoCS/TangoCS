@@ -8,6 +8,10 @@ namespace Tango.Identity
 {
 	public class UserOptions
 	{
+		public static string EngLettersAndDigitsChars = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890_";
+		public static string EngRusLettersAndDigitsChars = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnmАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдеёжзийклмнопрстуфхцчшщъыьэюя1234567890_";
+
+
 		public int MinPasswordLength { get; set; }
 		//public string AllowedPasswordChars { get; set; }
 
@@ -26,7 +30,7 @@ namespace Tango.Identity
 		{
 			MinPasswordLength = 6;
 			//AllowedPasswordChars = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890~!@#$%^&*()-=\\][{}|+_`';:/?.>,<";
-			AllowedLoginChars = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890_";
+			AllowedLoginChars = EngLettersAndDigitsChars;
 			MaxLoginLength = 12;
 			RequireEmail = true;
 			RequireUniqueEmail = true;

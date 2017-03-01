@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'flaticon';
-  src:  url('fonts/flaticon.eot?4v0sa2');
-  src:  url('fonts/flaticon.eot?4v0sa2#iefix') format('embedded-opentype'),
-    url('fonts/flaticon.ttf?4v0sa2') format('truetype'),
-    url('fonts/flaticon.woff?4v0sa2') format('woff'),
-    url('fonts/flaticon.svg?4v0sa2#flaticon') format('svg');
+  src:  url('fonts/flaticon.eot?74114g');
+  src:  url('fonts/flaticon.eot?74114g#iefix') format('embedded-opentype'),
+    url('fonts/flaticon.ttf?74114g') format('truetype'),
+    url('fonts/flaticon.woff?74114g') format('woff'),
+    url('fonts/flaticon.svg?74114g#flaticon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -24,6 +24,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.flaticon-xml:before {
+  content: "\e900";
+}
 .flaticon-calendar:before {
   content: "\f106";
 }
@@ -42,217 +45,217 @@
 .flaticon-shield:before {
   content: "\f135";
 }
-.flaticon-collapsed:before {
+.flaticon-plus:before {
   content: "\f108";
 }
 .flaticon-expanded:before {
-  content: "\e900";
+  content: "\e901";
 }
 .flaticon-true:before {
   content: "\f13e";
 }
 .flaticon-approval:before {
-  content: "\e901";
-}
-.flaticon-a-square:before {
   content: "\e902";
 }
-.flaticon-a-three:before {
+.flaticon-a-square:before {
   content: "\e903";
 }
-.flaticon-back:before {
+.flaticon-a-three:before {
   content: "\e904";
 }
-.flaticon-calc:before {
+.flaticon-back:before {
   content: "\e905";
 }
-.flaticon-changehistory:before {
+.flaticon-calc:before {
   content: "\e906";
 }
-.flaticon-delete:before {
+.flaticon-changehistory:before {
   content: "\e907";
 }
-.flaticon-documents:before {
+.flaticon-delete:before {
   content: "\e908";
 }
-.flaticon-docx:before {
+.flaticon-documents:before {
   content: "\e909";
 }
-.flaticon-done:before {
+.flaticon-docx:before {
   content: "\e90a";
 }
-.flaticon-download:before {
+.flaticon-done:before {
   content: "\e90b";
 }
-.flaticon-downloadzip:before {
+.flaticon-download:before {
   content: "\e90c";
 }
-.flaticon-egg1:before {
+.flaticon-downloadzip:before {
   content: "\e90d";
 }
-.flaticon-egg2:before {
+.flaticon-egg1:before {
   content: "\e90e";
 }
-.flaticon-excel:before {
+.flaticon-egg2:before {
   content: "\e90f";
 }
-.flaticon-filter:before {
+.flaticon-excel:before {
   content: "\e910";
 }
-.flaticon-hie:before {
+.flaticon-filter:before {
   content: "\e911";
 }
-.flaticon-home:before {
+.flaticon-hie:before {
   content: "\e912";
 }
-.flaticon-warning:before {
+.flaticon-home:before {
   content: "\e913";
 }
-.flaticon-information:before {
+.flaticon-warning:before {
   content: "\e914";
 }
-.flaticon-help:before {
+.flaticon-information:before {
   content: "\e915";
 }
-.flaticon-error:before {
+.flaticon-help:before {
   content: "\e916";
 }
-.flaticon-import:before {
+.flaticon-error:before {
   content: "\e917";
 }
-.flaticon-key:before {
+.flaticon-import:before {
   content: "\e918";
 }
-.flaticon-keys:before {
+.flaticon-key:before {
   content: "\e919";
 }
-.flaticon-begin:before {
+.flaticon-keys:before {
   content: "\e91a";
 }
-.flaticon-left:before {
+.flaticon-begin:before {
   content: "\e91b";
 }
-.flaticon-right:before {
+.flaticon-left:before {
   content: "\e91c";
 }
-.flaticon-end:before {
+.flaticon-right:before {
   content: "\e91d";
 }
-.flaticon-lock:before {
+.flaticon-end:before {
   content: "\e91e";
 }
-.flaticon-mail:before {
+.flaticon-lock:before {
   content: "\e91f";
+}
+.flaticon-mail:before {
+  content: "\e920";
 }
 .flaticon-report:before {
   content: "\f12d";
 }
 .flaticon-new:before {
-  content: "\e920";
-}
-.flaticon-new2:before {
   content: "\e921";
 }
-.flaticon-objects:before {
+.flaticon-new2:before {
   content: "\e922";
 }
-.flaticon-print:before {
+.flaticon-objects:before {
   content: "\e923";
 }
-.flaticon-role:before {
+.flaticon-print:before {
   content: "\e924";
 }
-.flaticon-rss:before {
+.flaticon-role:before {
   content: "\e925";
 }
-.flaticon-save31:before {
+.flaticon-rss:before {
   content: "\e926";
 }
-.flaticon-search:before {
+.flaticon-save31:before {
   content: "\e927";
 }
-.flaticon-tools:before {
+.flaticon-search:before {
   content: "\e928";
 }
-.flaticon-settings2:before {
+.flaticon-tools:before {
   content: "\e929";
 }
-.flaticon-settings3:before {
+.flaticon-settings2:before {
   content: "\e92a";
 }
-.flaticon-shield2:before {
+.flaticon-settings3:before {
   content: "\e92b";
 }
-.flaticon-sign:before {
+.flaticon-shield2:before {
   content: "\e92c";
 }
-.flaticon-sortasc:before {
+.flaticon-sign:before {
   content: "\e92d";
 }
-.flaticon-sortdesc:before {
+.flaticon-sortasc:before {
   content: "\e92e";
 }
-.flaticon-star:before {
+.flaticon-sortdesc:before {
   content: "\e92f";
 }
-.flaticon-table:before {
+.flaticon-star:before {
   content: "\e930";
 }
-.flaticon-tables:before {
+.flaticon-table:before {
   content: "\e931";
 }
-.flaticon-unlock:before {
+.flaticon-tables:before {
   content: "\e932";
 }
-.flaticon-upload:before {
+.flaticon-unlock:before {
   content: "\e933";
+}
+.flaticon-upload:before {
+  content: "\e934";
 }
 .flaticon-userwoman:before {
   content: "\f145";
 }
 .flaticon-user:before {
-  content: "\e934";
-}
-.flaticon-userman:before {
   content: "\e935";
 }
-.flaticon-users:before {
+.flaticon-userman:before {
   content: "\e936";
 }
-.flaticon-users2:before {
+.flaticon-users:before {
   content: "\e937";
 }
-.flaticon-zip:before {
+.flaticon-users2:before {
   content: "\e938";
 }
-.flaticon-exportexcel:before {
+.flaticon-zip:before {
   content: "\e939";
 }
-.flaticon-exportexcel2:before {
+.flaticon-exportexcel:before {
   content: "\e93a";
 }
-.flaticon-exportword:before {
+.flaticon-exportexcel2:before {
   content: "\e93b";
 }
-.flaticon-exportword2:before {
+.flaticon-exportword:before {
   content: "\e93c";
 }
-.flaticon-word:before {
+.flaticon-exportword2:before {
   content: "\e93d";
 }
-.flaticon-pdf:before {
+.flaticon-word:before {
   content: "\e93e";
 }
-.flaticon-exportpdf:before {
+.flaticon-pdf:before {
   content: "\e93f";
 }
-.flaticon-doc:before {
+.flaticon-exportpdf:before {
   content: "\e940";
 }
-.flaticon-xlsx:before {
+.flaticon-doc:before {
   content: "\e941";
 }
-.flaticon-money:before {
+.flaticon-xlsx:before {
   content: "\e942";
+}
+.flaticon-money:before {
+  content: "\e943";
 }
 

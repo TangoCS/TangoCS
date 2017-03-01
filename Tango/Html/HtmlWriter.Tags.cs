@@ -259,12 +259,15 @@ namespace Tango.Html
 		public static void B(this IHtmlWriter w, string text) { w.B(null, () => w.Write(text)); }
 		public static void Div(this IHtmlWriter w, string text) { w.Div(null, () => w.Write(text)); }
 		public static void Div(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.Div(attributes, () => w.Write(text)); }
+		public static void I(this IHtmlWriter w, string text) { w.I(null, () => w.Write(text)); }
 		public static void Label(this IHtmlWriter w, string labelFor, string lableTitle)
 		{
 			w.Label(a => a.For(labelFor), () => w.Write(lableTitle));
 		}
 		public static void Span(this IHtmlWriter w, string text) { w.Span(null, () => w.Write(text)); }
 		public static void Span(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.Span(attributes, () => w.Write(text)); }
+		public static void Sub(this IHtmlWriter w, string text) { w.Sub(null, () => w.Write(text)); }
+		public static void Sup(this IHtmlWriter w, string text) { w.Sup(null, () => w.Write(text)); }
 		public static void H1(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H1(attributes, () => w.Write(text)); }
 		public static void H2(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H2(attributes, () => w.Write(text)); }
 		public static void H3(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.H3(attributes, () => w.Write(text)); }
