@@ -8,32 +8,20 @@ namespace Tango.Html
 	{
 		protected T _this;
 
-		public string IDPrefix { get; set; }
-		public IDictionary<string, string> Attributes { get; private set; }
-
 		public TagAttributes()
 		{
 			_this = this as T;
-			Attributes = new SortedDictionary<string, string>(StringComparer.Ordinal);
 		}
 
-		public void MergeAttribute(string key, string value, bool replaceExisting = true)
+		public Action<string, string, bool> MergeAttributeFunc { get; set; }
+		public Action<string, string> MergeIDAttributeFunc { get; set; }
+
+		protected void MergeAttribute(string key, string value, bool replaceExisting = true)
 		{
-			if (replaceExisting || !Attributes.ContainsKey(key))
-				Attributes[key] = value;
-			else
-				Attributes[key] = Attributes[key] + " " + value;
+			MergeAttributeFunc(key, value, replaceExisting);
 		}
 
-		protected string GetID(string id)
-		{
-			if (id == null) return null;
-			if (!IDPrefix.IsEmpty() && IDPrefix != id)
-				return (IDPrefix + (!id.IsEmpty() ? "_" + id : "")).ToLower();
-			return id.ToLower();
-		}
-
-		public T ID(string value) { MergeAttribute("id", GetID(value)); return _this; }
+		public T ID(string value) { MergeIDAttributeFunc("id", value); return _this; }
 
 		public T AccessKey(string value) { MergeAttribute("accesskey", value); return _this; }
 		public T Aria(string key, string value) { MergeAttribute("aria-" + key.ToLower(), value); return _this; }
@@ -186,7 +174,7 @@ namespace Tango.Html
 
 	public class LabelTagAttributes : TagAttributes<LabelTagAttributes>
 	{
-		public LabelTagAttributes For(string value) { MergeAttribute("for", GetID(value)); return this; }
+		public LabelTagAttributes For(string value) { MergeIDAttributeFunc("for", value); return this; }
 		public LabelTagAttributes Form(string value) { MergeAttribute("form", value); return this; }
 	}
 

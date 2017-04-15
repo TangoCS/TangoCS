@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using Tango.Html;
 using Tango.Localization;
 
@@ -8,22 +9,48 @@ namespace Tango.UI
 {
 	public class LayoutWriter : HtmlWriter
 	{	
-		public ActionContext Context { get; private set; }
+		public ActionContext Context { get; }
 		public IResourceManager Resources => Context.Resources;
 
-		public List<ClientAction> ClientActions { get; set; }
-		public HashSet<string> Includes { get; set; }
+		public List<ClientAction> ClientActions { get; private set; } = new List<ClientAction>();
+		public HashSet<string> Includes { get; private set; } = new HashSet<string>();
+
+		public LayoutWriter(ActionContext context, StringBuilder sb) : base(sb) 
+		{
+			Context = context;
+		}
+		
+		public LayoutWriter(ActionContext context, string idPrefix) : base(idPrefix) 
+		{
+			Context = context;
+		}
+		
+		public LayoutWriter(ActionContext context, string idPrefix, StringBuilder sb) : base(idPrefix, sb) 
+		{
+			Context = context;
+		}
 
 		public LayoutWriter(ActionContext context)
         {
 			Context = context;
-			ClientActions = new List<ClientAction>();
-			Includes = new HashSet<string>();
+		}
+
+		public LayoutWriter Clone(string newIdPrefix)
+		{
+			var w = new LayoutWriter(Context, newIdPrefix, GetStringBuilder());
+			w.ClientActions = ClientActions;
+			w.Includes = Includes;
+			return w;
 		}
 	}
 
 	public static class LayoutWriterMainExtensions
 	{
+		public static LayoutWriter Clone(this LayoutWriter w, ViewElement el)
+		{
+			return w.Clone(el.ClientID);
+		}
+
 		public static void AjaxForm(this LayoutWriter w, string name, Action content)
 		{
 			w.AjaxForm(name, false, null, content);

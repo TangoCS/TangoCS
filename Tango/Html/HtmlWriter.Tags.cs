@@ -9,13 +9,22 @@ namespace Tango.Html
 			where T : TagAttributes<T>, new()
 		{
 			TagBuilder tb = new TagBuilder(name);	
+			
 			if (attrs != null)
 			{
 				T ta = new T();
-				ta.IDPrefix = w.IDPrefix;
+
+				ta.MergeAttributeFunc = (key, value, replaceExisting) => {
+					if (replaceExisting || !tb.Attributes.ContainsKey(key))
+						tb.Attributes[key] = value;
+					else
+						tb.Attributes[key] = tb.Attributes[key] + " " + value;
+				};
+				ta.MergeIDAttributeFunc = (key, value) => tb.Attributes[key] = w.GetID(value).ToLower();
+
 				attrs(ta);
-				tb.SetAttributes(ta.Attributes);
 			}
+
 			if (inner != null)
 			{
 				tb.Render(w, TagRenderMode.StartTag);

@@ -565,7 +565,7 @@ button.close {
     list-style: none;
 	box-sizing: border-box;
     border-bottom: 1px solid #ccc;
-    display: inline-block;
+    display: flex;
 }
 .tabs2 li {
 	margin: 0;

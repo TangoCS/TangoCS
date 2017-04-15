@@ -11,46 +11,55 @@ namespace Tango.UI.Controls
 	{
 		public List<TabPage> Pages { get; set; } = new List<TabPage>();
 
+		string _curid;
+		TabPage _curpage;
+
+		public override void OnInit()
+		{
+			_curid = GetArg(ID);
+			_curpage = Pages.Where(o => o.ID == _curid).FirstOrDefault() ?? Pages.FirstOrDefault();
+		}
+
 		public void OnPageSelect(ApiResponse response)
 		{
-			var p = GetArg(ID);
-			var page = Pages.Where(o => o.ID == p).FirstOrDefault();
-
-			if (page != null)
-				response.AddWidget(ParentElement, p, w => page.Content(w));			
+			if (_curpage != null)
+				response.AddWidget(ParentElement, _curid, w => _curpage.Content(w));			
 		}
 
 		public void Render(LayoutWriter w)
 		{
-			w.Includes.Add("tango/tabs.js");
-			w.Div(a => a.ID(ID).Data("parmname", ID).Class("tabs2"), () => {
-				RenderPages(w);
-			});		
+			RenderTabs(w);
+			RenderPages(w);
 		}
 
-		void RenderPages(LayoutWriter w)
+		public void RenderTabs(LayoutWriter w)
 		{
-			var defid = GetArg(ID);
-			var def = Pages.Where(o => o.ID == defid).FirstOrDefault() ?? Pages.FirstOrDefault();
+			w.Div(a => a.ID(ID).Data("parmname", ID).Class("tabs2"), () => {
+				w.Ul(() => {
+					foreach (var p in Pages)
+					{
+						w.Li(() => {
+							w.RadioButton(ClientID, p.ID + "_title", null, _curpage.ID == p.ID);
+							w.Label(a => a.For(p.ID + "_title")
+								.Data("id", p.ID).Data("ajax", p.IsAjax).Data("useurlparm", true).Data("loaded", !p.IsAjax || _curpage.ID == p.ID)
+								.OnClick("tabs.onselect(this)"), () => w.Write(p.Title));
+						});
+					}
+				});
+			});
+		}
 
-			w.Ul(() => {
+		public void RenderPages(LayoutWriter w)
+		{
+			w.Div(a => a.Class("tabs2").ID(ID + "_pages"), () => {
 				foreach (var p in Pages)
 				{
-					w.Li(() => {
-						w.RadioButton(ClientID, p.ID + "_title", null, def.ID == p.ID);
-						w.Label(a => a.For(p.ID + "_title")
-							.Data("id", p.ID).Data("ajax", p.IsAjax).Data("useurlparm", true).Data("loaded", !p.IsAjax || def.ID == p.ID)
-							.OnClick("tabs.onselect(this)"), () => w.Write(p.Title));
+					w.Div(a => a.ID(p.ID).Class(_curpage.ID == p.ID ? "selected" : ""), () => {
+						if (!p.IsAjax || _curpage.ID == p.ID)
+							p.Content(w);
 					});
 				}
 			});
-			foreach (var p in Pages)
-			{
-				w.Div(a => a.ID(p.ID).Class(def.ID == p.ID ? "selected" : ""), () => {
-					if (!p.IsAjax || def.ID == p.ID)
-						p.Content(w);
-				});
-			}
 		}
 	}
 

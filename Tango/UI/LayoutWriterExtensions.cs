@@ -55,10 +55,10 @@ namespace Tango.UI
 			l.Td(attributes, () => l.Write(content?.ToString() ?? "&nbsp;"));
 		}
 
-		public static void GroupTitleCell(this LayoutWriter w, int colSpan, string value)
-		{
-			w.Td(a => a.Class("ms-gb").ColSpan(colSpan), () => w.Write(value));
-		}
+		//public static void GroupTitleCell(this LayoutWriter w, int colSpan, string value)
+		//{
+		//	w.Td(a => a.Class("ms-gb").ColSpan(colSpan), () => w.Write(value));
+		//}
 
 		public static void FormTable(this LayoutWriter w, Action content)
 		{

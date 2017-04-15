@@ -70,13 +70,6 @@ namespace Tango.UI
 		public string ClientID { get; set; }
 		public ViewElement ParentElement { get; set; }
 
-		public virtual LayoutWriter CreateLayoutWriter()
-		{
-			var w = new LayoutWriter(Context);
-			w.IDPrefix = ClientID;
-			return w;
-		}
-
 		public virtual void OnInit() { }
 		public virtual void AfterInit() { }
 

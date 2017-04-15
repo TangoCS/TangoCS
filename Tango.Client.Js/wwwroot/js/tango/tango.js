@@ -120,10 +120,10 @@ var ajaxUtils = function ($, cu) {
 		},
 		setHash: function (target, args) {
 			if (target.e)
-				_event = target.e;
+				state.loc.event = target.e;
 			else
-				_event = '#';
-			if (target.r) _eventReceiver = target.r;
+				state.loc.event = '#';
+			if (target.r) state.loc.receiver = target.r;
 			instance.setHashParms(args);
 		},
 		setHashFromElement: function (el) {
@@ -137,15 +137,15 @@ var ajaxUtils = function ($, cu) {
 			if (args) {
 				for (key in args) {
 					if (key == 'e')
-						_event = args[key];
+						state.loc.event = args[key];
 					else
-						_hash[key] = args[key];
+						state.loc.hash[key] = args[key];
 				}
 			}
 			var hashUrl = '/';
-			for (key in _hash) {
-				if (_hash[key] && _hash[key] != '' && _hash[key] != 'null')
-					hashUrl += key + '=' + _hash[key] + '&';
+			for (key in state.loc.hash) {
+				if (state.loc.hash[key] && state.loc.hash[key] != '' && state.loc.hash[key] != 'null')
+					hashUrl += key + '=' + state.loc.hash[key] + '&';
 			}
 			window.location.hash = hashUrl == '/' ? hashUrl : hashUrl.substring(0, hashUrl.length - 1);
 		},
@@ -211,54 +211,59 @@ var ajaxUtils = function ($, cu) {
 				return r.resolve(apiResult);
 		},
 		prepareUrl: function (target, args) {
-			_event = target.e;
-			if (!_event) _event = 'onload';
-			_hash = cu.getHashParams();
+			state.loc.event = target.e;
+			if (!state.loc.event) state.loc.event = 'onload';
+			state.loc.hash = cu.getHashParams();
 
-			var url = target.url ? target.url : '/api' + window.location.pathname;
+			var url = '/api' + (window.location.pathname == '/' ? state.loc.defAction : window.location.pathname);
 			if (window.location.search == '')
 				url += '?';
 			else
 				url += window.location.search;
 
 			if (!url.endsWith('?')) url += '&';
-			url += 'e=' + _event;
+			url += 'e=' + state.loc.event;
 			var p = document.head.getAttribute('data-p');
 			if (p) url += '&p=' + p;
 
-			for (key in _hash) {
-				if (key != 'e' && key != 'r' && key != 'p' && _hash[key])
-					url += '&' + key + '=' + _hash[key];
+			for (key in state.loc.hash) {
+				if (key != 'e' && key != 'r' && key != 'p' && state.loc.hash[key])
+					url += '&' + key + '=' + encodeURIComponent(state.loc.hash[key]);
 				else if (key == 'r')
-					target.r = _hash[key];
+					target.r = state.loc.hash[key];
 			}
 			for (key in args) {
-				url += '&' + key + '=' + args[key];
+				url += '&' + key + '=' + encodeURIComponent(args[key]);
 			}
 			if (target.r) url += '&r=' + target.r;
 
-			_event = null;
+			state.loc.event = null;
 			return url;
 		}
 	};
 
-	var _requestInProcess = null;
-	var _requestedJs = [];
-
-	var _hash = cu.getHashParams();
-	var _event = null;
-	var _eventReceiver = null;
-
-	var _topMessage = $("#topmessagecontainer");
+	var state = {
+		com: {
+			requestId: null,
+			message: $("#topmessagecontainer"),
+			requestedJs: []
+		},
+		loc: {
+			defAction: null,
+			hash: cu.getHashParams(),
+			event: null,
+			receiver: null
+		}
+	};
 
 	function loadScript(def, toLoad, cur) {
-		if ($.inArray(toLoad[cur], _requestedJs) >= 0) {
+		if ($.inArray(toLoad[cur], state.com.requestedJs) >= 0) {
 			if (toLoad.length - 1 > cur)
 				return loadScript(def, toLoad, cur + 1);
 			else
 				return def.resolve();
 		}
-		_requestedJs.push(toLoad[cur]);
+		state.com.requestedJs.push(toLoad[cur]);
 		return $.ajax({
 			type: "GET",
 			url: toLoad[cur],
@@ -276,21 +281,21 @@ var ajaxUtils = function ($, cu) {
 	}
 
 	function beforeRequest(event, xhr, settings) {
-		_requestInProcess = cu.createGuid();
-		xhr.setRequestHeader('x-request-guid', _requestInProcess)
+		state.com.requestId = cu.createGuid();
+		xhr.setRequestHeader('x-request-guid', state.com.requestId)
 		xhr.setRequestHeader('x-csrf-token', document.head.getAttribute('data-x-csrf-token'))
 		setTimeout(function () {
-			if (_requestInProcess) _topMessage.css('display', 'block');
+			if (state.com.requestId) state.com.message.css('display', 'block');
 		}, 100);
 	}
 
 	function requestCompleted() {
-		_requestInProcess = null;
-		_topMessage.css('display', 'none')
+		state.com.requestId = null;
+		state.com.message.css('display', 'none')
 	}
 
 	function onRequestResult(data, status, xhr) {
-		return xhr.getResponseHeader('X-Request-Guid') == _requestInProcess ?
+		return xhr.getResponseHeader('X-Request-Guid') == state.com.requestId ?
 			$.Deferred().resolve(data) : $.when();
 	}
 
@@ -309,14 +314,16 @@ var ajaxUtils = function ($, cu) {
 	}
 
 	function processElementDataOnAction(el, data) {
+		state.loc.event = null;
+		state.loc.receiver = null;
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
 			attr = attrs[i];
 			if (attr.name.startsWith('data-p-')) {
 				data[attr.name.replace('data-p-', '')] = attr.value;
 			} else if (attr.name == 'data-e') {
-				_event = attr.value;
+				state.loc.event = attr.value;
 			} else if (attr.name == 'data-r') {
-				_eventReceiver = attr.value;
+				state.loc.receiver = attr.value;
 			} else if (attr.name.startsWith('data-ref-')) {
 				var refEl = document.getElementById(attr.name.replace('data-ref-', ''));
 				if (refEl) data[refEl.name] = refEl.value;
@@ -405,8 +412,8 @@ var ajaxUtils = function ($, cu) {
 
 		$(window).on('hashchange', function () {
 			if (!window.location.hash.startsWith('#/')) return;
-			if (!_event) _event = 'onload';
-			if (_event != '#') instance.runEventWithApiResponse({ e: _event, r: _eventReceiver });
+			if (!state.loc.event) state.loc.event = 'onload';
+			if (state.loc.event != '#') instance.runEventWithApiResponse({ e: state.loc.event, r: state.loc.receiver });
 		});
 
 		$(document).ajaxSend(beforeRequest);
@@ -414,12 +421,11 @@ var ajaxUtils = function ($, cu) {
 
 		var __load = document.getElementById('__load');
 		if (__load) {
-			var target = {};
 			if (window.location.pathname == '/') {
-				var defAction = __load.getAttribute('data-default');
-				if (defAction) target.url = '/api' + defAction;
+				state.loc.defAction = __load.getAttribute('data-default');
+				//if (state.loc.defAction) target.url = '/api' + state.loc.defAction;
 			}
-			instance.runEventWithApiResponse(target);
+			instance.runEventWithApiResponse({});
 		}
 	});
 

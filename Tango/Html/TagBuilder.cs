@@ -13,7 +13,7 @@ namespace Tango.Html
 			TagName = tagName;
 		}
 
-		public IDictionary<string, string> Attributes { get; private set; }
+		public IDictionary<string, string> Attributes { get; private set; } = new SortedDictionary<string, string>(StringComparer.Ordinal);
 
 		public string InnerHtml
 		{
@@ -37,11 +37,6 @@ namespace Tango.Html
 					w.Write('"');
 				}
 			}
-		}
-
-		public void SetAttributes(IDictionary<string, string> attributes)
-		{
-			Attributes = attributes;
 		}
 
 		public void SetInnerText(string innerText)

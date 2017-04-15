@@ -34,6 +34,7 @@ namespace Tango.UI
 		public List<string> WidgetsForRemove { get; set; }
 		public List<ClientAction> ClientActions { get; set; }
 		public HashSet<string> Includes { get; set; }
+		public Dictionary<string, List<string>> PageContext { get; set; }
 
 		public ApiResponse()
 		{
@@ -108,43 +109,47 @@ namespace Tango.UI
 			RemoveElementClass(elementOwner.GetClientID(name), clsName);
 		}
 
-		public virtual void AddWidget(string name, string content)
+		public virtual ApiResponse AddWidget(string name, string content)
 		{
 			Widgets.Add(name.ToLower(), content);
+			return this;
 		}
 
-		public virtual void RemoveWidget(string name)
+		public virtual ApiResponse RemoveWidget(string name)
 		{
 			WidgetsForRemove.Add(name.ToLower());
+			return this;
 		}
 
-		public virtual void AddRootWidget(string name, string content)
+		public virtual ApiResponse AddRootWidget(string name, string content)
 		{
 			AddAdjacentWidget(null, name, content);
+			return this;
 		}
 
-		public virtual void AddAdjacentWidget(string parent, string name, string content, string position = "beforeend")
+		public virtual ApiResponse AddAdjacentWidget(string parent, string name, string content, AdjacentHTMLPosition position = AdjacentHTMLPosition.BeforeEnd)
 		{
-			Widgets.Add(name.ToLower(), new { Parent = parent, Content = content, Position = position });
+			Widgets.Add(name.ToLower(), new { Parent = parent, Content = content, Position = position.ToString() });
+			return this;
 		}
 
-		public void AddWidget(string name, LayoutWriter content)
+		public ApiResponse AddWidget(string name, LayoutWriter content)
 		{
 			ClientActions.AddRange(content.ClientActions);
 			foreach (var i in content.Includes) Includes.Add(i);
-			AddWidget(name, content.ToString());
+			return AddWidget(name, content.ToString());
 		}
 
-		public void AddRootWidget(string name, LayoutWriter content)
+		public ApiResponse AddRootWidget(string name, LayoutWriter content)
 		{
-			AddAdjacentWidget(null, name, content);
+			return AddAdjacentWidget(null, name, content);
 		}
 
-		public void AddAdjacentWidget(string parent, string name, LayoutWriter content, string position = "beforeend")
+		public ApiResponse AddAdjacentWidget(string parent, string name, LayoutWriter content, AdjacentHTMLPosition position = AdjacentHTMLPosition.BeforeEnd)
 		{
 			ClientActions.AddRange(content.ClientActions);
 			foreach (var i in content.Includes) Includes.Add(i);
-			AddAdjacentWidget(parent, name, content.ToString(), position);
+			return AddAdjacentWidget(parent, name, content.ToString(), position);
 		}
 
 		public void RedirectBack(ActionContext context)
@@ -166,53 +171,74 @@ namespace Tango.UI
 			return JsonConvert.SerializeObject(Data, Json.CamelCase);
 		}
 
-		public void AddWidget(ViewElement elementOwner, string name, string content)
+		public ApiResponse AddWidget(ViewElement elementOwner, string name, string content)
 		{
-			AddWidget(elementOwner.GetClientID(name), content);
+			return AddWidget(elementOwner.GetClientID(name), content);
 		}
 
-		public void RemoveWidget(ViewElement elementOwner, string name)
+		public ApiResponse RemoveWidget(ViewElement elementOwner, string name)
 		{
-			RemoveWidget(elementOwner.GetClientID(name));
+			return RemoveWidget(elementOwner.GetClientID(name));
 		}
 
-		public void AddRootWidget(ViewElement elementOwner, string name, string content)
+		public ApiResponse AddRootWidget(ViewElement elementOwner, string name, string content)
 		{
-			AddAdjacentWidget(null, elementOwner.GetClientID(name), content);
+			return AddAdjacentWidget(null, elementOwner.GetClientID(name), content);
 		}
 
-		public void AddAdjacentWidget(ViewElement elementOwner, string parent, string name, string content, string position = "beforeend")
+		public ApiResponse AddAdjacentWidget(ViewElement elementOwner, string parent, string name, string content, AdjacentHTMLPosition position = AdjacentHTMLPosition.BeforeEnd)
 		{
-			AddAdjacentWidget(parent, elementOwner.GetClientID(name), content, position);
+			return AddAdjacentWidget(parent, elementOwner.GetClientID(name), content, position);
 		}
 
-		public void AddWidget(ViewElement elementOwner, string name, Action<LayoutWriter> content)
+		public ApiResponse AddWidget(ViewElement elementOwner, string name, Action<LayoutWriter> content)
 		{
-			var w = elementOwner.CreateLayoutWriter();
+			var w = new LayoutWriter(elementOwner.Context, elementOwner.ClientID);
 			content?.Invoke(w);
-			AddWidget(elementOwner.GetClientID(name), w);
+
+			return AddWidget(elementOwner.GetClientID(name), w);
 		}
 
-		public void AddRootWidget(ViewElement elementOwner, string name, Action<LayoutWriter> content)
+		public ApiResponse AddRootWidget(ViewElement elementOwner, string name, Action<LayoutWriter> content)
 		{
-			var w = elementOwner.CreateLayoutWriter();
+			var w = new LayoutWriter(elementOwner.Context, elementOwner.ClientID);
 			content?.Invoke(w);
-			AddAdjacentWidget(null, elementOwner.GetClientID(name), w);
+
+			ClientActions.AddRange(w.ClientActions);
+			foreach (var i in w.Includes) Includes.Add(i);
+
+			return AddAdjacentWidget(null, elementOwner.GetClientID(name), w.ToString());
 		}
 
-		public void AddChildWidget(ViewElement elementOwner, string parent, string name, Action<LayoutWriter> content)
+		public ApiResponse AddChildWidget(ViewElement elementOwner, string parent, string name, Action<LayoutWriter> content)
 		{
-			var w = elementOwner.CreateLayoutWriter();
+			var w = new LayoutWriter(elementOwner.Context, elementOwner.ClientID);
 			content?.Invoke(w);
-			AddAdjacentWidget(parent, elementOwner.GetClientID(name), w);
+
+			ClientActions.AddRange(w.ClientActions);
+			foreach (var i in w.Includes) Includes.Add(i);
+
+			return AddAdjacentWidget(parent, elementOwner.GetClientID(name), w.ToString());
 		}
 
-		public void AddAdjacentWidget(ViewElement elementOwner, string parent, string name, string position, Action<LayoutWriter> content)
+		public ApiResponse AddAdjacentWidget(ViewElement elementOwner, string parent, string name, AdjacentHTMLPosition position, Action<LayoutWriter> content)
 		{
-			var w = elementOwner.CreateLayoutWriter();
+			var w = new LayoutWriter(elementOwner.Context, elementOwner.ClientID);
 			content?.Invoke(w);
-			AddAdjacentWidget(parent, elementOwner.GetClientID(name), w, position);
+
+			ClientActions.AddRange(w.ClientActions);
+			foreach (var i in w.Includes) Includes.Add(i);
+
+			return AddAdjacentWidget(parent, elementOwner.GetClientID(name), w.ToString(), position);
 		}
+	}
+
+	public enum AdjacentHTMLPosition
+	{
+		BeforeEnd,
+		BeforeBegin,
+		AfterBegin,
+		AfterEnd
 	}
 
 	public class ClientAction
