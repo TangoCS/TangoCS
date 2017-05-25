@@ -62,6 +62,8 @@ namespace Tango.Meta.Database
 					t.PrimaryKey = pk;
 
 				}
+				if (Tables.ContainsKey(t.Name))
+					throw new Exception("Duplicate table name " + t.Name);
 				Tables.Add(t.Name, t);
 
 				//var primaryColumn = new Column();

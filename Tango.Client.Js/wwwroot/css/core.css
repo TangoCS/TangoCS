@@ -255,33 +255,3 @@ a.actionbtn {
     background-image: linear-gradient(#ddd, #fcfcfc);
 	border: 1px solid #aaa;
 }
-
-
-/* topbarmenu */
-.topbarmenu {
-	background-color: white;
-}
-
-.topbarmenu-header {
-    background-color: #eff0f1;
-    width: 100%;
-    padding: 8px 12px 4px 12px;
-	color: #6a737c;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.topbarmenu a {
-    display: block;
-    width: 100%;
-    text-decoration: none;
-    outline: none;
-    padding: 8px 12px 4px 12px;
-}
-
-.topbarmenu a:hover {
-	background-color: #296ca3;
-	color: white;
-	text-decoration: none;
-}
-

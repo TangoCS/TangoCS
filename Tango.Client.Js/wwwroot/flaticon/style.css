@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'flaticon';
-  src:  url('fonts/flaticon.eot?74114g');
-  src:  url('fonts/flaticon.eot?74114g#iefix') format('embedded-opentype'),
-    url('fonts/flaticon.ttf?74114g') format('truetype'),
-    url('fonts/flaticon.woff?74114g') format('woff'),
-    url('fonts/flaticon.svg?74114g#flaticon') format('svg');
+  src:  url('fonts/flaticon.eot?oeowyo');
+  src:  url('fonts/flaticon.eot?oeowyo#iefix') format('embedded-opentype'),
+    url('fonts/flaticon.ttf?oeowyo') format('truetype'),
+    url('fonts/flaticon.woff?oeowyo') format('woff'),
+    url('fonts/flaticon.svg?oeowyo#flaticon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -45,7 +45,7 @@
 .flaticon-shield:before {
   content: "\f135";
 }
-.flaticon-plus:before {
+.flaticon-collapsed:before {
   content: "\f108";
 }
 .flaticon-expanded:before {
