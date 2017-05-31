@@ -61,6 +61,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Tango.Abstractions\Tango.Abstractions.csproj">
+      <Project>{08917986-6340-4D26-BB53-B1B69FD3C810}</Project>
+      <Name>Tango.Abstractions</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tango.Meta.Database.MSSQL\Tango.Meta.Database.MSSQL.csproj">
       <Project>{de61160e-44db-40cd-82c9-ba812dce4812}</Project>
       <Name>Tango.Meta.Database.MSSQL</Name>

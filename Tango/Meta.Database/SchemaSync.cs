@@ -244,7 +244,7 @@ namespace Tango.Meta.Database
             else
             {
 				bool chg_type = srcColumn.Type.GetType() != Type.GetType() && String.IsNullOrEmpty(ComputedText);
-				bool chg_def = !Identity && ((DefaultValue == null ? "" : DefaultValue.ToLower()) != (srcColumn.DefaultValue == null ? "" : srcColumn.DefaultValue.ToLower()));
+				bool chg_def = !Identity && ((DefaultValue == null ? "" : DefaultValue.Replace("(", "").Replace(")", "").ToLower()) != (srcColumn.DefaultValue == null ? "" : srcColumn.DefaultValue.Replace("(", "").Replace(")", "").ToLower()));
                 bool chg_null = Nullable != srcColumn.Nullable;
 
 				string ct1 = ComputedText == null ? "" : ComputedText.Replace("(", "").Replace(")", "").Replace("[", "").Replace("]", "").ToLower();

@@ -16,6 +16,13 @@ namespace Tango.Meta
 			return mapper.GetDecimalType(Precision, Scale);
 		}
 	}
+	public partial class MetaMoneyType
+	{
+		public override string GetDBType(IDBTypeMapper mapper)
+		{
+			return mapper.GetMoneyType();
+		}
+	}
 
 	public partial class MetaBooleanType
 	{
@@ -77,6 +84,13 @@ namespace Tango.Meta
 		public override string GetDBType(IDBTypeMapper mapper)
 		{
 			return mapper.GetLongType();
+		}
+	}
+	public partial class MetaShortType
+	{
+		public override string GetDBType(IDBTypeMapper mapper)
+		{
+			return mapper.GetShortType();
 		}
 	}
 	public partial class MetaGuidType

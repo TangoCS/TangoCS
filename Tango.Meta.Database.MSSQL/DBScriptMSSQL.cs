@@ -400,6 +400,10 @@ namespace Tango.Meta.Database
 		{
 			return string.Format("decimal({0},{1})", precision, scale);
 		}
+		public string GetMoneyType()
+		{
+			return "money";
+		}
 		public string GetGuidType()
 		{
 			return "uniqueidentifier";
@@ -431,6 +435,10 @@ namespace Tango.Meta.Database
 		public string GetLongType()
 		{
 			return "bigint";
+		}
+		public string GetShortType()
+		{
+			return "smallint";
 		}
 		public string GetByteArrayType(int length)
 		{
@@ -472,6 +480,8 @@ namespace Tango.Meta.Database
 					case "text":
 						return "N'" + reader.GetString(index).Replace("'", "''") + "'";
 					case "decimal":
+						return reader.GetDecimal(index).ToString(CultureInfo.InvariantCulture);
+					case "numeric":
 						return reader.GetDecimal(index).ToString(CultureInfo.InvariantCulture);
 					case "date":
 						return String.Format("CAST('{0}' AS Date)", reader.GetDateTime(index).ToString("yyyy-MM-dd"));
@@ -547,7 +557,7 @@ namespace Tango.Meta.Database
 
 		public IMetaPrimitiveType GetType(string dataType, bool notNull)
 		{
-			var type = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(", System.StringComparison.Ordinal)) : dataType;
+			var type = dataType.Contains("(") ? dataType.Substring(0, dataType.IndexOf("(", StringComparison.Ordinal)) : dataType;
 			var precision = string.Empty;
 			var scale = string.Empty;
 			var match = Regex.Match(dataType, @"\((.*?)\)");
@@ -573,6 +583,10 @@ namespace Tango.Meta.Database
 							TypeFactory.CustomString(Int32.Parse(precision == "max" ? "-1" : precision));
 				case "decimal":
 					return TypeFactory.CustomDecimal(Int32.Parse(precision), Int32.Parse(scale));
+				case "numeric":
+					return TypeFactory.CustomDecimal(Int32.Parse(precision), Int32.Parse(scale));
+				case "money":
+					return TypeFactory.Money;
 				case "uniqueidentifier":
 					return TypeFactory.Guid;
 				case "datetime":
@@ -582,8 +596,9 @@ namespace Tango.Meta.Database
 					return TypeFactory.Date;
 				case "bit":
 					return TypeFactory.Boolean;
-				//case "datetimeoffset":
-				//	return new MetaZoneDateTimeType();
+				case "smallint":
+				case "tinyint":
+					return TypeFactory.Short;
 				case "bigint":
 					return TypeFactory.Long;
 				case "char":

@@ -391,7 +391,12 @@ namespace Tango.Meta.Database
             return string.Format("DECIMAL({0},{1})", precision, scale);
         }
 
-        public string GetDateTimeType()
+		public string GetMoneyType()
+		{
+			return "MONEY";
+		}
+
+		public string GetDateTimeType()
         {
             return "TIMESTAMP";
         }
@@ -411,7 +416,12 @@ namespace Tango.Meta.Database
             return "BIGINT";
         }
 
-        public string GetByteArrayType(int length)
+		public string GetShortType()
+		{
+			return "SMALLINT";
+		}
+
+		public string GetByteArrayType(int length)
         {
             return "BLOB";
         }
