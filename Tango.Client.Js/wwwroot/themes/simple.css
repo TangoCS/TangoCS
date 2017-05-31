@@ -2,7 +2,7 @@ body {
 	background-color: #FFFFFF;
 	font-size: 14px;
 	font-family: Segoe UI, 'Open Sans', Trebuchet MS;
-	color: #000000;
+	color: #333;
 }
 
 input, textarea, keygen, select, button {

@@ -215,7 +215,9 @@ var ajaxUtils = function ($, cu) {
 			if (!state.loc.event) state.loc.event = 'onload';
 			state.loc.hash = cu.getHashParams();
 
-			var url = '/api' + (window.location.pathname == '/' ? state.loc.defAction : window.location.pathname);
+			var url = target.url ?
+				target.url :
+				('/api' + (window.location.pathname == '/' ? state.loc.defAction : window.location.pathname));
 			if (window.location.search == '')
 				url += '?';
 			else
@@ -239,6 +241,9 @@ var ajaxUtils = function ($, cu) {
 
 			state.loc.event = null;
 			return url;
+		},
+		stopRequest: function () {
+			requestCompleted();
 		}
 	};
 
@@ -296,7 +301,7 @@ var ajaxUtils = function ($, cu) {
 
 	function onRequestResult(data, status, xhr) {
 		return xhr.getResponseHeader('X-Request-Guid') == state.com.requestId ?
-			$.Deferred().resolve(data) : $.when();
+			$.Deferred().resolve(data) : $.Deferred().reject();
 	}
 
 	function processElementDataOnEvent(el, data) {
