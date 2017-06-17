@@ -573,6 +573,7 @@ button.close {
 	display: block;
     float: left;
     margin: 0 0 0 -1px;
+	user-select: none;
 }
  
 .tabs2 li > div
@@ -611,6 +612,7 @@ button.close {
 {
     opacity: 0;
 	display: none;
+	user-select: none;
 }
  
 .tabs2 > div

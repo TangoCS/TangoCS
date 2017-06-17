@@ -67,8 +67,6 @@ namespace Tango.Html
 
 		public T Set(Action<T> attrs) { if (attrs != null) attrs(_this); return _this; }
 		
-		public T DataParm(string key, object value) { MergeAttribute("data-p-" + key.ToLower(), value.ToString()); return _this; }
-		public T DataRef(string id) { MergeAttribute("data-ref-" + id.ToLower(), ""); return _this; }
 		public T Data(DataCollection d) 
 		{
 			if (d != null) 

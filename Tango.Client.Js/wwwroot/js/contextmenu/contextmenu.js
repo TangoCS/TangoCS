@@ -24,7 +24,7 @@
 			method = 'popup';
 		}
 
-		//need to check for array object
+			//need to check for array object
 		else if (selector) {
 			if (!((selector instanceof Array) || (typeof selector === 'string') || (selector.nodeType) || (selector.jquery))) {
 				option = selector;
@@ -64,6 +64,7 @@
 		closeOnClick: true, //close context menu on click/ trigger of any item in menu
 
 		//callback
+		beforeOpen: function (data, event) { return 0; },
 		onOpen: function (data, event) { return $.when(); },
 		afterOpen: function (data, event) { },
 		onClose: function (data, event) { }
@@ -335,13 +336,31 @@
                 cntWin = cntnmnt == window,
                 btChck = option.baseTrigger.index(trigger) == -1;
 
-			//to close previous open menu.
-			if (!btChck && option.closeOther) {
-				$('.iw-contextMenu').css('display', 'none');
-			}
 
-			//to reset already selected menu item
-			menu.find('.iw-mSelected').removeClass('iw-mSelected');
+
+			var res = option.beforeOpen.call(this, clbckData, e);
+			if (res == 0) {
+				//to close previous open menu.
+				if (!btChck && option.closeOther) {
+					$('.iw-contextMenu').not(menu.selector).css('display', 'none');
+				}
+
+				//to reset already selected menu item
+				menu.find('.iw-mSelected').not(menu.selector).removeClass('iw-mSelected');
+				$('.iw-opened').not(menu.selector).removeClass('iw-opened');
+			}
+			else if (res == 1) {
+				//to close previous open menu.
+				if (!btChck && option.closeOther) {
+					$('.iw-contextMenu').css('display', 'none');
+				}
+				//to reset already selected menu item
+				menu.find('.iw-mSelected').removeClass('iw-mSelected');
+				$('.iw-opened').removeClass('iw-opened');
+				return;
+			}
+			else
+				return;
 
 			//call open callback
 			option.onOpen.call(this, clbckData, e).done(function () {
@@ -418,7 +437,7 @@
 				}
 				if (rightMenu > cWidth) {
 					ha = -1 * ha;
-					left = left - menuWidth;
+					left = cWidth - menuWidth;
 				}
 
 
@@ -471,7 +490,7 @@
 					method: trgrData.method
 				};
 				$('html').unbind('click', iMethods.clickEvent).click(dataParm, iMethods.clickEvent);
-				$(document).unbind('keydown', iMethods.keyEvent).keydown(dataParm, iMethods.keyEvent);
+				//$(document).unbind('keydown', iMethods.keyEvent).keydown(dataParm, iMethods.keyEvent);
 				if (option.winEventClose) {
 					$(window).bind('scroll resize', dataParm, iMethods.scrollEvent);
 				}

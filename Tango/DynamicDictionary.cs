@@ -192,6 +192,7 @@ namespace Tango
 		public static List<T> ParseList<T>(this DynamicDictionary dd, string name)
 		{
 			object d = dd[name];
+			if (d == null) return null;
 			if (!(d is IList))
 			{
 				if (d is string)

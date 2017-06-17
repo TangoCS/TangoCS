@@ -127,25 +127,28 @@ var ajaxUtils = function ($, cu) {
 			instance.setHashParms(args);
 		},
 		setHashFromElement: function (el) {
-			var data = {};
-			processElementDataOnAction(el, data);
+			var data = {}, target = {};
+			processElementDataOnEvent(el, data, target);
+			if (target.e)
+				state.loc.event = target.e;
+			else
+				state.loc.event = state.loc.DEF_EVENT_NAME;
+			if (target.r) state.loc.receiver = target.r;
 			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)
 				data[el.name] = el.value;
 			instance.setHashParms(data);
 		},
 		setHashParms: function (args) {
+			var hashParms = cu.getHashParams();
 			if (args) {
 				for (key in args) {
-					if (key == 'e')
-						state.loc.event = args[key];
-					else
-						state.loc.hash[key] = args[key];
+					hashParms[key] = args[key];
 				}
 			}
 			var hashUrl = '/';
-			for (key in state.loc.hash) {
-				if (state.loc.hash[key] && state.loc.hash[key] != '' && state.loc.hash[key] != 'null')
-					hashUrl += key + '=' + state.loc.hash[key] + '&';
+			for (key in hashParms) {
+				if (hashParms[key] && hashParms[key] != '' && hashParms[key] != 'null')
+					hashUrl += key + '=' + hashParms[key] + '&';
 			}
 			window.location.hash = hashUrl == '/' ? hashUrl : hashUrl.substring(0, hashUrl.length - 1);
 		},
@@ -168,7 +171,7 @@ var ajaxUtils = function ($, cu) {
 		},
 		runEventFromElementWithApiResponse: function (el, target) {
 			var data = {};
-			processElementDataOnEvent(el, data);
+			processElementDataOnEvent(el, data, target);
 			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)
 				data[el.name] = el.value;
 			return instance.runEventWithApiResponse(target, data);
@@ -191,7 +194,8 @@ var ajaxUtils = function ($, cu) {
 			var form = $(el).closest('form')[0];
 			var data = {};
 			if (form) data = $(form).serializeObject();
-			processElementDataOnEvent(el, data);
+			if (!target) target = {};
+			processElementDataOnEvent(el, data, target);
 			return instance.postEventWithApiResponse(target, data);
 		},
 		loadScripts: function (apiResult) {
@@ -211,9 +215,8 @@ var ajaxUtils = function ($, cu) {
 				return r.resolve(apiResult);
 		},
 		prepareUrl: function (target, args) {
-			state.loc.event = target.e;
-			if (!state.loc.event) state.loc.event = 'onload';
-			state.loc.hash = cu.getHashParams();
+			//if (!target.e) target.e = 'onload';
+			var hashParms = cu.getHashParams();
 
 			var url = target.url ?
 				target.url :
@@ -224,22 +227,21 @@ var ajaxUtils = function ($, cu) {
 				url += window.location.search;
 
 			if (!url.endsWith('?')) url += '&';
-			url += 'e=' + state.loc.event;
+			url += 'e=' + target.e;
 			var p = document.head.getAttribute('data-p');
 			if (p) url += '&p=' + p;
 
-			for (key in state.loc.hash) {
-				if (key != 'e' && key != 'r' && key != 'p' && state.loc.hash[key])
-					url += '&' + key + '=' + encodeURIComponent(state.loc.hash[key]);
+			for (key in hashParms) {
+				if (key != 'e' && key != 'r' && key != 'p' && hashParms[key])
+					url += '&' + key + '=' + encodeURIComponent(hashParms[key]);
 				else if (key == 'r')
-					target.r = state.loc.hash[key];
+					target.r = hashParms[key];
 			}
 			for (key in args) {
 				url += '&' + key + '=' + encodeURIComponent(args[key]);
 			}
 			if (target.r) url += '&r=' + target.r;
 
-			state.loc.event = null;
 			return url;
 		},
 		stopRequest: function () {
@@ -254,8 +256,8 @@ var ajaxUtils = function ($, cu) {
 			requestedJs: []
 		},
 		loc: {
+			DEF_EVENT_NAME: 'onload',
 			defAction: null,
-			hash: cu.getHashParams(),
 			event: null,
 			receiver: null
 		}
@@ -304,31 +306,17 @@ var ajaxUtils = function ($, cu) {
 			$.Deferred().resolve(data) : $.Deferred().reject();
 	}
 
-	function processElementDataOnEvent(el, data) {
-		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
-			attr = attrs[i];
-			if (attr.name.startsWith('data-p-')) {
-				data[attr.name.replace('data-p-', '')] = attr.value;
-			} else if (attr.name.startsWith('data-format')) {
-				data['__format_' + el.name] = attr.value;
-			} else if (attr.name.startsWith('data-ref-')) {
-				var refEl = document.getElementById(attr.name.replace('data-ref-', ''));
-				if (refEl) data[refEl.name] = refEl.value;
-			}
-		}
-	}
-
-	function processElementDataOnAction(el, data) {
-		state.loc.event = null;
-		state.loc.receiver = null;
+	function processElementDataOnEvent(el, data, target) {
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
 			attr = attrs[i];
 			if (attr.name.startsWith('data-p-')) {
 				data[attr.name.replace('data-p-', '')] = attr.value;
 			} else if (attr.name == 'data-e') {
-				state.loc.event = attr.value;
+				target.e = attr.value;
 			} else if (attr.name == 'data-r') {
-				state.loc.receiver = attr.value;
+				target.r = attr.value;
+			} else if (attr.name.startsWith('data-format')) {
+				data['__format_' + el.name] = attr.value;
 			} else if (attr.name.startsWith('data-ref-')) {
 				var refEl = document.getElementById(attr.name.replace('data-ref-', ''));
 				if (refEl) data[refEl.name] = refEl.value;
@@ -417,8 +405,10 @@ var ajaxUtils = function ($, cu) {
 
 		$(window).on('hashchange', function () {
 			if (!window.location.hash.startsWith('#/')) return;
-			if (!state.loc.event) state.loc.event = 'onload';
+			if (!state.loc.event) state.loc.event = state.loc.DEF_EVENT_NAME;
 			if (state.loc.event != '#') instance.runEventWithApiResponse({ e: state.loc.event, r: state.loc.receiver });
+			state.loc.event = null;
+			state.loc.receiver = null;
 		});
 
 		$(document).ajaxSend(beforeRequest);
@@ -430,7 +420,7 @@ var ajaxUtils = function ($, cu) {
 				state.loc.defAction = __load.getAttribute('data-default');
 				//if (state.loc.defAction) target.url = '/api' + state.loc.defAction;
 			}
-			instance.runEventWithApiResponse({});
+			instance.runEventWithApiResponse({ e: state.loc.DEF_EVENT_NAME });
 		}
 	});
 
