@@ -221,7 +221,7 @@ namespace Tango.Meta.Database
 
 			});*/
 
-			doc.Descendants("Function").ToList().ForEach(p =>
+			/*doc.Descendants("Function").ToList().ForEach(p =>
 			{
 				var function = new Function();
 				function.Name = p.GetAttributeValue("NAME");
@@ -239,7 +239,7 @@ namespace Tango.Meta.Database
 
 				returnSchema.Functions.Add(function.Name, function);
 
-			});
+			});*/
 		}
 
 		/*public List<ProcedureDetails> ReadProceduresDetails()

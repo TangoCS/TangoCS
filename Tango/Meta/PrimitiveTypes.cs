@@ -32,6 +32,12 @@ namespace Tango.Meta
 		public int Scale { get; set; }
 		public override string ToCSharpType(bool nullable) => nullable ? "decimal?" : "decimal";
 	}
+	public partial class MetaMoneyType : MetaPrimitiveType, IMetaNumericType
+	{
+		public int Precision { get; set; }
+		public int Scale { get; set; }
+		public override string ToCSharpType(bool nullable) => nullable ? "decimal?" : "decimal";
+	}
 	public partial class MetaStringType : MetaPrimitiveType, IMetaIdentifierType, IMetaParameterType
 	{
 		public int Length { get; set; }
@@ -60,6 +66,11 @@ namespace Tango.Meta
 	{
 		public string ColumnSuffix => "ID";
 		public override string ToCSharpType(bool nullable) => nullable ? "long?" : "long";
+	}
+	public partial class MetaShortType : MetaPrimitiveType, IMetaNumericType
+	{
+		public string ColumnSuffix => "";
+		public override string ToCSharpType(bool nullable) => nullable ? "short?" : "short";
 	}
 	public partial class MetaByteArrayType : MetaPrimitiveType
 	{
@@ -95,11 +106,13 @@ namespace Tango.Meta
 		static MetaZoneDateTimeType _zoneDateTime = new MetaZoneDateTimeType();
 		static MetaIntType _int = new MetaIntType();
 		static MetaLongType _long = new MetaLongType();
+		static MetaShortType _short = new MetaShortType();
 		static MetaBooleanType _boolean = new MetaBooleanType();
 		static MetaGuidType _guid = new MetaGuidType();
 		static MetaFileType _fileIntKey = new MetaFileType(_int);
 		static MetaFileType _fileGuidKey = new MetaFileType(_guid);
 		static MetaDecimalType _decimal = new MetaDecimalType { Precision = 18, Scale = 5 };
+		static MetaMoneyType _money = new MetaMoneyType { Precision = 18, Scale = 2 };
 		static MetaXmlType _xml = new MetaXmlType();
 
 		public static MetaStringType String => _string;
@@ -109,9 +122,11 @@ namespace Tango.Meta
 		public static MetaZoneDateTimeType ZoneDateTime => _zoneDateTime;
 		public static MetaIntType Int => _int;
 		public static MetaLongType Long => _long;
+		public static MetaShortType Short => _short;
 		public static MetaBooleanType Boolean => _boolean;
 		public static MetaGuidType Guid => _guid;
 		public static MetaDecimalType Decimal => _decimal;
+		public static MetaMoneyType Money => _money;
 		public static MetaFileType FileIntKey => _fileIntKey;
 		public static MetaFileType FileGuidKey => _fileGuidKey;
 		public static MetaXmlType Xml => _xml;
@@ -131,6 +146,7 @@ namespace Tango.Meta
 			if (type == typeof(DateTime) || type == typeof(DateTime?)) return _dateTime;
 			//if (typeof(IEnum).IsAssignableFrom(type)) return Enum(type.Name);
 			if (type == typeof(long) || type == typeof(long?)) return _long;
+			if (type == typeof(short) || type == typeof(short?)) return _short;
 			if (type == typeof(byte[])) return _byteArray;
 			if (type == typeof(XDocument)) return _xml;
 			throw new NotSupportedException("Type " + type.Name + " is not supported");

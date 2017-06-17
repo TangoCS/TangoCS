@@ -211,7 +211,7 @@ namespace Tango.Meta.Database
 			}
 			else
 			{
-				_MainScripts.Add(string.Format("ALTER TABLE {5}.{4} ADD {0} {1} {2} {3};",
+				_MainScripts.Add(string.Format("ALTER TABLE {5}.{4} ADD {0} {1} {2}{3};",
 										srcColumn.Name.ToLower(),
 										srcColumn.Identity ? "serial" : srcColumn.Type.GetDBType(this),
 										srcColumn.Nullable ? "NULL" : "NOT NULL",
@@ -357,8 +357,9 @@ namespace Tango.Meta.Database
 			{
 				using (NpgsqlCommand cmd = new NpgsqlCommand("select dbo.usp_dbschema(:s)", con))
 				{
-					con.Open();
+					cmd.CommandTimeout = 600;
 					cmd.Parameters.Add(new NpgsqlParameter("s", _SchemaName));
+					con.Open();
 					using (var reader = cmd.ExecuteReader())
 					{
 						while (reader.Read())
@@ -393,6 +394,11 @@ namespace Tango.Meta.Database
 			return string.Format("numeric({0},{1})", precision, scale);
 		}
 
+		public string GetMoneyType()
+		{
+			return "money";
+		}
+
 		public string GetDateTimeType()
 		{
 			return "timestamp";
@@ -411,6 +417,11 @@ namespace Tango.Meta.Database
 		public string GetLongType()
 		{
 			return "bigint";
+		}
+
+		public string GetShortType()
+		{
+			return "smallint";
 		}
 
 		public string GetByteArrayType(int length)
@@ -462,6 +473,8 @@ namespace Tango.Meta.Database
 						return TypeFactory.String;
 				case "numeric":
 					return TypeFactory.CustomDecimal(precision, scale);
+				case "money":
+					return TypeFactory.Money;
 				case "timestamp":
 				case "timestamptz":
 					return TypeFactory.DateTime;
@@ -469,6 +482,9 @@ namespace Tango.Meta.Database
 					return TypeFactory.Date;
 				case "bigint":
 					return TypeFactory.Long;
+				case "smallint":
+				case "tinyint":
+					return TypeFactory.Short;
 				case "bytea":
 					return TypeFactory.ByteArray;
 				case "boolean":
@@ -482,24 +498,26 @@ namespace Tango.Meta.Database
 
 		private string GetDefaultValue(string value, string type)
 		{
-			return value;
-			//var match = Regex.Match(value, @"(?<=\(').*(?='\))");
-			//var defValue = match.Groups[0].Value;
-			//if (string.IsNullOrEmpty(defValue))
-			//{
-			//	var match1 = Regex.Match(value, @"\((.*)\)");
-			//	defValue = match1.Groups[1].Value;
-			//}
-			//string retvalue;
-			//if (value == "(getdate())")
-			//	retvalue = "now()"; //(Type.ToLower() == "date" ? "current_date" : "current_timestamp");
-			//else
-			//	if (value == "(newid())")
-			//		retvalue = "newid()";
-			//	else
-			//		retvalue = "'" + defValue.Replace("'", "").Replace("(", "").Replace(")", "").Replace("\"", "") + "'";
- 
-			//return retvalue;
+			var match = Regex.Match(value, @"(?<=\(').*(?='\))");
+			var defValue = match.Groups[0].Value;
+			if (string.IsNullOrEmpty(defValue))
+			{
+				var match1 = Regex.Match(value, @"\((.*)\)");
+				defValue = match1.Groups[1].Value;
+			}
+			string retvalue;
+			if (value == "(getdate())" || value == "(newid())" || value == "('')")
+				retvalue = value;
+			else
+			if (type == "varchar" || type == "text")
+				retvalue = "('" + defValue + "')";
+			else
+			if (type == "boolean" || type == "date" || type == "timestamp" || type == "timestamptz")
+				retvalue = "('" + defValue.Replace("'", "").Replace("(", "").Replace(")", "").Replace("\"", "") + "')";
+			else
+				retvalue = "(" + defValue.Replace("'", "").Replace("(", "").Replace(")", "").Replace("\"", "") + ")";
+
+			return retvalue;
 		}
 	}
 }

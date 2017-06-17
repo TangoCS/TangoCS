@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using IBM.Data.DB2;
 using Tango.Meta.Database;
 using Npgsql;
+using System.Xml.Linq;
 
 namespace DBSchemaDiff
 {
@@ -16,7 +17,7 @@ namespace DBSchemaDiff
 	{
 		static void Main(string[] args)
 		{
-			string mydocpath = System.IO.Directory.GetCurrentDirectory();
+			string mydocpath = Directory.GetCurrentDirectory();
 
 			IDatabaseMetadataReader readerFrom;
 			IDatabaseMetadataReader readerTo;
@@ -24,43 +25,50 @@ namespace DBSchemaDiff
 			var dbFromName = string.Empty;
 			var dbToName = string.Empty;
 			var cfgTables = ConfigurationManager.AppSettings["Tables"].Split(',');
+			var exclude = ConfigurationManager.AppSettings["ExcludeTables"];
+			var tableIndex = ConfigurationManager.AppSettings["TableIndex"];
 
-			if (ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString().Contains("Data Source"))
+			string[] cfgExcludeTables = null;
+			if (exclude != null)
+				cfgExcludeTables = ConfigurationManager.AppSettings["ExcludeTables"].Split(',');
+			var tableIndexes = Convert.ToBoolean(tableIndex);
+
+			if (ConfigurationManager.ConnectionStrings["ConnectionFrom"].ToString().Contains("Data Source"))
 			{
-				SqlConnectionStringBuilder strBuilder = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString());
+				SqlConnectionStringBuilder strBuilder = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionFrom"].ToString());
 				dbFromName = strBuilder.InitialCatalog;
 				readerFrom = new SqlServerMetadataReader(strBuilder.ConnectionString);
 			}
 			else
-			if (ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString().Contains("Port"))
+			if (ConfigurationManager.ConnectionStrings["ConnectionFrom"].ToString().Contains("Port"))
 			{
-				NpgsqlConnectionStringBuilder strBuilder = new NpgsqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString());
+				NpgsqlConnectionStringBuilder strBuilder = new NpgsqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionFrom"].ToString());
 				dbFromName = strBuilder.Database;
 				readerFrom = new PostgreSQLMetadataReader(strBuilder.ConnectionString);
 			}
 			else
 			{
-				DB2ConnectionStringBuilder strBuilder = new DB2ConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringFrom"].ToString());
+				DB2ConnectionStringBuilder strBuilder = new DB2ConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionFrom"].ToString());
 				dbFromName = strBuilder.DBName;
 				readerFrom = new DB2ServerMetadataReader(strBuilder.ConnectionString);
 			}
 
-			if (ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString().Contains("Data Source"))
+			if (ConfigurationManager.ConnectionStrings["ConnectionTo"].ToString().Contains("Data Source"))
 			{
 				
 				dbScript = new DBScriptMSSQL("dbo");
 
-				SqlConnectionStringBuilder strBuilder = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString());
+				SqlConnectionStringBuilder strBuilder = new SqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionTo"].ToString());
 				dbToName = strBuilder.InitialCatalog;
 				readerTo = new SqlServerMetadataReader(strBuilder.ConnectionString);
 
 			}
 			else
-			if (ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString().Contains("Port"))
+			if (ConfigurationManager.ConnectionStrings["ConnectionTo"].ToString().Contains("Port"))
 			{				
 				dbScript = new DBScriptPostgreSQL("dbo");
 
-				NpgsqlConnectionStringBuilder strBuilder = new NpgsqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString());
+				NpgsqlConnectionStringBuilder strBuilder = new NpgsqlConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionTo"].ToString());
 				dbToName = strBuilder.Database;
 				readerTo = new PostgreSQLMetadataReader(strBuilder.ConnectionString);
 			}
@@ -68,41 +76,119 @@ namespace DBSchemaDiff
 			{			
 				dbScript = new DBScriptDB2("dbo");
 
-				DB2ConnectionStringBuilder strBuilder = new DB2ConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionStringTo"].ToString());
+				DB2ConnectionStringBuilder strBuilder = new DB2ConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionTo"].ToString());
 				dbToName = strBuilder.DBName;
 				readerTo = new DB2ServerMetadataReader(strBuilder.ConnectionString);
 			}
 
-			var fromSchema = readerFrom.ReadSchema("dbo");
-			var toSchema = readerTo.ReadSchema("dbo");
+			var path = mydocpath + "\\DbScripts\\";
+			if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+
+			Schema schemaFrom = readerFrom.ReadSchema("dbo");
+			Schema schemaTo;
+
+			if (File.Exists(mydocpath + "\\dbschema_to.xml"))
+			{
+				var s = File.ReadAllText(mydocpath + "\\dbschema_to.xml");
+				XDocument doc = XDocument.Parse(s);
+				schemaTo = readerTo.ReadSchema("dbo", doc);
+			}
+			else
+			{
+				schemaTo = readerTo.ReadSchema("dbo");
+			}
 			
 			List<Table> Tables;
 			if (cfgTables[0].ToLower() == "all")
-				Tables = fromSchema.Tables.Values.ToList();
+				Tables = schemaFrom.Tables.Values.ToList();
 			else
-				Tables = fromSchema.Tables.Values.Where(t => cfgTables.Any(c => t.Name.ToLower() == c.ToLower()) /*|| t.ForeignKeys.Any(f => cfgTables.Any(l => l.ToLower() == f.Value.RefTable.ToLower()))*/).ToList();
-			 
+				Tables = schemaFrom.Tables.Values.Where(t => cfgTables.Any(c => t.Name.ToLower() == c.ToLower()) /*|| t.ForeignKeys.Any(f => cfgTables.Any(l => l.ToLower() == f.Value.RefTable.ToLower()))*/).ToList();
+
+			if (cfgExcludeTables != null)
+				Tables = Tables.Where(t => !cfgExcludeTables.Any(c => t.Name.ToLower() == c.ToLower())).ToList();
+
+			var result = new StringBuilder();
+			var resultBeg = new StringBuilder();
+			resultBeg.AppendLine("DO LANGUAGE plpgsql");
+			resultBeg.AppendLine("$$");
+			resultBeg.AppendLine("BEGIN");
+
+			var resultEnd = new StringBuilder();
+			resultEnd.AppendLine("EXCEPTION WHEN OTHERS THEN");
+			resultEnd.AppendLine("RAISE EXCEPTION 'Error state: %, Error message: %', SQLSTATE, SQLERRM;");
+			resultEnd.AppendLine("RAISE NOTICE 'Database structure successfully updated!';");
+			resultEnd.AppendLine("END;");
+			resultEnd.AppendLine("$$");
+
+			var indexaddpath = path + dbFromName + "_ADD_INDEX.sql";
+			var indexdroppath = path + dbFromName + "_DROP_INDEX.sql";
+			if (tableIndexes)
+			{
+				File.WriteAllText(indexaddpath, resultBeg.ToString());
+				File.WriteAllText(indexdroppath, resultBeg.ToString());
+			}
+
 			foreach (var rsctable in Tables)
 			{
-				Console.WriteLine(@"Таблица - " + rsctable.Name);
-				var table = toSchema.Tables.Values.SingleOrDefault(t => t.Name.ToUpper() == rsctable.Name.ToUpper());
+				Console.Write(@"Таблица - " + rsctable.Name + " start...");
+
+				if (tableIndexes && rsctable.Indexes.Count() > 0)
+				{
+					CreateIndex(rsctable, result);
+					File.AppendAllText(indexaddpath, result.ToString());
+					result.Clear();
+				}
+
+				var table = schemaTo.Tables.Values.SingleOrDefault(t => t.Name.ToUpper() == rsctable.Name.ToUpper());
 
 				if (table == null)
 				{
 					dbScript.CreateTable(rsctable);
 				}
 				else
+				{
 					table.Sync(dbScript, rsctable);
+					if (tableIndexes && table.Indexes.Count() > 0)
+					{
+						DropIndex(table, result);
+						File.AppendAllText(indexdroppath, result.ToString());
+						result.Clear();
+					}
+				}
 
+				Console.WriteLine(@"end");
 			}
 			var script = dbScript.ToString();
 
-			var filePath = mydocpath + "\\DbScripts\\" + dbFromName + "_" + dbToName + "_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss") + ".txt";
+			var filePath = path + dbFromName + "_" + dbToName + "_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm_ss") + ".sql";
 			TextWriter tw = File.CreateText(filePath);
 			tw.Write(script);
 			tw.Close();
 
-			//Console.ReadKey();
+			if (tableIndexes)
+			{
+				File.AppendAllText(indexaddpath, resultEnd.ToString());
+				File.AppendAllText(indexdroppath, resultEnd.ToString());
+			}
+
+			Console.WriteLine("End");
+			Console.ReadKey();
+		}
+
+		public static void CreateIndex(Table t, StringBuilder result)
+		{
+			foreach (var indx in t.Indexes.Values)
+			{
+				result.AppendFormat("CREATE{4}INDEX IF NOT EXISTS {3} ON {0}.{1} ({2});\r\n", t.Schema.Name.ToLower(), t.Name.ToLower(), string.Join(",", indx.Columns).ToLower(), indx.Name.ToLower(), indx.IsUnique ? " UNIQUE " : " ");
+			}
+		}
+
+		public static void DropIndex(Table t, StringBuilder result)
+		{
+			foreach (var indx in t.Indexes.Values)
+			{
+				result.AppendFormat("DROP INDEX IF EXISTS {0};\r\n", /*t.Schema.Name.ToLower(), */indx.Name.ToLower());
+			}
 		}
 	}
 }
