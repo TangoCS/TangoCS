@@ -20,6 +20,7 @@ Common.Buttons.UnCheckAll;очистить все;clear all
 Common.OK;ОК;OK
 Common.Cancel;Отмена;Cancel
 Common.ChangeHistory;История изменений;Change history
+Common.Clear;Очистить;Clear
 Common.Condition;Условие;Condition
 Common.Continue;Продолжить;Continue
 Common.Controls.FileList.AttachFile;Прикрепить файл;Attach file
