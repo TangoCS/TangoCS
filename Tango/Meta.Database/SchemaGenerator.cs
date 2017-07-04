@@ -27,8 +27,14 @@ namespace Tango.Meta.Database
 
 				if (cls.BaseClass != null)
 				{
+					if (cls.CompositeKey.Count > 1)
+						throw new Exception(string.Format("Class {0}. При наследовании не должно быть больше одного первичного ключа", t.Name));
+
 					var column = new Column();
-					column.Name = (cls.Name.Contains("_") ? cls.Name.Substring(cls.Name.IndexOf('_') + 1, cls.Name.Length - cls.Name.IndexOf('_') - 1) : cls.Name) + (cls.BaseClass.Key.Type as IMetaIdentifierType).ColumnSuffix;
+					if (cls.CompositeKey.Count < 1)
+						column.Name = (cls.Name.Contains("_") ? cls.Name.Substring(cls.Name.IndexOf('_') + 1, cls.Name.Length - cls.Name.IndexOf('_') - 1) : cls.Name) + (cls.BaseClass.Key.Type as IMetaIdentifierType).ColumnSuffix;
+					else
+						column.Name = cls.CompositeKey[0].Name;
 					column.Type = cls.BaseClass.Key.Type;
 					column.Table = t;
 					column.Nullable = false;
@@ -66,8 +72,6 @@ namespace Tango.Meta.Database
 					throw new Exception("Duplicate table name " + t.Name);
 				Tables.Add(t.Name, t);
 
-				//var primaryColumn = new Column();
-
 				foreach (var prop in cls.Properties)
 				{
 					if (prop is IMetaComputedAttribute)
@@ -78,10 +82,17 @@ namespace Tango.Meta.Database
 						continue;
 
 					var column = new Column();
+					column.IsPrimaryKey = cls.CompositeKey.Any(p => p.Name == prop.Name);
+					column.Nullable = !prop.IsRequired;
+
+					if (cls.BaseClass != null && column.IsPrimaryKey)
+						continue;
+
 					column.Name = prop.Name;
 					column.Table = t;
 					column.Type = prop.Type;
 					column.DefaultValue = prop.DefaultDBValue;
+
 					if (prop is IMetaPersistentComputedAttribute)
 					{
 						column.ComputedText = (prop as IMetaPersistentComputedAttribute).Expression;
@@ -111,9 +122,6 @@ namespace Tango.Meta.Database
 						t.ForeignKeys.Add(column.ForeignKeyName, new ForeignKey() { Table = t, Name = column.ForeignKeyName, RefTable = "N_File", Columns = new[] { column.Name }, RefTableColumns = new[] { "Guid" } });
 					}
 
-					column.Nullable = !prop.IsRequired;
-					column.IsPrimaryKey = cls.CompositeKey.Any(p => p.Name == prop.Name);
-					
 					if (column.IsPrimaryKey)
 					{
 						primaryColumn = column;
@@ -184,7 +192,17 @@ namespace Tango.Meta.Database
 							fknm = "FK_" + ttr.Name + "_Transition";
 							ttr.Columns.Add("TransitionID", new Column() { Table = ttr, Name = "TransitionID", ForeignKeyName = fknm, Type = TypeFactory.Int });
 							ttr.ForeignKeys.Add(fknm, new ForeignKey() { Table = ttr, Name = fknm, RefTable = "WF_Transition", Columns = new[] { "TransitionID" }, RefTableColumns = new[] { "TransitionID" } });
-							
+
+							// Для случая, если есть наследуемый класс, совпадающий с классом формируемым по референсу на WF_Activity
+							if (ttr.Name.ToLower().Contains("transition") && Tables.Any(o => o.Key == ttr.Name))
+							{
+								var trtable = Tables.First(o => o.Key == ttr.Name).Value;
+								foreach(var trclm in trtable.Columns.Values)
+								{
+									if (!trclm.IsPrimaryKey) ttr.Columns.Add(trclm.Name, trclm);
+								}
+								Tables.Remove(ttr.Name);
+							}
 							Tables.Add(ttr.Name, ttr);
 						}
 					}
