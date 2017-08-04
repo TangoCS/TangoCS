@@ -30,12 +30,30 @@ var commonUtils = function ($) {
 				return v.toString(16);
 			});
 		},
-		hideShow: function(id) {
-			var x = document.getElementById(id);
-			if (x.style.display === 'none') {
-				x.style.display = 'block';
-			} else {
-				x.style.display = 'none';
+		getScrollParent: function (element, includeHidden) {
+			var style = getComputedStyle(element);
+			var excludeStaticParent = style.position === "absolute";
+			var overflowRegex = includeHidden ? /(auto|scroll|hidden)/ : /(auto|scroll)/;
+
+			if (style.position === "fixed") return document.body;
+			for (var parent = element; (parent = parent.parentElement) ;) {
+				style = getComputedStyle(parent);
+				if (excludeStaticParent && style.position === "static") {
+					continue;
+				}
+				if (overflowRegex.test(style.overflow + style.overflowY + style.overflowX)) return parent;
+			}
+
+			return document.body;
+		},
+		scrollToView: function (element) {
+			var r = element.getBoundingClientRect();
+			if (r.bottom > window.innerHeight) {
+				var scrl = instance.getScrollParent(element);
+				if (scrl)
+					scrl.scrollTop += r.bottom - window.innerHeight + 16;
+				else
+					window.scrollBy(0, r.bottom - window.innerHeight + 16);
 			}
 		}
 	}
@@ -43,10 +61,28 @@ var commonUtils = function ($) {
 	return instance;
 }($);
 
-var domActions = function ($) {
+if (!String.prototype.endsWith) {
+	String.prototype.endsWith = function (searchString, position) {
+		var subjectString = this.toString();
+		if (typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > subjectString.length) {
+			position = subjectString.length;
+		}
+		position -= searchString.length;
+		var lastIndex = subjectString.indexOf(searchString, position);
+		return lastIndex !== -1 && lastIndex === position;
+	};
+}
+
+if (!String.prototype.startsWith) {
+	String.prototype.startsWith = function (str) {
+		return this.lastIndexOf(str, 0) === 0;
+	}
+}
+
+var domActions = function () {
 	var instance = {
 		setValue: function (args) {
-			var e = document.getElementById(args.elName);
+			var e = document.getElementById(args.id);
 			if (e) {
 				if (e instanceof HTMLInputElement || e instanceof HTMLSelectElement)
 					e.value = args.value;
@@ -55,29 +91,57 @@ var domActions = function ($) {
 			}
 		},
 		setAttribute: function (args) {
-			var e = document.getElementById(args.elName);
+			var e = document.getElementById(args.id);
 			e.setAttribute(args.attrName, args.attrValue);
 		},
 		removeAttribute: function (args) {
-			var e = document.getElementById(args.elName);
+			var e = document.getElementById(args.id);
 			e.removeAttribute(args.attrName);
 		},
 		setVisible: function (args) {
-			var e = document.getElementById(args.elName);
-			if (args.visible) $(e).show(); else $(e).hide();
+			var e = document.getElementById(args.id);
+			if (args.visible) e.classList.remove('hide'); else e.classList.add('hide');
 		},
 		setClass: function (args) {
-			var e = document.getElementById(args.elName);
-			$(e).addClass(args.clsName);
+			var e = document.getElementById(args.id);
+			e.classList.add(args.clsName);
 		},
 		removeClass: function (args) {
-			var e = document.getElementById(args.elName);
-			$(e).removeClass(args.clsName);
+			var e = document.getElementById(args.id);
+			e.classList.remove(args.clsName);
+		},
+		toggleClass: function (args) {
+			if (args.id) {
+				var el = document.getElementById(args.id);
+				el.classList.toggle(args.clsName);
+			}
+			else {
+				var root = args.root ? args.root : document;
+				var grels = root.querySelectorAll(args.groupSelector);
+				var els = root.querySelectorAll(args.itemsSelector);
+
+				var b = args.sender.classList.contains(args.senderClsName);
+
+				for (var i = 0; i < grels.length; i++) {
+					grels[i].classList.remove(args.clsName);
+					grels[i].classList.remove(args.senderClsName);
+				}
+
+				if (!b) {
+					for (var i = 0; i < els.length; i++) {
+						els[i].classList.add(args.clsName);
+					}
+					args.sender.classList.add(args.senderClsName);
+				}
+			}
+		},
+		hideShow: function (id) {
+			instance.toggleClass({ id: id, clsName: 'hide' });
 		}
 	}
 
 	return instance;
-}($);
+}();
 
 var ajaxUtils = function ($, cu) {
 	var timer = null;
@@ -171,6 +235,7 @@ var ajaxUtils = function ($, cu) {
 		},
 		runEventFromElementWithApiResponse: function (el, target) {
 			var data = {};
+			if (!target) target = {};
 			processElementDataOnEvent(el, data, target);
 			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)
 				data[el.name] = el.value;
@@ -231,13 +296,13 @@ var ajaxUtils = function ($, cu) {
 			var p = document.head.getAttribute('data-p');
 			if (p) url += '&p=' + p;
 
-			for (key in hashParms) {
+			for (var key in hashParms) {
 				if (key != 'e' && key != 'r' && key != 'p' && hashParms[key])
 					url += '&' + key + '=' + encodeURIComponent(hashParms[key]);
 				else if (key == 'r')
 					target.r = hashParms[key];
 			}
-			for (key in args) {
+			for (var key in args) {
 				url += '&' + key + '=' + encodeURIComponent(args[key]);
 			}
 			if (target.r) url += '&r=' + target.r;
@@ -252,7 +317,8 @@ var ajaxUtils = function ($, cu) {
 	var state = {
 		com: {
 			requestId: null,
-			message: $("#topmessagecontainer"),
+			message: null,
+			apiResult: null,
 			requestedJs: []
 		},
 		loc: {
@@ -298,7 +364,7 @@ var ajaxUtils = function ($, cu) {
 
 	function requestCompleted() {
 		state.com.requestId = null;
-		state.com.message.css('display', 'none')
+		if (state.com.message) state.com.message.css('display', 'none')
 	}
 
 	function onRequestResult(data, status, xhr) {
@@ -337,13 +403,24 @@ var ajaxUtils = function ($, cu) {
 		console.log('processApiResponse');
 		if (!apiResult) return;
 
-		if (apiResult.error) {
-			document.documentElement.innerHTML = 'Server error<br/>' + apiResult.error;
+		if (apiResult.url) {
+			window.location = apiResult.url;
 			return;
 		}
 
-		if (apiResult.url) {
-			window.location = apiResult.url;
+		state.com.apiResult = apiResult;
+
+		if (document.readyState == 'complete' || document.readyState == 'interactive')
+			renderApiResult();
+
+	}
+
+	function renderApiResult() {
+		var apiResult = state.com.apiResult;
+		state.com.apiResult = null;
+
+		if (apiResult.error) {
+			document.documentElement.innerHTML = 'Server error<br/>' + apiResult.error;
 			return;
 		}
 
@@ -356,8 +433,12 @@ var ajaxUtils = function ($, cu) {
 					if (obj.parent && obj.parent != 'body') el2 = document.getElementById(obj.parent);
 					if (el)
 						el.outerHTML = obj.content;
-					else
+					else {
 						el2.insertAdjacentHTML(obj.position, obj.content);
+					}
+					if (obj.position.toLowerCase() == 'afterend') {
+						cu.scrollToView(el2.nextSibling);
+					}
 				}
 				else {
 					if (el) el.innerHTML = obj;
@@ -400,7 +481,11 @@ var ajaxUtils = function ($, cu) {
 		}
 	}
 
-	$(document).ready(function () {
+	document.addEventListener('DOMContentLoaded', function () {
+		state.com.message = $("#topmessagecontainer");
+		setTimeout(function () {
+			if (state.com.requestId) state.com.message.css('display', 'block');
+		}, 100);
 		document.body.className = '';
 
 		$(window).on('hashchange', function () {
@@ -411,36 +496,20 @@ var ajaxUtils = function ($, cu) {
 			state.loc.receiver = null;
 		});
 
-		$(document).ajaxSend(beforeRequest);
-		$(document).ajaxStop(requestCompleted);
-
-		var __load = document.getElementById('__load');
-		if (__load) {
-			if (window.location.pathname == '/') {
-				state.loc.defAction = __load.getAttribute('data-default');
-				//if (state.loc.defAction) target.url = '/api' + state.loc.defAction;
-			}
-			instance.runEventWithApiResponse({ e: state.loc.DEF_EVENT_NAME });
-		}
+		if (state.com.apiResult)
+			renderApiResult();
 	});
+
+	$(document).ajaxSend(beforeRequest);
+	$(document).ajaxStop(requestCompleted);
+
+	var __load = document.head.attributes['data-load'];
+	if (__load) {
+		if (window.location.pathname == '/') {
+			state.loc.defAction = __load.value;
+		}
+		instance.runEventWithApiResponse({ e: 'onload' });
+	}
 
 	return instance;
 }($, commonUtils);
-
-if (!String.prototype.endsWith) {
-	String.prototype.endsWith = function (searchString, position) {
-		var subjectString = this.toString();
-		if (typeof position !== 'number' || !isFinite(position) || Math.floor(position) !== position || position > subjectString.length) {
-			position = subjectString.length;
-		}
-		position -= searchString.length;
-		var lastIndex = subjectString.indexOf(searchString, position);
-		return lastIndex !== -1 && lastIndex === position;
-	};
-}
-
-if (!String.prototype.startsWith) {
-	String.prototype.startsWith = function (str) {
-		return this.lastIndexOf(str, 0) === 0;
-	}
-}

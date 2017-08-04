@@ -76,10 +76,10 @@ namespace Tango.UI
 			w.AddClientAction("ajaxUtils", "initForm", new { ID = w.GetID(name), SubmitOnEnter = submitOnEnter });
 		}
 
-		public static void ListTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
-		{
-			w.Table(a => a.Class("ms-listviewtable").Set(attributes), content);
-		}
+		//public static void ListTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+		//{
+		//	w.Table(a => a.Class("ms-listviewtable").Set(attributes), content);
+		//}
 
 		public static void FormTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{

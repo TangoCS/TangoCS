@@ -10,7 +10,7 @@ namespace Tango.UI.Controls
 {
 	public static class CalendarExtension
 	{
-		public static void Calendar(this LayoutWriter w, string name, DateTime? value = null, bool enabled = true, bool showTime = false)
+		public static void Calendar(this LayoutWriter w, InputName name, DateTime? value = null, bool enabled = true, bool showTime = false)
 		{
 			string basePath = GlobalSettings.JSPath + "calendar/";
 
@@ -18,20 +18,22 @@ namespace Tango.UI.Controls
 			if (value == DateTime.MinValue) value = null;
 
 			w.TextBox(name, showTime ? value.DateTimeToString() : value.DateToString(), a =>
-				a.ID(name).Data("format", "dd.MM.yyyy").Placeholder("ДД.ММ.ГГГГ").Style("width:" + (showTime ? "130px" : "100px"))
+				a.Data("format", "dd.MM.yyyy").Placeholder("ДД.ММ.ГГГГ").Style("width:" + (showTime ? "130px" : "100px"))
+				.Data("calendar", "")
+				.Data("showtime", showTime).Data("usecalendardays", ConfigurationManager.AppSettings["UseCalendarDaysInJSCalendar"])
 				.OnKeyPress("return calendarcontrol.keypress(event)").Disabled(!enabled)
 			);
 			if (enabled)
 			{
-				w.Img(a => a.ID("btn" + name).Title("Календарь").Src(basePath + "img.gif"));
+				w.Img(a => a.ID("btn" + name.ID).Title("Календарь").Src(basePath + "img.gif"));
 
 				w.Includes.Add("calendar/calendar_stripped.js");
 				w.Includes.Add("calendar/lang/calendar-ru.js");
 				w.Includes.Add("calendar/calendarcontrol.js");
 
 				w.AddClientAction("Calendar", "setup", new {
-					inputField = w.GetID(name),
-					button = w.GetID("btn" + name),
+					inputField = w.GetID(name.ID),
+					button = w.GetID("btn" + name.ID),
 					showOthers = true,
 					weekNumbers = false,
 					showTime = showTime,

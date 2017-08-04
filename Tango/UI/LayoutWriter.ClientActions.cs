@@ -37,13 +37,13 @@ namespace Tango.UI
 		static void BindEvent(this LayoutWriter w, string elementId, string clientEvent, string serverEvent, string method, string serverEventReceiver = null)
 		{
 			w.ClientActions.Add(new ClientAction("ajaxUtils", "bindevent", new {
-				Id = GetTrueName(w, elementId), ClientEvent = clientEvent,
+				Id = GetClientId(w, elementId), ClientEvent = clientEvent,
 				ServerEvent = serverEvent, ServerEventReceiver = serverEventReceiver,
 				Method = method
 			}));
 		}
 
-		static string GetTrueName(LayoutWriter w, string name)
+		static string GetClientId(LayoutWriter w, string name)
 		{
 			return (!w.IDPrefix.IsEmpty() ? w.IDPrefix + "_" + name : name).ToLower();
 		}

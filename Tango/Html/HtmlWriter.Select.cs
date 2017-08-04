@@ -6,13 +6,9 @@ namespace Tango.Html
 {
 	public static class HtmlWriterSelectExtensions
 	{
-		public static void DropDownList(this IHtmlWriter w, string name, string value, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
+		public static void DropDownList(this IHtmlWriter w, InputName name, string value, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
 		{
-			Action<SelectTagAttributes> a = ta => {
-				ta.Name(name).ID(name);
-				if (attributes != null) attributes(ta);
-			};
-			w.WriteTag("select", a, () => {
+			w.WriteTag<SelectTagAttributes>("select", a => a.Name(name.Name).ID(name.ID).Set(attributes), () => {
 				if (items == null) return;
 				foreach (var item in items)
 				{
@@ -23,13 +19,9 @@ namespace Tango.Html
 			});
 		}
 
-		public static void ListBox(this IHtmlWriter w, string name, int size, IEnumerable<string> values, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
+		public static void ListBox(this IHtmlWriter w, InputName name, int size, IEnumerable<string> values, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
 		{
-			Action<SelectTagAttributes> a = ta => {
-				ta.Name(name).ID(name).Size(size);
-				if (attributes != null) attributes(ta);
-			};
-			w.WriteTag("select", a, () => {
+			w.WriteTag<SelectTagAttributes>("select", a => a.Name(name.Name).ID(name.ID).Size(size).Set(attributes), () => {
 				if (items == null) return;
 				foreach (var item in items)
 				{

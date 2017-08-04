@@ -51,6 +51,12 @@ h2 a {
 	text-decoration: none;
 }
 
+h3 {
+    font-size: 1.2em;
+    font-weight: 500;
+    margin: 0px 0px 8px 0px;
+}
+
 img { border: 0; }
 .middle { vertical-align:middle; }
 input.text { width: 300px; }
@@ -61,17 +67,6 @@ input.text { width: 300px; }
 a i.icon {
 	margin-right: 4px;
 }
-
-
-
-[class^="flaticon-"]:before, [class*=" flaticon-"]:before,
-[class^="flaticon-"]:after, [class*=" flaticon-"]:after {   
-	font-family: Flaticon;
-	font-size: 0.9rem;
-	font-style: normal;
-	margin-left: 0px;
-}
-
 
 
 /* forms */
@@ -142,7 +137,8 @@ hr {
 }
 
 .ms-descriptiontext {
-	font-weight: normal; 
+	font-weight: normal;
+	font-size: smaller !important;
 	margin: 3px 0 0 1px
 }
 
@@ -163,7 +159,7 @@ hr {
 
 
 /* lists */
-.ms-listviewtable th {
+.listviewtable th {
 	font-weight: normal;
 	color: #b2b2b2;
 	text-align: left;
@@ -173,28 +169,48 @@ hr {
 	padding: 4px 6px;
 }
 
-.ms-listviewtable .ms-gb {
+.listviewtable .gr {
 	height: 22px;
 	background-color: #ffffff;
 	font-weight: bold;
 	border-bottom: 1px solid #8ebbf5;
 	border-top: 1px solid #f9f9f9;
-	padding-bottom: 3px;
-	padding-left: 8px;
-	padding-right: 8px;
-	padding-top: 14px;
+	padding: 14px 8px 3px 8px;
 }
 
-.ms-listviewtable td {
+.listviewtable td {
 	padding: 4px 8px;
 }
 
-.ms-listviewtable tr.alt {
+.listviewtable .alt {
     background: #f9f9f9;
 }
 
-/* menu */
+/* two columns row*/
+.twocolumnsrow {
+	display: table;
+	width:100%;
+}
+.twocolumnsrow > div {
+	display: table-cell;
+}
+.twocolumnsrow.longfirst > div:first-child {
+	width:auto;
+}
+.twocolumnsrow.longfirst > div:last-child {
+	width:20px; 
+	text-align:right;
+}
+.twocolumnsrow.longlast > div:first-child {
+	width:20px; 
+	text-align:left;
+}
+.twocolumnsrow.longlast > div:last-child {
+	width:auto;
+}
 
+
+/* menu */
 /* toolbar */
 .ms-menutoolbar {
 	border-bottom: 1px solid #ccc;
@@ -236,7 +252,8 @@ hr {
 	padding: 3px 9px;
 	background-color: #eee;
     background-image: -webkit-linear-gradient(#fcfcfc, #eee);
-    background-image: linear-gradient(#fcfcfc, #eee);	
+    background-image: linear-gradient(#fcfcfc, #eee);
+	white-space:nowrap;
 }
 
 a.actionbtn {
@@ -254,4 +271,12 @@ a.actionbtn {
 	background-image: -webkit-linear-gradient(#ddd, #fcfcfc);
     background-image: linear-gradient(#ddd, #fcfcfc);
 	border: 1px solid #aaa;
+}
+
+.actionbtn .icon-dropdownarrow {
+	font-size: x-small;
+}
+
+.backbutton {
+	margin-right: 8px;
 }

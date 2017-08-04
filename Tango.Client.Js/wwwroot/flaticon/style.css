@@ -1,17 +1,17 @@
 @font-face {
-  font-family: 'flaticon';
-  src:  url('fonts/flaticon.eot?oeowyo');
-  src:  url('fonts/flaticon.eot?oeowyo#iefix') format('embedded-opentype'),
-    url('fonts/flaticon.ttf?oeowyo') format('truetype'),
-    url('fonts/flaticon.woff?oeowyo') format('woff'),
-    url('fonts/flaticon.svg?oeowyo#flaticon') format('svg');
+  font-family: 'icomoon';
+  src:  url('fonts/icomoon.eot?s8k9il');
+  src:  url('fonts/icomoon.eot?s8k9il#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?s8k9il') format('truetype'),
+    url('fonts/icomoon.woff?s8k9il') format('woff'),
+    url('fonts/icomoon.svg?s8k9il#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
 
-[class^="flaticon-"], [class*=" flaticon-"] {
+[class^="icon-"], [class*=" icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
-  font-family: 'flaticon' !important;
+  font-family: 'icomoon' !important;
   speak: none;
   font-style: normal;
   font-weight: normal;
@@ -24,238 +24,246 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-.flaticon-xml:before {
+.icon-dropdownarrow:before {
+  content: "\e944";
+}
+.icon-collapsed:before {
+  content: "\e945";
+}
+.icon-expanded:before {
+  content: "\e946";
+}
+.icon-xml:before {
   content: "\e900";
 }
-.flaticon-calendar:before {
-  content: "\f106";
-}
-.flaticon-edit:before {
-  content: "\f110";
-}
-.flaticon-folder:before {
-  content: "\f11c";
-}
-.flaticon-library:before {
-  content: "\f11d";
-}
-.flaticon-form:before {
-  content: "\f13c";
-}
-.flaticon-shield:before {
-  content: "\f135";
-}
-.flaticon-collapsed:before {
-  content: "\f108";
-}
-.flaticon-expanded:before {
+.icon-expanded2:before {
   content: "\e901";
 }
-.flaticon-true:before {
-  content: "\f13e";
-}
-.flaticon-approval:before {
+.icon-approval:before {
   content: "\e902";
 }
-.flaticon-a-square:before {
+.icon-a-square:before {
   content: "\e903";
 }
-.flaticon-a-three:before {
+.icon-a-three:before {
   content: "\e904";
 }
-.flaticon-back:before {
+.icon-back:before {
   content: "\e905";
 }
-.flaticon-calc:before {
+.icon-calc:before {
   content: "\e906";
 }
-.flaticon-changehistory:before {
+.icon-changehistory:before {
   content: "\e907";
 }
-.flaticon-delete:before {
+.icon-delete:before {
   content: "\e908";
 }
-.flaticon-documents:before {
+.icon-documents:before {
   content: "\e909";
 }
-.flaticon-docx:before {
+.icon-docx:before {
   content: "\e90a";
 }
-.flaticon-done:before {
+.icon-done:before {
   content: "\e90b";
 }
-.flaticon-download:before {
+.icon-download:before {
   content: "\e90c";
 }
-.flaticon-downloadzip:before {
+.icon-downloadzip:before {
   content: "\e90d";
 }
-.flaticon-egg1:before {
+.icon-egg1:before {
   content: "\e90e";
 }
-.flaticon-egg2:before {
+.icon-egg2:before {
   content: "\e90f";
 }
-.flaticon-excel:before {
+.icon-excel:before {
   content: "\e910";
 }
-.flaticon-filter:before {
+.icon-filter:before {
   content: "\e911";
 }
-.flaticon-hie:before {
+.icon-hie:before {
   content: "\e912";
 }
-.flaticon-home:before {
+.icon-home:before {
   content: "\e913";
 }
-.flaticon-warning:before {
+.icon-warning:before {
   content: "\e914";
 }
-.flaticon-information:before {
+.icon-information:before {
   content: "\e915";
 }
-.flaticon-help:before {
+.icon-help:before {
   content: "\e916";
 }
-.flaticon-error:before {
+.icon-error:before {
   content: "\e917";
 }
-.flaticon-import:before {
+.icon-import:before {
   content: "\e918";
 }
-.flaticon-key:before {
+.icon-key:before {
   content: "\e919";
 }
-.flaticon-keys:before {
+.icon-keys:before {
   content: "\e91a";
 }
-.flaticon-begin:before {
+.icon-begin:before {
   content: "\e91b";
 }
-.flaticon-left:before {
+.icon-left:before {
   content: "\e91c";
 }
-.flaticon-right:before {
+.icon-right:before {
   content: "\e91d";
 }
-.flaticon-end:before {
+.icon-end:before {
   content: "\e91e";
 }
-.flaticon-lock:before {
+.icon-lock:before {
   content: "\e91f";
 }
-.flaticon-mail:before {
+.icon-mail:before {
   content: "\e920";
 }
-.flaticon-report:before {
-  content: "\f12d";
-}
-.flaticon-new:before {
+.icon-new:before {
   content: "\e921";
 }
-.flaticon-new2:before {
+.icon-new2:before {
   content: "\e922";
 }
-.flaticon-objects:before {
+.icon-objects:before {
   content: "\e923";
 }
-.flaticon-print:before {
+.icon-print:before {
   content: "\e924";
 }
-.flaticon-role:before {
+.icon-role:before {
   content: "\e925";
 }
-.flaticon-rss:before {
+.icon-rss:before {
   content: "\e926";
 }
-.flaticon-save31:before {
+.icon-save31:before {
   content: "\e927";
 }
-.flaticon-search:before {
+.icon-search:before {
   content: "\e928";
 }
-.flaticon-tools:before {
+.icon-tools:before {
   content: "\e929";
 }
-.flaticon-settings2:before {
+.icon-settings2:before {
   content: "\e92a";
 }
-.flaticon-settings3:before {
+.icon-settings3:before {
   content: "\e92b";
 }
-.flaticon-shield2:before {
+.icon-shield2:before {
   content: "\e92c";
 }
-.flaticon-sign:before {
+.icon-sign:before {
   content: "\e92d";
 }
-.flaticon-sortasc:before {
+.icon-sortasc:before {
   content: "\e92e";
 }
-.flaticon-sortdesc:before {
+.icon-sortdesc:before {
   content: "\e92f";
 }
-.flaticon-star:before {
+.icon-star:before {
   content: "\e930";
 }
-.flaticon-table:before {
+.icon-table:before {
   content: "\e931";
 }
-.flaticon-tables:before {
+.icon-tables:before {
   content: "\e932";
 }
-.flaticon-unlock:before {
+.icon-unlock:before {
   content: "\e933";
 }
-.flaticon-upload:before {
+.icon-upload:before {
   content: "\e934";
 }
-.flaticon-userwoman:before {
-  content: "\f145";
-}
-.flaticon-user:before {
+.icon-user:before {
   content: "\e935";
 }
-.flaticon-userman:before {
+.icon-userman:before {
   content: "\e936";
 }
-.flaticon-users:before {
+.icon-users:before {
   content: "\e937";
 }
-.flaticon-users2:before {
+.icon-users2:before {
   content: "\e938";
 }
-.flaticon-zip:before {
+.icon-zip:before {
   content: "\e939";
 }
-.flaticon-exportexcel:before {
+.icon-exportexcel:before {
   content: "\e93a";
 }
-.flaticon-exportexcel2:before {
+.icon-exportexcel2:before {
   content: "\e93b";
 }
-.flaticon-exportword:before {
+.icon-exportword:before {
   content: "\e93c";
 }
-.flaticon-exportword2:before {
+.icon-exportword2:before {
   content: "\e93d";
 }
-.flaticon-word:before {
+.icon-word:before {
   content: "\e93e";
 }
-.flaticon-pdf:before {
+.icon-pdf:before {
   content: "\e93f";
 }
-.flaticon-exportpdf:before {
+.icon-exportpdf:before {
   content: "\e940";
 }
-.flaticon-doc:before {
+.icon-doc:before {
   content: "\e941";
 }
-.flaticon-xlsx:before {
+.icon-xlsx:before {
   content: "\e942";
 }
-.flaticon-money:before {
+.icon-money:before {
   content: "\e943";
 }
-
+.icon-calendar:before {
+  content: "\f106";
+}
+.icon-collapsed2:before {
+  content: "\f108";
+}
+.icon-edit:before {
+  content: "\f110";
+}
+.icon-folder:before {
+  content: "\f11c";
+}
+.icon-library:before {
+  content: "\f11d";
+}
+.icon-report:before {
+  content: "\f12d";
+}
+.icon-shield:before {
+  content: "\f135";
+}
+.icon-form:before {
+  content: "\f13c";
+}
+.icon-true:before {
+  content: "\f13e";
+}
+.icon-userwoman:before {
+  content: "\f145";
+}

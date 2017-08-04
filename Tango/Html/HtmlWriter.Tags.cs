@@ -1,38 +1,75 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace Tango.Html
 {
 	public static class HtmlWriterTagsExtensions
 	{
-		public static void WriteTag<T>(this IHtmlWriter w, string name, Action<T> attrs, Action inner, bool selfClosing = false)
+		public static void WriteTag<T>(this IHtmlWriter w, string name, Action<T> attrs, Action inner)
 			where T : TagAttributes<T>, new()
 		{
-			TagBuilder tb = new TagBuilder(name);	
-			
-			if (attrs != null)
+			w.Write('<');
+			w.Write(name);
+			if (attrs != null) WriteAttributes(w, attrs);
+			w.Write('>');
+			inner?.Invoke();
+			w.Write("</");
+			w.Write(name);
+			w.Write('>');
+		}
+
+		public static void WriteBeginTag<T>(this IHtmlWriter w, string name, Action<T> attrs)
+			where T : TagAttributes<T>, new()
+		{
+			w.Write('<');
+			w.Write(name);
+			if (attrs != null) WriteAttributes(w, attrs);
+			w.Write('>');
+		}
+
+		public static void WriteEndTag(this IHtmlWriter w, string name)
+		{
+			w.Write("</");
+			w.Write(name);
+			w.Write('>');
+		}
+
+		public static void WriteSelfClosingTag<T>(this IHtmlWriter w, string name, Action<T> attrs)
+			where T : TagAttributes<T>, new()
+		{
+			w.Write('<');
+			w.Write(name);
+			if (attrs != null) WriteAttributes(w, attrs);
+			w.Write("/>");
+		}
+
+		static void WriteAttributes<T>(IHtmlWriter w, Action<T> attrs)
+			where T : TagAttributes<T>, new()
+		{
+			IDictionary<string, string> attributes = new Dictionary<string, string>(StringComparer.Ordinal);
+
+			T ta = new T();
+			ta.MergeAttributeFunc = (key, value, replaceExisting) => {
+				if (replaceExisting || !attributes.ContainsKey(key))
+					attributes[key] = value;
+				else
+					attributes[key] = attributes[key] + " " + value;
+			};
+			ta.MergeIDAttributeFunc = (key, value) => attributes[key] = w.GetID(value).ToLower();
+			attrs(ta);
+
+			foreach (var attribute in attributes)
 			{
-				T ta = new T();
-
-				ta.MergeAttributeFunc = (key, value, replaceExisting) => {
-					if (replaceExisting || !tb.Attributes.ContainsKey(key))
-						tb.Attributes[key] = value;
-					else
-						tb.Attributes[key] = tb.Attributes[key] + " " + value;
-				};
-				ta.MergeIDAttributeFunc = (key, value) => tb.Attributes[key] = w.GetID(value).ToLower();
-
-				attrs(ta);
+				if (attribute.Value != null)
+				{
+					w.Write(' ');
+					w.Write(attribute.Key);
+					w.Write("=\"");
+					w.Write(WebUtility.HtmlEncode(attribute.Value));
+					w.Write('"');
+				}
 			}
-
-			if (inner != null)
-			{
-				tb.Render(w, TagRenderMode.StartTag);
-				inner();
-				tb.Render(w, TagRenderMode.EndTag);
-			}
-			else
-				tb.Render(w, selfClosing ? TagRenderMode.SelfClosing : TagRenderMode.Normal);
 		}
 
 		public static string GetID(this IHtmlWriter w, string id)
@@ -51,7 +88,7 @@ namespace Tango.Html
 		}		
 		public static void Br(this IHtmlWriter w, Action<TagAttributes> attributes = null)
 		{
-			w.WriteTag("br", attributes, null, true);
+			w.WriteSelfClosingTag("br", attributes);
 		}
 		public static void Canvas(this IHtmlWriter w, Action<CanvasTagAttributes> attributes = null, Action inner = null)
 		{
@@ -59,7 +96,7 @@ namespace Tango.Html
 		}
 		public static void Col(this IHtmlWriter w, Action<ColTagAttributes> attributes = null)
 		{
-			w.WriteTag("col", attributes, null, true);
+			w.WriteSelfClosingTag("col", attributes);
 		}
 		public static void Colgroup(this IHtmlWriter w, Action<ColTagAttributes> attributes = null, Action inner = null)
 		{
@@ -72,6 +109,14 @@ namespace Tango.Html
 		public static void Div(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			w.WriteTag("div", attributes, inner);
+		}
+		public static void DivBegin(this IHtmlWriter w, Action<TagAttributes> attributes = null)
+		{
+			w.WriteBeginTag("div", attributes);
+		}
+		public static void DivEnd(this IHtmlWriter w)
+		{
+			w.WriteEndTag("div");
 		}
 		public static void Dl(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
@@ -127,7 +172,7 @@ namespace Tango.Html
 		}
 		public static void Img(this IHtmlWriter w, Action<ImgTagAttributes> attributes = null)
 		{
-			w.WriteTag("img", attributes, null, true);
+			w.WriteSelfClosingTag("img", attributes);
 		}
 		public static void Label(this IHtmlWriter w, Action<LabelTagAttributes> attributes = null, Action inner = null)
 		{
@@ -293,6 +338,7 @@ namespace Tango.Html
 		public static void P(this IHtmlWriter w, string text) { w.P(null, () => w.Write(text)); }
 		public static void P(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.P(attributes, () => w.Write(text)); }
 		public static void Script(this IHtmlWriter w, string path) { w.Script(a => a.Type("text/javascript").Src(path)); }
+		public static void ScriptAsync(this IHtmlWriter w, string path) { w.Script(a => a.Type("text/javascript").Src(path).Async()); }
 		public static void Td(this IHtmlWriter w, string text) { w.Td(null, () => w.Write(text)); }
 		public static void Td(this IHtmlWriter w, Action<TdTagAttributes> attributes, string text) { w.Td(attributes, () => w.Write(text)); }
 
@@ -321,11 +367,11 @@ namespace Tango.Html
 		}
 		public static void HeadLink(this IHtmlWriter w, Action<LinkTagAttributes> attributes = null)
 		{
-			w.WriteTag("link", attributes, null, true);
+			w.WriteSelfClosingTag("link", attributes);
 		}
 		public static void HeadMeta(this IHtmlWriter w, Action<MetaTagAttributes> attributes = null)
 		{
-			w.WriteTag("meta", attributes, null, true);
+			w.WriteSelfClosingTag("meta", attributes);
 		}
 		public static void HeadTitle(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
@@ -338,5 +384,6 @@ namespace Tango.Html
 		public static void HeadTitle(this IHtmlWriter w, Action inner) { w.HeadTitle(null, inner); }
 		public static void HeadTitle(this IHtmlWriter w, string title) { w.HeadTitle(() => w.Write(title)); }
 		public static void HeadLinkCss(this IHtmlWriter w, string path) { w.HeadLink(a => a.Rel(LinkRel.Stylesheet).Type("text/css").Href(path)); }
+
 	}
 }

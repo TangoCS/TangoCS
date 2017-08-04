@@ -2,7 +2,7 @@
 	var instance = {
 		instances : {},
 		open: function (caller, serverEvent, id, callBack) {
-			return au.runEventWithApiResponse({ e: serverEvent, r: id }).then(function () {
+			return au.runEventFromElementWithApiResponse(caller, { e: serverEvent, r: id }).then(function () {
 				$('#modalOverlay').css('display', 'block');
 
 				var modal = $('#' + id + "_dialog");				

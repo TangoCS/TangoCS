@@ -144,9 +144,9 @@ namespace Tango.UI.Controls
 			return this;
 		}
 
-		public ActionLink WithTitle(string title)
+		public ActionLink WithTitle<T>(T title)
 		{
-			_title = title;
+			_title = title?.ToString();
 			return this;
 		}
 

@@ -201,26 +201,26 @@ namespace Tango
 		public static string Icon(this bool src)
 		{
 			if (src)
-				return "<i class='icon flaticon-true'></i>";
+				return "<i class='icon icon-true'></i>";
 			return String.Empty;
 		}
 
 		public static string Icon(this bool? src)
 		{
 			if (src.HasValue)
-				return src.Value ? "<i class='icon flaticon-true'></i>" : "";
+				return src.Value ? "<i class='icon icon-true'></i>" : "";
 			return String.Empty;
 		}
 
 
-		public static string Join(this string[] str, string separator)
+		public static string Join(this string[] str, string separator, bool excludeEmpties = true)
 		{
-			return String.Join(separator, str.Where(s => !String.IsNullOrEmpty(s)).ToArray());
+			return String.Join(separator, str.Where(s => !excludeEmpties || !String.IsNullOrEmpty(s)).ToArray());
 		}
 
-		public static string Join(this IEnumerable<string> str, string separator)
+		public static string Join(this IEnumerable<string> str, string separator, bool excludeEmpties = true)
 		{
-			return String.Join(separator, str.Where(s => !String.IsNullOrEmpty(s)).ToArray());
+			return String.Join(separator, str.Where(s => !excludeEmpties || !String.IsNullOrEmpty(s)).ToArray());
 		}
 
 		public static bool In<T>(this T obj, params T[] values)

@@ -65,8 +65,8 @@ namespace Tango.Html
 		public T OnMouseOver(string value) { MergeAttribute("onmouseover", value); return _this; }
 		public T OnMouseUp(string value) { MergeAttribute("onmouseup", value); return _this; }
 
-		public T Set(Action<T> attrs) { if (attrs != null) attrs(_this); return _this; }
-		
+		public T Set(Action<T> attrs) { attrs?.Invoke(_this); return _this; }
+
 		public T Data(DataCollection d) 
 		{
 			if (d != null) 
@@ -233,6 +233,7 @@ namespace Tango.Html
 		public ScriptTagAttributes CharSet(string value) { MergeAttribute("type", value); return this; }
 		public ScriptTagAttributes Src(string value) { MergeAttribute("src", value); return this; }
 		public ScriptTagAttributes Type(string value) { MergeAttribute("type", value); return this; }
+		public ScriptTagAttributes Async() { MergeAttribute("async", "async"); return this; }
 	}
 
 	public class TdTagAttributes : TagAttributes<TdTagAttributes>

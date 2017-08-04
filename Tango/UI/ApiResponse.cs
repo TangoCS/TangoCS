@@ -54,59 +54,59 @@ namespace Tango.UI
 			ClientActions.Add(action);
 		}
 
-		public virtual void SetElementValue(string name, string value)
+		public virtual void SetElementValue(string id, string value)
 		{
-			AddClientAction("domActions", "setValue", new { elName = name.ToLower(), value = value });
+			AddClientAction("domActions", "setValue", new { id = id.ToLower(), value = value });
 		}
 
-		public void SetElementValue(ViewElement elementOwner, string name, string value)
+		public void SetElementValue(ViewElement elementOwner, string id, string value)
 		{
-			SetElementValue(elementOwner.GetClientID(name), value);
+			SetElementValue(elementOwner.GetClientID(id), value);
 		}
 
-		public virtual void SetElementVisibility(string name, bool visible)
+		public virtual void SetElementVisibility(string id, bool visible)
 		{
-			AddClientAction("domActions", "setVisible", new { elName = name.ToLower(), visible = visible });
+			AddClientAction("domActions", "setVisible", new { id = id.ToLower(), visible = visible });
 		}
-		public virtual void SetElementVisibility(ViewElement elementOwner, string name, bool visible)
+		public virtual void SetElementVisibility(ViewElement elementOwner, string id, bool visible)
 		{
-			SetElementVisibility(elementOwner.GetClientID(name), visible);
-		}
-
-		public virtual void SetElementAttribute(string name, string attrName, string attrValue)
-		{
-			AddClientAction("domActions", "setAttribute", new { elName = name.ToLower(), attrName = attrName, attrValue = attrValue });
-		}
-		public virtual void SetElementAttribute(ViewElement elementOwner, string name, string attrName, string attrValue)
-		{
-			SetElementAttribute(elementOwner.GetClientID(name), attrName, attrValue);
+			SetElementVisibility(elementOwner.GetClientID(id), visible);
 		}
 
-		public virtual void RemoveElementAttribute(string name, string attrName)
+		public virtual void SetElementAttribute(string id, string attrName, string attrValue)
 		{
-			AddClientAction("domActions", "removeAttribute", new { elName = name.ToLower(), attrName = attrName });
+			AddClientAction("domActions", "setAttribute", new { id = id.ToLower(), attrName = attrName, attrValue = attrValue });
 		}
-		public virtual void RemoveElementAttribute(ViewElement elementOwner, string name, string attrName)
+		public virtual void SetElementAttribute(ViewElement elementOwner, string id, string attrName, string attrValue)
 		{
-			RemoveElementAttribute(elementOwner.GetClientID(name), attrName);
-		}
-
-		public virtual void SetElementClass(string name, string clsName)
-		{
-			AddClientAction("domActions", "setClass", new { elName = name.ToLower(), clsName = clsName });
-		}
-		public virtual void SetElementClass(ViewElement elementOwner, string name, string clsName)
-		{
-			SetElementClass(elementOwner.GetClientID(name), clsName);
+			SetElementAttribute(elementOwner.GetClientID(id), attrName, attrValue);
 		}
 
-		public virtual void RemoveElementClass(string name, string clsName)
+		public virtual void RemoveElementAttribute(string id, string attrName)
 		{
-			AddClientAction("domActions", "removeClass", new { elName = name.ToLower(), clsName = clsName });
+			AddClientAction("domActions", "removeAttribute", new { id = id.ToLower(), attrName = attrName });
 		}
-		public virtual void RemoveElementClass(ViewElement elementOwner, string name, string clsName)
+		public virtual void RemoveElementAttribute(ViewElement elementOwner, string id, string attrName)
 		{
-			RemoveElementClass(elementOwner.GetClientID(name), clsName);
+			RemoveElementAttribute(elementOwner.GetClientID(id), attrName);
+		}
+
+		public virtual void SetElementClass(string id, string clsName)
+		{
+			AddClientAction("domActions", "setClass", new { id = id.ToLower(), clsName = clsName });
+		}
+		public virtual void SetElementClass(ViewElement elementOwner, string id, string clsName)
+		{
+			SetElementClass(elementOwner.GetClientID(id), clsName);
+		}
+
+		public virtual void RemoveElementClass(string id, string clsName)
+		{
+			AddClientAction("domActions", "removeClass", new { id = id.ToLower(), clsName = clsName });
+		}
+		public virtual void RemoveElementClass(ViewElement elementOwner, string id, string clsName)
+		{
+			RemoveElementClass(elementOwner.GetClientID(id), clsName);
 		}
 
 		public virtual ApiResponse AddWidget(string name, string content)

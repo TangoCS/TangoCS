@@ -7,10 +7,10 @@ namespace Tango.UI
 {
 	public static class LayoutWriterTablesExtensions
 	{
-		public static void ListTable(this LayoutWriter l, Action a)
-		{
-			l.ListTable(null, a);
-		}
+		//public static void ListTable(this LayoutWriter l, Action a)
+		//{
+		//	l.ListTable(null, a);
+		//}
 
 		public static void Th(this LayoutWriter l, Action content)
 		{

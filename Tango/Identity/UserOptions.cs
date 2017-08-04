@@ -31,7 +31,7 @@ namespace Tango.Identity
 			MinPasswordLength = 6;
 			//AllowedPasswordChars = "QWERTYUIOPASDFGHJKLZXCVBNMqwertyuiopasdfghjklzxcvbnm1234567890~!@#$%^&*()-=\\][{}|+_`';:/?.>,<";
 			AllowedLoginChars = EngLettersAndDigitsChars;
-			MaxLoginLength = 12;
+			MaxLoginLength = 32;
 			RequireEmail = true;
 			RequireUniqueEmail = true;
 		}
