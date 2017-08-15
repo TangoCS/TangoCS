@@ -342,7 +342,7 @@
 			if (res == 0) {
 				//to close previous open menu.
 				if (!btChck && option.closeOther) {
-					$('.iw-contextMenu').not(menu.selector).css('display', 'none');
+					$('.iw-contextMenu').not(menu.selector).removeClass('iw-display');
 				}
 
 				//to reset already selected menu item
@@ -352,7 +352,7 @@
 			else if (res == 1) {
 				//to close previous open menu.
 				if (!btChck && option.closeOther) {
-					$('.iw-contextMenu').css('display', 'none');
+					$('.iw-contextMenu').removeClass('iw-display');
 				}
 				//to reset already selected menu item
 				menu.find('.iw-mSelected').removeClass('iw-mSelected');
@@ -444,7 +444,6 @@
 				//applying css property
 				var cssObj = {
 					'position': (cntWin || btChck) ? 'fixed' : 'absolute',
-					'display': 'inline-block',
 					'height': '',
 					'width': ''
 				};
@@ -470,7 +469,7 @@
 				cssObj.left = left + ha + 'px';
 				cssObj.top = top + va + 'px';
 
-				menu.css(cssObj);
+				menu.css(cssObj).addClass('iw-display');
 
 				//to call after open call back
 				option.afterOpen.call(this, clbckData, e);
@@ -559,7 +558,7 @@
                     	var selector = curMenu.data('iw-menuData').trigger;
                     	var parMenu = selector.closest('.iw-contextMenu');
                     	if (parMenu.length != 0) {
-                    		curMenu.removeClass('iw-curMenu').css('display', 'none');
+                    		curMenu.removeClass('iw-curMenu').removeClass('iw-display');
                     		parMenu.addClass('iw-curMenu');
                     	}
                     };
@@ -594,7 +593,7 @@
 			$(document).unbind('keydown', iMethods.keyEvent);
 			$('html').unbind('click', iMethods.clickEvent);
 			$(window).unbind('scroll resize', iMethods.scrollEvent);
-			$('.iw-contextMenu').css('display', 'none');
+			$('.iw-contextMenu').removeClass('iw-display');
 			$(document).focus();
 
 			option.baseTrigger.removeClass('iw-opened');
@@ -689,7 +688,7 @@
 				element.removeClass('iw-contextMenuCurrent')
                     .addClass('iw-contextMenu iw-cm-menu iw-contextMenu' + randomNum)
                     .attr('menuId', 'iw-contextMenu' + randomNum)
-                    .css('display', 'none');
+                    .removeClass('iw-display');
 
 				//to create subMenu
 				element.find('ul').each(function (index, element) {

@@ -12,6 +12,14 @@ namespace Tango.UI
 		ActionContext Context { get; set; }
 	}
 
+	public interface IViewElement : IInteractionFlowElement
+	{
+		string ClientID { get; set; }
+		IViewElement ParentElement { get; set; }
+		DataCollection DataCollection { get; set; }
+		string GetClientID(string id);
+	}
+
 	public abstract class InteractionFlowElement : IInteractionFlowElement, IWithPropertyInjection
 	{
 		public virtual string ID { get; set; }
@@ -63,12 +71,12 @@ namespace Tango.UI
 		}
 	}
 
-	public abstract class ViewElement : InteractionFlowElement
+	public abstract class ViewElement : InteractionFlowElement, IViewElement
 	{
 		public DataCollection DataCollection { get; set; } = new DataCollection();
 
 		public string ClientID { get; set; }
-		public ViewElement ParentElement { get; set; }
+		public IViewElement ParentElement { get; set; }
 
 		public virtual void OnInit() { }
 		public virtual void AfterInit() { }

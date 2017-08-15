@@ -23,14 +23,21 @@ a, a:visited {
 	text-decoration: none;
 }
 
-a:hover {
-	text-decoration: underline;
+	a:hover {
+		text-decoration: underline;
+	}
+
+a, .actionbtn {
+	cursor: pointer;
 }
 
 
 table {
 	border: none;
 	border-collapse: collapse;
+}
+td.r {
+	text-align:right;
 }
 
 h1 {
@@ -47,34 +54,59 @@ h2 {
 	margin: 0px 0px 8px 0px;
 }
 
-h2 a {
-	text-decoration: none;
-}
+	h2 a {
+		text-decoration: none;
+	}
 
 h3 {
-    font-size: 1.2em;
-    font-weight: 500;
-    margin: 0px 0px 8px 0px;
+	font-size: 1.2em;
+	font-weight: 500;
+	margin: 0px 0px 8px 0px;
 }
 
-img { border: 0; }
-.middle { vertical-align:middle; }
-input.text { width: 300px; }
+img {
+	border: 0;
+}
+
+.middle {
+	vertical-align: middle;
+}
+
+input.text {
+	width: 300px;
+}
+
 .icon {
 	display: inline-block;
 	min-width: 16px;
 }
-a i.icon {
+
+a.actionbtn i.icon, a.actionlink i.icon {
 	margin-right: 4px;
 }
 
 
 /* forms */
-.ms-formtoolbar { width:700px; }
-.ms-formlabel { width: 30%; }
-.ms-formbody { width: 70%; }
-.ms-formtable {	margin-bottom: 7px; }
-.ms-formtable td { vertical-align: top; }
+.ms-formtoolbar {
+	width: 700px;
+}
+
+.ms-formlabel {
+	width: 30%;
+}
+
+.ms-formbody {
+	width: 70%;
+}
+
+.ms-formtable {
+	margin-bottom: 7px;
+}
+
+	.ms-formtable td {
+		vertical-align: top;
+	}
+
 .ms-formbody textarea {
 	width: 100%;
 	height: 75px;
@@ -107,7 +139,7 @@ hr {
 }
 
 .ms-formtable tr:not(:first-child) {
-     border-top: 1px solid #bad6dd; 
+	border-top: 1px solid #bad6dd;
 }
 
 .ms-formbody {
@@ -116,12 +148,12 @@ hr {
 	padding: 3px 6px 4px 6px;
 }
 
-.ms-formbody input[type=text],
-.ms-formbody input[type=password],
-.ms-formbody select,
-.ms-formbody textarea {
-	width: 100%;
-}
+	.ms-formbody input[type=text],
+	.ms-formbody input[type=password],
+	.ms-formbody select,
+	.ms-formbody textarea {
+		width: 100%;
+	}
 
 .ms-formlabel {
 	text-align: left;
@@ -183,31 +215,36 @@ hr {
 }
 
 .listviewtable .alt {
-    background: #f9f9f9;
+	background: #f9f9f9;
 }
 
 /* two columns row*/
 .twocolumnsrow {
 	display: table;
-	width:100%;
+	width: 100%;
 }
-.twocolumnsrow > div {
-	display: table-cell;
-}
-.twocolumnsrow.longfirst > div:first-child {
-	width:auto;
-}
-.twocolumnsrow.longfirst > div:last-child {
-	width:20px; 
-	text-align:right;
-}
-.twocolumnsrow.longlast > div:first-child {
-	width:20px; 
-	text-align:left;
-}
-.twocolumnsrow.longlast > div:last-child {
-	width:auto;
-}
+
+	.twocolumnsrow > div {
+		display: table-cell;
+	}
+
+	.twocolumnsrow.longfirst > div:first-child {
+		width: auto;
+	}
+
+	.twocolumnsrow.longfirst > div:last-child {
+		width: 20px;
+		text-align: right;
+	}
+
+	.twocolumnsrow.longlast > div:first-child {
+		width: 20px;
+		text-align: left;
+	}
+
+	.twocolumnsrow.longlast > div:last-child {
+		width: auto;
+	}
 
 
 /* menu */
@@ -220,21 +257,22 @@ hr {
 	width: 100%;
 }
 
-.ms-menutoolbar ul {
-	margin: 0;
-	padding: 0px 8px;
-	border:0;
-	list-style-type: none;
-	height:34px;
-}
+	.ms-menutoolbar ul {
+		margin: 0;
+		padding: 0px 8px;
+		border: 0;
+		list-style-type: none;
+		height: 34px;
+	}
 
-.ms-menutoolbar li {
-	/*padding: 3px;*/
-	display: table-cell;
-	border:0;
-	vertical-align: middle;
-	height:34px;
-}
+	.ms-menutoolbar li {
+		/*padding: 3px;*/
+		display: table-cell;
+		border: 0;
+		vertical-align: middle;
+		height: 34px;
+	}
+
 .ms-toolbar-left {
 	float: left;
 }
@@ -247,30 +285,30 @@ hr {
 	width: 6px;
 }
 
-.actionbtn {
+.actionbtn, .actionimg {
 	border: 1px solid #d5d5d5;
 	padding: 3px 9px;
 	background-color: #eee;
-    background-image: -webkit-linear-gradient(#fcfcfc, #eee);
-    background-image: linear-gradient(#fcfcfc, #eee);
-	white-space:nowrap;
+	background-image: -webkit-linear-gradient(#fcfcfc, #eee);
+	background-image: linear-gradient(#fcfcfc, #eee);
+	white-space: nowrap;
 }
 
-a.actionbtn {
-	text-decoration:none;
-	color:black;
+a.actionbtn, a.actionimg {
+	text-decoration: none;
+	color: #333;
 }
 
-.actionbtn:hover {
+.actionbtn:hover, .actionimg:hover {
 	background-image: -webkit-linear-gradient(#fcfcfc, #ddd);
-    background-image: linear-gradient(#fcfcfc, #ddd);
-	border: 1px solid #aaa;
+	background-image: linear-gradient(#fcfcfc, #ddd);
+	border: 1px solid #c6c6c6;
 }
 
-.actionbtn:active {
+.actionbtn:active, .actionimg:active {
 	background-image: -webkit-linear-gradient(#ddd, #fcfcfc);
-    background-image: linear-gradient(#ddd, #fcfcfc);
-	border: 1px solid #aaa;
+	background-image: linear-gradient(#ddd, #fcfcfc);
+	border: 1px solid #4d90fe;
 }
 
 .actionbtn .icon-dropdownarrow {

@@ -428,28 +428,21 @@ var ajaxUtils = function ($, cu) {
 			for (var w in apiResult.widgets) {
 				var el = w == 'body' ? document.body : document.getElementById(w);
 				var obj = apiResult.widgets[w];
-				if (obj != null && typeof (obj) == "object") {
-					var el2 = document.body;
-					if (obj.parent && obj.parent != 'body') el2 = document.getElementById(obj.parent);
-					if (el)
+				if (obj && typeof(obj) == "object") {
+					if (el && (obj.action == 'replace' || obj.action == 'adjacent'))
 						el.outerHTML = obj.content;
-					else {
+					else if (el && obj.action == 'add')
+						el.innerHTML = obj.content;
+					else if (el && obj.action == 'remove')
+						el.remove();
+					else if (obj.action == 'adjacent') {
+						var el2 = (obj.parent && obj.parent != 'body') ? document.getElementById(obj.parent) : document.body;
 						el2.insertAdjacentHTML(obj.position, obj.content);
-					}
-					if (obj.position.toLowerCase() == 'afterend') {
-						cu.scrollToView(el2.nextSibling);
+						if (obj.position.toLowerCase() == 'afterend') {
+							cu.scrollToView(el2.nextSibling);
+						}
 					}
 				}
-				else {
-					if (el) el.innerHTML = obj;
-				}
-			}
-		}
-
-		if (apiResult.widgetsforremove) {
-			for (var w in apiResult.widgetsforremove) {
-				var el = document.getElementById(apiResult.widgetsforremove[w]);
-				if (el) el.remove();
 			}
 		}
 

@@ -46,7 +46,7 @@ namespace Tango.UI
 
 	public static class LayoutWriterMainExtensions
 	{
-		public static LayoutWriter Clone(this LayoutWriter w, ViewElement el)
+		public static LayoutWriter Clone(this LayoutWriter w, IViewElement el)
 		{
 			return w.Clone(el.ClientID);
 		}

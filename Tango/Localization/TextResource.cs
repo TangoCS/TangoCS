@@ -185,12 +185,12 @@ namespace Tango.Localization
 
 	public static class ResourceManagerSpecialExtensions
 	{
-		public static string Description<T>(this IResourceManager textResource, Expression<Func<T, object>> exp)
+		public static string Description<T, T2>(this IResourceManager textResource, Expression<Func<T, T2>> exp)
 		{
 			return textResource.Description(exp.GetResourceKey());
 		}
 
-		public static string CaptionShort<T>(this IResourceManager textResource, Expression<Func<T, object>> exp)
+		public static string CaptionShort<T, T2>(this IResourceManager textResource, Expression<Func<T, T2>> exp)
 		{
 			return textResource.CaptionShort(exp.GetResourceKey());
 		}

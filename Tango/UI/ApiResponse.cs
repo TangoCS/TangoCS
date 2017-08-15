@@ -31,7 +31,7 @@ namespace Tango.UI
 	public class ApiResponse : ObjectResponse
 	{
 		public Dictionary<string, object> Widgets { get; set; }
-		public List<string> WidgetsForRemove { get; set; }
+		//public List<string> WidgetsForRemove { get; set; }
 		public List<ClientAction> ClientActions { get; set; }
 		public HashSet<string> Includes { get; set; }
 		public Dictionary<string, List<string>> PageContext { get; set; }
@@ -39,7 +39,7 @@ namespace Tango.UI
 		public ApiResponse()
 		{
 			Widgets = new Dictionary<string, object>();
-			WidgetsForRemove = new List<string>();
+			//WidgetsForRemove = new List<string>();
 			ClientActions = new List<ClientAction>();
 			Includes = new HashSet<string>();
 		}
@@ -59,7 +59,7 @@ namespace Tango.UI
 			AddClientAction("domActions", "setValue", new { id = id.ToLower(), value = value });
 		}
 
-		public void SetElementValue(ViewElement elementOwner, string id, string value)
+		public void SetElementValue(IViewElement elementOwner, string id, string value)
 		{
 			SetElementValue(elementOwner.GetClientID(id), value);
 		}
@@ -68,7 +68,7 @@ namespace Tango.UI
 		{
 			AddClientAction("domActions", "setVisible", new { id = id.ToLower(), visible = visible });
 		}
-		public virtual void SetElementVisibility(ViewElement elementOwner, string id, bool visible)
+		public virtual void SetElementVisibility(IViewElement elementOwner, string id, bool visible)
 		{
 			SetElementVisibility(elementOwner.GetClientID(id), visible);
 		}
@@ -77,7 +77,7 @@ namespace Tango.UI
 		{
 			AddClientAction("domActions", "setAttribute", new { id = id.ToLower(), attrName = attrName, attrValue = attrValue });
 		}
-		public virtual void SetElementAttribute(ViewElement elementOwner, string id, string attrName, string attrValue)
+		public virtual void SetElementAttribute(IViewElement elementOwner, string id, string attrName, string attrValue)
 		{
 			SetElementAttribute(elementOwner.GetClientID(id), attrName, attrValue);
 		}
@@ -86,7 +86,7 @@ namespace Tango.UI
 		{
 			AddClientAction("domActions", "removeAttribute", new { id = id.ToLower(), attrName = attrName });
 		}
-		public virtual void RemoveElementAttribute(ViewElement elementOwner, string id, string attrName)
+		public virtual void RemoveElementAttribute(IViewElement elementOwner, string id, string attrName)
 		{
 			RemoveElementAttribute(elementOwner.GetClientID(id), attrName);
 		}
@@ -95,7 +95,7 @@ namespace Tango.UI
 		{
 			AddClientAction("domActions", "setClass", new { id = id.ToLower(), clsName = clsName });
 		}
-		public virtual void SetElementClass(ViewElement elementOwner, string id, string clsName)
+		public virtual void SetElementClass(IViewElement elementOwner, string id, string clsName)
 		{
 			SetElementClass(elementOwner.GetClientID(id), clsName);
 		}
@@ -104,20 +104,26 @@ namespace Tango.UI
 		{
 			AddClientAction("domActions", "removeClass", new { id = id.ToLower(), clsName = clsName });
 		}
-		public virtual void RemoveElementClass(ViewElement elementOwner, string id, string clsName)
+		public virtual void RemoveElementClass(IViewElement elementOwner, string id, string clsName)
 		{
 			RemoveElementClass(elementOwner.GetClientID(id), clsName);
 		}
 
 		public virtual ApiResponse AddWidget(string name, string content)
 		{
-			Widgets.Add(name.ToLower(), content);
+			Widgets.Add(name.ToLower(), new { Content = content, Action = "add" });
+			return this;
+		}
+
+		public virtual ApiResponse ReplaceWidget(string name, string content)
+		{
+			Widgets.Add(name.ToLower(), new { Content = content, Action = "replace" });
 			return this;
 		}
 
 		public virtual ApiResponse RemoveWidget(string name)
 		{
-			WidgetsForRemove.Add(name.ToLower());
+			Widgets.Add(name.ToLower(), new { Action = "remove" });
 			return this;
 		}
 
@@ -129,7 +135,7 @@ namespace Tango.UI
 
 		public virtual ApiResponse AddAdjacentWidget(string parent, string name, string content, AdjacentHTMLPosition position = AdjacentHTMLPosition.BeforeEnd)
 		{
-			Widgets.Add(name.ToLower(), new { Parent = parent, Content = content, Position = position.ToString() });
+			Widgets.Add(name.ToLower(), new { Parent = parent, Content = content, Action = "adjacent", Position = position.ToString() });
 			return this;
 		}
 
@@ -140,6 +146,13 @@ namespace Tango.UI
 			return AddWidget(name, content.ToString());
 		}
 
+		public ApiResponse ReplaceWidget(string name, LayoutWriter content)
+		{
+			ClientActions.AddRange(content.ClientActions);
+			foreach (var i in content.Includes) Includes.Add(i);
+			return ReplaceWidget(name, content.ToString());
+		}
+
 		public ApiResponse AddRootWidget(string name, LayoutWriter content)
 		{
 			return AddAdjacentWidget(null, name, content);
@@ -148,7 +161,8 @@ namespace Tango.UI
 		public ApiResponse AddAdjacentWidget(string parent, string name, LayoutWriter content, AdjacentHTMLPosition position = AdjacentHTMLPosition.BeforeEnd)
 		{
 			ClientActions.AddRange(content.ClientActions);
-			foreach (var i in content.Includes) Includes.Add(i);
+			foreach (var i in content.Includes)
+				Includes.Add(i);
 			return AddAdjacentWidget(parent, name, content.ToString(), position);
 		}
 
@@ -161,8 +175,8 @@ namespace Tango.UI
 		{
 			if (Widgets.Count > 0)
 				Data.Add("widgets", Widgets);
-			if (WidgetsForRemove.Count > 0)
-				Data.Add("widgetsforremove", WidgetsForRemove);
+			//if (WidgetsForRemove.Count > 0)
+			//	Data.Add("widgetsforremove", WidgetsForRemove);
 			if (ClientActions.Count > 0)
 				Data.Add("clientactions", ClientActions);
 			if (Includes.Count > 0)
@@ -171,27 +185,32 @@ namespace Tango.UI
 			return JsonConvert.SerializeObject(Data, Json.CamelCase);
 		}
 
-		public ApiResponse AddWidget(ViewElement elementOwner, string name, string content)
+		public ApiResponse AddWidget(IViewElement elementOwner, string name, string content)
 		{
 			return AddWidget(elementOwner.GetClientID(name), content);
 		}
 
-		public ApiResponse RemoveWidget(ViewElement elementOwner, string name)
+		public ApiResponse ReplaceWidget(IViewElement elementOwner, string name, string content)
+		{
+			return ReplaceWidget(elementOwner.GetClientID(name), content);
+		}
+
+		public ApiResponse RemoveWidget(IViewElement elementOwner, string name)
 		{
 			return RemoveWidget(elementOwner.GetClientID(name));
 		}
 
-		public ApiResponse AddRootWidget(ViewElement elementOwner, string name, string content)
+		public ApiResponse AddRootWidget(IViewElement elementOwner, string name, string content)
 		{
 			return AddAdjacentWidget(null, elementOwner.GetClientID(name), content);
 		}
 
-		public ApiResponse AddAdjacentWidget(ViewElement elementOwner, string parent, string name, string content, AdjacentHTMLPosition position = AdjacentHTMLPosition.BeforeEnd)
+		public ApiResponse AddAdjacentWidget(IViewElement elementOwner, string parent, string name, string content, AdjacentHTMLPosition position = AdjacentHTMLPosition.BeforeEnd)
 		{
 			return AddAdjacentWidget(parent, elementOwner.GetClientID(name), content, position);
 		}
 
-		public ApiResponse AddWidget(ViewElement elementOwner, string name, Action<LayoutWriter> content)
+		public ApiResponse AddWidget(IViewElement elementOwner, string name, Action<LayoutWriter> content)
 		{
 			var w = new LayoutWriter(elementOwner.Context, elementOwner.ClientID);
 			content?.Invoke(w);
@@ -199,7 +218,15 @@ namespace Tango.UI
 			return AddWidget(elementOwner.GetClientID(name), w);
 		}
 
-		public ApiResponse AddRootWidget(ViewElement elementOwner, string name, Action<LayoutWriter> content)
+		public ApiResponse ReplaceWidget(IViewElement elementOwner, string name, Action<LayoutWriter> content)
+		{
+			var w = new LayoutWriter(elementOwner.Context, elementOwner.ClientID);
+			content?.Invoke(w);
+
+			return ReplaceWidget(elementOwner.GetClientID(name), w);
+		}
+
+		public ApiResponse AddRootWidget(IViewElement elementOwner, string name, Action<LayoutWriter> content)
 		{
 			var w = new LayoutWriter(elementOwner.Context, elementOwner.ClientID);
 			content?.Invoke(w);
@@ -210,7 +237,7 @@ namespace Tango.UI
 			return AddAdjacentWidget(null, elementOwner.GetClientID(name), w.ToString());
 		}
 
-		public ApiResponse AddChildWidget(ViewElement elementOwner, string parent, string name, Action<LayoutWriter> content)
+		public ApiResponse AddChildWidget(IViewElement elementOwner, string parent, string name, Action<LayoutWriter> content)
 		{
 			var w = new LayoutWriter(elementOwner.Context, elementOwner.ClientID);
 			content?.Invoke(w);
@@ -221,7 +248,7 @@ namespace Tango.UI
 			return AddAdjacentWidget(parent, elementOwner.GetClientID(name), w.ToString());
 		}
 
-		public ApiResponse AddAdjacentWidget(ViewElement elementOwner, string parent, string name, AdjacentHTMLPosition position, Action<LayoutWriter> content)
+		public ApiResponse AddAdjacentWidget(IViewElement elementOwner, string parent, string name, AdjacentHTMLPosition position, Action<LayoutWriter> content)
 		{
 			var w = new LayoutWriter(elementOwner.Context, elementOwner.ClientID);
 			content?.Invoke(w);

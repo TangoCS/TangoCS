@@ -41,13 +41,8 @@
     <AssemblyOriginatorKeyFile>Tango.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper.StrongName, Version=1.50.2.0, Culture=neutral, PublicKeyToken=e3e8412083d25dd3, processorArchitecture=MSIL">
-      <HintPath>..\..\Welfare\packages\Dapper.StrongName.1.50.2\lib\net451\Dapper.StrongName.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\LicWidget\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\..\FinHub\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -191,8 +186,8 @@
   <ItemGroup>
     <Compile Include="UI\LayoutWriter.ClientActions.cs" />
     <None Include="nuget.nuspec" />
-    <None Include="Tango.snk" />
     <None Include="packages.config" />
+    <None Include="Tango.snk" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Identity\Resources.resx">
@@ -202,6 +197,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Dapper\Dapper.csproj">
+      <Project>{d0205633-0549-4363-84cd-9e32baf5386f}</Project>
+      <Name>Dapper</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tango.Abstractions\Tango.Abstractions.csproj">
       <Project>{08917986-6340-4d26-bb53-b1b69fd3c810}</Project>
       <Name>Tango.Abstractions</Name>
