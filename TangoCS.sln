@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.16
+VisualStudioVersion = 15.0.26730.3
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{F5355549-CCF2-4DBD-88D0-53E3E2CE6B2E}"
 EndProject
@@ -55,6 +55,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Tango.Client.Js", "Tango.Cl
 		VWDPort = "63396"
 		SlnRelativePath = "Tango.Client.Js\"
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper", "Dapper\Dapper.csproj", "{D0205633-0549-4363-84CD-9E32BAF5386F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -216,6 +218,18 @@ Global
 		{6918E281-C526-4E3E-8915-1BE29504F964}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
 		{6918E281-C526-4E3E-8915-1BE29504F964}.Release|x86.ActiveCfg = Debug|Any CPU
 		{6918E281-C526-4E3E-8915-1BE29504F964}.Release|x86.Build.0 = Debug|Any CPU
+		{D0205633-0549-4363-84CD-9E32BAF5386F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0205633-0549-4363-84CD-9E32BAF5386F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0205633-0549-4363-84CD-9E32BAF5386F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{D0205633-0549-4363-84CD-9E32BAF5386F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{D0205633-0549-4363-84CD-9E32BAF5386F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D0205633-0549-4363-84CD-9E32BAF5386F}.Debug|x86.Build.0 = Debug|Any CPU
+		{D0205633-0549-4363-84CD-9E32BAF5386F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0205633-0549-4363-84CD-9E32BAF5386F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0205633-0549-4363-84CD-9E32BAF5386F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{D0205633-0549-4363-84CD-9E32BAF5386F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{D0205633-0549-4363-84CD-9E32BAF5386F}.Release|x86.ActiveCfg = Release|Any CPU
+		{D0205633-0549-4363-84CD-9E32BAF5386F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -226,5 +240,9 @@ Global
 		{911F430A-7ACE-43F7-9654-CE34D2BE0664} = {F5355549-CCF2-4DBD-88D0-53E3E2CE6B2E}
 		{6729E69A-BB79-46DC-A576-F6C4DFE43360} = {F5355549-CCF2-4DBD-88D0-53E3E2CE6B2E}
 		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F} = {F5355549-CCF2-4DBD-88D0-53E3E2CE6B2E}
+		{D0205633-0549-4363-84CD-9E32BAF5386F} = {C704BCA4-0E47-4C0E-BC6A-EAAC11E43C0F}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {34D25309-0A23-4B03-976A-3A263DBDACF3}
 	EndGlobalSection
 EndGlobal
