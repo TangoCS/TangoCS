@@ -64,29 +64,37 @@ namespace Tango.UI
 		public static int GetIntArg(this ActionContext ctx, string name, int defaultValue)
 		{
 			object s = null;
+			int res = 0;
 			bool b = ctx.AllArgs.TryGetValue(name, out s);
-			if (b) return Convert.ToInt32(s);
+			if (b) b = int.TryParse(s.ToString(), out res);
+			if (b) return res;
 			return defaultValue;
 		}
 		public static int? GetIntArg(this ActionContext ctx, string name)
 		{
 			object s = null;
+			int res = 0;
 			bool b = ctx.AllArgs.TryGetValue(name, out s);
-			if (b) return Convert.ToInt32(s);
+			if (b) b = int.TryParse(s.ToString(), out res);
+			if (b) return res;
 			return null;
 		}
 		public static Guid GetGuidArg(this ActionContext ctx, string name, Guid defaultValue)
 		{
 			object s = null;
+			Guid res = Guid.Empty;
 			bool b = ctx.AllArgs.TryGetValue(name, out s);
-			if (b) return Guid.Parse(s.ToString());
+			if (b) b = Guid.TryParse(s.ToString(), out res);
+			if (b) return res;
 			return defaultValue;
 		}
 		public static Guid? GetGuidArg(this ActionContext ctx, string name)
 		{
 			object s = null;
+			Guid res = Guid.Empty;
 			bool b = ctx.AllArgs.TryGetValue(name, out s);
-			if (b) return Guid.Parse(s.ToString());
+			if (b) b = Guid.TryParse(s.ToString(), out res);
+			if (b) return res;
 			return null;
 		}
 

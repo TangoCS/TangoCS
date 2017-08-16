@@ -81,10 +81,9 @@ input.text {
 	min-width: 16px;
 }
 
-a.actionbtn i.icon, a.actionlink i.icon {
+a.actionbtn i.icon, a.actionlink i.icon, .nav a .icon {
 	margin-right: 4px;
 }
-
 
 /* forms */
 .ms-formtoolbar {

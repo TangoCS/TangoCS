@@ -297,7 +297,7 @@ var ajaxUtils = function ($, cu) {
 			if (p) url += '&p=' + p;
 
 			for (var key in hashParms) {
-				if (key != 'e' && key != 'r' && key != 'p' && hashParms[key])
+				if (key != 'e' && key != 'r' && key != 'p' && hashParms[key] && !(args && key in args))
 					url += '&' + key + '=' + encodeURIComponent(hashParms[key]);
 				else if (key == 'r')
 					target.r = hashParms[key];
