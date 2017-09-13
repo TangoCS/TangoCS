@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Text;
-using Tango.Data;
 using Tango.Html;
 
 namespace Tango.UI.Controls
 {
 	public static class CalendarExtension
 	{
-		public static void Calendar(this LayoutWriter w, InputName name, DateTime? value = null, bool enabled = true, bool showTime = false)
+		public static void Calendar(this LayoutWriter w, InputName name, DateTime? value = null, bool enabled = true, bool showTime = false, bool useCalendarDaysInJSCalendar = false)
 		{
 			string basePath = GlobalSettings.JSPath + "calendar/";
 
@@ -20,7 +15,7 @@ namespace Tango.UI.Controls
 			w.TextBox(name, showTime ? value.DateTimeToString() : value.DateToString(), a =>
 				a.Data("format", "dd.MM.yyyy").Placeholder("ДД.ММ.ГГГГ").Style("width:" + (showTime ? "130px" : "100px"))
 				.Data("calendar", "")
-				.Data("showtime", showTime).Data("usecalendardays", ConfigurationManager.AppSettings["UseCalendarDaysInJSCalendar"])
+				.Data("showtime", showTime).Data("usecalendardays", useCalendarDaysInJSCalendar)
 				.OnKeyPress("return calendarcontrol.keypress(event)").Disabled(!enabled)
 			);
 			if (enabled)
@@ -39,7 +34,7 @@ namespace Tango.UI.Controls
 					showTime = showTime,
 					ifFormat = showTime ? "%d.%m.%Y %H:%M" : "%d.%m.%Y",
 					timeFormat = "24",
-					dateStatusFunc = ConfigurationManager.AppSettings["UseCalendarDaysInJSCalendar"] == "true" ? "jscal_calendarDate" : null
+					dateStatusFunc = useCalendarDaysInJSCalendar ? "jscal_calendarDate" : null
 				});
 			}
 

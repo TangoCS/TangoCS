@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text.RegularExpressions;
@@ -12,6 +13,17 @@ namespace Tango
 
 	public interface IRequestEnvironment
 	{
+		IDictionary<string, IReadOnlyList<string>> Headers { get; }
+
+		string Method { get; }
+		string Protocol { get; }
+		string Scheme { get; }
+		string Host { get; }
+		string Path { get; }
+		string QueryString { get; }
+
+		string Referrer { get; }
+
 		IPAddress IP { get; }
 		string UserAgent { get; }
 	}

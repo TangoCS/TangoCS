@@ -26,6 +26,7 @@ namespace Tango.UI
 		public IResourceManager Resources { get; protected set; }
 		public RoutesCollection Routes { get; protected set; }
 
+		public Guid? RequestID { get; set; }
 		public string RequestMethod { get; set; }
 		public string RootReceiver { get; set; }
 		public string Service { get; set; }

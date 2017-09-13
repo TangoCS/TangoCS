@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Tango.UI
 {
 	public class DefaultTypeActivatorCache : ITypeActivatorCache, ITypeObserver
 	{
-		static readonly Dictionary<string, Tuple<Type, IActionInvoker>> _typeActivatorCache
-			= new Dictionary<string, Tuple<Type, IActionInvoker>>(StringComparer.OrdinalIgnoreCase);
+		static readonly Dictionary<string, (Type Type, IActionInvoker Invoker)> _typeActivatorCache
+			= new Dictionary<string, (Type Type, IActionInvoker Invoker)>(StringComparer.OrdinalIgnoreCase);
 
 		protected List<InvokeableTypeInfo> typeInfos = new List<InvokeableTypeInfo>();
 
@@ -57,18 +55,19 @@ namespace Tango.UI
 					if (keys == null || keys.Count == 0) continue;
 					foreach (var key in keys)
 					{
-						_typeActivatorCache[key] = new Tuple<Type, IActionInvoker>(t, info.Invoker);
+						_typeActivatorCache[key] = (t, info.Invoker);
 					}
 					break;
 				}
 			}
 		}
 
-		public Tuple<Type, IActionInvoker> Get(string key)
+		public (Type Type, IActionInvoker Invoker)? Get(string key)
 		{
-			Tuple<Type, IActionInvoker> ret = null;
-			_typeActivatorCache.TryGetValue(key.ToLower(), out ret);
-			return ret;
+			if (_typeActivatorCache.TryGetValue(key.ToLower(), out (Type Type, IActionInvoker Invoker) ret))
+				return ret;
+			else
+				return null;
 		}
 	}
 

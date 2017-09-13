@@ -2,14 +2,8 @@
 
 namespace Tango.UI
 {
-	public abstract class Controller : InteractionFlowElement, IWithPropertyInjection
+	public abstract class Controller : InteractionFlowElement, IWithCheckAccess
 	{
-		public void Init(ActionContext context)
-		{
-			Context = context;
-			this.InjectProperties(Context.RequestServices);
-		}
-
 		[NonAction]
 		public ActionResult RedirectBack()
 		{
@@ -34,10 +28,6 @@ namespace Tango.UI
 			return new MessageResult(message);
 		}
 
-		[NonAction]
-		public virtual bool CheckAccess(MethodInfo mi)
-		{
-			return true;
-		}
+		public abstract bool CheckAccess(MethodInfo method);
 	}
 }

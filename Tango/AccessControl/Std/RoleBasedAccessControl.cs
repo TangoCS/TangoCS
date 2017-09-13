@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Security.Principal;
-using System.Text;
-using Tango.Identity;
 using Tango.Identity.Std;
 using Tango.Logger;
 using Tango.Cache;
@@ -13,9 +10,11 @@ using System.Collections.Concurrent;
 namespace Tango.AccessControl.Std
 {
 	public abstract class AbstractAccessControl : IRoleBasedAccessControl<int>
-	{	
-		protected IIdentity _identity;
-		protected int _userId;
+	{
+		IIdentityManager _identityManager;
+
+		protected IIdentity _identity => _identityManager.CurrentIdentity;
+		protected int _userId => _identityManager.CurrentUser.Id;
 		protected IPredicateChecker _predicateChecker;
 		protected AccessControlOptions _options;
 		protected IRequestLogger _logger;
@@ -23,8 +22,7 @@ namespace Tango.AccessControl.Std
 		public AbstractAccessControl(IIdentityManager identityManager, IPredicateChecker predicateChecker, 
 			IRequestLoggerProvider loggerProvider, AccessControlOptions options)
 		{
-			_identity = identityManager.CurrentIdentity;
-			_userId = identityManager.CurrentUser.Id;
+			_identityManager = identityManager;
 			_predicateChecker = predicateChecker;
 			_options = options;
 			_logger = loggerProvider.GetLogger("accesscontrol");

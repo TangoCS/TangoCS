@@ -2,18 +2,19 @@
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Linq;
+using Tango.Html;
 
 namespace Tango.UI
 {
 	public interface IJsonResponse
 	{
-		string Serialize();
+		string Serialize(ActionContext context);
 	}
 
 	public class ArrayResponse : IJsonResponse
 	{
 		public List<object> Data { get; set; } = new List<object>();
-		public string Serialize()
+		public string Serialize(ActionContext context)
 		{
 			return JsonConvert.SerializeObject(Data, Json.CamelCase);
 		}
@@ -22,7 +23,7 @@ namespace Tango.UI
 	public class ObjectResponse : IJsonResponse
 	{
 		public Dictionary<string, object> Data { get; set; } = new Dictionary<string, object>();
-		public virtual string Serialize()
+		public virtual string Serialize(ActionContext context)
 		{
 			return JsonConvert.SerializeObject(Data, Json.CamelCase);
 		}
@@ -31,7 +32,6 @@ namespace Tango.UI
 	public class ApiResponse : ObjectResponse
 	{
 		public Dictionary<string, object> Widgets { get; set; }
-		//public List<string> WidgetsForRemove { get; set; }
 		public List<ClientAction> ClientActions { get; set; }
 		public HashSet<string> Includes { get; set; }
 		public Dictionary<string, List<string>> PageContext { get; set; }
@@ -39,7 +39,6 @@ namespace Tango.UI
 		public ApiResponse()
 		{
 			Widgets = new Dictionary<string, object>();
-			//WidgetsForRemove = new List<string>();
 			ClientActions = new List<ClientAction>();
 			Includes = new HashSet<string>();
 		}
@@ -171,12 +170,39 @@ namespace Tango.UI
 			Data.Add("url", context.GetArg(Constants.ReturnUrl));
 		}
 
-		public override string Serialize()
+		public override string Serialize(ActionContext context)
 		{
+			var container = context.GetArg("c-type");
+			if (!container.IsEmpty())
+			{
+				var coll = context.RequestServices.GetService(typeof(IContainerCollection)) as IContainerCollection;
+				if (coll.TryGetValue(container, out var item))
+				{
+					var id = context.GetArg("c-id");
+					var w = new LayoutWriter(context, id);
+
+					var keys = Widgets.Keys.ToList();
+					foreach (var s in keys)
+					{
+						if (item.Mapping.ContainsKey(s))
+						{
+							Widgets[w.GetID(item.Mapping[s])] = Widgets[s];
+							Widgets.Remove(s);
+						}
+					}
+
+					item.Renderer(w);
+
+					Widgets.Add(id.ToLower(), new {
+						Content = w.ToString(),
+						Action = "adjacent",
+						Position = AdjacentHTMLPosition.BeforeEnd.ToString()
+					});
+				}
+			}
+
 			if (Widgets.Count > 0)
 				Data.Add("widgets", Widgets);
-			//if (WidgetsForRemove.Count > 0)
-			//	Data.Add("widgetsforremove", WidgetsForRemove);
 			if (ClientActions.Count > 0)
 				Data.Add("clientactions", ClientActions);
 			if (Includes.Count > 0)
@@ -299,5 +325,22 @@ namespace Tango.UI
 			public string Method { get; set; }
 			public object Args { get; set; }
 		}
+	}
+
+	public interface IContainerCollection : IDictionary<string, IContainerCollectionItem>
+	{
+
+	}
+
+	public interface IContainerCollectionItem
+	{
+		IDictionary<string, string> Mapping { get; }
+		Action<LayoutWriter> Renderer { get; }
+	}
+
+	public class ContainerCollectionItem : IContainerCollectionItem
+	{
+		public IDictionary<string, string> Mapping { get; set; }
+		public Action<LayoutWriter> Renderer { get; set; }
 	}
 }

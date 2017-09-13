@@ -21,7 +21,7 @@ namespace Tango.Html
 			MergeAttributeFunc(key, value, replaceExisting);
 		}
 
-		public T ID(string value) { MergeIDAttributeFunc("id", value); return _this; }
+		public T ID<TValue>(TValue value) { MergeIDAttributeFunc("id", value.ToString()); return _this; }
 
 		public T AccessKey(string value) { MergeAttribute("accesskey", value); return _this; }
 		public T Aria(string key, string value) { MergeAttribute("aria-" + key.ToLower(), value); return _this; }

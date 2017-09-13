@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Reflection;
 
 using NHibernate.Bytecode;
@@ -228,33 +227,34 @@ namespace NHibernate.Cfg
 
 		private static void LoadGlobalPropertiesFromAppConfig()
 		{
-			object config = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName);
+			// net core support
+			//object config = ConfigurationManager.GetSection(CfgXmlHelper.CfgSectionName);
 
-			if (config == null)
-			{
-				log.Info(string.Format("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName));
-				return;
-			}
+			//if (config == null)
+			//{
+			//	log.Info(string.Format("{0} section not found in application configuration file", CfgXmlHelper.CfgSectionName));
+			//	return;
+			//}
 
-			var nhConfig = config as IHibernateConfiguration;
-			if (nhConfig == null)
-			{
-				log.Info(
-					string.Format(
-						"{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored",
-						CfgXmlHelper.CfgSectionName));
-				return;
-			}
+			//var nhConfig = config as IHibernateConfiguration;
+			//if (nhConfig == null)
+			//{
+			//	log.Info(
+			//		string.Format(
+			//			"{0} section handler, in application configuration file, is not IHibernateConfiguration, section ignored",
+			//			CfgXmlHelper.CfgSectionName));
+			//	return;
+			//}
 
-			GlobalProperties[PropertyBytecodeProvider] = nhConfig.ByteCodeProviderType;
-			GlobalProperties[PropertyUseReflectionOptimizer] = nhConfig.UseReflectionOptimizer.ToString();
-			if (nhConfig.SessionFactory != null)
-			{
-				foreach (var kvp in nhConfig.SessionFactory.Properties)
-				{
-					GlobalProperties[kvp.Key] = kvp.Value;
-				}
-			}
+			//GlobalProperties[PropertyBytecodeProvider] = nhConfig.ByteCodeProviderType;
+			//GlobalProperties[PropertyUseReflectionOptimizer] = nhConfig.UseReflectionOptimizer.ToString();
+			//if (nhConfig.SessionFactory != null)
+			//{
+			//	foreach (var kvp in nhConfig.SessionFactory.Properties)
+			//	{
+			//		GlobalProperties[kvp.Key] = kvp.Value;
+			//	}
+			//}
 		}
 
 		internal static void ResetSessionFactoryProperties()

@@ -1,5 +1,4 @@
 using System;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
@@ -77,26 +76,28 @@ namespace NHibernate
 
 		private static string GetNhibernateLoggerClass()
 		{
-			var nhibernateLogger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => NhibernateLoggerConfKey.Equals(k.ToLowerInvariant()));
-			string nhibernateLoggerClass = null;
-			if (string.IsNullOrEmpty(nhibernateLogger))
-			{
-				// look for log4net.dll
-				string baseDir = AppDomain.CurrentDomain.BaseDirectory;
-				string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
-				string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
-				string log4NetDllPath = binPath == null ? "log4net.dll" : Path.Combine(binPath, "log4net.dll");
+			// net core support
+			return null;
+			//var nhibernateLogger = ConfigurationManager.AppSettings.Keys.Cast<string>().FirstOrDefault(k => NhibernateLoggerConfKey.Equals(k.ToLowerInvariant()));
+			//string nhibernateLoggerClass = null;
+			//if (string.IsNullOrEmpty(nhibernateLogger))
+			//{
+			//	// look for log4net.dll
+			//	string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+			//	string relativeSearchPath = AppDomain.CurrentDomain.RelativeSearchPath;
+			//	string binPath = relativeSearchPath == null ? baseDir : Path.Combine(baseDir, relativeSearchPath);
+			//	string log4NetDllPath = binPath == null ? "log4net.dll" : Path.Combine(binPath, "log4net.dll");
 
-				if (File.Exists(log4NetDllPath) || AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "log4net"))
-				{
-					nhibernateLoggerClass = typeof(Log4NetLoggerFactory).AssemblyQualifiedName;
-				}
-			}
-			else
-			{
-				nhibernateLoggerClass = ConfigurationManager.AppSettings[nhibernateLogger];
-			}
-			return nhibernateLoggerClass;
+			//	if (File.Exists(log4NetDllPath) || AppDomain.CurrentDomain.GetAssemblies().Any(a => a.GetName().Name == "log4net"))
+			//	{
+			//		nhibernateLoggerClass = typeof(Log4NetLoggerFactory).AssemblyQualifiedName;
+			//	}
+			//}
+			//else
+			//{
+			//	nhibernateLoggerClass = ConfigurationManager.AppSettings[nhibernateLogger];
+			//}
+			//return nhibernateLoggerClass;
 		}
 
 

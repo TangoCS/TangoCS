@@ -5,8 +5,8 @@ namespace Tango
 {
 	public class IconSet
 	{
-		static Lazy<string> _rootPath = new Lazy<string>(() => ConfigurationManager.AppSettings["ImagesPath"] ?? "/i/");
-		public static string RootPath { get { return _rootPath.Value; } }
+		// TODO: брать из настроек
+		public static string RootPath { get { return "/i/"; } }
 
 		// Paging
 		public const string Firstpage = "Firstpage";

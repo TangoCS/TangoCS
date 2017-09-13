@@ -37,10 +37,10 @@ namespace Tango.UI
 
 		public LayoutWriter Clone(string newIdPrefix)
 		{
-			var w = new LayoutWriter(Context, newIdPrefix, GetStringBuilder());
-			w.ClientActions = ClientActions;
-			w.Includes = Includes;
-			return w;
+			return new LayoutWriter(Context, newIdPrefix, GetStringBuilder()) {
+				ClientActions = ClientActions,
+				Includes = Includes
+			};
 		}
 	}
 

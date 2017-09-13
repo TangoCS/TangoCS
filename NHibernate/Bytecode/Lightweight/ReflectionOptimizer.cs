@@ -101,7 +101,7 @@ namespace NHibernate.Bytecode.Lightweight
 		{
 			System.Type owner = mappedType.IsInterface ? typeof (object) : mappedType;
 			bool canSkipChecks = SecurityManager.IsGranted(new ReflectionPermission(ReflectionPermissionFlag.MemberAccess));
-			return new DynamicMethod(string.Empty, returnType, argumentTypes, owner, canSkipChecks);
+			return new DynamicMethod(string.Empty, returnType, argumentTypes, owner);
 		}
 
 		private static void EmitCastToReference(ILGenerator il, System.Type type)

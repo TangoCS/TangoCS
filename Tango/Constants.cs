@@ -7,6 +7,8 @@
 		public static string ReturnUrl = "returnurl";
 		public static string Id = "oid";
 
+		public static string ShowLogsName = "showlogs";
+
 		public static string EventName = "e";
 		public static string EventReceiverName = "r";
 		public static string RootReceiverName = "p";

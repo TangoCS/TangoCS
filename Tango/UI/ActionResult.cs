@@ -3,6 +3,7 @@ using System.Security.Principal;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.Net;
 
 namespace Tango.UI
 {
@@ -11,16 +12,18 @@ namespace Tango.UI
 		public abstract Task ExecuteResultAsync(ActionContext context);
 	}
 
-	public abstract class HttpResult : ActionResult
+	public class HttpResult : ActionResult
 	{
 		[JsonIgnore]
 		public string ContentType { get; set; }
+		[JsonIgnore]
+		public HttpStatusCode StatusCode { get; set; } = HttpStatusCode.OK;
 		[JsonIgnore]
 		public Dictionary<string, string> Headers { get; private set; } = new Dictionary<string, string>();
 		[JsonIgnore]
 		public Dictionary<string, string> Cookies { get; private set; } = new Dictionary<string, string>();
 		[JsonIgnore]
-		public Func<string> ContentFunc { get; protected set; }
+		public Func<ActionContext, string> ContentFunc { get; protected set; }
 
 		public override Task ExecuteResultAsync(ActionContext context)
 		{
@@ -40,7 +43,7 @@ namespace Tango.UI
 			Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
 			Headers.Add("Pragma", "no-cache"); // HTTP 1.0.
 			Headers.Add("Expires", "0"); // Proxies.
-			ContentFunc = () => Html;
+			ContentFunc = ctx => Html;
 		}
 	}
 
@@ -66,7 +69,7 @@ namespace Tango.UI
 			Headers.Add("Pragma", "no-cache"); // HTTP 1.0.
 			Headers.Add("Expires", "0"); // Proxies.
 			ContentType = "application/json";
-			ContentFunc = () => ApiResponse.Serialize();
+			ContentFunc = ctx => ApiResponse.Serialize(ctx);
 		}
 	}
 
@@ -78,7 +81,7 @@ namespace Tango.UI
 		{
 			Url = url;
 			ContentType = "application/json";
-			ContentFunc = () => JsonConvert.SerializeObject(this, Json.CamelCase);
+			ContentFunc = ctx => JsonConvert.SerializeObject(this, Json.CamelCase);
 		}
 	}
 
@@ -92,26 +95,46 @@ namespace Tango.UI
 		}
 	}
 
-	public class UserLoginResult : RedirectBackResult
+	public class SignInResult : RedirectBackResult
 	{
 		IIdentity _user;
-		public UserLoginResult(IIdentity user)
+		public SignInResult(IIdentity user)
 		{
 			_user = user;
 		}
 
 		public override Task ExecuteResultAsync(ActionContext context)
 		{
-			var executor = context.RequestServices.GetService(typeof(IUserSignInExecutor)) as IUserSignInExecutor;
-			executor.Execute(_user);
+			var executor = context.RequestServices.GetService(typeof(IAuthenticationManager)) as IAuthenticationManager;
+			executor.SignIn(_user);
 
 			return base.ExecuteResultAsync(context);
 		}
 	}
 
-	public interface IUserSignInExecutor
+	public class ChallengeResult : ActionResult
 	{
-		Task Execute(IIdentity user);
+		public override Task ExecuteResultAsync(ActionContext context)
+		{
+			var executor = context.RequestServices.GetService(typeof(IAuthenticationManager)) as IAuthenticationManager;
+			return executor.Challenge();
+		}
+	}
+
+	public class SignOutResult : ActionResult
+	{
+		public override Task ExecuteResultAsync(ActionContext context)
+		{
+			var executor = context.RequestServices.GetService(typeof(IAuthenticationManager)) as IAuthenticationManager;
+			return executor.SignOut();
+		}
+	}
+
+	public interface IAuthenticationManager
+	{
+		Task SignIn(IIdentity user);
+		Task SignOut();
+		Task Challenge();
 	}
 
 	public interface IHttpResultExecutor

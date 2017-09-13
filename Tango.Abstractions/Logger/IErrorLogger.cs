@@ -6,4 +6,9 @@ namespace Tango.Logger
 	{
 		int Log(Exception exception);
 	}
+
+	public interface IExceptionFilter
+	{
+		bool Filter(Exception e);
+	}
 }

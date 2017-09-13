@@ -1,12 +1,12 @@
 ﻿var dialog = function (au) {
 	var instance = {
-		instances : {},
+		instances: {},
 		open: function (caller, serverEvent, id, callBack) {
 			return au.runEventFromElementWithApiResponse(caller, { e: serverEvent, r: id }).then(function () {
 				$('#modalOverlay').css('display', 'block');
 
-				var modal = $('#' + id + "_dialog");				
-				modal.css('display', 'block');
+				var modal = $('#' + id + "_dialog");
+				modal.addClass('visible');
 				modal.css('zIndex', 101);
 				instance.instances[id] = {};
 
@@ -25,7 +25,7 @@
 			var modalBody = modal.find('.modal-body');
 
 			modalBody.css('height', '');
-			modal.css('display', 'none');
+			modal.removeClass('visible');
 
 			if (instance.instances[id].parentDialog) {
 				var p = $('#' + instance.instances[id].parentDialog);

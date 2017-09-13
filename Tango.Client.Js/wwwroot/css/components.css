@@ -402,6 +402,7 @@ td.showDragHandle {
 	width: 600px;
 	height: 100%;
 	max-height: 80%;
+	visibility: hidden;
 }
 
 .modal-dialog form {
@@ -470,12 +471,13 @@ button.close {
 	cursor: pointer;
 	background: 0 0;
 	border: 0;
+	font-size: smaller;
 }
 
 .close {
 	float: right;
 	font-size: 1.2em;
-	line-height: 1;
+	line-height: 20px;
 	color: #777;
 }
 
@@ -701,4 +703,20 @@ button.close {
 .tipso_bubble .bottom_left_corner,
 .tipso_bubble.bottom_left_corner {
 	border-top-right-radius: 0;
+}
+
+.visible {
+	visibility: visible;
+}
+
+.modal-dialog {
+	transform: scale(0.8);
+	transform-origin: top;
+	opacity: 0;
+	transition: all 0.2s;
+}
+
+.modal-dialog.visible {
+	transform: scale(1);
+	opacity: 1;
 }

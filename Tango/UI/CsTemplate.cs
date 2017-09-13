@@ -3,6 +3,7 @@ using Tango.Localization;
 using Newtonsoft.Json;
 using Tango.Html;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Tango.UI
 {
@@ -18,6 +19,11 @@ namespace Tango.UI
 		IViewElement ParentElement { get; set; }
 		DataCollection DataCollection { get; set; }
 		string GetClientID(string id);
+	}
+
+	public interface IWithCheckAccess
+	{
+		bool CheckAccess(MethodInfo method);
 	}
 
 	public abstract class InteractionFlowElement : IInteractionFlowElement, IWithPropertyInjection
@@ -125,7 +131,7 @@ namespace Tango.UI
 		
 	}
 
-	public abstract class ViewContainer : ViewElement
+	public abstract class ViewRootElement : ViewElement
 	{
 		public abstract ActionResult Execute();	
 	}

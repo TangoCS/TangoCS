@@ -42,10 +42,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\FinHub\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Xml.Linq" />
@@ -71,6 +70,7 @@
     <Compile Include="Identity\Std\InterfacesStd.cs" />
     <Compile Include="Identity\Std\Tessera2IdentityStore.cs" />
     <Compile Include="UI\Controls\Tabs.cs" />
+    <Compile Include="UI\InteractionHelper.cs" />
     <Compile Include="Var.cs" />
     <Compile Include="RouteUtils.cs" />
     <Compile Include="TreeNode.cs" />
@@ -103,10 +103,9 @@
     <Compile Include="MimeMapping.cs" />
     <Compile Include="StringUtils.cs" />
     <Compile Include="UI\Controls\ActionLink.cs" />
-    <Compile Include="UI\Controls\BackButton.cs" />
+    <Compile Include="UI\Controls\Buttons.cs" />
     <Compile Include="UI\Controls\Calendar.cs" />
     <Compile Include="UI\Controls\CodeArea.cs" />
-    <Compile Include="UI\Controls\Dialog.cs" />
     <Compile Include="UI\DefaultTypeActivatorCache.cs" />
     <Compile Include="Html\HtmlParms.cs" />
     <Compile Include="Html\HtmlWriter.Links.cs" />
@@ -118,7 +117,7 @@
     <Compile Include="Identity\PasswordHasher.cs" />
     <Compile Include="Json.cs" />
     <Compile Include="Localization\IMultilingual.cs" />
-    <Compile Include="UI\AllowAnonymousAttribute.cs" />
+    <Compile Include="AllowAnonymousAttribute.cs" />
     <Compile Include="UI\ApiResponse.cs" />
     <Compile Include="UI\LayoutWriter.cs" />
     <Compile Include="UI\LayoutWriterExtensions.cs" />

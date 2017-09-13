@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.DirectoryServices;
 using System.Linq;
 using System.Security.Principal;
@@ -9,7 +8,8 @@ namespace Tango.ActiveDirectory
 {
 	public static class ADSettings
 	{
-		static Lazy<string> _adDomain = new Lazy<string>(() => ConfigurationManager.AppSettings["ADDomain"] ?? "");
+		// TODO: брать из appsettings.json
+		static Lazy<string> _adDomain = new Lazy<string>(() => "");
 		public static string ADDomain { get { return _adDomain.Value; } }
 	}
 

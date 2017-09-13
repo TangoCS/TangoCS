@@ -280,7 +280,6 @@ var ajaxUtils = function ($, cu) {
 				return r.resolve(apiResult);
 		},
 		prepareUrl: function (target, args) {
-			//if (!target.e) target.e = 'onload';
 			var hashParms = cu.getHashParams();
 
 			var url = target.url ?
@@ -383,9 +382,13 @@ var ajaxUtils = function ($, cu) {
 				target.r = attr.value;
 			} else if (attr.name.startsWith('data-format')) {
 				data['__format_' + el.name] = attr.value;
+			} else if (attr.name.startsWith('data-c-')) {
+				data[attr.name.replace('data-c-', 'c-')] = attr.value;
 			} else if (attr.name.startsWith('data-ref-')) {
 				var refEl = document.getElementById(attr.name.replace('data-ref-', ''));
 				if (refEl) data[refEl.name] = refEl.value;
+			} else if (attr.name == 'href') {
+				target.url = '/api' + attr.value;
 			}
 		}
 	}
