@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\GostCryptography\Source\GostCryptography\GostCryptography.csproj" />
+    <ProjectReference Include="..\..\iTextSharp\itextsharp.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -173,7 +173,7 @@ namespace ImportData2
 				//object robj = cmd.ExecuteScalar();
 				//decimal tsize = (robj != null && robj != DBNull.Value ? decimal.Parse(robj.ToString()) : 0) / 1024;
 				decimal tsize = decimal.Parse(cmd.ExecuteScalar().ToString()) / 1024;
-				tsize = tsize + (tsize * table.Columns.Count() * 2 / 100);
+				tsize = tsize + (tsize * table.Columns.Count() * 2M / 100M);
 
 				if (tsize > 20480)
 				{
@@ -199,14 +199,14 @@ namespace ImportData2
 						{
 							File.AppendAllText(filePath, result.ToString());
 							result.Clear();
-							fsize = (new FileInfo(filePath)).Length / 1024;
+							fsize = (new FileInfo(filePath)).Length / 1024M;
 							allsize = fsize;
 						}
 					}
 
 					ImportData(table, tableto, cmd, result);
 
-					if (((allsize + (result.Length / 1024)) > 10240) && tsize > 0)
+					if (((allsize + (result.Length / 1024M)) > 10240M) && tsize > 0M)
 					{
 						if (i == 0)
 						{
@@ -221,7 +221,7 @@ namespace ImportData2
 					{
 						File.AppendAllText(filePath, result.ToString());
 						result.Clear();
-						fsize = (new FileInfo(filePath)).Length / 1024;
+						fsize = (new FileInfo(filePath)).Length / 1024M;
 						allsize = fsize;
 					}
 					i++;
@@ -234,7 +234,7 @@ namespace ImportData2
 
 			sqlCon.Close();
 
-			if (allsize > 0)
+			if (allsize > 0M)
 			{
 				File.AppendAllText(string.Format(newfilePath, num), resultEnd.ToString());
 			}
