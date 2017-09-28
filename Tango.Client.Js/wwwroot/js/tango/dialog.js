@@ -1,23 +1,35 @@
 ﻿var dialog = function (au) {
 	var instance = {
 		instances: {},
-		open: function (caller, serverEvent, id, callBack) {
-			return au.runEventFromElementWithApiResponse(caller, { e: serverEvent, r: id }).then(function () {
-				$('#modalOverlay').css('display', 'block');
-
-				var modal = $('#' + id + "_dialog");
-				modal.addClass('visible');
-				modal.css('zIndex', 101);
-				instance.instances[id] = {};
-
-				var parent = getParent(caller);
-				if (parent) {
-					parent.css('zIndex', 99);
-					instance.instances[id].parentDialog = parent.id;
-				}
-
+		runeventandopen: function (caller, serverEvent, id, callBack) {
+			if (!id) id = caller.getAttribute('data-c-id');
+			return au.runEventFromElementWithApiResponse(caller, { e: serverEvent, r: id })
+			.then(function () {
+				instance.open(caller, id);
 				if (callBack) callBack(caller, id);
 			});
+		},
+		rundefeventandopen: function (caller, callBack) {
+			var id = caller.getAttribute('data-c-id');
+			return au.runEventFromElementWithApiResponse(caller)
+			.then(function () {
+				instance.open(caller, id);
+				if (callBack) callBack(caller, id);
+			});
+		},
+		open: function (caller, id) {
+			$('#modalOverlay').css('display', 'block');
+
+			var modal = $('#' + id + "_dialog");
+			modal.addClass('visible');
+			modal.css('zIndex', 101);
+			instance.instances[id] = {};
+
+			var parent = getParent(caller);
+			if (parent) {
+				parent.css('zIndex', 99);
+				instance.instances[id].parentDialog = parent.id;
+			}
 		},
 		hide: function (id) {
 			var modal = $('#' + id + "_dialog");

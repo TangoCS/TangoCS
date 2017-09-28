@@ -69,6 +69,7 @@
     <Compile Include="Identity\Std\IdentityUser.cs" />
     <Compile Include="Identity\Std\InterfacesStd.cs" />
     <Compile Include="Identity\Std\Tessera2IdentityStore.cs" />
+    <Compile Include="UI\Controls\DateLists.cs" />
     <Compile Include="UI\Controls\Tabs.cs" />
     <Compile Include="UI\InteractionHelper.cs" />
     <Compile Include="Var.cs" />

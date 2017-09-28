@@ -16,7 +16,7 @@ namespace Tango.UI
 		public List<object> Data { get; set; } = new List<object>();
 		public string Serialize(ActionContext context)
 		{
-			return JsonConvert.SerializeObject(Data, Json.CamelCase);
+			return JsonConvert.SerializeObject(Data, Json.StdSettings);
 		}
 	}
 
@@ -25,20 +25,20 @@ namespace Tango.UI
 		public Dictionary<string, object> Data { get; set; } = new Dictionary<string, object>();
 		public virtual string Serialize(ActionContext context)
 		{
-			return JsonConvert.SerializeObject(Data, Json.CamelCase);
+			return JsonConvert.SerializeObject(Data, Json.StdSettings);
 		}
 	}
 
 	public class ApiResponse : ObjectResponse
 	{
-		public Dictionary<string, object> Widgets { get; set; }
+		public List<KeyValue<string, object>> Widgets { get; set; }
 		public List<ClientAction> ClientActions { get; set; }
 		public HashSet<string> Includes { get; set; }
-		public Dictionary<string, List<string>> PageContext { get; set; }
+		//public Dictionary<string, List<string>> PageContext { get; set; }
 
 		public ApiResponse()
 		{
-			Widgets = new Dictionary<string, object>();
+			Widgets = new List<KeyValue<string, object>>();
 			ClientActions = new List<ClientAction>();
 			Includes = new HashSet<string>();
 		}
@@ -179,21 +179,19 @@ namespace Tango.UI
 				if (coll.TryGetValue(container, out var item))
 				{
 					var id = context.GetArg("c-id");
+					var prefix = context.GetArg("c-prefix");
 					var w = new LayoutWriter(context, id);
 
-					var keys = Widgets.Keys.ToList();
-					foreach (var s in keys)
+					var mappings = item.Mapping.ToDictionary(o => HtmlWriterHelpers.GetID(prefix, o.Key), o => w.GetID(o.Value));
+					foreach (var wgt in Widgets)
 					{
-						if (item.Mapping.ContainsKey(s))
-						{
-							Widgets[w.GetID(item.Mapping[s])] = Widgets[s];
-							Widgets.Remove(s);
-						}
+						if (mappings.ContainsKey(wgt.Key))
+							wgt.Key = mappings[wgt.Key];
 					}
 
 					item.Renderer(w);
 
-					Widgets.Add(id.ToLower(), new {
+					Widgets.Insert(0, w.GetID(item.ID), new {
 						Content = w.ToString(),
 						Action = "adjacent",
 						Position = AdjacentHTMLPosition.BeforeEnd.ToString()
@@ -208,7 +206,7 @@ namespace Tango.UI
 			if (Includes.Count > 0)
 				Data.Add("includes", Includes.Select(o => GlobalSettings.JSPath + o));
 
-			return JsonConvert.SerializeObject(Data, Json.CamelCase);
+			return JsonConvert.SerializeObject(Data, Json.StdSettings);
 		}
 
 		public ApiResponse AddWidget(IViewElement elementOwner, string name, string content)
@@ -334,12 +332,14 @@ namespace Tango.UI
 
 	public interface IContainerCollectionItem
 	{
+		string ID { get; }
 		IDictionary<string, string> Mapping { get; }
 		Action<LayoutWriter> Renderer { get; }
 	}
 
 	public class ContainerCollectionItem : IContainerCollectionItem
 	{
+		public string ID { get; set; }
 		public IDictionary<string, string> Mapping { get; set; }
 		public Action<LayoutWriter> Renderer { get; set; }
 	}

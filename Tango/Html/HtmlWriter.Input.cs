@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Tango.Html
 {
@@ -29,6 +27,11 @@ namespace Tango.Html
 		public static void CheckBox(this IHtmlWriter w, InputName name, bool isChecked = false, Action<InputTagAttributes> attributes = null)
 		{
 			Action<InputTagAttributes> a = ta => ta.Name(name.Name).ID(name.ID).Type(InputType.Checkbox).Checked(isChecked).Set(attributes);
+			w.WriteSelfClosingTag("input", a);
+		}
+		public static void CheckBox(this IHtmlWriter w, InputName name, string value, bool isChecked = false, Action<InputTagAttributes> attributes = null)
+		{
+			Action<InputTagAttributes> a = ta => ta.Name(name.Name).ID(name.ID).Type(InputType.Checkbox).Value(value).Checked(isChecked).Set(attributes);
 			w.WriteSelfClosingTag("input", a);
 		}
 		public static void RadioButton(this IHtmlWriter w, string name, string id, string value = null, bool isChecked = false, Action<InputTagAttributes> attributes = null)

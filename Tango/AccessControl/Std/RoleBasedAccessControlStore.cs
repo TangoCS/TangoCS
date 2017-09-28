@@ -10,10 +10,12 @@ namespace Tango.AccessControl.Std
 	public abstract class RoleBasedAccessControlStoreBase<T> : IRoleBasedAccessControlStoreBase<T>
 	{
 		protected IDbConnection _dc;
+		protected IIdentity _identity;
 
-		public RoleBasedAccessControlStoreBase(IDbConnection dc)
+		public RoleBasedAccessControlStoreBase(IDbConnection dc, IIdentity identity)
 		{
 			_dc = dc;
+			_identity = identity;
 		}
 
 		static List<IdentityRole<T>> _allRoles = null;
@@ -29,9 +31,9 @@ namespace Tango.AccessControl.Std
 			return GetAllRoles().FirstOrDefault(o => o.Id.Equals(id));
 		}
 
-		public IEnumerable<IdentityRole<T>> UserRoles(IIdentity identity, T id)
+		public IEnumerable<IdentityRole<T>> UserRoles(T id)
 		{
-			WindowsIdentity wi = identity as WindowsIdentity;
+			WindowsIdentity wi = _identity as WindowsIdentity;
 			List<T> r = null;
 			if (wi != null && !wi.IsAnonymous)
 			{
@@ -45,22 +47,22 @@ namespace Tango.AccessControl.Std
 		}
 	}
 
-	public class RoleBasedAccessControlStore<T> : RoleBasedAccessControlStoreBase<T>, IRoleBasedAccessControlStore<T>
-	{
-		public RoleBasedAccessControlStore(IDbConnection dc) : base(dc)
-		{
+	//public class RoleBasedAccessControlStore<T> : RoleBasedAccessControlStoreBase<T>, IRoleBasedAccessControlStore<T>
+	//{
+	//	public RoleBasedAccessControlStore(IDbConnection dc, IIdentity identity) : base(dc, identity)
+	//	{
 			
-		}
+	//	}
 
-		public IEnumerable<T> GetAccessInfo(string securableObjectKey)
-		{
-			throw new NotImplementedException();
-		}
-	}
+	//	public IEnumerable<T> GetAccessInfo(string securableObjectKey)
+	//	{
+	//		throw new NotImplementedException();
+	//	}
+	//}
 
 	public class CacheableRoleBasedAccessControlStore<T> : RoleBasedAccessControlStoreBase<T>, ICacheableRoleBasedAccessControlStore<T>
 	{
-		public CacheableRoleBasedAccessControlStore(IDbConnection dc) : base(dc)
+		public CacheableRoleBasedAccessControlStore(IDbConnection dc, IIdentity identity) : base(dc, identity)
 		{
 
 		}

@@ -73,7 +73,7 @@ var selectMultipleObjectsDialog = function (au, cu, dialog) {
 			var d = dialog.instances[id];
 			if (!d.selectedObjs) {
 				var val = $("#" + $("#" + id).attr('data-value-id')).val();
-				if (val != '')
+				if (val && val != '')
 					d.selectedObjs = val.split(",");
 				else
 					d.selectedObjs = [];

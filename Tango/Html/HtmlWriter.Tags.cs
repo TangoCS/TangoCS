@@ -4,6 +4,15 @@ using System.Net;
 
 namespace Tango.Html
 {
+	public static class HtmlWriterHelpers
+	{
+		public static string GetID(string prefix, string id)
+		{
+			id = id.ToLower();
+			return prefix.IsEmpty() ? id : $"{prefix}_{id}";
+		}
+	}
+
 	public static class HtmlWriterTagsExtensions
 	{
 		public static void WriteTag<T>(this IHtmlWriter w, string name, Action<T> attrs, Action inner)
@@ -49,14 +58,15 @@ namespace Tango.Html
 		{
 			IDictionary<string, string> attributes = new Dictionary<string, string>(StringComparer.Ordinal);
 
-			T ta = new T();
-			ta.MergeAttributeFunc = (key, value, replaceExisting) => {
-				if (replaceExisting || !attributes.ContainsKey(key))
-					attributes[key] = value;
-				else
-					attributes[key] = attributes[key] + " " + value;
+			T ta = new T {
+				MergeAttributeFunc = (key, value, replaceExisting) => {
+					if (replaceExisting || !attributes.ContainsKey(key))
+						attributes[key] = value;
+					else
+						attributes[key] = attributes[key] + " " + value;
+				},
+				MergeIDAttributeFunc = (key, value) => attributes[key] = w.GetID(value).ToLower()
 			};
-			ta.MergeIDAttributeFunc = (key, value) => attributes[key] = w.GetID(value).ToLower();
 			attrs(ta);
 
 			foreach (var attribute in attributes)
@@ -74,8 +84,7 @@ namespace Tango.Html
 
 		public static string GetID(this IHtmlWriter w, string id)
 		{
-			id = id.ToLower();
-			return w.IDPrefix.IsEmpty() ? id : (w.IDPrefix + "_" + id);
+			return HtmlWriterHelpers.GetID(w.IDPrefix, id);
 		}
 
 		public static void A(this IHtmlWriter w, Action<ATagAttributes> attributes = null, Action inner = null)

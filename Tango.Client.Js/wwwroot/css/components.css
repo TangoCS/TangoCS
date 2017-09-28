@@ -274,6 +274,15 @@ div.calendar {
 	color: #fff;
 }
 
+/* datelists */
+.datelists {
+	display: inline-block;
+}
+
+.datelists select {
+	width: auto;
+}
+
 /* td drag'n'drop */
 td.showDragHandle {
 	background-image: url(/i/dnd/updown2.gif);
@@ -401,7 +410,7 @@ td.showDragHandle {
 	margin-right: auto;
 	width: 600px;
 	height: 100%;
-	max-height: 80%;
+	max-height: 85%;
 	visibility: hidden;
 }
 
@@ -411,26 +420,16 @@ td.showDragHandle {
 	flex-direction: column;
 }
 
+.modal-container {
+	max-height: 99%; /*ie 11 hack*/
+	display: flex;
+	flex-direction: column;
+	box-shadow: 0 3px 9px rgba(0,0,0,.5);
+	border: 1px solid rgba(0,0,0,.5);
+}
+
 .modal-header, .modal-body, .modal-footer {
 	background-color: #fff;
-	background-clip: padding-box;
-	box-shadow: 0 3px 9px rgba(0,0,0,.5);
-	border-left: 1px solid rgba(0,0,0,.2);
-	border-right: 1px solid rgba(0,0,0,.2);
-}
-
-.modal-header {
-	border-top: 1px solid rgba(0,0,0,.2);
-}
-
-.modal-footer {
-	border-bottom: 1px solid rgba(0,0,0,.2);
-}
-
-@media (min-width: 768px) {
-	.modal-header, .modal-body, .modal-footer {
-		box-shadow: 0 5px 15px rgba(0,0,0,.5);
-	}
 }
 
 .modal-header {

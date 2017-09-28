@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Principal;
 using Tango.Identity.Std;
 using Tango.Logger;
 using Tango.Cache;
@@ -13,7 +12,6 @@ namespace Tango.AccessControl.Std
 	{
 		IIdentityManager _identityManager;
 
-		protected IIdentity _identity => _identityManager.CurrentIdentity;
 		protected int _userId => _identityManager.CurrentUser.Id;
 		protected IPredicateChecker _predicateChecker;
 		protected AccessControlOptions _options;
@@ -54,7 +52,7 @@ namespace Tango.AccessControl.Std
 		{
 			get
 			{
-				if (_roles == null) _roles = _baseDataContext.UserRoles(_identity, _userId);
+				if (_roles == null) _roles = _baseDataContext.UserRoles(_userId);
 				return _roles;
 			}
 		}

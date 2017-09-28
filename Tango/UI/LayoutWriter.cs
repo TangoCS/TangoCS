@@ -83,17 +83,17 @@ namespace Tango.UI
 
 		public static void FormTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
-			w.Table(a => a.Class("ms-formtable").Set(attributes), content);
+			w.Table(a => a.Class("formtable").Set(attributes), content);
 		}
 
 		public static void FormTableStd(this LayoutWriter w, Action content)
 		{
-			w.FormTable(a => a.Style("width:700px"), content);
+			w.FormTable(a => a.Class("widthstd"), content);
 		}
 
 		public static void FormTable100Percent(this LayoutWriter w, Action content)
 		{
-			w.FormTable(a => a.Style("width:100%"), content);
+			w.FormTable(a => a.Class("width100"), content);
 		}
 
 		public static void GroupTitle(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
@@ -106,19 +106,14 @@ namespace Tango.UI
 			w.Div(a => a.Style("padding:8px"), inner);
 		}
 
-		public static void ButtonsBar(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+		public static void ButtonsBar(this LayoutWriter w, Action content)
 		{
-			w.Table(a => a.Class("ms-formtoolbar").Set(attributes), content);
+			w.Div(a => a.ID("buttonsbar").Class("buttonsbar"), content);
 		}
 
-		public static void ButtonsBarWhiteSpace(this LayoutWriter w)
+		public static void ButtonsBarRight(this LayoutWriter w, Action content)
 		{
-			w.Td(a => a.Class("buttonbarwhitespace"));
-		}
-
-		public static void ButtonsBarItem(this LayoutWriter w, Action content)
-		{
-			w.Td(a => a.Style("vertical-align:middle"), content);
+			w.Div(a => a.Class("right"), content);
 		}
 	}	
 }

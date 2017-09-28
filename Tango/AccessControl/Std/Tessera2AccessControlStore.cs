@@ -10,10 +10,12 @@ namespace Tango.AccessControl.Std
 	public class Tessera2AccessControlStoreBase<T> : IRoleBasedAccessControlStoreBase<T>, ICacheableRoleBasedAccessControlStore<T>
 	{
 		protected IDbConnection _dc;
+		protected IIdentity _identity;
 
-		public Tessera2AccessControlStoreBase(IDbConnection dc)
+		public Tessera2AccessControlStoreBase(IDbConnection dc, IIdentity identity)
 		{
 			_dc = dc;
+			_identity = identity;
 		}
 
 		static List<IdentityRole<T>> _allRoles = null;
@@ -29,9 +31,9 @@ namespace Tango.AccessControl.Std
 			return GetAllRoles().FirstOrDefault(o => o.Id.Equals(id));
 		}
 
-		public IEnumerable<IdentityRole<T>> UserRoles(IIdentity identity, T id)
+		public IEnumerable<IdentityRole<T>> UserRoles(T id)
 		{
-			WindowsIdentity wi = identity as WindowsIdentity;
+			WindowsIdentity wi = _identity as WindowsIdentity;
 			List<T> r = null;
 			if (wi != null && !wi.IsAnonymous)
 			{

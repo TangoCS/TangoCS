@@ -81,7 +81,7 @@ namespace Tango.UI
 		{
 			Url = url;
 			ContentType = "application/json";
-			ContentFunc = ctx => JsonConvert.SerializeObject(this, Json.CamelCase);
+			ContentFunc = ctx => JsonConvert.SerializeObject(this, Json.StdSettings);
 		}
 	}
 

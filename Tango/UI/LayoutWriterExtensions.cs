@@ -80,11 +80,6 @@ namespace Tango.UI
 			w.GroupTitle(null, content);
 		}
 
-		public static void ButtonsBar(this LayoutWriter l, Action a)
-		{
-			l.ButtonsBar(null, a);
-		}
-
 		public static void LabelDefault(this LayoutWriter w, string text)
 		{
 			w.Span(a => a.Class("label label-default"), text);

@@ -23,9 +23,9 @@ a, a:visited {
 	text-decoration: none;
 }
 
-	a:hover {
-		text-decoration: underline;
-	}
+a:hover {
+	text-decoration: underline;
+}
 
 a, .actionbtn {
 	cursor: pointer;
@@ -36,8 +36,9 @@ table {
 	border: none;
 	border-collapse: collapse;
 }
+
 td.r {
-	text-align:right;
+	text-align: right;
 }
 
 h1 {
@@ -54,9 +55,9 @@ h2 {
 	margin: 0px 0px 8px 0px;
 }
 
-	h2 a {
-		text-decoration: none;
-	}
+h2 a {
+	text-decoration: none;
+}
 
 h3 {
 	font-size: 1.2em;
@@ -72,6 +73,11 @@ img {
 	vertical-align: middle;
 }
 
+.hide {
+	display: none !important;
+}
+
+
 input.text {
 	width: 300px;
 }
@@ -86,27 +92,37 @@ a.actionbtn i.icon, a.actionlink i.icon, .nav a .icon {
 }
 
 /* forms */
-.ms-formtoolbar {
+.formtable.width100 {
+	width: 100%;
+}
+
+.formtable.widthstd {
 	width: 700px;
 }
 
-.ms-formlabel {
+.formtable.widthstd .formlabel {
+	width: 190px;
+}
+
+.formtable.width100 .formlabel {
 	width: 30%;
 }
 
-.ms-formbody {
+.formtable.width100 .formbody {
 	width: 70%;
 }
 
-.ms-formtable {
+.formtable {
 	margin-bottom: 7px;
 }
 
-	.ms-formtable td {
-		vertical-align: top;
-	}
 
-.ms-formbody textarea {
+
+.formtable td {
+	vertical-align: top;
+}
+
+.formbody textarea {
 	width: 100%;
 	height: 75px;
 }
@@ -126,7 +142,7 @@ hr {
 	height: 2px;
 }
 
-.ms-formtable .ms-formbody {
+.formtable .formbody {
 	line-height: 1.3em;
 }
 
@@ -137,24 +153,31 @@ hr {
 	width: 100%;
 }
 
-.ms-formtable tr:not(:first-child) {
+.formtable tr:not(:first-child) {
 	border-top: 1px solid #bad6dd;
 }
 
-.ms-formbody {
+.formbody {
 	vertical-align: top;
 	background: #ebf3ff;
 	padding: 3px 6px 4px 6px;
 }
 
-	.ms-formbody input[type=text],
-	.ms-formbody input[type=password],
-	.ms-formbody select,
-	.ms-formbody textarea {
-		width: 100%;
-	}
+.formbody input[type=text],
+.formbody input[type=password],
+.formbody select,
+.formbody textarea {
+	width: 100%;
+}
 
-.ms-formlabel {
+.inpstd .formbody input[type=text],
+.inpstd .formbody input[type=password],
+.inpstd .formbody select,
+.inpstd .formbody textarea {
+	width: auto;
+}
+
+.formlabel {
 	text-align: left;
 	padding-top: 3px;
 	padding-right: 8px;
@@ -163,29 +186,31 @@ hr {
 	font-weight: bold;
 }
 
-.ms-formvalidation {
+.formvalidation {
 	color: #ff0000;
 }
 
-.ms-descriptiontext {
+.descriptiontext {
 	font-weight: normal;
 	font-size: smaller !important;
 	margin: 3px 0 0 1px
 }
 
-.ms-formline {
-	border-top: 1px solid #c4c4c4;
-	padding-right: 8px;
-	padding-left: 8px;
-}
-
-.ms-ButtonHeightWidth, .btn {
+.btn {
 	width: 7.5em;
 	height: 2.1em;
 }
 
-.buttonbarwhitespace {
-	width: 100%;
+.buttonsbar {
+	display: flex;
+}
+
+.modal-footer .right, .buttonsbar .right {
+	margin-left: auto;
+}
+
+.modal-footer .right *, .buttonsbar .right * {
+	margin-left: 4px;
 }
 
 
@@ -217,70 +242,91 @@ hr {
 	background: #f9f9f9;
 }
 
-/* two columns row*/
+/* two columns table/row*/
+.twocolumnstable {
+	display: table;
+	width: 100%;
+	border-spacing: 4px;
+}
+
 .twocolumnsrow {
 	display: table;
 	width: 100%;
 }
 
-	.twocolumnsrow > div {
-		display: table-cell;
-	}
+.twocolumnstable .twocolumnsrow {
+	display: table-row;
+}
 
-	.twocolumnsrow.longfirst > div:first-child {
-		width: auto;
-	}
+.twocolumnstable .twocolumnsrow:not(:first-child) > div {
+	padding-top: 4px;
+}
 
-	.twocolumnsrow.longfirst > div:last-child {
-		width: 20px;
-		text-align: right;
-	}
+.twocolumnstable .twocolumnsrow input[type=text], .twocolumnstable .twocolumnsrow input[type=password],
+.twocolumnstable .twocolumnsrow select, .twocolumnstable .twocolumnsrow textarea {
+	width: 100%;
+}
 
-	.twocolumnsrow.longlast > div:first-child {
-		width: 20px;
-		text-align: left;
-	}
+.twocolumnsrow > div {
+	display: table-cell;
+}
 
-	.twocolumnsrow.longlast > div:last-child {
-		width: auto;
-	}
+.twocolumnstable .twocolumnsrow > div:first-child {
+	padding-right: 4px;
+}
+
+.twocolumnsrow.longfirst > div:first-child {
+	width: auto;
+}
+
+.twocolumnsrow.longfirst > div:last-child {
+	width: 20px;
+	text-align: right;
+}
+
+.twocolumnsrow.longlast > div:first-child {
+	width: 20px;
+	text-align: left;
+}
+
+.twocolumnsrow.longlast > div:last-child {
+	width: auto;
+}
 
 
 /* menu */
 /* toolbar */
-.ms-menutoolbar {
+.menutoolbar {
 	border-bottom: 1px solid #ccc;
 	height: 34px;
-	/*background-color: #afd2ff;*/
 	display: table;
 	width: 100%;
 }
 
-	.ms-menutoolbar ul {
-		margin: 0;
-		padding: 0px 8px;
-		border: 0;
-		list-style-type: none;
-		height: 34px;
-	}
+.menutoolbar ul {
+	margin: 0;
+	padding: 0px 8px;
+	border: 0;
+	list-style-type: none;
+	height: 34px;
+}
 
-	.ms-menutoolbar li {
-		/*padding: 3px;*/
-		display: table-cell;
-		border: 0;
-		vertical-align: middle;
-		height: 34px;
-	}
+.menutoolbar li {
+	display: table-cell;
+	border: 0;
+	vertical-align: middle;
+	height: 34px;
+}
 
-.ms-toolbar-left {
+.menutoolbar-left {
 	float: left;
 }
 
-.ms-toolbar-right {
+.menutoolbar-right {
 	float: right;
 }
 
-.ms-separator {
+.menutoolbarseparator {
 	width: 6px;
 }
 

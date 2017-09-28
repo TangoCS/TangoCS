@@ -16,11 +16,11 @@ body {
 	width: 100px;
 	padding: 2px 10px;
 	border-radius: 2px;
-  -webkit-border-radius: 2px;
-  -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  -webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  font-weight:bold;
+	-webkit-border-radius: 2px;
+	-webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+	-webkit-box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+	box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+	font-weight: bold;
 }
 
 /*home*/
@@ -64,31 +64,17 @@ body {
 }
 
 #contentbody {
-	overflow-x: auto; 
-	overflow-y: auto; 
-	position: relative; 
-	display:block;
-	width:100%;
+	overflow-x: auto;
+	overflow-y: auto;
+	position: relative;
+	display: block;
+	width: 100%;
 }
 
 
 
 
 /*header*/
-
-.right {
-	float: right !important;
-}
-.right li {
-	float: right !important;
-}
-.left {
-	float: left !important;
-}
-.left li {
-	float: left !important;
-}
-
 header {
 	display: inline-block;
 	padding: 0 8px;
@@ -99,17 +85,13 @@ header {
 	display: flex;
 	flex-direction: row;
 	height: 35px;
-
 }
 
 .header-logo {
-	/*float: left;*/
-	/*padding: 3px 3px 2px 3px;*/
 	line-height: 1px;
 }
 
 .header-title {
-	/*float: left;*/
 	padding: 0px;
 	line-height: 35px;
 }
@@ -120,8 +102,7 @@ h1 {
 
 .header-buttons {
 	list-style: none;
-	margin: 0;
-	width: 100%;
+	margin: 0 0 0 auto;
 }
 
 .header-buttons li {
@@ -129,6 +110,7 @@ h1 {
 	display: block;
 	line-height: 35px;
 	padding: 0px 10px;
+	float: right;
 }
 
 .header-buttons a {
@@ -158,7 +140,7 @@ h1 {
 
 /*navigation*/
 .nav-header {
-    text-transform: uppercase;
+	text-transform: uppercase;
 	font-weight: bold;
 	font-size: 0.9em;
 	width: 100%;
@@ -196,14 +178,17 @@ h1 {
 .nav-button {
 	width: 100%;
 	padding-left: 4px;
-	line-height:24px;
+	line-height: 24px;
 }
+
 .nav-button .icon {
 	color: #3b73af
 }
+
 .nav-button.selected {
 	background-color: #ffe6a0;
 }
+
 .nav-button:hover {
 	background-color: #f1f1f1;
 }

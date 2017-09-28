@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Security.Principal;
 
 namespace Tango.AccessControl.Std
 {
 	public interface IRoleBasedAccessControlStoreBase<T>
 	{
 		IdentityRole<T> RoleFromID(T id);
-		IEnumerable<IdentityRole<T>> UserRoles(IIdentity identity, T id);
+		IEnumerable<IdentityRole<T>> UserRoles(T id);
 	}
 
 	public interface IRoleBasedAccessControlStore<T> : IRoleBasedAccessControlStoreBase<T>

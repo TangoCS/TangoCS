@@ -291,7 +291,7 @@ var ajaxUtils = function ($, cu) {
 				url += window.location.search;
 
 			if (!url.endsWith('?')) url += '&';
-			url += 'e=' + target.e;
+			if (target.e) url += 'e=' + target.e;
 			var p = document.head.getAttribute('data-p');
 			if (p) url += '&p=' + p;
 
