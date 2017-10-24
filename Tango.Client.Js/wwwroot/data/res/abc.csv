@@ -252,10 +252,12 @@ Abc.Model.TM_TaskExecution.FinishDate;Дата/время окончания;Fin
 Abc.Model.TM_TaskExecution.IsSuccessfull;Результат;Is successful
 Abc.Model.TM_TaskExecution.LastModifiedDate;Дата записи;Last modified date
 Abc.Model.TM_TaskExecution.LastModifiedUser;Пользователь;Last modified by
+Abc.Model.TM_TaskExecution.LastModifiedUser.Title;Пользователь;Last modified by
 Abc.Model.TM_TaskExecution.MachineName;Имя машины;Host name
 Abc.Model.TM_TaskExecution.ResultXml;Результат XML;Result
 Abc.Model.TM_TaskExecution.StartDate;Дата/время запуска;Start date
 Abc.Model.TM_TaskExecution.Task;Задача;Task
+Abc.Model.TM_TaskExecution.Task.Title;Задача;Task
 Abc.Model.TM_TaskExecution.Title;Наименование;Title
 Abc.Model.TM_TaskExecution.ViewList;Лог запуска задач;Execution log
 Abc.Model.TM_TaskParameter;Параметр задачи;Task parameter
