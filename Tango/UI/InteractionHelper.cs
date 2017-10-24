@@ -9,7 +9,7 @@ namespace Tango.UI
 		public static ActionResult RunEvent(IInteractionFlowElement recipient, string e, Action<ApiResponse> renderLog)
 		{	
 			var t = recipient.GetType();
-			var m = FindMethod(t, e, recipient.Context.RequestMethod);
+			var m = FindMethod(t, e.ToLower(), recipient.Context.RequestMethod);
 			if (m == null)
 				return new HttpResult { StatusCode = HttpStatusCode.Forbidden };
 

@@ -40,7 +40,7 @@ namespace Tango.Html
 				int i = 0;
 				foreach (var item in items)
 				{
-					w.CheckBox(new InputName { Name = name, ID = name + i.ToString() }, item.Value, item.Selected || (value != null && value.Contains(item.Value)));
+					w.CheckBox(new InputName { Name = name + "[]", ID = name + i.ToString() }, item.Value, item.Selected || (value != null && value.Contains(item.Value)));
 					w.Label(name + i.ToString(), item.Text);
 					i++;
 				}

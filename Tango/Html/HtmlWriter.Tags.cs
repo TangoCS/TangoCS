@@ -263,6 +263,14 @@ namespace Tango.Html
 		{
 			w.WriteTag("tr", attributes, inner);
 		}
+		public static void TrBegin(this IHtmlWriter w, Action<TagAttributes> attributes = null)
+		{
+			w.WriteBeginTag("tr", attributes);
+		}
+		public static void TrEnd(this IHtmlWriter w)
+		{
+			w.WriteEndTag("tr");
+		}
 		public static void U(this IHtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			w.WriteTag("u", attributes, inner);

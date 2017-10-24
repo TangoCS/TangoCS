@@ -4,20 +4,59 @@ using Tango.Html;
 
 namespace Tango.UI.Controls
 {
-	public class DateListsOptions
+	public class DateLists : ViewComponent
 	{
 		public bool ShowTime { get; set; }
 		public bool ShowDays { get; set; } = true;
 		public int MinYear { get; set; }
 		public int MaxYear { get; set; }
-	}
 
-	public static class DateListsExtensions
-	{
-		public static void DateLists(this IHtmlWriter w, string name, DateTime? value, DateListsOptions options = null)
+		int Day => GetPosted<int>($"{ClientID}_day", 1);
+		int Month => GetPosted<int>($"{ClientID}_month", 1);
+		int Year => GetPosted<int>($"{ClientID}_year", 1900);
+		int Hour => GetPosted<int>($"{ClientID}_hour");
+		int Minute => GetPosted<int>($"{ClientID}_minute");
+
+		public bool HasValue
 		{
-			if (options == null) options = new DateListsOptions();
+			get
+			{
+				int d = ShowDays ? Day : 1;
+				int m = Month;
+				int y = Year;
+				DateTime dt;
+				return (d > 0 && m > 0 && y > 0 && DateTime.TryParse(y.ToString() + "/" + m.ToString() + "/" + d.ToString(), out dt));
 
+			}
+		}
+
+		public DateTime? Date
+		{
+			get
+			{
+				if (HasValue)
+				{
+					DateTime dt = new DateTime(Year, Month, ShowDays ? Day : 1);
+					if (ShowTime)
+					{
+						var h = Hour;					
+						if (h > 0)
+						{
+							dt = dt.AddHours(h);
+							var m = Minute;
+							if (m > 0)
+								dt = dt.AddMinutes(m);
+						}
+					}
+					return dt;
+				}
+				else
+					return null;
+			}
+		}
+
+		public void Render(IHtmlWriter w, DateTime? value = null)
+		{
 			var monthItems = new List<SelectListItem>();
 			var dayItems = new List<SelectListItem>();
 			var yearItems = new List<SelectListItem>();
@@ -25,20 +64,20 @@ namespace Tango.UI.Controls
 			var minuteItems = new List<SelectListItem>();
 
 			monthItems.Add(new SelectListItem { Value = "0", Text = "Месяц" });
-			monthItems.Add(new SelectListItem { Value = "1", Text = options.ShowDays ? "января" : "январь" });
-			monthItems.Add(new SelectListItem { Value = "2", Text = options.ShowDays ? "февраля" : "февраль" });
-			monthItems.Add(new SelectListItem { Value = "3", Text = options.ShowDays ? "марта" : "март" });
-			monthItems.Add(new SelectListItem { Value = "4", Text = options.ShowDays ? "апреля" : "апрель" });
-			monthItems.Add(new SelectListItem { Value = "5", Text = options.ShowDays ? "мая" : "май" });
-			monthItems.Add(new SelectListItem { Value = "6", Text = options.ShowDays ? "июня" : "июнь" });
-			monthItems.Add(new SelectListItem { Value = "7", Text = options.ShowDays ? "июля" : "июль" });
-			monthItems.Add(new SelectListItem { Value = "8", Text = options.ShowDays ? "августа" : "август" });
-			monthItems.Add(new SelectListItem { Value = "9", Text = options.ShowDays ? "сентября" : "сентябрь" });
-			monthItems.Add(new SelectListItem { Value = "10", Text = options.ShowDays ? "октября" : "октябрь" });
-			monthItems.Add(new SelectListItem { Value = "11", Text = options.ShowDays ? "ноября" : "ноябрь" });
-			monthItems.Add(new SelectListItem { Value = "12", Text = options.ShowDays ? "декабря" : "декабрь" });
+			monthItems.Add(new SelectListItem { Value = "1", Text = ShowDays ? "января" : "январь" });
+			monthItems.Add(new SelectListItem { Value = "2", Text = ShowDays ? "февраля" : "февраль" });
+			monthItems.Add(new SelectListItem { Value = "3", Text = ShowDays ? "марта" : "март" });
+			monthItems.Add(new SelectListItem { Value = "4", Text = ShowDays ? "апреля" : "апрель" });
+			monthItems.Add(new SelectListItem { Value = "5", Text = ShowDays ? "мая" : "май" });
+			monthItems.Add(new SelectListItem { Value = "6", Text = ShowDays ? "июня" : "июнь" });
+			monthItems.Add(new SelectListItem { Value = "7", Text = ShowDays ? "июля" : "июль" });
+			monthItems.Add(new SelectListItem { Value = "8", Text = ShowDays ? "августа" : "август" });
+			monthItems.Add(new SelectListItem { Value = "9", Text = ShowDays ? "сентября" : "сентябрь" });
+			monthItems.Add(new SelectListItem { Value = "10", Text = ShowDays ? "октября" : "октябрь" });
+			monthItems.Add(new SelectListItem { Value = "11", Text = ShowDays ? "ноября" : "ноябрь" });
+			monthItems.Add(new SelectListItem { Value = "12", Text = ShowDays ? "декабря" : "декабрь" });
 
-			if (options.ShowDays)
+			if (ShowDays)
 			{
 				dayItems.Add(new SelectListItem("День", "0"));
 				for (int i = 1; i < 32; i++)
@@ -47,16 +86,16 @@ namespace Tango.UI.Controls
 				}
 			}
 
-			if (options.MinYear == 0) options.MinYear = 1900;
-			if (options.MaxYear == 0) options.MaxYear = DateTime.Now.Year + 1;
+			if (MinYear == 0) MinYear = 1900;
+			if (MaxYear == 0) MaxYear = DateTime.Now.Year + 1;
 
 			yearItems.Add(new SelectListItem("Год", "0"));
-			for (int i = options.MaxYear; i >= options.MinYear; i--)
+			for (int i = MaxYear; i >= MinYear; i--)
 			{
 				yearItems.Add(new SelectListItem(i, i));
 			}
 
-			if (options.ShowTime)
+			if (ShowTime)
 			{
 				hourItems.Add(new SelectListItem("Час", "-1"));
 				for (int i = 0; i < 24; i++)
@@ -68,22 +107,22 @@ namespace Tango.UI.Controls
 			}
 
 			w.Div(a => a.Class("datelists"), () => {
-				if (options.ShowDays)
+				if (ShowDays)
 				{
-					w.DropDownList($"{name}_day", value?.Day.ToString(), dayItems);
+					w.DropDownList($"{ClientID}_day", value?.Day.ToString(), dayItems);
 					w.Write("&nbsp;");
 				}
 
-				w.DropDownList($"{name}_month", value?.Month.ToString(), monthItems);
+				w.DropDownList($"{ClientID}_month", value?.Month.ToString(), monthItems);
 				w.Write("&nbsp;");
-				w.DropDownList($"{name}_year", value?.Year.ToString(), yearItems);
+				w.DropDownList($"{ClientID}_year", value?.Year.ToString(), yearItems);
 
-				if (options.ShowTime)
+				if (ShowTime)
 				{
 					w.Write("&nbsp;");
-					w.DropDownList($"{name}_hour", value?.Hour.ToString(), hourItems);
+					w.DropDownList($"{ClientID}_hour", value?.Hour.ToString(), hourItems);
 					w.Write("&nbsp;");
-					w.DropDownList($"{name}_minute", value?.Minute.ToString(), minuteItems);
+					w.DropDownList($"{ClientID}_minute", value?.Minute.ToString(), minuteItems);
 				}
 			});
 		}
