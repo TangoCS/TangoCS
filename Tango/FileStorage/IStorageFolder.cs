@@ -18,9 +18,10 @@ namespace Tango.FileStorage
 	public interface IStorageFolder<TKey> 
 	{
 		TKey ID { get; set; }
+		string FullPath { get; set; }
 		int MaxFileSize { get; set; }
 
-		IEnumerable<IStorageFolder<TKey>> GetFolders();
+		IEnumerable<IStorageFolder<TKey>> GetFolders(int offset = 0, int limit = 50);
 
 		IStorageFile<TKey> CreateFile(TKey id, string name);
 		IStorageFile<TKey> GetOrCreateFile(TKey id, string name);
@@ -28,6 +29,8 @@ namespace Tango.FileStorage
 
         IStorageFile<TKey> GetFile(TKey id);
 		IStorageFile<TKey> GetFileByName(string name);
-		IEnumerable<IStorageFile<TKey>> GetFiles();
+
+		bool HasFiles();
+		IEnumerable<IStorageFile<TKey>> GetFiles(int offset = 0, int limit = 50);
 	}
 }
