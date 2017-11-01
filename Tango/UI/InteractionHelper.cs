@@ -42,7 +42,7 @@ namespace Tango.UI
 				for (int i = 0; i < ps.Length; i++)
 				{
 					string parmName = ps[i].Name.ToLower() == "id" ? "oid" : ps[i].Name.ToLower();
-					string val = WebUtility.UrlDecode(recipient.Context.GetArg(ps[i].Name.ToLower()));
+					string val = WebUtility.UrlDecode(recipient.Context.GetArg(parmName));
 
 					if (!val.IsEmpty())
 					{

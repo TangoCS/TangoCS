@@ -248,7 +248,6 @@ var ajaxUtils = function ($, cu) {
 				type: 'POST',
 				processData: !isForm,
 				contentType: isForm ? false : "application/json; charset=utf-8",
-				dataType: 'json',
 				data: isForm ? args : JSON.stringify(args)
 			}).fail(instance.error).then(onRequestResult);
 		},
@@ -367,8 +366,53 @@ var ajaxUtils = function ($, cu) {
 	}
 
 	function onRequestResult(data, status, xhr) {
-		return xhr.getResponseHeader('X-Request-Guid') == state.com.requestId ?
-			$.Deferred().resolve(data) : $.Deferred().reject();
+		if (xhr.getResponseHeader('X-Request-Guid') == state.com.requestId) {
+			var disposition = xhr.getResponseHeader('Content-Disposition');
+			// check file download response
+			if (disposition && disposition.indexOf('attachment') !== -1) {
+				var filename = "";
+				var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+				var matches = filenameRegex.exec(disposition);
+				if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+				filename = decodeURIComponent(filename);
+				var type = xhr.getResponseHeader('Content-Type');
+
+				var blob = typeof File === 'function'
+					? new File([data], filename, { type: type })
+					: new Blob([data], { type: type });
+
+				if (typeof window.navigator.msSaveBlob !== 'undefined') {
+					// IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+					window.navigator.msSaveBlob(blob, filename);
+				} else {
+					var URL = window.URL || window.webkitURL;
+					var downloadUrl = URL.createObjectURL(blob);
+
+					if (filename) {
+						// use HTML5 a[download] attribute to specify filename
+						var a = document.createElement("a");
+						// safari doesn't support this yet
+						if (typeof a.download === 'undefined') {
+							window.location = downloadUrl;
+						} else {
+							a.href = downloadUrl;
+							a.download = filename;
+							document.body.appendChild(a);
+							a.click();
+						}
+					} else {
+						window.location = downloadUrl;
+					}
+
+					setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
+				}
+				return $.Deferred().reject();
+			}
+			else
+				return $.Deferred().resolve(data);
+		}
+		else
+			return $.Deferred().reject();
 	}
 
 	function processElementDataOnEvent(el, data, target) {
@@ -431,7 +475,7 @@ var ajaxUtils = function ($, cu) {
 			for (var w in apiResult.widgets) {
 				var el = w == 'body' ? document.body : document.getElementById(w);
 				var obj = apiResult.widgets[w];
-				if (obj && typeof(obj) == "object") {
+				if (obj && typeof (obj) == "object") {
 					if (el && (obj.action == 'replace' || obj.action == 'adjacent'))
 						el.outerHTML = obj.content;
 					else if (el && obj.action == 'add')
