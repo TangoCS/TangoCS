@@ -21,29 +21,29 @@ namespace Tango.Html
 
 		public static void RadioButtonList(this IHtmlWriter w, string name, string value, IEnumerable<SelectListItem> items, Action<TagAttributes> attributes = null, Func<SelectListItem, Action<InputTagAttributes>> itemAttributes = null)
 		{
-			if (items == null) return;
-			w.Div(a => a.Class("radiobuttonlist").Set(attributes), () => {
+			w.Div(a => a.Class("radiobuttonlist").ID(name + "_placeholder").Set(attributes), () => {
 				int i = 0;
-				foreach (var item in items)
-				{
-					w.RadioButton(name, name + i.ToString(), item.Value, item.Selected || item.Value == value, itemAttributes?.Invoke(item));
-					w.Label(name + i.ToString(), item.Text);
-					i++;
-				}
+				if (items != null)
+					foreach (var item in items)
+					{
+						w.RadioButton(name, name + i.ToString(), item.Value, item.Selected || item.Value == value, itemAttributes?.Invoke(item));
+						w.Label(name + i.ToString(), item.Text);
+						i++;
+					}
 			});
 		}
 
-		public static void CheckBoxList(this IHtmlWriter w, string name, string[] value, IEnumerable<SelectListItem> items, Action<TagAttributes> attributes = null)
+		public static void CheckBoxList(this IHtmlWriter w, string name, string[] value, IEnumerable<SelectListItem> items, Action<TagAttributes> attributes = null, Func<SelectListItem, Action<InputTagAttributes>> itemAttributes = null)
 		{
-			if (items == null) return;
-			w.Div(a => a.Class("checkboxlist").Set(attributes), () => {
+			w.Div(a => a.Class("checkboxlist").ID(name + "_placeholder").Set(attributes), () => {
 				int i = 0;
-				foreach (var item in items)
-				{
-					w.CheckBox(new InputName { Name = name + "[]", ID = name + i.ToString() }, item.Value, item.Selected || (value != null && value.Contains(item.Value)));
-					w.Label(name + i.ToString(), item.Text);
-					i++;
-				}
+				if (items != null)
+					foreach (var item in items)
+					{
+						w.CheckBox(new InputName { Name = name + "[]", ID = name + i.ToString() }, item.Value, item.Selected || (value != null && value.Contains(item.Value)), itemAttributes?.Invoke(item));
+						w.Label(name + i.ToString(), item.Text);
+						i++;
+					}
 			});
 		}
 

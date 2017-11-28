@@ -142,13 +142,8 @@ namespace Tango
 		{
 			var d = dd[name];
 			if (d == null) return defaultValue;
-			if (typeof(T) == typeof(DateTime?) || typeof(T) == typeof(DateTime))
-			{
-				var ds = d.ToString();
-				if (ds.IsEmpty()) return defaultValue;
-				return (T)(object)DateTime.ParseExact(ds, dd["__format_" + name]?.ToString() ?? "yyyy-MM-dd", CultureInfo.InvariantCulture);
-			}
-			return Parse(d, defaultValue);
+			string format = dd["__format_" + name]?.ToString();
+			return Parse(d, format, defaultValue);
 		}
 
 		public static DateTime? ParseDateTime(this DynamicDictionary dd, string name, string format)
@@ -177,9 +172,16 @@ namespace Tango
 			return d.ToString().ToDecimal(defaultValue);
 		}
 
-		static T Parse<T>(object d, T defaultValue = default(T))
+		static T Parse<T>(object d, string format, T defaultValue = default(T))
 		{
 			if (typeof(T) == d.GetType()) return (T)d;
+
+			if (typeof(T) == typeof(DateTime?) || typeof(T) == typeof(DateTime))
+			{
+				var ds = d.ToString();
+				if (ds.IsEmpty()) return defaultValue;
+				return (T)(object)DateTime.ParseExact(ds, format ?? "yyyy-MM-dd", CultureInfo.InvariantCulture);
+			}
 
 			var typeConverter = TypeDescriptor.GetConverter(typeof(T));
 			if (typeConverter != null && typeConverter.CanConvertFrom(d.GetType()) && typeConverter.IsValid(d))
@@ -193,23 +195,22 @@ namespace Tango
 		{
 			object d = dd[name];
 			if (d == null) return null;
+			string format = dd["__format_" + name + "[]"]?.ToString();
 			if (!(d is IList))
 			{
 				if (d is string)
 				{
 					if (string.IsNullOrEmpty(d as string)) return new List<T>();
-					return (d as string).Split(new char[] { ',' }).Select(o => Parse<T>(o)).ToList();
+					return (d as string).Split(new char[] { ',' }).Select(o => Parse<T>(o, format)).ToList();
 				}
 				else
 				{
-					var res = new List<T>();
-					res.Add(Parse<T>(d));
-					return res;
+					return new List<T> { Parse<T>(d, format) };
 				}
 			}
 			else
 			{
-				return (d as List<object>).Select(o => Parse<T>(o)).ToList();
+				return (d as List<object>).Select(o => Parse<T>(o, format)).ToList();
 			}
 		}
 	}

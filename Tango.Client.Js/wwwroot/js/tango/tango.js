@@ -162,7 +162,7 @@ var ajaxUtils = function ($, cu) {
 			var fd = new FormData(form);
 			var els = form.elements;
 			for (var i = 0, el; el = els[i++];) {
-				processElementDataOnFormSubmit(el, fd);
+				processElementDataOnFormSubmit(el, function (key, value) { fd.append(key, value); });
 			}
 			instance.postEventWithApiResponse({ e: 'onsubmit', url: form.action }, fd);
 			return false;
@@ -257,7 +257,13 @@ var ajaxUtils = function ($, cu) {
 		postEventFromElementWithApiResponse: function (el, target) {
 			var form = $(el).closest('form')[0];
 			var data = {};
-			if (form) data = $(form).serializeObject();
+			if (form) {
+				data = $(form).serializeObject();
+				var els = form.elements;
+				for (var i = 0, fel; fel = els[i++];) {
+					processElementDataOnFormSubmit(fel, function (key, value) { data[key] = value; });
+				}
+			}
 			if (!target) target = {};
 			processElementDataOnEvent(el, data, target);
 			return instance.postEventWithApiResponse(target, data);
@@ -437,11 +443,11 @@ var ajaxUtils = function ($, cu) {
 		}
 	}
 
-	function processElementDataOnFormSubmit(el, data) {
+	function processElementDataOnFormSubmit(el, setvalfunc) {
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
 			attr = attrs[i];
 			if (attr.name.startsWith('data-format')) {
-				data.append('__format_' + el.name, attr.value);
+				setvalfunc('__format_' + el.name, attr.value);
 			}
 		}
 	}
@@ -489,6 +495,9 @@ var ajaxUtils = function ($, cu) {
 							cu.scrollToView(el2.nextSibling);
 						}
 					}
+				} 
+				else if (el) {
+					el.innerHTML = obj;
 				}
 			}
 		}

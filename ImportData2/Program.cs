@@ -36,7 +36,7 @@ namespace ImportData2
 			var resultBeg = new StringBuilder();
 			var resultEnd = new StringBuilder();
 
-			if (string.IsNullOrEmpty(connectFrom) || string.IsNullOrEmpty(connectTo) || 
+			if (string.IsNullOrEmpty(connectFrom) || string.IsNullOrEmpty(connectTo) ||
 				string.IsNullOrEmpty(tablesImport)/* || string.IsNullOrEmpty(tableSeparat)*/)
 			{
 				Console.Write(@"Некорректные параметры");
@@ -58,12 +58,12 @@ namespace ImportData2
 				readerFrom = new SqlServerMetadataReader(strBuilder.ConnectionString);
 			}
 			else
-				//if (connectFrom.Contains("Port"))
-				{
-					NpgsqlConnectionStringBuilder strBuilder = new NpgsqlConnectionStringBuilder(connectFrom);
-					dbFromName = strBuilder.Database;
-					readerFrom = new PostgreSQLMetadataReader(strBuilder.ConnectionString);
-				}
+			//if (connectFrom.Contains("Port"))
+			{
+				NpgsqlConnectionStringBuilder strBuilder = new NpgsqlConnectionStringBuilder(connectFrom);
+				dbFromName = strBuilder.Database;
+				readerFrom = new PostgreSQLMetadataReader(strBuilder.ConnectionString);
+			}
 			/*else
 			{
 				DB2ConnectionStringBuilder strBuilder = new DB2ConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionFrom"].ToString());
@@ -108,21 +108,36 @@ namespace ImportData2
 			}
 
 			IEnumerable<Table> tableListObjects;
-            IEnumerable<Table> tableListForeignKeysObjects;
-            if (tablesForImport[0].ToLower() == "all")
+			IEnumerable<Table> tableListForeignKeysObjects;
+			Func<Table, string, bool> tablePredicate = (t, c) => {
+				if (c.EndsWith("*"))
+					return t.Name.ToLower().StartsWith(c.ToLower().Replace("*", ""));
+				else
+					return t.Name.ToLower() == c.ToLower();
+			};
+			Func<ForeignKey, string, bool> fkPredicate = (fk, c) => {
+				if (c.EndsWith("*"))
+					return fk.RefTable.ToLower().StartsWith(c.ToLower().Replace("*", ""));
+				else
+					return fk.RefTable.ToLower() == c.ToLower();
+			};
+
+
+
+			if (tablesForImport[0].ToLower() == "all")
             {
                 tableListObjects = schemaFrom.Tables.Values;
                 tableListForeignKeysObjects = schemaFrom.Tables.Values;
             }
             else
             {
-                tableListObjects = schemaFrom.Tables.Values.Where(t => tablesForImport.Any(c => t.Name.ToLower() == c.ToLower()));
-                tableListForeignKeysObjects = schemaFrom.Tables.Values.Where(t => tablesForImport.Any(c => t.Name.ToLower() == c.ToLower()) || t.ForeignKeys.Any(f => tablesForImport.Any(l => l.ToLower() == f.Value.RefTable.ToLower())));
+                tableListObjects = schemaFrom.Tables.Values.Where(t => tablesForImport.Any(c => tablePredicate(t, c)));
+                tableListForeignKeysObjects = schemaFrom.Tables.Values.Where(t => tablesForImport.Any(c => tablePredicate(t, c)) || t.ForeignKeys.Any(f => tablesForImport.Any(c => fkPredicate(f.Value, c))));
             }
             if (tablesForExclude != null)
             {
-                tableListObjects = tableListObjects.Where(t => !tablesForExclude.Any(c => t.Name.ToLower() == c.ToLower()));
-                tableListForeignKeysObjects = tableListForeignKeysObjects.Where(t => !tablesForExclude.Any(c => t.Name.ToLower() == c.ToLower()) || t.ForeignKeys.Any(f => !tablesForExclude.Any(l => l.ToLower() == f.Value.RefTable.ToLower())));
+                tableListObjects = tableListObjects.Where(t => !tablesForExclude.Any(c => tablePredicate(t, c)));
+                tableListForeignKeysObjects = tableListForeignKeysObjects.Where(t => !tablesForExclude.Any(c => tablePredicate(t, c)) || t.ForeignKeys.Any(f => !tablesForExclude.Any(c => fkPredicate(f.Value, c))));
             }
 			var tableListTo = schemaTo.Tables.Values.Where(t => tableListObjects.Any(c => t.Name.ToLower() == c.Name.ToLower())).ToArray();
             var tableListForeignKeysTo = schemaTo.Tables.Values.Where(t => tableListForeignKeysObjects.Any(c => t.Name.ToLower() == c.Name.ToLower())).ToArray();
