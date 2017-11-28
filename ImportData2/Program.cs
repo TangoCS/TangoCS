@@ -108,18 +108,28 @@ namespace ImportData2
 			}
 
 			IEnumerable<Table> tableListObjects;
-			if (tablesForImport[0].ToLower() == "all")
-				tableListObjects = schemaFrom.Tables.Values;
-			else
-				tableListObjects = schemaFrom.Tables.Values.Where(t => tablesForImport.Any(c => t.Name.ToLower() == c.ToLower()) /*|| t.ForeignKeys.Any(f => tablesForImport.Any(l => l.ToLower() == f.Value.RefTable.ToLower()))*/);
-
-			if (tablesForExclude != null)
-				tableListObjects = tableListObjects.Where(t => !tablesForExclude.Any(c => t.Name.ToLower() == c.ToLower()));
-
+            IEnumerable<Table> tableListForeignKeysObjects;
+            if (tablesForImport[0].ToLower() == "all")
+            {
+                tableListObjects = schemaFrom.Tables.Values;
+                tableListForeignKeysObjects = schemaFrom.Tables.Values;
+            }
+            else
+            {
+                tableListObjects = schemaFrom.Tables.Values.Where(t => tablesForImport.Any(c => t.Name.ToLower() == c.ToLower()));
+                tableListForeignKeysObjects = schemaFrom.Tables.Values.Where(t => tablesForImport.Any(c => t.Name.ToLower() == c.ToLower()) || t.ForeignKeys.Any(f => tablesForImport.Any(l => l.ToLower() == f.Value.RefTable.ToLower())));
+            }
+            if (tablesForExclude != null)
+            {
+                tableListObjects = tableListObjects.Where(t => !tablesForExclude.Any(c => t.Name.ToLower() == c.ToLower()));
+                tableListForeignKeysObjects = tableListForeignKeysObjects.Where(t => !tablesForExclude.Any(c => t.Name.ToLower() == c.ToLower()) || t.ForeignKeys.Any(f => !tablesForExclude.Any(l => l.ToLower() == f.Value.RefTable.ToLower())));
+            }
 			var tableListTo = schemaTo.Tables.Values.Where(t => tableListObjects.Any(c => t.Name.ToLower() == c.Name.ToLower())).ToArray();
-			tableListObjects = tableListObjects.Where(t => tableListTo.Any(c => c.Name.ToLower() == t.Name.ToLower())).ToArray();
+            var tableListForeignKeysTo = schemaTo.Tables.Values.Where(t => tableListForeignKeysObjects.Any(c => t.Name.ToLower() == c.Name.ToLower())).ToArray();
+            tableListObjects = tableListObjects.Where(t => tableListTo.Any(c => c.Name.ToLower() == t.Name.ToLower())).ToArray();
+            tableListForeignKeysObjects = tableListForeignKeysObjects.Where(t => tableListForeignKeysTo.Any(c => c.Name.ToLower() == t.Name.ToLower())).ToArray();
 
-			resultBeg.AppendLine("DO LANGUAGE plpgsql");
+            resultBeg.AppendLine("DO LANGUAGE plpgsql");
 			resultBeg.AppendLine("$$");
 			resultBeg.AppendLine("BEGIN");
 
@@ -131,14 +141,14 @@ namespace ImportData2
 
 			var droppath = path + dbFromName + "__DROP_CONSTRAINTS.sql";
 			File.WriteAllText(droppath, resultBeg.ToString());
-			DropConstraints(tableListTo, result);
+			DropConstraints(tableListForeignKeysTo, result);
 			File.AppendAllText(droppath, result.ToString());
 			File.AppendAllText(droppath, resultEnd.ToString());
 			result.Clear();
 
 			var addpath = path + dbFromName + "__ADD_CONSTRAINTS.sql";
 			File.WriteAllText(addpath, resultBeg.ToString());
-			CreateConstraints(tableListObjects, result);
+			CreateConstraints(tableListForeignKeysObjects, result);
 			File.AppendAllText(addpath, result.ToString());
 			File.AppendAllText(addpath, resultEnd.ToString());
 			result.Clear();
