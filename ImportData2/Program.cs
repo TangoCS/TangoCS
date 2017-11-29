@@ -168,7 +168,7 @@ namespace ImportData2
 			File.AppendAllText(addpath, resultEnd.ToString());
 			result.Clear();
 
-			var newfilePath = path + dbFromName + "_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm") + "_{0}.sql";
+			var newfilePath = path + dbFromName + "_{0}_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm") + ".sql";
 			int num = 1;
 			int i = 0;
 			decimal allsize = 0;
@@ -181,24 +181,33 @@ namespace ImportData2
 
 				var tableto = tableListTo.First(t => t.Name.ToLower() == table.Name.ToLower());
 
-				var clmsfrom = table.Columns.Values.Where(c => string.IsNullOrEmpty(c.ComputedText));
-				var clms = clmsfrom.Where(c => tableto.Columns.Values.Any(c2 => string.IsNullOrEmpty(c2.ComputedText) &&
-																		c2.Name.ToLower() == c.Name.ToLower()));
-				var columns = string.Join("+", clms.Select(c => (c.Type.GetDBType(dbScript).Contains("varbinary") || c.Type.GetDBType(dbScript).Contains("image") || c.Type.GetDBType(dbScript).Contains("xml")) ?
-				string.Format("isnull(datalength([{0}])*4,0)", c.Name) : string.Format("isnull(len([{0}]),0)", c.Name)).ToArray());
+				//var clmsfrom = table.Columns.Values.Where(c => string.IsNullOrEmpty(c.ComputedText));
+				//var clms = clmsfrom.Where(c => tableto.Columns.Values.Any(c2 => string.IsNullOrEmpty(c2.ComputedText) &&
+				//														c2.Name.ToLower() == c.Name.ToLower()));
+				//var columns = string.Join("+", clms.Select(c => (c.Type.GetDBType(dbScript).Contains("varbinary") || c.Type.GetDBType(dbScript).Contains("image") || c.Type.GetDBType(dbScript).Contains("xml")) ?
+				//string.Format("isnull(datalength([{0}])*4,0)", c.Name) : string.Format("isnull(len([{0}]),0)", c.Name)).ToArray());
 
 				if (sqlCon.State == ConnectionState.Closed)
 					sqlCon.Open();
 
 				SqlCommand cmd = sqlCon.CreateCommand();
-				cmd.CommandTimeout = 600;
+				cmd.CommandTimeout = 0;
 				cmd.CommandType = CommandType.Text;
-				cmd.CommandText = string.Format("select isnull(sum({0}),0) from [{1}]", columns, table.Name);
+				//cmd.CommandText = string.Format("select isnull(sum({0}),0) from [{1}]", columns, table.Name);
+
+				cmd.CommandText = string.Format(@"SELECT SUM(a.data_pages) * 8
+FROM sys.tables t
+JOIN sys.indexes i ON t.OBJECT_ID = i.object_id
+JOIN sys.partitions p ON i.object_id = p.OBJECT_ID AND i.index_id = p.index_id
+JOIN sys.allocation_units a ON p.partition_id = a.container_id
+JOIN sys.schemas s ON t.schema_id = s.schema_id
+WHERE t.NAME = '{0}' AND t.is_ms_shipped = 0 AND i.OBJECT_ID > 255
+GROUP BY t.Name, s.Name, p.Rows", table.Name);
 
 				//object robj = cmd.ExecuteScalar();
 				//decimal tsize = (robj != null && robj != DBNull.Value ? decimal.Parse(robj.ToString()) : 0) / 1024;
-				decimal tsize = decimal.Parse(cmd.ExecuteScalar().ToString()) / 1024;
-				tsize = tsize + (tsize * table.Columns.Count() * 2M / 100M);
+				long tsize = long.Parse(cmd.ExecuteScalar().ToString());
+				//tsize = tsize + (tsize * table.Columns.Count() * 2M / 100M);
 
 				if (tsize > 20480)
 				{
@@ -216,7 +225,7 @@ namespace ImportData2
 				else
 				{
 					decimal fsize = 0;
-					var filePath = string.Format(newfilePath, num);
+					var filePath = string.Format(newfilePath, table.Name.ToLower());
 					if (allsize == 0)
 					{
 						File.WriteAllText(filePath, resultBeg.ToString());
@@ -283,7 +292,14 @@ namespace ImportData2
 
 			var columns = string.Join(",", clms.Select(c => string.Format("[{0}]", c.Name)).ToArray());
 
-			cmd.CommandText = string.Format("select {0} from [{1}]", columns, tfrom.Name);
+			cmd.CommandText = string.Format("select {0} from {1}", columns, tfrom.Name);
+			var filter = ConfigurationManager.AppSettings["filter_" + tfrom.Name.ToLower()];
+			if (filter != null && filter != "")
+			{
+				cmd.CommandText += " where " + filter;
+				sqlInsert.AppendFormat("filter: {0}\r\n", filter);
+			}
+
 			using (var reader = cmd.ExecuteReader())
 			{
 				while (reader.Read())
@@ -321,7 +337,13 @@ namespace ImportData2
 			sqltab.AppendFormat("TRUNCATE TABLE dbo.{0};\r\n", tfrom.Name.ToLower());
 			sqltab.AppendFormat("COPY dbo.{0} ({1}) FROM '{2}_{0}.txt';\r\n", tfrom.Name.ToLower(), columns.ToLower().Replace("[", "").Replace("]", ""), baza);
 
-			cmd.CommandText = string.Format("select {0} from [{1}]", columns, tfrom.Name);
+			cmd.CommandText = string.Format("select {0} from {1}", columns, tfrom.Name);
+			var filter = ConfigurationManager.AppSettings["filter_" + tfrom.Name.ToLower()];
+			if (filter != null && filter != "")
+			{
+				cmd.CommandText += " where " + filter;
+				sqltab.AppendFormat("filter: {0}\r\n", filter);
+			}
 
 			using (var reader = cmd.ExecuteReader())
 			{
