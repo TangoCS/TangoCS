@@ -163,7 +163,7 @@ namespace ImportData2
 
 			var addpath = path + dbFromName + "__ADD_CONSTRAINTS.sql";
 			File.WriteAllText(addpath, resultBeg.ToString());
-			CreateConstraints(tableListForeignKeysObjects, result);
+			CreateConstraints(tableListForeignKeysTo, result);
 			File.AppendAllText(addpath, result.ToString());
 			File.AppendAllText(addpath, resultEnd.ToString());
 			result.Clear();
