@@ -149,7 +149,7 @@ hr {
 .contentheader {
 	background-color: #f5f5f5;
 	padding-left: 8px;
-	display: table;
+	/*display: table;*/
 	width: 100%;
 }
 
@@ -240,6 +240,10 @@ hr {
 
 .listviewtable .alt {
 	background: #f9f9f9;
+}
+.listviewtable .del {
+	background-color: #ccc;
+	text-decoration: line-through;
 }
 
 /* two columns table/row*/

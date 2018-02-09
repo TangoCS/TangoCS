@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 
 namespace Tango.Html
 {
@@ -8,8 +7,7 @@ namespace Tango.Html
 	{
 		public static string GetID(string prefix, string id)
 		{
-			id = id.ToLower();
-			return prefix.IsEmpty() ? id : $"{prefix}_{id}";
+			return prefix.IsEmpty() ? id.ToLower() : $"{prefix}_{id.ToLower()}";
 		}
 	}
 
@@ -60,12 +58,12 @@ namespace Tango.Html
 
 			T ta = new T {
 				MergeAttributeFunc = (key, value, replaceExisting) => {
-					if (replaceExisting || !attributes.ContainsKey(key))
+					if (replaceExisting || (!string.IsNullOrEmpty(value) && !attributes.ContainsKey(key)))
 						attributes[key] = value;
-					else
+					else if (!string.IsNullOrEmpty(value))
 						attributes[key] = attributes[key] + " " + value;
 				},
-				MergeIDAttributeFunc = (key, value) => attributes[key] = w.GetID(value).ToLower()
+				MergeIDAttributeFunc = (key, value) => attributes[key] = w.GetID(value)
 			};
 			attrs(ta);
 
@@ -76,7 +74,7 @@ namespace Tango.Html
 					w.Write(' ');
 					w.Write(attribute.Key);
 					w.Write("=\"");
-					w.Write(WebUtility.HtmlEncode(attribute.Value));
+					w.Write(attribute.Value);
 					w.Write('"');
 				}
 			}

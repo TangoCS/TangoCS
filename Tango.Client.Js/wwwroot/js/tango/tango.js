@@ -111,6 +111,7 @@ var domActions = function () {
 			e.classList.remove(args.clsName);
 		},
 		toggleClass: function (args) {
+			event.stopPropagation();
 			if (args.id) {
 				var el = document.getElementById(args.id);
 				el.classList.toggle(args.clsName);

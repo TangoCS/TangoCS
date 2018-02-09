@@ -719,3 +719,44 @@ button.close {
 	transform: scale(1);
 	opacity: 1;
 }
+
+
+/* dropdownmenu */
+.dropdownmenu {
+	background-color: white;
+	transition: opacity 80ms linear, visibility 80ms linear;
+}
+
+.dropdownmenu > div > div {
+	background-color: #eff0f1;
+	width: 100%;
+	padding: 0px 12px;
+	line-height: 28px;
+	color: #6a737c;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.dropdownmenu a {
+	display: block;
+	width: 100%;
+	text-decoration: none;
+	outline: none;
+	padding: 0px 12px;
+	line-height: 28px;
+	text-align: left;
+}
+
+.dropdownmenu .separator {
+	border-top: 2px solid transparent;
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 3px;
+}
+
+
+
+.dropdownmenu a:hover, .dropdownmenu a.selected {
+	background-color: #296ca3;
+	color: white;
+	text-decoration: none;
+}

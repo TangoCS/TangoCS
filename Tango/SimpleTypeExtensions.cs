@@ -213,15 +213,7 @@ namespace Tango
 		}
 
 
-		public static string Join(this string[] str, string separator, bool excludeEmpties = true)
-		{
-			return String.Join(separator, str.Where(s => !excludeEmpties || !String.IsNullOrEmpty(s)).ToArray());
-		}
-
-		public static string Join(this IEnumerable<string> str, string separator, bool excludeEmpties = true)
-		{
-			return String.Join(separator, str.Where(s => !excludeEmpties || !String.IsNullOrEmpty(s)).ToArray());
-		}
+		
 
 		public static bool In<T>(this T obj, params T[] values)
 		{
@@ -424,19 +416,7 @@ namespace Tango
 		//	obj.GetType().GetProperty(propertyName).SetValue(obj, value, null);
 		//}
 
-		public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key)
-		{
-			TValue res = default(TValue);
-			dict.TryGetValue(key, out res);
-			return res;
-		}
-
-		public static string Get(this IDictionary<string, string[]> dict, string key)
-		{
-			string res = "";
-			if (dict.ContainsKey(key)) res = dict[key].Join(",");
-			return res;
-		}
+		
 
 		public static string GetFriendlyName(this Type type)
 		{

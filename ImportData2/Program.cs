@@ -11,7 +11,7 @@ using Tango.Meta.Database;
 using Npgsql;
 using System.Xml.Linq;
 using System.Data;
-using Tango.Meta;
+using Tango;
 
 namespace ImportData2
 {
@@ -21,6 +21,9 @@ namespace ImportData2
 		{
 			string mydocpath = Directory.GetCurrentDirectory();
 
+			var profileName = args.Length > 0 ? args[0] : "";
+			var constraintsOnly = args.Length > 1 && args[1] == "c";
+
 			IDatabaseMetadataReader readerFrom;
 			IDatabaseMetadataReader readerTo;
 
@@ -28,23 +31,21 @@ namespace ImportData2
 			var dbToName = string.Empty;
 			var connectFrom = ConfigurationManager.ConnectionStrings["ConnectionFrom"].ToString();
 			var connectTo = ConfigurationManager.ConnectionStrings["ConnectionTo"].ToString();
-			var tablesImport = ConfigurationManager.AppSettings["TablesForImport"];
-			var tablesExclude = ConfigurationManager.AppSettings["TablesExclude"];
-			//var tableSeparat = ConfigurationManager.AppSettings["TableSeparation"];
+			var tablesImport = ConfigurationManager.AppSettings["TablesForImport" + (!profileName.IsEmpty() ? "_" + profileName : "")];
+			var tablesExclude = ConfigurationManager.AppSettings["TablesExclude" + (!profileName.IsEmpty() ? "_" + profileName : "")];
+
 			var result = new StringBuilder();
 			var resultcopy = new StringBuilder();
 			var resultBeg = new StringBuilder();
 			var resultEnd = new StringBuilder();
 
-			if (string.IsNullOrEmpty(connectFrom) || string.IsNullOrEmpty(connectTo) ||
-				string.IsNullOrEmpty(tablesImport)/* || string.IsNullOrEmpty(tableSeparat)*/)
+			if (string.IsNullOrEmpty(connectFrom) || string.IsNullOrEmpty(connectTo) || string.IsNullOrEmpty(tablesImport))
 			{
 				Console.Write(@"Некорректные параметры");
 				Console.ReadKey();
 				return;
 			}
 
-			//var tableSeparation = Convert.ToBoolean(tableSeparat);
 			var tablesForImport = tablesImport.ToLower().Split(',');
 
 			string[] tablesForExclude = null;
@@ -58,18 +59,12 @@ namespace ImportData2
 				readerFrom = new SqlServerMetadataReader(strBuilder.ConnectionString);
 			}
 			else
-			//if (connectFrom.Contains("Port"))
 			{
 				NpgsqlConnectionStringBuilder strBuilder = new NpgsqlConnectionStringBuilder(connectFrom);
 				dbFromName = strBuilder.Database;
 				readerFrom = new PostgreSQLMetadataReader(strBuilder.ConnectionString);
 			}
-			/*else
-			{
-				DB2ConnectionStringBuilder strBuilder = new DB2ConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionFrom"].ToString());
-				dbFromName = strBuilder.DBName;
-				readerFrom = new DB2ServerMetadataReader(strBuilder.ConnectionString);
-			}*/
+
 			if (connectTo.Contains("Data Source"))
 			{
 				SqlConnectionStringBuilder strBuilder = new SqlConnectionStringBuilder(connectTo);
@@ -77,18 +72,12 @@ namespace ImportData2
 				readerTo = new SqlServerMetadataReader(strBuilder.ConnectionString);
 			}
 			else
-			//if (connectFrom.Contains("Port"))
 			{
 				NpgsqlConnectionStringBuilder strBuilder = new NpgsqlConnectionStringBuilder(connectTo);
 				dbToName = strBuilder.Database;
 				readerTo = new PostgreSQLMetadataReader(strBuilder.ConnectionString);
 			}
-			/*else
-			{
-				DB2ConnectionStringBuilder strBuilder = new DB2ConnectionStringBuilder(ConfigurationManager.ConnectionStrings["ConnectionTo"].ToString());
-				dbToName = strBuilder.DBName;
-				readerTo = new DB2ServerMetadataReader(strBuilder.ConnectionString);
-			}*/
+
 			var dbScript = new DBScriptMSSQL("dbo");
 			var path = mydocpath + "\\DbScripts\\";
 			if (!Directory.Exists(path)) Directory.CreateDirectory(path);
@@ -144,9 +133,15 @@ namespace ImportData2
             tableListObjects = tableListObjects.Where(t => tableListTo.Any(c => c.Name.ToLower() == t.Name.ToLower())).ToArray();
             tableListForeignKeysObjects = tableListForeignKeysObjects.Where(t => tableListForeignKeysTo.Any(c => c.Name.ToLower() == t.Name.ToLower())).ToArray();
 
-            resultBeg.AppendLine("DO LANGUAGE plpgsql");
+			Console.WriteLine(@"Таблиц: " + tableListObjects.Count());
+			Console.WriteLine(@"Drop constraints: " + tableListForeignKeysTo.Count());
+			Console.WriteLine(@"Create constraints: " + tableListForeignKeysObjects.Count());
+
+			resultBeg.AppendLine("DO LANGUAGE plpgsql");
 			resultBeg.AppendLine("$$");
 			resultBeg.AppendLine("BEGIN");
+
+			
 
 			resultEnd.AppendLine("EXCEPTION WHEN OTHERS THEN");
 			resultEnd.AppendLine("RAISE EXCEPTION 'Error state: %, Error message: %', SQLSTATE, SQLERRM;");
@@ -168,34 +163,26 @@ namespace ImportData2
 			File.AppendAllText(addpath, resultEnd.ToString());
 			result.Clear();
 
-			var newfilePath = path + dbFromName + "_{0}_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm") + ".sql";
-			int num = 1;
-			int i = 0;
-			decimal allsize = 0;
-
-			SqlConnection sqlCon = new SqlConnection(connectFrom);
-
-			foreach (var table in tableListObjects.OrderBy(t => t.Name))
+			if (!constraintsOnly)
 			{
-				Console.Write(@"Таблица " + table.Name + " start...");
+				var newfilePath = path + dbFromName + "_{0}_" + DateTime.Now.ToString("dd_MM_yyyy_hh_mm") + ".sql";
 
-				var tableto = tableListTo.First(t => t.Name.ToLower() == table.Name.ToLower());
+				SqlConnection sqlCon = new SqlConnection(connectFrom);
 
-				//var clmsfrom = table.Columns.Values.Where(c => string.IsNullOrEmpty(c.ComputedText));
-				//var clms = clmsfrom.Where(c => tableto.Columns.Values.Any(c2 => string.IsNullOrEmpty(c2.ComputedText) &&
-				//														c2.Name.ToLower() == c.Name.ToLower()));
-				//var columns = string.Join("+", clms.Select(c => (c.Type.GetDBType(dbScript).Contains("varbinary") || c.Type.GetDBType(dbScript).Contains("image") || c.Type.GetDBType(dbScript).Contains("xml")) ?
-				//string.Format("isnull(datalength([{0}])*4,0)", c.Name) : string.Format("isnull(len([{0}]),0)", c.Name)).ToArray());
+				foreach (var table in tableListObjects.OrderBy(t => t.Name))
+				{
+					Console.Write(@"Таблица " + table.Name + " start...");
 
-				if (sqlCon.State == ConnectionState.Closed)
-					sqlCon.Open();
+					var tableto = tableListTo.First(t => t.Name.ToLower() == table.Name.ToLower());
 
-				SqlCommand cmd = sqlCon.CreateCommand();
-				cmd.CommandTimeout = 0;
-				cmd.CommandType = CommandType.Text;
-				//cmd.CommandText = string.Format("select isnull(sum({0}),0) from [{1}]", columns, table.Name);
+					if (sqlCon.State == ConnectionState.Closed)
+						sqlCon.Open();
 
-				cmd.CommandText = string.Format(@"SELECT SUM(a.data_pages) * 8
+					SqlCommand cmd = sqlCon.CreateCommand();
+					cmd.CommandTimeout = 0;
+					cmd.CommandType = CommandType.Text;
+
+					cmd.CommandText = string.Format(@"SELECT SUM(a.data_pages) * 8
 FROM sys.tables t
 JOIN sys.indexes i ON t.OBJECT_ID = i.object_id
 JOIN sys.partitions p ON i.object_id = p.OBJECT_ID AND i.index_id = p.index_id
@@ -204,73 +191,34 @@ JOIN sys.schemas s ON t.schema_id = s.schema_id
 WHERE t.NAME = '{0}' AND t.is_ms_shipped = 0 AND i.OBJECT_ID > 255
 GROUP BY t.Name, s.Name, p.Rows", table.Name);
 
-				//object robj = cmd.ExecuteScalar();
-				//decimal tsize = (robj != null && robj != DBNull.Value ? decimal.Parse(robj.ToString()) : 0) / 1024;
-				long tsize = long.Parse(cmd.ExecuteScalar().ToString());
-				//tsize = tsize + (tsize * table.Columns.Count() * 2M / 100M);
+					long tsize = long.Parse(cmd.ExecuteScalar().ToString());
 
-				if (tsize > 20480)
-				{
-					var filecopy = path + dbFromName.ToLower() + "_" + table.Name.ToLower() + ".txt";
-					File.WriteAllText(filecopy, "");
-
-					ImportData2(filecopy, dbFromName.ToLower(), table, tableto, cmd, resultcopy);
-
-					var filePath = path + dbFromName + "_" + table.Name + ".sql";
-					File.WriteAllText(filePath, resultBeg.ToString());
-					File.AppendAllText(filePath, resultcopy.ToString());
-					File.AppendAllText(filePath, resultEnd.ToString());
-					resultcopy.Clear();
-				}
-				else
-				{
-					decimal fsize = 0;
-					var filePath = string.Format(newfilePath, table.Name.ToLower());
-					if (allsize == 0)
+					if (tsize > 20480)
 					{
+						var filecopy = path + dbFromName.ToLower() + "_" + table.Name.ToLower() + ".txt";
+						File.WriteAllText(filecopy, "");
+
+						ImportData2(filecopy, dbFromName.ToLower(), table, tableto, cmd, resultcopy);
+
+						var filePath = path + dbFromName + "_" + table.Name + ".sql";
 						File.WriteAllText(filePath, resultBeg.ToString());
-						if (result.Length > 0)
-						{
-							File.AppendAllText(filePath, result.ToString());
-							result.Clear();
-							fsize = (new FileInfo(filePath)).Length / 1024M;
-							allsize = fsize;
-						}
-					}
-
-					ImportData(table, tableto, cmd, result);
-
-					if (((allsize + (result.Length / 1024M)) > 10240M) && tsize > 0M)
-					{
-						if (i == 0)
-						{
-							File.AppendAllText(filePath, result.ToString());
-							result.Clear();
-						}
+						File.AppendAllText(filePath, resultcopy.ToString());
 						File.AppendAllText(filePath, resultEnd.ToString());
-						allsize = 0;
-						num++;
+						resultcopy.Clear();
 					}
 					else
 					{
+						var filePath = string.Format(newfilePath, table.Name.ToLower());						
+						ImportData(table, tableto, cmd, result);
+						File.WriteAllText(filePath, resultBeg.ToString());
 						File.AppendAllText(filePath, result.ToString());
+						File.AppendAllText(filePath, resultEnd.ToString());
 						result.Clear();
-						fsize = (new FileInfo(filePath)).Length / 1024M;
-						allsize = fsize;
 					}
-					i++;
+					Console.WriteLine(@"end");
 				}
 
-				Console.WriteLine(@"end");
-			}
-			result.Clear();
-			resultcopy.Clear();
-
-			sqlCon.Close();
-
-			if (allsize > 0M)
-			{
-				File.AppendAllText(string.Format(newfilePath, num), resultEnd.ToString());
+				sqlCon.Close();
 			}
 
 			resultBeg.Clear();
@@ -297,7 +245,7 @@ GROUP BY t.Name, s.Name, p.Rows", table.Name);
 			if (filter != null && filter != "")
 			{
 				cmd.CommandText += " where " + filter;
-				sqlInsert.AppendFormat("filter: {0}\r\n", filter);
+				//sqlInsert.AppendFormat("filter: {0}\r\n", filter);
 			}
 
 			using (var reader = cmd.ExecuteReader())

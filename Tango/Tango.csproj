@@ -65,6 +65,7 @@
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
     <Compile Include="BusinessLogic.cs" />
     <Compile Include="ByteArrayToHex.cs" />
+    <Compile Include="CollectionsExtensions.cs" />
     <Compile Include="FileStorage\IStorageManager.cs" />
     <Compile Include="FileStorage\Std\LocalDiskFolder.cs" />
     <Compile Include="Identity\Std\IdentityUser.cs" />
