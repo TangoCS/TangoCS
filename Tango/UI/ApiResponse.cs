@@ -31,14 +31,14 @@ namespace Tango.UI
 
 	public class ApiResponse : ObjectResponse
 	{
-		public List<KeyValue<string, object>> Widgets { get; set; }
+		public List<IWidget> Widgets { get; set; }
 		public List<ClientAction> ClientActions { get; set; }
 		public HashSet<string> Includes { get; set; }
 		//public Dictionary<string, List<string>> PageContext { get; set; }
 
 		public ApiResponse()
 		{
-			Widgets = new List<KeyValue<string, object>>();
+			Widgets = new List<IWidget>();
 			ClientActions = new List<ClientAction>();
 			Includes = new HashSet<string>();
 		}
@@ -110,19 +110,19 @@ namespace Tango.UI
 
 		public virtual ApiResponse AddWidget(string name, string content)
 		{
-			Widgets.Add(name.ToLower(), new { Content = content, Action = "add" });
+			Widgets.Add(new ContentWidget{ Name = name.ToLower(), Content = content, Action = "add" });
 			return this;
 		}
 
 		public virtual ApiResponse ReplaceWidget(string name, string content)
 		{
-			Widgets.Add(name.ToLower(), new { Content = content, Action = "replace" });
+			Widgets.Add(new ContentWidget { Name = name.ToLower(), Content = content, Action = "replace" });
 			return this;
 		}
 
 		public virtual ApiResponse RemoveWidget(string name)
 		{
-			Widgets.Add(name.ToLower(), new { Action = "remove" });
+			Widgets.Add(new Widget { Name = name.ToLower(), Action = "remove" });
 			return this;
 		}
 
@@ -134,7 +134,7 @@ namespace Tango.UI
 
 		public virtual ApiResponse AddAdjacentWidget(string parent, string name, string content, AdjacentHTMLPosition position = AdjacentHTMLPosition.BeforeEnd)
 		{
-			Widgets.Add(name.ToLower(), new { Parent = parent, Content = content, Action = "adjacent", Position = position.ToString() });
+			Widgets.Add(new AdjacentWidget { Name = name.ToLower(), Parent = parent, Content = content, Action = "adjacent", Position = position.ToString() });
 			return this;
 		}
 
@@ -180,18 +180,22 @@ namespace Tango.UI
 				{
 					var id = context.GetArg("c-id");
 					var prefix = context.GetArg("c-prefix");
-					var w = new LayoutWriter(context, id);
-
-					var mappings = item.Mapping.ToDictionary(o => HtmlWriterHelpers.GetID(prefix, o.Key), o => w.GetID(o.Value));
+					
+					var mappings = item.Mapping.ToDictionary(
+						o => HtmlWriterHelpers.GetID(prefix, o.Key), 
+						o => HtmlWriterHelpers.GetID(id, o.Value)
+					);
 					foreach (var wgt in Widgets)
 					{
-						if (mappings.ContainsKey(wgt.Key))
-							wgt.Key = mappings[wgt.Key];
+						if (mappings.ContainsKey(wgt.Name))
+							wgt.Name = mappings[wgt.Name];
 					}
 
+					var w = new LayoutWriter(context, id);
 					item.Renderer(w);
 
-					Widgets.Insert(0, w.GetID(item.ID), new {
+					Widgets.Insert(0, new AdjacentWidget {
+						Name = w.GetID(item.ID),
 						Content = w.ToString(),
 						Action = "adjacent",
 						Position = AdjacentHTMLPosition.BeforeEnd.ToString()
@@ -291,6 +295,28 @@ namespace Tango.UI
 		AfterBegin,
 		AfterEnd
 	}
+
+	public interface IWidget
+	{
+		string Name { get; set; }
+	}
+
+	public class Widget : IWidget
+	{
+		public string Name { get; set; }
+		public string Action { get; set; }
+		
+	}
+	public class ContentWidget : Widget
+	{
+		public string Content { get; set; }
+	}
+	public class AdjacentWidget : ContentWidget
+	{
+		public string Position { get; set; }
+		public string Parent { get; set; }
+	}
+
 
 	public class ClientAction
 	{

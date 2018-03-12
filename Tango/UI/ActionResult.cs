@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Net;
+using System.Text;
 
 namespace Tango.UI
 {
@@ -23,7 +24,7 @@ namespace Tango.UI
 		[JsonIgnore]
 		public Dictionary<string, string> Cookies { get; private set; } = new Dictionary<string, string>();
 		[JsonIgnore]
-		public Func<ActionContext, string> ContentFunc { get; protected set; }
+		public Func<ActionContext, byte[]> ContentFunc { get; protected set; }
 
 		public override Task ExecuteResultAsync(ActionContext context)
 		{
@@ -43,7 +44,7 @@ namespace Tango.UI
 			Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
 			Headers.Add("Pragma", "no-cache"); // HTTP 1.0.
 			Headers.Add("Expires", "0"); // Proxies.
-			ContentFunc = ctx => Html;
+			ContentFunc = ctx => Encoding.UTF8.GetBytes(Html);
 		}
 	}
 
@@ -69,7 +70,7 @@ namespace Tango.UI
 			Headers.Add("Pragma", "no-cache"); // HTTP 1.0.
 			Headers.Add("Expires", "0"); // Proxies.
 			ContentType = "application/json";
-			ContentFunc = ctx => ApiResponse.Serialize(ctx);
+			ContentFunc = ctx => Encoding.UTF8.GetBytes(ApiResponse.Serialize(ctx));
 		}
 	}
 
@@ -81,7 +82,7 @@ namespace Tango.UI
 		{
 			Url = url;
 			ContentType = "application/json";
-			ContentFunc = ctx => JsonConvert.SerializeObject(this, Json.StdSettings);
+			ContentFunc = ctx => Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(this, Json.StdSettings));
 		}
 	}
 

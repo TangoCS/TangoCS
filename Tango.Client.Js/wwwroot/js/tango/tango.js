@@ -480,9 +480,9 @@ var ajaxUtils = function ($, cu) {
 
 		if (apiResult.widgets) {
 			for (var w in apiResult.widgets) {
-				var el = w == 'body' ? document.body : document.getElementById(w);
 				var obj = apiResult.widgets[w];
 				if (obj && typeof (obj) == "object") {
+					var el = obj.name == 'body' ? document.body : document.getElementById(obj.name);
 					if (el && (obj.action == 'replace' || obj.action == 'adjacent'))
 						el.outerHTML = obj.content;
 					else if (el && obj.action == 'add')
@@ -490,7 +490,7 @@ var ajaxUtils = function ($, cu) {
 					else if (el && obj.action == 'remove')
 						el.remove();
 					else if (obj.action == 'adjacent') {
-						var el2 = (obj.parent && obj.parent != 'body') ? document.getElementById(obj.parent) : document.body;
+						var el2 = (obj.parent && obj.parent != 'body' && obj.parent != '') ? document.getElementById(obj.parent) : document.body;
 						el2.insertAdjacentHTML(obj.position, obj.content);
 						if (obj.position.toLowerCase() == 'afterend') {
 							cu.scrollToView(el2.nextSibling);
@@ -558,7 +558,7 @@ var ajaxUtils = function ($, cu) {
 		if (window.location.pathname == '/') {
 			state.loc.defAction = __load.value;
 		}
-		instance.runEventWithApiResponse({ e: 'onload' });
+		instance.runEventWithApiResponse({ e: 'onload' }, { firstload: true });
 	}
 
 	return instance;

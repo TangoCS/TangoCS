@@ -6,7 +6,7 @@ namespace Tango.UI
 {
 	public static class InteractionHelper
 	{
-		public static ActionResult RunEvent(IInteractionFlowElement recipient, string e, Action<ApiResponse> renderLog)
+		public static ActionResult RunEvent(IInteractionFlowElement recipient, string e, Action<ApiResponse> firstLoad, Action<ApiResponse> renderLog)
 		{	
 			var t = recipient.GetType();
 			var m = FindMethod(t, e.ToLower(), recipient.Context.RequestMethod);
@@ -28,6 +28,10 @@ namespace Tango.UI
 					resp = new ApiResponse();
 				else if (p == typeof(ObjectResponse))
 					resp = new ObjectResponse();
+
+				if (resp is ApiResponse && firstLoad != null && recipient.Context.GetBoolArg(Constants.FirstLoad, false))
+					firstLoad(resp as ApiResponse);
+
 				m.Invoke(recipient, new object[] { resp });
 
 				if (resp is ApiResponse && renderLog != null && recipient.Context.GetArg(Constants.ShowLogsName) == "1")
