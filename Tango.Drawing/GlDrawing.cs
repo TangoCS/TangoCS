@@ -251,5 +251,16 @@ namespace Tango.Drawing
 		{
 			
 		}
+
+		public void FrameViewEnable(IFrame f)
+		{
+			GL.glScissor(f.X, _height - f.Height - f.Y, f.Width, f.Height);
+			GL.glEnable(GL.GL_SCISSOR_TEST);
+		}
+
+		public void FrameViewDisable()
+		{
+			GL.glDisable(GL.GL_SCISSOR_TEST);
+		}
 	}
 }

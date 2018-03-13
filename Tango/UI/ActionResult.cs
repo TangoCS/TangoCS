@@ -131,6 +131,26 @@ namespace Tango.UI
 		}
 	}
 
+	public class FileResult : HttpResult
+	{
+		public FileResult(string fileName, byte[] bytes)
+		{
+			ContentType = "application/octet-stream";
+			fileName = fileName.Replace(" ", "_");
+			Headers.Add("content-disposition", "attachment; filename=\"" + Uri.EscapeDataString(fileName) + "\"");
+			ContentFunc = ctx => { return bytes; };
+		}
+	}
+
+	public class FileContentResult : HttpResult
+	{
+		public FileContentResult(byte[] fileContents, string contentType)
+		{
+			ContentType = contentType;
+			ContentFunc = ctx => fileContents;
+		}
+	}
+
 	public interface IAuthenticationManager
 	{
 		Task SignIn(IIdentity user);
