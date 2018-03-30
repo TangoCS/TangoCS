@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-
 using SharpFont;
 
 namespace Tango.Drawing
@@ -54,7 +52,7 @@ namespace Tango.Drawing
 
 			var textures = new uint[128];
 			GL.glEnable(GL.GL_TEXTURE_2D);
-			GL.glDisable(GL.GL_DEPTH_TEST);
+			//GL.glDisable(GL.GL_DEPTH_TEST);
 			GL.glGenTextures(128, textures);
 
 			// Draw the string into the bitmap.
@@ -122,41 +120,22 @@ namespace Tango.Drawing
 				#endregion
 
 			}
-
+			GL.glDisable(GL.GL_TEXTURE_2D);
 		}
 
 		static void RenderChar(Face face, FTBitmap ftbmp, uint texture, int x, int y)
 		{
-			int bmpSize = ftbmp.Width * ftbmp.Rows;
-
-			byte[] bmp = new byte[bmpSize];
-			Array.Copy(ftbmp.BufferData, bmp, bmp.Length);
+			var imgbmp = GLHelpers.GraysToRGBA(ftbmp.BufferData, ftbmp.Width, ftbmp.Rows);
+			var bottomY = y + face.Glyph.Metrics.HorizontalBearingY.ToInt32() - ftbmp.Rows;
 
 			// Set up some texture parameters for opengl
 			GL.glBindTexture(GL.GL_TEXTURE_2D, texture);
 			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
 			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
 
-			byte[] imgbmp = new byte[4 * ftbmp.Width * ftbmp.Rows];
-			var p = 0;
-			for (int row = 0; row < ftbmp.Rows; row++)
-			{
-				for (int col = 0; col < ftbmp.Width; col++)
-				{
-					imgbmp[p] = bmp[row * ftbmp.Width + col];
-					imgbmp[p + 1] = bmp[row * ftbmp.Width + col];
-					imgbmp[p + 2] = bmp[row * ftbmp.Width + col];
-					imgbmp[p + 3] = 255;
-					p += 4;
-				}
-			}
-
 			// Create the texture
 			GL.glTexImage2D(GL.GL_TEXTURE_2D, 0, (int)GL.GL_RGBA, ftbmp.Width, ftbmp.Rows,
 				0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, imgbmp);
-			bmp = null;
-
-			var bottomY = y + face.Glyph.Metrics.HorizontalBearingY.ToInt32() - ftbmp.Rows;
 
 			//  Draw the quad
 			GL.glBegin(GL.GL_QUADS);

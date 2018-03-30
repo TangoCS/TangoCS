@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Hibernate.cs" />
+    <Compile Include="HTable.cs" />
     <Compile Include="IntBackedBoolUserType.cs" />
     <Compile Include="LogInterceptor.cs" />
     <Compile Include="MappingConfig.cs" />

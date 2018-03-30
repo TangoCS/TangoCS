@@ -400,6 +400,7 @@ GROUP BY t.Name, s.Name, p.Rows", table.Name);
 						return string.Format("CAST('{0}' AS timestamp)", reader.GetDateTime(index).ToString("yyyy-MM-dd HH:mm:ss.FFFFFFF"));
 					case "image":
 					case "varbinary":
+					case "binary":
 						StringBuilder result = new StringBuilder();
 						byte[] data = reader.GetSqlBytes(index).Value;
 						for (int x = 0; x < data.Length; x++)

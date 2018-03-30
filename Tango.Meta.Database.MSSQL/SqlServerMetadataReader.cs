@@ -11,16 +11,13 @@ namespace Tango.Meta.Database
 	public class SqlServerMetadataReader : IDatabaseMetadataReader
 	{
 		string _connectionString = "";
-		public SqlServerMetadataReader(string connectionString)
+		public SqlServerMetadataReader(string connectionString = "")
 		{
 			_connectionString = connectionString;
 		}
 
 		public Schema ReadSchema(string name)
 		{
-			var returnSchema = new Schema();
-			returnSchema.Name = name;
-			//var DbScript = new DBScriptMSSQL(name);
 			using (SqlConnection con = new SqlConnection(_connectionString))
 			{
 				using (SqlCommand cmd = new SqlCommand("usp_dbschema", con))
@@ -35,29 +32,23 @@ namespace Tango.Meta.Database
 						{
 							string s = reader.ReadOuterXml();
 							XDocument doc = XDocument.Parse(s);
-							GenerateSchema(returnSchema, doc);
+							return ReadSchema(name, doc);
 						}
 					}
 				}
 			}
-			return returnSchema;
+			return null;
 		}
 
 		public Schema ReadSchema(string name, XDocument doc)
 		{
-			var returnSchema = new Schema();
-			returnSchema.Name = name;
-			GenerateSchema(returnSchema, doc);
+			var schema = new Schema {
+				Name = name
+			};
 
-			return returnSchema;
-		}
+			var DbScript = new DBScriptMSSQL(schema.Name);
 
-		static void GenerateSchema(Schema returnSchema, XDocument doc)
-		{
-			var DbScript = new DBScriptMSSQL(returnSchema.Name);
-
-			doc.Descendants("Table").ToList().ForEach(t =>
-			{
+			doc.Descendants("Table").ToList().ForEach(t => {
 				var table = new Table();
 				table.Name = t.GetAttributeValue("Name");
 				table.Owner = t.GetAttributeValue("Owner");
@@ -65,8 +56,7 @@ namespace Tango.Meta.Database
 				//table.Identity = !string.IsNullOrEmpty(t.GetAttributeValue("Identity")) && t.GetAttributeValue("Identity") == "1";
 				var xColumnsElement = t.Element("Columns");
 				if (xColumnsElement != null)
-					xColumnsElement.Descendants("Column").ToList().ForEach(c =>
-					{
+					xColumnsElement.Descendants("Column").ToList().ForEach(c => {
 						var column = new Column();
 						column.Name = c.GetAttributeValue("Name");
 						column.Identity = !string.IsNullOrEmpty(c.GetAttributeValue("Identity")) && c.GetAttributeValue("Identity") == "1";
@@ -85,8 +75,7 @@ namespace Tango.Meta.Database
 
 				var xForeignKeysElement = t.Element("ForeignKeys");
 				if (xForeignKeysElement != null)
-					xForeignKeysElement.Descendants("ForeignKey").ToList().ForEach(c =>
-					{
+					xForeignKeysElement.Descendants("ForeignKey").ToList().ForEach(c => {
 						var foreignKey = new ForeignKey();
 						foreignKey.Name = c.GetAttributeValue("Name");
 						foreignKey.RefTable = c.GetAttributeValue("RefTable");
@@ -104,8 +93,7 @@ namespace Tango.Meta.Database
 
 				var xTriggersElement = t.Element("Triggers");
 				if (xTriggersElement != null)
-					xTriggersElement.Descendants("Trigger").ToList().ForEach(c =>
-					{
+					xTriggersElement.Descendants("Trigger").ToList().ForEach(c => {
 						var trigger = new Trigger();
 						trigger.Owner = table.Name;
 						trigger.Name = c.GetAttributeValue("Name");
@@ -118,8 +106,7 @@ namespace Tango.Meta.Database
 
 				var xPrimaryKeyElement = t.Element("PrimaryKey");
 				if (xPrimaryKeyElement != null)
-					table.PrimaryKey = new PrimaryKey()
-					{
+					table.PrimaryKey = new PrimaryKey() {
 						Name = xPrimaryKeyElement.GetAttributeValue("Name"),
 						Columns =
 							xPrimaryKeyElement.Descendants("Column")
@@ -131,8 +118,7 @@ namespace Tango.Meta.Database
 
 				var xIndexesElement = t.Element("Indexes");
 				if (xIndexesElement != null)
-					xIndexesElement.Descendants("Index").ToList().ForEach(c =>
-					{
+					xIndexesElement.Descendants("Index").ToList().ForEach(c => {
 						var index = new Index();
 						index.Name = c.GetAttributeValue("Name");
 						index.Columns = c.Descendants("Column").Select(fc => fc.GetAttributeValue("Name")).ToArray();
@@ -146,20 +132,18 @@ namespace Tango.Meta.Database
 						table.Indexes.Add(index.Name, index);
 					});
 
-				table.Schema = returnSchema;
-				returnSchema.Tables.Add(table.Name, table);
+				table.Schema = schema;
+				schema.Tables.Add(table.Name, table);
 			});
 
 
-			doc.Descendants("View").ToList().ForEach(v =>
-			{
+			doc.Descendants("View").ToList().ForEach(v => {
 				var view = new View();
 				view.Name = v.GetAttributeValue("Name");
 				view.Text = v.GetAttributeValue("Text");
 				var xColumnsElement = v.Element("Columns");
 				if (xColumnsElement != null)
-					xColumnsElement.Descendants("Column").ToList().ForEach(c =>
-					{
+					xColumnsElement.Descendants("Column").ToList().ForEach(c => {
 						var column = new ViewColumn();
 						column.Name = c.GetAttributeValue("Name");
 
@@ -170,8 +154,7 @@ namespace Tango.Meta.Database
 
 				var xTriggersElement = v.Element("Triggers");
 				if (xTriggersElement != null)
-					xTriggersElement.Descendants("Trigger").ToList().ForEach(c =>
-					{
+					xTriggersElement.Descendants("Trigger").ToList().ForEach(c => {
 						var trigger = new Trigger();
 						trigger.Owner = view.Name;
 						trigger.Name = c.GetAttributeValue("Name");
@@ -179,47 +162,45 @@ namespace Tango.Meta.Database
 						view.Triggers.Add(trigger.Name, trigger);
 					});
 
-				returnSchema.Views.Add(view.Name, view);
+				schema.Views.Add(view.Name, view);
 
 			});
 
-			doc.Descendants("Procedure").ToList().ForEach(p =>
-			{
+			doc.Descendants("Procedure").ToList().ForEach(p => {
 				var procedure = new Procedure();
 				procedure.Name = p.GetAttributeValue("Name");
 				procedure.Text = p.GetAttributeValue("Text");
 				var xParametrsElement = p.Element("Parameters");
 				if (xParametrsElement != null)
-					xParametrsElement.Descendants("Parameter").ToList().ForEach(c =>
-					{
+					xParametrsElement.Descendants("Parameter").ToList().ForEach(c => {
 						var Parameter = new Parameter();
 						Parameter.Name = c.GetAttributeValue("Name");
 						Parameter.Type = DbScript.GetType(c.GetAttributeValue("Type"), true);
 						procedure.Parameters.Add(Parameter.Name, Parameter);
 					});
 
-				returnSchema.Procedures.Add(procedure.Name, procedure);
+				schema.Procedures.Add(procedure.Name, procedure);
 
 			});
 
-			doc.Descendants("Function").ToList().ForEach(p =>
-			{
+			doc.Descendants("Function").ToList().ForEach(p => {
 				var function = new Function();
 				function.Name = p.GetAttributeValue("Name");
 				function.Text = p.GetAttributeValue("Text");
 				var xParametrsElement = p.Element("Parameters");
 				if (xParametrsElement != null)
-					xParametrsElement.Descendants("Parameter").ToList().ForEach(c =>
-					{
+					xParametrsElement.Descendants("Parameter").ToList().ForEach(c => {
 						var Parameter = new Parameter();
 						Parameter.Name = c.GetAttributeValue("Name");
 						Parameter.Type = DbScript.GetType(c.GetAttributeValue("Type"), true);
 						function.Parameters.Add(Parameter.Name, Parameter);
 					});
 
-				if (!returnSchema.Functions.ContainsKey(function.Name))
-					returnSchema.Functions.Add(function.Name, function);
+				if (!schema.Functions.ContainsKey(function.Name))
+					schema.Functions.Add(function.Name, function);
 			});
+
+			return schema;
 		}
 
 		/*public List<ProcedureDetails> ReadProceduresDetails()

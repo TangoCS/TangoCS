@@ -1,4 +1,7 @@
-﻿using System;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Gif;
+using System;
+using System.IO;
 using System.Runtime.InteropServices;
 
 namespace Tango.Drawing
@@ -16,6 +19,9 @@ namespace Tango.Drawing
 		public int Width { get; private set; }
 		public int Height { get; private set; }
 
+		GLDrawing _drawing;
+		public IDrawing Drawing => _drawing;
+
 		public WglContext(int width, int height, int bitDepth = 32)
 		{
 			Width = width;
@@ -25,6 +31,8 @@ namespace Tango.Drawing
 			_length = Width * Height * 4;
 
 			Create();
+
+			_drawing = new GLDrawing(width, height);
 		}
 
 		void Create()
@@ -89,6 +97,18 @@ namespace Tango.Drawing
 			byte[] buffer = new byte[_length];
 			GL.glReadPixels(0, 0, Width, Height, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, buffer);
 			return buffer;
+		}
+
+		public byte[] ToGif()
+		{
+			using (Image<Rgba32> image = Image.LoadPixelData<Rgba32>(GetBytes(), Width, Height))
+			{
+				using (MemoryStream ms = new MemoryStream())
+				{
+					image.Save(ms, new GifEncoder());
+					return ms.ToArray();
+				}
+			}
 		}
 
 		public void Dispose()

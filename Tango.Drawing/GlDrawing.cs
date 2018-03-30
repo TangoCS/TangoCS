@@ -52,6 +52,8 @@ namespace Tango.Drawing
 			GL.glMatrixMode(GL.GL_PROJECTION);
 			GL.glLoadIdentity();
 			GL.glOrtho(0.0f, _width, _height, 0.0f, 0.0f, 1.0f);
+			//GL.glOrtho(0.0f, _width, 0.0f, _height, 0.0f, 1.0f);
+			GL.glMatrixMode(GL.GL_MODELVIEW);
 
 			GL.glClearColor((float)c.R / 255, (float)c.G / 255, (float)c.B / 255, (float)c.A / 255);
 			GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);		
@@ -62,20 +64,20 @@ namespace Tango.Drawing
 		public void SetColor(Rgba32 c)
 		{
 			_blend = (c.A < 255);
-			GL.glColor4f((float)c.R / 255, (float)c.G / 255, (float)c.B / 255, (float)c.A / 255);
+			GL.glColor4ub(c.R, c.G, c.B, c.A);
 		}
 
-		public void SetColor(Rgba32 c, int alpha)
+		public void SetColor(Rgba32 c, byte alpha)
 		{
 			_blend = (alpha < 255);
-			GL.glColor4f((float)c.R / 255, (float)c.G / 255, (float)c.B / 255, (float)alpha / 255);
+			GL.glColor4ub(c.R, c.G, c.B, alpha);
 		}
 
 		public void DrawLine(int x1, int y1, int x2, int y2)
 		{
 			GL.glBegin(GL.GL_LINES);
-			GL.glVertex2i(x1, y1);
-			GL.glVertex2i(x2, y2);
+			GL.glVertex2f(x1 + 0.375f, y1 + 0.375f);
+			GL.glVertex2f(x2 + 0.375f, y2 + 0.375f);
 			GL.glEnd();
 		}
 
@@ -93,7 +95,7 @@ namespace Tango.Drawing
 		{
 			GL.glBegin(GL.GL_LINE_STRIP);
 			for (int i = 0; i < p.Length; i++)
-				GL.glVertex2i(p[i].X, p[i].Y);
+				GL.glVertex2f(p[i].X + 0.375f, p[i].Y + 0.375f);
 			GL.glEnd();
 		}
 
@@ -109,10 +111,13 @@ namespace Tango.Drawing
 		public void DrawLines(int[] p)
 		{
 			GL.glBegin(GL.GL_LINES);
-
 			for (int i = 0; i < p.Length; i += 2)
-				GL.glVertex2i(p[i], p[i + 1]);
+				GL.glVertex2f(p[i] + 0.375f, p[i + 1] + 0.375f);
+			GL.glEnd();
 
+			GL.glBegin(GL.GL_POINTS);
+			for (int i = 0; i < p.Length; i += 2)
+				GL.glVertex2f(p[i] + 0.375f, p[i + 1] + 0.375f);
 			GL.glEnd();
 		}
 
@@ -121,8 +126,8 @@ namespace Tango.Drawing
 			GL.glBegin(GL.GL_LINES);
 			for (int i = 0; i < pb.Length; i++)
 			{
-				GL.glVertex2i(pb[i].X, pb[i].Y);
-				GL.glVertex2i(pe[i].X, pe[i].Y);
+				GL.glVertex2f(pb[i].X + 0.375f, pb[i].Y + 0.375f);
+				GL.glVertex2f(pe[i].X + 0.375f, pe[i].Y + 0.375f);
 			}
 			GL.glEnd();
 		}
@@ -138,10 +143,10 @@ namespace Tango.Drawing
 		public void DrawRectangle(int x, int y, int w, int h)
 		{
 			GL.glBegin(GL.GL_LINE_LOOP);
-			GL.glVertex2i(x + w, y);
-			GL.glVertex2i(x + w, y + h);
-			GL.glVertex2i(x, y + h);
-			GL.glVertex2i(x, y);
+			GL.glVertex2f(x + w + 0.375f, y + 0.375f);
+			GL.glVertex2f(x + w + 0.375f, y + h + 0.375f);
+			GL.glVertex2f(x + 0.375f, y + h + 0.375f);
+			GL.glVertex2f(x + 0.375f, y + 0.375f);
 			GL.glEnd();
 		}
 
@@ -186,9 +191,9 @@ namespace Tango.Drawing
 				GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 			}
 			GL.glBegin(GL.GL_TRIANGLES);
-			GL.glVertex2i(p1.X, p1.Y);
-			GL.glVertex2i(p2.X, p2.Y);
-			GL.glVertex2i(p3.X, p3.Y);
+			GL.glVertex2f(p1.X + 0.375f, p1.Y + 0.375f);
+			GL.glVertex2f(p2.X + 0.375f, p2.Y + 0.375f);
+			GL.glVertex2f(p3.X + 0.375f, p3.Y + 0.375f);
 			GL.glEnd();
 			if (_blend)
 			{
@@ -219,7 +224,12 @@ namespace Tango.Drawing
 				GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
 			}
 
-			GL.glRecti(x, y, x + w, y + h);
+			GL.glBegin(GL.GL_TRIANGLE_STRIP);
+			GL.glVertex2f(x + 0.375f, y + 0.375f);
+			GL.glVertex2f(x + 0.375f, y + h + 0.375f);
+			GL.glVertex2f(x + w + 0.375f, y + 0.375f);
+			GL.glVertex2f(x + w + 0.375f, y + h + 0.375f);	
+			GL.glEnd();
 
 			if (_blend)
 			{
@@ -254,13 +264,48 @@ namespace Tango.Drawing
 
 		public void FrameViewEnable(IFrame f)
 		{
-			GL.glScissor(f.X, _height - f.Height - f.Y, f.Width, f.Height);
-			GL.glEnable(GL.GL_SCISSOR_TEST);
+			//GL.glScissor(f.X, _height - f.Height - f.Y, f.Width, f.Height);
+			//GL.glEnable(GL.GL_SCISSOR_TEST);
 		}
 
 		public void FrameViewDisable()
 		{
-			GL.glDisable(GL.GL_SCISSOR_TEST);
+			//GL.glDisable(GL.GL_SCISSOR_TEST);
+		}
+
+		public void DrawTexture(uint textureno, int x, int y, int width, int height)
+		{
+			GL.glEnable(GL.GL_TEXTURE_2D);
+			GL.glBindTexture(GL.GL_TEXTURE_2D, textureno);
+			GL.glBegin(GL.GL_QUADS);
+			GL.glTexCoord2d(0, 0);
+			GL.glVertex2f(x, y + height);
+			GL.glTexCoord2d(0, 1);
+			GL.glVertex2f(x, y);
+			GL.glTexCoord2d(1, 1);
+			GL.glVertex2f(x + width, y);
+			GL.glTexCoord2d(1, 0);
+			GL.glVertex2f(x + width, y + height);
+			GL.glEnd();
+			GL.glDisable(GL.GL_TEXTURE_2D);
+		}
+
+		public uint AddTexture(int width, int height, byte[] data)
+		{
+			var tex = new uint[1];
+
+			GL.glGenTextures(1, tex);
+
+			// Set up some texture parameters for opengl
+			GL.glBindTexture(GL.GL_TEXTURE_2D, tex[0]);
+
+			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+
+			// Create the texture
+			GL.glTexImage2D(GL.GL_TEXTURE_2D, 0, (int)GL.GL_RGBA, width, height, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
+
+			return tex[0];
 		}
 	}
 }
