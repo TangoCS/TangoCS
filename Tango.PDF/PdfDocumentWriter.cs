@@ -4,7 +4,7 @@ using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
-namespace Tango.PDF
+namespace Nephrite.PDF
 {
 	public class PdfDocumentWriter : IDisposable
 	{
@@ -343,7 +343,14 @@ namespace Tango.PDF
 			return this;
 		}
 
-		public PAttributes Font(string family = "times.ttf", float size = 12f, FontWeight weight = FontWeight.Normal, FontStyle style = FontStyle.Normal)
+        public PAttributes Spacing(float spacingbefore = 0, float spacingafter = 0)
+        {
+                Element.SpacingBefore = spacingbefore;
+                Element.SpacingAfter = spacingafter;
+            return this;
+        }
+
+        public PAttributes Font(string family = "times.ttf", float size = 12f, FontWeight weight = FontWeight.Normal, FontStyle style = FontStyle.Normal)
 		{
 			Element.Font = FontManager.Get(family, size, weight, style);
 			return this;
@@ -428,7 +435,13 @@ namespace Tango.PDF
 			return this;
 		}
 
-		public CellAttributes Height(float height)
+        public CellAttributes Width(float width)
+        {
+            Element.Width = width;
+            return this;
+        }
+
+        public CellAttributes Height(float height)
 		{
 			Element.FixedHeight = height;
 			return this;

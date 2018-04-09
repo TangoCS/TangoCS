@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\GostCryptography\Source\GostCryptography\GostCryptography.csproj" />
-    <ProjectReference Include="..\..\itextsharp\itextsharp.csproj" />
+    <ProjectReference Include="..\..\iTextSharp\itextsharp.csproj" />
   </ItemGroup>
 
 </Project>
