@@ -1,5 +1,6 @@
 ﻿using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Gif;
+using SixLabors.ImageSharp.Formats.Png;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -55,6 +56,18 @@ namespace Tango.Drawing
 					image.Save(ms, new GifEncoder());
 					return ms.ToArray();
 				}	
+			}
+		}
+
+		public byte[] ToPng()
+		{
+			using (Image<Rgba32> image = Image.LoadPixelData<Rgba32>(GetBytes(), Width, Height))
+			{
+				using (MemoryStream ms = new MemoryStream())
+				{
+					image.Save(ms, new PngEncoder());
+					return ms.ToArray();
+				}
 			}
 		}
 

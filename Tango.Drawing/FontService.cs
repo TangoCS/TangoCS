@@ -6,8 +6,11 @@ namespace Tango.Drawing
 {
 	public class FontService : IDisposable
 	{
-		private Library _lib = new Library();
-		private Face _fontFace;
+		Library _lib = new Library();
+		Face _fontFace;
+
+		IDrawing _d;
+		Dictionary<int, uint[]> _texturesStore = new Dictionary<int, uint[]>();
 
 		public FontFormatCollection SupportedFormats { get; } = new FontFormatCollection {
 			{ "TrueType", "ttf" },
@@ -17,9 +20,9 @@ namespace Tango.Drawing
 		/// <summary>
 		/// If multithreading, each thread should have its own FontService.
 		/// </summary>
-		public FontService()
+		public FontService(IDrawing d)
 		{
-			
+			_d = d;
 		}
 
 		public void SetFont(string filename)
@@ -41,7 +44,7 @@ namespace Tango.Drawing
 			RenderString(_lib, _fontFace, x, y, text, fontSize);
 		}
 
-		static void RenderString(Library library, Face face, int x, int y, string text, int fontSize)
+		void RenderString(Library library, Face face, int x, int y, string text, int fontSize)
 		{
 			float penX = x;
 			float overrun = 0;
@@ -50,10 +53,11 @@ namespace Tango.Drawing
 
 			face.SetCharSize(0, fontSize, 0, 96);
 
-			var textures = new uint[128];
-			GL.glEnable(GL.GL_TEXTURE_2D);
-			//GL.glDisable(GL.GL_DEPTH_TEST);
-			GL.glGenTextures(128, textures);
+			if (!_texturesStore.TryGetValue(fontSize, out var textures))
+			{
+				textures = new uint[128];
+				_texturesStore.Add(fontSize, textures);
+			}
 
 			// Draw the string into the bitmap.
 			// A lot of this is a repeat of the measuring steps, but this time we have
@@ -66,9 +70,10 @@ namespace Tango.Drawing
 				// Same as when we were measuring, except RenderGlyph() causes the glyph data
 				// to be converted to a bitmap.
 				uint glyphIndex = face.GetCharIndex(c);
-				face.LoadGlyph(glyphIndex, LoadFlags.Default, LoadTarget.Normal);
-				face.Glyph.RenderGlyph(RenderMode.Normal);
+				face.LoadGlyph(glyphIndex, LoadFlags.Default, LoadTarget.Lcd);
+				face.Glyph.RenderGlyph(RenderMode.Lcd);
 				FTBitmap ftbmp = face.Glyph.Bitmap;
+				int gWidthi = face.Glyph.Metrics.Width.ToInt32();
 
 				float gAdvanceX = (float)face.Glyph.Advance.X;
 				float gBearingX = (float)face.Glyph.Metrics.HorizontalBearingX;
@@ -86,9 +91,19 @@ namespace Tango.Drawing
 				#region Draw glyph
 				// Whitespace characters sometimes have a bitmap of zero size, but a non-zero advance.
 				// We can't draw a 0-size bitmap, but the pen position will still get advanced (below).
-				if ((ftbmp.Width > 0 && ftbmp.Rows > 0))
+				if (ftbmp.Width > 0 && ftbmp.Rows > 0)
 				{
-					RenderChar(face, ftbmp, textures[glyphIndex], (int)Math.Round(penX + face.Glyph.BitmapLeft), y);
+					var t = textures[glyphIndex];
+					if (t == 0)
+					{
+						var imgbmp = GLHelpers.LcdToRGBA(ftbmp.BufferData, gWidthi, ftbmp.Rows, ftbmp.Pitch);
+						//var imgbmp = GLHelpers.GraysToRGBA(ftbmp.BufferData);
+						
+						t = _d.AddTexture(gWidthi, ftbmp.Rows, imgbmp);
+						textures[glyphIndex] = t;
+					}
+					var bottomY = y + face.Glyph.Metrics.HorizontalBearingY.ToInt32() - ftbmp.Rows;
+					_d.DrawTexture(t, (int)Math.Round(penX + face.Glyph.BitmapLeft), bottomY, gWidthi, ftbmp.Rows);
 					// Check if we are aligned properly on the right edge (for debugging)
 				}
 
@@ -120,38 +135,7 @@ namespace Tango.Drawing
 				#endregion
 
 			}
-			GL.glDisable(GL.GL_TEXTURE_2D);
 		}
-
-		static void RenderChar(Face face, FTBitmap ftbmp, uint texture, int x, int y)
-		{
-			var imgbmp = GLHelpers.GraysToRGBA(ftbmp.BufferData, ftbmp.Width, ftbmp.Rows);
-			var bottomY = y + face.Glyph.Metrics.HorizontalBearingY.ToInt32() - ftbmp.Rows;
-
-			// Set up some texture parameters for opengl
-			GL.glBindTexture(GL.GL_TEXTURE_2D, texture);
-			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
-			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-
-			// Create the texture
-			GL.glTexImage2D(GL.GL_TEXTURE_2D, 0, (int)GL.GL_RGBA, ftbmp.Width, ftbmp.Rows,
-				0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, imgbmp);
-
-			//  Draw the quad
-			GL.glBegin(GL.GL_QUADS);
-			GL.glTexCoord2d(0, 0);
-			GL.glVertex2f(x, bottomY + ftbmp.Rows);
-			GL.glTexCoord2d(0, 1);
-			GL.glVertex2f(x, bottomY);
-			GL.glTexCoord2d(1, 1);
-			GL.glVertex2f(x + ftbmp.Width, bottomY);
-			GL.glTexCoord2d(1, 0);
-			GL.glVertex2f(x + ftbmp.Width, bottomY + ftbmp.Rows);
-			GL.glEnd();
-		}
-
-
-
 		#endregion // RenderString
 
 		bool disposedValue = false; // To detect redundant calls

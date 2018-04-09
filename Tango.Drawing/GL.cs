@@ -797,10 +797,41 @@ namespace Tango.Drawing
 
 			/* WIN_specular_fog */
 			GL_FOG_SPECULAR_TEXTURE_WIN = 0x80EC;
+
+
+		public const int GL_FRAMEBUFFER = 0x8D40;
+		public const int GL_FRAMEBUFFER_ATTACHMENT_OBJECT_NAME = 0x8CD1;
+		public const int GL_FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE = 0x8CD0;
+		public const int GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE = 0x8CD3;
+		public const int GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL = 0x8CD2;
+		public const int GL_FRAMEBUFFER_BINDING = 0x8CA6;
+		public const int GL_FRAMEBUFFER_COMPLETE = 0x8CD5;
+		public const int GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT = 0x8CD6;
+		public const int GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS = 0x8CD9;
+		public const int GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT = 0x8CD7;
+		public const int GL_FRAMEBUFFER_UNSUPPORTED = 0x8CDD;
+
+		public const int GL_RENDERBUFFER = 0x8D41;
+		public const int GL_RENDERBUFFER_ALPHA_SIZE = 0x8D53;
+		public const int GL_RENDERBUFFER_BINDING = 0x8CA7;
+		public const int GL_RENDERBUFFER_BLUE_SIZE = 0x8D52;
+		public const int GL_RENDERBUFFER_DEPTH_SIZE = 0x8D54;
+		public const int GL_RENDERBUFFER_GREEN_SIZE = 0x8D51;
+		public const int GL_RENDERBUFFER_HEIGHT = 0x8D43;
+		public const int GL_RENDERBUFFER_INTERNAL_FORMAT = 0x8D44;
+		public const int GL_RENDERBUFFER_RED_SIZE = 0x8D50;
+		public const int GL_RENDERBUFFER_STENCIL_SIZE = 0x8D55;
+		public const int GL_RENDERBUFFER_WIDTH = 0x8D42;
+		public const int GL_COLOR_ATTACHMENT0 = 0x8CE0;
+
+		public const int GL_DEPTH_ATTACHMENT = 0x8D00;
+
+		public const int GL_GENERATE_MIPMAP = 0x8191;
+		public const int GL_CLAMP_TO_EDGE = 0x812F;
 		#endregion
 
 		#region Functions from opengl32
-		
+
 
 		[DllImport(Opengl)]
 		public static extern void glAccum(uint op, float value);
@@ -814,7 +845,8 @@ namespace Tango.Drawing
 		public static extern void glBegin(uint mode);
 		[DllImport(Opengl)]
 		public static extern void glBindTexture(uint target, uint texture);
-
+		[DllImport(Opengl)]
+		public static extern void glBindFramebuffer(uint target, uint framebuffer);
 		[DllImport(Opengl)]
 		unsafe public static extern void glBitmap(int width, int height, float xorig, float yorig, float xmove, float ymove, byte* bitmap);
 		[DllImport(Opengl)]
@@ -1001,6 +1033,8 @@ namespace Tango.Drawing
 		public static extern uint glGenLists(int range);
 		[DllImport(Opengl)]
 		unsafe public static extern void glGenTextures(int n, uint* textures);
+		[DllImport(Opengl)]
+		public static extern unsafe void glGenFramebuffers(int n, uint[] framebuffers);
 		[DllImport(Opengl)]
 		unsafe public static extern void glGetBooleanv(uint pname, byte* someParams);
 		[DllImport(Opengl)]
@@ -1602,6 +1636,26 @@ namespace Tango.Drawing
 
 		[DllImport(Opengl)]
 		public static extern void glGenTextures(int n, uint[] textures);
+		[DllImport(Opengl)]
+		public static extern void glFramebufferTexture(uint target, uint attachment, uint texture, int level);
+		[DllImport(Opengl)]
+		public static extern void glFramebufferTexture2D(uint target, uint attachment, uint textarget, uint texture, int level);
+		[DllImport(Opengl)]
+		public static extern void glDrawBuffers(int n, uint[] bufs);
+		[DllImport(Opengl)]
+		public static extern uint glCheckFramebufferStatus(uint target);
+		[DllImport(Opengl)]
+		public static extern void glGenerateMipmap(uint target);
+
+		[DllImport(Opengl)]
+		public static extern unsafe void glGenRenderbuffers(int n, uint[] renderbuffers);
+		[DllImport(Opengl)]
+		public static extern void glBindRenderbuffer(uint target, uint renderbuffer);
+		[DllImport(Opengl)]
+		public static extern void glRenderbufferStorage(uint target, uint internalformat, int width, int height);
+		[DllImport(Opengl)]
+		public static extern void glFramebufferRenderbuffer(uint target, uint attachment, uint renderbuffertarget, uint renderbuffer);
+
 		[DllImport(Opengl)]
 		public static extern void glDeleteTextures(int n, uint[] textures);
 		[DllImport(Opengl)]

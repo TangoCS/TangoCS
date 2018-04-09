@@ -79,10 +79,6 @@
       <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
       <Name>Tango</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
-      <Project>{5909bfe7-93cf-4e5f-be22-6293368af01d}</Project>
-      <Name>NHibernate</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Tango.Hibernate.snk" />

@@ -6,7 +6,7 @@ namespace Tango.Drawing
 {
 	public class GLDrawing : IDrawing, IDisposable
     {
-		FontService _fontService = new FontService();
+		FontService _fontService;
 		bool _blend = false;
 
 		int _width, _height;
@@ -15,6 +15,7 @@ namespace Tango.Drawing
 		{
 			_width = width;
 			_height = height;
+			_fontService = new FontService(this);
 		}
 
 		void SetDashStyle(DashStyle style)
@@ -47,17 +48,22 @@ namespace Tango.Drawing
 		}
 
 		public bool BeginDraw(Rgba32 c)
+		{		
+			return BeginDraw(_width, _height, c);
+		}
+
+		bool BeginDraw(int width, int height, Rgba32 c)
 		{
-			GL.glViewport(0, 0, _width, _height);
+			GL.glViewport(0, 0, width, height);
 			GL.glMatrixMode(GL.GL_PROJECTION);
 			GL.glLoadIdentity();
-			GL.glOrtho(0.0f, _width, _height, 0.0f, 0.0f, 1.0f);
-			//GL.glOrtho(0.0f, _width, 0.0f, _height, 0.0f, 1.0f);
+			GL.glOrtho(0.0f, width, height, 0.0f, 0.0f, 1.0f);
 			GL.glMatrixMode(GL.GL_MODELVIEW);
 
 			GL.glClearColor((float)c.R / 255, (float)c.G / 255, (float)c.B / 255, (float)c.A / 255);
-			GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);		
+			GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
 			GL.glShadeModel(GL.GL_FLAT);
+
 			return true;
 		}
 
@@ -91,15 +97,15 @@ namespace Tango.Drawing
 			GL.glDisable(GL.GL_LINE_STIPPLE);
 		}
 
-		public void DrawLineStrip(Point[] p)
+		public void DrawLineStrip(int[] p)
 		{
 			GL.glBegin(GL.GL_LINE_STRIP);
-			for (int i = 0; i < p.Length; i++)
-				GL.glVertex2f(p[i].X + 0.375f, p[i].Y + 0.375f);
+			for (int i = 0; i < p.Length; i += 2)
+				GL.glVertex2f(p[i] + 0.375f, p[i + 1] + 0.375f);
 			GL.glEnd();
 		}
 
-		public void DrawLineStrip(Point[] p, DashStyle style)
+		public void DrawLineStrip(int[] p, DashStyle style)
 		{
 			GL.glEnable(GL.GL_LINE_STIPPLE);
 			SetDashStyle(style);
@@ -121,23 +127,12 @@ namespace Tango.Drawing
 			GL.glEnd();
 		}
 
-		public void DrawLines(Point[] pb, Point[] pe)
+		public void DrawTriangleStrip(int[] p)
 		{
-			GL.glBegin(GL.GL_LINES);
-			for (int i = 0; i < pb.Length; i++)
-			{
-				GL.glVertex2f(pb[i].X + 0.375f, pb[i].Y + 0.375f);
-				GL.glVertex2f(pe[i].X + 0.375f, pe[i].Y + 0.375f);
-			}
+			GL.glBegin(GL.GL_TRIANGLE_STRIP);
+			for (int i = 0; i < p.Length; i += 2)
+				GL.glVertex2f(p[i] + 0.375f, p[i + 1] + 0.375f);
 			GL.glEnd();
-		}
-
-		public void DrawLines(Point[] pb, Point[] pe, DashStyle style)
-		{
-			GL.glEnable(GL.GL_LINE_STIPPLE);
-			SetDashStyle(style);
-			DrawLines(pb, pe);
-			GL.glDisable(GL.GL_LINE_STIPPLE);
 		}
 
 		public void DrawRectangle(int x, int y, int w, int h)
@@ -216,6 +211,8 @@ namespace Tango.Drawing
 			GL.glEnd();
 		}
 
+
+
 		public void FillRectangle(int x, int y, int w, int h)
 		{
 			if (_blend)
@@ -230,6 +227,31 @@ namespace Tango.Drawing
 			GL.glVertex2f(x + w + 0.375f, y + 0.375f);
 			GL.glVertex2f(x + w + 0.375f, y + h + 0.375f);	
 			GL.glEnd();
+
+			if (_blend)
+			{
+				GL.glDisable(GL.GL_BLEND);
+			}
+		}
+
+		public void FillRectangle(int x, int y, int w, int h, Rgba32 gradientBottomColor, Rgba32 gradientTopColor)
+		{
+			if(_blend)
+			{
+				GL.glEnable(GL.GL_BLEND);
+				GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+			}
+
+			GL.glShadeModel(GL.GL_SMOOTH);
+			GL.glBegin(GL.GL_TRIANGLE_STRIP);
+			SetColor(gradientBottomColor);
+			GL.glVertex2f(x + 0.375f, y + 0.375f);
+			GL.glVertex2f(x + w + 0.375f, y + 0.375f);			
+			SetColor(gradientTopColor);
+			GL.glVertex2f(x + 0.375f, y + h + 0.375f);
+			GL.glVertex2f(x + w + 0.375f, y + h + 0.375f);
+			GL.glEnd();
+			GL.glShadeModel(GL.GL_FLAT);
 
 			if (_blend)
 			{
@@ -273,20 +295,37 @@ namespace Tango.Drawing
 			//GL.glDisable(GL.GL_SCISSOR_TEST);
 		}
 
-		public void DrawTexture(uint textureno, int x, int y, int width, int height)
+		public void DrawTexture(uint textureno, int x, int y, int width, int height, int[] map = null)
 		{
+			if (map == null) map = new int[8] {
+				0, 0,
+				0, 1,
+				1, 1,
+				1, 0
+			};
+
+			//GL.glDisable(GL.GL_DEPTH_TEST);
 			GL.glEnable(GL.GL_TEXTURE_2D);
+
+			//GL.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_COMBINE);
 			GL.glBindTexture(GL.GL_TEXTURE_2D, textureno);
+			//GL.glGenerateMipmap(GL.GL_TEXTURE_2D);
+
+			GL.glEnable(GL.GL_BLEND);
+			GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+
 			GL.glBegin(GL.GL_QUADS);
-			GL.glTexCoord2d(0, 0);
+			GL.glTexCoord2d(map[0], map[1]);
 			GL.glVertex2f(x, y + height);
-			GL.glTexCoord2d(0, 1);
+			GL.glTexCoord2d(map[2], map[3]);
 			GL.glVertex2f(x, y);
-			GL.glTexCoord2d(1, 1);
+			GL.glTexCoord2d(map[4], map[5]);
 			GL.glVertex2f(x + width, y);
-			GL.glTexCoord2d(1, 0);
+			GL.glTexCoord2d(map[6], map[7]);
 			GL.glVertex2f(x + width, y + height);
 			GL.glEnd();
+
+			GL.glDisable(GL.GL_BLEND);
 			GL.glDisable(GL.GL_TEXTURE_2D);
 		}
 
@@ -306,6 +345,34 @@ namespace Tango.Drawing
 			GL.glTexImage2D(GL.GL_TEXTURE_2D, 0, (int)GL.GL_RGBA, width, height, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, data);
 
 			return tex[0];
+		}
+
+		public uint DrawOnTexture(int width, int height, Action content)
+		{
+			var renderedTexture = new uint[1];
+			GL.glGenTextures(1, renderedTexture);
+			GL.glBindTexture(GL.GL_TEXTURE_2D, renderedTexture[0]);
+			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
+			GL.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+
+			GL.glTexImage2D(GL.GL_TEXTURE_2D, 0, (int)GL.GL_RGBA, width, height, 0, GL.GL_RGBA, GL.GL_UNSIGNED_BYTE, IntPtr.Zero);
+			GL.glBindTexture(GL.GL_TEXTURE_2D, 0);
+
+			var FramebufferName = new uint[1];
+			GL.glGenFramebuffers(1, FramebufferName);
+			GL.glBindFramebuffer(GL.GL_FRAMEBUFFER, FramebufferName[0]);
+
+			GL.glFramebufferTexture2D(GL.GL_FRAMEBUFFER, GL.GL_COLOR_ATTACHMENT0, GL.GL_TEXTURE_2D, renderedTexture[0], 0);
+
+			var r = GL.glCheckFramebufferStatus(GL.GL_FRAMEBUFFER);
+
+			BeginDraw(width, height, Rgba32.Black);
+
+			content();
+
+			GL.glBindFramebuffer(GL.GL_FRAMEBUFFER, 0);
+
+			return renderedTexture[0];
 		}
 	}
 }
