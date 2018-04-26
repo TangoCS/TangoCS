@@ -4,7 +4,7 @@ using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
-namespace Nephrite.PDF
+namespace Tango.PDF
 {
 	public class PdfDocumentWriter : IDisposable
 	{
@@ -194,11 +194,6 @@ namespace Nephrite.PDF
 			{
 				var c = o as PdfPCell;
 
-				/*var to = state.Pop();
-				if (!(to is PdfPTable))
-					throw new Exception(exeption);
-				var t = to as PdfPTable;*/
-
 				state.Push(table);
 				if (ta != null) ta();
 
@@ -222,7 +217,6 @@ namespace Nephrite.PDF
 				var t = o as PdfPTable;
 				state.Push(cell);
 				if (ta != null) ta();
-				//state.Pop();
 
 				t.AddCell(cell);
 				state.Push(t);
@@ -284,7 +278,6 @@ namespace Nephrite.PDF
 			{
 				var t = o as PdfPTable;
 				ColumnText ct = new ColumnText(w.DirectContent);
-				//var d = ct.Canvas.PdfDocument;
 				ct.SetSimpleColumn(doc.Left, doc.Top, doc.Right, doc.Bottom);
 				ct.AddElement(t);
 				ct.Go(true);
@@ -305,11 +298,6 @@ namespace Nephrite.PDF
 			}
 			else throw new Exception(exeption);
 		}
-
-		/*public float RowFixedHeight(int idx)
-		{
-			return _table.GetRowHeight(idx);
-		}*/
 
 		public void AddAttachment(string fileName, byte[] fileBytes)
 		{
@@ -435,12 +423,6 @@ namespace Nephrite.PDF
 			return this;
 		}
 
-        public CellAttributes Width(float width)
-        {
-            Element.Width = width;
-            return this;
-        }
-
         public CellAttributes Height(float height)
 		{
 			Element.FixedHeight = height;
@@ -456,25 +438,13 @@ namespace Nephrite.PDF
 
 	public class TableAttributes : PdfElementAttributes<PdfPTable>
 	{
-		/*public TableAttributes Columns(int numColumns)
-		{
-			Element.SetWidths(new int[numColumns]);
-			return this;
-		}
-
-		public TableAttributes Columns(float[] relativeWidths)
-		{
-			Element.SetWidths(relativeWidths);
-			return this;
-		}*/
-
 		public TableAttributes SetWidths(float[] widths)
 		{
 			Element.SetWidths(widths);
 			return this;
 		}
 
-		public TableAttributes SpacingBefore(float spacingBefore = 8f)
+        public TableAttributes SpacingBefore(float spacingBefore = 8f)
 		{
 			Element.SpacingBefore = spacingBefore;
 			return this;
