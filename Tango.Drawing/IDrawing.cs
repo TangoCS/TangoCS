@@ -7,6 +7,7 @@ namespace Tango.Drawing
 	public interface IDrawing
 	{
 		bool BeginDraw(Rgba32 backcolor);
+		bool BeginDraw();
 		void DrawCircle(int x, int y, int r);
 		void DrawLine(int x1, int y1, int x2, int y2, DashStyle style);
 		void DrawLine(int x1, int y1, int x2, int y2);

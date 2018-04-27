@@ -33,6 +33,7 @@ namespace Tango.UI
 		public string Action { get; set; }
 		public string Event { get; set; }
 		public string EventReceiver { get; set; }
+		public bool IsFirstLoad { get; set; }
 
 		public DynamicDictionary AllArgs { get; set; }
 		public DynamicDictionary ActionArgs { get; set; }

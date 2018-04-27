@@ -14,9 +14,12 @@ namespace Tango.UI
 			w.ClientActions.Add(action);
 		}
 
-		public static void BindEventGet(this LayoutWriter w, string elementId, string clientEvent, Action<ApiResponse> serverEvent, string serverEventReceiver = null)
+		public static void BindEventGet(this LayoutWriter w, string elementId, string clientEvent, Action<ApiResponse> serverEvent)
 		{
-			w.BindEvent(elementId, clientEvent, serverEvent.Method.Name, "get", serverEventReceiver);
+			var el = serverEvent.Target as ViewElement;
+			if (el == null) throw new InvalidCastException("Invalid class type for serverEvent.Target; must be of type ViewElement");
+
+			w.BindEvent(elementId, clientEvent, serverEvent.Method.Name, "get", el.ClientID);
 		}
 
 		public static void BindEventGet(this LayoutWriter w, string elementId, string clientEvent, string serverEvent, string serverEventReceiver = null)
@@ -24,9 +27,12 @@ namespace Tango.UI
 			w.BindEvent(elementId, clientEvent, serverEvent, "get", serverEventReceiver);
 		}
 
-		public static void BindEventPost(this LayoutWriter w, string elementId, string clientEvent, Action<ApiResponse> serverEvent, string serverEventReceiver = null)
+		public static void BindEventPost(this LayoutWriter w, string elementId, string clientEvent, Action<ApiResponse> serverEvent)
 		{
-			w.BindEvent(elementId, clientEvent, serverEvent.Method.Name, "post", serverEventReceiver);
+			var el = serverEvent.Target as ViewElement;
+			if (el == null) throw new InvalidCastException("Invalid class type for serverEvent.Target; must be of type ViewElement");
+
+			w.BindEvent(elementId, clientEvent, serverEvent.Method.Name, "post", el.ClientID);
 		}
 
 		public static void BindEventPost(this LayoutWriter w, string elementId, string clientEvent, string serverEvent, string serverEventReceiver = null)

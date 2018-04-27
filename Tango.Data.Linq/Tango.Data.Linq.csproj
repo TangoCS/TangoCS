@@ -4,6 +4,7 @@
     <TargetFramework>net452</TargetFramework>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Tango.Data.Linq.snk</AssemblyOriginatorKeyFile>
+    <DefineConstants>CODE_ANALYSIS_BASELINE;FEATURE_LEGACYSURFACEAREA;FEATURE_UTF32;FEATURE_UTF7;ILGEN;SYSTEM_DATA_LINQ;TRACE;RETAIL;WIN32</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

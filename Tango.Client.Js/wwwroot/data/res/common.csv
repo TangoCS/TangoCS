@@ -70,8 +70,6 @@ Common.Theme.Current;Текущая тема;Current theme
 Common.Theme.Default;По умолчанию;Default
 Common.Theme.Description;Эта страница служит для изменения шрифтов и цветовой схемы;On this page you can change application font and colors
 Common.Theme.Select;Выберите тему;Select theme
-Common.Toolbar.CreateView;Создать представление;Create View
-Common.Toolbar.View;Представление;View
 Common.Undelete.Confirm;Вы уверены, что хотите отменить удаление;Are you sure you want to undelete the
 Common.Undelete.Undeletion;Отмена удаления;Undeletion
 Common.Utils;Утилиты;Utils
@@ -94,6 +92,7 @@ Common.Version;Версия;
 SaveFileResult.AntiViralFailure;Загружаемый файл не прошел проверку на наличие вирусов. Проведите антивирусную обработку файла и повторите загрузку или обратитесь к администратору системы;
 SaveFileResult.AntiViralSuspicion;Проверка на наличие вирусов не может быть выполнена. Загружаемый файл может содержать вирусы. Проведите антивирусную обработку файла и повторите загрузку или обратитесь к администратору системы;
 
+System.Filter;Фильтр;Filter
 System.Filter.AddCriteria;Добавить;Add
 System.Filter.AddRow;Добавить строку;Add row
 System.Filter.AdvancedFilter;Расширенный фильтр;Advanced filter
@@ -142,7 +141,9 @@ System.Filter.Tabs.Properties.ToolTip.Personal;Представление вид
 System.Filter.Tabs.Properties.ToolTip.Shared;Представление видно всем пользователям;The view is visible to all users
 System.Filter.Tabs.Sorting;Сортировка;Sorting
 System.Filter.Title;Название;Title
-System.Filter.TitleWindow;Представление;List settings
+System.Filter.ViewSettings;Представление;View settings
+System.Filter.CreateView;Создать представление;Create view
+System.Filter.EditView;Изменить это представление;Edit current view
 System.Filter.ToolTip.ClosingBrackets;Закрывающие скобки;Closing brackets
 System.Filter.ToolTip.Delete;Удалить;Delete
 System.Filter.ToolTip.MoveDown;Переместить вниз;Move Down

@@ -8,6 +8,8 @@ namespace Tango.UI
 		public string Service { get; }
 		public string Action { get; }
 
+		public OnActionAttribute() { }
+
 		public OnActionAttribute(string service, string action)
 		{
 			Service = service;

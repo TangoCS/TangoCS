@@ -37,9 +37,12 @@ namespace Tango.UI
 			typeInfos.Add(new InvokeableTypeInfo {
 				Filter = t => t.IsSubclassOf(typeof(ViewElement)) && !t.IsAbstract,
 				Keys = t => {
+					var parts = t.Name.Split('_');
+					var defService = parts.Length > 0 ? parts[0] : "";
+					var defAction = parts.Length > 1 ? parts[1] : "";
 					var attrs = t.GetCustomAttributes<OnActionAttribute>();
 					if (attrs == null) return null;
-					return attrs.Select(a => a.Service + "." + a.Action).ToList();
+					return attrs.Select(a => (a.Service ?? defService) + "." + (a.Action ?? defAction)).ToList();
 				},
 				Invoker = new CsFormInvoker()
 			});

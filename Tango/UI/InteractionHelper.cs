@@ -29,12 +29,12 @@ namespace Tango.UI
 				else if (p == typeof(ObjectResponse))
 					resp = new ObjectResponse();
 
-				if (resp is ApiResponse && firstLoad != null && recipient.Context.GetBoolArg(Constants.FirstLoad, false))
+				if (resp is ApiResponse && firstLoad != null)
 					firstLoad(resp as ApiResponse);
 
 				m.Invoke(recipient, new object[] { resp });
 
-				if (resp is ApiResponse && renderLog != null && recipient.Context.GetArg(Constants.ShowLogsName) == "1")
+				if (resp is ApiResponse && renderLog != null)
 					renderLog(resp as ApiResponse);
 
 				return new AjaxResult(resp);

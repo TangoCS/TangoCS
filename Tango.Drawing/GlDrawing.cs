@@ -52,13 +52,26 @@ namespace Tango.Drawing
 			return BeginDraw(_width, _height, c);
 		}
 
-		bool BeginDraw(int width, int height, Rgba32 c)
+		public bool BeginDraw()
+		{
+			return BeginDraw(_width, _height);
+		}
+
+		bool BeginDraw(int width, int height)
 		{
 			GL.glViewport(0, 0, width, height);
 			GL.glMatrixMode(GL.GL_PROJECTION);
 			GL.glLoadIdentity();
 			GL.glOrtho(0.0f, width, height, 0.0f, 0.0f, 1.0f);
 			GL.glMatrixMode(GL.GL_MODELVIEW);
+			GL.glDisable(GL.GL_DEPTH_TEST);
+
+			return true;
+		}
+
+		bool BeginDraw(int width, int height, Rgba32 c)
+		{
+			BeginDraw(width, height);
 
 			GL.glClearColor((float)c.R / 255, (float)c.G / 255, (float)c.B / 255, (float)c.A / 255);
 			GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
@@ -89,12 +102,23 @@ namespace Tango.Drawing
 
 		public void DrawLine(int x1, int y1, int x2, int y2, DashStyle style)
 		{
+			if (_blend)
+			{
+				GL.glEnable(GL.GL_BLEND);
+				GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE_MINUS_SRC_ALPHA);
+			}
+
 			GL.glEnable(GL.GL_LINE_STIPPLE);
 			//GL.glLineWidth(p.Width);
 			SetDashStyle(style);
 			DrawLine(x1, y1, x2, y2);
 			GL.glLineWidth(1);
 			GL.glDisable(GL.GL_LINE_STIPPLE);
+
+			if (_blend)
+			{
+				GL.glDisable(GL.GL_BLEND);
+			}
 		}
 
 		public void DrawLineStrip(int[] p)
@@ -304,7 +328,6 @@ namespace Tango.Drawing
 				1, 0
 			};
 
-			//GL.glDisable(GL.GL_DEPTH_TEST);
 			GL.glEnable(GL.GL_TEXTURE_2D);
 
 			//GL.glTexEnvf(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_COMBINE);
@@ -371,6 +394,9 @@ namespace Tango.Drawing
 			content();
 
 			GL.glBindFramebuffer(GL.GL_FRAMEBUFFER, 0);
+
+			BeginDraw();
+			SetColor(Rgba32.White);
 
 			return renderedTexture[0];
 		}

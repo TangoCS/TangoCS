@@ -745,6 +745,15 @@ button.close {
 	padding: 0px 12px;
 	line-height: 28px;
 	text-align: left;
+	color: initial;
+}
+
+.dropdownmenu span {
+	padding: 0px 12px;
+}
+
+.dropdownmenu .icon {
+	margin-right: 3px;
 }
 
 .dropdownmenu .separator {
