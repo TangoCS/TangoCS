@@ -71,6 +71,10 @@
     <Content Include="nuget.nuspec" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\NHibernate\NHibernate.csproj">
+      <Project>{5909bfe7-93cf-4e5f-be22-6293368af01d}</Project>
+      <Name>NHibernate</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Tango.Abstractions\Tango.Abstractions.csproj">
       <Project>{08917986-6340-4d26-bb53-b1b69fd3c810}</Project>
       <Name>Tango.Abstractions</Name>

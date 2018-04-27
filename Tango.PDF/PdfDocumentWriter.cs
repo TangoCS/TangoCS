@@ -194,11 +194,6 @@ namespace Tango.PDF
 			{
 				var c = o as PdfPCell;
 
-				/*var to = state.Pop();
-				if (!(to is PdfPTable))
-					throw new Exception(exeption);
-				var t = to as PdfPTable;*/
-
 				state.Push(table);
 				if (ta != null) ta();
 
@@ -222,7 +217,6 @@ namespace Tango.PDF
 				var t = o as PdfPTable;
 				state.Push(cell);
 				if (ta != null) ta();
-				//state.Pop();
 
 				t.AddCell(cell);
 				state.Push(t);
@@ -284,7 +278,6 @@ namespace Tango.PDF
 			{
 				var t = o as PdfPTable;
 				ColumnText ct = new ColumnText(w.DirectContent);
-				//var d = ct.Canvas.PdfDocument;
 				ct.SetSimpleColumn(doc.Left, doc.Top, doc.Right, doc.Bottom);
 				ct.AddElement(t);
 				ct.Go(true);
@@ -305,11 +298,6 @@ namespace Tango.PDF
 			}
 			else throw new Exception(exeption);
 		}
-
-		/*public float RowFixedHeight(int idx)
-		{
-			return _table.GetRowHeight(idx);
-		}*/
 
 		public void AddAttachment(string fileName, byte[] fileBytes)
 		{
@@ -343,7 +331,14 @@ namespace Tango.PDF
 			return this;
 		}
 
-		public PAttributes Font(string family = "times.ttf", float size = 12f, FontWeight weight = FontWeight.Normal, FontStyle style = FontStyle.Normal)
+        public PAttributes Spacing(float spacingbefore = 0, float spacingafter = 0)
+        {
+                Element.SpacingBefore = spacingbefore;
+                Element.SpacingAfter = spacingafter;
+            return this;
+        }
+
+        public PAttributes Font(string family = "times.ttf", float size = 12f, FontWeight weight = FontWeight.Normal, FontStyle style = FontStyle.Normal)
 		{
 			Element.Font = FontManager.Get(family, size, weight, style);
 			return this;
@@ -428,7 +423,7 @@ namespace Tango.PDF
 			return this;
 		}
 
-		public CellAttributes Height(float height)
+        public CellAttributes Height(float height)
 		{
 			Element.FixedHeight = height;
 			return this;
@@ -443,25 +438,13 @@ namespace Tango.PDF
 
 	public class TableAttributes : PdfElementAttributes<PdfPTable>
 	{
-		/*public TableAttributes Columns(int numColumns)
-		{
-			Element.SetWidths(new int[numColumns]);
-			return this;
-		}
-
-		public TableAttributes Columns(float[] relativeWidths)
-		{
-			Element.SetWidths(relativeWidths);
-			return this;
-		}*/
-
 		public TableAttributes SetWidths(float[] widths)
 		{
 			Element.SetWidths(widths);
 			return this;
 		}
 
-		public TableAttributes SpacingBefore(float spacingBefore = 8f)
+        public TableAttributes SpacingBefore(float spacingBefore = 8f)
 		{
 			Element.SpacingBefore = spacingBefore;
 			return this;
