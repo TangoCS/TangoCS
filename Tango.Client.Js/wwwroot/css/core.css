@@ -85,9 +85,10 @@ input.text {
 .icon {
 	display: inline-block;
 	min-width: 16px;
+	text-align: center;
 }
 
-a.actionbtn i.icon, a.actionlink i.icon, .nav a .icon {
+.actionbtn i.icon:first-child, .actionlink i.icon, .nav a .icon {
 	margin-right: 4px;
 }
 
@@ -241,6 +242,7 @@ hr {
 .listviewtable .alt {
 	background: #f9f9f9;
 }
+
 .listviewtable .del {
 	background-color: #ccc;
 	text-decoration: line-through;

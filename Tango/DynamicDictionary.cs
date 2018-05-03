@@ -138,7 +138,7 @@ namespace Tango
 
 	public static class DynamicDictionaryExtensions
 	{
-		public static T Parse<T>(this DynamicDictionary dd, string name, T defaultValue = default(T))
+		public static T Parse<T>(this IReadOnlyDictionary<string, object> dd, string name, T defaultValue = default(T))
 		{
 			var d = dd[name];
 			if (d == null) return defaultValue;
@@ -146,7 +146,7 @@ namespace Tango
 			return Parse(d, format, defaultValue);
 		}
 
-		public static DateTime? ParseDateTime(this DynamicDictionary dd, string name, string format)
+		public static DateTime? ParseDateTime(this IReadOnlyDictionary<string, object> dd, string name, string format)
 		{
 			var d = dd[name];
 			if (d == null) return null;
@@ -156,7 +156,7 @@ namespace Tango
 			return DateTime.ParseExact(ds, format, CultureInfo.InvariantCulture);
 		}
 
-		public static DateTime ParseDateTime(this DynamicDictionary dd, string name, string format, DateTime defaultValue)
+		public static DateTime ParseDateTime(this IReadOnlyDictionary<string, object> dd, string name, string format, DateTime defaultValue)
 		{
 			var d = dd[name];
 			if (d == null) return defaultValue;
@@ -166,7 +166,7 @@ namespace Tango
 			return DateTime.ParseExact(ds, format, CultureInfo.InvariantCulture);
 		}
 
-		public static decimal ParseDecimal(this DynamicDictionary dd, string name, decimal defaultValue = 0)
+		public static decimal ParseDecimal(this IReadOnlyDictionary<string, object> dd, string name, decimal defaultValue = 0)
 		{
 			var d = dd[name];		
 			return d.ToString().ToDecimal(defaultValue);
@@ -191,7 +191,7 @@ namespace Tango
 			return defaultValue;
 		}
 
-		public static List<T> ParseList<T>(this DynamicDictionary dd, string name)
+		public static List<T> ParseList<T>(this IReadOnlyDictionary<string, object> dd, string name)
 		{
 			object d = dd[name];
 			if (d == null) return null;

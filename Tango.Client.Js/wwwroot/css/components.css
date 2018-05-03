@@ -746,6 +746,7 @@ button.close {
 	line-height: 28px;
 	text-align: left;
 	color: initial;
+	white-space: nowrap;
 }
 
 .dropdownmenu span {

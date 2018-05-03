@@ -1,7 +1,7 @@
 ﻿using System;
 using Tango.Html;
 
-namespace Tango.UI.Controls
+namespace Tango.UI
 {
 	public static class ButtonsExtension
 	{

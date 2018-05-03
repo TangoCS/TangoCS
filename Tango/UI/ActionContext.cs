@@ -33,6 +33,7 @@ namespace Tango.UI
 		public string Action { get; set; }
 		public string Event { get; set; }
 		public string EventReceiver { get; set; }
+		public string Sender { get; set; }
 		public bool IsFirstLoad { get; set; }
 
 		public DynamicDictionary AllArgs { get; set; }
@@ -117,8 +118,7 @@ namespace Tango.UI
 			bool b = ctx.AllArgs.TryGetValue(name, out s);
 			if (b)
 			{
-				DateTime dt;
-				b = DateTime.TryParseExact(s.ToString(), format, null, DateTimeStyles.None, out dt);
+				b = DateTime.TryParseExact(s.ToString(), format, null, DateTimeStyles.None, out DateTime dt);
 				if (b)
 					return dt;
 				else

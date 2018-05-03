@@ -3,7 +3,7 @@ using System.Net;
 using Tango.Html;
 using Tango.Localization;
 
-namespace Tango.UI.Controls
+namespace Tango.UI
 {
 	public class ActionLink
 	{
@@ -133,12 +133,19 @@ namespace Tango.UI.Controls
 			return this;
 		}
 
-		public ActionLink WithEventArg(string key, string value)
+		public ActionLink WithEventArg<T>(string key, T value)
 		{
 			if (value != null)
-				_eventArgs[key] = WebUtility.UrlEncode(value);
+				_eventArgs[key] = WebUtility.UrlEncode(value.ToString());
 			else
 				_eventArgs.Remove(key);
+			return this;
+		}
+
+		public ActionLink RemoveArg(string key)
+		{
+			_args.Remove(key);
+			_eventArgs.Remove(key);
 			return this;
 		}
 

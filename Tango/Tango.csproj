@@ -106,9 +106,9 @@
     <Compile Include="Meta\LocalizationExtensions.cs" />
     <Compile Include="MimeMapping.cs" />
     <Compile Include="StringUtils.cs" />
-    <Compile Include="UI\Controls\ActionLink.cs" />
-    <Compile Include="UI\Controls\Buttons.cs" />
-    <Compile Include="UI\Controls\Calendar.cs" />
+    <Compile Include="UI\ActionLink.cs" />
+    <Compile Include="UI\Buttons.cs" />
+    <Compile Include="UI\Calendar.cs" />
     <Compile Include="UI\Controls\CodeArea.cs" />
     <Compile Include="UI\DefaultTypeActivatorCache.cs" />
     <Compile Include="Html\HtmlParms.cs" />

@@ -212,7 +212,7 @@ var ajaxUtils = function ($, cu) {
 			}
 			var hashUrl = '/';
 			for (key in hashParms) {
-				if (hashParms[key] && hashParms[key] != '' && hashParms[key] != 'null')
+				if (hashParms[key] != null)
 					hashUrl += key + '=' + hashParms[key] + '&';
 			}
 			window.location.hash = hashUrl == '/' ? hashUrl : hashUrl.substring(0, hashUrl.length - 1);
@@ -427,23 +427,27 @@ var ajaxUtils = function ($, cu) {
 	}
 
 	function processElementDataOnEvent(el, data, target) {
+		if (el.id) data['sender'] = el.id;
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
 			attr = attrs[i];
+			var val = attr.value == '' ? null : attr.value;
 			if (attr.name.startsWith('data-p-')) {
-				data[attr.name.replace('data-p-', '')] = attr.value;
+				data[attr.name.replace('data-p-', '')] = val;
 			} else if (attr.name == 'data-e') {
-				target.e = attr.value;
+				target.e = val;
 			} else if (attr.name == 'data-r') {
-				target.r = attr.value;
+				target.r = val;
 			} else if (attr.name.startsWith('data-format')) {
-				data['__format_' + el.name] = attr.value;
+				data['__format_' + el.name] = val;
 			} else if (attr.name.startsWith('data-c-')) {
-				data[attr.name.replace('data-c-', 'c-')] = attr.value;
+				data[attr.name.replace('data-c-', 'c-')] = val;
 			} else if (attr.name.startsWith('data-ref-')) {
 				var refEl = document.getElementById(attr.name.replace('data-ref-', ''));
 				if (refEl) data[refEl.name] = refEl.value;
 			} else if (attr.name == 'href') {
-				target.url = '/api' + attr.value;
+				target.url = '/api' + val;
+			} else if (attr.name == 'data-url') {
+				target.url = val;
 			}
 		}
 	}

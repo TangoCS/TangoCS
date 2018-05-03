@@ -61,6 +61,7 @@ Common.Paging.From;из;of
 Common.Paging.Page;Страница;Page
 Common.Paging.TotalRecords;Всего записей;Total records
 Common.Report.Generate;Сформировать;Generate
+Common.Save;Сохранить;Save
 Common.Search;Поиск;Search
 Common.SelectObject;Выбрать;Select object
 Common.SelectObjects;Выбрать;Select objects
@@ -140,7 +141,7 @@ System.Filter.Tabs.Properties.ToolTip.DefaultView;Предустановленн
 System.Filter.Tabs.Properties.ToolTip.Personal;Представление видно только создавшему пользователю;The view is visible only for the owner
 System.Filter.Tabs.Properties.ToolTip.Shared;Представление видно всем пользователям;The view is visible to all users
 System.Filter.Tabs.Sorting;Сортировка;Sorting
-System.Filter.Title;Название;Title
+System.Filter.Custom;Без названия;Custom
 System.Filter.ViewSettings;Представление;View settings
 System.Filter.CreateView;Создать представление;Create view
 System.Filter.EditView;Изменить это представление;Edit current view

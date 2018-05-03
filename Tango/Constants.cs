@@ -13,5 +13,6 @@
 		public static string EventReceiverName = "r";
 		public static string RootReceiverName = "p";
 		public static string FirstLoad = "firstload";
+		public static string Sender = "sender";
 	}
 }
