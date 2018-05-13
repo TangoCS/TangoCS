@@ -184,7 +184,7 @@ var ajaxUtils = function ($, cu) {
 			for (var i = 0, el; el = els[i++];) {
 				processElementDataOnFormSubmit(el, function (key, value) { fd.append(key, value); });
 			}
-			instance.postEventWithApiResponse({ e: 'onsubmit', url: form.action }, fd);
+			instance.postEventWithApiResponse({ e: 'onsubmit', url: form.action, data: fd });
 			return false;
 		},
 		error: function (xhr, status, e) {
