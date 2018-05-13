@@ -23,7 +23,7 @@ namespace Tango.UI.Controls
 		public void OnPageSelect(ApiResponse response)
 		{
 			if (_curpage != null)
-				response.AddWidget(ParentElement, _curid, w => _curpage.Content(w));			
+				response.WithNamesAndWritersFor(ParentElement).AddWidget(_curid, w => _curpage.Content(w));			
 		}
 
 		public void Render(LayoutWriter w)

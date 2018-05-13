@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?vax1uv');
-  src:  url('fonts/icomoon.eot?vax1uv#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?vax1uv') format('truetype'),
-    url('fonts/icomoon.woff?vax1uv') format('woff'),
-    url('fonts/icomoon.svg?vax1uv#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?athss8');
+  src:  url('fonts/icomoon.eot?athss8#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?athss8') format('truetype'),
+    url('fonts/icomoon.woff?athss8') format('woff'),
+    url('fonts/icomoon.svg?athss8#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -24,6 +24,18 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-minus-box:before {
+  content: "\e901";
+}
+.icon-checkbox-checked:before {
+  content: "\e94c";
+}
+.icon-checkbox-intermediate:before {
+  content: "\e94d";
+}
+.icon-checkbox-unchecked:before {
+  content: "\e94e";
+}
 .icon-view:before {
   content: "\e948";
 }
@@ -50,9 +62,6 @@
 }
 .icon-xml:before {
   content: "\e900";
-}
-.icon-expanded2:before {
-  content: "\e901";
 }
 .icon-approval:before {
   content: "\e902";
@@ -254,9 +263,6 @@
 }
 .icon-calendar:before {
   content: "\f106";
-}
-.icon-collapsed2:before {
-  content: "\f108";
 }
 .icon-edit:before {
   content: "\f110";

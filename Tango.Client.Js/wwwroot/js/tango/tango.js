@@ -47,6 +47,7 @@ var commonUtils = function ($) {
 			return document.body;
 		},
 		scrollToView: function (element) {
+			if (!element.getBoundingClientRect) return;
 			var r = element.getBoundingClientRect();
 			if (r.bottom > window.innerHeight) {
 				var scrl = instance.getScrollParent(element);
@@ -147,6 +148,24 @@ var domActions = function () {
 var ajaxUtils = function ($, cu) {
 	var timer = null;
 
+	var state = {
+		com: {
+			requestId: null,
+			message: null,
+			apiResult: null,
+			requestedJs: []
+		},
+		loc: {
+			DEF_EVENT_NAME: 'onload',
+			defAction: null,
+			event: null,
+			receiver: null
+		},
+		ctrl: {
+
+		}
+	};
+
 	var instance = {
 		initForm: function (args) {
 			var form = $('#' + args.id);
@@ -183,25 +202,18 @@ var ajaxUtils = function ($, cu) {
 			}
 			timer = window.setTimeout(function () { func(caller); }, 400);
 		},
-		setHash: function (target, args) {
-			if (target.e)
-				state.loc.event = target.e;
-			else
-				state.loc.event = '#';
-			if (target.r) state.loc.receiver = target.r;
-			instance.setHashParms(args);
-		},
-		setHashFromElement: function (el) {
-			var data = {}, target = {};
-			processElementDataOnEvent(el, data, target);
+		setHashFromElement: function (el, target) {
+			if (!target) target = {};
+			if (!target.data) target.data = {};
+			processElementDataOnEvent(el, target);
 			if (target.e)
 				state.loc.event = target.e;
 			else
 				state.loc.event = state.loc.DEF_EVENT_NAME;
 			if (target.r) state.loc.receiver = target.r;
 			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)
-				data[el.name] = el.value;
-			instance.setHashParms(data);
+				target.data[el.name] = el.value;
+			instance.setHashParms(target.data);
 		},
 		setHashParms: function (args) {
 			var hashParms = cu.getHashParams();
@@ -225,49 +237,50 @@ var ajaxUtils = function ($, cu) {
 					instance.postEventFromElementWithApiResponse(this, { e: e.data.serverEvent, r: e.data.receiver });
 			});
 		},
-		runEvent: function (target, args) {
+		runEvent: function (target) {
 			return $.ajax({
-				url: instance.prepareUrl(target, args),
+				url: instance.prepareUrl(target, true),
 				type: 'GET'
 			}).fail(instance.error).then(onRequestResult);
 		},
-		runEventWithApiResponse: function (target, args) {
-			return instance.runEvent(target, args).then(instance.loadScripts).then(processApiResponse);
+		runEventWithApiResponse: function (target) {
+			return instance.runEvent(target).then(instance.loadScripts).then(processApiResponse);
 		},
 		runEventFromElementWithApiResponse: function (el, target) {
-			var data = {};
 			if (!target) target = {};
-			processElementDataOnEvent(el, data, target);
+			if (!target.data) target.data = {};
+			processElementDataOnEvent(el, target);
 			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)
-				data[el.name] = el.value;
-			return instance.runEventWithApiResponse(target, data);
+				target.data[el.name] = el.value;
+			return instance.runEventWithApiResponse(target);
 		},
-		postEvent: function (target, args) {
-			var isForm = args instanceof FormData;
+		postEvent: function (target) {
+			var isForm = target.data instanceof FormData;
 			return $.ajax({
-				url: instance.prepareUrl(target),
+				url: instance.prepareUrl(target, false),
 				type: 'POST',
 				processData: !isForm,
 				contentType: isForm ? false : "application/json; charset=utf-8",
-				data: isForm ? args : JSON.stringify(args)
+				data: isForm ? target.data : JSON.stringify(target.data)
 			}).fail(instance.error).then(onRequestResult);
 		},
-		postEventWithApiResponse: function (target, args) {
-			return instance.postEvent(target, args).then(instance.loadScripts).then(processApiResponse);
+		postEventWithApiResponse: function (target) {
+			return instance.postEvent(target).then(instance.loadScripts).then(processApiResponse);
 		},
 		postEventFromElementWithApiResponse: function (el, target) {
 			var form = $(el).closest('form')[0];
-			var data = {};
+			if (!target) target = {};
+			if (!target.data) target.data = {};
 			if (form) {
-				data = $(form).serializeObject();
+				target.data = $(form).serializeObject();
 				var els = form.elements;
 				for (var i = 0, fel; fel = els[i++];) {
 					processElementDataOnFormSubmit(fel, function (key, value) { data[key] = value; });
 				}
 			}
-			if (!target) target = {};
-			processElementDataOnEvent(el, data, target);
-			return instance.postEventWithApiResponse(target, data);
+
+			processElementDataOnEvent(el, target);
+			return instance.postEventWithApiResponse(target);
 		},
 		loadScripts: function (apiResult) {
 			if (!apiResult) return $.Deferred().resolve(apiResult);
@@ -285,7 +298,7 @@ var ajaxUtils = function ($, cu) {
 			else
 				return r.resolve(apiResult);
 		},
-		prepareUrl: function (target, args) {
+		prepareUrl: function (target, processData) {
 			var hashParms = cu.getHashParams();
 
 			var url = target.url ?
@@ -302,36 +315,25 @@ var ajaxUtils = function ($, cu) {
 			if (p) url += '&p=' + p;
 
 			for (var key in hashParms) {
-				if (key != 'e' && key != 'r' && key != 'p' && hashParms[key] && !(args && key in args))
+				if (key != 'e' && key != 'r' && key != 'p' && hashParms[key] && !(processData && target.data && key in target.data))
 					url += '&' + key + '=' + encodeURIComponent(hashParms[key]);
 				else if (key == 'r')
 					target.r = hashParms[key];
 			}
-			for (var key in args) {
-				url += '&' + key + '=' + encodeURIComponent(args[key]);
+			if (processData) {
+				for (var key in target.data) {
+					url += '&' + key + '=' + encodeURIComponent(target.data[key]);
+				}
 			}
 			if (target.r) url += '&r=' + target.r;
+			if (target.sender) url += '&sender=' + target.sender;
 
 			return url;
 		},
 		stopRequest: function () {
 			requestCompleted();
-		}
-	};
-
-	var state = {
-		com: {
-			requestId: null,
-			message: null,
-			apiResult: null,
-			requestedJs: []
 		},
-		loc: {
-			DEF_EVENT_NAME: 'onload',
-			defAction: null,
-			event: null,
-			receiver: null
-		}
+		state: state
 	};
 
 	function loadScript(def, toLoad, cur) {
@@ -363,7 +365,7 @@ var ajaxUtils = function ($, cu) {
 		xhr.setRequestHeader('x-request-guid', state.com.requestId)
 		xhr.setRequestHeader('x-csrf-token', document.head.getAttribute('data-x-csrf-token'))
 		setTimeout(function () {
-			if (state.com.requestId) state.com.message.css('display', 'block');
+			if (state.com.requestId && state.com.message) state.com.message.css('display', 'block');
 		}, 100);
 	}
 
@@ -426,24 +428,24 @@ var ajaxUtils = function ($, cu) {
 		}
 	}
 
-	function processElementDataOnEvent(el, data, target) {
-		if (el.id) data['sender'] = el.id;
+	function processElementDataOnEvent(el, target) {
+		if (el.id) target.sender = el.id;
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
 			attr = attrs[i];
 			var val = attr.value == '' ? null : attr.value;
 			if (attr.name.startsWith('data-p-')) {
-				data[attr.name.replace('data-p-', '')] = val;
+				target.data[attr.name.replace('data-p-', '')] = val;
 			} else if (attr.name == 'data-e') {
 				target.e = val;
 			} else if (attr.name == 'data-r') {
 				target.r = val;
 			} else if (attr.name.startsWith('data-format')) {
-				data['__format_' + el.name] = val;
+				target.data['__format_' + el.name] = val;
 			} else if (attr.name.startsWith('data-c-')) {
-				data[attr.name.replace('data-c-', 'c-')] = val;
+				target.data[attr.name.replace('data-c-', 'c-')] = val;
 			} else if (attr.name.startsWith('data-ref-')) {
 				var refEl = document.getElementById(attr.name.replace('data-ref-', ''));
-				if (refEl) data[refEl.name] = refEl.value;
+				if (refEl && refEl.name !== undefined && refEl.value !== undefined) target.data[refEl.name] = refEl.value;
 			} else if (attr.name == 'href') {
 				target.url = '/api' + val;
 			} else if (attr.name == 'data-url') {
@@ -504,7 +506,7 @@ var ajaxUtils = function ($, cu) {
 							cu.scrollToView(el2.nextSibling);
 						}
 					}
-				} 
+				}
 				else if (el) {
 					el.innerHTML = obj;
 				}
@@ -519,6 +521,7 @@ var ajaxUtils = function ($, cu) {
 			}
 		}
 		if (window.homePage) homePage.countNavBodyHeight();
+		console.log("renderApiResult complete");
 	}
 
 	function runClientAction(service, callChain, iter) {
@@ -561,12 +564,44 @@ var ajaxUtils = function ($, cu) {
 	$(document).ajaxSend(beforeRequest);
 	$(document).ajaxStop(requestCompleted);
 
+	var dom_observer = new MutationObserver(function (mutations) {
+		mutations.forEach(function (m) {
+			for (var n = 0; n < m.addedNodes.length; n++) {
+				const node = m.addedNodes[n];
+				if (!(node instanceof Element)) continue;
+				if (!node.id) continue;
+
+				const t = node.getAttribute('data-init');
+				if (t) {
+					var ctrlstate = { type: t, root: node };
+					state.ctrl[node.id] = ctrlstate;
+
+					const els = node.querySelectorAll('[data-hasclientstate]');
+					for (var i = 0; i < els.length; i++) {
+						if (els[i].id == node.id + '_' + els[i].name)
+							ctrlstate[els[i].name] = JSON.parse(els[i].value);
+					}
+
+					window[t]['init'](node, ctrlstate);
+					console.log('mut: ' + node.id + ' init ' + t);
+				}
+				else if (state.ctrl[node.id]) {
+					const t = state.ctrl[node.id].type;
+					window[t]['setstate'](node, ctrlstate);
+					console.log('mut: ' + node.id + ' setstate ' + t);
+				}
+			}
+		});
+	});
+	dom_observer.observe(document, { childList: true, subtree: true });
+
+
 	var __load = document.head.attributes['data-load'];
 	if (__load) {
 		if (window.location.pathname == '/') {
 			state.loc.defAction = __load.value;
 		}
-		instance.runEventWithApiResponse({ e: 'onload' }, { firstload: true });
+		instance.runEventWithApiResponse({ e: 'onload', data: { firstload: true } });
 	}
 
 	return instance;

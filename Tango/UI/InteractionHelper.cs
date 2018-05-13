@@ -25,12 +25,13 @@ namespace Tango.UI
 				if (p == typeof(ArrayResponse))
 					resp = new ArrayResponse();
 				else if (p == typeof(ApiResponse))
-					resp = new ApiResponse();
+				{
+					var apiResp = new ApiResponse(recipient);
+					firstLoad?.Invoke(apiResp);
+					resp = apiResp;
+				}
 				else if (p == typeof(ObjectResponse))
 					resp = new ObjectResponse();
-
-				if (resp is ApiResponse && firstLoad != null)
-					firstLoad(resp as ApiResponse);
 
 				m.Invoke(recipient, new object[] { resp });
 

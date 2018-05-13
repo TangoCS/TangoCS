@@ -15,7 +15,7 @@ namespace Tango.UI
 
 	public interface IViewElement : IInteractionFlowElement
 	{
-		string ClientID { get; set; }
+		string ClientID { get; }
 		IViewElement ParentElement { get; set; }
 		DataCollection DataCollection { get; set; }
 		string GetClientID(string id);
@@ -81,8 +81,25 @@ namespace Tango.UI
 	{
 		public DataCollection DataCollection { get; set; } = new DataCollection();
 
-		public string ClientID { get; set; }
-		public IViewElement ParentElement { get; set; }
+		public override string ID {
+			get => base.ID;
+			set {
+				base.ID = value;
+				ClientID = _parentElement?.GetClientID(value) ?? value?.ToLower();
+			}
+		}
+
+		public string ClientID { get; private set; }
+		public string Name => ClientID.IsEmpty() ? GetType().Name.ToLower() : ClientID;
+
+		IViewElement _parentElement;
+		public IViewElement ParentElement {
+			get => _parentElement;
+			set {
+				_parentElement = value;
+				ClientID = _parentElement?.GetClientID(ID) ?? ID?.ToLower();
+			}
+		}
 
 		public virtual void OnInit() { }
 		public virtual void AfterInit() { }
@@ -98,7 +115,6 @@ namespace Tango.UI
 			T c = new T() { Context = Context };
 			if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
 			c.ID = id;
-			c.ClientID = GetClientID(id);
 			c.ParentElement = this;
 
 			Context.EventReceivers.Add(c.ClientID, c);
@@ -116,7 +132,6 @@ namespace Tango.UI
 
 			c.Context = Context;
 			if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
-			c.ClientID = GetClientID(c.ID);
 			c.ParentElement = this;
 
 			Context.EventReceivers.Add(c.ClientID, c);

@@ -30,7 +30,7 @@
 			if (contentcellid != '') getCell(document.getElementById(contentcellid)).classList.remove('expandedcell');
 			if (elcellid != '' && (load || state == 'collapsed')) getCell(document.getElementById(elcellid)).classList.add('expandedcell');
 
-			if (load) au.postEventFromElementWithApiResponse(el, { e: e, r: r });
+			if (load) au.postEventFromElementWithApiResponse(el, { e: e, r: r, data: { rowid: tr.id } });
 		},
 		togglelevel: function (el, e, r) {
 			var tr = getRow(el);
@@ -55,7 +55,104 @@
 
 				row = row.nextElementSibling;
 			}
+		},
+		init: function (el, s) {
+
+		},
+		setstate: function (root, s) {
+			const cblist = root.querySelectorAll('.sel');
+			const state = au.state.ctrl[root.id];
+			const cbhead = document.getElementById(root.id + "_sel_header");
+
+			var j = 0;
+			for (var i = 0; i < cblist.length; i++) {
+				const tr = getRow(cblist[i]);
+				const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
+				if (index > -1) {
+					setRowChecked(tr, cblist[i]);
+					j++;
+				}
+			}
+			setHeaderSelectorState(cbhead, j, cblist.length);
+		},
+		setselected: function (el) {
+			const tr = getRow(el);
+			const root = tr.parentNode.parentNode;
+			const state = au.state.ctrl[root.id];
+			const cbhead = document.getElementById(root.id + "_sel_header");
+			const selected = tr.classList.contains('selected');
+
+			if (selected) {
+				setRowUnchecked(tr, el);
+				const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
+				if (index > -1) {
+					state.selectedvalues.splice(index, 1);
+				}
+			}
+			else {
+				setRowChecked(tr, el);
+				state.selectedvalues.push(tr.getAttribute('data-rowid'));
+			}
+
+			const cblist = root.querySelectorAll('.sel');
+			var j = 0;
+			for (var i = 0; i < cblist.length; i++) {
+				if (cblist[i].getAttribute('data-state') == 1) j++;
+			}
+			setHeaderSelectorState(cbhead, j, cblist.length);
+		},
+		cbheadclicked: function (cbhead) {
+			const tr = getRow(cbhead);
+			const root = tr.parentNode.parentNode;
+			const state = au.state.ctrl[root.id];
+			const cblist = root.querySelectorAll('.sel');
+			const headstate = cbhead.getAttribute('data-state') || '0';
+
+			if (headstate == '2' || headstate == '1') {
+				for (var i = 0; i < cblist.length; i++) {
+					const row = getRow(cblist[i]);
+					setRowUnchecked(row, cblist[i]);
+				}
+				state.selectedvalues = [];
+				cbhead.setAttribute('data-state', '0');
+				cbhead.firstChild.className = 'icon icon-checkbox-unchecked';
+			}
+			else if (headstate == '0') {
+				for (var i = 0; i < cblist.length; i++) {
+					const row = getRow(cblist[i]);
+					setRowChecked(row, cblist[i]);
+					state.selectedvalues.push(row.getAttribute('data-rowid'));
+				}
+				cbhead.setAttribute('data-state', '1');
+				cbhead.firstChild.className = 'icon icon-checkbox-checked';
+			}
+
 		}
+	}
+
+	function setHeaderSelectorState(cbhead, j, cnt) {
+		if (j == cnt) {
+			cbhead.setAttribute('data-state', '1');
+			cbhead.firstChild.className = 'icon icon-checkbox-checked';
+		} else if (j == 0) {
+			cbhead.setAttribute('data-state', '0');
+			cbhead.firstChild.className = 'icon icon-checkbox-unchecked';
+		} else {
+			cbhead.setAttribute('data-state', '2');
+			cbhead.firstChild.className = 'icon icon-minus-box';
+		}
+	}
+
+	function setRowChecked(tr, el) {
+		tr.classList.add('selected');
+		el.firstChild.className = 'icon icon-checkbox-checked';
+		el.setAttribute('data-state', 1);
+	}
+
+	function setRowUnchecked(tr, el) {
+		tr.classList.remove('selected');
+		el.firstChild.className = 'icon icon-checkbox-unchecked';
+		el.setAttribute('data-state', 0);
 	}
 
 	function getRow(caller) {

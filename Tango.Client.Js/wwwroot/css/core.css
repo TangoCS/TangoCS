@@ -248,6 +248,16 @@ hr {
 	text-decoration: line-through;
 }
 
+.listviewtable.hover tr:hover {
+	background-color: #AFEEEE;
+}
+
+.listviewtable tr.selected {
+	background-color: #c2dbff;
+}
+
+
+
 /* two columns table/row*/
 .twocolumnstable {
 	display: table;

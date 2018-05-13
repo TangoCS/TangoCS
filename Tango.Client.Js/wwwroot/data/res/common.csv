@@ -65,6 +65,8 @@ Common.Save;Сохранить;Save
 Common.Search;Поиск;Search
 Common.SelectObject;Выбрать;Select object
 Common.SelectObjects;Выбрать;Select objects
+Common.SelectObject_Field;Выбрать;Select object
+Common.SelectObjects_Field;Выбрать;Select objects
 Common.Text;Текст;Text
 Common.Theme;Тема;Theme
 Common.Theme.Current;Текущая тема;Current theme

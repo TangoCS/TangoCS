@@ -9,14 +9,14 @@
 			}
 
 			if (el.getAttribute('data-useurlparm') == "True") {
-				var args = {}, target = {};
+				var target = {};
 
-				args[id] = el.getAttribute('data-id');
 				if (el.getAttribute('data-ajax') == "True" && el.getAttribute('data-loaded') != "True") {
-					target = { e: "OnPageSelect", r: id };
+					target = { e: "OnPageSelect", r: id, data: {} };
+					target.data[id] = el.getAttribute('data-id');
 					el.setAttribute('data-loaded', 'True');
 				}
-				au.setHash(target, args);
+				au.setHashFromElement(el, target);
 			}
 		}
 	};

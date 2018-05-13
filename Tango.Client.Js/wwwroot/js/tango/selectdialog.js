@@ -61,7 +61,7 @@ var selectMultipleObjectsDialog = function (au, cu, dialog) {
 
 			var data = {};
 			data[valueelid] = d.selectedObjs;
-			au.postEventWithApiResponse({ e: 'submitdialog', r: id }, data);
+			au.postEventWithApiResponse({ e: 'submitdialog', r: id, data: data });
 		},
 		clear: function (id) {
 			var el = $("#" + $("#" + id).attr('data-value-id'));

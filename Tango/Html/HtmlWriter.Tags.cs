@@ -54,16 +54,16 @@ namespace Tango.Html
 		static void WriteAttributes<T>(IHtmlWriter w, Action<T> attrs)
 			where T : TagAttributes<T>, new()
 		{
-			IDictionary<string, string> attributes = new Dictionary<string, string>(StringComparer.Ordinal);
+			IDictionary<string, string> attributes = new Dictionary<string, string>(7, StringComparer.Ordinal);
 
 			T ta = new T {
-				MergeAttributeFunc = (key, value, replaceExisting) => {
+				AttributeFunc = (key, value, replaceExisting) => {
 					if (replaceExisting || (!string.IsNullOrEmpty(value) && !attributes.ContainsKey(key)))
 						attributes[key] = value;
 					else if (!string.IsNullOrEmpty(value))
 						attributes[key] = attributes[key] + " " + value;
 				},
-				MergeIDAttributeFunc = (key, value) => attributes[key] = w.GetID(value)
+				IDAttributeFunc = (key, value) => attributes[key] = value == null ? w.IDPrefix : w.GetID(value)
 			};
 			attrs(ta);
 
@@ -80,10 +80,7 @@ namespace Tango.Html
 			}
 		}
 
-		public static string GetID(this IHtmlWriter w, string id)
-		{
-			return HtmlWriterHelpers.GetID(w.IDPrefix, id);
-		}
+		public static string GetID(this IHtmlWriter w, string id) => HtmlWriterHelpers.GetID(w.IDPrefix, id);
 
 		public static void A(this IHtmlWriter w, Action<ATagAttributes> attributes = null, Action inner = null)
 		{
