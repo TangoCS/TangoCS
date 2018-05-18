@@ -41,7 +41,7 @@ namespace NHibernate.Type
 			try
 			{
 				DateTime dbValue = Convert.ToDateTime(rs[index]);
-				return new DateTime(dbValue.Year, dbValue.Month, dbValue.Day, dbValue.Hour, dbValue.Minute, dbValue.Second);
+				return new DateTime(dbValue.Year, dbValue.Month, dbValue.Day, dbValue.Hour, dbValue.Minute, dbValue.Second, dbValue.Millisecond);
 			}
 			catch (Exception ex)
 			{
@@ -63,7 +63,7 @@ namespace NHibernate.Type
 		{
 			DateTime dateValue = (DateTime) value;
 			((IDataParameter)st.Parameters[index]).Value =
-				new DateTime(dateValue.Year, dateValue.Month, dateValue.Day, dateValue.Hour, dateValue.Minute, dateValue.Second);
+				new DateTime(dateValue.Year, dateValue.Month, dateValue.Day, dateValue.Hour, dateValue.Minute, dateValue.Second, dateValue.Millisecond);
 		}
 
 		#region IVersionType Members
@@ -75,7 +75,7 @@ namespace NHibernate.Type
 
 		public virtual object Seed(ISessionImplementor session)
 		{
-			return TimestampType.Round(DateTime.Now, TimeSpan.TicksPerSecond);
+			return TimestampType.Round(DateTime.Now, TimeSpan.TicksPerMillisecond);
 		}
 
 		public override bool IsEqual(object x, object y)
@@ -96,15 +96,16 @@ namespace NHibernate.Type
 			if(date1.Equals(date2))
 				return true;
 
-			return (date1.Year == date2.Year &&
-					date1.Month == date2.Month &&
-					date1.Day == date2.Day &&
-					date1.Hour == date2.Hour &&
-					date1.Minute == date2.Minute &&
-					date1.Second == date2.Second);
-		}
+            return (date1.Year == date2.Year &&
+                    date1.Month == date2.Month &&
+                    date1.Day == date2.Day &&
+                    date1.Hour == date2.Hour &&
+                    date1.Minute == date2.Minute &&
+                    date1.Second == date2.Second &&
+                    date1.Millisecond == date2.Millisecond);
+        }
 
-		public virtual IComparer Comparator
+        public virtual IComparer Comparator
 		{
 			get { return Comparer<DateTime>.Default; }
 		}
@@ -119,7 +120,8 @@ namespace NHibernate.Type
 			int hashCode = 1;
 			unchecked
 			{
-				hashCode = 31 * hashCode + date.Second;
+                hashCode = 31 * hashCode + date.Millisecond;
+                hashCode = 31 * hashCode + date.Second;
 				hashCode = 31 * hashCode + date.Minute;
 				hashCode = 31 * hashCode + date.Hour;
 				hashCode = 31 * hashCode + date.Day;
