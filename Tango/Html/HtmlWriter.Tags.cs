@@ -11,8 +11,50 @@ namespace Tango.Html
 		}
 	}
 
+	public class AttributeWriter : IAttributeWriter
+	{
+		IDictionary<string, string> attributes = new Dictionary<string, string>(7, StringComparer.Ordinal);
+		IHtmlWriter w;
+
+		public void SetHtmlWriter(IHtmlWriter writer)
+		{
+			w = writer;
+			attributes.Clear();
+		}
+
+		public void Write(string key, string value, bool replaceExisting = true)
+		{
+			if (replaceExisting || (!string.IsNullOrEmpty(value) && !attributes.ContainsKey(key)))
+				attributes[key] = value;
+			else if (!string.IsNullOrEmpty(value))
+				attributes[key] = attributes[key] + " " + value;
+		}
+
+		public void WriteID(string key, string value)
+		{
+			attributes[key] = value == null ? w.IDPrefix : w.GetID(value);
+		}
+
+		public void Render()
+		{
+			foreach (var attribute in attributes)
+			{
+				if (attribute.Value != null)
+				{
+					w.Write(' ');
+					w.Write(attribute.Key);
+					w.Write("=\"");
+					w.Write(attribute.Value);
+					w.Write('"');
+				}
+			}
+		}
+	}
+
 	public static class HtmlWriterTagsExtensions
 	{
+		static AttributeWriter attributeWriter = new AttributeWriter();
+
 		public static void WriteTag<T>(this IHtmlWriter w, string name, Action<T> attrs, Action inner)
 			where T : TagAttributes<T>, new()
 		{
@@ -54,30 +96,9 @@ namespace Tango.Html
 		static void WriteAttributes<T>(IHtmlWriter w, Action<T> attrs)
 			where T : TagAttributes<T>, new()
 		{
-			IDictionary<string, string> attributes = new Dictionary<string, string>(7, StringComparer.Ordinal);
-
-			T ta = new T {
-				AttributeFunc = (key, value, replaceExisting) => {
-					if (replaceExisting || (!string.IsNullOrEmpty(value) && !attributes.ContainsKey(key)))
-						attributes[key] = value;
-					else if (!string.IsNullOrEmpty(value))
-						attributes[key] = attributes[key] + " " + value;
-				},
-				IDAttributeFunc = (key, value) => attributes[key] = value == null ? w.IDPrefix : w.GetID(value)
-			};
-			attrs(ta);
-
-			foreach (var attribute in attributes)
-			{
-				if (attribute.Value != null)
-				{
-					w.Write(' ');
-					w.Write(attribute.Key);
-					w.Write("=\"");
-					w.Write(attribute.Value);
-					w.Write('"');
-				}
-			}
+			attributeWriter.SetHtmlWriter(w);
+			attrs(new T { AttributeWriter = attributeWriter });
+			attributeWriter.Render();
 		}
 
 		public static string GetID(this IHtmlWriter w, string id) => HtmlWriterHelpers.GetID(w.IDPrefix, id);

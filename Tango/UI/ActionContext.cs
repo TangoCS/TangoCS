@@ -45,6 +45,53 @@ namespace Tango.UI
 
 		public IDictionary<string, string> PersistentArgs { get; }
 		public IDictionary<string, InteractionFlowElement> EventReceivers { get; private set; }
+
+		protected void ParseQueryParms(IReadOnlyDictionary<string, string> d)
+		{
+			Action<string, string> addArg = (k, v) => ActionArgs.Add(k, v);
+
+			foreach (var arg in d)
+			{
+				var key = arg.Key;
+				var value = arg.Value;
+
+				if (key == Constants.ServiceName)
+				{
+					Service = value.ToString();
+					if (Service != null && Service.Contains("."))
+						throw new ArgumentException("Incorrect character '.' in Service parameter");
+				}
+				else if (key == Constants.ActionName)
+				{
+					Action = value.ToString();
+					if (Action != null && Action.Contains("."))
+						throw new ArgumentException("Incorrect character '.' in Action parameter");
+				}
+				else if (key == Constants.RootReceiverName)
+					RootReceiver = value.ToString();
+				else if (key == Constants.FirstLoad)
+					IsFirstLoad = value.ToLower() == "true";
+				else if (key == Constants.Sender)
+					Sender = value.ToLower();
+				else if (key == Constants.EventName)
+				{
+					addArg = (k, v) => {
+						EventArgs.Add(k, v);
+						if (!FormData.ContainsKey(k)) FormData.Add(k, v);
+					};
+					Event = value.ToString().ToLower();
+				}
+				else if (key == Constants.EventReceiverName)
+				{
+					EventReceiver = value.ToString().ToLower();
+				}
+				else
+				{
+					addArg(key, value);
+					AllArgs.Add(key, value);
+				}
+			}
+		}
 	}
 
 	public class PostedFileInfo

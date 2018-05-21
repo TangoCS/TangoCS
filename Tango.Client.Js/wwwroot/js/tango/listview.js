@@ -56,24 +56,30 @@
 				row = row.nextElementSibling;
 			}
 		},
-		init: function (el, s) {
-
-		},
-		setstate: function (root, s) {
+		widgetWillMount: function (shadow, state) {
+			const root = shadow.getElementById(state.root);
 			const cblist = root.querySelectorAll('.sel');
-			const state = au.state.ctrl[root.id];
-			const cbhead = document.getElementById(root.id + "_sel_header");
+			const cbhead = shadow.getElementById(root.id + "_sel_header");
 
 			var j = 0;
-			for (var i = 0; i < cblist.length; i++) {
-				const tr = getRow(cblist[i]);
-				const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
-				if (index > -1) {
-					setRowChecked(tr, cblist[i]);
-					j++;
+
+			if (state.selectedvalues[0] == -1) {
+				setPageChecked(root, state, cbhead);
+				j = cblist.length
+			} else {
+				for (var i = 0; i < cblist.length; i++) {
+					const tr = getRow(cblist[i]);
+					const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
+					if (index > -1) {
+						setRowChecked(tr, cblist[i]);
+						j++;
+					}
 				}
 			}
+
 			setHeaderSelectorState(cbhead, j, cblist.length);
+			setMassOpsState(shadow, root, state);
+			initInfoBlock(shadow, root, state);
 		},
 		setselected: function (el) {
 			const tr = getRow(el);
@@ -83,6 +89,10 @@
 			const selected = tr.classList.contains('selected');
 
 			if (selected) {
+				if (state.selectedvalues[0] == -1) {
+					state.selectedvalues = [];
+					setPageChecked(root, state, cbhead);
+				}
 				setRowUnchecked(tr, el);
 				const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
 				if (index > -1) {
@@ -100,6 +110,8 @@
 				if (cblist[i].getAttribute('data-state') == 1) j++;
 			}
 			setHeaderSelectorState(cbhead, j, cblist.length);
+			setMassOpsState(document, root, state);
+			initInfoBlock(document, root, state, j != 0);
 		},
 		cbheadclicked: function (cbhead) {
 			const tr = getRow(cbhead);
@@ -109,25 +121,37 @@
 			const headstate = cbhead.getAttribute('data-state') || '0';
 
 			if (headstate == '2' || headstate == '1') {
-				for (var i = 0; i < cblist.length; i++) {
-					const row = getRow(cblist[i]);
-					setRowUnchecked(row, cblist[i]);
-				}
-				state.selectedvalues = [];
-				cbhead.setAttribute('data-state', '0');
-				cbhead.firstChild.className = 'icon icon-checkbox-unchecked';
+				setPageUnchecked(root, state, cbhead);
 			}
 			else if (headstate == '0') {
-				for (var i = 0; i < cblist.length; i++) {
-					const row = getRow(cblist[i]);
-					setRowChecked(row, cblist[i]);
-					state.selectedvalues.push(row.getAttribute('data-rowid'));
-				}
-				cbhead.setAttribute('data-state', '1');
-				cbhead.firstChild.className = 'icon icon-checkbox-checked';
+				setPageChecked(root, state, cbhead);
 			}
+			setMassOpsState(document, root, state);
+			initInfoBlock(document, root, state);
+		},
+		selectall: function (rootid) {
+			const root = document.getElementById(rootid);
+			const state = au.state.ctrl[rootid];
+			const cbhead = document.getElementById(root.id + "_sel_header");
 
-		}
+			state.selectedvalues = [];
+			state.selectedvalues.push(-1);
+
+			setPageChecked(root, state, cbhead);
+			setMassOpsState(document, root, state);
+			initInfoBlock(document, root, state);
+		},
+		clearselection: function (rootid) {
+			const root = document.getElementById(rootid);
+			const state = au.state.ctrl[rootid];
+			const cbhead = document.getElementById(root.id + "_sel_header");
+
+			state.selectedvalues = [];
+
+			setPageUnchecked(root, state, cbhead);
+			setMassOpsState(document, root, state);
+			initInfoBlock(document, root, state);
+		},
 	}
 
 	function setHeaderSelectorState(cbhead, j, cnt) {
@@ -143,6 +167,42 @@
 		}
 	}
 
+	function setMassOpsState(doc, root, state) {
+		const massops = doc.querySelectorAll('.massop');
+		for (var i = 0; i < massops.length; i++) {
+			if (state.selectedvalues.length == 0) {
+				massops[i].style.display = 'none';
+			} else {
+				massops[i].style.display = '';
+			}
+		}
+	}
+
+	function initInfoBlock(doc, root, state, keepBlockState) {
+		const trInfo = doc.getElementById(root.id + '_sel_info');
+		if (trInfo) {
+			if (state.selectedvalues.length > 0) {
+				if (!keepBlockState) trInfo.style.display = '';
+			}
+			else {
+				trInfo.style.display = 'none';
+			}
+			if (trInfo.style.display == '') {
+				const elCnt = doc.getElementById(root.id + '_sel_info_cnt');
+				const elAll = doc.getElementById(root.id + '_sel_info_all');
+				if (state.selectedvalues[0] != -1) {
+					elCnt.style.display = '';
+					elAll.style.display = 'none';
+					elCnt.innerHTML = state.selectedvalues.length;
+				}
+				else {
+					elCnt.style.display = 'none';
+					elAll.style.display = '';
+				}
+			}
+		}
+	}
+
 	function setRowChecked(tr, el) {
 		tr.classList.add('selected');
 		el.firstChild.className = 'icon icon-checkbox-checked';
@@ -153,6 +213,41 @@
 		tr.classList.remove('selected');
 		el.firstChild.className = 'icon icon-checkbox-unchecked';
 		el.setAttribute('data-state', 0);
+	}
+
+	function setPageChecked(root, state, cbhead) {
+		const cblist = root.querySelectorAll('.sel');
+		for (var i = 0; i < cblist.length; i++) {
+			const tr = getRow(cblist[i]);
+			setRowChecked(tr, cblist[i]);
+			state.selectedvalues.push(tr.getAttribute('data-rowid'));
+		}
+		cbhead.setAttribute('data-state', '1');
+		cbhead.firstChild.className = 'icon icon-checkbox-checked';
+	}
+
+	function setPageUnchecked(root, state, cbhead) {
+		const cblist = root.querySelectorAll('.sel');
+		for (var i = 0; i < cblist.length; i++) {
+			const tr = getRow(cblist[i]);
+			setRowUnchecked(tr, cblist[i]);
+			const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
+			if (index > -1) {
+				state.selectedvalues.splice(index, 1);
+			}
+		}
+		cbhead.setAttribute('data-state', '0');
+		cbhead.firstChild.className = 'icon icon-checkbox-unchecked';
+	}
+
+	function getFirstRowNo(table) {
+		var i = 0;
+		var tr = table.firstChild.firstChild;
+		while (tr.firstChild.nodeName == 'TH') {
+			tr = tr.nextSibling;
+			i++;
+		}
+		return i;
 	}
 
 	function getRow(caller) {

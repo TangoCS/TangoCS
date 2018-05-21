@@ -60,6 +60,8 @@ Common.OnlySelected;Только выбранные;Only selected
 Common.Paging.From;из;of
 Common.Paging.Page;Страница;Page
 Common.Paging.TotalRecords;Всего записей;Total records
+Common.Paging.First;В начало;First
+Common.Paging.Last;В конец;Last
 Common.Report.Generate;Сформировать;Generate
 Common.Save;Сохранить;Save
 Common.Search;Поиск;Search

@@ -494,6 +494,10 @@ button.close {
 	user-select: none;
 }
 
+.paging2 .int {
+	cursor: pointer;
+}
+
 .paging2 a.cnt {
 	/*line-height: 20px;*/
 	border: 1px solid transparent;

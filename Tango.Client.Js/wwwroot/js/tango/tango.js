@@ -240,7 +240,8 @@ var ajaxUtils = function ($, cu) {
 		runEvent: function (target) {
 			return $.ajax({
 				url: instance.prepareUrl(target, true),
-				type: 'GET'
+				type: 'GET',
+				responseType: target.responsetype ? target.responsetype : ""
 			}).fail(instance.error).then(onRequestResult);
 		},
 		runEventWithApiResponse: function (target) {
@@ -261,6 +262,7 @@ var ajaxUtils = function ($, cu) {
 				type: 'POST',
 				processData: !isForm,
 				contentType: isForm ? false : "application/json; charset=utf-8",
+				responseType: target.responsetype ? target.responsetype : "",
 				data: isForm ? target.data : JSON.stringify(target.data)
 			}).fail(instance.error).then(onRequestResult);
 		},
@@ -376,10 +378,12 @@ var ajaxUtils = function ($, cu) {
 
 	function onRequestResult(data, status, xhr) {
 		if (xhr.getResponseHeader('X-Request-Guid') == state.com.requestId) {
-			var disposition = xhr.getResponseHeader('Content-Disposition');
+			const disposition = xhr.getResponseHeader('Content-Disposition');
+
 			// check file download response
 			if (disposition && disposition.indexOf('attachment') !== -1) {
-				processFile(disposition);
+				const contenttype = xhr.getResponseHeader('Content-Type');
+				processFile(contenttype, disposition, data);
 				return $.Deferred().reject();
 			}
 			else
@@ -389,17 +393,16 @@ var ajaxUtils = function ($, cu) {
 			return $.Deferred().reject();
 	}
 
-	function processFile(disposition) {
+	function processFile(contenttype, disposition, data) {
 		var filename = "";
 		var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
 		var matches = filenameRegex.exec(disposition);
 		if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
 		filename = decodeURIComponent(filename);
-		var type = xhr.getResponseHeader('Content-Type');
 
 		var blob = typeof File === 'function'
-			? new File([data], filename, { type: type })
-			: new Blob([data], { type: type });
+			? new File([data], filename, { type: contenttype })
+			: new Blob([data], { type: contenttype });
 
 		if (typeof window.navigator.msSaveBlob !== 'undefined') {
 			// IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
@@ -450,6 +453,8 @@ var ajaxUtils = function ($, cu) {
 				target.url = '/api' + val;
 			} else if (attr.name == 'data-url') {
 				target.url = val;
+			} else if (attr.name == 'data-responsetype') {
+				target.responsetype = val;
 			}
 		}
 	}
@@ -488,27 +493,111 @@ var ajaxUtils = function ($, cu) {
 			return;
 		}
 
+		const nodes = [];
+		const shadow = (new DOMParser()).parseFromString("<!DOCTYPE html>", "text/html");
+
+		const replaceFunc = function (el, obj) {
+			el.parentNode.replaceChild(obj.content.firstChild, el);
+		};
+		const addFunc = function (el, obj) {
+			while (el.firstChild) {
+				el.removeChild(el.firstChild);
+			}
+			while (obj.content.childNodes.length > 0)
+				el.appendChild(obj.content.childNodes[0]);
+		};
+		const adjacentFunc = function (el, obj) {
+			while (obj.content.childNodes.length > 0)
+				el.insertAdjacentElement(obj.position, obj.content.childNodes[0]);
+			if (obj.position.toLowerCase() == 'afterend') {
+				cu.scrollToView(el.nextSibling);
+			}
+		};
+		function parseHTML(parent, htmlString) {
+			const el = document.createElement(parent.tagName);
+			el.innerHTML = htmlString;
+			return el;
+		}
+
 		if (apiResult.widgets) {
 			for (var w in apiResult.widgets) {
 				var obj = apiResult.widgets[w];
 				if (obj && typeof (obj) == "object") {
 					var el = obj.name == 'body' ? document.body : document.getElementById(obj.name);
-					if (el && (obj.action == 'replace' || obj.action == 'adjacent'))
-						el.outerHTML = obj.content;
-					else if (el && obj.action == 'add')
-						el.innerHTML = obj.content;
-					else if (el && obj.action == 'remove')
-						el.remove();
+
+					if (obj.action == 'remove') {
+						if (el) el.remove();
+						continue;
+					}
+
+					const shadowel = shadow.getElementById(obj.name);
+					if (shadowel) {
+						el = shadowel;
+						obj.nested = true;
+					}
+
+					if (el && (obj.action == 'replace' || obj.action == 'adjacent' || obj.action == 'add')) {
+						obj.content = parseHTML(el, obj.content);
+						obj.el = el;
+						obj.func = obj.action == 'add' ? addFunc : replaceFunc;
+						nodes.push(obj);
+					}
 					else if (obj.action == 'adjacent') {
-						var el2 = (obj.parent && obj.parent != 'body' && obj.parent != '') ? document.getElementById(obj.parent) : document.body;
-						el2.insertAdjacentHTML(obj.position, obj.content);
-						if (obj.position.toLowerCase() == 'afterend') {
-							cu.scrollToView(el2.nextSibling);
-						}
+						const el2 = (obj.parent && obj.parent != 'body' && obj.parent != '') ? document.getElementById(obj.parent) : document.body;
+						const root = el2 == document.body ? document.body :
+							(obj.position == 'afterbegin' || obj.position == 'afterend' ? el2 : el2.parentNode);
+						obj.content = parseHTML(root, obj.content);
+						obj.el = el2;
+						obj.func = adjacentFunc;
+						nodes.push(obj);
+					}
+
+					if (obj.nested)
+						obj.func(el, obj);
+					else {
+						const parent = obj.el.parentNode.nodeName == 'HEAD' ? shadow.head : shadow.body;
+						parent.appendChild(obj.content);
 					}
 				}
-				else if (el) {
-					el.innerHTML = obj;
+			}
+
+			const ctrls = shadow.querySelectorAll('[data-ctrl]');
+			for (var i = 0; i < ctrls.length; i++) {
+				const root = ctrls[i];
+				const t = root.getAttribute('data-ctrl');
+				const ctrlstate = state.ctrl[root.id] ? state.ctrl[root.id] : { type: t, root: root.id };
+
+				if (!state.ctrl[root.id]) {
+					state.ctrl[root.id] = ctrlstate;
+
+					const els = root.querySelectorAll('[data-hasclientstate]');
+					for (var j = 0; j < els.length; j++) {
+						if (els[j].id == root.id + '_' + els[j].name)
+							ctrlstate[els[j].name] = JSON.parse(els[j].value);
+					}
+
+					if (window[t] && window[t]['init']) {
+						window[t]['init'](root, ctrlstate);
+						console.log('widget: ' + root.id + ' init ' + t);
+					}
+				}
+
+				if (window[t] && window[t]['widgetWillMount']) {
+					window[t]['widgetWillMount'](shadow, ctrlstate);
+					console.log('widget: ' + root.id + ' widgetWillMount ' + t);
+				}
+			}
+
+			nodes.forEach(function (n) {
+				if (n.nested) return;
+				n.func(n.el, n);
+			});
+
+			for (var id in state.ctrl) {
+				const s = state.ctrl[id];
+				if (window[s.type] && window[s.type]['widgetDidMount']) {
+					window[s.type]['widgetDidMount'](s);
+					console.log('widget: ' + id + ' widgetDidMount ' + s.type);
 				}
 			}
 		}
@@ -542,6 +631,29 @@ var ajaxUtils = function ($, cu) {
 		}
 	}
 
+	function onAddNode(node) {
+		const t = node.getAttribute('data-init');
+		if (t) {
+			var ctrlstate = { type: t, root: node };
+			state.ctrl[node.id] = ctrlstate;
+
+			const els = node.querySelectorAll('[data-hasclientstate]');
+			for (var i = 0; i < els.length; i++) {
+				if (els[i].id == node.id + '_' + els[i].name)
+					ctrlstate[els[i].name] = JSON.parse(els[i].value);
+			}
+
+			window[t]['init'](node, ctrlstate);
+			console.log('mut: ' + node.id + ' init ' + t);
+		}
+
+		if (state.ctrl[node.id]) {
+			const t = state.ctrl[node.id].type;
+			window[t]['setstate'](node, ctrlstate);
+			console.log('mut: ' + node.id + ' setstate ' + t);
+		}
+	}
+
 	document.addEventListener('DOMContentLoaded', function () {
 		state.com.message = $("#topmessagecontainer");
 		setTimeout(function () {
@@ -564,36 +676,17 @@ var ajaxUtils = function ($, cu) {
 	$(document).ajaxSend(beforeRequest);
 	$(document).ajaxStop(requestCompleted);
 
-	var dom_observer = new MutationObserver(function (mutations) {
-		mutations.forEach(function (m) {
-			for (var n = 0; n < m.addedNodes.length; n++) {
-				const node = m.addedNodes[n];
-				if (!(node instanceof Element)) continue;
-				if (!node.id) continue;
-
-				const t = node.getAttribute('data-init');
-				if (t) {
-					var ctrlstate = { type: t, root: node };
-					state.ctrl[node.id] = ctrlstate;
-
-					const els = node.querySelectorAll('[data-hasclientstate]');
-					for (var i = 0; i < els.length; i++) {
-						if (els[i].id == node.id + '_' + els[i].name)
-							ctrlstate[els[i].name] = JSON.parse(els[i].value);
-					}
-
-					window[t]['init'](node, ctrlstate);
-					console.log('mut: ' + node.id + ' init ' + t);
-				}
-				else if (state.ctrl[node.id]) {
-					const t = state.ctrl[node.id].type;
-					window[t]['setstate'](node, ctrlstate);
-					console.log('mut: ' + node.id + ' setstate ' + t);
-				}
-			}
-		});
-	});
-	dom_observer.observe(document, { childList: true, subtree: true });
+	//var dom_observer = new MutationObserver(function (mutations) {
+	//	mutations.forEach(function (m) {
+	//		for (var n = 0; n < m.addedNodes.length; n++) {
+	//			const node = m.addedNodes[n];
+	//			if (!(node instanceof Element)) continue;
+	//			if (!node.id) continue;
+	//			onAddNode(node);				
+	//		}
+	//	});
+	//});
+	//dom_observer.observe(document, { childList: true, subtree: true });
 
 
 	var __load = document.head.attributes['data-load'];
