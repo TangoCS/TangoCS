@@ -24,11 +24,15 @@ namespace Tango.FileStorage
 				return new HtmlResult(w.ToString(), "");
 			}
 
-			var folder = Context.RequestServices.GetService(typeof(IStorageFolder<Guid>)) as IStorageFolder<Guid>;
-			if (folder == null)
+            var storage = Context.RequestServices.GetService(typeof(IStorageManager<Guid>)) as IStorageManager<Guid>;
+            if (storage == null)
 				return renderMessage("Нет удалось получить доступ к файловому хранилищу");
 
-			var file = folder.GetFile(id);
+            var folder = storage.GetFolder();
+            if (folder == null)
+                return renderMessage("Нет удалось получить доступ к файловому хранилищу");
+
+            var file = folder.GetFile(id);
 			return file == null ?
 				renderMessage("Файл был удален, не существует или недостаточно полномочий.") :
 				new FileStreamResult(file);
