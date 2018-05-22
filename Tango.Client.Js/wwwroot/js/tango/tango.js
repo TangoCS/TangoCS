@@ -257,14 +257,34 @@ var ajaxUtils = function ($, cu) {
 		},
 		postEvent: function (target) {
 			var isForm = target.data instanceof FormData;
-			return $.ajax({
-				url: instance.prepareUrl(target, false),
-				type: 'POST',
-				processData: !isForm,
-				contentType: isForm ? false : "application/json; charset=utf-8",
-				responseType: target.responsetype ? target.responsetype : "",
-				data: isForm ? target.data : JSON.stringify(target.data)
-			}).fail(instance.error).then(onRequestResult);
+			if (!target.responsetype) {
+				return $.ajax({
+					url: instance.prepareUrl(target, false),
+					type: 'POST',
+					processData: !isForm,
+					contentType: isForm ? false : "application/json; charset=utf-8",
+					data: isForm ? target.data : JSON.stringify(target.data)
+				}).fail(instance.error).then(onRequestResult);
+			}
+			else {
+				const r = $.Deferred();
+				const xhr = new XMLHttpRequest();
+				xhr.open('POST', instance.prepareUrl(target, false));
+				xhr.responseType = 'arraybuffer';
+				xhr.onload = function () {
+					if (this.status >= 200 && this.status < 300) {
+						r.resolve(xhr.response, this.status, xhr).then(onRequestResult);
+					} else {
+						r.reject(xhr, status, null).then(instance.error);
+					}
+				};
+				xhr.onerror = function () {
+					r.reject(xhr, status, null).then(instance.error);
+				};
+				beforeRequest(this, xhr, null);
+				xhr.send();
+				return r.promise();
+			}
 		},
 		postEventWithApiResponse: function (target) {
 			return instance.postEvent(target).then(instance.loadScripts).then(processApiResponse);
@@ -277,7 +297,7 @@ var ajaxUtils = function ($, cu) {
 				target.data = $(form).serializeObject();
 				var els = form.elements;
 				for (var i = 0, fel; fel = els[i++];) {
-					processElementDataOnFormSubmit(fel, function (key, value) { data[key] = value; });
+					processElementDataOnFormSubmit(fel, function (key, value) { target.data[key] = value; });
 				}
 			}
 
@@ -378,12 +398,13 @@ var ajaxUtils = function ($, cu) {
 
 	function onRequestResult(data, status, xhr) {
 		if (xhr.getResponseHeader('X-Request-Guid') == state.com.requestId) {
+			requestCompleted();
 			const disposition = xhr.getResponseHeader('Content-Disposition');
 
 			// check file download response
 			if (disposition && disposition.indexOf('attachment') !== -1) {
 				const contenttype = xhr.getResponseHeader('Content-Type');
-				processFile(contenttype, disposition, data);
+				processFile(contenttype, disposition, xhr.response);
 				return $.Deferred().reject();
 			}
 			else
@@ -392,6 +413,8 @@ var ajaxUtils = function ($, cu) {
 		else
 			return $.Deferred().reject();
 	}
+
+
 
 	function processFile(contenttype, disposition, data) {
 		var filename = "";
@@ -536,7 +559,8 @@ var ajaxUtils = function ($, cu) {
 						obj.nested = true;
 					}
 
-					if (el && (obj.action == 'replace' || obj.action == 'adjacent' || obj.action == 'add')) {
+					if (obj.action == 'replace' || (el && obj.action == 'adjacent') || obj.action == 'add') {
+						if (!el) continue;
 						obj.content = parseHTML(el, obj.content);
 						obj.el = el;
 						obj.func = obj.action == 'add' ? addFunc : replaceFunc;
@@ -544,6 +568,7 @@ var ajaxUtils = function ($, cu) {
 					}
 					else if (obj.action == 'adjacent') {
 						const el2 = (obj.parent && obj.parent != 'body' && obj.parent != '') ? document.getElementById(obj.parent) : document.body;
+						if (!el2) continue;
 						const root = el2 == document.body ? document.body :
 							(obj.position == 'afterbegin' || obj.position == 'afterend' ? el2 : el2.parentNode);
 						obj.content = parseHTML(root, obj.content);
