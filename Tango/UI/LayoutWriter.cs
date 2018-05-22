@@ -76,25 +76,37 @@ namespace Tango.UI
 			w.AddClientAction("ajaxUtils", "initForm", new { ID = w.GetID(name), SubmitOnEnter = submitOnEnter });
 		}
 
-		//public static void ListTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
-		//{
-		//	w.Table(a => a.Class("ms-listviewtable").Set(attributes), content);
-		//}
-
 		public static void FormTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
 			w.Table(a => a.Class("formtable").Set(attributes), content);
-		}
-
-		public static void FormTableStd(this LayoutWriter w, Action content)
-		{
-			w.FormTable(a => a.Class("widthstd"), content);
 		}
 
 		public static void FormTable100Percent(this LayoutWriter w, Action content)
 		{
 			w.FormTable(a => a.Class("width100"), content);
 		}
+
+		public static void FieldsBlockStd(this LayoutWriter w, Action content)
+		{
+			w.FieldsBlockStd(null, content);
+		}
+
+		public static void FieldsBlock100Percent(this LayoutWriter w, Action content)
+		{
+			w.FieldsBlock100Percent(null, content);
+		}
+
+		public static void FieldsBlockStd(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+		{
+			w.FormTable(a => a.ID().Class("widthstd").Set(attributes), content);
+		}
+
+		public static void FieldsBlock100Percent(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+		{
+			w.FormTable(a => a.ID().Class("width100").Set(attributes), content);
+		}
+
+
 
 		public static void GroupTitle(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
@@ -108,7 +120,12 @@ namespace Tango.UI
 
 		public static void ButtonsBar(this LayoutWriter w, Action content)
 		{
-			w.Div(a => a.ID("buttonsbar").Class("buttonsbar"), content);
+			w.ButtonsBar(null, content);
+		}
+
+		public static void ButtonsBar(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+		{
+			w.Div(a => a.ID("buttonsbar").Class("buttonsbar").Set(attributes), content);
 		}
 
 		public static void ButtonsBarRight(this LayoutWriter w, Action content)

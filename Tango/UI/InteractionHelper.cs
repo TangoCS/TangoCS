@@ -9,7 +9,18 @@ namespace Tango.UI
 		public static ActionResult RunEvent(IInteractionFlowElement recipient, string e, Action<ApiResponse> firstLoad, Action<ApiResponse> renderLog)
 		{	
 			var t = recipient.GetType();
-			var m = FindMethod(t, e.ToLower(), recipient.Context.RequestMethod);
+			var name = e.ToLower();
+			var m = FindMethod(t, name, recipient.Context.RequestMethod);
+			MulticastDelegate eventDelegate = null;
+			if (m == null)
+			{
+				var f = t.GetField(name, BindingFlags.IgnoreCase | BindingFlags.NonPublic | BindingFlags.Instance);
+				if (f != null)
+				{
+					eventDelegate = f.GetValue(recipient) as MulticastDelegate;
+					if (eventDelegate != null) m = eventDelegate.Method;
+				}
+			}
 			if (m == null)
 				return new HttpResult { StatusCode = HttpStatusCode.Forbidden };
 
@@ -33,7 +44,10 @@ namespace Tango.UI
 				else if (p == typeof(ObjectResponse))
 					resp = new ObjectResponse();
 
-				m.Invoke(recipient, new object[] { resp });
+				if (eventDelegate == null)
+					m.Invoke(recipient, new object[] { resp });
+				else
+					eventDelegate.DynamicInvoke(resp);
 
 				if (resp is ApiResponse && renderLog != null)
 					renderLog(resp as ApiResponse);
@@ -60,7 +74,10 @@ namespace Tango.UI
 					}
 				}
 
-				return m.Invoke(recipient, p) as ActionResult;
+				if (eventDelegate == null)
+					return m.Invoke(recipient, p) as ActionResult;
+				else
+					return eventDelegate.DynamicInvoke(p) as ActionResult;
 			}
 
 			throw new Exception($"{t.Name}.{e} method is not a valid action");

@@ -93,11 +93,11 @@ input.text {
 }
 
 /* forms */
-.formtable.width100 {
+.formtable.width100, .buttonsbar.width100 {
 	width: 100%;
 }
 
-.formtable.widthstd {
+.formtable.widthstd, .buttonsbar.widthstd {
 	width: 700px;
 }
 
@@ -117,7 +117,9 @@ input.text {
 	margin-bottom: 7px;
 }
 
-
+.contentbodypadding {
+	padding: 8px;
+}
 
 .formtable td {
 	vertical-align: top;
