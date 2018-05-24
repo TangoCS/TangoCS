@@ -520,7 +520,7 @@ var ajaxUtils = function ($, cu) {
 		const shadow = (new DOMParser()).parseFromString("<!DOCTYPE html>", "text/html");
 
 		const replaceFunc = function (el, obj) {
-			el.parentNode.replaceChild(obj.content, el);
+			el.parentNode.replaceChild(obj.content.firstChild, el);
 		};
 		const addFunc = function (el, obj) {
 			while (el.firstChild) {
@@ -561,7 +561,7 @@ var ajaxUtils = function ($, cu) {
 
 					if (obj.action == 'replace' || (el && obj.action == 'adjacent') || obj.action == 'add') {
 						if (!el) continue;
-						obj.content = parseHTML(el, obj.content);
+						obj.content = parseHTML(obj.action == 'replace' ? el.parentNode : el, obj.content);
 						obj.el = el;
 						obj.func = obj.action == 'add' ? addFunc : replaceFunc;
 						nodes.push(obj);
@@ -569,9 +569,7 @@ var ajaxUtils = function ($, cu) {
 					else if (obj.action == 'adjacent') {
 						const el2 = (obj.parent && obj.parent != 'body' && obj.parent != '') ? document.getElementById(obj.parent) : document.body;
 						if (!el2) continue;
-						const root = el2 == document.body ? document.body :
-							(obj.position == 'afterbegin' || obj.position == 'afterend' ? el2 : el2.parentNode);
-						obj.content = parseHTML(root, obj.content);
+						obj.content = parseHTML(obj.position == 'afterbegin' || obj.position == 'afterend' ? el2 : el2.parentNode, obj.content);
 						obj.el = el2;
 						obj.func = adjacentFunc;
 						nodes.push(obj);
