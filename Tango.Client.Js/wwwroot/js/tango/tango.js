@@ -520,7 +520,7 @@ var ajaxUtils = function ($, cu) {
 		const shadow = (new DOMParser()).parseFromString("<!DOCTYPE html>", "text/html");
 
 		const replaceFunc = function (el, obj) {
-			el.parentNode.replaceChild(obj.content.firstChild, el);
+			el.parentNode.replaceChild(obj.content, el);
 		};
 		const addFunc = function (el, obj) {
 			while (el.firstChild) {
