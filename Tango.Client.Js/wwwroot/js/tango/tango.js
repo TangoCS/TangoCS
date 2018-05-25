@@ -80,6 +80,8 @@ if (!String.prototype.startsWith) {
 	}
 }
 
+NodeList.prototype.forEach = Array.prototype.forEach;
+
 var domActions = function () {
 	var instance = {
 		setValue: function (args) {
