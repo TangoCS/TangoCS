@@ -56,6 +56,22 @@ var commonUtils = function ($) {
 				else
 					window.scrollBy(0, r.bottom - window.innerHeight + 16);
 			}
+		},
+		checkids: function () {
+			var elms = document.getElementsByTagName("*"), i, len, ids = {}, id;
+			for (i = 0, len = elms.length; i < len; i += 1) {
+				id = elms[i].id || null;
+				if (id) {
+					ids[id] = ids.hasOwnProperty(id) ? ids[id] += 1 : 0;
+				}
+			}
+			for (id in ids) {
+				if (ids.hasOwnProperty(id)) {
+					if (ids[id]) {
+						console.warn("Multiple IDs #" + id);
+					}
+				}
+			}
 		}
 	}
 

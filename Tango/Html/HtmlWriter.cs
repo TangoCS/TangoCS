@@ -54,7 +54,7 @@ namespace Tango.Html
 
 		void SetPrefix()
 		{
-			var str = new[] { _initialPrefix, String.Join("_", _ids.Where(s => !string.IsNullOrEmpty(s))) };
+			var str = new[] { _initialPrefix, String.Join("_", _ids.Where(s => !string.IsNullOrEmpty(s)).Reverse()) };
 			_idPrefix = String.Join("_", str.Where(s => !string.IsNullOrEmpty(s)));
 		}
 	}

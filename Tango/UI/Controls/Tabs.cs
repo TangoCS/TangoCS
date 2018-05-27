@@ -23,7 +23,7 @@ namespace Tango.UI.Controls
 		public void OnPageSelect(ApiResponse response)
 		{
 			if (_curpage != null)
-				response.WithNamesAndWritersFor(ParentElement).AddWidget(_curid, w => _curpage.Content(w));			
+				response.WithNamesAndWritersFor(ParentElement).AddWidget(_curid + "_page", _curpage.Render);			
 		}
 
 		public void Render(LayoutWriter w)
@@ -54,9 +54,9 @@ namespace Tango.UI.Controls
 			w.Div(a => a.Class("tabs2").ID(ID + "_pages"), () => {
 				foreach (var p in Pages)
 				{
-					w.Div(a => a.ID(p.ID).Class(_curpage.ID == p.ID ? "selected" : ""), () => {
+					w.Div(a => a.ID(p.ID + "_page").Class(_curpage.ID == p.ID ? "selected" : ""), () => {
 						if (!p.IsAjax || _curpage.ID == p.ID)
-							p.Content(w);
+							p.Render(w);
 					});
 				}
 			});
@@ -77,6 +77,13 @@ namespace Tango.UI.Controls
 			Title = title;
 			Content = content;
 			IsAjax = isAjax;
+		}
+
+		public void Render(LayoutWriter w)
+		{
+			w.PushID(ID);
+			Content(w);
+			w.PopID();
 		}
 	}
 }

@@ -66,6 +66,9 @@
     <Compile Include="BusinessLogic.cs" />
     <Compile Include="ByteArrayToHex.cs" />
     <Compile Include="CollectionsExtensions.cs" />
+    <Compile Include="Data\DapperRepository.cs" />
+    <Compile Include="Data\IRepository.cs" />
+    <Compile Include="Data\QueryTranslator.cs" />
     <Compile Include="FileStorage\FileController.cs" />
     <Compile Include="FileStorage\IStorageManager.cs" />
     <Compile Include="FileStorage\Std\LocalDiskFolder.cs" />

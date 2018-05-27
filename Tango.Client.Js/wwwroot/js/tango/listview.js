@@ -1,17 +1,18 @@
 ﻿var listview = function (au, cu) {
 	var instance = {
-		togglerow: function (el, e) {
+		togglerow: function (el) {
 			const tr = getRow(el);
 			const root = tr.parentNode.parentNode;
 			const level = parseInt(tr.getAttribute('data-level')) || 0;
 			const elcellid = el.id || '';
 			const state = el.getAttribute('data-state') || 'collapsed';
 			const isButton = (el.className == 'rowexpandercell');
-			var load = true;
 
 			if (state == 'collapsed') {
 				el.setAttribute('data-state', 'expanded');
 				if (isButton) el.firstChild.className = 'icon icon-expanded';
+
+				var load = true;
 
 				var row = tr.nextElementSibling;
 				while (row && parseInt(row.getAttribute('data-level')) > level) {
@@ -22,7 +23,22 @@
 					row = row.nextElementSibling;
 				}
 
-				if (!load) cu.scrollToView(el);
+				const hideOthers = function () {
+					row = tr.nextElementSibling;
+					while (row && parseInt(row.getAttribute('data-level')) > level) {
+						if (elcellid != (row.getAttribute('data-cellid') || '')) {
+							row.style.display = 'none';
+							document.getElementById(row.getAttribute('data-cellid')).setAttribute('data-state', 'collapsed');
+						}
+						row = row.nextElementSibling;
+					}
+				};
+
+				const e = el.getAttribute('data-e');
+				if (load && e)
+					au.postEventFromElementWithApiResponse(el, { data: { rowid: tr.id, level: level } }).then(hideOthers);
+				else
+					hideOthers();
 			} else {
 				el.setAttribute('data-state', 'collapsed');
 				if (isButton) el.firstChild.className = 'icon icon-collapsed';
@@ -34,16 +50,13 @@
 					}
 					row = row.nextElementSibling;
 				}
-				load = false;
 			}
 
 			tr.querySelectorAll('.expandedcell').forEach(function (n) {
 				n.classList.remove('expandedcell');
 			});
 
-			if (elcellid != '' && (load || state == 'collapsed')) getCell(el).classList.add('expandedcell');
-
-			if (load && e) au.postEventFromElementWithApiResponse(el, { e: e, r: root.id, data: { rowid: tr.id } });
+			if (elcellid != '' && state == 'collapsed') getCell(el).classList.add('expandedcell');
 		},
 		togglelevel: function (el) {
 			const tr = getRow(el);
