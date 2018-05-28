@@ -132,5 +132,10 @@ namespace Tango.UI
 		{
 			w.Div(a => a.Class("right"), content);
 		}
-	}	
+
+        public static void ButtonsBarLeft(this LayoutWriter w, Action content)
+        {
+            w.Div(a => a.Class("left"), content);
+        }
+    }
 }
