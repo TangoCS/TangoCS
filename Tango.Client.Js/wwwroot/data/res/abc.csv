@@ -70,25 +70,27 @@ Abc.Model.N_File.StorageType;Тип хранения;
 Abc.Model.N_File.Tag;Tag;
 Abc.Model.N_File.Title;Наименование;Title
 Abc.Model.N_File.VersionNumber;Номер версии;
-Abc.Model.N_FileData;Данные для файла;File data
-Abc.Model.N_FileData.Data;Данные;
-Abc.Model.N_FileData.Extension;Расширение;
-Abc.Model.N_FileData.LastModifiedDate;Дата последнего изменения;
-Abc.Model.N_FileData.Owner;Владелец;
-Abc.Model.N_FileData.Size;Размер;
-Abc.Model.N_FileData.Title;Наименование;Title
-Abc.Model.N_FileData.Upload;Загрузить файлы;Upload files
-Abc.Model.N_FileData.Upload-extensions;Допустимые расширения файлов;Allowed file types
-Abc.Model.N_FileData.Upload-extensionsmsg;Расширение файла {0} запрещено для загрузки в данную папку.;File {0} can't be uploaded to the current folder because of extension restrictions
-Abc.Model.N_FileData.Upload-file1;Файл 1;File 1
-Abc.Model.N_FileData.Upload-file2;Файл 2;File 2
-Abc.Model.N_FileData.Upload-file3;Файл 3;File 3
-Abc.Model.N_FileData.Upload-file4;Файл 4;File 4
-Abc.Model.N_FileData.Upload-file5;Файл 5;File 5
-Abc.Model.N_FileData.Upload-file6;Файл 6;File 6
-Abc.Model.N_FileData.Upload-maxfilesize;Максимальный размер загружаемых файлов;File size limit
-Abc.Model.N_FileData.Upload-maxfilesizemsg;Размер файла {0} превышает максимальный разрешенный.;File {0} size exceeds the allowable limit
-Abc.Model.N_FileData.Upload-unzip;Распаковывать zip архивы;Unzip archieves
+Abc.Model.N_FileData.ViewList;Файлы;Files
+Tango.FileStorage.Std.Model.N_FileData-pl;Файлы;Files
+Tango.FileStorage.Std.Model.N_FileData;Данные для файла;File data
+Tango.FileStorage.Std.Model.N_FileData.Data;Данные;
+Tango.FileStorage.Std.Model.N_FileData.Extension;Расширение;
+Tango.FileStorage.Std.Model.N_FileData.LastModifiedDate;Дата последнего изменения;
+Tango.FileStorage.Std.Model.N_FileData.Owner;Владелец;
+Tango.FileStorage.Std.Model.N_FileData.Size;Размер;
+Tango.FileStorage.Std.Model.N_FileData.Title;Наименование;Title
+Tango.FileStorage.Std.Model.N_FileData.Upload;Загрузить файлы;Upload files
+Tango.FileStorage.Std.Model.N_FileData.Upload-extensions;Допустимые расширения файлов;Allowed file types
+Tango.FileStorage.Std.Model.N_FileData.Upload-extensionsmsg;Расширение файла {0} запрещено для загрузки в данную папку.;File {0} can't be uploaded to the current folder because of extension restrictions
+Tango.FileStorage.Std.Model.N_FileData.Upload-file1;Файл 1;File 1
+Tango.FileStorage.Std.Model.N_FileData.Upload-file2;Файл 2;File 2
+Tango.FileStorage.Std.Model.N_FileData.Upload-file3;Файл 3;File 3
+Tango.FileStorage.Std.Model.N_FileData.Upload-file4;Файл 4;File 4
+Tango.FileStorage.Std.Model.N_FileData.Upload-file5;Файл 5;File 5
+Tango.FileStorage.Std.Model.N_FileData.Upload-file6;Файл 6;File 6
+Tango.FileStorage.Std.Model.N_FileData.Upload-maxfilesize;Максимальный размер загружаемых файлов;File size limit
+Tango.FileStorage.Std.Model.N_FileData.Upload-maxfilesizemsg;Размер файла {0} превышает максимальный разрешенный.;File {0} size exceeds the allowable limit
+Tango.FileStorage.Std.Model.N_FileData.Upload-unzip;Распаковывать zip архивы;Unzip archieves
 Abc.Model.N_FileLibrary;Библиотека;File library
 Abc.Model.N_FileLibrary-pl;Библиотеки файлов;File libraries
 Abc.Model.N_FileLibrary.FileLibraryType;Тип;File library type
@@ -296,6 +298,7 @@ Abc.Model.WF_Transition.SeqNo;Порядковый номер;Seq no
 Abc.Model.WF_Transition.TargetActivity;Целевая активность;Destination activity
 Abc.Model.WF_Transition.Title;Наименование;Title
 Abc.Model.WF_Workflow;Рабочий процесс;Workflow
+Abc.Model.WF_Workflow.ViewList;Рабочие процессы;Workflows
 Abc.Model.WF_Workflow-pl;Рабочие процессы;Workflows
 Abc.Model.WF_Workflow.Activities;Активности;
 Abc.Model.WF_Workflow.ClassName;Класс;Class
