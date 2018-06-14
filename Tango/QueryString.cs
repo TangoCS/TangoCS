@@ -188,7 +188,7 @@ namespace Tango
 		/// </summary>
 		/// <param name="text">The raw query string value, with or without the leading '?'.</param>
 		/// <returns>A collection of parsed keys and values.</returns>
-		static IDictionary<string, string[]> ParseQuery(string queryString)
+		public static IDictionary<string, string[]> ParseQuery(string queryString)
 		{
 			if (!string.IsNullOrEmpty(queryString) && queryString[0] == '?')
 			{

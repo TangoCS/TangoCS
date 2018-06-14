@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -22,10 +23,9 @@ namespace Tango
 				int length = g.Index - startIndex - 1;
 				sb.Append(template.Substring(startIndex, length));
 
-				string result;
-				if (parameters.TryGetValue(g.Value, out result)) //Cool, we found something
+				if (parameters.TryGetValue(g.Value, out string result)) //Cool, we found something
 				{
-					sb.Append(parameters[g.Value]);
+					sb.Append(result);
 					processedKeys.Add(g.Value);
 				}
 				else //didn't find a property with that name, so be gracious and put it back
@@ -53,7 +53,7 @@ namespace Tango
 				if (processedKeys.Contains(parm.Key)) continue;
 				if (!first) sb.Append("&");
 				sb.Append(parm.Key);
-				if (parm.Value != null) sb.Append("=").Append(parm.Value);
+				if (parm.Value != null) sb.Append("=").Append(WebUtility.UrlEncode(parm.Value));
 				first = false;
 			}
 

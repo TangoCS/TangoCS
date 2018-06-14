@@ -1,44 +1,48 @@
-﻿/// <reference path="homewindow.js"/>
-/// <reference path="dialog.js"/>
-/// ver. 26-08-2016
-var selectSingleObjectDialog = function (au, cu, dialog) {
+﻿var selectSingleObjectDialog = function (au, cu) {
 	var instance = {
-		submit: function (id) {
-			var d = dialog.instances[id];
-			var el = $("#" + $("#" + id).attr('data-value-id'));
-			el.val(d.selectedObj);
-			dialog.hide(id);
-			au.postEventFromElementWithApiResponse(el[0], { e: 'submitdialog', r: id });
-		},
 		clear: function (id) {
-			var el = $("#" + $("#" + id).attr('data-value-id'));
-			el.val("");
-			$("#" + id + "_selected").html("");
-			au.postEventFromElementWithApiResponse(el[0], { e: 'submitdialog', r: id });
+			document.getElementById(id).value = '';
+			document.getElementById(id + '_selected').innerHTML = '';
+			const state = au.state.ctrl[id + '_str'];
+			if (state) state.selectedObj = [];
 		},
-		setupItems: function (caller, id) {
-			var d = dialog.instances[id];
-			if (!d.selectedObj)
-				d.selectedObj = $("#" + $("#" + id).attr('data-value-id')).val();
+		widgetWillMount: function (shadow, state) {
+			const root = shadow.getElementById(state.root);
+			const valid = root.getAttribute('data-val');
 
-			$("#" + id + "_list :input").each(function () {
-				var el = $(this);
-				if (el.val() == d.selectedObj) {
-					el.prop('checked', true);
-				}
-				el.on('change', { dialog: d }, function (e) {
-					e.data.dialog.selectedObj = this.value;
+			const checks = root.getElementsByTagName('input');
+			for (var i = 0; i < checks.length; i++) {
+				const el = checks[i];
+				el.checked = state.selectedObj == el.value;
+				el.addEventListener("change", function () {
+					state.selectedObj = el.value;
+				});
+			}
+
+			const filter = (shadow.getElementById(root.id + '_filter') || document.getElementById(root.id + '_filter'));
+
+			filter.addEventListener('keyup', function () {
+				au.delay(filter, function (caller) {
+					au.postEventFromElementWithApiResponse(caller, { e: 'renderlist', r: root.id });
 				});
 			});
 
-			$("#" + id + "_filter").on('keyup', { id: id }, function (e) {
-				au.delay(this, function (caller) {
-					au.runEventFromElementWithApiResponse(caller, { e: 'renderlist', r: id })
-						.done(function () { instance.setupItems(caller, id); });
-				});
-			});
+			cu.setFocus(filter);
+		},
+		onResult: function (res, state) {
+			if (res == 0)
+				delete state.selectedObjs;
+			else if (res == 1) {
+				const root = document.getElementById(state.root);
+				const val = document.getElementById(root.getAttribute('data-val'));
 
-			cu.setFocus(id + "_filter");
+				val.value = state.selectedObj;
+
+				var data = {};
+				data[val.id] = state.selectedObj;
+				au.postEventWithApiResponse({ e: 'submitdialog', r: root.id, data: data });
+				return false;
+			}
 		},
 		pagingEvent: function (caller, id) {
 			au.runEventFromElementWithApiResponse(caller, { e: 'renderlist', r: id }).done(function () {
@@ -48,67 +52,74 @@ var selectSingleObjectDialog = function (au, cu, dialog) {
 	}
 
 	return instance;
-}(ajaxUtils, commonUtils, dialog);
+}(ajaxUtils, commonUtils);
 
 
-var selectMultipleObjectsDialog = function (au, cu, dialog) {
+var selectMultipleObjectsDialog = function (au, cu) {
 	var instance = {
-		submit: function (id) {
-			var d = dialog.instances[id];
-			var valueelid = $("#" + id).attr('data-value-id');
-			$("#" + valueelid).val(d.selectedObjs.join());
-			dialog.hide(id);
-
-			var data = {};
-			data[valueelid] = d.selectedObjs;
-			au.postEventWithApiResponse({ e: 'submitdialog', r: id, data: data });
-		},
 		clear: function (id) {
-			var el = $("#" + $("#" + id).attr('data-value-id'));
-			el.val("");
-			$("#" + id + "_selected").html("");
-			au.postEventFromElementWithApiResponse(el[0], { e: 'submitdialog', r: id });
+			document.getElementById(id).value = '';
+			document.getElementById(id + '_selected').innerHTML = '';
+			const state = au.state.ctrl[id + '_str'];
+			if (state) state.selectedObjs = [];
 		},
-		setupItems: function (caller, id) {
-			var d = dialog.instances[id];
-			if (!d.selectedObjs) {
-				var val = $("#" + $("#" + id).attr('data-value-id')).val();
+		widgetWillMount: function (shadow, state) {
+			const root = shadow.getElementById(state.root);
+			const valid = root.getAttribute('data-val');
+
+			if (!state.selectedObjs) {
+				const val = (shadow.getElementById(valid) || document.getElementById(valid)).value;
 				if (val && val != '')
-					d.selectedObjs = val.split(",");
+					state.selectedObjs = val.split(",");
 				else
-					d.selectedObjs = [];
+					state.selectedObjs = [];
 			}
-			$("#" + id + "_list :input").each(function () {
-				var el = $(this);
-				if ($.inArray(el.val(), d.selectedObjs) >= 0) {
-					el.prop('checked', true);
-				}
-				el.on('change', { dialog: d }, function (e) {
-					if (this.checked) {
-						e.data.dialog.selectedObjs.push(this.value);
+
+			const checks = root.getElementsByTagName('input');
+			for (var i = 0; i < checks.length; i++) {
+				const el = checks[i];
+				el.checked = state.selectedObjs.indexOf(el.value) >= 0;
+				el.addEventListener("change", function () {
+					if (el.checked) {
+						state.selectedObjs.push(el.value);
 					}
 					else {
-						var index = e.data.dialog.selectedObjs.indexOf(this.value);
-						e.data.dialog.selectedObjs.splice(index, 1);
+						const index = state.selectedObjs.indexOf(el.value);
+						state.selectedObjs.splice(index, 1);
 					}
 				});
-			});
+			}
 
-			$("#" + id + "_filter").on('keyup', { id: id }, function (e) {
-				au.delay(this, function (caller) {
-					au.runEventFromElementWithApiResponse(caller, { e: 'renderlist', r: id })
-						.done(function () { instance.setupItems(caller, id); });
+			const filter = (shadow.getElementById(root.id + '_filter') || document.getElementById(root.id + '_filter'));
+
+			filter.addEventListener('keyup', function () {
+				au.delay(filter, function (caller) {
+					au.postEventFromElementWithApiResponse(caller, { e: 'renderlist', r: root.id });
 				});
 			});
 
-			cu.setFocus(id + "_filter");
+			cu.setFocus(filter);
+		},
+		onResult: function (res, state) {
+			if (res == 0)
+				delete state.selectedObjs;
+			else if (res == 1) {
+				const root = document.getElementById(state.root);
+				const val = document.getElementById(root.getAttribute('data-val'));
+
+				val.value = state.selectedObjs.join();
+
+				var data = {};
+				data[val.id] = state.selectedObjs;
+				au.postEventWithApiResponse({ e: 'submitdialog', r: root.id, data: data });
+				return true;
+			}
 		},
 		pagingEvent: function (caller, id) {
-			au.runEventFromElementWithApiResponse(caller, { e: 'renderlist', r: id }).done(function () {
+			au.postEventFromElementWithApiResponse(caller, { e: 'renderlist', r: id }).done(function () {
 				instance.setupItems(caller, id);
 			});
 		}
 	}
-
 	return instance;
-}(ajaxUtils, commonUtils, dialog);
+}(ajaxUtils, commonUtils);

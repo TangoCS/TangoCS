@@ -21,6 +21,11 @@ namespace Tango.UI
 		string GetClientID(string id);
 	}
 
+	public interface IContainerItem
+	{
+		ViewContainer GetDefaultContainer();
+	}
+
 	public interface IWithCheckAccess
 	{
 		bool CheckAccess(MethodInfo method);
@@ -85,7 +90,10 @@ namespace Tango.UI
 			get => base.ID;
 			set {
 				base.ID = value;
-				ClientID = _parentElement?.GetClientID(value) ?? value?.ToLower();
+				if (value != null)
+					ClientID = _parentElement?.GetClientID(value) ?? value.ToLower();
+				else
+					ClientID = null;
 			}
 		}
 
@@ -97,7 +105,7 @@ namespace Tango.UI
 			get => _parentElement;
 			set {
 				_parentElement = value;
-				ClientID = _parentElement?.GetClientID(ID) ?? ID?.ToLower();
+				if (ID != null) ClientID = _parentElement?.GetClientID(ID) ?? ID.ToLower();
 			}
 		}
 
@@ -106,7 +114,7 @@ namespace Tango.UI
 
 		public string GetClientID(string id)
 		{
-			return (!ClientID.IsEmpty() ? ClientID + (!id.IsEmpty() ? "_" + id : "") : id).ToLower();
+			return (!ClientID.IsEmpty() ? ClientID + (!id.IsEmpty() ? "_" + id : "") : (id ?? "")).ToLower();
 		}
 
 		public T CreateControl<T>(string id, Action<T> setProperties = null)
@@ -146,10 +154,39 @@ namespace Tango.UI
 		
 	}
 
+	public abstract class ViewContainer : ViewElement
+	{
+		public string Type => GetType().Name.Replace("Container", "");
+
+		public IDictionary<string, string> Mapping { get; } = new Dictionary<string, string>();
+		public abstract void Render(ApiResponse response);
+	}
+
 	public abstract class ViewRootElement : ViewElement
 	{
 		public abstract ActionResult Execute();	
 	}
 
 	public delegate void ViewElementEventHandler(ApiResponse response);
+
+	public class ContainersCache : ITypeObserver
+	{
+		static readonly Dictionary<string, Type> _typeCache = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
+
+		protected List<InvokeableTypeInfo> typeInfos = new List<InvokeableTypeInfo>();
+
+		public void LookOver(Type t)
+		{
+			if (t.IsSubclassOf(typeof(ViewContainer)) && !t.IsAbstract)
+				_typeCache.Add(t.Name.Replace("Container", "").ToLower(), t);
+		}
+
+		public Type Get(string key)
+		{
+			if (_typeCache.TryGetValue(key.ToLower(), out Type ret))
+				return ret;
+			else
+				return null;
+		}
+	}
 }

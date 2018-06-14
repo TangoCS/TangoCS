@@ -20,13 +20,9 @@ namespace Tango.Data
 		Func<bool, string> _boolConstant = o => o.ToString().ToLower();
 
 		string _orderBy = string.Empty;
-		//int? _skip = null;
-		//int? _take = null;
 		string _whereClause = string.Empty;
 		Dictionary<string, object> _parms = new Dictionary<string, object>();
 
-		//public int? Skip => _skip;
-		//public int? Take => _take;
 		public string OrderBy => _orderBy;
 		public string WhereClause => _whereClause;
 		public IReadOnlyDictionary<string, object> Parms => _parms;
@@ -258,14 +254,27 @@ namespace Tango.Data
 		}
 
 		protected void ParseContainsMethod(MethodCallExpression m)
-		{
-			Visit(m.Object);
-			sb.Append(" ILIKE ");
-			_beforeConstant = "'%'||";
-			_afterConstant = "||'%'";
-			Visit(m.Arguments[0]);
-			_beforeConstant = "";
-			_afterConstant = "";
+		{		
+			if (m.Arguments[0].Type == typeof(string))
+			{
+				Visit(m.Object);
+				sb.Append(" ILIKE ");
+				_beforeConstant = "'%'||";
+				_afterConstant = "||'%'";
+				Visit(m.Arguments[0]);
+				_beforeConstant = "";
+				_afterConstant = "";
+			}
+			else
+			{
+				Visit(m.Arguments[1]);
+				sb.Append(" = ANY ");
+				_beforeConstant = "(";
+				_afterConstant = ")";
+				Visit(m.Arguments[0]);
+				_beforeConstant = "";
+				_afterConstant = "";
+			}
 		}
 
 		protected void ParseStartsWithMethod(MethodCallExpression m)

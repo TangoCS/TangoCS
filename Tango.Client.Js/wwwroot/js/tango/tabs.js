@@ -11,12 +11,18 @@
 			if (el.getAttribute('data-useurlparm') == "True") {
 				var target = {};
 
-				if (el.getAttribute('data-ajax') == "True" && el.getAttribute('data-loaded') != "True") {
+				if (el.getAttribute('data-ajax') == "True") {
 					target = { e: "OnPageSelect", r: id, data: {} };
 					target.data[id] = el.getAttribute('data-id');
-					el.setAttribute('data-loaded', 'True');
+
+					if (el.getAttribute('data-loaded') != "True") {
+						el.setAttribute('data-loaded', 'True');
+						au.runHrefWithApiResponse(el, target);
+					} else {
+						target.changeloc = true;
+						au.prepareTarget(target);
+					}
 				}
-				au.setHashFromElement(el, target);
 			}
 		}
 	};

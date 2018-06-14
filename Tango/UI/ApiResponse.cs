@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Linq;
 using Tango.Html;
+using System.Net;
 
 namespace Tango.UI
 {
@@ -31,12 +32,21 @@ namespace Tango.UI
 
 	public class ApiResponse : ObjectResponse
 	{
+		class WidgetToRender
+		{
+			public ContentWidget widget;
+			public ActionContext context;
+			public string prefix;
+			public Action<LayoutWriter> content;
+		}
+
 		public List<IWidget> Widgets { get; set; } = new List<IWidget>();
 		public List<ClientAction> ClientActions { get; set; } = new List<ClientAction>();
 		public HashSet<string> Includes { get; set; } = new HashSet<string>();
 
-		List<ContentWidgetPostRendered> _widgetsToRender = new List<ContentWidgetPostRendered>();
+		List<WidgetToRender> _widgetsToRender = new List<WidgetToRender>();
 		string _idprefix = "";
+		IDictionary<string, string> _mapping;
 		Func<string, string> _namefunc = name => name.ToLower();
 
 		public ApiResponse()
@@ -46,6 +56,41 @@ namespace Tango.UI
 
 		public ApiResponse(IInteractionFlowElement element)
 		{
+			var context = element.Context;
+
+			ViewContainer containerObj = null;
+
+			if (context.AddContainer)
+			{
+				if (!context.ContainerType.IsEmpty())
+				{
+					var t = new ContainersCache().Get(context.ContainerType);
+					if (t != null)
+						containerObj = Activator.CreateInstance(t) as ViewContainer;
+				}
+				else if (element is IContainerItem)
+				{
+					containerObj = (element as IContainerItem).GetDefaultContainer();
+				}
+			}
+
+			if (containerObj != null && element is IViewElement)
+			{
+				containerObj.Context = context;
+
+				var ve = element as IViewElement;
+			
+				containerObj.ID = context.ContainerPrefix;
+				ve.ParentElement = containerObj;
+
+				_mapping = containerObj.Mapping;
+				_idprefix = context.ContainerPrefix;
+
+				_namefunc = name => HtmlWriterHelpers.GetID(context.ContainerPrefix, name);
+				containerObj.Render(this);
+				_namefunc = name => _mapping.ContainsKey(name) ? HtmlWriterHelpers.GetID(context.ContainerPrefix, _mapping[name]) : name;
+			}
+
 			WithWritersFor(element as IViewElement);
 		}
 
@@ -58,15 +103,10 @@ namespace Tango.UI
 		public ApiResponse WithWritersFor(IViewElement view, Action content)
 		{
 			var lastPrefix = _idprefix;
-			_idprefix = view?.ClientID ?? "";
+			WithWritersFor(view);
 			content();
 			_idprefix = lastPrefix;
 			return this;
-		}
-
-		public ApiResponse WithRootWriters(Action content)
-		{
-			return WithWritersFor(null, content);
 		}
 
 		public ApiResponse WithNamesFor(IViewElement view)
@@ -78,10 +118,18 @@ namespace Tango.UI
 			return this;
 		}
 
-		public ApiResponse WithNamesAndWritersFor(IViewElement view)
+		public ApiResponse WithNamesFor(IViewElement view, Action content)
 		{
-			return WithNamesFor(view).WithWritersFor(view);
+			var lastNamefunc = _namefunc;
+			WithNamesFor(view);
+			content();
+			_namefunc = lastNamefunc;
+			return this;
 		}
+
+		public ApiResponse WithRootWriters(Action content) => WithWritersFor(null, content);
+		public ApiResponse WithRootNames(Action content) => WithNamesFor(null, content);
+		public ApiResponse WithNamesAndWritersFor(IViewElement view) => WithNamesFor(view).WithWritersFor(view);
 
 		public void Insert(ApiResponse resp)
 		{
@@ -95,9 +143,10 @@ namespace Tango.UI
 				ClientActions.Insert(0, resp.ClientActions[i]);
 		}
 
-		public void AddClientAction(string service, string method, object args)
+		public void AddClientAction(string service, string method, Func<Func<string, string>, object> args)
 		{
-			ClientActions.Add(new ClientAction(service, method, args));
+			var resolvedArgs = args != null ? args(_namefunc) : null;
+			ClientActions.Add(new ClientAction(service, method, resolvedArgs));
 		}
 
 		public void AddClientAction(ClientAction action)
@@ -107,57 +156,78 @@ namespace Tango.UI
 
 		public void RedirectBack(ActionContext context)
 		{
-			Data.Add("url", context.GetArg(Constants.ReturnUrl));
+			if (context.ReturnTarget == null) return;
+			var retctx = context.ReturnTargetContext();
+
+			var cache = retctx.RequestServices.GetService(typeof(ITypeActivatorCache)) as ITypeActivatorCache;
+			(var type, var invoker) = cache?.Get(retctx.Service + "." + retctx.Action) ?? (null, null);
+
+			
+			var result = invoker?.Invoke(retctx, type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
+
+			if (result is AjaxResult ajax && ajax.ApiResponse is ApiResponse resp)
+			{
+				for (int i = resp._widgetsToRender.Count - 1; i >= 0; i--)
+					resp._widgetsToRender[i].context = retctx;
+				Insert(resp);
+			}
+
+			Data.Add("redirect", new {
+				Url = WebUtility.UrlDecode(context.ReturnUrl),
+				retctx.Service,
+				retctx.Action,
+				Parms = retctx.AllArgs
+			});
 		}
 
 		#region dom actions
 		public virtual void SetElementValue(string id, string value)
 		{
-			AddClientAction("domActions", "setValue", new { id = _namefunc(id), value = value });
+			AddClientAction("domActions", "setValue", f => new { id = f(id), value });
 		}
 
 		public virtual void SetElementVisibility(string id, bool visible)
 		{
-			AddClientAction("domActions", "setVisible", new { id = _namefunc(id), visible = visible });
+			AddClientAction("domActions", "setVisible", f => new { id = f(id), visible });
 		}
 
 		public virtual void SetElementAttribute(string id, string attrName, string attrValue)
 		{
-			AddClientAction("domActions", "setAttribute", new { id = _namefunc(id), attrName = attrName, attrValue = attrValue });
+			AddClientAction("domActions", "setAttribute", f => new { id = f(id), attrName, attrValue });
 		}
 
 		public virtual void RemoveElementAttribute(string id, string attrName)
 		{
-			AddClientAction("domActions", "removeAttribute", new { id = _namefunc(id), attrName = attrName });
+			AddClientAction("domActions", "removeAttribute", f => new { id = f(id), attrName });
 		}
 
 		public virtual void SetElementClass(string id, string clsName)
 		{
-			AddClientAction("domActions", "setClass", new { id = _namefunc(id), clsName = clsName });
+			AddClientAction("domActions", "setClass", f => new { id = f(id), clsName });
 		}
 
 		public virtual void RemoveElementClass(string id, string clsName)
 		{
-			AddClientAction("domActions", "removeClass", new { id = _namefunc(id), clsName = clsName });
+			AddClientAction("domActions", "removeClass", f => new { id = f(id), clsName });
 		}
 		#endregion	
 
 		#region main widget methods, string content
 		public virtual ApiResponse AddWidget(string name, string content)
 		{
-			Widgets.Add(new ContentWidget{ Name = _namefunc(name), Content = content, Action = "add" });
+			Widgets.Add(new ContentWidget{ Name = _namefunc(name), Content = content, Action = WidgetAction.Add });
 			return this;
 		}
 
 		public virtual ApiResponse ReplaceWidget(string name, string content)
 		{
-			Widgets.Add(new ContentWidget { Name = _namefunc(name), Content = content, Action = "replace" });
+			Widgets.Add(new ContentWidget { Name = _namefunc(name), Content = content, Action = WidgetAction.Replace });
 			return this;
 		}
 
 		public virtual ApiResponse RemoveWidget(string name)
 		{
-			Widgets.Add(new Widget { Name = _namefunc(name), Action = "remove" });
+			Widgets.Add(new Widget { Name = _namefunc(name), Action = WidgetAction.Remove });
 			return this;
 		}
 
@@ -169,7 +239,7 @@ namespace Tango.UI
 
 		public virtual ApiResponse AddAdjacentWidget(string parent, string name, string content, AdjacentHTMLPosition position = AdjacentHTMLPosition.BeforeEnd)
 		{
-			Widgets.Add(new AdjacentWidget { Name = _namefunc(name), Parent = parent, Content = content, Action = "adjacent", Position = position.ToString() });
+			Widgets.Add(new AdjacentWidget { Name = _namefunc(name), Parent = parent, Content = content, Action = WidgetAction.Adjacent, Position = position });
 			return this;
 		}
 		#endregion
@@ -177,19 +247,17 @@ namespace Tango.UI
 		#region root widget, no prefix, content = action
 		public ApiResponse AddWidget(string name, Action<LayoutWriter> content)
 		{
-			var w = new ContentWidgetPostRendered { Name = _namefunc(name), RenderAction = content, Action = "add",
-				IDPrefix = _idprefix };
+			var w = new ContentWidget { Name = _namefunc(name), Action = WidgetAction.Add };
 			Widgets.Add(w);
-			_widgetsToRender.Add(w);
+			_widgetsToRender.Add(new WidgetToRender { widget = w, prefix = _idprefix, content = content });
 			return this;
 		}
 
 		public ApiResponse ReplaceWidget(string name, Action<LayoutWriter> content)
 		{
-			var w = new ContentWidgetPostRendered { Name = _namefunc(name), RenderAction = content, Action = "replace",
-				IDPrefix = _idprefix };
+			var w = new ContentWidget { Name = _namefunc(name), Action = WidgetAction.Replace };
 			Widgets.Add(w);
-			_widgetsToRender.Add(w);
+			_widgetsToRender.Add(new WidgetToRender { widget = w, prefix = _idprefix, content = content });
 			return this;
 		}
 
@@ -205,56 +273,34 @@ namespace Tango.UI
 
 		public ApiResponse AddAdjacentWidget(string parent, string name, AdjacentHTMLPosition position, Action<LayoutWriter> content)
 		{
-			var w = new AdjacentWidgetPostRendered { Name = _namefunc(name), Parent = parent, RenderAction = content,
-				Action = "adjacent", Position = position.ToString(), IDPrefix = _idprefix };
+			var w = new AdjacentWidget { Name = _namefunc(name), Parent = parent, Action = WidgetAction.Adjacent, Position = position };
 			Widgets.Add(w);
-			_widgetsToRender.Add(w);
+			_widgetsToRender.Add(new WidgetToRender { widget = w, prefix = _idprefix, content = content });
 			return this;
 		}
 		#endregion
 
 		public override string Serialize(ActionContext context)
 		{
-			var container = context.GetArg("c-type");
-			if (!container.IsEmpty())
-			{
-				var coll = context.RequestServices.GetService(typeof(IContainerCollection)) as IContainerCollection;
-				if (coll.TryGetValue(container, out var item))
-				{
-					var id = context.GetArg("c-id");
-					//var prefix = context.GetArg("c-prefix");
-
-					var mappings = item.Mapping.ToDictionary(
-						o => o.Key,
-						o => HtmlWriterHelpers.GetID(id, o.Value)
-					);
-					foreach (var wgt in Widgets)
-					{
-						if (mappings.ContainsKey(wgt.Name))
-							wgt.Name = mappings[wgt.Name];
-					}
-
-					var w = new LayoutWriter(context, id);
-					item.Renderer(w);
-
-					Widgets.Insert(0, new AdjacentWidget {
-						Name = w.GetID(item.ID),
-						Content = w.ToString(),
-						Action = "adjacent",
-						Position = AdjacentHTMLPosition.BeforeEnd.ToString()
-					});
-				}
-			}
-
 			if (Widgets.Count > 0)
 			{
-				foreach (var widget in _widgetsToRender)
-					widget.Render(context, ClientActions, Includes);
+				foreach (var r in _widgetsToRender)
+				{
+					var w = new LayoutWriter(r.context ?? context, r.prefix);
+					r.content?.Invoke(w);
+					r.widget.Content = w.ToString();
+
+					foreach (var i in w.ClientActions)
+						ClientActions.Add(i);
+					foreach (var i in w.Includes)
+						Includes.Add(i);
+				}
 
 				Data.Add("widgets", Widgets);
 			}
 			if (ClientActions.Count > 0)
 				Data.Add("clientactions", ClientActions);
+
 			if (Includes.Count > 0)
 				Data.Add("includes", Includes.Select(o => GlobalSettings.JSPath + o));
 
@@ -277,6 +323,14 @@ namespace Tango.UI
 		AfterEnd
 	}
 
+	public enum WidgetAction
+	{
+		Add,
+		Remove,
+		Replace,
+		Adjacent
+	}
+
 	public interface IWidget
 	{
 		string Name { get; set; }
@@ -285,45 +339,19 @@ namespace Tango.UI
 	public class Widget : IWidget
 	{
 		public string Name { get; set; }
-		public string Action { get; set; }
+		public WidgetAction Action { get; set; }
 		
 	}
 	public class ContentWidget : Widget
 	{
 		public string Content { get; set; }
 	}
+
 	public class AdjacentWidget : ContentWidget
 	{
-		public string Position { get; set; }
+		public AdjacentHTMLPosition Position { get; set; }
 		public string Parent { get; set; }
 	}
-
-	public class ContentWidgetPostRendered : ContentWidget
-	{
-		[JsonIgnore]
-		public Action<LayoutWriter> RenderAction { get; set; }
-		[JsonIgnore]
-		public string IDPrefix { get; set; }
-
-		public void Render(ActionContext context, ICollection<ClientAction> clientActions, ICollection<string> includes)
-		{
-			var w = new LayoutWriter(context, IDPrefix);
-			RenderAction?.Invoke(w);
-			Content = w.ToString();
-
-			foreach (var i in w.ClientActions)
-				clientActions.Add(i);
-			foreach (var i in w.Includes)
-				includes.Add(i);
-		}
-	}
-
-	public class AdjacentWidgetPostRendered : ContentWidgetPostRendered
-	{
-		public string Position { get; set; }
-		public string Parent { get; set; }
-	}
-
 
 	public class ClientAction
 	{
@@ -335,45 +363,11 @@ namespace Tango.UI
 			Service = service;
 			CallChain.Add(new ChainElement { Method = method, Args = args });
 		}
-		public ClientAction(string service, params object[] args) : this(service, "apply", args)
-		{
-
-		}
-
-		public ClientAction Then(string method, object args = null)
-		{
-			CallChain.Add(new ChainElement { Method = method, Args = args });
-			return this;
-		}
-
-		public ClientAction CallWith(params object[] args)
-		{
-			return Then("apply", args);
-		}
 
 		public class ChainElement
 		{
 			public string Method { get; set; }
 			public object Args { get; set; }
 		}
-	}
-
-	public interface IContainerCollection : IDictionary<string, IContainerCollectionItem>
-	{
-
-	}
-
-	public interface IContainerCollectionItem
-	{
-		string ID { get; }
-		IDictionary<string, string> Mapping { get; }
-		Action<LayoutWriter> Renderer { get; }
-	}
-
-	public class ContainerCollectionItem : IContainerCollectionItem
-	{
-		public string ID { get; set; }
-		public IDictionary<string, string> Mapping { get; set; }
-		public Action<LayoutWriter> Renderer { get; set; }
 	}
 }

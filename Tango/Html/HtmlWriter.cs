@@ -9,6 +9,9 @@ namespace Tango.Html
 	public interface IHtmlWriter
 	{
 		string IDPrefix { get; }
+
+		IAttributeWriter AttributeWriter { get; }
+
 		void Write(string value);
 		void Write(char value);
 	}
@@ -19,17 +22,26 @@ namespace Tango.Html
 		string _initialPrefix;
 		Stack<string> _ids = new Stack<string>(4);
 
+		public IAttributeWriter AttributeWriter { get; private set; }
 		public string IDPrefix => _idPrefix;
 
-		public HtmlWriter() { }
-		public HtmlWriter(StringBuilder sb) : base(sb) { }
+		public HtmlWriter()
+		{
+			AttributeWriter = new AttributeWriter(this);
+		}
+		public HtmlWriter(StringBuilder sb) : base(sb)
+		{
+			AttributeWriter = new AttributeWriter(this);
+		}
 		public HtmlWriter(string idPrefix)
 		{
+			AttributeWriter = new AttributeWriter(this);
 			_initialPrefix = idPrefix;
 			SetPrefix();
 		}
 		public HtmlWriter(string idPrefix, StringBuilder sb) : base(sb)
 		{
+			AttributeWriter = new AttributeWriter(this);
 			_initialPrefix = idPrefix;
 			SetPrefix();
 		}

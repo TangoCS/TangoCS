@@ -42,8 +42,6 @@ namespace Tango.UI
 			Html = html;
 			Cookies.Add("x-csrf-token", csrfToken);
 			Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
-			Headers.Add("Pragma", "no-cache"); // HTTP 1.0.
-			Headers.Add("Expires", "0"); // Proxies.
 			ContentFunc = ctx => Encoding.UTF8.GetBytes(Html);
 		}
 	}
@@ -67,8 +65,6 @@ namespace Tango.UI
 		{
 			ApiResponse = data;
 			Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
-			Headers.Add("Pragma", "no-cache"); // HTTP 1.0.
-			Headers.Add("Expires", "0"); // Proxies.
 			ContentType = "application/json";
 			ContentFunc = ctx => Encoding.UTF8.GetBytes(ApiResponse.Serialize(ctx));
 		}
@@ -91,7 +87,7 @@ namespace Tango.UI
 		public RedirectBackResult(string url = null) : base(url) { }
 		public override Task ExecuteResultAsync(ActionContext context)
 		{
-			Url = Url ?? context.GetArg(Constants.ReturnUrl);
+			Url = Url ?? context.ReturnUrl ?? context.AllArgs.Parse<string>(Constants.ReturnUrl);
 			return base.ExecuteResultAsync(context);
 		}
 	}

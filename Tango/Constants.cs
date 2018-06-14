@@ -14,5 +14,10 @@
 		public static string RootReceiverName = "p";
 		public static string FirstLoad = "firstload";
 		public static string Sender = "sender";
+
+		public static string ContainerPrefix = "c-prefix";
+		public static string ContainerType = "c-type";
+		public static string ContainerNew = "c-new";
+
 	}
 }

@@ -164,6 +164,7 @@ namespace Tango.Hibernate
 				SaveActions.Clear();
 				AfterSaveActions.Clear();
 			}
+			Session.GetSessionImplementation().PersistenceContext.Clear();
 			//Session.Clear();
 		}
 

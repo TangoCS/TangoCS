@@ -16,12 +16,16 @@ namespace Tango.Html
 		IDictionary<string, string> attributes = new Dictionary<string, string>(7, StringComparer.Ordinal);
 		IHtmlWriter w;
 
-		public void SetHtmlWriter(IHtmlWriter writer)
+		public AttributeWriter(IHtmlWriter writer)
 		{
 			w = writer;
-			attributes.Clear();
 		}
 
+		public void NewTag()
+		{
+			attributes.Clear();
+		}
+		
 		public void Write(string key, string value, bool replaceExisting = true)
 		{
 			if (replaceExisting || (!string.IsNullOrEmpty(value) && !attributes.ContainsKey(key)))
@@ -53,8 +57,6 @@ namespace Tango.Html
 
 	public static class HtmlWriterTagsExtensions
 	{
-		static AttributeWriter attributeWriter = new AttributeWriter();
-
 		public static void WriteTag<T>(this IHtmlWriter w, string name, Action<T> attrs, Action inner)
 			where T : TagAttributes<T>, new()
 		{
@@ -96,9 +98,9 @@ namespace Tango.Html
 		static void WriteAttributes<T>(IHtmlWriter w, Action<T> attrs)
 			where T : TagAttributes<T>, new()
 		{
-			attributeWriter.SetHtmlWriter(w);
-			attrs(new T { AttributeWriter = attributeWriter });
-			attributeWriter.Render();
+			w.AttributeWriter.NewTag();
+			attrs(new T { AttributeWriter = w.AttributeWriter });
+			w.AttributeWriter.Render();
 		}
 
 		public static string GetID(this IHtmlWriter w, string id) => HtmlWriterHelpers.GetID(w.IDPrefix, id);

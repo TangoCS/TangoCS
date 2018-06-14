@@ -26,9 +26,9 @@ namespace Tango.UI
 				w.Includes.Add("calendar/lang/calendar-ru.js");
 				w.Includes.Add("calendar/calendarcontrol.js");
 
-				w.AddClientAction("Calendar", "setup", new {
-					inputField = w.GetID(name.ID),
-					button = w.GetID("btn" + name.ID),
+				w.AddClientAction("Calendar", "setup", f => new {
+					inputField = f(name.ID),
+					button = f("btn" + name.ID),
 					showOthers = true,
 					weekNumbers = false,
 					showTime = showTime,

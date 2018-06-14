@@ -1,17 +1,40 @@
 ﻿using System;
+using Tango.Html;
 
 namespace Tango.UI
 {
 	public static class LayoutWriterClientActionsExtensions
 	{
-		public static void AddClientAction(this LayoutWriter w, string service, string method, object args)
+		public static void AddClientAction(this LayoutWriter w, string service, string method, Func<Func<string, string>, object> args)
 		{
-			w.ClientActions.Add(new ClientAction(service, method, args));
+			var resolvedArgs = args != null ? args(id => w.GetID(id)) : null;
+			w.ClientActions.Add(new ClientAction(service, method, resolvedArgs));
 		}
 
-		public static void AddClientAction(this LayoutWriter w, ClientAction action)
+		public static void AddClientAction(this LayoutWriter w, string service, Func<Func<string, string>, object> args)
 		{
-			w.ClientActions.Add(action);
+			w.AddClientAction(service, "apply", args);
+		}
+
+		public static void AddClientAction(this LayoutWriter w, string service, string method, Func<Func<string, string>, object> args, params (string method, Func<Func<string, string>, object> args)[] then)
+		{
+			var resolvedArgs = args != null ? args(id => w.GetID(id)) : null;
+			var ca = new ClientAction(service, method, resolvedArgs);
+			w.ClientActions.Add(ca);
+			
+			if (then != null && then.Length > 0)
+			{
+				foreach (var ch in then)
+				{
+					var resolvedChainArgs = ch.args != null ? ch.args(id => w.GetID(id)) : null;
+					ca.CallChain.Add(new ClientAction.ChainElement { Method = ch.method, Args = resolvedChainArgs });
+				}
+			}
+		}
+
+		public static void AddClientAction(this LayoutWriter w, string service, Func<Func<string, string>, object> args, params (string method, Func<Func<string, string>, object> args)[] then)
+		{
+			w.AddClientAction(service, "apply", args, then);
 		}
 
 		public static void BindEventGet(this LayoutWriter w, string elementId, string clientEvent, Action<ApiResponse> serverEvent)
@@ -42,16 +65,16 @@ namespace Tango.UI
 
 		static void BindEvent(this LayoutWriter w, string elementId, string clientEvent, string serverEvent, string method, string serverEventReceiver = null)
 		{
-			w.ClientActions.Add(new ClientAction("ajaxUtils", "bindevent", new {
-				Id = GetClientId(w, elementId), ClientEvent = clientEvent,
+			w.AddClientAction("ajaxUtils", "bindevent", f => new {
+				Id = f(elementId), ClientEvent = clientEvent,
 				ServerEvent = serverEvent, ServerEventReceiver = serverEventReceiver,
 				Method = method
-			}));
+			});
 		}
 
-		static string GetClientId(LayoutWriter w, string name)
-		{
-			return (!w.IDPrefix.IsEmpty() ? w.IDPrefix + "_" + name : name).ToLower();
-		}
+		//static string GetClientId(LayoutWriter w, string name)
+		//{
+		//	return (!w.IDPrefix.IsEmpty() ? w.IDPrefix + "_" + name : name).ToLower();
+		//}
 	}
 }

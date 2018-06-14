@@ -104,7 +104,7 @@
 			}
 
 			setHeaderSelectorState(cbhead, j, cblist.length);
-			setMassOpsState(shadow, root, state);
+			setBulkOpsState(shadow, root, state);
 			initInfoBlock(shadow, root, state);
 		},
 		setselected: function (el) {
@@ -136,7 +136,7 @@
 				if (cblist[i].getAttribute('data-state') == 1) j++;
 			}
 			setHeaderSelectorState(cbhead, j, cblist.length);
-			setMassOpsState(document, root, state);
+			setBulkOpsState(document, root, state);
 			initInfoBlock(document, root, state, j != 0);
 		},
 		cbheadclicked: function (cbhead) {
@@ -152,7 +152,7 @@
 			else if (headstate == '0') {
 				setPageChecked(root, state, cbhead);
 			}
-			setMassOpsState(document, root, state);
+			setBulkOpsState(document, root, state);
 			initInfoBlock(document, root, state);
 		},
 		selectall: function (rootid) {
@@ -164,7 +164,7 @@
 			state.selectedvalues.push(-1);
 
 			setPageChecked(root, state, cbhead);
-			setMassOpsState(document, root, state);
+			setBulkOpsState(document, root, state);
 			initInfoBlock(document, root, state);
 		},
 		clearselection: function (rootid) {
@@ -175,7 +175,7 @@
 			state.selectedvalues = [];
 
 			setPageUnchecked(root, state, cbhead);
-			setMassOpsState(document, root, state);
+			setBulkOpsState(document, root, state);
 			initInfoBlock(document, root, state);
 		},
 	}
@@ -193,13 +193,13 @@
 		}
 	}
 
-	function setMassOpsState(doc, root, state) {
-		const massops = doc.querySelectorAll('.massop');
-		for (var i = 0; i < massops.length; i++) {
+	function setBulkOpsState(doc, root, state) {
+		const bulkops = doc.querySelectorAll('.bulkop');
+		for (var i = 0; i < bulkops.length; i++) {
 			if (state.selectedvalues.length == 0) {
-				massops[i].style.display = 'none';
+				bulkops[i].style.display = 'none';
 			} else {
-				massops[i].style.display = '';
+				bulkops[i].style.display = '';
 			}
 		}
 	}
@@ -277,21 +277,11 @@
 	}
 
 	function getRow(caller) {
-		var el = caller;
-		while (el) {
-			if (el instanceof HTMLTableRowElement) return el;
-			el = el.parentNode;
-		}
-		return undefined;
+		return commonUtils.getParent(caller, function (el) { return el instanceof HTMLTableRowElement; });
 	};
 
 	function getCell(caller) {
-		var el = caller;
-		while (el) {
-			if (el instanceof HTMLTableCellElement) return el;
-			el = el.parentNode;
-		}
-		return undefined;
+		return commonUtils.getParent(caller, function (el) { return el instanceof HTMLTableCellElement; });
 	};
 
 	return instance;

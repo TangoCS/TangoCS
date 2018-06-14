@@ -464,6 +464,19 @@ td.showDragHandle {
 	background-color: #f3f3f3;
 }
 
+.modal-dialog {
+	transform: scale(0.8);
+	transform-origin: top;
+	opacity: 0;
+	transition: all 0.2s;
+}
+
+.modal-dialog.md-show {
+	transform: scale(1);
+	opacity: 1;
+}
+
+
 button.close {
 	-webkit-appearance: none;
 	padding: 0;
@@ -710,18 +723,6 @@ button.close {
 
 .visible {
 	visibility: visible;
-}
-
-.modal-dialog {
-	transform: scale(0.8);
-	transform-origin: top;
-	opacity: 0;
-	transition: all 0.2s;
-}
-
-.modal-dialog.visible {
-	transform: scale(1);
-	opacity: 1;
 }
 
 

@@ -93,23 +93,19 @@ input.text {
 }
 
 /* forms */
-.formtable.width100, .buttonsbar.width100 {
+.width100 {
 	width: 100%;
 }
 
-.formtable.widthstd, .buttonsbar.widthstd {
+.widthstd {
 	width: 700px;
 }
 
-.formtable.widthstd .formlabel {
-	width: 190px;
-}
-
-.formtable.width100 .formlabel {
+.formtable .formlabel {
 	width: 30%;
 }
 
-.formtable.width100 .formbody {
+.formtable .formbody {
 	width: 70%;
 }
 

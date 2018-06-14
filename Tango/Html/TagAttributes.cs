@@ -5,8 +5,10 @@ namespace Tango.Html
 {
 	public interface IAttributeWriter
 	{
+		void NewTag();
 		void Write(string key, string value, bool replaceExisting = true);
 		void WriteID(string key, string value);
+		void Render();
 	}
 
 	public abstract class TagAttributes<T>
@@ -23,12 +25,14 @@ namespace Tango.Html
 
 		public T ID() { AttributeWriter.WriteID("id", null); return _this; }
 		public T ID<TValue>(TValue value) { AttributeWriter.WriteID("id", value.ToString()); return _this; }
+		public T IDExplicit<TValue>(TValue value) { AttributeWriter.Write("id", value.ToString()); return _this; }
 
 		public T AccessKey(string value) { AttributeWriter.Write("accesskey", value); return _this; }
 		public T Aria(string key, string value) { AttributeWriter.Write("aria-" + key.ToLower(), value); return _this; }
 		public T Class(string value, bool replaceExisting = false) { AttributeWriter.Write("class", value, replaceExisting); return _this; }
 		public T ContentEditable(bool value) { if (value) AttributeWriter.Write("contenteditable", "Contenteditable"); return _this; }
 		public T Data<TValue>(string key, TValue value) { AttributeWriter.Write("data-" + key.ToLower(), value?.ToString()); return _this; }
+		public T Data(string key) { AttributeWriter.Write("data-" + key.ToLower(), null); return _this; }
 		public T DataIDValue<TValue>(string key, TValue value) { AttributeWriter.WriteID("data-" + key.ToLower(), value?.ToString()); return _this; }
 		public T Dir(Dir value) { AttributeWriter.Write("dir", value.ToString().ToLower()); return _this; }
 		public T Draggable(bool value) { if (value) AttributeWriter.Write("draggable", "Draggable"); return _this; }

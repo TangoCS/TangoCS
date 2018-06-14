@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -11,10 +12,9 @@ namespace Tango
 		{
 			get
 			{
-				return new JsonSerializerSettings
-				{
+				return new JsonSerializerSettings {
 					ContractResolver = new CamelCasePropertyNamesContractResolver(),
-					Converters = new[] { new KeyValueListConverter() }
+					Converters = new List<JsonConverter> { new KeyValueListConverter(), new StringEnumConverter(true) }
 				};
 			}
 		}

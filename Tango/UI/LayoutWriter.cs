@@ -69,11 +69,14 @@ namespace Tango.UI
         public static void AjaxForm(this LayoutWriter w, string name, bool submitOnEnter, Action<FormTagAttributes> attributes, Action content)
 		{
 			w.Form(a => a.ID(name).Set(attributes), () => {
-                content();
-                // Workaround to avoid corrupted XHR2 request body in IE10 / IE11
-                w.Hidden("__dontcare", null);
+				if (content != null)
+				{
+					content();
+					// Workaround to avoid corrupted XHR2 request body in IE10 / IE11
+					w.Hidden("__dontcare", null);
+				}
             });
-			w.AddClientAction("ajaxUtils", "initForm", new { ID = w.GetID(name), SubmitOnEnter = submitOnEnter });
+			w.AddClientAction("ajaxUtils", "initForm", f => new { ID = f(name), SubmitOnEnter = submitOnEnter });
 		}
 
 		public static void FormTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
@@ -125,7 +128,7 @@ namespace Tango.UI
 
 		public static void ButtonsBar(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
-			w.Div(a => a.ID("buttonsbar").Class("buttonsbar").Set(attributes), content);
+			w.Div(a => a.IDExplicit("buttonsbar").Class("buttonsbar").Set(attributes), content);
 		}
 
 		public static void ButtonsBarRight(this LayoutWriter w, Action content)
