@@ -27,8 +27,8 @@ a:hover {
 	text-decoration: underline;
 }
 
-a, .actionbtn {
-	cursor: pointer;
+a, .actionbtn, .icon-collapsed, .icon-expanded {
+    cursor: pointer;
 }
 
 
@@ -204,11 +204,11 @@ hr {
 	display: flex;
 }
 
-.modal-footer .right, .buttonsbar .right {
+.modal-footer .right, .buttonsbar .right  {
 	margin-left: auto;
 }
 
-.modal-footer .right *, .buttonsbar .right * {
+.modal-footer .right *, .buttonsbar .right *, .buttonsbar .left * {
 	margin-left: 4px;
 }
 

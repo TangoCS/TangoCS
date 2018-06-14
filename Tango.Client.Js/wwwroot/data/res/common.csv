@@ -75,6 +75,7 @@ Common.Theme.Current;Текущая тема;Current theme
 Common.Theme.Default;По умолчанию;Default
 Common.Theme.Description;Эта страница служит для изменения шрифтов и цветовой схемы;On this page you can change application font and colors
 Common.Theme.Select;Выберите тему;Select theme
+Common.Undelete;Отменить удаление;Undelete
 Common.Undelete.Confirm;Вы уверены, что хотите отменить удаление;Are you sure you want to undelete the
 Common.Undelete.Undeletion;Отмена удаления;Undeletion
 Common.Utils;Утилиты;Utils
