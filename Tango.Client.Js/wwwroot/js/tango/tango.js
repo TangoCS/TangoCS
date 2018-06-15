@@ -431,13 +431,13 @@ var ajaxUtils = function ($, cu) {
 				}
 			};
 
-			var r = callOnResult(handler);
+			if (callOnResult(handler) == false) return false;
+
 			const children = handler.querySelectorAll('[data-ctrl]');
 
-			for (var i = 0; i < children.length; i++)
-				r = callOnResult(children[i]) || r;
-
-			return r;
+			for (var i = 0; i < children.length; i++) {
+				if (callOnResult(children[i]) == false) return false;
+			}
 		},
 		state: state
 	};
@@ -700,37 +700,47 @@ var ajaxUtils = function ($, cu) {
 			}
 
 			const ctrls = shadow.querySelectorAll('[data-ctrl]');
+			const bindels = shadow.querySelectorAll('[data-hasclientstate]');
 
+			for (var j = 0; j < bindels.length; j++) {
+				const node = bindels[j];
+				const type = node.getAttribute('data-hasclientstate');
+				var owner = node.getAttribute('data-clientstate-owner');
+				const name = node.getAttribute('data-clientstate-name') || node.name;
+				if (!owner) {
+					const parentctrl = cu.getParent(node, function (n) { return n.hasAttribute('data-ctrl'); });
+					if (!parentctrl) continue;
+					owner = parentctrl.id;
+				}
+				if (!state.ctrl[owner]) state.ctrl[owner] = {};
+				const nodectrl = state.ctrl[owner];
+				if (type == 'array') {
+					nodectrl[name] = new ObservableArray(node.value.split(',').filter(String));
+					nodectrl[name].on('pop push shift unshift splice reverse sort', function () {
+						node.value = this.join(',');
+					});
+				} else if (type == 'value') {
+					Object.defineProperty(nodectrl, name, {
+						enumerable: true,
+						get: function () { return node.value; },
+						set: function (val) { node.value = val; }
+					});
+				}
+			}
 
 			for (var i = 0; i < ctrls.length; i++) {
 				const root = ctrls[i];
 				const t = root.getAttribute('data-ctrl');
-				const ctrlstate = state.ctrl[root.id] ? state.ctrl[root.id] : { type: t, root: root.id };
-				const bindels = root.querySelectorAll('[data-hasclientstate]');
-
-				if (!state.ctrl[root.id]) {
+				const ctrlstate = state.ctrl[root.id] ? state.ctrl[root.id] : { };	
+				
+				if (!state.ctrl[root.id] || !ctrlstate.type) {
+					ctrlstate.type = t;
+					ctrlstate.root = root.id;
 					state.ctrl[root.id] = ctrlstate;
 
 					if (window[t] && window[t]['init']) {
 						window[t]['init'](root, ctrlstate);
 						console.log('widget: ' + root.id + ' init ' + t);
-					}
-				}
-
-				for (var j = 0; j < bindels.length; j++) {
-					const node = bindels[j];
-					const type = node.getAttribute('data-hasclientstate');
-					if (type == 'array') {
-						ctrlstate[node.name] = new ObservableArray(node.value.split(',').filter(String));
-						ctrlstate[node.name].on('pop push shift unshift splice reverse sort', function () {
-							node.value = this.join(',');
-						});
-					} else if (type == 'value') {
-						Object.defineProperty(ctrlstate, node.name, {
-							enumerable: true,
-							get: function () { return node.value; },
-							set: function (val) { node.value = val; }
-						});
 					}
 				}
 

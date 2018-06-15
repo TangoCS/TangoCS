@@ -4,18 +4,17 @@
 			document.getElementById(id).value = '';
 			document.getElementById(id + '_selected').innerHTML = '';
 			const state = au.state.ctrl[id + '_str'];
-			if (state) state.selectedObj = [];
+			if (state) state.selectedvalue = '';
 		},
 		widgetWillMount: function (shadow, state) {
 			const root = shadow.getElementById(state.root);
-			const valid = root.getAttribute('data-val');
 
 			const checks = root.getElementsByTagName('input');
 			for (var i = 0; i < checks.length; i++) {
 				const el = checks[i];
-				el.checked = state.selectedObj == el.value;
+				el.checked = state.selectedvalue == el.value;
 				el.addEventListener("change", function () {
-					state.selectedObj = el.value;
+					state.selectedvalue = el.value;
 				});
 			}
 
@@ -31,16 +30,10 @@
 		},
 		onResult: function (res, state) {
 			if (res == 0)
-				delete state.selectedObjs;
+				state.selectedvalue = '';
 			else if (res == 1) {
 				const root = document.getElementById(state.root);
-				const val = document.getElementById(root.getAttribute('data-val'));
-
-				val.value = state.selectedObj;
-
-				var data = {};
-				data[val.id] = state.selectedObj;
-				au.postEventWithApiResponse({ e: 'submitdialog', r: root.id, data: data });
+				au.postEventFromElementWithApiResponse(root, { e: 'submitdialog', r: root.id });
 				return false;
 			}
 		},
@@ -61,31 +54,22 @@ var selectMultipleObjectsDialog = function (au, cu) {
 			document.getElementById(id).value = '';
 			document.getElementById(id + '_selected').innerHTML = '';
 			const state = au.state.ctrl[id + '_str'];
-			if (state) state.selectedObjs = [];
+			if (state) state.selectedvalues.length = 0;
 		},
 		widgetWillMount: function (shadow, state) {
 			const root = shadow.getElementById(state.root);
-			const valid = root.getAttribute('data-val');
-
-			if (!state.selectedObjs) {
-				const val = (shadow.getElementById(valid) || document.getElementById(valid)).value;
-				if (val && val != '')
-					state.selectedObjs = val.split(",");
-				else
-					state.selectedObjs = [];
-			}
 
 			const checks = root.getElementsByTagName('input');
 			for (var i = 0; i < checks.length; i++) {
 				const el = checks[i];
-				el.checked = state.selectedObjs.indexOf(el.value) >= 0;
+				el.checked = state.selectedvalues.indexOf(el.value) >= 0;
 				el.addEventListener("change", function () {
 					if (el.checked) {
-						state.selectedObjs.push(el.value);
+						state.selectedvalues.push(el.value);
 					}
 					else {
-						const index = state.selectedObjs.indexOf(el.value);
-						state.selectedObjs.splice(index, 1);
+						const index = state.selectedvalues.indexOf(el.value);
+						state.selectedvalues.splice(index, 1);
 					}
 				});
 			}
@@ -102,17 +86,11 @@ var selectMultipleObjectsDialog = function (au, cu) {
 		},
 		onResult: function (res, state) {
 			if (res == 0)
-				delete state.selectedObjs;
+				state.selectedvalues.length = 0;
 			else if (res == 1) {
 				const root = document.getElementById(state.root);
-				const val = document.getElementById(root.getAttribute('data-val'));
-
-				val.value = state.selectedObjs.join();
-
-				var data = {};
-				data[val.id] = state.selectedObjs;
-				au.postEventWithApiResponse({ e: 'submitdialog', r: root.id, data: data });
-				return true;
+				au.postEventFromElementWithApiResponse(root, { e: 'submitdialog', r: root.id });
+				return false;
 			}
 		},
 		pagingEvent: function (caller, id) {
