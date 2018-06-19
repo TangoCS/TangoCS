@@ -58,17 +58,24 @@ namespace Tango.UI
 		}
 	}
 
-	public class AjaxResult : HttpResult
+	public abstract class AjaxResult<T> : HttpResult
+		where T: IJsonResponse, new()
 	{
-		public IJsonResponse ApiResponse { get; private set; }
-		public AjaxResult(IJsonResponse data)
+		public T ApiResponse { get; private set; }
+		public AjaxResult()
 		{
-			ApiResponse = data;
+			ApiResponse = new T();
 			Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
 			ContentType = "application/json";
 			ContentFunc = ctx => Encoding.UTF8.GetBytes(ApiResponse.Serialize(ctx));
 		}
 	}
+
+	public class ApiResult : AjaxResult<ApiResponse> { }
+
+	public class ArrayResult : AjaxResult<ArrayResponse> { }
+
+	public class ObjectResult : AjaxResult<ObjectResponse> { }
 
 	public class RedirectResult : HttpResult
 	{

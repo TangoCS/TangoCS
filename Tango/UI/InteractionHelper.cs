@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 
@@ -6,10 +8,11 @@ namespace Tango.UI
 {
 	public static class InteractionHelper
 	{
-		public static ActionResult RunEvent(IInteractionFlowElement recipient, string e, Action<ApiResponse> firstLoad, Action<ApiResponse> renderLog)
+		public static ActionResult RunEvent(IInteractionFlowElement recipient, string e)
 		{	
-			var t = recipient.GetType();
+			var t = recipient.GetType();			
 			var name = e.ToLower();
+			var filtersCollection = recipient.Context.GetService<FilterCollection>();
 			var m = FindMethod(t, name, recipient.Context.RequestMethod);
 			MulticastDelegate eventDelegate = null;
 			if (m == null)
@@ -24,7 +27,7 @@ namespace Tango.UI
 			if (m == null)
 				return new HttpResult { StatusCode = HttpStatusCode.Forbidden };
 
-			if (recipient is IWithCheckAccess && !(recipient as IWithCheckAccess).CheckAccess(m))
+			if (recipient is IWithCheckAccess secured && !secured.CheckAccess(m))
 				return new HttpResult { StatusCode = HttpStatusCode.Forbidden };
 
 			var ps = m.GetParameters();
@@ -32,27 +35,41 @@ namespace Tango.UI
 			if (ps.Length == 1 && m.ReturnType == typeof(void))
 			{
 				IJsonResponse resp = null;
+				ActionResult res = null;
+
 				var p = ps[0].ParameterType;
 				if (p == typeof(ArrayResponse))
-					resp = new ArrayResponse();
+				{
+					var arrRes = new ArrayResult();
+					resp = arrRes.ApiResponse;
+					res = arrRes;
+				}
 				else if (p == typeof(ApiResponse))
 				{
-					var apiResp = new ApiResponse(recipient);
-					firstLoad?.Invoke(apiResp);
-					resp = apiResp;
+					var apiRes = new ApiResult();
+					resp = apiRes.ApiResponse;
+					res = apiRes;
 				}
 				else if (p == typeof(ObjectResponse))
-					resp = new ObjectResponse();
+				{
+					var arrObj = new ObjectResult();
+					resp = arrObj.ApiResponse;
+					res = arrObj;
+				}
+
+				var filterContext = new ActionFilterContext(recipient, m, res);
+				RunBeforeActionFilters(filtersCollection.BeforeActionFilters, filterContext);
+				if (filterContext.CancelResult != null) return filterContext.CancelResult;
 
 				if (eventDelegate == null)
 					m.Invoke(recipient, new object[] { resp });
 				else
 					eventDelegate.DynamicInvoke(resp);
 
-				if (resp is ApiResponse && renderLog != null)
-					renderLog(resp as ApiResponse);
+				RunAfterActionFilters(filtersCollection.AfterActionFilters, filterContext);
+				if (filterContext.CancelResult != null) return filterContext.CancelResult;
 
-				return new AjaxResult(resp);
+				return res;
 			}
 			else if (m.ReturnType == typeof(ActionResult))
 			{
@@ -74,16 +91,45 @@ namespace Tango.UI
 					}
 				}
 
+				ActionResult res = null;
 				if (eventDelegate == null)
-					return m.Invoke(recipient, p) as ActionResult;
+					res = m.Invoke(recipient, p) as ActionResult;
 				else
-					return eventDelegate.DynamicInvoke(p) as ActionResult;
+					res = eventDelegate.DynamicInvoke(p) as ActionResult;
+
+				var filterContext = new ActionFilterContext(recipient, m, res);
+				RunAfterActionFilters(filtersCollection.AfterActionFilters, filterContext);
+				if (filterContext.CancelResult != null) return filterContext.CancelResult;
+
+				return res;
 			}
 
 			throw new Exception($"{t.Name}.{e} method is not a valid action");
 		}
 
-		public static MethodInfo FindMethod(Type type, string methodName, string httpMethod)
+		static ActionResult RunBeforeActionFilters(IReadOnlyList<IBeforeActionFilter> collection, ActionFilterContext context)
+		{
+			foreach (var f in collection)
+			{
+				f.BeforeAction(context);
+				if (context.CancelResult != null)
+					return context.CancelResult;
+			}
+			return null;
+		}
+
+		static ActionResult RunAfterActionFilters(IReadOnlyList<IAfterActionFilter> collection, ActionFilterContext context)
+		{
+			foreach (var f in collection)
+			{
+				f.AfterAction(context);
+				if (context.CancelResult != null)
+					return context.CancelResult;
+			}
+			return null;
+		}
+
+		static MethodInfo FindMethod(Type type, string methodName, string httpMethod)
 		{
 			var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance);
 			MethodInfo method = null;

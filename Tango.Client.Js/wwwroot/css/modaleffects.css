@@ -712,6 +712,15 @@ perspective effects (not including the modals and the overlay).
 	}
 }
 
+#container_err.modal-dialog {
+	width: 90%;
+}
+
+#container_err iframe {
+	width: 100%;
+	height: 500px;
+	border: 0;
+}
 
 #container_err .modal-container {
 	background: #fff;

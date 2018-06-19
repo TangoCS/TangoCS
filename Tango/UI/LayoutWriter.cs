@@ -69,13 +69,10 @@ namespace Tango.UI
         public static void AjaxForm(this LayoutWriter w, string name, bool submitOnEnter, Action<FormTagAttributes> attributes, Action content)
 		{
 			w.Form(a => a.ID(name).Set(attributes), () => {
-				if (content != null)
-				{
-					content();
-					// Workaround to avoid corrupted XHR2 request body in IE10 / IE11
-					w.Hidden("__dontcare", null);
-				}
-            });
+				content?.Invoke();
+				// Workaround to avoid corrupted XHR2 request body in IE10 / IE11
+				w.Hidden(Constants.IEFormFix, null);
+			});
 			w.AddClientAction("ajaxUtils", "initForm", f => new { ID = f(name), SubmitOnEnter = submitOnEnter });
 		}
 

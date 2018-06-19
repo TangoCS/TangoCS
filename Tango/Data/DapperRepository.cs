@@ -21,6 +21,8 @@ namespace Tango.Data
 		
 		public IDbTransaction BeginTransaction(IsolationLevel il = IsolationLevel.Unspecified)
 		{
+			if (Connection.State != ConnectionState.Open)
+				Connection.Open();
 			Transaction = Connection.BeginTransaction(il);
 			return Transaction;
 		}

@@ -12,21 +12,28 @@ namespace Tango.UI
 		string Serialize(ActionContext context);
 	}
 
-	public class ArrayResponse : IJsonResponse
+	public class JsonResponse<TData> : IJsonResponse
 	{
-		public List<object> Data { get; set; } = new List<object>();
-		public string Serialize(ActionContext context)
+		public TData Data { get; set; }
+		public virtual string Serialize(ActionContext context)
 		{
 			return JsonConvert.SerializeObject(Data, Json.StdSettings);
 		}
 	}
 
-	public class ObjectResponse : IJsonResponse
+	public class ArrayResponse : JsonResponse<List<object>>
 	{
-		public Dictionary<string, object> Data { get; set; } = new Dictionary<string, object>();
-		public virtual string Serialize(ActionContext context)
+		public ArrayResponse()
 		{
-			return JsonConvert.SerializeObject(Data, Json.StdSettings);
+			Data = new List<object>();
+		}
+	}
+
+	public class ObjectResponse : JsonResponse<Dictionary<string, object>>
+	{
+		public ObjectResponse()
+		{
+			Data = new Dictionary<string, object>();
 		}
 	}
 
@@ -46,53 +53,7 @@ namespace Tango.UI
 
 		List<WidgetToRender> _widgetsToRender = new List<WidgetToRender>();
 		string _idprefix = "";
-		IDictionary<string, string> _mapping;
 		Func<string, string> _namefunc = name => name.ToLower();
-
-		public ApiResponse()
-		{
-
-		}
-
-		public ApiResponse(IInteractionFlowElement element)
-		{
-			var context = element.Context;
-
-			ViewContainer containerObj = null;
-
-			if (context.AddContainer)
-			{
-				if (!context.ContainerType.IsEmpty())
-				{
-					var t = new ContainersCache().Get(context.ContainerType);
-					if (t != null)
-						containerObj = Activator.CreateInstance(t) as ViewContainer;
-				}
-				else if (element is IContainerItem)
-				{
-					containerObj = (element as IContainerItem).GetDefaultContainer();
-				}
-			}
-
-			if (containerObj != null && element is IViewElement)
-			{
-				containerObj.Context = context;
-
-				var ve = element as IViewElement;
-			
-				containerObj.ID = context.ContainerPrefix;
-				ve.ParentElement = containerObj;
-
-				_mapping = containerObj.Mapping;
-				_idprefix = context.ContainerPrefix;
-
-				_namefunc = name => HtmlWriterHelpers.GetID(context.ContainerPrefix, name);
-				containerObj.Render(this);
-				_namefunc = name => _mapping.ContainsKey(name) ? HtmlWriterHelpers.GetID(context.ContainerPrefix, _mapping[name]) : name;
-			}
-
-			WithWritersFor(element as IViewElement);
-		}
 
 		public ApiResponse WithWritersFor(IViewElement view)
 		{
@@ -106,6 +67,12 @@ namespace Tango.UI
 			WithWritersFor(view);
 			content();
 			_idprefix = lastPrefix;
+			return this;
+		}
+
+		public ApiResponse WithNamesFor(Func<string, string> nameFunc)
+		{
+			_namefunc = nameFunc;
 			return this;
 		}
 
@@ -154,30 +121,35 @@ namespace Tango.UI
 			ClientActions.Add(action);
 		}
 
-		public void RedirectBack(ActionContext context)
+		void RunRedirect(ActionContext retctx)
 		{
-			if (context.ReturnTarget == null) return;
-			var retctx = context.ReturnTargetContext();
-
 			var cache = retctx.RequestServices.GetService(typeof(ITypeActivatorCache)) as ITypeActivatorCache;
 			(var type, var invoker) = cache?.Get(retctx.Service + "." + retctx.Action) ?? (null, null);
 
-			
 			var result = invoker?.Invoke(retctx, type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
 
-			if (result is AjaxResult ajax && ajax.ApiResponse is ApiResponse resp)
+			if (result is ApiResult ajax)
 			{
-				for (int i = resp._widgetsToRender.Count - 1; i >= 0; i--)
-					resp._widgetsToRender[i].context = retctx;
-				Insert(resp);
+				for (int i = ajax.ApiResponse._widgetsToRender.Count - 1; i >= 0; i--)
+					ajax.ApiResponse._widgetsToRender[i].context = retctx;
+				Insert(ajax.ApiResponse);
 			}
+		}
 
-			Data.Add("redirect", new {
-				Url = WebUtility.UrlDecode(context.ReturnUrl),
-				retctx.Service,
-				retctx.Action,
-				Parms = retctx.AllArgs
-			});
+		public void RedirectBack(ActionContext context)
+		{
+			var retctx = context.ReturnTargetContext();
+			RunRedirect(retctx);
+			Data.Add("redirect", new { Url = context.ReturnUrl, Parms = retctx.AllArgs });
+		}
+
+		public void RedirectTo(ActionContext context, Action<ActionLink> action)
+		{
+			var target = new ActionLink(context);
+			action(target);
+			var retctx = context.TargetContext(target);
+			RunRedirect(retctx);
+			Data.Add("redirect", new { target.Url, Parms = retctx.AllArgs });
 		}
 
 		#region dom actions

@@ -8,7 +8,8 @@ namespace Tango
 	public static class RouteUtils
 	{
 		public static StringBuilder Resolve(string template, 
-			IReadOnlyDictionary<string, string> parameters, 
+			IReadOnlyDictionary<string, string> parameters,
+			DynamicDictionary globalParameters,
 			bool ignoreNotMachedParms = false, string notMatchedParmsBeginWith = "?")
 		{
 			StringBuilder sb = new StringBuilder();
@@ -27,6 +28,10 @@ namespace Tango
 				{
 					sb.Append(result);
 					processedKeys.Add(g.Value);
+				}
+				else if (globalParameters != null && globalParameters.TryGetValue(g.Value, out object result2)) //Cool, we found something
+				{
+					sb.Append(result2);
 				}
 				else //didn't find a property with that name, so be gracious and put it back
 				{

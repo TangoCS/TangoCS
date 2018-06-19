@@ -11,8 +11,7 @@ namespace Tango.UI
 		public ActionContext(IServiceProvider requestServices)
 		{
 			AllArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
-			ActionArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
-			EventArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
+			RouteArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			FormData = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			EventReceivers = new Dictionary<string, InteractionFlowElement>(StringComparer.OrdinalIgnoreCase);
 			PersistentArgs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -42,14 +41,12 @@ namespace Tango.UI
 		public string Sender { get; set; }
 		public string ReturnUrl { get; set; }
 		public ActionTarget ReturnTarget { get; set; }
+		public string SourceUrl { get; set; }
 
 		// parameters
 		public DynamicDictionary AllArgs { get; set; }
-		public DynamicDictionary ActionArgs { get; set; }
-		public DynamicDictionary EventArgs { get; set; }
-		public DynamicDictionary FormData { get; set; }
-		//public dynamic FormBag { get { return FormData; } }
-		
+		public DynamicDictionary RouteArgs { get; set; }
+		public DynamicDictionary FormData { get; set; }		
 
 		// container
 		public string ContainerType { get; set; }
@@ -58,14 +55,32 @@ namespace Tango.UI
 
 		protected abstract ActionTarget ParseReturnUrl(string returnUrl);
 
+		protected void ParseRouteParms(IReadOnlyDictionary<string, string> d)
+		{
+			ParseParms(d, (k, v) => RouteArgs.Add(k, v));
+		}
+
 		protected void ParseQueryParms(IReadOnlyDictionary<string, string> d)
 		{
-			Action<string, string> addArg = (k, v) => ActionArgs.Add(k, v);
+			ParseParms(d, (k, v) => AllArgs.Add(k, v));
+		}
 
+		protected void ProcessFormData()
+		{
+			ParseParms(FormData, (k, v) => FormData.ForEach((kv) => {
+				if (!AllArgs.ContainsKey(kv.Key))
+					AllArgs.Add(kv.Key, kv.Value);
+				else
+					AllArgs[kv.Key] = kv.Value;
+			}));
+		}
+
+		void ParseParms<TValue>(IEnumerable<KeyValuePair<string, TValue>> d, Action<string, string> addArg)
+		{
 			foreach (var arg in d)
 			{
 				var key = arg.Key;
-				var value = arg.Value;
+				var value = arg.Value.ToString();
 
 				if (key == Constants.ServiceName)
 				{
@@ -90,16 +105,14 @@ namespace Tango.UI
 					Sender = value.ToLower();
 				else if (key == Constants.EventName)
 				{
-					addArg = (k, v) => {
-						EventArgs.Add(k, v);
-						if (!FormData.ContainsKey(k)) FormData.Add(k, v);
-					};
 					Event = value.ToString().ToLower();
 				}
 				else if (key == Constants.EventReceiverName)
 					EventReceiver = value.ToString().ToLower();
 				else if (key == Constants.ReturnUrl)
-					ReturnUrl = WebUtility.UrlDecode(value.ToString().ToLower());
+					ReturnUrl = value.ToString().ToLower();
+				else if (key == "sourceurl")
+					SourceUrl = value.ToString().ToLower();
 				else if (key == Constants.ContainerType)
 					ContainerType = value.ToString().ToLower();
 				else if (key == Constants.ContainerPrefix)
@@ -109,28 +122,29 @@ namespace Tango.UI
 				else
 				{
 					addArg(key, value);
-					AllArgs.Add(key, value);
 				}
 			}
 		}
 
-		public ActionContext ReturnTargetContext()
+		public ActionContext ReturnTargetContext() => TargetContext(ReturnTarget);
+
+		public ActionContext TargetContext(ActionTarget target)
 		{
 			var ctx = MemberwiseClone() as ActionContext;
 
 			ctx.IsFirstLoad = false;
-			ctx.Service = ReturnTarget.Service;
-			ctx.Action = ReturnTarget.Action;
+			ctx.Service = target.Service;
+			ctx.Action = target.Action;
+			ctx.Event = target.Event;
+			ctx.EventReceiver = target.EventReceiver;
 
 			ctx.ReturnTarget = null;
 			ctx.ReturnUrl = null;
 
 			ctx.AllArgs.Clear();
 			ctx.FormData.Clear();
-			ctx.EventArgs.Clear();
-			ctx.ActionArgs.Clear();
 
-			foreach (var p in ReturnTarget.Args)
+			foreach (var p in target.Args)
 			{
 				if (p.Key == Constants.ReturnUrl)
 				{
@@ -139,20 +153,15 @@ namespace Tango.UI
 					if (ctx.ReturnTarget.Args.TryGetValue(Constants.ReturnUrl, out string value))
 					{
 						ctx.AllArgs.Add(p.Key, value);
-						ctx.ActionArgs.Add(p.Key, value);
 					}
 				}
 				else
 				{
 					ctx.AllArgs.Add(p.Key, p.Value);
-					ctx.ActionArgs.Add(p.Key, p.Value);
 				}
 			}
-
-			ctx.Event = null;
-			ctx.EventReceiver = null;
+		
 			ctx.Sender = null;
-
 			ctx.ContainerType = null;
 			ctx.ContainerPrefix = null;
 			ctx.AddContainer = false;
@@ -171,6 +180,12 @@ namespace Tango.UI
 
 	public static class ActionContextExtensions
 	{
+		public static T GetService<T>(this ActionContext ctx)
+			where T:class
+		{
+			return ctx.RequestServices.GetService(typeof(T)) as T;
+		}
+
 		public static string GetArg(this ActionContext ctx, string name)
 		{
 			bool b = ctx.AllArgs.TryGetValue(name, out object s);

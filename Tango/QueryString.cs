@@ -157,7 +157,7 @@ namespace Tango
 			if (_returnUrl != null) return _returnUrl;
 
 			AbstractQueryString url = this;
-			var returnurl = WebUtility.UrlEncode(url);
+			var returnurl = url.ToString();
 			if (returnurl.Length > MaxReturnUrlLength)
 			{
 				Stack<string> urlStack = new Stack<string>();
@@ -170,7 +170,7 @@ namespace Tango
 				url = new Url(urlStack.Pop());
 				while (urlStack.Count > 0)
 					url = new Url(urlStack.Pop()).AddParameter(Constants.ReturnUrl, WebUtility.UrlEncode(url));
-				returnurl = WebUtility.UrlEncode(url);
+				returnurl = url;
 			}
 			_returnUrl = returnurl;
 			return _returnUrl;

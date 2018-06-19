@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
 using Tango.Html;
 using Tango.Localization;
 
@@ -17,10 +16,13 @@ namespace Tango.UI
 		string Service { get; set; }
 		string Action { get; set; }
 
+		string Event { get; set; }
+		string EventReceiver { get; set; }
+
 		Dictionary<string, string> Args { get; }
-		Dictionary<string, string> HashArgs { get; }
 
 		ActionRequestType RequestType { get; set; }
+		string RequestMethod { get; set; }
 	}
 
 	public class ActionTarget : IActionTarget
@@ -28,18 +30,19 @@ namespace Tango.UI
 		public string Service { get; set; }
 		public string Action { get; set; }
 
+		public string Event { get; set; }
+		public string EventReceiver { get; set; }
+
 		public Dictionary<string, string> Args { get; } = new Dictionary<string, string>();
-		public Dictionary<string, string> HashArgs { get; } = new Dictionary<string, string>();
 
 		public ActionRequestType RequestType { get; set; } = ActionRequestType.Text;
+		public string RequestMethod { get; set; } = "GET";
 	}
 
 	public class ActionLink : ActionTarget
 	{
 		protected IUrlResolver _resolver;
-		protected IUrlResolver _hashPartResolver = new RouteUrlResolver("", "/");
 
-		Dictionary<int, ActionTarget> _callbacks = new Dictionary<int, ActionTarget>();
 
 		string _url = null;
 		string _title;
@@ -67,7 +70,8 @@ namespace Tango.UI
 
 		public Dictionary<string, string> References { get; } = new Dictionary<string, string>();
 		public (string Prefix, string Type) Container { get; private set; }
-		public IReadOnlyDictionary<int, ActionTarget> Callbacks => _callbacks;
+
+		public string CallbackUrl { get; private set; }
 
 		public ActionContext Context { get; private set; }
 		public IResourceManager Resources => Context.Resources;
@@ -95,7 +99,7 @@ namespace Tango.UI
 		{
 			if (_resolver == null)
 			{
-				_enabled = false;
+				_enabled = true;
 				return;
 			}
 			if (_url == null)
@@ -106,25 +110,19 @@ namespace Tango.UI
 					return;
 				}
 
-				foreach (var arg in Context.PersistentArgs)
-				{
-					if (!Args.ContainsKey(arg.Key))
-						Args.Add(arg.Key, arg.Value);
-				}
+				//foreach (var arg in Context.PersistentArgs)
+				//{
+				//	if (!Args.ContainsKey(arg.Key))
+				//		Args.Add(arg.Key, arg.Value);
+				//}
 
 				var urlArgs = new Dictionary<string, string>(Args) {
 					{ Constants.ServiceName, Service },
 					{ Constants.ActionName, Action }
 				};
-				var r = _resolver.Resolve(urlArgs);
+				var r = _resolver.Resolve(urlArgs, Context.AllArgs);
 				if (r.Resolved)
 				{
-					if (HashArgs.Count > 0)
-					{
-						var hr = _hashPartResolver.Resolve(HashArgs);
-						if (hr.Resolved)
-							r.Result.Append("#").Append(hr.Result);
-					}
 					_url = r.Result.ToString();
 				}
 				_enabled = r.Resolved;
@@ -145,11 +143,6 @@ namespace Tango.UI
 		public ActionLink UseResolver(IUrlResolver resolver)
 		{
 			_resolver = resolver;
-			return this;
-		}
-		public ActionLink UseHashPartResolver(IUrlResolver resolver)
-		{
-			_hashPartResolver = resolver;
 			return this;
 		}
 
@@ -190,9 +183,9 @@ namespace Tango.UI
 			return this;
 		}
 
-		public ActionLink Callback(int retValue, ActionTarget action)
+		public ActionLink WithCallbackUrl(string url)
 		{
-			_callbacks[retValue] = action;
+			CallbackUrl = url;
 			return this;
 		}
 
@@ -215,15 +208,59 @@ namespace Tango.UI
 
 	public static class ActionTargetExtensions
 	{
-		public static T To<T>(this T target, string serviceName, string actionName)
+		public static T RunEvent<T>(this T target, Action<ApiResponse> action)
+			where T : IActionTarget
+		{
+			target.RequestMethod = "GET";
+			return target.SetEvent(action);
+		}
+
+		public static T RunEvent<T>(this T target, string eventName, string eventReceiver = null)
+			where T : IActionTarget
+		{
+			target.RequestMethod = "GET";
+			target.Event = eventName;
+			target.EventReceiver = eventReceiver;
+			return target;
+		}
+
+		public static T PostEvent<T>(this T target, Action<ApiResponse> action)
+			where T : IActionTarget
+		{
+			target.RequestMethod = "POST";
+			return target.SetEvent(action);
+		}
+
+		public static T PostEvent<T>(this T target, string eventName, string eventReceiver = null)
+			where T : IActionTarget
+		{
+			target.RequestMethod = "POST";
+			target.Event = eventName;
+			target.EventReceiver = eventReceiver;
+			return target;
+		}
+
+		static T SetEvent<T>(this T target, Action<ApiResponse> action)
 			where T: IActionTarget
+		{
+			var el = action.Target as ViewElement;
+			if (el == null) throw new InvalidCastException("Invalid class type for action.Target; must be of type ViewElement");
+
+			if (!el.ClientID.IsEmpty()) target.EventReceiver = el.ClientID;
+			target.Event = action.Method.Name.ToLower();
+
+			return target;
+		}
+
+		public static T To<T>(this T target, string serviceName, string actionName)
+			where T : IActionTarget
 		{
 			target.Service = serviceName;
 			target.Action = actionName;
 			return target;
 		}
 
-		public static T WithArgs<T>(this T target, IDictionary<string, object> args)
+		public static T WithArgs<T, TValue>(this T target, IEnumerable<KeyValuePair<string, TValue>> args)
 			where T : IActionTarget
 		{
 			foreach (var p in args)
@@ -231,17 +268,6 @@ namespace Tango.UI
 					target.Args[p.Key] = p.Value.ToString();
 				else
 					target.Args.Remove(p.Key);
-			return target;
-		}
-
-		public static T WithEventArgs<T>(this T target, IDictionary<string, object> args)
-			where T : IActionTarget
-		{
-			foreach (var p in args)
-				if (p.Value != null)
-					target.HashArgs[p.Key] = p.Value.ToString();
-				else
-					target.HashArgs.Remove(p.Key);
 			return target;
 		}
 
@@ -255,22 +281,10 @@ namespace Tango.UI
 			return target;
 		}
 
-		public static T WithEventArg<T, TValue>(this T target, string key, TValue value)
-			where T : IActionTarget
-		{
-			if (value != null)
-				target.HashArgs[key] = value.ToString();
-			else
-				target.HashArgs.Remove(key);
-			return target;
-		}
-
-
 		public static T RemoveArg<T>(this T target, string key)
 			where T : IActionTarget
 		{
 			target.Args.Remove(key);
-			target.HashArgs.Remove(key);
 			return target;
 		}
 
@@ -286,6 +300,12 @@ namespace Tango.UI
 		{
 			attrs?.Invoke(target);
 			return target;
+		}
+
+		public static ActionLink CallbackToCurrent(this ActionLink link)
+		{
+			link.WithCallbackUrl(link.Context.BaseUrl().Url);
+			return link;
 		}
 	}
 }

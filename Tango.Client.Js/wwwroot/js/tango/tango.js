@@ -1,13 +1,15 @@
 ﻿/// <reference path="/js/jquery-1.11.0.min.js"/>
-/// ver. 29-08-2016
 var commonUtils = function ($) {
 	var instance = {
-		getParams: function (query) {
+		getParams: function (query, raw) {
 			var p = {};
 			var e,
 				a = /\+/g, // Regex for replacing addition symbol with a space
 				r = /([^&;=]+)=?([^&;]*)/g,
-				d = function (s) { return decodeURIComponent(s.replace(a, " ")); },
+				d = function (s) {
+					const parm = s.replace(a, " ");
+					return raw ? parm : decodeURIComponent(parm);
+				},
 				q = query;
 
 			while (e = r.exec(q))
@@ -77,6 +79,43 @@ var commonUtils = function ($) {
 				if (predicate(el)) return el;
 				el = el.parentNode;
 				if (el instanceof HTMLBodyElement) return;
+			}
+		},
+		processFile: function (contenttype, disposition, data) {
+			var filename = "";
+			var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+			var matches = filenameRegex.exec(disposition);
+			if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
+			filename = decodeURIComponent(filename);
+
+			var blob = typeof File === 'function'
+				? new File([data], filename, { type: contenttype })
+				: new Blob([data], { type: contenttype });
+
+			if (typeof window.navigator.msSaveBlob !== 'undefined') {
+				// IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
+				window.navigator.msSaveBlob(blob, filename);
+			} else {
+				var URL = window.URL || window.webkitURL;
+				var downloadUrl = URL.createObjectURL(blob);
+
+				if (filename) {
+					// use HTML5 a[download] attribute to specify filename
+					var a = document.createElement("a");
+					// safari doesn't support this yet
+					if (typeof a.download === 'undefined') {
+						window.location = downloadUrl;
+					} else {
+						a.href = downloadUrl;
+						a.download = filename;
+						document.body.appendChild(a);
+						a.click();
+					}
+				} else {
+					window.location = downloadUrl;
+				}
+
+				setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
 			}
 		}
 	}
@@ -171,6 +210,11 @@ var domActions = function () {
 
 var ajaxUtils = function ($, cu) {
 	const DEF_EVENT_NAME = 'onload';
+	const META_HOME = '_home';
+	const META_CURRENT = '_current';
+	const META_PERSISTENT_ARGS = '_parms';
+	const FORMAT_PREFIX = '__format_';
+
 	var timer = null;
 
 	var state = {
@@ -181,13 +225,10 @@ var ajaxUtils = function ($, cu) {
 			requestedJs: []
 		},
 		loc: {
-			service: null,
-			action: null,
+			url: null,
 			parms: {}
 		},
-		ctrl: {
-
-		}
+		ctrl: {}
 	};
 
 	var instance = {
@@ -216,6 +257,7 @@ var ajaxUtils = function ($, cu) {
 		error: function (xhr, status, e) {
 			var text = '';
 			var title = 'System error';
+			var showinframe = false;
 
 			if (e && e.message) {
 				title = 'Javascript error';
@@ -226,10 +268,11 @@ var ajaxUtils = function ($, cu) {
 				text = this.url + '<br>' + xhr.status + ' ' + e;
 			}
 			else {
-				text = xhr.responseText;
+				var text = xhr.responseText;
+				showinframe = true;
 			}
 
-			showError(title, text);
+			showError(title, text, showinframe);
 		},
 		delay: function (caller, func) {
 			if (timer) {
@@ -260,9 +303,10 @@ var ajaxUtils = function ($, cu) {
 			if (el.hasAttribute('data-res') && instance.processResult(el) == false) return;
 			if (!target) target = {};
 			if (!target.data) target.data = {};
-			processElementDataOnEvent(el, target);
+			if (!target.query) target.query = {};
+			processElementDataOnEvent(el, target, 'GET');
 			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)
-				target.data[el.name] = el.value;
+				target.query[el.name] = el.value;
 			return instance.runEventWithApiResponse(target);
 		},
 		postEvent: function (target) {
@@ -304,6 +348,7 @@ var ajaxUtils = function ($, cu) {
 			const form = $(el).closest('form')[0];
 			if (!target) target = {};
 			if (!target.data) target.data = {};
+			if (!target.query) target.query = {};
 			if (form) {
 				target.data = $(form).serializeObject();
 				var els = form.elements;
@@ -312,17 +357,12 @@ var ajaxUtils = function ($, cu) {
 				}
 			}
 
-			processElementDataOnEvent(el, target);
+			processElementDataOnEvent(el, target, 'POST');
 			return instance.postEventWithApiResponse(target);
 		},
 		runHrefWithApiResponse: function (a, target) {
 			if (!target) target = {};
 			target.changeloc = true;
-			target.url = a.href || a.getAttribute('data-href');
-			if (a.pathname == '/') {
-				target.s = document.head.getAttribute('data-s-home') || 'home';
-				target.a = document.head.getAttribute('data-a-home') || 'index';
-			}
 			instance.runEventFromElementWithApiResponse(a, target);
 		},
 		loadScripts: function (apiResult) {
@@ -343,64 +383,46 @@ var ajaxUtils = function ($, cu) {
 		},
 		prepareTarget: function (target) {
 			var parms = {};
-			var hrefParms = {};
-
 			const isForm = target.data instanceof FormData;
 
+			var sep = target.url.indexOf('?');
+			const targetpath = sep >= 0 ? target.url.substring(0, sep) : target.url;
+			const targetquery = sep >= 0 ? target.url.substring(sep + 1) : '';
+			const targetqueryparms = cu.getParams(targetquery, true);
+			for (var key in target.query) {
+				targetqueryparms[key] = target.query[key]
+			}
+			target.url = targetpath + '?';
+			for (var key in targetqueryparms) {
+				if (targetqueryparms[key] && targetqueryparms[key] != '')
+					target.url += key + '=' + targetqueryparms[key] + '&';
+			}
+			target.url = target.url.slice(0, -1);
+
 			if (target.changeloc) {
-				state.loc.service = target.s;
-				state.loc.action = target.a;
+				state.loc.url = target.url;
 			}
 
 			if (!isForm) {
 				for (var key in target.data) {
 					parms[key] = target.data[key];
 				}
-
-				if (!target.changeloc && !target.isfirstload) {
-					parms.returnurl = encodeURIComponent(window.location.pathname + window.location.search);
-				}
 			}
 
-			if (window.location.search != '') {
-				const qparms = cu.getParams(window.location.search.substring(1));
-				for (var qparm in qparms) {
-					if (target.changeloc && !target.url) {
-						hrefParms[qparm] = qparms[qparm];
-						if (!(qparm in parms)) parms[qparm] = qparms[qparm];
-					}
-					if (!target.changeloc && !(qparm in parms))
-						parms[qparm] = qparms[qparm];
-				}
-			}
-
-			var p = document.head.getAttribute('data-p');
-			if (p) parms.p = p;
+			var page = document.head.getAttribute('data-page');
+			if (page) parms.p = page;
 			if (target.sender) parms.sender = target.sender;
 			if (target.r) parms.r = target.r;
-			if (!target.e) target.e = DEF_EVENT_NAME;
-			parms.e = target.e;
+			parms.e = target.e ? target.e : DEF_EVENT_NAME;
+			parms.sourceurl = window.location.pathname + window.location.search;
 
 			state.loc.parms = parms;
 
 			if (target.changeloc) {
-				if (target.url) {
+				const k = target.url.indexOf('?');
+				const path = k >= 0 ? target.url.substring(0, k) : target.url;
+				if (path != window.location.pathname) {
 					parms['c-new'] = 1;
-				}
-				else {
-					if (!isForm) {
-						for (var key in target.data) {
-							hrefParms[key] = target.data[key];
-						}
-					}
-					for (var key in hrefParms) {
-						if (!hrefParms[key]) delete hrefParms[key];
-					}
-					target.url = '//' + location.host + location.pathname + '?';
-					for (var key in hrefParms) {
-						target.url += key + '=' + encodeURIComponent(hrefParms[key]) + '&';
-					}
-					target.url = target.url.slice(0, -1);
 				}
 				window.history.pushState(state.loc, "", target.url);
 			}
@@ -413,7 +435,7 @@ var ajaxUtils = function ($, cu) {
 		},
 		prepareUrl: function (target) {
 			instance.prepareTarget(target);
-			return getApiUrl(target.s, target.a, target.parms, target.isfirstload);
+			return getApiUrl(target.url, target.parms, target.isfirstload);
 		},
 		stopRequest: function () {
 			requestCompleted();
@@ -442,8 +464,10 @@ var ajaxUtils = function ($, cu) {
 		state: state
 	};
 
-	function getApiUrl(service, action, parms, isfirstload) {
-		var url = '/api/' + service + '/' + action + '?';
+	function getApiUrl(path, parms, isfirstload) {
+		var url = path;
+		const k = url.indexOf('?');
+		if (k >= 0) url += '&'; else url += '?';
 
 		for (var key in parms) {
 			url += key + '=' + encodeURIComponent(parms[key]) + '&';
@@ -498,7 +522,7 @@ var ajaxUtils = function ($, cu) {
 			// check file download response
 			if (disposition && disposition.indexOf('attachment') !== -1) {
 				const contenttype = xhr.getResponseHeader('Content-Type');
-				processFile(contenttype, disposition, xhr.response);
+				cu.processFile(contenttype, disposition, xhr.response);
 				return $.Deferred().reject();
 			}
 			else
@@ -508,72 +532,38 @@ var ajaxUtils = function ($, cu) {
 			return $.Deferred().reject();
 	}
 
-	function processFile(contenttype, disposition, data) {
-		var filename = "";
-		var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-		var matches = filenameRegex.exec(disposition);
-		if (matches != null && matches[1]) filename = matches[1].replace(/['"]/g, '');
-		filename = decodeURIComponent(filename);
-
-		var blob = typeof File === 'function'
-			? new File([data], filename, { type: contenttype })
-			: new Blob([data], { type: contenttype });
-
-		if (typeof window.navigator.msSaveBlob !== 'undefined') {
-			// IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
-			window.navigator.msSaveBlob(blob, filename);
-		} else {
-			var URL = window.URL || window.webkitURL;
-			var downloadUrl = URL.createObjectURL(blob);
-
-			if (filename) {
-				// use HTML5 a[download] attribute to specify filename
-				var a = document.createElement("a");
-				// safari doesn't support this yet
-				if (typeof a.download === 'undefined') {
-					window.location = downloadUrl;
-				} else {
-					a.href = downloadUrl;
-					a.download = filename;
-					document.body.appendChild(a);
-					a.click();
-				}
-			} else {
-				window.location = downloadUrl;
-			}
-
-			setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
-		}
-	}
-
-	function processElementDataOnEvent(el, target) {
+	function processElementDataOnEvent(el, target, method) {
 		if (el.id) target.sender = el.id;
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
 			attr = attrs[i];
 			var val = attr.value == '' ? null : attr.value;
 			if (attr.name.startsWith('data-p-')) {
-				target.data[attr.name.replace('data-p-', '')] = val;
-			} else if (attr.name == 'data-s') {
-				target.s = val;
-			} else if (attr.name == 'data-a') {
-				target.a = val;
+				target.query[attr.name.replace('data-p-', '')] = val;
+			} else if (attr.name == 'href') {
+				target.url = val;
+			} else if (attr.name == 'data-href') {
+				target.url = val;
 			} else if (attr.name == 'data-e') {
 				target.e = val;
 			} else if (attr.name == 'data-r') {
 				target.r = val;
 			} else if (attr.name.startsWith('data-format')) {
-				target.data['__format_' + el.name] = val;
+				target.data[FORMAT_PREFIX + el.name] = val;
 			} else if (attr.name.startsWith('data-c-')) {
 				target.data[attr.name.replace('data-c-', 'c-')] = val;
 			} else if (attr.name == 'data-ref') {
 				var refEl = document.getElementById(val);
-				if (refEl && refEl.name !== undefined && refEl.value !== undefined) target.data[refEl.name] = refEl.value;
+				if (refEl && refEl.name !== undefined && refEl.value !== undefined)
+					if (method == 'POST')
+						target.data[refEl.name] = refEl.value;
+					else
+						target.query[refEl.name] = refEl.value;
 			} else if (attr.name == 'data-responsetype') {
 				target.responsetype = val;
 			}
 		}
 
-		if (!target.s) {
+		if (!target.url) {
 			findServiceAction(el, target);
 		}
 	}
@@ -581,18 +571,18 @@ var ajaxUtils = function ($, cu) {
 	function findServiceAction(el, target) {
 		var root = el;
 		if (root != document.head) {
-			root = cu.getParent(el, function (n) { return n.hasAttribute('data-s'); });
-			if (!root) root = document.head;
+			root = cu.getParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-href'); });
+			if (!root) root = document.getElementById(META_CURRENT);
 		}
-		target.s = root.getAttribute('data-s') || root.getAttribute('data-s-home') || 'home';
-		target.a = root.getAttribute('data-a') || root.getAttribute('data-a-home') || 'index';
+		const home = document.getElementById(META_HOME);
+		target.url = root.getAttribute('data-href') || home.getAttribute('data-href') || '/';
 	}
 
 	function processElementDataOnFormSubmit(el, setvalfunc) {
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
 			attr = attrs[i];
 			if (attr.name.startsWith('data-format')) {
-				setvalfunc('__format_' + el.name, attr.value);
+				setvalfunc(FORMAT_PREFIX + el.name, attr.value);
 			}
 		}
 	}
@@ -638,9 +628,11 @@ var ajaxUtils = function ($, cu) {
 				el.appendChild(obj.content.childNodes[0]);
 		};
 		const adjacentFunc = function (el, obj) {
-			while (obj.content.childNodes.length > 0)
-				el.insertAdjacentElement(obj.position, obj.content.childNodes[0]);
-			if (obj.position.toLowerCase() == 'afterend') {
+			while (obj.content.childNodes.length > 0) {
+				const i = obj.position == 'beforeEnd' || obj.position == 'beforeBegin' ? 0 : obj.content.childNodes.length - 1;
+				el.insertAdjacentElement(obj.position, obj.content.childNodes[i]);
+			}
+			if (obj.position == 'afterEnd') {
 				cu.scrollToView(el.nextSibling);
 			}
 		};
@@ -731,8 +723,8 @@ var ajaxUtils = function ($, cu) {
 			for (var i = 0; i < ctrls.length; i++) {
 				const root = ctrls[i];
 				const t = root.getAttribute('data-ctrl');
-				const ctrlstate = state.ctrl[root.id] ? state.ctrl[root.id] : { };	
-				
+				const ctrlstate = state.ctrl[root.id] ? state.ctrl[root.id] : {};
+
 				if (!state.ctrl[root.id] || !ctrlstate.type) {
 					ctrlstate.type = t;
 					ctrlstate.root = root.id;
@@ -773,14 +765,13 @@ var ajaxUtils = function ($, cu) {
 		}
 
 		if (apiResult.redirect) {
-			state.loc.service = apiResult.redirect.service;
-			state.loc.action = apiResult.redirect.action;
+			state.loc.url = apiResult.redirect.url;
 			state.loc.parms = apiResult.redirect.parms;
 			window.history.pushState(state.loc, "", apiResult.redirect.url);
 		}
 
-		document.head.setAttribute('data-s', state.loc.service);
-		document.head.setAttribute('data-a', state.loc.action);
+		const current = document.getElementById(META_CURRENT);
+		current.setAttribute('data-href', state.loc.url);
 
 		if (window.homePage) homePage.countNavBodyHeight();
 		console.log("renderApiResult complete");
@@ -804,7 +795,7 @@ var ajaxUtils = function ($, cu) {
 		}
 	}
 
-	function showError(title, text) {
+	function showError(title, text, showinframe) {
 		if (window.dialog) {
 			const placeholder = 'container_err';
 			const errd = document.getElementById(placeholder);
@@ -815,36 +806,24 @@ var ajaxUtils = function ($, cu) {
 				state.ctrl[placeholder].root = placeholder;
 			}
 			errt.innerHTML = title;
-			errb.innerHTML = text;
+			if (showinframe) {
+				var frame = document.getElementById(placeholder + '_frame');
+				if (!frame) {
+					frame = document.createElement('iframe');
+					frame.id = placeholder + '_frame';
+					errt.insertAdjacentElement('afterEnd', frame);
+				}
+				frame.contentWindow.contents = text;
+				frame.src = 'javascript:window["contents"]';
+			}
+			else
+				errb.innerHTML = text;
 
 			dialog.widgetWillMount(document, state.ctrl[placeholder]);
 		}
 		else
 			document.body.innerHTML = title + '<br/>' + text;
 	}
-
-	//function onAddNode(node) {
-	//	const t = node.getAttribute('data-init');
-	//	if (t) {
-	//		var ctrlstate = { type: t, root: node };
-	//		state.ctrl[node.id] = ctrlstate;
-
-	//		const els = node.querySelectorAll('[data-hasclientstate]');
-	//		for (var i = 0; i < els.length; i++) {
-	//			if (els[i].id == node.id + '_' + els[i].name)
-	//				ctrlstate[els[i].name] = JSON.parse(els[i].value);
-	//		}
-
-	//		window[t]['init'](node, ctrlstate);
-	//		console.log('mut: ' + node.id + ' init ' + t);
-	//	}
-
-	//	if (state.ctrl[node.id]) {
-	//		const t = state.ctrl[node.id].type;
-	//		window[t]['setstate'](node, ctrlstate);
-	//		console.log('mut: ' + node.id + ' setstate ' + t);
-	//	}
-	//}
 
 	document.addEventListener('DOMContentLoaded', function () {
 		state.com.message = $("#topmessagecontainer");
@@ -864,7 +843,7 @@ var ajaxUtils = function ($, cu) {
 			}
 
 			state.loc = s;
-			$.get(getApiUrl(s.service, s.action, s.parms))
+			$.get(getApiUrl(s.url, s.parms))
 				.fail(instance.error)
 				.then(onRequestResult).then(instance.loadScripts).then(processApiResponse);
 		});
@@ -889,15 +868,14 @@ var ajaxUtils = function ($, cu) {
 	//});
 	//dom_observer.observe(document, { childList: true, subtree: true });
 
-	state.loc.service = document.head.getAttribute('data-s') || document.head.getAttribute('data-s-home') || 'home';
-	state.loc.action = document.head.getAttribute('data-a') || document.head.getAttribute('data-a-home') || 'index';
-	instance.runEventFromElementWithApiResponse(document.head, { isfirstload: true });
+	const current = document.getElementById(META_CURRENT);
+	state.loc.url = document.location.pathname + document.location.search;
+	instance.runEventFromElementWithApiResponse(current, { url: state.loc.url, isfirstload: true });
 
-	history.replaceState(state.loc, document.title, document.location.href);
+	history.replaceState(state.loc, document.title, state.loc.url);
 
 	return instance;
 }($, commonUtils);
-
 
 var ObservableArray = (function () {
 	function ObservableArray(collection) {

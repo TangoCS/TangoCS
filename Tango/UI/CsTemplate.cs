@@ -125,7 +125,8 @@ namespace Tango.UI
 			c.ID = id;
 			c.ParentElement = this;
 
-			Context.EventReceivers.Add(c.ClientID, c);
+			if (!Context.EventReceivers.ContainsKey(c.ClientID))
+				Context.EventReceivers.Add(c.ClientID, c);
 
 			setProperties?.Invoke(c);
 			c.OnInit();
