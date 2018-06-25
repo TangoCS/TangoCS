@@ -6,7 +6,7 @@
 				displayAround: args.displaysaround,
 				position: args.position,
 				onOpen: function (data, event) {
-					if (data.menu[0].getAttribute('data-s') || data.menu[0].getAttribute('data-e'))
+					if (data.menu[0].getAttribute('data-href') || data.menu[0].getAttribute('data-e'))
 						return ajaxUtils.runEventFromElementWithApiResponse(data.menu[0]);
 
 					return $.when();

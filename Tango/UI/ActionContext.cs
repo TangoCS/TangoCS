@@ -160,7 +160,7 @@ namespace Tango.UI
 					ctx.AllArgs.Add(p.Key, p.Value);
 				}
 			}
-		
+
 			ctx.Sender = null;
 			ctx.ContainerType = null;
 			ctx.ContainerPrefix = null;

@@ -32,10 +32,6 @@
 			}
 		}
 
-		if ((selector instanceof Array) && (method != 'update')) {
-			method = 'menu';
-		}
-
 		var myoptions = option;
 		if (method != 'update') {
 			option = iMethods.optionOtimizer(method, option);
@@ -50,7 +46,6 @@
 
 	$.fn.contextMenu.defaults = {
 		triggerOn: 'click', //avaliable options are all event related mouse plus enter option
-		subMenuTriggerOn: 'hover click',
 		displayAround: 'cursor', // cursor or trigger
 		mouseClick: 'left',
 		verAdjust: 0,
@@ -62,6 +57,7 @@
 		winEventClose: true,
 		position: 'auto', //allowed values are top, left, bottom and right
 		closeOnClick: true, //close context menu on click/ trigger of any item in menu
+		delayedTrigger: false,
 
 		//callback
 		beforeOpen: function (data, event) { return 0; },
@@ -73,7 +69,6 @@
 	var methods = {
 		menu: function (selector, option) {
 			var trigger = $(this);
-			selector = iMethods.createMenuList(trigger, selector, option);
 			iMethods.contextMenuBind.call(this, selector, option, 'menu');
 		},
 		popup: function (selector, option) {
@@ -92,56 +87,6 @@
 					self.contextMenu('refresh');
 					menuData = trgr.data('iw-menuData');
 				}
-
-				var menu = menuData.menu;
-				if (typeof selector === 'object') {
-
-					for (var i = 0; i < selector.length; i++) {
-						var name = selector[i].name,
-                            disable = selector[i].disable,
-                            fun = selector[i].fun,
-                            img = selector[i].img,
-                            title = selector[i].title,
-                            className = selector[i].className,
-                            elm = menu.children('li').filter(function () {
-                            	return $(this).contents().filter(function () {
-                            		return this.nodeType == 3;
-                            	}).text() == name;
-                            }),
-                            subMenu = selector[i].subMenu;
-
-						//toggle disable if provided on update method
-						disable != undefined && (disable ? elm.addClass('iw-mDisable') : elm.removeClass('iw-mDisable'));
-
-						//bind new function if provided
-						fun && elm.unbind('click.contextMenu').bind('click.contextMenu', fun);
-
-						//update title
-						title != undefined && elm.attr('title', title);
-
-						//update class name
-						className != undefined && elm.attr('class', className);
-
-						//update image
-						if (img) {
-							var imgIcon = elm.find('.iw-mIcon');
-							if (imgIcon.length) {
-								imgIcon[0].src = img;
-							} else {
-								elm.prepend('<img src="' + img + '" align="absmiddle" class="iw-mIcon" />');
-							}
-						}
-
-						//to change submenus
-						if (subMenu) {
-							elm.contextMenu('update', subMenu);
-						}
-					}
-
-				}
-
-				iMethods.onOff(menu);
-
 				//bind event again if trigger option has changed.
 				var triggerOn = option.triggerOn;
 				if (triggerOn) {
@@ -190,16 +135,6 @@
 				iMethods.closeContextMenu(menuData.option, this, menuData.menu, null);
 			}
 		},
-		//to get value of a key
-		value: function (key) {
-			var menuData = this.data('iw-menuData');
-			if (menuData[key]) {
-				return menuData[key];
-			} else if (menuData.option) {
-				return menuData.option[key];
-			}
-			return null;
-		},
 		destroy: function () {
 			this.each(function () {
 				var trgr = $(this),
@@ -210,7 +145,6 @@
 				//Handle the situation of dynamically added element.
 				if (!menuData) return;
 
-
 				if (menuData.noTrigger == 1) {
 					if (menu.hasClass('iw-created')) {
 						menu.remove();
@@ -218,7 +152,7 @@
 						menu.removeClass('iw-contextMenu ' + menuId)
                             .removeAttr('menuId').removeData('iw-menuData');
 						//to destroy submenus
-						menu.find('li.iw-mTrigger').contextMenu('destroy');
+						//menu.find('li.iw-mTrigger').contextMenu('destroy');
 					}
 				} else {
 					menuData.noTrigger--;
@@ -228,6 +162,7 @@
 			});
 		}
 	};
+	var timer = null;
 	var iMethods = {
 		contextMenuBind: function (selector, option, method) {
 			var trigger = this,
@@ -242,12 +177,8 @@
 				}
 			}
 
-			if (method == 'menu') {
-				iMethods.menuHover(menu);
-			}
 			//get base trigger
 			var baseTrigger = option.baseTrigger;
-
 
 			if (!menuData) {
 				var menuId;
@@ -294,7 +225,6 @@
 						}
 					});
 				}
-
 			}
 
 			trigger.delegate('input,a,.needs-click', 'click', function (e) {
@@ -316,9 +246,10 @@
 				e.stopPropagation();
 			});
 
-			menu.delegate('li', 'click', function (e) {
-				if (option.closeOnClick && !$.single(this).hasClass('iw-has-submenu')) iMethods.closeContextMenu(option, trigger, menu, e);
+			menu.bind('click', function (e) {
+				iMethods.closeContextMenu(option, trigger, menu, e);
 			});
+
 		},
 		eventHandler: function (e) {
 			e.preventDefault();
@@ -336,9 +267,8 @@
                 cntWin = cntnmnt == window,
                 btChck = option.baseTrigger.index(trigger) == -1;
 
-
-
 			var res = option.beforeOpen.call(this, clbckData, e);
+
 			if (res == 0) {
 				//to close previous open menu.
 				if (!btChck && option.closeOther) {
@@ -362,8 +292,7 @@
 			else
 				return;
 
-			//call open callback
-			option.onOpen.call(this, clbckData, e).done(function () {
+			var openMenu = function () {
 				var cObj = $(cntnmnt),
 					cHeight = cObj.innerHeight(),
 					cWidth = cObj.innerWidth(),
@@ -493,7 +422,19 @@
 				if (option.winEventClose) {
 					$(window).bind('scroll resize', dataParm, iMethods.scrollEvent);
 				}
-			});
+			};
+
+			//call open callback
+			if (option.delayedTrigger) {
+				if (timer) {
+					window.clearTimeout(timer);
+					timer = null;
+				}
+				timer = window.setTimeout(function () { option.onOpen.call(this, clbckData, e).done(openMenu); }, 300);
+			}
+			else {
+				option.onOpen.call(this, clbckData, e).done(openMenu);
+			}
 		},
 
 		scrollEvent: function (e) {
@@ -507,90 +448,10 @@
 				iMethods.closeContextMenu(e.data.option, e.data.trigger, e.data.menu, e);
 			}
 		},
-		keyEvent: function (e) {
-			e.preventDefault();
-			var menu = e.data.menu,
-                option = e.data.option,
-                keyCode = e.keyCode;
-			// handle cursor keys
-			if (keyCode == 27) {
-				iMethods.closeContextMenu(option, e.data.trigger, menu, e);
-			}
-			if (e.data.method == 'menu') {
-				var curMenu = $('.iw-curMenu'),
-                    optList = curMenu.children('li:not(.iw-mDisable)'),
-                    selected = optList.filter('.iw-mSelected'),
-                    index = optList.index(selected),
-                    focusOn = function (elm) {
-                    	iMethods.selectMenu(curMenu, elm);
-                    	var menuData = elm.data('iw-menuData');
-                    	if (menuData) {
-                    		iMethods.eventHandler.call(elm[0], e);
-
-                    	}
-                    },
-                    first = function () {
-                    	focusOn(optList.filter(':first'));
-                    },
-                    last = function () {
-                    	focusOn(optList.filter(':last'));
-                    },
-                    next = function () {
-                    	focusOn(optList.filter(':eq(' + (index + 1) + ')'));
-                    },
-                    prev = function () {
-                    	focusOn(optList.filter(':eq(' + (index - 1) + ')'));
-                    },
-                    subMenu = function () {
-                    	var menuData = selected.data('iw-menuData');
-                    	if (menuData) {
-                    		iMethods.eventHandler.call(selected[0], e);
-                    		var selector = menuData.menu;
-                    		selector.addClass('iw-curMenu');
-                    		curMenu.removeClass('iw-curMenu');
-                    		curMenu = selector;
-                    		optList = curMenu.children('li:not(.iw-mDisable)');
-                    		selected = optList.filter('.iw-mSelected');
-                    		first();
-                    	}
-                    },
-                    parMenu = function () {
-                    	var selector = curMenu.data('iw-menuData').trigger;
-                    	var parMenu = selector.closest('.iw-contextMenu');
-                    	if (parMenu.length != 0) {
-                    		curMenu.removeClass('iw-curMenu').removeClass('iw-display');
-                    		parMenu.addClass('iw-curMenu');
-                    	}
-                    };
-				switch (keyCode) {
-					case 13:
-						selected.click();
-						break;
-					case 40:
-						(index == optList.length - 1 || selected.length == 0) ? first() : next();
-						break;
-					case 38:
-						(index == 0 || selected.length == 0) ? last() : prev();
-						break;
-					case 33:
-						first();
-						break;
-					case 34:
-						last();
-						break;
-					case 37:
-						parMenu();
-						break;
-					case 39:
-						subMenu();
-						break;
-				}
-			}
-		},
 		closeContextMenu: function (option, trigger, menu, e) {
 
 			//unbind all events from top DOM
-			$(document).unbind('keydown', iMethods.keyEvent);
+			//$(document).unbind('keydown', iMethods.keyEvent);
 			$('html').unbind('click', iMethods.clickEvent);
 			$(window).unbind('scroll resize', iMethods.scrollEvent);
 			$('.iw-contextMenu').removeClass('iw-display');
@@ -613,117 +474,6 @@
 			} else {
 				return parseInt(size);
 			}
-		},
-		selectMenu: function (menu, elm) {
-			//to select the list
-			var selected = menu.find('li.iw-mSelected'),
-                submenu = selected.find('.iw-contextMenu');
-			if ((submenu.length != 0) && (selected[0] != elm[0])) {
-				submenu.fadeOut(100);
-			}
-			selected.removeClass('iw-mSelected');
-			elm.addClass('iw-mSelected');
-		},
-		menuHover: function (menu) {
-			var lastEventTime = Date.now();
-			menu.children('li').bind('mouseenter.contextMenu click.contextMenu', function (e) {
-				//to make curmenu
-				$('.iw-curMenu').removeClass('iw-curMenu');
-				menu.addClass('iw-curMenu');
-				iMethods.selectMenu(menu, $(this));
-			});
-		},
-		createMenuList: function (trgr, selector, option) {
-			var baseTrigger = option.baseTrigger,
-                randomNum = Math.floor(Math.random() * 10000);
-			if ((typeof selector == 'object') && (!selector.nodeType) && (!selector.jquery)) {
-				var menuList = $('<ul class="iw-contextMenu iw-created iw-cm-menu" id="iw-contextMenu' + randomNum + '"></ul>');
-				$.each(selector, function (index, selObj) {
-					var name = selObj.name,
-                        fun = selObj.fun || function () { },
-                        subMenu = selObj.subMenu,
-                        img = selObj.img || '',
-                        title = selObj.title || "",
-                        className = selObj.className || "",
-                        disable = selObj.disable,
-                        list = $('<li title="' + title + '" class="' + className + '">' + name + '</li>');
-
-					if (img) {
-						list.prepend('<img src="' + img + '" align="absmiddle" class="iw-mIcon" />');
-					}
-
-					//to add disable
-					if (disable) {
-						list.addClass('iw-mDisable');
-					}
-
-					if (!subMenu) {
-						list.bind('click.contextMenu', function (e) {
-							fun.call(this, {
-								trigger: baseTrigger,
-								menu: menuList
-							}, e);
-						});
-					}
-
-					//to create sub menu
-					menuList.append(list);
-					if (subMenu) {
-						list.addClass('iw-has-submenu').append('<div class="iw-cm-arrow-right" />');
-						iMethods.subMenu(list, subMenu, baseTrigger, option);
-					}
-				});
-
-				if (baseTrigger.index(trgr[0]) == -1) {
-					trgr.append(menuList);
-				} else {
-					var par = option.containment == window ? 'body' : option.containment;
-					$(par).append(menuList);
-				}
-
-				iMethods.onOff($('#iw-contextMenu' + randomNum));
-				return '#iw-contextMenu' + randomNum;
-			} else if ($(selector).length != 0) {
-				var element = $(selector);
-				element.removeClass('iw-contextMenuCurrent')
-                    .addClass('iw-contextMenu iw-cm-menu iw-contextMenu' + randomNum)
-                    .attr('menuId', 'iw-contextMenu' + randomNum)
-                    .removeClass('iw-display');
-
-				//to create subMenu
-				element.find('ul').each(function (index, element) {
-					var subMenu = $(this),
-                        parent = subMenu.parent('li');
-					parent.append('<div class="iw-cm-arrow-right" />');
-					subMenu.addClass('iw-contextMenuCurrent');
-					iMethods.subMenu(parent, '.iw-contextMenuCurrent', baseTrigger, option);
-				});
-				iMethods.onOff($('.iw-contextMenu' + randomNum));
-				return '.iw-contextMenu' + randomNum;
-			}
-		},
-		subMenu: function (trigger, selector, baseTrigger, option) {
-			trigger.contextMenu('menu', selector, {
-				triggerOn: option.subMenuTriggerOn,
-				displayAround: 'trigger',
-				position: 'auto',
-				mouseClick: 'left',
-				baseTrigger: baseTrigger,
-				containment: option.containment
-			});
-		},
-		onOff: function (menu) {
-
-			menu.find('.iw-mOverlay').remove();
-			menu.find('.iw-mDisable').each(function () {
-				var list = $(this);
-				list.append('<div class="iw-mOverlay"/>');
-				list.find('.iw-mOverlay').bind('click mouseenter', function (event) {
-					event.stopPropagation();
-				});
-
-			});
-
 		},
 		optionOtimizer: function (method, option) {
 			if (!option) {

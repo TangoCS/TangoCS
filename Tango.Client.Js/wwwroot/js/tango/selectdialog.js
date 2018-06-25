@@ -31,11 +31,6 @@
 		onResult: function (res, state) {
 			if (res == 0)
 				state.selectedvalue = '';
-			else if (res == 1) {
-				const root = document.getElementById(state.root);
-				au.postEventFromElementWithApiResponse(root, { e: 'submitdialog', r: root.id });
-				return false;
-			}
 		},
 		pagingEvent: function (caller, id) {
 			au.runEventFromElementWithApiResponse(caller, { e: 'renderlist', r: id }).done(function () {
@@ -87,11 +82,6 @@ var selectMultipleObjectsDialog = function (au, cu) {
 		onResult: function (res, state) {
 			if (res == 0)
 				state.selectedvalues.length = 0;
-			else if (res == 1) {
-				const root = document.getElementById(state.root);
-				au.postEventFromElementWithApiResponse(root, { e: 'submitdialog', r: root.id });
-				return false;
-			}
 		},
 		pagingEvent: function (caller, id) {
 			au.postEventFromElementWithApiResponse(caller, { e: 'renderlist', r: id }).done(function () {

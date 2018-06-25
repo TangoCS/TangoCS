@@ -70,6 +70,7 @@
     <Compile Include="Data\DapperRepository.cs" />
     <Compile Include="Data\IRepository.cs" />
     <Compile Include="Data\QueryTranslator.cs" />
+    <Compile Include="DelegateClassPropertyAccess.cs" />
     <Compile Include="FileStorage\FileController.cs" />
     <Compile Include="FileStorage\IStorageManager.cs" />
     <Compile Include="FileStorage\Std\LocalDiskFolder.cs" />

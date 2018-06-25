@@ -123,9 +123,8 @@ namespace Tango.UI
 
 		void RunRedirect(ActionContext retctx)
 		{
-			var cache = retctx.RequestServices.GetService(typeof(ITypeActivatorCache)) as ITypeActivatorCache;
+			var cache = retctx.GetService<ITypeActivatorCache>();
 			(var type, var invoker) = cache?.Get(retctx.Service + "." + retctx.Action) ?? (null, null);
-
 			var result = invoker?.Invoke(retctx, type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
 
 			if (result is ApiResult ajax)
@@ -279,12 +278,17 @@ namespace Tango.UI
 			return JsonConvert.SerializeObject(Data, Json.StdSettings);
 		}
 
-		static LayoutWriter RenderContent(ActionContext context, string prefix, Action<LayoutWriter> content)
+		public void Success(bool value)
 		{
-			var w = new LayoutWriter(context, prefix);
-			content?.Invoke(w);
-			return w;
+			Data.Add("success", value);
 		}
+
+		//static LayoutWriter RenderContent(ActionContext context, string prefix, Action<LayoutWriter> content)
+		//{
+		//	var w = new LayoutWriter(context, prefix);
+		//	content?.Invoke(w);
+		//	return w;
+		//}
 	}
 
 	public enum AdjacentHTMLPosition

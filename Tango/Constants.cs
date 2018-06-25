@@ -19,12 +19,12 @@
 		public static string ContainerType = "c-type";
 		public static string ContainerNew = "c-new";
 
-		//public static string PersistentArgsFormPrefix = "__pa_";
 		public static string IEFormFix = "__dontcare";
 
 		public static string MetaHome = "_home";
 		public static string MetaCurrent = "_current";
-		//public static string MetaPersistentArgs = "_parms";
+
+		public static string SelectedValues = "selectedvalues";
 
 	}
 }

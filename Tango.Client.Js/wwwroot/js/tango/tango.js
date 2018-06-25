@@ -251,7 +251,14 @@ var ajaxUtils = function ($, cu) {
 			}
 			var target = { e: 'onsubmit', data: fd };
 			findServiceAction(form, target);
-			instance.postEventWithApiResponse(target);
+
+			const r = instance.postEventWithApiResponse(target);
+			if (form.hasAttribute('data-res-postponed'))
+				r.then(function (apiResult) {
+					if (apiResult.success != false)
+						instance.processResult(form);
+				});
+
 			return false;
 		},
 		error: function (xhr, status, e) {
@@ -272,6 +279,7 @@ var ajaxUtils = function ($, cu) {
 				showinframe = true;
 			}
 
+			requestCompleted();
 			showError(title, text, showinframe);
 		},
 		delay: function (caller, func) {
@@ -358,7 +366,14 @@ var ajaxUtils = function ($, cu) {
 			}
 
 			processElementDataOnEvent(el, target, 'POST');
-			return instance.postEventWithApiResponse(target);
+			const r = instance.postEventWithApiResponse(target);
+			if (el.hasAttribute('data-res-postponed'))
+				return r.then(function (apiResult) {
+					if (apiResult.success != false)
+						instance.processResult(el);
+				});
+			else
+				return r;
 		},
 		runHrefWithApiResponse: function (a, target) {
 			if (!target) target = {};
@@ -441,7 +456,7 @@ var ajaxUtils = function ($, cu) {
 			requestCompleted();
 		},
 		processResult: function (el) {
-			const result = el.getAttribute('data-res');
+			const result = el.getAttribute('data-res') || el.getAttribute('data-res-postponed');
 			const handler = commonUtils.getParent(el, function (parent) { return parent.hasAttribute('data-res-handler'); });
 
 			if (!handler) return;
@@ -453,13 +468,13 @@ var ajaxUtils = function ($, cu) {
 				}
 			};
 
-			if (callOnResult(handler) == false) return false;
-
 			const children = handler.querySelectorAll('[data-ctrl]');
 
 			for (var i = 0; i < children.length; i++) {
 				if (callOnResult(children[i]) == false) return false;
 			}
+
+			if (callOnResult(handler) == false) return false;
 		},
 		state: state
 	};
@@ -601,6 +616,7 @@ var ajaxUtils = function ($, cu) {
 		if (document.readyState == 'complete' || document.readyState == 'interactive')
 			renderApiResult();
 
+		return $.Deferred().resolve(apiResult);
 	}
 
 	function renderApiResult() {

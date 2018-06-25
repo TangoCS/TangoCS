@@ -59,7 +59,7 @@ namespace Tango.UI
 	}
 
 	public abstract class AjaxResult<T> : HttpResult
-		where T: IJsonResponse, new()
+		where T : IJsonResponse, new()
 	{
 		public T ApiResponse { get; private set; }
 		public AjaxResult()
@@ -69,13 +69,26 @@ namespace Tango.UI
 			ContentType = "application/json";
 			ContentFunc = ctx => Encoding.UTF8.GetBytes(ApiResponse.Serialize(ctx));
 		}
+		public AjaxResult(Action<T> responseAction) : this()
+		{
+			responseAction(ApiResponse);
+		}
 	}
 
-	public class ApiResult : AjaxResult<ApiResponse> { }
+	public class ApiResult : AjaxResult<ApiResponse> {
+		public ApiResult() { }
+		public ApiResult(Action<ApiResponse> responseAction) : base(responseAction) { }
+	}
 
-	public class ArrayResult : AjaxResult<ArrayResponse> { }
+	public class ArrayResult : AjaxResult<ArrayResponse> {
+		public ArrayResult() { }
+		public ArrayResult(Action<ArrayResponse> responseAction) : base(responseAction) { }
+	}
 
-	public class ObjectResult : AjaxResult<ObjectResponse> { }
+	public class ObjectResult : AjaxResult<ObjectResponse> {
+		public ObjectResult() { }
+		public ObjectResult(Action<ObjectResponse> responseAction) : base(responseAction) { }
+	}
 
 	public class RedirectResult : HttpResult
 	{
