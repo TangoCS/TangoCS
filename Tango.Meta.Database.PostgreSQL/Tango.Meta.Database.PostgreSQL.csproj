@@ -55,10 +55,6 @@
       <Project>{08917986-6340-4d26-bb53-b1b69fd3c810}</Project>
       <Name>Tango.Abstractions</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Tango\Tango.csproj">
-      <Project>{2d823e9b-401e-4a8e-a7ed-8658a711be06}</Project>
-      <Name>Tango</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="nuget.nuspec" />

@@ -98,7 +98,7 @@ namespace System.Data.Linq.SqlClient {
                 }
             } else if (oldClrType == typeof(char) && (oldSqlType.IsChar || oldSqlType.IsString) && newSqlType.IsNumeric) {
                 // char --> int 
-                return sql.FunctionCall(newClrType, sql.TypeProvider.From(typeof(int)), "UNICODE", new SqlExpression[] { uo.Operand }, uo.SourceExpression);
+                return sql.FunctionCall(newClrType, sql.TypeProvider.From(typeof(int)), sql.Dialect.CharToInt, new SqlExpression[] { uo.Operand }, uo.SourceExpression);
             } else if (newClrType == typeof(string)) {
                 if (oldClrType == typeof(double)) {
                     // use longer format if it was a double in the CLR expression

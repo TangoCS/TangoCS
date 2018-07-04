@@ -23,7 +23,7 @@ namespace Tango.UI
 
 	public interface IContainerItem
 	{
-		ViewContainer GetDefaultContainer();
+		ViewContainer GetContainer();
 	}
 
 	public interface IWithCheckAccess

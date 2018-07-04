@@ -50,17 +50,32 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Cache\ICache.cs" />
+    <Compile Include="CodifierValue.cs" />
+    <Compile Include="CollectionsExtensions.cs" />
     <Compile Include="IFMLInterfaces.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Logger\IErrorLogger.cs" />
     <Compile Include="Logger\IRequestLogger.cs" />
     <Compile Include="Logger\IRequestLoggerProvider.cs" />
     <Compile Include="Mailer\IMailer.cs" />
+    <Compile Include="Meta.Database\IDatabaseMetadataReader.cs" />
+    <Compile Include="Meta.Database\IDBScript.cs" />
+    <Compile Include="Meta.Database\MetaDatabaseModel.cs" />
+    <Compile Include="Meta.Database\PrimitiveTypesExtensions.cs" />
+    <Compile Include="Meta.Database\SchemaGenerator.cs" />
+    <Compile Include="Meta.Database\SchemaSync.cs" />
+    <Compile Include="Meta.Stereotypes\SVersioning.cs" />
     <Compile Include="MetaDatabaseInterfaces.cs" />
     <Compile Include="MetaInterfaces.cs" />
     <Compile Include="LocalizationInterfaces.cs" />
     <Compile Include="EntityInterfaces.cs" />
+    <Compile Include="Meta\Core.cs" />
+    <Compile Include="Meta\CoreFluent.cs" />
+    <Compile Include="Meta\LocalizationExtensions.cs" />
+    <Compile Include="Meta\MetaLoad.cs" />
+    <Compile Include="Meta\PrimitiveTypes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimpleTypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="nuget.nuspec" />

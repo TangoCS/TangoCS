@@ -10,8 +10,8 @@ namespace System.Data.Linq.SqlClient {
     /// Hoist WHERE clauses as close to the root as possible.
     /// </summary>
     class SqlLiftWhereClauses {
-        internal static SqlNode Lift(SqlNode node, TypeSystemProvider typeProvider, MetaModel model) {
-            return new Lifter(typeProvider, model).Visit(node);
+        internal static SqlNode Lift(SqlNode node, SqlFactory factory) {
+            return new Lifter(factory).Visit(node);
         }
 
         class Lifter : SqlVisitor {
@@ -29,8 +29,8 @@ namespace System.Data.Linq.SqlClient {
             SqlAggregateChecker aggregateChecker;
             SqlRowNumberChecker rowNumberChecker;
 
-            internal Lifter(TypeSystemProvider typeProvider, MetaModel model) {
-                this.sql = new SqlFactory(typeProvider, model);
+            internal Lifter(SqlFactory factory) {
+                this.sql = factory;
                 this.aggregateChecker = new SqlAggregateChecker();
                 this.rowNumberChecker = new SqlRowNumberChecker();
             }

@@ -18,6 +18,10 @@ namespace Solution
 				}
 				return context;
 			}
+			set
+			{
+				context = value;
+			}
 		}
 	}
 

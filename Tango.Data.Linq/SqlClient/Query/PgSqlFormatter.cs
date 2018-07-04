@@ -185,6 +185,158 @@ namespace System.Data.Linq.SqlClient
 				else
 					sb.Append("@" + s);
 			}
+
+			internal override string GetBoolValue(bool value)
+			{
+				return value ? "true" : "false";
+			}
+
+			//internal override SqlExpression VisitVariable(SqlVariable v)
+			//{
+			//	sb.Append("'" + v.Name + "'");
+			//	return v;
+			//}
+
+			internal override SqlBlock VisitBlock(SqlBlock block)
+			{
+				for (int i = 0, n = block.Statements.Count; i < n; i++)
+				{
+					this.Visit(block.Statements[i]);
+					sb.Append(";");
+					if (i < n - 1)
+					{
+						SqlSelect select = block.Statements[i + 1] as SqlSelect;
+						if (select == null || !select.DoNotOutput)
+						{
+							this.NewLine();
+							this.NewLine();
+						}
+					}
+				}
+				return block;
+			}
+
+			internal override SqlExpression VisitUnaryOperator(SqlUnary uo)
+			{
+				switch (uo.NodeType)
+				{
+					case SqlNodeType.Not:
+					case SqlNodeType.Not2V:
+						this.sb.Append(GetOperator(uo.NodeType));
+						this.sb.Append(" ");
+						this.VisitWithParens(uo.Operand, uo);
+						break;
+					case SqlNodeType.Negate:
+					case SqlNodeType.BitNot:
+						this.sb.Append(GetOperator(uo.NodeType));
+						this.VisitWithParens(uo.Operand, uo);
+						break;
+					case SqlNodeType.Count:
+					case SqlNodeType.LongCount:
+					case SqlNodeType.Max:
+					case SqlNodeType.Min:
+					case SqlNodeType.Sum:
+					case SqlNodeType.Avg:
+					case SqlNodeType.Stddev:
+					case SqlNodeType.ClrLength:
+						{
+							this.sb.Append(GetOperator(uo.NodeType));
+							this.sb.Append("(");
+							if (uo.Operand == null)
+							{
+								this.sb.Append("*");
+							}
+							else
+							{
+								this.Visit(uo.Operand);
+							}
+							this.sb.Append(")");
+							break;
+						}
+					case SqlNodeType.IsNull:
+					case SqlNodeType.IsNotNull:
+						{
+							this.VisitWithParens(uo.Operand, uo);
+							sb.Append(" ");
+							sb.Append(GetOperator(uo.NodeType));
+							break;
+						}
+					case SqlNodeType.Convert:
+						{
+							if (ToQueryString(uo.Operand.SqlType) == ToQueryString(uo.SqlType))
+							{
+								this.Visit(uo.Operand);
+							}
+							else
+							{
+								this.sb.Append("CAST(");
+								this.Visit(uo.Operand);
+								this.sb.Append(" AS ");
+								this.sb.Append(ToQueryString(uo.SqlType));
+								this.sb.Append(")");
+							}
+							break;
+						}
+					case SqlNodeType.ValueOf:
+					case SqlNodeType.OuterJoinedValue:
+						this.Visit(uo.Operand); // no op
+						break;
+					default:
+						throw Error.InvalidFormatNode(uo.NodeType);
+				}
+				return uo;
+			}
+
+			internal string ToQueryString(ProviderType sqlType)
+			{
+				var sqlDbType = (sqlType as SqlTypeSystem.SqlType).SqlDbType;
+				StringBuilder sb = new StringBuilder();
+
+				switch (sqlDbType)
+				{
+					case SqlDbType.BigInt:
+					case SqlDbType.Bit:
+					case SqlDbType.Date:
+					case SqlDbType.Time:
+					case SqlDbType.DateTime:
+					case SqlDbType.DateTime2:
+					case SqlDbType.DateTimeOffset:
+					case SqlDbType.Int:
+					case SqlDbType.Money:
+					case SqlDbType.SmallDateTime:
+					case SqlDbType.SmallInt:
+					case SqlDbType.SmallMoney:
+					case SqlDbType.Timestamp:
+					case SqlDbType.TinyInt:
+					case SqlDbType.UniqueIdentifier:
+					case SqlDbType.Xml:
+					case SqlDbType.Image:
+					case SqlDbType.NText:
+					case SqlDbType.Text:
+					case SqlDbType.Udt:
+						sb.Append(sqlDbType.ToString());
+						break;
+					case SqlDbType.Variant:
+						sb.Append("sql_variant");
+						break;
+					case SqlDbType.Binary:
+					case SqlDbType.Char:
+					case SqlDbType.NChar:
+						sb.Append(sqlDbType);
+						break;
+					case SqlDbType.NVarChar:
+					case SqlDbType.VarBinary:
+					case SqlDbType.VarChar:
+						sb.Append("text");
+						break;
+					case SqlDbType.Decimal:
+					case SqlDbType.Float:
+					case SqlDbType.Real:
+						sb.Append(sqlDbType);
+						break;
+				}
+				return sb.ToString();
+			}
 		}
 	}
 }

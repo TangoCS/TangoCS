@@ -142,8 +142,10 @@ namespace System.Data.Linq.SqlClient {
                         this.typeProvider = SqlTypeSystem.Create2005Provider();
                         break;
                     case ProviderMode.Sql2008:
-					case ProviderMode.PostgreSQL:
 						this.typeProvider = SqlTypeSystem.Create2008Provider();
+						break;
+					case ProviderMode.PostgreSQL:
+						this.typeProvider = SqlTypeSystem.CreatePgProvider();
                         break;
                     case ProviderMode.SqlCE:
                         this.typeProvider = SqlTypeSystem.CreateCEProvider();
@@ -154,7 +156,8 @@ namespace System.Data.Linq.SqlClient {
                 }
             }
             if (this.sqlFactory == null) {
-                this.sqlFactory = new SqlFactory(this.typeProvider, this.services.Model);
+				var dialect = this.mode == ProviderMode.PostgreSQL ? (Dialect)new DialectPg() : new DialectSqlServer();
+				this.sqlFactory = new SqlFactory(this.typeProvider, this.services.Model, dialect);
                 this.translator = new Translator(this.services, this.sqlFactory, this.typeProvider);
             }
         }
@@ -1503,7 +1506,7 @@ namespace System.Data.Linq.SqlClient {
             node = PostBindDotNetConverter.Convert(node, this.sqlFactory, this.Mode);
 
             // identify true flow of sql data types 
-            SqlRetyper retyper = new SqlRetyper(this.typeProvider, this.services.Model);
+            SqlRetyper retyper = new SqlRetyper(this.sqlFactory);
             node = retyper.Retype(node);
             validator.Validate(node);
 
@@ -1552,7 +1555,7 @@ namespace System.Data.Linq.SqlClient {
             validator.Validate(node);
 
             // Inject code to turn predicates into bits, and bits into predicates where necessary
-            node = SqlBooleanizer.Rationalize(node, this.typeProvider, this.services.Model);
+            node = SqlBooleanizer.Rationalize(node, this.sqlFactory);
             if (this.checkQueries) {
                 validator.AddValidator(new ExpectRationalizedBooleans()); /* From now on all boolean expressions should remain rationalized. */
             }
@@ -1573,7 +1576,7 @@ namespace System.Data.Linq.SqlClient {
             validator.Validate(node);
 
             // SQL2K enablers.
-            node = SqlLiftWhereClauses.Lift(node, this.typeProvider, this.services.Model);
+            node = SqlLiftWhereClauses.Lift(node, this.sqlFactory);
             node = SqlLiftIndependentRowExpressions.Lift(node);
             node = SqlOuterApplyReducer.Reduce(node, this.sqlFactory, annotations);
             node = SqlTopReducer.Reduce(node, annotations, this.sqlFactory);

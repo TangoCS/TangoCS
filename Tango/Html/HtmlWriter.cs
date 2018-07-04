@@ -52,13 +52,13 @@ namespace Tango.Html
 			Write("<br/>");
 		}
 
-		public void PushID(string id)
+		public void PushPrefix(string prefix)
 		{
-			_ids.Push(id);
+			_ids.Push(prefix);
 			SetPrefix();
 		}
 
-		public void PopID()
+		public void PopPrefix()
 		{
 			_ids.Pop();
 			SetPrefix();

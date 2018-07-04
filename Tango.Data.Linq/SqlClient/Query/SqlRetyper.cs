@@ -6,8 +6,8 @@ namespace System.Data.Linq.SqlClient {
     internal class SqlRetyper {
         Visitor visitor;
 
-        internal SqlRetyper(TypeSystemProvider typeProvider, MetaModel model) {
-            this.visitor = new Visitor(typeProvider, model);
+        internal SqlRetyper(SqlFactory factory) {
+            this.visitor = new Visitor(factory);
         }
 
         internal SqlNode Retype(SqlNode node) {
@@ -18,9 +18,9 @@ namespace System.Data.Linq.SqlClient {
             private TypeSystemProvider typeProvider;
             private SqlFactory sql;
 
-            internal Visitor(TypeSystemProvider typeProvider, MetaModel model) {
-                this.sql = new SqlFactory(typeProvider, model);
-                this.typeProvider = typeProvider;
+            internal Visitor(SqlFactory factory) {
+                this.sql = factory;
+                this.typeProvider = factory.TypeProvider;
             }
 
             internal override SqlExpression VisitColumn(SqlColumn col) {

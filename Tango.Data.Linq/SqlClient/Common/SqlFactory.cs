@@ -18,15 +18,22 @@ namespace System.Data.Linq.SqlClient {
     internal class SqlFactory {
         private TypeSystemProvider typeProvider;
         private MetaModel model;
+		private Dialect dialect;
 
         internal TypeSystemProvider TypeProvider {
             get { return typeProvider; }
         }
 
-        internal SqlFactory(TypeSystemProvider typeProvider, MetaModel model) {
+		internal Dialect Dialect
+		{
+			get { return dialect; }
+		}
+
+		internal SqlFactory(TypeSystemProvider typeProvider, MetaModel model, Dialect dialect) {
             this.typeProvider = typeProvider;
             this.model = model;
-        }
+			this.dialect = dialect;
+		}
 
         #region Expression Operators
 
@@ -187,9 +194,9 @@ namespace System.Data.Linq.SqlClient {
         internal SqlExpression DATEPART(string partName, SqlExpression expr) {
             return FunctionCall(
                 typeof(int),
-                "DATEPART",
+                Dialect.DatePart,
                 new SqlExpression[] { 
-                    new SqlVariable(typeof(void), null, partName, expr.SourceExpression), 
+                    new SqlVariable(typeof(void), null, Dialect.DatePartName(partName), expr.SourceExpression), 
                     expr 
                 },
                 expr.SourceExpression

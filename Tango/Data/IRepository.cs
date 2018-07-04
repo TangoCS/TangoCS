@@ -18,6 +18,7 @@ namespace Tango.Data
 	public interface IRepository<T>
 	{
 		string AllObjectsQuery { get; set; }
+		object Parameters { get; set; }
 
 		T GetById(object id);
 
@@ -44,9 +45,10 @@ namespace Tango.Data
 
 	public static class RepositoryExtensions
 	{
-		public static IRepository<T> WithAllObjectsQuery<T>(this IRepository<T> rep, string allObjectsQuery)
+		public static IRepository<T> WithAllObjectsQuery<T>(this IRepository<T> rep, string allObjectsQuery, object parameters = null)
 		{
 			rep.AllObjectsQuery = allObjectsQuery;
+			rep.Parameters = parameters;
 			return rep;
 		}
 	}

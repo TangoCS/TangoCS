@@ -158,7 +158,11 @@ namespace System.Data.Linq {
                 if (toType == typeof(Guid)) {
                     return new Guid((string)value);
                 }
-                else if (toType == typeof(char[])) {
+				else if (toType == typeof(char))
+				{
+					return ((String)value).Length > 0 ? ((String)value)[0] : default(char);
+				}
+				else if (toType == typeof(char[])) {
                     return ((String)value).ToCharArray();
                 }
                 else if (toType == typeof(System.Xml.Linq.XDocument) && (string)value == string.Empty) {

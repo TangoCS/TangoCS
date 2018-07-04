@@ -1056,7 +1056,7 @@ namespace System.Data.Linq.SqlClient {
 
         private SqlSelect GenerateSkipTake(SqlSelect sequence, SqlExpression skipExp, SqlExpression takeExp) {
 
-			if (this.UseConverterStrategy(ConverterStrategy.SkipWithOffset))
+			if (skipExp != null && this.UseConverterStrategy(ConverterStrategy.SkipWithOffset))
 			{
 				sequence.Offset = this.sql.Value(skipExp.ClrType, skipExp.SqlType, ((SqlValue)skipExp).Value, false, this.dominatingExpression);
 				return sequence;
@@ -2537,13 +2537,15 @@ namespace System.Data.Linq.SqlClient {
                 if (!IsLegalIdentityType(sqlType.GetClosestRuntimeType())) {                    
                     throw Error.InvalidDbGeneratedType(sqlType.ToQueryString());
                 }
-                if ((this.converterStrategy & ConverterStrategy.CanUseScopeIdentity) != 0) {
-                    return new SqlVariable(typeof(decimal), typeProvider.From(typeof(decimal)), "SCOPE_IDENTITY()", this.dominatingExpression);
-                }
-                else {
-                    return new SqlVariable(typeof(decimal), typeProvider.From(typeof(decimal)), "@@IDENTITY", this.dominatingExpression);
-                }
-            }
+				//if ((this.converterStrategy & ConverterStrategy.CanUseScopeIdentity) != 0) {
+				//    return new SqlVariable(typeof(decimal), typeProvider.From(typeof(decimal)), "SCOPE_IDENTITY()", this.dominatingExpression);
+				//}
+				//else {
+				//    return new SqlVariable(typeof(decimal), typeProvider.From(typeof(decimal)), "@@IDENTITY", this.dominatingExpression);
+				//}
+				var b = (this.converterStrategy & ConverterStrategy.CanUseScopeIdentity) != 0;
+				return new SqlVariable(typeof(decimal), typeProvider.From(typeof(decimal)), sql.Dialect.Identity(id, b), this.dominatingExpression);
+			}
         }
 
         private static bool IsLegalIdentityType(Type type) {

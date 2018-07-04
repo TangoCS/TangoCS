@@ -81,9 +81,9 @@ namespace Tango.UI.Controls
 
 		public void Render(LayoutWriter w)
 		{
-			w.PushID(ID);
+			w.PushPrefix(ID);
 			Content(w);
-			w.PopID();
+			w.PopPrefix();
 		}
 	}
 }

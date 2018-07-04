@@ -54,6 +54,7 @@ namespace Tango.Data
 	public class DapperRepository<T> : IRepository<T>
 	{
 		public string AllObjectsQuery { get; set; }
+		public object Parameters { get; set; }
 
 		public IDatabase Database { get; }
 
@@ -94,7 +95,7 @@ namespace Tango.Data
 		public int Count(Expression predicate = null)
 		{
 			var query = $"select count(1) from ({AllObjectsQuery}) t";
-			var args = new DynamicParameters();
+			var args = new DynamicParameters(Parameters);
 
 			if (predicate != null)
 			{
@@ -112,7 +113,7 @@ namespace Tango.Data
 		public IEnumerable<T> List(Expression predicate = null)
 		{
 			var query = AllObjectsQuery;
-			var args = new DynamicParameters();
+			var args = new DynamicParameters(Parameters);
 
 			if (predicate != null)
 			{

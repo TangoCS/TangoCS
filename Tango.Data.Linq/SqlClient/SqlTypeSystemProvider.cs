@@ -8,7 +8,7 @@ using System.Text;
 
 namespace System.Data.Linq.SqlClient {
 
-    internal static class SqlTypeSystem {
+    internal static partial class SqlTypeSystem {
 
         internal static TypeSystemProvider Create2000Provider() {
             return new Sql2000Provider();
@@ -1607,5 +1607,7 @@ namespace System.Data.Linq.SqlClient {
 
         class SqlCEProvider : Sql2000Provider {
         }
+
+		
     }
 }

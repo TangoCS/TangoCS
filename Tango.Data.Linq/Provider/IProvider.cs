@@ -1,23 +1,16 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Linq;
 using System.Data.Common;
 using System.Linq.Expressions;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Transactions;
-using System.Reflection;
 using System.Diagnostics.CodeAnalysis;
 
-namespace System.Data.Linq.Provider {
+namespace System.Data.Linq.Provider
+{
 
-    /// <summary>
-    /// A data provider implements this interface to hook into the LINQ to SQL framework.
-    /// </summary>
-    internal interface IProvider : IDisposable {
+	/// <summary>
+	/// A data provider implements this interface to hook into the LINQ to SQL framework.
+	/// </summary>
+	public interface IProvider : IDisposable {
         /// <summary>
         /// Initializes the database provider with the data services object and connection.
         /// </summary>
@@ -119,7 +112,7 @@ namespace System.Data.Linq.Provider {
     /// <summary>
     /// A compiled query.
     /// </summary>
-    internal interface ICompiledQuery {
+    public interface ICompiledQuery {
         /// <summary>
         /// Executes the compiled query using the specified provider and a set of arguments.
         /// </summary>

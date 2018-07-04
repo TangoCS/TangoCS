@@ -100,7 +100,7 @@ namespace System.Data.Linq {
                 throw Error.ArgumentNull("connection");
             }
             this.InitWithDefaultMapping(connection);
-        }
+		}
 
         public DataContext(IDbConnection connection, MappingSource mapping) {
             if (connection == null) {
@@ -166,26 +166,36 @@ namespace System.Data.Linq {
             return Activator.CreateInstance(this.GetType(), new object[] { this.Connection, this.Mapping.MappingSource });
         }
 
-        private void Init(object connection, MappingSource mapping) {
-            MetaModel model = mapping.GetModel(this.GetType());
-            this.services = new CommonDataServices(this, model);
-            this.conflicts = new ChangeConflictCollection();
+		public static Func<IProvider> ProviderFactory { get; set; } = null;
 
-            // determine provider
-            Type providerType;
-            if (model.ProviderType != null) {
-                providerType = model.ProviderType;
-            }
-            else {
-                throw Error.ProviderTypeNull();
-            }
+		private void Init(object connection, MappingSource mapping) {
+			MetaModel model = mapping.GetModel(this.GetType());
+			this.services = new CommonDataServices(this, model);
+			this.conflicts = new ChangeConflictCollection();
 
-            if (!typeof(IProvider).IsAssignableFrom(providerType)) {
-                throw Error.ProviderDoesNotImplementRequiredInterface(providerType, typeof(IProvider));
-            }
+			// determine provider
+			this.provider = ProviderFactory?.Invoke();
+			if (this.provider == null)
+			{
+				Type providerType;
+				if (model.ProviderType != null)
+				{
+					providerType = model.ProviderType;
+				}
+				else
+				{
+					throw Error.ProviderTypeNull();
+				}
 
-            this.provider = (IProvider)Activator.CreateInstance(providerType);
-            this.provider.Initialize(this.services, connection);
+				if (!typeof(IProvider).IsAssignableFrom(providerType))
+				{
+					throw Error.ProviderDoesNotImplementRequiredInterface(providerType, typeof(IProvider));
+				}
+
+				this.provider = (IProvider)Activator.CreateInstance(providerType);
+			}
+
+			this.provider.Initialize(this.services, connection);
 
             this.tables = new Dictionary<MetaTable, ITable>();
             this.InitTables(this);

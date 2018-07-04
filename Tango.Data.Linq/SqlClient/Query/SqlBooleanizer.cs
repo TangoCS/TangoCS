@@ -11,8 +11,8 @@ namespace System.Data.Linq.SqlClient {
         private class Booleanizer : SqlBooleanMismatchVisitor {
             private SqlFactory sql;
 
-            internal Booleanizer(TypeSystemProvider typeProvider, MetaModel model) {
-                this.sql = new SqlFactory(typeProvider, model);
+            internal Booleanizer(SqlFactory factory) {
+                this.sql = factory;
             }
 
             internal override SqlSelect VisitSelect(SqlSelect select) {
@@ -83,8 +83,8 @@ namespace System.Data.Linq.SqlClient {
         /// <summary>
         /// Rationalize boolean expressions for the given node.
         /// </summary>
-        internal static SqlNode Rationalize(SqlNode node, TypeSystemProvider typeProvider, MetaModel model) {
-            return new Booleanizer(typeProvider, model).Visit(node);
+        internal static SqlNode Rationalize(SqlNode node, SqlFactory factory) {
+            return new Booleanizer(factory).Visit(node);
         }
     }
 }
