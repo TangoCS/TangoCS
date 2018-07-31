@@ -1071,7 +1071,8 @@ namespace System.Data.Linq.SqlClient {
                 switch (queryInfo.ResultShape) {
                     default:
                     case ResultShape.Return: {
-                            return new ExecuteResult(cmd, queryInfo.Parameters, null, cmd.ExecuteNonQuery(), true);
+							var res = cmd.ExecuteNonQuery();
+							return new ExecuteResult(cmd, queryInfo.Parameters, null, res, true);
                         }
                     case ResultShape.Singleton: {
                             DbDataReader reader = cmd.ExecuteReader();                            
@@ -1114,7 +1115,7 @@ namespace System.Data.Linq.SqlClient {
                                     }
                                     catch (TargetInvocationException tie) {
                                         if (tie.InnerException != null) {
-                                            throw tie.InnerException;
+											throw tie.InnerException;
                                         }
                                         throw;
                                     }

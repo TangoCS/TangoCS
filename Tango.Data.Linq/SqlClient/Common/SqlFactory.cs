@@ -192,15 +192,26 @@ namespace System.Data.Linq.SqlClient {
         }
 
         internal SqlExpression DATEPART(string partName, SqlExpression expr) {
-            return FunctionCall(
-                typeof(int),
-                Dialect.DatePart,
+            return Dialect is DialectPg ? 
+				ConvertTo(typeof(int), FunctionCall(
+                typeof(double),
+                "DATE_PART",
                 new SqlExpression[] { 
                     new SqlVariable(typeof(void), null, Dialect.DatePartName(partName), expr.SourceExpression), 
                     expr 
                 },
                 expr.SourceExpression
-                );
+                )) :
+
+				FunctionCall(
+				typeof(int),
+				"DATEPART",
+				new SqlExpression[] {
+					new SqlVariable(typeof(void), null, Dialect.DatePartName(partName), expr.SourceExpression),
+					expr
+				},
+				expr.SourceExpression
+				);
         }
 
         internal SqlExpression DATEADD(string partName, SqlExpression value, SqlExpression expr) {

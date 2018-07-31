@@ -10,7 +10,6 @@ namespace System.Data.Linq.SqlClient
     public abstract class Dialect
     {
 		public abstract string CharToInt { get; }
-		public abstract string DatePart { get; }
 
 		public abstract string DatePartName(string partName);
 
@@ -20,7 +19,6 @@ namespace System.Data.Linq.SqlClient
 	public class DialectSqlServer : Dialect
 	{
 		public override string CharToInt => "UNICODE";
-		public override string DatePart => "DATEPART";
 
 		public override string DatePartName(string partName) => partName;
 
@@ -33,7 +31,7 @@ namespace System.Data.Linq.SqlClient
 	public class DialectPg : Dialect
 	{
 		public override string CharToInt => "ASCII";
-		public override string DatePart => "DATE_PART";
+		//public override SqlExpression DatePart => "DATE_PART";
 
 		public override string DatePartName(string partName) => "'" + partName + "'";
 

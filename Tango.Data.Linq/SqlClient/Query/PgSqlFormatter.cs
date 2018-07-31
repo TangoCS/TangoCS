@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Data.Linq.Mapping;
+using System.Text;
 
 namespace System.Data.Linq.SqlClient
 {
@@ -336,6 +337,39 @@ namespace System.Data.Linq.SqlClient
 						break;
 				}
 				return sb.ToString();
+			}
+
+			internal override SqlStoredProcedureCall VisitStoredProcedureCall(SqlStoredProcedureCall spc)
+			{
+				sb.Append("select ");
+				this.WriteName(spc.Function.MappedName);
+				sb.Append("(");
+
+				int pc = spc.Function.Parameters.Count;
+				System.Diagnostics.Debug.Assert(spc.Arguments.Count >= pc);
+
+				for (int i = 0; i < pc; i++)
+				{
+					MetaParameter mp = spc.Function.Parameters[i];
+					if (i > 0) sb.Append(", ");
+					//this.WriteVariableName(mp.MappedName);
+					//sb.Append(" = ");
+					this.Visit(spc.Arguments[i]);
+					//if (mp.Parameter.IsOut || mp.Parameter.ParameterType.IsByRef)
+					//	sb.Append(" OUTPUT");
+				}
+
+				//if (spc.Arguments.Count > pc)
+				//{
+				//	if (pc > 0) sb.Append(", ");
+				//	this.WriteVariableName(spc.Function.ReturnParameter.MappedName);
+				//	sb.Append(" = ");
+				//	this.Visit(spc.Arguments[pc]);
+				//	sb.Append(" OUTPUT");
+				//}
+
+				sb.Append(")");
+				return spc;
 			}
 		}
 	}

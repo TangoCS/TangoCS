@@ -1059,6 +1059,7 @@ namespace System.Data.Linq.SqlClient {
 			if (skipExp != null && this.UseConverterStrategy(ConverterStrategy.SkipWithOffset))
 			{
 				sequence.Offset = this.sql.Value(skipExp.ClrType, skipExp.SqlType, ((SqlValue)skipExp).Value, false, this.dominatingExpression);
+				sequence.Top = takeExp;
 				return sequence;
 			}
 
