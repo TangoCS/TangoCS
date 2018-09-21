@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -12,7 +13,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.UInt16"/> column.
 	/// </summary>
 	[Serializable]
-	public class UInt16Type : PrimitiveType, IDiscriminatorType, IVersionType
+	public partial class UInt16Type : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 		/// <summary></summary>
 		public UInt16Type() : base(SqlTypeFactory.UInt16)
@@ -26,7 +27,7 @@ namespace NHibernate.Type
 		}
 
 		private static readonly UInt16 ZERO = 0;
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
@@ -38,7 +39,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
 			try
 			{
@@ -55,17 +56,29 @@ namespace NHibernate.Type
 			get { return typeof(UInt16); }
 		}
 
-		public override void Set(IDbCommand rs, object value, int index)
+		public override void Set(DbCommand rs, object value, int index, ISessionImplementor session)
 		{
-			((IDataParameter)rs.Parameters[index]).Value = value;
+			rs.Parameters[index].Value = value;
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc />
 		public object StringToObject(string xml)
 		{
+			// 6.0 TODO: remove warning disable/restore
+#pragma warning disable 618
 			return FromStringValue(xml);
+#pragma warning restore 618
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior. Replace override keyword by virtual after having
+		// removed the obsoleted base.
+		/// <inheritdoc cref="IVersionType.FromStringValue"/>
+#pragma warning disable 672
 		public override object FromStringValue(string xml)
+#pragma warning restore 672
 		{
 			return UInt16.Parse(xml);
 		}

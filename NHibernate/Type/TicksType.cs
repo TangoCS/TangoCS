@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -16,32 +17,20 @@ namespace NHibernate.Type
 	/// The System.DateTime.Ticks is accurate to 100-nanosecond intervals. 
 	/// </remarks>
 	[Serializable]
-	public class TicksType : PrimitiveType, IVersionType, ILiteralType
+	public partial class TicksType : PrimitiveType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>
 		public TicksType()
 			: base(SqlTypeFactory.Int64) {}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			return new DateTime(Convert.ToInt64(rs[index]));
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		/// <summary></summary>
@@ -50,15 +39,9 @@ namespace NHibernate.Type
 			get { return typeof(DateTime); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		public override void Set(IDbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			((IDataParameter)st.Parameters[index]).Value = ((DateTime)value).Ticks;
+			st.Parameters[index].Value = ((DateTime)value).Ticks;
 		}
 
 		/// <summary></summary>
@@ -67,12 +50,30 @@ namespace NHibernate.Type
 			get { return "Ticks"; }
 		}
 
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val)
 		{
 			return ((DateTime)val).Ticks.ToString();
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior. Replace override keyword by virtual after having
+		// removed the obsoleted base.
+		/// <inheritdoc cref="IVersionType.FromStringValue"/>
+#pragma warning disable 672
 		public override object FromStringValue(string xml)
+#pragma warning restore 672
 		{
 			return new DateTime(Int64.Parse(xml));
 		}
@@ -89,6 +90,8 @@ namespace NHibernate.Type
 			return DateTime.Now;
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public object StringToObject(string xml)
 		{
 			return Int64.Parse(xml);

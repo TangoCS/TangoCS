@@ -1,10 +1,29 @@
 using System;
 using System.Data;
+using System.Data.Common;
+using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Engine;
+using NHibernate.Impl;
+using NHibernate.Multi;
+using NHibernate.Util;
 
 namespace NHibernate
 {
+	// 6.0 TODO: Convert to interface methods
+	public static class StatelessSessionExtensions
+	{
+		/// <summary>
+		/// Creates a <see cref="IQueryBatch"/> for the session.
+		/// </summary>
+		/// <param name="session">The session</param>
+		/// <returns>A query batch.</returns>
+		public static IQueryBatch CreateQueryBatch(this IStatelessSession session)
+		{
+			return ReflectHelper.CastOrThrow<AbstractSessionImpl>(session, "query batch").CreateQueryBatch();
+		}
+	}
+
 	/// <summary>
 	/// A command-oriented API for performing bulk operations against a database.
 	/// </summary>
@@ -21,7 +40,7 @@ namespace NHibernate
 	/// For certain kinds of transactions, a stateless session may
 	/// perform slightly faster than a stateful session.
 	/// </remarks>
-	public interface IStatelessSession : IDisposable
+	public partial interface IStatelessSession : IDisposable
 	{
 		/// <summary>
 		/// Returns the current ADO.NET connection associated with this instance.
@@ -32,7 +51,7 @@ namespace NHibernate
 		/// close the connection returned by this call. Otherwise, the
 		/// application should not close the connection.
 		/// </remarks>
-		IDbConnection Connection { get; }
+		DbConnection Connection { get; }
 		
 		/// <summary>Get the current NHibernate transaction.</summary>
 		ITransaction Transaction { get; }
@@ -43,8 +62,16 @@ namespace NHibernate
 		bool IsOpen { get; }
 
 		/// <summary>
-		/// Is the <c>IStatelessSession</c> currently connected?
+		/// Is the session connected?
 		/// </summary>
+		/// <value>
+		/// <see langword="true" /> if the session is connected.
+		/// </value>
+		/// <remarks>
+		/// A session is considered connected if there is a <see cref="DbConnection"/> (regardless
+		/// of its state) or if the field <c>connect</c> is true. Meaning that it will connect
+		/// at the next operation that requires a connection.
+		/// </remarks>
 		bool IsConnected { get; }
 
 		/// <summary>
@@ -249,10 +276,42 @@ namespace NHibernate
 		ITransaction BeginTransaction(IsolationLevel isolationLevel);
 
 		/// <summary>
+		/// Join the <see cref="System.Transactions.Transaction.Current"/> system transaction.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Sessions auto-join current transaction by default on their first usage within a scope.
+		/// This can be disabled with <see cref="IStatelessSessionBuilder.AutoJoinTransaction(bool)"/> from
+		/// a session builder obtained with <see cref="ISessionFactory.WithStatelessOptions()"/>.
+		/// </para>
+		/// <para>
+		/// This method allows to explicitly join the current transaction. It does nothing if it is already
+		/// joined.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="HibernateException">Thrown if there is no current transaction.</exception>
+		void JoinTransaction();
+
+		/// <summary>
 		/// Sets the batch size of the session
 		/// </summary>
 		/// <param name="batchSize">The batch size.</param>
 		/// <returns>The same instance of the session for methods chain.</returns>
 		IStatelessSession SetBatchSize(int batchSize);
+
+		/// <summary>
+		/// Creates a new Linq <see cref="IQueryable{T}"/> for the entity class.
+		/// </summary>
+		/// <typeparam name="T">The entity class</typeparam>
+		/// <returns>An <see cref="IQueryable{T}"/> instance</returns>
+		IQueryable<T> Query<T>();
+
+		/// <summary>
+		/// Creates a new Linq <see cref="IQueryable{T}"/> for the entity class and with given entity name.
+		/// </summary>
+		/// <typeparam name="T">The type of entity to query.</typeparam>
+		/// <param name="entityName">The entity name.</param>
+		/// <returns>An <see cref="IQueryable{T}"/> instance</returns>
+		IQueryable<T> Query<T>(string entityName);
 	}
 }

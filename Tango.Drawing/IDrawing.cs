@@ -1,4 +1,4 @@
-﻿using SixLabors.ImageSharp;
+﻿using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.Primitives;
 using System;
 
@@ -18,6 +18,7 @@ namespace Tango.Drawing
 		void DrawRectangle(Rectangle r);
 		void DrawRectangle(int x, int y, int w, int h);
 		void DrawString(int x, int y, string s, int size);
+		int MeasureString(string s, int size);
 		uint AddTexture(int width, int height, byte[] data);
 		void DrawTexture(uint textureno, int x, int y, int width, int height, int[] map = null);
 		uint DrawOnTexture(int width, int height, Action content);

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using NHibernate.Engine;
 using NHibernate.Type;
 using System.Collections.Generic;
@@ -17,6 +16,7 @@ namespace NHibernate.Impl
 		private FilterDefinition definition;
 
 		private readonly IDictionary<string, object> parameters = new Dictionary<string, object>();
+		private readonly Dictionary<string, int> _parameterSpans = new Dictionary<string, int>();
 
 		public void AfterDeserialize(FilterDefinition factoryDefinition)
 		{
@@ -76,43 +76,22 @@ namespace NHibernate.Impl
 		/// <param name="name">The parameter's name.</param>
 		/// <param name="values">The values to be expanded into an SQL IN list.</param>
 		/// <returns>This FilterImpl instance (for method chaining).</returns>
-		public IFilter SetParameterList(string name, ICollection values)
+		/// <exception cref="ArgumentNullException">Thrown when <paramref name="name"/> or <paramref name="values"/> are <see langword="null" />.</exception>
+		public IFilter SetParameterList<T>(string name, ICollection<T> values)
 		{
-			// Make sure this is a defined parameter and check the incoming value type
 			if (values == null)
-			{
-				throw new ArgumentException("Collection must be not null!", "values");
-			}
+				throw new ArgumentNullException(nameof(values), "Collection must be not null!");
 
 			var type = definition.GetParameterType(name);
 			if (type == null)
-			{
 				throw new HibernateException("Undefined filter parameter [" + name + "]");
-			}
 
-			if (values.Count > 0)
-			{
-				var e = values.GetEnumerator();
-				e.MoveNext();
-				if (!type.ReturnedClass.IsInstanceOfType(e.Current))
-				{
-					throw new HibernateException("Incorrect type for parameter [" + name + "]");
-				}
-			}
+			if (!type.ReturnedClass.IsAssignableFrom(typeof(T)))
+				throw new HibernateException("Incorrect type for parameter [" + name + "]");
+
+			_parameterSpans[name] = values.Count;
 			parameters[name] = values;
 			return this;
-		}
-
-		/// <summary>
-		/// Set the named parameter's value list for this filter.  Used
-		/// in conjunction with IN-style filter criteria.        
-		/// </summary>
-		/// <param name="name">The parameter's name.</param>
-		/// <param name="values">The values to be expanded into an SQL IN list.</param>
-		/// <returns>This FilterImpl instance (for method chaining).</returns>
-		public IFilter SetParameterList(string name, object[] values)
-		{
-			return SetParameterList(name, new List<object>(values));
 		}
 
 		public object GetParameter(string name)
@@ -120,6 +99,18 @@ namespace NHibernate.Impl
 			object result;
 			parameters.TryGetValue(name, out result);
 			return result;
+		}
+
+		/// <summary>
+		/// Get the span of a value list parameter by name. <see langword="null" /> if the parameter is not a value list
+		/// or if there is no such parameter.
+		/// </summary>
+		/// <param name="name">The parameter name.</param>
+		/// <returns>The parameter span, or <see langword="null" /> if the parameter is not a value list or
+		/// if there is no such parameter.</returns>
+		public int? GetParameterSpan(string name)
+		{
+			return _parameterSpans.TryGetValue(name, out var result) ? result : default(int?);
 		}
 
 		/// <summary>

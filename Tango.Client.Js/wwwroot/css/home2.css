@@ -4,6 +4,7 @@
 	top: 0;
 	display: none;
 	text-align: center;
+	z-index: 1000;
 }
 
 #topmessagecontainer span {
@@ -20,26 +21,27 @@
 }
 
 body {
-	height: 100%;
+	height: initial;
 }
 
 /*home*/
 #container {
-	height: 100%;
+	margin-top: 37px;
+	/*height: 100%;
 	display: flex;
-	flex-direction: column;
+	flex-direction: column;*/
 }
 
 #content {
-	height: 100%;
+	/*height: 100%;
 	display: flex;
-	flex-direction: column;
+	flex-direction: column;*/
 }
 
 #contentbody {
 	width: 100%;
-	height: 100%;
-	overflow: auto;
+	/*height: 100%;
+	overflow: auto;*/
 }
 
 /*header*/
@@ -63,6 +65,9 @@ header {
 	width: 100%;
 	line-height: 37px;
 	padding: 0 8px;
+	position: fixed;
+	top: 0;
+	z-index: 999;
 }
 
 .header-logo {
@@ -98,14 +103,4 @@ header {
 
 .header-buttons li:hover, .header-buttons li.iw-opened {
 	background-color: #296ca3;
-}
-
-.header-buttons .ms-menubuttoninactivehover, .header-buttons .ms-menubuttonactivehover {
-	margin: 0px;
-	padding: 0px;
-	border: none;
-}
-
-.header-buttons .ms-menubuttonactivehover, .header-buttons .ms-buttonactivehover {
-	background-color: transparent;
 }

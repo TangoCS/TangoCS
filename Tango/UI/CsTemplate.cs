@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Tango.Html;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Net;
 
 namespace Tango.UI
 {
@@ -64,7 +65,8 @@ namespace Tango.UI
 
 		public T GetPostedJson<T>(string name, Func<T> defaultValue = null)
 		{
-			var s = GetPosted<string>(name);
+			var s = GetArg<string>(name);
+			s = WebUtility.HtmlDecode(s);
 			T res = default(T);
 			if (!s.IsEmpty()) res = JsonConvert.DeserializeObject<T>(s);
 			if (res == null && defaultValue != null) res = defaultValue();
@@ -161,6 +163,26 @@ namespace Tango.UI
 
 		public IDictionary<string, string> Mapping { get; } = new Dictionary<string, string>();
 		public abstract void Render(ApiResponse response);
+
+		public void ProcessResponse(ActionContext ctx, IViewElement content, ApiResponse response)
+		{
+			Context = ctx;
+
+			if (ctx.ContainerType != null)
+				ID = ctx.ContainerPrefix; //HtmlWriterHelpers.GetID(ctx.ContainerPrefix, content.ID);
+
+			if (content.ParentElement == null)
+				content.ParentElement = this;
+
+			response.WithNameFunc(name => HtmlWriterHelpers.GetID(ctx.ContainerPrefix, name));
+
+			response.WithWritersFor(this, () => Render(response));
+
+			response.WithNameFunc(name => 
+				Mapping.ContainsKey(name) ?
+				HtmlWriterHelpers.GetID(ClientID, Mapping[name]) :
+				HtmlWriterHelpers.GetID(ClientID, name));
+		}
 	}
 
 	public abstract class ViewRootElement : ViewElement

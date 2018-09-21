@@ -6,6 +6,7 @@
 		public static string ActionName = "action";
 		public static string ReturnUrl = "returnurl";
 		public static string Id = "oid";
+		public static string ParentId = "parentid";
 
 		public static string ShowLogsName = "showlogs";
 
@@ -25,6 +26,11 @@
 		public static string MetaCurrent = "_current";
 
 		public static string SelectedValues = "selectedvalues";
+	}
 
+	public static class DBConventions
+	{
+		public static string IDSuffix = "ID";
+		public static string GUIDSuffix = "GUID";
 	}
 }

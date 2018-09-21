@@ -1,5 +1,5 @@
 using System;
-using System.Data;
+using System.Data.Common;
 using Antlr.Runtime;
 using Antlr.Runtime.Tree;
 using NHibernate.Action;
@@ -13,15 +13,18 @@ using NHibernate.SqlCommand;
 using NHibernate.SqlTypes;
 using NHibernate.Transaction;
 using NHibernate.Util;
+using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
 	[CLSCompliant(false)]
-	public abstract class AbstractStatementExecutor : IStatementExecutor
+	public abstract partial class AbstractStatementExecutor : IStatementExecutor
 	{
-		private readonly IInternalLogger log;
+		private readonly INHibernateLogger log;
 
-		protected AbstractStatementExecutor(IStatement statement, IInternalLogger log)
+		protected AbstractStatementExecutor(IStatement statement, INHibernateLogger log)
 		{
 			Statement = statement;
 			Walker = statement.Walker;
@@ -46,11 +49,30 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		{
 			var action = new BulkOperationCleanupAction(session, AffectedQueryables);
 
-			action.Init();
-
 			if (session.IsEventSource)
 			{
-				((IEventSource)session).ActionQueue.AddAction(action);
+				((IEventSource) session).ActionQueue.AddAction(action);
+			}
+			else
+			{
+				action.AfterTransactionCompletionProcess(true);
+			}
+		}
+
+		// Since v5.2
+		[Obsolete("This method has no more actual async calls to do, use its sync version instead.")]
+		protected virtual Task CoordinateSharedCacheCleanupAsync(ISessionImplementor session, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+
+			try
+			{
+				CoordinateSharedCacheCleanup(session);
+				return Task.CompletedTask;
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
 			}
 		}
 
@@ -192,16 +214,16 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			else
 			{
 				// at the very least cleanup the data :)
-				IDbCommand ps = null;
+				DbCommand ps = null;
 				try
 				{
 					var commandText = new SqlString("delete from " + persister.TemporaryIdTableName);
-					ps = session.Batcher.PrepareCommand(CommandType.Text, commandText, new SqlType[0]);
+					ps = session.Batcher.PrepareCommand(CommandType.Text, commandText, Array.Empty<SqlType>());
 					session.Batcher.ExecuteNonQuery(ps);
 				}
 				catch (Exception t)
 				{
-					log.Warn("unable to cleanup temporary id table after use [" + t + "]");
+					log.Warn(t, "unable to cleanup temporary id table after use [{0}]", t);
 				}
 				finally
 				{
@@ -220,22 +242,22 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 		}
 
-		private class TmpIdTableCreationIsolatedWork : IIsolatedWork
+		private partial class TmpIdTableCreationIsolatedWork : IIsolatedWork
 		{
 			private readonly IQueryable persister;
-			private readonly IInternalLogger log;
+			private readonly INHibernateLogger log;
 			private readonly ISessionImplementor session;
 
-			public TmpIdTableCreationIsolatedWork(IQueryable persister, IInternalLogger log, ISessionImplementor session)
+			public TmpIdTableCreationIsolatedWork(IQueryable persister, INHibernateLogger log, ISessionImplementor session)
 			{
 				this.persister = persister;
 				this.log = log;
 				this.session = session;
 			}
 
-			public void DoWork(IDbConnection connection, IDbTransaction transaction)
+			public void DoWork(DbConnection connection, DbTransaction transaction)
 			{
-				IDbCommand stmnt = null;
+				DbCommand stmnt = null;
 				try
 				{
 					stmnt = connection.CreateCommand();
@@ -246,7 +268,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				}
 				catch (Exception t)
 				{
-					log.Debug("unable to create temporary id table [" + t.Message + "]");
+					log.Debug(t, "unable to create temporary id table [{0}]", t.Message);
 				}
 				finally
 				{
@@ -265,9 +287,9 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 		}
 
-		private class TmpIdTableDropIsolatedWork : IIsolatedWork
+		private partial class TmpIdTableDropIsolatedWork : IIsolatedWork
 		{
-			public TmpIdTableDropIsolatedWork(IQueryable persister, IInternalLogger log, ISessionImplementor session)
+			public TmpIdTableDropIsolatedWork(IQueryable persister, INHibernateLogger log, ISessionImplementor session)
 			{
 				this.persister = persister;
 				this.log = log;
@@ -275,12 +297,12 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 			}
 
 			private readonly IQueryable persister;
-			private readonly IInternalLogger log;
+			private readonly INHibernateLogger log;
 			private readonly ISessionImplementor session;
 
-			public void DoWork(IDbConnection connection, IDbTransaction transaction)
+			public void DoWork(DbConnection connection, DbTransaction transaction)
 			{
-				IDbCommand stmnt = null;
+				DbCommand stmnt = null;
 				try
 				{
 					stmnt = connection.CreateCommand();
@@ -291,7 +313,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 				}
 				catch (Exception t)
 				{
-					log.Warn("unable to drop temporary id table after use [" + t.Message + "]");
+					log.Warn("unable to drop temporary id table after use [{0}]", t.Message);
 				}
 				finally
 				{

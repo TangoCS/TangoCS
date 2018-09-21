@@ -428,7 +428,7 @@ td.showDragHandle {
 	border: 1px solid rgba(0,0,0,.5);
 }
 
-.modal-header, .modal-body, .modal-footer {
+.modal-header, .modal-body, .modal-footer, .modal-container .buttonsbar {
 	background-color: #fff;
 }
 
@@ -457,7 +457,7 @@ td.showDragHandle {
 	flex-direction: column;
 }
 
-.modal-footer {
+.modal-footer, .modal-container .buttonsbar {
 	padding: 8px 15px;
 	text-align: right;
 	border-top: 1px solid #e5e5e5;
@@ -546,7 +546,7 @@ button.close {
 	display: flex;
 }
 
-.tabs2 li {
+.tabs2 > ul > li {
 	margin: 0;
 	padding: 0;
 	display: block;
@@ -555,7 +555,7 @@ button.close {
 	user-select: none;
 }
 
-.tabs2 li > div {
+.tabs2 > ul > li > div {
 	top: 33px;
 	bottom: 0;
 	left: 0;
@@ -565,7 +565,7 @@ button.close {
 	box-sizing: border-box;
 }
 
-.tabs2 input[type="radio"] + label {
+.tabs2 > ul > li > input[type="radio"] + label {
 	display: block;
 	border: 1px solid #ccc;
 	margin-bottom: -1px;
@@ -576,7 +576,7 @@ button.close {
 	user-select: none;
 }
 
-.tabs2 input[type="radio"]:checked + label {
+.tabs2 > ul > li > input[type="radio"]:checked + label {
 	z-index: 1;
 	background: #fff;
 	border-bottom-color: #fff;
@@ -584,7 +584,7 @@ button.close {
 	cursor: default;
 }
 
-.tabs2 input[type="radio"] {
+.tabs2 > ul > li > input[type="radio"] {
 	opacity: 0;
 	display: none;
 	user-select: none;
@@ -599,9 +599,13 @@ button.close {
 }
 
 
-.tabs2 input[type="radio"]:disabled + label {
+.tabs2 > ul > li > input[type="radio"]:disabled + label {
 	opacity: .5;
 	cursor: no-drop;
+}
+
+div.tabs2 + div.tabs2 {
+	margin-top: 8px;
 }
 
 
@@ -774,4 +778,28 @@ button.close {
 	background-color: #296ca3;
 	color: white;
 	text-decoration: none;
+}
+
+.icon-dropdownarrow-angle {
+	margin-left: 10px;
+	font-size: small;
+}
+
+.dropdownfield {
+	display: inline-block;
+	padding-right: 10px;
+}
+
+.dropdownfield:hover, .dropdownfield.iw-opened {
+	background-color: #7fe0f8;
+	background-image: linear-gradient(#cef8ff, #7fe0f8);
+}
+
+.dropdownimage {
+	padding: 2px 4px;
+}
+
+.dropdownimage:hover, .dropdownimage.iw-opened {
+	background-color: #7fe0f8;
+	background-image: linear-gradient(#cef8ff, #7fe0f8);
 }

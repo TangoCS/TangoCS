@@ -226,7 +226,8 @@ var ajaxUtils = function ($, cu) {
 		},
 		loc: {
 			url: null,
-			parms: {}
+			parms: {},
+			onBack: null
 		},
 		ctrl: {}
 	};
@@ -250,7 +251,7 @@ var ajaxUtils = function ($, cu) {
 				processElementDataOnFormSubmit(el, function (key, value) { fd.append(key, value); });
 			}
 			var target = { e: 'onsubmit', data: fd };
-			findServiceAction(form, target);
+			target.url = instance.findServiceAction(form);
 
 			const r = instance.postEventWithApiResponse(target);
 			if (form.hasAttribute('data-res-postponed'))
@@ -366,6 +367,9 @@ var ajaxUtils = function ($, cu) {
 			}
 
 			processElementDataOnEvent(el, target, 'POST');
+			if (!form && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement))
+				target.data[el.name] = el.value;
+
 			const r = instance.postEventWithApiResponse(target);
 			if (el.hasAttribute('data-res-postponed'))
 				return r.then(function (apiResult) {
@@ -433,12 +437,19 @@ var ajaxUtils = function ($, cu) {
 
 			state.loc.parms = parms;
 
+			const k = target.url.indexOf('?');
+			const path = k >= 0 ? target.url.substring(0, k) : target.url;
+			if (path != window.location.pathname) {
+				parms['c-new'] = 1;
+			}
+
+			if (!parms['c-prefix'] && !parms['c-new'] && target.containerPrefix) {
+				parms['c-prefix'] = target.containerPrefix;
+			}
+
+
 			if (target.changeloc) {
-				const k = target.url.indexOf('?');
-				const path = k >= 0 ? target.url.substring(0, k) : target.url;
-				if (path != window.location.pathname) {
-					parms['c-new'] = 1;
-				}
+				if (target.onBack) state.loc.onBack = target.onBack;
 				window.history.pushState(state.loc, "", target.url);
 			}
 
@@ -475,6 +486,15 @@ var ajaxUtils = function ($, cu) {
 			}
 
 			if (callOnResult(handler) == false) return false;
+		},
+		findServiceAction: function (el) {
+			var root = el;
+			if (root != document.head) {
+				root = cu.getParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-href'); });
+				if (!root) root = document.getElementById(META_CURRENT);
+			}
+			const home = document.getElementById(META_HOME);
+			return root.getAttribute('data-href') || home.getAttribute('data-href') || '/';
 		},
 		state: state
 	};
@@ -579,19 +599,15 @@ var ajaxUtils = function ($, cu) {
 		}
 
 		if (!target.url) {
-			findServiceAction(el, target);
+			target.url = instance.findServiceAction(el);
+		}
+
+		const container = cu.getParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
+		if (container) {
+			target.containerPrefix = container.getAttribute('data-c-prefix');
 		}
 	}
 
-	function findServiceAction(el, target) {
-		var root = el;
-		if (root != document.head) {
-			root = cu.getParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-href'); });
-			if (!root) root = document.getElementById(META_CURRENT);
-		}
-		const home = document.getElementById(META_HOME);
-		target.url = root.getAttribute('data-href') || home.getAttribute('data-href') || '/';
-	}
 
 	function processElementDataOnFormSubmit(el, setvalfunc) {
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
@@ -637,6 +653,10 @@ var ajaxUtils = function ($, cu) {
 			el.parentNode.replaceChild(obj.content.firstChild, el);
 		};
 		const addFunc = function (el, obj) {
+			if (obj.content.childNodes.length == 1 && el.id == obj.content.childNodes[0].id) {
+				replaceFunc(el, obj);
+				return;
+			}
 			while (el.firstChild) {
 				el.removeChild(el.firstChild);
 			}
@@ -730,6 +750,7 @@ var ajaxUtils = function ($, cu) {
 				} else if (type == 'value') {
 					Object.defineProperty(nodectrl, name, {
 						enumerable: true,
+						configurable: true,
 						get: function () { return node.value; },
 						set: function (val) { node.value = val; }
 					});
@@ -859,7 +880,10 @@ var ajaxUtils = function ($, cu) {
 			}
 
 			state.loc = s;
-			$.get(getApiUrl(s.url, s.parms))
+			if (s.onBack && !s.parms['c-new'])
+				runClientAction(s.onBack.service, s.onBack.callChain, 0);
+			else
+				$.get(getApiUrl(s.url, s.parms))
 				.fail(instance.error)
 				.then(onRequestResult).then(instance.loadScripts).then(processApiResponse);
 		});

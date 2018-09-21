@@ -28,7 +28,7 @@ a:hover {
 }
 
 a, .actionbtn, .icon-collapsed, .icon-expanded {
-    cursor: pointer;
+	cursor: pointer;
 }
 
 
@@ -111,6 +111,7 @@ input.text {
 
 .formtable {
 	margin-bottom: 7px;
+	width: 100%;
 }
 
 .contentbodypadding {
@@ -127,12 +128,14 @@ input.text {
 }
 
 .radiobuttonlist label, .checkboxlist label {
-	display: block;
-	margin: 5px 0 5px 25px;
+	display: flex;
+	margin: 2px 0 2px 0;
 }
-
-.radiobuttonlist input[type=radio], .checkboxlist input[type=checkbox] {
-	float: left;
+.radiobuttonlist.horizontal {
+	display: flex;
+}
+.radiobuttonlist.horizontal label:not(:first-child), .checkboxlist.horizontal label:not(:first-child) {
+	margin: 2px 0 2px 12px;
 }
 
 
@@ -147,7 +150,7 @@ hr {
 
 .contentheader {
 	background-color: #f5f5f5;
-	padding-left: 8px;
+	padding: 0 8px 0 8px;
 	display: inline-block;
 	width: 100%;
 }
@@ -202,9 +205,10 @@ hr {
 
 .buttonsbar {
 	display: flex;
+	min-height: 30px;
 }
 
-.modal-footer .right, .buttonsbar .right  {
+.modal-footer .right, .buttonsbar .right {
 	margin-left: auto;
 }
 
@@ -262,6 +266,19 @@ hr {
 	font-weight: bold;
 }
 
+.listviewtable th {
+	position: relative;
+}
+.listviewtable th .dropdownimage {
+	font-size: x-small;
+	visibility: hidden;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+.listviewtable th:hover .dropdownimage {
+	visibility: visible;
+}
 
 /* two columns table/row*/
 .twocolumnstable {
@@ -351,6 +368,14 @@ hr {
 	width: 6px;
 }
 
+.menutoolbar-left h3 {
+	margin: 0 8px 0 -8px;
+}
+
+.topmargin {
+	margin-top: 12px;
+}
+
 .actionbtn, .actionimg {
 	border: 1px solid #d5d5d5;
 	padding: 3px 9px;
@@ -383,4 +408,50 @@ a.actionbtn, a.actionimg {
 
 .backbutton {
 	margin-right: 8px;
+}
+
+.badge {
+	position: absolute;
+	top: -7px;
+	right: -7px;
+	background: #f00;
+	display: inline-block;
+	font-size: 10px;
+	color: #fff;
+	padding: 2px 3px;
+	text-align: center;
+	font-family: Segoe UI, 'Open Sans', Trebuchet MS;
+}
+
+.dropdownmenu a.task-progress {
+	padding: 4px 12px 12px 12px;
+}
+
+.dropdownmenu a.task-progress:hover {
+	background-color: #eff0f1;
+	color: #333;
+}
+
+.dropdownmenu a.task-progress:not(:last-child) {
+	border-bottom: #ccc;
+}
+
+.task-progress > div:first-child > span {
+	text-align: right;
+}
+
+.task-progress > div:last-child {
+	position: relative;
+	overflow: hidden;
+	height: 7px;
+	background-color: #eee;
+}
+
+.task-progress > div:last-child > span {
+	position: absolute;
+	overflow: hidden;
+	float: left;
+	height: 100%;
+	background-color: #57889c;
+	padding: 0px;
 }

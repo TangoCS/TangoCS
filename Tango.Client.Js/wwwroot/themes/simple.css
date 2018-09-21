@@ -13,6 +13,7 @@ input, textarea, keygen, select, button {
 header {
 	background: #205081;
 	color: #fff;
+	display: inline-block;
 }
 
 .nav-header {

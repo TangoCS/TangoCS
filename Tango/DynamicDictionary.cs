@@ -140,15 +140,17 @@ namespace Tango
 	{
 		public static T Parse<T>(this IReadOnlyDictionary<string, object> dd, string name, T defaultValue = default(T))
 		{
-			var d = dd[name];
+			if (!dd.TryGetValue(name, out var d)) return defaultValue;
 			if (d == null) return defaultValue;
-			string format = dd["__format_" + name]?.ToString();
+			string format = null;
+			if (dd.TryGetValue("__format_" + name, out var f))
+				format = f.ToString();
 			return Parse(d, format, defaultValue);
 		}
 
 		public static DateTime? ParseDateTime(this IReadOnlyDictionary<string, object> dd, string name, string format)
 		{
-			var d = dd[name];
+			if (!dd.TryGetValue(name, out var d)) return null;
 			if (d == null) return null;
 			var ds = d.ToString();
 			if (ds.IsEmpty()) return null;
@@ -158,7 +160,7 @@ namespace Tango
 
 		public static DateTime ParseDateTime(this IReadOnlyDictionary<string, object> dd, string name, string format, DateTime defaultValue)
 		{
-			var d = dd[name];
+			if (!dd.TryGetValue(name, out var d)) return defaultValue;
 			if (d == null) return defaultValue;
 			var ds = d.ToString();
 			if (ds.IsEmpty()) return defaultValue;
@@ -168,7 +170,7 @@ namespace Tango
 
 		public static decimal ParseDecimal(this IReadOnlyDictionary<string, object> dd, string name, decimal defaultValue = 0)
 		{
-			var d = dd[name];		
+			if (!dd.TryGetValue(name, out var d)) return defaultValue;
 			return d.ToString().ToDecimal(defaultValue);
 		}
 
@@ -188,6 +190,13 @@ namespace Tango
 				return (T)(object)DateTime.ParseExact(ds, format ?? "yyyy-MM-dd", CultureInfo.InvariantCulture);
 			}
 
+			if (typeof(T).IsEnum)
+			{
+				var d2 = Convert.ChangeType(d, Enum.GetUnderlyingType(typeof(T)));
+				if (Enum.IsDefined(typeof(T), d2))
+					return (T)d2;
+			}
+
 			var typeConverter = TypeDescriptor.GetConverter(typeof(T));
 			if (typeConverter != null && typeConverter.CanConvertFrom(d.GetType()) && typeConverter.IsValid(d))
 			{
@@ -198,7 +207,7 @@ namespace Tango
 
 		public static List<T> ParseList<T>(this IReadOnlyDictionary<string, object> dd, string name)
 		{
-			object d = dd[name];
+			if (!dd.TryGetValue(name, out var d)) return null;
 			if (d == null) return null;
 			string format = dd["__format_" + name + "[]"]?.ToString();
 			if (!(d is IList))

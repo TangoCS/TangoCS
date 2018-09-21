@@ -17,10 +17,10 @@ using IQueryable = NHibernate.Persister.Entity.IQueryable;
 namespace NHibernate.Hql.Ast.ANTLR.Exec
 {
 	[CLSCompliant(false)]
-	public class BasicExecutor : AbstractStatementExecutor
+	public partial class BasicExecutor : AbstractStatementExecutor
 	{
 		private readonly IQueryable persister;
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(BasicExecutor));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(BasicExecutor));
 		private readonly SqlString sql;
 
 		public BasicExecutor(IStatement statement, IQueryable persister)
@@ -52,7 +52,7 @@ namespace NHibernate.Hql.Ast.ANTLR.Exec
 		{
 			CoordinateSharedCacheCleanup(session);
 
-			IDbCommand st = null;
+			DbCommand st = null;
 			RowSelection selection = parameters.RowSelection;
 
 			try

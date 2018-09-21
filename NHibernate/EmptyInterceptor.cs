@@ -6,9 +6,17 @@ using NHibernate.Type;
 
 namespace NHibernate
 {
+	/// <summary>
+	/// An interceptor that does nothing.  May be used as a base class for application-defined custom interceptors.
+	/// </summary>
 	[Serializable]
 	public class EmptyInterceptor : IInterceptor
 	{
+		/// <summary>
+		/// The singleton reference.
+		/// </summary>
+		public static readonly EmptyInterceptor Instance = new EmptyInterceptor();
+
 		public virtual void OnDelete(object entity, object id, object[] state, string[] propertyNames, IType[] types)
 		{
 		}
@@ -26,7 +34,7 @@ namespace NHibernate
 		}
 
 		public virtual bool OnFlushDirty(object entity, object id, object[] currentState, object[] previousState,
-		                                 string[] propertyNames, IType[] types)
+			string[] propertyNames, IType[] types)
 		{
 			return false;
 		}
@@ -54,7 +62,7 @@ namespace NHibernate
 			return null;
 		}
 
-		public virtual object Instantiate(string clazz, EntityMode entityMode, object id)
+		public virtual object Instantiate(string clazz, object id)
 		{
 			return null;
 		}
@@ -70,7 +78,7 @@ namespace NHibernate
 		}
 
 		public virtual int[] FindDirty(object entity, object id, object[] currentState, object[] previousState,
-		                               string[] propertyNames, IType[] types)
+			 string[] propertyNames, IType[] types)
 		{
 			return null;
 		}
@@ -95,7 +103,6 @@ namespace NHibernate
 		{
 			return sql;
 		}
-
 		public virtual void OnPrepareCommand(IDbCommand command)
 		{
 			

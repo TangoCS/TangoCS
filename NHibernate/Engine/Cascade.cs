@@ -1,9 +1,10 @@
 using System.Collections;
-
+using System.Collections.Generic;
 using NHibernate.Collection;
 using NHibernate.Event;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
+using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Util;
 
@@ -68,15 +69,15 @@ namespace NHibernate.Engine
 	/// Delegate responsible, in conjunction with the various
 	/// <see cref="CascadingAction"/>, for implementing cascade processing. 
 	/// </summary>
-	public sealed class Cascade
+	public sealed partial class Cascade
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Cascade));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(Cascade));
 
 		private CascadePoint point;
 		private readonly IEventSource eventSource;
 		private readonly CascadingAction action;
 
-		private readonly Stack componentPathStack = new Stack();
+		private readonly Stack<string> componentPathStack = new Stack<string>();
 
 		public Cascade(CascadingAction action, CascadePoint point, IEventSource eventSource)
 		{
@@ -108,12 +109,11 @@ namespace NHibernate.Engine
 		{
 			if (persister.HasCascades || action.RequiresNoCascadeChecking)
 			{
-				log.Info("processing cascade " + action + " for: " + persister.EntityName);
+				log.Info("processing cascade {0} for: {1}", action, persister.EntityName);
 
 				IType[] types = persister.PropertyTypes;
 				CascadeStyle[] cascadeStyles = persister.PropertyCascadeStyles;
-				EntityMode entityMode = eventSource.EntityMode;
-				bool hasUninitializedLazyProperties = persister.HasUninitializedLazyProperties(parent, entityMode);
+				bool hasUninitializedLazyProperties = persister.HasUninitializedLazyProperties(parent);
 				for (int i = 0; i < types.Length; i++)
 				{
 					CascadeStyle style = cascadeStyles[i];
@@ -126,15 +126,15 @@ namespace NHibernate.Engine
 
 					if (style.DoCascade(action))
 					{
-						CascadeProperty(parent, persister.GetPropertyValue(parent, i, entityMode), types[i], style, propertyName, anything, false);
+						CascadeProperty(parent, persister.GetPropertyValue(parent, i), types[i], style, propertyName, anything, false);
 					}
 					else if (action.RequiresNoCascadeChecking)
 					{
-						action.NoCascade(eventSource, persister.GetPropertyValue(parent, i, entityMode), parent, persister, i);
+						action.NoCascade(eventSource, persister.GetPropertyValue(parent, i), parent, persister, i);
 					}
 				}
 
-				log.Info("done processing cascade " + action + " for: " + persister.EntityName);
+				log.Info("done processing cascade {0} for: {1}", action, persister.EntityName);
 			}
 		}
 
@@ -171,12 +171,18 @@ namespace NHibernate.Engine
 						EntityEntry entry = eventSource.PersistenceContext.GetEntry(parent);
 						if (entry != null && entry.Status != Status.Saving)
 						{
-							EntityType entityType = (EntityType)type;
 							object loadedValue;
-							if (!componentPathStack.Any())
+							if (componentPathStack.Count == 0)
 							{
 								// association defined on entity
 								loadedValue = entry.GetLoadedValue(propertyName);
+
+								// Check this is not a null carrying proxy. The no-proxy load is currently handled by
+								// putting a proxy (!) flagged for unwrapping (even for non-constrained one-to-one,
+								// which association may be null) in the loadedState of the parent. The unwrap flag
+								// causes it to support having a null implementation, instead of throwing an entity
+								// not found error.
+								loadedValue = eventSource.PersistenceContext.UnproxyAndReassociate(loadedValue);
 							}
 							else
 							{
@@ -207,7 +213,7 @@ namespace NHibernate.Engine
 
 		private bool CascadeAssociationNow(IAssociationType associationType)
 		{
-			return associationType.ForeignKeyDirection.CascadeNow(point) && (eventSource.EntityMode != EntityMode.Xml || associationType.IsEmbeddedInXML);
+			return associationType.ForeignKeyDirection.CascadeNow(point);
 		}
 
 		private void CascadeComponent(object parent, object child, IAbstractComponentType componentType, string componentPropertyName, object anything)
@@ -278,21 +284,17 @@ namespace NHibernate.Engine
 		/// <summary> Cascade to the collection elements</summary>
 		private void CascadeCollectionElements(object parent, object child, CollectionType collectionType, CascadeStyle style, IType elemType, object anything, bool isCascadeDeleteEnabled)
 		{
-			// we can't cascade to non-embedded elements
-			bool embeddedElements = eventSource.EntityMode != EntityMode.Xml
-			                        || ((EntityType) collectionType.GetElementType(eventSource.Factory)).IsEmbeddedInXML;
-
-			bool reallyDoCascade = style.ReallyDoCascade(action) && embeddedElements
+			bool reallyDoCascade = style.ReallyDoCascade(action)
 			                       && child != CollectionType.UnfetchedCollection;
 
 			if (reallyDoCascade)
 			{
-				log.Info("cascade " + action + " for collection: " + collectionType.Role);
+				log.Info("cascade {0} for collection: {1}", action, collectionType.Role);
 
 				foreach (object o in action.GetCascadableChildrenIterator(eventSource, collectionType, child))
 					CascadeProperty(parent, o, elemType, style, null, anything, isCascadeDeleteEnabled);
 
-				log.Info("done cascade " + action + " for collection: " + collectionType.Role);
+				log.Info("done cascade {0} for collection: {1}", action, collectionType.Role);
 			}
 
 			var childAsPersColl = child as IPersistentCollection;
@@ -302,7 +304,7 @@ namespace NHibernate.Engine
 			if (deleteOrphans)
 			{
 				// handle orphaned entities!!
-				log.Info("deleting orphans for collection: " + collectionType.Role);
+				log.Info("deleting orphans for collection: {0}", collectionType.Role);
 
 				// we can do the cast since orphan-delete does not apply to:
 				// 1. newly instantiated collections
@@ -310,7 +312,7 @@ namespace NHibernate.Engine
 				string entityName = collectionType.GetAssociatedEntityName(eventSource.Factory);
 				DeleteOrphans(entityName, childAsPersColl);
 
-				log.Info("done deleting orphans for collection: " + collectionType.Role);
+				log.Info("done deleting orphans for collection: {0}", collectionType.Role);
 			}
 		}
 
@@ -333,7 +335,7 @@ namespace NHibernate.Engine
 			{
 				if (orphan != null)
 				{
-					log.Info("deleting orphaned entity instance: " + entityName);
+					log.Info("deleting orphaned entity instance: {0}", entityName);
 
 					eventSource.Delete(entityName, orphan, false, null);
 				}

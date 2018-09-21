@@ -23,7 +23,6 @@ namespace NHibernate.Mapping
 		private bool selectable = true;
 		private string propertyAccessorName;
 		private bool optional;
-		private string nodeName;
 		private IDictionary<string, MetaAttribute> metaAttributes;
 		private PersistentClass persistentClass;
 		private bool isOptimisticLocked;
@@ -112,7 +111,7 @@ namespace NHibernate.Mapping
 					int i = 0;
 					foreach (string token in tokens)
 					{
-						styles[i++] = CascadeStyle.GetCascadeStyle(token.ToLowerInvariant().Trim());
+						styles[i++] = CascadeStyle.GetCascadeStyle(token.Trim());
 					}
 					if (tokens.Length == 1) return styles[0];
 					else return new CascadeStyle.MultipleCascadeStyle(styles);
@@ -185,11 +184,6 @@ namespace NHibernate.Mapping
 		protected virtual IPropertyAccessor PropertyAccessor
 		{
 			get { return PropertyAccessorFactory.GetPropertyAccessor(PropertyAccessorName); }
-		}
-
-		public virtual string GetAccessorPropertyName(EntityMode mode)
-		{
-			return mode == EntityMode.Xml ? nodeName : Name;
 		}
 
 		public virtual bool IsBasicPropertyAccessor
@@ -279,12 +273,6 @@ namespace NHibernate.Mapping
 		{
 			get { return isNaturalIdentifier; }
 			set { isNaturalIdentifier = value; }
-		}
-
-		public string NodeName
-		{
-			get { return nodeName; }
-			set { nodeName = value; }
 		}
 
 		// both many-to-one and one-to-one are represented as a

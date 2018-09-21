@@ -394,7 +394,7 @@ namespace Tango.Meta.Database
 		}
 		public string GetStringType(int length)
 		{
-			return string.Format("nvarchar({0})", length == -1 ? "max" : length.ToString());
+			return string.Format("nvarchar({0})", length < 1 ? "max" : length.ToString());
 		}
 		public string GetDecimalType(int precision, int scale)
 		{
@@ -442,7 +442,7 @@ namespace Tango.Meta.Database
 		}
 		public string GetByteArrayType(int length)
 		{
-			return string.Format("varbinary({0})", length == -1 ? "max" : length.ToString());
+			return string.Format("varbinary({0})", length < 1 ? "max" : length.ToString());
 		}
 
 		public string GetStringValue(SqlDataReader reader, int index)
@@ -534,15 +534,15 @@ namespace Tango.Meta.Database
 			XDocument doc = null;
 			using (var con = new SqlConnection(connectionString))
 			{
-				using (var cmd = new SqlCommand("EXEC dbo.usp_dbschema(:s)", con))
+				using (var cmd = new SqlCommand("EXEC dbo.usp_dbschema @s", con))
 				{
 					con.Open();
 					cmd.Parameters.Add(new SqlParameter("s", _SchemaName));
-					using (var reader = cmd.ExecuteReader())
+					using (var reader = cmd.ExecuteXmlReader())
 					{
 						while (reader.Read())
 						{
-							string s = reader.GetString(0);
+							string s = reader.ReadOuterXml();
 							doc = XDocument.Parse(s);
 						}
 					}
@@ -579,7 +579,7 @@ namespace Tango.Meta.Database
 				case "nvarchar":
 				case "varchar":
 					return string.IsNullOrEmpty(precision) ?
-							TypeFactory.String :
+							TypeFactory.CustomString(-1) :
 							TypeFactory.CustomString(Int32.Parse(precision == "max" ? "-1" : precision));
 				case "decimal":
 					return TypeFactory.CustomDecimal(Int32.Parse(precision), Int32.Parse(scale));
@@ -604,7 +604,10 @@ namespace Tango.Meta.Database
 				case "char":
 					return TypeFactory.CustomString(precision.IsEmpty() ? 1 : Int32.Parse(precision));
 				case "varbinary":
-					return TypeFactory.CustomByteArray(Int32.Parse(precision == "max" ? "-1" : precision));
+					var s = precision.ToLower() == "max" || precision.IsEmpty() ? "-1" : precision;
+					if (!Int32.TryParse(s, out var n))
+						throw new Exception("Unknown precision: " + s);
+					return TypeFactory.CustomByteArray(n);
 				case "image":
 					return TypeFactory.ByteArray;
 				case "xml":

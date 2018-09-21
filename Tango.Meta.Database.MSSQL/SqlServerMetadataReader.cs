@@ -88,7 +88,8 @@ namespace Tango.Meta.Database
 							foreignKey.DeleteOption = (DeleteOption)Int32.Parse(xDeleteOptionElement.Value);
 
 						foreignKey.Table = table;
-						table.ForeignKeys.Add(foreignKey.Name, foreignKey);
+						if (!table.ForeignKeys.ContainsKey(foreignKey.Name))
+							table.ForeignKeys.Add(foreignKey.Name, foreignKey);
 					});
 
 				var xTriggersElement = t.Element("Triggers");

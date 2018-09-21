@@ -78,6 +78,7 @@ namespace NHibernate.Dialect
 			RegisterFunction("left", new SQLFunctionTemplate(NHibernateUtil.String, "substr(?1,1,?2)"));
 			RegisterFunction("trim", new AnsiTrimEmulationFunction());
 			RegisterFunction("replace", new StandardSafeSQLFunction("replace", NHibernateUtil.String, 3));
+			RegisterFunction("chr", new StandardSQLFunction("char", NHibernateUtil.Character));
 
 			RegisterFunction("mod", new SQLFunctionTemplate(NHibernateUtil.Int32, "((?1) % (?2))"));
 
@@ -86,11 +87,99 @@ namespace NHibernate.Dialect
 			RegisterFunction("cast", new SQLiteCastFunction());
 
 			RegisterFunction("round", new StandardSQLFunction("round"));
+
+			// SQLite has no built-in support of bitwise xor, but can emulate it.
+			// http://sqlite.1065341.n5.nabble.com/XOR-operator-td98004.html
+			RegisterFunction("bxor", new SQLFunctionTemplate(null, "((?1 | ?2) - (?1 & ?2))"));
+
+			// NH-3787: SQLite requires the cast in SQL too for not defaulting to string.
+			RegisterFunction("transparentcast", new CastFunction());
 		}
+
+		#region private static readonly string[] DialectKeywords = { ... }
+
+		private static readonly string[] DialectKeywords =
+		{
+			"abort",
+			"action",
+			"after",
+			"analyze",
+			"asc",
+			"attach",
+			"autoincrement",
+			"before",
+			"bit",
+			"bool",
+			"boolean",
+			"cascade",
+			"conflict",
+			"counter",
+			"currency",
+			"database",
+			"datetime",
+			"deferrable",
+			"deferred",
+			"desc",
+			"detach",
+			"exclusive",
+			"explain",
+			"fail",
+			"general",
+			"glob",
+			"guid",
+			"ignore",
+			"image",
+			"index",
+			"indexed",
+			"initially",
+			"instead",
+			"isnull",
+			"key",
+			"limit",
+			"logical",
+			"long",
+			"longtext",
+			"memo",
+			"money",
+			"note",
+			"notnull",
+			"ntext",
+			"nvarchar",
+			"offset",
+			"oleobject",
+			"plan",
+			"pragma",
+			"query",
+			"raise",
+			"regexp",
+			"reindex",
+			"rename",
+			"replace",
+			"restrict",
+			"single",
+			"smalldate",
+			"smalldatetime",
+			"smallmoney",
+			"sql_variant",
+			"string",
+			"temp",
+			"temporary",
+			"text",
+			"tinyint",
+			"transaction",
+			"uniqueidentifier",
+			"vacuum",
+			"varbinary",
+			"view",
+			"virtual",
+			"yesno",
+		};
+
+		#endregion
 
 		protected virtual void RegisterKeywords()
 		{
-			RegisterKeyword("int"); // Used in our function templates.
+			RegisterKeywords(DialectKeywords);
 		}
 
 		protected virtual void RegisterDefaultProperties()
@@ -101,7 +190,7 @@ namespace NHibernate.Dialect
 
 		public override Schema.IDataBaseSchema GetDataBaseSchema(DbConnection connection)
 		{
-			return new Schema.SQLiteDataBaseMetaData(connection);
+			return new Schema.SQLiteDataBaseMetaData(connection, this);
 		}
 
 		public override string AddColumnString
@@ -192,12 +281,12 @@ namespace NHibernate.Dialect
 			
 			if (!string.IsNullOrEmpty(catalog))
 			{
-				if (catalog.StartsWith(OpenQuote.ToString()))
+				if (catalog.StartsWith(OpenQuote))
 				{
 					catalog = catalog.Substring(1, catalog.Length - 1);
 					quoted = true;
 				} 
-				if (catalog.EndsWith(CloseQuote.ToString()))
+				if (catalog.EndsWith(CloseQuote))
 				{
 					catalog = catalog.Substring(0, catalog.Length - 1);
 					quoted = true;
@@ -206,12 +295,12 @@ namespace NHibernate.Dialect
 			}
 			if (!string.IsNullOrEmpty(schema))
 			{
-				if (schema.StartsWith(OpenQuote.ToString()))
+				if (schema.StartsWith(OpenQuote))
 				{
 					schema = schema.Substring(1, schema.Length - 1);
 					quoted = true;
 				}
-				if (schema.EndsWith(CloseQuote.ToString()))
+				if (schema.EndsWith(CloseQuote))
 				{
 					schema = schema.Substring(0, schema.Length - 1);
 					quoted = true;
@@ -219,12 +308,12 @@ namespace NHibernate.Dialect
 				qualifiedName.Append(schema).Append(StringHelper.Underscore);
 			}
 
-			if (table.StartsWith(OpenQuote.ToString()))
+			if (table.StartsWith(OpenQuote))
 			{
 				table = table.Substring(1, table.Length - 1);
 				quoted = true;
 			}
-			if (table.EndsWith(CloseQuote.ToString()))
+			if (table.EndsWith(CloseQuote))
 			{
 				table = table.Substring(0, table.Length - 1);
 				quoted = true;
@@ -306,13 +395,36 @@ namespace NHibernate.Dialect
 			get { return false; }
 		}
 
+		/// <summary>
+		/// Does this dialect support concurrent writing connections?
+		/// </summary>
+		/// <remarks>
+		/// As documented at https://www.sqlite.org/faq.html#q5
+		/// </remarks>
+		public override bool SupportsConcurrentWritingConnections => false;
+
+		/// <summary>
+		/// Does this dialect supports distributed transaction? <c>false</c>.
+		/// </summary>
+		/// <remarks>
+		/// SQLite does not have a two phases commit and as such does not respect distributed transaction semantic.
+		/// But moreover, it fails handling the threading involved with distributed transactions (see
+		/// https://system.data.sqlite.org/index.html/tktview/5cee5409f84da5f62172 ).
+		/// It has moreover some flakyness in tests due to seemingly highly delayed (> 500ms) commits when distributed. 
+		/// </remarks>
+		public override bool SupportsDistributedTransactions => false;
+
+		// Said to be unlimited. http://sqlite.1065341.n5.nabble.com/Max-limits-on-the-following-td37859.html
+		/// <inheritdoc />
+		public override int MaxAliasLength => 128;
+
 		[Serializable]
 		protected class SQLiteCastFunction : CastFunction
 		{
 			protected override bool CastingIsRequired(string sqlType)
 			{
 				// SQLite doesn't support casting to datetime types.  It assumes you want an integer and destroys the date string.
-				if (sqlType.ToLowerInvariant().Contains("date") || sqlType.ToLowerInvariant().Contains("time"))
+				if (StringHelper.ContainsCaseInsensitive(sqlType, "date") || StringHelper.ContainsCaseInsensitive(sqlType, "time"))
 					return false;
 				return true;
 			}

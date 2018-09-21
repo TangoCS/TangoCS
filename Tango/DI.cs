@@ -26,5 +26,10 @@ namespace Tango
 
 	public interface IWithPropertyInjection
 	{
-	} 
+	}
+
+	public interface IServiceScope : IDisposable
+	{
+		IServiceProvider ServiceProvider { get; }
+	}
 }

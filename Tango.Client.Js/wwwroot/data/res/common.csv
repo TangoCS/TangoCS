@@ -40,6 +40,7 @@ Common.Delete.Bulk.Confirm;Вы действительно хотите удал
 Common.Delete.LinkedObjectWarning;Удаление невозможно, так как имеются связанные объекты;Deletion is impossible because of linked objects
 Common.Edit;Редактировать;Edit
 Common.Edit.MaxLength;При заполнении просим учесть: максимальное количество допустимых символов в одной строке - {0} знаков.;While filling in form consider please that maximum number of symbols {0} in the each row.
+Common.Empty;<отсутствует>;<empty>
 Common.ExceptSelected;Кроме выбранных;Except selected
 Common.Filter;Фильтр;Filter
 Common.Image;Изображение;Image

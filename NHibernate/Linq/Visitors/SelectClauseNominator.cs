@@ -12,7 +12,7 @@ namespace NHibernate.Linq.Visitors
 	/// Analyze the select clause to determine what parts can be translated
 	/// fully to HQL, and some other properties of the clause.
 	/// </summary>
-	class SelectClauseHqlNominator : ExpressionTreeVisitor
+	class SelectClauseHqlNominator : RelinqExpressionVisitor
 	{
 		private readonly ILinqToHqlGeneratorsRegistry _functionRegistry;
 
@@ -37,7 +37,7 @@ namespace NHibernate.Linq.Visitors
 			_functionRegistry = parameters.SessionFactory.Settings.LinqToHqlGeneratorsRegistry;
 		}
 
-		internal Expression Visit(Expression expression)
+		internal Expression Nominate(Expression expression)
 		{
 			HqlCandidates = new HashSet<Expression>();
 			ContainsUntranslatedMethodCalls = false;
@@ -45,23 +45,23 @@ namespace NHibernate.Linq.Visitors
 			_stateStack = new Stack<bool>();
 			_stateStack.Push(false);
 
-			return VisitExpression(expression);
+			return Visit(expression);
 		}
 
-		public override Expression VisitExpression(Expression expression)
+		public override Expression Visit(Expression expression)
 		{
 			if (expression == null)
 				return null;
 
-			if (expression.NodeType == (ExpressionType)NhExpressionType.Nominator)
+			if (expression is NhNominatedExpression nominatedExpression)
 			{
 				// Add the nominated clause and strip the nominator wrapper from the select expression
-				var innerExpression = ((NhNominatedExpression)expression).Expression;
+				var innerExpression = nominatedExpression.Expression;
 				HqlCandidates.Add(innerExpression);
 				return innerExpression;
 			}
 
-			var projectConstantsInHql = _stateStack.Peek() || IsRegisteredFunction(expression);
+			var projectConstantsInHql = _stateStack.Peek() || expression.NodeType == ExpressionType.Equal || IsRegisteredFunction(expression);
 
 			// Set some flags, unless we already have proper values for them:
 			//    projectConstantsInHql if they are inside a method call executed server side.
@@ -86,7 +86,7 @@ namespace NHibernate.Linq.Visitors
 					return expression;
 				}
 
-				expression = base.VisitExpression(expression);
+				expression = base.Visit(expression);
 
 				if (_canBeCandidate)
 				{
@@ -118,14 +118,14 @@ namespace NHibernate.Linq.Visitors
 				if (_functionRegistry.TryGetGenerator(methodCallExpression.Method, out methodGenerator))
 				{
 					return methodCallExpression.Object == null || // is static or extension method
-						   methodCallExpression.Object.NodeType != ExpressionType.Constant; // does not belong to parameter 
+					       methodCallExpression.Object.NodeType != ExpressionType.Constant; // does not belong to parameter 
 				}
 			}
-			else if (expression.NodeType == (ExpressionType)NhExpressionType.Sum ||
-						expression.NodeType == (ExpressionType)NhExpressionType.Count ||
-						expression.NodeType == (ExpressionType)NhExpressionType.Average ||
-						expression.NodeType == (ExpressionType)NhExpressionType.Max ||
-						expression.NodeType == (ExpressionType)NhExpressionType.Min)
+			else if (expression is NhSumExpression ||
+			         expression is NhCountExpression ||
+			         expression is NhAverageExpression ||
+			         expression is NhMaxExpression ||
+			         expression is NhMinExpression)
 			{
 				return true;
 			}
@@ -153,8 +153,17 @@ namespace NHibernate.Linq.Visitors
 			if (expression.NodeType == ExpressionType.Call)
 			{
 				// Depends if it's in the function registry
-				if (!IsRegisteredFunction(expression))
-					return false;
+				return IsRegisteredFunction(expression);
+			}
+
+			if (expression.NodeType == ExpressionType.Conditional)
+			{
+				// Theoretically, any conditional that returns a CAST-able primitive should be constructable in HQL.
+				// The type needs to be CAST-able because HQL wraps the CASE clause in a CAST and only supports
+				// certain types (as defined by the HqlIdent constructor that takes a System.Type as the second argument).
+				// However, this may still not cover all cases, so to limit the nomination of conditional expressions,
+				// we will only consider those which are already getting constants projected into them.
+				return projectConstantsInHql;
 			}
 
 			// Assume all is good
@@ -163,7 +172,7 @@ namespace NHibernate.Linq.Visitors
 
 		private static bool CanBeEvaluatedInHqlStatementShortcut(Expression expression)
 		{
-			return ((NhExpressionType)expression.NodeType) == NhExpressionType.Count;
+			return expression is NhCountExpression;
 		}
 	}
 }

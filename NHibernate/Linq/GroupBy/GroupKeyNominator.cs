@@ -1,6 +1,7 @@
 using System.Linq;
 using System.Linq.Expressions;
 using NHibernate.Linq.Expressions;
+using NHibernate.Linq.ReWriters;
 using Remotion.Linq.Clauses.Expressions;
 using Remotion.Linq.Clauses.ResultOperators;
 using Remotion.Linq.Parsing;
@@ -11,7 +12,7 @@ namespace NHibernate.Linq.GroupBy
 	/// This class nominates sub-expression trees on the GroupBy Key expression
 	/// for inclusion in the Select clause.
 	/// </summary>
-	internal class GroupKeyNominator : ExpressionTreeVisitor
+	internal class GroupKeyNominator : RelinqExpressionVisitor
 	{
 		private GroupKeyNominator() { }
 
@@ -26,13 +27,13 @@ namespace NHibernate.Linq.GroupBy
 
 		private static Expression VisitInternal(Expression expr)
 		{
-			return new GroupKeyNominator().VisitExpression(expr);
+			return new GroupKeyNominator().Visit(expr);
 		}
 
-		public override Expression VisitExpression(Expression expression)
+		public override Expression Visit(Expression expression)
 		{
 			_depth++;
-			var expr = base.VisitExpression(expression);
+			var expr = base.Visit(expression);
 			_depth--;
 
 			// At the root expression, wrap it in the nominator expression if needed
@@ -43,32 +44,48 @@ namespace NHibernate.Linq.GroupBy
 			return expr;
 		}
 
-		protected override Expression VisitNewArrayExpression(NewArrayExpression expression)
+		protected override Expression VisitNewArray(NewArrayExpression expression)
 		{
 			_transformed = true;
 			// Transform each initializer recursively (to allow for nested initializers)
 			return Expression.NewArrayInit(expression.Type.GetElementType(), expression.Expressions.Select(VisitInternal));
 		}
 
-		protected override Expression VisitNewExpression(NewExpression expression)
+		protected override Expression VisitNew(NewExpression expression)
 		{
 			_transformed = true;
 			// Transform each initializer recursively (to allow for nested initializers)
+			if (expression.Members == null)
+				return Expression.New(expression.Constructor, expression.Arguments.Select(VisitInternal));
+
 			return Expression.New(expression.Constructor, expression.Arguments.Select(VisitInternal), expression.Members);
 		}
 
-		protected override Expression VisitQuerySourceReferenceExpression(QuerySourceReferenceExpression expression)
+		protected override Expression VisitQuerySourceReference(QuerySourceReferenceExpression expression)
 		{
 			// If the (sub)expression contains a QuerySourceReference, then the entire expression should be nominated
 			_requiresRootNomination = true;
-			return base.VisitQuerySourceReferenceExpression(expression);
+			return base.VisitQuerySourceReference(expression);
 		}
 
-		protected override Expression VisitSubQueryExpression(SubQueryExpression expression)
+		protected override Expression VisitSubQuery(SubQueryExpression expression)
 		{
 			// If the (sub)expression contains a QuerySourceReference, then the entire expression should be nominated
 			_requiresRootNomination = true;
-			return base.VisitSubQueryExpression(expression);
+			return base.VisitSubQuery(expression);
+		}
+
+		protected override Expression VisitBinary(BinaryExpression expression)
+		{
+			if (expression.NodeType != ExpressionType.ArrayIndex) 
+				return base.VisitBinary(expression);
+			
+			// If we encounter an array index then we need to attempt to flatten it before nomination
+			var flattenedExpression = new ArrayIndexExpressionFlattener().Visit(expression);
+			if (flattenedExpression != expression)
+				return base.Visit(flattenedExpression);
+
+			return base.VisitBinary(expression);
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace Tango.Identity.Std
 			_dc = dc;
 		}
 
-		string subjSelect = @"select ID, UserName, Title, PasswordHash, LockoutEnabled, MustChangePassword, Email, SecurityStamp from V_IdentityUser";
+		readonly string subjSelect = @"select ID, UserName, Title, PasswordHash, LockoutEnabled, MustChangePassword, Email, SecurityStamp from V_IdentityUser";
 
 		public IdentityUser UserFromName(string name)
 		{

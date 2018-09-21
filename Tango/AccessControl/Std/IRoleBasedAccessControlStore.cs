@@ -2,19 +2,15 @@
 
 namespace Tango.AccessControl.Std
 {
-	public interface IRoleBasedAccessControlStoreBase<T>
+	public interface IRoleBasedAccessControlStore<T> : IRoleBasedAccessControlStoreBase
 	{
-		IdentityRole<T> RoleFromID(T id);
-		IEnumerable<IdentityRole<T>> UserRoles(T id);
-	}
-
-	public interface IRoleBasedAccessControlStore<T> : IRoleBasedAccessControlStoreBase<T>
-	{
+		IEnumerable<T> Roles { get; }
 		IEnumerable<T> GetAccessInfo(string securableObjectKey);
 	}
 
-	public interface ICacheableRoleBasedAccessControlStore<T> : IRoleBasedAccessControlStoreBase<T>
+	public interface ICacheableRoleBasedAccessControlStore<T> : IRoleBasedAccessControlStoreBase
 	{
+		IEnumerable<T> Roles { get; }
 		IEnumerable<string> GetKeys();
 		IEnumerable<string> GetRolesAccess();
 		IEnumerable<T> RoleAncestors(T id);

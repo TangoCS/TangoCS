@@ -35,13 +35,13 @@ namespace NHibernate.Linq.Functions
 			this.Merge(new EndsWithGenerator());
 			this.Merge(new ContainsGenerator());
 			this.Merge(new EqualsGenerator());
-			this.Merge(new BoolEqualsGenerator());
 			this.Merge(new ToUpperGenerator());
 			this.Merge(new ToLowerGenerator());
 			this.Merge(new SubStringGenerator());
 			this.Merge(new IndexOfGenerator());
 			this.Merge(new ReplaceGenerator());
 			this.Merge(new LengthGenerator());
+			this.Merge(new GetCharsGenerator());
 			this.Merge(new TrimGenerator());
 			this.Merge(new MathGenerator());
 
@@ -52,6 +52,19 @@ namespace NHibernate.Linq.Functions
 			this.Merge(new CollectionContainsGenerator());
 
 			this.Merge(new DateTimePropertiesHqlGenerator());
+
+			this.Merge(new DecimalAddGenerator());
+			this.Merge(new DecimalDivideGenerator());
+			this.Merge(new DecimalMultiplyGenerator());
+			this.Merge(new DecimalSubtractGenerator());
+			this.Merge(new DecimalRemainderGenerator());
+			this.Merge(new DecimalNegateGenerator());
+			this.Merge(new RoundGenerator());
+			this.Merge(new TruncateGenerator());
+
+			var indexerGenerator = new ListIndexerGenerator();
+			RegisterGenerator(indexerGenerator);
+			this.Merge(indexerGenerator);
 		}
 
 		protected bool GetRuntimeMethodGenerator(MethodInfo method, out IHqlGeneratorForMethod methodGenerator)
@@ -88,12 +101,12 @@ namespace NHibernate.Linq.Functions
 
 		public virtual void RegisterGenerator(MethodInfo method, IHqlGeneratorForMethod generator)
 		{
-			registeredMethods[method] = generator;
+			registeredMethods.Add(method, generator);
 		}
 
 		public virtual void RegisterGenerator(MemberInfo property, IHqlGeneratorForProperty generator)
 		{
-			registeredProperties[property] = generator;
+			registeredProperties.Add(property, generator);
 		}
 
 		public void RegisterGenerator(IRuntimeMethodHqlGenerator generator)

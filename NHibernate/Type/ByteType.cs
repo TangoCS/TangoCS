@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
@@ -11,7 +12,7 @@ namespace NHibernate.Type
 	/// to a <see cref="DbType.Byte"/> column.
 	/// </summary>
 	[Serializable]
-	public class ByteType : PrimitiveType, IDiscriminatorType, IVersionType
+	public partial class ByteType : PrimitiveType, IDiscriminatorType, IVersionType
 	{
 		private static readonly byte ZERO = 0;
 
@@ -20,12 +21,12 @@ namespace NHibernate.Type
 		{
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			return Convert.ToByte(rs[index]);
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
 			return Convert.ToByte(rs[name]);
 		}
@@ -40,9 +41,9 @@ namespace NHibernate.Type
 			get { return typeof(byte); }
 		}
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			((IDataParameter) cmd.Parameters[index]).Value = Convert.ToByte(value);
+			cmd.Parameters[index].Value = Convert.ToByte(value);
 		}
 
 		public override string Name
@@ -55,12 +56,21 @@ namespace NHibernate.Type
 			return value.ToString();
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc />
 		public virtual object StringToObject(string xml)
 		{
 			return Byte.Parse(xml);
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior. Replace override keyword by virtual after having
+		// removed the obsoleted base.
+		/// <inheritdoc cref="IVersionType.FromStringValue"/>
+#pragma warning disable 672
 		public override object FromStringValue(string xml)
+#pragma warning restore 672
 		{
 			return byte.Parse(xml);
 		}

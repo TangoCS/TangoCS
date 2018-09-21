@@ -21,7 +21,7 @@ namespace NHibernate.Loader.Collection
 		{
 			//disable a join back to this same association
 			bool isSameJoin = oneToManyPersister.TableName.Equals(foreignKeyTable)
-			                  && CollectionHelper.CollectionEquals<string>(foreignKeyColumns, oneToManyPersister.KeyColumnNames);
+			                  && CollectionHelper.SequenceEquals<string>(foreignKeyColumns, oneToManyPersister.KeyColumnNames);
 			return isSameJoin || base.IsDuplicateAssociation(foreignKeyTable, foreignKeyColumns);
 		}
 
@@ -38,7 +38,7 @@ namespace NHibernate.Loader.Collection
 			IList<OuterJoinableAssociation> allAssociations = new List<OuterJoinableAssociation>(associations);
 			allAssociations.Add(
 				new OuterJoinableAssociation(oneToManyPersister.CollectionType, null, null, alias, JoinType.LeftOuterJoin, null, Factory,
-				                             new CollectionHelper.EmptyMapClass<string, IFilter>()));
+				                             CollectionHelper.EmptyDictionary<string, IFilter>()));
 
 			InitPersisters(allAssociations, LockMode.None);
 			InitStatementString(elementPersister, alias, batchSize, subquery);
@@ -64,13 +64,17 @@ namespace NHibernate.Loader.Collection
 
 			JoinFragment ojf = MergeOuterJoins(associations);
 			SqlSelectBuilder select =
-				new SqlSelectBuilder(Factory).SetSelectClause(
-					oneToManyPersister.SelectFragment(null, null, alias, Suffixes[joins], CollectionSuffixes[0], true)
-					+ SelectString(associations)).SetFromClause(elementPersister.FromTableFragment(alias)
-																+ oneToManyPersister.FromJoinFragment(alias, true, true)).SetWhereClause(
-					whereString.ToSqlString()).SetOuterJoins(ojf.ToFromFragmentString,
-					                                         ojf.ToWhereFragmentString
-					                                         + elementPersister.WhereJoinFragment(alias, true, true));
+				new SqlSelectBuilder(Factory)
+					.SetSelectClause(
+#pragma warning disable 618
+						oneToManyPersister.SelectFragment(null, null, alias, Suffixes[joins], CollectionSuffixes[0], true) +
+#pragma warning restore 618
+						SelectString(associations))
+					.SetFromClause(
+						elementPersister.FromTableFragment(alias) + oneToManyPersister.FromJoinFragment(alias, true, true))
+					.SetWhereClause(whereString.ToSqlString())
+					.SetOuterJoins(ojf.ToFromFragmentString,
+					               ojf.ToWhereFragmentString + elementPersister.WhereJoinFragment(alias, true, true));
 
 			select.SetOrderByClause(OrderBy(associations, oneToManyPersister.GetSQLOrderByString(alias)));
 

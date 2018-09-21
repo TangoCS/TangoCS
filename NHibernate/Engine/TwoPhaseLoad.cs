@@ -9,6 +9,7 @@ using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
 using NHibernate.Type;
 using NHibernate.Properties;
+using System;
 
 namespace NHibernate.Engine
 {
@@ -17,9 +18,9 @@ namespace NHibernate.Engine
 	/// that may be reused by persisters that do not use the Loader
 	/// framework
 	/// </summary>
-	public static class TwoPhaseLoad
+	public static partial class TwoPhaseLoad
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(TwoPhaseLoad));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(TwoPhaseLoad));
 		
 		/// <summary>
 		/// Register the "hydrated" state of an entity instance, after the first step of 2-phase loading.
@@ -33,10 +34,10 @@ namespace NHibernate.Engine
 			object version = Versioning.GetVersion(values, persister);
 			session.PersistenceContext.AddEntry(obj, Status.Loading, values, rowId, id, version, lockMode, true, persister, false, lazyPropertiesAreUnfetched);
 
-			if (log.IsDebugEnabled && version != null)
+			if (log.IsDebugEnabled() && version != null)
 			{
 				System.String versionStr = persister.IsVersioned ? persister.VersionType.ToLoggableString(version, session.Factory) : "null";
-				log.Debug("Version: " + versionStr);
+				log.Debug("Version: {0}", versionStr);
 			}
 		}
 		
@@ -47,6 +48,18 @@ namespace NHibernate.Engine
 		/// "hydrated" into an array
 		/// </summary>
 		public static void InitializeEntity(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent)
+		{
+			InitializeEntity(entity, readOnly, session, preLoadEvent, postLoadEvent, null);
+		}
+		
+		/// <summary>
+		/// Perform the second step of 2-phase load. Fully initialize the entity instance.
+		/// After processing a JDBC result set, we "resolve" all the associations
+		/// between the entities which were instantiated and had their state
+		/// "hydrated" into an array
+		/// </summary>
+		internal static void InitializeEntity(object entity, bool readOnly, ISessionImplementor session, PreLoadEvent preLoadEvent, PostLoadEvent postLoadEvent,
+		                                      Action<IEntityPersister, CachePutData> cacheBatchingHandler)
 		{
 			//TODO: Should this be an InitializeEntityEventListener??? (watch out for performance!)
 
@@ -67,8 +80,8 @@ namespace NHibernate.Engine
 			object id = entityEntry.Id;
 			object[] hydratedState = entityEntry.LoadedState;
 
-			if (log.IsDebugEnabled)
-				log.Debug("resolving associations for " + MessageHelper.InfoString(persister, id, session.Factory));
+			if (log.IsDebugEnabled())
+				log.Debug("resolving associations for {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
 			IType[] types = persister.PropertyTypes;
 			for (int i = 0; i < hydratedState.Length; i++)
@@ -94,27 +107,42 @@ namespace NHibernate.Engine
 				}
 			}
 
-			persister.SetPropertyValues(entity, hydratedState, session.EntityMode);
+			persister.SetPropertyValues(entity, hydratedState);
 			
 			ISessionFactoryImplementor factory = session.Factory;
 
-			if (persister.HasCache && ((session.CacheMode & CacheMode.Put) == CacheMode.Put))
+			if (persister.HasCache && session.CacheMode.HasFlag(CacheMode.Put))
 			{
-				if (log.IsDebugEnabled)
-					log.Debug("adding entity to second-level cache: " + MessageHelper.InfoString(persister, id, session.Factory));
+				if (log.IsDebugEnabled())
+					log.Debug("adding entity to second-level cache: {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
 				object version = Versioning.GetVersion(hydratedState, persister);
 				CacheEntry entry =
-					new CacheEntry(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity);
+					CacheEntry.Create(hydratedState, persister, entityEntry.LoadedWithLazyPropertiesUnfetched, version, session, entity);
 				CacheKey cacheKey = session.GenerateCacheKey(id, persister.IdentifierType, persister.RootEntityName);
-				bool put =
-					persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
-										persister.IsVersioned ? persister.VersionType.Comparator : null,
-										UseMinimalPuts(session, entityEntry));
 
-				if (put && factory.Statistics.IsStatisticsEnabled)
+				if (cacheBatchingHandler != null && persister.IsBatchLoadable && persister.Cache.IsBatchingPutSupported())
 				{
-					factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+					cacheBatchingHandler(
+						persister,
+						new CachePutData(
+							cacheKey,
+							persister.CacheEntryStructure.Structure(entry),
+							version,
+							persister.IsVersioned ? persister.VersionType.Comparator : null,
+							UseMinimalPuts(session, entityEntry)));
+				}
+				else
+				{
+					bool put =
+						persister.Cache.Put(cacheKey, persister.CacheEntryStructure.Structure(entry), session.Timestamp, version,
+						                    persister.IsVersioned ? persister.VersionType.Comparator : null,
+						                    UseMinimalPuts(session, entityEntry));
+
+					if (put && factory.Statistics.IsStatisticsEnabled)
+					{
+						factory.StatisticsImplementor.SecondLevelCachePut(persister.Cache.RegionName);
+					}
 				}
 			}
 			
@@ -164,8 +192,8 @@ namespace NHibernate.Engine
 				}
 			}
 
-			if (log.IsDebugEnabled)
-				log.Debug("done materializing entity " + MessageHelper.InfoString(persister, id, session.Factory));
+			if (log.IsDebugEnabled())
+				log.Debug("done materializing entity {0}", MessageHelper.InfoString(persister, id, session.Factory));
 
 			if (statsEnabled)
 			{

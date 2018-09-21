@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
 using NHibernate.Collection;
@@ -10,21 +10,92 @@ using NHibernate.Event;
 using NHibernate.Hql;
 using NHibernate.Impl;
 using NHibernate.Loader.Custom;
+using NHibernate.Multi;
 using NHibernate.Persister.Entity;
 using NHibernate.Transaction;
 using NHibernate.Type;
+using NHibernate.Util;
 
 namespace NHibernate.Engine
 {
+	// 6.0 TODO: Convert to interface methods, excepted SwitchCacheMode
+	internal static partial class SessionImplementorExtensions
+	{
+		internal static IDisposable BeginContext(this ISessionImplementor session)
+		{
+			if (session == null)
+				return null;
+			return (session as AbstractSessionImpl)?.BeginContext() ?? new SessionIdLoggingContext(session.SessionId);
+		}
+
+		internal static IDisposable BeginProcess(this ISessionImplementor session)
+		{
+			if (session == null)
+				return null;
+			return (session as AbstractSessionImpl)?.BeginProcess() ??
+				// This method has only replaced bare call to setting the id, so this fallback is enough for avoiding a
+				// breaking change in case a custom session implementation is used.
+				new SessionIdLoggingContext(session.SessionId);
+		}
+
+		//6.0 TODO: Expose as ISessionImplementor.FutureBatch and replace method usages with property
+		internal static IQueryBatch GetFutureBatch(this ISessionImplementor session)
+		{
+			return ReflectHelper.CastOrThrow<AbstractSessionImpl>(session, "future batch").FutureBatch;
+		}
+
+		internal static void AutoFlushIfRequired(this ISessionImplementor implementor, ISet<string> querySpaces)
+		{
+			(implementor as AbstractSessionImpl)?.AutoFlushIfRequired(querySpaces);
+		}
+
+		/// <summary>
+		/// Switch the session current cache mode.
+		/// </summary>
+		/// <param name="session">The session for which the cache mode has to be switched.</param>
+		/// <param name="cacheMode">The desired cache mode. <see langword="null" /> for not actually switching.</param>
+		/// <returns><see langword="null" /> if no switch is required, otherwise an <see cref="IDisposable"/> which
+		/// dispose will set the session cache mode back to its original value.</returns>
+		internal static IDisposable SwitchCacheMode(this ISessionImplementor session, CacheMode? cacheMode)
+		{
+			if (!cacheMode.HasValue || cacheMode == session.CacheMode)
+				return null;
+			return new CacheModeSwitch(session, cacheMode.Value);
+		}
+
+		private sealed class CacheModeSwitch : IDisposable
+		{
+			private ISessionImplementor _session;
+			private readonly CacheMode _originalCacheMode;
+
+			public CacheModeSwitch(ISessionImplementor session, CacheMode cacheMode)
+			{
+				_session = session;
+				_originalCacheMode = session.CacheMode;
+				_session.CacheMode = cacheMode;
+			}
+
+			public void Dispose()
+			{
+				if (_session == null)
+					throw new ObjectDisposedException("The session cache mode switch has been disposed already");
+				_session.CacheMode = _originalCacheMode;
+				_session = null;
+			}
+		}
+	}
+
 	/// <summary>
 	/// Defines the internal contract between the <c>Session</c> and other parts of NHibernate
 	/// such as implementors of <c>Type</c> or <c>ClassPersister</c>
 	/// </summary>
-	public interface ISessionImplementor
+	public partial interface ISessionImplementor
 	{
 		/// <summary>
 		/// Initialize the session after its construction was complete
 		/// </summary>
+		// Since v5.1
+		[Obsolete("This method has no more usages in NHibernate and will be removed.")]
 		void Initialize();
 
 		/// <summary>
@@ -75,15 +146,6 @@ namespace NHibernate.Engine
 		IBatcher Batcher { get; }
 
 		/// <summary>
-		/// Execute a <c>List()</c> query
-		/// </summary>
-		/// <param name="query"></param>
-		/// <param name="parameters"></param>
-		/// <returns></returns>
-		[Obsolete("Use overload with IQueryExpression")]
-		IList List(string query, QueryParameters parameters);
-
-		/// <summary>
 		/// Execute a <c>List()</c> expression query
 		/// </summary>
 		/// <param name="queryExpression"></param>
@@ -98,16 +160,7 @@ namespace NHibernate.Engine
 		/// </summary>
 		IQuery CreateQuery(IQueryExpression queryExpression);
 
-		[Obsolete("Use overload with IQueryExpression")]
-		void List(string query, QueryParameters parameters, IList results);
-
 		void List(IQueryExpression queryExpression, QueryParameters queryParameters, IList results);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="List(string,QueryParameters)" />
-		/// </summary>
-		[Obsolete("Use overload with IQueryExpression")]
-		IList<T> List<T>(string query, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="List(IQueryExpression,QueryParameters)" />
@@ -129,22 +182,7 @@ namespace NHibernate.Engine
 		/// <param name="query"></param>
 		/// <param name="parameters"></param>
 		/// <returns></returns>
-		[Obsolete("Use overload with IQueryExpression")]
-		IEnumerable Enumerable(string query, QueryParameters parameters);
-
-		/// <summary>
-		/// Execute an <c>Iterate()</c> query
-		/// </summary>
-		/// <param name="query"></param>
-		/// <param name="parameters"></param>
-		/// <returns></returns>
 		IEnumerable Enumerable(IQueryExpression query, QueryParameters parameters);
-
-		/// <summary>
-		/// Strongly-typed version of <see cref="Enumerable(string, QueryParameters)" />
-		/// </summary>
-		[Obsolete("Use overload with IQueryExpression")]
-		IEnumerable<T> Enumerable<T>(string query, QueryParameters queryParameters);
 
 		/// <summary>
 		/// Strongly-typed version of <see cref="Enumerable(IQueryExpression, QueryParameters)" />
@@ -155,6 +193,11 @@ namespace NHibernate.Engine
 		/// Execute a filter
 		/// </summary>
 		IList ListFilter(object collection, string filter, QueryParameters parameters);
+
+		/// <summary>
+		/// Execute a filter
+		/// </summary>
+		IList ListFilter(object collection, IQueryExpression queryExpression, QueryParameters parameters);
 
 		/// <summary>
 		/// Execute a filter (strongly-typed version).
@@ -185,6 +228,11 @@ namespace NHibernate.Engine
 		/// Notify the session that the transaction is about to complete
 		/// </summary>
 		void BeforeTransactionCompletion(ITransaction tx);
+
+		/// <summary>
+		/// 
+		/// </summary>
+		void FlushBeforeTransactionCompletion();
 
 		/// <summary>
 		/// Notify the session that the transaction completed, so we no longer own the old locks.
@@ -245,18 +293,15 @@ namespace NHibernate.Engine
 		IDictionary<string, IFilter> EnabledFilters { get; }
 
 		IQuery GetNamedSQLQuery(string name);
-
-		[Obsolete("Use overload with IQueryExpression")]
-		IQueryTranslator[] GetQueries(string query, bool scalar); // NH specific for MultiQuery
 		
+		// Since v5.2
+		[Obsolete("This method has no usages and will be removed in a future version")]
 		IQueryTranslator[] GetQueries(IQueryExpression query, bool scalar); // NH specific for MultiQuery
 
 		IInterceptor Interceptor { get; }
 
 		/// <summary> Retrieves the configured event listeners from this event source. </summary>
 		EventListeners Listeners { get; }
-
-		int DontFlushFromFind { get; }
 
 		ConnectionManager ConnectionManager { get; }
 
@@ -279,8 +324,16 @@ namespace NHibernate.Engine
 		bool IsOpen { get; }
 
 		/// <summary>
-		/// Is the <c>ISession</c> currently connected?
+		/// Is the session connected?
 		/// </summary>
+		/// <value>
+		/// <see langword="true" /> if the session is connected.
+		/// </value>
+		/// <remarks>
+		/// A session is considered connected if there is a <see cref="DbConnection"/> (regardless
+		/// of its state) or if the field <c>connect</c> is true. Meaning that it will connect
+		/// at the next operation that requires a connection.
+		/// </remarks>
 		bool IsConnected { get; }
 
 		FlushMode FlushMode { get; set; }
@@ -293,49 +346,68 @@ namespace NHibernate.Engine
 		/// <summary> The guessed entity name for an entity not in an association</summary>
 		string GuessEntityName(object entity);
 
-		IDbConnection Connection { get; }
+		DbConnection Connection { get; }
 
 		IQuery GetNamedQuery(string queryName);
 
-		/// <summary> Determine whether the session is closed.  Provided separately from
-		/// {@link #isOpen()} as this method does not attempt any JTA sync
-		/// registration, where as {@link #isOpen()} does; which makes this one
-		/// nicer to use for most internal purposes. 
+		/// <summary>
+		/// Determine whether the session is closed. Provided separately from
+		/// <c>IsOpen</c> as this method does not attempt any system transaction sync
+		/// registration, whereas <c>IsOpen</c> is allowed to (does not currently, but may do
+		/// in a future version as it is the case in Hibernate); which makes this one
+		/// nicer to use for most internal purposes.
 		/// </summary>
-		/// <returns> True if the session is closed; false otherwise.
+		/// <returns>
+		/// <see langword="true" /> if the session is closed; <see langword="false" /> otherwise.
 		/// </returns>
 		bool IsClosed { get; }
 
 		void Flush();
 
-		/// <summary> 
-		/// Does this <tt>Session</tt> have an active Hibernate transaction
-		/// or is there a JTA transaction in progress?
+		/// <summary>
+		/// Does this <c>ISession</c> have an active NHibernate transaction
+		/// or is there a system transaction in progress in which the session is enlisted?
 		/// </summary>
 		bool TransactionInProgress { get; }
-
-		/// <summary> Retrieve the entity mode in effect for this session. </summary>
-		EntityMode EntityMode { get; }
 
 		/// <summary> Execute a native SQL update or delete query</summary>
 		int ExecuteNativeUpdate(NativeSQLQuerySpecification specification, QueryParameters queryParameters);
 
 		/// <summary> Execute a HQL update or delete query</summary>
-		[Obsolete("Use overload with IQueryExpression")]
-		int ExecuteUpdate(string query, QueryParameters queryParameters);
-
-		/// <summary> Execute a HQL update or delete query</summary>
 		int ExecuteUpdate(IQueryExpression query, QueryParameters queryParameters);
 
+		//Since 5.2
+		[Obsolete("Replaced by FutureBatch")]
 		FutureCriteriaBatch FutureCriteriaBatch { get; }
 
+		//Since 5.2
+		[Obsolete("Replaced by FutureBatch")]
 		FutureQueryBatch FutureQueryBatch { get; }
 
 		Guid SessionId { get; }
 
 		ITransactionContext TransactionContext { get; set; }
 
-		void CloseSessionFromDistributedTransaction();
+		/// <summary>
+		/// Join the <see cref="System.Transactions.Transaction.Current"/> system transaction.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Sessions auto-join current transaction by default on their first usage within a scope.
+		/// This can be disabled with <see cref="ISessionBuilder{T}.AutoJoinTransaction(bool)"/> from
+		/// a session builder obtained with <see cref="ISessionFactory.WithOptions()"/>.
+		/// </para>
+		/// <para>
+		/// This method allows to explicitly join the current transaction. It does nothing if it is already
+		/// joined.
+		/// </para>
+		/// </remarks>
+		/// <exception cref="HibernateException">Thrown if there is no current transaction.</exception>
+		void JoinTransaction();
+
+		void CloseSessionFromSystemTransaction();
+
+		IQuery CreateFilter(object collection, IQueryExpression queryExpression);
 
 		EntityKey GenerateEntityKey(object id, IEntityPersister persister);
 

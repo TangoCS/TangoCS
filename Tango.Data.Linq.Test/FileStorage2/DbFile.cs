@@ -39,7 +39,8 @@ namespace Solution.Model
 		private System.Nullable<Guid> _MainID;
 		private int _VersionNumber;
 		private string _Tag;
-		
+		private System.Data.Linq.Binary _DataHash;
+
 		public DbFile()
 		{
 			this._ParentFolder = default(EntityRef<DbFolder>);
@@ -187,6 +188,10 @@ namespace Solution.Model
 			{
 				return this._ID;
 			}
+            set
+            {
+                this._ID = value;
+            }
 		}
 
 		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage = "_SPMActionItemGUID", DbType = "UniqueIdentifier NOT NULL")]
@@ -372,6 +377,23 @@ namespace Solution.Model
 			}
 		}
 
+		[global::System.Data.Linq.Mapping.ColumnAttribute(Storage = "_DataHash", DbType = "Binary(16)", CanBeNull = true)]
+		public System.Data.Linq.Binary DataHash
+		{
+			get
+			{
+				return this._DataHash;
+			}
+			set
+			{
+				if ((this._DataHash != value))
+				{
+					this.SendPropertyChanging();
+					this._DataHash = value;
+					this.SendPropertyChanged("DataHash");
+				}
+			}
+		}
 
 		void Changed()
 		{

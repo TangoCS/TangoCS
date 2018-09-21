@@ -13,21 +13,34 @@ namespace NHibernate.Cache
 		private readonly string _filterName;
 		private readonly Dictionary<string, TypedValue> _filterParameters = new Dictionary<string, TypedValue>();
 
-		public FilterKey(string name, IEnumerable<KeyValuePair<string, object>> @params, IDictionary<string, IType> types, EntityMode entityMode)
+		// Since v5.2
+		[Obsolete("Use overload taking a FilterImpl")]
+		public FilterKey(string name, IEnumerable<KeyValuePair<string, object>> @params, IDictionary<string, IType> types)
 		{
 			_filterName = name;
 			foreach (KeyValuePair<string, object> me in @params)
 			{
 				IType type = types[me.Key];
-				_filterParameters[me.Key] = new TypedValue(type, me.Value, entityMode);
+				_filterParameters[me.Key] = new TypedValue(type, me.Value);
+			}
+		}
+
+		public FilterKey(FilterImpl filter)
+		{
+			var types = filter.FilterDefinition.ParameterTypes;
+			_filterName = filter.Name;
+			foreach (var me in filter.Parameters)
+			{
+				var type = types[me.Key];
+				_filterParameters[me.Key] = new TypedValue(type, me.Value, filter.GetParameterSpan(me.Key) != null);
 			}
 		}
 
 		public override int GetHashCode()
 		{
-			int result = 13;
+			var result = 13;
 			result = 37 * result + _filterName.GetHashCode();
-			result = 37 * result + CollectionHelper.GetHashCode(_filterParameters);
+			result = 37 * result + CollectionHelper.GetHashCode(_filterParameters, NamedParameterComparer.Instance);
 			return result;
 		}
 
@@ -50,7 +63,7 @@ namespace NHibernate.Cache
 			return string.Format("FilterKey[{0}{1}]", _filterName, CollectionPrinter.ToString(_filterParameters));
 		}
 
-		public static ISet<FilterKey> CreateFilterKeys(IDictionary<string, IFilter> enabledFilters, EntityMode entityMode)
+		public static ISet<FilterKey> CreateFilterKeys(IDictionary<string, IFilter> enabledFilters)
 		{
 			if (enabledFilters.Count == 0)
 				return null;
@@ -58,7 +71,7 @@ namespace NHibernate.Cache
 			var result = new HashSet<FilterKey>();
 			foreach (FilterImpl filter in enabledFilters.Values)
 			{
-				FilterKey key = new FilterKey(filter.Name, filter.Parameters, filter.FilterDefinition.ParameterTypes, entityMode);
+				var key = new FilterKey(filter);
 				result.Add(key);
 			}
 			return result;

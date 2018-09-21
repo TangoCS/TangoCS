@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using System.Collections.Generic;
+using System.Data;
 
 namespace NHibernate.Type
 {
@@ -11,7 +12,7 @@ namespace NHibernate.Type
 	/// Maps a <see cref="System.TimeSpan" /> Property to an <see cref="DbType.Int64" /> column 
 	/// </summary>
 	[Serializable]
-	public class TimeSpanType : PrimitiveType, IVersionType, ILiteralType
+	public partial class TimeSpanType : PrimitiveType, IVersionType, ILiteralType
 	{
 		/// <summary></summary>
 		public TimeSpanType()
@@ -25,7 +26,7 @@ namespace NHibernate.Type
 			get { return "TimeSpan"; }
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			try
 			{
@@ -37,7 +38,7 @@ namespace NHibernate.Type
 			}
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
 			try
 			{
@@ -55,17 +56,23 @@ namespace NHibernate.Type
 			get { return typeof(TimeSpan); }
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="st"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		public override void Set(IDbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			((IDataParameter)st.Parameters[index]).Value = ((TimeSpan)value).Ticks;
+			st.Parameters[index].Value = ((TimeSpan)value).Ticks;
 		}
 
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val)
 		{
 			return ((TimeSpan)val).Ticks.ToString();
@@ -84,6 +91,8 @@ namespace NHibernate.Type
 			return new TimeSpan(DateTime.Now.Ticks);
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public object StringToObject(string xml)
 		{
 			return TimeSpan.Parse(xml);
@@ -96,7 +105,13 @@ namespace NHibernate.Type
 
 		#endregion
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior. Replace override keyword by virtual after having
+		// removed the obsoleted base.
+		/// <inheritdoc cref="IVersionType.FromStringValue"/>
+#pragma warning disable 672
 		public override object FromStringValue(string xml)
+#pragma warning restore 672
 		{
 			return TimeSpan.Parse(xml);
 		}

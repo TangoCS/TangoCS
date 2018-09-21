@@ -67,9 +67,10 @@ namespace Tango.UI
 		public string Description { get; private set; }
 
 		public bool ChangeUrl { get; private set; } = true;
+		public bool IsTargetBlank { get; private set; } = false;
 
 		public Dictionary<string, string> References { get; } = new Dictionary<string, string>();
-		public (string Prefix, string Type) Container { get; private set; }
+		public (string Type, string Prefix) Container { get; private set; }
 
 		public string CallbackUrl { get; private set; }
 
@@ -177,9 +178,21 @@ namespace Tango.UI
 			return this;
 		}
 
-		public ActionLink InContainer(string prefix, string type)
+		public ActionLink InContainer(string type, string prefix)
 		{
-			Container = (prefix, type);
+			Container = (type, prefix);
+			return this;
+		}
+
+		public ActionLink InContainer(Type type, string prefix)
+		{
+			Container = (type.Name.Replace("Container", ""), prefix);
+			return this;
+		}
+
+		public ActionLink InDefaultContainer()
+		{
+			Container = ("default", null);
 			return this;
 		}
 
@@ -201,6 +214,12 @@ namespace Tango.UI
 		public ActionLink KeepTheSameUrl()
 		{
 			ChangeUrl = false;
+			return this;
+		}
+
+		public ActionLink TargetBlank()
+		{
+			IsTargetBlank = true;
 			return this;
 		}
 

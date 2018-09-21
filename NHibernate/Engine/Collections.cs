@@ -6,9 +6,9 @@ using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
-	public static class Collections
+	public static partial class Collections
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(Collections));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(Collections));
 
 		/// <summary> 
 		/// Record the fact that this collection was dereferenced 
@@ -33,14 +33,14 @@ namespace NHibernate.Engine
 			CollectionEntry entry = persistenceContext.GetCollectionEntry(coll);
 			ICollectionPersister loadedPersister = entry.LoadedPersister;
 
-			if (log.IsDebugEnabled && loadedPersister != null)
-				log.Debug("Collection dereferenced: " + MessageHelper.CollectionInfoString(loadedPersister, coll, entry.LoadedKey, session));
+			if (log.IsDebugEnabled() && loadedPersister != null)
+				log.Debug("Collection dereferenced: {0}", MessageHelper.CollectionInfoString(loadedPersister, coll, entry.LoadedKey, session));
 
 			// do a check
 			bool hasOrphanDelete = loadedPersister != null && loadedPersister.HasOrphanDelete;
 			if (hasOrphanDelete)
 			{
-				object ownerId = loadedPersister.OwnerEntityPersister.GetIdentifier(coll.Owner, session.EntityMode);
+				object ownerId = loadedPersister.OwnerEntityPersister.GetIdentifier(coll.Owner);
 				// TODO NH Different behavior
 				//if (ownerId == null)
 				//{
@@ -77,19 +77,19 @@ namespace NHibernate.Engine
 			// do the work
 			entry.CurrentPersister = null;
 			entry.CurrentKey = null;
-			PrepareCollectionForUpdate(coll, entry, session.EntityMode, session.Factory);
+			PrepareCollectionForUpdate(coll, entry, session.Factory);
 		}
 
 		private static void ProcessNeverReferencedCollection(IPersistentCollection coll, ISessionImplementor session)
 		{
 			CollectionEntry entry = session.PersistenceContext.GetCollectionEntry(coll);
 
-			log.Debug("Found collection with unloaded owner: " + MessageHelper.CollectionInfoString(entry.LoadedPersister, coll, entry.LoadedKey, session));
+			log.Debug("Found collection with unloaded owner: {0}", MessageHelper.CollectionInfoString(entry.LoadedPersister, coll, entry.LoadedKey, session));
 
 			entry.CurrentPersister = entry.LoadedPersister;
 			entry.CurrentKey = entry.LoadedKey;
 
-			PrepareCollectionForUpdate(coll, entry, session.EntityMode, session.Factory);
+			PrepareCollectionForUpdate(coll, entry, session.Factory);
 		}
 
 		/// <summary> 
@@ -124,18 +124,18 @@ namespace NHibernate.Engine
 			ce.CurrentPersister = persister;
 			ce.CurrentKey = type.GetKeyOfOwner(entity, session); //TODO: better to pass the id in as an argument?
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("Collection found: " + 
-						  MessageHelper.CollectionInfoString(persister, collection, ce.CurrentKey, session) + ", was: " +
-						  MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, session) + 
-						  (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
+				log.Debug("Collection found: {0}, was: {1}{2}",
+				          MessageHelper.CollectionInfoString(persister, collection, ce.CurrentKey, session),
+				          MessageHelper.CollectionInfoString(ce.LoadedPersister, collection, ce.LoadedKey, session),
+				          (collection.WasInitialized ? " (initialized)" : " (uninitialized)"));
 			}
 
-			PrepareCollectionForUpdate(collection, ce, session.EntityMode, factory);
+			PrepareCollectionForUpdate(collection, ce, factory);
 		}
 
-		private static void PrepareCollectionForUpdate(IPersistentCollection collection, CollectionEntry entry, EntityMode entityMode, ISessionFactoryImplementor factory)
+		private static void PrepareCollectionForUpdate(IPersistentCollection collection, CollectionEntry entry, ISessionFactoryImplementor factory)
 		{
 			//1. record the collection role that this collection is referenced by
 			//2. decide if the collection needs deleting/creating/updating (but don't actually schedule the action yet)
@@ -151,7 +151,7 @@ namespace NHibernate.Engine
 			{
 				// it is or was referenced _somewhere_
 				bool ownerChanged = loadedPersister != currentPersister ||
-					!currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, entityMode, factory);
+					!currentPersister.KeyType.IsEqual(entry.LoadedKey, entry.CurrentKey, factory);
 
 				if (ownerChanged)
 				{

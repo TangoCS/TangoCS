@@ -12,11 +12,16 @@ using System.Reflection.Emit;
 
 namespace NHibernate.Proxy.DynamicProxy
 {
+	// Since v5.2
+	[Obsolete("DynamicProxy namespace has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	internal class ProxyImplementor
 	{
 		private const MethodAttributes InterceptorMethodsAttributes = MethodAttributes.Public | MethodAttributes.HideBySig |
 		                                                  MethodAttributes.SpecialName | MethodAttributes.NewSlot |
 		                                                  MethodAttributes.Virtual;
+
+		private static readonly MethodInfo OriginalSetter = typeof(IProxy).GetMethod("set_Interceptor");
+		private static readonly MethodInfo OriginalGetter = typeof(IProxy).GetMethod("get_Interceptor");
 
 		private FieldBuilder field;
 
@@ -33,7 +38,7 @@ namespace NHibernate.Proxy.DynamicProxy
 			field = typeBuilder.DefineField("__interceptor", typeof (IInterceptor), FieldAttributes.Private);
 
 			// Implement the getter
-			MethodBuilder getterMethod = typeBuilder.DefineMethod("get_Interceptor", InterceptorMethodsAttributes, CallingConventions.HasThis, typeof(IInterceptor), new System.Type[0]);
+			MethodBuilder getterMethod = typeBuilder.DefineMethod("get_Interceptor", InterceptorMethodsAttributes, CallingConventions.HasThis, typeof(IInterceptor), System.Type.EmptyTypes);
 			getterMethod.SetImplementationFlags(MethodImplAttributes.Managed | MethodImplAttributes.IL);
 
 			ILGenerator IL = getterMethod.GetILGenerator();
@@ -54,11 +59,8 @@ namespace NHibernate.Proxy.DynamicProxy
 			IL.Emit(OpCodes.Stfld, field);
 			IL.Emit(OpCodes.Ret);
 
-			MethodInfo originalSetter = typeof (IProxy).GetMethod("set_Interceptor");
-			MethodInfo originalGetter = typeof (IProxy).GetMethod("get_Interceptor");
-
-			typeBuilder.DefineMethodOverride(setterMethod, originalSetter);
-			typeBuilder.DefineMethodOverride(getterMethod, originalGetter);
+			typeBuilder.DefineMethodOverride(setterMethod, OriginalSetter);
+			typeBuilder.DefineMethodOverride(getterMethod, OriginalGetter);
 		}
 	}
 }

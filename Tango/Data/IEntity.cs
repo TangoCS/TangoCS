@@ -8,9 +8,4 @@ namespace Tango.Data
 	public interface IEntity
 	{
 	}
-
-	public interface IChildEntity : IEntity
-	{
-		string GetPath();
-	}
 }

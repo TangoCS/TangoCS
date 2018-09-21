@@ -26,8 +26,10 @@ namespace Tango.Html
 				if (items != null)
 					foreach (var item in items)
 					{
-						w.RadioButton(name, name + i.ToString(), item.Value, item.Selected || item.Value == value, itemAttributes?.Invoke(item));
-						w.Label(name + i.ToString(), item.Text);
+						w.Label(a => a.For(name + i.ToString()), () => {
+							w.RadioButton(name, name + i.ToString(), item.Value, item.Selected || item.Value == value, itemAttributes?.Invoke(item));
+							w.Write(item.Text);
+						});
 						i++;
 					}
 			});
@@ -40,8 +42,10 @@ namespace Tango.Html
 				if (items != null)
 					foreach (var item in items)
 					{
-						w.CheckBox(new InputName { Name = name + "[]", ID = name + i.ToString() }, item.Value, item.Selected || (value != null && value.Contains(item.Value)), itemAttributes?.Invoke(item));
-						w.Label(name + i.ToString(), item.Text);
+						w.Label(a => a.For(name + i.ToString()), () => {
+							w.CheckBox(new InputName { Name = name + "[]", ID = name + i.ToString() }, item.Value, item.Selected || (value != null && value.Contains(item.Value)), itemAttributes?.Invoke(item));
+							w.Write(item.Text);
+						});
 						i++;
 					}
 			});
@@ -58,50 +62,6 @@ namespace Tango.Html
 						() => w.Write(item.Text));
 				}
 			});
-		}
-	}
-
-	public class SelectListItem
-	{
-		public string Text { get; set; }
-		public string Value { get; set; }
-		public bool Selected { get; set; }
-
-		public SelectListItem()
-		{
-		}
-
-		public SelectListItem(object text, object value, bool selected)
-		{
-			Text = text?.ToString();
-			Value = value?.ToString();
-			Selected = selected;
-		}
-
-		public SelectListItem(object text, object value)
-		{
-			Text = text?.ToString();
-			Value = value?.ToString();
-		}
-
-		public SelectListItem(object text)
-		{
-			Text = text?.ToString();
-			Value = text?.ToString();
-		}
-	}
-
-	public static class SelectListItemExtensions
-	{
-		public static List<SelectListItem> AddEmptyItem(this List<SelectListItem> list)
-		{
-			list.Insert(0, new SelectListItem());
-			return list;
-		}
-
-		public static List<SelectListItem> AddEmptyItem(this IEnumerable<SelectListItem> list)
-		{
-			return list.ToList().AddEmptyItem();
 		}
 	}
 }

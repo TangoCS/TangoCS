@@ -346,6 +346,7 @@ namespace Tango.Html
 		public static void A(this IHtmlWriter w, Action<ATagAttributes> attributes, string linkTitle) { w.A(attributes, () => w.Write(linkTitle)); }
 		public static void A(this IHtmlWriter w, string linkTitle) { w.A(null, () => w.Write(linkTitle)); }
 		public static void B(this IHtmlWriter w, string text) { w.B(null, () => w.Write(text)); }
+		public static void B(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.B(attributes, () => w.Write(text)); }
 		public static void Div(this IHtmlWriter w, string text) { w.Div(null, () => w.Write(text)); }
 		public static void Div(this IHtmlWriter w, Action<TagAttributes> attributes, string text) { w.Div(attributes, () => w.Write(text)); }
 		public static void I(this IHtmlWriter w, string text) { w.I(null, () => w.Write(text)); }

@@ -115,6 +115,16 @@ namespace Tango.Localization
 			return textResource.Get(typeof(T).FullName + "." + key, suffix);
 		}
 
+		public static string Get(this IResourceManager textResource, Type t, string key)
+		{
+			return textResource.Get(t.FullName + "." + key);
+		}
+
+		public static string Get(this IResourceManager textResource, Type t, string key, string suffix)
+		{
+			return textResource.Get(t.FullName + "." + key, suffix);
+		}
+
 		public static string Get(this IResourceManager textResource, ResourceKeyInfo k)
 		{
 			var p = k.Parts.Join(".");
@@ -141,11 +151,21 @@ namespace Tango.Localization
 		}
 
 
-		public static ResourceKeyInfo GetResourceKey<TFunc>(this Expression<TFunc> exp)
+		//public static ResourceKeyInfo GetResourceKey<TFunc>(this Expression<TFunc> exp)
+		public static ResourceKeyInfo GetResourceKey(this LambdaExpression exp)
 		{
 			if (exp == null) throw new ArgumentNullException("exp");
 			ResourceKeyInfo res = new ResourceKeyInfo();
 			GetResourceKeyInt(exp.Body, res);
+			return res;
+		}
+
+		public static Type GetResourceType(this Type type)
+		{
+			var res = type;
+			var attr = res.GetCustomAttributes(typeof(ResourceTypeAttribute), false);
+			if (attr != null && attr.Length > 0)
+				res = (attr[0] as ResourceTypeAttribute).Type;
 			return res;
 		}
 
@@ -160,10 +180,7 @@ namespace Tango.Localization
 			}
 			else if (typeof(ParameterExpression).IsAssignableFrom(t))
 			{
-				res.Type = exp.Type;
-				var attr = res.Type.GetCustomAttributes(typeof(ResourceTypeAttribute), false);
-				if (attr != null && attr.Length > 0)
-					res.Type = (attr[0] as ResourceTypeAttribute).Type;
+				res.Type = GetResourceType(exp.Type);
 				return;
 			}
 			else if (t == typeof(UnaryExpression))

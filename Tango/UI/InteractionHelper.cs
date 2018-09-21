@@ -9,8 +9,8 @@ namespace Tango.UI
 	public static class InteractionHelper
 	{
 		public static ActionResult RunEvent(IInteractionFlowElement recipient, string e)
-		{	
-			var t = recipient.GetType();			
+		{
+			var t = recipient.GetType();
 			var name = e.ToLower();
 			var filtersCollection = recipient.Context.GetService<FilterCollection>();
 			var m = FindMethod(t, name, recipient.Context.RequestMethod);
@@ -73,23 +73,7 @@ namespace Tango.UI
 			}
 			else if (m.ReturnType == typeof(ActionResult))
 			{
-				object[] p = new object[ps.Length];
-
-				for (int i = 0; i < ps.Length; i++)
-				{
-					string parmName = ps[i].Name.ToLower() == "id" ? "oid" : ps[i].Name.ToLower();
-					string val = WebUtility.UrlDecode(recipient.Context.GetArg(parmName));
-
-					if (!val.IsEmpty())
-					{
-						if (ps[i].ParameterType == typeof(Guid))
-							p[i] = val.ToGuid();
-						else
-						{
-							p[i] = Convert.ChangeType(val, ps[i].ParameterType);
-						}
-					}
-				}
+				var p = ProcessParameters(recipient.Context, ps);
 
 				ActionResult res = null;
 				if (eventDelegate == null)
@@ -105,6 +89,28 @@ namespace Tango.UI
 			}
 
 			throw new Exception($"{t.Name}.{e} method is not a valid action");
+		}
+
+		static object[] ProcessParameters(ActionContext context, ParameterInfo[] ps)
+		{
+			object[] p = new object[ps.Length];
+
+			for (int i = 0; i < ps.Length; i++)
+			{
+				string val = WebUtility.UrlDecode(context.GetArg(ps[i].Name.ToLower()));
+
+				if (!val.IsEmpty())
+				{
+					if (ps[i].ParameterType == typeof(Guid))
+						p[i] = val.ToGuid();
+					else
+					{
+						p[i] = Convert.ChangeType(val, ps[i].ParameterType);
+					}
+				}
+			}
+
+			return p;
 		}
 
 		static ActionResult RunBeforeActionFilters(IReadOnlyList<IBeforeActionFilter> collection, ActionFilterContext context)

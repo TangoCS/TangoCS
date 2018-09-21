@@ -19,14 +19,13 @@ namespace NHibernate.Mapping
 	[Serializable]
 	public abstract class Collection : IFetchable, IValue, IFilterable
 	{
-		private static readonly IEnumerable<ISelectable> EmptyColumns = new ISelectable[0];
+		private static readonly IEnumerable<ISelectable> EmptyColumns = System.Array.Empty<ISelectable>();
 
 		public const string DefaultElementColumnName = "elt";
 		public const string DefaultKeyColumnName = "id";
 
 		private IKeyValue key;
 		private IValue element;
-		private string elementNodeName;
 		private Table collectionTable;
 		private string role;
 		private bool lazy;
@@ -46,8 +45,6 @@ namespace NHibernate.Mapping
 		private System.Type collectionPersisterClass;
 		private string referencedPropertyName;
 		private string typeName;
-		private bool embedded = true;
-		private string nodeName;
 
 		private string loaderName;
 
@@ -155,11 +152,11 @@ namespace NHibernate.Mapping
 				{
 					try
 					{
-						comparer = Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(ComparerClassName));
+						comparer = Cfg.Environment.ObjectsFactory.CreateInstance(ReflectHelper.ClassForName(ComparerClassName));
 					}
-					catch
+					catch (Exception ex)
 					{
-						throw new MappingException("Could not instantiate comparator class [" + ComparerClassName + "] for collection " + Role);
+						throw new MappingException("Could not instantiate comparator class [" + ComparerClassName + "] for collection " + Role, ex);
 					}
 				}
 				return comparer;
@@ -212,7 +209,7 @@ namespace NHibernate.Mapping
 				}
 				else
 				{
-					return TypeFactory.CustomCollection(typeName, typeParameters, role, referencedPropertyName, Embedded);
+					return TypeFactory.CustomCollection(typeName, typeParameters, role, referencedPropertyName);
 				}
 			}
 		}
@@ -397,29 +394,16 @@ namespace NHibernate.Mapping
 			}
 
 			CheckColumnDuplication();
-
-			if (elementNodeName != null && elementNodeName.StartsWith("@"))
-			{
-				throw new MappingException(string.Format("element node must not be an attribute: {0}", elementNodeName));
-			}
-			if (elementNodeName != null && elementNodeName.Equals("."))
-			{
-				throw new MappingException(string.Format("element node must not be the parent: {0}", elementNodeName));
-			}
-			if (nodeName != null && nodeName.IndexOf('@') > -1)
-			{
-				throw new MappingException(string.Format("collection node must not be an attribute: {0}", elementNodeName));
-			}
 		}
 
 		public bool[] ColumnInsertability
 		{
-			get { return ArrayHelper.EmptyBoolArray; }
+			get { return System.Array.Empty<bool>(); }
 		}
 
 		public bool[] ColumnUpdateability
 		{
-			get { return ArrayHelper.EmptyBoolArray; }
+			get { return System.Array.Empty<bool>(); }
 		}
 
 		public string TypeName
@@ -566,18 +550,6 @@ namespace NHibernate.Mapping
 			set { optimisticLocked = value; }
 		}
 
-		public string ElementNodeName
-		{
-			get { return elementNodeName; }
-			set { elementNodeName = value; }
-		}
-
-		public bool Embedded
-		{
-			get { return embedded; }
-			set { embedded = value; }
-		}
-
 		public bool ExtraLazy
 		{
 			get { return extraLazy; }
@@ -640,12 +612,6 @@ namespace NHibernate.Mapping
 		{
 			get { return mutable; }
 			set { mutable = value; }
-		}
-
-		public string NodeName
-		{
-			get { return nodeName; }
-			set { nodeName = value; }
 		}
 
 		public ISet<string> SynchronizedTables

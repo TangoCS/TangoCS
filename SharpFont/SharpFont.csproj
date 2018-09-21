@@ -31,6 +31,7 @@
     <DocumentationFile>bin\Debug\SharpFont.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -42,6 +43,7 @@
     <DocumentationFile>bin\Release\SharpFont.xml</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'ReleaseNET20|AnyCPU'">
     <OutputPath>..\..\Binaries\SharpFont\ReleaseNET20\</OutputPath>
@@ -51,6 +53,7 @@
     </TargetFrameworkProfile>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <TargetFrameworkIdentifier>.NETFramework</TargetFrameworkIdentifier>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <ItemGroup Condition=" '$(Configuration)' == 'ReleaseNET20' ">
     <Reference Include="System" />

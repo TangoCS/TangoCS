@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -25,7 +26,7 @@ namespace NHibernate.Type
 	/// </para>
 	/// </remarks>
 	[Serializable]
-	public class SerializableType : MutableType
+	public partial class SerializableType : MutableType
 	{
 		private readonly System.Type serializableClass;
 		private readonly BinaryType binaryType;
@@ -46,19 +47,19 @@ namespace NHibernate.Type
 			binaryType = (BinaryType) TypeFactory.GetBinaryType(sqlType.Length);
 		}
 
-		public override void Set(IDbCommand st, object value, int index)
+		public override void Set(DbCommand st, object value, int index, ISessionImplementor session)
 		{
-			binaryType.Set(st, ToBytes(value), index);
+			binaryType.Set(st, ToBytes(value), index, session);
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			byte[] bytes = (byte[]) binaryType.Get(rs, index);
+			byte[] bytes = (byte[]) binaryType.Get(rs, index, session);
 			if (bytes == null)
 			{
 				return null;
@@ -85,16 +86,30 @@ namespace NHibernate.Type
 			return x.Equals(y) || binaryType.IsEqual(ToBytes(x), ToBytes(y));
 		}
 
-		public override int GetHashCode(Object x, EntityMode entityMode)
+		public override int GetHashCode(Object x)
 		{
-			return binaryType.GetHashCode(ToBytes(x), entityMode);
+			return binaryType.GetHashCode(ToBytes(x));
 		}
 
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object value)
 		{
 			return binaryType.ToString(ToBytes(value));
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
 			return FromBytes((byte[])binaryType.FromStringValue(xml));
@@ -119,14 +134,16 @@ namespace NHibernate.Type
 			return FromBytes(ToBytes(value));
 		}
 
-		private byte[] ToBytes(object obj)
+		private static byte[] ToBytes(object obj)
 		{
 			try
 			{
-				BinaryFormatter bf = new BinaryFormatter();
-				MemoryStream stream = new MemoryStream();
-				bf.Serialize(stream, obj);
-				return stream.ToArray();
+				var formatter = new BinaryFormatter();
+				using (var ms = new MemoryStream())
+				{
+					formatter.Serialize(ms, obj);
+					return ms.ToArray();
+				}
 			}
 			catch (Exception e)
 			{
@@ -143,8 +160,11 @@ namespace NHibernate.Type
 		{
 			try
 			{
-				BinaryFormatter bf = new BinaryFormatter();
-				return bf.Deserialize(new MemoryStream(bytes));
+				var formatter = new BinaryFormatter();
+				using (var ms = new MemoryStream(bytes))
+				{
+					return formatter.Deserialize(ms);
+				}
 			}
 			catch (Exception e)
 			{

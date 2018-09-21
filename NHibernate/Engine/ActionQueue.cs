@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Action;
 using NHibernate.Cache;
+using NHibernate.Type;
 
 namespace NHibernate.Engine
 {
@@ -18,9 +20,9 @@ namespace NHibernate.Engine
 	/// </para>
 	/// </summary>
 	[Serializable]
-	public class ActionQueue
+	public partial class ActionQueue
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(ActionQueue));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(ActionQueue));
 		private const int InitQueueListSize = 5;
 
 		private ISessionImplementor session;
@@ -28,7 +30,7 @@ namespace NHibernate.Engine
 		// Object insertions, updates, and deletions have list semantics because
 		// they must happen in the right order so as to respect referential
 		// integrity
-		private readonly List<IExecutable> insertions;
+		private readonly List<AbstractEntityInsertAction> insertions;
 		private readonly List<EntityDeleteAction> deletions;
 		private readonly List<EntityUpdateAction> updates;
 		// Actually the semantics of the next three are really "Bag"
@@ -41,11 +43,12 @@ namespace NHibernate.Engine
 
 		private readonly AfterTransactionCompletionProcessQueue afterTransactionProcesses;
 		private readonly BeforeTransactionCompletionProcessQueue beforeTransactionProcesses;
+		private readonly HashSet<string> executedSpaces;
 
 		public ActionQueue(ISessionImplementor session)
 		{
 			this.session = session;
-			insertions = new List<IExecutable>(InitQueueListSize);
+			insertions = new List<AbstractEntityInsertAction>(InitQueueListSize);
 			deletions = new List<EntityDeleteAction>(InitQueueListSize);
 			updates = new List<EntityUpdateAction>(InitQueueListSize);
 
@@ -53,8 +56,10 @@ namespace NHibernate.Engine
 			collectionUpdates = new List<CollectionUpdateAction>(InitQueueListSize);
 			collectionRemovals = new List<CollectionRemoveAction>(InitQueueListSize);
 
-			afterTransactionProcesses = new AfterTransactionCompletionProcessQueue(session);
-			beforeTransactionProcesses = new BeforeTransactionCompletionProcessQueue(session);
+			afterTransactionProcesses = new AfterTransactionCompletionProcessQueue();
+			beforeTransactionProcesses = new BeforeTransactionCompletionProcessQueue();
+
+			executedSpaces = new HashSet<string>();
 		}
 
 		public virtual void Clear()
@@ -107,7 +112,26 @@ namespace NHibernate.Engine
 		{
 			RegisterCleanupActions(cleanupAction);
 		}
-		
+
+		//Since v5.1
+		[Obsolete("This method is no longer executed asynchronously and will be removed in a next major version.")]
+		public Task AddActionAsync(BulkOperationCleanupAction cleanupAction, CancellationToken cancellationToken=default(CancellationToken))
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled(cancellationToken);
+			}
+			try
+			{
+				AddAction(cleanupAction);
+				return Task.CompletedTask;
+			}
+			catch (Exception e)
+			{
+				return Task.FromException(e);
+			}
+		}
+
 		public void RegisterProcess(AfterTransactionCompletionProcessDelegate process)
 		{
 			afterTransactionProcesses.Register(process);
@@ -120,15 +144,40 @@ namespace NHibernate.Engine
 	
 		private void ExecuteActions(IList list)
 		{
-			int size = list.Count;
-			for (int i = 0; i < size; i++)
-				Execute((IExecutable)list[i]);
-
+			// Actions may raise events to which user code can react and cause changes to action list.
+			// It will then fail here due to list being modified. (Some previous code was dodging the
+			// trouble with a for loop which was not failing provided the list was not getting smaller.
+			// But then it was clearing it without having executed added actions (if any), ...)
+			
+			foreach (IExecutable executable in list)
+			{
+				InnerExecute(executable);
+			}
 			list.Clear();
 			session.Batcher.ExecuteBatch();
 		}
 
+		private void PreInvalidateCaches()
+		{
+			if (session.Factory.Settings.IsQueryCacheEnabled)
+			{
+				session.Factory.UpdateTimestampsCache.PreInvalidate(executedSpaces);
+			}
+		}
+
 		public void Execute(IExecutable executable)
+		{
+			try
+			{
+				InnerExecute(executable);
+			}
+			finally
+			{
+				PreInvalidateCaches();
+			}
+		}
+
+		private void InnerExecute(IExecutable executable)
 		{
 			try
 			{
@@ -136,19 +185,17 @@ namespace NHibernate.Engine
 			}
 			finally
 			{
+				if (executable.PropertySpaces != null)
+				{
+					executedSpaces.UnionWith(executable.PropertySpaces);
+				}
 				RegisterCleanupActions(executable);
 			}
 		}
-		
+
 		private void RegisterCleanupActions(IExecutable executable)
 		{
 			beforeTransactionProcesses.Register(executable.BeforeTransactionCompletionProcess);
-			if (session.Factory.Settings.IsQueryCacheEnabled)
-			{
-				string[] spaces = executable.PropertySpaces;
-				afterTransactionProcesses.AddSpacesToInvalidate(spaces);
-				session.Factory.UpdateTimestampsCache.PreInvalidate(spaces);
-			}
 			afterTransactionProcesses.Register(executable.AfterTransactionCompletionProcess);
 		}
 
@@ -157,7 +204,14 @@ namespace NHibernate.Engine
 		/// </summary>
 		public void ExecuteInserts()
 		{
-			ExecuteActions(insertions);
+			try
+			{
+				ExecuteActions(insertions);
+			}
+			finally
+			{
+				PreInvalidateCaches();
+			}
 		}
 
 		/// <summary> 
@@ -165,15 +219,22 @@ namespace NHibernate.Engine
 		/// </summary>
 		public void ExecuteActions()
 		{
-			ExecuteActions(insertions);
-			ExecuteActions(updates);
-			ExecuteActions(collectionRemovals);
-			ExecuteActions(collectionUpdates);
-			ExecuteActions(collectionCreations);
-			ExecuteActions(deletions);
+			try
+			{
+				ExecuteActions(insertions);
+				ExecuteActions(updates);
+				ExecuteActions(collectionRemovals);
+				ExecuteActions(collectionUpdates);
+				ExecuteActions(collectionCreations);
+				ExecuteActions(deletions);
+			}
+			finally
+			{
+				PreInvalidateCaches();
+			}
 		}
 
-		private void PrepareActions(IList queue)
+		private static void PrepareActions(IList queue)
 		{
 			foreach (IExecutable executable in queue)
 				executable.BeforeExecutions();
@@ -196,7 +257,7 @@ namespace NHibernate.Engine
 		{
 			beforeTransactionProcesses.BeforeTransactionCompletion();
 		}
-		
+
 		/// <summary> 
 		/// Performs cleanup of any held cache softlocks.
 		/// </summary>
@@ -204,8 +265,20 @@ namespace NHibernate.Engine
 		public void AfterTransactionCompletion(bool success)
 		{
 			afterTransactionProcesses.AfterTransactionCompletion(success);
+
+			InvalidateCaches();
 		}
-		
+
+		private void InvalidateCaches()
+		{
+			if (session.Factory.Settings.IsQueryCacheEnabled)
+			{
+				session.Factory.UpdateTimestampsCache.Invalidate(executedSpaces);
+			}
+
+			executedSpaces.Clear();
+		}
+
 		/// <summary> 
 		/// Check whether the given tables/query-spaces are to be executed against
 		/// given the currently queued actions. 
@@ -241,8 +314,8 @@ namespace NHibernate.Engine
 				{
 					if(tablespaces.Contains(o))
 					{
-						if(log.IsDebugEnabled)
-							log.Debug("changes must be flushed to space: " + o);
+						if(log.IsDebugEnabled())
+							log.Debug("changes must be flushed to space: {0}", o);
 
 						return true;
 					}
@@ -315,7 +388,7 @@ namespace NHibernate.Engine
 		private void SortInsertActions()
 		{
 			new InsertActionSorter(this).Sort();
-				}
+		}
 
 		public IList<EntityDeleteAction> CloneDeletions()
 		{
@@ -381,19 +454,13 @@ namespace NHibernate.Engine
 		[Serializable]
 		private class BeforeTransactionCompletionProcessQueue 
 		{
-			private ISessionImplementor session;
-			private IList<BeforeTransactionCompletionProcessDelegate> processes = new List<BeforeTransactionCompletionProcessDelegate>();
+			private List<BeforeTransactionCompletionProcessDelegate> processes = new List<BeforeTransactionCompletionProcessDelegate>();
 
 			public bool HasActions
 			{
 				get { return processes.Count > 0; }
 			}
 
-			public BeforeTransactionCompletionProcessQueue(ISessionImplementor session) 
-			{
-				this.session = session;
-			}
-	
 			public void Register(BeforeTransactionCompletionProcessDelegate process) 
 			{
 				if (process == null) 
@@ -413,9 +480,9 @@ namespace NHibernate.Engine
 						BeforeTransactionCompletionProcessDelegate process = processes[i];
 						process();
 					}
-					catch (HibernateException e)
+					catch (HibernateException)
 					{
-						throw e;
+						throw;
 					}
 					catch (Exception e) 
 					{
@@ -429,37 +496,13 @@ namespace NHibernate.Engine
 		[Serializable]
 		private class AfterTransactionCompletionProcessQueue 
 		{
-			private ISessionImplementor session;
-			private HashSet<string> querySpacesToInvalidate = new HashSet<string>();
-			private IList<AfterTransactionCompletionProcessDelegate> processes = new List<AfterTransactionCompletionProcessDelegate>(InitQueueListSize * 3);
+			private List<AfterTransactionCompletionProcessDelegate> processes = new List<AfterTransactionCompletionProcessDelegate>(InitQueueListSize * 3);
 
 			public bool HasActions
 			{
 				get { return processes.Count > 0; }
 			}
-			
-			public AfterTransactionCompletionProcessQueue(ISessionImplementor session)
-			{
-				this.session = session;
-			}
-	
-			public void AddSpacesToInvalidate(string[] spaces)
-			{
-				if (spaces == null)
-				{
-					return;
-				}
-				for (int i = 0, max = spaces.Length; i < max; i++)
-				{
-					this.AddSpaceToInvalidate(spaces[i]);
-				}
-			}
-	
-			public void AddSpaceToInvalidate(string space) 
-			{
-				querySpacesToInvalidate.Add(space);
-			}
-	
+
 			public void Register(AfterTransactionCompletionProcessDelegate process)
 			{
 				if (process == null) 
@@ -482,7 +525,7 @@ namespace NHibernate.Engine
 					}
 					catch (CacheException e)
 					{
-						log.Error( "could not release a cache lock", e);
+						log.Error(e, "could not release a cache lock");
 						// continue loop
 					}
 					catch (Exception e)
@@ -491,12 +534,6 @@ namespace NHibernate.Engine
 					}
 				}
 				processes.Clear();
-	
-				if (session.Factory.Settings.IsQueryCacheEnabled) 
-				{
-					session.Factory.UpdateTimestampsCache.Invalidate(querySpacesToInvalidate.ToArray());
-				}
-				querySpacesToInvalidate.Clear();
 			}
 		}
 
@@ -505,13 +542,20 @@ namespace NHibernate.Engine
 		{
 			private readonly ActionQueue _actionQueue;
 
-			// the mapping of entity names to their latest batch numbers.
+			// The map of entity names to their latest batch.
 			private readonly Dictionary<string, int> _latestBatches = new Dictionary<string, int>();
+			// The map of entities to their batch.
 			private readonly Dictionary<object, int> _entityBatchNumber;
+			// The map of entities to the latest batch (of another entities) they depend on.
+			private readonly Dictionary<object, int> _entityBatchDependency = new Dictionary<object, int>();
 
 			// the map of batch numbers to EntityInsertAction lists
-			private readonly Dictionary<int, List<EntityInsertAction>> _actionBatches = new Dictionary<int, List<EntityInsertAction>>();
+			private readonly Dictionary<int, List<AbstractEntityInsertAction>> _actionBatches = new Dictionary<int, List<AbstractEntityInsertAction>>();
 
+			/// <summary>
+			/// A sorter aiming to group inserts as much as possible for optimizing batching.
+			/// </summary>
+			/// <param name="actionQueue">The list of inserts to optimize, already sorted in order to avoid constraint violations.</param>
 			public InsertActionSorter(ActionQueue actionQueue)
 			{
 				_actionQueue = actionQueue;
@@ -520,12 +564,16 @@ namespace NHibernate.Engine
 				_entityBatchNumber = new Dictionary<object, int>(actionQueue.insertions.Count + 1);
 			}
 
+			// This sorting does not actually optimize some features like mapped inheritance or joined-table,
+			// which causes additional inserts per action, causing the batcher to flush on each. Moreover,
+			// inheritance may causes children entities batches to get split per concrete parent classes.
+			// (See InsertOrderingFixture.WithJoinedTableInheritance by example.)
+			// Trying to merge those children batches cases would probably require to much computing.
 			public void Sort()
 			{
-				// the list of entity names that indicate the batch number
-				foreach (EntityInsertAction action in _actionQueue.insertions)
+				// build the map of entity names that indicate the batch number
+				foreach (var action in _actionQueue.insertions)
 				{
-					// remove the current element from insertions. It will be added back later.
 					var entityName = action.EntityName;
 
 					// the entity associated with the current action.
@@ -534,7 +582,9 @@ namespace NHibernate.Engine
 					var batchNumber = GetBatchNumber(action, entityName);
 					_entityBatchNumber[currentEntity] = batchNumber;
 					AddToBatch(batchNumber, action);
+					UpdateChildrenDependencies(batchNumber, action);
 				}
+
 				_actionQueue.insertions.Clear();
 
 				// now rebuild the insertions list. There is a batch for each entry in the name list.
@@ -548,14 +598,14 @@ namespace NHibernate.Engine
 				}
 			}
 
-			private int GetBatchNumber(EntityInsertAction action, string entityName)
+			private int GetBatchNumber(AbstractEntityInsertAction action, string entityName)
 			{
 				int batchNumber;
 				if (_latestBatches.TryGetValue(entityName, out batchNumber))
 				{
 					// There is already an existing batch for this type of entity.
 					// Check to see if the latest batch is acceptable.
-					if (IsProcessedAfterAllAssociatedEntities(action, batchNumber))
+					if (!RequireNewBatch(action, batchNumber))
 						return batchNumber;
 				}
 				
@@ -565,49 +615,104 @@ namespace NHibernate.Engine
 				// so specify that this entity is with the latest batch.
 				// doing the batch number before adding the name to the list is
 				// a faster way to get an accurate number.
-
 				batchNumber = _actionBatches.Count;
 				_latestBatches[entityName] = batchNumber;
 				return batchNumber;
 			}
 
-			private bool IsProcessedAfterAllAssociatedEntities(EntityInsertAction action, int latestBatchNumberForType)
+			private bool RequireNewBatch(AbstractEntityInsertAction action, int latestBatchNumberForType)
 			{
+				// This method assumes the original action list is already sorted in order to respect dependencies.
 				var propertyValues = action.State;
-				var propertyTypes = action.Persister.ClassMetadata.PropertyTypes;
+				var propertyTypes = action.Persister.EntityMetamodel?.PropertyTypes;
+				if (propertyTypes == null)
+				{
+					log.Info(
+						"Entity {0} persister does not provide meta-data, giving up batching grouping optimization for this entity.",
+						action.EntityName);
+					// Cancel grouping optimization for this entity.
+					return true;
+				}
+
+				int latestDependency;
+				if (_entityBatchDependency.TryGetValue(action.Instance, out latestDependency) && latestDependency > latestBatchNumberForType)
+					return true;
 
 				for (var i = 0; i < propertyValues.Length; i++)
 				{
 					var value = propertyValues[i];
 					var type = propertyTypes[i];
 
-					if (type.IsEntityType &&
-						value != null)
+					if (type.IsEntityType && value != null)
 					{
 						// find the batch number associated with the current association, if any.
 						int associationBatchNumber;
 						if (_entityBatchNumber.TryGetValue(value, out associationBatchNumber) &&
 							associationBatchNumber > latestBatchNumberForType)
 						{
-							return false;
+							return true;
 						}
 					}
 				}
 
-				return true;
+				return false;
 			}
 
-			private void AddToBatch(int batchNumber, EntityInsertAction action)
+			private void AddToBatch(int batchNumber, AbstractEntityInsertAction action)
 			{
-				List<EntityInsertAction> actions;
+				List<AbstractEntityInsertAction> actions;
 
 				if (!_actionBatches.TryGetValue(batchNumber, out actions))
 				{
-					actions = new List<EntityInsertAction>();
+					actions = new List<AbstractEntityInsertAction>();
 					_actionBatches[batchNumber] = actions;
 				}
 
 				actions.Add(action);
+			}
+
+			private void UpdateChildrenDependencies(int batchNumber, AbstractEntityInsertAction action)
+			{
+				var propertyValues = action.State;
+				var propertyTypes = action.Persister.EntityMetamodel?.PropertyTypes;
+				if (propertyTypes == null)
+				{
+					log.Warn(
+						"Entity {0} persister does not provide meta-data: if there is dependent entities providing " +
+						"meta-data, they may get batched before this one and cause a failure.",
+						action.EntityName);
+					return;
+				}
+
+				var sessionFactory = action.Session.Factory;
+				for (var i = 0; i < propertyValues.Length; i++)
+				{
+					var type = propertyTypes[i];
+
+					if (!type.IsCollectionType)
+						continue;
+
+					var collectionType = (CollectionType)type;
+					var collectionPersister = sessionFactory.GetCollectionPersister(collectionType.Role);
+					if (collectionPersister.IsManyToMany || !collectionPersister.ElementType.IsEntityType)
+						continue;
+
+					var children = propertyValues[i] as IEnumerable;
+					if (children == null)
+						continue;
+					
+					foreach(var child in children)
+					{
+						if (child == null)
+							continue;
+
+						int latestDependency;
+						if (_entityBatchDependency.TryGetValue(child, out latestDependency) && latestDependency > batchNumber)
+							continue;
+
+						_entityBatchDependency[child] = batchNumber;
+					}
+				}
 			}
 		}
 	}

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Tango.Data;
+﻿using Tango.Data;
 using NHibernate.Mapping.ByCode;
 
 namespace Tango.Hibernate
@@ -21,6 +18,11 @@ namespace Tango.Hibernate
 		public static void GuidIDPropertyConfig(IIdMapper map)
 		{
 			if (ConnectionManager.DBType == DBType.DB2) map.Type(new StringBackedGuidUserType());
+		}
+
+		public static void SequenceGenerator(this IIdMapper map, string seqName)
+		{
+			map.Generator(Generators.Sequence, g => g.Params(new { sequence = seqName }));
 		}
 	}
 }

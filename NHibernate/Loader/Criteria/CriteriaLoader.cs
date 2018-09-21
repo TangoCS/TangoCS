@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.Impl;
 using NHibernate.Param;
@@ -20,16 +20,18 @@ namespace NHibernate.Loader.Criteria
 	/// Note that criteria
 	/// queries are more like multi-object <c>Load()</c>s than like HQL queries.
 	/// </remarks>
-	public class CriteriaLoader : OuterJoinLoader
+	public partial class CriteriaLoader : OuterJoinLoader
 	{
 		private readonly CriteriaQueryTranslator translator;
 		private readonly ISet<string> querySpaces;
-		private readonly IType[] resultTypes;
 		//the user visible aliases, which are unknown to the superclass,
 		//these are not the actual "physical" SQL aliases
 		private readonly string[] userAliases;
 		private readonly bool[] includeInResultRow;
 		private readonly int resultRowLength;
+		// caching NH-3486
+		private readonly string[] cachedProjectedColumnAliases;
+		private bool[] childFetchEntities;
 
 		public CriteriaLoader(IOuterJoinLoadable persister, ISessionFactoryImplementor factory, CriteriaImpl rootCriteria,
 							  string rootEntityName, IDictionary<string, IFilter> enabledFilters)
@@ -45,9 +47,15 @@ namespace NHibernate.Loader.Criteria
 			InitFromWalker(walker);
 
 			userAliases = walker.UserAliases;
-			resultTypes = walker.ResultTypes;
+			ResultTypes = walker.ResultTypes;
 			includeInResultRow = walker.IncludeInResultRow;
 			resultRowLength = ArrayHelper.CountTrue(IncludeInResultRow);
+			childFetchEntities = walker.ChildFetchEntities;
+			// fill caching objects only if there is a projection
+			if (translator.HasProjection)
+			{
+				cachedProjectedColumnAliases = translator.ProjectedColumnAliases;
+			}
 
 			PostInstantiate();
 		}
@@ -69,12 +77,7 @@ namespace NHibernate.Loader.Criteria
 			get { return translator; }
 		}
 
-		public IType[] ResultTypes
-		{
-			get { return resultTypes; }
-		}
-
-		protected override  string[] ResultRowAliases
+		protected override string[] ResultRowAliases
 		{
 			get { return userAliases; }
 		}
@@ -84,9 +87,14 @@ namespace NHibernate.Loader.Criteria
 			get { return includeInResultRow; }
 		}
 
+		protected override bool IsChildFetchEntity(int i)
+		{
+			return childFetchEntities?[i] == true;
+		}
+
 		public IList List(ISessionImplementor session)
 		{
-			return List(session, translator.GetQueryParameters(), querySpaces, resultTypes);
+			return List(session, translator.GetQueryParameters(), querySpaces);
 		}
 
 		protected override IResultTransformer ResolveResultTransformer(IResultTransformer resultTransformer)
@@ -99,7 +107,7 @@ namespace NHibernate.Loader.Criteria
 			return true;
 		}
 
-		protected override object GetResultColumnOrRow(object[] row, IResultTransformer customResultTransformer, IDataReader rs,
+		protected override object GetResultColumnOrRow(object[] row, IResultTransformer customResultTransformer, DbDataReader rs,
 													   ISessionImplementor session)
 		{
 			return ResolveResultTransformer(customResultTransformer)
@@ -107,28 +115,26 @@ namespace NHibernate.Loader.Criteria
 		}
 
 
-		protected override object[] GetResultRow(object[] row, IDataReader rs, ISessionImplementor session)
+		protected override object[] GetResultRow(object[] row, DbDataReader rs, ISessionImplementor session)
 		{
 			object[] result;
 
 			if (translator.HasProjection)
 			{
-				IType[] types = translator.ProjectedTypes;
-				result = new object[types.Length];
-				string[] columnAliases = translator.ProjectedColumnAliases;
-				
+				result = new object[ResultTypes.Length];
+
 				for (int i = 0, position = 0; i < result.Length; i++)
 				{
-					int numColumns = types[i].GetColumnSpan(session.Factory);
-					
-					if ( numColumns > 1 ) 
+					int numColumns = ResultTypes[i].GetColumnSpan(session.Factory);
+
+					if (numColumns > 1)
 					{
-						string[] typeColumnAliases = ArrayHelper.Slice(columnAliases, position, numColumns);
-						result[i] = types[i].NullSafeGet(rs, typeColumnAliases, session, null);
+						string[] typeColumnAliases = ArrayHelper.Slice(cachedProjectedColumnAliases, position, numColumns);
+						result[i] = ResultTypes[i].NullSafeGet(rs, typeColumnAliases, session, null);
 					}
 					else
 					{
-						result[i] = types[i].NullSafeGet(rs, columnAliases[position], session, null);
+						result[i] = ResultTypes[i].NullSafeGet(rs, cachedProjectedColumnAliases[position], session, null);
 					}
 					position += numColumns;
 				}
@@ -166,7 +172,7 @@ namespace NHibernate.Loader.Criteria
 			}
 
 			Dictionary<string, LockMode> aliasedLockModes = new Dictionary<string, LockMode>();
-			Dictionary<string, string[]> keyColumnNames = dialect.ForUpdateOfColumns ? new Dictionary<string, string[]>() : null;
+			Dictionary<string, string[]> keyColumnNames = dialect.UsesColumnsWithForUpdateOf ? new Dictionary<string, string[]>() : null;
 			string[] drivingSqlAliases = Aliases;
 
 			//NH-3710: if we are issuing an aggregation function, Aliases will be null

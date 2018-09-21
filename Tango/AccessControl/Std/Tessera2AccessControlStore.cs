@@ -4,38 +4,23 @@ using System.Data;
 using System.Linq;
 using System.Security.Principal;
 using Dapper;
+using Tango.Identity.Std;
 
 namespace Tango.AccessControl.Std
 {
-	public class Tessera2AccessControlStoreBase<T> : IRoleBasedAccessControlStoreBase<T>, ICacheableRoleBasedAccessControlStore<T>
+	public class Tessera2AccessControlStoreBase<T> : RoleBasedAccessControlStoreBase<T>, ICacheableRoleBasedAccessControlStore<T>
 	{
-		protected IDbConnection _dc;
-		protected IIdentity _identity;
-
-		public Tessera2AccessControlStoreBase(IDbConnection dc, IIdentity identity)
+		public Tessera2AccessControlStoreBase(IDbConnection dc, IIdentity identity, IIdentityManager identityManager) :
+			base(dc, identity, identityManager)
 		{
-			_dc = dc;
-			_identity = identity;
+			
 		}
 
-		static List<IdentityRole<T>> _allRoles = null;
-		List<IdentityRole<T>> GetAllRoles()
+		protected override IEnumerable<IdentityRole<T>> CurrentUserRoles()
 		{
-			if (_allRoles != null) return _allRoles;
-			_allRoles = _dc.Query<IdentityRole<T>>("select RoleID as Id, Title, lower(SysName) as \"Name\" from SPM_Role").ToList();
-			return _allRoles;
-		}
-
-		public IdentityRole<T> RoleFromID(T id)
-		{
-			return GetAllRoles().FirstOrDefault(o => o.Id.Equals(id));
-		}
-
-		public IEnumerable<IdentityRole<T>> UserRoles(T id)
-		{
-			WindowsIdentity wi = _identity as WindowsIdentity;
 			List<T> r = null;
-			if (wi != null && !wi.IsAnonymous)
+			var id = _identityManager.CurrentUser.Id;
+			if (_identity is WindowsIdentity wi && !wi.IsAnonymous)
 			{
 				var groupNames = wi.Groups.Select(x => "'" + x.Value + "'");
 				r = _dc.Query<T>("select RoleID from V_SPM_AllSubjectRole where SubjectID = @p1 union select RoleID from SPM_Role where SID in (" + groupNames.Join(",") + ")", new { p1 = id }).ToList();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Common;
 using System.Linq;
 
 namespace Tango.Data
@@ -21,7 +22,7 @@ namespace Tango.Data
 
 	public interface IDataContext : IDisposable
 	{
-		IDbConnection Connection { get; }
+		DbConnection Connection { get; }
 
 		int ExecuteCommand(string command, params object[] parameters);
 		IEnumerable<TResult> ExecuteQuery<TResult>(string query, params object[] parameters);
@@ -41,6 +42,8 @@ namespace Tango.Data
 
 		List<Action> AfterSaveActions { get; }
 		List<Action> BeforeSaveActions { get; }
+
+		void ClearCache();
 	}
 
 	public static class DefaultTableFilters

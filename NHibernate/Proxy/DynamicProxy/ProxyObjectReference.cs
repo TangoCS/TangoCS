@@ -14,6 +14,8 @@ using System.Security;
 namespace NHibernate.Proxy.DynamicProxy
 {
 	[Serializable]
+	// Since v5.2
+	[Obsolete("DynamicProxy namespace has been obsoleted, use static proxies instead (see StaticProxyFactory)")]
 	public class ProxyObjectReference : IObjectReference, ISerializable
 	{
 		private readonly System.Type _baseType;
@@ -48,9 +50,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		#region IObjectReference Members
 
-#if NET_4_0
 		[SecurityCritical]
-#endif
 		public object GetRealObject(StreamingContext context)
 		{
 			return _proxy;
@@ -60,9 +60,7 @@ namespace NHibernate.Proxy.DynamicProxy
 
 		#region ISerializable Members
 
-#if NET_4_0
 		[SecurityCritical]
-#endif
 		public void GetObjectData(SerializationInfo info, StreamingContext context) {}
 
 		#endregion

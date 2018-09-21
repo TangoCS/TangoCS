@@ -19,14 +19,15 @@ namespace NHibernate.Engine
 		private readonly object key;
 		private readonly IType keyType;
 		private readonly int hashCode;
-		private readonly EntityMode entityMode;
 
-		public EntityUniqueKey(string entityName, string uniqueKeyName, object semiResolvedKey, IType keyType, EntityMode entityMode, ISessionFactoryImplementor factory)
+		// 6.0 TODO: rename semiResolvedKey as simply key. That is not the responsibility of this class to make any
+		// assumption on the key being semi-resolved or not, that is the responsibility of its callers.
+		public EntityUniqueKey(string entityName, string uniqueKeyName, object semiResolvedKey, IType keyType, ISessionFactoryImplementor factory)
 		{
 			if (string.IsNullOrEmpty(entityName))
 				throw new ArgumentNullException("entityName");
 			if (string.IsNullOrEmpty(uniqueKeyName))
-				throw new ArgumentNullException("entityName");
+				throw new ArgumentNullException("uniqueKeyName");
 			if (semiResolvedKey == null)
 				throw new ArgumentNullException("semiResolvedKey");
 			if (keyType == null)
@@ -35,8 +36,7 @@ namespace NHibernate.Engine
 			this.entityName = entityName;
 			this.uniqueKeyName = uniqueKeyName;
 			key = semiResolvedKey;
-			this.keyType = keyType.GetSemiResolvedType(factory);
-			this.entityMode = entityMode;
+			this.keyType = keyType;
 			hashCode = GenerateHashCode(factory);
 		}
 
@@ -47,7 +47,7 @@ namespace NHibernate.Engine
 			{
 				result = 37 * result + entityName.GetHashCode();
 				result = 37 * result + uniqueKeyName.GetHashCode();
-				result = 37 * result + keyType.GetHashCode(key, entityMode, factory);
+				result = 37 * result + keyType.GetHashCode(key, factory);
 			}
 			return result;
 		}
@@ -81,7 +81,7 @@ namespace NHibernate.Engine
 		public bool Equals(EntityUniqueKey that)
 		{
 			return that == null ? false :
-				that.EntityName.Equals(entityName) && that.UniqueKeyName.Equals(uniqueKeyName) && keyType.IsEqual(that.key, key, entityMode);
+				that.EntityName.Equals(entityName) && that.UniqueKeyName.Equals(uniqueKeyName) && keyType.IsEqual(that.key, key);
 		}
 
 		public override string ToString()

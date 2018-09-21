@@ -1,18 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
 {
-	using System.Runtime.Serialization;
-
 	/// <summary>
 	/// PersistentEnumType
 	/// </summary>
 	[Serializable]
-	public class PersistentEnumType : AbstractEnumType
+	public partial class PersistentEnumType : AbstractEnumType
 	{
 		#region Converters
 
@@ -179,7 +177,7 @@ namespace NHibernate.Type
 			return result;
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			object code = rs[index];
 			if (code == DBNull.Value || code == null)
@@ -224,15 +222,14 @@ namespace NHibernate.Type
 		}
 
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			IDataParameter par = (IDataParameter) cmd.Parameters[index];
-			par.Value = value != null ? GetValue(value) : DBNull.Value;
+			cmd.Parameters[index].Value = value != null ? GetValue(value) : DBNull.Value;
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		public override string Name
@@ -240,11 +237,25 @@ namespace NHibernate.Type
 			get { return ReturnedClass.FullName; }
 		}
 
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object value)
 		{
 			return (value == null) ? null : GetValue(value).ToString();
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
 			return GetInstance(long.Parse(xml));

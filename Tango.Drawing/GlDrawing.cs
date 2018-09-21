@@ -1,4 +1,4 @@
-﻿using SixLabors.ImageSharp;
+﻿using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.Primitives;
 using System;
 
@@ -291,6 +291,11 @@ namespace Tango.Drawing
 		public void DrawString(int x, int y, string s, int size)
 		{
 			_fontService.RenderString(x, y, s, size);
+		}
+
+		public int MeasureString(string s, int size)
+		{
+			return _fontService.MeasureString(s, size);
 		}
 
 		public void SetFont(string fontFile)

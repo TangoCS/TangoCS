@@ -24,6 +24,7 @@
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <RunCodeAnalysis>false</RunCodeAnalysis>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,6 +34,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -42,7 +44,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\..\FinHub\packages\Newtonsoft.Json.11.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\Vtd.Core\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -54,6 +56,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccessControl\AbstractAccessControl.cs" />
     <Compile Include="AccessControl\AccessControlOptions.cs" />
     <Compile Include="AccessControl\IAccessControl.cs" />
     <Compile Include="AccessControl\Attributes.cs" />
@@ -66,6 +69,7 @@
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
     <Compile Include="BusinessLogic.cs" />
     <Compile Include="ByteArrayToHex.cs" />
+    <Compile Include="Data\ConnectionWrapper.cs" />
     <Compile Include="Data\DapperRepository.cs" />
     <Compile Include="Data\IRepository.cs" />
     <Compile Include="Data\QueryTranslator.cs" />
@@ -73,13 +77,16 @@
     <Compile Include="FileStorage\FileController.cs" />
     <Compile Include="FileStorage\IStorageManager.cs" />
     <Compile Include="FileStorage\Std\LocalDiskFolder.cs" />
+    <Compile Include="Identity\IdentityManager.cs" />
     <Compile Include="Identity\Std\IdentityUser.cs" />
     <Compile Include="Identity\Std\InterfacesStd.cs" />
     <Compile Include="Identity\Std\Tessera2IdentityStore.cs" />
+    <Compile Include="RealTime\Interfaces.cs" />
+    <Compile Include="RealTime\ProgressLogger.cs" />
+    <Compile Include="RealTime\TaskCollection.cs" />
     <Compile Include="UI\ActionFilters.cs" />
     <Compile Include="UI\ContextExtensions.cs" />
     <Compile Include="UI\Controls\DateLists.cs" />
-    <Compile Include="UI\Controls\Tabs.cs" />
     <Compile Include="UI\InteractionHelper.cs" />
     <Compile Include="UI\MetaFluentExtensions.cs" />
     <Compile Include="Var.cs" />
@@ -98,8 +105,8 @@
     <Compile Include="GlobalSettings.cs" />
     <Compile Include="AccessControl\IPredicateChecker.cs" />
     <Compile Include="Identity\Std\DefaultUserValidator.cs" />
-    <Compile Include="Identity\Std\IdentityUserClaim.cs" />
-    <Compile Include="Identity\Std\IdentityUserLogin.cs" />
+    <Compile Include="Identity\IdentityUserClaim.cs" />
+    <Compile Include="Identity\IdentityUserLogin.cs" />
     <Compile Include="Identity\IdentityOptions.cs" />
     <Compile Include="Identity\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -157,7 +164,7 @@
     <Compile Include="Html\TagAttributes.cs" />
     <Compile Include="Icons.cs" />
     <Compile Include="Data\IDataContext.cs" />
-    <Compile Include="Identity\Std\IdentityManager.cs" />
+    <Compile Include="Identity\Std\StdIdentityManager.cs" />
     <Compile Include="Identity\IUserValidator.cs" />
     <Compile Include="Data\IEntity.cs" />
     <Compile Include="IPersistentSettings.cs" />

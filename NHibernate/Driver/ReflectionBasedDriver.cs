@@ -1,4 +1,4 @@
-using System.Data;
+using System;
 using System.Data.Common;
 using NHibernate.Util;
 
@@ -6,12 +6,17 @@ namespace NHibernate.Driver
 {
 	public abstract class ReflectionBasedDriver : DriverBase
 	{
-		protected const string ReflectionTypedProviderExceptionMessageTemplate = "The IDbCommand and IDbConnection implementation in the assembly {0} could not be found. "
+		protected const string ReflectionTypedProviderExceptionMessageTemplate = "The DbCommand and DbConnection implementation in the assembly {0} could not be found. "
 		                                                                       + "Ensure that the assembly {0} is located in the application directory or in the Global "
 		                                                                       + "Assembly Cache. If the assembly is in the GAC, use <qualifyAssembly/> element in the "
 		                                                                       + "application configuration file to specify the full name of the assembly.";
 
 		private readonly IDriveConnectionCommandProvider connectionCommandProvider;
+
+		/// <summary>
+		/// If the driver use a third party driver (not a .Net Framework DbProvider), its assembly version.
+		/// </summary>
+		protected Version DriverVersion { get; } 
 
 		/// <summary>
 		/// Initializes a new instance of <see cref="ReflectionBasedDriver" /> with
@@ -33,7 +38,6 @@ namespace NHibernate.Driver
 		/// <param name="driverAssemblyName">Assembly to load the types from.</param>
 		/// <param name="connectionTypeName">Connection type name.</param>
 		/// <param name="commandTypeName">Command type name.</param>
-		/// <seealso cref="DbProviderFactories.GetFactory(string)"/>
 		protected ReflectionBasedDriver(string providerInvariantName, string driverAssemblyName, string connectionTypeName, string commandTypeName)
 		{
 			// Try to get the types from an already loaded assembly
@@ -42,25 +46,30 @@ namespace NHibernate.Driver
 
 			if (connectionType == null || commandType == null)
 			{
+#if NETFX
 				if (string.IsNullOrEmpty(providerInvariantName))
 				{
+#endif
 					throw new HibernateException(string.Format(ReflectionTypedProviderExceptionMessageTemplate, driverAssemblyName));
+#if NETFX
 				}
 				var factory = DbProviderFactories.GetFactory(providerInvariantName);
 				connectionCommandProvider = new DbProviderFactoryDriveConnectionCommandProvider(factory);
+#endif
 			}
 			else
 			{
 				connectionCommandProvider = new ReflectionDriveConnectionCommandProvider(connectionType, commandType);
+				DriverVersion = connectionType.Assembly.GetName().Version;
 			}
 		}
 
-		public override IDbConnection CreateConnection()
+		public override DbConnection CreateConnection()
 		{
 			return connectionCommandProvider.CreateConnection();
 		}
 
-		public override IDbCommand CreateCommand()
+		public override DbCommand CreateCommand()
 		{
 			return connectionCommandProvider.CreateCommand();
 		}

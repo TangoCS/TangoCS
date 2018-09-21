@@ -14,7 +14,7 @@ namespace NHibernate.Tuple.Entity
 	/// <summary> Support for tuplizers relating to entities. </summary>
 	public abstract class AbstractEntityTuplizer : IEntityTuplizer
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(AbstractEntityTuplizer));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(AbstractEntityTuplizer));
 		private readonly EntityMetamodel entityMetamodel;
 		private readonly IGetter idGetter;
 		private readonly ISetter idSetter;
@@ -59,9 +59,9 @@ namespace NHibernate.Tuple.Entity
 					foundCustomAccessor = true;
 				i++;				
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.DebugFormat("{0} accessors found for entity: {1}", foundCustomAccessor ? "Custom" : "No custom",
+				log.Debug("{0} accessors found for entity: {1}", foundCustomAccessor ? "Custom" : "No custom",
 				                mappingInfo.EntityName);
 			}
 			hasCustomAccessors = foundCustomAccessor;
@@ -130,8 +130,8 @@ namespace NHibernate.Tuple.Entity
 					else
 					{
 						ComponentType copier = (ComponentType)entityMetamodel.IdentifierProperty.Type;
-						id = copier.Instantiate(EntityMode);
-						copier.SetPropertyValues(id, identifierMapperType.GetPropertyValues(entity, EntityMode), EntityMode);
+						id = copier.Instantiate();
+						copier.SetPropertyValues(id, identifierMapperType.GetPropertyValues(entity));
 					}
 				}
 				else
@@ -150,7 +150,7 @@ namespace NHibernate.Tuple.Entity
 				if (entity != id)
 				{
 					IAbstractComponentType copier = (IAbstractComponentType)entityMetamodel.IdentifierProperty.Type;
-					copier.SetPropertyValues(entity, copier.GetPropertyValues(id, EntityMode), EntityMode);
+					copier.SetPropertyValues(entity, copier.GetPropertyValues(id));
 				}
 			}
 			else if (idSetter != null)
@@ -364,7 +364,7 @@ namespace NHibernate.Tuple.Entity
 				throw new MappingException("component property not found: " + basePropertyName);
 			}
 
-			object baseValue = type.GetPropertyValue(component, index, EntityMode);
+			object baseValue = type.GetPropertyValue(component, index);
 
 			if (loc > 0)
 			{

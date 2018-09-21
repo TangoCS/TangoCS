@@ -12,9 +12,9 @@ namespace NHibernate.Event.Default
 	/// Defines the default listener used by Hibernate for handling save-update events. 
 	/// </summary>
 	[Serializable]
-	public class DefaultSaveOrUpdateEventListener : AbstractSaveEventListener, ISaveOrUpdateEventListener
+	public partial class DefaultSaveOrUpdateEventListener : AbstractSaveEventListener, ISaveOrUpdateEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultSaveOrUpdateEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultSaveOrUpdateEventListener));
 
 		protected override CascadingAction CascadeAction
 		{
@@ -103,7 +103,7 @@ namespace NHibernate.Event.Default
 				}
 				else
 				{
-					if (!entityEntry.Persister.IdentifierType.IsEqual(requestedId, entityEntry.Id, EntityMode.Poco))
+					if (!entityEntry.Persister.IdentifierType.IsEqual(requestedId, entityEntry.Id))
 					{
 						throw new PersistentObjectException("object passed to save() was already persistent: " + 
 							MessageHelper.InfoString(entityEntry.Persister, requestedId, factory));
@@ -111,10 +111,10 @@ namespace NHibernate.Event.Default
 					savedId = requestedId;
 				}
 
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("object already associated with session: " + 
-						MessageHelper.InfoString(entityEntry.Persister, savedId, factory));
+					log.Debug("object already associated with session: {0}",
+					          MessageHelper.InfoString(entityEntry.Persister, savedId, factory));
 				}
 
 				return savedId;
@@ -188,7 +188,7 @@ namespace NHibernate.Event.Default
 
 			IEntityPersister persister = @event.Session.GetEntityPersister(@event.EntityName, entity);
 
-			@event.RequestedId = GetUpdateId(entity, persister, @event.RequestedId, @event.Session.EntityMode);
+			@event.RequestedId = GetUpdateId(entity, persister, @event.RequestedId);
 
 			PerformUpdate(@event, entity, persister);
 		}
@@ -197,12 +197,11 @@ namespace NHibernate.Event.Default
 		/// <param name="entity">The entity. </param>
 		/// <param name="persister">The entity persister </param>
 		/// <param name="requestedId">The requested identifier </param>
-		/// <param name="entityMode">The entity mode. </param>
 		/// <returns> The id. </returns>
-		protected virtual object GetUpdateId(object entity, IEntityPersister persister, object requestedId, EntityMode entityMode)
+		protected virtual object GetUpdateId(object entity, IEntityPersister persister, object requestedId)
 		{
 			// use the id assigned to the instance
-			object id = persister.GetIdentifier(entity, entityMode);
+			object id = persister.GetIdentifier(entity);
 			if (id == null)
 			{
 				// assume this is a newly instantiated transient object
@@ -222,9 +221,9 @@ namespace NHibernate.Event.Default
 				log.Debug("immutable instance passed to PerformUpdate(), locking");
 			}
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("updating " + MessageHelper.InfoString(persister, @event.RequestedId, @event.Session.Factory));
+				log.Debug("updating {0}", MessageHelper.InfoString(persister, @event.RequestedId, @event.Session.Factory));
 			}
 
 			IEventSource source = @event.Session;
@@ -259,7 +258,7 @@ namespace NHibernate.Event.Default
 				persister.IsMutable ? Status.Loaded : Status.ReadOnly,
 				null, 
 				key,
-				persister.GetVersion(entity, source.EntityMode), 
+				persister.GetVersion(entity), 
 				LockMode.None, 
 				true, 
 				persister,
@@ -268,9 +267,9 @@ namespace NHibernate.Event.Default
 
 			//persister.AfterReassociate(entity, source); TODO H3.2 not ported
 
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("updating " + MessageHelper.InfoString(persister, @event.RequestedId, source.Factory));
+				log.Debug("updating {0}", MessageHelper.InfoString(persister, @event.RequestedId, source.Factory));
 			}
 
 			CascadeOnUpdate(@event, persister, entity);
@@ -278,7 +277,7 @@ namespace NHibernate.Event.Default
 
 		protected virtual bool InvokeUpdateLifecycle(object entity, IEntityPersister persister, IEventSource source)
 		{
-			if (persister.ImplementsLifecycle(source.EntityMode))
+			if (persister.ImplementsLifecycle)
 			{
 				log.Debug("calling onUpdate()");
 				if (((ILifecycle)entity).OnUpdate(source) == LifecycleVeto.Veto)

@@ -24,7 +24,7 @@ namespace Tango.UI
 		{
 			Context = context;
 		}
-		
+
 		public LayoutWriter(ActionContext context, string idPrefix, StringBuilder sb) : base(idPrefix, sb) 
 		{
 			Context = context;

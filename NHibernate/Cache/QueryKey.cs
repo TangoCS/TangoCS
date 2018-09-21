@@ -137,11 +137,11 @@ namespace NHibernate.Cache
 				return false;
 			}
 
-			if (!CollectionHelper.CollectionEquals<int>(_multiQueriesFirstRows, that._multiQueriesFirstRows))
+			if (!CollectionHelper.SequenceEquals<int>(_multiQueriesFirstRows, that._multiQueriesFirstRows))
 			{
 				return false;
 			}
-			if (!CollectionHelper.CollectionEquals<int>(_multiQueriesMaxRows, that._multiQueriesMaxRows))
+			if (!CollectionHelper.SequenceEquals<int>(_multiQueriesMaxRows, that._multiQueriesMaxRows))
 			{
 				return false;
 			}
@@ -161,7 +161,7 @@ namespace NHibernate.Cache
 				result = 37 * result + _firstRow.GetHashCode();
 				result = 37 * result + _maxRows.GetHashCode();
 
-				result = 37 * result + (_namedParameters == null ? 0 : CollectionHelper.GetHashCode(_namedParameters));
+				result = 37 * result + (_namedParameters == null ? 0 : CollectionHelper.GetHashCode(_namedParameters, NamedParameterComparer.Instance));
 
 				for (int i = 0; i < _types.Length; i++)
 				{

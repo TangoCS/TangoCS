@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Net;
+using System.Reflection;
 
 namespace Tango.UI
 {
@@ -20,6 +21,12 @@ namespace Tango.UI
 		public virtual ActionResult AccessDeniedResult()
 		{
 			return MessageResult("Недостаточно полномочий для выполнения операции.");
+		}
+
+		[NonAction]
+		public virtual ActionResult OK()
+		{
+			return new HttpResult { StatusCode = HttpStatusCode.OK };
 		}
 
 		[NonAction]

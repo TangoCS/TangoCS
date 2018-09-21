@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -31,6 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup>
     <SignAssembly>true</SignAssembly>
@@ -52,9 +54,12 @@
     <Compile Include="Cache\ICache.cs" />
     <Compile Include="CodifierValue.cs" />
     <Compile Include="CollectionsExtensions.cs" />
+    <Compile Include="EmbeddedResourceManager.cs" />
+    <Compile Include="Enumerations.cs" />
     <Compile Include="IFMLInterfaces.cs" />
     <Compile Include="Environment.cs" />
     <Compile Include="Logger\IErrorLogger.cs" />
+    <Compile Include="Logger\IProgressLogger.cs" />
     <Compile Include="Logger\IRequestLogger.cs" />
     <Compile Include="Logger\IRequestLoggerProvider.cs" />
     <Compile Include="Mailer\IMailer.cs" />
@@ -62,8 +67,13 @@
     <Compile Include="Meta.Database\IDBScript.cs" />
     <Compile Include="Meta.Database\MetaDatabaseModel.cs" />
     <Compile Include="Meta.Database\PrimitiveTypesExtensions.cs" />
+    <Compile Include="Meta.Database\SCharBool.cs" />
     <Compile Include="Meta.Database\SchemaGenerator.cs" />
     <Compile Include="Meta.Database\SchemaSync.cs" />
+    <Compile Include="Meta.Database\SColumn.cs" />
+    <Compile Include="Meta.Database\SSequenceIdentity.cs" />
+    <Compile Include="Meta.Database\STableFunction.cs" />
+    <Compile Include="Meta.Database\STable.cs" />
     <Compile Include="Meta.Stereotypes\SVersioning.cs" />
     <Compile Include="MetaDatabaseInterfaces.cs" />
     <Compile Include="MetaInterfaces.cs" />

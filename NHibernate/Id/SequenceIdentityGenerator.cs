@@ -5,10 +5,10 @@ namespace NHibernate.Id
 {
 	/// <summary>
 	/// A generator which combines sequence generation with immediate retrieval
-	/// by attaching a output parameter to the SQL command
+	/// by attaching an output parameter to the SQL command.
 	/// In this respect it works much like ANSI-SQL IDENTITY generation.
 	/// </summary>
-	public class SequenceIdentityGenerator : SequenceGenerator, IPostInsertIdentifierGenerator
+	public partial class SequenceIdentityGenerator : SequenceGenerator, IPostInsertIdentifierGenerator
 	{
 		#region IPostInsertIdentifierGenerator Members
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Xml.Linq;
 using Tango.Html;
 using Tango.Localization;
 
@@ -456,6 +457,7 @@ namespace Tango.UI.Controls
 
 	public class Field
 	{
+		public int SeqNo { get; set; }
 		public string Title { get; set; }
 		public object Column { get; set; }
 		public FieldType FieldType { get; set; }
@@ -504,7 +506,17 @@ namespace Tango.UI.Controls
 		bool IsShared { get; }
 		bool IsDefault { get; }
 
-
 		List<FilterItem> Criteria { get; set; }
+	}
+
+	public interface IPersistentFilterEntity<TKey>
+	{
+		TKey ID { get; }
+		string FilterName { get; set; }
+		XDocument FilterValue { get; set; }
+		bool IsDefault { get; set; }
+		string ListName { get; set; }
+		string ListParms { get; set; }
+		bool IsShared { get; }
 	}
 }

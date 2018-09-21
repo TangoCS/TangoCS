@@ -18,12 +18,12 @@ namespace Tango.Html
 
 	public class HtmlWriter : StringWriter, IHtmlWriter
 	{
-		string _idPrefix;
 		string _initialPrefix;
 		Stack<string> _ids = new Stack<string>(4);
+		Stack<(string prefix, Stack<string> ids)> _prefixes = new Stack<(string prefix, Stack<string> ids)>(4);
 
 		public IAttributeWriter AttributeWriter { get; private set; }
-		public string IDPrefix => _idPrefix;
+		public string IDPrefix { get; private set; }
 
 		public HtmlWriter()
 		{
@@ -52,22 +52,36 @@ namespace Tango.Html
 			Write("<br/>");
 		}
 
+		public void PushID(string id)
+		{
+			_ids.Push(id);
+			SetPrefix();
+		}
+
+		public void PopID()
+		{
+			_ids.Pop();
+			SetPrefix();
+		}
+
 		public void PushPrefix(string prefix)
 		{
-			_ids.Push(prefix);
+			_prefixes.Push((_initialPrefix, _ids));
+			_ids.Clear();
+			_initialPrefix = prefix;
 			SetPrefix();
 		}
 
 		public void PopPrefix()
 		{
-			_ids.Pop();
+			(_initialPrefix, _ids) = _prefixes.Pop();
 			SetPrefix();
 		}
 
 		void SetPrefix()
 		{
 			var str = new[] { _initialPrefix, String.Join("_", _ids.Where(s => !string.IsNullOrEmpty(s)).Reverse()) };
-			_idPrefix = String.Join("_", str.Where(s => !string.IsNullOrEmpty(s)));
+			IDPrefix = String.Join("_", str.Where(s => !string.IsNullOrEmpty(s)));
 		}
 	}
 }

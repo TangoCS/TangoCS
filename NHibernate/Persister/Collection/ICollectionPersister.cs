@@ -1,5 +1,6 @@
+using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Collection;
@@ -27,7 +28,7 @@ namespace NHibernate.Persister.Collection
 	/// <para/>
 	/// May be considered an immutable view of the mapping object
 	/// </remarks>
-	public interface ICollectionPersister
+	public partial interface ICollectionPersister
 	{
 		/// <summary>
 		/// Get the cache
@@ -130,12 +131,6 @@ namespace NHibernate.Persister.Collection
 		/// <summary> Can the elements of this collection change?</summary>
 		bool IsMutable { get;}
 
-		string NodeName { get;}
-
-		string ElementNodeName { get;}
-
-		string IndexNodeName { get;}
-
 		ISessionFactoryImplementor Factory { get; }
 		bool IsExtraLazy { get;}
 
@@ -152,27 +147,27 @@ namespace NHibernate.Persister.Collection
 		bool HasCache { get; }
 
 		/// <summary>
-		/// Read the key from a row of the <see cref="IDataReader" />
+		/// Read the key from a row of the <see cref="DbDataReader" />
 		/// </summary>
-		object ReadKey(IDataReader rs, string[] keyAliases, ISessionImplementor session);
+		object ReadKey(DbDataReader rs, string[] keyAliases, ISessionImplementor session);
 
 		/// <summary>
-		/// Read the element from a row of the <see cref="IDataReader" />
+		/// Read the element from a row of the <see cref="DbDataReader" />
 		/// </summary>
 		//TODO: the ReadElement should really be a parameterized TElement
-		object ReadElement(IDataReader rs, object owner, string[] columnAliases, ISessionImplementor session);
+		object ReadElement(DbDataReader rs, object owner, string[] columnAliases, ISessionImplementor session);
 
 		/// <summary>
-		/// Read the index from a row of the <see cref="IDataReader" />
+		/// Read the index from a row of the <see cref="DbDataReader" />
 		/// </summary>
 		//TODO: the ReadIndex should really be a parameterized TIndex
-		object ReadIndex(IDataReader rs, string[] columnAliases, ISessionImplementor session);
+		object ReadIndex(DbDataReader rs, string[] columnAliases, ISessionImplementor session);
 
 		/// <summary>
-		/// Read the identifier from a row of the <see cref="IDataReader" />
+		/// Read the identifier from a row of the <see cref="DbDataReader" />
 		/// </summary>
 		//TODO: the ReadIdentifier should really be a parameterized TIdentifier
-		object ReadIdentifier(IDataReader rs, string columnAlias, ISessionImplementor session);
+		object ReadIdentifier(DbDataReader rs, string columnAlias, ISessionImplementor session);
 
 		string GetManyToManyFilterFragment(string alias, IDictionary<string, IFilter> enabledFilters);
 
@@ -288,5 +283,26 @@ namespace NHibernate.Persister.Collection
 		/// A place-holder to inform that the data-reader was empty.
 		/// </summary>
 		object NotFoundObject { get; }
+	}
+
+	public static class CollectionPersisterExtensions
+	{
+		/// <summary>
+		/// Get the batch size of a collection persister.
+		/// </summary>
+		//6.0 TODO: Merge into ICollectionPersister and convert to a property.
+		public static int GetBatchSize(this ICollectionPersister persister)
+		{
+			if (persister is AbstractCollectionPersister acp)
+			{
+				return acp.GetBatchSize();
+			}
+
+			NHibernateLogger
+				.For(typeof(CollectionPersisterExtensions))
+				.Warn("Collection persister of {0} type is not supported, returning 1 as a batch size.", persister?.GetType());
+
+			return 1;
+		}
 	}
 }

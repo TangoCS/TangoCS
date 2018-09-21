@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.Common;
 
 using NHibernate.Engine;
 using NHibernate.SqlCommand;
@@ -11,9 +12,9 @@ namespace NHibernate.Id.Enhanced
 	/// <summary>
 	/// Describes a table used to mimic sequence behavior
 	/// </summary>
-	public class TableStructure : TransactionHelper, IDatabaseStructure
+	public partial class TableStructure : TransactionHelper, IDatabaseStructure
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(IDatabaseStructure));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(IDatabaseStructure));
 
 		private readonly int _incrementSize;
 		private readonly int _initialValue;
@@ -96,7 +97,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Overrides of TransactionHelper
 
-		public override object DoWorkInCurrentTransaction(ISessionImplementor session, IDbConnection conn, IDbTransaction transaction)
+		public override object DoWorkInCurrentTransaction(ISessionImplementor session, DbConnection conn, DbTransaction transaction)
 		{
 			long result;
 			int updatedRows;
@@ -107,7 +108,7 @@ namespace NHibernate.Id.Enhanced
 				{
 					object selectedValue;
 
-					IDbCommand selectCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _selectQuery, SqlTypeFactory.NoTypes);
+					var selectCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _selectQuery, SqlTypeFactory.NoTypes);
 					using (selectCmd)
 					{
 						selectCmd.Connection = conn;
@@ -119,21 +120,20 @@ namespace NHibernate.Id.Enhanced
 
 					if (selectedValue ==null)
 					{
-						string err = "could not read a hi value - you need to populate the table: " + _tableName;
-						Log.Error(err);
-						throw new IdentifierGenerationException(err);
+						Log.Error("could not read a hi value - you need to populate the table: {0}", _tableName);
+						throw new IdentifierGenerationException("could not read a hi value - you need to populate the table: " + _tableName);
 					}
 					result = Convert.ToInt64(selectedValue);
 				}
 				catch (Exception sqle)
 				{
-					Log.Error("could not read a hi value", sqle);
+					Log.Error(sqle, "could not read a hi value");
 					throw;
 				}
 
 				try
 				{
-					IDbCommand updateCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _updateQuery, _updateParameterTypes);
+					var updateCmd = session.Factory.ConnectionProvider.Driver.GenerateCommand(CommandType.Text, _updateQuery, _updateParameterTypes);
 					using (updateCmd)
 					{
 						updateCmd.Connection = conn;
@@ -141,14 +141,14 @@ namespace NHibernate.Id.Enhanced
 						PersistentIdGeneratorParmsNames.SqlStatementLogger.LogCommand(updateCmd, FormatStyle.Basic);
 
 						int increment = _applyIncrementSizeToSourceValues ? _incrementSize : 1;
-						((IDataParameter)updateCmd.Parameters[0]).Value = result + increment;
-						((IDataParameter)updateCmd.Parameters[1]).Value = result;
+						updateCmd.Parameters[0].Value = result + increment;
+						updateCmd.Parameters[1].Value = result;
 						updatedRows = updateCmd.ExecuteNonQuery();
 					}
 				}
 				catch (Exception sqle)
 				{
-					Log.Error("could not update hi value in: " + _tableName, sqle);
+					Log.Error(sqle, "could not update hi value in: {0}", _tableName);
 					throw;
 				}
 			}
@@ -163,7 +163,7 @@ namespace NHibernate.Id.Enhanced
 
 		#region Nested type: TableAccessCallback
 
-		private class TableAccessCallback : IAccessCallback
+		private partial class TableAccessCallback : IAccessCallback
 		{
 			private readonly TableStructure _owner;
 			private readonly ISessionImplementor _session;

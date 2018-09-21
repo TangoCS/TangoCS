@@ -17,7 +17,7 @@ namespace Tango.Meta
 		public T Stereotype<T>() where T : IMetaStereotype
 		{
 			Type t = typeof(T);
-			if (!_stereotypes.ContainsKey(t)) return default(T);
+			if (!_stereotypes.ContainsKey(t)) return default;
 			return (T)_stereotypes[t];
 		}
 
@@ -73,13 +73,7 @@ namespace Tango.Meta
 
 		public IMetaClass AddClass<T>()
 		{
-			IMetaClass c = null;
-			if (typeof(T).BaseType != null)
-				c = new MetaClass(typeof(T).BaseType.Name);
-			else
-				c = new MetaClass();
-			c.Name = typeof(T).Name;
-			c.Persistent = PersistenceType.Table;
+			var c = new MetaClass(typeof(T));
 			AddClass(c);
 			return c;
 		}
@@ -121,17 +115,12 @@ namespace Tango.Meta
 
 	public class MetaClass : MetaNamedElement, IMetaClass
 	{
-		public MetaClass() { }
-		public MetaClass(string baseClassName)
-		{
-			BaseClassName = baseClassName;
-		}
 		public MetaClass(Type t)
 		{
 			Name = t.Name;
 			Namespace = t.Namespace;
 			Persistent = PersistenceType.Table;
-			if (t.BaseType != null /*&& t.BaseType.Namespace == t.Namespace*/)
+			if (t.BaseType != null)
 				BaseClassName = t.BaseType.Name;
 		}
 
@@ -167,14 +156,11 @@ namespace Tango.Meta
 		/// </summary>
 		public PersistenceType Persistent { get; set; }
 
-		bool _isMultilingual = false;
-
 		/// <summary>
 		/// Есть ли у класса мультиязычные свойства
 		/// </summary>
-		public bool IsMultilingual { get { return _isMultilingual; } }
+		public bool IsMultilingual { get; private set; } = false;
 
-		List<IMetaProperty> _compositeKey = new List<IMetaProperty>();
 		/// <summary>
 		/// Свойство класса, являющееся первичным ключом (если оно одно)
 		/// </summary>
@@ -182,23 +168,20 @@ namespace Tango.Meta
 		{
 			get
 			{
-				if (_compositeKey.Count != 1)
+				if (CompositeKey.Count != 1)
 					if (BaseClass != null)
 						return BaseClass.Key;
 					else
-						throw new Exception(String.Format("Error while getting single key property for class {0}. Length of the key properties array: {1}", Name, _compositeKey.Count()));
+						throw new Exception(String.Format("Error while getting single key property for class {0}. Length of the key properties array: {1}", Name, CompositeKey.Count()));
 				else
-					return _compositeKey.First();
+					return CompositeKey.First();
 			}
 		}
 
 		/// <summary>
 		/// Все свойства класса, входящие в первичный ключ
 		/// </summary>
-		public List<IMetaProperty> CompositeKey
-		{
-			get { return _compositeKey; }
-		}
+		public List<IMetaProperty> CompositeKey { get; } = new List<IMetaProperty>();
 
 		/// <summary>
 		/// Свойства класса
@@ -247,7 +230,7 @@ namespace Tango.Meta
 			if (_properties.ContainsKey(metaProperty.Name.ToLower()))
 				throw new Exception(String.Format("Property {0} already exists in the class {1}", metaProperty.Name, Name));
 			_properties.Add(metaProperty.Name.ToLower(), metaProperty);
-			if (metaProperty is ICanBeMultilingual && (metaProperty as ICanBeMultilingual).IsMultilingual) _isMultilingual = true;
+			if (metaProperty is ICanBeMultilingual && (metaProperty as ICanBeMultilingual).IsMultilingual) IsMultilingual = true;
 		}
 		public void AddOperation(IMetaOperation metaOperation)
 		{
@@ -268,15 +251,7 @@ namespace Tango.Meta
 
 		public string LogicalDeleteExpressionString { get; set; }
 		public string DefaultOrderByExpressionString { get; set; }
-
-		List<Type> _interfaces = new List<Type>();
-		public List<Type> Interfaces
-		{
-			get
-			{
-				return _interfaces;
-			}
-		}
+		public List<Type> Interfaces { get; } = new List<Type>();
 	}
 
 	public abstract class MetaProperty : MetaNamedElement, IMetaProperty
@@ -452,6 +427,12 @@ namespace Tango.Meta
 			_inversePropertyName = inversePropertyName;
         }
 
+		ColumnNameFuncDelegate _columnNameFunc = (name, suffix) => name + suffix;
+		public void SetColumnNameFunc(ColumnNameFuncDelegate func)
+		{
+			_columnNameFunc = func;
+		}
+
 		/// <summary>
 		/// Имя столбца в базе данных
 		/// </summary>
@@ -462,10 +443,12 @@ namespace Tango.Meta
 				if (RefClass == null) throw new Exception(ID + " doesn't have a RefClass");
 				if (RefClass.Key == null) throw new Exception(RefClass.ID + " doesn't have a key.");
 				if (RefClass.Key.Type as IMetaIdentifierType == null) throw new Exception(RefClass.ID + " has a non IMetaIdentifierType key.");
-				return Name + (RefClass.Key.Type as IMetaIdentifierType).ColumnSuffix;
+				return _columnNameFunc(Name, (RefClass.Key.Type as IMetaIdentifierType).ColumnSuffix);
 			}
 		}
 	}
+
+	public delegate string ColumnNameFuncDelegate(string name, string columnSuffix);
 
 	public class MetaReference<TClass, TRefClass> : MetaReference, IMetaReference<TClass, TRefClass>
 	{

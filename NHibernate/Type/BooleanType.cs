@@ -1,5 +1,7 @@
 using System;
 using System.Data;
+using System.Data.Common;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -32,12 +34,12 @@ namespace NHibernate.Type
 		{
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			return Convert.ToBoolean(rs[index]);
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
 			return Convert.ToBoolean(rs[name]);
 		}
@@ -52,9 +54,9 @@ namespace NHibernate.Type
 			get { return typeof(bool); }
 		}
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			((IDataParameter) cmd.Parameters[index]).Value = (bool) value;
+			cmd.Parameters[index].Value = (bool) value;
 		}
 
 		public override string Name
@@ -72,11 +74,19 @@ namespace NHibernate.Type
 			return dialect.ToBooleanValueString((bool)value);
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior.
+		/// <inheritdoc />
 		public virtual object StringToObject(string xml)
 		{
+			// 6.0 TODO: inline the call
+#pragma warning disable 618
 			return FromStringValue(xml);
+#pragma warning restore 618
 		}
 
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
 			return bool.Parse(xml);

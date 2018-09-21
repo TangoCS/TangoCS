@@ -17,6 +17,7 @@ using NHibernate.Mapping.ByCode;
 using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Mapping.ByCode.Conformist;
+using System.Data.Common;
 
 namespace Tango.Hibernate
 {
@@ -34,8 +35,8 @@ namespace Tango.Hibernate
 		public List<Action> AfterSaveActions { get; private set; }
 		public List<Action> BeforeSaveActions { get; private set; }
 
-		Func<IDbConnection> _connection;
-		public IDbConnection Connection => Session.Connection;
+		readonly Func<DbConnection> _connection;
+		public DbConnection Connection => Session.Connection;
 
 		public ISession Session
 		{
@@ -69,7 +70,7 @@ namespace Tango.Hibernate
 					_cfg = new Configuration();
 					_cfg.DataBaseIntegration(_dbConfig);
 					_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" } });
-					if (ConfigurationExtensions != null) ConfigurationExtensions(_cfg);
+					ConfigurationExtensions?.Invoke(_cfg);
 					_cfg.AddMapping(Mapping);
 				}
 				return _cfg;
@@ -126,9 +127,9 @@ namespace Tango.Hibernate
 		}
 
 		public string ID { get; set; }
-		Action<IDbIntegrationConfigurationProperties> _dbConfig;
+		readonly Action<IDbIntegrationConfigurationProperties> _dbConfig;
 
-		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Func<IDbConnection> connection, IClassMappingList mappingList, IRequestLoggerProvider loggerProvider)
+		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Func<DbConnection> connection, IClassMappingList mappingList, IRequestLoggerProvider loggerProvider)
 		{
 			ID = GetType().Name + "-" + Guid.NewGuid().ToString();
 			_dbConfig = dbConfig;
@@ -164,7 +165,7 @@ namespace Tango.Hibernate
 				SaveActions.Clear();
 				AfterSaveActions.Clear();
 			}
-			Session.GetSessionImplementation().PersistenceContext.Clear();
+			ClearCache();
 			//Session.Clear();
 		}
 
@@ -374,6 +375,11 @@ namespace Tango.Hibernate
 					comm.ExecuteNonQuery();
 				}
 			});
+		}
+
+		public void ClearCache()
+		{
+			Session.GetSessionImplementation().PersistenceContext.Clear();
 		}
 	}
 

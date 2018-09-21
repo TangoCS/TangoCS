@@ -13,7 +13,7 @@ namespace Tango.UI
 			AllArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			RouteArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			FormData = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
-			EventReceivers = new Dictionary<string, InteractionFlowElement>(StringComparer.OrdinalIgnoreCase);
+			EventReceivers = new Dictionary<string, IViewElement>(StringComparer.OrdinalIgnoreCase);
 			PersistentArgs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 			RequestServices = requestServices;
@@ -22,10 +22,12 @@ namespace Tango.UI
 		}
 
 		public IServiceProvider RequestServices { get; protected set; }
+		public abstract IServiceScope CreateServiceScope();
+
 		public IResourceManager Resources { get; protected set; }
 		public RoutesCollection Routes { get; protected set; }
 		public IDictionary<string, string> PersistentArgs { get; }
-		public IDictionary<string, InteractionFlowElement> EventReceivers { get; private set; }
+		public IDictionary<string, IViewElement> EventReceivers { get; private set; }
 
 		// request
 		public Guid? RequestID { get; set; }
@@ -137,6 +139,7 @@ namespace Tango.UI
 			ctx.Action = target.Action;
 			ctx.Event = target.Event;
 			ctx.EventReceiver = target.EventReceiver;
+			ctx.RequestMethod = "GET";
 
 			ctx.ReturnTarget = null;
 			ctx.ReturnUrl = null;
@@ -164,7 +167,7 @@ namespace Tango.UI
 			ctx.Sender = null;
 			ctx.ContainerType = null;
 			ctx.ContainerPrefix = null;
-			ctx.AddContainer = false;
+			ctx.AddContainer = true;
 
 			return ctx;
 		}
@@ -224,11 +227,18 @@ namespace Tango.UI
 			if (b) return res;
 			return null;
 		}
+
 		public static bool GetBoolArg(this ActionContext ctx, string name, bool defaultValue)
 		{
 			if (ctx.AllArgs.TryGetValue(name, out object s))
-				return s.ToString().In("true", "1");
+				return s.ToString().ToLower().In("true", "1");
 			return defaultValue;
+		}
+		public static bool? GetBoolArg(this ActionContext ctx, string name)
+		{
+			if (ctx.AllArgs.TryGetValue(name, out object s))
+				return s.ToString().ToLower().In("true", "1");
+			return null;
 		}
 
 		public static DateTime GetDateTimeArg(this ActionContext ctx, string name, DateTime defaultValue)
@@ -257,9 +267,14 @@ namespace Tango.UI
 		}
 
 
-		public static T GetArg<T>(this ActionContext ctx, string name)
+		public static T GetArg<T>(this ActionContext ctx, string name, T defaultValue = default)
 		{
-			return ctx.AllArgs.Parse<T>(name);
+			return ctx.AllArgs.Parse<T>(name, defaultValue);
+		}
+
+		public static List<T> GetListArg<T>(this ActionContext ctx, string name)
+		{
+			return ctx.AllArgs.ParseList<T>(name);
 		}
 	}
 }

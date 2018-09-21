@@ -44,6 +44,16 @@ namespace Tango
 		TUser LastModifiedUser { get; set; }
 	}
 
+	public interface IChildEntity<TParentKey>
+	{
+		TParentKey ParentID { get; set; }
+	}
+
+	public interface IChildEntity<T, TParentKey> : IChildEntity<TParentKey>
+	{
+		Expression<Func<T, bool>> ByParentKeySelector(TParentKey id);
+	}
+
 	public interface IEnum
 	{
 	}

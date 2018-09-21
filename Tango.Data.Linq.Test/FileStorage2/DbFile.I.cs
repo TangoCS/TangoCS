@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -29,8 +29,8 @@ namespace Solution.Model
 			{
 				_validationMessages = new List<ValidationMessage>();
 				// Проверка на отсутствие файла с таким же именем
-				//if (IsNew && FileStorageManager.DbFiles.Any(o => o.Path == _Path && o.Title == _Title))
-				//	_validationMessages.Add(new ValidationMessage("Файл " + (_Path ?? "") + "/" + _Title + " уже существует", ValidationMessageSeverity.Error));
+				if (IsNew && FileStorageManager.DbFiles.Any(o => o.Path == _Path && o.Title == _Title))
+					_validationMessages.Add(new ValidationMessage("Файл " + (_Path ?? "") + "/" + _Title + " уже существует", ValidationMessageSeverity.Error));
 				// Проверка на отсутствие кривых символов
 				if (_Title.ToCharArray().Intersect(System.IO.Path.GetInvalidPathChars()).Count() > 0)
 					_validationMessages.Add(new ValidationMessage("Имя файла содержит недопустимый символ", ValidationMessageSeverity.Error));
@@ -62,7 +62,7 @@ namespace Solution.Model
 
 		public byte[] GetBytes()
 		{
-			if (!IsNew)
+			if (!IsNew && bytes == null)
 			{
 				bytes = FileStorageManager.GetBytes(this);
 			}
@@ -96,11 +96,17 @@ namespace Solution.Model
 				return;
 			}
 			Size = bytes.Length;
+
+			var md5 = System.Security.Cryptography.MD5.Create();
+			var hash = md5.ComputeHash(bytes);
+			DataHash = new Binary(hash);
+
 			Changed();
 			this.bytes = bytes;
 			if (!dataChanged)
 				App.DataContext.AfterSaveActions.Add(() =>
 					{
+						App.DataContext.ExecuteCommand("update n_file set datahash = {0} where guid = {1}", hash, ID);
 						FileStorageManager.StoreData(this, this.bytes);
 					});
 			dataChanged = true;
@@ -145,7 +151,7 @@ namespace Solution.Model
 			ParentFolder = (DbFolder)parent;
 			if (parent != null)
 			{
-				ParentFolderID = parent.ID;
+				ParentFolder = (DbFolder)parent;
 				Path = ParentFolder.FullPath;
 			}
 			else

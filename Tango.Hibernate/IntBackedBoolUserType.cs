@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Data;
+using System.Data.Common;
 using NHibernate;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
@@ -18,13 +20,9 @@ namespace Tango.Hibernate
 			return x.Equals(y);
 		}
 
-		public int GetHashCode(object x)
-		{
-			return x.GetHashCode();
-		}
-
 		public object DeepCopy(object value)
 		{
+			GetHashCode(value);
 			return value;
 		}
 
@@ -61,21 +59,21 @@ namespace Tango.Hibernate
 			get { return typeof(bool); }
 		}
 
-		public new void NullSafeSet(IDbCommand cmd, object value, int index)
+		public override void NullSafeSet(DbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			var val = !((bool)value) ? 0 : 1;
-			NHibernateUtil.Int32.NullSafeSet(cmd, val, index);
+			NHibernateUtil.Int32.NullSafeSet(cmd, val, index, session);
 		}
 
-		public object NullSafeGet(IDataReader rs, string[] names, object owner)
+		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return NHibernateUtil.Boolean.NullSafeGet(rs, names[0]);
+			return NHibernateUtil.Boolean.NullSafeGet(rs, name, session);
 		}
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			var val = value is int ? value : !((bool)value) ? 0 : 1;
-			((IDataParameter)cmd.Parameters[index]).Value = val;
+			cmd.Parameters[index].Value = val;
 		}
 	}
 }

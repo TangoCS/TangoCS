@@ -70,7 +70,7 @@ namespace Tango.UI
 			return this;
 		}
 
-		public ApiResponse WithNamesFor(Func<string, string> nameFunc)
+		public ApiResponse WithNameFunc(Func<string, string> nameFunc)
 		{
 			_namefunc = nameFunc;
 			return this;
@@ -110,6 +110,13 @@ namespace Tango.UI
 				ClientActions.Insert(0, resp.ClientActions[i]);
 		}
 
+		public void Add(ApiResponse resp)
+		{
+			Widgets.AddRange(resp.Widgets);
+			_widgetsToRender.AddRange(resp._widgetsToRender);
+			ClientActions.AddRange(resp.ClientActions);
+		}
+
 		public void AddClientAction(string service, string method, Func<Func<string, string>, object> args)
 		{
 			var resolvedArgs = args != null ? args(_namefunc) : null;
@@ -119,6 +126,11 @@ namespace Tango.UI
 		public void AddClientAction(ClientAction action)
 		{
 			ClientActions.Add(action);
+		}
+
+		public void AddClientAction(string service, string method, object args)
+		{
+			AddClientAction(service, method, f => args);
 		}
 
 		void RunRedirect(ActionContext retctx)
@@ -131,7 +143,7 @@ namespace Tango.UI
 			{
 				for (int i = ajax.ApiResponse._widgetsToRender.Count - 1; i >= 0; i--)
 					ajax.ApiResponse._widgetsToRender[i].context = retctx;
-				Insert(ajax.ApiResponse);
+				Add(ajax.ApiResponse);
 			}
 		}
 
@@ -218,7 +230,8 @@ namespace Tango.UI
 		#region root widget, no prefix, content = action
 		public ApiResponse AddWidget(string name, Action<LayoutWriter> content)
 		{
-			var w = new ContentWidget { Name = _namefunc(name), Action = WidgetAction.Add };
+			var n = name.StartsWith("#") ? name.Substring(1) : _namefunc(name);
+			var w = new ContentWidget { Name = n, Action = WidgetAction.Add };
 			Widgets.Add(w);
 			_widgetsToRender.Add(new WidgetToRender { widget = w, prefix = _idprefix, content = content });
 			return this;
@@ -226,7 +239,8 @@ namespace Tango.UI
 
 		public ApiResponse ReplaceWidget(string name, Action<LayoutWriter> content)
 		{
-			var w = new ContentWidget { Name = _namefunc(name), Action = WidgetAction.Replace };
+			var n = name.StartsWith("#") ? name.Substring(1) : _namefunc(name);
+			var w = new ContentWidget { Name = n, Action = WidgetAction.Replace };
 			Widgets.Add(w);
 			_widgetsToRender.Add(new WidgetToRender { widget = w, prefix = _idprefix, content = content });
 			return this;
@@ -244,7 +258,9 @@ namespace Tango.UI
 
 		public ApiResponse AddAdjacentWidget(string parent, string name, AdjacentHTMLPosition position, Action<LayoutWriter> content)
 		{
-			var w = new AdjacentWidget { Name = _namefunc(name), Parent = parent, Action = WidgetAction.Adjacent, Position = position };
+			var n = name.StartsWith("#") ? name.Substring(1) : _namefunc(name);
+			var p = parent == null ? null : (parent.StartsWith("#") ? parent.Substring(1) : _namefunc(parent));
+			var w = new AdjacentWidget { Name = n, Parent = p, Action = WidgetAction.Adjacent, Position = position };
 			Widgets.Add(w);
 			_widgetsToRender.Add(new WidgetToRender { widget = w, prefix = _idprefix, content = content });
 			return this;

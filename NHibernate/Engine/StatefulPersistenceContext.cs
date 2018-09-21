@@ -8,6 +8,7 @@ using System.Text;
 using NHibernate.Collection;
 using NHibernate.Engine.Loading;
 using NHibernate.Impl;
+using NHibernate.Intercept;
 using NHibernate.Persister.Collection;
 using NHibernate.Persister.Entity;
 using NHibernate.Proxy;
@@ -27,11 +28,11 @@ namespace NHibernate.Engine
 	/// PersistentContext to drive their processing.
 	/// </remarks>
 	[Serializable]
-	public class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
+	public partial class StatefulPersistenceContext : IPersistenceContext, ISerializable, IDeserializationCallback
 	{
 		private const int InitCollectionSize = 8;
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(StatefulPersistenceContext));
-		private static readonly IInternalLogger ProxyWarnLog = LoggerProvider.LoggerFor(typeof(StatefulPersistenceContext).FullName + ".ProxyWarnLog");
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(StatefulPersistenceContext));
+		private static readonly INHibernateLogger ProxyWarnLog = NHibernateLogger.For(typeof(StatefulPersistenceContext).FullName + ".ProxyWarnLog");
 
 		public static readonly object NoRow = new object();
 
@@ -530,7 +531,7 @@ namespace NHibernate.Engine
 																bool disableVersionIncrement, bool lazyPropertiesAreUnfetched)
 		{
 			EntityEntry e =
-				new EntityEntry(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister, session.EntityMode,
+				new EntityEntry(status, loadedState, rowId, id, version, lockMode, existsInDatabase, persister,
 								disableVersionIncrement, lazyPropertiesAreUnfetched);
 			entityEntries[entity] = e;
 
@@ -592,9 +593,9 @@ namespace NHibernate.Engine
 			{
 				var proxy = value as INHibernateProxy; 
 				
-				if (log.IsDebugEnabled)
+				if (log.IsDebugEnabled())
 				{
-					log.Debug("setting proxy identifier: " + id);
+					log.Debug("setting proxy identifier: {0}", id);
 				}
 				ILazyInitializer li = proxy.HibernateLazyInitializer;
 				li.Identifier = id;
@@ -708,13 +709,13 @@ namespace NHibernate.Engine
 		/// <returns> An appropriately narrowed instance. </returns>
 		public object NarrowProxy(INHibernateProxy proxy, IEntityPersister persister, EntityKey key, object obj)
 		{
-			bool alreadyNarrow = persister.GetConcreteProxyClass(session.EntityMode).IsInstanceOfType(proxy);
+			bool alreadyNarrow = persister.ConcreteProxyClass.IsInstanceOfType(proxy);
 
 			if (!alreadyNarrow)
 			{
-				if (ProxyWarnLog.IsWarnEnabled)
+				if (ProxyWarnLog.IsWarnEnabled())
 				{
-					ProxyWarnLog.Warn("Narrowing proxy to " + persister.GetConcreteProxyClass(session.EntityMode) + " - this operation breaks ==");
+					ProxyWarnLog.Warn("Narrowing proxy to {0} - this operation breaks ==", persister.ConcreteProxyClass);
 				}
 
 				if (obj != null)
@@ -835,6 +836,10 @@ namespace NHibernate.Engine
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
 			AddCollection(collection, ce, id);
+			if (persister.GetBatchSize() > 1)
+			{
+				batchFetchQueue.AddBatchLoadableCollection(collection, ce);
+			}
 		}
 
 		/// <summary> add a detached uninitialized collection</summary>
@@ -862,7 +867,7 @@ namespace NHibernate.Engine
 		private void AddCollection(IPersistentCollection coll, CollectionEntry entry, object key)
 		{
 			collectionEntries[coll] = entry;
-			CollectionKey collectionKey = new CollectionKey(entry.LoadedPersister, key, session.EntityMode);
+			CollectionKey collectionKey = new CollectionKey(entry.LoadedPersister, key);
 			IPersistentCollection tempObject;
 			collectionsByKey.TryGetValue(collectionKey, out tempObject);
 			collectionsByKey[collectionKey] = coll;
@@ -913,7 +918,7 @@ namespace NHibernate.Engine
 																										object id)
 		{
 			CollectionEntry ce = new CollectionEntry(collection, persister, id, flushing);
-			ce.PostInitialize(collection);
+			ce.PostInitialize(collection, this);
 			AddCollection(collection, ce, id);
 			return ce;
 		}
@@ -1169,7 +1174,7 @@ namespace NHibernate.Engine
 
 		private bool IsFoundInParent(string property, object childEntity, IEntityPersister persister, ICollectionPersister collectionPersister, object potentialParent)
 		{
-			object collection = persister.GetPropertyValue(potentialParent, property, session.EntityMode);
+			object collection = persister.GetPropertyValue(potentialParent, property);
 			return collection != null && NHibernateUtil.IsInitialized(collection) && collectionPersister.CollectionType.Contains(collection, childEntity, session);
 		}
 
@@ -1241,7 +1246,7 @@ namespace NHibernate.Engine
 
 		private object GetIndexInParent(string property, object childEntity, IEntityPersister persister, ICollectionPersister collectionPersister, object potentialParent)
 		{
-			object collection = persister.GetPropertyValue(potentialParent, property, session.EntityMode);
+			object collection = persister.GetPropertyValue(potentialParent, property);
 			if (collection != null && NHibernateUtil.IsInitialized(collection))
 			{
 				return collectionPersister.CollectionType.IndexOf(collection, childEntity);
@@ -1439,7 +1444,7 @@ namespace NHibernate.Engine
 				}
 				catch (HibernateException he)
 				{
-					throw new InvalidOperationException(he.Message);
+					throw new InvalidOperationException(he.Message, he);
 				}
 			}
 
@@ -1467,7 +1472,16 @@ namespace NHibernate.Engine
 				}
 				catch (MappingException me)
 				{
-					throw new InvalidOperationException(me.Message);
+					throw new InvalidOperationException(me.Message, me);
+				}
+			}
+
+			// Reconnect the lazy property proxies
+			foreach (var p in entitiesByKey)
+			{
+				if (p.Value is IFieldInterceptorAccessor lazyPropertyProxy && lazyPropertyProxy.FieldInterceptor != null)
+				{
+					lazyPropertyProxy.FieldInterceptor.Session = session;
 				}
 			}
 		}
@@ -1495,11 +1509,7 @@ namespace NHibernate.Engine
 			InitTransientState();
 		}
 
-#if NET_4_0
 		[SecurityCritical]
-#else
-		[SecurityPermission(SecurityAction.LinkDemand, Flags = SecurityPermissionFlag.SerializationFormatter)]
-#endif
 		void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
 		{
 			log.Debug("serializing persistent-context");

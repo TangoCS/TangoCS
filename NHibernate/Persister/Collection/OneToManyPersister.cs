@@ -1,12 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet;
 using NHibernate.Cache;
-using NHibernate.Cfg;
 using NHibernate.Collection;
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -19,14 +17,14 @@ using NHibernate.Util;
 
 namespace NHibernate.Persister.Collection
 {
-	public class OneToManyPersister : AbstractCollectionPersister
+	public partial class OneToManyPersister : AbstractCollectionPersister, ISupportSelectModeJoinable
 	{
 		private readonly bool _cascadeDeleteEnabled;
 		private readonly bool _keyIsNullable;
 		private readonly bool _keyIsUpdateable;
 
-		public OneToManyPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, Configuration cfg, ISessionFactoryImplementor factory)
-			: base(collection, cache, cfg, factory)
+		public OneToManyPersister(Mapping.Collection collection, ICacheConcurrencyStrategy cache, ISessionFactoryImplementor factory)
+			: base(collection, cache, factory)
 		{
 			_cascadeDeleteEnabled = collection.Key.IsCascadeDeleteEnabled && factory.Dialect.SupportsCascadeDelete;
 			_keyIsNullable = collection.Key.IsNullable;
@@ -78,7 +76,7 @@ namespace NHibernate.Persister.Collection
 				update.SetJoin(ownerPersister.TableName, KeyColumnNames, KeyType, JoinColumnNames, ownerPersister.GetPropertyColumnNames(CollectionType.LHSPropertyName));
 			}
 
-			if (HasIndex)
+			if (HasIndex && !indexContainsFormula)
 				update.AddColumns(IndexColumnNames, "null");
 
 			if (HasWhere)
@@ -116,18 +114,19 @@ namespace NHibernate.Persister.Collection
 		/// <summary>
 		/// Not needed for one-to-many association
 		/// </summary>
-		/// <returns></returns>
 		protected override SqlCommandInfo GenerateUpdateRowString()
 		{
 			return null;
 		}
 
+		/// <inheritdoc />
 		/// <summary>
 		/// Generate the SQL UPDATE that updates a particular row's foreign
-		/// key to null
+		/// key to null.
 		/// </summary>
-		/// <returns></returns>
-		protected override SqlCommandInfo GenerateDeleteRowString()
+		/// <param name="columnNullness">Unused, the element is the entity key and should not contain null
+		/// values.</param>
+		protected override SqlCommandInfo GenerateDeleteRowString(bool[] columnNullness)
 		{
 			var update = new SqlUpdateBuilder(Factory.Dialect, Factory);
 			update.SetTableName(qualifiedTableName)
@@ -186,7 +185,7 @@ namespace NHibernate.Persister.Collection
 					{
 						if (collection.NeedsUpdating(entry, i, ElementType))
 						{
-							IDbCommand st = null;
+							DbCommand st;
 							// will still be issued when it used to be null
 							if (useBatch)
 							{
@@ -202,7 +201,9 @@ namespace NHibernate.Persister.Collection
 							try
 							{
 								int loc = WriteKey(st, id, offset, session);
-								WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), loc, session);
+								// No columnNullness handling: the element is the entity key and should not contain null
+								// values.
+								WriteElementToWhere(st, collection.GetSnapshotElement(entry, i), null, loc, session);
 								if (useBatch)
 								{
 									session.Batcher.AddToBatch(deleteExpectation);
@@ -247,7 +248,7 @@ namespace NHibernate.Persister.Collection
 					{
 						if (collection.NeedsUpdating(entry, i, ElementType))
 						{
-							IDbCommand st = null;
+							DbCommand st;
 							if (useBatch)
 							{
 								st = session.Batcher.PrepareBatchCommand(SqlInsertRowString.CommandType, sql.Text,
@@ -267,7 +268,9 @@ namespace NHibernate.Persister.Collection
 								{
 									loc = WriteIndexToWhere(st, collection.GetIndex(entry, i, this), loc, session);
 								}
-								WriteElementToWhere(st, collection.GetElement(entry), loc, session);
+								// No columnNullness handling: the element is the entity key and should not contain null
+								// values.
+								WriteElementToWhere(st, collection.GetElement(entry), null, loc, session);
 								if (useBatch)
 								{
 									session.Batcher.AddToBatch(insertExpectation);
@@ -305,13 +308,20 @@ namespace NHibernate.Persister.Collection
 			}
 		}
 
-		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix, bool includeCollectionColumns)
+		public override string SelectFragment(IJoinable rhs, string rhsAlias, string lhsAlias, string entitySuffix, string collectionSuffix, bool includeCollectionColumns, bool fetchLazyProperties)
 		{
 			var buf = new StringBuilder();
 
 			if (includeCollectionColumns)
 			{
 				buf.Append(SelectFragment(lhsAlias, collectionSuffix)).Append(StringHelper.CommaSpace);
+			}
+
+			if (fetchLazyProperties)
+			{
+				var selectMode = ReflectHelper.CastOrThrow<ISupportSelectModeJoinable>(ElementPersister, "fetch lazy properties");
+				if (selectMode != null)
+					return buf.Append(selectMode.SelectFragment(null, null, lhsAlias, entitySuffix, null, false, fetchLazyProperties)).ToString();
 			}
 
 			var ojl = (IOuterJoinLoadable)ElementPersister;

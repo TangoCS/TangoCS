@@ -3,8 +3,8 @@ using System;
 namespace NHibernate.Engine
 {
 	/// <summary>
-	/// Information to determine how to run an IDbCommand and what
-	/// records to return from the IDataReader.
+	/// Information to determine how to run an DbCommand and what
+	/// records to return from the DbDataReader.
 	/// </summary>
 	[Serializable]
 	public sealed class RowSelection
@@ -42,10 +42,10 @@ namespace NHibernate.Engine
 		}
 
 		/// <summary>
-		/// Gets or Sets the Timeout of the Query
+		/// The timeout in seconds for the underlying ADO.NET query.
 		/// </summary>
-		/// <value>The Query Timeout</value>
-		/// <remarks>Defaults to NoValue unless specifically set.</remarks>
+		/// <value>The query timeout in seconds.</value>
+		/// <remarks>Defaults to <see cref="NoValue" /> unless specifically set.</remarks>
 		public int Timeout
 		{
 			get { return timeout; }

@@ -3,12 +3,11 @@ using System.Collections.Generic;
 
 namespace Tango.AccessControl
 {
-	public interface IRoleBasedAccessControl<TRole, TKey> : IAccessControl
+	public interface IRoleBasedAccessControl<TKey> : IAccessControl
 		where TKey : IEquatable<TKey>
-		where TRole : class
 	{
 		bool CheckForRole(TKey roleID, string securableObjectKey);
-		IEnumerable<TRole> Roles { get; }
+		IEnumerable<TKey> Roles { get; }
 		bool HasRole(params string[] roleName);
 	}
 }

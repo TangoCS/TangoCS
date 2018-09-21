@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Data;
 
 using NHibernate.Engine;
 using NHibernate.Exceptions;
@@ -9,6 +8,7 @@ using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.Util;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 
 namespace NHibernate.Id
@@ -32,9 +32,9 @@ namespace NHibernate.Id
 	/// The <c>sequence</c> parameter is required while the <c>schema</c> is optional.
 	/// </p>
 	/// </remarks>
-	public class SequenceGenerator : IPersistentIdentifierGenerator, IConfigurable
+	public partial class SequenceGenerator : IPersistentIdentifierGenerator, IConfigurable
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SequenceGenerator));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(SequenceGenerator));
 
 		/// <summary>
 		/// The name of the sequence parameter.
@@ -113,8 +113,8 @@ namespace NHibernate.Id
 		{
 			try
 			{
-				IDbCommand cmd = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
-				IDataReader reader = null;
+				var cmd = session.Batcher.PrepareCommand(CommandType.Text, sql, SqlTypeFactory.NoTypes);
+				DbDataReader reader = null;
 				try
 				{
 					reader = session.Batcher.ExecuteReader(cmd);
@@ -122,9 +122,9 @@ namespace NHibernate.Id
 					{
 						reader.Read();
 						object result = IdentifierGeneratorFactory.Get(reader, identifierType, session);
-						if (log.IsDebugEnabled)
+						if (log.IsDebugEnabled())
 						{
-							log.Debug("Sequence identifier generated: " + result);
+							log.Debug("Sequence identifier generated: {0}", result);
 						}
 						return result;
 					}
@@ -140,7 +140,7 @@ namespace NHibernate.Id
 			}
 			catch (DbException sqle)
 			{
-				log.Error("error generating sequence", sqle);
+				log.Error(sqle, "error generating sequence");
 				throw ADOExceptionHelper.Convert(session.Factory.SQLExceptionConverter, sqle, "could not get next sequence value");
 			}
 		}

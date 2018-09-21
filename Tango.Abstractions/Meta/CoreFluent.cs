@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Xml;
 using System.Xml.Linq;
+using Tango.Meta.Database;
 
 namespace Tango.Meta.Fluent
 {
@@ -70,6 +71,7 @@ namespace Tango.Meta.Fluent
 
 		public T IntKey(bool isIdentity = true) => Key<int>(TypeFactory.Int, a => a.IsIdentity = isIdentity);
 		public T IntKey(string name, bool isIdentity = true) => Key<int>(name, TypeFactory.Int, a => a.IsIdentity = isIdentity);
+		public T IntKey(string name, Action<MetaAttribute<TClass, int>> attribute) => Key<int>(name, TypeFactory.Int, attribute);
 		public T LongKey(bool isIdentity = true) => Key<long>(TypeFactory.Long, a => a.IsIdentity = isIdentity);
 		public T LongKey(string name, bool isIdentity = true) => Key<long>(name, TypeFactory.Long, a => a.IsIdentity = isIdentity);
 		public T GuidKey() => Key<Guid>(TypeFactory.Guid);
@@ -78,6 +80,8 @@ namespace Tango.Meta.Fluent
 		public T StringKey(string name) => Key<string>(name, TypeFactory.String);
 		public T DateKey() => Key<DateTime>(TypeFactory.Date);
 		public T DateKey(string name) => Key<DateTime>(name, TypeFactory.Date);
+		public T DateTimeKey() => Key<DateTime>(TypeFactory.DateTime);
+		public T DateTimeKey(string name) => Key<DateTime>(name, TypeFactory.DateTime);
 
 		bool CheckRequired(Type t)
 		{
@@ -98,11 +102,12 @@ namespace Tango.Meta.Fluent
 			return Key(name, type, attribute);
 		}
 
-		public T Key<TKey>(string name, IMetaIdentifierType type, Action<MetaAttribute<TClass, TKey>> attribute = null)
+		public T Key<TKey>(string name, IMetaIdentifierType type, Action<MetaAttribute<TClass, TKey>> attributes = null)
 		{
 			MetaAttribute<TClass, TKey> a = new MetaAttribute<TClass, TKey> {
 				Name = name, IsMultilingual = false, IsRequired = true, Type = type
 			};
+			attributes?.Invoke(a);
 			MetaClass.AddProperty(a);
 			MetaClass.CompositeKey.Add(a);
 			return _this;
@@ -114,7 +119,7 @@ namespace Tango.Meta.Fluent
 				Name = name, IsRequired = true
 			};
 			a.SetRefClass(typeof(TRefClass).Name);
-			if (attributes != null) attributes(a);
+			attributes?.Invoke(a);
 			MetaClass.AddProperty(a);
 			MetaClass.CompositeKey.Add(a);
 			return _this;
@@ -126,7 +131,7 @@ namespace Tango.Meta.Fluent
 			MetaAttribute<TClass, TValue> a = new MetaAttribute<TClass, TValue> {
 				Name = name, Type = type, IsRequired = CheckRequired(typeof(TValue))
 			};
-			if (attributes != null) attributes(a);
+			attributes?.Invoke(a);
 			MetaClass.AddProperty(a);
 			return _this;
 		}
@@ -148,7 +153,7 @@ namespace Tango.Meta.Fluent
 				Name = name, IsRequired = isRequired
 			};
 			a.SetRefClass(typeof(TRefClass).Name);
-			if (attributes != null) attributes(a);
+			attributes?.Invoke(a);
 			MetaClass.AddProperty(a);
 			return _this;
 		}
@@ -170,7 +175,7 @@ namespace Tango.Meta.Fluent
 				Name = name, IsRequired = isRequired
 			};
 			a.SetRefClass(typeof(TRefClass).Name);
-			if (attributes != null) attributes(a);
+			attributes?.Invoke(a);
 			MetaClass.AddProperty(a);
 			return _this;
 		}
@@ -200,7 +205,7 @@ namespace Tango.Meta.Fluent
 				Name = name, Type = type, IsMultilingual = false,
 				IsRequired = CheckRequired(typeof(TValue))
 			};
-			if (attributes != null) attributes(a);
+			attributes?.Invoke(a);
 			MetaClass.AddProperty(a);
 			return _this;
 		}
@@ -212,14 +217,14 @@ namespace Tango.Meta.Fluent
 				Type = TypeFactory.FromCSharpType(typeof(TValue)),
 				IsRequired = CheckRequired(typeof(TValue))
 			};
-			if (attributes != null) attributes(a);
+			attributes?.Invoke(a);
 			MetaClass.AddProperty(a);
 			return _this;
 		}
 
 		public T PersistentComputedAttribute<TValue>(string name, bool isRequired, Action<MetaPersistentComputedAttribute<TClass, TValue>> attributes = null)
 		{
-			Action<MetaPersistentComputedAttribute<TClass, TValue>> a = x => { x.IsRequired = isRequired; if (attributes != null) attributes(x); };
+			Action<MetaPersistentComputedAttribute<TClass, TValue>> a = x => { x.IsRequired = isRequired; attributes?.Invoke(x); };
 			return PersistentComputedAttribute<TValue>(name, TypeFactory.FromCSharpType(typeof(TValue)), a);
 		}
 
@@ -227,7 +232,7 @@ namespace Tango.Meta.Fluent
 		{
 			var op = new MetaOperation { Name = name };
 			MetaClass.AddOperation(op);
-			if (attributes != null) attributes(op);
+			attributes?.Invoke(op);
 			return _this;
 		}
 
@@ -238,14 +243,23 @@ namespace Tango.Meta.Fluent
 
 		public T Attribute<TValue>(string name, bool isRequired, Action<MetaAttribute<TClass, TValue>> attributes = null)
 		{
-			Action<MetaAttribute<TClass, TValue>> a = x => { x.IsRequired = isRequired; if (attributes != null) attributes(x); };
+			Action<MetaAttribute<TClass, TValue>> a = x => { x.IsRequired = isRequired; attributes?.Invoke(x); };
 			return Attribute<TValue>(name, TypeFactory.FromCSharpType(typeof(TValue)), a);
 		}
 
 		public T Attribute<TValue>(string name, IMetaPrimitiveType type, bool isRequired, Action<MetaAttribute<TClass, TValue>> attributes = null)
 		{
-			Action<MetaAttribute<TClass, TValue>> a = x => { x.IsRequired = isRequired; if (attributes != null) attributes(x); };
+			Action<MetaAttribute<TClass, TValue>> a = x => { x.IsRequired = isRequired; attributes?.Invoke(x); };
 			return Attribute<TValue>(name, type, a);
+		}
+
+		public T Parameter<TValue>(string name)
+		{
+			MetaClass.Parameters.Add(new MetaParameter {
+				Name = name,
+				Type = (IMetaParameterType)TypeFactory.FromCSharpType(typeof(TValue))
+			});
+			return _this;
 		}
 
 		public T TimeStamp<TUser, TKey>()
@@ -269,6 +283,28 @@ namespace Tango.Meta.Fluent
 			MetaClass.Interfaces.Add(typeof(IWithTitle));
 			return _this;
 		}
+
+		public T Table(string tableName)
+		{
+			MetaClass.Persistent = PersistenceType.Table;
+			MetaClass.AssignStereotype(new STable { Name = tableName } );
+			return _this;
+		}
+
+		public T CustomSql(string sqlFile)
+		{
+			MetaClass.Persistent = PersistenceType.Table;
+			MetaClass.AssignStereotype(new SCustomSql { Name = sqlFile });
+			return _this;
+		}
+
+		public T TableFunction<TResult>(string functionName)
+		{
+			MetaClass.Persistent = PersistenceType.TableFunction;
+			MetaClass.AssignStereotype(new STableFunction { Name = functionName, ReturnType = typeof(TResult) });
+			return _this;
+		}
+
 	}
 
 	public class MetaClassBuilder<TClass> : AbstractMetaClassBuilder<MetaClassBuilder<TClass>, TClass>
@@ -286,7 +322,7 @@ namespace Tango.Meta.Fluent
 			MetaAttribute<TClassData, TValue> a = new MetaAttribute<TClassData, TValue> {
 				Name = name, Type = type, IsRequired = Nullable.GetUnderlyingType(typeof(TValue)) == null, IsMultilingual = true
 			};
-			if (attributes != null) attributes(a);
+			attributes?.Invoke(a);
 			MetaClass.AddProperty(a);
 			return _this;
 		}

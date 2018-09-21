@@ -1,27 +1,34 @@
 ﻿var tabs = function (au) {
 	var instance = {
 		onselect: function (el) {
-			var id = el.parentNode.parentNode.parentNode.getAttribute('data-parmname');
-			var index = [].indexOf.call(el.parentNode.parentNode.children, el.parentNode);
-			var pages = document.getElementById(id.toLowerCase() + '_pages').children;
+			const isBack = !el.nodeType;
+			if (isBack) el = document.getElementById(el);
+			const tabs = el.parentNode.parentNode.parentNode;
+			const ctrlid = tabs.getAttribute('data-parmname').toLowerCase();
+			const index = [].indexOf.call(el.parentNode.parentNode.children, el.parentNode);
+			const pages = document.getElementById(tabs.id + '_pages').children;
 			for (i = 0; i < pages.length; i++) {
 				pages[i].className = i == index ? 'selected' : '';
 			}
+			if (isBack)
+				el.previousSibling.checked = true;
 
 			if (el.getAttribute('data-useurlparm') == "True") {
 				var target = {};
+				target = { e: "OnPageSelect", r: tabs.id, query: {} };
+				target.query[ctrlid] = el.getAttribute('data-id');
+				target.url = au.findServiceAction(el);
+				target.onBack = { service: "tabs", callChain: [{ method: "onselect", args: el.id }] };
+				if (!isBack) target.changeloc = true;
 
-				if (el.getAttribute('data-ajax') == "True") {
-					target = { e: "OnPageSelect", r: id, data: {} };
-					target.data[id] = el.getAttribute('data-id');
+				if (el.getAttribute('data-ajax') == "True" && el.getAttribute('data-loaded') != "True") {
+					el.setAttribute('data-loaded', 'True');
+					au.runEventFromElementWithApiResponse(el, target);
+					return;
+				}
 
-					if (el.getAttribute('data-loaded') != "True") {
-						el.setAttribute('data-loaded', 'True');
-						au.runHrefWithApiResponse(el, target);
-					} else {
-						target.changeloc = true;
-						au.prepareTarget(target);
-					}
+				if (!isBack) {
+					au.prepareTarget(target);
 				}
 			}
 		}

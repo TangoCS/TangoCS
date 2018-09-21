@@ -56,7 +56,7 @@
 		containment: window,
 		winEventClose: true,
 		position: 'auto', //allowed values are top, left, bottom and right
-		closeOnClick: true, //close context menu on click/ trigger of any item in menu
+		closeOnClick: false, //close context menu on click/ trigger of any item in menu
 		delayedTrigger: false,
 
 		//callback
@@ -246,10 +246,13 @@
 				e.stopPropagation();
 			});
 
-			menu.bind('click', function (e) {
-				iMethods.closeContextMenu(option, trigger, menu, e);
-			});
+			if (option.closeOnClick) {
+				menu.bind('click', function (e) {
+					iMethods.closeContextMenu(option, trigger, menu, e);
+				});
+			}
 
+			document.body.appendChild(menu[0]);
 		},
 		eventHandler: function (e) {
 			e.preventDefault();
@@ -314,7 +317,6 @@
 					if (cObj.css('position') == 'static') {
 						cObj.css('position', 'relative');
 					}
-
 				}
 
 				if (!menuData.menuHeight) {
@@ -326,6 +328,8 @@
 				}
 				var menuHeight = menuData.menuHeight;
 				var menuWidth = menuData.menuWidth;
+				option.triggerVisibility = trigger[0].style.visibility;
+				trigger.css('visibility', 'visible');
 
 				if (option.displayAround == 'cursor') {
 					left = cntWin ? e.clientX : e.clientX + $(window).scrollLeft() - cLeft;
@@ -458,6 +462,7 @@
 			$(document).focus();
 
 			option.baseTrigger.removeClass('iw-opened');
+			option.baseTrigger.css('visibility', option.triggerVisibility ? option.triggerVisibility : '');
 
 			//call close function
 			option.onClose.call(this, {

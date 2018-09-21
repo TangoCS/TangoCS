@@ -41,16 +41,17 @@ namespace Tango.Meta
 	public partial class MetaStringType : MetaPrimitiveType, IMetaIdentifierType, IMetaParameterType
 	{
 		public int Length { get; set; }
-		public string ColumnSuffix => "";
+		public string ColumnSuffix { get; set; } = "ID";
 		public override string ToCSharpType(bool nullable) => "string";
 	}
-	public partial class MetaDateTimeType : MetaPrimitiveType, IMetaParameterType 
+	public partial class MetaDateTimeType : MetaPrimitiveType, IMetaParameterType, IMetaIdentifierType
 	{
+		public string ColumnSuffix { get; set; } = "ID";
 		public override string ToCSharpType(bool nullable) => nullable ? "DateTime?" : "DateTime";
 	}
 	public partial class MetaDateType : MetaPrimitiveType, IMetaIdentifierType
 	{
-		public string ColumnSuffix => "";
+		public string ColumnSuffix { get; set; } = "ID";
 		public override string ToCSharpType(bool nullable) => nullable ? "DateTime?" : "DateTime";
 	}
     public partial class MetaXmlType : MetaPrimitiveType 
@@ -59,17 +60,17 @@ namespace Tango.Meta
 	}
 	public partial class MetaIntType : MetaPrimitiveType, IMetaIdentifierType, IMetaNumericType, IMetaParameterType
 	{
-		public string ColumnSuffix => "ID";
+		public string ColumnSuffix { get; set; } = "ID";
 		public override string ToCSharpType(bool nullable) => nullable ? "int?" : "int";
 	}
 	public partial class MetaLongType : MetaPrimitiveType, IMetaIdentifierType, IMetaNumericType 
 	{
-		public string ColumnSuffix => "ID";
+		public string ColumnSuffix { get; set; } = "ID";
 		public override string ToCSharpType(bool nullable) => nullable ? "long?" : "long";
 	}
 	public partial class MetaShortType : MetaPrimitiveType, IMetaNumericType
 	{
-		public string ColumnSuffix => "";
+		public string ColumnSuffix { get; set; } = "ID";
 		public override string ToCSharpType(bool nullable) => nullable ? "short?" : "short";
 	}
 	public partial class MetaByteArrayType : MetaPrimitiveType
@@ -83,7 +84,7 @@ namespace Tango.Meta
 	}
 	public partial class MetaGuidType : MetaPrimitiveType, IMetaIdentifierType, IMetaParameterType
 	{
-		public string ColumnSuffix => "GUID";
+		public string ColumnSuffix { get; set; } = "GUID";
 		public override string ToCSharpType(bool nullable) => nullable ? "Guid?" : "Guid";
 	}
 	public class MetaFileType : MetaPrimitiveType
@@ -99,37 +100,21 @@ namespace Tango.Meta
 
 	public static class TypeFactory
 	{
-		static MetaByteArrayType _byteArray = new MetaByteArrayType();
-		static MetaStringType _string = new MetaStringType();
-		static MetaDateType _date = new MetaDateType();
-		static MetaDateTimeType _dateTime = new MetaDateTimeType();
-		static MetaZoneDateTimeType _zoneDateTime = new MetaZoneDateTimeType();
-		static MetaIntType _int = new MetaIntType();
-		static MetaLongType _long = new MetaLongType();
-		static MetaShortType _short = new MetaShortType();
-		static MetaBooleanType _boolean = new MetaBooleanType();
-		static MetaGuidType _guid = new MetaGuidType();
-		static MetaFileType _fileIntKey = new MetaFileType(_int);
-		static MetaFileType _fileGuidKey = new MetaFileType(_guid);
-		static MetaDecimalType _decimal = new MetaDecimalType { Precision = 18, Scale = 5 };
-		static MetaMoneyType _money = new MetaMoneyType { Precision = 18, Scale = 2 };
-		static MetaXmlType _xml = new MetaXmlType();
-
-		public static MetaStringType String => _string;
-		public static MetaByteArrayType ByteArray => _byteArray;
-		public static MetaDateType Date => _date;
-		public static MetaDateTimeType DateTime => _dateTime;
-		public static MetaZoneDateTimeType ZoneDateTime => _zoneDateTime;
-		public static MetaIntType Int => _int;
-		public static MetaLongType Long => _long;
-		public static MetaShortType Short => _short;
-		public static MetaBooleanType Boolean => _boolean;
-		public static MetaGuidType Guid => _guid;
-		public static MetaDecimalType Decimal => _decimal;
-		public static MetaMoneyType Money => _money;
-		public static MetaFileType FileIntKey => _fileIntKey;
-		public static MetaFileType FileGuidKey => _fileGuidKey;
-		public static MetaXmlType Xml => _xml;
+		public static MetaStringType String = new MetaStringType();
+		public static MetaByteArrayType ByteArray = new MetaByteArrayType();
+		public static MetaDateType Date = new MetaDateType();
+		public static MetaDateTimeType DateTime = new MetaDateTimeType();
+		public static MetaZoneDateTimeType ZoneDateTime = new MetaZoneDateTimeType();
+		public static MetaIntType Int = new MetaIntType();
+		public static MetaLongType Long = new MetaLongType();
+		public static MetaShortType Short = new MetaShortType();
+		public static MetaBooleanType Boolean = new MetaBooleanType();
+		public static MetaGuidType Guid = new MetaGuidType();
+		public static MetaDecimalType Decimal = new MetaDecimalType { Precision = 18, Scale = 5 };
+		public static MetaMoneyType Money = new MetaMoneyType { Precision = 18, Scale = 2 };
+		public static MetaFileType FileIntKey = new MetaFileType(Int);
+		public static MetaFileType FileGuidKey = new MetaFileType(Guid);
+		public static MetaXmlType Xml = new MetaXmlType();
 
 		public static MetaEnumType Enum<T>() where T : IEnum { return new MetaEnumType { Name = typeof(T).Name }; }
 		public static MetaStringType CustomString(int length) { return new MetaStringType { Length = length }; }
@@ -138,17 +123,17 @@ namespace Tango.Meta
 
 		public static IMetaPrimitiveType FromCSharpType(Type type)
 		{
-			if (type == typeof(string)) return _string;
-			if (type == typeof(int) || type == typeof(int?)) return _int;
-			if (type == typeof(bool) || type == typeof(bool?)) return _boolean;
-			if (type == typeof(Guid) || type == typeof(Guid?)) return _guid;
-			if (type == typeof(decimal) || type == typeof(decimal?)) return _decimal;
-			if (type == typeof(DateTime) || type == typeof(DateTime?)) return _dateTime;
+			if (type == typeof(string)) return String;
+			if (type == typeof(int) || type == typeof(int?)) return Int;
+			if (type == typeof(bool) || type == typeof(bool?)) return Boolean;
+			if (type == typeof(Guid) || type == typeof(Guid?)) return Guid;
+			if (type == typeof(decimal) || type == typeof(decimal?)) return Decimal;
+			if (type == typeof(DateTime) || type == typeof(DateTime?)) return DateTime;
 			//if (typeof(IEnum).IsAssignableFrom(type)) return Enum(type.Name);
-			if (type == typeof(long) || type == typeof(long?)) return _long;
-			if (type == typeof(short) || type == typeof(short?)) return _short;
-			if (type == typeof(byte[])) return _byteArray;
-			if (type == typeof(XDocument)) return _xml;
+			if (type == typeof(long) || type == typeof(long?)) return Long;
+			if (type == typeof(short) || type == typeof(short?)) return Short;
+			if (type == typeof(byte[])) return ByteArray;
+			if (type == typeof(XDocument)) return Xml;
 			throw new NotSupportedException("Type " + type.Name + " is not supported");
 		}
 	}

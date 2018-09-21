@@ -1,83 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Tango.Identity.Std;
 using Tango.Logger;
 using Tango.Cache;
 using System.Collections.Concurrent;
 
 namespace Tango.AccessControl.Std
 {
-	public abstract class AbstractAccessControl : IRoleBasedAccessControl<int>
-	{
-		IIdentityManager _identityManager;
-
-		protected int _userId => _identityManager.CurrentUser.Id;
-		protected IPredicateChecker _predicateChecker;
-		protected AccessControlOptions _options;
-		protected IRequestLogger _logger;
-
-		public AbstractAccessControl(IIdentityManager identityManager, IPredicateChecker predicateChecker, 
-			IRequestLoggerProvider loggerProvider, AccessControlOptions options)
-		{
-			_identityManager = identityManager;
-			_predicateChecker = predicateChecker;
-			_options = options;
-			_logger = loggerProvider.GetLogger("accesscontrol");
-		}
-
-		protected abstract IRoleBasedAccessControlStoreBase<int> _baseDataContext { get; }
-		public abstract bool Check(string securableObjectKey, bool? defaultAccess = null);
-		public abstract bool CheckForRole(int roleID, string securableObjectKey);
-
-		public BoolResult CheckPredicate(string securableObjectKey, object predicateContext, bool? defaultAccess = null)
-		{
-			if (!_options.Enabled()) return BoolResult.True;
-			return _predicateChecker.Check(securableObjectKey, predicateContext);
-		}
-
-		public CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool? defaultAccess = null)
-		{
-			if (!_options.Enabled()) return new CheckWithPredicateResult(true, CheckWithPredicateResultCode.AccessGranted);
-
-			BoolResult res1 = CheckPredicate(securableObjectKey, predicateContext, defaultAccess);
-			if (!res1.Value) return new CheckWithPredicateResult(res1.Value, CheckWithPredicateResultCode.PredicateAccessDenied, res1.Message);
-
-			bool res2 = Check(securableObjectKey, defaultAccess);
-			return new CheckWithPredicateResult(res2, res2 ? CheckWithPredicateResultCode.AccessGranted : CheckWithPredicateResultCode.UserAccessDenied);
-		}
-
-		IEnumerable<IdentityRole<int>> _roles = null;
-		public IEnumerable<IdentityRole<int>> Roles
-		{
-			get
-			{
-				if (_roles == null) _roles = _baseDataContext.UserRoles(_userId);
-				return _roles;
-			}
-		}
-
-		public bool HasRole(params string[] roleName)
-		{
-			return Roles.Select(o => o.Name.ToLower()).Intersect(roleName.Select(o => o.ToLower())).Count() > 0;
-		}
-
-		protected ConcurrentBag<string> AllowItems { get; } = new ConcurrentBag<string>();
-		protected ConcurrentBag<string> DisallowItems { get; } = new ConcurrentBag<string>();
-	}
-
-	public class DefaultAccessControl : AbstractAccessControl
-	{
-		
+	public class DefaultAccessControl : AbstractAccessControl<int>, IRoleBasedAccessControl<int>
+	{	
 		protected IRoleBasedAccessControlStore<int> _dataContext;
-		protected override IRoleBasedAccessControlStoreBase<int> _baseDataContext => _dataContext;
+
+		public override IEnumerable<int> Roles => _dataContext.Roles;
 
 		public DefaultAccessControl(
 			IRoleBasedAccessControlStore<int> dataContext,
-			IIdentityManager identityManager,
 			IPredicateChecker predicateLoader,
 			IRequestLoggerProvider loggerProvider,
-			AccessControlOptions options) : base(identityManager, predicateLoader, loggerProvider, options)
+			AccessControlOptions options) : base(predicateLoader, loggerProvider, options)
 		{
 			_dataContext = dataContext;
 		}
@@ -90,68 +30,38 @@ namespace Tango.AccessControl.Std
 		public override bool Check(string securableObjectKey, bool? defaultAccess = null)
 		{
 			string key = securableObjectKey.ToUpper();
-			if (defaultAccess == null) defaultAccess = _options.DefaultAccess();
 			if (AllowItems.Contains(key)) return true;
 			if (DisallowItems.Contains(key)) return false;
 
 			List<int> _access = _dataContext.GetAccessInfo(securableObjectKey).ToList();
 
 			if (_access.Count == 0)
-			{
-				if (defaultAccess.Value || HasRole(_options.AdminRoleName))
-				{
-					if (!AllowItems.Contains(key))
-					{
-						if (!AllowItems.Contains(key)) AllowItems.Add(key);
-					}
-					_logger.Write(key + ": true (default/admin access)");
-				}
-				else
-				{
-					if (!DisallowItems.Contains(key))
-					{
-						if (!DisallowItems.Contains(key)) DisallowItems.Add(key);
-					}
-					_logger.Write(key + ": false (default/admin access denied)");
-				}
-				return defaultAccess.Value || HasRole(_options.AdminRoleName);
-			}
+				return CheckDefaultAccess(key, defaultAccess ?? _options.DefaultAccess());
 
-			if (Roles.Select(o => o.Id).Intersect(_access).Count() > 0)
-			{
-				if (!AllowItems.Contains(key))
-				{
-					if (!AllowItems.Contains(key)) AllowItems.Add(key);
-				}
-				_logger.Write(key + ": true (explicit access)"); 
-				return true;
-			}
-			else
-			{
-				if (!DisallowItems.Contains(key))
-				{
-					if (!DisallowItems.Contains(key)) DisallowItems.Add(key);
-				}
-				_logger.Write(key + ": false (explicit access denied)");
-				return false;
-			}
+			return CheckExplicitAccess(key, Roles.Intersect(_access).Count() > 0);
+		}
+
+		public override bool HasRole(params string[] roleNames)
+		{
+			return _dataContext.CurrentUserHasRoles(roleNames);
 		}
 	}
 
-	public class CacheableAccessControl : AbstractAccessControl, ICacheable
+	public class CacheableAccessControl : AbstractAccessControl<int>, IRoleBasedAccessControl<int>, ICacheable
 	{
 		protected ICacheableRoleBasedAccessControlStore<int> _dataContext;
-		protected override IRoleBasedAccessControlStoreBase<int> _baseDataContext => _dataContext;
-		string _cacheName;
+
+		readonly string _cacheName;
 		ICache _cache;
+
+		public override IEnumerable<int> Roles => _dataContext.Roles;
 
 		public CacheableAccessControl(
 			ICacheableRoleBasedAccessControlStore<int> dataContext,
-			IIdentityManager identityManager,
 			IPredicateChecker predicateChecker,
 			ICache cache,
 			IRequestLoggerProvider loggerProvider,
-			AccessControlOptions options) : base(identityManager, predicateChecker, loggerProvider, options)
+			AccessControlOptions options) : base(predicateChecker, loggerProvider, options)
 		{
 			_dataContext = dataContext;
 			_cacheName = GetType().Name;
@@ -185,7 +95,6 @@ namespace Tango.AccessControl.Std
 		{
 			if (!_options.Enabled()) return true;
 			string key = securableObjectKey.ToUpper();
-			if (defaultAccess == null) defaultAccess = _options.DefaultAccess();
 
 			if (AllowItems.Contains(key)) return true;
 			if (DisallowItems.Contains(key)) return false;
@@ -198,44 +107,16 @@ namespace Tango.AccessControl.Std
 
 			if (!_items.Contains(key))
 			{
-				if (defaultAccess.Value || HasRole(_options.AdminRoleName))
-				{
-					if (!AllowItems.Contains(key))
-					{
-						if (!AllowItems.Contains(key)) AllowItems.Add(key);
-					}
-					_logger.Write(key + ": true (default/admin access)");
-				}
-				else
-				{
-					if (!DisallowItems.Contains(key))
-					{
-						if (!DisallowItems.Contains(key)) DisallowItems.Add(key);
-					}
-					_logger.Write(key + ": false (default/admin access denied)");
-				}
-				return defaultAccess.Value || HasRole(_options.AdminRoleName);
+				return CheckDefaultAccess(key, defaultAccess ?? _options.DefaultAccess());
 			}
 
-			HashSet<string> _checking = new HashSet<string>(Roles.Select(o => key + "-" + o.Id.ToString()));
-			if (_checking.Any(o => _access.Contains(o)))
-			{
-				if (!AllowItems.Contains(key))
-				{
-					if (!AllowItems.Contains(key)) AllowItems.Add(key);
-				}
-				_logger.Write(key + ": true (explicit access)");
-				return true;
-			}
-			else
-			{
-				if (!DisallowItems.Contains(key))
-				{
-					if (!DisallowItems.Contains(key)) DisallowItems.Add(key);
-				}
-				_logger.Write(key + ": false (explicit access denied)");
-				return false;
-			}
+			HashSet<string> _checking = new HashSet<string>(Roles.Select(o => key + "-" + o.ToString()));
+			return CheckExplicitAccess(key, _checking.Any(o => _access.Contains(o)));
+		}
+
+		public override bool HasRole(params string[] roleNames)
+		{
+			return _dataContext.CurrentUserHasRoles(roleNames);
 		}
 
 		public void ResetCache()
@@ -245,8 +126,8 @@ namespace Tango.AccessControl.Std
 		}
 	}
 
-	public interface IRoleBasedAccessControl<TKey> : IRoleBasedAccessControl<IdentityRole<TKey>, TKey>
-		where TKey : IEquatable<TKey>
-	{
-	}
+	//public interface IRoleBasedAccessControl<TKey> : IRoleBasedAccessControl<IdentityRole<TKey>, TKey>
+	//	where TKey : IEquatable<TKey>
+	//{
+	//}
 }

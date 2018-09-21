@@ -1,6 +1,8 @@
 using System;
 using System.Data;
+using System.Data.Common;
 using System.Globalization;
+using NHibernate.Engine;
 using NHibernate.SqlTypes;
 
 namespace NHibernate.Type
@@ -14,69 +16,49 @@ namespace NHibernate.Type
 	/// <see cref="System.Globalization.CultureInfo"/> in the DB.
 	/// </remarks>
 	[Serializable]
-	public class CultureInfoType : ImmutableType, ILiteralType
+	public partial class CultureInfoType : ImmutableType, ILiteralType
 	{
-		/// <summary></summary>
 		internal CultureInfoType() : base(new StringSqlType(5))
 		{
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="index"></param>
-		/// <returns></returns>
-		public override object Get(IDataReader rs, int index)
+		/// <inheritdoc />
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			string str = (string) NHibernateUtil.String.Get(rs, index);
-			if (str == null)
-			{
-				return null;
-			}
-			else
-			{
-				return new CultureInfo(str);
-			}
+			return ParseStringRepresentation(NHibernateUtil.String.Get(rs, index, session));
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="rs"></param>
-		/// <param name="name"></param>
-		/// <returns></returns>
-		public override object Get(IDataReader rs, string name)
+		/// <inheritdoc />
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="cmd"></param>
-		/// <param name="value"></param>
-		/// <param name="index"></param>
-		public override void Set(IDbCommand cmd, object value, int index)
+		/// <inheritdoc />
+		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
-			NHibernateUtil.String.Set(cmd, ((CultureInfo) value).Name, index);
+			NHibernateUtil.String.Set(cmd, GetStringRepresentation(value), index, session);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="value"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object value)
 		{
-			return ((CultureInfo) value).Name;
+			return GetStringRepresentation(value);
 		}
 
-		/// <summary>
-		/// 
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version.")]
 		public override object FromStringValue(string xml)
 		{
 			return CultureInfo.CreateSpecificCulture(xml);
@@ -97,6 +79,28 @@ namespace NHibernate.Type
 		public string ObjectToSQLString(object value, Dialect.Dialect dialect)
 		{
 			return ((ILiteralType) NHibernateUtil.String).ObjectToSQLString(value.ToString(), dialect);
+		}
+
+		/// <inheritdoc />
+		public override object Assemble(object cached, ISessionImplementor session, object owner)
+		{
+			return ParseStringRepresentation(cached);
+		}
+
+		/// <inheritdoc />
+		public override object Disassemble(object value, ISessionImplementor session, object owner)
+		{
+			return GetStringRepresentation(value);
+		}
+
+		private static string GetStringRepresentation(object value)
+		{
+			return ((CultureInfo) value)?.Name;
+		}
+
+		private static object ParseStringRepresentation(object value)
+		{
+			return value is string str ? new CultureInfo(str) : null;
 		}
 	}
 }

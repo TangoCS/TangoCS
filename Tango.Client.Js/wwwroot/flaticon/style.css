@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?m4hn38');
-  src:  url('fonts/icomoon.eot?m4hn38#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?m4hn38') format('truetype'),
-    url('fonts/icomoon.woff?m4hn38') format('woff'),
-    url('fonts/icomoon.svg?m4hn38#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?to8zlm');
+  src:  url('fonts/icomoon.eot?to8zlm#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?to8zlm') format('truetype'),
+    url('fonts/icomoon.woff?to8zlm') format('woff'),
+    url('fonts/icomoon.svg?to8zlm#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -24,6 +24,27 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-menu:before {
+  content: "\e956";
+}
+.icon-function:before {
+  content: "\e955";
+}
+.icon-clipboard:before {
+  content: "\e952";
+}
+.icon-tasks:before {
+  content: "\e953";
+}
+.icon-clipboard-ok:before {
+  content: "\e954";
+}
+.icon-more:before {
+  content: "\e951";
+}
+.icon-dropdownarrow-angle:before {
+  content: "\e950";
+}
 .icon-log:before {
   content: "\e94f";
 }
@@ -267,6 +288,9 @@
 .icon-calendar:before {
   content: "\f106";
 }
+.icon-collapsed2:before {
+  content: "\f108";
+}
 .icon-edit:before {
   content: "\f110";
 }
@@ -282,7 +306,7 @@
 .icon-shield:before {
   content: "\f135";
 }
-.icon-form:before {
+.icon-checklist:before {
   content: "\f13c";
 }
 .icon-true:before {

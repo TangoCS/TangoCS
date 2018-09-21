@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using System.Data;
+using System.Data.Common;
 using System.Text;
 using NHibernate.Engine;
 using NHibernate.SqlTypes;
@@ -10,7 +10,7 @@ namespace NHibernate.Type
 {
 	/// <summary> Logic to bind stream of byte into a VARBINARY </summary>
 	[Serializable]
-	public abstract class AbstractBinaryType : MutableType, IVersionType, IComparer
+	public abstract partial class AbstractBinaryType : MutableType, IVersionType, IComparer
 	{
 		internal AbstractBinaryType() : this(new BinarySqlType())
 		{
@@ -21,8 +21,8 @@ namespace NHibernate.Type
 		{
 		}
 
-
 		#region IVersionType Members
+
 		//      Note : simply returns null for seed() and next() as the only known
 		//      application of binary types for versioning is for use with the
 		//      TIMESTAMP datatype supported by Sybase and SQL Server, which
@@ -56,16 +56,7 @@ namespace NHibernate.Type
 
 		#endregion
 
-		#region IComparer Members
-
-		public virtual int Compare(object x, object y)
-		{
-			return Compare(x, y, null);
-		}
-
-		#endregion
-
-		public abstract override string Name { get;}
+		public abstract override string Name { get; }
 
 		/// <summary> Convert the byte[] into the expected object type</summary>
 		protected internal abstract object ToExternalFormat(byte[] bytes);
@@ -73,11 +64,11 @@ namespace NHibernate.Type
 		/// <summary> Convert the object into the internal byte[] representation</summary>
 		protected internal abstract byte[] ToInternalFormat(object bytes);
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			byte[] internalValue = ToInternalFormat(value);
 
-			var parameter = (IDbDataParameter)cmd.Parameters[index];
+			var parameter = cmd.Parameters[index];
 
 			// set the parameter value before the size check, since ODBC changes the size automatically
 			parameter.Value = internalValue;
@@ -87,9 +78,9 @@ namespace NHibernate.Type
 				throw new HibernateException("The length of the byte[] value exceeds the length configured in the mapping/parameter.");
 		}
 
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
-			int length = (int)rs.GetBytes(index, 0, null, 0, 0);
+			int length = (int) rs.GetBytes(index, 0, null, 0, 0);
 			byte[] buffer = new byte[length];
 			if (length > 0)
 			{
@@ -99,12 +90,12 @@ namespace NHibernate.Type
 			return ToExternalFormat(buffer);
 		}
 
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
-		public override int GetHashCode(object x, EntityMode entityMode)
+		public override int GetHashCode(object x)
 		{
 			byte[] bytes = ToInternalFormat(x);
 			int hashCode = 1;
@@ -118,7 +109,7 @@ namespace NHibernate.Type
 			return hashCode;
 		}
 
-		public override int Compare(object x, object y, EntityMode? entityMode)
+		public override int Compare(object x, object y)
 		{
 			byte[] xbytes = ToInternalFormat(x);
 			byte[] ybytes = ToInternalFormat(y);
@@ -136,6 +127,18 @@ namespace NHibernate.Type
 			return 0;
 		}
 
+		/// <inheritdoc />
+		public override string ToLoggableString(object value, ISessionFactoryImplementor factory)
+		{
+			return (value == null) ? null :
+				// 6.0 TODO: inline this call.
+#pragma warning disable 618
+				ToString(value);
+#pragma warning restore 618
+		}
+
+		// Since 5.2
+		[Obsolete("This method has no more usages and will be removed in a future version. Override ToLoggableString instead.")]
 		public override string ToString(object val)
 		{
 			// convert to HEX string
@@ -159,18 +162,24 @@ namespace NHibernate.Type
 			return ToExternalFormat(result);
 		}
 
+		// 6.0 TODO: rename "xml" parameter as "value": it is not a xml string. The fact it generally comes from a xml
+		// attribute value is irrelevant to the method behavior. Replace override keyword by virtual after having
+		// removed the obsoleted base.
+		/// <inheritdoc cref="IVersionType.FromStringValue"/>
+#pragma warning disable 672
 		public override object FromStringValue(string xml)
+#pragma warning restore 672
 		{
 			if (xml == null)
 				return null;
 			if (xml.Length % 2 != 0)
-				throw new ArgumentException("The string is not a valid xml representation of a binary content.");
+				throw new ArgumentException("The string is not a valid representation of a binary content.");
 
 			byte[] bytes = new byte[xml.Length / 2];
 			for (int i = 0; i < bytes.Length; i++)
 			{
 				string hexStr = xml.Substring(i * 2, ((i + 1) * 2) - (i * 2));
-				bytes[i] = (byte)(Convert.ToInt32(hexStr, 16) + Byte.MinValue);
+				bytes[i] = (byte) (Convert.ToInt32(hexStr, 16) + Byte.MinValue);
 			}
 			return ToExternalFormat(bytes);
 		}

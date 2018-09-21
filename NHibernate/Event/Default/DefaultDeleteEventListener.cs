@@ -16,9 +16,9 @@ namespace NHibernate.Event.Default
 	/// from the datastore in response to generated delete events. 
 	/// </summary>
 	[Serializable]
-	public class DefaultDeleteEventListener : IDeleteEventListener
+	public partial class DefaultDeleteEventListener : IDeleteEventListener
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(DefaultDeleteEventListener));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(DefaultDeleteEventListener));
 
 		#region IDeleteEventListener Members
 
@@ -45,8 +45,8 @@ namespace NHibernate.Event.Default
 				log.Debug("entity was not persistent in delete processing");
 
 				persister = source.GetEntityPersister(@event.EntityName, entity);
-				
-				if (ForeignKeys.IsTransient(persister.EntityName, entity, null, source))
+
+				if (ForeignKeys.IsTransientSlow(persister.EntityName, entity, source))
 				{
 					DeleteTransientEntity(source, entity, @event.CascadeDeleteEnabled, persister, transientEntities);
 					// EARLY EXIT!!!
@@ -57,7 +57,7 @@ namespace NHibernate.Event.Default
 					PerformDetachedEntityDeletionCheck(@event);
 				}
 
-				id = persister.GetIdentifier(entity, source.EntityMode);
+				id = persister.GetIdentifier(entity);
 
 				if (id == null)
 				{
@@ -70,12 +70,12 @@ namespace NHibernate.Event.Default
 
 				new OnUpdateVisitor(source, id, entity).Process(entity, persister);
 
-				version = persister.GetVersion(entity, source.EntityMode);
+				version = persister.GetVersion(entity);
 
 				entityEntry = persistenceContext.AddEntity(
 					entity, 
 					persister.IsMutable ? Status.Loaded : Status.ReadOnly,
-					persister.GetPropertyValues(entity, source.EntityMode), 
+					persister.GetPropertyValues(entity), 
 					key,
 					version, 
 					LockMode.None, 
@@ -105,7 +105,7 @@ namespace NHibernate.Event.Default
 
 			if (source.Factory.Settings.IsIdentifierRollbackEnabled)
 			{
-				persister.ResetIdentifier(entity, id, version, source.EntityMode);
+				persister.ResetIdentifier(entity, id, version);
 			}
 		}
 
@@ -168,9 +168,9 @@ namespace NHibernate.Event.Default
 		/// <param name="transientEntities">A cache of already deleted entities. </param>
 		protected virtual void DeleteEntity(IEventSource session, object entity, EntityEntry entityEntry, bool isCascadeDeleteEnabled, IEntityPersister persister, ISet<object> transientEntities)
 		{
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
-				log.Debug("deleting " + MessageHelper.InfoString(persister, entityEntry.Id, session.Factory));
+				log.Debug("deleting {0}", MessageHelper.InfoString(persister, entityEntry.Id, session.Factory));
 			}
 
 			IPersistenceContext persistenceContext = session.PersistenceContext;
@@ -182,7 +182,7 @@ namespace NHibernate.Event.Default
 			if (entityEntry.LoadedState == null)
 			{
 				//ie. the entity came in from update()
-				currentState = persister.GetPropertyValues(entity, session.EntityMode);
+				currentState = persister.GetPropertyValues(entity);
 			}
 			else
 			{
@@ -228,7 +228,7 @@ namespace NHibernate.Event.Default
 
 		protected virtual bool InvokeDeleteLifecycle(IEventSource session, object entity, IEntityPersister persister)
 		{
-			if (persister.ImplementsLifecycle(session.EntityMode))
+			if (persister.ImplementsLifecycle)
 			{
 				log.Debug("calling onDelete()");
 				if (((ILifecycle)entity).OnDelete(session) == LifecycleVeto.Veto)
@@ -242,39 +242,41 @@ namespace NHibernate.Event.Default
 
 		protected virtual void CascadeBeforeDelete(IEventSource session, IEntityPersister persister, object entity, EntityEntry entityEntry, ISet<object> transientEntities)
 		{
-			ISessionImplementor si = session;
-			CacheMode cacheMode = si.CacheMode;
-			si.CacheMode = CacheMode.Get;
-			session.PersistenceContext.IncrementCascadeLevel();
-			try
+			using (session.SwitchCacheMode(CacheMode.Get))
 			{
-				// cascade-delete to collections BEFORE the collection owner is deleted
-				new Cascade(CascadingAction.Delete, CascadePoint.AfterInsertBeforeDelete, session).CascadeOn(persister, entity,
-				                                                                                             transientEntities);
-			}
-			finally
-			{
-				session.PersistenceContext.DecrementCascadeLevel();
-				si.CacheMode = cacheMode;
+				session.PersistenceContext.IncrementCascadeLevel();
+				try
+				{
+					// cascade-delete to collections BEFORE the collection owner is deleted
+					new Cascade(CascadingAction.Delete, CascadePoint.AfterInsertBeforeDelete, session).CascadeOn(
+						persister,
+						entity,
+						transientEntities);
+				}
+				finally
+				{
+					session.PersistenceContext.DecrementCascadeLevel();
+				}
 			}
 		}
 
 		protected virtual void CascadeAfterDelete(IEventSource session, IEntityPersister persister, object entity, ISet<object> transientEntities)
 		{
-			ISessionImplementor si = session;
-			CacheMode cacheMode = si.CacheMode;
-			si.CacheMode = CacheMode.Get;
-			session.PersistenceContext.IncrementCascadeLevel();
-			try
+			using (session.SwitchCacheMode(CacheMode.Get))
 			{
-				// cascade-delete to many-to-one AFTER the parent was deleted
-				new Cascade(CascadingAction.Delete, CascadePoint.BeforeInsertAfterDelete, session).CascadeOn(persister, entity,
-				                                                                                             transientEntities);
-			}
-			finally
-			{
-				session.PersistenceContext.DecrementCascadeLevel();
-				si.CacheMode = cacheMode;
+				session.PersistenceContext.IncrementCascadeLevel();
+				try
+				{
+					// cascade-delete to many-to-one AFTER the parent was deleted
+					new Cascade(CascadingAction.Delete, CascadePoint.BeforeInsertAfterDelete, session).CascadeOn(
+						persister,
+						entity,
+						transientEntities);
+				}
+				finally
+				{
+					session.PersistenceContext.DecrementCascadeLevel();
+				}
 			}
 		}
 	}

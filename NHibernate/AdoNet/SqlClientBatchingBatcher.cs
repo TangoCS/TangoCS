@@ -1,5 +1,5 @@
+#if NETFX
 using System;
-using System.Data;
 using System.Data.Common;
 using System.Text;
 using NHibernate.AdoNet.Util;
@@ -8,7 +8,7 @@ using NHibernate.Util;
 
 namespace NHibernate.AdoNet
 {
-	public class SqlClientBatchingBatcher : AbstractBatcher
+	public partial class SqlClientBatchingBatcher : AbstractBatcher
 	{
 		private int _batchSize;
 		private int _totalExpectedRowsAffected;
@@ -44,11 +44,11 @@ namespace NHibernate.AdoNet
 		public override void AddToBatch(IExpectation expectation)
 		{
 			_totalExpectedRowsAffected += expectation.ExpectedRowCount;
-			IDbCommand batchUpdate = CurrentCommand;
+			var batchUpdate = CurrentCommand;
 			Driver.AdjustCommand(batchUpdate);
 			string lineWithParameters = null;
 			var sqlStatementLogger = Factory.Settings.SqlStatementLogger;
-			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled)
+			if (sqlStatementLogger.IsDebugEnabled || Log.IsDebugEnabled())
 			{
 				lineWithParameters = sqlStatementLogger.GetCommandLineWithParameters(batchUpdate);
 				var formatStyle = sqlStatementLogger.DetermineActualStyle(FormatStyle.Basic);
@@ -58,11 +58,11 @@ namespace NHibernate.AdoNet
 					.Append(":")
 					.AppendLine(lineWithParameters);
 			}
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug("Adding to batch:" + lineWithParameters);
+				Log.Debug("Adding to batch:{0}", lineWithParameters);
 			}
-			_currentBatch.Append((System.Data.SqlClient.SqlCommand) batchUpdate);
+			_currentBatch.Append((System.Data.SqlClient.SqlCommand)batchUpdate);
 
 			if (_currentBatch.CountOfCommands >= _batchSize)
 			{
@@ -70,32 +70,33 @@ namespace NHibernate.AdoNet
 			}
 		}
 
-		protected override void DoExecuteBatch(IDbCommand ps)
+		protected override void DoExecuteBatch(DbCommand ps)
 		{
-			Log.DebugFormat("Executing batch");
-			CheckReaders();
-			Prepare(_currentBatch.BatchCommand);
-			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
-			{
-				Factory.Settings.SqlStatementLogger.LogBatchCommand(_currentBatchCommandsLog.ToString());
-				_currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
-			}
-
-			int rowsAffected;
 			try
 			{
-				rowsAffected = _currentBatch.ExecuteNonQuery();
+				Log.Debug("Executing batch");
+				CheckReaders();
+				Prepare(_currentBatch.BatchCommand);
+				if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+				{
+					Factory.Settings.SqlStatementLogger.LogBatchCommand(_currentBatchCommandsLog.ToString());
+				}
+				int rowsAffected;
+				try
+				{
+					rowsAffected = _currentBatch.ExecuteNonQuery();
+				}
+				catch (DbException e)
+				{
+					throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				}
+
+				Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected);
 			}
-			catch (DbException e)
+			finally
 			{
-				throw ADOExceptionHelper.Convert(Factory.SQLExceptionConverter, e, "could not execute batch command.");
+				ClearCurrentBatch();
 			}
-
-			Expectations.VerifyOutcomeBatched(_totalExpectedRowsAffected, rowsAffected);
-
-			_currentBatch.Dispose();
-			_totalExpectedRowsAffected = 0;
-			_currentBatch = CreateConfiguredBatch();
 		}
 
 		private SqlClientSqlCommandSet CreateConfiguredBatch()
@@ -109,14 +110,58 @@ namespace NHibernate.AdoNet
 				}
 				catch (Exception e)
 				{
-					if (Log.IsWarnEnabled)
+					if (Log.IsWarnEnabled())
 					{
-						Log.Warn(e.ToString());
+						Log.Warn(e, e.ToString());
 					}
 				}
 			}
 
 			return result;
 		}
+
+		private void ClearCurrentBatch()
+		{
+			_currentBatch.Dispose();
+			_totalExpectedRowsAffected = 0;
+			_currentBatch = CreateConfiguredBatch();
+
+			if (Factory.Settings.SqlStatementLogger.IsDebugEnabled)
+			{
+				_currentBatchCommandsLog = new StringBuilder().AppendLine("Batch commands:");
+			}
+		}
+
+		public override void CloseCommands()
+		{
+			base.CloseCommands();
+
+			// Prevent exceptions when closing the batch from hiding any original exception
+			// (We do not know here if this batch closing occurs after a failure or not.)
+			try
+			{
+				ClearCurrentBatch();
+			}
+			catch (Exception e)
+			{
+				Log.Warn(e, "Exception clearing batch");
+			}
+		}
+
+		protected override void Dispose(bool isDisposing)
+		{
+			base.Dispose(isDisposing);
+			// Prevent exceptions when closing the batch from hiding any original exception
+			// (We do not know here if this batch closing occurs after a failure or not.)
+			try
+			{
+				_currentBatch.Dispose();
+			}
+			catch (Exception e)
+			{
+				Log.Warn(e, "Exception closing batcher");
+			}
+		}
 	}
 }
+#endif

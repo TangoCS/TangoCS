@@ -41,10 +41,15 @@ namespace Tango.Drawing
 		/// <returns></returns>
 		public virtual void RenderString(int x, int y, string text, int fontSize)
 		{
-			RenderString(_lib, _fontFace, x, y, text, fontSize);
+			RenderString(_fontFace, x, y, text, fontSize);
 		}
 
-		void RenderString(Library library, Face face, int x, int y, string text, int fontSize)
+		public virtual int MeasureString(string text, int fontSize)
+		{
+			return RenderString(_fontFace, 0, 0, text, fontSize, true);
+		}
+
+		int RenderString(Face face, int x, int y, string text, int fontSize, bool measuring = false)
 		{
 			float penX = x;
 			float overrun = 0;
@@ -53,10 +58,14 @@ namespace Tango.Drawing
 
 			face.SetCharSize(0, fontSize, 0, 96);
 
-			if (!_texturesStore.TryGetValue(fontSize, out var textures))
+			uint[] textures = null;
+			if (!measuring)
 			{
-				textures = new uint[128];
-				_texturesStore.Add(fontSize, textures);
+				if (!_texturesStore.TryGetValue(fontSize, out textures))
+				{
+					textures = new uint[128];
+					_texturesStore.Add(fontSize, textures);
+				}
 			}
 
 			// Draw the string into the bitmap.
@@ -70,10 +79,7 @@ namespace Tango.Drawing
 				// Same as when we were measuring, except RenderGlyph() causes the glyph data
 				// to be converted to a bitmap.
 				uint glyphIndex = face.GetCharIndex(c);
-				face.LoadGlyph(glyphIndex, LoadFlags.Default, LoadTarget.Lcd);
-				face.Glyph.RenderGlyph(RenderMode.Lcd);
-				FTBitmap ftbmp = face.Glyph.Bitmap;
-				int gWidthi = face.Glyph.Metrics.Width.ToInt32();
+				face.LoadGlyph(glyphIndex, LoadFlags.Default, LoadTarget.Normal);
 
 				float gAdvanceX = (float)face.Glyph.Advance.X;
 				float gBearingX = (float)face.Glyph.Metrics.HorizontalBearingX;
@@ -91,22 +97,26 @@ namespace Tango.Drawing
 				#region Draw glyph
 				// Whitespace characters sometimes have a bitmap of zero size, but a non-zero advance.
 				// We can't draw a 0-size bitmap, but the pen position will still get advanced (below).
-				if (ftbmp.Width > 0 && ftbmp.Rows > 0)
+				if (!measuring)
 				{
-					var t = textures[glyphIndex];
-					if (t == 0)
+					face.Glyph.RenderGlyph(RenderMode.Normal);
+					var ftbmp = face.Glyph.Bitmap;
+					int gWidthi = face.Glyph.Metrics.Width.ToInt32();
+					if (ftbmp.Width > 0 && ftbmp.Rows > 0)
 					{
-						var imgbmp = GLHelpers.LcdToRGBA(ftbmp.BufferData, gWidthi, ftbmp.Rows, ftbmp.Pitch);
-						//var imgbmp = GLHelpers.GraysToRGBA(ftbmp.BufferData);
-						
-						t = _d.AddTexture(gWidthi, ftbmp.Rows, imgbmp);
-						textures[glyphIndex] = t;
-					}
-					var bottomY = y + face.Glyph.Metrics.HorizontalBearingY.ToInt32() - ftbmp.Rows;
-					_d.DrawTexture(t, (int)Math.Round(penX + face.Glyph.BitmapLeft), bottomY, gWidthi, ftbmp.Rows);
-					// Check if we are aligned properly on the right edge (for debugging)
-				}
+						var t = textures[glyphIndex];
+						if (t == 0)
+						{
+							//var imgbmp = GLHelpers.LcdToRGBA(ftbmp.BufferData, gWidthi, ftbmp.Rows, ftbmp.Pitch);
+							var imgbmp = GLHelpers.GraysToRGBA(ftbmp.BufferData);
 
+							t = _d.AddTexture(gWidthi, ftbmp.Rows, imgbmp);
+							textures[glyphIndex] = t;
+						}
+						var bottomY = y + face.Glyph.Metrics.HorizontalBearingY.ToInt32() - ftbmp.Rows;
+						_d.DrawTexture(t, (int)Math.Round(penX + face.Glyph.BitmapLeft), bottomY, gWidthi, ftbmp.Rows);
+					}
+				}
 				#endregion
 
 				#region Overrun
@@ -133,8 +143,9 @@ namespace Tango.Drawing
 					penX += (float)kern;
 				}
 				#endregion
-
 			}
+
+			return (int)penX;
 		}
 		#endregion // RenderString
 

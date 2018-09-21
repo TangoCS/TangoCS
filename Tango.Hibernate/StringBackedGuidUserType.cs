@@ -4,7 +4,8 @@ using NHibernate;
 using NHibernate.SqlTypes;
 using NHibernate.Type;
 using NHibernate.UserTypes;
-using NHibernate.Mapping.ByCode.Impl;
+using System.Data.Common;
+using NHibernate.Engine;
 
 namespace Tango.Hibernate
 {
@@ -22,11 +23,6 @@ namespace Tango.Hibernate
 			if (x == null || y == null) return false;
 
 			return x.Equals(y);
-		}
-
-		public int GetHashCode(object x)
-		{
-			return x.GetHashCode();
 		}
 
 		public object DeepCopy(object value)
@@ -59,15 +55,15 @@ namespace Tango.Hibernate
 			get { return typeof(Guid); }
 		}
 
-		public new void NullSafeSet(IDbCommand cmd, object value, int index)
+		public override void NullSafeSet(DbCommand cmd, object value, int index, bool[] settable, ISessionImplementor session)
 		{
 			var val = value == null ? (object)DBNull.Value : value.ToString();
-			((IDataParameter)cmd.Parameters[index]).Value = val;
+			cmd.Parameters[index].Value = val;
 		}
 
-		public object NullSafeGet(IDataReader rs, string[] names, object owner)
+		public override object NullSafeGet(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return NHibernateUtil.Guid.NullSafeGet(rs, names[0]);
+			return NHibernateUtil.Guid.NullSafeGet(rs, name, session);
 		}
 
 		/// <summary>
@@ -76,7 +72,7 @@ namespace Tango.Hibernate
 		/// <param name="rs"></param>
 		/// <param name="index"></param>
 		/// <returns></returns>
-		public override object Get(IDataReader rs, int index)
+		public override object Get(DbDataReader rs, int index, ISessionImplementor session)
 		{
 			if (rs.GetFieldType(index) == typeof(Guid))
 			{
@@ -97,9 +93,9 @@ namespace Tango.Hibernate
 		/// <param name="rs"></param>
 		/// <param name="name"></param>
 		/// <returns></returns>
-		public override object Get(IDataReader rs, string name)
+		public override object Get(DbDataReader rs, string name, ISessionImplementor session)
 		{
-			return Get(rs, rs.GetOrdinal(name));
+			return Get(rs, rs.GetOrdinal(name), session);
 		}
 
 		/// <summary></summary>
@@ -108,7 +104,7 @@ namespace Tango.Hibernate
 			get { return typeof(Guid); }
 		}
 
-		public override void Set(IDbCommand cmd, object value, int index)
+		public override void Set(DbCommand cmd, object value, int index, ISessionImplementor session)
 		{
 			var dp = (IDataParameter)cmd.Parameters[index];
 			dp.Value = value.ToString();

@@ -13,10 +13,11 @@ namespace Tango.Meta.Database
 			if (cls.Persistent == PersistenceType.Table)
 			{
 				var tempListJoinTables = new List<string>();
+				var stable = cls.Stereotype<STable>();
 
 				Table t = new Table();
 				t.Schema = this;
-				t.Name = cls.Name;
+				t.Name = stable?.Name ?? cls.Name;
 				//t.Description = cls.Caption;
 				t.Identity = cls.CompositeKey.Count == 1 && cls.Key is ICanBeIdentity && (cls.Key as ICanBeIdentity).IsIdentity;
 
@@ -102,8 +103,7 @@ namespace Tango.Meta.Database
 					if (prop is IMetaReference && prop.UpperBound == 1)
 					{
 						var r = prop as IMetaReference;
-						if (r.RefClass.Key.Type is MetaIntType || 
-							r.RefClass.Key.Type is MetaGuidType)
+						if (r.RefClass.Key.Type is IMetaIdentifierType)
 						{
 							column.Name = prop.ColumnName;
 						}
@@ -139,7 +139,13 @@ namespace Tango.Meta.Database
 					if (f.UpperBound == 1)
 					{
 						var fkcolumnname = metaRef.RefClass.BaseClass != null ? metaRef.RefClass.BaseClass.Key.ColumnName : metaRef.RefClass.CompositeKey.Select(o => o.ColumnName).First();
-						t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() { Table = t, Name = "FK_" + cls.Name + "_" + f.Name, RefTable = metaRef.RefClass.Name, Columns = new[] { metaRef.ColumnName }, RefTableColumns = new[] { fkcolumnname } });
+						t.ForeignKeys.Add("FK_" + cls.Name + "_" + f.Name, new ForeignKey() {
+							Table = t,
+							Name = "FK_" + cls.Name + "_" + f.Name,
+							RefTable = metaRef.RefClass.Stereotype<STable>()?.Name ?? metaRef.RefClass.Name,
+							Columns = new[] { metaRef.ColumnName },
+							RefTableColumns = new[] { fkcolumnname }
+						});
 
 						// Если референс на WF_Activity
 						var wf = new string[] {"wf_activity", "wf_workflow", "wf_transition" };
@@ -397,8 +403,9 @@ namespace Tango.Meta.Database
 			if (cls.Persistent == PersistenceType.TableFunction)
 			{
 				var function = new TableFunction();
-				function.Name = cls.Name;
-				function.ReturnType = cls.Name;
+				var stf = cls.Stereotype<STableFunction>();
+				function.Name = stf?.Name ?? cls.Name;
+				function.ReturnType = stf?.ReturnType.Name ?? cls.Name;
 				//function.Text = "";
 				foreach (var param in cls.Parameters)
 				{

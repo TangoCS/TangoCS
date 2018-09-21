@@ -224,7 +224,8 @@ namespace Tango.Data
 
 		protected override Expression VisitMember(MemberExpression m)
 		{
-			if (m.Expression?.NodeType == ExpressionType.Parameter)
+			if (m.Expression?.NodeType == ExpressionType.Parameter ||
+				(m.NodeType == ExpressionType.MemberAccess && m.Expression?.NodeType == ExpressionType.Convert))
 			{
 				sb.Append(m.Member.Name);
 				return m;
@@ -248,6 +249,21 @@ namespace Tango.Data
 						Visit(m.Expression);
 						return m;
 				}
+
+				MemberExpression m2 = (MemberExpression)m.Expression;
+				ConstantExpression captureConst = (ConstantExpression)m2.Expression;
+				object obj = ((FieldInfo)m2.Member).GetValue(captureConst.Value);
+				object val = ((PropertyInfo)m.Member).GetValue(obj, null);
+				sb.Append(ConvertConstantToParm(val));
+				return m;
+			}
+
+			if (m.NodeType == ExpressionType.MemberAccess && m.Expression == null)
+			{
+				if (m.Member is FieldInfo fi)
+					if (fi.IsStatic)
+						sb.Append(ConvertConstantToParm(fi.GetValue(null)));
+				return m;
 			}
 
 			throw new NotSupportedException(string.Format("The member '{0}' is not supported", m.Member.Name));
@@ -298,7 +314,7 @@ namespace Tango.Data
 		private void ParseOrderByExpression(MethodCallExpression expression, string order)
 		{
 			sb = new StringBuilder();
-			sbOrder.Add(sb);
+			sbOrder.Insert(0, sb);
 
 			Visit(expression.Arguments[1]);
 

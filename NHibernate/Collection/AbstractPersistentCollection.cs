@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
+using System.Data.Common;
 using NHibernate.Collection.Generic;
 using NHibernate.Engine;
 using NHibernate.Impl;
@@ -15,8 +15,9 @@ namespace NHibernate.Collection
 	/// <summary>
 	/// Base class for implementing <see cref="IPersistentCollection"/>.
 	/// </summary>
+	// 6.0 TODO: remove ILazyInitializedCollection once IPersistentCollection derives from it
 	[Serializable]
-	public abstract class AbstractPersistentCollection : IPersistentCollection
+	public abstract partial class AbstractPersistentCollection : IPersistentCollection, ILazyInitializedCollection
 	{
 		protected internal static readonly object Unknown = new object(); //place holder
 		protected internal static readonly object NotFound = new object(); //place holder
@@ -60,9 +61,11 @@ namespace NHibernate.Collection
 						{
 							return enclosingInstance.operationQueue[position].AddedInstance;
 						}
-						catch (IndexOutOfRangeException)
+						catch (IndexOutOfRangeException ex)
 						{
-							throw new InvalidOperationException();
+							throw new InvalidOperationException(
+								"MoveNext as not been called or its last call has yielded false (meaning the enumerator is beyond the end of the enumeration).",
+								ex);
 						}
 					}
 				}
@@ -410,7 +413,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Called just before reading any rows from the <see cref="IDataReader" />
+		/// Called just before reading any rows from the <see cref="DbDataReader" />
 		/// </summary>
 		public virtual void BeginRead()
 		{
@@ -419,7 +422,7 @@ namespace NHibernate.Collection
 		}
 
 		/// <summary>
-		/// Called after reading all rows from the <see cref="IDataReader" />
+		/// Called after reading all rows from the <see cref="DbDataReader" />
 		/// </summary>
 		/// <remarks>
 		/// This should be overridden by sub collections that use temporary collections
@@ -714,10 +717,10 @@ namespace NHibernate.Collection
 			var currentIds = new HashSet<TypedValue>();
 			foreach (object current in currentElements)
 			{
-				if (current != null && ForeignKeys.IsNotTransient(entityName, current, null, session))
+				if (current != null && ForeignKeys.IsNotTransientSlow(entityName, current, session))
 				{
 					object currentId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
-					currentIds.Add(new TypedValue(idType, currentId, session.EntityMode));
+					currentIds.Add(new TypedValue(idType, currentId, false));
 				}
 			}
 
@@ -725,7 +728,7 @@ namespace NHibernate.Collection
 			foreach (object old in oldElements)
 			{
 				object oldId = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, old, session);
-				if (!currentIds.Contains(new TypedValue(idType, oldId, session.EntityMode)))
+				if (!currentIds.Contains(new TypedValue(idType, oldId, false)))
 				{
 					res.Add(old);
 				}
@@ -736,7 +739,7 @@ namespace NHibernate.Collection
 
 		public void IdentityRemove(IList list, object obj, string entityName, ISessionImplementor session)
 		{
-			if (obj != null && ForeignKeys.IsNotTransient(entityName, obj, null, session))
+			if (obj != null && ForeignKeys.IsNotTransientSlow(entityName, obj, session))
 			{
 				IType idType = session.Factory.GetEntityPersister(entityName).IdentifierType;
 
@@ -749,7 +752,7 @@ namespace NHibernate.Collection
 						continue;
 					}
 					object idOfOld = ForeignKeys.GetEntityIdentifierIfNotUnsaved(entityName, current, session);
-					if (idType.IsEqual(idOfCurrent, idOfOld, session.EntityMode, session.Factory))
+					if (idType.IsEqual(idOfCurrent, idOfOld, session.Factory))
 					{
 						toRemove.Add(current);
 					}
@@ -821,14 +824,14 @@ namespace NHibernate.Collection
 		public abstract bool NeedsUpdating(object entry, int i, IType elemType);
 
 		/// <summary>
-		/// Reads the row from the <see cref="IDataReader"/>.
+		/// Reads the row from the <see cref="DbDataReader"/>.
 		/// </summary>
-		/// <param name="reader">The IDataReader that contains the value of the Identifier</param>
+		/// <param name="reader">The DbDataReader that contains the value of the Identifier</param>
 		/// <param name="role">The persister for this Collection.</param>
 		/// <param name="descriptor">The descriptor providing result set column names</param>
 		/// <param name="owner">The owner of this Collection.</param>
 		/// <returns>The object that was contained in the row.</returns>
-		public abstract object ReadFrom(IDataReader reader, ICollectionPersister role, ICollectionAliases descriptor,
+		public abstract object ReadFrom(DbDataReader reader, ICollectionPersister role, ICollectionAliases descriptor,
 										object owner);
 
 		public abstract object GetSnapshotElement(object entry, int i);

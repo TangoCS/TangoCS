@@ -5,6 +5,7 @@
 				triggerOn: args.triggerson,
 				displayAround: args.displaysaround,
 				position: args.position,
+				closeOnClick: args.closeonclick,
 				onOpen: function (data, event) {
 					if (data.menu[0].getAttribute('data-href') || data.menu[0].getAttribute('data-e'))
 						return ajaxUtils.runEventFromElementWithApiResponse(data.menu[0]);

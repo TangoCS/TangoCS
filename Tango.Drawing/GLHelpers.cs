@@ -1,5 +1,4 @@
-﻿using SharpFont;
-using System;
+﻿using System;
 
 namespace Tango.Drawing
 {
@@ -11,10 +10,10 @@ namespace Tango.Drawing
 			var p = 0;
 			for (int i = 0; i < grays.Length; i++)
 			{
-				imgbmp[p] = grays[i];
-				imgbmp[p + 1] = grays[i];
-				imgbmp[p + 2] = grays[i];
-				imgbmp[p + 3] = 255;
+				imgbmp[p] = 255;
+				imgbmp[p + 1] = 255;
+				imgbmp[p + 2] = 255;
+				imgbmp[p + 3] = grays[i];
 				p += 4;
 			}
 			return imgbmp;

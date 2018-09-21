@@ -6,7 +6,7 @@ using NHibernate.Engine.Query;
 
 namespace NHibernate.Impl
 {
-	public abstract class AbstractQueryImpl2 : AbstractQueryImpl
+	public abstract partial class AbstractQueryImpl2 : AbstractQueryImpl
 	{
 		private readonly Dictionary<string, LockMode> _lockModes = new Dictionary<string, LockMode>(2);
 
@@ -126,8 +126,8 @@ namespace NHibernate.Impl
 			// NOTE: updates queryParameters.NamedParameters as (desired) side effect
 			var queryExpression = ExpandParameters(queryParameters.NamedParameters);
 
-			return sessionImplementor.GetQueries(queryExpression, false)
-									 .Select(queryTranslator => new HqlTranslatorWrapper(queryTranslator));
+			var plan = sessionImplementor.Factory.QueryPlanCache.GetHQLQueryPlan(queryExpression, false, sessionImplementor.EnabledFilters);
+			return plan.Translators.Select(t => new HqlTranslatorWrapper(t));
 		}
 	}
 }

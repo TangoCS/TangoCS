@@ -13,6 +13,12 @@ namespace Tango.Identity
 		void RunAs(TUser user, Action action);
 	}
 
+	public interface IUserIdAccessor<TKey>
+	{
+		TKey CurrentUserID { get; }
+		TKey SystemUserID { get; }
+	}
+
 	public interface IIdentityStore<TUser, TKey>
 		where TKey : IEquatable<TKey>
 	{

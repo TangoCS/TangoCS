@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.Dynamic;
 using System.Linq;
@@ -12,22 +13,6 @@ namespace Tango.Data
 {
 	public class Store
 	{
-		public DBType DBType
-		{
-			get
-			{
-				switch (Connection.GetType().Name)
-				{
-					case "NpgsqlConnection":
-						return DBType.POSTGRESQL;
-					case "SqlConnection":
-						return DBType.MSSQL;
-					default:
-						return DBType.POSTGRESQL;
-				}
-			}
-		}
-
 		public IDbConnection Connection { get; }
 		public IDbTransaction Transaction { get; private set; }
 
@@ -45,6 +30,22 @@ namespace Tango.Data
 		}
 	}
 
+	public static class StoreExtensions
+	{
+		public static DBType GetDBType(this IDatabase db)
+		{
+			switch (db.Connection.GetType().Name)
+			{
+				case "NpgsqlConnection":
+					return DBType.POSTGRESQL;
+				case "SqlConnection":
+					return DBType.MSSQL;
+				default:
+					return DBType.POSTGRESQL;
+			}
+		}
+	}
+
 	public class DapperDatabase : Store, IDatabase
 	{
 		public DapperDatabase(IDbConnection connection) : base(connection) { }
@@ -57,17 +58,28 @@ namespace Tango.Data
 		public object Parameters { get; set; }
 
 		public IDatabase Database { get; }
+		protected DBType DBType { get; }
 
 		protected Dictionary<string, PropertyInfo> keys = new Dictionary<string, PropertyInfo>();
 		protected Dictionary<string, PropertyInfo> columns = new Dictionary<string, PropertyInfo>();
 		protected Dictionary<string, object> parms = new Dictionary<string, object>();
 
+		public string Table { get; }
+
 		public DapperRepository(IDatabase database)
 		{
 			Database = database;
-			AllObjectsQuery = "select * from " + typeof(T).Name.ToLower();
+			Table = typeof(T).GetCustomAttribute<TableAttribute>()?.Name ?? typeof(T).Name.ToLower();
+			if (Table.ToLower().EndsWith(".sql"))
+			{
+				Table = $"({EmbeddedResourceManager.GetString(typeof(T), Table)})";
+				AllObjectsQuery = Table;
+			}
+			else
+				AllObjectsQuery = "select * from " + Table;
+			DBType = database.GetDBType();
 
-			var props = typeof(T).GetProperties();
+			var props = typeof(T).GetProperties().Where(o => o.GetCustomAttribute<ColumnAttribute>() != null);
 			foreach (var p in props)
 			{
 				if (p.GetCustomAttributes(typeof(KeyAttribute), false).Any())
@@ -75,26 +87,24 @@ namespace Tango.Data
 				if (!p.GetCustomAttributes(typeof(ComputedAttribute), false).Any())
 					columns.Add(p.Name, p);
 			}
+		}
 
-			//var paramExp = Expression.Parameter(typeof(T), "o");
-
-			//Expression whereExpr = null;
-			//foreach (var key in keys)
-			//{
-			//	var leftExp = Expression.Property(paramExp, key);
-			//	var rightExp = Expression.Field(Expression.Constant(this), "keyValue");
-			//	if (whereExpr == null)
-			//		whereExpr = Expression.Equal(leftExp, rightExp);
-			//	else
-			//		whereExpr = Expression.AndAlso(whereExpr, Expression.Equal(leftExp, rightExp));
-			//}
-
-			//keySelector = Expression.Lambda<Func<T, bool>>(whereExpr, paramExp);
+		string PrepareSelectFromAllObjectsQuery(string fieldExpression)
+		{
+			var i = AllObjectsQuery.IndexOf("--#select");
+			if (i == -1)
+				return $"select {fieldExpression} from ({AllObjectsQuery}) t";
+			else
+			{
+				var part1 = AllObjectsQuery.Substring(0, i);
+				var part2 = AllObjectsQuery.Substring(i + 9);
+				return $"{part1} select {fieldExpression} from ({part2}) t";
+			}
 		}
 
 		public int Count(Expression predicate = null)
 		{
-			var query = $"select count(1) from ({AllObjectsQuery}) t";
+			var query = PrepareSelectFromAllObjectsQuery("count(1)");
 			var args = new DynamicParameters(Parameters);
 
 			if (predicate != null)
@@ -107,7 +117,7 @@ namespace Tango.Data
 					args.Add(pair.Key, pair.Value);
 			}
 
-			return Database.Connection.QuerySingle<int>(query, args);
+			return Database.Connection.QuerySingle<int>(query, args, Database.Transaction);
 		}
 
 		public IEnumerable<T> List(Expression predicate = null)
@@ -117,20 +127,32 @@ namespace Tango.Data
 
 			if (predicate != null)
 			{
-				query = $"select * from ({query}) t";
+				query = PrepareSelectFromAllObjectsQuery("*");
 				var translator = new QueryTranslator();
 				translator.Translate(predicate);
 				if (!translator.WhereClause.IsEmpty()) query += " where " + translator.WhereClause;
 				if (!translator.OrderBy.IsEmpty()) query += " order by " + translator.OrderBy;
-				if (translator.Parms.ContainsKey("take")) query += " limit @take";
-				if (translator.Parms.ContainsKey("skip")) query += " offset @skip";
+				if (DBType == DBType.POSTGRESQL)
+				{
+					if (translator.Parms.ContainsKey("take")) query += " limit @take";
+					if (translator.Parms.ContainsKey("skip")) query += " offset @skip";
+				}
+				else if (DBType == DBType.MSSQL)
+				{
+					if (translator.OrderBy.IsEmpty()) query += " order by (select null) ";
+					if (translator.Parms.ContainsKey("skip"))
+						query += " offset @skip rows";
+					else
+						query += " offset 0 rows";
+					if (translator.Parms.ContainsKey("take")) query += " fetch next @take rows only";			
+				}
 
 				foreach (var pair in translator.Parms)
 					args.Add(pair.Key, pair.Value);
 			}
 
 			if (typeof(T) == typeof(ExpandoObject))
-				return Database.Connection.Query(query, args).Select(x => {
+				return Database.Connection.Query(query, args, Database.Transaction).Select(x => {
 					var dapperRowProperties = x as IDictionary<string, object>;
 					IDictionary<string, object> expando = new ExpandoObject();
 
@@ -140,17 +162,18 @@ namespace Tango.Data
 					return (T)expando;
 				});
 			else
-				return Database.Connection.Query<T>(query, args);
+				return Database.Connection.Query<T>(query, args, Database.Transaction);
 		}
 
 		protected (string clause, Dictionary<string, object> parms) GetByIdWhereClause(object id)
 		{
 			var parms = new Dictionary<string, object>();
-			if (id.GetType() == typeof(Dictionary<string, object>))
+			var idtype = id.GetType();
+			if (idtype == typeof(Dictionary<string, object>))
 			{
-				var keys = id as Dictionary<string, object>;
+				var ids = id as Dictionary<string, object>;
 				int i = 0;
-				var clause = keys.Select(k => {
+				var clause = ids.Select(k => {
 					var s = $"{k.Key.ToLower()} = @p{i}";
 					parms.Add($"p{i}", k.Value);
 					i++;
@@ -158,29 +181,26 @@ namespace Tango.Data
 				}).Join(" and ");
 				return (clause, parms);
 			}
-			else
+			else if (idtype == typeof(string) || idtype == typeof(Guid) || idtype == typeof(DateTime) ||
+				(idtype.IsValueType && idtype.IsPrimitive))
 			{
-				var cnt = keys.Count();
-				if (cnt == 1)
-				{
-					parms.Add("p0", id);
-					return (keys.Keys.First().ToLower() + " = @p0", parms);
-				}
-				else if (cnt > 1)
-				{
-					var fields = id.GetType().GetFields();
-					int i = 0;
-					var clause = keys.Select(k => {
-						var s = $"{k.Key.ToLower()} = @p{i}";
-						parms.Add($"p{i}", fields[i].GetValue(id));
-						i++;
-						return s;
-					}).Join(" and ");
-					return (clause, parms);
-				}
-				else
-					throw new Exception($"Entity {typeof(T).Name} doesn't contain any key property");
+				parms.Add("p0", id);
+				return (keys.Keys.First().ToLower() + " = @p0", parms);
 			}
+			else if (idtype.IsValueType)
+			{
+				var props = id.GetType().GetProperties();
+				int i = 0;
+				var clause = keys.Select(k => {
+					var s = $"{k.Key.ToLower()} = @p{i}";
+					parms.Add($"p{i}", props[i].GetValue(id));
+					i++;
+					return s;
+				}).Join(" and ");
+				return (clause, parms);
+			}
+			else
+				throw new Exception($"Entity {typeof(T).Name} doesn't contain any key property");
 		}
 
 		protected (string clause, Dictionary<string, object> parms) GetByIdsWhereClause<TKey>(IEnumerable<TKey> ids)
@@ -191,7 +211,10 @@ namespace Tango.Data
 				var parms = new Dictionary<string, object> {
 					{ "p0", ids }
 				};
-				return (keys.Keys.First().ToLower() + " = any(@p0)", parms);
+				if (DBType == DBType.POSTGRESQL)
+					return (keys.Keys.First().ToLower() + " = any(@p0)", parms);
+				else
+					return (keys.Keys.First().ToLower() + " in @p0", parms);
 			}
 			else if (cnt > 1)
 				throw new Exception($"Composite keys not supported (entity: {typeof(T).Name}).");
@@ -202,14 +225,15 @@ namespace Tango.Data
 		public T GetById(object id)
 		{
 			var where = GetByIdWhereClause(id);
-			var query = $"select * from {typeof(T).Name.ToLower()} where {where.clause}";
+			var query = $"select * from {Table} where {where.clause}";
 
-			return Database.Connection.QuerySingleOrDefault<T>(query, where.parms);
+			return Database.Connection.QuerySingleOrDefault<T>(query, where.parms, Database.Transaction);
 		}
 
 		public virtual void Create(T entity)
 		{
-			var props = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public);
+			var props = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public)
+				.Where(o => o.GetCustomAttribute<ColumnAttribute>() != null);
 			var cols = new List<string>();
 			var vals = new List<string>();
 			var parms = new Dictionary<string, object>();
@@ -239,7 +263,7 @@ namespace Tango.Data
 			var valuesClause = vals.Join(", ");
 			var returning = identity == null ? "" : $"returning {identity.Name.ToLower()}";
 
-			var query = $"insert into {typeof(T).Name.ToLower()}({colsClause}) values({valuesClause}) {returning}";
+			var query = $"insert into {Table}({colsClause}) values({valuesClause}) {returning}";
 
 			var ret = Database.Connection.ExecuteScalar(query, parms, Database.Transaction);
 
@@ -259,7 +283,7 @@ namespace Tango.Data
 				keyCollection.Add(key.Key, key.Value.GetValue(entity));
 
 			var where = GetByIdWhereClause(keyCollection);
-			var query = $"update {typeof(T).Name.ToLower()} set {setCollection.GetClause()} where {where.clause}";
+			var query = $"update {Table} set {setCollection.GetClause()} where {where.clause}";
 
 			foreach (var i in setCollection.GetParms())
 				where.parms.Add(i.Key, i.Value);
@@ -276,7 +300,7 @@ namespace Tango.Data
 			var collection = new UpdateSetCollection<T>();
 			sets(collection);
 
-			var query = $"update {typeof(T).Name.ToLower()} set {collection.GetClause()} where {translator.WhereClause}";
+			var query = $"update {Table} set {collection.GetClause()} where {translator.WhereClause}";
 
 			foreach (var i in collection.GetParms())
 				args.Add(i.Key, i.Value);
@@ -290,7 +314,7 @@ namespace Tango.Data
 			sets(collection);
 
 			var where = ids.Count() == 1 ? GetByIdWhereClause(ids.First()) : GetByIdsWhereClause(ids);
-			var query = $"update {typeof(T).Name.ToLower()} set {collection.GetClause()} where {where.clause}";
+			var query = $"update {Table} set {collection.GetClause()} where {where.clause}";
 
 			foreach (var i in collection.GetParms())
 				where.parms.Add(i.Key, i.Value);
@@ -303,7 +327,7 @@ namespace Tango.Data
 			var translator = new QueryTranslator();
 			translator.Translate(Enumerable.Empty<T>().AsQueryable().Where(predicate).Expression);
 			var args = new DynamicParameters(translator.Parms);
-			var query = $"delete from {typeof(T).Name.ToLower()} where {translator.WhereClause}";
+			var query = $"delete from {Table} where {translator.WhereClause}";
 
 			Database.Connection.ExecuteScalar(query, args, Database.Transaction);
 		}
@@ -311,7 +335,7 @@ namespace Tango.Data
 		public virtual void Delete<TKey>(IEnumerable<TKey> ids)
 		{
 			var where = ids.Count() == 1 ? GetByIdWhereClause(ids.First()) : GetByIdsWhereClause(ids);
-			var query = $"delete from {typeof(T).Name.ToLower()} where {where.clause}";
+			var query = $"delete from {Table} where {where.clause}";
 
 			Database.Connection.ExecuteScalar(query, where.parms, Database.Transaction);
 		}

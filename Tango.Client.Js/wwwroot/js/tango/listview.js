@@ -196,10 +196,11 @@
 	function setBulkOpsState(doc, root, state) {
 		const bulkops = doc.querySelectorAll('.bulkop');
 		for (var i = 0; i < bulkops.length; i++) {
+			if (bulkops[i].getAttribute('data-owner') != root.id) continue;
 			if (state.selectedvalues.length == 0) {
-				bulkops[i].style.display = 'none';
+				bulkops[i].classList.add('hide');
 			} else {
-				bulkops[i].style.display = '';
+				bulkops[i].classList.remove('hide');
 			}
 		}
 	}
