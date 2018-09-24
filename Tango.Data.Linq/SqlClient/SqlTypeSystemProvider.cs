@@ -1019,6 +1019,7 @@ namespace System.Data.Linq.SqlClient {
             }
 
             protected int? GetLargestDeclarableSize(SqlType declaredType) {
+                if (SupportsMaxSize) return null;
                  switch (declaredType.SqlDbType) {
                     case SqlDbType.Image:
                     case SqlDbType.Binary:

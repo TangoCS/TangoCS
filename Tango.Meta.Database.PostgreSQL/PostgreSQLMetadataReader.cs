@@ -120,7 +120,8 @@ namespace Tango.Meta.Database
 						trigger.Owner = table.Name;
 						trigger.Name = c.GetAttributeValue("NAME");
 						trigger.Text = c.GetAttributeValue("TEXT");
-						table.Triggers.Add(trigger.Name, trigger);
+                        if (!table.Triggers.ContainsKey(trigger.Name))
+                            table.Triggers.Add(trigger.Name, trigger);
 					});
 
 				table.Description = t.GetAttributeValue("DESCRIPTION");
