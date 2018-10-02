@@ -158,7 +158,7 @@ namespace ImportData2
 
 			var addpath = path + dbFromName + "__ADD_CONSTRAINTS.sql";
 			File.WriteAllText(addpath, resultBeg.ToString());
-			CreateConstraints(tableListForeignKeysTo, result);
+			CreateConstraints(tableListForeignKeysObjects, result);
 			File.AppendAllText(addpath, result.ToString());
 			File.AppendAllText(addpath, resultEnd.ToString());
 			result.Clear();
@@ -328,7 +328,7 @@ GROUP BY t.Name, s.Name, p.Rows", table.Name);
 
 		static void DropConstraints(IEnumerable<Table> tables, StringBuilder result)
 		{
-			foreach (var t in tables)
+			foreach (var t in tables.OrderBy(o => o.Name))
 			{
 				foreach (var fk in t.ForeignKeys.Values)
 				{
@@ -344,7 +344,7 @@ GROUP BY t.Name, s.Name, p.Rows", table.Name);
 
 		static void CreateConstraints(IEnumerable<Table> tables, StringBuilder result)
 		{
-			foreach (var t in tables)
+			foreach (var t in tables.OrderBy(o => o.Name))
 			{
 				foreach (var fk in t.ForeignKeys.Values)
 				{
