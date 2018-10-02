@@ -172,7 +172,7 @@ namespace System.Data.Linq.SqlClient {
         /// user to String.Length.
         /// </summary>
         internal SqlExpression LEN(SqlExpression expr) {
-            return FunctionCall(typeof(int), "LEN", new SqlExpression[] { expr }, expr.SourceExpression);
+            return FunctionCall(typeof(int), Dialect is DialectPg ? "LENGTH" : "LEN", new SqlExpression[] { expr }, expr.SourceExpression);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace System.Data.Linq.SqlClient {
         /// case of string types it will count trailing spaces, but doesn't understand unicode.
         /// </summary>
         internal SqlExpression DATALENGTH(SqlExpression expr) {
-            return FunctionCall(typeof(int), "DATALENGTH", new SqlExpression[] { expr }, expr.SourceExpression);
+            return FunctionCall(typeof(int), Dialect is DialectPg ? "LENGTH" : "DATALENGTH", new SqlExpression[] { expr }, expr.SourceExpression);
         }
 
         /// <summary>
@@ -188,7 +188,24 @@ namespace System.Data.Linq.SqlClient {
         /// form of String.Length that should always be used.
         /// </summary>
         internal SqlExpression CLRLENGTH(SqlExpression expr) {
-            return Unary(SqlNodeType.ClrLength, expr);
+            if (Dialect is DialectPg)
+                return FunctionCall(typeof(int), "LENGTH", new SqlExpression[] { expr }, expr.SourceExpression);
+            else
+                return Unary(SqlNodeType.ClrLength, expr);
+        }
+
+        internal SqlExpression SPACE(SqlExpression expr, Expression source)
+        {
+            return Dialect is DialectPg ?
+                FunctionCall(typeof(string), "REPEAT",
+                new SqlExpression[] { new SqlVariable(expr.ClrType, expr.SqlType, "' '", source), expr },
+                source) :
+                FunctionCall(typeof(string), "SPACE", new SqlExpression[] { expr }, source);
+        }
+
+        internal SqlExpression REPLICATE(SqlExpression expr1, SqlExpression expr2, Expression source)
+        {
+            return FunctionCall(typeof(string), Dialect is DialectPg ? "REPEAT" : "REPLICATE", new SqlExpression[] { expr1, expr2 }, source);
         }
 
         internal SqlExpression DATEPART(string partName, SqlExpression expr) {
@@ -225,7 +242,7 @@ namespace System.Data.Linq.SqlClient {
                 returnType,
                 "DATEADD",
                 new SqlExpression[] {
-                    new SqlVariable(typeof(void), null, partName, sourceExpression),
+                    new SqlVariable(typeof(void), null, Dialect.DatePartName(partName), sourceExpression),
                     value,
                     expr },
                 sourceExpression
@@ -243,7 +260,7 @@ namespace System.Data.Linq.SqlClient {
                 returnType,
                 "DATEADD",
                 new SqlExpression[] {
-                    new SqlVariable(typeof(void), null, partName, sourceExpression),
+                    new SqlVariable(typeof(void), null, Dialect.DatePartName(partName), sourceExpression),
                     value,
                     expr },
                 sourceExpression
