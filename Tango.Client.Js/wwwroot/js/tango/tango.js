@@ -409,7 +409,13 @@ var ajaxUtils = function ($, cu) {
 			const targetquery = sep >= 0 ? target.url.substring(sep + 1) : '';
 			const targetqueryparms = cu.getParams(targetquery, true);
 			for (var key in target.query) {
-				targetqueryparms[key] = target.query[key]
+				targetqueryparms[key] = encodeURIComponent(target.query[key]);
+			}
+			for (var key in target.data) {
+				if (targetqueryparms[key]) {
+					targetqueryparms[key] = encodeURIComponent(target.data[key]);
+					delete target.data[key];
+				}
 			}
 			target.url = targetpath + '?';
 			for (var key in targetqueryparms) {
@@ -586,7 +592,7 @@ var ajaxUtils = function ($, cu) {
 				target.data[FORMAT_PREFIX + el.name] = val;
 			} else if (attr.name.startsWith('data-c-')) {
 				target.data[attr.name.replace('data-c-', 'c-')] = val;
-			} else if (attr.name == 'data-ref') {
+			} else if (attr.name.startsWith('data-ref')) {
 				var refEl = document.getElementById(val);
 				if (refEl && refEl.name !== undefined && refEl.value !== undefined)
 					if (method == 'POST')
@@ -648,8 +654,12 @@ var ajaxUtils = function ($, cu) {
 		const shadow = (new DOMParser()).parseFromString("<!DOCTYPE html>", "text/html");
 
 		const replaceFunc = function (el, obj) {
+			if (obj.name == el.id)
+				obj.content.firstChild.id = el.id;
+
 			if (obj.content.firstChild.id == '' && obj.content.querySelector('#' + el.id) == null)
 				obj.content.firstChild.id = el.id;
+
 			el.parentNode.replaceChild(obj.content.firstChild, el);
 		};
 		const addFunc = function (el, obj) {
@@ -673,7 +683,9 @@ var ajaxUtils = function ($, cu) {
 			}
 		};
 		function parseHTML(parent, htmlString) {
-			const el = document.createElement(parent.tagName);
+			var parent = parent.tagName;
+			if (parent == 'TABLE') parent = 'DIV';
+			const el = document.createElement(parent);
 			el.innerHTML = htmlString;
 			return el;
 		}

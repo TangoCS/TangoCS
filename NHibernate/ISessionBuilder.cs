@@ -12,7 +12,7 @@ namespace NHibernate
 	/// <summary>
 	/// Represents a consolidation of all session creation options into a builder style delegate.
 	/// </summary>
-	public interface ISessionBuilder<T> where T : ISessionBuilder<T>
+	public partial interface ISessionBuilder<T> where T : ISessionBuilder<T>
 	{
 		/// <summary>
 		/// Opens a session with the specified options.

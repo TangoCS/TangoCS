@@ -8,7 +8,7 @@ namespace Tango.Data
 	public interface IDatabase
 	{
 		IDbConnection Connection { get; }
-		IDbTransaction Transaction { get; }
+		IDbTransaction Transaction { get; set; }
 
 		IRepository<T> Repository<T>();
 
@@ -18,14 +18,17 @@ namespace Tango.Data
 	public interface IRepository<T>
 	{
 		string AllObjectsQuery { get; set; }
-		object Parameters { get; set; }
+		string Table { get; }
+		IDictionary<string, object> Parameters { get; }
 
 		T GetById(object id);
+		bool Exists(object id);
 
 		int Count(Expression predicate = null);
 		IEnumerable<T> List(Expression predicate = null);
 
 		void Create(T entity);
+		object CreateFrom(Action<UpdateSetCollection<T>> sets, Expression<Func<T, bool>> predicate);
 
 		void Update(T entity);
 		void Update(Action<UpdateSetCollection<T>> sets, Expression<Func<T, bool>> predicate);
@@ -48,7 +51,9 @@ namespace Tango.Data
 		public static IRepository<T> WithAllObjectsQuery<T>(this IRepository<T> rep, string allObjectsQuery, object parameters = null)
 		{
 			rep.AllObjectsQuery = allObjectsQuery;
-			rep.Parameters = parameters;
+			if (parameters != null)
+				foreach (var p in parameters.GetType().GetProperties())
+					rep.Parameters.Add(p.Name, p.GetValue(parameters));
 			return rep;
 		}
 	}

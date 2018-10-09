@@ -1335,7 +1335,7 @@ namespace NHibernate.Impl
 			}
 		}
 
-		internal class SessionBuilderImpl<T> : ISessionBuilder<T>, ISessionCreationOptions where T : ISessionBuilder<T>
+		internal partial class SessionBuilderImpl<T> : ISessionBuilder<T>, ISessionCreationOptions where T : ISessionBuilder<T>
 		{
 			// NH specific: implementing return type covariance with interface is a mess in .Net.
 			private T _this;

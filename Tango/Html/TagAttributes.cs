@@ -75,8 +75,8 @@ namespace Tango.Html
 
 		public T Data(IReadOnlyDictionary<string, string> d) 
 		{
-			if (d != null) 
-				foreach (var v in d) 
+			if (d != null)
+				foreach (var v in d)
 					Data(v.Key, v.Value); 
 			return _this; 
 		}
@@ -285,7 +285,7 @@ namespace Tango.Html
 	{
 		public DataCollection Ref(string id)
 		{
-			Add("ref-" + id, "");
+			Add("ref-" + id, id);
 			return this;
 		}
 
@@ -295,11 +295,11 @@ namespace Tango.Html
 			return this;
 		}
 
-		public DataCollection Add(IReadOnlyDictionary<string, string> source)
-		{
-			foreach(var d in source)
-				Add(d.Key, d.Value);
-			return this;
-		}
+		//public DataCollection Add(IReadOnlyDictionary<string, string> source)
+		//{
+		//	foreach(var d in source)
+		//		Add(d.Key, d.Value);
+		//	return this;
+		//}
 	}
 }

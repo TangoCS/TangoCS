@@ -252,6 +252,11 @@
 				});
 			}
 
+			var existing = document.body.querySelectorAll("#" + menu[0].id);
+			for (var i = existing.length - 1; i >= 0; i--) {
+				if (existing[i].parentElement == document.body)
+					document.body.removeChild(existing[i]);
+			}
 			document.body.appendChild(menu[0]);
 		},
 		eventHandler: function (e) {

@@ -14,7 +14,7 @@ namespace Tango.Data
 	public class Store
 	{
 		public IDbConnection Connection { get; }
-		public IDbTransaction Transaction { get; private set; }
+		public IDbTransaction Transaction { get; set; }
 
 		public Store(IDbConnection connection)
 		{
@@ -55,14 +55,18 @@ namespace Tango.Data
 	public class DapperRepository<T> : IRepository<T>
 	{
 		public string AllObjectsQuery { get; set; }
-		public object Parameters { get; set; }
+		public IDictionary<string, object> Parameters { get; } = new Dictionary<string, object>();
 
 		public IDatabase Database { get; }
 		protected DBType DBType { get; }
 
+		IQueryTranslatorDialect Dialect => DBType == DBType.MSSQL ? (IQueryTranslatorDialect)new QueryTranslatorMSSQL() :
+			DBType == DBType.POSTGRESQL ? new QueryTranslatorPostgres() :
+			throw new NotSupportedException();
+
 		protected Dictionary<string, PropertyInfo> keys = new Dictionary<string, PropertyInfo>();
 		protected Dictionary<string, PropertyInfo> columns = new Dictionary<string, PropertyInfo>();
-		protected Dictionary<string, object> parms = new Dictionary<string, object>();
+		//protected Dictionary<string, object> parms = new Dictionary<string, object>();
 
 		public string Table { get; }
 
@@ -105,11 +109,14 @@ namespace Tango.Data
 		public int Count(Expression predicate = null)
 		{
 			var query = PrepareSelectFromAllObjectsQuery("count(1)");
-			var args = new DynamicParameters(Parameters);
+			var args = new DynamicParameters();
+
+			foreach (var pair in Parameters)
+				args.Add(pair.Key, pair.Value);
 
 			if (predicate != null)
 			{
-				var translator = new QueryTranslator();
+				var translator = new QueryTranslator(Dialect);
 				translator.Translate(predicate);
 				if (!translator.WhereClause.IsEmpty()) query += " where " + translator.WhereClause;
 
@@ -123,12 +130,15 @@ namespace Tango.Data
 		public IEnumerable<T> List(Expression predicate = null)
 		{
 			var query = AllObjectsQuery;
-			var args = new DynamicParameters(Parameters);
+			var args = new DynamicParameters();
+
+			foreach (var pair in Parameters)
+				args.Add(pair.Key, pair.Value);
 
 			if (predicate != null)
 			{
 				query = PrepareSelectFromAllObjectsQuery("*");
-				var translator = new QueryTranslator();
+				var translator = new QueryTranslator(Dialect);
 				translator.Translate(predicate);
 				if (!translator.WhereClause.IsEmpty()) query += " where " + translator.WhereClause;
 				if (!translator.OrderBy.IsEmpty()) query += " order by " + translator.OrderBy;
@@ -230,6 +240,14 @@ namespace Tango.Data
 			return Database.Connection.QuerySingleOrDefault<T>(query, where.parms, Database.Transaction);
 		}
 
+		public bool Exists(object id)
+		{
+			var where = GetByIdWhereClause(id);
+			var query = $"select 1 from {Table} where {where.clause}";
+
+			return Database.Connection.QuerySingleOrDefault<int>(query, where.parms, Database.Transaction) == 1;
+		}
+
 		public virtual void Create(T entity)
 		{
 			var props = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public)
@@ -293,7 +311,7 @@ namespace Tango.Data
 
 		public void Update(Action<UpdateSetCollection<T>> sets, Expression<Func<T, bool>> predicate)
 		{
-			var translator = new QueryTranslator();
+			var translator = new QueryTranslator(Dialect);
 			translator.Translate(Enumerable.Empty<T>().AsQueryable().Where(predicate).Expression);
 			var args = new DynamicParameters(translator.Parms);
 
@@ -322,9 +340,64 @@ namespace Tango.Data
 			Database.Connection.ExecuteScalar(query, where.parms, Database.Transaction);
 		}
 
+		public virtual object CreateFrom(Action<UpdateSetCollection<T>> sets, Expression<Func<T, bool>> predicate)
+		{
+			var props = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public)
+				.Where(o => o.GetCustomAttribute<ColumnAttribute>() != null);
+			var insCols = new List<string>();
+			var selCols = new List<string>();
+			var vals = new List<string>();
+			var parms = new Dictionary<string, object>();
+			PropertyInfo identity = null;
+			var n = 0;
+
+			var collection = new UpdateSetCollection<T>();
+			sets(collection);
+			var setsCols = collection.GetColumnsWithValues();
+
+			foreach (var prop in props)
+			{
+				if (identity == null)
+				{
+					var hasIdentity = prop.GetCustomAttributes<IdentityAttribute>().Any();
+					identity = hasIdentity ? prop : null;
+					if (hasIdentity) continue;
+				}
+
+				var key = prop.Name.ToLower();
+				if (setsCols.ContainsKey(key))
+				{
+					selCols.Add("@i" + n);
+					parms.Add("i" + n, setsCols[key]);
+					n++;
+				}
+				else
+				{
+					selCols.Add(key);
+				}
+				insCols.Add(key);
+			}
+
+			var selColsClause = selCols.Join(", ");
+			var insColsClause = insCols.Join(", ");
+			var returning = identity == null ? "" : $"returning {identity.Name.ToLower()}";
+
+			var translator = new QueryTranslator(Dialect);
+			translator.Translate(Enumerable.Empty<T>().AsQueryable().Where(predicate).Expression);
+
+			foreach (var p in translator.Parms)
+				parms.Add(p.Key, p.Value);
+
+			var query = $"insert into {Table}({insColsClause}) select {selColsClause} from {Table} where {translator.WhereClause} {returning}";
+
+			var ret = Database.Connection.ExecuteScalar(query, parms, Database.Transaction);
+
+			return identity != null ? ret : null;
+		}
+
 		public virtual void Delete(Expression<Func<T, bool>> predicate)
 		{
-			var translator = new QueryTranslator();
+			var translator = new QueryTranslator(Dialect);
 			translator.Translate(Enumerable.Empty<T>().AsQueryable().Where(predicate).Expression);
 			var args = new DynamicParameters(translator.Parms);
 			var query = $"delete from {Table} where {translator.WhereClause}";
@@ -343,7 +416,7 @@ namespace Tango.Data
 
 	public class UpdateSetCollection<TEntity>
 	{
-		List<string> _sets = new List<string>();
+		List<string> _columns = new List<string>();
 		Dictionary<string, object> _parms = new Dictionary<string, object>();
 
 		public UpdateSetCollection<TEntity> Set<TValue>(Expression<Func<TEntity, TValue>> property, TValue value)
@@ -355,13 +428,22 @@ namespace Tango.Data
 
 		public UpdateSetCollection<TEntity> Set(string property, object value)
 		{
-			var n = _sets.Count;
-			_sets.Add($"{property.ToLower()} = @u{n}");
+			var n = _columns.Count;
+			_columns.Add(property.ToLower());
 			_parms.Add("u" + n.ToString(), value);
 			return this;
 		}
 
-		public string GetClause() => _sets.Join(", ");
+		public string GetClause() => _columns.Select((s, n) => $"{s} = @u{n}").Join(", ");
+
 		public Dictionary<string, object> GetParms() => _parms;
+		public IEnumerable<string> GetColumns() => _columns;
+		public Dictionary<string, object> GetColumnsWithValues()
+		{
+			var res = new Dictionary<string, object>();
+			for (int i = 0; i < _columns.Count; i++)
+				res.Add(_columns[i], _parms[$"u{i}"]);
+			return res;
+		}
 	}
 }

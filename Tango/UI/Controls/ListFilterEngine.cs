@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using System.Xml.Linq;
 using Tango.Html;
 using Tango.Localization;
@@ -38,13 +40,12 @@ namespace Tango.UI.Controls
 				{
 					var item = it as FilterItem;
 
-					Expression<Func<T, bool>> expr = null;
-					Field f = fieldList.SingleOrDefault<Field>(f1 => f1.Title == item.Title);
-					if (f == null)
+					Field f = fieldList.SingleOrDefault(f1 => f1.Title == item.Title);
+					if (f == null || !(f.Column is LambdaExpression))
 						continue;
 
-					LambdaExpression column = f.Column as LambdaExpression;
-					if (column == null)
+					Expression<Func<T, bool>> expr = null;
+					if (!(f.Column is LambdaExpression column))
 						column = ((List<object>)f.Column)[0] as LambdaExpression;
 
 					if (item.Condition == Resources.Get("System.Filter.Contains") && f.FieldType == FieldType.String)
@@ -75,85 +76,11 @@ namespace Tango.UI.Controls
 						expr = Expression.Lambda<Func<T, bool>>(mc, column.Parameters);
 					}
 
-					object val = null;
-					if (item.Value != null && item.Value.StartsWith("$"))
-						val = MacroManager.Evaluate(item.Value.Substring(1));
-					else
-						val = item.Value;
-
 					Type valType = column.Body is UnaryExpression ? ((UnaryExpression)column.Body).Operand.Type : column.Body.Type;
-
-					if (f.FieldType == FieldType.Date)
-					{
-						DateTime dt;
-						double d;
-
-						if (item.Condition == Resources.Get("System.Filter.LastXDays"))
-						{
-							if (!double.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out d))
-								d = 0;
-							val = DateTime.Now.AddDays(-d);
-						}
-						else
-						{
-							if (!DateTime.TryParseExact(item.Value, "d.MM.yyyy", null, DateTimeStyles.None, out dt))
-							{
-								DateTime? dtn = null;
-								val = dtn;
-							} // dt = DateTime.Today;
-							else
-								val = dt;
-						}
-					}
-
-					if (f.FieldType == FieldType.DateTime)
-					{
-						DateTime dt;
-						double d;
-
-
-						if (item.Condition == Resources.Get("System.Filter.LastXDays"))
-						{
-							if (!double.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out d))
-								d = 0;
-							val = DateTime.Now.AddDays(-d);
-						}
-						else
-						{
-							if (!DateTime.TryParseExact(item.Value, "d.MM.yyyy", null, DateTimeStyles.None, out dt))
-							{
-								DateTime? dtn = null;
-								val = dtn;
-							} // dt = DateTime.Today;
-							else
-								val = dt;
-						}
-					}
-
-					if (f.FieldType == FieldType.Number || f.FieldType == FieldType.CustomInt)
-					{
-						decimal d;
-						if (!decimal.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out d))
-							d = 0;
-						val = d;
-					}
+					object val = ConvertValue(valType, f, item);
 
 					if (f.FieldType == FieldType.Boolean)
 					{
-						bool b;
-
-						if (!bool.TryParse(item.Value, out b))
-							b = false;
-
-						if (BoolAsInt)
-						{
-							val = b ? 1 : 0;
-							valType = typeof(int);
-						}
-						else
-						{
-							val = b;
-						}
 						if (item.Condition == "=")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);
 						if (item.Condition == "<>")
@@ -161,11 +88,6 @@ namespace Tango.UI.Controls
 					}
 					else if (f.FieldType == FieldType.String || f.FieldType == FieldType.DDL)
 					{
-						if (valType == typeof(Char) && val is string)
-							val = ((string)val)[0];
-						if ((valType == typeof(int?) || valType == typeof(int)) && val is string)
-							val = int.Parse((string)val);
-
 						if (item.Condition == "=")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);
 
@@ -177,7 +99,6 @@ namespace Tango.UI.Controls
 						int num = f.Operator.IndexOf(item.Condition);
 						// Взять Expression<Func<T, int, bool>> и подставить во второй параметр значение
 						Expression<Func<T, int, bool>> col2 = ((List<object>)f.Column)[num] as Expression<Func<T, int, bool>>;
-						val = Convert.ToInt32(val);
 						expr = Expression.Lambda<Func<T, bool>>(ReplaceParameterExpression(col2.Body, col2.Parameters[1].Name, val), col2.Parameters[0]);
 					}
 					else if (f.FieldType == FieldType.CustomString)
@@ -189,11 +110,6 @@ namespace Tango.UI.Controls
 					}
 					else if (f.FieldType == FieldType.CustomObject)
 					{
-						if (valType == typeof(Char) && val is string)
-							val = ((string)val)[0];
-						if ((valType == typeof(int?) || valType == typeof(int)) && val is string)
-							val = int.Parse((string)val);
-
 						int num = f.Operator.IndexOf(item.Condition);
 						// Взять Expression<Func<T, int, bool>> и подставить во второй параметр значение
 						Expression<Func<T, object, bool>> col2 = ((List<object>)f.Column)[num] as Expression<Func<T, object, bool>>;
@@ -255,6 +171,148 @@ namespace Tango.UI.Controls
 				newquery = newquery.Where<T>(stack.Pop() as Expression<Func<T, bool>>);
 
 			return newquery;
+		}
+
+		object ConvertValue(Type valType, Field f, FilterItem item)
+		{
+			object val = null;
+			if (item.Value != null && item.Value.StartsWith("$"))
+				val = MacroManager.Evaluate(item.Value.Substring(1));
+			else
+				val = item.Value;
+
+			if (f.FieldType == FieldType.Date)
+			{
+				if (item.Condition == Resources.Get("System.Filter.LastXDays"))
+				{
+					if (!double.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out double d))
+						d = 0;
+					val = DateTime.Now.AddDays(-d);
+				}
+				else
+				{
+					if (!DateTime.TryParseExact(item.Value, "d.MM.yyyy", null, DateTimeStyles.None, out DateTime dt))
+					{
+						DateTime? dtn = null;
+						val = dtn;
+					} // dt = DateTime.Today;
+					else
+						val = dt;
+				}
+			}
+			else if (f.FieldType == FieldType.DateTime)
+			{
+				if (item.Condition == Resources.Get("System.Filter.LastXDays"))
+				{
+					if (!double.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out double d))
+						d = 0;
+					val = DateTime.Now.AddDays(-d);
+				}
+				else
+				{
+					if (!DateTime.TryParseExact(item.Value, "d.MM.yyyy", null, DateTimeStyles.None, out DateTime dt))
+					{
+						DateTime? dtn = null;
+						val = dtn;
+					} // dt = DateTime.Today;
+					else
+						val = dt;
+				}
+			}
+			else if (f.FieldType == FieldType.Decimal)
+			{
+				if (!decimal.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out decimal d))
+					d = 0;
+				val = d;
+			}
+			else if (f.FieldType == FieldType.Int)
+			{
+				if (!int.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out int d))
+					d = 0;
+				val = d;
+			}
+			else if (f.FieldType == FieldType.Boolean)
+			{
+				if (!bool.TryParse(item.Value, out bool b))
+					b = false;
+
+				if (BoolAsInt)
+				{
+					val = b ? 1 : 0;
+					valType = typeof(int);
+				}
+				else
+				{
+					val = b;
+				}
+			}
+			else if (f.FieldType == FieldType.String || f.FieldType == FieldType.DDL)
+			{
+				if (valType == typeof(Char) && val is string)
+					val = ((string)val)[0];
+				if ((valType == typeof(int?) || valType == typeof(int)) && val is string)
+					val = int.Parse((string)val);
+
+			}
+			else if (f.FieldType == FieldType.CustomInt)
+			{
+				val = Convert.ToInt32(val);
+			}
+			else if (f.FieldType == FieldType.CustomObject)
+			{
+				if (valType == typeof(Char) && val is string)
+					val = ((string)val)[0];
+				if ((valType == typeof(int?) || valType == typeof(int)) && val is string)
+					val = int.Parse((string)val);
+			}
+
+			return val;
+		}
+
+		public (string query, IDictionary<string, object> parms) ApplyFilterSql(string query, List<Field> fieldList, List<FilterItem> criteria)
+		{
+			var names = new List<string>();
+			var parms = new Dictionary<string, object>();
+			var fields = fieldList.Where(o => o.Column is ValueTuple<string, Type> && criteria.Any(cr => cr.Title == o.Title));
+
+			foreach (var f in fields)
+			{
+				var col = (ValueTuple<string, Type>)f.Column;
+				var item = criteria.First(cr => cr.Title == f.Title);
+				names.Add(col.Item1);
+				parms.Add(col.Item1, ConvertValue(col.Item2, f, item));
+			};
+
+			if (names.Count == 0)
+				names.Add("null");
+
+			var sb = new StringBuilder(query.Length);
+
+			using (var reader = new StringReader(query))
+			{
+				string line;
+				bool remove = false;
+				while ((line = reader.ReadLine()) != null)
+				{
+					if (line.StartsWith("--#filter"))
+					{
+						line = line.Trim().Substring(9);
+						line = line.Remove(line.Length - 1);
+						var blockNames = line.Split(',').Select(s => s.Trim());
+						if (blockNames.Intersect(names).Count() == 0)
+							remove = true;
+						continue;
+					}
+					if (line.StartsWith("--}"))
+					{
+						remove = false;
+						continue;
+					}
+					if (!remove) sb.AppendLine(line);
+				}
+			}
+
+			return (sb.ToString(), parms);
 		}
 
 		Expression<Func<T, bool>> Or<T>(Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
@@ -462,13 +520,14 @@ namespace Tango.UI.Controls
 		public object Column { get; set; }
 		public FieldType FieldType { get; set; }
 		public IEnumerable<SelectListItem> Values { get; set; }
-		public List<string> Operator { get; set; }
+		public List<string> Operator { get; set; } = new List<string>();
 	}
 
 	public enum FieldType
 	{
 		String,
-		Number,
+		Decimal,
+		Int,
 		Date,
 		DateTime,
 		DDL,

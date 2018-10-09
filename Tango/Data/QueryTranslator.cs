@@ -10,6 +10,7 @@ namespace Tango.Data
 {
 	public class QueryTranslator : ExpressionVisitor
 	{
+		readonly IQueryTranslatorDialect _dialect;
 		StringBuilder sb;
 
 		List<StringBuilder> sbWhere = new List<StringBuilder>();
@@ -17,23 +18,27 @@ namespace Tango.Data
 
 		string _beforeConstant = "";
 		string _afterConstant = "";
-		Func<bool, string> _boolConstant = o => o.ToString().ToLower();
-
-		string _orderBy = string.Empty;
-		string _whereClause = string.Empty;
+		readonly Func<bool, string> _boolConstant = o => o.ToString().ToLower();
 		Dictionary<string, object> _parms = new Dictionary<string, object>();
 
-		public string OrderBy => _orderBy;
-		public string WhereClause => _whereClause;
+		public string OrderBy { get; private set; } = string.Empty;
+
+		public string WhereClause { get; private set; } = string.Empty;
+
 		public IReadOnlyDictionary<string, object> Parms => _parms;
 
 		bool _hasvalueexpression = false;
 
+		public QueryTranslator(IQueryTranslatorDialect dialect)
+		{
+			_dialect = dialect;
+		}
+
 		public void Translate(Expression expression)
 		{
 			Visit(expression);
-			_whereClause = sbWhere.Select(o => o.ToString()).Join(" and ");
-			_orderBy = sbOrder.Select(o => o.ToString()).Join(", ");
+			WhereClause = sbWhere.Select(o => o.ToString()).Join(" and ");
+			OrderBy = sbOrder.Select(o => o.ToString()).Join(", ");
 		}
 
 		private static Expression StripQuotes(Expression e)
@@ -233,7 +238,10 @@ namespace Tango.Data
 
 			if (m.Expression?.NodeType == ExpressionType.Constant)
 			{
-				var val = ((FieldInfo)m.Member).GetValue((m.Expression as ConstantExpression).Value);
+				var obj = (m.Expression as ConstantExpression).Value;
+				var val = m.Member is FieldInfo f ? f.GetValue(obj) :
+					m.Member is PropertyInfo p ? p.GetValue(obj) :
+					throw new Exception("Unknown member type " + m.Member.GetType().Name);
 				sb.Append(_beforeConstant);
 				sb.Append(ConvertConstantToParm(val));
 				sb.Append(_afterConstant);
@@ -252,7 +260,9 @@ namespace Tango.Data
 
 				MemberExpression m2 = (MemberExpression)m.Expression;
 				ConstantExpression captureConst = (ConstantExpression)m2.Expression;
-				object obj = ((FieldInfo)m2.Member).GetValue(captureConst.Value);
+				object obj = m2.Member is FieldInfo f ? f.GetValue(captureConst.Value) :
+					m2.Member is PropertyInfo p ? p.GetValue(captureConst.Value) :
+					throw new Exception("Unknown member type " + m2.Member.GetType().Name);
 				object val = ((PropertyInfo)m.Member).GetValue(obj, null);
 				sb.Append(ConvertConstantToParm(val));
 				return m;
@@ -274,9 +284,9 @@ namespace Tango.Data
 			if (m.Arguments[0].Type == typeof(string))
 			{
 				Visit(m.Object);
-				sb.Append(" ILIKE ");
-				_beforeConstant = "'%'||";
-				_afterConstant = "||'%'";
+				sb.Append($" {_dialect.LikeKeyword} ");
+				_beforeConstant = $"'%'{_dialect.Concat}";
+				_afterConstant = $"{_dialect.Concat}'%'";
 				Visit(m.Arguments[0]);
 				_beforeConstant = "";
 				_afterConstant = "";
@@ -296,8 +306,8 @@ namespace Tango.Data
 		protected void ParseStartsWithMethod(MethodCallExpression m)
 		{
 			Visit(m.Object);
-			sb.Append(" ILIKE ");
-			_afterConstant = "||'%'"; 
+			sb.Append($" {_dialect.LikeKeyword} ");
+			_afterConstant = $"{_dialect.Concat}'%'"; 
 			Visit(m.Arguments[0]);
 			_afterConstant = "";
 		}
@@ -305,8 +315,8 @@ namespace Tango.Data
 		protected void ParseEndsWithMethod(MethodCallExpression m)
 		{
 			Visit(m.Object);
-			sb.Append(" ILIKE ");
-			_beforeConstant = "'%'||";
+			sb.Append($" {_dialect.LikeKeyword} ");
+			_beforeConstant = $"'%'{_dialect.Concat}";
 			Visit(m.Arguments[0]);
 			_beforeConstant = "";
 		}
@@ -346,6 +356,24 @@ namespace Tango.Data
 
 			return false;
 		}
+	}
+
+	public interface IQueryTranslatorDialect
+	{
+		string LikeKeyword { get; }
+		string Concat { get; }
+	}
+
+	public class QueryTranslatorMSSQL : IQueryTranslatorDialect
+	{
+		public string LikeKeyword => "LIKE";
+		public string Concat => "+";
+	}
+
+	public class QueryTranslatorPostgres : IQueryTranslatorDialect
+	{
+		public string LikeKeyword => "ILIKE";
+		public string Concat => "||";
 	}
 
 

@@ -18,6 +18,7 @@ using NHibernate.Transform;
 using NHibernate.Type;
 using NHibernate.Mapping.ByCode.Conformist;
 using System.Data.Common;
+using NHibernate.Event;
 
 namespace Tango.Hibernate
 {
@@ -30,12 +31,13 @@ namespace Tango.Hibernate
 		IRequestLoggerProvider _loggerProvider;
 		IRequestLogger _logger;
 		IClassMappingList _mappingList;
+		IServiceProvider _services;
+		EventListeners _listeners;
 
 		List<Action<ITransaction>> SaveActions = new List<Action<ITransaction>>();
 		public List<Action> AfterSaveActions { get; private set; }
 		public List<Action> BeforeSaveActions { get; private set; }
 
-		readonly Func<DbConnection> _connection;
 		public DbConnection Connection => Session.Connection;
 
 		public ISession Session
@@ -44,11 +46,12 @@ namespace Tango.Hibernate
 			{
 				if (_session == null || !_session.IsOpen)
 				{
-					var conn = _connection();
+					var conn = (DbConnection)_services.GetService(typeof(IDbConnection));
+					var b = SessionFactory.WithOptions().Connection(conn);
 					if (_logger.Enabled)
-						_session = SessionFactory.OpenSession(conn, new LogInterceptor(_logger));
-					else
-						_session = SessionFactory.OpenSession(conn);
+						b = b.Interceptor(new LogInterceptor(_logger));
+
+					_session = b.OpenSession(_services, _listeners);
 					_session.FlushMode = FlushMode.Commit;
 				}
 				return _session;
@@ -72,6 +75,9 @@ namespace Tango.Hibernate
 					_cfg.AddProperties(new Dictionary<string, string>() { { "command_timeout", "300" } });
 					ConfigurationExtensions?.Invoke(_cfg);
 					_cfg.AddMapping(Mapping);
+
+					if (_listeners != null)
+						_listeners.InitializeListeners(_cfg);
 				}
 				return _cfg;
 			}
@@ -129,14 +135,17 @@ namespace Tango.Hibernate
 		public string ID { get; set; }
 		readonly Action<IDbIntegrationConfigurationProperties> _dbConfig;
 
-		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, Func<DbConnection> connection, IClassMappingList mappingList, IRequestLoggerProvider loggerProvider)
+		public HDataContext(Action<IDbIntegrationConfigurationProperties> dbConfig, 
+			IClassMappingList mappingList, IRequestLoggerProvider loggerProvider, 
+			IServiceProvider services, EventListeners listeners = null)
 		{
 			ID = GetType().Name + "-" + Guid.NewGuid().ToString();
 			_dbConfig = dbConfig;
-			_connection = connection;
 			_loggerProvider = loggerProvider;
 			_logger = _loggerProvider.GetLogger("sql");
 			_mappingList = mappingList;
+			_services = services;
+			_listeners = listeners;
 
 			AfterSaveActions = new List<Action>();
 			BeforeSaveActions = new List<Action>();

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
     <AssemblyName>Tango.Meta.Database.PostgreSQL</AssemblyName>
     <PackageId>Tango.Meta.Database.PostgreSQL</PackageId>
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
@@ -21,7 +21,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Npgsql" Version="4.0.3.0" />
+    <PackageReference Include="Npgsql" Version="4.0.3" />
   </ItemGroup>
 
   <ItemGroup>

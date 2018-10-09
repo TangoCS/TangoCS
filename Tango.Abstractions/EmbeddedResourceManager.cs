@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace Tango
 {
@@ -16,12 +18,27 @@ namespace Tango
 		{
 			var assembly = t.Assembly;
 			var resourceName = assembly.GetName().Name + "." + name;
+			StringBuilder sb = new StringBuilder();
+			string line;
 
 			using (Stream stream = assembly.GetManifestResourceStream(resourceName))
 			using (StreamReader reader = new StreamReader(stream))
 			{
-				return reader.ReadToEnd();
+				if (!name.ToLower().EndsWith(".sql"))
+					return reader.ReadToEnd();
+
+				while ((line = reader.ReadLine()) != null)
+				{
+					if (line.StartsWith("--#include"))
+					{
+						sb.AppendLine(GetString(t, line.Substring(10).Trim()));
+						continue;
+					}
+					sb.AppendLine(line);
+				}
 			}
+
+			return sb.ToString();
 		}
 	}
 }
