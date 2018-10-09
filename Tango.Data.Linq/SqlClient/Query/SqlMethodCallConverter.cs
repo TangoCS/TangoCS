@@ -1812,7 +1812,7 @@ namespace System.Data.Linq.SqlClient {
                             SqlExpression len2 = sql.CLRLENGTH(exprS);
                             SqlExpression dontChange = sql.Binary(SqlNodeType.GE, len2, exprI);
                             SqlExpression numSpaces = sql.Subtract(exprI, len2);
-                            SqlExpression padding = sql.FunctionCall(typeof(string), "SPACE", new SqlExpression[] { numSpaces }, source);
+                            SqlExpression padding = sql.SPACE(numSpaces, source);
                             SqlExpression elseCase = sql.Concat(padding, exprS);
 
                             return sql.SearchedCase(new SqlWhen[] { new SqlWhen(dontChange, exprS) }, elseCase, source);
@@ -1828,7 +1828,7 @@ namespace System.Data.Linq.SqlClient {
                             SqlExpression dontChange = sql.Binary(SqlNodeType.GE, sql.CLRLENGTH(exprS), exprI);
                             SqlExpression len2 = sql.CLRLENGTH(exprS);
                             SqlExpression numSpaces = sql.Subtract(exprI, len2);
-                            SqlExpression padding = sql.FunctionCall(typeof(string), "REPLICATE", new SqlExpression[] { exprC, numSpaces }, source);
+                            SqlExpression padding = sql.REPLICATE(exprC, numSpaces, source);
                             SqlExpression elseCase = sql.Concat(padding, exprS);
 
                             return sql.SearchedCase(new SqlWhen[] { new SqlWhen(dontChange, exprS) }, elseCase, source);
@@ -1845,7 +1845,7 @@ namespace System.Data.Linq.SqlClient {
                             SqlExpression dontChange = sql.Binary(SqlNodeType.GE, sql.CLRLENGTH(exprS), exprI);
                             SqlExpression len2 = sql.CLRLENGTH(exprS);
                             SqlExpression numSpaces = sql.Subtract(exprI, len2);
-                            SqlExpression padding = sql.FunctionCall(typeof(string), "SPACE", new SqlExpression[] { numSpaces }, source);
+                            SqlExpression padding = sql.SPACE(numSpaces, source);
                             SqlExpression elseCase = sql.Concat(exprS, padding);
 
                             return sql.SearchedCase(new SqlWhen[] { new SqlWhen(dontChange, exprS) }, elseCase, source);
@@ -1861,7 +1861,7 @@ namespace System.Data.Linq.SqlClient {
                             SqlExpression dontChange = sql.Binary(SqlNodeType.GE, sql.CLRLENGTH(exprS), exprI);
                             SqlExpression len2 = sql.CLRLENGTH(exprS);
                             SqlExpression numSpaces = sql.Subtract(exprI, len2);
-                            SqlExpression padding = sql.FunctionCall(typeof(string), "REPLICATE", new SqlExpression[] { exprC, numSpaces }, source);
+                            SqlExpression padding = sql.REPLICATE(exprC, numSpaces, source);
                             SqlExpression elseCase = sql.Concat(exprS, padding);
 
                             return sql.SearchedCase(new SqlWhen[] { new SqlWhen(dontChange, exprS) }, elseCase, source);

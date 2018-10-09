@@ -82,9 +82,9 @@ namespace Tango.Meta.Database
 						foreignKey.IsEnabled = !string.IsNullOrEmpty(c.GetAttributeValue("IsEnabled")) && c.GetAttributeValue("IsEnabled") == "1";
 						foreignKey.Columns = c.Descendants("Column").Select(fc => fc.GetAttributeValue("Name")).ToArray();
 						foreignKey.RefTableColumns = c.Descendants("RefTableColumn").Select(fc => fc.GetAttributeValue("Name")).ToArray();
-						var xDeleteOptionElement = t.Element("DeleteOption");
+						var xDeleteOptionElement = c.Element("DeleteOption");
 						foreignKey.DeleteOption = DeleteOption.Restrict;
-						if (xDeleteOptionElement != null)
+						if (xDeleteOptionElement != null && !string.IsNullOrEmpty(xDeleteOptionElement.Value))
 							foreignKey.DeleteOption = (DeleteOption)Int32.Parse(xDeleteOptionElement.Value);
 
 						foreignKey.Table = table;
