@@ -36,7 +36,9 @@ namespace Tango.Html
 
 		public void WriteID(string key, string value)
 		{
-			attributes[key] = value == null ? w.IDPrefix : w.GetID(value);
+			attributes[key] = value == null ? 
+				w.IDPrefix : 
+				value.StartsWith("#") ? value.Substring(1) : w.GetID(value);
 		}
 
 		public void Render()

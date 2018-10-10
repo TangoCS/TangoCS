@@ -218,8 +218,22 @@ namespace Tango
 			return String.Empty;
 		}
 
+		public static string Icon(this int src)
+		{
+			if (src == 1)
+				return "<i class='icon icon-true'></i>";
+			return String.Empty;
+		}
 
-		
+		public static string Icon(this int? src)
+		{
+			if (src.HasValue)
+				return src.Value == 1 ? "<i class='icon icon-true'></i>" : "";
+			return String.Empty;
+		}
+
+
+
 
 		public static bool In<T>(this T obj, params T[] values)
 		{

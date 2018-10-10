@@ -80,6 +80,13 @@ namespace Tango.Html
 					Data(v.Key, v.Value); 
 			return _this; 
 		}
+
+		protected string GetName(string value)
+		{
+			value = value?.ToLower();
+			value = value != null && value.StartsWith("#") ? value.Substring(1) : value;
+			return value;
+		}
 	}
 
 	public class TagAttributes : TagAttributes<TagAttributes>
@@ -136,7 +143,7 @@ namespace Tango.Html
 
 	public class InputTagAttributes : TagAttributes<InputTagAttributes>
 	{
-		public InputTagAttributes Name(string value) { AttributeWriter.Write("name", value?.ToLower()); return this; }
+		public InputTagAttributes Name(string value) { AttributeWriter.Write("name", GetName(value)); return this; }
 
 		public InputTagAttributes Accept(string value) { AttributeWriter.Write("accept", value); return this; }
 		public InputTagAttributes Alt(string value) { AttributeWriter.Write("alt", value); return this; }
@@ -171,7 +178,7 @@ namespace Tango.Html
 		public ButtonTagAttributes FormEnctype(string value) { AttributeWriter.Write("formenctype", value); return this; }
 		public ButtonTagAttributes FormMethod(Method value) { AttributeWriter.Write("formmethod", value.ToString().ToLower()); return this; }
 		public ButtonTagAttributes FormTarget(Target value) { AttributeWriter.Write("formtarget", value.ToString().ToLower()); return this; }
-		public ButtonTagAttributes Name(string value) { AttributeWriter.Write("name", value); return this; }
+		public ButtonTagAttributes Name(string value) { AttributeWriter.Write("name", GetName(value)); return this; }
 		public ButtonTagAttributes Type(ButtonType value) { AttributeWriter.Write("type", value.ToString().ToLower()); return this; }
 		public ButtonTagAttributes Value(string value) { AttributeWriter.Write("value", value); return this; }
 	}
@@ -226,7 +233,10 @@ namespace Tango.Html
 
 	public class SelectTagAttributes : TagAttributes<SelectTagAttributes>
 	{
-		public SelectTagAttributes Name(string value) { AttributeWriter.Write("name", value?.ToLower()); return this; }
+		public SelectTagAttributes Name(string value)
+		{
+			AttributeWriter.Write("name", GetName(value)); return this;
+		}
 
 		public SelectTagAttributes Autofocus(bool value) { if (value) AttributeWriter.Write("autofocus", "autofocus"); return this; }
 		public SelectTagAttributes Disabled(bool value) { if (value) AttributeWriter.Write("disabled", "disabled"); return this; }
@@ -251,7 +261,10 @@ namespace Tango.Html
 
 	public class TextAreaTagAttributes : TagAttributes<TextAreaTagAttributes>
 	{
-		public TextAreaTagAttributes Name(string value) { AttributeWriter.Write("name", value?.ToLower()); return this; }
+		public TextAreaTagAttributes Name(string value)
+		{
+			AttributeWriter.Write("name", GetName(value)); return this;
+		}
 
 		public TextAreaTagAttributes Autofocus(bool value) { if (value) AttributeWriter.Write("autofocus", "autofocus"); return this; }
 		public TextAreaTagAttributes Cols(int value) { AttributeWriter.Write("cols", value.ToString()); return this; }
