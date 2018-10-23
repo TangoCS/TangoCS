@@ -18,8 +18,7 @@ namespace Tango
 
 		public static TValue Get<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key)
 		{
-			TValue res = default(TValue);
-			dict.TryGetValue(key, out res);
+			dict.TryGetValue(key, out TValue res);
 			return res;
 		}
 
@@ -34,6 +33,12 @@ namespace Tango
 		{
 			int x = list.BinarySearch(value);
 			list.Insert((x >= 0) ? x : ~x, value);
+		}
+
+		public static void AddIfNotExists<TKey, TValue>(this IDictionary<TKey, TValue> dict, TKey key, TValue value)
+		{
+			if (!dict.ContainsKey(key))
+				dict.Add(key, value);
 		}
 
 		public static IEnumerable<(TSource prev, TSource cur, bool isLast)> PairwiseWithPrev<TSource>(this IEnumerable<TSource> source)

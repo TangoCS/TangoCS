@@ -2,30 +2,37 @@
 {
 	public static class Constants
 	{
-		public static string ServiceName = "service";
-		public static string ActionName = "action";
-		public static string ReturnUrl = "returnurl";
-		public static string Id = "oid";
-		public static string ParentId = "parentid";
+		public static readonly string ServiceName = "service";
+		public static readonly string ActionName = "action";
+		public static readonly string ReturnUrl = "returnurl";
+		public static readonly string Id = "oid";
+		public static readonly string ParentId = "parentid";
 
-		public static string ShowLogsName = "showlogs";
+		public static readonly string ShowLogsName = "showlogs";
 
-		public static string EventName = "e";
-		public static string EventReceiverName = "r";
-		public static string RootReceiverName = "p";
-		public static string FirstLoad = "firstload";
-		public static string Sender = "sender";
+		public static readonly string EventName = "e";
+		public static readonly string EventReceiverName = "r";
+		public static readonly string RootReceiverName = "p";
+		public static readonly string FirstLoad = "firstload";
+		public static readonly string Sender = "sender";
 
-		public static string ContainerPrefix = "c-prefix";
-		public static string ContainerType = "c-type";
-		public static string ContainerNew = "c-new";
+		public static readonly string ContainerPrefix = "c-prefix";
+		public static readonly string ContainerType = "c-type";
+		public static readonly string ContainerNew = "c-new";
 
-		public static string IEFormFix = "__dontcare";
+		public static readonly string IEFormFix = "__dontcare";
 
-		public static string MetaHome = "_home";
-		public static string MetaCurrent = "_current";
+		public static readonly string MetaHome = "_home";
+		public static readonly string MetaCurrent = "_current";
 
-		public static string SelectedValues = "selectedvalues";
+		public static readonly string SelectedValues = "selectedvalues";
+
+		public static readonly string OpList = "viewlist";
+		public static readonly string OpView = "view";
+		public static readonly string OpEdit = "edit";
+		public static readonly string OpCreateNew = "createnew";
+		public static readonly string OpDelete = "delete";
+		public static readonly string OpUndelete = "undelete";
 	}
 
 	public static class DBConventions

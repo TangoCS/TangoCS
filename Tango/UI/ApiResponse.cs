@@ -147,11 +147,11 @@ namespace Tango.UI
 			}
 		}
 
-		public void RedirectBack(ActionContext context)
+		public void RedirectBack(ActionContext context, int code)
 		{
-			var retctx = context.ReturnTargetContext();
+			var retctx = context.ReturnTargetContext(code);
 			RunRedirect(retctx);
-			Data.Add("redirect", new { Url = context.ReturnUrl, Parms = retctx.AllArgs });
+			Data.Add("redirect", new { retctx.BaseUrl().Url, Parms = retctx.AllArgs });
 		}
 
 		public void RedirectTo(ActionContext context, Action<ActionLink> action)

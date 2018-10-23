@@ -16,6 +16,9 @@ namespace Tango.UI
 			EventReceivers = new Dictionary<string, IViewElement>(StringComparer.OrdinalIgnoreCase);
 			PersistentArgs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
+			ReturnUrl = new Dictionary<int, string>();
+			ReturnTarget = new Dictionary<int, ActionTarget>();
+
 			RequestServices = requestServices;
 			Resources = RequestServices.GetService(typeof(IResourceManager)) as IResourceManager;
 			Routes = RequestServices.GetService(typeof(RoutesCollection)) as RoutesCollection;
@@ -41,9 +44,9 @@ namespace Tango.UI
 		public string Event { get; set; }
 		public string EventReceiver { get; set; }
 		public string Sender { get; set; }
-		public string ReturnUrl { get; set; }
-		public ActionTarget ReturnTarget { get; set; }
-		public string SourceUrl { get; set; }
+		public Dictionary<int, string> ReturnUrl { get; set; }
+		public Dictionary<int, ActionTarget> ReturnTarget { get; set; }
+		//public string SourceUrl { get; set; }
 
 		// parameters
 		public DynamicDictionary AllArgs { get; set; }
@@ -112,9 +115,15 @@ namespace Tango.UI
 				else if (key == Constants.EventReceiverName)
 					EventReceiver = value.ToString().ToLower();
 				else if (key == Constants.ReturnUrl)
-					ReturnUrl = value.ToString().ToLower();
-				else if (key == "sourceurl")
-					SourceUrl = value.ToString().ToLower();
+					ReturnUrl[1] = value.ToString().ToLower();
+				else if (key.StartsWith(Constants.ReturnUrl))
+				{
+					var parts = key.Split('_');
+					if (parts.Length > 0)
+						ReturnUrl[parts[1].ToInt32(0)] = value.ToString().ToLower();
+				}
+				//else if (key == "sourceurl")
+				//	SourceUrl = value.ToString().ToLower();
 				else if (key == Constants.ContainerType)
 					ContainerType = value.ToString().ToLower();
 				else if (key == Constants.ContainerPrefix)
@@ -128,7 +137,8 @@ namespace Tango.UI
 			}
 		}
 
-		public ActionContext ReturnTargetContext() => TargetContext(ReturnTarget);
+		public ActionContext ReturnTargetContext(int code) => 
+			ReturnTarget.ContainsKey(code) ? TargetContext(ReturnTarget[code]) : null;
 
 		public ActionContext TargetContext(ActionTarget target)
 		{
@@ -141,8 +151,8 @@ namespace Tango.UI
 			ctx.EventReceiver = target.EventReceiver;
 			ctx.RequestMethod = "GET";
 
-			ctx.ReturnTarget = null;
-			ctx.ReturnUrl = null;
+			ctx.ReturnTarget = new Dictionary<int, ActionTarget>();
+			ctx.ReturnUrl = new Dictionary<int, string>();
 
 			ctx.AllArgs.Clear();
 			ctx.FormData.Clear();
@@ -151,12 +161,10 @@ namespace Tango.UI
 			{
 				if (p.Key == Constants.ReturnUrl)
 				{
-					ctx.ReturnUrl = p.Value;
-					ctx.ReturnTarget = ParseReturnUrl(p.Value);
-					if (ctx.ReturnTarget.Args.TryGetValue(Constants.ReturnUrl, out string value))
-					{
+					ctx.ReturnUrl[1] = p.Value;
+					ctx.ReturnTarget[1] = ParseReturnUrl(p.Value);
+					if (ctx.ReturnTarget[1].Args.TryGetValue(Constants.ReturnUrl, out string value))
 						ctx.AllArgs.Add(p.Key, value);
-					}
 				}
 				else
 				{

@@ -36,19 +36,20 @@ namespace Tango.UI.Controls
 
 			foreach (object it in pnlist)
 			{
-				if (it is FilterItem)
+				if (it is FilterItem item)
 				{
-					var item = it as FilterItem;
-
 					Field f = fieldList.SingleOrDefault(f1 => f1.Title == item.Title);
-					if (f == null || !(f.Column is LambdaExpression))
+					if (f == null)
+						continue;
+					if (!(f.Operators[item.Condition].Column is LambdaExpression column))
 						continue;
 
 					Expression<Func<T, bool>> expr = null;
-					if (!(f.Column is LambdaExpression column))
-						column = ((List<object>)f.Column)[0] as LambdaExpression;
 
-					if (item.Condition == Resources.Get("System.Filter.Contains") && f.FieldType == FieldType.String)
+					Type valType = column.Body is UnaryExpression ? ((UnaryExpression)column.Body).Operand.Type : column.Body.Type;
+					object val = ConvertValue(valType, item);
+
+					if (item.FieldType == FieldType.String && item.Condition == Resources.Get("System.Filter.Contains"))
 					{
 						if (StringContainsMapStrategy == StringContainsMapStrategy.Contains)
 						{
@@ -67,82 +68,46 @@ namespace Tango.UI.Controls
 							expr = Expression.Lambda<Func<T, bool>>(mc, column.Parameters);
 						}
 					}
-
-					if (item.Condition == Resources.Get("System.Filter.StartsWith") && f.FieldType == FieldType.String)
+					else if (item.FieldType == FieldType.String && item.Condition == Resources.Get("System.Filter.StartsWith"))
 					{
 						MethodCallExpression mc = Expression.Call(column.Body,
 							typeof(string).GetMethod("StartsWith", new Type[] { typeof(string) }),
 							Expression.Constant(item.Value.ToLower()));
 						expr = Expression.Lambda<Func<T, bool>>(mc, column.Parameters);
 					}
-
-					Type valType = column.Body is UnaryExpression ? ((UnaryExpression)column.Body).Operand.Type : column.Body.Type;
-					object val = ConvertValue(valType, f, item);
-
-					if (f.FieldType == FieldType.Boolean)
+					else if (item.FieldType == FieldType.Boolean || item.FieldType == FieldType.String)
 					{
 						if (item.Condition == "=")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);
-						if (item.Condition == "<>")
+						else if (item.Condition == "<>")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);
-					}
-					else if (f.FieldType == FieldType.String || f.FieldType == FieldType.DDL)
-					{
-						if (item.Condition == "=")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);
-
-						if (item.Condition == "<>")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);
-					}
-					else if (f.FieldType == FieldType.CustomInt)
-					{
-						int num = f.Operator.IndexOf(item.Condition);
-						// Взять Expression<Func<T, int, bool>> и подставить во второй параметр значение
-						Expression<Func<T, int, bool>> col2 = ((List<object>)f.Column)[num] as Expression<Func<T, int, bool>>;
-						expr = Expression.Lambda<Func<T, bool>>(ReplaceParameterExpression(col2.Body, col2.Parameters[1].Name, val), col2.Parameters[0]);
-					}
-					else if (f.FieldType == FieldType.CustomString)
-					{
-						int num = f.Operator.IndexOf(item.Condition);
-						// Взять Expression<Func<T, int, bool>> и подставить во второй параметр значение
-						Expression<Func<T, string, bool>> col2 = ((List<object>)f.Column)[num] as Expression<Func<T, string, bool>>;
-						expr = Expression.Lambda<Func<T, bool>>(ReplaceParameterExpression(col2.Body, col2.Parameters[1].Name, val), col2.Parameters[0]);
-					}
-					else if (f.FieldType == FieldType.CustomObject)
-					{
-						int num = f.Operator.IndexOf(item.Condition);
-						// Взять Expression<Func<T, int, bool>> и подставить во второй параметр значение
-						Expression<Func<T, object, bool>> col2 = ((List<object>)f.Column)[num] as Expression<Func<T, object, bool>>;
-						expr = Expression.Lambda<Func<T, bool>>(ReplaceParameterExpression(col2.Body, col2.Parameters[1].Name, val), col2.Parameters[0]);
 					}
 					else
 					{
 						if (item.Condition == "=")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
 
-						if (item.Condition == ">=" || item.Condition == Resources.Get("System.Filter.LastXDays"))
+						else if(item.Condition == ">=" || item.Condition == Resources.Get("System.Filter.LastXDays"))
 							expr = Expression.Lambda<Func<T, bool>>(Expression.GreaterThanOrEqual(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
 
-						if (item.Condition == ">")
+						else if(item.Condition == ">")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.GreaterThan(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
 
-						if (item.Condition == "<")
+						else if(item.Condition == "<")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.LessThan(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
 
-						if (item.Condition == "<=")
+						else if(item.Condition == "<=")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.LessThanOrEqual(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
 
-						if (item.Condition == "<>")
+						else if(item.Condition == "<>")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
 					}
+
 					if (expr != null)
-					{
 						stack.Push(expr);
-					}
 				}
-				if (it is char)
+				else if (it is char op)
 				{
-					var op = (char)it;
 					if (op == '!')
 					{
 						Expression<Func<T, bool>> operand = stack.Pop() as Expression<Func<T, bool>>;
@@ -173,7 +138,7 @@ namespace Tango.UI.Controls
 			return newquery;
 		}
 
-		object ConvertValue(Type valType, Field f, FilterItem item)
+		object ConvertValue(Type valType, FilterItem item)
 		{
 			object val = null;
 			if (item.Value != null && item.Value.StartsWith("$"))
@@ -181,7 +146,7 @@ namespace Tango.UI.Controls
 			else
 				val = item.Value;
 
-			if (f.FieldType == FieldType.Date)
+			if (item.FieldType == FieldType.Date)
 			{
 				if (item.Condition == Resources.Get("System.Filter.LastXDays"))
 				{
@@ -200,7 +165,7 @@ namespace Tango.UI.Controls
 						val = dt;
 				}
 			}
-			else if (f.FieldType == FieldType.DateTime)
+			else if (item.FieldType == FieldType.DateTime)
 			{
 				if (item.Condition == Resources.Get("System.Filter.LastXDays"))
 				{
@@ -219,19 +184,19 @@ namespace Tango.UI.Controls
 						val = dt;
 				}
 			}
-			else if (f.FieldType == FieldType.Decimal)
+			else if (item.FieldType == FieldType.Decimal)
 			{
 				if (!decimal.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out decimal d))
 					d = 0;
 				val = d;
 			}
-			else if (f.FieldType == FieldType.Int)
+			else if (item.FieldType == FieldType.Int)
 			{
 				if (!int.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out int d))
 					d = 0;
 				val = d;
 			}
-			else if (f.FieldType == FieldType.Boolean)
+			else if (item.FieldType == FieldType.Boolean)
 			{
 				if (!bool.TryParse(item.Value, out bool b))
 					b = false;
@@ -246,7 +211,7 @@ namespace Tango.UI.Controls
 					val = b;
 				}
 			}
-			else if (f.FieldType == FieldType.String || f.FieldType == FieldType.DDL)
+			else if (item.FieldType == FieldType.String)
 			{
 				if (valType == typeof(Char) && val is string)
 					val = ((string)val)[0];
@@ -254,17 +219,17 @@ namespace Tango.UI.Controls
 					val = int.Parse((string)val);
 
 			}
-			else if (f.FieldType == FieldType.CustomInt)
-			{
-				val = Convert.ToInt32(val);
-			}
-			else if (f.FieldType == FieldType.CustomObject)
-			{
-				if (valType == typeof(Char) && val is string)
-					val = ((string)val)[0];
-				if ((valType == typeof(int?) || valType == typeof(int)) && val is string)
-					val = int.Parse((string)val);
-			}
+			//else if (item.FieldType == FieldType.CustomInt)
+			//{
+			//	val = Convert.ToInt32(val);
+			//}
+			//else if (item.FieldType == FieldType.CustomObject)
+			//{
+			//	if (valType == typeof(Char) && val is string)
+			//		val = ((string)val)[0];
+			//	if ((valType == typeof(int?) || valType == typeof(int)) && val is string)
+			//		val = int.Parse((string)val);
+			//}
 
 			return val;
 		}
@@ -273,14 +238,16 @@ namespace Tango.UI.Controls
 		{
 			var names = new List<string>();
 			var parms = new Dictionary<string, object>();
-			var fields = fieldList.Where(o => o.Column is ValueTuple<string, Type> && criteria.Any(cr => cr.Title == o.Title));
+			var fields = fieldList.Where(o => criteria.Any(cr => cr.Title == o.Title));
 
 			foreach (var f in fields)
 			{
-				var col = (ValueTuple<string, Type>)f.Column;
 				var item = criteria.First(cr => cr.Title == f.Title);
-				names.Add(col.Item1);
-				parms.Add(col.Item1, ConvertValue(col.Item2, f, item));
+				if (f.Operators[item.Condition].Column is ValueTuple<string, Type> col)
+				{
+					names.Add(col.Item1);
+					parms.Add(col.Item1, ConvertValue(col.Item2, item));
+				}
 			};
 
 			if (names.Count == 0)
@@ -517,11 +484,18 @@ namespace Tango.UI.Controls
 	{
 		public int SeqNo { get; set; }
 		public string Title { get; set; }
-		public object Column { get; set; }
-		public FieldType FieldType { get; set; }
-		public IEnumerable<SelectListItem> Values { get; set; }
-		public List<string> Operator { get; set; } = new List<string>();
+		public Dictionary<string, FieldCriterion> Operators = new Dictionary<string, FieldCriterion>();
 	}
+
+	public class FieldCriterion
+	{
+		public FieldType FieldType { get; set; }
+		public object Column { get; set; }
+		public Action<LayoutWriter> Renderer { get; set; }
+		public Func<FilterItem, string> StringValue { get; set; }
+	}
+
+
 
 	public enum FieldType
 	{
@@ -530,11 +504,7 @@ namespace Tango.UI.Controls
 		Int,
 		Date,
 		DateTime,
-		DDL,
-		Boolean,
-		CustomInt,
-		CustomString,
-		CustomObject
+		Boolean
 	}
 
 	public enum FilterItemOperation

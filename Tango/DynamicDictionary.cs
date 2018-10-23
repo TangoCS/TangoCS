@@ -174,12 +174,12 @@ namespace Tango
 			return d.ToString().ToDecimal(defaultValue);
 		}
 
-		public static T ConvertTo<T>(this string s, string format = null, T defaultValue = default(T))
+		public static T ConvertTo<T>(this string s, string format = null, T defaultValue = default)
 		{
 			return Parse(s, format, defaultValue);
 		}
 
-		static T Parse<T>(object d, string format, T defaultValue = default(T))
+		static T Parse<T>(object d, string format, T defaultValue = default)
 		{
 			if (typeof(T) == d.GetType()) return (T)d;
 

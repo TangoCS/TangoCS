@@ -104,10 +104,15 @@ namespace Tango.UI
 
 	public class RedirectBackResult : RedirectResult
 	{
+		int _code = 0;
+
+		public RedirectBackResult(int code) : base(null) { _code = code; }
 		public RedirectBackResult(string url = null) : base(url) { }
+
 		public override Task ExecuteResultAsync(ActionContext context)
 		{
-			Url = Url ?? context.ReturnUrl ?? context.AllArgs.Parse<string>(Constants.ReturnUrl);
+			Url = Url ?? (context.ReturnUrl.ContainsKey(_code) ? context.ReturnUrl[_code] 
+				: context.AllArgs.Parse<string>(Constants.ReturnUrl));
 			return base.ExecuteResultAsync(context);
 		}
 	}

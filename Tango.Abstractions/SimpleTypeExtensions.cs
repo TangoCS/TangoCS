@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -14,32 +13,28 @@ namespace Tango
 	{
 		public static int ToInt32(this string src, int defaultValue)
 		{
-			int x;
-			if (int.TryParse(src, out x))
+			if (int.TryParse(src, out int x))
 				return x;
 			return defaultValue;
 		}
 
 		public static long ToInt64(this string src, long defaultValue)
 		{
-			long x;
-			if (long.TryParse(src, out x))
+			if (long.TryParse(src, out long x))
 				return x;
 			return defaultValue;
 		}
 
 		public static long? ToInt64(this string src)
 		{
-			long x;
-			if (long.TryParse(src, out x))
+			if (long.TryParse(src, out long x))
 				return x;
 			return null;
 		}
 
 		public static int? ToInt32(this string src)
 		{
-			int x;
-			if (int.TryParse(src, out x))
+			if (int.TryParse(src, out int x))
 				return x;
 			return null;
 		}
@@ -58,16 +53,14 @@ namespace Tango
 
 		public static double ToDouble(this string src, double defaultValue)
 		{
-			double x;
-			if (double.TryParse(src.Replace(",", ".").Replace(" ", "").Replace(" ", ""), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out x))
+			if (double.TryParse(src.Replace(",", ".").Replace(" ", "").Replace(" ", ""), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double x))
 				return x;
 			return defaultValue;
 		}
 
 		public static double? ToDouble(this string src)
 		{
-			double x;
-			if (double.TryParse(src.Replace(",", ".").Replace(" ", "").Replace(" ", ""), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out x))
+			if (double.TryParse(src.Replace(",", ".").Replace(" ", "").Replace(" ", ""), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double x))
 				return x;
 			return null;
 		}
@@ -76,8 +69,7 @@ namespace Tango
 		{
 			if (src == null)
 				return defaultValue;
-			decimal x;
-			if (decimal.TryParse(src.Replace(",", ".").Replace(" ", "").Replace(" ", ""), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out x))
+			if (decimal.TryParse(src.Replace(",", ".").Replace(" ", "").Replace(" ", ""), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out decimal x))
 				return x;
 			return defaultValue;
 		}
@@ -86,8 +78,7 @@ namespace Tango
 		{
 			if (src == null)
 				return null;
-			decimal x;
-			if (decimal.TryParse(src.Replace(",", ".").Replace(" ", "").Replace(" ", ""), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out x))
+			if (decimal.TryParse(src.Replace(",", ".").Replace(" ", "").Replace(" ", ""), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out decimal x))
 				return x;
 			return null;
 		}
@@ -96,27 +87,24 @@ namespace Tango
 
 		public static DateTime ToDate(this string src, DateTime defaultValue)
 		{
-			DateTime dt;
-			if (DateTime.TryParseExact(src, "d.MM.yyyy", null, System.Globalization.DateTimeStyles.None, out dt))
+			if (DateTime.TryParseExact(src, "d.MM.yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime dt))
 				return dt;
 			return defaultValue;
 		}
 
 		public static DateTime? ToDate(this string src)
 		{
-			DateTime dt;
-			if (DateTime.TryParseExact(src, "d.MM.yyyy", null, System.Globalization.DateTimeStyles.None, out dt))
+			if (DateTime.TryParseExact(src, "d.MM.yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime dt))
 				return dt;
 			return null;
 		}
 
 		public static DateTime ToDateTime(this string src, DateTime defaultValue)
 		{
-			DateTime dt;
 			src = src.Replace("%20", " ");
 			src = src.Replace("%3a", ":");
 			src = src.Replace("+", " ");
-			if (DateTime.TryParseExact(src, "d.MM.yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out dt))
+			if (DateTime.TryParseExact(src, "d.MM.yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dt))
 				return dt;
 			if (DateTime.TryParseExact(src, "d.MM.yyyy HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out dt))
 				return dt;
@@ -125,11 +113,10 @@ namespace Tango
 
 		public static DateTime? ToDateTime(this string src)
 		{
-			DateTime dt;
 			src = src.Replace("%20", " ");
 			src = src.Replace("%3a", ":");
 			src = src.Replace("+", " ");
-			if (DateTime.TryParseExact(src, "d.MM.yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out dt))
+			if (DateTime.TryParseExact(src, "d.MM.yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dt))
 				return dt;
 			if (DateTime.TryParseExact(src, "d.MM.yyyy HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out dt))
 				return dt;
@@ -290,8 +277,7 @@ namespace Tango
 
 		public static string GetAttributeValue(this XElement element, XName name)
 		{
-			var attribute = element.Attribute(name);
-			return attribute != null ? attribute.Value : null;
+			return element.Attribute(name)?.Value;
 		}
 
 		private enum State

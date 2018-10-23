@@ -83,6 +83,8 @@
 			}
 		},
 		widgetWillMount: function (shadow, state) {
+			if (!state.selectedvalues) return;
+
 			const root = shadow.getElementById(state.root);
 			const cblist = root.querySelectorAll('.sel');
 			const cbhead = shadow.getElementById(root.id + "_sel_header");
@@ -106,6 +108,33 @@
 			setHeaderSelectorState(cbhead, j, cblist.length);
 			setBulkOpsState(shadow, root, state);
 			initInfoBlock(shadow, root, state);
+		},
+		widgetDidMount: function (state) {
+			var el = $('#' + state.root);
+			if (!el.tableDnD || !el.hasClass("draggablerows")) return;
+			el.tableDnD({
+				_oldpos: null,
+				dragHandle: ".dragHandle",
+				onDragStart: function (table, row) {
+					const next = row.nodeName == 'TD' ? row.parentNode.nextElementSibling : row.nextElementSibling;
+					this._oldpos = next ? next.getAttribute('data-id') : -1;
+				},
+				onDragStop: function (table, row) {
+					const next = row.nodeName == 'TD' ? row.parentNode.nextElementSibling : row.nextElementSibling;
+
+					const target = {
+						e: 'OnRowMove',
+						r: table.id,
+						data: {
+							newid: next ? next.getAttribute('data-id') : -1,
+							oldid: row.getAttribute('data-id')
+						}
+					};
+					if (target.data.newid == this._oldpos) return;
+
+					au.postEventFromElementWithApiResponse(el[0], target);
+				}
+			});
 		},
 		setselected: function (el) {
 			const tr = getRow(el);

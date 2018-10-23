@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection;
 using Tango.Data;
 
 namespace Tango.Localization
@@ -64,12 +65,22 @@ namespace Tango.Localization
 		}
 	}
 
+	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
 	public class ResourceTypeAttribute : Attribute
 	{
 		public Type Type { get; set; }
 		public ResourceTypeAttribute(Type type)
 		{
 			Type = type;
+		}
+	}
+	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+	public class ResourceNameAttribute : Attribute
+	{
+		public string Name { get; set; }
+		public ResourceNameAttribute(string name)
+		{
+			Name = name;
 		}
 	}
 
@@ -194,7 +205,13 @@ namespace Tango.Localization
 			if (memberExp == null)
 				throw new Exception("Wrong format of the expression");
 			if (!memberExp.Expression.Type.IsValueType)
-				res.Parts.Push(memberExp.Member.Name);
+			{
+				var customName = memberExp.Member.GetCustomAttribute<ResourceNameAttribute>();
+				if (customName != null)
+					res.Parts.Push(customName.Name);
+				else
+					res.Parts.Push(memberExp.Member.Name);
+			}
 			if (memberExp.Expression != null)
 				GetResourceKeyInt(memberExp.Expression, res);
 		}

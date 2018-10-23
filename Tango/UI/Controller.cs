@@ -6,9 +6,9 @@ namespace Tango.UI
 	public abstract class Controller : InteractionFlowElement, IWithCheckAccess
 	{
 		[NonAction]
-		public ActionResult RedirectBack()
+		public ActionResult RedirectBack(int code = 0)
 		{
-			return new RedirectBackResult();
+			return new RedirectBackResult(0);
 		}
 
 		[NonAction]

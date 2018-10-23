@@ -14,15 +14,17 @@ namespace Tango.UI
 
 		public static ActionLink ToCurrent(this ActionLink a)
 		{
-			return a.To(a.Context.Service, a.Context.Action).UseDefaultResolver()
-				.WithArgs(a.Context.AllArgs)
-				.WithArg(Constants.ReturnUrl, a.Context.ReturnUrl);
+			a = a.To(a.Context.Service, a.Context.Action).UseDefaultResolver()
+				.WithArgs(a.Context.AllArgs);
+			foreach(var r in a.Context.ReturnUrl)
+				a.WithArg(Constants.ReturnUrl + (r.Key == 1 ? "" : $"_{r.Key}"), r.Value);
+			return a;
 		}
 
-		public static ActionLink ToReturnUrl(this ActionLink a)
+		public static ActionLink ToReturnUrl(this ActionLink a, int code)
 		{
-			return a.To(a.Context.ReturnTarget.Service, a.Context.ReturnTarget.Action)
-				.UseDefaultResolver().WithArgs(a.Context.ReturnTarget.Args);
+			var target = a.Context.ReturnTarget[code];
+			return a.To(target.Service, target.Action).UseDefaultResolver().WithArgs(target.Args);
 		}
 
 		public static ActionLink BaseUrl(this ActionContext context)
@@ -49,7 +51,7 @@ namespace Tango.UI
 		//	return context.CreateReturnUrl(new RouteUrlResolver(context.Routes["default"]), args);
 		//}
 
-		public static string CreateReturnUrl(this ActionContext context, IDictionary<string, object> args = null)
+		public static string CreateReturnUrl(this ActionContext context, int code, IDictionary<string, object> args = null)
 		{
 			var	baseUrl = context.BaseUrl();
 			if (args != null) baseUrl.WithArgs(args);
@@ -58,7 +60,7 @@ namespace Tango.UI
 			if (returnurl.Length > 1800)
 			{
 				Stack<string> urlStack = new Stack<string>();
-				AbstractQueryString url = new Url(context.ReturnUrl);
+				AbstractQueryString url = new Url(context.ReturnUrl[code]);
 
 				while (url.GetString(Constants.ReturnUrl) != "")
 				{

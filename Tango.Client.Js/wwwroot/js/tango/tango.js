@@ -73,13 +73,18 @@ var commonUtils = function ($) {
 				}
 			}
 		},
-		getParent: function (caller, predicate) {
+		getThisOrParent: function (caller, predicate) {
 			var el = caller;
 			while (el) {
 				if (predicate(el)) return el;
 				el = el.parentNode;
 				if (el instanceof HTMLBodyElement) return;
+				if (el instanceof HTMLDocument) return;
 			}
+		},
+		getParent: function (caller, predicate) {
+			if (!caller.parentNode) return;
+			return instance.getThisOrParent(caller.parentNode, predicate);
 		},
 		processFile: function (contenttype, disposition, data) {
 			var filename = "";
@@ -316,6 +321,7 @@ var ajaxUtils = function ($, cu) {
 			processElementDataOnEvent(el, target, 'GET');
 			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)
 				target.query[el.name] = el.value;
+			runOnAjaxSend(el, target);
 			return instance.runEventWithApiResponse(target);
 		},
 		postEvent: function (target) {
@@ -370,6 +376,7 @@ var ajaxUtils = function ($, cu) {
 			if (!form && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement))
 				target.data[el.name] = el.value;
 
+			runOnAjaxSend(el, target);
 			const r = instance.postEventWithApiResponse(target);
 			if (el.hasAttribute('data-res-postponed'))
 				return r.then(function (apiResult) {
@@ -439,7 +446,7 @@ var ajaxUtils = function ($, cu) {
 			if (target.sender) parms.sender = target.sender;
 			if (target.r) parms.r = target.r;
 			parms.e = target.e ? target.e : DEF_EVENT_NAME;
-			parms.sourceurl = window.location.pathname + window.location.search;
+			//parms.sourceurl = window.location.pathname + window.location.search;
 
 			state.loc.parms = parms;
 
@@ -474,7 +481,7 @@ var ajaxUtils = function ($, cu) {
 		},
 		processResult: function (el) {
 			const result = el.getAttribute('data-res') || el.getAttribute('data-res-postponed');
-			const handler = commonUtils.getParent(el, function (parent) { return parent.hasAttribute('data-res-handler'); });
+			const handler = commonUtils.getThisOrParent(el, function (parent) { return parent.hasAttribute('data-res-handler'); });
 
 			if (!handler) return;
 
@@ -496,7 +503,7 @@ var ajaxUtils = function ($, cu) {
 		findServiceAction: function (el) {
 			var root = el;
 			if (root != document.head) {
-				root = cu.getParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-href'); });
+				root = cu.getThisOrParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-href'); });
 				if (!root) root = document.getElementById(META_CURRENT);
 			}
 			const home = document.getElementById(META_HOME);
@@ -608,7 +615,7 @@ var ajaxUtils = function ($, cu) {
 			target.url = instance.findServiceAction(el);
 		}
 
-		const container = cu.getParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
+		const container = cu.getThisOrParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
 		if (container) {
 			target.containerPrefix = container.getAttribute('data-c-prefix');
 		}
@@ -748,7 +755,7 @@ var ajaxUtils = function ($, cu) {
 				var owner = node.getAttribute('data-clientstate-owner');
 				const name = node.getAttribute('data-clientstate-name') || node.name;
 				if (!owner) {
-					const parentctrl = cu.getParent(node, function (n) { return n.hasAttribute('data-ctrl'); });
+					const parentctrl = cu.getThisOrParent(node, function (n) { return n.hasAttribute('data-ctrl'); });
 					if (!parentctrl) continue;
 					owner = parentctrl.id;
 				}
@@ -826,6 +833,21 @@ var ajaxUtils = function ($, cu) {
 		console.log("renderApiResult complete");
 	}
 
+	function runOnAjaxSend(el, target) {
+		var node = el;
+		do {
+			node = cu.getParent(node, function (n) {
+				return n.hasAttribute('data-ctrl');
+			});
+			if (!node) break;
+			const t = node.getAttribute('data-ctrl');
+			if (window[t] && window[t]['onAjaxSend']) {
+				window[t]['onAjaxSend'](el, target, state.ctrl[node.id]);
+				console.log('widget: ' + node.id + ' onAjaxSend ' + t);
+			}
+		} while (true)
+	}
+
 	function runClientAction(service, callChain, iter) {
 		if (iter > 10) return;
 		var caller = window[service];
@@ -855,18 +877,15 @@ var ajaxUtils = function ($, cu) {
 				state.ctrl[placeholder].root = placeholder;
 			}
 			errt.innerHTML = title;
-			if (showinframe) {
-				var frame = document.getElementById(placeholder + '_frame');
-				if (!frame) {
-					frame = document.createElement('iframe');
-					frame.id = placeholder + '_frame';
-					errt.insertAdjacentElement('afterEnd', frame);
-				}
-				frame.contentWindow.contents = text;
-				frame.src = 'javascript:window["contents"]';
+
+			var frame = document.getElementById(placeholder + '_frame');
+			if (!frame) {
+				frame = document.createElement('iframe');
+				frame.id = placeholder + '_frame';
+				errt.insertAdjacentElement('afterEnd', frame);
 			}
-			else
-				errb.innerHTML = text;
+			frame.contentWindow.contents = text;
+			frame.src = 'javascript:window["contents"]';
 
 			dialog.widgetWillMount(document, state.ctrl[placeholder]);
 		}

@@ -1,24 +1,33 @@
 ﻿var dialog = function (au) {
 	var instance = {
+		open: function (el) {
+			if (!el.nodeType) el = document.getElementById(el);
+			el.classList.add('md-show');
+			el.style.zIndex = 101;
+		},
+		close: function (el) {
+			if (!el.nodeType) el = document.getElementById(el);
+			el.classList.remove('md-show');
+		},
 		widgetWillMount: function (shadow, state) {
-			var modal = shadow.getElementById(state.root);
-			modal.classList.add('md-show');
-			modal.style.zIndex = 101;
-			//var parent = getParent(caller);
-			//if (parent) {
-			//	parent.css('zIndex', 99);
-			//	instance.instances[id].parentDialog = parent.id;
-			//}
+			const el = shadow.getElementById(state.root);
+			const parentid = el.getAttribute('data-c-parent');
+			instance.open(el);
+			if (parentid) {
+				const parent = document.getElementById(parentid);
+				parent.style.zIndex = 99;
+				state.parent = parent;
+			}
+		},
+		onAjaxSend: function (caller, target, state) {
+			if (target.data['c-new']) {
+				target.data['c-parent'] = state.root;
+			}
 		},
 		onResult: function (res, state) {
-			var modal = document.getElementById(state.root);
-			modal.classList.remove('md-show');
-
-			//if (instance.instances[modal.id].parentDialog) {
-			//	var p = $('#' + instance.instances[modal.id].parentDialog);
-			//	p.css('zIndex', 101);
-			//}
-
+			instance.close(document.getElementById(state.root));
+			if (state.parent)
+				state.parent.style.zIndex = 101;
 			if (res == 0) {
 				return false;
 			}
