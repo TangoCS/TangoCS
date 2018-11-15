@@ -72,6 +72,8 @@
     <Compile Include="ActiveDirectory\ADSearcher.cs" />
     <Compile Include="BusinessLogic.cs" />
     <Compile Include="ByteArrayToHex.cs" />
+    <Compile Include="ContentWriter\ContentAttributes.cs" />
+    <Compile Include="ContentWriter\IContentWriter.cs" />
     <Compile Include="Data\ConnectionWrapper.cs" />
     <Compile Include="Data\DapperRepository.cs" />
     <Compile Include="Data\IRepository.cs" />
@@ -89,7 +91,6 @@
     <Compile Include="RealTime\TaskCollection.cs" />
     <Compile Include="UI\ActionFilters.cs" />
     <Compile Include="UI\ContextExtensions.cs" />
-    <Compile Include="UI\Controls\DateLists.cs" />
     <Compile Include="UI\InteractionHelper.cs" />
     <Compile Include="UI\MetaFluentExtensions.cs" />
     <Compile Include="Var.cs" />

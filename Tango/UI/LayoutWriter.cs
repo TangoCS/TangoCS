@@ -135,7 +135,7 @@ namespace Tango.UI
 
 		public static void ButtonsBar(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
-			w.Div(a => a.IDExplicit("buttonsbar").Class("buttonsbar").Set(attributes), content);
+			w.Div(a => a.ID("buttonsbar").Class("buttonsbar").Set(attributes), content);
 		}
 
 		public static void ButtonsBarRight(this LayoutWriter w, Action content)

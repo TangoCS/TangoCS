@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{C7
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.MSOffice", "Tango.MSOffice\Tango.MSOffice.csproj", "{E2D47815-7733-487F-BF95-8E288691F57B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate", "NHibernate\NHibernate.csproj", "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate", "NHibernate\NHibernate.csproj", "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBSchemaDiff", "DBSchemaDiff\DBSchemaDiff.csproj", "{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}"
 EndProject
@@ -21,7 +21,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Hibernate", "Tango.Hi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Test", "Tango.Test\Tango.Test.csproj", "{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Meta.Database.PostgreSQL", "Tango.Meta.Database.PostgreSQL\Tango.Meta.Database.PostgreSQL.csproj", "{2B3754DC-5507-4046-A135-BCED1C161ACF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Meta.Database.PostgreSQL", "Tango.Meta.Database.PostgreSQL\Tango.Meta.Database.PostgreSQL.csproj", "{2B3754DC-5507-4046-A135-BCED1C161ACF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango", "Tango\Tango.csproj", "{2D823E9B-401E-4A8E-A7ED-8658A711BE06}"
 EndProject
@@ -58,11 +58,13 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Tango.Client.Js", "Tango.Cl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper", "Dapper\Dapper.csproj", "{D0205633-0549-4363-84CD-9E32BAF5386F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.PDF", "Tango.PDF\Tango.PDF.csproj", "{AD666B4F-7E4B-41C4-9EAF-51E28930BFD0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.PDF", "Tango.PDF\Tango.PDF.csproj", "{AD666B4F-7E4B-41C4-9EAF-51E28930BFD0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "itextsharp", "..\iTextSharp\itextsharp.csproj", "{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GostCryptography", "..\GostCryptography\Source\GostCryptography\GostCryptography.csproj", "{1520A79F-03EB-4290-AA4A-027806890A9D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Excel", "Tango.Excel\Tango.Excel.csproj", "{64B19AFD-2BB9-4440-9A57-964C65AEC796}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -272,6 +274,18 @@ Global
 		{1520A79F-03EB-4290-AA4A-027806890A9D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{1520A79F-03EB-4290-AA4A-027806890A9D}.Release|x86.ActiveCfg = Release|Any CPU
 		{1520A79F-03EB-4290-AA4A-027806890A9D}.Release|x86.Build.0 = Release|Any CPU
+		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Debug|x86.Build.0 = Debug|Any CPU
+		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Release|Any CPU.Build.0 = Release|Any CPU
+		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Release|x86.ActiveCfg = Release|Any CPU
+		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

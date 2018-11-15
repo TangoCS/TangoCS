@@ -6,7 +6,7 @@ namespace Tango.Html
 {
 	public static class HtmlWriterSelectExtensions
 	{
-		public static void DropDownList(this IHtmlWriter w, InputName name, string value, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
+		public static void DropDownList(this HtmlWriter w, InputName name, string value, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
 		{
 			w.WriteTag<SelectTagAttributes>("select", a => a.Name(name.Name).ID(name.ID).Set(attributes), () => {
 				if (items == null) return;
@@ -19,7 +19,7 @@ namespace Tango.Html
 			});
 		}
 
-		public static void RadioButtonList(this IHtmlWriter w, string name, string value, IEnumerable<SelectListItem> items, Action<TagAttributes> attributes = null, Func<SelectListItem, Action<InputTagAttributes>> itemAttributes = null)
+		public static void RadioButtonList(this HtmlWriter w, string name, string value, IEnumerable<SelectListItem> items, Action<TagAttributes> attributes = null, Func<SelectListItem, Action<InputTagAttributes>> itemAttributes = null)
 		{
 			w.Div(a => a.Class("radiobuttonlist").ID(name + "_placeholder").Set(attributes), () => {
 				int i = 0;
@@ -35,7 +35,7 @@ namespace Tango.Html
 			});
 		}
 
-		public static void CheckBoxList(this IHtmlWriter w, string name, string[] value, IEnumerable<SelectListItem> items, Action<TagAttributes> attributes = null, Func<SelectListItem, Action<InputTagAttributes>> itemAttributes = null)
+		public static void CheckBoxList(this HtmlWriter w, string name, string[] value, IEnumerable<SelectListItem> items, Action<TagAttributes> attributes = null, Func<SelectListItem, Action<InputTagAttributes>> itemAttributes = null)
 		{
 			w.Div(a => a.Class("checkboxlist").ID(name + "_placeholder").Set(attributes), () => {
 				int i = 0;
@@ -51,7 +51,7 @@ namespace Tango.Html
 			});
 		}
 
-		public static void ListBox(this IHtmlWriter w, InputName name, int size, IEnumerable<string> values, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
+		public static void ListBox(this HtmlWriter w, InputName name, int size, IEnumerable<string> values, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
 		{
 			w.WriteTag<SelectTagAttributes>("select", a => a.Name(name.Name).ID(name.ID).Size(size).Set(attributes), () => {
 				if (items == null) return;

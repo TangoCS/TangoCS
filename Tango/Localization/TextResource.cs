@@ -74,7 +74,7 @@ namespace Tango.Localization
 			Type = type;
 		}
 	}
-	[AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+	[AttributeUsage(AttributeTargets.Property | AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
 	public class ResourceNameAttribute : Attribute
 	{
 		public string Name { get; set; }
@@ -87,7 +87,7 @@ namespace Tango.Localization
 	public class ResourceKeyInfo
 	{
 		public Stack<string> Parts { get; set; } = new Stack<string>(4);
-		public Type Type { get; set; }
+		public string Name { get; set; }
 		public string Suffix { get; set; }
 		public bool SuffixIsOptional { get; set; }
 	}
@@ -113,33 +113,33 @@ namespace Tango.Localization
 
 		public static string GetExt<T>(this IResourceManager textResource, string suffix)
 		{
-			return textResource.Get(typeof(T).FullName, suffix);
+			return textResource.Get(typeof(T).GetResourceName(), suffix);
 		}
 
 		public static string Get<T>(this IResourceManager textResource, string key)
 		{
-			return textResource.Get(typeof(T).FullName + "." + key);
+			return textResource.Get(typeof(T).GetResourceName() + "." + key);
 		}
 
 		public static string Get<T>(this IResourceManager textResource, string key, string suffix)
 		{
-			return textResource.Get(typeof(T).FullName + "." + key, suffix);
+			return textResource.Get(typeof(T).GetResourceName() + "." + key, suffix);
 		}
 
 		public static string Get(this IResourceManager textResource, Type t, string key)
 		{
-			return textResource.Get(t.FullName + "." + key);
+			return textResource.Get(t.GetResourceName() + "." + key);
 		}
 
 		public static string Get(this IResourceManager textResource, Type t, string key, string suffix)
 		{
-			return textResource.Get(t.FullName + "." + key, suffix);
+			return textResource.Get(t.GetResourceName() + "." + key, suffix);
 		}
 
 		public static string Get(this IResourceManager textResource, ResourceKeyInfo k)
 		{
 			var p = k.Parts.Join(".");
-			var t = k.Type.FullName;
+			var t = k.Name;
 			var s = "";
 			if (!k.Suffix.IsEmpty()) s += "-" + k.Suffix;
 
@@ -180,6 +180,18 @@ namespace Tango.Localization
 			return res;
 		}
 
+		static string GetResourceName(this Type type)
+		{
+			var attr = type.GetCustomAttributes(typeof(ResourceNameAttribute), false);
+			if (attr != null && attr.Length > 0)
+				return (attr[0] as ResourceNameAttribute).Name;
+
+			attr = type.GetCustomAttributes(typeof(ResourceTypeAttribute), false);
+			if (attr != null && attr.Length > 0)
+				type = (attr[0] as ResourceTypeAttribute).Type;
+			return type.FullName;
+		}
+
 		static void GetResourceKeyInt(Expression exp, ResourceKeyInfo res)
 		{
 			var t = exp.GetType();
@@ -191,7 +203,7 @@ namespace Tango.Localization
 			}
 			else if (typeof(ParameterExpression).IsAssignableFrom(t))
 			{
-				res.Type = GetResourceType(exp.Type);
+				res.Name = GetResourceName(exp.Type);
 				return;
 			}
 			else if (t == typeof(UnaryExpression))
@@ -201,8 +213,7 @@ namespace Tango.Localization
 				return;
 			}
 
-			var memberExp = exp as MemberExpression;
-			if (memberExp == null)
+			if (!(exp is MemberExpression memberExp))
 				throw new Exception("Wrong format of the expression");
 			if (!memberExp.Expression.Type.IsValueType)
 			{
@@ -244,8 +255,9 @@ namespace Tango.Localization
 
 		public static string CaptionShort<T>(this IResourceManager textResource, string key)
 		{
-			var k = new ResourceKeyInfo();
-			k.Type = typeof(T);
+			var k = new ResourceKeyInfo {
+				Name = typeof(T).FullName
+			};
 			k.Parts.Push(key);
 			k.Suffix = "s";
 			k.SuffixIsOptional = true;
