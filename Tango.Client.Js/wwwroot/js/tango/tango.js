@@ -240,8 +240,13 @@ var ajaxUtils = function ($, cu) {
 	var instance = {
 		initForm: function (args) {
 			var form = $('#' + args.id);
-			form.on('submit', { el: form[0] }, function (e) {
-				return instance.formSubmit(e.data.el);
+			form.on('click', 'input[type="submit"], button[type="submit"]', function (event) {
+				/* horrible hack to detect form submissions via ajax */
+				event.preventDefault();
+				$(event.target.form).trigger('submit', event.target);
+			});
+			form.on('submit', { el: form[0] }, function (e, submitter) {
+				return instance.formSubmit(submitter, e.data.el);
 			});
 			if (!args.submitOnEnter) {
 				form.on("keypress", ":input:not(textarea):not([type=submit])", function (e) {
@@ -249,13 +254,15 @@ var ajaxUtils = function ($, cu) {
 				});
 			}
 		},
-		formSubmit: function (form) {
+		formSubmit: function (sender, form) {
 			var fd = new FormData(form);
+			if (sender) fd.append('submit', sender.value);
 			var els = form.elements;
 			for (var i = 0, el; el = els[i++];) {
 				processElementDataOnFormSubmit(el, function (key, value) { fd.append(key, value); });
 			}
-			var target = { e: 'onsubmit', data: fd };
+			var target = { data: fd };
+			target.e = sender.hasAttribute('data-e') ? sender.getAttribute('data-e') : 'onsubmit';
 			target.url = instance.findServiceAction(form);
 
 			const r = instance.postEventWithApiResponse(target);

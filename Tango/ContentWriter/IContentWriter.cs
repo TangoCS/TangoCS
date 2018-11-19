@@ -20,7 +20,8 @@ namespace Tango
 		public static void Th(this IContentWriter w, Action inner) { w.Th(null, inner); }
 		public static void Div(this IContentWriter w, Action inner) { w.Div(null, inner); }
 
-		public static void Div<T>(this IContentWriter w, T text) { w.Div(null, () => w.Write(text?.ToString())); }
+		public static void Div(this IContentWriter w, string text) { w.Div(null, () => w.Write(text)); }
+		public static void Div(this IContentWriter w, Action<IContentItemAttributes> attrs, string text) { w.Div(attrs, () => w.Write(text)); }
 
 		public static void Th(this IContentWriter w, Action<IThAttributes> attrs, string text) { w.Th(attrs, () => w.Write(text)); }
 		public static void Th<T>(this IContentWriter w, T text) { w.Th(null, () => w.Write(text?.ToString())); }
