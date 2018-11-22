@@ -1,37 +1,354 @@
 ﻿using System;
-
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using System.Linq;
+using OfficeOpenXml;
 namespace Tango.Excel
 {
-	public class ExcelWriter : IContentWriter
-	{
-		public void Div(Action<IContentItemAttributes> attributes, Action inner)
+	public class ExcelWriter : IContentWriter, IDisposable
+    {
+        ExcelPackage p;
+        ExcelWorksheet s;
+        AngleSharp.Parser.Css.CssParser cssParser = new AngleSharp.Parser.Css.CssParser();
+        int r = 1;
+        int c = 1;
+        int totalColumns = 1;
+        List<int> divs;
+
+        public ExcelWriter()
+        {
+            p = new ExcelPackage();            
+        }
+
+        public void Sheet(string name, Action inner)
+        {
+            s = p.Workbook.Worksheets.Add(name);
+            totalColumns = 1;
+            divs = new List<int>();
+            inner();
+            r = 1;
+            c = 1;
+            foreach (int row in divs)
+            {
+                s.Cells[row, 1, row, totalColumns].Merge = true;
+                s.Cells[row, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+            }
+            for (int i = 1; i < totalColumns; i++)
+            {
+                if (s.Column(i).Width == 0)
+                    s.Column(i).AutoFit();
+            }
+        }
+
+        public void Div(Action<IContentItemAttributes> attributes, Action inner)
 		{
-			throw new NotImplementedException();
-		}
+            inner?.Invoke();
+            var cia = new CIAttributes();
+            cia.SetWriter(this);
+            attributes?.Invoke(cia);
+            cia.Apply();
+            divs.Add(r);
+            r++;
+            c = 1;
+        }
 
 		public void Table(Action<IContentItemAttributes> attributes = null, Action inner = null)
 		{
-			throw new NotImplementedException();
-		}
+            int fromRow = r;
+            int cols = totalColumns;
+            totalColumns = 1;
+            inner?.Invoke();
+            s.Cells[fromRow, 1, r, totalColumns].Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+            s.Cells[fromRow, 1, r - 1, totalColumns + 1].Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+            r++;
+            c = 1;
+            if (cols > totalColumns)
+                totalColumns = cols;
+        }
 
 		public void Td(Action<ITdAttributes> attributes = null, Action inner = null)
-		{
-			throw new NotImplementedException();
+        {
+            var tda = new TdAttributes();
+            tda.SetWriter(this);
+            attributes?.Invoke(tda);
+            tda.Apply();
+            inner?.Invoke();
+            while (s.Cells[r, c + 1].Merge)
+                c++;
+            if (c > totalColumns)
+                totalColumns = c;
+            c++;
 		}
 
 		public void Th(Action<IThAttributes> attributes = null, Action inner = null)
-		{
-			throw new NotImplementedException();
+        {
+            var tha = new ThAttributes();
+            tha.SetWriter(this);
+            attributes?.Invoke(tha);
+            tha.Apply();
+            inner?.Invoke();
+            if (c > totalColumns)
+                totalColumns = c;
+            c++;
 		}
 
 		public void Tr(Action<IContentItemAttributes> attributes, Action inner = null)
 		{
-			throw new NotImplementedException();
-		}
+            inner?.Invoke();
+            var cia = new CIAttributes();
+            cia.SetWriter(this);
+            attributes?.Invoke(cia);
+            cia.Apply();
+            r++;
+            c = 1;
+            while (s.Cells[r, c].Merge)
+                c++;
+        }
 
 		public void Write(string text)
 		{
-			throw new NotImplementedException();
-		}
-	}
+            if (text != null)
+            {
+                text = text.Replace("&nbsp;", "");
+                string formula = s.Cells[r, c].FormulaR1C1;
+                if (decimal.TryParse(text.Replace(" ", "").Replace(",", "."), out decimal d))
+                {
+                    s.Cells[r, c].Value = d;
+                    s.Cells[r, c].Style.Numberformat.Format = Regex.Replace(text.Replace(",", ".").Replace("-", ""), @"\d", "0");
+                }
+                else
+                    s.Cells[r, c].Value = text;
+                if ((formula ?? "") != "")
+                    s.Cells[r, c].FormulaR1C1 = formula;
+            }
+        }
+
+        public byte[] GetBytes()
+        {
+            using (var msout = new System.IO.MemoryStream())
+            {
+                p.Workbook.FullCalcOnLoad = true;
+                p.SaveAs(msout);
+                msout.Flush();
+                return msout.ToArray();
+            }            
+        }
+
+        public void Dispose()
+        {
+            p?.Dispose();
+        }
+
+        class TdAttributes : ITdAttributes
+        {
+            ExcelWriter writer;
+            int colSpan = 1;
+            int rowSpan = 1;
+            bool right;
+            AngleSharp.Dom.Css.ICssStyleDeclaration style;
+            string formula;
+            double width;
+
+            public ITdAttributes Class(string value, bool replaceExisting = false)
+            {
+                if (value == "r")
+                    right = true;
+                else
+                    throw new NotImplementedException();
+                return this;
+            }
+
+            public ITdAttributes ColSpan(int value)
+            {
+                if (value > 1) colSpan = value;
+                return this;
+            }
+
+            public ITdAttributes Extended<TValue>(string key, TValue value)
+            {
+                if (key == "FormulaR1C1")
+                    formula = value as string;
+                if (key == ExcelWriterAttributes.ColumnWidth)
+                    width = Convert.ToDouble(value);
+                return this;
+            }
+
+            public ITdAttributes ID<TValue>(TValue value)
+            {
+                return this;
+            }
+
+            public ITdAttributes RowSpan(int value)
+            {
+                if (value > 1) rowSpan = value;
+                return this;
+            }
+
+            public void SetWriter(IContentWriter writer)
+            {
+                this.writer = (ExcelWriter)writer;
+            }
+
+            public ITdAttributes Style(string value, bool replaceExisting = false)
+            {
+                var ss = writer.cssParser.ParseStylesheet(".someClass{" + value + "}");
+                style = (ss.Rules.First() as AngleSharp.Dom.Css.ICssStyleRule).Style;
+                return this;
+            }
+
+            public void Apply()
+            {
+                writer.s.Cells[writer.r, writer.c].Style.WrapText = true;
+                if (rowSpan > 1 || colSpan > 1)
+                    writer.s.Cells[writer.r, writer.c, writer.r + rowSpan - 1, writer.c + colSpan - 1].Merge = true;
+                if (right)
+                    writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
+                if (style?.TextAlign == "center")
+                    writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                if (style?.FontWeight == "bold")
+                    writer.s.Cells[writer.r, writer.c].Style.Font.Bold = true;
+                if (style?.FontStyle == "italic")
+                    writer.s.Cells[writer.r, writer.c].Style.Font.Italic = true;
+                if (style?.WhiteSpace == "nowrap")
+                    writer.s.Cells[writer.r, writer.c].Style.WrapText = false;
+                if (width > 0)
+                    writer.s.Column(writer.c).Width = width;
+                if (formula != null)
+                    writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
+            }
+        }
+
+        class ThAttributes : IThAttributes
+        {
+            ExcelWriter writer;
+            int colSpan = 1;
+            int rowSpan = 1;
+            bool right;
+            AngleSharp.Dom.Css.ICssStyleDeclaration style;
+            string formula;
+            double width;
+
+            public IThAttributes Class(string value, bool replaceExisting = false)
+            {
+                if (value == "r")
+                    right = true;
+                else
+                    throw new NotImplementedException();
+                return this;
+            }
+
+            public IThAttributes ColSpan(int value)
+            {
+                if (value > 1) colSpan = value;
+                return this;
+            }
+
+            public IThAttributes Extended<TValue>(string key, TValue value)
+            {
+                if (key == ExcelWriterAttributes.FormulaR1C1)
+                    formula = value as string;
+                if (key == ExcelWriterAttributes.ColumnWidth)
+                    width = Convert.ToDouble(value);
+                return this;
+            }
+
+            public IThAttributes ID<TValue>(TValue value)
+            {
+                return this;
+            }
+
+            public IThAttributes RowSpan(int value)
+            {
+                if (value > 1) rowSpan = value;
+                return this;
+            }
+
+            public void SetWriter(IContentWriter writer)
+            {
+                this.writer = (ExcelWriter)writer;
+            }
+
+            public IThAttributes Style(string value, bool replaceExisting = false)
+            {
+                var ss = writer.cssParser.ParseStylesheet(".someClass{" + value + "}");
+                style = (ss.Rules.First() as AngleSharp.Dom.Css.ICssStyleRule).Style;
+                return this;
+            }
+
+            public void Apply()
+            {
+                writer.s.Cells[writer.r, writer.c].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                writer.s.Cells[writer.r, writer.c].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
+                writer.s.Cells[writer.r, writer.c].Style.WrapText = true;
+
+                if (rowSpan > 1 || colSpan > 1)
+                    writer.s.Cells[writer.r, writer.c, writer.r + rowSpan - 1, writer.c + colSpan - 1].Merge = true; ;
+                if (right)
+                    writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
+                if (style?.TextAlign == "center")
+                    writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                if (style?.FontWeight == "bold")
+                    writer.s.Cells[writer.r, writer.c].Style.Font.Bold = true;
+                if (style?.FontStyle == "italic")
+                    writer.s.Cells[writer.r, writer.c].Style.Font.Italic = true;
+                if (width > 0)
+                    writer.s.Column(writer.c).Width = width;
+                if (formula != null)
+                    writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
+            }
+        }
+
+        class CIAttributes : IContentItemAttributes
+        {
+            ExcelWriter writer;
+            AngleSharp.Dom.Css.ICssStyleDeclaration style;
+            string formula;
+
+            public IContentItemAttributes Class(string value, bool replaceExisting = false)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IContentItemAttributes Extended<TValue>(string key, TValue value)
+            {
+                if (key == "FormulaR1C1")
+                    formula = value as string;
+                return this;
+            }
+
+            public IContentItemAttributes ID<TValue>(TValue value)
+            {
+                return this;
+            }
+
+            public void SetWriter(IContentWriter writer)
+            {
+                this.writer = (ExcelWriter)writer;
+            }
+
+            public IContentItemAttributes Style(string value, bool replaceExisting = false)
+            {
+                var ss = writer.cssParser.ParseStylesheet(".someClass{" + value + "}");
+                style = (ss.Rules.First() as AngleSharp.Dom.Css.ICssStyleRule).Style;
+                return this;
+            }
+
+            public void Apply()
+            {
+                if (style?.TextAlign == "center")
+                    writer.s.Row(writer.r).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                if (style?.FontWeight == "bold")
+                    writer.s.Row(writer.r).Style.Font.Bold = true;
+                if (style?.FontStyle == "italic")
+                    writer.s.Row(writer.r).Style.Font.Italic = true;
+                if (formula != null)
+                    writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
+            }
+        }
+    }
+    public static class ExcelWriterAttributes
+    {
+        public const string FormulaR1C1 = "FormulaR1C1";
+        public const string ColumnWidth = "ColumnWidth";
+    }
 }
