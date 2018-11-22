@@ -5,6 +5,8 @@ namespace Tango
 	public interface IContentWriter
 	{
 		void Write(string text);
+		string NewLine { get; }
+
 		void Table(Action<IContentItemAttributes> attributes, Action inner);
 		void Tr(Action<IContentItemAttributes> attributes, Action inner);
 		void Td(Action<ITdAttributes> attributes, Action inner);

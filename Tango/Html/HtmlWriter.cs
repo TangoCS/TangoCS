@@ -8,30 +8,30 @@ namespace Tango.Html
 {
 	public partial class HtmlWriter : StringWriter, IContentWriter
 	{
+		const string NEWLINE = "<br/>";
 		string _initialPrefix;
 		Stack<string> _ids = new Stack<string>(4);
 		Stack<(string prefix, Stack<string> ids)> _prefixes = new Stack<(string prefix, Stack<string> ids)>(4);
 
-		//public ITagAttributeWriter AttributeWriter { get; set; }
 		public string IDPrefix { get; private set; }
 
 		public HtmlWriter()
 		{
-			//AttributeWriter = new AttributeWriter(this);
+			NewLine = NEWLINE;
 		}
 		public HtmlWriter(StringBuilder sb) : base(sb)
 		{
-			//AttributeWriter = new AttributeWriter(this);
+			NewLine = NEWLINE;
 		}
 		public HtmlWriter(string idPrefix)
 		{
-			//AttributeWriter = new AttributeWriter(this);
+			NewLine = NEWLINE;
 			_initialPrefix = idPrefix;
 			SetPrefix();
 		}
 		public HtmlWriter(string idPrefix, StringBuilder sb) : base(sb)
 		{
-			//AttributeWriter = new AttributeWriter(this);
+			NewLine = NEWLINE;
 			_initialPrefix = idPrefix;
 			SetPrefix();
 		}

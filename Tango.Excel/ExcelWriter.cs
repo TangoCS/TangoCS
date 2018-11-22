@@ -4,6 +4,8 @@ namespace Tango.Excel
 {
 	public class ExcelWriter : IContentWriter
 	{
+		public string NewLine => throw new NotImplementedException();
+
 		public void Div(Action<IContentItemAttributes> attributes, Action inner)
 		{
 			throw new NotImplementedException();
