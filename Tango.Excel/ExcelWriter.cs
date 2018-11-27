@@ -7,33 +7,52 @@ namespace Tango.Excel
 {
 	public class ExcelWriter : IContentWriter, IDisposable
     {
-		public string NewLine => throw new NotImplementedException();
+		public string NewLine => "\n";
 
 		ExcelPackage p;
         ExcelWorksheet s;
         AngleSharp.Parser.Css.CssParser cssParser = new AngleSharp.Parser.Css.CssParser();
         int r = 1;
         int c = 1;
+        int startcol = 1;
         int totalColumns = 1;
         List<int> divs;
+
+        Dictionary<string, Action<ExcelRange>> classes = new Dictionary<string, Action<ExcelRange>>();
+
+        public void SetClassAction(string @class, Action<ExcelRange> cells)
+        {
+            classes[@class] = cells;
+        }
 
         public ExcelWriter()
         {
             p = new ExcelPackage();            
         }
 
+        public ExcelWriter(System.IO.Stream template)
+        {
+            p = new ExcelPackage(template);
+        }
+
+        public void Sheet(int index, Action inner)
+        {
+            Sheet(p.Workbook.Worksheets[index].Name, inner);
+        }
+
         public void Sheet(string name, Action inner)
         {
-            s = p.Workbook.Worksheets.Add(name);
+            s = p.Workbook.Worksheets[name] ?? p.Workbook.Worksheets.Add(name);
             totalColumns = 1;
             divs = new List<int>();
-            inner();
             r = 1;
             c = 1;
+            startcol = 1;
+            inner();
             foreach (int row in divs)
             {
-                s.Cells[row, 1, row, totalColumns].Merge = true;
-                s.Cells[row, 1].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                s.Cells[row, startcol, row, totalColumns].Merge = true;
+                s.Cells[row, startcol].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
             }
             for (int i = 1; i < totalColumns; i++)
             {
@@ -42,16 +61,21 @@ namespace Tango.Excel
             }
         }
 
+        public void SetWidth(int col, double width)
+        {
+            s.Column(col).Width = width;
+        }
+
         public void Div(Action<IContentItemAttributes> attributes, Action inner)
 		{
             inner?.Invoke();
             var cia = new CIAttributes();
             cia.SetWriter(this);
             attributes?.Invoke(cia);
-            cia.Apply();
+            cia.Apply(s.Cells[r, c]);
             divs.Add(r);
             r++;
-            c = 1;
+            c = startcol;
         }
 
 		public void Table(Action<IContentItemAttributes> attributes = null, Action inner = null)
@@ -60,10 +84,10 @@ namespace Tango.Excel
             int cols = totalColumns;
             totalColumns = 1;
             inner?.Invoke();
-            s.Cells[fromRow, 1, r, totalColumns].Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-            s.Cells[fromRow, 1, r - 1, totalColumns + 1].Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-            r++;
-            c = 1;
+            var cia = new CIAttributes();
+            cia.SetWriter(this);
+            attributes?.Invoke(cia);
+            cia.Apply(s.Cells[fromRow, startcol, r - 1, totalColumns]);
             if (cols > totalColumns)
                 totalColumns = cols;
         }
@@ -100,11 +124,19 @@ namespace Tango.Excel
             var cia = new CIAttributes();
             cia.SetWriter(this);
             attributes?.Invoke(cia);
-            cia.Apply();
+            cia.Apply(s.Cells[r, startcol, r, c - 1]);
             r++;
-            c = 1;
+            c = startcol;
             while (s.Cells[r, c].Merge)
-                c++;
+            {
+                if (c < totalColumns)
+                    c++;
+                else
+                {
+                    r++;
+                    c = startcol;
+                }
+            }
         }
 
 		public void Write(string text)
@@ -123,6 +155,18 @@ namespace Tango.Excel
                 if ((formula ?? "") != "")
                     s.Cells[r, c].FormulaR1C1 = formula;
             }
+        }
+
+        public void Style(string range, Action<ExcelRange> cells)
+        {
+            cells(s.Cells[range]);
+        }
+
+        public void Move(int row, int col)
+        {
+            r = row;
+            c = col;
+            startcol = col;
         }
 
         public byte[] GetBytes()
@@ -170,8 +214,6 @@ namespace Tango.Excel
             {
                 if (key == "FormulaR1C1")
                     formula = value as string;
-                if (key == ExcelWriterAttributes.ColumnWidth)
-                    width = Convert.ToDouble(value);
                 return this;
             }
 
@@ -247,10 +289,8 @@ namespace Tango.Excel
 
             public IThAttributes Extended<TValue>(string key, TValue value)
             {
-                if (key == ExcelWriterAttributes.FormulaR1C1)
+                if (key == Xlsx.FormulaR1C1)
                     formula = value as string;
-                if (key == ExcelWriterAttributes.ColumnWidth)
-                    width = Convert.ToDouble(value);
                 return this;
             }
 
@@ -279,9 +319,11 @@ namespace Tango.Excel
 
             public void Apply()
             {
-                writer.s.Cells[writer.r, writer.c].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                writer.s.Cells[writer.r, writer.c].Style.Fill.BackgroundColor.SetColor(System.Drawing.Color.LightGray);
                 writer.s.Cells[writer.r, writer.c].Style.WrapText = true;
+                writer.s.Cells[writer.r, writer.c].Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                writer.s.Cells[writer.r, writer.c + 1].Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                writer.s.Cells[writer.r, writer.c].Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+                writer.s.Cells[writer.r + 1, writer.c].Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
 
                 if (rowSpan > 1 || colSpan > 1)
                     writer.s.Cells[writer.r, writer.c, writer.r + rowSpan - 1, writer.c + colSpan - 1].Merge = true; ;
@@ -305,10 +347,12 @@ namespace Tango.Excel
             ExcelWriter writer;
             AngleSharp.Dom.Css.ICssStyleDeclaration style;
             string formula;
+            string[] classes = new string[0];
 
             public IContentItemAttributes Class(string value, bool replaceExisting = false)
             {
-                throw new NotImplementedException();
+                classes = value.Split(' ');
+                return this;
             }
 
             public IContentItemAttributes Extended<TValue>(string key, TValue value)
@@ -335,22 +379,24 @@ namespace Tango.Excel
                 return this;
             }
 
-            public void Apply()
+            public void Apply(ExcelRange range)
             {
                 if (style?.TextAlign == "center")
-                    writer.s.Row(writer.r).Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                    range.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
                 if (style?.FontWeight == "bold")
-                    writer.s.Row(writer.r).Style.Font.Bold = true;
+                    range.Style.Font.Bold = true;
                 if (style?.FontStyle == "italic")
-                    writer.s.Row(writer.r).Style.Font.Italic = true;
+                    range.Style.Font.Italic = true;
+                foreach (var cls in classes)
+                    if (writer.classes.ContainsKey(cls))
+                        writer.classes[cls](range);
                 if (formula != null)
-                    writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
+                    range.FormulaR1C1 = formula;
             }
         }
     }
-    public static class ExcelWriterAttributes
+    public static class Xlsx
     {
         public const string FormulaR1C1 = "FormulaR1C1";
-        public const string ColumnWidth = "ColumnWidth";
     }
 }
