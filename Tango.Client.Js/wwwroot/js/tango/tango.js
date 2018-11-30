@@ -264,7 +264,9 @@ var ajaxUtils = function ($, cu) {
 			var target = { data: fd };
 			target.e = sender.hasAttribute('data-e') ? sender.getAttribute('data-e') : 'onsubmit';
 			target.url = instance.findServiceAction(form);
-
+			if (sender.hasAttribute('data-responsetype')) {
+				target.responsetype = sender.getAttribute('data-responsetype');
+			}
 			const r = instance.postEventWithApiResponse(target);
 			if (form.hasAttribute('data-res-postponed'))
 				r.then(function (apiResult) {
@@ -349,17 +351,19 @@ var ajaxUtils = function ($, cu) {
 				xhr.responseType = 'arraybuffer';
 				xhr.onload = function () {
 					if (this.status >= 200 && this.status < 300) {
-						r.resolve(xhr.response, this.status, xhr).then(onRequestResult);
+						r.resolve(xhr.response, this.status, xhr);//.then(onRequestResult);
 					} else {
-						r.reject(xhr, status, null).then(instance.error);
+						r.reject(xhr, status, null);//.then(instance.error);
 					}
 				};
 				xhr.onerror = function () {
-					r.reject(xhr, status, null).then(instance.error);
+					r.reject(xhr, status, null);//.then(instance.error);
 				};
 				beforeRequest(this, xhr, null);
-				xhr.send();
-				return r.promise();
+				xhr.contentType = isForm ? false : "application/json; charset=utf-8";
+				xhr.processData = !isForm;
+				xhr.send(isForm ? target.data : JSON.stringify(target.data));
+				return r.fail(instance.error).then(onRequestResult);/*.promise()*/;
 			}
 		},
 		postEventWithApiResponse: function (target) {
@@ -577,7 +581,7 @@ var ajaxUtils = function ($, cu) {
 			// check file download response
 			if (disposition && disposition.indexOf('attachment') !== -1) {
 				const contenttype = xhr.getResponseHeader('Content-Type');
-				cu.processFile(contenttype, disposition, xhr.response);
+				cu.processFile(contenttype, disposition, data);
 				return $.Deferred().reject();
 			}
 			else
@@ -640,7 +644,10 @@ var ajaxUtils = function ($, cu) {
 
 	function processApiResponse(apiResult) {
 		console.log('processApiResponse');
+
 		if (!apiResult) return;
+		if (apiResult instanceof ArrayBuffer)
+			apiResult = JSON.parse(new TextDecoder('utf8').decode(apiResult));
 
 		if (apiResult.url) {
 			window.location = apiResult.url;
