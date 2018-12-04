@@ -66,6 +66,11 @@ namespace Tango.Excel
             s.Column(col).Width = width;
         }
 
+        public void SetHeight(int row, double height)
+        {
+            s.Row(row).Height = height;
+        }
+
         public void Div(Action<IContentItemAttributes> attributes, Action inner)
 		{
             inner?.Invoke();
@@ -258,7 +263,9 @@ namespace Tango.Excel
                 if (width > 0)
                     writer.s.Column(writer.c).Width = width;
                 if (formula != null)
+                {
                     writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
+                }
             }
         }
 
@@ -338,7 +345,9 @@ namespace Tango.Excel
                 if (width > 0)
                     writer.s.Column(writer.c).Width = width;
                 if (formula != null)
+                {
                     writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
+                }
             }
         }
 
@@ -391,7 +400,9 @@ namespace Tango.Excel
                     if (writer.classes.ContainsKey(cls))
                         writer.classes[cls](range);
                 if (formula != null)
+                {
                     range.FormulaR1C1 = formula;
+                }
             }
         }
     }
