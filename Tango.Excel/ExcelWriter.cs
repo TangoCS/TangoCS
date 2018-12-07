@@ -152,7 +152,7 @@ namespace Tango.Excel
             {
                 text = text.Replace("&nbsp;", "");
                 string formula = s.Cells[r, c].FormulaR1C1;
-                if (decimal.TryParse(text.Replace(" ", "").Replace(",", "."), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out decimal d))
+                if (decimal.TryParse(text.Replace(" ", "").Replace(" ", "").Replace(",", "."), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out decimal d))
                 {
                     s.Cells[r, c].Value = d;
                     s.Cells[r, c].Style.Numberformat.Format = Regex.Replace(text.Replace(",", ".").Replace("-", ""), @"\d", "0");
