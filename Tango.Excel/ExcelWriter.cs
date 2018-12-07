@@ -262,6 +262,8 @@ namespace Tango.Excel
                     writer.s.Cells[writer.r, writer.c].Style.WrapText = false;
                 if (width > 0)
                     writer.s.Column(writer.c).Width = width;
+                if ((style?.PaddingLeft ?? "") != "")
+                    writer.s.Cells[writer.r, writer.c].Style.Indent = style.PaddingLeft.Replace("px", "").Trim().ToInt32(0) / 10;
                 if (formula != null)
                 {
                     writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
@@ -396,6 +398,16 @@ namespace Tango.Excel
                     range.Style.Font.Bold = true;
                 if (style?.FontStyle == "italic")
                     range.Style.Font.Italic = true;
+                if ((style?.BackgroundColor ?? "") != "")
+                {
+                    range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+                    const string pattern = @"rgba?[(](\d{1,3})\s?,\s?(\d{1,3})\s?,\s?(\d{1,3})\s?[)]";
+                    var match = Regex.Match(style?.BackgroundColor, pattern);
+                    var r = byte.Parse(match.Groups[1].Value);
+                    var g = byte.Parse(match.Groups[2].Value);
+                    var b = byte.Parse(match.Groups[3].Value);
+                    range.Style.Fill.BackgroundColor.SetColor(0, r, g, b);
+                }
                 foreach (var cls in classes)
                     if (writer.classes.ContainsKey(cls))
                         writer.classes[cls](range);
