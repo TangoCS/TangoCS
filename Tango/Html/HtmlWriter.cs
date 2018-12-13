@@ -101,5 +101,5 @@ namespace Tango.Html
 			}
 			attributes.Clear();
 		}
-	}
+    }
 }

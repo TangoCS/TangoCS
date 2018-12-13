@@ -18,8 +18,9 @@ namespace Tango.Html
 		void IContentWriter.Td(Action<ITdAttributes> attributes, Action inner) => WriteTag("td", attributes, inner);
 		void IContentWriter.Th(Action<IThAttributes> attributes, Action inner) => WriteTag("th", attributes, inner);
 		void IContentWriter.Div(Action<IContentItemAttributes> attributes, Action inner) => WriteTag("div", attributes, inner);
+        void IContentWriter.Td(Action<ITdAttributes> attributes, decimal? n, string format) => WriteTag("td", attributes, () => Write(n == null ? "" : n.Value.ToString(format)));
 
-		T Fabric<T>()
+        T Fabric<T>()
 			where T: class, IContentItemAttributes<T>
 		{
 			switch (typeof(T))

@@ -41,10 +41,10 @@ namespace Tango.UI
 			l.Td(null, content);
 		}
 
-		public static void Td(this LayoutWriter l, int content) => l.Td(null, content.ToString());
-		public static void Td(this LayoutWriter l, decimal content) => l.Td(null, content.ToString());
-		public static void Td(this LayoutWriter l, int? content) => l.Td(null, content?.ToString());
-		public static void Td(this LayoutWriter l, decimal? content) => l.Td(null, content?.ToString());
+		public static void Td(this LayoutWriter l, int content) => l.Td(content, null);
+		public static void Td(this LayoutWriter l, decimal content) => l.Td(content, null);
+		public static void Td(this LayoutWriter l, int? content) => l.Td(content, null);
+		public static void Td(this LayoutWriter l, decimal? content) => l.Td(content, null);
 
 		public static void Td(this LayoutWriter l, Action<TdTagAttributes> attributes, int content) => l.Td(attributes, content.ToString());
 		public static void Td(this LayoutWriter l, Action<TdTagAttributes> attributes, decimal content) => l.Td(attributes, content.ToString());

@@ -10,7 +10,8 @@ namespace Tango
 		void Table(Action<IContentItemAttributes> attributes, Action inner);
 		void Tr(Action<IContentItemAttributes> attributes, Action inner);
 		void Td(Action<ITdAttributes> attributes, Action inner);
-		void Th(Action<IThAttributes> attributes, Action inner);
+        void Td(Action<ITdAttributes> attributes, decimal? n, string format);
+        void Th(Action<IThAttributes> attributes, Action inner);
 		void Div(Action<IContentItemAttributes> attributes, Action inner);
 	}
 
@@ -19,7 +20,8 @@ namespace Tango
 		public static void Table(this IContentWriter w, Action inner) { w.Table(null, inner); }
 		public static void Tr(this IContentWriter w, Action inner) { w.Tr(null, inner); }
 		public static void Td(this IContentWriter w, Action inner) { w.Td(null, inner); }
-		public static void Th(this IContentWriter w, Action inner) { w.Th(null, inner); }
+        public static void Td(this IContentWriter w, decimal? n, string format) { w.Td(null, n, format); }
+        public static void Th(this IContentWriter w, Action inner) { w.Th(null, inner); }
 		public static void Div(this IContentWriter w, Action inner) { w.Div(null, inner); }
 
 		public static void Div(this IContentWriter w, string text) { w.Div(null, () => w.Write(text)); }

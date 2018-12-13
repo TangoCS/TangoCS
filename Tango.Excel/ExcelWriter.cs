@@ -150,15 +150,9 @@ namespace Tango.Excel
 		{
             if (text != null)
             {
-                text = text.Replace("&nbsp;", "");
+                text = text.Replace("&nbsp;", " ");
                 string formula = s.Cells[r, c].FormulaR1C1;
-                if (decimal.TryParse(text.Replace(" ", "").Replace(" ", "").Replace(",", "."), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out decimal d))
-                {
-                    s.Cells[r, c].Value = d;
-                    s.Cells[r, c].Style.Numberformat.Format = Regex.Replace(text.Replace(",", ".").Replace("-", ""), @"\d", "0");
-                }
-                else
-                    s.Cells[r, c].Value = text;
+                s.Cells[r, c].Value = text;
                 if ((formula ?? "") != "")
                     s.Cells[r, c].FormulaR1C1 = formula;
             }
@@ -190,6 +184,27 @@ namespace Tango.Excel
         public void Dispose()
         {
             p?.Dispose();
+        }
+
+        public void Td(Action<ITdAttributes> attributes, decimal? n, string format)
+        {
+            Td(attributes, () => 
+            {
+                string formula = s.Cells[r, c].FormulaR1C1;
+                s.Cells[r, c].Value = n;
+                if ((formula ?? "") != "")
+                    s.Cells[r, c].FormulaR1C1 = formula;
+                if (format == "n0")
+                    s.Cells[r, c].Style.Numberformat.Format = "# ##0";
+                if (format == "n1")
+                    s.Cells[r, c].Style.Numberformat.Format = "#,##0.000";
+                if (format == "n2")
+                    s.Cells[r, c].Style.Numberformat.Format = "#,##0.000";
+                if (format == "n3")
+                    s.Cells[r, c].Style.Numberformat.Format = "#,##0.000";
+                if (format == "n7")
+                    s.Cells[r, c].Style.Numberformat.Format = "#,##0.0000000";
+            });
         }
 
         class TdAttributes : ITdAttributes
