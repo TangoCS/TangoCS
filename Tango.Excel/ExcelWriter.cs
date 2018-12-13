@@ -197,11 +197,17 @@ namespace Tango.Excel
                 if (format == "n0")
                     s.Cells[r, c].Style.Numberformat.Format = "# ##0";
                 if (format == "n1")
-                    s.Cells[r, c].Style.Numberformat.Format = "#,##0.000";
+                    s.Cells[r, c].Style.Numberformat.Format = "#,##0.0";
                 if (format == "n2")
-                    s.Cells[r, c].Style.Numberformat.Format = "#,##0.000";
+                    s.Cells[r, c].Style.Numberformat.Format = "#,##0.00";
                 if (format == "n3")
                     s.Cells[r, c].Style.Numberformat.Format = "#,##0.000";
+                if (format == "n4")
+                    s.Cells[r, c].Style.Numberformat.Format = "#,##0.0000";
+                if (format == "n5")
+                    s.Cells[r, c].Style.Numberformat.Format = "#,##0.00000";
+                if (format == "n6")
+                    s.Cells[r, c].Style.Numberformat.Format = "#,##0.000000";
                 if (format == "n7")
                     s.Cells[r, c].Style.Numberformat.Format = "#,##0.0000000";
             });
