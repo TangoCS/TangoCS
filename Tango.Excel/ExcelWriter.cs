@@ -195,7 +195,7 @@ namespace Tango.Excel
                 if ((formula ?? "") != "")
                     s.Cells[r, c].FormulaR1C1 = formula;
                 if (format == "n0")
-                    s.Cells[r, c].Style.Numberformat.Format = "# ##0";
+                    s.Cells[r, c].Style.Numberformat.Format = "#,##0";
                 if (format == "n1")
                     s.Cells[r, c].Style.Numberformat.Format = "#,##0.0";
                 if (format == "n2")
