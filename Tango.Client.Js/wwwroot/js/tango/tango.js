@@ -462,8 +462,16 @@ var ajaxUtils = function ($, cu) {
 			state.loc.parms = parms;
 
 			const k = target.url.indexOf('?');
-			const path = k >= 0 ? target.url.substring(0, k) : target.url;
-			if (path != window.location.pathname) {
+			var tarPath = k >= 0 ? target.url.substring(0, k) : target.url;
+			var curPath = window.location.pathname;
+
+			if (curPath == '/' || tarPath == '/') {
+				const home = document.getElementById(META_HOME);
+				const alias = home.getAttribute('data-alias');
+				if (curPath == '/') curPath = alias || '/';
+				if (tarPath == '/') tarPath = alias || '/';
+			}
+			if (tarPath != curPath) {
 				parms['c-new'] = 1;
 			}
 
@@ -524,9 +532,22 @@ var ajaxUtils = function ($, cu) {
 	};
 
 	function getApiUrl(path, parms, isfirstload) {
-		var url = path;
-		const k = url.indexOf('?');
-		if (k >= 0) url += '&'; else url += '?';
+		const k = path.indexOf('?');
+
+		var url;
+		if (k > 0) {
+			url = path.substring(0, k);
+			const urlParms = cu.getParams(path.substring(k + 1));
+			for (var key in urlParms) {
+				if (!parms[key]) {
+					parms[key] = urlParms[key];
+				}
+			}
+		}
+		else
+			url = path;
+
+		url += '?';
 
 		for (var key in parms) {
 			url += key + '=' + encodeURIComponent(parms[key]) + '&';
@@ -611,12 +632,7 @@ var ajaxUtils = function ($, cu) {
 			} else if (attr.name.startsWith('data-c-')) {
 				target.data[attr.name.replace('data-c-', 'c-')] = val;
 			} else if (attr.name.startsWith('data-ref')) {
-				var refEl = document.getElementById(val);
-				if (refEl && refEl.name !== undefined && refEl.value !== undefined)
-					if (method == 'POST')
-						target.data[refEl.name] = refEl.value;
-					else
-						target.query[refEl.name] = refEl.value;
+				processElementValue(document.getElementById(val), target, method);
 			} else if (attr.name == 'data-responsetype') {
 				target.responsetype = val;
 			}
@@ -629,9 +645,25 @@ var ajaxUtils = function ($, cu) {
 		const container = cu.getThisOrParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
 		if (container) {
 			target.containerPrefix = container.getAttribute('data-c-prefix');
+			if (container.getAttribute('aria-modal') == 'true')
+				target.changeloc = false;
 		}
 	}
 
+	function processElementValue(el, target, method) {
+		if (!el) return;
+
+		if (el.name !== undefined && el.value !== undefined) {
+			if (method == 'POST')
+				target.data[el.name] = el.value;
+			else
+				target.query[el.name] = el.value;
+		}
+
+		for (var i = 0; i < el.childNodes.length; i++) {
+			processElementValue(el.childNodes[i], target, method);
+		}
+	}
 
 	function processElementDataOnFormSubmit(el, setvalfunc) {
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
@@ -922,6 +954,7 @@ var ajaxUtils = function ($, cu) {
 				s.parms['c-new'] = 1;
 				s.parms['e'] = DEF_EVENT_NAME;
 				if (s.parms['r']) delete s.parms['r'];
+				if (s.parms['c-prefix']) delete s.parms['c-prefix'];
 			}
 
 			state.loc = s;

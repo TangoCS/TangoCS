@@ -7,6 +7,11 @@ namespace Tango.UI
 {
 	public static class ContextExtensions
 	{
+		public static IUrlResolver CreateDefaultUrlResolver(this ActionContext context)
+		{
+			return new RouteUrlResolver(context.Routes["default"]);
+		}
+
 		public static ActionLink UseDefaultResolver(this ActionLink actionUrl)
 		{
 			return actionUrl.UseResolver(new RouteUrlResolver(actionUrl.Context.Routes["default"]));

@@ -37,21 +37,24 @@ namespace Tango.Drawing.Test
 
 				//FillRectangle(0, 0, 100, 100);
 
-				//GL.glBegin(GL.GL_TRIANGLES);
-				//GL.glColor3f(1.0f, 0.0f, 0.0f); GL.glVertex2f(0.0f, 0.0f);
-				//GL.glColor3f(0.0f, 1.0f, 0.0f); GL.glVertex2f(0.5f, 1.0f);
-				//GL.glColor3f(0.0f, 0.0f, 1.0f); GL.glVertex2f(1.0f, 0.0f);
-				//GL.glEnd();
+				GL.glMatrixMode(GL.GL_PROJECTION);
+				GL.glLoadIdentity();
+				GL.glOrtho(0.0, 1.0f, 0.0, 1.0, 0.0, 1.0);
+				GL.glMatrixMode(GL.GL_MODELVIEW);
+				GL.glLoadIdentity();
 
-				//GL.glMatrixMode(GL.GL_MODELVIEW);
-				//GL.glLoadIdentity();
+				GL.glBegin(GL.GL_TRIANGLES);
+				GL.glColor3f(1.0f, 0.0f, 0.0f); GL.glVertex2f(0.0f, 0.0f);
+				GL.glColor3f(0.0f, 1.0f, 0.0f); GL.glVertex2f(0.5f, 1.0f);
+				GL.glColor3f(0.0f, 0.0f, 1.0f); GL.glVertex2f(1.0f, 0.0f);
+				GL.glEnd();
 
-				ctx.Drawing.SetFont(@"C:\Projects\TangoCS\Tango.Drawing.Test\bin\Debug\net47\Cousine-Regular-Latin.ttf");
-				ctx.Drawing.DrawString(100, 100, "test111 g", 14);
-				ctx.Drawing.DrawString(100, 130, "test111 g", 12);
-				ctx.Drawing.DrawString(100, 160, "test111 g", 11);
-				ctx.Drawing.DrawString(100, 180, "test111 g", 10);
-				ctx.Drawing.DrawString(100, 200, "test111 g", 8);
+				//ctx.Drawing.SetFont(@"C:\Projects\TangoCS\Tango.Drawing.Test\bin\Debug\net47\Cousine-Regular-Latin.ttf");
+				//ctx.Drawing.DrawString(100, 100, "test111 g", 14);
+				//ctx.Drawing.DrawString(100, 130, "test111 g", 12);
+				//ctx.Drawing.DrawString(100, 160, "test111 g", 11);
+				//ctx.Drawing.DrawString(100, 180, "test111 g", 10);
+				//ctx.Drawing.DrawString(100, 200, "test111 g", 8);
 
 				using (Image<Rgba32> image = Image.LoadPixelData<Rgba32>(ctx.GetBytes(), ctx.Width, ctx.Height))
 				{

@@ -101,6 +101,13 @@ namespace Tango.Data
 				ParseEndsWithMethod(m);
 				return m;
 			}
+			else if (m.Method.Name == "ToLower")
+			{
+				sb.Append("lower(");
+				Visit(m.Object);
+				sb.Append(")");
+				return m;
+			}
 			else if (m.Method.Name == "get_Item")
 			{
 				sb.Append((m.Arguments[0] as ConstantExpression).Value);

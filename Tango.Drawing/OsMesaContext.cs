@@ -81,21 +81,21 @@ namespace Tango.Drawing
 
 		
 
-		[DllImport("osmesa")]
+		[DllImport(GL.Opengl)]
 		public static extern IntPtr OSMesaCreateContext(uint format, IntPtr sharelist);
-		[DllImport("osmesa")]
+		[DllImport(GL.Opengl)]
 		public static extern IntPtr OSMesaGetCurrentContext();
-		[DllImport("osmesa")]
+		[DllImport(GL.Opengl)]
 		public static extern IntPtr OSMesaCreateContextExt(uint format, int depthBits, int stencilBits, int accumBits, IntPtr sharelist);
-		[DllImport("osmesa")]
+		[DllImport(GL.Opengl)]
 		public static extern IntPtr OSMesaCreateContextAttribs(int[] attribList, IntPtr sharelist);
 
-		[DllImport("osmesa")]
+		[DllImport(GL.Opengl)]
 		public static extern bool OSMesaMakeCurrent(IntPtr hdc, IntPtr buffer, uint type, int width, int height);
-		[DllImport("osmesa")]
+		[DllImport(GL.Opengl)]
 		public static extern void OSMesaDestroyContext(IntPtr hdc);
 
-		[DllImport("osmesa")]
+		[DllImport(GL.Opengl)]
 		public static extern void OSMesaGetIntegerv(int pname, out int value);
 
 		public const int OSMESA_WIDTH = 0x20;

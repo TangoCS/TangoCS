@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using OfficeOpenXml;
 using System.Globalization;
+using AngleSharp.Css.Parser;
+using AngleSharp.Css.Dom;
 
 namespace Tango.Excel
 {
@@ -13,7 +15,7 @@ namespace Tango.Excel
 
 		ExcelPackage p;
         ExcelWorksheet s;
-        AngleSharp.Parser.Css.CssParser cssParser = new AngleSharp.Parser.Css.CssParser();
+        CssParser cssParser = new CssParser();
         int r = 1;
         int c = 1;
         int startcol = 1;
@@ -219,7 +221,7 @@ namespace Tango.Excel
             int colSpan = 1;
             int rowSpan = 1;
             bool right;
-            AngleSharp.Dom.Css.ICssStyleDeclaration style;
+            ICssStyleDeclaration style;
             string formula;
             double width;
 
@@ -263,8 +265,8 @@ namespace Tango.Excel
 
             public ITdAttributes Style(string value, bool replaceExisting = false)
             {
-                var ss = writer.cssParser.ParseStylesheet(".someClass{" + value + "}");
-                style = (ss.Rules.First() as AngleSharp.Dom.Css.ICssStyleRule).Style;
+                var ss = writer.cssParser.ParseStyleSheet(".someClass{" + value + "}");
+                style = (ss.Rules.First() as ICssStyleRule).Style;
                 return this;
             }
 
@@ -275,18 +277,18 @@ namespace Tango.Excel
                     writer.s.Cells[writer.r, writer.c, writer.r + rowSpan - 1, writer.c + colSpan - 1].Merge = true;
                 if (right)
                     writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
-                if (style?.TextAlign == "center")
+                if (style?.GetTextAlign() == "center")
                     writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                if (style?.FontWeight == "bold")
+                if (style?.GetFontWeight() == "bold")
                     writer.s.Cells[writer.r, writer.c].Style.Font.Bold = true;
-                if (style?.FontStyle == "italic")
+                if (style?.GetFontStyle() == "italic")
                     writer.s.Cells[writer.r, writer.c].Style.Font.Italic = true;
-                if (style?.WhiteSpace == "nowrap")
+                if (style?.GetWhiteSpace() == "nowrap")
                     writer.s.Cells[writer.r, writer.c].Style.WrapText = false;
                 if (width > 0)
                     writer.s.Column(writer.c).Width = width;
-                if ((style?.PaddingLeft ?? "") != "")
-                    writer.s.Cells[writer.r, writer.c].Style.Indent = style.PaddingLeft.Replace("px", "").Trim().ToInt32(0) / 10;
+                if ((style?.GetPaddingLeft() ?? "") != "")
+                    writer.s.Cells[writer.r, writer.c].Style.Indent = style.GetPaddingLeft().Replace("px", "").Trim().ToInt32(0) / 10;
                 if (formula != null)
                 {
                     writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
@@ -300,7 +302,7 @@ namespace Tango.Excel
             int colSpan = 1;
             int rowSpan = 1;
             bool right;
-            AngleSharp.Dom.Css.ICssStyleDeclaration style;
+			ICssStyleDeclaration style;
             string formula;
             double width;
 
@@ -344,8 +346,8 @@ namespace Tango.Excel
 
             public IThAttributes Style(string value, bool replaceExisting = false)
             {
-                var ss = writer.cssParser.ParseStylesheet(".someClass{" + value + "}");
-                style = (ss.Rules.First() as AngleSharp.Dom.Css.ICssStyleRule).Style;
+                var ss = writer.cssParser.ParseStyleSheet(".someClass{" + value + "}");
+                style = (ss.Rules.First() as ICssStyleRule).Style;
                 return this;
             }
 
@@ -361,11 +363,11 @@ namespace Tango.Excel
                     writer.s.Cells[writer.r, writer.c, writer.r + rowSpan - 1, writer.c + colSpan - 1].Merge = true; ;
                 if (right)
                     writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
-                if (style?.TextAlign == "center")
+                if (style?.GetTextAlign() == "center")
                     writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                if (style?.FontWeight == "bold")
+                if (style?.GetFontWeight() == "bold")
                     writer.s.Cells[writer.r, writer.c].Style.Font.Bold = true;
-                if (style?.FontStyle == "italic")
+                if (style?.GetFontStyle() == "italic")
                     writer.s.Cells[writer.r, writer.c].Style.Font.Italic = true;
                 if (width > 0)
                     writer.s.Column(writer.c).Width = width;
@@ -379,7 +381,7 @@ namespace Tango.Excel
         class CIAttributes : IContentItemAttributes
         {
             ExcelWriter writer;
-            AngleSharp.Dom.Css.ICssStyleDeclaration style;
+            ICssStyleDeclaration style;
             string formula;
             string[] classes = new string[0];
 
@@ -408,24 +410,24 @@ namespace Tango.Excel
 
             public IContentItemAttributes Style(string value, bool replaceExisting = false)
             {
-                var ss = writer.cssParser.ParseStylesheet(".someClass{" + value + "}");
-                style = (ss.Rules.First() as AngleSharp.Dom.Css.ICssStyleRule).Style;
+                var ss = writer.cssParser.ParseStyleSheet(".someClass{" + value + "}");
+                style = (ss.Rules.First() as ICssStyleRule).Style;
                 return this;
             }
 
             public void Apply(ExcelRange range)
             {
-                if (style?.TextAlign == "center")
+                if (style?.GetTextAlign() == "center")
                     range.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-                if (style?.FontWeight == "bold")
+                if (style?.GetFontWeight() == "bold")
                     range.Style.Font.Bold = true;
-                if (style?.FontStyle == "italic")
+                if (style?.GetFontStyle() == "italic")
                     range.Style.Font.Italic = true;
-                if ((style?.BackgroundColor ?? "") != "")
+                if ((style?.GetBackgroundColor() ?? "") != "")
                 {
                     range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
                     const string pattern = @"rgba?[(](\d{1,3})\s?,\s?(\d{1,3})\s?,\s?(\d{1,3})\s?[)]";
-                    var match = Regex.Match(style?.BackgroundColor, pattern);
+                    var match = Regex.Match(style?.GetBackgroundColor(), pattern);
                     var r = byte.Parse(match.Groups[1].Value);
                     var g = byte.Parse(match.Groups[2].Value);
                     var b = byte.Parse(match.Groups[3].Value);

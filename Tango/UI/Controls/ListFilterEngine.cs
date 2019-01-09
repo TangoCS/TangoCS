@@ -526,7 +526,7 @@ namespace Tango.UI.Controls
 		IEnumerable<(TKey ID, string Name, bool IsDefault)> GetViews(string listName, IReadOnlyDictionary<string, object> listParms);
 
 		void SaveCriteria();
-		void SaveView(string name, bool isShared, bool isDefault, string listName, string listParms);
+		void SaveView(string name, bool isShared, bool isDefault, string listName, IReadOnlyDictionary<string, object> listParms);
 
 		void InsertOnSubmit();
 

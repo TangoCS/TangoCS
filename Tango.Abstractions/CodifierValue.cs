@@ -49,6 +49,13 @@ namespace Tango
 			return list;
 		}
 
+		public static List<SelectListItem> AddItem(this IEnumerable<SelectListItem> list, string text, string value)
+		{
+			var l = list.ToList();
+			l.Add(new SelectListItem(text, value));
+			return l;
+		}
+
 		public static List<SelectListItem> AddEmptyItem(this IEnumerable<SelectListItem> list)
 		{
 			return list.ToList().AddEmptyItem();
