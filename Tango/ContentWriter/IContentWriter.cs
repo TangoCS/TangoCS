@@ -21,7 +21,12 @@ namespace Tango
 		public static void Tr(this IContentWriter w, Action inner) { w.Tr(null, inner); }
 		public static void Td(this IContentWriter w, Action inner) { w.Td(null, inner); }
         public static void Td(this IContentWriter w, decimal? n, string format) { w.Td(null, n, format); }
-        public static void Th(this IContentWriter w, Action inner) { w.Th(null, inner); }
+		public static void TdRight(this IContentWriter w, decimal? n, string format) { w.Td(a => a.Class("r"), n, format); }
+		public static void TdRight(this IContentWriter w, Action<ITdAttributes> attributes, decimal? n, string format) {
+			attributes += a => a.Class("r");
+			w.Td(attributes, n, format);
+		}
+		public static void Th(this IContentWriter w, Action inner) { w.Th(null, inner); }
 		public static void Div(this IContentWriter w, Action inner) { w.Div(null, inner); }
 
 		public static void Div(this IContentWriter w, string text) { w.Div(null, () => w.Write(text)); }

@@ -901,7 +901,7 @@ var ajaxUtils = function ($, cu) {
 			for (var j = 0; j < callChain.length; j++) {
 				step = callChain[j];
 				if (step.method == 'apply')
-					caller = caller[step.method](caller, step.args);
+					caller = caller[step.method](caller, Array.isArray(step.args) ? step.args : [step.args]);
 				else
 					caller = caller[step.method](step.args);
 			}
