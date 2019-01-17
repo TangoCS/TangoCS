@@ -96,7 +96,8 @@ namespace Tango.Excel
             var cia = new CIAttributes();
             cia.SetWriter(this);
             attributes?.Invoke(cia);
-            cia.Apply(s.Cells[fromRow, startcol, r - 1, totalColumns]);
+            if (r > fromRow)
+                cia.Apply(s.Cells[fromRow, startcol, r - 1, totalColumns]);
             if (cols > totalColumns)
                 totalColumns = cols;
         }
