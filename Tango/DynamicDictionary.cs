@@ -200,7 +200,8 @@ namespace Tango
 			var typeConverter = TypeDescriptor.GetConverter(typeof(T));
 			if (typeConverter != null && typeConverter.CanConvertFrom(d.GetType()) && typeConverter.IsValid(d))
 			{
-				return (T)typeConverter.ConvertFrom(d);
+				var obj = typeConverter.ConvertFrom(d);
+				return obj == null ? defaultValue : (T)obj;
 			}
 			return defaultValue;
 		}
