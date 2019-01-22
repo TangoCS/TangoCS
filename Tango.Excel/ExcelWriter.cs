@@ -39,33 +39,40 @@ namespace Tango.Excel
             p = new ExcelPackage(template);
         }
 
-        public void Sheet(int index, Action inner)
-        {
-            Sheet(p.Workbook.Worksheets[index].Name, inner);
-        }
+		public void Sheet(int index, Action inner)
+		{
+			s = p.Workbook.Worksheets[index];
+			Sheet(inner);
+		}
 
-        public void Sheet(string name, Action inner)
+		public void Sheet(string name, Action inner)
         {
-            s = p.Workbook.Worksheets[name] ?? p.Workbook.Worksheets.Add(name);
-            totalColumns = 1;
-            divs = new List<int>();
-            r = 1;
-            c = 1;
-            startcol = 1;
-            inner();
-            foreach (int row in divs)
-            {
-                s.Cells[row, startcol, row, totalColumns].Merge = true;
-                s.Cells[row, startcol].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
-            }
-            for (int i = 1; i < totalColumns; i++)
-            {
-                if (s.Column(i).Width == 0)
-                    s.Column(i).AutoFit();
-            }
-        }
+            s = p.Workbook.Worksheets.Add(name);
+			Sheet(inner);
+		}
 
-        public void SetWidth(int col, double width)
+		void Sheet(Action inner)
+		{
+			totalColumns = 1;
+			divs = new List<int>();
+			r = 1;
+			c = 1;
+			startcol = 1;
+			inner();
+			foreach (int row in divs)
+			{
+				s.Cells[row, startcol, row, totalColumns].Merge = true;
+				s.Cells[row, startcol].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+			}
+			for (int i = 1; i < totalColumns; i++)
+			{
+				if (s.Column(i).Width == 0)
+					s.Column(i).AutoFit();
+			}
+		}
+
+
+		public void SetWidth(int col, double width)
         {
             s.Column(col).Width = width;
         }
@@ -427,7 +434,7 @@ namespace Tango.Excel
                 if ((style?.GetBackgroundColor() ?? "") != "")
                 {
                     range.Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
-                    const string pattern = @"rgba?[(](\d{1,3})\s?,\s?(\d{1,3})\s?,\s?(\d{1,3})\s?[)]";
+                    const string pattern = @"rgba?[(](\d{1,3})\s?,\s?(\d{1,3})\s?,\s?(\d{1,3})\s?,\s?(\d{1,3})\s?[)]";
                     var match = Regex.Match(style?.GetBackgroundColor(), pattern);
                     var r = byte.Parse(match.Groups[1].Value);
                     var g = byte.Parse(match.Groups[2].Value);

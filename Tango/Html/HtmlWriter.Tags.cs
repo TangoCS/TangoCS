@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Tango.Html
 {
@@ -13,12 +14,14 @@ namespace Tango.Html
 
 	public partial class HtmlWriter
 	{
+		CultureInfo ru = new CultureInfo("ru-RU");
+
 		void IContentWriter.Table(Action<IContentItemAttributes> attributes, Action inner) => WriteTag("table", attributes, inner);
 		void IContentWriter.Tr(Action<IContentItemAttributes> attributes, Action inner) => WriteTag("tr", attributes, inner);
 		void IContentWriter.Td(Action<ITdAttributes> attributes, Action inner) => WriteTag("td", attributes, inner);
 		void IContentWriter.Th(Action<IThAttributes> attributes, Action inner) => WriteTag("th", attributes, inner);
 		void IContentWriter.Div(Action<IContentItemAttributes> attributes, Action inner) => WriteTag("div", attributes, inner);
-        void IContentWriter.Td(Action<ITdAttributes> attributes, decimal? n, string format) => WriteTag("td", attributes, () => Write(n == null ? "" : n.Value.ToString(format)));
+        void IContentWriter.Td(Action<ITdAttributes> attributes, decimal? n, string format) => WriteTag("td", attributes, () => Write(n == null ? "" : n.Value.ToString(format, ru)));
 
         T Fabric<T>()
 			where T: class, IContentItemAttributes<T>
