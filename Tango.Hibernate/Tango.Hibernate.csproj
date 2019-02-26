@@ -29,8 +29,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\TangoCS\Tango.Abstractions\Tango.Abstractions.csproj" />
-    <ProjectReference Include="..\..\TangoCS\Tango\Tango.csproj" />
     <ProjectReference Include="..\NHibernate\NHibernate.csproj" />
+    <ProjectReference Include="..\Tango\Tango.csproj" />
   </ItemGroup>
 
 </Project>

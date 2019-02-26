@@ -455,4 +455,13 @@ namespace Tango.Excel
     {
         public const string FormulaR1C1 = "FormulaR1C1";
     }
+
+	public static class XlsxExtensions
+	{
+		public static void XlsxFormula<T>(this IContentItemAttributes<T> a, string formula)
+			where T : IContentItemAttributes<T>
+		{
+			a.Extended(Xlsx.FormulaR1C1, formula);
+		}
+	}
 }
