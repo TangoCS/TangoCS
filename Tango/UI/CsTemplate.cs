@@ -164,24 +164,18 @@ namespace Tango.UI
 		public IDictionary<string, string> Mapping { get; } = new Dictionary<string, string>();
 		public abstract void Render(ApiResponse response);
 
-		public void ProcessResponse(ActionContext ctx, IViewElement content, ApiResponse response)
+		public void ProcessResponse(ActionContext ctx, ApiResponse response)
 		{
-			Context = ctx;
-
-			if (ctx.ContainerType != null)
-				ID = ctx.ContainerPrefix; //HtmlWriterHelpers.GetID(ctx.ContainerPrefix, content.ID);
-
-			if (content.ParentElement == null)
-				content.ParentElement = this;
-
-			response.WithNameFunc(name => HtmlWriterHelpers.GetID(ctx.ContainerPrefix, name));
-
-			response.WithWritersFor(this, () => Render(response));
+			if (ctx.AddContainer)
+			{
+				response.WithNameFunc(name => HtmlWriterHelpers.GetID(ctx.ContainerPrefix, name));
+				response.WithWritersFor(this, () => Render(response));
+			}
 
 			response.WithNameFunc(name => 
 				Mapping.ContainsKey(name) ?
 				HtmlWriterHelpers.GetID(ClientID, Mapping[name]) :
-				HtmlWriterHelpers.GetID(ClientID, name));
+				ClientID == name ? name : HtmlWriterHelpers.GetID(ClientID, name));
 		}
 	}
 

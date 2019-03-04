@@ -423,7 +423,7 @@ var ajaxUtils = function ($, cu) {
 			const isForm = target.data instanceof FormData;
 
 			var sep = target.url.indexOf('?');
-			const targetpath = sep >= 0 ? target.url.substring(0, sep) : target.url;
+			var targetpath = sep >= 0 ? target.url.substring(0, sep) : target.url;
 			const targetquery = sep >= 0 ? target.url.substring(sep + 1) : '';
 			const targetqueryparms = cu.getParams(targetquery, true);
 			for (var key in target.query) {
@@ -457,28 +457,27 @@ var ajaxUtils = function ($, cu) {
 			if (target.sender) parms.sender = target.sender;
 			if (target.r) parms.r = target.r;
 			parms.e = target.e ? target.e : DEF_EVENT_NAME;
-			//parms.sourceurl = window.location.pathname + window.location.search;
 
 			state.loc.parms = parms;
 
-			const k = target.url.indexOf('?');
-			var tarPath = k >= 0 ? target.url.substring(0, k) : target.url;
-			var curPath = window.location.pathname;
+			var curpath = instance.findServiceAction(document.getElementById(parms.sender));
+			sep = curpath.indexOf('?');
+			curpath = sep >= 0 ? curpath.substring(0, sep) : curpath;
 
-			if (curPath == '/' || tarPath == '/') {
+			if (curpath == '/' || targetpath == '/') {
 				const home = document.getElementById(META_HOME);
 				const alias = home.getAttribute('data-alias');
-				if (curPath == '/') curPath = alias || '/';
-				if (tarPath == '/') tarPath = alias || '/';
+				if (curpath == '/') curpath = alias || '/';
+				if (targetpath == '/') targetpath = alias || '/';
 			}
-			if (tarPath != curPath) {
+			if (targetpath != curpath) {
 				parms['c-new'] = 1;
 			}
 
-			if (!parms['c-prefix'] && !parms['c-new'] && target.containerPrefix) {
+			if (!target.changeloc && !parms['c-prefix'] && target.containerPrefix) {
 				parms['c-prefix'] = target.containerPrefix;
+				parms['c-type'] = target.containerType;
 			}
-
 
 			if (target.changeloc) {
 				if (target.onBack) state.loc.onBack = target.onBack;
@@ -645,6 +644,7 @@ var ajaxUtils = function ($, cu) {
 		const container = cu.getThisOrParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
 		if (container) {
 			target.containerPrefix = container.getAttribute('data-c-prefix');
+			target.containerType = container.getAttribute('data-c-type');
 			if (container.getAttribute('aria-modal') == 'true')
 				target.changeloc = false;
 		}
@@ -988,6 +988,7 @@ var ajaxUtils = function ($, cu) {
 
 	const current = document.getElementById(META_CURRENT);
 	state.loc.url = document.location.pathname + document.location.search;
+	current.setAttribute('data-href', state.loc.url);
 	instance.runEventFromElementWithApiResponse(current, { url: state.loc.url, isfirstload: true });
 
 	history.replaceState(state.loc, document.title, state.loc.url);

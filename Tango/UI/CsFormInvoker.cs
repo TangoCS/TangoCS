@@ -8,7 +8,8 @@ namespace Tango.UI
 		{
 			var template = Activator.CreateInstance(t) as ViewRootElement;
 			template.Context = actionContext;
-			return template.InjectProperties(actionContext.RequestServices).Execute();
+			template.InjectProperties(actionContext.RequestServices);
+			return template.RunActionInvokingFilter() ?? template.Execute();
 		}
 	}
 }

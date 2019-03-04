@@ -1,10 +1,21 @@
 ﻿using System;
 using System.Reflection;
+using System.Threading.Tasks;
 using Tango.Html;
 using Tango.UI;
 
 namespace Tango.FileStorage
 {
+	public static class RunFileResource
+	{
+		public static async Task File(ActionContext ctx)
+		{
+			var fileController = new FileController { Context = ctx };
+			var id = ctx.GetGuidArg("id", Guid.Empty);
+			await fileController.Get(id).ExecuteResultAsync(fileController.Context);
+		}
+	}
+
 	public class FileController : Controller
 	{
 		[HttpGet]
