@@ -76,6 +76,9 @@ img {
 .hide {
 	display: none !important;
 }
+.smaller {
+	font-size: smaller;
+}
 
 
 input.text {

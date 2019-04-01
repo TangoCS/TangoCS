@@ -306,6 +306,12 @@ namespace Tango.UI
 			return target;
 		}
 
+		public static T WithDateArg<T>(this T target, string key, DateTime value)
+			where T : IActionTarget
+		{
+			return target.WithArg(key, value.ToString("yyyyMMdd"));
+		}
+
 		public static T RemoveArg<T>(this T target, string key)
 			where T : IActionTarget
 		{
