@@ -504,7 +504,8 @@ namespace Tango.UI.Controls
 		Int,
 		Date,
 		DateTime,
-		Boolean
+		Boolean,
+        Guid
 	}
 
 	public enum FilterItemOperation

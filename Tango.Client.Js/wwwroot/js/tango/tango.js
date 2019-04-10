@@ -149,66 +149,72 @@ if (!String.prototype.startsWith) {
 NodeList.prototype.forEach = Array.prototype.forEach;
 
 var domActions = function () {
-	var instance = {
-		setValue: function (args) {
-			var e = document.getElementById(args.id);
-			if (e) {
-				if (e instanceof HTMLInputElement || e instanceof HTMLSelectElement)
-					e.value = args.value;
-				else
-					e.innerHTML = args.value;
-			}
-		},
-		setAttribute: function (args) {
-			var e = document.getElementById(args.id);
-			e.setAttribute(args.attrName, args.attrValue);
-		},
-		removeAttribute: function (args) {
-			var e = document.getElementById(args.id);
-			e.removeAttribute(args.attrName);
-		},
-		setVisible: function (args) {
-			var e = document.getElementById(args.id);
-			if (args.visible) e.classList.remove('hide'); else e.classList.add('hide');
-		},
-		setClass: function (args) {
-			var e = document.getElementById(args.id);
-			e.classList.add(args.clsName);
-		},
-		removeClass: function (args) {
-			var e = document.getElementById(args.id);
-			e.classList.remove(args.clsName);
-		},
-		toggleClass: function (args) {
-			event.stopPropagation();
-			if (args.id) {
-				var el = document.getElementById(args.id);
-				el.classList.toggle(args.clsName);
-			}
-			else {
-				var root = args.root ? args.root : document;
-				var grels = root.querySelectorAll(args.groupSelector);
-				var els = root.querySelectorAll(args.itemsSelector);
+    var instance = {
+        setValue: function (args) {
+            var e = document.getElementById(args.id);
+            if (e) {
+                if (e instanceof HTMLInputElement || e instanceof HTMLSelectElement)
+                    e.value = args.value;
+                else
+                    e.innerHTML = args.value;
+            }
+        },
+        setAttribute: function (args) {
+            var e = document.getElementById(args.id);
+            e.setAttribute(args.attrName, args.attrValue);
+        },
+        removeAttribute: function (args) {
+            var e = document.getElementById(args.id);
+            e.removeAttribute(args.attrName);
+        },
+        setVisible: function (args) {
+            var e = document.getElementById(args.id);
+            if (args.visible) e.classList.remove('hide'); else e.classList.add('hide');
+        },
+        setClass: function (args) {
+            var e = document.getElementById(args.id);
+            e.classList.add(args.clsName);
+        },
+        removeClass: function (args) {
+            var e = document.getElementById(args.id);
+            e.classList.remove(args.clsName);
+        },
+        toggleClass: function (args) {
+            event.stopPropagation();
+            if (args.id) {
+                var el = document.getElementById(args.id);
+                el.classList.toggle(args.clsName);
+            }
+            else {
+                var root = args.root ? args.root : document;
+                var grels = root.querySelectorAll(args.groupSelector);
+                var els = root.querySelectorAll(args.itemsSelector);
 
-				var b = args.sender.classList.contains(args.senderClsName);
+                var b = args.sender.classList.contains(args.senderClsName);
 
-				for (var i = 0; i < grels.length; i++) {
-					grels[i].classList.remove(args.clsName);
-					grels[i].classList.remove(args.senderClsName);
-				}
+                for (var i = 0; i < grels.length; i++) {
+                    grels[i].classList.remove(args.clsName);
+                    grels[i].classList.remove(args.senderClsName);
+                }
 
-				if (!b) {
-					for (var i = 0; i < els.length; i++) {
-						els[i].classList.add(args.clsName);
-					}
-					args.sender.classList.add(args.senderClsName);
-				}
-			}
-		},
-		hideShow: function (id) {
-			instance.toggleClass({ id: id, clsName: 'hide' });
-		}
-	}
+                if (!b) {
+                    for (var i = 0; i < els.length; i++) {
+                        els[i].classList.add(args.clsName);
+                    }
+                    args.sender.classList.add(args.senderClsName);
+                }
+            }
+        },
+        hideShow: function (id) {
+            instance.toggleClass({ id: id, clsName: 'hide' });
+        },
+        setCookie: function (args) {
+            $.cookie(args.id, args.value);
+        },
+        setClientArg: function (args) {
+            ajaxUtils.state.loc.clientArgs[args.id] = args.value;
+        }
+    }
 
 	return instance;
 }();
@@ -232,7 +238,8 @@ var ajaxUtils = function ($, cu) {
 		loc: {
 			url: null,
 			parms: {},
-			onBack: null
+            onBack: null,
+            clientArgs: {}
 		},
 		ctrl: {}
 	};
@@ -290,7 +297,7 @@ var ajaxUtils = function ($, cu) {
 				text = this.url + '<br>' + xhr.status + ' ' + e;
 			}
 			else {
-				var text = xhr.responseText;
+				text = xhr.responseText;
 				showinframe = true;
 			}
 
@@ -363,7 +370,7 @@ var ajaxUtils = function ($, cu) {
 				xhr.contentType = isForm ? false : "application/json; charset=utf-8";
 				xhr.processData = !isForm;
 				xhr.send(isForm ? target.data : JSON.stringify(target.data));
-				return r.fail(instance.error).then(onRequestResult);/*.promise()*/;
+                return r.fail(instance.error).then(onRequestResult)/*.promise()*/;
 			}
 		},
 		postEventWithApiResponse: function (target) {
@@ -581,8 +588,8 @@ var ajaxUtils = function ($, cu) {
 
 	function beforeRequest(event, xhr, settings) {
 		state.com.requestId = cu.createGuid();
-		xhr.setRequestHeader('x-request-guid', state.com.requestId)
-		xhr.setRequestHeader('x-csrf-token', document.head.getAttribute('data-x-csrf-token'))
+        xhr.setRequestHeader('x-request-guid', state.com.requestId);
+        xhr.setRequestHeader('x-csrf-token', document.head.getAttribute('data-x-csrf-token'));
 		setTimeout(function () {
 			if (state.com.requestId && state.com.message) state.com.message.css('display', 'block');
 		}, 100);
@@ -590,7 +597,7 @@ var ajaxUtils = function ($, cu) {
 
 	function requestCompleted() {
 		state.com.requestId = null;
-		if (state.com.message) state.com.message.css('display', 'none')
+        if (state.com.message) state.com.message.css('display', 'none');
 	}
 
 	function onRequestResult(data, status, xhr) {
@@ -647,7 +654,14 @@ var ajaxUtils = function ($, cu) {
 			target.containerType = container.getAttribute('data-c-type');
 			if (container.getAttribute('aria-modal') == 'true')
 				target.changeloc = false;
-		}
+        }
+
+        for (var key in state.loc.clientArgs) {
+            if (method == 'POST')
+                target.data[key] = state.loc.clientArgs[key];
+            else
+                target.query[key] = state.loc.clientArgs[key];
+        }
 	}
 
 	function processElementValue(el, target, method) {
@@ -736,9 +750,9 @@ var ajaxUtils = function ($, cu) {
 			}
 		};
 		function parseHTML(parent, htmlString) {
-			var parent = parent.tagName;
-			if (parent == 'TABLE') parent = 'DIV';
-			const el = document.createElement(parent);
+			var tagname = parent.tagName;
+            if (tagname == 'TABLE') tagname = 'DIV';
+            const el = document.createElement(tagname);
 			el.innerHTML = htmlString;
 			return el;
 		}
@@ -881,17 +895,17 @@ var ajaxUtils = function ($, cu) {
 
 	function runOnAjaxSend(el, target) {
 		var node = el;
-		do {
-			node = cu.getParent(node, function (n) {
-				return n.hasAttribute('data-ctrl');
-			});
-			if (!node) break;
-			const t = node.getAttribute('data-ctrl');
-			if (window[t] && window[t]['onAjaxSend']) {
-				window[t]['onAjaxSend'](el, target, state.ctrl[node.id]);
-				console.log('widget: ' + node.id + ' onAjaxSend ' + t);
-			}
-		} while (true)
+        do {
+            node = cu.getParent(node, function (n) {
+                return n.hasAttribute('data-ctrl');
+            });
+            if (!node) break;
+            const t = node.getAttribute('data-ctrl');
+            if (window[t] && window[t]['onAjaxSend']) {
+                window[t]['onAjaxSend'](el, target, state.ctrl[node.id]);
+                console.log('widget: ' + node.id + ' onAjaxSend ' + t);
+            }
+        } while (true);
 	}
 
 	function runClientAction(service, callChain, iter) {
@@ -900,7 +914,7 @@ var ajaxUtils = function ($, cu) {
 		if (caller) {
 			for (var j = 0; j < callChain.length; j++) {
 				step = callChain[j];
-				if (step.method == 'apply')
+                if (step.method == 'apply')
 					caller = caller[step.method](caller, Array.isArray(step.args) ? step.args : [step.args]);
 				else
 					caller = caller[step.method](step.args);
