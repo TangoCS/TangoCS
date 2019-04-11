@@ -495,6 +495,10 @@ var ajaxUtils = function ($, cu) {
 				if (!parms[key]) delete parms[key];
 			}
 
+            for (var key in state.loc.clientArgs) {
+                parms[key] = state.loc.clientArgs[key];
+            }
+
 			target.parms = parms;
 		},
 		prepareUrl: function (target) {
@@ -618,7 +622,7 @@ var ajaxUtils = function ($, cu) {
 			return $.Deferred().reject();
 	}
 
-	function processElementDataOnEvent(el, target, method) {
+    function processElementDataOnEvent(el, target, method) {
 		if (el.id) target.sender = el.id;
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
 			attr = attrs[i];
@@ -654,13 +658,6 @@ var ajaxUtils = function ($, cu) {
 			target.containerType = container.getAttribute('data-c-type');
 			if (container.getAttribute('aria-modal') == 'true')
 				target.changeloc = false;
-        }
-
-        for (var key in state.loc.clientArgs) {
-            if (method == 'POST')
-                target.data[key] = state.loc.clientArgs[key];
-            else
-                target.query[key] = state.loc.clientArgs[key];
         }
 	}
 
