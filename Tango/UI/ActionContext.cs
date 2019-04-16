@@ -259,12 +259,15 @@ namespace Tango.UI
 			return ctx.GetDateTimeArg(name, format) ?? defaultValue;
 		}
 
-		public static DateTime? GetDateTimeArg(this ActionContext ctx, string name, string format = "yyyyMMdd")
+		public static DateTime? GetDateTimeArg(this ActionContext ctx, string name, string format = null)
 		{
 			object s = null;
 			bool b = ctx.AllArgs.TryGetValue(name, out s);
 			if (b)
 			{
+				if (format == null) format = ctx.GetArg($"__format_{name}");
+				if (format == null) format = "yyyyMMdd";
+
 				b = DateTime.TryParseExact(s.ToString(), format, null, DateTimeStyles.None, out DateTime dt);
 				if (b)
 					return dt;

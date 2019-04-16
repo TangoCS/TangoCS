@@ -209,7 +209,7 @@ var domActions = function () {
             instance.toggleClass({ id: id, clsName: 'hide' });
         },
         setCookie: function (args) {
-            $.cookie(args.id, args.value);
+        	$.cookie(args.id, args.value, { path: '/' });
         },
         setClientArg: function (args) {
             ajaxUtils.state.loc.clientArgs[args.id] = args.value;
@@ -875,6 +875,10 @@ var ajaxUtils = function ($, cu) {
 				ca = apiResult.clientactions[i];
 				runClientAction(ca.service, ca.callChain, 0);
 			}
+		}
+
+		if (apiResult.hardredirect) {
+			window.location = apiResult.hardredirect.url;
 		}
 
 		if (apiResult.redirect) {

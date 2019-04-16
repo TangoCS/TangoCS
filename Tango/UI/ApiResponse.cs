@@ -151,7 +151,7 @@ namespace Tango.UI
 		{
 			var retctx = context.ReturnTargetContext(code);
 			RunRedirect(retctx);
-			Data.Add("redirect", new { retctx.BaseUrl().Url, Parms = retctx.AllArgs });
+			RedirectTo(retctx.BaseUrl().Url, retctx.AllArgs);
 		}
 
 		public void RedirectTo(ActionContext context, Action<ActionLink> action)
@@ -160,7 +160,17 @@ namespace Tango.UI
 			action(target);
 			var retctx = context.TargetContext(target);
 			RunRedirect(retctx);
-			Data.Add("redirect", new { target.Url, Parms = retctx.AllArgs });
+			RedirectTo(target.Url, retctx.AllArgs);
+		}
+
+		public void RedirectTo(string url, DynamicDictionary parms = null)
+		{
+			Data.Add("redirect", new { url, parms });
+		}
+
+		public void HardRedirectTo(string url)
+		{
+			Data.Add("hardredirect", new { url });
 		}
 
 		#region dom actions
