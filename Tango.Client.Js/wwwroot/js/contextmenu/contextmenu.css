@@ -82,4 +82,13 @@
 	top: 3px;
 	position: absolute;
 }
+
+.iw-mTrigger:hover, .rowexpandercell:hover {
+    cursor: pointer;
+}
+
+input.iw-mTrigger:hover {
+    cursor: text;
+}
+
 /*context menu css end */
