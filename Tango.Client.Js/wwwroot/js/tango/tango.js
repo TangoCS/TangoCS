@@ -491,13 +491,13 @@ var ajaxUtils = function ($, cu) {
 				window.history.pushState(state.loc, "", target.url);
 			}
 
-			for (var key in parms) {
-				if (!parms[key]) delete parms[key];
-			}
-
             for (var key in state.loc.clientArgs) {
                 parms[key] = state.loc.clientArgs[key];
             }
+
+			for (var key in parms) {
+				if (!parms[key]) delete parms[key];
+			}
 
 			target.parms = parms;
 		},
