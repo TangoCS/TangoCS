@@ -2,7 +2,8 @@
 	var instance = {
 		clear: function (id) {
 			document.getElementById(id).value = '';
-			document.getElementById(id + '_selected').innerHTML = '';
+			const field = document.getElementById(id + '_selected');
+			if (field) field.innerHTML = '';
 			const state = au.state.ctrl[id + '_str'];
 			if (state) state.selectedvalue = '';
 		},
@@ -47,7 +48,8 @@ var selectMultipleObjectsDialog = function (au, cu) {
 	var instance = {
 		clear: function (id) {
 			document.getElementById(id).value = '';
-			document.getElementById(id + '_selected').innerHTML = '';
+			const field = document.getElementById(id + '_selected');
+			if (field) field.innerHTML = '';
 			const state = au.state.ctrl[id + '_str'];
 			if (state) state.selectedvalues.length = 0;
 		},
