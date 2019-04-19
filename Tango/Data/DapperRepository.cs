@@ -279,7 +279,7 @@ namespace Tango.Data
 
 			var colsClause = cols.Join(", ");
 			var valuesClause = vals.Join(", ");
-			var returning = identity == null ? "" : $"returning {identity.Name.ToLower()}";
+            var returning = identity == null || Database.GetDBType() == DBType.MSSQL ? "" : $"returning {identity.Name.ToLower()}";
 
 			var query = $"insert into {Table}({colsClause}) values({valuesClause}) {returning}";
 
