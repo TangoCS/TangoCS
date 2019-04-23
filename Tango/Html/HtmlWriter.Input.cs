@@ -64,6 +64,14 @@ namespace Tango.Html
 		{
 			w.SubmitButton(a => a.Class("btn btn-primary").Set(attributes), () => w.Write(text));
 		}
+		public static void SubmitButtonConfirm(this HtmlWriter w, Action<ButtonTagAttributes> attributes, string text, string message)
+		{
+			w.SubmitButton(a => a.Class("btn btn-primary").Data("confirm", message).Set(attributes), () => w.Write(text));
+		}
+		public static void SubmitButtonConfirm(this HtmlWriter w, string text, string message)
+		{
+			w.SubmitButtonConfirm(null, text, message);
+		}
 
 		public static void ResetButton(this HtmlWriter w, Action<ButtonTagAttributes> attributes, Action inner)
 		{

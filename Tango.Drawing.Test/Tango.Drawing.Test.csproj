@@ -17,7 +17,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ImageSharp\src\ImageSharp\ImageSharp.csproj" />
     <ProjectReference Include="..\Tango.Drawing\Tango.Drawing.csproj" />
   </ItemGroup>
 </Project>

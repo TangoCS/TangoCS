@@ -14,7 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ImageSharp\src\ImageSharp\ImageSharp.csproj" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.0-beta0006" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SharpFont\SharpFont.csproj" />
   </ItemGroup>
 </Project>

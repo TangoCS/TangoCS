@@ -248,11 +248,19 @@ var ajaxUtils = function ($, cu) {
 		initForm: function (args) {
 			var form = $('#' + args.id);
 			form.on('click', 'input[type="submit"], button[type="submit"]', function (event) {
+				if (event.target.getAttribute('data-cancelevent') == 'true') return;
 				/* horrible hack to detect form submissions via ajax */
 				event.preventDefault();
 				$(event.target.form).trigger('submit', event.target);
 			});
 			form.on('submit', { el: form[0] }, function (e, submitter) {
+				const confirmMsg = submitter.getAttribute('data-confirm');
+				if (confirmMsg) {
+					if (!window.confirm(confirmMsg)) {
+						return false;
+					}
+				}
+
 				return instance.formSubmit(submitter, e.data.el);
 			});
 			if (!args.submitOnEnter) {
