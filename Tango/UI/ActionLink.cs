@@ -40,22 +40,23 @@ namespace Tango.UI
 		public ActionRequestType RequestType { get; set; } = ActionRequestType.Text;
 		public string RequestMethod { get; set; } = "GET";
 
-		public UrlResolverResult Resolve(ActionContext context, IUrlResolver resolver)
+		public UrlResolverResult Resolve(ActionContext context, IUrlResolver resolver = null)
 		{
+			if (resolver == null) resolver = context.CreateDefaultUrlResolver();
+
 			var urlArgs = new Dictionary<string, string>(Args) {
-					{ Constants.ServiceName, Service },
-					{ Constants.ActionName, Action }
-				};
+				{ Constants.ServiceName, Service },
+				{ Constants.ActionName, Action }
+			};
 			return resolver.Resolve(urlArgs, context.AllArgs);
 		}
 	}
 
 	public class ActionLink : ActionTarget
 	{
+		protected string _url = null;
 		protected IUrlResolver _resolver;
-
-
-		string _url = null;
+		
 		string _title;
 		Func<IResourceManager, string> _titleFunc = null;
 
@@ -121,12 +122,6 @@ namespace Tango.UI
 					_enabled = false;
 					return;
 				}
-
-				//foreach (var arg in Context.PersistentArgs)
-				//{
-				//	if (!Args.ContainsKey(arg.Key))
-				//		Args.Add(arg.Key, arg.Value);
-				//}
 
 				var r = Resolve(Context, _resolver);
 				if (r.Resolved)

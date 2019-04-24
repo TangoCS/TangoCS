@@ -37,24 +37,12 @@ namespace Tango.UI
 			return new ActionLink(context).ToCurrent();
 		}
 
-		//public static ActionLink BaseUrl(this ActionContext context, IUrlResolver resolver, string returnUrl = "this")
-		//{
-		//	var a = new ActionLink(context)
-		//		.To(context.Service, context.Action)
-		//		.UseResolver(resolver)
-		//		.WithArgs(context.AllArgs)
-		//		.WithArg(Constants.ReturnUrl, context.ReturnUrl);
-		//	if (returnUrl == "this")
-		//		a.WithArg(Constants.ReturnUrl, context.ReturnUrl);
-		//	else if (returnUrl != null)
-		//		a.WithArg(Constants.ReturnUrl, returnUrl);
-		//	return a;
-		//}
-
-		//public static string CreateReturnUrl(this ActionContext context, IDictionary<string, object> args = null)
-		//{
-		//	return context.CreateReturnUrl(new RouteUrlResolver(context.Routes["default"]), args);
-		//}
+		public static string CreateReturnUrl(this ActionContext context, Action<ActionLink> linkAttrs)
+		{
+			var l = new ActionLink(context).UseDefaultResolver();
+			linkAttrs?.Invoke(l);
+			return l.Url;
+		}
 
 		public static string CreateReturnUrl(this ActionContext context, int code, IDictionary<string, object> args = null)
 		{

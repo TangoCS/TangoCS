@@ -262,6 +262,13 @@ namespace Tango
 			return String.Empty;
 		}
 
+		public static string MakeValidFileName(this string name)
+		{
+			string invalidChars = Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()));
+			string invalidRegStr = string.Format(@"([{0}]*\.+$)|([{0}]+)", invalidChars);
+
+			return Regex.Replace(name, invalidRegStr, "_");
+		}
 
 
 
