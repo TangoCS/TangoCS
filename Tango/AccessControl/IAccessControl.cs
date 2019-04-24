@@ -10,6 +10,7 @@ namespace Tango.AccessControl
 		bool Check(string securableObjectKey, bool? defaultAccess = null);
 		BoolResult CheckPredicate(string securableObjectKey, object predicateContext, bool? defaultAccess = null);
 		CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool? defaultAccess = null);
+		bool HasRole(params string[] roleName);
 	}
 
 	public class CheckWithPredicateResult : BoolResult
