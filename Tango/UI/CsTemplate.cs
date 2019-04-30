@@ -37,13 +37,13 @@ namespace Tango.UI
 		public virtual string ID { get; set; }
 		public ActionContext Context { get; set; }
 
-		public virtual bool UsePropertyInjection { get { return false; } }
+		public virtual bool UsePropertyInjection => true;
 
 		public IResourceManager Resources => Context.Resources;
 		protected dynamic FormBag { get { return Context.FormData; } }
 		protected DynamicDictionary FormData { get { return Context.FormData; } }
 
-		public T GetPosted<T>(string name, T defaultValue = default(T))
+		public T GetPosted<T>(string name, T defaultValue = default)
 		{
 			return Context.FormData.Parse<T>(name, defaultValue);
 		}

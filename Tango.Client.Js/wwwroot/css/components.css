@@ -543,7 +543,7 @@ button.close {
 	list-style: none;
 	box-sizing: border-box;
 	border-bottom: 1px solid #ccc;
-	display: flex;
+	display: inline-block;
 }
 
 .tabs2 > ul > li {
