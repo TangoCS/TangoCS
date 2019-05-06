@@ -38,7 +38,7 @@ table {
 }
 
 td.r {
-	text-align: right;
+	text-align: right !important;
 }
 
 h1 {
