@@ -37,8 +37,11 @@ table {
 	border-collapse: collapse;
 }
 
-td.r {
-	text-align: right;
+td.r, th.r, .r td, .c th {
+	text-align: right !important;
+}
+td.c, th.c, .c td, .c th {
+	text-align: center !important;
 }
 
 h1 {
@@ -67,6 +70,21 @@ h3 {
 
 img {
 	border: 0;
+}
+
+@media (resolution: 120dpi) {
+	img.fixscale {
+		width: 80%;
+	}
+}
+@media (resolution: 150dpi) {
+	img.fixscale {
+		width: 50%;
+	}
+}
+
+img.loading {
+	background: transparent url('/i/loading.gif') center no-repeat;
 }
 
 .middle {

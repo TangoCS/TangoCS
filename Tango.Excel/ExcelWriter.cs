@@ -302,7 +302,12 @@ namespace Tango.Excel
                     writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
                 }
             }
-        }
+
+			public ITdAttributes Title(string value)
+			{
+				return this;
+			}
+		}
 
         class ThAttributes : IThAttributes
         {
@@ -384,7 +389,12 @@ namespace Tango.Excel
                     writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
                 }
             }
-        }
+
+			public IThAttributes Title(string value)
+			{
+				return this;
+			}
+		}
 
         class CIAttributes : IContentItemAttributes
         {
@@ -449,7 +459,12 @@ namespace Tango.Excel
                     range.FormulaR1C1 = formula;
                 }
             }
-        }
+
+			public IContentItemAttributes Title(string value)
+			{
+				return this;
+			}
+		}
     }
     public static class Xlsx
     {

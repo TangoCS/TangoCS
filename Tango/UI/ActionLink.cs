@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Tango.Html;
 using Tango.Localization;
 
@@ -277,6 +278,20 @@ namespace Tango.UI
 		{
 			target.Service = serviceName;
 			target.Action = actionName;
+			return target;
+		}
+
+		public static IActionTarget To<T>(this IActionTarget target, string actionName)
+			where T : Controller
+		{
+			target.Service = typeof(T).Name.Replace("Controller", "");
+			target.Action = actionName;
+			return target;
+		}
+
+		public static IActionTarget WithReturnUrlToCurrent(this IActionTarget target, ActionContext context)
+		{
+			target.WithArg(Constants.ReturnUrl, context.BaseUrl().Url);
 			return target;
 		}
 

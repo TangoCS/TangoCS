@@ -14,7 +14,7 @@ namespace Tango.UI
 
 		public static ActionLink UseDefaultResolver(this ActionLink actionUrl)
 		{
-			return actionUrl.UseResolver(new RouteUrlResolver(actionUrl.Context.Routes["default"]));
+			return actionUrl.UseResolver(actionUrl.Context.CreateDefaultUrlResolver());
 		}
 
 		public static ActionLink ToCurrent(this ActionLink a)

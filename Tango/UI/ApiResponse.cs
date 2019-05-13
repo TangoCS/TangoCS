@@ -55,6 +55,12 @@ namespace Tango.UI
 		string _idprefix = "";
 		Func<string, string> _namefunc = name => name.ToLower();
 
+		public ApiResponse WithWritersFor(string prefix)
+		{
+			_idprefix = prefix;
+			return this;
+		}
+
 		public ApiResponse WithWritersFor(IViewElement view)
 		{
 			_idprefix = view?.ClientID ?? "";

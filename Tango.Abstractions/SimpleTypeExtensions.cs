@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -338,6 +339,11 @@ namespace Tango
 			ExpectingComma,
 			InEscapedCharacter
 		};
+
+		public static IEnumerable<string> Lines(this string s)
+		{
+			using (var tr = new StringReader(s)) while (tr.ReadLine() is string line) yield return line;
+		}
 
 		public static string[] CsvSplit(this String source)
 		{

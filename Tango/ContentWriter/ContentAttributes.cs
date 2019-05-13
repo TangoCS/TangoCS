@@ -15,6 +15,7 @@ namespace Tango
 		T Class(string value, bool replaceExisting = false);
 		T Style(string value, bool replaceExisting = false);
 		T Extended<TValue>(string key, TValue value);
+		T Title(string value);
 	}
 
 	public interface IContentItemAttributes : IContentItemAttributes<IContentItemAttributes>
