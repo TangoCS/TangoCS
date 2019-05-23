@@ -279,10 +279,17 @@ namespace Tango.Meta.Fluent
 
 		public T IsDeleted()
 		{
-			Attribute<bool>("IsDeleted", x => x.DefaultDBValue = "false");
-			MetaClass.Interfaces.Add(typeof(IWithTitle));
+			Attribute<bool>("IsDeleted", true, x => x.DefaultDBValue = "false");
+			MetaClass.Interfaces.Add(typeof(IWithLogicalDelete));
 			return _this;
-		}
+        }
+
+		public T SeqNo()
+        {
+            Attribute<int>("SeqNo", true);
+            MetaClass.Interfaces.Add(typeof(IWithSeqNo));
+            return _this;
+        }
 
 		public T Table(string tableName)
 		{
