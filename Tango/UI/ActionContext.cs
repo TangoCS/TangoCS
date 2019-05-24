@@ -151,6 +151,8 @@ namespace Tango.UI
 			ctx.EventReceiver = target.EventReceiver;
 			ctx.RequestMethod = "GET";
 
+			ctx.AddContainer = true;
+
 			ctx.ReturnTarget = new Dictionary<int, ActionTarget>();
 			ctx.ReturnUrl = new Dictionary<int, string>();
 
@@ -166,6 +168,12 @@ namespace Tango.UI
 					if (ctx.ReturnTarget[1].Args.TryGetValue(Constants.ReturnUrl, out string value))
 						ctx.AllArgs.Add(p.Key, value);
 				}
+				else if (p.Key == Constants.EventName)
+					ctx.Event = p.Value.ToString().ToLower();
+				else if (p.Key == Constants.EventReceiverName)
+					ctx.EventReceiver = p.Value.ToString().ToLower();
+				else if (p.Key == Constants.ContainerNew)
+					ctx.AddContainer = p.Value == "1";
 				else
 				{
 					ctx.AllArgs.Add(p.Key, p.Value);
@@ -175,7 +183,7 @@ namespace Tango.UI
 			ctx.Sender = null;
 			ctx.ContainerType = null;
 			ctx.ContainerPrefix = null;
-			ctx.AddContainer = true;
+			
 
 			return ctx;
 		}

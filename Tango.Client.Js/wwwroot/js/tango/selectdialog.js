@@ -1,9 +1,11 @@
 ﻿var selectSingleObjectDialog = function (au, cu) {
 	var instance = {
-		clear: function (id) {
+		clear: function (id, clear) {
 			document.getElementById(id).value = '';
-			const field = document.getElementById(id + '_selected');
-			if (field) field.innerHTML = '';
+			if (clear) {
+				const field = document.getElementById(id + '_selected');
+				if (field) field.innerHTML = '';
+			}
 			const state = au.state.ctrl[id + '_str'];
 			if (state) state.selectedvalue = '';
 		},
@@ -46,10 +48,12 @@
 
 var selectMultipleObjectsDialog = function (au, cu) {
 	var instance = {
-		clear: function (id) {
+		clear: function (id, clear) {
 			document.getElementById(id).value = '';
-			const field = document.getElementById(id + '_selected');
-			if (field) field.innerHTML = '';
+			if (clear) {
+				const field = document.getElementById(id + '_selected');
+				if (field) field.innerHTML = '';
+			}
 			const state = au.state.ctrl[id + '_str'];
 			if (state) state.selectedvalues.length = 0;
 		},

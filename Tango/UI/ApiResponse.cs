@@ -123,6 +123,14 @@ namespace Tango.UI
 			ClientActions.AddRange(resp.ClientActions);
 		}
 
+		public void ReplaceWith(ApiResponse resp)
+		{
+			Widgets = resp.Widgets;
+			ClientActions = resp.ClientActions;
+			Includes = resp.Includes;
+			_widgetsToRender = resp._widgetsToRender;
+		}
+
 		public void AddClientAction(string service, string method, Func<Func<string, string>, object> args)
 		{
 			var resolvedArgs = args != null ? args(_namefunc) : null;
@@ -149,7 +157,7 @@ namespace Tango.UI
 			{
 				for (int i = ajax.ApiResponse._widgetsToRender.Count - 1; i >= 0; i--)
 					ajax.ApiResponse._widgetsToRender[i].context = retctx;
-				Add(ajax.ApiResponse);
+				ReplaceWith(ajax.ApiResponse);
 			}
 		}
 
@@ -157,7 +165,8 @@ namespace Tango.UI
 		{
 			var retctx = context.ReturnTargetContext(code);
 			RunRedirect(retctx);
-			RedirectTo(retctx.BaseUrl().Url, retctx.AllArgs);
+			if (retctx.AddContainer)
+				RedirectTo(retctx.BaseUrl().Url, retctx.AllArgs);
 		}
 
 		public void RedirectTo(ActionContext context, Action<ActionLink> action)
@@ -166,7 +175,8 @@ namespace Tango.UI
 			action(target);
 			var retctx = context.TargetContext(target);
 			RunRedirect(retctx);
-			RedirectTo(target.Url, retctx.AllArgs);
+			if (retctx.AddContainer)
+				RedirectTo(target.Url, retctx.AllArgs);
 		}
 
 		public void RedirectTo(string url, DynamicDictionary parms = null)

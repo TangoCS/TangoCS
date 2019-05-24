@@ -17,6 +17,16 @@
 			OffText: "Off"
 		}, options);
 
+		var setClass = function (el, prefix) {
+			if (el.checked) {
+				el.classList.add('tgl-sw-' + prefix + '-checked');
+				el.classList.add('tgl-sw-active');
+			} else {
+				el.classList.remove('tgl-sw-' + prefix + '-checked');
+				el.classList.remove('tgl-sw-active');
+			}
+		};
+
 		var setHtml = function (id, prefix) {
 			const el = document.getElementById(id);
 			const parent = el.parentElement;
@@ -41,21 +51,17 @@
 			el.className = 'tgl-sw tgl-sw-' + prefix;
 
 			div.addEventListener('click', function (e) {
-				if (!el.checked) {
-					el.classList.add('tgl-sw-' + prefix + '-checked');
-					el.classList.add('tgl-sw-active');
-				} else {
-					el.classList.remove('tgl-sw-' + prefix + '-checked');
-					el.classList.remove('tgl-sw-active');
-				}
 				el.checked = !el.checked;
+				setClass(el, prefix);
 			});
+
+			setClass(el, prefix);
 		};
 
 		return this.each(function () {
 			if (['Light', 'Swipe', 'iOS', 'Android'].indexOf(settings.theme) == -1)
 				settings.theme = 'Swipe';
-			
+
 			setHtml(this.id, settings.theme.toLowerCase());
 		});
 	};
