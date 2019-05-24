@@ -5,6 +5,7 @@ Abc.Model.ErrorLog.ClearLog;Очистка журнала ошибок;Clear err
 Abc.Model.ErrorLog.Clear;Очистить;Clear
 Abc.Model.ErrorLog.DeleteAllRecordsBefore;Удалить все записи до;Delete all records before
 Abc.Model.ErrorLog.ErrorDate;Дата ошибки;Error date
+Abc.Model.ErrorLog.ErrorDate-Date;Дата;Date
 Abc.Model.ErrorLog.ErrorLogID;№;#
 Abc.Model.ErrorLog.ErrorText;Текст ошибки;Error text
 Abc.Model.ErrorLog.Hash;Хэш;
