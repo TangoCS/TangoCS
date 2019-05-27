@@ -199,9 +199,10 @@ Abc.Model.N_Settings.ObjectChangeHistory;История изменений;
 Abc.Model.N_Settings.SystemName;Системное имя;System name
 Abc.Model.N_Settings.Title;Наименование;Title
 Abc.Model.N_Settings.Value;Значение;Value
+Abc.Model.N_Settings.ViewList;Параметры системы;System settings
 Abc.Model.N_SettingsGroup;Группа параметров;Setting group
 Abc.Model.N_SettingsGroup-pl;Группы параметров системы;Setting groups
-Abc.Model.N_SettingsGroup.CreateNewForSettings;Создать группу;New group
+Abc.Model.N_SettingsGroup.CreateNew;Создать группу;New group
 Abc.Model.N_SettingsGroup.IsDeleted;Удален;Deleted
 Abc.Model.N_SettingsGroup.LastModifiedDate;Дата последней модификации;Last modified date
 Abc.Model.N_SettingsGroup.LastModifiedUser;Последний редактировавший пользователь;Last modified by

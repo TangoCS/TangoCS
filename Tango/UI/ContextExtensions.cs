@@ -37,6 +37,13 @@ namespace Tango.UI
 			return new ActionLink(context).ToCurrent();
 		}
 
+		public static ActionLink CallbackToCurrent(this ActionContext context, Action<ApiResponse> serverEvent)
+		{
+			return new ActionLink(context).To(context.Service, context.Action).UseDefaultResolver()
+						.WithArgs(context.AllArgs).WithArg(Constants.ContainerNew, "0")
+						.WithArg(Constants.EventName, serverEvent.Method.Name);
+		}
+
 		public static string CreateReturnUrl(this ActionContext context, Action<ActionLink> linkAttrs)
 		{
 			var l = new ActionLink(context).UseDefaultResolver();

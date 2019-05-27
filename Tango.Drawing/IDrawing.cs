@@ -33,6 +33,8 @@ namespace Tango.Drawing
 		void SetColor(Rgba32 c);
 		void SetColor(Rgba32 c, byte alpha);
 		void SetFont(string fontFile);
+		void EnableBlend();
+		void DisableBlend();
 	}
 
 	public interface IFrame

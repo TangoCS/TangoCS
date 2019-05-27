@@ -82,15 +82,24 @@ namespace Tango.Drawing
 
 		public void SetColor(Rgba32 c)
 		{
-			_blend = (c.A < 255);
 			GL.glColor4ub(c.R, c.G, c.B, c.A);
 		}
 
 		public void SetColor(Rgba32 c, byte alpha)
 		{
-			_blend = (alpha < 255);
 			GL.glColor4ub(c.R, c.G, c.B, alpha);
 		}
+
+		public void EnableBlend()
+		{
+			_blend = true;
+		}
+
+		public void DisableBlend()
+		{
+			_blend = false;
+		}
+
 
 		public void DrawLine(int x1, int y1, int x2, int y2)
 		{
