@@ -232,14 +232,15 @@ namespace Tango.Excel
             ICssStyleDeclaration style;
             string formula;
             double width;
+			string[] classes = new string[0];
 
-            public ITdAttributes Class(string value, bool replaceExisting = false)
+			public ITdAttributes Class(string value, bool replaceExisting = false)
             {
                 if (value == "r")
                     right = true;
                 else
-                    throw new NotImplementedException();
-                return this;
+					classes = classes.ToList().Union(value.Split(' ')).ToArray();
+				return this;
             }
 
             public ITdAttributes ColSpan(int value)
@@ -300,8 +301,21 @@ namespace Tango.Excel
                 if (formula != null)
                 {
                     writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
-                }
-            }
+				}
+				foreach (var cls in classes)
+					if (writer.classes.ContainsKey(cls))
+						writer.classes[cls](writer.s.Cells[writer.r, writer.c]);
+				if ((style?.GetBackgroundColor() ?? "") != "")
+				{
+					writer.s.Cells[writer.r, writer.c].Style.Fill.PatternType = OfficeOpenXml.Style.ExcelFillStyle.Solid;
+					const string pattern = @"rgba?[(](\d{1,3})\s?,\s?(\d{1,3})\s?,\s?(\d{1,3})\s?,\s?(\d{1,3})\s?[)]";
+					var match = Regex.Match(style?.GetBackgroundColor(), pattern);
+					var r = byte.Parse(match.Groups[1].Value);
+					var g = byte.Parse(match.Groups[2].Value);
+					var b = byte.Parse(match.Groups[3].Value);
+					writer.s.Cells[writer.r, writer.c].Style.Fill.BackgroundColor.SetColor(0, r, g, b);
+				}
+			}
 
 			public ITdAttributes Title(string value)
 			{
@@ -318,13 +332,14 @@ namespace Tango.Excel
 			ICssStyleDeclaration style;
             string formula;
             double width;
+			string[] classes = new string[0];
 
-            public IThAttributes Class(string value, bool replaceExisting = false)
+			public IThAttributes Class(string value, bool replaceExisting = false)
             {
-                if (value == "r")
-                    right = true;
-                else
-                    throw new NotImplementedException();
+				if (value == "r")
+					right = true;
+				else
+					classes = classes.ToList().Union(value.Split(' ')).ToArray();
                 return this;
             }
 
@@ -387,8 +402,11 @@ namespace Tango.Excel
                 if (formula != null)
                 {
                     writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
-                }
-            }
+				}
+				foreach (var cls in classes)
+					if (writer.classes.ContainsKey(cls))
+						writer.classes[cls](writer.s.Cells[writer.r, writer.c]);
+			}
 
 			public IThAttributes Title(string value)
 			{

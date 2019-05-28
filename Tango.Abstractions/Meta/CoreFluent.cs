@@ -207,7 +207,11 @@ namespace Tango.Meta.Fluent
 			};
 			attributes?.Invoke(a);
 			MetaClass.AddProperty(a);
-			return _this;
+            if (name?.ToLower() == "isdeleted")
+                MetaClass.Interfaces.Add(typeof(IWithLogicalDelete));
+            if (name?.ToLower() == "title")
+                MetaClass.Interfaces.Add(typeof(IWithTitle));
+            return _this;
 		}
 
 		public T PersistentComputedAttribute<TValue>(string name, Action<MetaPersistentComputedAttribute<TClass, TValue>> attributes = null)
@@ -219,7 +223,11 @@ namespace Tango.Meta.Fluent
 			};
 			attributes?.Invoke(a);
 			MetaClass.AddProperty(a);
-			return _this;
+            if (name?.ToLower() == "isdeleted")
+                MetaClass.Interfaces.Add(typeof(IWithLogicalDelete));
+            if (name?.ToLower() == "title")
+                MetaClass.Interfaces.Add(typeof(IWithTitle));
+            return _this;
 		}
 
 		public T PersistentComputedAttribute<TValue>(string name, bool isRequired, Action<MetaPersistentComputedAttribute<TClass, TValue>> attributes = null)
