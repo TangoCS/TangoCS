@@ -287,7 +287,7 @@ namespace Tango.Data
 		}
 
 		protected void ParseContainsMethod(MethodCallExpression m)
-		{		
+		{
 			if (m.Arguments[0].Type == typeof(string))
 			{
 				Visit(m.Object);
@@ -298,13 +298,23 @@ namespace Tango.Data
 				_beforeConstant = "";
 				_afterConstant = "";
 			}
-			else
+			else if (m.Arguments[0].Type.IsArray)
 			{
 				Visit(m.Arguments[1]);
-				sb.Append(" = ANY ");
-				_beforeConstant = "(";
-				_afterConstant = ")";
+				sb.Append($" {_dialect.In} ");
+				_beforeConstant = _dialect.BracketsForIn ? "(" : "";
+				_afterConstant = _dialect.BracketsForIn ? ")" : "";
 				Visit(m.Arguments[0]);
+				_beforeConstant = "";
+				_afterConstant = "";
+			}
+			else
+			{
+				Visit(m.Arguments[0]);
+				sb.Append($" {_dialect.In} ");
+				_beforeConstant = _dialect.BracketsForIn ? "(" : "";
+				_afterConstant = _dialect.BracketsForIn ? ")" : "";
+				Visit(m.Object);
 				_beforeConstant = "";
 				_afterConstant = "";
 			}
@@ -369,18 +379,24 @@ namespace Tango.Data
 	{
 		string LikeKeyword { get; }
 		string Concat { get; }
+		string In { get; }
+		bool BracketsForIn { get; }
 	}
 
 	public class QueryTranslatorMSSQL : IQueryTranslatorDialect
 	{
 		public string LikeKeyword => "LIKE";
 		public string Concat => "+";
+		public string In => "IN";
+		public bool BracketsForIn => false;
 	}
 
 	public class QueryTranslatorPostgres : IQueryTranslatorDialect
 	{
 		public string LikeKeyword => "ILIKE";
 		public string Concat => "||";
+		public string In => "= ANY";
+		public bool BracketsForIn => true;
 	}
 
 

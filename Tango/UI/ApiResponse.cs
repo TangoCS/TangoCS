@@ -295,27 +295,35 @@ namespace Tango.UI
 
 		public override string Serialize(ActionContext context)
 		{
-			if (Widgets.Count > 0)
+			try
 			{
-				foreach (var r in _widgetsToRender)
+				if (Widgets.Count > 0)
 				{
-					var w = new LayoutWriter(r.context ?? context, r.prefix);
-					r.content?.Invoke(w);
-					r.widget.Content = w.ToString();
+					foreach (var r in _widgetsToRender)
+					{
+						var w = new LayoutWriter(r.context ?? context, r.prefix);
+						r.content?.Invoke(w);
+						r.widget.Content = w.ToString();
 
-					foreach (var i in w.ClientActions)
-						ClientActions.Add(i);
-					foreach (var i in w.Includes)
-						Includes.Add(i);
+						foreach (var i in w.ClientActions)
+							ClientActions.Add(i);
+						foreach (var i in w.Includes)
+							Includes.Add(i);
+					}
+
+					Data.Add("widgets", Widgets);
 				}
+				if (ClientActions.Count > 0)
+					Data.Add("clientactions", ClientActions);
 
-				Data.Add("widgets", Widgets);
+				if (Includes.Count > 0)
+					Data.Add("includes", Includes.Select(o => GlobalSettings.JSPath + o));
 			}
-			if (ClientActions.Count > 0)
-				Data.Add("clientactions", ClientActions);
-
-			if (Includes.Count > 0)
-				Data.Add("includes", Includes.Select(o => GlobalSettings.JSPath + o));
+			catch (Exception ex)
+			{
+				Data.Clear();
+				Data.Add("error", ex.ToString());
+			}
 
 			return JsonConvert.SerializeObject(Data, Json.StdSettings);
 		}

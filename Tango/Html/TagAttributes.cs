@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Tango.UI;
 
 namespace Tango.Html
 {
@@ -316,6 +317,13 @@ namespace Tango.Html
 		public DataCollection Ref(string id)
 		{
 			Add("ref-" + id, id);
+			return this;
+		}
+
+		public DataCollection Ref(IViewElement owner, string id)
+		{
+			var clientid = owner.GetClientID(id);
+			Add("ref-" + clientid, clientid);
 			return this;
 		}
 

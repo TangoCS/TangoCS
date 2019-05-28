@@ -279,6 +279,7 @@ var ajaxUtils = function ($, cu) {
 			var target = { data: fd };
 			target.e = sender.hasAttribute('data-e') ? sender.getAttribute('data-e') : 'onsubmit';
 			target.url = instance.findServiceAction(form);
+			target.currenturl = target.url;
 			if (sender.hasAttribute('data-responsetype')) {
 				target.responsetype = sender.getAttribute('data-responsetype');
 			}
@@ -471,13 +472,13 @@ var ajaxUtils = function ($, cu) {
 
 			var page = document.head.getAttribute('data-page');
 			if (page) parms.p = page;
-			if (target.sender) parms.sender = target.sender;
 			if (target.r) parms.r = target.r;
+			if (target.sender) parms.sender = target.sender;
 			parms.e = target.e ? target.e : DEF_EVENT_NAME;
 
 			state.loc.parms = parms;
 
-			var curpath = instance.findServiceAction(document.getElementById(parms.sender));
+			var curpath = target.currenturl;
 			sep = curpath.indexOf('?');
 			curpath = sep >= 0 ? curpath.substring(0, sep) : curpath;
 
@@ -633,7 +634,6 @@ var ajaxUtils = function ($, cu) {
 	}
 
 	function processElementDataOnEvent(el, target) {
-		if (el.id) target.sender = el.id;
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
 			attr = attrs[i];
 			var val = attr.value == '' ? null : attr.value;
@@ -661,9 +661,12 @@ var ajaxUtils = function ($, cu) {
 			}
 		}
 
+		target.currenturl = instance.findServiceAction(el);
 		if (!target.url) {
-			target.url = instance.findServiceAction(el);
+			target.url = target.currenturl;
 		}
+
+		if (el.id) target.sender = el.id;
 
 		const container = cu.getThisOrParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
 		if (container) {
