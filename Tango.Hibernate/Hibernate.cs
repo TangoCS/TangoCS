@@ -19,10 +19,11 @@ using NHibernate.Type;
 using NHibernate.Mapping.ByCode.Conformist;
 using System.Data.Common;
 using NHibernate.Event;
+using NHibernate.Transaction;
 
 namespace Tango.Hibernate
 {
-	public class HDataContext : IDisposable, IDataContext
+	public class HDataContext : IDisposable, IDataContext, ISynchronization
 	{
 		static Dictionary<string, ISessionFactory> _sessionFactories = new Dictionary<string, ISessionFactory>();
 		static Dictionary<string, HbmMapping> _mappings = new Dictionary<string, HbmMapping>();
@@ -164,7 +165,7 @@ namespace Tango.Hibernate
 
 				foreach (var action in BeforeSaveActions) action();
 				foreach (var action in SaveActions) action(transaction);
-				foreach (var action in AfterSaveActions) action();
+				transaction.RegisterSynchronization(this);				
 
 				transaction.Commit();
 
@@ -176,6 +177,27 @@ namespace Tango.Hibernate
 			}
 			ClearCache();
 			//Session.Clear();
+		}
+
+		public void BeforeCompletion()
+		{
+			foreach (var action in AfterSaveActions) action();
+		}
+
+		public void AfterCompletion(bool success)
+		{
+		}
+
+		public IDbTransaction Transaction
+		{
+			get
+			{
+				using (var command = Session.Connection.CreateCommand())
+				{
+					Session.Transaction.Enlist(command);
+					return command.Transaction;
+				}
+			}
 		}
 
 		public void Dispose()

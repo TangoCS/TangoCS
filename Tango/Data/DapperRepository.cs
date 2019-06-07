@@ -279,14 +279,14 @@ namespace Tango.Data
 
 			var colsClause = cols.Join(", ");
 			var valuesClause = vals.Join(", ");
-            var returning = identity == null || Database.GetDBType() == DBType.MSSQL ? "" : $"returning {identity.Name.ToLower()}";
+            var returning = identity == null ? "" : (Database.GetDBType() == DBType.MSSQL ? "select @@IDENTITY" : $"returning {identity.Name.ToLower()}");
 
 			var query = $"insert into {Table}({colsClause}) values({valuesClause}) {returning}";
 
 			var ret = Database.Connection.ExecuteScalar(query, parms, Database.Transaction);
 
 			if (identity != null)
-				identity.SetValue(entity, ret);
+				identity.SetValue(entity, identity.PropertyType == typeof(Int32) ? Convert.ToInt32(ret) : ret);
 		}
 
 		public void Update(T entity)
