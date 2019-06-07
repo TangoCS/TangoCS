@@ -23,6 +23,7 @@ namespace Tango.Data
 	public interface IDataContext : IDisposable
 	{
 		DbConnection Connection { get; }
+		IDbTransaction Transaction { get; }
 
 		int ExecuteCommand(string command, params object[] parameters);
 		IEnumerable<TResult> ExecuteQuery<TResult>(string query, params object[] parameters);
