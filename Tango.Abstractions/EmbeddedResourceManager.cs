@@ -11,25 +11,26 @@ namespace Tango
 
 	public static class EmbeddedResourceManager
 	{
-		public static string GetString(this IHasEmbeddedResources obj, string name, params string[] filters)
+		public static string GetString(this IHasEmbeddedResources obj, string name, List<string> filters = null)
 		{
 			return GetString(obj.GetType(), name, filters);
 		}
 
-		public static string GetString(Type t, string name, params string[] filters)
+		public static string GetString(Type t, string name, List<string> filters = null)
 		{
 			return GetString(t.Assembly, name, filters);
 		}
 
-		public static string GetString(Assembly assembly, string name, params string[] filters)
-		{
-			var f = new List<string>(filters);
-			if (f.Count == 0) f.Add("null");
-			return GetString(assembly, name, f, DefaultLineParsers);
+		public static string GetString(Assembly assembly, string name, List<string> filters = null)
+		{	
+			return GetString(assembly, name, filters, DefaultLineParsers);
 		}
 
 		static string GetString(Assembly assembly, string name, List<string> filters, params Func<State, bool>[] lineParsers)
 		{
+			if (filters == null) filters = new List<string>();
+			if (filters.Count == 0) filters.Add("null");
+
 			var resourceName = assembly.GetName().Name + "." + name;
 			using (Stream stream = assembly.GetManifestResourceStream(resourceName))
 			using (StreamReader reader = new StreamReader(stream))
