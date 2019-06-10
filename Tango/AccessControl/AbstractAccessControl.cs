@@ -46,9 +46,9 @@ namespace Tango.AccessControl
 		protected ConcurrentBag<string> AllowItems { get; } = new ConcurrentBag<string>();
 		protected ConcurrentBag<string> DisallowItems { get; } = new ConcurrentBag<string>();
 
-		protected bool CheckDefaultAccess(string key, bool? defaultAccess)
+		protected bool CheckDefaultAccess(string key, bool defaultAccess)
 		{
-			if (defaultAccess.Value || HasRole(_options.AdminRoleName))
+			if (defaultAccess)
 			{
 				if (!AllowItems.Contains(key))
 					AllowItems.Add(key);
@@ -62,7 +62,7 @@ namespace Tango.AccessControl
 
 				_logger.Write(key + ": false (default/admin access denied)");
 			}
-			return defaultAccess.Value || HasRole(_options.AdminRoleName);
+			return defaultAccess;
 		}
 
 		protected bool CheckExplicitAccess(string key, bool accessResult)
@@ -73,7 +73,6 @@ namespace Tango.AccessControl
 					AllowItems.Add(key);
 
 				_logger.Write(key + ": true (explicit access)");
-				return true;
 			}
 			else
 			{
@@ -81,8 +80,9 @@ namespace Tango.AccessControl
 					DisallowItems.Add(key);
 
 				_logger.Write(key + ": false (explicit access denied)");
-				return false;
 			}
+
+			return accessResult;
 		}
 	}
 

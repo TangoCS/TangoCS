@@ -8,15 +8,13 @@ namespace Tango.AccessControl
 {
 	public class AccessControlOptions
 	{
-		public string AdminRoleName { get; set; }
 		public Func<bool> Enabled { get; set; }
-		public Func<bool> DefaultAccess { get; set; }
+		public Func<IAccessControl, bool> DefaultAccess { get; set; }
 
 		public AccessControlOptions()
 		{
-			AdminRoleName = "Administrator";
 			Enabled = () => true;
-			DefaultAccess = () => false;
+			DefaultAccess = ac => ac.HasRole("Administrator");
 		}
 	}
 }

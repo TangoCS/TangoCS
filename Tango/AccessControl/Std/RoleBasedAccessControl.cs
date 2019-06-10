@@ -36,7 +36,7 @@ namespace Tango.AccessControl.Std
 			List<int> _access = _dataContext.GetAccessInfo(securableObjectKey).ToList();
 
 			if (_access.Count == 0)
-				return CheckDefaultAccess(key, defaultAccess ?? _options.DefaultAccess());
+				return CheckDefaultAccess(key, defaultAccess ?? _options.DefaultAccess(this));
 
 			return CheckExplicitAccess(key, Roles.Intersect(_access).Count() > 0);
 		}
@@ -106,9 +106,7 @@ namespace Tango.AccessControl.Std
 			_items = _cache.GetOrAdd(_cacheName + "-items", () => new ConcurrentBag<string>(_dataContext.GetKeys()));
 
 			if (!_items.Contains(key))
-			{
-				return CheckDefaultAccess(key, defaultAccess ?? _options.DefaultAccess());
-			}
+				return CheckDefaultAccess(key, defaultAccess ?? _options.DefaultAccess(this));
 
 			HashSet<string> _checking = new HashSet<string>(Roles.Select(o => key + "-" + o.ToString()));
 			return CheckExplicitAccess(key, _checking.Any(o => _access.Contains(o)));
