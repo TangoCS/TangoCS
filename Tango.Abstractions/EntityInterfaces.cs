@@ -43,6 +43,14 @@ namespace Tango
 	{
 		TUser LastModifiedUser { get; set; }
 	}
+	
+	public interface IWithTimeStampEx<TUser> where TUser : IWithTitle
+	{
+		DateTime LastModifiedDate { get; }
+		TUser LastModifiedUser { get; }
+		DateTime CreateDate { get; }
+		TUser Creator { get; }
+	}
 
 	public interface IChildEntity<TParentKey>
 	{
