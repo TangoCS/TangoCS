@@ -341,11 +341,13 @@ namespace Tango.Data
 		private void ParseOrderByExpression(MethodCallExpression expression, string order)
 		{
 			sb = new StringBuilder();
-			sbOrder.Insert(0, sb);
 
 			Visit(expression.Arguments[1]);
-
-			sb.Append(" " + order);
+			if (!sbOrder.Any(o => o.ToString().StartsWith(sb.ToString())))
+			{
+				sbOrder.Insert(0, sb);
+				sb.Append(" " + order);
+			}
 		}
 
 		private bool ParseTakeExpression(MethodCallExpression expression)
