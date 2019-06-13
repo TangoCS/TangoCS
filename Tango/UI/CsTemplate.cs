@@ -162,13 +162,18 @@ namespace Tango.UI
 		public string Type => GetType().Name.Replace("Container", "");
 
 		public IDictionary<string, string> Mapping { get; } = new Dictionary<string, string>();
+
 		public abstract void Render(ApiResponse response);
 
 		public void ProcessResponse(ActionContext ctx, ApiResponse response)
 		{
+			OnInit();
+
 			if (ctx.AddContainer)
 			{
-				response.WithNameFunc(name => HtmlWriterHelpers.GetID(ctx.ContainerPrefix, name));
+				response.WithNameFunc(name => Mapping.ContainsKey(name) ?
+					HtmlWriterHelpers.GetID(ctx.ContainerPrefix, Mapping[name]) :
+					HtmlWriterHelpers.GetID(ctx.ContainerPrefix, name));
 				response.WithWritersFor(this, () => Render(response));
 			}
 

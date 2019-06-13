@@ -7,6 +7,7 @@ namespace Tango.Identity
 	{
 		IIdentityOptions Options { get; }
 
+		TUser DefaultUser { get; }
 		TUser CurrentUser { get; }
 		TUser SystemUser { get; }
 

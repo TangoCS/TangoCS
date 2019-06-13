@@ -13,6 +13,7 @@ namespace Tango.Identity
 
 		public IIdentityOptions Options { get; private set; }
 
+		public abstract TUser DefaultUser { get; }
 
 		public IdentityManager(
 			IIdentity user,
@@ -31,7 +32,7 @@ namespace Tango.Identity
 				if (_currentUser != null) return _currentUser;
 
 				var name = GetUserName();
-				_currentUser = _dataContext.UserFromName(name) ?? throw new Exception(String.Format("User {0} does not exist in the database", name));
+				_currentUser = _dataContext.UserFromName(name) ?? DefaultUser;
 				return _currentUser;
 			}
 		}

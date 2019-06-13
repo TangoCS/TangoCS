@@ -12,5 +12,7 @@ namespace Tango.Identity.Std
 		public int CurrentUserID => CurrentUser.Id;
 
 		public int SystemUserID => SystemUser.Id;
+
+		public override IdentityUser DefaultUser => new IdentityUser { Id = -1, UserName = "anonymous" };
 	}
 }
