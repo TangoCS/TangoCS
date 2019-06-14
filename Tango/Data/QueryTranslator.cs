@@ -15,6 +15,7 @@ namespace Tango.Data
 
 		List<StringBuilder> sbWhere = new List<StringBuilder>();
 		List<StringBuilder> sbOrder = new List<StringBuilder>();
+		public IReadOnlyList<string> OrderByList => sbOrder.Select(o => o.ToString()).ToList();
 
 		string _beforeConstant = "";
 		string _afterConstant = "";

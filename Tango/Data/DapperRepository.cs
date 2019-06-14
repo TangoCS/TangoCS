@@ -127,7 +127,7 @@ namespace Tango.Data
 			return Database.Connection.QuerySingle<int>(query, args, Database.Transaction);
 		}
 
-		public IEnumerable<T> List(Expression predicate = null)
+		public IEnumerable<T> List(Expression predicate = null, int sorterCount = 0)
 		{
 			var query = AllObjectsQuery;
 			var args = new DynamicParameters();
@@ -141,7 +141,7 @@ namespace Tango.Data
 				var translator = new QueryTranslator(Dialect);
 				translator.Translate(predicate);
 				if (!translator.WhereClause.IsEmpty()) query += " where " + translator.WhereClause;
-				if (!translator.OrderBy.IsEmpty()) query += " order by " + translator.OrderBy;
+				if (!translator.OrderBy.IsEmpty()) query += " order by " + translator.OrderByList.Skip(translator.OrderByList.Count - sorterCount).Union(translator.OrderByList.Take(translator.OrderByList.Count - sorterCount)).Join(", ");
 				if (DBType == DBType.POSTGRESQL)
 				{
 					if (translator.Parms.ContainsKey("take")) query += " limit @take";
