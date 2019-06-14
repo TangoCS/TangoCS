@@ -25,7 +25,7 @@ namespace Tango.Data
 		bool Exists(object id);
 
 		int Count(Expression predicate = null);
-		IEnumerable<T> List(Expression predicate = null, int sortCount = 0);
+		IEnumerable<T> List(Expression predicate = null);
 
 		void Create(T entity);
 		object CreateFrom(Action<UpdateSetCollection<T>> sets, Expression<Func<T, bool>> predicate);
