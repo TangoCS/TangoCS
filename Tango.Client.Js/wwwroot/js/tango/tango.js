@@ -279,7 +279,11 @@ var ajaxUtils = function ($, cu) {
 			var target = { data: fd };
 			target.e = sender.hasAttribute('data-e') ? sender.getAttribute('data-e') : 'onsubmit';
 			target.url = instance.findServiceAction(form);
-			target.currenturl = target.url;
+			const container = cu.getThisOrParent(sender, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
+			if (container) {
+				target.containerPrefix = container.getAttribute('data-c-prefix');
+				target.containerType = container.getAttribute('data-c-type');
+			}
 			if (sender.hasAttribute('data-responsetype')) {
 				target.responsetype = sender.getAttribute('data-responsetype');
 			}
@@ -440,6 +444,9 @@ var ajaxUtils = function ($, cu) {
 			var parms = {};
 			const isForm = target.data instanceof FormData;
 
+			if (!target.currenturl)
+				target.currenturl = target.url;
+
 			var sep = target.url.indexOf('?');
 			var targetpath = sep >= 0 ? target.url.substring(0, sep) : target.url;
 			const targetquery = sep >= 0 ? target.url.substring(sep + 1) : '';
@@ -491,8 +498,7 @@ var ajaxUtils = function ($, cu) {
 			if (targetpath != curpath) {
 				parms['c-new'] = 1;
 			}
-
-			if (!target.changeloc && !parms['c-prefix'] && target.containerPrefix) {
+			else if (!parms['c-prefix'] && target.containerPrefix) {
 				parms['c-prefix'] = target.containerPrefix;
 				parms['c-type'] = target.containerType;
 			}
@@ -543,7 +549,7 @@ var ajaxUtils = function ($, cu) {
 		findServiceAction: function (el) {
 			var root = el;
 			if (root != document.head) {
-				root = cu.getThisOrParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-href'); });
+				root = cu.getParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-href'); });
 				if (!root) root = document.getElementById(META_CURRENT);
 			}
 			const home = document.getElementById(META_HOME);
@@ -762,12 +768,35 @@ var ajaxUtils = function ($, cu) {
 				cu.scrollToView(el.nextSibling);
 			}
 		};
-		function parseHTML(parent, htmlString) {
-			var tagname = parent.tagName;
-			if (tagname == 'TABLE') tagname = 'DIV';
-			const el = document.createElement(tagname);
-			el.innerHTML = htmlString;
-			return el;
+
+		var rtagName = /<([\w:]+)/,
+        rhtml = /<|&#?\w+;/,
+        // We have to close these tags to support XHTML (#13200)
+        wrapMap = {
+        	option: [1, "<select multiple='multiple'>", "</select>"],
+        	thead: [1, "<table>", "</table>"],
+        	col: [2, "<table><colgroup>", "</colgroup></table>"],
+        	tr: [2, "<table><tbody>", "</tbody></table>"],
+        	td: [3, "<table><tbody><tr>", "</tr></tbody></table>"],
+        	_default: [0, "", ""]
+        };
+
+		function parseHTML(htmlString) {
+			var tag, wrap, j,
+            fragment = document.createElement('div');
+
+			// Deserialize a standard representation
+			tag = (rtagName.exec(htmlString) || ["", ""])[1].toLowerCase();
+			wrap = wrapMap[tag] || wrapMap._default;
+			fragment.innerHTML = wrap[1] + htmlString + wrap[2];
+
+			// Descend through wrappers to the right content
+			j = wrap[0];
+			while (j--) {
+				fragment = fragment.lastChild;
+			}
+
+			return fragment;
 		}
 
 		if (apiResult.widgets) {
@@ -787,31 +816,39 @@ var ajaxUtils = function ($, cu) {
 						obj.nested = true;
 					}
 
+					var parentel = null;
+					if (obj.action == 'adjacent') {
+						if (obj.parent && obj.parent != 'body' && obj.parent != '') {
+							parentel = shadow.getElementById(obj.parent);
+							if (parentel) {
+								obj.nested = true;
+								el = shadow.getElementById(obj.name);
+							}
+							else
+								parentel = document.getElementById(obj.parent);
+
+						}
+						else
+							parentel = document.body;
+					}
+
 					if (obj.action == 'replace' || (el && obj.action == 'adjacent') || obj.action == 'add') {
 						if (!el) continue;
-						obj.content = parseHTML(obj.action == 'replace' ? el.parentNode : el, obj.content);
+						obj.content = parseHTML(obj.content);
 						obj.el = el;
 						obj.func = obj.action == 'add' ? addFunc : replaceFunc;
 						nodes.push(obj);
 					}
 					else if (obj.action == 'adjacent') {
-						var el2 = null;
-						if (obj.parent && obj.parent != 'body' && obj.parent != '') {
-							el2 = shadow.getElementById(obj.parent);
-							if (el2) obj.nested = true;
-						}
-						if (!el2) {
-							el2 = (obj.parent && obj.parent != 'body' && obj.parent != '') ? document.getElementById(obj.parent) : document.body;
-						}
-						if (!el2) continue;
-						obj.content = parseHTML(obj.position == 'afterBegin' || obj.position == 'beforeEnd' || el2 == document.body ? el2 : el2.parentNode, obj.content);
-						obj.el = el2;
+						if (!parentel) continue;
+						obj.content = parseHTML(obj.content);
+						obj.el = parentel;
 						obj.func = adjacentFunc;
 						nodes.push(obj);
 					}
 
 					if (obj.nested)
-						obj.func(el || el2, obj);
+						obj.func(el || parentel, obj);
 					else {
 						const parent = obj.el.parentNode.nodeName == 'HEAD' ? shadow.head : shadow.body;
 						parent.appendChild(obj.content);
