@@ -107,7 +107,7 @@ namespace Tango.UI
 					AddContainer = AddContainer || IsFirstLoad;
 				}
 				else if (key == Constants.Sender)
-					Sender = value.ToLower();
+					Sender = $"#{value.ToLower()}";
 				else if (key == Constants.EventName)
 				{
 					Event = value.ToString().ToLower();

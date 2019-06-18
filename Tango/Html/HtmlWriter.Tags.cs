@@ -8,37 +8,15 @@ namespace Tango.Html
 	{
 		public static string GetID(string prefix, string id)
 		{
-			return prefix.IsEmpty() ? id.ToLower() : $"{prefix}_{id.ToLower()}";
+			return id.StartsWith("#") ? 
+				id.Substring(1).ToLower() : 
+				(prefix.IsEmpty() ? id.ToLower() : $"{prefix}_{id.ToLower()}");
 		}
 	}
 
 	public partial class HtmlWriter
 	{
 		CultureInfo ru = new CultureInfo("ru-RU");
-
-		void IContentWriter.Table(Action<IContentItemAttributes> attributes, Action inner) => WriteTag("table", attributes, inner);
-		void IContentWriter.Tr(Action<IContentItemAttributes> attributes, Action inner) => WriteTag("tr", attributes, inner);
-		void IContentWriter.Td(Action<ITdAttributes> attributes, Action inner) => WriteTag("td", attributes, inner);
-		void IContentWriter.Th(Action<IThAttributes> attributes, Action inner) => WriteTag("th", attributes, inner);
-		void IContentWriter.Div(Action<IContentItemAttributes> attributes, Action inner) => WriteTag("div", attributes, inner);
-		void IContentWriter.Td(Action<ITdAttributes> attributes, decimal? n, string format) => WriteTag("td", (Action<ITdAttributes>)(a => { a.Class("r"); attributes?.Invoke(a); }), () => Write(n == null ? "" : n.Value.ToString(format, ru)));
-
-        T Fabric<T>()
-			where T: class, IContentItemAttributes<T>
-		{
-			switch (typeof(T))
-			{
-				case Type td when td == typeof(ITdAttributes):
-					return new TdTagAttributes() as T;
-				case Type th when th == typeof(IThAttributes):
-					return new ThTagAttributes() as T;
-				case Type other when other == typeof(IContentItemAttributes):
-					return new TagAttributes() as T;
-			}
-
-			throw new NotSupportedException();
-		}
-
 
 		void WriteTag(string name, Action inner)
 		{
@@ -357,11 +335,11 @@ namespace Tango.Html
 		public static void Sup(this HtmlWriter w, Action inner) { w.Sup(null, inner); }
 		public static void Table(this HtmlWriter w, Action inner) { w.Table(null, inner); }
 		public static void Tbody(this HtmlWriter w, Action inner) { w.Tbody(null, inner); }
-		public static void Td(this HtmlWriter w, Action inner) { w.Td(null, inner); }
+		//public static void Td(this HtmlWriter w, Action inner) { w.Td(null, inner); }
 		public static void Th(this HtmlWriter w, Action inner) { w.Th(null, inner); }
 		public static void Thead(this HtmlWriter w, Action inner) { w.Thead(null, inner); }
 		
-		public static void Tr(this HtmlWriter w, Action inner) { w.Tr(null, inner); }
+		//public static void Tr(this HtmlWriter w, Action inner) { w.Tr(null, inner); }
 		public static void U(this HtmlWriter w, Action inner) { w.U(null, inner); }
 		public static void U(this HtmlWriter w, string text) { w.U(null, () => w.Write(text)); }
 		public static void Ul(this HtmlWriter w, Action inner) { w.Ul(null, inner); }
@@ -398,8 +376,8 @@ namespace Tango.Html
 		public static void P(this HtmlWriter w, Action<TagAttributes> attributes, string text) { w.P(attributes, () => w.Write(text)); }
 		public static void Script(this HtmlWriter w, string path) { w.Script(a => a.Type("text/javascript").Src(path)); }
 		public static void ScriptAsync(this HtmlWriter w, string path) { w.Script(a => a.Type("text/javascript").Src(path).Async()); }
-		public static void Td(this HtmlWriter w, string text) { w.Td(null, () => w.Write(text)); }
-		public static void Td(this HtmlWriter w, Action<TdTagAttributes> attributes, string text) { w.Td(attributes, () => w.Write(text)); }
+		//public static void Td(this HtmlWriter w, string text) { w.Td(null, () => w.Write(text)); }
+		//public static void Td(this HtmlWriter w, Action<TdTagAttributes> attributes, string text) { w.Td(attributes, () => w.Write(text)); }
 
 		public static void WriteLine(this HtmlWriter w, string text) { w.Write(text); w.Br(); }
 		public static void WriteLines(this HtmlWriter w, IEnumerable<string> textLines) { if (textLines != null) w.Write(textLines.Join("<br />")); }

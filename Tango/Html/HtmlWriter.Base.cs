@@ -9,9 +9,9 @@ namespace Tango.Html
 	public partial class HtmlWriter : StringWriter, IContentWriter
 	{
 		const string NEWLINE = "<br/>";
-		string _initialPrefix;
+		//string _initialPrefix;
 		Stack<string> _ids = new Stack<string>(4);
-		Stack<(string prefix, Stack<string> ids)> _prefixes = new Stack<(string prefix, Stack<string> ids)>(4);
+		//Stack<(string prefix, Stack<string> ids)> _prefixes = new Stack<(string prefix, Stack<string> ids)>(4);
 
 		public string IDPrefix { get; private set; }
 
@@ -26,13 +26,15 @@ namespace Tango.Html
 		public HtmlWriter(string idPrefix)
 		{
 			NewLine = NEWLINE;
-			_initialPrefix = idPrefix;
+			idPrefix.Split('_').ForEach(s => _ids.Push(s));
+			//_initialPrefix = idPrefix;
 			SetPrefix();
 		}
 		public HtmlWriter(string idPrefix, StringBuilder sb) : base(sb)
 		{
 			NewLine = NEWLINE;
-			_initialPrefix = idPrefix;
+			idPrefix.Split('_').ForEach(s => _ids.Push(s));
+			//_initialPrefix = idPrefix;
 			SetPrefix();
 		}
 
@@ -44,7 +46,7 @@ namespace Tango.Html
 
 		public void PushID(string id)
 		{
-			_ids.Push(id);
+			_ids.Push(id.ToLower());
 			SetPrefix();
 		}
 
@@ -56,22 +58,24 @@ namespace Tango.Html
 
 		public void PushPrefix(string prefix)
 		{
-			_prefixes.Push((_initialPrefix, _ids));
-			_ids.Clear();
-			_initialPrefix = prefix;
+			//_prefixes.Push((_initialPrefix, _ids));
+			//_ids.Clear();
+			//_initialPrefix = prefix;
+			_ids.Push(prefix.ToLower());
 			SetPrefix();
 		}
 
 		public void PopPrefix()
 		{
-			(_initialPrefix, _ids) = _prefixes.Pop();
+			//(_initialPrefix, _ids) = _prefixes.Pop();
+			_ids.Pop();
 			SetPrefix();
 		}
 
 		void SetPrefix()
 		{
-			var str = new[] { _initialPrefix, String.Join("_", _ids.Where(s => !string.IsNullOrEmpty(s)).Reverse()) };
-			IDPrefix = String.Join("_", str.Where(s => !string.IsNullOrEmpty(s)));
+			//var str = new[] { _initialPrefix, String.Join("_", _ids.Where(s => !string.IsNullOrEmpty(s)).Reverse()) };
+			IDPrefix = String.Join("_", _ids.Where(s => !string.IsNullOrEmpty(s)).Reverse());
 		}
 
 
@@ -89,7 +93,7 @@ namespace Tango.Html
 		{
 			attributes[key] = value == null ?
 				IDPrefix :
-				value.StartsWith("#") ? value.Substring(1) : this.GetID(value);
+				this.GetID(value);
 		}
 
 		public void RenderAttrs()

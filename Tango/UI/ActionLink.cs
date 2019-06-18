@@ -82,7 +82,7 @@ namespace Tango.UI
 		public bool ChangeUrl { get; private set; } = true;
 		public bool IsTargetBlank { get; private set; } = false;
 
-		public Dictionary<string, string> References { get; } = new Dictionary<string, string>();
+		public List<string> References { get; } = new List<string>();
 		public (string Type, string Prefix) Container { get; private set; }
 
 		public string CallbackUrl { get; private set; }
@@ -204,12 +204,10 @@ namespace Tango.UI
 			return this;
 		}
 
-		public ActionLink WithRef(string key, string value)
+		public ActionLink WithRef(string id)
 		{
-			if (value != null)
-				References[key] = value;
-			else
-				References.Remove(key);
+			if (!References.Contains(id))
+				References.Add(id);
 			return this;
 		}
 
