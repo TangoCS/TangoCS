@@ -50,40 +50,40 @@ namespace Tango.Data
 	{
 		public DapperDatabase(IDbConnection connection) : base(connection) { }
 		public IRepository<T> Repository<T>() => new DapperRepository<T>(this);
+		public IRepository Repository(Type type) => new DapperRepository(this, type);
 	}
 
-	public class DapperRepository<T> : IRepository<T>
+	public class DapperRepository : IRepository
 	{
+		public IDatabase Database { get; }
+		protected Type Type;
+		public string Table { get; }
+		protected DBType DBType { get; }
 		public string AllObjectsQuery { get; set; }
+		protected Dictionary<string, PropertyInfo> keys = new Dictionary<string, PropertyInfo>();
+		protected Dictionary<string, PropertyInfo> columns = new Dictionary<string, PropertyInfo>();
 		public IDictionary<string, object> Parameters { get; } = new Dictionary<string, object>();
 
-		public IDatabase Database { get; }
-		protected DBType DBType { get; }
-
-		IQueryTranslatorDialect Dialect => DBType == DBType.MSSQL ? (IQueryTranslatorDialect)new QueryTranslatorMSSQL() :
+		protected IQueryTranslatorDialect Dialect => DBType == DBType.MSSQL ? (IQueryTranslatorDialect)new QueryTranslatorMSSQL() :
 			DBType == DBType.POSTGRESQL ? new QueryTranslatorPostgres() :
 			throw new NotSupportedException();
 
-		protected Dictionary<string, PropertyInfo> keys = new Dictionary<string, PropertyInfo>();
-		protected Dictionary<string, PropertyInfo> columns = new Dictionary<string, PropertyInfo>();
-		//protected Dictionary<string, object> parms = new Dictionary<string, object>();
-
-		public string Table { get; }
-
-		public DapperRepository(IDatabase database)
+		public DapperRepository(IDatabase database, Type type)
 		{
 			Database = database;
-			Table = typeof(T).GetCustomAttribute<TableAttribute>()?.Name ?? typeof(T).Name.ToLower();
+			Type = type;
+
+			Table = Type.GetCustomAttribute<TableAttribute>()?.Name ?? Type.Name.ToLower();
 			if (Table.ToLower().EndsWith(".sql"))
 			{
-				Table = $"({EmbeddedResourceManager.GetString(typeof(T), Table)})";
+				Table = $"({EmbeddedResourceManager.GetString(Type, Table)})";
 				AllObjectsQuery = Table;
 			}
 			else
 				AllObjectsQuery = "select * from " + Table;
 			DBType = database.GetDBType();
 
-			var props = typeof(T).GetProperties().Where(o => o.GetCustomAttribute<ColumnAttribute>() != null);
+			var props = Type.GetProperties().Where(o => o.GetCustomAttribute<ColumnAttribute>() != null);
 			foreach (var p in props)
 			{
 				if (p.GetCustomAttributes(typeof(KeyAttribute), false).Any())
@@ -93,7 +93,53 @@ namespace Tango.Data
 			}
 		}
 
-		string PrepareSelectFromAllObjectsQuery(string fieldExpression)
+		public bool Exists(object id)
+		{
+			var where = GetByIdWhereClause(id);
+			var query = $"select 1 from {Table} where {where.clause}";
+
+			return Database.Connection.QuerySingleOrDefault<int>(query, where.parms, Database.Transaction) == 1;
+		}
+
+		protected (string clause, Dictionary<string, object> parms) GetByIdWhereClause(object id)
+		{
+			var parms = new Dictionary<string, object>();
+			var idtype = id.GetType();
+			if (idtype == typeof(Dictionary<string, object>))
+			{
+				var ids = id as Dictionary<string, object>;
+				int i = 0;
+				var clause = ids.Select(k => {
+					var s = $"{k.Key.ToLower()} = @p{i}";
+					parms.Add($"p{i}", k.Value);
+					i++;
+					return s;
+				}).Join(" and ");
+				return (clause, parms);
+			}
+			else if (idtype == typeof(string) || idtype == typeof(Guid) || idtype == typeof(DateTime) ||
+				(idtype.IsValueType && idtype.IsPrimitive))
+			{
+				parms.Add("p0", id);
+				return (keys.Keys.First().ToLower() + " = @p0", parms);
+			}
+			else if (idtype.IsValueType)
+			{
+				var props = id.GetType().GetProperties();
+				int i = 0;
+				var clause = keys.Select(k => {
+					var s = $"{k.Key.ToLower()} = @p{i}";
+					parms.Add($"p{i}", props[i].GetValue(id));
+					i++;
+					return s;
+				}).Join(" and ");
+				return (clause, parms);
+			}
+			else
+				throw new Exception($"Entity {Type.Name} doesn't contain any key property");
+		}
+
+		protected string PrepareSelectFromAllObjectsQuery(string fieldExpression)
 		{
 			var i = AllObjectsQuery.IndexOf("--#select");
 			if (i == -1)
@@ -127,6 +173,23 @@ namespace Tango.Data
 			return Database.Connection.QuerySingle<int>(query, args, Database.Transaction);
 		}
 
+		public object GetById(object id)
+		{
+			var where = GetByIdWhereClause(id);
+			var query = $"select * from {Table} where {where.clause}";
+
+			return Database.Connection.QuerySingleOrDefault(Type, query, where.parms, Database.Transaction);
+		}
+	}
+
+	public class DapperRepository<T> : DapperRepository, IRepository<T>
+	{
+		//protected Dictionary<string, object> parms = new Dictionary<string, object>();
+		
+		public DapperRepository(IDatabase database) :base(database, typeof(T))
+		{			
+		}
+				
 		public IEnumerable<T> List(Expression predicate = null)
 		{
 			var query = AllObjectsQuery;
@@ -174,45 +237,7 @@ namespace Tango.Data
 			else
 				return Database.Connection.Query<T>(query, args, Database.Transaction);
 		}
-
-		protected (string clause, Dictionary<string, object> parms) GetByIdWhereClause(object id)
-		{
-			var parms = new Dictionary<string, object>();
-			var idtype = id.GetType();
-			if (idtype == typeof(Dictionary<string, object>))
-			{
-				var ids = id as Dictionary<string, object>;
-				int i = 0;
-				var clause = ids.Select(k => {
-					var s = $"{k.Key.ToLower()} = @p{i}";
-					parms.Add($"p{i}", k.Value);
-					i++;
-					return s;
-				}).Join(" and ");
-				return (clause, parms);
-			}
-			else if (idtype == typeof(string) || idtype == typeof(Guid) || idtype == typeof(DateTime) ||
-				(idtype.IsValueType && idtype.IsPrimitive))
-			{
-				parms.Add("p0", id);
-				return (keys.Keys.First().ToLower() + " = @p0", parms);
-			}
-			else if (idtype.IsValueType)
-			{
-				var props = id.GetType().GetProperties();
-				int i = 0;
-				var clause = keys.Select(k => {
-					var s = $"{k.Key.ToLower()} = @p{i}";
-					parms.Add($"p{i}", props[i].GetValue(id));
-					i++;
-					return s;
-				}).Join(" and ");
-				return (clause, parms);
-			}
-			else
-				throw new Exception($"Entity {typeof(T).Name} doesn't contain any key property");
-		}
-
+				
 		protected (string clause, Dictionary<string, object> parms) GetByIdsWhereClause<TKey>(IEnumerable<TKey> ids)
 		{
 			var cnt = keys.Count();
@@ -232,22 +257,11 @@ namespace Tango.Data
 				throw new Exception($"Entity {typeof(T).Name} doesn't contain any key property");
 		}
 
-		public T GetById(object id)
+		public new T GetById(object id)
 		{
-			var where = GetByIdWhereClause(id);
-			var query = $"select * from {Table} where {where.clause}";
-
-			return Database.Connection.QuerySingleOrDefault<T>(query, where.parms, Database.Transaction);
+			return (T)base.GetById(id);
 		}
-
-		public bool Exists(object id)
-		{
-			var where = GetByIdWhereClause(id);
-			var query = $"select 1 from {Table} where {where.clause}";
-
-			return Database.Connection.QuerySingleOrDefault<int>(query, where.parms, Database.Transaction) == 1;
-		}
-
+				
 		public virtual void Create(T entity)
 		{
 			var props = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public)
