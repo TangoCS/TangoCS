@@ -155,7 +155,10 @@ namespace Tango
 			var ds = d.ToString();
 			if (ds.IsEmpty()) return null;
 
-			return DateTime.ParseExact(ds, format, CultureInfo.InvariantCulture);
+			if (DateTime.TryParseExact(ds, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
+				return dt;
+			else
+				return null;
 		}
 
 		public static DateTime ParseDateTime(this IReadOnlyDictionary<string, object> dd, string name, string format, DateTime defaultValue)
@@ -165,7 +168,10 @@ namespace Tango
 			var ds = d.ToString();
 			if (ds.IsEmpty()) return defaultValue;
 
-			return DateTime.ParseExact(ds, format, CultureInfo.InvariantCulture);
+			if (DateTime.TryParseExact(ds, format, CultureInfo.InvariantCulture, DateTimeStyles.None, out var dt))
+				return dt;
+			else
+				return defaultValue;
 		}
 
 		public static decimal ParseDecimal(this IReadOnlyDictionary<string, object> dd, string name, decimal defaultValue = 0)
@@ -181,16 +187,32 @@ namespace Tango
 
 		static T Parse<T>(object d, string format, T defaultValue = default)
 		{
-			if (typeof(T) == d.GetType()) return (T)d;
-
-			if (typeof(T) == typeof(DateTime?) || typeof(T) == typeof(DateTime))
+			if (typeof(T) == d.GetType())
+				return (T)d;
+			else if (typeof(T) == typeof(DateTime?) || typeof(T) == typeof(DateTime))
 			{
 				var ds = d.ToString();
 				if (ds.IsEmpty()) return defaultValue;
 				return (T)(object)DateTime.ParseExact(ds, format ?? "yyyy-MM-dd", CultureInfo.InvariantCulture);
 			}
+			else if (typeof(T) == typeof(decimal?))
+			{
+				var ds = d.ToString();
+				if (ds.IsEmpty()) return defaultValue;
+				return (T)(object)ds.ToDecimal();
+			}
+			else if (typeof(T) == typeof(decimal))
+			{
+				var ds = d.ToString();
+				if (ds.IsEmpty()) return defaultValue;
+				var dec = ds.ToDecimal();
+				if (dec == null)
+					return defaultValue;
+				else
+					return (T)(object)dec;
 
-			if (typeof(T).IsEnum)
+			}
+			else if (typeof(T).IsEnum)
 			{
 				var d2 = Convert.ChangeType(d, Enum.GetUnderlyingType(typeof(T)));
 				if (Enum.IsDefined(typeof(T), d2))

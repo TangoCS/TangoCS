@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Net;
 using Tango.Html;
@@ -20,7 +21,7 @@ namespace Tango.UI
 		public static ActionLink ToCurrent(this ActionLink a)
 		{
 			a = a.To(a.Context.Service, a.Context.Action).UseDefaultResolver()
-				.WithArgs(a.Context.AllArgs);
+				.WithArgs(a.Context.AllArgs.Where(arg => !a.Context.FormData.ContainsKey(arg.Key)));
 			foreach(var r in a.Context.ReturnUrl)
 				a.WithArg(Constants.ReturnUrl + (r.Key == 1 ? "" : $"_{r.Key}"), r.Value);
 			return a;

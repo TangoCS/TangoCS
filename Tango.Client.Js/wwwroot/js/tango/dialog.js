@@ -8,6 +8,11 @@
 		close: function (el) {
 			if (!el.nodeType) el = document.getElementById(el);
 			el.classList.remove('md-show');
+			if (!el.getAttribute('data-reuse')) {
+				au.delay(el, function (d) {
+					d.parentNode.removeChild(d);
+				});
+			};
 		},
 		widgetWillMount: function (shadow, state) {
 			const el = shadow.getElementById(state.root);
