@@ -11,22 +11,26 @@ namespace Tango.Data
 		IDbTransaction Transaction { get; set; }
 
 		IRepository<T> Repository<T>();
+		IRepository Repository(Type type);
 
 		IDbTransaction BeginTransaction(IsolationLevel il = IsolationLevel.Unspecified);
 	}
 
-	public interface IRepository<T>
+	public interface IRepository
 	{
 		string AllObjectsQuery { get; set; }
 		string Table { get; }
 		IDictionary<string, object> Parameters { get; }
 
-		T GetById(object id);
 		bool Exists(object id);
-
+		object GetById(object id);
 		int Count(Expression predicate = null);
-		IEnumerable<T> List(Expression predicate = null);
+	}
 
+	public interface IRepository<T> : IRepository
+	{
+		new T GetById(object id);
+		new IEnumerable<T> List(Expression predicate = null);
 		void Create(T entity);
 		object CreateFrom(Action<UpdateSetCollection<T>> sets, Expression<Func<T, bool>> predicate);
 
