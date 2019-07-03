@@ -13,7 +13,7 @@ namespace Tango.UI
 			AllArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			RouteArgs = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
 			FormData = new DynamicDictionary(StringComparer.OrdinalIgnoreCase);
-			EventReceivers = new Dictionary<string, IViewElement>(StringComparer.OrdinalIgnoreCase);
+			EventReceivers = new List<IViewElement>();
 			PersistentArgs = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
 			ReturnUrl = new Dictionary<int, string>();
@@ -30,7 +30,7 @@ namespace Tango.UI
 		public IResourceManager Resources { get; protected set; }
 		public RoutesCollection Routes { get; protected set; }
 		public IDictionary<string, string> PersistentArgs { get; }
-		public IDictionary<string, IViewElement> EventReceivers { get; private set; }
+		public ICollection<IViewElement> EventReceivers { get; private set; }
 
 		// request
 		public Guid? RequestID { get; set; }
