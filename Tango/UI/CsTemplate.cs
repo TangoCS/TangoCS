@@ -88,36 +88,13 @@ namespace Tango.UI
 	{
 		public DataCollection DataCollection { get; set; } = new DataCollection();
 
-		public override string ID {
-			get => base.ID;
-			set {
-				base.ID = value;
-				if (value != null)
-					ClientID = _parentElement?.GetClientID(value) ?? value.ToLower();
-				else
-					ClientID = null;
-			}
-		}
+		public string ClientID => ID != null ? ParentElement?.GetClientID(ID) ?? ID.ToLower() : null;
+		public IViewElement ParentElement { get; set; }
 
-		public string ClientID { get; private set; }
-		public string Name => ClientID.IsEmpty() ? GetType().Name.ToLower() : ClientID;
-
-		IViewElement _parentElement;
-		public IViewElement ParentElement {
-			get => _parentElement;
-			set {
-				_parentElement = value;
-				if (ID != null) ClientID = _parentElement?.GetClientID(ID) ?? ID.ToLower();
-			}
-		}
+		public string GetClientID(string id) => (!ClientID.IsEmpty() ? ClientID + (!id.IsEmpty() ? "_" + id : "") : (id ?? "")).ToLower();
 
 		public virtual void OnInit() { }
 		public virtual void AfterInit() { }
-
-		public string GetClientID(string id)
-		{
-			return (!ClientID.IsEmpty() ? ClientID + (!id.IsEmpty() ? "_" + id : "") : (id ?? "")).ToLower();
-		}
 
 		public T CreateControl<T>(string id, Action<T> setProperties = null)
 			where T : ViewElement, new()
@@ -127,8 +104,8 @@ namespace Tango.UI
 			c.ID = id;
 			c.ParentElement = this;
 
-			if (!Context.EventReceivers.ContainsKey(c.ClientID))
-				Context.EventReceivers.Add(c.ClientID, c);
+			if (!Context.EventReceivers.Contains(c))
+				Context.EventReceivers.Add(c);
 
 			setProperties?.Invoke(c);
 			c.OnInit();
@@ -139,13 +116,13 @@ namespace Tango.UI
 		public T AddControl<T>(T c)
 			where T : ViewElement
 		{
-			if (Context.EventReceivers.ContainsKey(c.ID)) return c;
+			if (Context.EventReceivers.Contains(c)) return c;
 
 			c.Context = Context;
 			if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
 			c.ParentElement = this;
 
-			Context.EventReceivers.Add(c.ClientID, c);
+			Context.EventReceivers.Add(c);
 			c.OnInit();
 			c.AfterInit();
 			return c;
@@ -162,6 +139,7 @@ namespace Tango.UI
 		public string Type => GetType().Name.Replace("Container", "");
 
 		public IDictionary<string, string> Mapping { get; } = new Dictionary<string, string>();
+		public HashSet<string> ToRemove { get; } = new HashSet<string>();
 
 		public abstract void Render(ApiResponse response);
 
