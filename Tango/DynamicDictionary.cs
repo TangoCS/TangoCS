@@ -193,7 +193,7 @@ namespace Tango
 			{
 				var ds = d.ToString();
 				if (ds.IsEmpty()) return defaultValue;
-				return (T)(object)DateTime.ParseExact(ds, format ?? "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                return (T)(object)ds.ToDate(format ?? "yyyy-MM-dd", (DateTime)(object)defaultValue);
 			}
 			else if (typeof(T) == typeof(decimal?))
 			{

@@ -89,12 +89,17 @@ namespace Tango
 
 		public static DateTime ToDate(this string src, DateTime defaultValue)
 		{
-			if (DateTime.TryParseExact(src, "d.MM.yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime dt))
-				return dt;
-			return defaultValue;
+			return src.ToDate(null, defaultValue);
 		}
 
-		public static DateTime? ToDate(this string src)
+        public static DateTime ToDate(this string src, string format, DateTime defaultValue)
+        {
+            if (DateTime.TryParseExact(src, format ?? "d.MM.yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime dt))
+                return dt;
+            return defaultValue;
+        }
+
+        public static DateTime? ToDate(this string src)
 		{
 			if (DateTime.TryParseExact(src, "d.MM.yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime dt))
 				return dt;
