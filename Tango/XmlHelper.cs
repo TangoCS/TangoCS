@@ -1,4 +1,5 @@
-﻿using System.Xml;
+﻿using System.Text;
+using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
@@ -29,10 +30,11 @@ namespace Tango
 			XmlSerializer xs = new XmlSerializer(request.GetType());
 			XDocument d = new XDocument();
 
-			using (XmlWriter w = d.CreateWriter()) xs.Serialize(w, request);
+            using (XmlWriter w = d.CreateWriter())                
+                xs.Serialize(w, request);
 
 			XElement e = d.Root;
-			e.Remove();
+			e.Remove();            
 
 			return e;
 		}
@@ -45,5 +47,16 @@ namespace Tango
 			return xs.Deserialize(xe.CreateReader()) as T;
 		}
 
-	}
+        public static XmlWriterSettings GetSettings()
+        {
+            XmlWriterSettings settings = new XmlWriterSettings
+            {
+                
+                Encoding = Encoding.GetEncoding("windows-1251"),
+                Indent = true,
+                NewLineHandling = NewLineHandling.None
+            };
+            return settings;
+        }
+    }
 }

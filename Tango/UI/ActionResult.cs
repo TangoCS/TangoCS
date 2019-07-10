@@ -45,8 +45,9 @@ namespace Tango.UI
 			ContentFunc = ctx => Encoding.UTF8.GetBytes(Html);
 		}
 	}
+    
 
-	public class MessageResult : HttpResult
+    public class MessageResult : HttpResult
 	{
 		public MessageResult(string title, string message)
 		{
