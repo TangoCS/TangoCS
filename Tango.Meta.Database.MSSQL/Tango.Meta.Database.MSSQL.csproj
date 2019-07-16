@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net47</TargetFrameworks>
     <AssemblyName>Tango.Meta.Database.MSSQL</AssemblyName>
     <PackageId>Tango.Meta.Database.MSSQL</PackageId>
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
@@ -20,12 +20,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Data.SqlClient" Version="4.6.0" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.6.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\TangoCS\Tango.Abstractions\Tango.Abstractions.csproj" />
-    <ProjectReference Include="..\..\TangoCS\Tango\Tango.csproj" />
   </ItemGroup>
 
 </Project>

@@ -108,24 +108,29 @@ namespace DBSchemaDiff
 				Tables = Tables.Where(t => !cfgExcludeTables.Any(c => t.Name.ToLower() == c.ToLower())).ToList();
 
 			var result = new StringBuilder();
-			var resultBeg = new StringBuilder();
-			resultBeg.AppendLine("DO LANGUAGE plpgsql");
-			resultBeg.AppendLine("$$");
-			resultBeg.AppendLine("BEGIN");
 
-			var resultEnd = new StringBuilder();
-			resultEnd.AppendLine("EXCEPTION WHEN OTHERS THEN");
-			resultEnd.AppendLine("RAISE EXCEPTION 'Error state: %, Error message: %', SQLSTATE, SQLERRM;");
-			resultEnd.AppendLine("RAISE NOTICE 'Database structure successfully updated!';");
-			resultEnd.AppendLine("END;");
-			resultEnd.AppendLine("$$");
+            var resBeg = new StringBuilder();
+            resBeg.AppendLine("DO LANGUAGE plpgsql");
+			resBeg.AppendLine("$$");
+			resBeg.AppendLine("BEGIN");
+            string resultBeg = resBeg.ToString();
+            resBeg.Clear();
 
-			var indexaddpath = path + dbFromName + "_ADD_INDEX.sql";
+            var resEnd = new StringBuilder();
+            resEnd.AppendLine("EXCEPTION WHEN OTHERS THEN");
+			resEnd.AppendLine("RAISE EXCEPTION 'Error state: %, Error message: %', SQLSTATE, SQLERRM;");
+			resEnd.AppendLine("RAISE NOTICE 'Database structure successfully updated!';");
+			resEnd.AppendLine("END;");
+			resEnd.AppendLine("$$");
+            string resultEnd = resEnd.ToString();
+            resEnd.Clear();
+
+            var indexaddpath = path + dbFromName + "_ADD_INDEX.sql";
 			var indexdroppath = path + dbFromName + "_DROP_INDEX.sql";
 			if (tableIndexes)
 			{
-				File.WriteAllText(indexaddpath, resultBeg.ToString());
-				File.WriteAllText(indexdroppath, resultBeg.ToString());
+				File.WriteAllText(indexaddpath, resultBeg);
+				File.WriteAllText(indexdroppath, resultBeg);
 			}
 
 			foreach (var rsctable in Tables)
@@ -167,8 +172,8 @@ namespace DBSchemaDiff
 
 			if (tableIndexes)
 			{
-				File.AppendAllText(indexaddpath, resultEnd.ToString());
-				File.AppendAllText(indexdroppath, resultEnd.ToString());
+				File.AppendAllText(indexaddpath, resultEnd);
+				File.AppendAllText(indexdroppath, resultEnd);
 			}
 
 			Console.WriteLine("End");

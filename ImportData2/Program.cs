@@ -34,11 +34,6 @@ namespace ImportData2
 			var tablesImport = ConfigurationManager.AppSettings["TablesForImport" + (!profileName.IsEmpty() ? "_" + profileName : "")];
 			var tablesExclude = ConfigurationManager.AppSettings["TablesExclude" + (!profileName.IsEmpty() ? "_" + profileName : "")];
 
-			var result = new StringBuilder();
-			var resultcopy = new StringBuilder();
-			var resultBeg = new StringBuilder();
-			var resultEnd = new StringBuilder();
-
 			if (string.IsNullOrEmpty(connectFrom) || string.IsNullOrEmpty(connectTo) || string.IsNullOrEmpty(tablesImport))
 			{
 				Console.Write(@"Некорректные параметры");
@@ -137,30 +132,37 @@ namespace ImportData2
 			Console.WriteLine(@"Drop constraints: " + tableListForeignKeysTo.Count());
 			Console.WriteLine(@"Create constraints: " + tableListForeignKeysObjects.Count());
 
-			resultBeg.AppendLine("DO LANGUAGE plpgsql");
-			resultBeg.AppendLine("$$");
-			resultBeg.AppendLine("BEGIN");
+            var result = new StringBuilder();
+            var resultcopy = new StringBuilder();
 
-			
+            var resBeg = new StringBuilder();
+            resBeg.AppendLine("DO LANGUAGE plpgsql");
+			resBeg.AppendLine("$$");
+			resBeg.AppendLine("BEGIN");
+            string resultBeg = resBeg.ToString();
+            resBeg.Clear();
 
-			resultEnd.AppendLine("EXCEPTION WHEN OTHERS THEN");
-			resultEnd.AppendLine("RAISE EXCEPTION 'Error state: %, Error message: %', SQLSTATE, SQLERRM;");
-			resultEnd.AppendLine("RAISE NOTICE 'Database structure successfully updated!';");
-			resultEnd.AppendLine("END;");
-			resultEnd.AppendLine("$$");
+            var resEnd = new StringBuilder();
+            resEnd.AppendLine("EXCEPTION WHEN OTHERS THEN");
+			resEnd.AppendLine("RAISE EXCEPTION 'Error state: %, Error message: %', SQLSTATE, SQLERRM;");
+			resEnd.AppendLine("RAISE NOTICE 'Database structure successfully updated!';");
+			resEnd.AppendLine("END;");
+			resEnd.AppendLine("$$");
+            string resultEnd = resEnd.ToString();
+            resEnd.Clear();
 
-			var droppath = path + dbFromName + "__DROP_CONSTRAINTS.sql";
-			File.WriteAllText(droppath, resultBeg.ToString());
+            var droppath = path + dbFromName + "__DROP_CONSTRAINTS.sql";
+			File.WriteAllText(droppath, resultBeg);
 			DropConstraints(tableListForeignKeysTo, result);
 			File.AppendAllText(droppath, result.ToString());
-			File.AppendAllText(droppath, resultEnd.ToString());
+			File.AppendAllText(droppath, resultEnd);
 			result.Clear();
 
 			var addpath = path + dbFromName + "__ADD_CONSTRAINTS.sql";
-			File.WriteAllText(addpath, resultBeg.ToString());
+			File.WriteAllText(addpath, resultBeg);
 			CreateConstraints(tableListForeignKeysObjects, result);
 			File.AppendAllText(addpath, result.ToString());
-			File.AppendAllText(addpath, resultEnd.ToString());
+			File.AppendAllText(addpath, resultEnd);
 			result.Clear();
 
 			if (!constraintsOnly)
@@ -201,18 +203,18 @@ GROUP BY t.Name, s.Name, p.Rows", table.Name);
 						ImportData2(filecopy, dbFromName.ToLower(), table, tableto, cmd, resultcopy);
 
 						var filePath = path + dbFromName + "_" + table.Name + ".sql";
-						File.WriteAllText(filePath, resultBeg.ToString());
+						File.WriteAllText(filePath, resultBeg);
 						File.AppendAllText(filePath, resultcopy.ToString());
-						File.AppendAllText(filePath, resultEnd.ToString());
+						File.AppendAllText(filePath, resultEnd);
 						resultcopy.Clear();
 					}
 					else
 					{
 						var filePath = string.Format(newfilePath, table.Name.ToLower());						
 						ImportData(table, tableto, cmd, result);
-						File.WriteAllText(filePath, resultBeg.ToString());
+						File.WriteAllText(filePath, resultBeg);
 						File.AppendAllText(filePath, result.ToString());
-						File.AppendAllText(filePath, resultEnd.ToString());
+						File.AppendAllText(filePath, resultEnd);
 						result.Clear();
 					}
 					Console.WriteLine(@"end");
@@ -220,9 +222,6 @@ GROUP BY t.Name, s.Name, p.Rows", table.Name);
 
 				sqlCon.Close();
 			}
-
-			resultBeg.Clear();
-			resultEnd.Clear();
 
 			Console.WriteLine("End");
 			Console.ReadKey();
