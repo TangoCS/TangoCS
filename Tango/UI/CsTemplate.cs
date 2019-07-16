@@ -143,15 +143,15 @@ namespace Tango.UI
 
 		public abstract void Render(ApiResponse response);
 
-		public void ProcessResponse(ActionContext ctx, ApiResponse response)
+		public void ProcessResponse(ApiResponse response, bool addContainer, string prefix)
 		{
 			OnInit();
 
-			if (ctx.AddContainer)
+			if (addContainer)
 			{
 				response.WithNameFunc(name => Mapping.ContainsKey(name) ?
-					HtmlWriterHelpers.GetID(ctx.ContainerPrefix, Mapping[name]) :
-					HtmlWriterHelpers.GetID(ctx.ContainerPrefix, name));
+					HtmlWriterHelpers.GetID(prefix, Mapping[name]) :
+					HtmlWriterHelpers.GetID(prefix, name));
 				response.WithWritersFor(this, () => Render(response));
 			}
 

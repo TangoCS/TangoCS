@@ -227,6 +227,22 @@ namespace Tango.UI
 			if (b) return res;
 			return null;
 		}
+		public static long GetLongArg(this ActionContext ctx, string name, int defaultValue)
+		{
+			long res = 0;
+			bool b = ctx.AllArgs.TryGetValue(name, out object s);
+			if (b) b = long.TryParse(s.ToString(), out res);
+			if (b) return res;
+			return defaultValue;
+		}
+		public static long? GetLongArg(this ActionContext ctx, string name)
+		{
+			long res = 0;
+			bool b = ctx.AllArgs.TryGetValue(name, out object s);
+			if (b) b = long.TryParse(s.ToString(), out res);
+			if (b) return res;
+			return null;
+		}
 		public static Guid GetGuidArg(this ActionContext ctx, string name, Guid defaultValue)
 		{
 			Guid res = Guid.Empty;
