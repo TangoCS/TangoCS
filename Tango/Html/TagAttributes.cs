@@ -14,7 +14,7 @@ namespace Tango.Html
 			_this = this as T;
 		}
 
-		protected HtmlWriter Writer;
+		public HtmlWriter Writer;
 
 		public void SetWriter(IContentWriter writer) => Writer = writer as HtmlWriter;
 

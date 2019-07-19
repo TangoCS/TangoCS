@@ -29,7 +29,8 @@ namespace Tango.UI
 
 		public static ActionLink ToReturnUrl(this ActionLink a, int code)
 		{
-			var target = a.Context.ReturnTarget[code];
+			var target = a.Context.ReturnTarget.Get(code);
+			if (target == null) return a;
 			return a.To(target.Service, target.Action).UseDefaultResolver().WithArgs(target.Args);
 		}
 
