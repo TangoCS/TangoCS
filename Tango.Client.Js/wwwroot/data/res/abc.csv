@@ -311,3 +311,4 @@ Abc.Model.WF_Workflow.LastModifiedUser;Последний редактирова
 Abc.Model.WF_Workflow.SysName;Системное имя;System name
 Abc.Model.WF_Workflow.Title;Наименование;Title
 abc.model.utils.notfoundresources;Отсутствующие ресурсы;Not found resources
+abc.views.fields.simpledto-pl;Выберите объект;Choose object
