@@ -187,14 +187,15 @@ var domActions = function () {
 			}
 			else {
 				var root = args.root ? args.root : document;
-				var grels = root.querySelectorAll(args.groupSelector);
 				var els = root.querySelectorAll(args.itemsSelector);
-
 				var b = args.sender.classList.contains(args.senderClsName);
 
-				for (var i = 0; i < grels.length; i++) {
-					grels[i].classList.remove(args.clsName);
-					grels[i].classList.remove(args.senderClsName);
+				if (args.groupSelector) {
+					var grels = root.querySelectorAll(args.groupSelector);
+					for (var i = 0; i < grels.length; i++) {
+						grels[i].classList.remove(args.clsName);
+						grels[i].classList.remove(args.senderClsName);
+					}
 				}
 
 				if (!b) {
@@ -202,6 +203,12 @@ var domActions = function () {
 						els[i].classList.add(args.clsName);
 					}
 					args.sender.classList.add(args.senderClsName);
+				}
+				else if (!args.groupSelector) {
+					for (var i = 0; i < els.length; i++) {
+						els[i].classList.remove(args.clsName);
+					}
+					args.sender.classList.remove(args.senderClsName);
 				}
 			}
 		},

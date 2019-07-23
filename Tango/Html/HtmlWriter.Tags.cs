@@ -372,6 +372,7 @@ namespace Tango.Html
 		public static void H5(this HtmlWriter w, string text) { w.H5(null, () => w.Write(text)); }
 		public static void H6(this HtmlWriter w, string text) { w.H6(null, () => w.Write(text)); }
 		public static void Legend(this HtmlWriter w, string text) { w.Legend(null, text); }
+		public static void Li(this HtmlWriter w, string text) { w.Li(null, () => w.Write(text)); }
 		public static void P(this HtmlWriter w, string text) { w.P(null, () => w.Write(text)); }
 		public static void P(this HtmlWriter w, Action<TagAttributes> attributes, string text) { w.P(attributes, () => w.Write(text)); }
 		public static void Script(this HtmlWriter w, string path) { w.Script(a => a.Type("text/javascript").Src(path)); }
