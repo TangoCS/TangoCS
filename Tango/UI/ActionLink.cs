@@ -81,6 +81,7 @@ namespace Tango.UI
 
 		public bool ChangeUrl { get; private set; } = true;
 		public bool IsTargetBlank { get; private set; } = false;
+		public bool HideDisabled { get; private set; } = false;
 
 		public List<string> References { get; } = new List<string>();
 		public (string Type, string Prefix) Container { get; private set; }
@@ -177,6 +178,18 @@ namespace Tango.UI
 		public ActionLink WithCondition(bool cond)
 		{
 			_condition = _condition && cond;
+			return this;
+		}
+
+		public ActionLink WithHideDisabled(bool value)
+		{
+			HideDisabled = value;
+			return this;
+		}
+
+		public ActionLink WithRequestMethod(string value)
+		{
+			RequestMethod = value;
 			return this;
 		}
 
