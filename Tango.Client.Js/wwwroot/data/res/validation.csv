@@ -1,0 +1,7 @@
+﻿name;ru;en
+common.validation.NotEmpty;Необходимо заполнить значение поля {0}
+common.validation.NotNull;Необходимо заполнить значение поля {0}
+common.validation.MinLength;Количество символов в поле {0} не должно быть меньше {1}
+common.validation.MaxLength;Количество символов в поле {0} не должно быть больше {1}
+
+
