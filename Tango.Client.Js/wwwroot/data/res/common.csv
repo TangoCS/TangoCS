@@ -160,3 +160,8 @@ System.Filter.ToolTip.OpeningBrackets;Открывающие скобки;Openin
 System.Filter.Up;Вверх;Up
 System.Filter.Value;Значение;Value
 System.Filter.Yes;Да;Yes
+
+common.validation.NotEmpty;Необходимо заполнить значение поля {0}
+common.validation.NotNull;Необходимо заполнить значение поля {0}
+common.validation.MinLength;Количество символов в поле {0} не должно быть меньше {1}
+common.validation.MaxLength;Количество символов в поле {0} не должно быть больше {1}
