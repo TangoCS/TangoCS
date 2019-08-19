@@ -652,9 +652,9 @@ var ajaxUtils = function ($, cu) {
 			var val = attr.value == '' ? null : attr.value;
 			if (attr.name.startsWith('data-p-')) {
 				if (target.method == 'POST')
-					target.data[attr.name.replace('data-p-', '')] = val;
+					target.data[attr.name.replace('data-p-', '')] = val || '';
 				else
-					target.query[attr.name.replace('data-p-', '')] = val;
+					target.query[attr.name.replace('data-p-', '')] = val || '';
 			} else if (attr.name == 'href') {
 				target.url = val;
 			} else if (attr.name == 'data-href') {
@@ -666,7 +666,7 @@ var ajaxUtils = function ($, cu) {
 			} else if (attr.name.startsWith('data-format')) {
 				target.data[FORMAT_PREFIX + el.name] = val;
 			} else if (attr.name.startsWith('data-c-')) {
-				target.data[attr.name.replace('data-c-', 'c-')] = val;
+				target.data[attr.name.replace('data-c-', 'c-')] = val || '';
 			} else if (attr.name.startsWith('data-ref')) {
 				processElementValue(document.getElementById(val), target);
 			} else if (attr.name == 'data-responsetype') {

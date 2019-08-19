@@ -24,21 +24,59 @@ namespace Tango.FileStorage
 
 	public static class IStorageFileExtensions
 	{
-		public static string ReadAllText(this IStorageFile file)
-		{
-			var bytes = file.ReadAllBytes();
+        public static string ReadAllText(this IStorageFile file)
+        {
+            var b = file.ReadAllBytes();
 
-			if (bytes.Length >= 3 && bytes[0] == 0xEF && bytes[1] == 0xBB && bytes[2] == 0xBF)
-				return Encoding.UTF8.GetString(bytes, 3, bytes.Length - 3);
+            if (b.Length >= 4 && b[0] == 0x00 && b[1] == 0x00 && b[2] == 0xFE && b[3] == 0xFF) return Encoding.GetEncoding("utf-32BE").GetString(b, 4, b.Length - 4); // UTF-32, big-endian 
+            if (b.Length >= 4 && b[0] == 0xFF && b[1] == 0xFE && b[2] == 0x00 && b[3] == 0x00) return Encoding.UTF32.GetString(b, 4, b.Length - 4); // UTF-32, little-endian
+            if (b.Length >= 3 && b[0] == 0xEF && b[1] == 0xBB && b[2] == 0xBF) return Encoding.UTF8.GetString(b, 3, b.Length - 3); // UTF-8
+            if (b.Length >= 3 && b[0] == 0x2b && b[1] == 0x2f && b[2] == 0x76) return Encoding.UTF7.GetString(b, 3, b.Length - 3); // UTF-7
+            if (b.Length >= 2 && b[0] == 0xFE && b[1] == 0xFF) return Encoding.BigEndianUnicode.GetString(b, 2, b.Length - 2); // UTF-16, big-endian
+            if (b.Length >= 2 && b[0] == 0xFF && b[1] == 0xFE) return Encoding.Unicode.GetString(b, 2, b.Length - 2); // UTF-16, little-endian
 
-			if (bytes.Length >= 2 && bytes[0] == 0xFE && bytes[1] == 0xFF)
-				return Encoding.BigEndianUnicode.GetString(bytes, 2, bytes.Length - 2);
+            Encoding encoding = null;
+            var stream = new MemoryStream(b);
+            using (StreamReader reader = new StreamReader(stream, Encoding.ASCII, true))
+            {
+                reader.Read();
+                if (reader.CurrentEncoding != Encoding.ASCII)
+                {
+                    encoding = reader.CurrentEncoding;
+                }
+            }
+            if (encoding != null)
+                return encoding.GetString(b);
 
-			if (bytes.Length >= 2 && bytes[0] == 0xFF && bytes[1] == 0xFE)
-				return Encoding.Unicode.GetString(bytes, 2, bytes.Length - 2);
+            stream = new MemoryStream(b);
+            using (StreamReader reader = new StreamReader(stream, new UTF8Encoding(false, true)))
+            {
+                try
+                {
+                    reader.Read();
+                    encoding = Encoding.UTF8;
+                }
+                catch { }
+            }
 
-			return Encoding.UTF8.GetString(bytes);
-		}
+            if (encoding != null)
+                return encoding.GetString(b);
+
+            var enc = Encoding.GetEncoding(Encoding.ASCII.CodePage, new EncoderExceptionFallback(), new DecoderExceptionFallback());
+            try
+            {
+                var str = enc.GetString(b);
+                return str;
+            }
+            catch { }
+
+            if (encoding == null)
+            {
+                encoding = Encoding.GetEncoding(1251);
+            }
+
+            return encoding.GetString(b);
+        }
 
 		public static XDocument ReadAllXml(this IStorageFile file)
 		{

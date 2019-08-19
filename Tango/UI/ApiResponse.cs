@@ -57,7 +57,7 @@ namespace Tango.UI
 
 		public ApiResponse WithWritersFor(string prefix)
 		{
-			_idprefix = prefix;
+			_idprefix = prefix ?? "";
 			return this;
 		}
 

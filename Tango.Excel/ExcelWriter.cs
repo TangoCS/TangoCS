@@ -253,7 +253,11 @@ namespace Tango.Excel
             {
                 if (key == "FormulaR1C1")
                     formula = value as string;
-                return this;
+				else if (key == Xlsx.AutoFilter)
+					writer.s.Cells[writer.r, writer.c].AutoFilter = true;
+				else if (key == Xlsx.OutlineLevel)
+					writer.s.Row(writer.r).OutlineLevel = Convert.ToInt32(value);
+				return this;
             }
 
             public ITdAttributes ID<TValue>(TValue value)
@@ -353,7 +357,11 @@ namespace Tango.Excel
             {
                 if (key == Xlsx.FormulaR1C1)
                     formula = value as string;
-                return this;
+				else if (key == Xlsx.AutoFilter)
+					writer.s.Cells[writer.r, writer.c].AutoFilter = true;
+				else if (key == Xlsx.OutlineLevel)
+					writer.s.Row(writer.r).OutlineLevel = Convert.ToInt32(value);
+				return this;
             }
 
             public IThAttributes ID<TValue>(TValue value)
@@ -487,7 +495,9 @@ namespace Tango.Excel
     public static class Xlsx
     {
         public const string FormulaR1C1 = "FormulaR1C1";
-    }
+		public const string AutoFilter = "AutoFilter";
+		public const string OutlineLevel = "OutlineLevel";
+	}
 
 	public static class XlsxExtensions
 	{
@@ -495,6 +505,18 @@ namespace Tango.Excel
 			where T : IContentItemAttributes<T>
 		{
 			a.Extended(Xlsx.FormulaR1C1, formula);
+		}
+
+		public static void XlsxEnableAutoFilter<T>(this IContentItemAttributes<T> a)
+			where T : IContentItemAttributes<T>
+		{
+			a.Extended(Xlsx.AutoFilter, "1");
+		}
+
+		public static void XlsxOutlineLevel<T>(this IContentItemAttributes<T> a, int level)
+			where T : IContentItemAttributes<T>
+		{
+			a.Extended(Xlsx.OutlineLevel, level);
 		}
 	}
 }
