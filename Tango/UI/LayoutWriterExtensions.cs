@@ -109,5 +109,10 @@ namespace Tango.UI
 		{
 			w.Span(a => a.Class("label label-inverse"), text);
 		}
-	}
+
+        public static void LabelDanger(this LayoutWriter w, string text)
+        {
+            w.Span(a => a.Class("label label-danger"), text);
+        }
+    }
 }
