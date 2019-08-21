@@ -92,7 +92,7 @@ namespace Tango.Html
 		IContentItemAttributes IContentItemAttributes<IContentItemAttributes>.Style(string value, bool replaceExisting) => Style(value, replaceExisting);
 		IContentItemAttributes IContentItemAttributes<IContentItemAttributes>.Extended<TValue>(string key, TValue value) => Extended(key, value);
 		IContentItemAttributes IContentItemAttributes<IContentItemAttributes>.Title(string value) => Title(value);
-
+		IContentItemAttributes IContentItemAttributes<IContentItemAttributes>.Data<TValue>(string key, TValue value) => Data(key, value);
 	}
 
 	public class ATagAttributes : TagAttributes<ATagAttributes>
@@ -265,6 +265,7 @@ namespace Tango.Html
 		ITdAttributes IContentItemAttributes<ITdAttributes>.Style(string value, bool replaceExisting) => Style(value, replaceExisting);
 		ITdAttributes IContentItemAttributes<ITdAttributes>.Extended<TValue>(string key, TValue value) => Extended(key, value);
 		ITdAttributes IContentItemAttributes<ITdAttributes>.Title(string value) => Title(value);
+		ITdAttributes IContentItemAttributes<ITdAttributes>.Data<TValue>(string key, TValue value) => Data(key, value);
 		ITdAttributes ITdAttributes.ColSpan(int value) => ColSpan(value);
 		ITdAttributes ITdAttributes.RowSpan(int value) => RowSpan(value);
 	}
@@ -298,6 +299,7 @@ namespace Tango.Html
 		IThAttributes IContentItemAttributes<IThAttributes>.Style(string value, bool replaceExisting) => Style(value, replaceExisting);
 		IThAttributes IContentItemAttributes<IThAttributes>.Extended<TValue>(string key, TValue value) => Extended(key, value);
 		IThAttributes IContentItemAttributes<IThAttributes>.Title(string value) => Title(value);
+		IThAttributes IContentItemAttributes<IThAttributes>.Data<TValue>(string key, TValue value) => Data(key, value);
 		IThAttributes IThAttributes.ColSpan(int value) => ColSpan(value);
 		IThAttributes IThAttributes.RowSpan(int value) => RowSpan(value);
 	}

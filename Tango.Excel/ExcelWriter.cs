@@ -325,6 +325,11 @@ namespace Tango.Excel
 			{
 				return this;
 			}
+
+			public ITdAttributes Data<TValue>(string key, TValue value)
+			{
+				return this;
+			}
 		}
 
         class ThAttributes : IThAttributes
@@ -420,6 +425,11 @@ namespace Tango.Excel
 			{
 				return this;
 			}
+
+			public IThAttributes Data<TValue>(string key, TValue value)
+			{
+				return this;
+			}
 		}
 
         class CIAttributes : IContentItemAttributes
@@ -487,6 +497,11 @@ namespace Tango.Excel
             }
 
 			public IContentItemAttributes Title(string value)
+			{
+				return this;
+			}
+
+			public IContentItemAttributes Data<TValue>(string key, TValue value)
 			{
 				return this;
 			}
