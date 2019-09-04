@@ -83,18 +83,6 @@ Calendar = function (firstDayOfWeek, dateStr, onSelected, onClose) {
 /// "static", needed for event handlers.
 Calendar._C = null;
 
-/// detect a special case of "web browser"
-Calendar.is_ie = (/msie/i.test(navigator.userAgent) &&
-		   !/opera/i.test(navigator.userAgent));
-
-Calendar.is_ie5 = (Calendar.is_ie && /msie 5\.0/i.test(navigator.userAgent));
-
-/// detect Opera browser
-Calendar.is_opera = /opera/i.test(navigator.userAgent);
-
-/// detect KHTML-based browsers
-Calendar.is_khtml = /Konqueror|Safari|KHTML/i.test(navigator.userAgent);
-
 // BEGIN: UTILITY FUNCTIONS; beware that these might be moved into a separate
 //        library, at some point.
 
@@ -154,14 +142,14 @@ Calendar.addClass = function (el, className) {
 
 // FIXME: the following 2 functions totally suck, are useless and should be replaced immediately.
 Calendar.getElement = function (ev) {
-	var f = Calendar.is_ie ? window.event.srcElement : ev.currentTarget;
+	var f = ev.currentTarget;
 	while (f.nodeType != 1 || /^div$/i.test(f.tagName))
 		f = f.parentNode;
 	return f;
 };
 
 Calendar.getTargetElement = function (ev) {
-	var f = Calendar.is_ie ? window.event.srcElement : ev.target;
+	var f = ev.target;
 	while (f.nodeType != 1)
 		f = f.parentNode;
 	return f;
@@ -169,13 +157,8 @@ Calendar.getTargetElement = function (ev) {
 
 Calendar.stopEvent = function (ev) {
 	ev || (ev = window.event);
-	if (Calendar.is_ie) {
-		ev.cancelBubble = true;
-		ev.returnValue = false;
-	} else {
-		ev.preventDefault();
-		ev.stopPropagation();
-	}
+	ev.preventDefault();
+	ev.stopPropagation();
 	return false;
 };
 
@@ -224,10 +207,6 @@ Calendar._add_evs = function (el) {
 		addEvent(el, "mouseover", dayMouseOver);
 		addEvent(el, "mousedown", dayMouseDown);
 		addEvent(el, "mouseout", dayMouseOut);
-		if (is_ie) {
-			addEvent(el, "dblclick", dayMouseDblClick);
-			el.setAttribute("unselectable", true);
-		}
 	}
 };
 
@@ -317,9 +296,6 @@ Calendar.showYearsCombo = function (fwd) {
 			s.left = cd.offsetLeft + "px";
 		else {
 			var ycw = yc.offsetWidth;
-			if (typeof ycw == "undefined")
-				// Konqueror brain-dead techniques
-				ycw = 50;
 			s.left = (cd.offsetLeft + cd.offsetWidth - ycw) + "px";
 		}
 		s.top = (cd.offsetTop + cd.offsetHeight) + "px";
@@ -471,14 +447,8 @@ Calendar.calDragIt = function (ev) {
 	}
 	var posX;
 	var posY;
-	if (Calendar.is_ie) {
-		posY = window.event.clientY + document.body.scrollTop;
-		posX = window.event.clientX + document.body.scrollLeft;
-	} else {
-		posX = ev.pageX;
-		posY = ev.pageY;
-	}
-	cal.hideShowCovered();
+	posX = ev.pageX;
+	posY = ev.pageY;
 	var st = cal.element.style;
 	st.left = (posX - cal.xOffs) + "px";
 	st.top = (posY - cal.yOffs) + "px";
@@ -496,7 +466,6 @@ Calendar.calDragEnd = function (ev) {
 		removeEvent(document, "mouseup", calDragEnd);
 		tableMouseUp(ev);
 	}
-	cal.hideShowCovered();
 };
 
 Calendar.dayMouseDown = function (ev) {
@@ -512,7 +481,7 @@ Calendar.dayMouseDown = function (ev) {
 			el._current = el.innerHTML;
 			addEvent(document, "mousemove", tableMouseOver);
 		} else
-			addEvent(document, Calendar.is_ie5 ? "mousemove" : "mouseover", tableMouseOver);
+			addEvent(document, "mouseover", tableMouseOver);
 		addClass(el, "hilite active");
 		addEvent(document, "mouseup", tableMouseUp);
 	} else if (cal.isPopup) {
@@ -532,9 +501,6 @@ Calendar.dayMouseDown = function (ev) {
 
 Calendar.dayMouseDblClick = function (ev) {
 	Calendar.cellClick(Calendar.getElement(ev), ev || window.event);
-	if (Calendar.is_ie) {
-		document.selection.empty();
-	}
 };
 
 Calendar.dayMouseOver = function (ev) {
@@ -755,9 +721,9 @@ Calendar.prototype.create = function (_par) {
 	var hh = function (text, cs, navtype) {
 		cell = Calendar.createElement("td", row);
 		cell.colSpan = cs;
-		cell.className = "button";
+		cell.className = "cal-button";
 		if (navtype != 0 && Math.abs(navtype) <= 2)
-			cell.className += " nav";
+			cell.className += " cal-nav";
 		Calendar._add_evs(cell);
 		cell.calendar = cal;
 		cell.navtype = navtype;
@@ -772,7 +738,7 @@ Calendar.prototype.create = function (_par) {
 
 	hh("?", 1, 400).ttip = Calendar._TT["INFO"];
 	this.title = hh("", title_length, 300);
-	this.title.className = "title";
+	this.title.className = "cal-title";
 	if (this.isPopup) {
 		this.title.ttip = Calendar._TT["DRAG_TO_MOVE"];
 		this.title.style.cursor = "move";
@@ -938,10 +904,10 @@ Calendar.prototype.create = function (_par) {
 
 	div = Calendar.createElement("div", this.element);
 	this.monthsCombo = div;
-	div.className = "combo";
+	div.className = "cal-combo";
 	for (i = 0; i < Calendar._MN.length; ++i) {
 		var mn = Calendar.createElement("div");
-		mn.className = Calendar.is_ie ? "label-IEfix" : "label";
+		mn.className = "cal-label";
 		mn.month = i;
 		mn.innerHTML = Calendar._SMN[i];
 		div.appendChild(mn);
@@ -949,10 +915,10 @@ Calendar.prototype.create = function (_par) {
 
 	div = Calendar.createElement("div", this.element);
 	this.yearsCombo = div;
-	div.className = "combo";
+	div.className = "cal-combo";
 	for (i = 12; i > 0; --i) {
 		var yr = Calendar.createElement("div");
-		yr.className = Calendar.is_ie ? "label-IEfix" : "label";
+		yr.className = "cal-label";
 		div.appendChild(yr);
 	}
 
@@ -965,8 +931,8 @@ Calendar._keyEvent = function (ev) {
 	var cal = window._dynarch_popupCalendar;
 	if (!cal || cal.multiple)
 		return false;
-	(Calendar.is_ie) && (ev = window.event);
-	var act = (Calendar.is_ie || ev.type == "keypress"),
+
+	var act = (ev.type == "keypress"),
 		K = ev.keyCode;
 	if (ev.ctrlKey) {
 		switch (K) {
@@ -1281,7 +1247,6 @@ Calendar.prototype.callCloseHandler = function () {
 	if (this.onClose) {
 		this.onClose(this);
 	}
-	this.hideShowCovered();
 };
 
 /** Removes the calendar object from the DOM tree and destroys it. */
@@ -1310,7 +1275,7 @@ Calendar._checkCalendar = function (ev) {
 	if (!calendar) {
 		return false;
 	}
-	var el = Calendar.is_ie ? Calendar.getElement(ev) : Calendar.getTargetElement(ev);
+	var el = Calendar.getTargetElement(ev);
 	for (; el != null && el != calendar.element; el = el.parentNode);
 	if (el == null) {
 		// calls closeHandler which should hide the calendar.
@@ -1340,7 +1305,6 @@ Calendar.prototype.show = function () {
 		Calendar.addEvent(document, "keypress", Calendar._keyEvent);
 		Calendar.addEvent(document, "mousedown", Calendar._checkCalendar);
 	}
-	this.hideShowCovered();
 };
 
 /**
@@ -1355,7 +1319,6 @@ Calendar.prototype.hide = function () {
 	}
 	this.element.style.display = "none";
 	this.hidden = true;
-	this.hideShowCovered();
 };
 
 /**
@@ -1378,30 +1341,7 @@ Calendar.prototype.showAtElement = function (el, opts) {
 		this.showAt(p.x, p.y + el.offsetHeight);
 		return true;
 	}
-	//function fixPosition(box) {
-	//	if (box.x < 0)
-	//		box.x = 0;
-	//	if (box.y < 0)
-	//		box.y = 0;
-	//	var cp = document.createElement("div");
-	//	var s = cp.style;
-	//	s.position = "absolute";
-	//	s.right = s.bottom = s.width = s.height = "0px";
-	//	document.body.appendChild(cp);
-	//	var br = Calendar.getAbsolutePos(cp);
-	//	document.body.removeChild(cp);
-	//	if (Calendar.is_ie) {
-	//		br.y += document.body.scrollTop;
-	//		br.x += document.body.scrollLeft;
-	//	} else {
-	//		br.y += window.scrollY;
-	//		br.x += window.scrollX;
-	//	}
-	//	var tmp = box.x + box.width - br.x;
-	//	if (tmp > 0) box.x -= tmp;
-	//	tmp = box.y + box.height - br.y;
-	//	if (tmp > 0) box.y -= tmp;
-	//};
+
 	this.element.style.display = "block";
 
 	var w = self.element.offsetWidth;
@@ -1455,63 +1395,6 @@ Calendar.prototype.parseDate = function (str, fmt) {
 	this.setDate(Date.parseDate(str, fmt));
 };
 
-Calendar.prototype.hideShowCovered = function () {
-	if (!Calendar.is_ie && !Calendar.is_opera)
-		return;
-	function getVisib(obj) {
-		var value = obj.style.visibility;
-		if (!value) {
-			if (document.defaultView && typeof (document.defaultView.getComputedStyle) == "function") { // Gecko, W3C
-				if (!Calendar.is_khtml)
-					value = document.defaultView.
-						getComputedStyle(obj, "").getPropertyValue("visibility");
-				else
-					value = '';
-			} else if (obj.currentStyle) { // IE
-				value = obj.currentStyle.visibility;
-			} else
-				value = '';
-		}
-		return value;
-	};
-
-	var tags = new Array("applet", "iframe", "select");
-	var el = this.element;
-
-	var p = Calendar.getAbsolutePos(el);
-	var EX1 = p.x;
-	var EX2 = el.offsetWidth + EX1;
-	var EY1 = p.y;
-	var EY2 = el.offsetHeight + EY1;
-
-	for (var k = tags.length; k > 0;) {
-		var ar = document.getElementsByTagName(tags[--k]);
-		var cc = null;
-
-		for (var i = ar.length; i > 0;) {
-			cc = ar[--i];
-
-			p = Calendar.getAbsolutePos(cc);
-			var CX1 = p.x;
-			var CX2 = cc.offsetWidth + CX1;
-			var CY1 = p.y;
-			var CY2 = cc.offsetHeight + CY1;
-
-			if (this.hidden || (CX1 > EX2) || (CX2 < EX1) || (CY1 > EY2) || (CY2 < EY1)) {
-				if (!cc.__msh_save_visibility) {
-					cc.__msh_save_visibility = getVisib(cc);
-				}
-				cc.style.visibility = cc.__msh_save_visibility;
-			} else {
-				if (!cc.__msh_save_visibility) {
-					cc.__msh_save_visibility = getVisib(cc);
-				}
-				cc.style.visibility = "hidden";
-			}
-		}
-	}
-};
-
 /** Internal function; it displays the bar with the names of the weekday. */
 Calendar.prototype._displayWeekdays = function () {
 	var fdow = this.firstDayOfWeek;
@@ -1549,13 +1432,8 @@ Calendar.prototype._dragStart = function (ev) {
 	this.dragging = true;
 	var posX;
 	var posY;
-	if (Calendar.is_ie) {
-		posY = window.event.clientY + document.body.scrollTop;
-		posX = window.event.clientX + document.body.scrollLeft;
-	} else {
-		posY = ev.clientY + window.scrollY;
-		posX = ev.clientX + window.scrollX;
-	}
+	posY = ev.clientY + window.scrollY;
+	posX = ev.clientX + window.scrollX;
 	var st = this.element.style;
 	this.xOffs = posX - parseInt(st.left);
 	this.yOffs = posY - parseInt(st.top);
@@ -1578,7 +1456,6 @@ Date.DAY = 24 * Date.HOUR;
 Date.WEEK = 7 * Date.DAY;
 
 Date.parseDate = function (str, fmt) {
-	var today = new Date();
 	var y = 0;
 	var m = -1;
 	var d = 0;
@@ -1633,40 +1510,9 @@ Date.parseDate = function (str, fmt) {
 				break;
 		}
 	}
-	if (isNaN(y)) y = today.getFullYear();
-	if (isNaN(m)) m = today.getMonth();
-	if (isNaN(d)) d = today.getDate();
-	if (isNaN(hr)) hr = 23; //today.getHours();
-	if (isNaN(min)) min = 59; //today.getMinutes();
 	if (y != 0 && m != -1 && d != 0)
 		return new Date(y, m, d, hr, min, 0);
-	y = 0; m = -1; d = 0;
-	for (i = 0; i < a.length; ++i) {
-		if (a[i].search(/[a-zA-Z]+/) != -1) {
-			var t = -1;
-			for (j = 0; j < 12; ++j) {
-				if (Calendar._MN[j].substr(0, a[i].length).toLowerCase() == a[i].toLowerCase()) { t = j; break; }
-			}
-			if (t != -1) {
-				if (m != -1) {
-					d = m + 1;
-				}
-				m = t;
-			}
-		} else if (parseInt(a[i], 10) <= 12 && m == -1) {
-			m = a[i] - 1;
-		} else if (parseInt(a[i], 10) > 31 && y == 0) {
-			y = parseInt(a[i], 10);
-			(y < 100) && (y += (y > 29) ? 1900 : 2000);
-		} else if (d == 0) {
-			d = a[i];
-		}
-	}
-	if (y == 0)
-		y = today.getFullYear();
-	if (m != -1 && d != 0)
-		return new Date(y, m, d, hr, min, 0);
-	return new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 0);;
+	return null;
 };
 
 /** Returns the number of days in the current month */
@@ -1771,19 +1617,7 @@ Date.prototype.print = function (str) {
 	s["%%"] = "%";		// a literal '%' character
 
 	var re = /%./g;
-	if (!Calendar.is_ie5 && !Calendar.is_khtml)
-		return str.replace(re, function (par) { return s[par] || par; });
-
-	var a = str.match(re);
-	for (var i = 0; i < a.length; i++) {
-		var tmp = s[a[i]];
-		if (tmp) {
-			re = new RegExp(a[i], 'g');
-			str = str.replace(re, tmp);
-		}
-	}
-
-	return str;
+	return str.replace(re, function (par) { return s[par] || par; });
 };
 
 Date.prototype.__msh_oldSetFullYear = Date.prototype.setFullYear;
