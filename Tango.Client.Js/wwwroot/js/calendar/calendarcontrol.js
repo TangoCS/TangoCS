@@ -46,7 +46,7 @@
 		var pos = getCaretPos(target);
 		var pos0 = pos == 2 || pos == 5 ? pos + 1 : pos;
 		const char0 = char;
-		const len = target.value.length;
+		var len = target.value.length;
 		var val = target.value;
 
 		function next() {
@@ -60,63 +60,69 @@
 			char = val.substring(pos, pos + 1);
 		}
 
+		function reject() {
+			if (pos0 < len)
+				target.value = target.value.substring(0, pos0);
+			if (pos > pos0)
+				target.value = target.value + char0;
+			return false;
+		}
+
 		if (pos == 0) {
 			if ('0123'.indexOf(char) == -1)
-				return false;
+				return reject();
 			if (pos < len) next();
 		}
 
 		if (pos == 1) {
 			if (val.substring(0, 1) == '3' && '01'.indexOf(char) == -1)
-				return false;
+				return reject();
 			if (pos < len) next();
 		}
 
 		if (pos == 2 || pos == 3) {
 			const day = val.substring(0, 2);
 			if (day == '31' && '013578'.indexOf(char) == -1)
-				return false;
+				return reject();
 			if (day == '30' && char == '2')
-				return false;
-			if (pos == len) {
-				if (pos == 2)
-					target.value += '.';
-				if ('01'.indexOf(char) == -1)
-					target.value += '0';
+				return reject();
+			if (pos < len) {
+				if ('01'.indexOf(char) == -1) {
+					pos = pos0 = 4;
+					char = char0;
+					target.setSelectionRange(pos0 + 1, pos0 + 1);
+				}
+				else
+					next();
 			}
-			if (pos < len && '01'.indexOf(char) == -1)
-				return false;
-			if (pos < len) next();
 		}
 
 		if (pos == 4) {
 			const day = val.substring(0, 2);
 			const m1 = val.substring(3, 4);
 			if (day == '31' && m1 == '0' && '13578'.indexOf(char) == -1)
-				return false;
+				return reject();
 			if (day == '31' && m1 == '1' && char == '1')
-				return false;
+				return reject();
 			if (day == '30' && m1 == '0' && char == '2')
-				return false;
+				return reject();
 			if (m1 == '1' && '012'.indexOf(char) == -1)
-				return false;
+				return reject();
 			if (pos < len) next();
 		}
 
 		if (pos == 5 || pos == 6) {
 			if ('12'.indexOf(char) == -1)
-				return false;
-			if (pos == 5 && pos == len)
-				target.value += '.';
+				return reject();
 			if (pos < len) next();
 		}
 
 		if (pos == 7) {
 			const y1 = val.substring(6, 7);
 			if (y1 == '1' && char != '9')
-				return false;
+				return reject();
 			if (y1 == '2' && char != '0')
-				return false;
+				return reject();
 			if (pos < len) next();
 		}
 
@@ -124,11 +130,25 @@
 			const year = parseInt(val.substring(6, 9) + char);
 			const isLeap = ((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0);
 			if (!isLeap)
-				return false;
+				return reject();
 		}
 
 		if (pos > 9)
-			return false;
+			return reject();
+
+		if (len == 2) {
+			target.value += '.';
+			if ('01'.indexOf(char0) == -1) {
+				target.value += '0';
+			}
+		}
+		else if (len == 3 && '01'.indexOf(char0) == -1) {
+			target.value += '0';
+		}
+		else if (len == 5 && pos0 > len) {
+			target.value += '.';
+		}
+
 
 		if (pos0 < len) {
 			target.value = target.value.substring(0, pos0) + char0 + target.value.substring(pos0 + 1);
