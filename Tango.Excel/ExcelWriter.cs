@@ -45,7 +45,12 @@ namespace Tango.Excel
 			Sheet(inner);
 		}
 
-		public void Sheet(string name, Action inner)
+        public List<string> WorkSheetsNames()
+        {
+            return p.Workbook.Worksheets.Select(x => x.Name.ToLower()).ToList();
+        }
+
+        public void Sheet(string name, Action inner)
         {
             s = p.Workbook.Worksheets.Add(name);
 			Sheet(inner);
