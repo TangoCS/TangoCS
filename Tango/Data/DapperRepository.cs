@@ -96,7 +96,7 @@ namespace Tango.Data
 		public bool Exists(object id)
 		{
 			var where = GetByIdWhereClause(id);
-			var query = $"select 1 from {Table} where {where.clause}";
+			var query = $"select 1 from ({AllObjectsQuery}) t where {where.clause}";
 
 			return Database.Connection.QuerySingleOrDefault<int>(query, where.parms, Database.Transaction) == 1;
 		}
@@ -175,10 +175,11 @@ namespace Tango.Data
 
 		public object GetById(object id)
 		{
-			var where = GetByIdWhereClause(id);
-			var query = $"select * from {Table} where {where.clause}";
+			if (id == null) return null;
+			var (clause, parms) = GetByIdWhereClause(id);
+			var query = $"select * from ({AllObjectsQuery}) t where {clause}";
 
-			return Database.Connection.QuerySingleOrDefault(Type, query, where.parms, Database.Transaction);
+			return Database.Connection.QuerySingleOrDefault(Type, query, parms, Database.Transaction);
 		}
 	}
 
@@ -259,6 +260,7 @@ namespace Tango.Data
 
 		public new T GetById(object id)
 		{
+			if (id == null) return default;
 			return (T)base.GetById(id);
 		}
 				
