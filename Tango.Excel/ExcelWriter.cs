@@ -297,6 +297,10 @@ namespace Tango.Excel
                     writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
                 if (style?.GetTextAlign() == "center")
                     writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                if (style?.GetTextAlign() == "right")
+                    writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
+                if (style?.GetTextAlign() == "left")
+                    writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
                 if (style?.GetFontWeight() == "bold")
                     writer.s.Cells[writer.r, writer.c].Style.Font.Bold = true;
                 if (style?.GetFontStyle() == "italic")
@@ -411,6 +415,10 @@ namespace Tango.Excel
                     writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
                 if (style?.GetTextAlign() == "center")
                     writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                if (style?.GetTextAlign() == "right")
+                    writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
+                if (style?.GetTextAlign() == "left")
+                    writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
                 if (style?.GetFontWeight() == "bold")
                     writer.s.Cells[writer.r, writer.c].Style.Font.Bold = true;
                 if (style?.GetFontStyle() == "italic")
@@ -478,6 +486,10 @@ namespace Tango.Excel
             {
                 if (style?.GetTextAlign() == "center")
                     range.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Center;
+                if (style?.GetTextAlign() == "right")
+                    range.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
+                if (style?.GetTextAlign() == "left")
+                    range.Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
                 if (style?.GetFontWeight() == "bold")
                     range.Style.Font.Bold = true;
                 if (style?.GetFontStyle() == "italic")
