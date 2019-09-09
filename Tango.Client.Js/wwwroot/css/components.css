@@ -373,7 +373,7 @@ td.showDragHandle {
 	border: 1px solid rgba(0,0,0,.5);
 }
 
-.modal-header, .modal-body, .modal-footer, .modal-container .buttonsbar {
+.modal-header, .modal-body, .modal-footer, .modal-toolbar, .modal-container .buttonsbar {
 	background-color: #fff;
 }
 
