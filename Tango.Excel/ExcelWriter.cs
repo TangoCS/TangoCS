@@ -50,6 +50,11 @@ namespace Tango.Excel
             return p.Workbook.Worksheets.Select(x => x.Name.ToLower()).ToList();
         }
 
+        public void SetActiveSheet(int pos)
+        {
+            s = p.Workbook.Worksheets[pos];
+        }
+
         public void Sheet(string name, Action inner)
         {
             s = p.Workbook.Worksheets.Add(name);
