@@ -333,8 +333,8 @@
 				}
 				var menuHeight = menuData.menuHeight;
 				var menuWidth = menuData.menuWidth;
-				option.triggerVisibility = trigger[0].style.visibility;
-				trigger.css('visibility', 'visible');
+				//option.triggerVisibility = trigger[0].style.visibility;
+				//trigger.css('visibility', 'visible');
 
 				if (option.displayAround == 'cursor') {
 					left = cntWin ? e.clientX : e.clientX + $(window).scrollLeft() - cLeft;
@@ -369,11 +369,11 @@
 				rightMenu = left + menuWidth;
 
 				//max height and width of context menu
-				if (bottomMenu > cHeight) {
+				if (bottomMenu > cHeight && top - menuHeight > 0) {
 					va = -1 * va;
 					top = top - menuHeight;
 				}
-				if (rightMenu > cWidth) {
+				if (rightMenu > cWidth && cWidth - menuWidth > 0) {
 					ha = -1 * ha;
 					left = cWidth - menuWidth;
 				}
@@ -467,7 +467,7 @@
 			$(document).focus();
 
 			option.baseTrigger.removeClass('iw-opened');
-			option.baseTrigger.css('visibility', option.triggerVisibility ? option.triggerVisibility : '');
+			//option.baseTrigger.css('visibility', option.triggerVisibility ? option.triggerVisibility : '');
 
 			//call close function
 			option.onClose.call(this, {

@@ -12,6 +12,7 @@ namespace Tango
 		{
 			return value.ToString().Split(',').Select(s => {
 				var fi = value.GetType().GetField(s.Trim());
+				if (fi == null) return "";
 				var attributes = fi.GetCustomAttributes<DescriptionAttribute>(false);
 				return (attributes != null && attributes.Count() > 0) ? attributes.First().Description : value.ToString();
 			}).Join(", ");

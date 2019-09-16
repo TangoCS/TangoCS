@@ -161,11 +161,24 @@ var domActions = function () {
 		},
 		setAttribute: function (args) {
 			var e = document.getElementById(args.id);
-			e.setAttribute(args.attrName, args.attrValue);
+			if (e instanceof HTMLSelectElement && args.attrName == 'readonly') {
+				for (i = 0; i < e.options.length; i++) {
+					if (e.value != e.options[i].value)
+						e.options[i].setAttribute('disabled', 'disabled');
+				}
+			}
+			else
+				e.setAttribute(args.attrName, args.attrValue);
 		},
 		removeAttribute: function (args) {
 			var e = document.getElementById(args.id);
-			e.removeAttribute(args.attrName);
+			if (e instanceof HTMLSelectElement && args.attrName == 'readonly') {
+				for (i = 0; i < e.options.length; i++) {
+					e.options[i].removeAttribute('disabled');
+				}
+			}
+			else
+				e.removeAttribute(args.attrName);
 		},
 		setVisible: function (args) {
 			var e = document.getElementById(args.id);
