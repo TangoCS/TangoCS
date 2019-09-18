@@ -298,6 +298,7 @@ var ajaxUtils = function ($, cu) {
 			}
 			var target = { data: fd };
 			target.e = sender.hasAttribute('data-e') ? sender.getAttribute('data-e') : 'onsubmit';
+			if (sender.hasAttribute('data-r')) target.r = sender.getAttribute('data-r');
 			target.url = instance.findServiceAction(form);
 			const container = cu.getThisOrParent(sender, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
 			if (container) {

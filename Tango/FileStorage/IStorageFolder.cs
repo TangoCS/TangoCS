@@ -32,5 +32,7 @@ namespace Tango.FileStorage
 
 		bool HasFiles();
 		IEnumerable<IStorageFile<TKey>> GetFiles(int offset = 0, int limit = 50);
+
+		void DeleteFile(TKey id);
 	}
 }

@@ -39,6 +39,11 @@ namespace Tango.Excel
             p = new ExcelPackage(template);
         }
 
+		public void CreateVBAProject()
+		{
+			p.Workbook.CreateVBAProject();
+		}
+
 		public void Sheet(int index, Action inner)
 		{
 			s = p.Workbook.Worksheets[index];
