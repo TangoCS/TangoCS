@@ -6,7 +6,7 @@ namespace Tango.Data
 {
 	public interface IEntityAudit
 	{
-		void WriteObjectChange<T, TKey>(T entity, EntityAuditAction action, List<PropertyChange> propertyChanges) where T : IWithKey<T, TKey>;
+		void WriteObjectChange<T, TKey>(T entity, EntityAuditAction action, List<PropertyChange> propertyChanges) where T : IWithKey<TKey>;
 	}
 
 	public class PropertyChange
