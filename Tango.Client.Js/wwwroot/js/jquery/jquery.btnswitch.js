@@ -10,59 +10,62 @@
  */
 
 (function ($) {
-	$.fn.btnSwitch = function (options) {
-		var settings = $.extend({
-			theme: "Swipe",
-			OnText: "On",
-			OffText: "Off"
-		}, options);
+    $.fn.btnSwitch = function (options) {
+        var settings = $.extend({
+            theme: "Swipe",
+            OnText: "On",
+            OffText: "Off"
+        }, options);
 
-		var setClass = function (el, prefix) {
-			if (el.checked) {
-				el.classList.add('tgl-sw-' + prefix + '-checked');
-				el.classList.add('tgl-sw-active');
-			} else {
-				el.classList.remove('tgl-sw-' + prefix + '-checked');
-				el.classList.remove('tgl-sw-active');
-			}
-		};
+        var setClass = function (el, prefix) {
+            if (el.checked) {
+                el.classList.add('tgl-sw-' + prefix + '-checked');
+                el.classList.add('tgl-sw-active');
+            } else {
+                el.classList.remove('tgl-sw-' + prefix + '-checked');
+                el.classList.remove('tgl-sw-active');
+            }
+        };
 
-		var setHtml = function (id, prefix) {
-			const el = document.getElementById(id);
-			const parent = el.parentElement;
+        var setHtml = function (id, prefix) {
+            const el = document.getElementById(id);
+            const parent = el.parentElement;
 
-			const div = document.createElement('div');
-			div.id = id + '_bsh';
+            const div = document.createElement('div');
+            div.id = id + '_bsh';
 
-			div.appendChild(el);
-			parent.appendChild(div);
+            div.appendChild(el);
+            parent.appendChild(div);
 
-			const label = document.createElement('label');
-			label.classList.add('btn-switch');
-			label.htmlFor = id;
-			label.setAttribute('data-tg-on', settings.OnText);
-			label.setAttribute('data-tg-off', settings.OffText);
-			div.appendChild(label);
+            const label = document.createElement('label');
+            label.classList.add('btn-switch');
+            label.htmlFor = id;
+            label.setAttribute('data-tg-on', settings.OnText);
+            label.setAttribute('data-tg-off', settings.OffText);
+            div.appendChild(label);
 
-			const divcl = document.createElement('div');
-			divcl.style.clear = 'both';
-			div.appendChild(divcl);
+            const divcl = document.createElement('div');
+            divcl.style.clear = 'both';
+            div.appendChild(divcl);
 
-			el.className = 'tgl-sw tgl-sw-' + prefix;
+            el.className = 'tgl-sw tgl-sw-' + prefix;
 
-			div.addEventListener('click', function (e) {
-				el.checked = !el.checked;
-				setClass(el, prefix);
-			});
+            div.addEventListener('click', function (e) {
+                el.checked = !el.checked;
+                setClass(el, prefix);
+                if (el.hasAttribute('data-e'))
+                    ajaxUtils.postEventFromElementWithApiResponse(el);
 
-			setClass(el, prefix);
-		};
+            });
 
-		return this.each(function () {
-			if (['Light', 'Swipe', 'iOS', 'Android'].indexOf(settings.theme) == -1)
-				settings.theme = 'Swipe';
+            setClass(el, prefix);
+        };
 
-			setHtml(this.id, settings.theme.toLowerCase());
-		});
-	};
+        return this.each(function () {
+            if (['Light', 'Swipe', 'iOS', 'Android'].indexOf(settings.theme) == -1)
+                settings.theme = 'Swipe';
+
+            setHtml(this.id, settings.theme.toLowerCase());
+        });
+    };
 }(jQuery));
