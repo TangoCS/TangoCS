@@ -91,6 +91,15 @@
 	background: #205081;
 }
 
+.tgl-sw-light:disabled + .btn-switch {
+	background: #bdc1c2;
+}
+
+.tgl-sw-light:disabled + .btn-switch::after {
+	background: #e5e5e5;
+}
+
+
 .tgl-sw-light.tgl-sw-active + .btn-switch:after {
 	left: 65%;
 }
