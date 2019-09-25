@@ -60,10 +60,12 @@ namespace Tango.Excel
             s = p.Workbook.Worksheets[pos];
         }
 
-        public void Sheet(string name, Action inner)
-        {
+        public void Sheet(string name, Action inner, Action<ExcelWorksheet> style = null)
+        {            
             s = p.Workbook.Worksheets.Add(name);
-			Sheet(inner);
+            s.Cells.Style.Font.Name = "Times New Roman";
+            style?.Invoke(s);
+            Sheet(inner);
 		}
 
 		void Sheet(Action inner)
@@ -186,7 +188,7 @@ namespace Tango.Excel
         public void Style(string range, Action<ExcelRange> cells)
         {
             cells(s.Cells[range]);
-        }
+        }      
 
         public void Move(int row, int col)
         {
