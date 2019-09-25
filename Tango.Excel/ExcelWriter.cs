@@ -246,8 +246,8 @@ namespace Tango.Excel
             bool right;
             ICssStyleDeclaration style;
             string formula;
-            double width;
-			string[] classes = new string[0];
+            double width;          
+            string[] classes = new string[0];
 
 			public ITdAttributes Class(string value, bool replaceExisting = false)
             {
@@ -311,6 +311,8 @@ namespace Tango.Excel
                     writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
                 if (style?.GetTextAlign() == "left")
                     writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                if(style?.GetVerticalAlign() == "middle")
+                    writer.s.Cells[writer.r, writer.c].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
                 if (style?.GetFontWeight() == "bold")
                     writer.s.Cells[writer.r, writer.c].Style.Font.Bold = true;
                 if (style?.GetFontStyle() == "italic")
@@ -318,7 +320,7 @@ namespace Tango.Excel
                 if (style?.GetWhiteSpace() == "nowrap")
                     writer.s.Cells[writer.r, writer.c].Style.WrapText = false;
                 if (width > 0)
-                    writer.s.Column(writer.c).Width = width;
+                    writer.s.Column(writer.c).Width = width;             
                 if ((style?.GetPaddingLeft() ?? "") != "")
                     writer.s.Cells[writer.r, writer.c].Style.Indent = style.GetPaddingLeft().Replace("px", "").Trim().ToInt32(0) / 10;
                 if (formula != null)
@@ -429,6 +431,8 @@ namespace Tango.Excel
                     writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Right;
                 if (style?.GetTextAlign() == "left")
                     writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
+                if (style?.GetVerticalAlign() == "middle")
+                    writer.s.Cells[writer.r, writer.c].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
                 if (style?.GetFontWeight() == "bold")
                     writer.s.Cells[writer.r, writer.c].Style.Font.Bold = true;
                 if (style?.GetFontStyle() == "italic")
