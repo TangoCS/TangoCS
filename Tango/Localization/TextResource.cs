@@ -212,6 +212,12 @@ namespace Tango.Localization
 				GetResourceKeyInt(uExp.Operand, res);
 				return;
 			}
+			else if (typeof(BinaryExpression).IsAssignableFrom(t))
+			{
+				var bExp = exp as BinaryExpression;
+				GetResourceKeyInt(bExp.Left, res);
+				return;
+			}
 
 			if (!(exp is MemberExpression memberExp))
 				throw new Exception("Wrong format of the expression");
