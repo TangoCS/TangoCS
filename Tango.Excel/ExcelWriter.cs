@@ -274,7 +274,7 @@ namespace Tango.Excel
 					writer.s.Cells[writer.r, writer.c].AutoFilter = true;
 				else if (key == Xlsx.OutlineLevel)
 					writer.s.Row(writer.r).OutlineLevel = Convert.ToInt32(value);
-                else if (key == Xlsx.SetHeigth)
+                else if (key == Xlsx.XlsxHeight)
                     writer.s.Row(writer.r).Height = Convert.ToInt32(value);
                 return this;
             }
@@ -480,7 +480,7 @@ namespace Tango.Excel
             {
                 if (key == Xlsx.FormulaR1C1)
                     formula = value as string;
-                else if (key == Xlsx.SetHeigth)
+                else if (key == Xlsx.XlsxHeight)
                     writer.s.Row(writer.r).Height = Convert.ToInt32(value);
                 return this;
             }
@@ -549,7 +549,7 @@ namespace Tango.Excel
         public const string FormulaR1C1 = "FormulaR1C1";
 		public const string AutoFilter = "AutoFilter";
 		public const string OutlineLevel = "OutlineLevel";
-        public const string SetHeigth = "SetHeigth";
+        public const string XlsxHeight = "SetHeigth";
     }
 
 	public static class XlsxExtensions
@@ -575,7 +575,7 @@ namespace Tango.Excel
         public static void SetHeigth<T>(this IContentItemAttributes<T> a, int px)
             where T : IContentItemAttributes<T>
         {
-            a.Extended(Xlsx.SetHeigth, px);
+            a.Extended(Xlsx.XlsxHeight, px);
         }
     }
 }
