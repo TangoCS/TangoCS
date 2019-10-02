@@ -572,7 +572,7 @@ namespace Tango.Excel
 			a.Extended(Xlsx.OutlineLevel, level);
 		}
 
-        public static void SetHeigth<T>(this IContentItemAttributes<T> a, int px)
+        public static void SetHeigth<T>(this IContentItemAttributes<T> a, double px)
             where T : IContentItemAttributes<T>
         {
             a.Extended(Xlsx.SetHeigth, px);
