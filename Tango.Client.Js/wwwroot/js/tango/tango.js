@@ -682,7 +682,7 @@ var ajaxUtils = function ($, cu) {
 			} else if (attr.name.startsWith('data-c-')) {
 				target.data[attr.name.replace('data-c-', 'c-')] = val || '';
 			} else if (attr.name.startsWith('data-ref')) {
-				processElementValue(document.getElementById(val), target);
+				processElementValue(document.getElementById(val), target, attr.name.replace('data-ref-', ''));
 			} else if (attr.name == 'data-responsetype') {
 				target.responsetype = val;
 			}
@@ -704,14 +704,23 @@ var ajaxUtils = function ($, cu) {
 		}
 	}
 
-	function processElementValue(el, target) {
+	function processElementValue(el, target, parmname) {
 		if (!el) return;
 
+		var val = null;
+
 		if (el.name !== undefined && el.value !== undefined) {
+			val = el.value;
+		}
+		else if (el.isContentEditable) {
+			val = el.innerHTML;
+		}
+
+		if (val) {
 			if (target.method == 'POST')
-				target.data[el.name] = el.value;
+				target.data[parmname] = val;
 			else
-				target.query[el.name] = el.value;
+				target.query[parmname] = val;
 		}
 
 		for (var i = 0; i < el.childNodes.length; i++) {

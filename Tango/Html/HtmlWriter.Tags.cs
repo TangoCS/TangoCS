@@ -306,7 +306,7 @@ namespace Tango.Html
 		public static void Col(this HtmlWriter w) { w.Col(null); }
 		public static void Colgroup(this HtmlWriter w, Action inner) { w.Colgroup(null, inner); }
 		public static void Dd(this HtmlWriter w, Action inner) { w.Dd(null, inner); }
-		public static void Div(this HtmlWriter w, Action inner) { w.Div(null, inner); }
+		//public static void Div(this HtmlWriter w, Action inner) { w.Div(null, inner); }
 		public static void Dl(this HtmlWriter w, Action inner) { w.Dl(null, inner); }
 		public static void Dt(this HtmlWriter w, Action inner) { w.Dt(null, inner); }
 		public static void Em(this HtmlWriter w, Action inner) { w.Em(null, inner); }
@@ -333,10 +333,10 @@ namespace Tango.Html
 		public static void Span(this HtmlWriter w, Action inner) { w.Span(null, inner); }
 		public static void Sub(this HtmlWriter w, Action inner) { w.Sub(null, inner); }
 		public static void Sup(this HtmlWriter w, Action inner) { w.Sup(null, inner); }
-		public static void Table(this HtmlWriter w, Action inner) { w.Table(null, inner); }
+		//public static void Table(this HtmlWriter w, Action inner) { w.Table(null, inner); }
 		public static void Tbody(this HtmlWriter w, Action inner) { w.Tbody(null, inner); }
 		//public static void Td(this HtmlWriter w, Action inner) { w.Td(null, inner); }
-		public static void Th(this HtmlWriter w, Action inner) { w.Th(null, inner); }
+		//public static void Th(this HtmlWriter w, Action inner) { w.Th(null, inner); }
 		public static void Thead(this HtmlWriter w, Action inner) { w.Thead(null, inner); }
 		
 		//public static void Tr(this HtmlWriter w, Action inner) { w.Tr(null, inner); }
@@ -348,7 +348,7 @@ namespace Tango.Html
 		public static void A(this HtmlWriter w, string linkTitle) { w.A(null, () => w.Write(linkTitle)); }
 		public static void B(this HtmlWriter w, string text) { w.B(null, () => w.Write(text)); }
 		public static void B(this HtmlWriter w, Action<TagAttributes> attributes, string text) { w.B(attributes, () => w.Write(text)); }
-		public static void Div(this HtmlWriter w, string text) { w.Div(null, () => w.Write(text)); }
+		//public static void Div(this HtmlWriter w, string text) { w.Div(null, () => w.Write(text)); }
 		public static void Div(this HtmlWriter w, Action<TagAttributes> attributes, string text) { w.Div(attributes, () => w.Write(text)); }
 		public static void I(this HtmlWriter w, string text) { w.I(null, () => w.Write(text)); }
 		public static void Label(this HtmlWriter w, string labelFor, string lableTitle)

@@ -9,9 +9,7 @@ namespace Tango.Html
 	public partial class HtmlWriter : StringWriter, IContentWriter
 	{
 		const string NEWLINE = "<br/>";
-		//string _initialPrefix;
 		Stack<string> _ids = new Stack<string>(4);
-		//Stack<(string prefix, Stack<string> ids)> _prefixes = new Stack<(string prefix, Stack<string> ids)>(4);
 
 		public string IDPrefix { get; private set; }
 
@@ -27,14 +25,12 @@ namespace Tango.Html
 		{
 			NewLine = NEWLINE;
 			idPrefix.Split('_').ForEach(s => _ids.Push(s));
-			//_initialPrefix = idPrefix;
 			SetPrefix();
 		}
 		public HtmlWriter(string idPrefix, StringBuilder sb) : base(sb)
 		{
 			NewLine = NEWLINE;
 			idPrefix.Split('_').ForEach(s => _ids.Push(s));
-			//_initialPrefix = idPrefix;
 			SetPrefix();
 		}
 
@@ -50,31 +46,26 @@ namespace Tango.Html
 			SetPrefix();
 		}
 
+		public void PushPrefix(string prefix)
+		{
+			_ids.Push(prefix.ToLower());
+			SetPrefix();
+		}
+
 		public void PopID()
 		{
 			_ids.Pop();
 			SetPrefix();
 		}
 
-		public void PushPrefix(string prefix)
-		{
-			//_prefixes.Push((_initialPrefix, _ids));
-			//_ids.Clear();
-			//_initialPrefix = prefix;
-			_ids.Push(prefix.ToLower());
-			SetPrefix();
-		}
-
 		public void PopPrefix()
 		{
-			//(_initialPrefix, _ids) = _prefixes.Pop();
 			_ids.Pop();
 			SetPrefix();
 		}
 
 		void SetPrefix()
 		{
-			//var str = new[] { _initialPrefix, String.Join("_", _ids.Where(s => !string.IsNullOrEmpty(s)).Reverse()) };
 			IDPrefix = String.Join("_", _ids.Where(s => !string.IsNullOrEmpty(s)).Reverse());
 		}
 
@@ -87,6 +78,11 @@ namespace Tango.Html
 				attributes[key] = value;
 			else if (!string.IsNullOrEmpty(value))
 				attributes[key] = attributes[key] + " " + value;
+		}
+
+		public void WriteAttr(string key)
+		{
+			attributes[key] = null;
 		}
 
 		public void WriteAttrID(string key, string value)
@@ -102,6 +98,8 @@ namespace Tango.Html
 			{
 				if (attribute.Value != null)
 					Write($" {attribute.Key}=\"{attribute.Value}\"");
+				else
+					Write($" {attribute.Key}");
 			}
 			attributes.Clear();
 		}

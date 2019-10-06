@@ -24,7 +24,7 @@ namespace Tango.Html
 		public T AccessKey(string value) { Writer.WriteAttr("accesskey", value); return _this; }
 		public T Aria(string key, string value) { Writer.WriteAttr("aria-" + key.ToLower(), value); return _this; }
 		public T Class(string value, bool replaceExisting = false) { Writer.WriteAttr("class", value, replaceExisting); return _this; }
-		public T ContentEditable(bool value) { if (value) Writer.WriteAttr("contenteditable", "Contenteditable"); return _this; }
+		public T ContentEditable() { Writer.WriteAttr("contenteditable"); return _this; }
 		public T Data<TValue>(string key, TValue value) { Writer.WriteAttr("data-" + key.ToLower(), value?.ToString()); return _this; }
 		public T Data(string key) { Writer.WriteAttr("data-" + key.ToLower(), null); return _this; }
 		public T DataIDValue<TValue>(string key, TValue value) { Writer.WriteAttrID("data-" + key.ToLower(), value?.ToString()); return _this; }
