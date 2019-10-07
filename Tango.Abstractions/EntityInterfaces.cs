@@ -62,6 +62,16 @@ namespace Tango
 		Expression<Func<T, bool>> ByParentKeySelector(TParentKey id);
 	}
 
+	public interface IWithoutEntityAudit
+	{
+
+	}
+
+	public interface IWithPropertyAudit
+	{
+
+	}
+
 	public interface IEnum
 	{
 	}

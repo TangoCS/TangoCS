@@ -36,5 +36,15 @@ namespace Tango.Identity.Std
 		{
 			return _dc.Query<IdentityUser>(subjSelect + " where lower(Email) = @p1", new { p1 = email.ToLower() }).FirstOrDefault();
 		}
+
+		public void Activate(int id)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Deactivate(int id)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
