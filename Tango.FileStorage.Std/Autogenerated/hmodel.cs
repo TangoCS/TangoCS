@@ -1,4 +1,4 @@
- 
+
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -7,17 +7,16 @@ using System.Xml.Linq;
 using Tango;
 using Tango.Data;
 using Tango.Localization;
-using Abc.Model;
 
 namespace Tango.FileStorage.Std.Model
 {
 
 	[Table("N_DownloadLog")]
-	public partial class N_DownloadLog : IEntity, IWithKey<N_DownloadLog, int>, IWithTimeStamp<SPM_Subject>, IWithLogicalDelete
+	public partial class N_DownloadLog : IEntity, IWithKey<N_DownloadLog, int>, IWithTimeStamp, IWithLogicalDelete
 	{
 		public N_DownloadLog()
 		{
-		 
+
 		}
 
 
@@ -37,48 +36,34 @@ namespace Tango.FileStorage.Std.Model
 		public virtual Guid FileGUID { get; set; }
 		[Column]
 		public virtual string IP { get; set; }
-		
+
 		[Column]
-		public virtual int LastModifiedUserID 
-		{
-			get  
-			{
-				
-				if (LastModifiedUser == null) return 0;				
-				return LastModifiedUser.SubjectID;
-			}
-			set 
-			{
-				
-				LastModifiedUser = new SPM_Subject { SubjectID = value};
-			}
-		}
-		public virtual SPM_Subject LastModifiedUser { get; set; }
-		
+		public virtual int LastModifiedUserID { get; set; }
+
 		[Column]
-		public virtual int FileID 
+		public virtual int FileID
 		{
-			get  
+			get
 			{
-				
-				if (File == null) return 0;				
+
+				if (File == null) return 0;
 				return File.FileID;
 			}
-			set 
+			set
 			{
-				
-				File = new N_File { FileID = value};
+
+				File = new N_File { FileID = value };
 			}
 		}
 		public virtual N_File File { get; set; }
 	}
 
 	[Table("N_File")]
-	public partial class N_File : IEntity, IWithKey<N_File, int>, IWithTimeStamp<SPM_Subject>, IWithTitle, IWithLogicalDelete
+	public partial class N_File : IEntity, IWithKey<N_File, int>, IWithTimeStamp, IWithTitle, IWithLogicalDelete
 	{
 		public N_File()
 		{
-		 
+
 		}
 
 
@@ -124,74 +109,32 @@ namespace Tango.FileStorage.Std.Model
 		public virtual string StorageParameter { get; set; }
 		[Column]
 		public virtual bool IsDeleted { get; set; }
-		
+
 		[Column]
-		public virtual int LastModifiedUserID 
-		{
-			get  
-			{
-				
-				if (LastModifiedUser == null) return 0;				
-				return LastModifiedUser.SubjectID;
-			}
-			set 
-			{
-				
-				LastModifiedUser = new SPM_Subject { SubjectID = value};
-			}
-		}
-		public virtual SPM_Subject LastModifiedUser { get; set; }
-		
+		public virtual int LastModifiedUserID { get; set; }
+
 		[Column]
-		public virtual int FolderID 
+		public virtual int FolderID
 		{
-			get  
+			get
 			{
-				
-				if (Folder == null) return 0;				
+
+				if (Folder == null) return 0;
 				return Folder.FolderID;
 			}
-			set 
+			set
 			{
-				
-				Folder = new N_Folder { FolderID = value};
+
+				Folder = new N_Folder { FolderID = value };
 			}
 		}
 		public virtual N_Folder Folder { get; set; }
-		
+
 		[Column]
-		public virtual int? CheckedOutByID 
-		{
-			get  
-			{
-				
-				if (CheckedOutBy == null) return null;				
-				return CheckedOutBy.SubjectID;
-			}
-			set 
-			{
-				if (value == null) { CheckedOutBy = null; return; }
-				CheckedOutBy = new SPM_Subject { SubjectID = value.Value};
-			}
-		}
-		public virtual SPM_Subject CheckedOutBy { get; set; }
-		
+		public virtual int? CheckedOutByID { get; set; }
+
 		[Column]
-		public virtual int CreatorID 
-		{
-			get  
-			{
-				
-				if (Creator == null) return 0;				
-				return Creator.SubjectID;
-			}
-			set 
-			{
-				
-				Creator = new SPM_Subject { SubjectID = value};
-			}
-		}
-		public virtual SPM_Subject Creator { get; set; }
+		public virtual int CreatorID { get; set; }
 	}
 
 	[Table("N_FileData")]
@@ -200,7 +143,7 @@ namespace Tango.FileStorage.Std.Model
 		public N_FileData()
 		{
 			FileGUID = Guid.NewGuid();
-		 
+
 		}
 
 
@@ -231,7 +174,7 @@ namespace Tango.FileStorage.Std.Model
 	{
 		public N_FileLibrary()
 		{
-		 
+
 		}
 
 
@@ -249,31 +192,31 @@ namespace Tango.FileStorage.Std.Model
 		public virtual string StorageType { get; set; }
 		[Column]
 		public virtual string StorageParameter { get; set; }
-		
+
 		[Column]
-		public virtual int FileLibraryTypeID 
+		public virtual int FileLibraryTypeID
 		{
-			get  
+			get
 			{
-				
-				if (FileLibraryType == null) return 0;				
+
+				if (FileLibraryType == null) return 0;
 				return FileLibraryType.FileLibraryTypeID;
 			}
-			set 
+			set
 			{
-				
-				FileLibraryType = new N_FileLibraryType { FileLibraryTypeID = value};
+
+				FileLibraryType = new N_FileLibraryType { FileLibraryTypeID = value };
 			}
 		}
 		public virtual N_FileLibraryType FileLibraryType { get; set; }
 	}
 
 	[Table("N_FileLibraryType")]
-	public partial class N_FileLibraryType : IEntity, IWithKey<N_FileLibraryType, int>, IWithTimeStamp<SPM_Subject>, IWithLogicalDelete, IWithTitle
+	public partial class N_FileLibraryType : IEntity, IWithKey<N_FileLibraryType, int>, IWithTimeStamp, IWithLogicalDelete, IWithTitle
 	{
 		public N_FileLibraryType()
 		{
-		 
+
 		}
 
 
@@ -295,31 +238,17 @@ namespace Tango.FileStorage.Std.Model
 		public virtual string Extensions { get; set; }
 		[Column]
 		public virtual string ClassName { get; set; }
-		
+
 		[Column]
-		public virtual int LastModifiedUserID 
-		{
-			get  
-			{
-				
-				if (LastModifiedUser == null) return 0;				
-				return LastModifiedUser.SubjectID;
-			}
-			set 
-			{
-				
-				LastModifiedUser = new SPM_Subject { SubjectID = value};
-			}
-		}
-		public virtual SPM_Subject LastModifiedUser { get; set; }
+		public virtual int LastModifiedUserID { get; set; }
 	}
 
 	[Table("N_Folder")]
-	public partial class N_Folder : IEntity, IWithKey<N_Folder, int>, IWithTimeStamp<SPM_Subject>, IWithTitle
+	public partial class N_Folder : IEntity, IWithKey<N_Folder, int>, IWithTimeStamp, IWithTitle
 	{
 		public N_Folder()
 		{
-		 
+
 		}
 
 
@@ -345,54 +274,40 @@ namespace Tango.FileStorage.Std.Model
 		public virtual string GuidPath { get; set; }
 		[Column]
 		public virtual Guid SPMActionItemGUID { get; set; }
-		
+
 		[Column]
-		public virtual int LastModifiedUserID 
-		{
-			get  
-			{
-				
-				if (LastModifiedUser == null) return 0;				
-				return LastModifiedUser.SubjectID;
-			}
-			set 
-			{
-				
-				LastModifiedUser = new SPM_Subject { SubjectID = value};
-			}
-		}
-		public virtual SPM_Subject LastModifiedUser { get; set; }
-		
+		public virtual int LastModifiedUserID { get; set; }
+
 		[Column]
-		public virtual int FileLibraryID 
+		public virtual int FileLibraryID
 		{
-			get  
+			get
 			{
-				
-				if (FileLibrary == null) return 0;				
+
+				if (FileLibrary == null) return 0;
 				return FileLibrary.FileLibraryID;
 			}
-			set 
+			set
 			{
-				
-				FileLibrary = new N_FileLibrary { FileLibraryID = value};
+
+				FileLibrary = new N_FileLibrary { FileLibraryID = value };
 			}
 		}
 		public virtual N_FileLibrary FileLibrary { get; set; }
-		
+
 		[Column]
-		public virtual int ParentID 
+		public virtual int ParentID
 		{
-			get  
+			get
 			{
-				
-				if (Parent == null) return 0;				
+
+				if (Parent == null) return 0;
 				return Parent.FolderID;
 			}
-			set 
+			set
 			{
-				
-				Parent = new N_Folder { FolderID = value};
+
+				Parent = new N_Folder { FolderID = value };
 			}
 		}
 		public virtual N_Folder Parent { get; set; }
@@ -408,5 +323,5 @@ namespace Tango.FileStorage.Std.Model
 		public virtual int FolderID { get; set; }
 		public virtual int ParentID { get; set; }
 		public virtual int ArcLen { get; set; }
-}
+	}
 }

@@ -143,6 +143,11 @@ namespace Tango.FileStorage.Std
 		{
             return new DatabaseFile(this, id, false) { Name = name, Extension = Path.GetExtension(name) };
 		}
+
+		public void DeleteFile(Guid id)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
     public class DatabaseFile : IStorageFile<Guid>

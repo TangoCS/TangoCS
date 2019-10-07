@@ -3,7 +3,7 @@ using Tango;
 using Tango.Hibernate;
 using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
-using Abc.Model;
+
 
 namespace Tango.FileStorage.Std.Model
 {
@@ -21,12 +21,7 @@ namespace Tango.FileStorage.Std.Model
 			Property(x => x.Guid, map => { MappingConfig.GuidPropertyConfig(map); });
 			Property(x => x.GuidPath);
 			Property(x => x.SPMActionItemGUID, map => { MappingConfig.GuidPropertyConfig(map); });
-			Property(x => x.LastModifiedUserID, map => { map.Formula("LastModifiedUserID"); });
-			ManyToOne(x => x.LastModifiedUser, map => 
-			{
-				map.Column("LastModifiedUserID");
-				map.Cascade(Cascade.None);
-			});
+			Property(x => x.LastModifiedUserID);
 			Property(x => x.FileLibraryID, map => { map.Formula("FileLibraryID"); });
 			ManyToOne(x => x.FileLibrary, map => 
 			{
@@ -68,30 +63,15 @@ namespace Tango.FileStorage.Std.Model
 			Property(x => x.Path);
 			Property(x => x.StorageParameter);
 			Property(x => x.IsDeleted, map => { MappingConfig.BoolPropertyConfig(map); map.Formula("IsDeleted"); });
-			Property(x => x.LastModifiedUserID, map => { map.Formula("LastModifiedUserID"); });
-			ManyToOne(x => x.LastModifiedUser, map => 
-			{
-				map.Column("LastModifiedUserID");
-				map.Cascade(Cascade.None);
-			});
+			Property(x => x.LastModifiedUserID);
 			Property(x => x.FolderID, map => { map.Formula("FolderID"); });
 			ManyToOne(x => x.Folder, map => 
 			{
 				map.Column("FolderID");
 				map.Cascade(Cascade.None);
 			});
-			Property(x => x.CheckedOutByID, map => { map.Formula("CheckedOutByID"); });
-			ManyToOne(x => x.CheckedOutBy, map => 
-			{
-				map.Column("CheckedOutByID");
-				map.Cascade(Cascade.None);
-			});
-			Property(x => x.CreatorID, map => { map.Formula("CreatorID"); });
-			ManyToOne(x => x.Creator, map => 
-			{
-				map.Column("CreatorID");
-				map.Cascade(Cascade.None);
-			});
+			Property(x => x.CheckedOutByID);
+			Property(x => x.CreatorID);
 			Extension();
 		}
 
@@ -127,12 +107,7 @@ namespace Tango.FileStorage.Std.Model
 			Property(x => x.Title);
 			Property(x => x.Extensions);
 			Property(x => x.ClassName);
-			Property(x => x.LastModifiedUserID, map => { map.Formula("LastModifiedUserID"); });
-			ManyToOne(x => x.LastModifiedUser, map => 
-			{
-				map.Column("LastModifiedUserID");
-				map.Cascade(Cascade.None);
-			});
+			Property(x => x.LastModifiedUserID);
 			Extension();
 		}
 
@@ -170,12 +145,7 @@ namespace Tango.FileStorage.Std.Model
 			Property(x => x.IsDeleted, map => { MappingConfig.BoolPropertyConfig(map); });
 			Property(x => x.FileGUID, map => { MappingConfig.GuidPropertyConfig(map); });
 			Property(x => x.IP);
-			Property(x => x.LastModifiedUserID, map => { map.Formula("LastModifiedUserID"); });
-			ManyToOne(x => x.LastModifiedUser, map => 
-			{
-				map.Column("LastModifiedUserID");
-				map.Cascade(Cascade.None);
-			});
+			Property(x => x.LastModifiedUserID);
 			Property(x => x.FileID, map => { MappingConfig.GuidPropertyConfig(map);});
 			Extension();
 		}

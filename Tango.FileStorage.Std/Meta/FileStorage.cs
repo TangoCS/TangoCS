@@ -2,7 +2,6 @@
 using Tango.Meta;
 using Tango.Meta.Fluent;
 using Tango;
-using Abc.Model;
 using Tango.UI;
 
 namespace Tango.FileStorage.Std.Model
@@ -26,7 +25,7 @@ namespace Tango.FileStorage.Std.Model
         public void N_Folder(IMetaClass cls)
         {
             Class<N_Folder>(cls).IntKey()
-            .TimeStamp<SPM_Subject, int>()
+            .TimeStamp<int>()
             .Title()
             .Attribute<bool>("IsDeleted", true, x => x.DefaultDBValue = "false")
             .Attribute<string>("Path")
@@ -48,7 +47,7 @@ namespace Tango.FileStorage.Std.Model
         public void N_File(IMetaClass cls)
         {
             Class<N_File>(cls).IntKey()
-            .TimeStamp<SPM_Subject, int>()
+            .TimeStamp<int>()
             .Title()
             .Attribute<string>("Password")
             .Attribute<DateTime>("BeginDate", x => x.DefaultDBValue = "(getdate())")
@@ -69,8 +68,8 @@ namespace Tango.FileStorage.Std.Model
                 //x.Expression = "isnull(CONVERT([bit],case when [EndDate]>getdate() and [BeginDate]<getdate() then (0) else (1) end,(0)),(1))";
             })
             .Reference<N_Folder, int>("Folder", x => x.SetInverseProperty("Files"))
-            .Reference<SPM_Subject, int?>("CheckedOutBy")
-            .Reference<SPM_Subject, int>("Creator")
+            .Attribute<int?>("CheckedOutByID")
+            .Attribute<int>("CreatorID")
             .OperationDelete(x => x
                 .ParmGuid("folderid")
                 .ParmString("filekey")
@@ -104,7 +103,7 @@ namespace Tango.FileStorage.Std.Model
         public void N_FileLibraryType(IMetaClass cls)
         {
             Class<N_FileLibraryType>(cls).IntKey()
-            .TimeStamp<SPM_Subject, int>()
+            .TimeStamp<int>()
             .IsDeleted()
             .Title()
             .Attribute<string>("Extensions", true)
@@ -127,7 +126,7 @@ namespace Tango.FileStorage.Std.Model
         public void N_DownloadLog(IMetaClass cls)
         {
             Class<N_DownloadLog>(cls).IntKey()
-            .TimeStamp<SPM_Subject, int>()
+            .TimeStamp<int>()
             .IsDeleted()
             .Attribute<Guid>("FileGUID")
             .Attribute<string>("IP")
