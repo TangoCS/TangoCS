@@ -1,0 +1,3 @@
+﻿<#@ template language="C#" hostspecific="true"#>
+<# var module = "Tango.FileStorage.Std"; #>
+<#@ include file="$(SolutionDir)CodeGeneration\main.tt"#>

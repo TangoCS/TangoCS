@@ -682,7 +682,7 @@ var ajaxUtils = function ($, cu) {
 			} else if (attr.name.startsWith('data-c-')) {
 				target.data[attr.name.replace('data-c-', 'c-')] = val || '';
 			} else if (attr.name.startsWith('data-ref')) {
-				processElementValue(document.getElementById(val), target, attr.name.replace('data-ref-', ''));
+				processElementValue(document.getElementById(val), target);
 			} else if (attr.name == 'data-responsetype') {
 				target.responsetype = val;
 			}
@@ -704,7 +704,7 @@ var ajaxUtils = function ($, cu) {
 		}
 	}
 
-	function processElementValue(el, target, parmname) {
+	function processElementValue(el, target) {
 		if (!el) return;
 
 		var val = null;
@@ -716,15 +716,21 @@ var ajaxUtils = function ($, cu) {
 			val = el.innerHTML;
 		}
 
-		if (val) {
+		var parmname = null;
+		if (el.name)
+			parmname = el.name;
+		else if (el.hasAttribute('data-name'))
+			parmname = el.getAttribute('data-name');
+
+		if (val && parmname) {
 			if (target.method == 'POST')
 				target.data[parmname] = val;
 			else
 				target.query[parmname] = val;
 		}
 
-		for (var i = 0; i < el.childNodes.length; i++) {
-			processElementValue(el.childNodes[i], target);
+		for (var i = 0; i < el.children.length; i++) {
+			processElementValue(el.children[i], target);
 		}
 	}
 

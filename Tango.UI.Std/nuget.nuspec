@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+    <metadata>
+        <id>Nephrite.UI.Std</id>
+        <version>1.0</version>
+        <authors>Nephrite Technologies</authors>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Nephrite.UI.Std</description>
+        <dependencies>
+        <dependency id="Microsoft.AspNet.Razor" version="[3.2.3,)" />
+        <dependency id="Newtonsoft.Json" version="[8.0.2,)" />
+        <dependency id="RazorEngine" version="[3.7.7,)" />
+        <dependency id="Nephrite.Abstractions" version="1.0" />
+        <dependency id="Nephrite.Razor" version="1.0" />
+        <dependency id="Nephrite" version="1.0" />
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="bin\Debug\Nephrite.UI.Std.dll" target="lib\net451\Nephrite.UI.Std.dll" />
+        <file src="bin\Debug\Nephrite.UI.Std.pdb" target="lib\net451\Nephrite.UI.Std.pdb" />
+    </files>
+</package>

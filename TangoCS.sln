@@ -17,23 +17,23 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Meta.Database.DB2", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportData", "ImportData\ImportData.csproj", "{911F430A-7ACE-43F7-9654-CE34D2BE0664}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Hibernate", "Tango.Hibernate\Tango.Hibernate.csproj", "{307C0353-867B-4942-B448-52635A6BC321}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Hibernate", "Tango.Hibernate\Tango.Hibernate.csproj", "{307C0353-867B-4942-B448-52635A6BC321}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Test", "Tango.Test\Tango.Test.csproj", "{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Meta.Database.PostgreSQL", "Tango.Meta.Database.PostgreSQL\Tango.Meta.Database.PostgreSQL.csproj", "{2B3754DC-5507-4046-A135-BCED1C161ACF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango", "Tango\Tango.csproj", "{2D823E9B-401E-4A8E-A7ED-8658A711BE06}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango", "Tango\Tango.csproj", "{2D823E9B-401E-4A8E-A7ED-8658A711BE06}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Razor", "Tango.Razor\Tango.Razor.csproj", "{8E63794B-0D88-4EBA-B74A-942DCF32DFA5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Meta.Database.MSSQL", "Tango.Meta.Database.MSSQL\Tango.Meta.Database.MSSQL.csproj", "{DE61160E-44DB-40CD-82C9-BA812DCE4812}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Meta.Database.MSSQL", "Tango.Meta.Database.MSSQL\Tango.Meta.Database.MSSQL.csproj", "{DE61160E-44DB-40CD-82C9-BA812DCE4812}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportData2", "ImportData2\ImportData2.csproj", "{6729E69A-BB79-46DC-A576-F6C4DFE43360}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.AzureBackup", "Tango.AzureBackup\Tango.AzureBackup.csproj", "{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Abstractions", "Tango.Abstractions\Tango.Abstractions.csproj", "{08917986-6340-4D26-BB53-B1B69FD3C810}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Abstractions", "Tango.Abstractions\Tango.Abstractions.csproj", "{08917986-6340-4D26-BB53-B1B69FD3C810}"
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Tango.Client.Js", "Tango.Client.Js\", "{6918E281-C526-4E3E-8915-1BE29504F964}"
 	ProjectSection(WebsiteProperties) = preProject
@@ -56,7 +56,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Tango.Client.Js", "Tango.Cl
 		SlnRelativePath = "Tango.Client.Js\"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dapper", "Dapper\Dapper.csproj", "{D0205633-0549-4363-84CD-9E32BAF5386F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dapper", "Dapper\Dapper.csproj", "{D0205633-0549-4363-84CD-9E32BAF5386F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.PDF", "Tango.PDF\Tango.PDF.csproj", "{AD666B4F-7E4B-41C4-9EAF-51E28930BFD0}"
 EndProject
@@ -64,7 +64,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "itextsharp", "..\iTextSharp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GostCryptography", "..\GostCryptography\Source\GostCryptography\GostCryptography.csproj", "{1520A79F-03EB-4290-AA4A-027806890A9D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Excel", "Tango.Excel\Tango.Excel.csproj", "{64B19AFD-2BB9-4440-9A57-964C65AEC796}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Excel", "Tango.Excel\Tango.Excel.csproj", "{64B19AFD-2BB9-4440-9A57-964C65AEC796}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.AspNetCore", "Tango.AspNetCore\Tango.AspNetCore.csproj", "{376DEF24-FA8E-48A1-BD49-D6BDD4781038}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.FileStorage.Std", "Tango.FileStorage.Std\Tango.FileStorage.Std.csproj", "{C733311F-7DD8-4A10-A79C-681EAB4CA152}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.ServiceModel", "Tango.ServiceModel\Tango.ServiceModel.csproj", "{1B4767ED-08D5-4CEE-AEA3-4DFB948FED1E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.TaskManager", "Tango.TaskManager\Tango.TaskManager.csproj", "{DD533FE9-8B01-41AA-966A-90A42BDF08BF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.UI.Std", "Tango.UI.Std\Tango.UI.Std.csproj", "{BA5C0EC4-5DA8-4EBB-BB66-1772F71AF971}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -286,6 +296,66 @@ Global
 		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Release|x86.ActiveCfg = Release|Any CPU
 		{64B19AFD-2BB9-4440-9A57-964C65AEC796}.Release|x86.Build.0 = Release|Any CPU
+		{376DEF24-FA8E-48A1-BD49-D6BDD4781038}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{376DEF24-FA8E-48A1-BD49-D6BDD4781038}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{376DEF24-FA8E-48A1-BD49-D6BDD4781038}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{376DEF24-FA8E-48A1-BD49-D6BDD4781038}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{376DEF24-FA8E-48A1-BD49-D6BDD4781038}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{376DEF24-FA8E-48A1-BD49-D6BDD4781038}.Debug|x86.Build.0 = Debug|Any CPU
+		{376DEF24-FA8E-48A1-BD49-D6BDD4781038}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{376DEF24-FA8E-48A1-BD49-D6BDD4781038}.Release|Any CPU.Build.0 = Release|Any CPU
+		{376DEF24-FA8E-48A1-BD49-D6BDD4781038}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{376DEF24-FA8E-48A1-BD49-D6BDD4781038}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{376DEF24-FA8E-48A1-BD49-D6BDD4781038}.Release|x86.ActiveCfg = Release|Any CPU
+		{376DEF24-FA8E-48A1-BD49-D6BDD4781038}.Release|x86.Build.0 = Release|Any CPU
+		{C733311F-7DD8-4A10-A79C-681EAB4CA152}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C733311F-7DD8-4A10-A79C-681EAB4CA152}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C733311F-7DD8-4A10-A79C-681EAB4CA152}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C733311F-7DD8-4A10-A79C-681EAB4CA152}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C733311F-7DD8-4A10-A79C-681EAB4CA152}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C733311F-7DD8-4A10-A79C-681EAB4CA152}.Debug|x86.Build.0 = Debug|Any CPU
+		{C733311F-7DD8-4A10-A79C-681EAB4CA152}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C733311F-7DD8-4A10-A79C-681EAB4CA152}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C733311F-7DD8-4A10-A79C-681EAB4CA152}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C733311F-7DD8-4A10-A79C-681EAB4CA152}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C733311F-7DD8-4A10-A79C-681EAB4CA152}.Release|x86.ActiveCfg = Release|Any CPU
+		{C733311F-7DD8-4A10-A79C-681EAB4CA152}.Release|x86.Build.0 = Release|Any CPU
+		{1B4767ED-08D5-4CEE-AEA3-4DFB948FED1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B4767ED-08D5-4CEE-AEA3-4DFB948FED1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B4767ED-08D5-4CEE-AEA3-4DFB948FED1E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{1B4767ED-08D5-4CEE-AEA3-4DFB948FED1E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{1B4767ED-08D5-4CEE-AEA3-4DFB948FED1E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1B4767ED-08D5-4CEE-AEA3-4DFB948FED1E}.Debug|x86.Build.0 = Debug|Any CPU
+		{1B4767ED-08D5-4CEE-AEA3-4DFB948FED1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B4767ED-08D5-4CEE-AEA3-4DFB948FED1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B4767ED-08D5-4CEE-AEA3-4DFB948FED1E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{1B4767ED-08D5-4CEE-AEA3-4DFB948FED1E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{1B4767ED-08D5-4CEE-AEA3-4DFB948FED1E}.Release|x86.ActiveCfg = Release|Any CPU
+		{1B4767ED-08D5-4CEE-AEA3-4DFB948FED1E}.Release|x86.Build.0 = Release|Any CPU
+		{DD533FE9-8B01-41AA-966A-90A42BDF08BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD533FE9-8B01-41AA-966A-90A42BDF08BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD533FE9-8B01-41AA-966A-90A42BDF08BF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DD533FE9-8B01-41AA-966A-90A42BDF08BF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DD533FE9-8B01-41AA-966A-90A42BDF08BF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DD533FE9-8B01-41AA-966A-90A42BDF08BF}.Debug|x86.Build.0 = Debug|Any CPU
+		{DD533FE9-8B01-41AA-966A-90A42BDF08BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD533FE9-8B01-41AA-966A-90A42BDF08BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD533FE9-8B01-41AA-966A-90A42BDF08BF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{DD533FE9-8B01-41AA-966A-90A42BDF08BF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DD533FE9-8B01-41AA-966A-90A42BDF08BF}.Release|x86.ActiveCfg = Release|Any CPU
+		{DD533FE9-8B01-41AA-966A-90A42BDF08BF}.Release|x86.Build.0 = Release|Any CPU
+		{BA5C0EC4-5DA8-4EBB-BB66-1772F71AF971}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA5C0EC4-5DA8-4EBB-BB66-1772F71AF971}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA5C0EC4-5DA8-4EBB-BB66-1772F71AF971}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BA5C0EC4-5DA8-4EBB-BB66-1772F71AF971}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BA5C0EC4-5DA8-4EBB-BB66-1772F71AF971}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BA5C0EC4-5DA8-4EBB-BB66-1772F71AF971}.Debug|x86.Build.0 = Debug|Any CPU
+		{BA5C0EC4-5DA8-4EBB-BB66-1772F71AF971}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA5C0EC4-5DA8-4EBB-BB66-1772F71AF971}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA5C0EC4-5DA8-4EBB-BB66-1772F71AF971}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{BA5C0EC4-5DA8-4EBB-BB66-1772F71AF971}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{BA5C0EC4-5DA8-4EBB-BB66-1772F71AF971}.Release|x86.ActiveCfg = Release|Any CPU
+		{BA5C0EC4-5DA8-4EBB-BB66-1772F71AF971}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

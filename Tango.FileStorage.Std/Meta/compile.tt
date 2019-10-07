@@ -1,0 +1,19 @@
+﻿<#@ template debug="false" hostspecific="true" language="C#" #>
+<#@ output extension="/" #>
+<#@ include file="$(SolutionDir)CodeGeneration\compiledll.tt"#>
+<#
+var path = Host.ResolvePath("");
+string[] refs = new string[] { 
+	Host.ResolvePath("..\\..\\..\\TangoCS\\Tango\\bin\\Debug\\netstandard2.0\\") + "Tango.dll", 
+	Host.ResolvePath("..\\..\\..\\TangoCS\\Tango.Abstractions\\bin\\Debug\\netstandard2.0\\") + "Tango.Abstractions.dll", 
+	Host.ResolvePath("..\\..\\Tango.UI.Std\\bin\\Debug\\netstandard2.0\\") + "Tango.UI.Std.dll",
+	Host.ResolvePath("..\\..\\MetaBin\\") + "Abc.Meta.dll",
+	"netstandard.dll", 
+	"System.dll", 
+	"System.Xml.dll", 
+	"System.Xml.Linq.dll", 
+	"System.Data.dll", 
+	"System.Core.dll"
+};
+CompileDll(path, path + "\\..\\..\\MetaBin\\Tango.FileStorage.Std.Meta.dll", refs);
+#>
