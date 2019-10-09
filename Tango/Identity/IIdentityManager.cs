@@ -27,5 +27,7 @@ namespace Tango.Identity
 		TUser UserFromProviderKey(string providerName, string providerKey);
 		TUser UserFromID(TKey id);
 		TUser UserFromEmail(string email);
+		void Activate(TKey id);
+		void Deactivate(TKey id);
 	}
 }

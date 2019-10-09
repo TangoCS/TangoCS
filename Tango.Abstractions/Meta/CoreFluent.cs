@@ -278,6 +278,14 @@ namespace Tango.Meta.Fluent
 			return _this;
 		}
 
+		public T TimeStamp<TKey>()
+		{
+			Attribute<DateTime>("LastModifiedDate", x => x.DefaultDBValue = "now()");
+			Attribute<TKey>("LastModifiedUserID");
+			MetaClass.Interfaces.Add(typeof(IWithTimeStamp));
+			return _this;
+		}
+
 		public T Title(bool isRequired = true)
 		{
 			Attribute<string>("Title", x => x.IsRequired = isRequired);
