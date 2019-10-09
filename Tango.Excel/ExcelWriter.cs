@@ -566,10 +566,12 @@ namespace Tango.Excel
 			a.Extended(Xlsx.AutoFilter, "1");
 		}
 
-		public static void XlsxOutlineLevel<T>(this IContentItemAttributes<T> a, int level)
+		public static void XlsxOutlineLevel<T>(this IContentItemAttributes<T> a, int[] level)
 			where T : IContentItemAttributes<T>
 		{
-			a.Extended(Xlsx.OutlineLevel, level);
+            foreach(var currLev in level)
+                if(currLev!=0)
+			        a.Extended(Xlsx.OutlineLevel, currLev);
 		}
 
         public static void SetHeigth<T>(this IContentItemAttributes<T> a, double px)
