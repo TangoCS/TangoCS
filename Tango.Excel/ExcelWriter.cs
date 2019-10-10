@@ -185,6 +185,15 @@ namespace Tango.Excel
             }
         }
 
+        public string Write(IEnumerable<string> text)
+        {
+            if (text != null)
+            {
+                return String.Join("\n", text);
+            }
+            return null;
+        }
+
         public void Style(string range, Action<ExcelRange> cells)
         {
             cells(s.Cells[range]);

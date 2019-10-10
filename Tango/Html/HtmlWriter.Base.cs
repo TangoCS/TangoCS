@@ -103,5 +103,10 @@ namespace Tango.Html
 			}
 			attributes.Clear();
 		}
+
+        public string Write(IEnumerable<string> text)
+        {
+            return String.Join("<br/>", text);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Tango
 {
@@ -13,7 +14,8 @@ namespace Tango
         void Td(Action<ITdAttributes> attributes, decimal? n, string format);
         void Th(Action<IThAttributes> attributes, Action inner);
 		void Div(Action<IContentItemAttributes> attributes, Action inner);
-	}
+        string Write(IEnumerable<string> text);
+    }
 
 	public static class ContentWriterExtensions
 	{
