@@ -256,7 +256,7 @@ namespace Tango.UI
 		#region root widget, no prefix, content = action
 		public ApiResponse AddWidget(string name, Action<LayoutWriter> content)
 		{
-			var n = name.StartsWith("#") ? name.Substring(1) : _namefunc(name);
+			var n = name?.StartsWith("#") ?? false ? name.Substring(1) : _namefunc(name);
 			var w = new ContentWidget { Name = n, Action = WidgetAction.Add };
 			Widgets.Add(w);
 			_widgetsToRender.Add(new WidgetToRender { widget = w, prefix = _idprefix, content = content });
@@ -265,7 +265,7 @@ namespace Tango.UI
 
 		public ApiResponse ReplaceWidget(string name, Action<LayoutWriter> content)
 		{
-			var n = name.StartsWith("#") ? name.Substring(1) : _namefunc(name);
+			var n = name?.StartsWith("#") ?? false ? name.Substring(1) : _namefunc(name);
 			var w = new ContentWidget { Name = n, Action = WidgetAction.Replace };
 			Widgets.Add(w);
 			_widgetsToRender.Add(new WidgetToRender { widget = w, prefix = _idprefix, content = content });
@@ -284,7 +284,7 @@ namespace Tango.UI
 
 		public ApiResponse AddAdjacentWidget(string parent, string name, AdjacentHTMLPosition position, Action<LayoutWriter> content)
 		{
-			var n = name.StartsWith("#") ? name.Substring(1) : _namefunc(name);
+			var n = name?.StartsWith("#") ?? false ? name.Substring(1) : _namefunc(name);
 			var p = parent == null ? null : (parent.StartsWith("#") ? parent.Substring(1) : _namefunc(parent));
 			var w = new AdjacentWidget { Name = n, Parent = p, Action = WidgetAction.Adjacent, Position = position };
 			Widgets.Add(w);

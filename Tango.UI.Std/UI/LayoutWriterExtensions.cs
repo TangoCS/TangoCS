@@ -129,12 +129,12 @@ namespace Tango.UI
 		}
 
 
-		public static void FormFieldCalendar(this LayoutWriter w, string name, string caption, DateTime? value, bool isRequired = false, string description = "", bool enabled = true, bool showTime = false)
+		public static void FormFieldCalendar(this LayoutWriter w, string name, string caption, DateTime? value, bool isRequired = false, string description = "", EnabledState enabled = EnabledState.Enabled, bool showTime = false)
 		{
 			w.FormField(name, caption, () => w.Calendar(name, value, enabled, showTime), isRequired, description);
 		}
 
-		public static void FormFieldCalendar<T>(this LayoutWriter w, MetaAttribute<T, DateTime> prop, T model, bool enabled = true, bool showTime = false)
+		public static void FormFieldCalendar<T>(this LayoutWriter w, MetaAttribute<T, DateTime> prop, T model, EnabledState enabled = EnabledState.Enabled, bool showTime = false)
 		{
 			w.FormField(
 				prop,
@@ -142,7 +142,7 @@ namespace Tango.UI
 			);
 		}
 
-		public static void FormFieldCalendar<T>(this LayoutWriter w, MetaAttribute<T, DateTime?> prop, T model, bool enabled = true, bool showTime = false)
+		public static void FormFieldCalendar<T>(this LayoutWriter w, MetaAttribute<T, DateTime?> prop, T model, EnabledState enabled = EnabledState.Enabled, bool showTime = false)
 		{
 			w.FormField(
 				prop,

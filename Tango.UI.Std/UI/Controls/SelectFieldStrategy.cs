@@ -7,14 +7,25 @@ using Tango.Localization;
 
 namespace Tango.UI.Controls
 {
-	public abstract class SelectObjectDialog<TRef, TRefKey, TValue> : ViewComponent
+	public abstract class SelectObjectDialog<TRef, TRefKey, TValue, TField> : ViewComponent
 		where TRef : class, IWithKey<TRefKey>
+		where TField : SelectObjectField<TRef, TRefKey, TValue>
 	{
-		public string FilterValue { get; set; }
+		string _filterValue = null;
+		public string FilterValue {
+			get
+			{
+				if (_filterValue == null) _filterValue = Context.GetArg(FilterFieldName);
+				return _filterValue;
+			}
+		}
+
 		public string Width { get; set; } = "700px";
 		public string Title { get; set; }
 		public bool HighlightSearchResults { get; set; } = false;
 		protected Paging Paging { get; set; }
+
+		public TField Field { get; set; }
 
 		public string FilterFieldName { get; set; } = "filter";
 
@@ -24,17 +35,31 @@ namespace Tango.UI.Controls
 				p.PageIndex = Context.GetIntArg(p.ClientID, 1);
 				p.PageSize = 20;
 			});
+			DataCollection = Field.DataCollection;
 			DataCollection.Ref(GetClientID("filter"));
 			Title = Resources.Get(typeof(TRef).GetResourceType().FullName + "-pl");
 		}
 
 		public void OpenDialog(ApiResponse response)
 		{
-			FilterValue = Context.GetArg(FilterFieldName);
+			var data = Field.DataProvider.GetData(Paging, FilterValue);
+			if (data.Count() == 1)
+				RenderSingleObjectFound(response, data.First());
+			else
+				RenderMultipleObjectsFound(response, data);
+
+		}
+
+		protected virtual void RenderMultipleObjectsFound(ApiResponse response, IEnumerable<TRef> data)
+		{
 			response.AddWidget("contenttitle", Title);
-			response.AddWidget("contentbody", List);
+			response.AddWidget("contentbody", w => List(w, data));
 			response.AddWidget("contenttoolbar", w => w.Toolbar(ToolbarLeft, ToolbarRight));
 			response.AddWidget("buttonsbar", Footer);
+		}
+		protected virtual void RenderSingleObjectFound(ApiResponse response, TRef data)
+		{
+			RenderMultipleObjectsFound(response, new List<TRef> { data });
 		}
 
 		public virtual void ToolbarLeft(MenuBuilder t)
@@ -46,50 +71,45 @@ namespace Tango.UI.Controls
 
 		public virtual void ToolbarRight(MenuBuilder t)
 		{
+			t.Item(RenderPaging);
 		}
 
 		public virtual void RenderList(ApiResponse response)
 		{
-			FilterValue = Context.GetArg(FilterFieldName);
-			//response.WithNamesAndWritersFor(this);
-			response.AddWidget(ClientID, List);
+			var data = Field.DataProvider.GetData(Paging, FilterValue);
+
+			// TODO решить проблему префиксов при name = prefix
+			response.WithNamesAndWritersFor(this);
+			response.AddWidget(null, w => List(w, data));
 			response.AddWidget(Paging.ID, RenderPaging);
 		}
 
 		public abstract void SubmitDialog(ApiResponse response);
-		public abstract void List(LayoutWriter w);
+		public abstract void List(LayoutWriter w, IEnumerable<TRef> data);
 		public Action<LayoutWriter> AfterList { get; set; }
-
-		protected abstract string FieldID { get; }
 
 		public virtual void Footer(LayoutWriter w)
 		{
-			w.Button(a => a.DataResultPostponed(1).OnClickPostEvent(SubmitDialog).DataRef("#" + FieldID), "OK");
+			w.Button(a => a.DataResultPostponed(1).OnClickPostEvent(SubmitDialog).DataRef("#" + Field.ClientID), "OK");
 			//w.SubmitButton();
 			w.Write("&nbsp;");
 			w.BackButton();
 		}
 		public abstract void Render(LayoutWriter w, TValue selectedValue);
-		public abstract void RenderPaging(LayoutWriter w);
+		public virtual void RenderPaging(LayoutWriter w)
+		{
+			Paging.Render(w, Field.DataProvider.GetCount(FilterValue), a => a.RunEvent(RenderList));
+		}
 	}
 
-	public class SelectSingleObjectDialog<TRef, TRefKey> : SelectObjectDialog<TRef, TRefKey, TRef>
+	public class SelectSingleObjectDialog<TRef, TRefKey> : SelectObjectDialog<TRef, TRefKey, TRef, SelectSingleObjectField<TRef, TRefKey>>
 		where TRef : class, IWithKey<TRef, TRefKey>, new()
 	{
-		public SelectSingleObjectField<TRef, TRefKey> Field { get; set; }
-		protected override string FieldID => Field.ClientID;
-
-		public override void OnInit()
-		{
-			DataCollection = Field.DataCollection;
-			base.OnInit();
-		}
-
-		public override void List(LayoutWriter w)
+		public override void List(LayoutWriter w, IEnumerable<TRef> data)
 		{
 			w.Div(a => a.ID().DataCtrl("selectSingleObjectDialog"), () => {
 				w.Div(a => a.Class("radiobuttonlist"), () => {
-					foreach (var item in Field.DataProvider.GetData(Paging, FilterValue).Select(o => Field.GetListItem(o, FilterValue, HighlightSearchResults)))
+					foreach (var item in data.Select(o => Field.GetListItem(o, FilterValue, HighlightSearchResults)))
 					{
 						w.Label(a => a.For("item" + item.Value), () => {
 							w.RadioButton("item", "item" + item.Value, item.Value);
@@ -102,16 +122,6 @@ namespace Tango.UI.Controls
 			AfterList?.Invoke(w);
 		}
 
-		public override void ToolbarRight(MenuBuilder t)
-		{
-			t.Item(RenderPaging);
-		}
-
-		public override void RenderPaging(LayoutWriter w)
-		{
-			Paging.Render(w, Field.DataProvider.GetCount(FilterValue), a => a.RunEvent(RenderList));
-		}
-
 		public override void Render(LayoutWriter w, TRef selectedValue)
 		{
 			var cw = w.Clone(Field);
@@ -121,7 +131,7 @@ namespace Tango.UI.Controls
 				pw.Hidden(Field.ID, value, a => a.DataHasClientState(ClientStateType.Value, ClientID, "selectedvalue"));
 				if (!Field.Disabled)
 				{
-					cw.A(a => a.Data(Field.DataCollection).CallbackToCurrent(Context).AsDialog(OpenDialog), Resources.Get("Common.SelectObject_Field"));
+					cw.A(a => a.Data(Field.DataCollection).CallbackToCurrent(Context).AsDialog(OpenDialog, Field.ClientID), Resources.Get("Common.SelectObject_Field"));
 					cw.Write("&nbsp;");
 					if (!Field.PostOnClearEvent)
 						cw.A(a => a.OnClick($"selectSingleObjectDialog.clear('{Field.ClientID}', true)"), Resources.Get("Common.Clear"));
@@ -160,23 +170,15 @@ namespace Tango.UI.Controls
 		}
 	}
 
-	public class SelectMultipleObjectsDialog<TRef, TRefKey> : SelectObjectDialog<TRef, TRefKey, IEnumerable<TRef>>
+	public abstract class SelectMultipleObjectsDialog<TRef, TRefKey, TField> : SelectObjectDialog<TRef, TRefKey, IEnumerable<TRef>, TField>
 		where TRef : class, IWithTitle, IWithKey<TRefKey>
+		where TField : SelectObjectField<TRef, TRefKey, IEnumerable<TRef>>
 	{
-		public SelectMultipleObjectsField<TRef, TRefKey> Field { get; set; }
-		protected override string FieldID => Field.ClientID;
-
-		public override void OnInit()
-		{
-			DataCollection = Field.DataCollection;
-			base.OnInit();
-		}
-
-		public override void List(LayoutWriter w)
+		public override void List(LayoutWriter w, IEnumerable<TRef> data)
 		{
 			w.Div(a => a.ID().DataCtrl("selectMultipleObjectsDialog"), () => {
 				w.Div(a => a.Class("checkboxlist"), () => {
-					foreach (var item in Field.DataProvider.GetData(Paging, FilterValue).Select(o => Field.GetListItem(o, FilterValue, HighlightSearchResults)))
+					foreach (var item in data.Select(o => Field.GetListItem(o, FilterValue, HighlightSearchResults)))
 					{
 						w.Label(a => a.For("item" + item.Value), () => {
 							w.CheckBox("item", false, a =>
@@ -190,16 +192,6 @@ namespace Tango.UI.Controls
 			AfterList?.Invoke(w);
 		}
 
-		public override void ToolbarRight(MenuBuilder t)
-		{
-			t.Item(RenderPaging);
-		}
-
-		public override void RenderPaging(LayoutWriter w)
-		{
-			Paging.Render(w, Field.DataProvider.GetCount(FilterValue), a => a.RunEvent(RenderList));
-		}
-
 		public override void Render(LayoutWriter w, IEnumerable<TRef> selectedValues)
 		{
 			var cw = w.Clone(Field);
@@ -208,7 +200,7 @@ namespace Tango.UI.Controls
 				pw.Hidden(Field.ID, selectedValues?.Select(o => Field.DataValueField(o)).Join(","), a => a.DataHasClientState(ClientStateType.Array, ClientID, "selectedvalues"));
 				if (!Field.Disabled)
 				{
-					cw.A(a => a.Data(Field.DataCollection).CallbackToCurrent(Context).AsDialog(OpenDialog), Resources.Get("Common.SelectObjects_Field"));
+					cw.A(a => a.Data(Field.DataCollection).CallbackToCurrent(Context).AsDialog(OpenDialog, Field.ClientID), Resources.Get("Common.SelectObjects_Field"));
 					cw.Write("&nbsp;");
 					if (!Field.PostOnClearEvent)
 						cw.A(a => a.OnClick($"selectMultipleObjectsDialog.clear('{Field.ClientID}', true)"), Resources.Get("Common.Clear"));
@@ -233,7 +225,11 @@ namespace Tango.UI.Controls
 			response.AddClientAction("selectMultipleObjectsDialog", "clear", Field.ClientID);
 			Field.OnClear(response);
 		}
+	}
 
+	public class SelectMultipleObjectsDialog<TRef, TRefKey> : SelectMultipleObjectsDialog<TRef, TRefKey, SelectMultipleObjectsField<TRef, TRefKey>>
+		where TRef : class, IWithTitle, IWithKey<TRefKey>
+	{
 		public override void SubmitDialog(ApiResponse response)
 		{
 			var ids = Context.GetListArg<TRefKey>(Field.ID);

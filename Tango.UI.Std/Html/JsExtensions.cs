@@ -191,8 +191,8 @@ namespace Tango.Html
 		public static T DataEvent<T>(this TagAttributes<T> a, Action<ApiResponse> action)
 			where T : TagAttributes<T>
 		{
-			var el = action.Target as ViewElement;
-			if (el == null) throw new InvalidCastException("Invalid class type for action.Target; must be of type ViewElement");
+			if (!(action.Target is ViewElement el))
+				throw new InvalidCastException("Invalid class type for action.Target; must be of type ViewElement");
 
 			if (!el.ClientID.IsEmpty()) a.Data("r", el.ClientID);
 			return a.Data("e", action.Method.Name.ToLower());
@@ -201,16 +201,17 @@ namespace Tango.Html
 		public static T DataEvent<T>(this TagAttributes<T> a, Func<ActionResult> func)
 			where T : TagAttributes<T>
 		{
-			var el = func.Target as ViewElement;
-			if (el == null) throw new InvalidCastException("Invalid class type for func.Target; must be of type ViewElement");
+			if (!(func.Target is ViewElement el))
+				throw new InvalidCastException("Invalid class type for func.Target; must be of type ViewElement");
 
 			if (!el.ClientID.IsEmpty()) a.Data("r", el.ClientID);
 			return a.Data("e", func.Method.Name.ToLower());
 		}
 
-		public static T DataCtrl<T>(this TagAttributes<T> a, string ctrlType)
+		public static T DataCtrl<T>(this TagAttributes<T> a, string ctrlType, string ctrlId = null)
 			where T : TagAttributes<T>
 		{
+			if (ctrlId != null) a.Data("ctrl-id", ctrlId);
 			return a.Data("ctrl", ctrlType);
 		}
 

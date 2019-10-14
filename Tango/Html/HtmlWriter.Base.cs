@@ -106,7 +106,7 @@ namespace Tango.Html
 
         public string Write(IEnumerable<string> text)
         {
-            return String.Join("<br/>", text);
+            return String.Join(NEWLINE, text);
         }
     }
 }

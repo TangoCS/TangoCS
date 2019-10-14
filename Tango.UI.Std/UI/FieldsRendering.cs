@@ -42,6 +42,7 @@ namespace Tango.UI
 		{
 			w.FormField(field, grid, () => w.TextBox(field.ID, field.StringValue, a => {
 				if (field.Disabled) a.Disabled(true);
+				else if (field.ReadOnly) a.Readonly(true);
 			}));
 		}
 
@@ -140,12 +141,14 @@ namespace Tango.UI
 
 		public static void Calendar(this LayoutWriter w, IField<DateTime> field, Grid grid = Grid.OneWhole)
 		{
-			w.FormField(field, grid, () => w.Calendar(field.ID, field.Value, !field.Disabled));
+			var state = field.Disabled ? EnabledState.Disabled : (field.ReadOnly ? EnabledState.ReadOnly : EnabledState.Enabled);
+			w.FormField(field, grid, () => w.Calendar(field.ID, field.Value, state));
 		}
 
 		public static void Calendar(this LayoutWriter w, IField<DateTime?> field, Grid grid = Grid.OneWhole)
 		{
-			w.FormField(field, grid, () => w.Calendar(field.ID, field.Value, !field.Disabled));
+			var state = field.Disabled ? EnabledState.Disabled : (field.ReadOnly ? EnabledState.ReadOnly : EnabledState.Enabled);
+			w.FormField(field, grid, () => w.Calendar(field.ID, field.Value, state));
 		}
 	}
 

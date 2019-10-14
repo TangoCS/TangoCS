@@ -34,7 +34,8 @@ namespace Tango.UI.Controls
 
 		public override void OnInit()
 		{
-			var orderByColumns = GetArg(ClientID)?.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+			ParameterName = ClientID;
+			var orderByColumns = GetArg(ParameterName)?.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
 			if (orderByColumns == null) return;
 

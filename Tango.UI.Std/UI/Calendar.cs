@@ -3,9 +3,11 @@ using Tango.Html;
 
 namespace Tango.UI
 {
+	public enum EnabledState { Enabled, ReadOnly, Disabled }
+
 	public class CalendarOptions
 	{
-		public bool Enabled { get; set; } = true;
+		public EnabledState Enabled { get; set; } = EnabledState.Enabled;
 		public bool ShowTime { get; set; } = false;
 		public bool UseCalendarDays { get; set; } = false;
 		public Action<InputTagAttributes> Attributes { get; set; }
@@ -25,9 +27,11 @@ namespace Tango.UI
 				a.Data("format", "dd.MM.yyyy").Placeholder("ДД.ММ.ГГГГ").Style("width:" + (options.ShowTime ? "130px" : "100px"))
 				.Data("calendar", "")
 				.Data("showtime", options.ShowTime).Data("usecalendardays", options.UseCalendarDays)
-				.Disabled(!options.Enabled).Set(options.Attributes)
+				.Disabled(options.Enabled == EnabledState.Disabled)
+				.Readonly(options.Enabled == EnabledState.ReadOnly)
+				.Set(options.Attributes)
 			);
-			if (options.Enabled)
+			if (options.Enabled == EnabledState.Enabled)
 			{
 				w.Span(a => a.ID("btn" + name.ID).Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
 
@@ -70,7 +74,7 @@ namespace Tango.UI
 			//				}
 		}
 
-		public static void Calendar(this LayoutWriter w, InputName name, DateTime? value = null, bool enabled = true, bool showTime = false, bool useCalendarDaysInJSCalendar = false)
+		public static void Calendar(this LayoutWriter w, InputName name, DateTime? value = null, EnabledState enabled = EnabledState.Enabled, bool showTime = false, bool useCalendarDaysInJSCalendar = false)
 		{
 			w.Calendar(name, value, new CalendarOptions { Enabled = enabled, ShowTime = showTime, UseCalendarDays = useCalendarDaysInJSCalendar });
 		}

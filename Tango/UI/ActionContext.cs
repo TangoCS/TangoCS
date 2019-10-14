@@ -207,12 +207,14 @@ namespace Tango.UI
 
 		public static string GetArg(this ActionContext ctx, string name)
 		{
+			if (name == null) return null;
 			bool b = ctx.AllArgs.TryGetValue(name, out object s);
 			if (b) return WebUtility.UrlDecode(s.ToString());
 			return null;
 		}
 		public static int GetIntArg(this ActionContext ctx, string name, int defaultValue)
 		{
+			if (name == null) return defaultValue;
 			int res = 0;
 			bool b = ctx.AllArgs.TryGetValue(name, out object s);
 			if (b) b = int.TryParse(s.ToString(), out res);
@@ -221,6 +223,7 @@ namespace Tango.UI
 		}
 		public static int? GetIntArg(this ActionContext ctx, string name)
 		{
+			if (name == null) return null;
 			int res = 0;
 			bool b = ctx.AllArgs.TryGetValue(name, out object s);
 			if (b) b = int.TryParse(s.ToString(), out res);
@@ -229,6 +232,7 @@ namespace Tango.UI
 		}
 		public static long GetLongArg(this ActionContext ctx, string name, int defaultValue)
 		{
+			if (name == null) return defaultValue;
 			long res = 0;
 			bool b = ctx.AllArgs.TryGetValue(name, out object s);
 			if (b) b = long.TryParse(s.ToString(), out res);
@@ -237,6 +241,7 @@ namespace Tango.UI
 		}
 		public static long? GetLongArg(this ActionContext ctx, string name)
 		{
+			if (name == null) return null;
 			long res = 0;
 			bool b = ctx.AllArgs.TryGetValue(name, out object s);
 			if (b) b = long.TryParse(s.ToString(), out res);
@@ -245,6 +250,7 @@ namespace Tango.UI
 		}
 		public static Guid GetGuidArg(this ActionContext ctx, string name, Guid defaultValue)
 		{
+			if (name == null) return defaultValue;
 			Guid res = Guid.Empty;
 			bool b = ctx.AllArgs.TryGetValue(name, out object s);
 			if (b) b = Guid.TryParse(s.ToString(), out res);
@@ -253,6 +259,7 @@ namespace Tango.UI
 		}
 		public static Guid? GetGuidArg(this ActionContext ctx, string name)
 		{
+			if (name == null) return null;
 			Guid res = Guid.Empty;
 			bool b = ctx.AllArgs.TryGetValue(name, out object s);
 			if (b) b = Guid.TryParse(s.ToString(), out res);
@@ -262,12 +269,14 @@ namespace Tango.UI
 
 		public static bool GetBoolArg(this ActionContext ctx, string name, bool defaultValue)
 		{
+			if (name == null) return defaultValue;
 			if (ctx.AllArgs.TryGetValue(name, out object s))
 				return s.ToString().ToLower().In("true", "1");
 			return defaultValue;
 		}
 		public static bool? GetBoolArg(this ActionContext ctx, string name)
 		{
+			if (name == null) return null;
 			if (ctx.AllArgs.TryGetValue(name, out object s))
 				return s.ToString().ToLower().In("true", "1");
 			return null;
@@ -285,6 +294,7 @@ namespace Tango.UI
 
 		public static DateTime? GetDateTimeArg(this ActionContext ctx, string name, string format = null)
 		{
+			if (name == null) return null;
 			object s = null;
 			bool b = ctx.AllArgs.TryGetValue(name, out s);
 			if (b)

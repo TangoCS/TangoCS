@@ -1,5 +1,4 @@
-﻿/// <reference path="/js/jquery-1.11.0.min.js"/>
-var commonUtils = function ($) {
+﻿var commonUtils = function ($) {
 	var instance = {
 		getParams: function (query, raw) {
 			var p = {};

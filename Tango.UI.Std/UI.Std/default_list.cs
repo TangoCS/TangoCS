@@ -208,21 +208,18 @@ namespace Tango.UI.Std
 
 		public void OnQuickSearch(ApiResponse response)
 		{
-			//if (ParentElement != null) response.WithNamesFor(this);
 			response.AddWidget(Sections.ContentBody, Render);
 			RenderPaging(response);
 		}
 
 		public void OnSetPage(ApiResponse response)
 		{
-			//if (ParentElement != null) response.WithNamesFor(this);
 			response.AddWidget(Sections.ContentBody, Render);
 			RenderPaging(response);
 		}
 
 		public void GetObjCount(ApiResponse response)
 		{
-			//if (ParentElement != null) response.WithNamesFor(this);
 			_itemsCount = GetCount();
 			RenderPaging(response);
 		}

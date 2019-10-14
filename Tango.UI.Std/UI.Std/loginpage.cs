@@ -20,6 +20,8 @@ namespace Tango.UI.Std
 
 		protected override void HeadContent(HtmlWriter w)
 		{
+			w.Script(GlobalSettings.JSPath + "browsercheck.js");
+
 			w.HeadLinkCss("/css/login.css");
 			w.HeadLinkCss("/flaticon/style.css");
 			w.HeadLinkCss("/css/core.css");

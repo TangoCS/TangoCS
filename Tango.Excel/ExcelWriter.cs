@@ -189,7 +189,7 @@ namespace Tango.Excel
         {
             if (text != null)
             {
-                return String.Join("\n", text);
+                return String.Join(NewLine, text);
             }
             return null;
         }
@@ -573,6 +573,12 @@ namespace Tango.Excel
 			where T : IContentItemAttributes<T>
 		{
 			a.Extended(Xlsx.AutoFilter, "1");
+		}
+
+		public static void XlsxOutlineLevel<T>(this IContentItemAttributes<T> a, int level)
+			where T : IContentItemAttributes<T>
+		{
+			a.Extended(Xlsx.OutlineLevel, level);
 		}
 
 		public static void XlsxOutlineLevel<T>(this IContentItemAttributes<T> a, int[] level)
