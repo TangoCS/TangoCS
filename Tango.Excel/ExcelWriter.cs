@@ -44,6 +44,12 @@ namespace Tango.Excel
 			p.Workbook.CreateVBAProject();
 		}
 
+		public void AddVBACode(string moduleName, string vbaCode)
+		{
+			var m = p.Workbook.VbaProject.Modules.AddModule(moduleName);
+			m.Code = vbaCode;
+		}
+
 		public void Sheet(int index, Action inner)
 		{
 			s = p.Workbook.Worksheets[index];
@@ -194,7 +200,13 @@ namespace Tango.Excel
             return null;
         }
 
-        public void Style(string range, Action<ExcelRange> cells)
+		public void WriteFormula(string formula)
+		{
+			if (formula != null)
+				s.Cells[r, c].FormulaR1C1 = formula;
+		}
+
+		public void Style(string range, Action<ExcelRange> cells)
         {
             cells(s.Cells[range]);
         }      
