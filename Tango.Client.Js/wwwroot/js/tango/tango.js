@@ -246,6 +246,7 @@ var ajaxUtils = function ($, cu) {
 	const FORMAT_PREFIX = '__format_';
 
 	var timer = null;
+	var intervals = {};
 
 	var state = {
 		com: {
@@ -351,6 +352,15 @@ var ajaxUtils = function ($, cu) {
 				else
 					instance.postEventFromElementWithApiResponse(this, { e: e.data.serverEvent, r: e.data.receiver });
 			});
+		},
+		repeatedPostEvent: function (args) {
+			var el = document.getElementById(args.id);
+			if (!el || intervals[el.id]) return;
+
+			var n = window.setInterval(function () {
+				instance.postEventFromElementWithApiResponse(el);
+			}, args.interval);
+			intervals[el.id] = n;
 		},
 		runEvent: function (target) {
 			return $.ajax({
@@ -553,8 +563,9 @@ var ajaxUtils = function ($, cu) {
 
 			const callOnResult = function (ctrl) {
 				const t = ctrl.getAttribute('data-ctrl');
+				const ctrlid = ctrl.hasAttribute('data-ctrl-id') ? ctrl.getAttribute('data-ctrl-id') : ctrl.id;
 				if (window[t] && window[t]['onResult']) {
-					return window[t]['onResult'](result, state.ctrl[ctrl.id]);
+					return window[t]['onResult'](result, state.ctrl[ctrlid]);
 				}
 			};
 
@@ -712,7 +723,7 @@ var ajaxUtils = function ($, cu) {
 			val = el.value;
 		}
 		else if (el.isContentEditable) {
-			val = el.innerHTML;
+			val = el.innerText;
 		}
 
 		var parmname = null;
@@ -924,22 +935,23 @@ var ajaxUtils = function ($, cu) {
 			for (var i = 0; i < ctrls.length; i++) {
 				const root = ctrls[i];
 				const t = root.getAttribute('data-ctrl');
-				const ctrlstate = state.ctrl[root.id] ? state.ctrl[root.id] : {};
+				const ctrlid = root.hasAttribute('data-ctrl-id') ? root.getAttribute('data-ctrl-id') : root.id;
+				const ctrlstate = state.ctrl[ctrlid] ? state.ctrl[ctrlid] : {};
 
-				if (!state.ctrl[root.id] || !ctrlstate.type) {
+				if (!state.ctrl[ctrlid] || !ctrlstate.type) {
 					ctrlstate.type = t;
-					ctrlstate.root = root.id;
-					state.ctrl[root.id] = ctrlstate;
+					ctrlstate.root = ctrlid;
+					state.ctrl[ctrlid] = ctrlstate;
 
 					if (window[t] && window[t]['init']) {
 						window[t]['init'](root, ctrlstate);
-						console.log('widget: ' + root.id + ' init ' + t);
+						console.log('widget: ' + ctrlid + ' init ' + t);
 					}
 				}
 
 				if (window[t] && window[t]['widgetWillMount']) {
 					window[t]['widgetWillMount'](shadow, ctrlstate);
-					console.log('widget: ' + root.id + ' widgetWillMount ' + t);
+					console.log('widget: ' + ctrlid + ' widgetWillMount ' + t);
 				}
 			}
 
