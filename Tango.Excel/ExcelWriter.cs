@@ -20,9 +20,10 @@ namespace Tango.Excel
         int c = 1;
         int startcol = 1;
         int totalColumns = 1;
-        List<int> divs;
+        HashSet<int> divs;
+		HashSet<int> divs_nomerge;
 
-        Dictionary<string, Action<ExcelRange>> classes = new Dictionary<string, Action<ExcelRange>>();
+		Dictionary<string, Action<ExcelRange>> classes = new Dictionary<string, Action<ExcelRange>>();
 
         public void SetClassAction(string @class, Action<ExcelRange> cells)
         {
@@ -77,11 +78,13 @@ namespace Tango.Excel
 		void Sheet(Action inner)
 		{
 			totalColumns = 1;
-			divs = new List<int>();
+			divs = new HashSet<int>();
+			divs_nomerge = new HashSet<int>();
 			r = 1;
 			c = 1;
 			startcol = 1;
 			inner();
+			divs.RemoveWhere(i => divs_nomerge.Contains(i));
 			foreach (int row in divs)
 			{
 				s.Cells[row, startcol, row, totalColumns].Merge = true;
@@ -499,10 +502,12 @@ namespace Tango.Excel
 
             public IContentItemAttributes Extended<TValue>(string key, TValue value)
             {
-                if (key == Xlsx.FormulaR1C1)
-                    formula = value as string;
-                else if (key == Xlsx.XlsxHeight)
-                    writer.s.Row(writer.r).Height = Convert.ToInt32(value);
+				if (key == Xlsx.FormulaR1C1)
+					formula = value as string;
+				else if (key == Xlsx.XlsxHeight)
+					writer.s.Row(writer.r).Height = Convert.ToInt32(value);
+				else if (key == Xlsx.NoMerge)
+					writer.divs_nomerge.Add(writer.r);
                 return this;
             }
 
@@ -570,8 +575,9 @@ namespace Tango.Excel
         public const string FormulaR1C1 = "FormulaR1C1";
 		public const string AutoFilter = "AutoFilter";
 		public const string OutlineLevel = "OutlineLevel";
-        public const string XlsxHeight = "SetHeigth";
-    }
+        public const string XlsxHeight = "SetHeight";
+		public const string NoMerge = "NoMerge";
+	}
 
 	public static class XlsxExtensions
 	{
@@ -601,10 +607,16 @@ namespace Tango.Excel
 			        a.Extended(Xlsx.OutlineLevel, currLev);
 		}
 
-        public static void SetHeigth<T>(this IContentItemAttributes<T> a, double px)
+        public static void XlsxSetHeight<T>(this IContentItemAttributes<T> a, double px)
             where T : IContentItemAttributes<T>
         {
             a.Extended(Xlsx.XlsxHeight, px);
         }
-    }
+
+		public static void XlsxNoMerge<T>(this IContentItemAttributes<T> a)
+			where T : IContentItemAttributes<T>
+		{
+			a.Extended(Xlsx.NoMerge, "1");
+		}
+	}
 }
