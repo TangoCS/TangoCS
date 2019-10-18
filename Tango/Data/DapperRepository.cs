@@ -88,7 +88,8 @@ namespace Tango.Data
 			{
 				if (p.GetCustomAttributes(typeof(KeyAttribute), false).Any())
 					keys.Add(p.Name, p);
-				if (!p.GetCustomAttributes(typeof(ComputedAttribute), false).Any())
+				if (!p.GetCustomAttributes(typeof(ComputedAttribute), false).Any() &&
+                    !p.GetCustomAttributes(typeof(KeyAttribute), false).Any())
 					columns.Add(p.Name, p);
 			}
 		}
