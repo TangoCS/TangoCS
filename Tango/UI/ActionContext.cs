@@ -302,11 +302,18 @@ namespace Tango.UI
 				if (format == null) format = ctx.GetArg($"__format_{name}");
 				if (format == null) format = "yyyyMMdd";
 
-				b = DateTime.TryParseExact(s.ToString(), format, null, DateTimeStyles.None, out DateTime dt);
+                b = DateTime.TryParseExact(s.ToString(), format, null, DateTimeStyles.None, out DateTime dt);
 				if (b)
 					return dt;
 				else
-					return null;
+                {
+                    format = "yyyy-MM-dd";
+                    b = DateTime.TryParseExact(s.ToString(), format, null, DateTimeStyles.None, out dt);
+                    if (b)
+                        return dt;
+                    else
+                        return null;
+                }
 			}
 			return null;
 		}

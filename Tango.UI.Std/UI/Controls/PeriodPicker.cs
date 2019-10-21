@@ -43,7 +43,12 @@ namespace Tango.UI.Controls
 			dPeriodFrom.MaxYear = DateTime.Today.Year;
 			dPeriodTo.MaxYear = DateTime.Today.Year;
 
-			w.PushID(ID);
+            if (from == null)
+                from = Context.GetDateTimeArg("dperiodfrom");
+            if (to == null)
+                to = Context.GetDateTimeArg("dperiodto");
+
+            w.PushID(ID);
 			w.Div(a => a.Class("periodpicker").ID(), () => {
 				w.Div("с");
 				if (UseCalendar && ShowDays) w.Calendar("dperiodfrom", from ?? DefaultValue?.From);
@@ -63,8 +68,8 @@ namespace Tango.UI.Controls
 			{
 				if (UseCalendar && ShowDays)
 				{
-					var from = Context.GetDateTimeArg("dperiodfrom", "dd.MM.yyyy");
-					var to = Context.GetDateTimeArg("dperiodto", "dd.MM.yyyy");
+					var from = Context.GetDateTimeArg("dperiodfrom");
+					var to = Context.GetDateTimeArg("dperiodto");
 					var fromtime = dPeriodFrom.Value?.TimeOfDay;
 					var totime = dPeriodTo.Value?.TimeOfDay;
 
