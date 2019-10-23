@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Globalization;
+using System.Linq;
 
 namespace Tango.UI
 {
@@ -294,26 +295,13 @@ namespace Tango.UI
 
 		public static DateTime? GetDateTimeArg(this ActionContext ctx, string name, string format = null)
 		{
-			if (name == null) return null;
-			object s = null;
-			bool b = ctx.AllArgs.TryGetValue(name, out s);
-			if (b)
+			if (name != null && ctx.AllArgs.TryGetValue(name, out object s))
 			{
-				if (format == null) format = ctx.GetArg($"__format_{name}");
-				if (format == null) format = "yyyyMMdd";
+				var formats = new List<string> { ctx.GetArg($"__format_{name}"), "dd.MM.yyyy", "yyyy-MM-dd", "yyyyMMdd" }
+					.Where(x => x != null).ToArray();
 
-                b = DateTime.TryParseExact(s.ToString(), format, null, DateTimeStyles.None, out DateTime dt);
-				if (b)
+                if (DateTime.TryParseExact(s.ToString(), formats, null, DateTimeStyles.None, out DateTime dt))
 					return dt;
-				else
-                {
-                    format = "yyyy-MM-dd";
-                    b = DateTime.TryParseExact(s.ToString(), format, null, DateTimeStyles.None, out dt);
-                    if (b)
-                        return dt;
-                    else
-                        return null;
-                }
 			}
 			return null;
 		}

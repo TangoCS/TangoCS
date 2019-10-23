@@ -237,12 +237,12 @@ namespace Tango.UI.Controls
 		public IEnumerable<string> GetSelectedObjectsTitle()
 		{
 			List<TRefKey> selectedIds = Context.FormData.ParseList<TRefKey>(ClientID);
-			return GetObjectsByIDs(selectedIds).Select(SelectedObjectTextField);
+			return selectedIds == null || selectedIds.Count == 0 ? null : GetObjectsByIDs(selectedIds).Select(SelectedObjectTextField);
 		}
 
 		public IEnumerable<TRef> GetObjectsByIDs(IEnumerable<TRefKey> ids)
 		{
-			return DataProvider.GetObjectsByID(ids, FilterSelected(ids));
+			return ids == null || ids.Count() == 0 ? null : DataProvider.GetObjectsByID(ids, FilterSelected(ids));
 		}
 	}
 

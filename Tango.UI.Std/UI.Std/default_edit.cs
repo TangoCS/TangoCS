@@ -224,7 +224,11 @@ namespace Tango.UI.Std
 			if (ViewData is IWithTimeStamp withTimeStamp)
 			{
 				withTimeStamp.LastModifiedDate = DateTime.Now;
-				withTimeStamp.LastModifiedUserID = IdentityManager.CurrentUser.Id;
+			}
+
+			if (ViewData is IWithUserTimeStamp withUserTimeStamp)
+			{
+				withUserTimeStamp.LastModifiedUserID = IdentityManager.CurrentUser.Id;
 			}
 		}
 

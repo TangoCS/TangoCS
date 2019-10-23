@@ -152,8 +152,11 @@ namespace Tango.Localization
 
 			if (k.Parts.Count == 1)
 			{
-				if (textResource.TryGet("Common." + k.Parts.Pop(), out text))
+				if (textResource.TryGet($"Common.{p}{s}", out text))
 					return text;
+				else if (k.SuffixIsOptional)
+					if (textResource.TryGet($"Common.{p}", out text))
+						return text;
 			}
 
 			var key = k.SuffixIsOptional ? $"{t}.{p}" : $"{t}.{p}{s}";

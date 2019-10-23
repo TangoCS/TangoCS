@@ -172,10 +172,10 @@ namespace Tango.UI.Std
 	{
 		protected override void Footer(LayoutWriter w)
 		{
-			if (ViewData is IWithTimeStamp<TUser>)
-				w.LastModifiedBlock(ViewData as IWithTimeStamp<TUser>);
-			if (ViewData is IWithTimeStampEx<TUser>)
-				w.TimeStampExBlock(ViewData as IWithTimeStampEx<TUser>);
+			if (ViewData is IWithUserTimeStamp<TUser>)
+				w.LastModifiedBlock(ViewData as IWithUserTimeStamp<TUser>);
+			if (ViewData is IWithUserTimeStampEx<TUser>)
+				w.TimeStampExBlock(ViewData as IWithUserTimeStampEx<TUser>);
 		}
 	}
 }

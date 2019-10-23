@@ -9,7 +9,7 @@ namespace Tango.EntityBehaviour
 		protected IIdentityManager IdentityManager { get; set; }
 
 		[BehaviourContext]
-		protected IWithTimeStamp ViewData { get; set; }
+		protected IWithUserTimeStamp ViewData { get; set; }
 
 		public void Invoke(Action next)
 		{

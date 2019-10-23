@@ -35,19 +35,22 @@ namespace Tango
 	public interface IWithTimeStamp
 	{
 		DateTime LastModifiedDate { get; set; }
+	}
+
+	public interface IWithUserTimeStamp : IWithTimeStamp
+	{
 		int LastModifiedUserID { get; set; }
 	}
 
-	public interface IWithTimeStamp<TUser> : IWithTimeStamp
+	public interface IWithUserTimeStamp<TUser> : IWithTimeStamp
 		where TUser : IWithTitle
 	{
 		TUser LastModifiedUser { get; set; }
 	}
 	
-	public interface IWithTimeStampEx<TUser> where TUser : IWithTitle
+	public interface IWithUserTimeStampEx<TUser> : IWithUserTimeStamp<TUser>
+		where TUser : IWithTitle
 	{
-		DateTime LastModifiedDate { get; }
-		TUser LastModifiedUser { get; }
 		DateTime CreateDate { get; }
 		TUser Creator { get; }
 	}
