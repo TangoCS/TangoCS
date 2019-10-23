@@ -352,7 +352,7 @@ namespace Tango.UI.Controls
 
 			PersistentFilter.SaveView(
 				Context.GetArg("title"),
-				Context.GetBoolArg("isshared", false),
+				Context.GetIntArg("isshared") == 2,
 				Context.GetBoolArg("isdefault", false),
 				ListName, 
 				null
