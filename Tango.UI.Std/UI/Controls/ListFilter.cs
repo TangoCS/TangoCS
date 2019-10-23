@@ -587,8 +587,9 @@ namespace Tango.UI.Controls
 			var f = CreateOrGetCondition(title);
 
 			LambdaExpression expr = column;
-			if (expr.Body is UnaryExpression)
-				expr = Expression.Lambda((expr.Body as UnaryExpression).Operand, expr.Parameters);
+			//Если ничего не сломается, то эти две строки удалить
+			//if (expr.Body is UnaryExpression)
+			//	expr = Expression.Lambda((expr.Body as UnaryExpression).Operand, expr.Parameters);
 			var t = expr.Body.Type;
 
 			if (t == typeof(string))
