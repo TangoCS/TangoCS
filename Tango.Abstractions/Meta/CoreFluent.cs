@@ -274,7 +274,7 @@ namespace Tango.Meta.Fluent
 		{
 			Attribute<DateTime>("LastModifiedDate", x => x.DefaultDBValue = "now()");
 			Reference<TUser, TKey>("LastModifiedUser");
-			MetaClass.Interfaces.Add(typeof(IWithTimeStamp));
+			MetaClass.Interfaces.Add(typeof(IWithUserTimeStamp));
 			return _this;
 		}
 
@@ -282,7 +282,7 @@ namespace Tango.Meta.Fluent
 		{
 			Attribute<DateTime>("LastModifiedDate", x => x.DefaultDBValue = "now()");
 			Attribute<TKey>("LastModifiedUserID");
-			MetaClass.Interfaces.Add(typeof(IWithTimeStamp));
+			MetaClass.Interfaces.Add(typeof(IWithUserTimeStamp));
 			return _this;
 		}
 

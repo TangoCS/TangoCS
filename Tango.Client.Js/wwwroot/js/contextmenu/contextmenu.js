@@ -16,33 +16,26 @@
 		}
 	}());
 
-	$.fn.contextMenu = function (method, selector, option) {
-		//parameter fix
-		if (!methods[method]) {
-			option = selector;
-			selector = method;
-			method = 'popup';
-		}
-
-			//need to check for array object
-		else if (selector) {
-			if (!((selector instanceof Array) || (typeof selector === 'string') || (selector.nodeType) || (selector.jquery))) {
-				option = selector;
-				selector = null;
-			}
-		}
-
+	function callMethod(el, method, selector, option) {
 		var myoptions = option;
 		if (method != 'update') {
-			option = iMethods.optionOtimizer(method, option);
+			option = iMethods.optionOptimizer(method, option);
 			myoptions = $.extend({}, $.fn.contextMenu.defaults, option);
 			if (!myoptions.baseTrigger) {
-				myoptions.baseTrigger = this;
+				myoptions.baseTrigger = el;
 			}
 		}
-		methods[method].call(this, selector, myoptions);
+		methods[method].call(el, selector, myoptions);
 		return this;
+	}
+
+	$.fn.contextMenu = function (selector, option) {
+		return callMethod(this, 'popup', selector, option);
 	};
+
+	//$.fn.contextMenuMethod = function (method, selector, option) {
+	//	return callMethod(this, method, selector, option);
+	//};
 
 	$.fn.contextMenu.defaults = {
 		triggerOn: 'click', //avaliable options are all event related mouse plus enter option
@@ -57,11 +50,12 @@
 		winEventClose: true,
 		position: 'auto', //allowed values are top, left, bottom and right
 		closeOnClick: false, //close context menu on click/ trigger of any item in menu
-		delayedTrigger: false,
+		closeOnClickSelector: null,
 
 		//callback
 		beforeOpen: function (data, event) { return 0; },
 		onOpen: function (data, event) { return $.when(); },
+		beforeDisplay: function (data, event) { return 1; },
 		afterOpen: function (data, event) { },
 		onClose: function (data, event) { }
 	};
@@ -124,9 +118,8 @@
 			var e = data.event || $.Event('click');
 			if (data.top) e.clientY = data.top;
 			if (data.left) e.clientX = data.left;
-			this.each(function () {
-				iMethods.eventHandler.call(this, e);
-			});
+
+			iMethods.eventHandler.call(data.baseTrigger, e);
 		},
 		//to force context menu to close
 		close: function () {
@@ -149,10 +142,7 @@
 					if (menu.hasClass('iw-created')) {
 						menu.remove();
 					} else {
-						menu.removeClass('iw-contextMenu ' + menuId)
-                            .removeAttr('menuId').removeData('iw-menuData');
-						//to destroy submenus
-						//menu.find('li.iw-mTrigger').contextMenu('destroy');
+						menu.removeClass('iw-contextMenu ' + menuId).removeAttr('menuId').removeData('iw-menuData');
 					}
 				} else {
 					menuData.noTrigger--;
@@ -162,7 +152,7 @@
 			});
 		}
 	};
-	var timer = null;
+
 	var iMethods = {
 		contextMenuBind: function (selector, option, method) {
 			var trigger = this,
@@ -248,7 +238,9 @@
 
 			if (option.closeOnClick) {
 				menu.bind('click', function (e) {
-					iMethods.closeContextMenu(option, trigger, menu, e);
+					var b = true;
+					if (option.closeOnClickSelector) b = option.closeOnClickSelector(e.target);
+					if (b) iMethods.closeContextMenu(option, trigger, menu, e);
 				});
 			}
 
@@ -272,14 +264,15 @@
                 	menu: menu
                 },
                 //check conditions
-                cntWin = cntnmnt == window,
-                btChck = option.baseTrigger.index(trigger) == -1;
+                cntWin = cntnmnt == window;
+			//btChck = option.baseTrigger.index(trigger) == -1;
 
+			var baseEl = option.baseTrigger ? option.baseTrigger : trigger;
 			var res = option.beforeOpen.call(this, clbckData, e);
 
 			if (res == 0) {
 				//to close previous open menu.
-				if (!btChck && option.closeOther) {
+				if (option.closeOther) {
 					$('.iw-contextMenu').not(menu.selector).removeClass('iw-display');
 				}
 
@@ -289,7 +282,7 @@
 			}
 			else if (res == 1) {
 				//to close previous open menu.
-				if (!btChck && option.closeOther) {
+				if (option.closeOther) {
 					$('.iw-contextMenu').removeClass('iw-display');
 				}
 				//to reset already selected menu item
@@ -333,17 +326,15 @@
 				}
 				var menuHeight = menuData.menuHeight;
 				var menuWidth = menuData.menuWidth;
-				//option.triggerVisibility = trigger[0].style.visibility;
-				//trigger.css('visibility', 'visible');
 
 				if (option.displayAround == 'cursor') {
 					left = cntWin ? e.clientX : e.clientX + $(window).scrollLeft() - cLeft;
 					top = cntWin ? e.clientY : e.clientY + $(window).scrollTop() - cTop;
 				} else if (option.displayAround == 'trigger') {
-					var triggerHeight = trigger.outerHeight(true),
-						triggerWidth = trigger.outerWidth(true),
-						triggerLeft = cntWin ? trigger.offset().left - cObj.scrollLeft() : trigger.offset().left - cLeft,
-						triggerTop = cntWin ? trigger.offset().top - cObj.scrollTop() : trigger.offset().top - cTop,
+					var triggerHeight = baseEl.outerHeight(true),
+						triggerWidth = baseEl.outerWidth(true),
+						triggerLeft = cntWin ? baseEl.offset().left - cObj.scrollLeft() : baseEl.offset().left - cLeft,
+						triggerTop = cntWin ? baseEl.offset().top - cObj.scrollTop() : baseEl.offset().top - cTop,
 						leftShift = triggerWidth;
 
 					if (option.position == 'top') {
@@ -395,7 +386,7 @@
 					top = iMethods.getPxSize(option.top, cHeight);
 				}
 				if (!cntWin) {
-					var oParPos = trigger.offsetParent().offset();
+					var oParPos = baseEl.offsetParent().offset();
 					if (btChck) {
 						left = left + cLeft - $(window).scrollLeft();
 						top = top + cTop - $(window).scrollTop();
@@ -406,6 +397,12 @@
 				}
 				cssObj.left = left + ha + 'px';
 				cssObj.top = top + va + 'px';
+
+				var res = option.beforeDisplay.call(this, clbckData, e);
+				if (res != 1) {
+					$('.iw-contextMenu').removeClass('iw-display');
+					return;
+				}
 
 				menu.css(cssObj).addClass('iw-display');
 
@@ -419,31 +416,22 @@
 					menu.addClass('iw-curMenu');
 				}
 
-
 				var dataParm = {
 					trigger: trigger,
 					menu: menu,
 					option: option,
 					method: trgrData.method
 				};
+
 				$('html').unbind('click', iMethods.clickEvent).click(dataParm, iMethods.clickEvent);
-				//$(document).unbind('keydown', iMethods.keyEvent).keydown(dataParm, iMethods.keyEvent);
+
 				if (option.winEventClose) {
 					$(window).bind('scroll resize', dataParm, iMethods.scrollEvent);
 				}
 			};
 
 			//call open callback
-			if (option.delayedTrigger) {
-				if (timer) {
-					window.clearTimeout(timer);
-					timer = null;
-				}
-				timer = window.setTimeout(function () { option.onOpen.call(this, clbckData, e).done(openMenu); }, 300);
-			}
-			else {
-				option.onOpen.call(this, clbckData, e).done(openMenu);
-			}
+			option.onOpen.call(this, clbckData, e).done(openMenu);
 		},
 
 		scrollEvent: function (e) {
@@ -460,14 +448,12 @@
 		closeContextMenu: function (option, trigger, menu, e) {
 
 			//unbind all events from top DOM
-			//$(document).unbind('keydown', iMethods.keyEvent);
 			$('html').unbind('click', iMethods.clickEvent);
 			$(window).unbind('scroll resize', iMethods.scrollEvent);
 			$('.iw-contextMenu').removeClass('iw-display');
 			$(document).focus();
 
 			option.baseTrigger.removeClass('iw-opened');
-			//option.baseTrigger.css('visibility', option.triggerVisibility ? option.triggerVisibility : '');
 
 			//call close function
 			option.onClose.call(this, {
@@ -485,7 +471,7 @@
 				return parseInt(size);
 			}
 		},
-		optionOtimizer: function (method, option) {
+		optionOptimizer: function (method, option) {
 			if (!option) {
 				return;
 			}

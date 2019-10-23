@@ -9,7 +9,7 @@ namespace Tango.UI.Std
 			w.Div(a => a.ID("validation"));
 		}
 
-		public static void LastModifiedBlock<TUser>(this LayoutWriter w, IWithTimeStamp<TUser> obj)
+		public static void LastModifiedBlock<TUser>(this LayoutWriter w, IWithUserTimeStamp<TUser> obj)
 			where TUser : IWithTitle
 		{
 			w.Div(a => a.Class("lastmodified"), () => {
@@ -21,7 +21,7 @@ namespace Tango.UI.Std
 			});
 		}
 
-		public static void TimeStampExBlock<TUser>(this LayoutWriter w, IWithTimeStampEx<TUser> obj)
+		public static void TimeStampExBlock<TUser>(this LayoutWriter w, IWithUserTimeStampEx<TUser> obj)
 			where TUser : IWithTitle
 		{
 			w.Div(a => a.Class("lastmodified"), () => {

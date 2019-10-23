@@ -36,7 +36,7 @@ namespace Tango.UI.Controls
 				p.PageSize = 20;
 			});
 			DataCollection = Field.DataCollection;
-			DataCollection.Ref(GetClientID("filter"));
+			DataCollection.Ref(Field.GetClientID("filter"));
 			Title = Resources.Get(typeof(TRef).GetResourceType().FullName + "-pl");
 		}
 
@@ -211,7 +211,7 @@ namespace Tango.UI.Controls
 				cw.Div(a => a.ID("selected"), () => {
 					if (Field.Disabled && Field.TextWhenDisabled != null)
 						Field.TextWhenDisabled?.Invoke(cw);
-					else if (selectedValues != null)
+					else if (selectedValues != null && selectedValues.Count() > 0)
 						cw.WriteLines(selectedValues.Select(o => Field.SelectedObjectTextField(o)));
 					else
 						Field.TextWhenNothingSelected?.Invoke(cw);
