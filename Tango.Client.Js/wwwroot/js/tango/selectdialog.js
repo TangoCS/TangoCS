@@ -106,7 +106,7 @@ var selectSingleObjectDialog2 = function (au, cu) {
 			const elPopup = document.getElementById(id + '_popup');
 
 			const opt = {
-				triggerOn: 'keyup',
+				triggerOn: 'keyup paste',
 				displayAround: 'trigger',
 				position: 'bottom',
 				delayedTrigger: true,
@@ -124,13 +124,17 @@ var selectSingleObjectDialog2 = function (au, cu) {
 			};
 			opt.beforeOpen = function (data, event) {
 				if (event.type == 'click') return 0;
+				else if (event.type == 'paste') {
+					elFilter.value = event.originalEvent.clipboardData.getData('Text');
+					return 0;
+				}
 				var v = data.trigger.val();
 				if (event.keyCode == 8) return v == '' ? 1 : 0;
 				if (event.keyCode == 27 || event.keyCode == 13) return 1;
 				if (event.keyCode == 33 || event.keyCode == 34 || event.keyCode == 37 || event.keyCode == 38 || event.keyCode == 39) return 2;
 				if (event.keyCode == 40) return elPh.classList.contains('iw-opened') ? 2 : 0;
 				if (v == '') return 1;
-
+				
 				return 0;
 			}
 
@@ -209,7 +213,7 @@ var selectSingleObjectDialog2 = function (au, cu) {
 		},
 		widgetWillMount: function (shadow, state) {
 			const root = shadow.getElementById(state.root + '_str');
-
+			
 			const checks = root.getElementsByTagName('input');
 			for (var i = 0; i < checks.length; i++) {
 				const el = checks[i];

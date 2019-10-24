@@ -354,13 +354,19 @@ var ajaxUtils = function ($, cu) {
 			});
 		},
 		repeatedPostEvent: function (args) {
-			var el = document.getElementById(args.id);
-			if (!el || intervals[el.id]) return;
+			if (intervals[args.id]) return;
 
 			var n = window.setInterval(function () {
-				instance.postEventFromElementWithApiResponse(el);
+				var el = document.getElementById(args.id);
+				if (el)
+					instance.postEventFromElementWithApiResponse(el);
+				else if (intervals[args.id]) {
+					window.clearInterval(intervals[args.id]);
+					delete intervals[args.id];
+				}
 			}, args.interval);
-			intervals[el.id] = n;
+
+			intervals[args.id] = n;
 		},
 		runEvent: function (target) {
 			return $.ajax({
