@@ -145,12 +145,18 @@ namespace Tango.UI
 			w.FormField(field, grid, () => w.Calendar(field.ID, field.Value, state));
 		}
 
-		public static void Calendar(this LayoutWriter w, IField<DateTime?> field, Grid grid = Grid.OneWhole)
+		public static void Calendar(this LayoutWriter w, IField<DateTime?> field, CalendarOptions opt = null, Grid grid = Grid.OneWhole)
 		{
 			var state = field.Disabled ? EnabledState.Disabled : (field.ReadOnly ? EnabledState.ReadOnly : EnabledState.Enabled);
-			w.FormField(field, grid, () => w.Calendar(field.ID, field.Value, state));
-		}
-	}
+            if (opt == null)
+                w.FormField(field, grid, () => w.Calendar(field.ID, field.Value, state));
+            else
+            {
+                opt.Enabled = state;
+                w.FormField(field, grid, () => w.Calendar(field.ID, field.Value, opt));
+            }
+        }
+    }
 
 	//public static class FieldRenderForList
 	//{

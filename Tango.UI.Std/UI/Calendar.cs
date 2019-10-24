@@ -74,11 +74,11 @@ namespace Tango.UI
 			//				}
 		}
 
-		public static void Calendar(this LayoutWriter w, InputName name, DateTime? value = null, EnabledState enabled = EnabledState.Enabled, bool showTime = false, bool useCalendarDaysInJSCalendar = false)
-		{
-			w.Calendar(name, value, new CalendarOptions { Enabled = enabled, ShowTime = showTime, UseCalendarDays = useCalendarDaysInJSCalendar });
-		}
-	}
+        public static void Calendar(this LayoutWriter w, InputName name, DateTime? value = null, EnabledState enabled = EnabledState.Enabled, bool showTime = false, bool useCalendarDaysInJSCalendar = false)
+        {
+            w.Calendar(name, value,  new CalendarOptions { Enabled = enabled, ShowTime = showTime, UseCalendarDays = useCalendarDaysInJSCalendar });
+        }
+    }
 
 	
 }

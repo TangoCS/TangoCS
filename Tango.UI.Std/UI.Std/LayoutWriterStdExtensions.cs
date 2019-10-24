@@ -39,7 +39,24 @@ namespace Tango.UI.Std
 			});
 		}
 
-		public static void ButtonsBar_view(this LayoutWriter w)
+        public static void TimeStampExBlock(this LayoutWriter w, IWithUserTimeStampEx obj)
+        {
+            w.Div(a => a.Class("lastmodified"), () => {
+                w.Write(w.Resources.Get("Common.Created"));
+                w.Write(": ");
+                w.Write(obj.CreateDate.DateTimeToString());
+                w.Write(" ");
+                w.Write(obj.Creator);
+                w.Write(w.NewLine);
+                w.Write(w.Resources.Get("Common.LastModified"));
+                w.Write(": ");
+                w.Write(obj.LastModifiedDate.DateTimeToString());
+                w.Write(" ");
+                w.Write(obj.LastModifiedUser);
+            });
+        }
+
+        public static void ButtonsBar_view(this LayoutWriter w)
 		{
 			w.ButtonsBar(() => {
 				w.ButtonsBarRight(() => w.BackButton());

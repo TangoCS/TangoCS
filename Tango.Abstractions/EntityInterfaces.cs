@@ -55,7 +55,14 @@ namespace Tango
 		TUser Creator { get; }
 	}
 
-	public interface IChildEntity<TParentKey>
+    public interface IWithUserTimeStampEx : IWithTimeStamp
+    {
+        DateTime CreateDate { get; }
+        String Creator { get; }
+        String LastModifiedUser { get; }
+    }
+
+    public interface IChildEntity<TParentKey>
 	{
 		TParentKey ParentID { get; set; }
 	}
