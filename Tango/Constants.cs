@@ -7,6 +7,7 @@
 		public static readonly string ReturnUrl = "returnurl";
 		public static readonly string Id = "oid";
 		public static readonly string ParentId = "parentid";
+		public static readonly string FileId = "fileid";
 
 		public static readonly string ShowLogsName = "showlogs";
 

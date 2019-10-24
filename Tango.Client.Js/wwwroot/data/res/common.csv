@@ -50,6 +50,7 @@ Common.Label.Info;Справка;Reference
 Common.Label.PageInfo;Информация к странице;Page information
 Common.Labels.DeletingDictElement;Удаление элемента справочника;Removing of dictionary item
 Common.LastModified;Последнее изменение;Last modified
+Common.Created;Создана;Created
 Common.ListTable.Actions;Действия;Actions
 Common.Messages.EmployeeMissingRole;Сотрудник не обладает правами на запрашиваемую роль;Employer has no authority for a inquired role
 Common.Messages.EmployeeNotFound;Сотрудник не обладает правами пользователя БД ОСУР БН РиД;Employer has no authority for EWRM database
@@ -57,6 +58,7 @@ Common.NoGroup;Без группы;No group
 Common.NotAny;Никакие;Not any
 Common.ObjectChangeActions.Create;Создание;Create
 Common.ObjectChangeActions.Edit;Редактирование;Edit
+Common.ObjectNotExists;Объект не существует;Object not exists
 Common.OnlySelected;Только выбранные;Only selected
 Common.Paging.From;из;of
 Common.Paging.Page;Страница;Page
@@ -96,6 +98,8 @@ Common.passportno;Номер паспорта
 Common.patronymic;Отчество
 Common.surname;Фамилия
 Common.Version;Версия;
+Common.lastmodifieddate;Дата последней модификации
+Common.lastmodifieddate-s;Дата мод.
 
 SaveFileResult.AntiViralFailure;Загружаемый файл не прошел проверку на наличие вирусов. Проведите антивирусную обработку файла и повторите загрузку или обратитесь к администратору системы;
 SaveFileResult.AntiViralSuspicion;Проверка на наличие вирусов не может быть выполнена. Загружаемый файл может содержать вирусы. Проведите антивирусную обработку файла и повторите загрузку или обратитесь к администратору системы;
