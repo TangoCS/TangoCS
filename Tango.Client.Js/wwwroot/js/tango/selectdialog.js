@@ -97,7 +97,7 @@ var selectMultipleObjectsDialog = function (au, cu) {
 	return instance;
 }(ajaxUtils, commonUtils);
 
-var selectSingleObjectDialog2 = function (au, cu) {
+var selectObjectDialog2 = function (au, cu, cbcell) {
 	var instance = {
 		placeholderInit: function (id) {
 			const elPh = document.getElementById(id + '_placeholder');
@@ -157,19 +157,19 @@ var selectSingleObjectDialog2 = function (au, cu) {
 				}
 
 				if (elPh.classList.contains('iw-opened')) {
-					var cur = elPopup.querySelector('label.selected');
-					if (!cur) cur = elPopup.querySelector('label');
+					var cur = elPopup.querySelector('.row.selected');
+					if (!cur) cur = elPopup.querySelector('.row');
 
 					if (e.keyCode == 38) {
 						e.preventDefault();
-						if (cur.previousSibling instanceof HTMLLabelElement) {
+						if (cur.previousSibling && cur.previousSibling.classList.contains('row')) {
 							cur.classList.remove('selected');
 							cur.previousSibling.classList.add('selected');
 						}
 					}
 					else if (e.keyCode == 40) {
 						e.preventDefault();
-						if (cur.nextSibling instanceof HTMLLabelElement) {
+						if (cur.nextSibling && cur.nextSibling.classList.contains('row')) {
 							cur.classList.remove('selected');
 							cur.nextSibling.classList.add('selected');
 						}
@@ -214,27 +214,36 @@ var selectSingleObjectDialog2 = function (au, cu) {
 		widgetWillMount: function (shadow, state) {
 			const root = shadow.getElementById(state.root + '_str');
 			
-			const checks = root.getElementsByTagName('input');
-			for (var i = 0; i < checks.length; i++) {
-				const el = checks[i];
+			const radios = root.getElementsByTagName('input');
+			for (var i = 0; i < radios.length; i++) {
+				const el = radios[i];
 				el.checked = state.selectedvalue == el.value;
 				el.addEventListener("change", function () {
 					state.selectedvalue = el.value;
 				});
 			}
+
+			const checks = root.querySelectorAll('.checkboxlist .row');
+			for (var i = 0; i < checks.length; i++) {
+				const el = checks[i];
+				el.addEventListener('mousedown', function (e) {
+					e.preventDefault();
+					cbcell.setselected(el);
+				});
+			}
 		},
 		widgetDidMount: function (state) {
 			const elPopup = document.getElementById(state.root + '_popup');
-			const rows = elPopup.getElementsByTagName('label');
+			const rows = elPopup.querySelectorAll('.row');
 			if (rows.length > 0) rows[0].classList.add('selected');
 
 			for (var i = 0; i < rows.length; i++) {
 				const el = rows[i];
 				el.addEventListener('mousemove', function (e) {
-					const cur = elPopup.querySelector('label.selected');
-					if (cur == e.target) return;
+					const cur = elPopup.querySelector('.row.selected');
+					if (cur == e.currentTarget) return;
 					if (cur) cur.classList.remove('selected');
-					e.target.classList.add('selected');
+					e.currentTarget.classList.add('selected');
 				});
 			}
 
@@ -252,4 +261,4 @@ var selectSingleObjectDialog2 = function (au, cu) {
 	}
 
 	return instance;
-}(ajaxUtils, commonUtils);
+}(ajaxUtils, commonUtils, checkBoxCell);

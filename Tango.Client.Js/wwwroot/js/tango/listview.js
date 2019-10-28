@@ -1,4 +1,115 @@
-﻿var listview = function (au, cu) {
+﻿var checkBoxCell = function (au, cu) {
+	var instance = {
+		setselected: function (el, onCheckChangeDelegate) {
+			const tr = getRow(el);
+			const root = cu.getThisOrParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-ctrl'); });
+			const ctrlid = root.hasAttribute('data-ctrl-id') ? root.getAttribute('data-ctrl-id') : root.id;
+			const state = au.state.ctrl[ctrlid];
+			const cbhead = document.getElementById(ctrlid + "_sel_header");
+			const selected = tr.classList.contains('checked');
+
+			if (selected) {
+				if (state.selectedvalues[0] == -1) {
+					state.selectedvalues = [];
+					if (cbhead) instance.setPageChecked(root, state, cbhead);
+				}
+				instance.setRowUnchecked(tr, el);
+				const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
+				if (index > -1) {
+					state.selectedvalues.splice(index, 1);
+				}
+			}
+			else {
+				instance.setRowChecked(tr, el);
+				state.selectedvalues.push(tr.getAttribute('data-rowid'));
+			}
+
+			const cblist = root.querySelectorAll('.sel');
+			var j = 0;
+			for (var i = 0; i < cblist.length; i++) {
+				if (cblist[i].getAttribute('data-state') == 1) j++;
+			}
+			if (cbhead) instance.setHeaderSelectorState(cbhead, j, cblist.length);
+			if (onCheckChangeDelegate) onCheckChangeDelegate(document, root, state, j != 0);
+		},
+
+		cbheadclicked: function (cbhead, onCheckChangeDelegate) {
+			const root = cu.getThisOrParent(cbhead, function (n) { return n.hasAttribute && n.hasAttribute('data-ctrl'); });
+			const ctrlid = root.hasAttribute('data-ctrl-id') ? root.getAttribute('data-ctrl-id') : root.id;
+			const state = au.state.ctrl[ctrlid];
+			const cblist = root.querySelectorAll('.sel');
+			const headstate = cbhead.getAttribute('data-state') || '0';
+
+			if (headstate == '2' || headstate == '1') {
+				instance.setPageUnchecked(root, state, cbhead);
+			}
+			else if (headstate == '0') {
+				instance.setPageChecked(root, state, cbhead);
+			}
+			if (onCheckChangeDelegate) onCheckChangeDelegate(document, root, state);
+		},
+
+		setHeaderSelectorState: function (cbhead, j, cnt) {
+			if (j == cnt) {
+				cbhead.setAttribute('data-state', '1');
+				cbhead.firstChild.className = 'icon icon-checkbox-checked';
+			} else if (j == 0) {
+				cbhead.setAttribute('data-state', '0');
+				cbhead.firstChild.className = 'icon icon-checkbox-unchecked';
+			} else {
+				cbhead.setAttribute('data-state', '2');
+				cbhead.firstChild.className = 'icon icon-minus-box';
+			}
+		},
+
+		setRowChecked: function (tr, el) {
+			tr.classList.add('checked');
+			el.querySelector('i').className = 'icon icon-checkbox-checked';
+			//el.firstChild.className = 'icon icon-checkbox-checked';
+			el.setAttribute('data-state', 1);
+		},
+
+		setRowUnchecked: function (tr, el) {
+			tr.classList.remove('checked');
+			el.querySelector('i').className = 'icon icon-checkbox-unchecked';
+			//el.firstChild.className = 'icon icon-checkbox-unchecked';
+			el.setAttribute('data-state', 0);
+		},
+
+		setPageChecked: function (root, state, cbhead) {
+			const cblist = root.querySelectorAll('.sel');
+			for (var i = 0; i < cblist.length; i++) {
+				const tr = getRow(cblist[i]);
+				instance.setRowChecked(tr, cblist[i]);
+				state.selectedvalues.push(tr.getAttribute('data-rowid'));
+			}
+			cbhead.setAttribute('data-state', '1');
+			cbhead.firstChild.className = 'icon icon-checkbox-checked';
+		},
+
+		setPageUnchecked: function (root, state, cbhead) {
+			const cblist = root.querySelectorAll('.sel');
+			for (var i = 0; i < cblist.length; i++) {
+				const tr = getRow(cblist[i]);
+				instance.setRowUnchecked(tr, cblist[i]);
+				const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
+				if (index > -1) {
+					state.selectedvalues.splice(index, 1);
+				}
+			}
+			cbhead.setAttribute('data-state', '0');
+			cbhead.firstChild.className = 'icon icon-checkbox-unchecked';
+		}
+	};
+
+	function getRow(caller) {
+		return cu.getThisOrParent(caller, function (el) { return el instanceof HTMLTableRowElement; });
+	};
+
+	return instance;
+}(ajaxUtils, commonUtils);
+
+var listview = function (au, cu, cbcell) {
 	var instance = {
 		togglerow: function (el) {
 			const tr = getRow(el);
@@ -87,27 +198,32 @@
 
 			const root = shadow.getElementById(state.root);
 			const cblist = root.querySelectorAll('.sel');
-			const cbhead = shadow.getElementById(root.id + "_sel_header");
+			const cbhead = root.querySelector('.sel_header');
 
 			var j = 0;
 
 			if (state.selectedvalues[0] == -1) {
-				setPageChecked(root, state, cbhead);
+				cbcell.setPageChecked(root, state, cbhead);
 				j = cblist.length
 			} else {
 				for (var i = 0; i < cblist.length; i++) {
 					const tr = getRow(cblist[i]);
 					const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
 					if (index > -1) {
-						setRowChecked(tr, cblist[i]);
+						cbcell.setRowChecked(tr, cblist[i]);
 						j++;
 					}
 				}
 			}
 
-			setHeaderSelectorState(cbhead, j, cblist.length);
-			setBulkOpsState(shadow, root, state);
-			initInfoBlock(shadow, root, state);
+			for (var i = 0; i < cblist.length; i++) {
+				const el = cblist[i];
+				el.addEventListener('click', function (e) { cbcell.setselected(el, onCheckChange); });
+			}
+			cbhead.addEventListener('click', function (e) { cbcell.cbheadclicked(cbhead, onCheckChange); });
+
+			cbcell.setHeaderSelectorState(cbhead, j, cblist.length);
+			onCheckChange(shadow, root, state);
 		},
 		widgetDidMount: function (state) {
 			var el = $('#' + state.root);
@@ -136,54 +252,8 @@
 				}
 			});
 		},
-		setselected: function (el) {
-			const tr = getRow(el);
-			const root = tr.parentNode.parentNode;
-			const state = au.state.ctrl[root.id];
-			const cbhead = document.getElementById(root.id + "_sel_header");
-			const selected = tr.classList.contains('selected');
-
-			if (selected) {
-				if (state.selectedvalues[0] == -1) {
-					state.selectedvalues = [];
-					setPageChecked(root, state, cbhead);
-				}
-				setRowUnchecked(tr, el);
-				const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
-				if (index > -1) {
-					state.selectedvalues.splice(index, 1);
-				}
-			}
-			else {
-				setRowChecked(tr, el);
-				state.selectedvalues.push(tr.getAttribute('data-rowid'));
-			}
-
-			const cblist = root.querySelectorAll('.sel');
-			var j = 0;
-			for (var i = 0; i < cblist.length; i++) {
-				if (cblist[i].getAttribute('data-state') == 1) j++;
-			}
-			setHeaderSelectorState(cbhead, j, cblist.length);
-			setBulkOpsState(document, root, state);
-			initInfoBlock(document, root, state, j != 0);
-		},
-		cbheadclicked: function (cbhead) {
-			const tr = getRow(cbhead);
-			const root = tr.parentNode.parentNode;
-			const state = au.state.ctrl[root.id];
-			const cblist = root.querySelectorAll('.sel');
-			const headstate = cbhead.getAttribute('data-state') || '0';
-
-			if (headstate == '2' || headstate == '1') {
-				setPageUnchecked(root, state, cbhead);
-			}
-			else if (headstate == '0') {
-				setPageChecked(root, state, cbhead);
-			}
-			setBulkOpsState(document, root, state);
-			initInfoBlock(document, root, state);
-		},
+		
+		
 		selectall: function (rootid) {
 			const root = document.getElementById(rootid);
 			const state = au.state.ctrl[rootid];
@@ -192,9 +262,8 @@
 			state.selectedvalues = [];
 			state.selectedvalues.push(-1);
 
-			setPageChecked(root, state, cbhead);
-			setBulkOpsState(document, root, state);
-			initInfoBlock(document, root, state);
+			cbcell.setPageChecked(root, state, cbhead);
+			onCheckChange(document, root, state);
 		},
 		clearselection: function (rootid) {
 			const root = document.getElementById(rootid);
@@ -203,23 +272,14 @@
 
 			state.selectedvalues = [];
 
-			setPageUnchecked(root, state, cbhead);
-			setBulkOpsState(document, root, state);
-			initInfoBlock(document, root, state);
+			cbcell.setPageUnchecked(root, state, cbhead);
+			onCheckChange(document, root, state);
 		},
 	}
 
-	function setHeaderSelectorState(cbhead, j, cnt) {
-		if (j == cnt) {
-			cbhead.setAttribute('data-state', '1');
-			cbhead.firstChild.className = 'icon icon-checkbox-checked';
-		} else if (j == 0) {
-			cbhead.setAttribute('data-state', '0');
-			cbhead.firstChild.className = 'icon icon-checkbox-unchecked';
-		} else {
-			cbhead.setAttribute('data-state', '2');
-			cbhead.firstChild.className = 'icon icon-minus-box';
-		}
+	function onCheckChange(document, root, state, keepInfoBlockState) {
+		setBulkOpsState(document, root, state);
+		initInfoBlock(document, root, state, keepInfoBlockState);
 	}
 
 	function setBulkOpsState(doc, root, state) {
@@ -259,60 +319,13 @@
 		}
 	}
 
-	function setRowChecked(tr, el) {
-		tr.classList.add('selected');
-		el.firstChild.className = 'icon icon-checkbox-checked';
-		el.setAttribute('data-state', 1);
-	}
-
-	function setRowUnchecked(tr, el) {
-		tr.classList.remove('selected');
-		el.firstChild.className = 'icon icon-checkbox-unchecked';
-		el.setAttribute('data-state', 0);
-	}
-
-	function setPageChecked(root, state, cbhead) {
-		const cblist = root.querySelectorAll('.sel');
-		for (var i = 0; i < cblist.length; i++) {
-			const tr = getRow(cblist[i]);
-			setRowChecked(tr, cblist[i]);
-			state.selectedvalues.push(tr.getAttribute('data-rowid'));
-		}
-		cbhead.setAttribute('data-state', '1');
-		cbhead.firstChild.className = 'icon icon-checkbox-checked';
-	}
-
-	function setPageUnchecked(root, state, cbhead) {
-		const cblist = root.querySelectorAll('.sel');
-		for (var i = 0; i < cblist.length; i++) {
-			const tr = getRow(cblist[i]);
-			setRowUnchecked(tr, cblist[i]);
-			const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
-			if (index > -1) {
-				state.selectedvalues.splice(index, 1);
-			}
-		}
-		cbhead.setAttribute('data-state', '0');
-		cbhead.firstChild.className = 'icon icon-checkbox-unchecked';
-	}
-
-	function getFirstRowNo(table) {
-		var i = 0;
-		var tr = table.firstChild.firstChild;
-		while (tr.firstChild.nodeName == 'TH') {
-			tr = tr.nextSibling;
-			i++;
-		}
-		return i;
-	}
-
 	function getRow(caller) {
-		return commonUtils.getParent(caller, function (el) { return el instanceof HTMLTableRowElement; });
+		return cu.getThisOrParent(caller, function (el) { return el instanceof HTMLTableRowElement; });
 	};
 
 	function getCell(caller) {
-		return commonUtils.getParent(caller, function (el) { return el instanceof HTMLTableCellElement; });
+		return cu.getThisOrParent(caller, function (el) { return el instanceof HTMLTableCellElement; });
 	};
 
 	return instance;
-}(ajaxUtils, commonUtils);
+}(ajaxUtils, commonUtils, checkBoxCell);

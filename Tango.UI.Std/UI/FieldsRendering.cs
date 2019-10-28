@@ -74,8 +74,6 @@ namespace Tango.UI
 			w.FormField(null, caption, () => w.Write(value), false, description);
 		}
 
-		
-
 		public static void PlainText<TEntity, TRefClass, TRefKey>(this LayoutWriter w, EntityReferenceManyField<TEntity, TRefClass, TRefKey> field, Grid grid = Grid.OneWhole)
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefKey>
@@ -100,6 +98,7 @@ namespace Tango.UI
 		{
 			w.FormField(field.ID, field.Caption, () => w.CheckBox(field.ID, field.Value, a => {
 				if (field.Disabled) a.Disabled(true);
+				if (field.ReadOnly) a.Readonly(true).OnChange("event.preventDefault(); this.checked = !this.checked; return false;");
 			}), false, field.ShowDescription ? field.Description : null, field.IsVisible);
 		}
 
@@ -107,6 +106,7 @@ namespace Tango.UI
 		{
 			w.FormField(field.ID, field.Caption, () => w.CheckBox(field.ID, field.Value ?? false, a => {
 				if (field.Disabled) a.Disabled(true);
+				if (field.ReadOnly) a.Readonly(true).OnChange("event.preventDefault(); this.checked = !this.checked; return false;");
 			}), false, field.ShowDescription ? field.Description : null, field.IsVisible);
 		}
 
@@ -157,53 +157,6 @@ namespace Tango.UI
             }
         }
     }
-
-	//public static class FieldRenderForList
-	//{
-	//	public static void AddFieldCell<TEntity, TResult>(this FieldCollection<TEntity, TResult> f, 
-	//		Expression<Func<TEntity, object>> res, IField field)
-	//		where TResult : class
-	//	{
-	//		f.AddCellWithSortAndFilter(res, o => {
-	//			field.Context = f.Context;
-	//			if (field is IEntityField<TResult>)
-	//				(field as IEntityField<TResult>).ViewData = o;
-	//			else if (field is IEntityField<object>)
-	//				(field as IEntityField<object>).ViewData = o;
-	//			return field.StringValue;
-	//		});
-	//	}
-
-	//	public static void AddFieldCell<TEntity, TResult, TField>(this FieldCollection<TEntity, TResult> f,
-	//		Expression<Func<TEntity, object>> res, TField field, Action<LayoutWriter, TResult, TField> action)
-	//		where TField : IField
-	//		where TResult : class
-	//	{
-	//		f.AddCellWithSortAndFilter(res, (w, o) => {
-	//			field.Context = f.Context;
-	//			if (field is IEntityField<TResult>)
-	//				(field as IEntityField<TResult>).ViewData = o;
-	//			else if (field is IEntityField<object>)
-	//				(field as IEntityField<object>).ViewData = o;
-	//			action(w, o, field);
-	//		});
-	//	}
-
-	//	public static void AddFieldCell<TEntity, TResult, TField>(this FieldCollection<TEntity, TResult> f,
-	//		Expression<Func<TEntity, object>> res, TField field, Action<LayoutWriter, TResult, int, TField> action)
-	//		where TField : IField
-	//		where TResult : class
-	//	{
-	//		f.AddCellWithSortAndFilter(res, (w, o, i) => {
-	//			field.Context = f.Context;
-	//			if (field is IEntityField<TResult>)
-	//				(field as IEntityField<TResult>).ViewData = o;
-	//			else if (field is IEntityField<object>)
-	//				(field as IEntityField<object>).ViewData = o;
-	//			action(w, o, i, field);
-	//		});
-	//	}
-	//}
 
 	public static class FieldActionLinkExtensions
 	{

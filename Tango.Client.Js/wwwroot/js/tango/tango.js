@@ -274,6 +274,9 @@ var ajaxUtils = function ($, cu) {
 				$(event.target.form).trigger('submit', event.target);
 			});
 			form.on('submit', { el: form[0] }, function (e, submitter) {
+				if (submitter.classList.contains('ajax-loading'))
+					return false;
+
 				const confirmMsg = submitter.getAttribute('data-confirm');
 				if (confirmMsg) {
 					if (!window.confirm(confirmMsg)) {
@@ -291,7 +294,7 @@ var ajaxUtils = function ($, cu) {
 		},
 		formSubmit: function (sender, form) {
 			var fd = new FormData(form);
-			if (sender) fd.append('submit', sender.value);
+			fd.append('submit', sender.value);
 			var els = form.elements;
 			for (var i = 0, el; el = els[i++];) {
 				processElementDataOnFormSubmit(el, function (key, value) { fd.append(key, value); });
@@ -308,6 +311,7 @@ var ajaxUtils = function ($, cu) {
 			if (sender.hasAttribute('data-responsetype')) {
 				target.responsetype = sender.getAttribute('data-responsetype');
 			}
+			runOnAjaxSend(sender, target);
 			const r = instance.postEventWithApiResponse(target);
 			if (form.hasAttribute('data-res-postponed'))
 				r.then(function (apiResult) {
@@ -656,6 +660,12 @@ var ajaxUtils = function ($, cu) {
 	function requestCompleted() {
 		state.com.requestId = null;
 		if (state.com.message) state.com.message.css('display', 'none');
+
+		const nodes = document.querySelectorAll('.ajax-loading');
+
+		for (var i = 0; i < nodes.length; i++) {
+			nodes[i].classList.remove('ajax-loading');
+		}
 	}
 
 	function onRequestResult(data, status, xhr) {
@@ -924,7 +934,8 @@ var ajaxUtils = function ($, cu) {
 				if (!state.ctrl[owner]) state.ctrl[owner] = {};
 				const nodectrl = state.ctrl[owner];
 				if (type == 'array') {
-					nodectrl[name] = new ObservableArray(node.value.split(',').filter(String));
+					nodectrl[name] = nodectrl[name] ? new ObservableArray(nodectrl[name]) : new ObservableArray();
+					nodectrl[name].push.apply(nodectrl[name], node.value.split(',').filter(String));
 					nodectrl[name].on('pop push shift unshift splice reverse sort', function () {
 						node.value = this.join(',');
 					});
@@ -966,11 +977,14 @@ var ajaxUtils = function ($, cu) {
 				n.func(n.el, n);
 			});
 
-			for (var id in state.ctrl) {
-				const s = state.ctrl[id];
+			for (var i = 0; i < ctrls.length; i++) {
+				const root = ctrls[i];
+				const ctrlid = root.hasAttribute('data-ctrl-id') ? root.getAttribute('data-ctrl-id') : root.id;
+				const s = state.ctrl[ctrlid];
+
 				if (window[s.type] && window[s.type]['widgetDidMount']) {
 					window[s.type]['widgetDidMount'](s);
-					console.log('widget: ' + id + ' widgetDidMount ' + s.type);
+					console.log('widget: ' + ctrlid + ' widgetDidMount ' + s.type);
 				}
 			}
 		}
@@ -1002,6 +1016,7 @@ var ajaxUtils = function ($, cu) {
 
 	function runOnAjaxSend(el, target) {
 		var node = el;
+		node.classList.add('ajax-loading');
 		do {
 			node = cu.getParent(node, function (n) {
 				return n.hasAttribute('data-ctrl');
