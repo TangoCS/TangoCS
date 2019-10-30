@@ -721,7 +721,8 @@ var ajaxUtils = function ($, cu) {
 
 		if (el.id) target.sender = el.id;
 
-		const container = cu.getThisOrParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
+		const startEl = el.hasAttribute('data-c-external') ? document.getElementById(el.getAttribute('data-c-external')) : el;
+		const container = cu.getThisOrParent(startEl, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
 		if (container) {
 			target.containerPrefix = container.getAttribute('data-c-prefix');
 			target.containerType = container.getAttribute('data-c-type');

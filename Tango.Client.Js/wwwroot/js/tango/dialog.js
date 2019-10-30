@@ -52,18 +52,18 @@
 
 		function dragMouseDown(e) {
 			e = e || window.event;
+			if (e.target instanceof HTMLButtonElement) return;
 			e.preventDefault();
-			// get the mouse cursor position at startup:
+
 			pos3 = e.clientX;
 			pos4 = e.clientY;
+
 			document.onmouseup = closeDragElement;
-			// call a function whenever the cursor moves:
 			document.onmousemove = elementDrag;
 
 			var style = window.getComputedStyle(el);
-			if (style.transition != '') {
-				el.style.transition = 'inherit';
-			}
+			el.style.transition = 'inherit';
+
 			if (style.right != '') {
 				const left = el.offsetLeft;
 				el.style.right = 'inherit';

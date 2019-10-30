@@ -24,6 +24,7 @@ namespace Tango.UI.Controls
 		protected const string eFieldValueContainer = "fieldValue_fieldbody";
 		protected const string eFieldValue = "fieldValue";
 		protected const string eExpression = "expression";
+		protected const string eValidation = "validation";
 
 
 		[Inject]
@@ -157,6 +158,7 @@ namespace Tango.UI.Controls
 					w.FormField(eFieldValue, valuetitle, null);
 				});
 				w.Div(a => a.Style("text-align:right"), () => w.Button(a => a.OnClickPostEvent(OnCriterionAdded), addtitle));
+				w.Div(a => a.ID(eValidation), "");
 			});
 			w.Hidden(hValue, SerializedCriteria);
 		}
@@ -201,7 +203,8 @@ namespace Tango.UI.Controls
 
 		public void OnCriterionAdded(ApiResponse response)
 		{
-			var item = GetPostedItem();
+			var (item, success) = ProcessSubmit(response);
+			if (!success) return;
 			if (item != null) Criteria.Add(item);
 
 			response.WithNamesAndWritersFor(this);
@@ -234,7 +237,8 @@ namespace Tango.UI.Controls
 		{
 			Criteria = GetPostedJson<List<FilterItem>>(hValue, () => new List<FilterItem>());
 
-			var item = GetPostedItem();
+			var (item, success) = ProcessSubmit(response);
+			if (!success) return;
 			if (item != null) Criteria.Add(item);
 
 			//LoadPersistent();
@@ -265,11 +269,13 @@ namespace Tango.UI.Controls
 			}
 		}
 
-		FilterItem GetPostedItem()
+		(FilterItem item, bool validationSuccess) ProcessSubmit(ApiResponse response)
 		{
+			var v = new ValidationMessageCollection();
+
 			var f = Context.GetIntArg(ddlField, -1);
 			var cond = Context.GetArg(ddlCondition);
-			if (f < 0) return null;
+			if (f < 0) return (null, true);
 
 			var field = FieldList[f];
 			var op = field.Operators[cond];
@@ -285,7 +291,30 @@ namespace Tango.UI.Controls
 			};
 
 			item.ValueTitle = op.StringValue(item);
-			return item;
+
+			ValidateItem(field, item, v);
+
+			if (v.Count > 0)
+			{
+				response.AddWidget(eValidation, w => w.ValidationBlock(v));
+				response.Success(false);
+			}
+				
+
+			return (item, v.Count == 0);
+		}
+
+		void ValidateItem(Field f, FilterItem item, ValidationMessageCollection v)
+		{
+			var column = _engine.ColumnExpression(f, item);
+			if (column == null)
+				return;
+
+			var valType = _engine.ColumnType(column);
+			var val = _engine.ConvertValue(valType, item);
+
+			if (val == null && Nullable.GetUnderlyingType(valType) == null)
+				v.Add("entitycheck", eFieldValue, "Значение не может быть пустым");
 		}
 
 		//views
@@ -345,7 +374,8 @@ namespace Tango.UI.Controls
 
 			Criteria = GetPostedJson(hValue, () => new List<FilterItem>());
 
-			var item = GetPostedItem();
+			var (item, success) = ProcessSubmit(response);
+			if (!success) return;
 			if (item != null) Criteria.Add(item);
 
 			PersistentFilter.Criteria = Criteria;
@@ -366,11 +396,11 @@ namespace Tango.UI.Controls
 				var views = PersistentFilter.GetViews(ListName, Context.AllArgs);
 				LoadPersistent();
 
-				w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, 0).WithTitle(r => r.Get("Common.AllItems")));
+				w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, 0).WithTitle(r => r.Get("Common.AllItems")), a => a.DataContainerExternal(ParentElement.ClientID));
 
 				foreach (var view in views)
 				{
-					void link() => w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, view.ID).WithTitle(view.Name));
+					void link() => w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, view.ID).WithTitle(view.Name), a => a.DataContainerExternal(ParentElement.ClientID));
 					if (view.IsDefault)
 						w.B(link);
 					else

@@ -20,6 +20,7 @@
 		public static readonly string ContainerPrefix = "c-prefix";
 		public static readonly string ContainerType = "c-type";
 		public static readonly string ContainerNew = "c-new";
+		public static readonly string ContainerExternal = "c-external";
 
 		public static readonly string IEFormFix = "__dontcare";
 

@@ -38,15 +38,17 @@ namespace Tango.UI.Controls
 			{
 				if (it is FilterItem item)
 				{
-					Field f = fieldList.SingleOrDefault(f1 => f1.Title == item.Title);
+					var f = fieldList.SingleOrDefault(f1 => f1.Title == item.Title);
 					if (f == null)
 						continue;
-					if (!(f.Operators[item.Condition].Column is LambdaExpression column))
+
+					var column = ColumnExpression(f, item);
+					if (column == null)
 						continue;
 
 					Expression<Func<T, bool>> expr = null;
 
-					Type valType = column.Body is UnaryExpression ? ((UnaryExpression)column.Body).Operand.Type : column.Body.Type;
+					Type valType = ColumnType(column);
 					object val = ConvertValue(valType, item);
 
 					if (item.FieldType == FieldType.String && item.Condition == Resources.Get("System.Filter.Contains"))
@@ -138,7 +140,10 @@ namespace Tango.UI.Controls
 			return newquery;
 		}
 
-		object ConvertValue(Type valType, FilterItem item)
+		public LambdaExpression ColumnExpression(Field f, FilterItem item) => f.Operators[item.Condition].Column as LambdaExpression;
+		public Type ColumnType(LambdaExpression column) => column.Body is UnaryExpression ? ((UnaryExpression)column.Body).Operand.Type : column.Body.Type;
+
+		public object ConvertValue(Type valType, FilterItem item)
 		{
 			object val = null;
 			if (item.Value != null && item.Value.StartsWith("$"))

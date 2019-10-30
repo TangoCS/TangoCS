@@ -181,6 +181,12 @@ namespace Tango.Html
 				.Data(Constants.ContainerNew, "1");
 		}
 
+		public static T DataContainerExternal<T>(this TagAttributes<T> a, string externalElementId)
+			where T : TagAttributes<T>
+		{
+			return a.Data(Constants.ContainerExternal, externalElementId.ToLower());
+		}
+
 		public static T DataEvent<T>(this TagAttributes<T> a, string name, string receiver = null)
 			where T : TagAttributes<T>
 		{

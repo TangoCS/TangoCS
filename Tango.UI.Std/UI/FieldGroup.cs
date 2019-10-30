@@ -38,7 +38,7 @@ namespace Tango.UI
 		{
 			foreach (var f in fields)
 			{
-				if (f.IsVisible && f is IEditableField ef && !ef.Disabled && !ef.ReadOnly)
+				if (f.IsVisible && f is IEditableField ef && !ef.Disabled)
 					ef.ValidateFormValue(val);
 			}
 			OnValidateFormData(val);
@@ -48,7 +48,7 @@ namespace Tango.UI
 		{
 			foreach (var f in fields)
 			{
-				if (f.IsVisible && f is IEditableField ef && !ef.Disabled && !ef.ReadOnly)
+				if (f.IsVisible && f is IEditableField ef && !ef.Disabled)
 					ef.SubmitProperty(val);
 				else if (f is IServerField sf)
 					sf.SubmitProperty();
