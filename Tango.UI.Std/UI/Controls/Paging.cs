@@ -90,28 +90,30 @@ namespace Tango.UI.Controls
 					w.B((itemsCount != null && pageIdx * paging.PageSize > itemsCount ? itemsCount : pageIdx * paging.PageSize).ToString());
 				});
 
-				w.Write("&nbsp;of&nbsp;");
+                var dc = paging.ParentElement.DataCollection;
+
+                w.Write("&nbsp;of&nbsp;");
 				w.B(() => {
-					if (itemsCount.HasValue)
-						w.Write(itemsCount.Value.ToString());
-					else
-						w.ActionLink(a => a.ToCurrent().PostEvent(onObjCount).WithTitle("?"), a => a.Class("cnt"));
+                    if (itemsCount.HasValue)
+                        w.Write(itemsCount.Value.ToString());
+                    else
+                        w.ActionLink(a => a.ToCurrent().PostEvent(onObjCount).WithTitle("?"), a => a.Class("cnt").Data(dc));
 				});
 				w.Write("&nbsp;");
 
-				if (pageIdx > 1)
-					w.ActionImageButton(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, pageIdx - 1).WithImage("left"));
+                if (pageIdx > 1)
+                    w.ActionImageButton(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, pageIdx - 1).WithImage("left"), a => a.Data(dc));
 
 				if (itemsCount == null || pageCount - pageIdx >= 1)
-					w.ActionImageButton(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, pageIdx + 1).WithImage("right"));
+					w.ActionImageButton(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, pageIdx + 1).WithImage("right"), a => a.Data(dc));
 
-				if (itemsCount.HasValue)
+                if (itemsCount.HasValue)
 				{
 					w.DropDownForElement(paging.ID + "_cnt", () => {
 						if (pageIdx > 2)
-							w.ActionLink(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, 1).WithTitle(r => r.Get("Common.Paging.First")));
-						if (pageCount > 1 && pageCount - pageIdx >= 2)
-							w.ActionLink(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, pageCount).WithTitle(r => r.Get("Common.Paging.Last")));
+							w.ActionLink(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, 1).WithTitle(r => r.Get("Common.Paging.First")), a => a.Data(dc));
+                        if (pageCount > 1 && pageCount - pageIdx >= 2)
+							w.ActionLink(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, pageCount).WithTitle(r => r.Get("Common.Paging.Last")),a => a.Data(dc));
 					});
 				}
 			});
