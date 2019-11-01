@@ -29,5 +29,16 @@ namespace Tango
 					Convert.ChangeType(v, ut).ToString()
 				));
 		}
-	}
+        public static IEnumerable<SelectListItem> AsSelectListWithSelected<T>(T selected)
+            where T : Enum
+        {
+            var ut = Enum.GetUnderlyingType(typeof(T));
+            return Enum.GetValues(typeof(T))
+                .Cast<T>()
+                .Select(v => new SelectListItem(
+                    GetEnumDescription(v),
+                    Convert.ChangeType(v, ut).ToString(), v.Equals(selected) ? true : false
+                ));
+        }
+    }
 }

@@ -54,7 +54,8 @@ namespace Tango.UI.Controls
 				.DataParm(paging.ClientID, 1)
 				.DataEvent("OnQuickSearch", list.ClientID)
 				.OnKeyUpRunHrefDelayed()
-				.Placeholder(w.Resources.Get("Common.Search")))
+				.Placeholder(w.Resources.Get("Common.Search"))
+                .Data(list.DataCollection))                
 			);
 		}
 

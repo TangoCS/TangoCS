@@ -10,8 +10,7 @@ namespace Tango
 	public interface IWithKey<T, TKey> : IWithKey<TKey>
 	{
 		Expression<Func<T, bool>> KeySelector(TKey id);		
-	}
-
+	}   
 	public interface IWithTitle
 	{
 		string Title { get; }
