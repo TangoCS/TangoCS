@@ -100,7 +100,7 @@ namespace Tango.UI.Std
 		protected virtual void RenderValidation(ApiResponse response, ValidationMessageCollection m)
 		{
 			response.WithNamesFor(this).AddWidget("validation", w => w.ValidationBlock(m));
-			response.Success(false);
+			response.Success = false;
 		}
 	}
 }

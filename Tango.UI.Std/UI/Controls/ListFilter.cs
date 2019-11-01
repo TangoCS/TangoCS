@@ -297,9 +297,11 @@ namespace Tango.UI.Controls
 			if (v.Count > 0)
 			{
 				response.AddWidget(eValidation, w => w.ValidationBlock(v));
-				response.Success(false);
+				response.Success = false;
 			}
-				
+			else
+				response.AddWidget(eValidation, w => w.Write(""));
+
 
 			return (item, v.Count == 0);
 		}
@@ -313,7 +315,7 @@ namespace Tango.UI.Controls
 			var valType = _engine.ColumnType(column);
 			var val = _engine.ConvertValue(valType, item);
 
-			if (val == null && Nullable.GetUnderlyingType(valType) == null)
+			if (val == null && (Nullable.GetUnderlyingType(valType) == null || !item.Condition.In("<>", "=")))
 				v.Add("entitycheck", eFieldValue, "Значение не может быть пустым");
 		}
 

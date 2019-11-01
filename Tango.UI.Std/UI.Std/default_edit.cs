@@ -88,44 +88,48 @@ namespace Tango.UI.Std
 			}
 		}
 
-		protected (bool Result, ValidationMessageCollection Messages) ProcessSubmit()
-		{
-			if (Context.FormData == null) return (false, null);
+		
 
-			ValidationMessageCollection m = new ValidationMessageCollection();
+		protected bool ProcessSubmit(ApiResponse response)
+		{
+			if (Context.FormData == null) return false;
+
+			var m = new ValidationMessageCollection();
+			bool prepareResponse()
+			{
+				RenderValidation(response, m);
+				return false;
+			}
+
 			ValidateFormData(m);
-			if (m.HasItems()) return (false, m);
+			if (m.HasItems()) return prepareResponse();
 			ProcessFormData(m);
-			if (m.HasItems()) return (false, m);
-			BeforeTransaction(m);
-			if (m.HasItems()) return (false, m);
-			return (true, null);
+			if (m.HasItems()) return prepareResponse();
+			PostProcessFormData(response, m);
+			if (m.HasItems()) return prepareResponse();
+
+			return response.Success;
 		}
 
 		public virtual void OnSubmit(ApiResponse response)
 		{
-			var res = ProcessSubmit();
-			if (!res.Result)
-			{
-				RenderValidation(response, res.Messages);
+			if (!ProcessSubmit(response)) 
 				return;
-			}
 
 			Submit(response);
 			AfterSubmit(response);
 			response.AddWidget("validation", w => w.Write(""));
 		}
 
+		protected virtual void ValidateFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ValidateFormData(val));
+		protected virtual void ProcessFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ProcessFormData(val));
+		protected virtual void PostProcessFormData(ApiResponse response, ValidationMessageCollection val) { }
+
+		protected abstract void Submit(ApiResponse response);
 		protected virtual void AfterSubmit(ApiResponse response)
 		{
 			response.RedirectBack(Context, 1);
 		}
-
-		protected virtual void ValidateFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ValidateFormData(val));
-		protected virtual void ProcessFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ProcessFormData(val));
-
-		protected virtual void BeforeTransaction(ValidationMessageCollection val) { }
-		protected abstract void Submit(ApiResponse response);
 
 		protected virtual bool EnableToolbar => false;
 
@@ -146,7 +150,7 @@ namespace Tango.UI.Std
 		protected virtual void RenderValidation(ApiResponse response, ValidationMessageCollection m)
 		{
 			response.WithNamesFor(this).AddWidget("validation", w => w.ValidationBlock(m));
-			response.Success(false);
+			response.Success = false;
 		}
 
 		protected void RefreshField(ApiResponse response, IField field, Action<LayoutWriter> content)

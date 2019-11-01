@@ -328,9 +328,19 @@ namespace Tango.UI
 			return JsonConvert.SerializeObject(Data, Json.StdSettings);
 		}
 
-		public void Success(bool value)
+		public bool Success
 		{
-			Data.Add("success", value);
+			get
+			{
+				if (Data.TryGetValue("success", out var val))
+					return (bool)val;
+				else
+					return true;
+			}
+			set
+			{
+				Data["success"] = value;
+			}
 		}
 
 		//static LayoutWriter RenderContent(ActionContext context, string prefix, Action<LayoutWriter> content)

@@ -28,6 +28,7 @@ namespace Tango.Data
 		public IReadOnlyDictionary<string, object> Parms => _parms;
 
 		bool _hasvalueexpression = false;
+		bool _nullconstant = false;
 
 		public QueryTranslator(IQueryTranslatorDialect dialect)
 		{
@@ -141,62 +142,71 @@ namespace Tango.Data
 			sb.Append("(");
 			_hasvalueexpression = false;
 			Visit(b.Left);
+			_nullconstant = false;
 
-			var nullcheckconst = b.Right.NodeType == ExpressionType.Constant && ((ConstantExpression)b.Right).Value == null;
-			var isnull = nullcheckconst && b.NodeType == ExpressionType.Equal;
-			var isnotnull = nullcheckconst && b.NodeType == ExpressionType.NotEqual;
+			var cursb = sb;
+			sb = new StringBuilder();
+			Visit(b.Right);
 
-			if (isnull)
-				sb.Append(" IS NULL");
-			else if (isnotnull)
-				sb.Append(" IS NOT NULL");
+			if (_nullconstant)
+			{
+				cursb.Append(" IS ");
+				if (b.NodeType == ExpressionType.NotEqual)
+					cursb.Append("NOT ");
+			}
 			else
 			{
 				switch (b.NodeType)
 				{
 					case ExpressionType.And:
 					case ExpressionType.AndAlso:
-						sb.Append(" AND ");
+						cursb.Append(" AND ");
 						break;
 					case ExpressionType.Or:
 					case ExpressionType.OrElse:
-						sb.Append(" OR ");
+						cursb.Append(" OR ");
 						break;
 					case ExpressionType.Equal:
-						sb.Append(_hasvalueexpression ? " IS " : " = ");
+						cursb.Append(_hasvalueexpression ? " IS " : " = ");
 						break;
 					case ExpressionType.NotEqual:
-						sb.Append(" <> ");
+						cursb.Append(" <> ");
 						break;
 					case ExpressionType.LessThan:
-						sb.Append(" < ");
+						cursb.Append(" < ");
 						break;
 					case ExpressionType.LessThanOrEqual:
-						sb.Append(" <= ");
+						cursb.Append(" <= ");
 						break;
 					case ExpressionType.GreaterThan:
-						sb.Append(" > ");
+						cursb.Append(" > ");
 						break;
-
 					case ExpressionType.GreaterThanOrEqual:
-						sb.Append(" >= ");
+						cursb.Append(" >= ");
 						break;
-
 					default:
 						throw new NotSupportedException(string.Format("The binary operator '{0}' is not supported", b.NodeType));
-
 				}
-				Visit(b.Right);
 			}
-			
+			cursb.Append(sb);
+			sb = cursb;
+
 			sb.Append(")");
 			return b;
 		}
 
 		protected override Expression VisitConstant(ConstantExpression c)
 		{
+			if (c.Value == null)
+			{
+				_nullconstant = true;
+				sb.Append("NULL");
+				return c;
+			}
+
 			if (c.Value is IQueryable)
 				return c;
+			
 
 			switch (Type.GetTypeCode(c.Value.GetType()))
 			{
@@ -399,97 +409,5 @@ namespace Tango.Data
 		public string Concat => "||";
 		public string In => "= ANY";
 		public bool BracketsForIn => true;
-	}
-
-
-	public sealed class EnumMapper<TKey, TValue> where TKey : struct, IConvertible
-	{
-		private struct FlaggedValue<T>
-		{
-			public bool flag;
-			public T value;
-		}
-
-		private static readonly int size;
-		private readonly Func<TKey, int> func;
-		private FlaggedValue<TValue>[] flaggedValues;
-
-		public TValue this[TKey key]
-		{
-			get
-			{
-				int index = this.func.Invoke(key);
-				FlaggedValue<TValue> flaggedValue = this.flaggedValues[index];
-				if (flaggedValue.flag == false)
-				{
-					ThrowNoMappingException(); // Don't want the exception code in the method. Make this callsite as small as possible to promote JIT inlining and squeeze out every last bit of performance.
-				}
-
-				return flaggedValue.value;
-			}
-		}
-
-		static EnumMapper()
-		{
-			Type keyType = typeof(TKey);
-
-			if (keyType.IsEnum == false)
-			{
-				throw new Exception("The key type [" + keyType.AssemblyQualifiedName + "] is not an enumeration.");
-			}
-
-			Type underlyingType = Enum.GetUnderlyingType(keyType);
-			if (underlyingType != typeof(int))
-			{
-				throw new Exception("The key type's underlying type [" + underlyingType.AssemblyQualifiedName + "] is not a 32-bit signed integer.");
-			}
-
-			var values = (int[])Enum.GetValues(keyType);
-			int maxValue = 0;
-
-			foreach (int value in values)
-			{
-				if (value < 0)
-				{
-					throw new Exception("The key type has a constant with a negative value.");
-				}
-
-				if (value > maxValue)
-				{
-					maxValue = value;
-				}
-			}
-
-			size = maxValue + 1;
-		}
-
-		public EnumMapper(Func<TKey, int> func)
-		{
-			this.func = func ?? throw new ArgumentNullException("func", "The func cannot be a null reference.");
-			this.flaggedValues = new FlaggedValue<TValue>[EnumMapper<TKey, TValue>.size];
-		}
-
-		public static EnumMapper<TKey, TValue> Construct(Func<TKey, int> func)
-		{
-			return new EnumMapper<TKey, TValue>(func);
-		}
-
-		public EnumMapper<TKey, TValue> Map(TKey key, TValue value)
-		{
-			int index = this.func.Invoke(key);
-
-			FlaggedValue<TValue> flaggedValue;
-			flaggedValue.flag = true;
-			flaggedValue.value = value;
-			this.flaggedValues[index] = flaggedValue;
-
-			return this;
-		}
-
-		[MethodImpl(MethodImplOptions.NoInlining)]
-		private static void ThrowNoMappingException()
-		{
-			throw new Exception("No mapping exists corresponding to the key.");
-		}
 	}
 }
