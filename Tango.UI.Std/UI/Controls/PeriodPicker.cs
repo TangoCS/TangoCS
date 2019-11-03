@@ -48,17 +48,32 @@ namespace Tango.UI.Controls
             if (to == null)
                 to = Context.GetDateTimeArg("dperiodto");
 
+			var options = new CalendarOptions { ShowButton = false };
+
             w.PushID(ID);
 			w.Div(a => a.Class("periodpicker").ID(), () => {
-				w.Div("с");
-				if (UseCalendar && ShowDays) w.Calendar("dperiodfrom", from ?? DefaultValue?.From);
-				if (!UseCalendar || ShowTime)
-					dPeriodFrom.Render(w, from ?? DefaultValue?.From);
-				w.Div("по");
-				if (UseCalendar && ShowDays) w.Calendar("dperiodto", to ?? DefaultValue?.To);
-				if (!UseCalendar || ShowTime)
-					dPeriodTo.Render(w, to ?? DefaultValue?.To);
+				w.Div(() => {
+					if (UseCalendar && ShowDays) w.Calendar("dperiodfrom", from ?? DefaultValue?.From, options);
+					if (!UseCalendar || ShowTime)
+						dPeriodFrom.Render(w, from ?? DefaultValue?.From);
+				});
+				w.Div("&ndash;");
+				w.Div(() => {
+					if (UseCalendar && ShowDays) w.Calendar("dperiodto", to ?? DefaultValue?.To, options);
+					if (!UseCalendar || ShowTime)
+						dPeriodTo.Render(w, to ?? DefaultValue?.To);
+				});
+				if (UseCalendar && ShowDays)
+					w.Span(a => a.ID("btn" + ID).Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
 			});
+
+			if (UseCalendar && ShowDays)
+			{
+				w.AddClientAction("daterangepickerproxy", "init", f => new {
+					triggerid = f("btn" + ID)
+				});
+			}
+
 			w.PopID();
 		}
 
@@ -92,35 +107,6 @@ namespace Tango.UI.Controls
 				}
 				return null;
 			}
-		}
-
-		public Expression<Func<T, bool>> GetPredicate<T>(Expression<Func<T, DateTime?>> selector)
-		{
-			//var arr = AsArray();
-
-			//if (arr.Length == 0)
-			//	return o => true;
-
-			ParameterExpression pe_o = Expression.Parameter(typeof(T), "o");
-			UnaryExpression ue_c = Expression.Convert(pe_o, typeof(T));
-			MemberExpression me = Expression.Property(ue_c, ((MemberExpression)selector.Body).Member.Name);
-
-			List<Expression> expressions = new List<Expression>();
-
-			//foreach (var p in arr)
-			//{
-				ConstantExpression ce_valFrom = Expression.Constant(Value.From, typeof(DateTime));
-				ConstantExpression ce_valTo = Expression.Constant(Value.To, typeof(DateTime));
-
-				Expression GreaterThan = Expression.GreaterThanOrEqual(me, ce_valFrom);
-				Expression lessThan = Expression.LessThanOrEqual(me, ce_valTo);
-				expressions.Add(Expression.And(lessThan, GreaterThan));
-			//}
-
-			Expression body = expressions[0];
-			for (int i = 1; i < expressions.Count; i++)
-				body = Expression.Or(body, expressions[i]);
-			return Expression.Lambda<Func<T, bool>>(body, pe_o);
 		}
 	}
 

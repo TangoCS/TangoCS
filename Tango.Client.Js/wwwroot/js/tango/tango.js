@@ -596,6 +596,11 @@ var ajaxUtils = function ($, cu) {
 			const home = document.getElementById(META_HOME);
 			return root.getAttribute('data-href') || home.getAttribute('data-href') || '/';
 		},
+		findControl: function (el) {
+			const ctrl = cu.getThisOrParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-ctrl'); });
+			const id = ctrl.hasAttribute('data-ctrl-id') ? ctrl.getAttribute('data-ctrl-id') : ctrl.id;
+			return { root: ctrl, id: id, state: state.ctrl[id] };
+		},
 		state: state
 	};
 
@@ -653,12 +658,16 @@ var ajaxUtils = function ($, cu) {
 		xhr.setRequestHeader('x-request-guid', state.com.requestId);
 		xhr.setRequestHeader('x-csrf-token', document.head.getAttribute('data-x-csrf-token'));
 		setTimeout(function () {
-			if (state.com.requestId && state.com.message) state.com.message.css('display', 'block');
+			if (state.com.requestId && state.com.message) document.body.style.cursor = 'wait';
 		}, 100);
+		setTimeout(function () {
+			if (state.com.requestId && state.com.message) state.com.message.css('display', 'block');
+		}, 1000);
 	}
 
 	function requestCompleted() {
 		state.com.requestId = null;
+		if (document.body) document.body.style.cursor = '';
 		if (state.com.message) state.com.message.css('display', 'none');
 
 		const nodes = document.querySelectorAll('.ajax-loading');
@@ -951,10 +960,11 @@ var ajaxUtils = function ($, cu) {
 			}
 
 			for (var i = 0; i < ctrls.length; i++) {
-				const root = ctrls[i];
+				var root = ctrls[i];
 				const t = root.getAttribute('data-ctrl');
 				const ctrlid = root.hasAttribute('data-ctrl-id') ? root.getAttribute('data-ctrl-id') : root.id;
 				const ctrlstate = state.ctrl[ctrlid] ? state.ctrl[ctrlid] : {};
+				if (root.id != ctrlid) root = shadow.getElementById(ctrlid);
 
 				if (!state.ctrl[ctrlid] || !ctrlstate.type) {
 					ctrlstate.type = t;
@@ -980,12 +990,13 @@ var ajaxUtils = function ($, cu) {
 
 			for (var i = 0; i < ctrls.length; i++) {
 				const root = ctrls[i];
+				const t = root.getAttribute('data-ctrl');
 				const ctrlid = root.hasAttribute('data-ctrl-id') ? root.getAttribute('data-ctrl-id') : root.id;
 				const s = state.ctrl[ctrlid];
 
-				if (window[s.type] && window[s.type]['widgetDidMount']) {
-					window[s.type]['widgetDidMount'](s);
-					console.log('widget: ' + ctrlid + ' widgetDidMount ' + s.type);
+				if (window[t] && window[t]['widgetDidMount']) {
+					window[t]['widgetDidMount'](s);
+					console.log('widget: ' + ctrlid + ' widgetDidMount ' + t);
 				}
 			}
 		}
@@ -1110,18 +1121,6 @@ var ajaxUtils = function ($, cu) {
 
 	$(document).ajaxSend(beforeRequest);
 	$(document).ajaxStop(requestCompleted);
-
-	//var dom_observer = new MutationObserver(function (mutations) {
-	//	mutations.forEach(function (m) {
-	//		for (var n = 0; n < m.addedNodes.length; n++) {
-	//			const node = m.addedNodes[n];
-	//			if (!(node instanceof Element)) continue;
-	//			if (!node.id) continue;
-	//			onAddNode(node);				
-	//		}
-	//	});
-	//});
-	//dom_observer.observe(document, { childList: true, subtree: true });
 
 	const current = document.getElementById(META_CURRENT);
 	state.loc.url = document.location.pathname + document.location.search;

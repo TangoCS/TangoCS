@@ -2,51 +2,49 @@
 	var instance = {
 		setselected: function (el, onCheckChangeDelegate) {
 			const tr = getRow(el);
-			const root = cu.getThisOrParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-ctrl'); });
-			const ctrlid = root.hasAttribute('data-ctrl-id') ? root.getAttribute('data-ctrl-id') : root.id;
-			const state = au.state.ctrl[ctrlid];
-			const cbhead = document.getElementById(ctrlid + "_sel_header");
+			const c = au.findControl(el);
+			const cbhead = document.getElementById(c.id + "_sel_header");
 			const selected = tr.classList.contains('checked');
+			const rowid = tr.getAttribute('data-rowid');
 
 			if (selected) {
-				if (state.selectedvalues[0] == -1) {
-					state.selectedvalues = [];
-					if (cbhead) instance.setPageChecked(root, state, cbhead);
+				if (c.state.selectedvalues[0] == -1) {
+					c.state.selectedvalues = [];
+					if (cbhead) instance.setPageChecked(c.root, c.state, cbhead);
 				}
 				instance.setRowUnchecked(tr, el);
-				const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
+				const index = c.state.selectedvalues.indexOf(rowid);
 				if (index > -1) {
-					state.selectedvalues.splice(index, 1);
+					c.state.selectedvalues.splice(index, 1);
 				}
 			}
 			else {
 				instance.setRowChecked(tr, el);
-				state.selectedvalues.push(tr.getAttribute('data-rowid'));
+				if (c.state.selectedvalues.indexOf(rowid) == -1)
+					c.state.selectedvalues.push(rowid);
 			}
 
-			const cblist = root.querySelectorAll('.sel');
+			const cblist = c.root.querySelectorAll('.sel');
 			var j = 0;
 			for (var i = 0; i < cblist.length; i++) {
 				if (cblist[i].getAttribute('data-state') == 1) j++;
 			}
 			if (cbhead) instance.setHeaderSelectorState(cbhead, j, cblist.length);
-			if (onCheckChangeDelegate) onCheckChangeDelegate(document, root, state, j != 0);
+			if (onCheckChangeDelegate) onCheckChangeDelegate(document, c.root, c.state, j != 0);
 		},
 
 		cbheadclicked: function (cbhead, onCheckChangeDelegate) {
-			const root = cu.getThisOrParent(cbhead, function (n) { return n.hasAttribute && n.hasAttribute('data-ctrl'); });
-			const ctrlid = root.hasAttribute('data-ctrl-id') ? root.getAttribute('data-ctrl-id') : root.id;
-			const state = au.state.ctrl[ctrlid];
-			const cblist = root.querySelectorAll('.sel');
+			const c = au.findControl(cbhead);
+			const cblist = c.root.querySelectorAll('.sel');
 			const headstate = cbhead.getAttribute('data-state') || '0';
 
 			if (headstate == '2' || headstate == '1') {
-				instance.setPageUnchecked(root, state, cbhead);
+				instance.setPageUnchecked(vroot, c.state, cbhead);
 			}
 			else if (headstate == '0') {
-				instance.setPageChecked(root, state, cbhead);
+				instance.setPageChecked(c.root, c.state, cbhead);
 			}
-			if (onCheckChangeDelegate) onCheckChangeDelegate(document, root, state);
+			if (onCheckChangeDelegate) onCheckChangeDelegate(document, c.root, c.state);
 		},
 
 		setHeaderSelectorState: function (cbhead, j, cnt) {

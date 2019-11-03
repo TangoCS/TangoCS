@@ -8,6 +8,7 @@ namespace Tango.UI
 	public class CalendarOptions
 	{
 		public EnabledState Enabled { get; set; } = EnabledState.Enabled;
+		public bool ShowButton { get; set; } = true;
 		public bool ShowTime { get; set; } = false;
 		public bool UseCalendarDays { get; set; } = false;
 		public Action<InputTagAttributes> Attributes { get; set; }
@@ -24,20 +25,19 @@ namespace Tango.UI
 			if (value == DateTime.MinValue) value = null;
 
 			w.TextBox(name, options.ShowTime ? value.DateTimeToString() : value.DateToString(), a =>
-				a.Data("format", "dd.MM.yyyy").Placeholder("ДД.ММ.ГГГГ").Style("width:" + (options.ShowTime ? "130px" : "100px"))
+				a.Data("format", "dd.MM.yyyy").Placeholder("ДД.ММ.ГГГГ").Class("cal-" + (options.ShowTime ? "datetime" : "date"))
 				.Data("calendar", "")
 				.Data("showtime", options.ShowTime).Data("usecalendardays", options.UseCalendarDays)
 				.Disabled(options.Enabled == EnabledState.Disabled)
 				.Readonly(options.Enabled == EnabledState.ReadOnly)
 				.Set(options.Attributes)
 			);
-			if (options.Enabled == EnabledState.Enabled)
+
+			if (!(options.Enabled == EnabledState.Enabled)) options.ShowButton = false;
+
+			if (options.ShowButton)
 			{
 				w.Span(a => a.ID("btn" + name.ID).Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
-
-				//w.Includes.Add("calendar/calendar_stripped.js");
-				//w.Includes.Add("calendar/lang/calendar-ru.js");
-				//w.Includes.Add("calendar/calendarcontrol.js");
 
 				w.AddClientAction("Calendar", "setup", f => new {
 					inputField = f(name.ID),
@@ -49,8 +49,10 @@ namespace Tango.UI
 					timeFormat = "24",
 					dateStatusFunc = options.UseCalendarDays ? "jscal_calendarDate" : null
 				});
-				w.AddClientAction("calendarcontrol", "init", f => f(name.ID));
 			}
+
+			if (options.Enabled == EnabledState.Enabled)
+				w.AddClientAction("calendarcontrol", "init", f => f(name.ID));
 
 			//				if (ConfigurationManager.AppSettings["UseCalendarDaysInJSCalendar"] == "true")
 			//				{

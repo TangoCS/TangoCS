@@ -85,21 +85,21 @@ namespace Tango.UI.Controls
 				{
 					if (ShowDays)
 					{
-						w.DropDownList($"{ID}_day", value?.Day.ToString(), dayItems);
+						w.DropDownList($"{ID}_day", value?.Day.ToString(), dayItems, a => a.Class("days"));
 						w.Write("&nbsp;");
 					}
 
-					w.DropDownList($"{ID}_month", value?.Month.ToString(), monthItems);
+					w.DropDownList($"{ID}_month", value?.Month.ToString(), monthItems, a => a.Class("months"));
 					w.Write("&nbsp;");
-					w.DropDownList($"{ID}_year", value?.Year.ToString(), yearItems);
+					w.DropDownList($"{ID}_year", value?.Year.ToString(), yearItems, a => a.Class("years"));
 				}
 
 				if (ShowTime || TimeOnly)
 				{
 					w.Write("&nbsp;");
-					w.DropDownList($"{ID}_hour", value?.Hour.ToString(), hourItems);
-					w.Write("&nbsp;");
-					w.DropDownList($"{ID}_minute", value?.Minute.ToString(), minuteItems);
+					w.DropDownList($"{ID}_hour", value?.Hour.ToString(), hourItems, a => a.Class("hours"));
+					w.Write(":");
+					w.DropDownList($"{ID}_minute", value?.Minute.ToString(), minuteItems, a => a.Class("minutes"));
 				}
 			});
 		}

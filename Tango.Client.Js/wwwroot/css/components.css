@@ -217,7 +217,12 @@ div.calendar {
 	cursor: pointer;
 	color: #7a869a;
 }
-
+.cal-date {
+	width: 85px;
+}
+.cal-datetime {
+	width: 115px;
+}
 
 /* datelists */
 .datelists {

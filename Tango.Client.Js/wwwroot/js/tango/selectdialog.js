@@ -97,12 +97,12 @@ var selectMultipleObjectsDialog = function (au, cu) {
 	return instance;
 }(ajaxUtils, commonUtils);
 
-var selectObjectDialog2 = function (au, cu, cbcell) {
+var selectObjectDropDownField = function (au, cu, cbcell) {
 	var instance = {
-		placeholderInit: function (id) {
+		widgetDidMount: function (state) {
+			const id = state.root;
 			const elPh = document.getElementById(id + '_placeholder');
-			const elFilter = document.getElementById(id + '_filter');
-			const elSel = document.getElementById(id + '_selected');
+			const elFilter = document.getElementById(id + '_filter');			
 			const elPopup = document.getElementById(id + '_popup');
 
 			const opt = {
@@ -129,12 +129,14 @@ var selectObjectDialog2 = function (au, cu, cbcell) {
 					return 0;
 				}
 				var v = data.trigger.val();
+				const sso = elPopup.querySelector('.radiobuttonlist') != null;
 				if (event.keyCode == 8) return v == '' ? 1 : 0;
-				if (event.keyCode == 27 || event.keyCode == 13) return 1;
-				if (event.keyCode == 33 || event.keyCode == 34 || event.keyCode == 37 || event.keyCode == 38 || event.keyCode == 39) return 2;
+				if (event.keyCode == 27 || (event.keyCode == 13 && sso)) return 1;
+				if (event.keyCode == 33 || event.keyCode == 34 || event.keyCode == 37 ||
+					event.keyCode == 38 || event.keyCode == 39 || (event.keyCode == 13 && !sso)) return 2;
 				if (event.keyCode == 40) return elPh.classList.contains('iw-opened') ? 2 : 0;
 				if (v == '') return 1;
-				
+
 				return 0;
 			}
 
@@ -143,6 +145,7 @@ var selectObjectDialog2 = function (au, cu, cbcell) {
 			$('#' + id + '_btn').contextMenu('#' + id + '_popup', opt);
 
 			elPh.addEventListener('click', function (e) {
+				const elSel = document.getElementById(id + '_selected');
 				if (e.target.id != elSel.id) elFilter.focus();
 			});
 
@@ -151,8 +154,16 @@ var selectObjectDialog2 = function (au, cu, cbcell) {
 			});
 
 			elFilter.addEventListener('keydown', function (e) {
+				const elSel = document.getElementById(id + '_selected');
+				const isSingleMode = state && state.hasOwnProperty('selectedvalue');
+
 				if (e.keyCode == 8 && elFilter.value == '') {
-					instance.clear(id, true);
+					if (isSingleMode) {
+						instance.clear(elSel);
+					}
+					else {
+						instance.clear(elSel.lastChild);
+					}
 					return;
 				}
 
@@ -185,8 +196,15 @@ var selectObjectDialog2 = function (au, cu, cbcell) {
 						if (pg) au.postEventFromElementWithApiResponse(pg);
 					}
 					else if (e.keyCode == 13) {
-						cur.firstChild.checked = true;
-						cur.firstChild.onchange();
+						if (isSingleMode) {
+							cur.firstChild.checked = true;
+							cur.firstChild.onchange();
+						}
+						else {
+							e.preventDefault();
+							instance.setselected(elPh, cur);
+							elFilter.value = '';
+						}
 					}
 				}
 			});
@@ -200,20 +218,60 @@ var selectObjectDialog2 = function (au, cu, cbcell) {
 				this.style.width = w + 'px'; // apply width of the span to the input
 			});
 		},
-		clear: function (id) {
-			document.getElementById(id).value = '';
-			const field = document.getElementById(id + '_selected');
-			if (field) {
+		clear: function (field) {
+			if (!field) return;
+			field = cu.getThisOrParent(field, function (n) { return n.classList.contains('selected'); });
+			if (!field) return;
+
+			const rowid = field.getAttribute('data-rowid');
+			const c = au.findControl(field);
+
+			document.getElementById(c.id).value = '';
+			if (c.state && c.state.hasOwnProperty('selectedvalue')) {
 				field.innerText = '';
 				if (!field.classList.contains('empty'))
 					field.classList.add('empty');
+				c.state.selectedvalue = '';
 			}
-			const state = au.state.ctrl[id];
-			if (state) state.selectedvalue = '';
+			if (c.state && c.state.hasOwnProperty('selectedvalues')) {
+				field.parentElement.removeChild(field);
+				const index = c.state.selectedvalues.indexOf(rowid);
+				if (index > -1) {
+					c.state.selectedvalues.splice(index, 1);
+				}
+			}
 		},
+		setselected: function (elPh, elSel) {
+			cbcell.setselected(elSel);
+
+			const cont = elPh.querySelector('.selectedcontainer');
+			const rowid = elSel.getAttribute('data-rowid');
+			const existing = cont.querySelector('[data-rowid="' + rowid + '"]');
+
+			if (elSel.classList.contains('checked')) {
+				if (!existing) {
+					const textel = elSel.querySelector('.text');
+					const template = elPh.querySelector('.template');
+					const div = template.cloneNode(true);
+					div.className = "selected";
+					div.setAttribute('data-rowid', rowid);
+					div.firstChild.innerHTML = textel.innerHTML;
+					cont.appendChild(div);
+				}
+			}
+			else {
+				existing.parentElement.removeChild(existing);
+			}
+		}
+	}
+	return instance;
+}(ajaxUtils, commonUtils, checkBoxCell);
+
+var selectObjectDropDown = function (au, cu, cbcell, field) {
+	var instance = {	
 		widgetWillMount: function (shadow, state) {
 			const root = shadow.getElementById(state.root + '_str');
-			
+
 			const radios = root.getElementsByTagName('input');
 			for (var i = 0; i < radios.length; i++) {
 				const el = radios[i];
@@ -226,9 +284,14 @@ var selectObjectDialog2 = function (au, cu, cbcell) {
 			const checks = root.querySelectorAll('.checkboxlist .row');
 			for (var i = 0; i < checks.length; i++) {
 				const el = checks[i];
+				const rowid = el.getAttribute('data-rowid');
+				if (state.selectedvalues.indexOf(rowid) >= 0)
+					cbcell.setselected(el);
+
 				el.addEventListener('mousedown', function (e) {
 					e.preventDefault();
-					cbcell.setselected(el);
+					const elPh = document.getElementById(state.root + '_placeholder');
+					field.setselected(elPh, el);
 				});
 			}
 		},
@@ -261,4 +324,4 @@ var selectObjectDialog2 = function (au, cu, cbcell) {
 	}
 
 	return instance;
-}(ajaxUtils, commonUtils, checkBoxCell);
+}(ajaxUtils, commonUtils, checkBoxCell, selectObjectDropDownField);
