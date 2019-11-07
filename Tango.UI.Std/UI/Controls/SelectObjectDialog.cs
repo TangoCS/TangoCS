@@ -9,7 +9,7 @@ namespace Tango.UI.Controls
 {
 	public abstract class SelectObjectDialog<TRef, TRefKey, TValue, TField> : ViewComponent
 		where TRef : class, IWithKey<TRefKey>
-		where TField : SelectObjectField<TRef, TRefKey, TValue>
+		where TField : ISelectObjectField<TRef>
 	{
 		string _filterValue = null;
 		public string FilterValue {
@@ -102,7 +102,7 @@ namespace Tango.UI.Controls
 		}
 	}
 
-	public class SelectSingleObjectDialog<TRef, TRefKey> : SelectObjectDialog<TRef, TRefKey, TRef, SelectSingleObjectField<TRef, TRefKey>>
+	public class SelectSingleObjectDialog<TRef, TRefKey> : SelectObjectDialog<TRef, TRefKey, TRef, ISelectSingleObjectField<TRef, TRefKey, TRef>>
 		where TRef : class, IWithKey<TRef, TRefKey>, new()
 	{
 		public override void List(LayoutWriter w, IEnumerable<TRef> data)

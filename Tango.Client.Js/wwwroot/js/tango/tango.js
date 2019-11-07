@@ -598,6 +598,7 @@ var ajaxUtils = function ($, cu) {
 		},
 		findControl: function (el) {
 			const ctrl = cu.getThisOrParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-ctrl'); });
+			if (!ctrl) return null;
 			const id = ctrl.hasAttribute('data-ctrl-id') ? ctrl.getAttribute('data-ctrl-id') : ctrl.id;
 			return { root: ctrl, id: id, state: state.ctrl[id] };
 		},
@@ -842,7 +843,6 @@ var ajaxUtils = function ($, cu) {
 		};
 
 		var rtagName = /<([\w:]+)/,
-        rhtml = /<|&#?\w+;/,
         // We have to close these tags to support XHTML (#13200)
         wrapMap = {
         	option: [1, "<select multiple='multiple'>", "</select>"],
@@ -937,7 +937,7 @@ var ajaxUtils = function ($, cu) {
 				var owner = node.getAttribute('data-clientstate-owner');
 				const name = node.getAttribute('data-clientstate-name') || node.name;
 				if (!owner) {
-					const parentctrl = cu.getThisOrParent(node, function (n) { return n.hasAttribute('data-ctrl'); });
+					const parentctrl = instance.findControl(node);
 					if (!parentctrl) continue;
 					owner = parentctrl.id;
 				}
@@ -962,24 +962,27 @@ var ajaxUtils = function ($, cu) {
 			for (var i = 0; i < ctrls.length; i++) {
 				var root = ctrls[i];
 				const t = root.getAttribute('data-ctrl');
-				const ctrlid = root.hasAttribute('data-ctrl-id') ? root.getAttribute('data-ctrl-id') : root.id;
-				const ctrlstate = state.ctrl[ctrlid] ? state.ctrl[ctrlid] : {};
-				if (root.id != ctrlid) root = shadow.getElementById(ctrlid);
+				const ctrl = instance.findControl(root);
+				if (root.id != ctrl.id) root = shadow.getElementById(ctrl.id);
 
-				if (!state.ctrl[ctrlid] || !ctrlstate.type) {
-					ctrlstate.type = t;
-					ctrlstate.root = ctrlid;
-					state.ctrl[ctrlid] = ctrlstate;
+				if (!ctrl.state) {
+					ctrl.state = {};
+					state.ctrl[ctrl.id] = ctrl.state;
+				}
+
+				if (!ctrl.state.type) {
+					ctrl.state.type = t
+					ctrl.state.root = ctrl.id;
 
 					if (window[t] && window[t]['init']) {
-						window[t]['init'](root, ctrlstate);
-						console.log('widget: ' + ctrlid + ' init ' + t);
+						window[t]['init'](root, ctrl.state);
+						console.log('widget: ' + ctrl.id + ' init ' + t);
 					}
 				}
 
 				if (window[t] && window[t]['widgetWillMount']) {
-					window[t]['widgetWillMount'](shadow, ctrlstate);
-					console.log('widget: ' + ctrlid + ' widgetWillMount ' + t);
+					window[t]['widgetWillMount'](shadow, ctrl.state);
+					console.log('widget: ' + ctrl.id + ' widgetWillMount ' + t);
 				}
 			}
 
@@ -990,13 +993,12 @@ var ajaxUtils = function ($, cu) {
 
 			for (var i = 0; i < ctrls.length; i++) {
 				const root = ctrls[i];
+				const ctrl = instance.findControl(root);
 				const t = root.getAttribute('data-ctrl');
-				const ctrlid = root.hasAttribute('data-ctrl-id') ? root.getAttribute('data-ctrl-id') : root.id;
-				const s = state.ctrl[ctrlid];
 
 				if (window[t] && window[t]['widgetDidMount']) {
-					window[t]['widgetDidMount'](s);
-					console.log('widget: ' + ctrlid + ' widgetDidMount ' + t);
+					window[t]['widgetDidMount'](ctrl.state);
+					console.log('widget: ' + ctrl.id + ' widgetDidMount ' + t);
 				}
 			}
 		}
@@ -1030,9 +1032,7 @@ var ajaxUtils = function ($, cu) {
 		var node = el;
 		node.classList.add('ajax-loading');
 		do {
-			node = cu.getParent(node, function (n) {
-				return n.hasAttribute('data-ctrl');
-			});
+			node = cu.getParent(node, function (n) { return n.hasAttribute('data-ctrl'); });
 			if (!node) break;
 			const t = node.getAttribute('data-ctrl');
 			if (window[t] && window[t]['onAjaxSend']) {
