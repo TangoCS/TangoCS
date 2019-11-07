@@ -7,12 +7,35 @@ using Tango.Data;
 
 namespace Tango.UI.Controls
 {
-	public interface ISelectObjectField<TRef>
+	public interface ISelectObjectField<TRef> : IViewElement
 	{
 		IQueryable<TRef> AllObjects { get; set; }
 		Func<string, Expression<Func<TRef, bool>>> SearchExpression { get; }
 		Func<string, int, int, IQueryable<TRef>> SearchQuery { get; }
 		Func<string, IQueryable<TRef>> SearchCountQuery { get; }
+
+		Func<TRef, string> DataTextField { get; }
+		Func<TRef, string> DataValueField { get;  }
+		Func<TRef, string> SelectedObjectTextField { get; }
+		string FilterValue { get; }
+		bool Disabled { get; }
+		Action<LayoutWriter> TextWhenDisabled { get; }
+		Action<LayoutWriter> TextWhenNothingSelected { get; }
+
+		Action<LayoutWriter> FieldExtensions { get; }
+
+		bool PostOnClearEvent { get; }
+		bool PostOnChangeEvent { get; }
+
+		ISelectObjectFieldDataProvider<TRef> DataProvider { get; }
+
+		void OnClear(ApiResponse response);
+	}
+
+	public interface ISelectSingleObjectField<TRef, TRefKey, TValue> : ISelectObjectField<TRef>
+	{
+		void OnChange(ApiResponse response, TValue selectedValue);
+		TRef GetObjectByID(TRefKey id);
 	}
 
 	public abstract class SelectObjectField<TRef, TRefKey, TValue> : ViewComponent, ISelectObjectField<TRef>
@@ -47,6 +70,7 @@ namespace Tango.UI.Controls
 		public void OnClear(ApiResponse response) => Clear?.Invoke(response);
 
 		public bool PostOnClearEvent => TextWhenNothingSelected != null || Clear != null;
+		public bool PostOnChangeEvent => Change != null;
 
 		public ISelectObjectFieldDataProvider<TRef> DataProvider { get; set; }
 
@@ -77,9 +101,7 @@ namespace Tango.UI.Controls
 			}
 		}
 
-		public static SelectListItem GetListItem<TRef, TRefKey, TValue>(this SelectObjectField<TRef, TRefKey, TValue> field,
-			TRef obj, string filterValue, bool highlightSearchResults)
-			where TRef : class, IWithKey<TRefKey>
+		public static SelectListItem GetListItem<TRef>(this ISelectObjectField<TRef> field,	TRef obj, string filterValue, bool highlightSearchResults)
 		{
 			string text = field.DataTextField(obj);
 			string value = field.DataValueField(obj);
@@ -203,15 +225,15 @@ namespace Tango.UI.Controls
 		}
 	}
 
-	public class SelectSingleObjectField<TRef, TRefKey> : SelectObjectField<TRef, TRefKey, TRef>
+	public class SelectSingleObjectField<TRef, TRefKey> : SelectObjectField<TRef, TRefKey, TRef>, ISelectSingleObjectField<TRef, TRefKey, TRef>
 		where TRef : class, IWithKey<TRef, TRefKey>, new()
 	{
 		public Func<TRefKey, Expression<Func<TRef, bool>>> FilterSelected { get; set; }
-		public SelectSingleObjectDialog<TRef, TRefKey> Strategy { get; set; }
+		public SelectSingleObjectDropDown<TRef, TRefKey> Strategy { get; set; }
 
 		public override void OnInit()
 		{
-			Strategy = CreateControl<SelectSingleObjectDialog<TRef, TRefKey>>("str", c => c.Field = this);
+			Strategy = CreateControl<SelectSingleObjectDropDown<TRef, TRefKey>>("str", c => c.Field = this);
 		}
 
 		public TRef GetObjectByID(TRefKey id)

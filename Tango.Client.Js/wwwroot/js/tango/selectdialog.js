@@ -158,12 +158,7 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 				const isSingleMode = state && state.hasOwnProperty('selectedvalue');
 
 				if (e.keyCode == 8 && elFilter.value == '') {
-					if (isSingleMode) {
-						instance.clear(elSel);
-					}
-					else {
-						instance.clear(elSel.lastChild);
-					}
+					instance.clear(elSel.lastChild);
 					return;
 				}
 
@@ -173,14 +168,14 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 
 					if (e.keyCode == 38) {
 						e.preventDefault();
-						if (cur.previousSibling && cur.previousSibling.classList.contains('row')) {
+						if (cur && cur.previousSibling && cur.previousSibling.classList.contains('row')) {
 							cur.classList.remove('selected');
 							cur.previousSibling.classList.add('selected');
 						}
 					}
 					else if (e.keyCode == 40) {
 						e.preventDefault();
-						if (cur.nextSibling && cur.nextSibling.classList.contains('row')) {
+						if (cur && cur.nextSibling && cur.nextSibling.classList.contains('row')) {
 							cur.classList.remove('selected');
 							cur.nextSibling.classList.add('selected');
 						}
@@ -196,15 +191,17 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 						if (pg) au.postEventFromElementWithApiResponse(pg);
 					}
 					else if (e.keyCode == 13) {
+						e.preventDefault();
 						if (isSingleMode) {
 							cur.firstChild.checked = true;
-							cur.firstChild.onchange();
+							if (cur.firstChild.onchange) cur.firstChild.onchange();
+							state.selectedvalue = cur.firstChild.value;
+							instance.setselected_singlemode(elPh, cur);
 						}
 						else {
-							e.preventDefault();
 							instance.setselected(elPh, cur);
-							elFilter.value = '';
 						}
+						elFilter.value = '';
 					}
 				}
 			});
@@ -218,28 +215,44 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 				this.style.width = w + 'px'; // apply width of the span to the input
 			});
 		},
-		clear: function (field) {
+		clear: function (el) {
+			if (!el) return;
+
+			const field = cu.getThisOrParent(el, function (n) { return n.classList.contains('selected'); });
 			if (!field) return;
-			field = cu.getThisOrParent(field, function (n) { return n.classList.contains('selected'); });
-			if (!field) return;
+			if (field.classList.contains('hide')) return;
+			if (!field.classList.contains('object')) return;
 
 			const rowid = field.getAttribute('data-rowid');
 			const c = au.findControl(field);
+			const isSingleMode = c.state && c.state.hasOwnProperty('selectedvalue');
 
 			document.getElementById(c.id).value = '';
-			if (c.state && c.state.hasOwnProperty('selectedvalue')) {
-				field.innerText = '';
-				if (!field.classList.contains('empty'))
-					field.classList.add('empty');
+
+			const container = field.parentElement;
+
+			if (isSingleMode) {
+				field.firstChild.innerText = '';
+				if (!field.classList.contains('hide'))
+					field.classList.add('hide');
 				c.state.selectedvalue = '';
 			}
-			if (c.state && c.state.hasOwnProperty('selectedvalues')) {
+			else {
 				field.parentElement.removeChild(field);
 				const index = c.state.selectedvalues.indexOf(rowid);
 				if (index > -1) {
 					c.state.selectedvalues.splice(index, 1);
 				}
 			}
+
+			const selectedCnt = container.querySelectorAll('.selected.object:not(.hide)').length;
+			if (selectedCnt == 0) {
+				const empty = container.querySelector('.nothingselectedtext');
+				if (empty) empty.classList.remove('hide');
+			}
+
+			if (el.hasAttribute('data-e'))
+				au.postEventFromElementWithApiResponse(el);
 		},
 		setselected: function (elPh, elSel) {
 			cbcell.setselected(elSel);
@@ -253,7 +266,7 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 					const textel = elSel.querySelector('.text');
 					const template = elPh.querySelector('.template');
 					const div = template.cloneNode(true);
-					div.className = "selected";
+					div.className = "selected object";
 					div.setAttribute('data-rowid', rowid);
 					div.firstChild.innerHTML = textel.innerHTML;
 					cont.appendChild(div);
@@ -262,6 +275,25 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 			else {
 				existing.parentElement.removeChild(existing);
 			}
+
+			const empty = cont.querySelector('.nothingselectedtext');
+			if (empty) {
+				const selectedCnt = cont.querySelectorAll('.selected.object:not(.hide)').length;
+				if (selectedCnt == 0) {
+					empty.classList.remove('hide');
+				}
+				else {
+					empty.classList.add('hide');
+				}
+			}
+		},
+		setselected_singlemode: function (elPh, elSel) {
+			const selected = elPh.querySelector('.selected.object');
+			selected.classList.remove('hide');
+			selected.firstChild.innerText = elSel.innerText;
+
+			const empty = elPh.querySelector('.nothingselectedtext');
+			if (empty) empty.classList.add('hide');
 		}
 	}
 	return instance;
@@ -271,28 +303,32 @@ var selectObjectDropDown = function (au, cu, cbcell, field) {
 	var instance = {	
 		widgetWillMount: function (shadow, state) {
 			const root = shadow.getElementById(state.root + '_str');
+			const isSingleMode = state && state.hasOwnProperty('selectedvalue');
 
-			const radios = root.getElementsByTagName('input');
-			for (var i = 0; i < radios.length; i++) {
-				const el = radios[i];
-				el.checked = state.selectedvalue == el.value;
-				el.addEventListener("change", function () {
-					state.selectedvalue = el.value;
-				});
-			}
+			const rows = root.querySelectorAll('.row');
+			for (var i = 0; i < rows.length; i++) {
+				const el = rows[i];
 
-			const checks = root.querySelectorAll('.checkboxlist .row');
-			for (var i = 0; i < checks.length; i++) {
-				const el = checks[i];
-				const rowid = el.getAttribute('data-rowid');
-				if (state.selectedvalues.indexOf(rowid) >= 0)
-					cbcell.setselected(el);
+				if (isSingleMode) {
+					el.addEventListener('mousedown', function (e) {
+						e.preventDefault();
+						const input = el.querySelector('input');
+						state.selectedvalue = input.value;
+						const elPh = document.getElementById(state.root + '_placeholder');
+						field.setselected_singlemode(elPh, el);
+					});
+				}
+				else {
+					const rowid = el.getAttribute('data-rowid');
+					if (state.selectedvalues.indexOf(rowid) >= 0)
+						cbcell.setselected(el);
 
-				el.addEventListener('mousedown', function (e) {
-					e.preventDefault();
-					const elPh = document.getElementById(state.root + '_placeholder');
-					field.setselected(elPh, el);
-				});
+					el.addEventListener('mousedown', function (e) {
+						e.preventDefault();
+						const elPh = document.getElementById(state.root + '_placeholder');
+						field.setselected(elPh, el);
+					});
+				}
 			}
 		},
 		widgetDidMount: function (state) {
