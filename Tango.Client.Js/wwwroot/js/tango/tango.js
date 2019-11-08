@@ -293,6 +293,7 @@ var ajaxUtils = function ($, cu) {
 			}
 		},
 		formSubmit: function (sender, form) {
+			if (form.hasAttribute('data-res') && instance.processResult(form) == false) return false;
 			var fd = new FormData(form);
 			fd.append('submit', sender.value);
 			var els = form.elements;

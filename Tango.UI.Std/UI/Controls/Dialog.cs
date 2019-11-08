@@ -95,7 +95,7 @@ namespace Tango.UI.Controls
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
 				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix), () => {
-					w.AjaxForm("form", a => a.DataResultPostponed(1), () => {
+					w.AjaxForm("form", a => a.DataResult(1), () => {
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
 							w.ButtonsBarRight(() => {
 								w.SubmitButton(null, "Да");

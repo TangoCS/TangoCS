@@ -85,7 +85,7 @@ namespace Tango.UI.Controls
 				pw.Hidden(Field.ID, value, a => a.DataHasClientState(ClientStateType.Value, Field.ClientID, "selectedvalue"));
 			});
 
-			cw.Div(a => a.ID("popup").Class("selectsingleobject-popup").DataRef(FilterFieldName).DataEvent(OpenDialog).DataContainer(typeof(SelectObjectPopupContainer), Field.ClientID));
+			cw.Div(a => a.ID("popup").Class("selectsingleobject-popup").DataRef(FilterFieldName).Data(DataCollection).DataEvent(OpenDialog).DataContainer(typeof(SelectObjectPopupContainer), Field.ClientID));
 		}
 
 		public void OnClear(ApiResponse response)
