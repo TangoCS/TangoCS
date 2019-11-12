@@ -217,7 +217,7 @@ div.calendar {
 	cursor: pointer;
 	color: #7a869a;
 }
-.cal-date {
+.formbody input[type=text].cal-date {
 	width: 85px;
 }
 .cal-datetime {

@@ -64,6 +64,8 @@ namespace Tango.Data
 		protected Dictionary<string, PropertyInfo> columns = new Dictionary<string, PropertyInfo>();
 		public IDictionary<string, object> Parameters { get; } = new Dictionary<string, object>();
 
+		protected string noKeyMessage => $"Entity {Type.Name} doesn't contain any key property";
+
 		protected IQueryTranslatorDialect Dialect => DBType == DBType.MSSQL ? (IQueryTranslatorDialect)new QueryTranslatorMSSQL() :
 			DBType == DBType.POSTGRESQL ? new QueryTranslatorPostgres() :
 			throw new NotSupportedException();
@@ -106,6 +108,7 @@ namespace Tango.Data
 		{
 			var parms = new Dictionary<string, object>();
 			var idtype = id.GetType();
+
 			if (idtype == typeof(Dictionary<string, object>))
 			{
 				var ids = id as Dictionary<string, object>;
@@ -121,11 +124,13 @@ namespace Tango.Data
 			else if (idtype == typeof(string) || idtype == typeof(Guid) || idtype == typeof(DateTime) ||
 				(idtype.IsValueType && idtype.IsPrimitive))
 			{
+				if (keys.Count == 0) throw new Exception(noKeyMessage);
 				parms.Add("p0", id);
 				return (keys.Keys.First().ToLower() + " = @p0", parms);
 			}
 			else if (idtype.IsValueType)
 			{
+				if (keys.Count == 0) throw new Exception(noKeyMessage);
 				var props = id.GetType().GetProperties();
 				int i = 0;
 				var clause = keys.Select(k => {
@@ -137,7 +142,7 @@ namespace Tango.Data
 				return (clause, parms);
 			}
 			else
-				throw new Exception($"Entity {Type.Name} doesn't contain any key property");
+				throw new Exception(noKeyMessage);
 		}
 
 		protected string PrepareSelectFromAllObjectsQuery(string fieldExpression)
@@ -256,7 +261,7 @@ namespace Tango.Data
 			else if (cnt > 1)
 				throw new Exception($"Composite keys not supported (entity: {typeof(T).Name}).");
 			else
-				throw new Exception($"Entity {typeof(T).Name} doesn't contain any key property");
+				throw new Exception(noKeyMessage);
 		}
 
 		public new T GetById(object id)

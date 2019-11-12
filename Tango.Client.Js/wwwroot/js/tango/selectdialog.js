@@ -125,7 +125,10 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 			opt.beforeOpen = function (data, event) {
 				if (event.type == 'click') return 0;
 				else if (event.type == 'paste') {
-					elFilter.value = event.originalEvent.clipboardData.getData('Text');
+					var data = event.originalEvent.clipboardData
+					if (!data) data = window.clipboardData;
+					elFilter.value = data.getData('Text');
+					adjustInputWidth(elFilter);
 					return 0;
 				}
 				var v = data.trigger.val();
@@ -206,13 +209,8 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 				}
 			});
 
-			elFilter.addEventListener('input', function (w) {
-				var spanElm = this.nextElementSibling;
-				spanElm.textContent = this.value; // the hidden span takes the value of the input; 
-				var w = spanElm.offsetWidth + 15;
-				if (w < 25) w = 25;
-				if (w > this.parentElement.offsetWidth - 26) return;
-				this.style.width = w + 'px'; // apply width of the span to the input
+			elFilter.addEventListener('input', function () {
+				adjustInputWidth(this);
 			});
 		},
 		clear: function (el) {
@@ -296,6 +294,16 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 			if (empty) empty.classList.add('hide');
 		}
 	}
+
+	function adjustInputWidth(el) {
+		var spanElm = el.nextElementSibling;
+		spanElm.textContent = el.value; // the hidden span takes the value of the input; 
+		var w = spanElm.offsetWidth + 15;
+		if (w < 25) w = 25;
+		if (w > el.parentElement.offsetWidth - 26) return;
+		el.style.width = w + 'px'; // apply width of the span to the input
+	}
+
 	return instance;
 }(ajaxUtils, commonUtils, checkBoxCell);
 
@@ -316,6 +324,7 @@ var selectObjectDropDown = function (au, cu, cbcell, field) {
 						state.selectedvalue = input.value;
 						const elPh = document.getElementById(state.root + '_placeholder');
 						field.setselected_singlemode(elPh, el);
+						instance.onResult(1, state);
 					});
 				}
 				else {

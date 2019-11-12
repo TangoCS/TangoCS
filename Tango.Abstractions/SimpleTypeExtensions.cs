@@ -106,27 +106,38 @@ namespace Tango
 			return null;
 		}
 
-		public static DateTime ToDateTime(this string src, DateTime defaultValue)
-		{
-			src = src.Replace("%20", " ");
-			src = src.Replace("%3a", ":");
-			src = src.Replace("+", " ");
-			if (DateTime.TryParseExact(src, "d.MM.yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dt))
-				return dt;
-			if (DateTime.TryParseExact(src, "d.MM.yyyy HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out dt))
-				return dt;
-			return defaultValue;
-		}
-
 		public static DateTime? ToDateTime(this string src)
 		{
+			if (src.IsEmpty()) return null;
+			return src.ToDateTime(null);
+		}
+
+		public static DateTime ToDateTime(this string src, DateTime defaultValue)
+		{
+			if (src.IsEmpty()) return defaultValue;
+			return src.ToDateTime(defaultValue, null);
+		}
+
+		public static DateTime ToDateTime(this string src, DateTime defaultValue, params string[] customFormats)
+		{
+			if (src.IsEmpty()) return defaultValue;
+			return src.ToDateTime(customFormats) ?? defaultValue;
+		}
+
+		public static DateTime? ToDateTime(this string src, params string[] customFormats)
+		{
+			if (src.IsEmpty()) return null;
+
 			src = src.Replace("%20", " ");
 			src = src.Replace("%3a", ":");
 			src = src.Replace("+", " ");
-			if (DateTime.TryParseExact(src, "d.MM.yyyy HH:mm", null, System.Globalization.DateTimeStyles.None, out DateTime dt))
+
+			var formats = new List<string>(customFormats ?? new string[] { }) { "dd.MM.yyyy", "yyyy-MM-dd", "yyyyMMdd" }
+					.Where(x => x != null).ToArray();
+
+			if (DateTime.TryParseExact(src, formats, null, DateTimeStyles.None, out DateTime dt))
 				return dt;
-			if (DateTime.TryParseExact(src, "d.MM.yyyy HH:mm:ss", null, System.Globalization.DateTimeStyles.None, out dt))
-				return dt;
+
 			return null;
 		}
 

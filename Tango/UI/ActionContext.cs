@@ -297,11 +297,7 @@ namespace Tango.UI
 		{
 			if (name != null && ctx.AllArgs.TryGetValue(name, out object s))
 			{
-				var formats = new List<string> { ctx.GetArg($"__format_{name}"), "dd.MM.yyyy", "yyyy-MM-dd", "yyyyMMdd" }
-					.Where(x => x != null).ToArray();
-
-                if (DateTime.TryParseExact(s.ToString(), formats, null, DateTimeStyles.None, out DateTime dt))
-					return dt;
+				return s.ToString().ToDateTime(ctx.GetArg($"__format_{name}"), format);
 			}
 			return null;
 		}
