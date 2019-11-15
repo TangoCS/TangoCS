@@ -8,5 +8,6 @@ namespace Tango.AccessControl
 	{
 		bool CheckForRole(TKey roleID, string securableObjectKey);
 		IEnumerable<TKey> Roles { get; }
-	}
+        IEnumerable<TKey> DenyRoles { get; }
+    }
 }

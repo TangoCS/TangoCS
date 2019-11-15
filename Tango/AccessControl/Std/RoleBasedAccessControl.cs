@@ -12,8 +12,9 @@ namespace Tango.AccessControl.Std
 		protected IRoleBasedAccessControlStore<int> _dataContext;
 
 		public override IEnumerable<int> Roles => _dataContext.Roles;
+        public override IEnumerable<int> DenyRoles => _dataContext.DenyRoles;
 
-		public DefaultAccessControl(
+        public DefaultAccessControl(
 			IRoleBasedAccessControlStore<int> dataContext,
 			IPredicateChecker predicateLoader,
 			IRequestLoggerProvider loggerProvider,
@@ -55,8 +56,9 @@ namespace Tango.AccessControl.Std
 		ICache _cache;
 
 		public override IEnumerable<int> Roles => _dataContext.Roles;
+        public override IEnumerable<int> DenyRoles => _dataContext.DenyRoles;
 
-		public CacheableAccessControl(
+        public CacheableAccessControl(
 			ICacheableRoleBasedAccessControlStore<int> dataContext,
 			IPredicateChecker predicateChecker,
 			ICache cache,

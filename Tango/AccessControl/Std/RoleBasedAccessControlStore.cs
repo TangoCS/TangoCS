@@ -60,8 +60,9 @@ namespace Tango.AccessControl.Std
 		}
 
 		public IEnumerable<T> Roles => IdentityRoles.Select(o => o.Id);
+        public IEnumerable<T> DenyRoles => new List<T>();
 
-		public bool CurrentUserHasRoles(string[] roleNames)
+        public bool CurrentUserHasRoles(string[] roleNames)
 		{
 			return IdentityRoles.Select(o => o.Name.ToLower()).Intersect(roleNames.Select(o => o.ToLower())).Count() > 0;
 		}

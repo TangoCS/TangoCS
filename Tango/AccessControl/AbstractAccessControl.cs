@@ -42,8 +42,9 @@ namespace Tango.AccessControl
 
 		public abstract bool HasRole(params string[] roleName);
 		public abstract IEnumerable<TKey> Roles { get; }
+        public abstract IEnumerable<TKey> DenyRoles { get; }
 
-		protected ConcurrentBag<string> AllowItems { get; } = new ConcurrentBag<string>();
+        protected ConcurrentBag<string> AllowItems { get; } = new ConcurrentBag<string>();
 		protected ConcurrentBag<string> DisallowItems { get; } = new ConcurrentBag<string>();
 
 		protected bool CheckDefaultAccess(string key, bool defaultAccess)
