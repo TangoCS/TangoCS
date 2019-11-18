@@ -99,7 +99,8 @@ namespace Tango.UI.Controls
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
 							w.ButtonsBarRight(() => {
 								
-								w.SubmitButton(a => {
+                                if(!warningMode)
+                                    w.SubmitButton(a => {
 									if (!w.Context.ResponseType.IsEmpty())
 										a.Data("responsetype", w.Context.ResponseType);
 								}, "Да");
