@@ -142,12 +142,15 @@ namespace Tango.UI
 		{
 			get
 			{
-				if (FormValue is TValue v)
-					return v;
-				else if (FormValue is ICastable<TFormValue, TValue> obj)
-					return obj.Cast(FormValue);
-				else
-					throw new NotImplementedException($"Cast from {typeof(TFormValue).Name} to {typeof(TValue).Name} is not implemented");
+                if (FormValue is TValue v)
+                    return v;
+                else if (FormValue == null)
+                    return (TValue)(object)null;
+
+                else if (FormValue is ICastable<TFormValue, TValue> obj)
+                    return obj.Cast(FormValue);
+                else
+                    throw new NotImplementedException($"Cast from {typeof(TFormValue).Name} to {typeof(TValue).Name} is not implemented");
 			}
 		}
 
