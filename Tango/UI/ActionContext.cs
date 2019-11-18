@@ -59,6 +59,9 @@ namespace Tango.UI
 		public string ContainerPrefix { get; set; }
 		public bool AddContainer { get; set; }
 
+		// response
+		public string ResponseType { get; set; }
+
 		protected abstract ActionTarget ParseReturnUrl(string returnUrl);
 
 		protected void ParseRouteParms(IReadOnlyDictionary<string, string> d)
@@ -90,18 +93,18 @@ namespace Tango.UI
 
 				if (key == Constants.ServiceName)
 				{
-					Service = value.ToString();
+					Service = value;
 					if (Service != null && Service.Contains("."))
 						throw new ArgumentException("Incorrect character '.' in Service parameter");
 				}
 				else if (key == Constants.ActionName)
 				{
-					Action = value.ToString();
+					Action = value;
 					if (Action != null && Action.Contains("."))
 						throw new ArgumentException("Incorrect character '.' in Action parameter");
 				}
 				else if (key == Constants.RootReceiverName)
-					RootReceiver = value.ToString();
+					RootReceiver = value;
 				else if (key == Constants.FirstLoad)
 				{
 					IsFirstLoad = value.ToLower() == "true";
@@ -111,24 +114,26 @@ namespace Tango.UI
 					Sender = $"#{value.ToLower()}";
 				else if (key == Constants.EventName)
 				{
-					Event = value.ToString().ToLower();
+					Event = value.ToLower();
 				}
 				else if (key == Constants.EventReceiverName)
-					EventReceiver = value.ToString().ToLower();
+					EventReceiver = value.ToLower();
 				else if (key == Constants.ReturnUrl)
-					ReturnUrl[1] = value.ToString().ToLower();
+					ReturnUrl[1] = value.ToLower();
+				else if (key == Constants.ResponseType)
+					ResponseType = value;
 				else if (key.StartsWith(Constants.ReturnUrl))
 				{
 					var parts = key.Split('_');
 					if (parts.Length > 0)
-						ReturnUrl[parts[1].ToInt32(0)] = value.ToString().ToLower();
+						ReturnUrl[parts[1].ToInt32(0)] = value.ToLower();
 				}
 				//else if (key == "sourceurl")
 				//	SourceUrl = value.ToString().ToLower();
 				else if (key == Constants.ContainerType)
-					ContainerType = value.ToString().ToLower();
+					ContainerType = value.ToLower();
 				else if (key == Constants.ContainerPrefix)
-					ContainerPrefix = value.ToString().ToLower();
+					ContainerPrefix = value.ToLower();
 				else if (key == Constants.ContainerNew)
 					AddContainer = AddContainer || value == "1";
 				else

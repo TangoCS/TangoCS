@@ -13,16 +13,17 @@ namespace Tango.Meta.Database
 			if (cls.Persistent == PersistenceType.Table)
 			{
 				var tempListJoinTables = new List<string>();
-				var stable = cls.Stereotype<STable>();
 
-				Table t = new Table();
-				t.Schema = this;
-				t.Name = stable?.Name ?? cls.Name;
-				//t.Description = cls.Caption;
-				t.Identity = cls.CompositeKey.Count == 1 && cls.Key is ICanBeIdentity && (cls.Key as ICanBeIdentity).IsIdentity;
+				var t = new Table {
+					Schema = this,
+					Name = cls.Name,
+					//t.Description = cls.Caption;
+					Identity = cls.CompositeKey.Count == 1 && cls.Key is ICanBeIdentity && (cls.Key as ICanBeIdentity).IsIdentity
+				};
 
-				if (t.Identity && cls.CompositeKey.Any(c => c.Type is MetaGuidType))
-					throw new Exception(string.Format("Class {0}. Поле не может быть Identity с типом uniqueidentifier", t.Name));
+				foreach (var s in cls.Stereotypes)
+					if (s is IOnTableGenerateLogic logic)
+						logic.Generate(t);
 
 				var primaryColumn = new Column();
 
@@ -40,10 +41,11 @@ namespace Tango.Meta.Database
 					column.Table = t;
 					column.Nullable = false;
 
-					PrimaryKey pk = new PrimaryKey();
-					pk.Name = "PK_" + cls.Name.Trim();
-					pk.Columns = new string[] { column.Name };
-					pk.Table = t;
+					var pk = new PrimaryKey {
+						Name = "PK_" + cls.Name.Trim(),
+						Columns = new string[] { column.Name },
+						Table = t
+					};
 					t.PrimaryKey = pk;
 
 					column.ForeignKeyName = "FK_" + cls.Name + "_" + cls.BaseClass.Name;
@@ -62,10 +64,11 @@ namespace Tango.Meta.Database
 				}
 				else if (cls.CompositeKey.Count > 0)
 				{
-					PrimaryKey pk = new PrimaryKey();
-					pk.Name = "PK_" + cls.Name.Trim();
-					pk.Columns = cls.CompositeKey.Select(o => o.ColumnName).ToArray();
-					pk.Table = t;
+					var pk = new PrimaryKey {
+						Name = "PK_" + cls.Name.Trim(),
+						Columns = cls.CompositeKey.Select(o => o.ColumnName).ToArray(),
+						Table = t
+					};
 					t.PrimaryKey = pk;
 
 				}
@@ -82,9 +85,10 @@ namespace Tango.Meta.Database
 					if (prop is ICanBeMultilingual && (prop as ICanBeMultilingual).IsMultilingual)
 						continue;
 
-					var column = new Column();
-					column.IsPrimaryKey = cls.CompositeKey.Any(p => p.Name == prop.Name);
-					column.Nullable = !prop.IsRequired;
+					var column = new Column {
+						IsPrimaryKey = cls.CompositeKey.Any(p => p.Name == prop.Name),
+						Nullable = !prop.IsRequired
+					};
 
 					if (cls.BaseClass != null && column.IsPrimaryKey)
 						continue;
@@ -234,10 +238,11 @@ namespace Tango.Meta.Database
 								Type = metaRef.RefClass.Key.Type 
 							});
 
-							PrimaryKey joinPk = new PrimaryKey();
-							joinPk.Name = "PK_" + tj.Name;
-							joinPk.Columns = tj.Columns.Select(o => o.Key).ToArray();
-							joinPk.Table = tj;
+							PrimaryKey joinPk = new PrimaryKey {
+								Name = "PK_" + tj.Name,
+								Columns = tj.Columns.Select(o => o.Key).ToArray(),
+								Table = tj
+							};
 							tj.PrimaryKey = joinPk;
 
 							tj.ForeignKeys.Add("FK_" + tj.Name + "_" + t.Name, new ForeignKey() { 

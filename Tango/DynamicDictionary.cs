@@ -230,8 +230,8 @@ namespace Tango
 
 		public static List<T> ParseList<T>(this IReadOnlyDictionary<string, object> dd, string name)
 		{
-			if (!dd.TryGetValue(name, out var d)) return null;
-			if (d == null) return null;
+			if (!dd.TryGetValue(name, out var d)) return new List<T>();
+			if (d == null) return new List<T>();
 			string format = dd["__format_" + name + "[]"]?.ToString();
 			if (!(d is IList))
 			{

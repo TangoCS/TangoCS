@@ -5,14 +5,14 @@ using System.Linq;
 namespace Tango.Meta.Database
 {
 	[Serializable]
-	public partial class Schema
+	public partial class Schema : MetaNamedElement
 	{
 		public Dictionary<string, Table> Tables { get; private set; }
 		public Dictionary<string, View> Views { get; private set; }
 		public Dictionary<string, Procedure> Procedures { get; private set; }
 		public Dictionary<string, Function> Functions { get; private set; }
 		public Dictionary<string, TableFunction> TableFunctions { get; private set; }
-		public string Name { get; set; }
+
 		public Schema()
 		{
 			Tables = new Dictionary<string, Table>();
@@ -24,9 +24,8 @@ namespace Tango.Meta.Database
 	}
 
 	[Serializable]
-	public partial class Table
+	public partial class Table : MetaNamedElement
 	{
-		public string Name { get; set; }
 		public string Owner { get; set; }
 		public string Description { get; set; }
 		public bool Identity { get; set; }
@@ -48,9 +47,8 @@ namespace Tango.Meta.Database
 	}
 
 	[Serializable]
-	public partial class Index
+	public partial class Index : MetaNamedElement
 	{
-		public string Name { get; set; }
 		public string[] Columns { get; set; }
 		public Table Table { get; set; }
 
@@ -62,9 +60,8 @@ namespace Tango.Meta.Database
 
 	}
 	[Serializable]
-	public partial class Column
+	public partial class Column : MetaNamedElement
 	{
-		public string Name { get; set; }
 		public IMetaPrimitiveType Type { get; set; }
 		public bool Nullable { get; set; }
 		public string DefaultValue { get; set; }
@@ -78,26 +75,23 @@ namespace Tango.Meta.Database
 	}
 
 	[Serializable]
-	public partial class ViewColumn
+	public partial class ViewColumn : MetaNamedElement
 	{
-		public string Name { get; set; }
 		public IMetaPrimitiveType Type { get; set; }
 		public bool Nullable { get; set; }
 		public string Description { get; set; }
 	}
 
 	[Serializable]
-	public partial class PrimaryKey
+	public partial class PrimaryKey : MetaNamedElement
 	{
-		public string Name { get; set; }
 		public string[] Columns { get; set; }
 		public Table Table { get; set; }
 	}
 
 	[Serializable]
-	public class ForeignKey
+	public class ForeignKey : MetaNamedElement
 	{
-		public string Name { get; set; }
 		public string RefTable { get; set; }
 		public bool IsEnabled { get; set; }
 		public string[] Columns { get; set; }
@@ -114,9 +108,8 @@ namespace Tango.Meta.Database
 	}
 
 	[Serializable]
-	public partial class Procedure
+	public partial class Procedure : MetaNamedElement
 	{
-		public string Name { get; set; }
 		public string Text { get; set; }
 		public Dictionary<string, Parameter> Parameters { get; private set; }
 
@@ -127,9 +120,8 @@ namespace Tango.Meta.Database
 	}
 
 	[Serializable]
-	public partial class Function
+	public partial class Function : MetaNamedElement
 	{
-		public string Name { get; set; }
 		public string Text { get; set; }
 		public Dictionary<string, Parameter> Parameters { get; private set; }
 
@@ -140,9 +132,8 @@ namespace Tango.Meta.Database
 	}
 
 	[Serializable]
-	public partial class TableFunction
+	public partial class TableFunction : MetaNamedElement
 	{
-		public string Name { get; set; }
 		public string Text { get; set; }
 		public Dictionary<string, Parameter> Parameters { get; private set; }
 		public Dictionary<string, ViewColumn> Columns { get; private set; }
@@ -156,9 +147,8 @@ namespace Tango.Meta.Database
 	}
 
 	[Serializable]
-	public partial class View
+	public partial class View : MetaNamedElement
 	{
-		public string Name { get; set; }
 		public string Text { get; set; }
 		public Dictionary<string, ViewColumn> Columns { get; private set; }
 		public Dictionary<string, Trigger> Triggers { get; private set; }
@@ -171,17 +161,15 @@ namespace Tango.Meta.Database
 	}
 
 	[Serializable]
-	public partial class Trigger
+	public partial class Trigger : MetaNamedElement
 	{
-		public string Name { get; set; }
 		public string Text { get; set; }
 		public string Owner { get; set; }
 	}
 
 	[Serializable]
-	public class Parameter
+	public class Parameter : MetaNamedElement
 	{
-		public string Name { get; set; }
 		public IMetaPrimitiveType Type { get; set; }
 	}
 
@@ -193,4 +181,9 @@ namespace Tango.Meta.Database
         public bool IsList { get; set; }
 		public Dictionary<string, string> Columns { get; set; }
 	}*/
+
+	public interface IOnTableGenerateLogic
+	{
+		void Generate(Table table);
+	}
 }

@@ -138,7 +138,18 @@ namespace Tango.UI
 			if (IsRequired && ValidationFunc != null) ValidationFunc(val.Check(Resources, ID, Caption, FormValue));
 		}
 		public virtual Func<ValidationBuilder<TFormValue>, ValidationBuilder<TFormValue>> ValidationFunc=> vb => vb.NotEmpty();
-		public abstract TValue ProceedFormValue { get; }
+		protected TValue ProceedFormValue
+		{
+			get
+			{
+				if (FormValue is TValue v)
+					return v;
+				else if (FormValue is ICastable<TFormValue, TValue> obj)
+					return obj.Cast(FormValue);
+				else
+					throw new NotImplementedException($"Cast from {typeof(TFormValue).Name} to {typeof(TValue).Name} is not implemented");
+			}
+		}
 
 		public Field()
 		{
@@ -215,16 +226,6 @@ namespace Tango.UI
 		protected virtual string GUIDSuffix => DBConventions.GUIDSuffix;
 
 		public override TValue Value => Context.RequestMethod == "POST" ? ProceedFormValue : PropertyValue;
-
-		public override TValue ProceedFormValue {
-			get
-			{
-				if (typeof(TFormValue) != typeof(TValue))
-					throw new NotImplementedException();
-
-				return (TValue)(FormValue as object);
-			}
-		}
 
 		bool SubmitToID(Type t)
 		{
@@ -304,15 +305,11 @@ namespace Tango.UI
 
 	public abstract class Field<TValue> : Field<TValue, TValue>
 	{
-		public override TValue ProceedFormValue => FormValue;
 	}
 
 	public abstract class EntityField<TEntity, TValue> : EntityField<TEntity, TValue, TValue>
 		where TEntity : class
 	{
-		public override TValue ProceedFormValue => FormValue;
-
-        //public override Func<ValidationBuilder<TValue>, ValidationBuilder<TValue>> ValidationFunc => vb => vb.NotEmpty(DefaultValue);
     }
 
 	public abstract class EntityDateTimeField<TEntity> : EntityField<TEntity, DateTime>, IFormattedField
@@ -322,12 +319,10 @@ namespace Tango.UI
 		public virtual string Format => "dd.MM.yyyy HH:mm";
 		public override string StringValue => Value.ToString(Format);
 		public override DateTime GetFormValue() => Context.GetDateTimeArg(ID, Format, DefaultValue);
-        public override void ValidateFormValue(ValidationMessageCollection val)
-        {
-            FieldExtensions.ValidateDateValue(Value, ID, val);
-            base.ValidateFormValue(val);
-        }
-    }
+		public override Func<ValidationBuilder<DateTime>, ValidationBuilder<DateTime>> ValidationFunc =>
+			v => base.ValidationFunc(v).ValidateDateInterval();
+
+	}
 
 	public abstract class EntityNullableDateTimeField<TEntity> : EntityField<TEntity, DateTime?>, IFormattedField
 		where TEntity : class
@@ -335,12 +330,9 @@ namespace Tango.UI
 		public virtual string Format => "dd.MM.yyyy HH:mm";
 		public override string StringValue => Value?.ToString(Format);
 		public override DateTime? GetFormValue() => Context.GetDateTimeArg(ID, Format);
-        public override void ValidateFormValue(ValidationMessageCollection val)
-        {
-            FieldExtensions.ValidateDateValue(Value, ID, val);
-            base.ValidateFormValue(val);
-        }
-    }
+		public override Func<ValidationBuilder<DateTime?>, ValidationBuilder<DateTime?>> ValidationFunc =>
+			v => base.ValidationFunc(v).ValidateDateInterval();
+	}
 
 	public abstract class EntityDateField<TEntity> : EntityField<TEntity, DateTime>, IFormattedField
 		where TEntity : class
@@ -350,11 +342,9 @@ namespace Tango.UI
 		public override string StringValue => Value.ToString(Format);
 		public override DateTime GetFormValue() => Context.GetDateTimeArg(ID, Format, DefaultValue);
 
-        public override void ValidateFormValue(ValidationMessageCollection val)
-        {
-            FieldExtensions.ValidateDateValue(Value, ID, val);
-            base.ValidateFormValue(val);
-        }
+		public override Func<ValidationBuilder<DateTime>, ValidationBuilder<DateTime>> ValidationFunc => 
+			v => base.ValidationFunc(v).ValidateDateInterval();
+
     }
 
 	public abstract class EntityNullableDateField<TEntity> : EntityField<TEntity, DateTime?>, IFormattedField
@@ -363,12 +353,9 @@ namespace Tango.UI
 		public virtual string Format => "dd.MM.yyyy";
 		public override string StringValue => Value?.ToString(Format);
 		public override DateTime? GetFormValue() => Context.GetDateTimeArg(ID, Format);
-        public override void ValidateFormValue(ValidationMessageCollection val)
-        {
-            FieldExtensions.ValidateDateValue(Value, ID, val);
-            base.ValidateFormValue(val);
-        }
-    }
+		public override Func<ValidationBuilder<DateTime?>, ValidationBuilder<DateTime?>> ValidationFunc =>
+			v => base.ValidationFunc(v).ValidateDateInterval();
+	}
 
 	public abstract class EntityReferenceManyField<TEntity, TRefClass, TRefKey> : EntityField<TEntity, IQueryable<TRefClass>, List<TRefKey>>
 		where TEntity : class
@@ -389,11 +376,11 @@ namespace Tango.UI
 
     public static class FieldExtensions
     {
-        public static void ValidateDateValue(DateTime? entityDate, string entityName, ValidationMessageCollection val)
-        {
-            if (Data.ConnectionManager.DBType == Data.DBType.MSSQL && (entityDate < new DateTime(1753, 1, 1) || entityDate > new DateTime(9999, 12, 31)))
-                val.Add(new ValidationMessage("entitycheck", entityName, "Введена дата вне пределов разрешенного диапазона.", ValidationMessageSeverity.Error));
-        }
+        //public static void ValidateDateValue(DateTime? entityDate, string entityName, ValidationMessageCollection val)
+        //{
+        //    if (Data.ConnectionManager.DBType == Data.DBType.MSSQL && (entityDate < new DateTime(1753, 1, 1) || entityDate > new DateTime(9999, 12, 31)))
+        //        val.Add(new ValidationMessage("entitycheck", entityName, "Введена дата вне пределов разрешенного диапазона.", ValidationMessageSeverity.Error));
+        //}
 
         //public static T GetField<T>(this IField field)
         //    where T : class, IField
