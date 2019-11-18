@@ -28,7 +28,7 @@ namespace Tango.UI.Controls
 					foreach (var item in data.Select(o => Field.GetListItem(o, FilterValue, HighlightSearchResults)))
 					{
 						w.Label(a => a.Class("row").For("item" + item.Value).DataResultPostponed(1), () => {
-							w.RadioButton("item", "item" + item.Value, item.Value, false, a => { if (Field.PostOnChangeEvent) a.OnChangePostEvent(SubmitDialog); });
+							w.RadioButton("item", "item" + item.Value, item.Value, false, a => { if (Field.PostOnChangeEvent) a.OnChangePostEvent(SubmitDialog); a.Data(DataCollection); }); //DataCollection
 							w.Write(item.Text);
 						});
 					}
