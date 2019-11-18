@@ -16,6 +16,7 @@
 		public static readonly string RootReceiverName = "p";
 		public static readonly string FirstLoad = "firstload";
 		public static readonly string Sender = "sender";
+		public static readonly string ResponseType = "responsetype";
 
 		public static readonly string ContainerPrefix = "c-prefix";
 		public static readonly string ContainerType = "c-type";

@@ -89,10 +89,11 @@ namespace Tango
 
 	public class ValidationBuilder<T>
 	{
+		const string GROUP = "entitycheck";
+
 		public string ElementID { get; private set; }
 		public string ElementName { get; set; }
 		public T Value { get; private set; }
-
 
 		public ValidationMessageCollection Collection { get; private set; }
 		public IResourceManager Resources { get; private set; }
@@ -104,6 +105,16 @@ namespace Tango
 			ElementName = name;
 			Value = value;
 			Resources = resources;
+		}
+
+		public string GetMesssageText(string msgType, string data = null)
+		{
+			return string.Format(Resources.Get($"common.validation.{msgType}"), ElementName, data);
+		}
+
+		public void AddMessage(string msgType, string data = null, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		{
+			Collection.Add(GROUP, ElementID, GetMesssageText(msgType, data), severity);
 		}
 	}
 

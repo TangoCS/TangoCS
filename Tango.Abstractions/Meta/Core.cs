@@ -13,6 +13,7 @@ namespace Tango.Meta
 		public virtual string ID { get; protected set; }
 
 		protected Dictionary<Type, IMetaStereotype> _stereotypes = new Dictionary<Type, IMetaStereotype>();
+		public IEnumerable<IMetaStereotype> Stereotypes => _stereotypes.Values;
 
 		public T Stereotype<T>() where T : IMetaStereotype
 		{

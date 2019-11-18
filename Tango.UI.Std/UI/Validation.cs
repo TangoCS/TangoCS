@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Tango.Meta;
 using Tango.Localization;
+using Tango.Data;
 
 namespace Tango.UI
 {
 	public static class ValidationBuilderExtensions
 	{
-		const string GROUP = "entitycheck";
 
 		public static ValidationBuilder<T> Check<TClass, T>(this ValidationMessageCollection c, IResourceManager textResource, MetaAttribute<TClass, T> prop, DynamicDictionary dto)
 		{
@@ -31,10 +31,6 @@ namespace Tango.UI
 		//	return new ValidationBuilder<T>(f.Resources, c, f.ID, f.Caption, f.Value);
 		//}
 
-		static string Msg<T>(ValidationBuilder<T> val, string msgType, string data = null)
-		{
-			return string.Format(val.Resources.Get($"common.validation.{msgType}"), val.ElementName, data);
-		}
 
         public static ValidationBuilder<T> NotEmpty<T>(this ValidationBuilder<T> val, T defaultValue = default(T), ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
         {
@@ -42,7 +38,7 @@ namespace Tango.UI
                 return val;
             if (val.Value == null || (val.Value is string && val.Value.ToString().IsEmpty()) || Equals(val.Value, defaultValue))
             {
-                val.Collection.Add(GROUP, val.ElementID, Msg(val, "NotEmpty"), severity);
+				val.AddMessage("NotEmpty", severity: severity);
             }
             return val;
         }
@@ -51,7 +47,7 @@ namespace Tango.UI
 		{
 			if (val.Value == null || (val.Value is string && val.Value.ToString().IsEmpty()))
 			{
-				val.Collection.Add(GROUP, val.ElementID, Msg(val, "NotNull"), severity);
+				val.AddMessage("NotNull", severity: severity);
 			}
 			return val;
 		}
@@ -67,7 +63,7 @@ namespace Tango.UI
 
 			if (!b)
 			{
-				val.Collection.Add(GROUP, val.ElementID, Msg(val, "Between"), severity);
+				val.AddMessage("Between", severity: severity);
 			}
 			return val;
 		}
@@ -76,7 +72,7 @@ namespace Tango.UI
 		{
 			if (!(Comparer<T>.Default.Compare(val.Value, valueToCompare) > 0))
 			{
-				val.Collection.Add(GROUP, val.ElementID, Msg(val, "GreaterThan"), severity);
+				val.AddMessage("GreaterThan", severity: severity);
 			}
 			return val;
 		}
@@ -84,18 +80,14 @@ namespace Tango.UI
 		public static ValidationBuilder<T> GreaterOrEqualThan<T>(this ValidationBuilder<T> val, T valueToCompare, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
 		{
 			if (!(Comparer<T>.Default.Compare(val.Value, valueToCompare) >= 0))
-			{
-				val.Collection.Add(GROUP, val.ElementID, Msg(val, "GreaterOrEqualThan"), severity);
-			}
+				val.AddMessage("GreaterOrEqualThan", severity: severity);
 			return val;
 		}
 
 		public static ValidationBuilder<T> LessThan<T>(this ValidationBuilder<T> val, T valueToCompare, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
 		{
 			if (!(Comparer<T>.Default.Compare(val.Value, valueToCompare) < 0))
-			{
-				val.Collection.Add(GROUP, val.ElementID, Msg(val, "LessThan"), severity);
-			}
+				val.AddMessage("LessThan", severity: severity);
 			return val;
 		}
 
@@ -103,9 +95,8 @@ namespace Tango.UI
 			
 		{
 			if (!(Comparer<T>.Default.Compare(val.Value, valueToCompare) <= 0))
-			{
-				val.Collection.Add(GROUP, val.ElementID, Msg(val, "LessOrEqualThan"), severity);
-			}
+				val.AddMessage("LessOrEqualThan", severity: severity);
+
 			return val;
 		}
 
@@ -116,7 +107,7 @@ namespace Tango.UI
 				string s = val.Value as string;
 				if (!(s.Length >= min))
 				{
-					val.Collection.Add(GROUP, val.ElementID, Msg(val, "MinLength", min.ToString()), severity);
+					val.AddMessage("MinLength", min.ToString(), severity);
 				}
 			}
 			return val;
@@ -129,7 +120,7 @@ namespace Tango.UI
 				string s = val.Value as string;
 				if (!(s.Length <= max))
 				{
-					val.Collection.Add(GROUP, val.ElementID, Msg(val, "MaxLength", max.ToString()), severity);
+					val.AddMessage("MaxLength", max.ToString(), severity);
 				}
 			}
 			return val;
@@ -141,10 +132,25 @@ namespace Tango.UI
 			{
 				if (!chars.Contains(c))
 				{
-					val.Collection.Add(GROUP, val.ElementID, Msg(val, "CheckChars", chars), severity);
+					val.AddMessage("CheckChars", chars, severity);
 					break;
 				}
 			}
+			return val;
+		}
+
+		public static ValidationBuilder<DateTime> ValidateDateInterval(this ValidationBuilder<DateTime> val, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		{
+			if (ConnectionManager.DBType == DBType.MSSQL && (val.Value < new DateTime(1753, 1, 1) || val.Value > new DateTime(9999, 12, 31)))
+				val.AddMessage("MSSQLDateInterval", severity: severity);
+
+			return val;
+		}
+		public static ValidationBuilder<DateTime?> ValidateDateInterval(this ValidationBuilder<DateTime?> val, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		{
+			if (ConnectionManager.DBType == DBType.MSSQL && (val.Value < new DateTime(1753, 1, 1) || val.Value > new DateTime(9999, 12, 31)))
+				val.AddMessage("MSSQLDateInterval", severity: severity);
+
 			return val;
 		}
 	}

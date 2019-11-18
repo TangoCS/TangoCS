@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -75,7 +76,16 @@ namespace Tango.AspNetCore
 
 			try
 			{
-                CustomBinding cust = new CustomBinding(new BasicHttpBinding
+				//context.Request.EnableRewind();
+				//using (StreamReader reader = new StreamReader(context.Request.Body, Encoding.UTF8, true, 1024, true))
+				//{
+				//	var env = context.RequestServices.GetService(typeof(IHostingEnvironment)) as IHostingEnvironment;
+				//	string text = reader.ReadToEnd();
+				//	File.WriteAllText($"{env.WebRootPath}{Path.DirectorySeparatorChar}soap_{DateTime.Now:yyyyMMddHHmmss}.xml", text);
+				//}
+				//context.Request.Body.Position = 0;
+
+				CustomBinding cust = new CustomBinding(new BasicHttpBinding
                 {
                     ReaderQuotas = ReaderQuotas,
                     OpenTimeout = new TimeSpan(0, 3, 0),

@@ -544,6 +544,9 @@ var ajaxUtils = function ($, cu) {
 				parms['c-type'] = target.containerType;
 			}
 
+			if (target.responsetype)
+				parms['responsetype'] = target.responsetype;
+
 			if (target.changeloc) {
 				if (target.onBack) state.loc.onBack = target.onBack;
 				window.history.pushState(state.loc, "", target.url);
@@ -786,7 +789,7 @@ var ajaxUtils = function ($, cu) {
 
 		if (!apiResult) return;
 		if (apiResult instanceof ArrayBuffer)
-			apiResult = JSON.parse(new TextDecoder('utf8').decode(apiResult));
+			apiResult = JSON.parse(textDecode(apiResult));
 
 		if (apiResult.url) {
 			window.location = apiResult.url;
@@ -1086,6 +1089,52 @@ var ajaxUtils = function ($, cu) {
 		}
 		else
 			document.body.innerHTML = title + '<br/>' + text;
+	}
+
+	function textDecode(str) {
+		if (window.TextDecoder) {
+			return new TextDecoder('utf-8').decode(str);
+		}
+		const bytes = new Uint8Array(str);
+		let pos = 0;
+		const len = bytes.length;
+		const out = [];
+
+		while (pos < len) {
+			const byte1 = bytes[pos++];
+			if (byte1 === 0) {
+				break;  // NULL
+			}
+
+			if ((byte1 & 0x80) === 0) {  // 1-byte
+				out.push(byte1);
+			} else if ((byte1 & 0xe0) === 0xc0) {  // 2-byte
+				const byte2 = bytes[pos++] & 0x3f;
+				out.push(((byte1 & 0x1f) << 6) | byte2);
+			} else if ((byte1 & 0xf0) === 0xe0) {
+				const byte2 = bytes[pos++] & 0x3f;
+				const byte3 = bytes[pos++] & 0x3f;
+				out.push(((byte1 & 0x1f) << 12) | (byte2 << 6) | byte3);
+			} else if ((byte1 & 0xf8) === 0xf0) {
+				const byte2 = bytes[pos++] & 0x3f;
+				const byte3 = bytes[pos++] & 0x3f;
+				const byte4 = bytes[pos++] & 0x3f;
+
+				// this can be > 0xffff, so possibly generate surrogates
+				let codepoint = ((byte1 & 0x07) << 0x12) | (byte2 << 0x0c) | (byte3 << 0x06) | byte4;
+				if (codepoint > 0xffff) {
+					// codepoint &= ~0x10000;
+					codepoint -= 0x10000;
+					out.push((codepoint >>> 10) & 0x3ff | 0xd800)
+					codepoint = 0xdc00 | codepoint & 0x3ff;
+				}
+				out.push(codepoint);
+			} else {
+				// FIXME: we're ignoring this
+			}
+		}
+
+		return String.fromCharCode.apply(null, out);
 	}
 
 	document.addEventListener('DOMContentLoaded', function () {

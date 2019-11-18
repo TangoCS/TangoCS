@@ -98,7 +98,11 @@ namespace Tango.UI.Controls
 					w.AjaxForm("form", a => a.DataResult(1), () => {
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
 							w.ButtonsBarRight(() => {
-								w.SubmitButton(null, "Да");
+								
+								w.SubmitButton(a => {
+									if (!w.Context.ResponseType.IsEmpty())
+										a.Data("responsetype", w.Context.ResponseType);
+								}, "Да");
 								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), "Нет");
 							});
 						});

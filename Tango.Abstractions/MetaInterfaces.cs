@@ -9,6 +9,7 @@ namespace Tango.Meta
 	{
 		string ID { get; }
 
+		IEnumerable<IMetaStereotype> Stereotypes { get; }
 		T Stereotype<T>() where T : IMetaStereotype;
 		void AssignStereotype(IMetaStereotype stereotype);
 	}
