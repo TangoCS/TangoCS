@@ -156,7 +156,7 @@ namespace Tango.UI
 
 		public Field()
 		{
-			ID = GetType().Name;
+			ID = GetType().Name.Replace("`1", "");
 			ValueProvider = this;
 		}
 	}
@@ -174,7 +174,7 @@ namespace Tango.UI
 
 		public EntityField()
 		{
-			ID = GetType().Name;
+			ID = GetType().Name.Replace("`1", "");
 		}
 
         public void SetViewData<TViewData>(TViewData viewData)
