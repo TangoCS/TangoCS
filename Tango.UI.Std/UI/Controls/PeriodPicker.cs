@@ -19,14 +19,14 @@ namespace Tango.UI.Controls
 
 		public override void OnInit()
 		{
-			dPeriodFrom = CreateControl<DateLists>(UseCalendar ? $"dperiodfromtime" : $"dperiodfrom", c => {
+			dPeriodFrom = CreateControl<DateLists>(ID + "_" + (UseCalendar ? $"dperiodfromtime" : $"dperiodfrom"), c => {
 				c.ShowDays = ShowDays && !UseCalendar;
 				c.ShowTime = ShowTime;
 				c.TimeOnly = UseCalendar && ShowDays;
 				c.MinutesStep = 30;
 				if (DefaultValue != null) c.DefaultValue = DefaultValue.From;
 			});
-			dPeriodTo = CreateControl<DateLists>(UseCalendar ? $"dperiodtotime" : $"dperiodto", c => {
+			dPeriodTo = CreateControl<DateLists>(ID + "_" + (UseCalendar ? $"dperiodtotime" : $"dperiodto"), c => {
 				c.ShowDays = ShowDays && !UseCalendar;
 				c.ShowTime = ShowTime;
 				c.TimeOnly = UseCalendar && ShowDays;
@@ -44,22 +44,22 @@ namespace Tango.UI.Controls
 			dPeriodTo.MaxYear = DateTime.Today.Year;
 
             if (from == null)
-                from = Context.GetDateTimeArg("dperiodfrom");
+                from = Context.GetDateTimeArg(ID + "_" + "dperiodfrom");
             if (to == null)
-                to = Context.GetDateTimeArg("dperiodto");
+                to = Context.GetDateTimeArg(ID + "_" + "dperiodto");
 
 			var options = new CalendarOptions { ShowButton = false };
 
-            w.PushID(ID);
+            //w.PushID(ID);
 			w.Div(a => a.Class("periodpicker").ID(), () => {
 				w.Div(() => {
-					if (UseCalendar && ShowDays) w.Calendar("dperiodfrom", from ?? DefaultValue?.From, options);
+					if (UseCalendar && ShowDays) w.Calendar(ID + "_" + "dperiodfrom", from ?? DefaultValue?.From, options);
 					if (!UseCalendar || ShowTime)
 						dPeriodFrom.Render(w, from ?? DefaultValue?.From);
 				});
 				w.Div("&ndash;");
 				w.Div(() => {
-					if (UseCalendar && ShowDays) w.Calendar("dperiodto", to ?? DefaultValue?.To, options);
+					if (UseCalendar && ShowDays) w.Calendar(ID + "_" + "dperiodto", to ?? DefaultValue?.To, options);
 					if (!UseCalendar || ShowTime)
 						dPeriodTo.Render(w, to ?? DefaultValue?.To);
 				});
@@ -74,7 +74,7 @@ namespace Tango.UI.Controls
 				});
 			}
 
-			w.PopID();
+			//w.PopID();
 		}
 
 		public PeriodValue Value
@@ -83,8 +83,8 @@ namespace Tango.UI.Controls
 			{
 				if (UseCalendar && ShowDays)
 				{
-					var from = Context.GetDateTimeArg("dperiodfrom");
-					var to = Context.GetDateTimeArg("dperiodto");
+					var from = Context.GetDateTimeArg(ID + "_" + "dperiodfrom");
+					var to = Context.GetDateTimeArg(ID + "_" + "dperiodto");
 					var fromtime = dPeriodFrom.Value?.TimeOfDay;
 					var totime = dPeriodTo.Value?.TimeOfDay;
 
