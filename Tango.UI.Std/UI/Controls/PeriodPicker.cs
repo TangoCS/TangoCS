@@ -51,7 +51,7 @@ namespace Tango.UI.Controls
 			var options = new CalendarOptions { ShowButton = false };
 
             //w.PushID(ID);
-			w.Div(a => a.Class("periodpicker").ID(), () => {
+			w.Div(a => a.Class("periodpicker").ID(ID), () => {
 				w.Div(() => {
 					if (UseCalendar && ShowDays) w.Calendar(ID + "_" + "dperiodfrom", from ?? DefaultValue?.From, options);
 					if (!UseCalendar || ShowTime)
@@ -64,13 +64,13 @@ namespace Tango.UI.Controls
 						dPeriodTo.Render(w, to ?? DefaultValue?.To);
 				});
 				if (UseCalendar && ShowDays)
-					w.Span(a => a.ID("btn" + ID).Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
+					w.Span(a => a.ID(ID + "_" + "btn" + ID).Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
 			});
 
 			if (UseCalendar && ShowDays)
 			{
 				w.AddClientAction("daterangepickerproxy", "init", f => new {
-					triggerid = f("btn" + ID)
+					triggerid = f(ID + "_" + "btn" + ID)
 				});
 			}
 
