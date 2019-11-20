@@ -948,11 +948,16 @@ var ajaxUtils = function ($, cu) {
 				if (!state.ctrl[owner]) state.ctrl[owner] = {};
 				const nodectrl = state.ctrl[owner];
 				if (type == 'array') {
-					nodectrl[name] = nodectrl[name] ? new ObservableArray(nodectrl[name]) : new ObservableArray();
-					nodectrl[name].push.apply(nodectrl[name], node.value.split(',').filter(String));
-					nodectrl[name].on('pop push shift unshift splice reverse sort', function () {
+					const ctrlvar = nodectrl[name] ? new ObservableArray(nodectrl[name]) : new ObservableArray();
+					const values = node.value.split(',').filter(String);
+					for (var i = 0; i < values.length; i++) {
+						if (ctrlvar.indexOf(values[i]) == -1)
+							ctrlvar.push(values[i]);
+					}
+					ctrlvar.on('pop push shift unshift splice reverse sort', function () {
 						node.value = this.join(',');
 					});
+					nodectrl[name] = ctrlvar;
 				} else if (type == 'value') {
 					Object.defineProperty(nodectrl, name, {
 						enumerable: true,

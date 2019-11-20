@@ -65,7 +65,9 @@ var selectMultipleObjectsDialog = function (au, cu) {
 				el.checked = state.selectedvalues.indexOf(el.value) >= 0;
 				el.addEventListener("change", function () {
 					if (el.checked) {
-						state.selectedvalues.push(el.value);
+						const index = state.selectedvalues.indexOf(el.value);
+						if (index == -1)
+							state.selectedvalues.push(el.value);
 					}
 					else {
 						const index = state.selectedvalues.indexOf(el.value);
@@ -205,6 +207,7 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 							instance.setselected(elPh, cur);
 						}
 						elFilter.value = '';
+						adjustInputWidth(elFilter);
 					}
 				}
 			});
@@ -300,7 +303,8 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 		spanElm.textContent = el.value; // the hidden span takes the value of the input; 
 		var w = spanElm.offsetWidth + 15;
 		if (w < 25) w = 25;
-		if (w > el.parentElement.offsetWidth - 26) return;
+		const maxWidth = el.parentElement.offsetWidth - 26 - 2;
+		if (w > maxWidth) w = maxWidth;
 		el.style.width = w + 'px'; // apply width of the span to the input
 	}
 
