@@ -8,8 +8,8 @@ using System.Reflection;
 
 namespace Tango.TaskManager
 {
-	public class Program
-	{
+    public class Program
+    {
         public static void Main(string[] args)
         {
             bool IsService = args.Contains("--windows-service");
@@ -18,29 +18,20 @@ namespace Tango.TaskManager
             Directory.SetCurrentDirectory(curPath);
 
             var builder = CreateHostBuilder(args.Where(arg => arg != "--windows-service").ToArray());
+            if (IsService)
+                builder = builder.UseWindowsService();
+
             using (var host = builder.UseContentRoot(curPath).Build())
             {
                 host.Run();
             }
         }
 
-        static IHostBuilder CreateHostBuilder(string[] args)
-        {
-            var builder = new HostBuilder()
-            /*.ConfigureAppConfiguration((hostingContext, config) =>
-            {
-                if (args != null)
-                {
-                    //config.AddCommandLine(args);
-                }
-            })*/
+        static IHostBuilder CreateHostBuilder(string[] args) =>
+            Host.CreateDefaultBuilder(args)
             .ConfigureServices((hostContext, services) =>
             {
                 services.AddSingleton<IHostedService, TaskHostedService>();
             });
-
-            return builder;
-        }
-
     }
 }
