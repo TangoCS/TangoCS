@@ -50,7 +50,12 @@ where a2.Type = 2 and a1.Type = 1
 order by ActionRoleAccess");
 		}
 
-		public IEnumerable<string> GetKeys()
+        public IEnumerable<string> GetRolesDeny()
+        {
+            return new string[0];
+        }
+
+        public IEnumerable<string> GetKeys()
 		{
 			return _dc.Query<string>(@"select upper(a1.SystemName + '.' + a2.SystemName) as SystemName
 from SPM_Action a1, SPM_Action a2, SPM_ActionAsso asso

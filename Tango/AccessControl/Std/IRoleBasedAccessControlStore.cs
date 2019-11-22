@@ -15,6 +15,7 @@ namespace Tango.AccessControl.Std
         IEnumerable<T> DenyRoles { get; }
         IEnumerable<string> GetKeys();
 		IEnumerable<string> GetRolesAccess();
-		IEnumerable<T> RoleAncestors(T id);
+        IEnumerable<string> GetRolesDeny();
+        IEnumerable<T> RoleAncestors(T id);
 	}
 }
