@@ -6,9 +6,6 @@ namespace Tango.UI.Std
 {
 	public class BaseController : Controller
 	{
-		[Inject]
-		public IDataContext DataContext { get; set; }
-
 		public override bool CheckAccess(MethodInfo method)
 		{
 			var anon = method.GetCustomAttribute<AllowAnonymousAttribute>();

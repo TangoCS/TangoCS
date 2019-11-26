@@ -28,7 +28,7 @@ namespace Tango.UI
 				return new HttpResult { StatusCode = HttpStatusCode.Forbidden };
 
 			if (recipient is IWithCheckAccess secured && !secured.CheckAccess(m))
-				return new HttpResult { StatusCode = HttpStatusCode.Forbidden };
+				return secured.OnNoAccess();
 
 			var ps = m.GetParameters();
 

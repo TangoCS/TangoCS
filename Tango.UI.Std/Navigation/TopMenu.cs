@@ -21,16 +21,11 @@ namespace Tango.UI.Navigation
 
 		public void Render(LayoutWriter w)
 		{
-			var rootItems = Cache.GetOrAdd("topmenu", () => {
-				return MenuLoader.Load("topmenu");
-			});
-
-			rootItems = rootItems.Where(o => AccessControl.Check(o.SecurableObjectKey));
-			if (rootItems == null || rootItems.Count() == 0) return;
+			var (rootItems, removed) = MenuHelper.GetMenu(Cache, MenuLoader, AccessControl, "topmenu");
 
 			foreach (var m in rootItems)
 			{
-				var children = m.Children.Where(o => AccessControl.Check(o.SecurableObjectKey));
+				var children = m.Children.Where(o => !removed.Contains(o.ID));
 				var hasChildren = children.Count() > 0;
 				var menuid = "m" + Guid.NewGuid().ToString();
 
@@ -43,13 +38,14 @@ namespace Tango.UI.Navigation
 						});
 
 						w.DropDownForElement(menuid, () => {
-							foreach (var cm in children)
-							{
-								w.A(a => a.Href(cm.Url).OnClickRunHref(), () => {
-									if (!cm.Image.IsEmpty()) w.Icon(cm.Image);
-									w.Write(cm.Title);
-								});
-							}
+							w.RenderTwoLevelMenu(children, removed);
+							//foreach (var cm in children)
+							//{
+							//	w.A(a => a.Href(cm.Url).OnClickRunHref(), () => {
+							//		if (!cm.Image.IsEmpty()) w.Icon(cm.Image);
+							//		w.Write(cm.Title);
+							//	});
+							//}
 						});
 					}
 					else

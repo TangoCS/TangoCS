@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Net;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using Tango.AccessControl;
 using Tango.Html;
+using Tango.Identity.Std;
 using Tango.Logger;
 
 namespace Tango.UI.Std
@@ -44,6 +46,14 @@ namespace Tango.UI.Std
 			var soname = so != null ? so.Name : Context.Action;
 
 			return ac.Check(Context.Service + "." + soname);
+		}
+
+		public ActionResult OnNoAccess()
+		{
+			if (Context.RequestServices.GetService(typeof(IIdentity)) is IIdentity identity && identity.IsAuthenticated)
+				return new HttpResult { StatusCode = HttpStatusCode.Forbidden };
+			else
+				return new ChallengeResult();
 		}
 	}
 

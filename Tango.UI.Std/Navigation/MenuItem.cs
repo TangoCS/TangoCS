@@ -1,9 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Tango.AccessControl;
+using Tango.Cache;
+using Tango.Data;
+using Tango.Html;
+using Tango.UI.Std;
 
 namespace Tango.UI.Navigation
 {
 	public class MenuItem
 	{
+		public Guid ID { get; } = Guid.NewGuid();
 		public string ResourceKey { get; set; }
 		public string SecurableObjectKey { get; set; }
 
@@ -20,5 +28,122 @@ namespace Tango.UI.Navigation
 		public string Description { get; set; }
 
 		public List<MenuItem> Children { get; } = new List<MenuItem>();
+	}
+
+	public static class MenuHelper
+	{
+		public static HashSet<Guid> ChechMenuItems(IAccessControl ac, IEnumerable<MenuItem> rootItems)
+		{
+			HashSet<Guid> removed = new HashSet<Guid>();
+
+			void checkChildren(IEnumerable<MenuItem> items)
+			{
+				foreach (var item in items)
+				{
+					if (item.Children.Count > 0)
+					{
+						checkChildren(item.Children);
+						if (item.Children.All(o => removed.Contains(o.ID)))
+							removed.Add(item.ID);
+					}
+					else if (!ac.Check(item.SecurableObjectKey))
+						removed.Add(item.ID);
+				}
+			}
+
+			checkChildren(rootItems);
+
+			return removed;
+		}
+
+		public static void AdminTopMenuIcon(this LayoutWriter w)
+		{
+			var cache = w.Context.RequestServices.GetService(typeof(ICache)) as ICache;
+			var loader = w.Context.RequestServices.GetService(typeof(IMenuDataLoader)) as IMenuDataLoader;
+			var ac = w.Context.RequestServices.GetService(typeof(IAccessControl)) as IAccessControl;
+
+			var (rootItems, removed) = GetMenu(cache, loader, ac, "adminmenu");
+			if (rootItems.Count() == 0) return;
+
+			w.Li(a => a.ID("header-adminmenu"), () => {
+				w.Span(() => w.Icon("settings2"));
+				w.DropDownForElement("header-adminmenu", () => {
+					w.RenderTwoLevelMenu(rootItems, removed);
+				});
+			});
+		}
+
+		public static void ChangeDBMenuIcon(this LayoutWriter w)
+		{
+			var settings = w.Context.RequestServices.GetService(typeof(IPersistentSettings)) as IPersistentSettings;
+			var ac = w.Context.RequestServices.GetService(typeof(IAccessControl)) as IAccessControl;
+
+			if (!settings.GetBool("canchangedb")) return;
+
+			w.Li(a => a.ID("header-db"), () => {
+				w.Span(() => {
+					w.Icon("database");
+					var conn = w.Context.PersistentArgs.Get("conn") ?? w.Context.GetArg("conn");
+					w.Write(conn ?? ConnectionManager.DefaultConnection);
+				});
+
+				w.DropDownForElement("header-db", () => {
+					w.Div(() => {
+						foreach (var cs in ConnectionManager.ConnectionStrings)
+						{
+							w.ActionLink(al => al.To<ConnectionController>("changeconnection", ac).WithTitle(cs.Key).WithArg("newconn", cs.Key));
+						}
+					});
+				});
+			});
+		}
+
+		public static void VersionMenuIcon(this LayoutWriter w)
+		{
+			var verProvider = w.Context.RequestServices.GetService(typeof(IVersionProvider)) as IVersionProvider;
+
+			w.Li(() => w.Span(() => {
+				var v = verProvider.Version;
+				w.Write($"v. {v.Major}.{v.Minor}.{v.Build}");
+			}));
+		}
+
+		public static (IEnumerable<MenuItem> rootItems, HashSet<Guid> removed) GetMenu(ICache cache, IMenuDataLoader loader, IAccessControl ac, string menuName)
+		{
+			var rootItems = cache.GetOrAdd(menuName, () => {
+				return loader.Load(menuName);
+			});
+
+			var removed = ChechMenuItems(ac, rootItems);
+
+			return (rootItems.Where(o => !removed.Contains(o.ID)), removed);
+		}
+
+		public static void RenderTwoLevelMenu(this LayoutWriter w, IEnumerable<MenuItem> rootItems, HashSet<Guid> removed)
+		{
+			void link(MenuItem c)
+			{
+				w.A(a => a.Href(c.Url).OnClickRunHref(), () => {
+					if (!c.Image.IsEmpty()) w.Icon(c.Image);
+					w.Write(c.Title);
+				});
+			}
+
+			foreach (var m in rootItems)
+			{
+				var children = m.Children.Where(o => !removed.Contains(o.ID));
+
+				if (children.Count() > 0)
+				{
+					w.Div(() => {
+						w.Div(m.Title);
+						foreach (var c in children)
+							link(c);
+					});
+				}
+				else
+					link(m);
+			}
+		}
 	}
 }
