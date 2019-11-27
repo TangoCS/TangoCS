@@ -21,7 +21,6 @@ namespace Tango.UI.Controls
 		}
 
 		public string Width { get; set; } = "700px";
-		public string Title { get; set; }
 		public bool HighlightSearchResults { get; set; } = false;
 		protected Paging Paging { get; set; }
 
@@ -37,7 +36,6 @@ namespace Tango.UI.Controls
 			});
 			DataCollection = Field.DataCollection;
 			DataCollection.Ref(Field.GetClientID("filter"));
-			Title = Resources.Get(typeof(TRef).GetResourceType().FullName + "-pl");
 		}
 
 		public void OpenDialog(ApiResponse response)
@@ -52,7 +50,7 @@ namespace Tango.UI.Controls
 
 		protected virtual void RenderMultipleObjectsFound(ApiResponse response, IEnumerable<TRef> data)
 		{
-			response.AddWidget("contenttitle", Title);
+			response.AddWidget("contenttitle", Field.Title());
 			response.AddWidget("contentbody", w => List(w, data));
 			response.AddWidget("contenttoolbar", w => w.Toolbar(ToolbarLeft, ToolbarRight));
 			response.AddWidget("buttonsbar", Footer);

@@ -4,11 +4,14 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using Tango.Data;
+using Tango.Localization;
 
 namespace Tango.UI.Controls
 {
 	public interface ISelectObjectField<TRef> : IViewElement
 	{
+		Func<string> Title { get; } 
+
 		IQueryable<TRef> AllObjects { get; set; }
 		Func<string, Expression<Func<TRef, bool>>> SearchExpression { get; }
 		Func<string, int, int, IQueryable<TRef>> SearchQuery { get; }
@@ -41,6 +44,8 @@ namespace Tango.UI.Controls
 	public abstract class SelectObjectField<TRef, TRefKey, TValue> : ViewComponent, ISelectObjectField<TRef>
 		where TRef : class, IWithKey<TRefKey>
 	{
+		public Func<string> Title { get; set; }
+
 		public IQueryable<TRef> AllObjects { get; set; }
 
 		public Func<string, Expression<Func<TRef, bool>>> SearchExpression { get; set; } = s => o => (o as IWithTitle).Title.Contains(s);
@@ -77,6 +82,7 @@ namespace Tango.UI.Controls
 		public SelectObjectField()
 		{
 			DataProvider = new ORMSelectObjectFieldDataProvider<TRef>(this);
+			Title = () => Resources.Get(typeof(TRef).GetResourceType().FullName + "-pl");
 		}
 	}
 
@@ -292,7 +298,7 @@ namespace Tango.UI.Controls
 		{
 			var id = dialog.Context.GetArg<TRefKey>(dialog.ID);
 			var v = dialog.Context.RequestMethod == "POST" ? dialog.GetObjectByID(id) : field.Value;
-			dialog.Disabled = field.Disabled;
+			dialog.Disabled = field.Disabled || field.ReadOnly;
 			w.FormField(field, grid, () => dialog.Strategy.Render(w, v));
 		}
 
@@ -308,7 +314,7 @@ namespace Tango.UI.Controls
 				dialog.Context.GetArg<TRefKey>(dialog.ID) :
 				field.Value;
 			var v =  dialog.GetObjectByID(id);
-			dialog.Disabled = field.Disabled;
+			dialog.Disabled = field.Disabled || field.ReadOnly;
 			w.FormField(field, grid, () => dialog.Strategy.Render(w, v));
 		}
 
@@ -322,7 +328,7 @@ namespace Tango.UI.Controls
 		{
 			var ids = dialog.Context.GetListArg<TRefKey>(dialog.ID);
 			var v = dialog.Context.RequestMethod == "POST" ? dialog.GetObjectsByIDs(ids) : field.Value;
-			dialog.Disabled = field.Disabled;
+			dialog.Disabled = field.Disabled || field.ReadOnly;
 			w.FormField(field, grid, () => dialog.Strategy.Render(w, v));
 		}
 
@@ -338,7 +344,7 @@ namespace Tango.UI.Controls
 				dialog.Context.GetListArg<TRefKey>(dialog.ID) :
 				field.Value;
 			var v = dialog.GetObjectsByIDs(ids);
-			dialog.Disabled = field.Disabled;
+			dialog.Disabled = field.Disabled || field.ReadOnly;
 			w.FormField(field, grid, () => dialog.Strategy.Render(w, v));
 		}
 
@@ -354,7 +360,7 @@ namespace Tango.UI.Controls
 				dialog.Context.GetListArg<TRefKey>(dialog.ID) :
 				field.Value;
 			var v = dialog.GetObjectsByIDs(ids);
-			dialog.Disabled = field.Disabled;
+			dialog.Disabled = field.Disabled || field.ReadOnly;
 			w.FormField(field, grid, () => dialog.Strategy.Render(w, v));
 		}
 	}
