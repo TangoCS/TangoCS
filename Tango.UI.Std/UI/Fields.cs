@@ -138,12 +138,18 @@ namespace Tango.UI
 			if (IsRequired && ValidationFunc != null) ValidationFunc(val.Check(Resources, ID, Caption, FormValue));
 		}
 		public virtual Func<ValidationBuilder<TFormValue>, ValidationBuilder<TFormValue>> ValidationFunc=> vb => vb.NotEmpty();
+
 		protected TValue ProceedFormValue
 		{
 			get
 			{
                 if (FormValue is TValue v)
+                {
+                    if (v is string v2)
+                        return (TValue)(object)v2.Trim();
+
                     return v;
+                }
                 else if (FormValue == null)
                     return (TValue)(object)null;
 
