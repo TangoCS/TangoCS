@@ -393,11 +393,17 @@ namespace Tango.Data
 		string Concat { get; }
 		string In { get; }
 		bool BracketsForIn { get; }
-	}
+        string ReturningIdentity { get; }
+        string InsertDefault { get; }
+
+    }
 
 	public class QueryTranslatorMSSQL : IQueryTranslatorDialect
 	{
-		public string LikeKeyword => "LIKE";
+        public string InsertDefault => @"insert into {0} default values";
+        public string ReturningIdentity => "select SCOPE_IDENTITY()";
+
+        public string LikeKeyword => "LIKE";
 		public string Concat => "+";
 		public string In => "IN";
 		public bool BracketsForIn => false;
@@ -405,7 +411,10 @@ namespace Tango.Data
 
 	public class QueryTranslatorPostgres : IQueryTranslatorDialect
 	{
-		public string LikeKeyword => "ILIKE";
+        public string InsertDefault => @"insert into {0} values(default)";
+        public string ReturningIdentity => @"returning {0}";
+
+        public string LikeKeyword => "ILIKE";
 		public string Concat => "||";
 		public string In => "= ANY";
 		public bool BracketsForIn => true;

@@ -170,6 +170,7 @@ namespace Tango.Data
 			{
 				var translator = new QueryTranslator(Dialect);
 				translator.Translate(predicate);
+
 				if (!translator.WhereClause.IsEmpty()) query += " where " + translator.WhereClause;
 
 				foreach (var pair in translator.Parms)
@@ -300,12 +301,12 @@ namespace Tango.Data
 			}
 
 			var colsClause = cols.Join(", ");
-			var valuesClause = vals.Join(", ");
-            var returning = identity == null ? "" : (Database.GetDBType() == DBType.MSSQL ? "select @@IDENTITY" : $"returning {identity.Name.ToLower()}");
+			var valuesClause = vals.Join(", ");         
+            var returning = identity == null ? "" : string.Format(Dialect.ReturningIdentity, identity.Name.ToLower());
+            
+            var query = props.Count() > 1 ? $"insert into {Table}({colsClause}) values({valuesClause}) {returning}" : string.Format(Dialect.InsertDefault, Table) + " " + returning;          
 
-			var query = $"insert into {Table}({colsClause}) values({valuesClause}) {returning}";
-
-			var ret = Database.Connection.ExecuteScalar(query, parms, Database.Transaction);
+            var ret = Database.Connection.ExecuteScalar(query, parms, Database.Transaction);
 
 			if (identity != null)
 				identity.SetValue(entity, identity.PropertyType == typeof(Int32) ? Convert.ToInt32(ret) : ret);
