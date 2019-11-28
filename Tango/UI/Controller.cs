@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Reflection;
+using System.Security.Principal;
 
 namespace Tango.UI
 {
@@ -36,5 +37,13 @@ namespace Tango.UI
 		}
 
 		public abstract bool CheckAccess(MethodInfo method);
+
+		public ActionResult OnNoAccess()
+		{
+			if (Context.RequestServices.GetService(typeof(IIdentity)) is IIdentity identity && identity.IsAuthenticated)
+				return new HttpResult { StatusCode = HttpStatusCode.Forbidden };
+			else
+				return new ChallengeResult();
+		}
 	}
 }

@@ -91,7 +91,12 @@ namespace Tango.AccessControl.Std
 			return _dc.Query<string>(@"select ActionRoleAccess from V_AccessControl_ActionRoleAccess order by ActionRoleAccess");
 		}
 
-		public IEnumerable<string> GetKeys()
+        public IEnumerable<string> GetRolesDeny()
+        {
+            return new string[0];
+        }
+
+        public IEnumerable<string> GetKeys()
 		{
 			return _dc.Query<string>(@"select upper(a.SystemName) from SPM_Action a order by a.SystemName");
 		}

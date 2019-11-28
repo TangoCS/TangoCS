@@ -67,7 +67,10 @@ namespace Tango.UI.Controls
 
 		void RenderFilter(LayoutWriter w)
 		{
-			w.Input(FilterFieldName, a => a.ID(FilterFieldName).Class("filter").Autocomplete(false));
+			w.Input(FilterFieldName, a => {
+				a.ID(FilterFieldName).Class("filter").Autocomplete(false);
+				if (Field.Disabled) a.Readonly(true);
+			});
 			w.Span(a => a.Class("input-measure").ID("measure"), "");
 		}
 
@@ -76,10 +79,15 @@ namespace Tango.UI.Controls
 			var cw = w.Clone(Field);
 			var pw = w.Clone(Field.ParentElement);
 			
-			cw.Div(a => a.ID("placeholder").Class("selectsingleobject").DataCtrl("selectObjectDropDownField", Field.ClientID), () => {
+			cw.Div(a => {
+				a.ID("placeholder").Class("selectsingleobject").DataCtrl("selectObjectDropDownField", Field.ClientID);
+				if (Field.Disabled) a.Data("disabled", true);
+			}, () => {
 				RenderSelected(w, selectedValue);
 				RenderFilter(cw);
-				cw.I(a => a.ID("btn").Class("btn").Icon("dropdownarrow-angle"));
+
+				if (!Field.Disabled)
+					cw.I(a => a.ID("btn").Class("btn").Icon("dropdownarrow-angle"));
 
 				var value = selectedValue != null ? Field.DataValueField(selectedValue) : "";
 				pw.Hidden(Field.ID, value, a => a.DataHasClientState(ClientStateType.Value, Field.ClientID, "selectedvalue"));

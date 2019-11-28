@@ -30,6 +30,7 @@ namespace Tango.UI
 	public interface IWithCheckAccess
 	{
 		bool CheckAccess(MethodInfo method);
+		ActionResult OnNoAccess();
 	}
 
 	public abstract class InteractionFlowElement : IInteractionFlowElement, IWithPropertyInjection
@@ -164,7 +165,25 @@ namespace Tango.UI
 
 	public abstract class ViewRootElement : ViewElement
 	{
-		public abstract ActionResult Execute();	
+		public abstract ActionResult Execute();
+
+		public static ActionResult Invoke<T>(ActionContext context)
+			where T: ViewRootElement, new()
+		{
+			return Invoke(new T(), context);
+		}
+
+		public static ActionResult Invoke(ActionContext context, Type t)
+		{
+			return Invoke(Activator.CreateInstance(t) as ViewRootElement, context);
+		}
+
+		static ActionResult Invoke(ViewRootElement form, ActionContext context)
+		{
+			form.Context = context;
+			form.InjectProperties(context.RequestServices);
+			return form.RunActionInvokingFilter() ?? form.Execute();
+		}
 	}
 
 	public delegate void ViewElementEventHandler(ApiResponse response);

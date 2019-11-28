@@ -39,7 +39,8 @@ namespace Tango.UI.Navigation
 				var parms = (i.parms as DynamicDictionary).ToDictionary(o => o.Key, o => o.Value.ToString());
 				if (parentParms != null)
 					foreach (var parentParm in parentParms)
-						parms.Add(parentParm.Key, parentParm.Value);
+						if (!parms.ContainsKey(parentParm.Key))
+							parms.Add(parentParm.Key, parentParm.Value);
 
 				var mitems = _resolvers[resolver].Resolve(parms);
 				foreach (var m in mitems)

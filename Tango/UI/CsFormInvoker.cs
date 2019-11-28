@@ -6,10 +6,7 @@ namespace Tango.UI
 	{
 		public ActionResult Invoke(ActionContext actionContext, Type t)
 		{
-			var template = Activator.CreateInstance(t) as ViewRootElement;
-			template.Context = actionContext;
-			template.InjectProperties(actionContext.RequestServices);
-			return template.RunActionInvokingFilter() ?? template.Execute();
+			return ViewRootElement.Invoke(actionContext, t);
 		}
 	}
 }
