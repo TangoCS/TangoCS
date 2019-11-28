@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -308,7 +309,7 @@ namespace Tango.Data
 				_beforeConstant = "";
 				_afterConstant = "";
 			}
-			else if (m.Arguments[0].Type.IsArray)
+			else if (m.Arguments[0].Type.IsArray || typeof(IEnumerable).IsAssignableFrom(m.Arguments[0].Type))
 			{
 				Visit(m.Arguments[1]);
 				sb.Append($" {_dialect.In} ");
