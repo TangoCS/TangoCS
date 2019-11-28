@@ -217,9 +217,14 @@ namespace Tango.Excel
 		public void Style(string range, Action<ExcelRange> cells)
         {
             cells(s.Cells[range]);
-        }      
+        }
 
-        public void Move(int row, int col)
+		public void Style(int fromRow, int fromCol, int toRow, int toCol, Action<ExcelRange> cells)
+		{
+			cells(s.Cells[fromRow, fromCol, toRow, toCol]);
+		}
+
+		public void Move(int row, int col)
         {
             r = row;
             c = col;
