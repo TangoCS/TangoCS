@@ -88,7 +88,7 @@ namespace Tango.UI.Controls
 
 		public virtual void Footer(LayoutWriter w)
 		{
-			w.Button(a => a.DataResultPostponed(1).OnClickPostEvent(SubmitDialog).DataRef("#" + Field.ClientID), "OK");
+			w.Button(a => a.DataResult(1).OnClickPostEvent(SubmitDialog).DataRef("#" + Field.ClientID), "OK");
 			//w.SubmitButton();
 			w.Write("&nbsp;");
 			w.BackButton();

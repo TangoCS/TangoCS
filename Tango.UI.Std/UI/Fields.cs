@@ -143,16 +143,12 @@ namespace Tango.UI
 		{
 			get
 			{
-                if (FormValue is TValue v)
-                {
-                    if (v is string v2)
-                        return (TValue)(object)v2.Trim();
-
+				if (FormValue is string s)
+					return (TValue)(object)s.Trim();
+				else if (FormValue is TValue v)
                     return v;
-                }
                 else if (FormValue == null)
                     return (TValue)(object)null;
-
                 else if (FormValue is ICastable<TFormValue, TValue> obj)
                     return obj.Cast(FormValue);
                 else

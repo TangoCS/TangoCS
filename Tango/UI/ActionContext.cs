@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Net;
 using System.Globalization;
 using System.Linq;
+using System.Security.Principal;
 
 namespace Tango.UI
 {
@@ -316,6 +317,14 @@ namespace Tango.UI
 		public static List<T> GetListArg<T>(this ActionContext ctx, string name)
 		{
 			return ctx.AllArgs.ParseList<T>(name);
+		}
+	}
+
+	public static class ActionContextIdentityExtension
+	{
+		public static bool IsCurrentUserAuthenticated(this ActionContext context)
+		{
+			return context.RequestServices.GetService(typeof(IIdentity)) is IIdentity identity && identity.IsAuthenticated;
 		}
 	}
 }

@@ -22,10 +22,12 @@ perspective effects (not including the modals and the overlay).
 	-webkit-backface-visibility: hidden;
 	-moz-backface-visibility: hidden;
 	backface-visibility: hidden;
+	opacity: 0;
 }
 
 .md-show {
 	visibility: visible;
+	opacity: 1;
 }
 
 .md-overlay {
@@ -712,7 +714,9 @@ perspective effects (not including the modals and the overlay).
 	}
 }
 
-#container_err.modal-dialog {
+
+/* err */
+#container_err.modal-dialog.err {
 	width: 90%;
 }
 
@@ -735,9 +739,17 @@ perspective effects (not including the modals and the overlay).
 	text-align: center;
 	font-size: 2.4em;
 	font-weight: 300;
+}
+
+#container_err.err .modal-container h3 {
 	background: #e74c3c;
 	color: #fff;
 }
+#container_err.warn .modal-container h3 {
+	background-color: orange;
+	color: #fff;
+}
+
 
 #container_err .modal-container div {
 	padding: 15px 40px 30px;
@@ -751,4 +763,26 @@ perspective effects (not including the modals and the overlay).
 
 #container_err_body {
 	overflow-y: auto;
+	max-height: 500px;
+}
+
+/* console */
+.modal-dialog.console {
+	width: 70%;
+}
+.modal-dialog.console .modal-body {
+	background-color: midnightblue;
+	color: white;
+	min-height: 300px;
+	padding: 4px;
+	font-family: Consolas, 'Courier New';
+}
+.modal-dialog.console .modal-container {
+	border: none;
+}
+.modal-dialog.console .modal-header {
+	border: 1px solid #00000080;
+}
+.modal-dialog.console .modal-header h3 {
+	padding-top: 0px;
 }

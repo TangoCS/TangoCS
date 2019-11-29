@@ -54,29 +54,29 @@ var selectMultipleObjectsDialog = function (au, cu) {
 				if (field) field.innerHTML = '';
 			}
 			const state = au.state.ctrl[id + '_str'];
-			if (state) state.selectedvalues.length = 0;
+			if (state) state.selectedvalues.splice(0, state.selectedvalues.length);
 		},
-		widgetWillMount: function (shadow, state) {
-			const root = shadow.getElementById(state.root);
+		widgetDidMount: function (state) {
+			const root = document.getElementById(state.root);
+
+			if (!state.dialogvalues) state.dialogvalues = state.selectedvalues.slice();
 
 			const checks = root.getElementsByTagName('input');
 			for (var i = 0; i < checks.length; i++) {
 				const el = checks[i];
-				el.checked = state.selectedvalues.indexOf(el.value) >= 0;
+				el.checked = state.dialogvalues.indexOf(el.value) >= 0;
 				el.addEventListener("change", function () {
 					if (el.checked) {
-						const index = state.selectedvalues.indexOf(el.value);
-						if (index == -1)
-							state.selectedvalues.push(el.value);
+						state.dialogvalues.push(el.value);
 					}
 					else {
-						const index = state.selectedvalues.indexOf(el.value);
-						state.selectedvalues.splice(index, 1);
+						const index = state.dialogvalues.indexOf(el.value);
+						state.dialogvalues.splice(index, 1);
 					}
 				});
 			}
 
-			const filter = (shadow.getElementById(root.id + '_filter') || document.getElementById(root.id + '_filter'));
+			const filter = document.getElementById(root.id + '_filter');
 
 			filter.addEventListener('keyup', function () {
 				au.delay(filter, function (caller) {
@@ -88,7 +88,13 @@ var selectMultipleObjectsDialog = function (au, cu) {
 		},
 		onResult: function (res, state) {
 			if (res == 0)
-				state.selectedvalues.length = 0;
+				delete state.dialogvalues;
+			else if (res == 1) {
+				state.selectedvalues.splice(0, state.selectedvalues.length);
+				for (var i = 0; i < state.dialogvalues.length; i++) {
+					state.selectedvalues.push(state.dialogvalues[i]);
+				}
+			}
 		},
 		pagingEvent: function (caller, id) {
 			au.postEventFromElementWithApiResponse(caller, { e: 'renderlist', r: id }).done(function () {
@@ -126,6 +132,7 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 			};
 			opt.beforeOpen = function (data, event) {
 				if (event.type == 'click') return 0;
+				if (elPh.hasAttribute('data-disabled')) return 2;
 				else if (event.type == 'paste') {
 					var data = event.originalEvent.clipboardData
 					if (!data) data = window.clipboardData;
@@ -159,58 +166,58 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 			});
 
 			elFilter.addEventListener('keydown', function (e) {
-				const elSel = document.getElementById(id + '_selected');
-				const isSingleMode = state && state.hasOwnProperty('selectedvalue');
+					const elSel = document.getElementById(id + '_selected');
+					const isSingleMode = state && state.hasOwnProperty('selectedvalue');
 
-				if (e.keyCode == 8 && elFilter.value == '') {
-					instance.clear(elSel.lastChild);
-					return;
-				}
+					if (e.keyCode == 8 && elFilter.value == '') {
+						instance.clear(elSel.lastChild);
+						return;
+					}
 
-				if (elPh.classList.contains('iw-opened')) {
-					var cur = elPopup.querySelector('.row.selected');
-					if (!cur) cur = elPopup.querySelector('.row');
+					if (elPh.classList.contains('iw-opened')) {
+						var cur = elPopup.querySelector('.row.selected');
+						if (!cur) cur = elPopup.querySelector('.row');
 
-					if (e.keyCode == 38) {
-						e.preventDefault();
-						if (cur && cur.previousSibling && cur.previousSibling.classList.contains('row')) {
-							cur.classList.remove('selected');
-							cur.previousSibling.classList.add('selected');
+						if (e.keyCode == 38) {
+							e.preventDefault();
+							if (cur && cur.previousSibling && cur.previousSibling.classList.contains('row')) {
+								cur.classList.remove('selected');
+								cur.previousSibling.classList.add('selected');
+							}
+						}
+						else if (e.keyCode == 40) {
+							e.preventDefault();
+							if (cur && cur.nextSibling && cur.nextSibling.classList.contains('row')) {
+								cur.classList.remove('selected');
+								cur.nextSibling.classList.add('selected');
+							}
+						}
+						else if (e.keyCode == 33) {
+							e.preventDefault();
+							var pg = elPopup.querySelector('#' + id + '_str_pgup');
+							if (pg) au.postEventFromElementWithApiResponse(pg);
+						}
+						else if (e.keyCode == 34) {
+							e.preventDefault();
+							var pg = elPopup.querySelector('#' + id + '_str_pgdown');
+							if (pg) au.postEventFromElementWithApiResponse(pg);
+						}
+						else if (e.keyCode == 13) {
+							e.preventDefault();
+							if (isSingleMode) {
+								cur.firstChild.checked = true;
+								if (cur.firstChild.onchange) cur.firstChild.onchange();
+								state.selectedvalue = cur.firstChild.value;
+								instance.setselected_singlemode(elPh, cur);
+							}
+							else {
+								instance.setselected(elPh, cur);
+							}
+							elFilter.value = '';
+							adjustInputWidth(elFilter);
 						}
 					}
-					else if (e.keyCode == 40) {
-						e.preventDefault();
-						if (cur && cur.nextSibling && cur.nextSibling.classList.contains('row')) {
-							cur.classList.remove('selected');
-							cur.nextSibling.classList.add('selected');
-						}
-					}
-					else if (e.keyCode == 33) {
-						e.preventDefault();
-						var pg = elPopup.querySelector('#' + id + '_str_pgup');
-						if (pg) au.postEventFromElementWithApiResponse(pg);
-					}
-					else if (e.keyCode == 34) {
-						e.preventDefault();
-						var pg = elPopup.querySelector('#' + id + '_str_pgdown');
-						if (pg) au.postEventFromElementWithApiResponse(pg);
-					}
-					else if (e.keyCode == 13) {
-						e.preventDefault();
-						if (isSingleMode) {
-							cur.firstChild.checked = true;
-							if (cur.firstChild.onchange) cur.firstChild.onchange();
-							state.selectedvalue = cur.firstChild.value;
-							instance.setselected_singlemode(elPh, cur);
-						}
-						else {
-							instance.setselected(elPh, cur);
-						}
-						elFilter.value = '';
-						adjustInputWidth(elFilter);
-					}
-				}
-			});
+				});
 
 			elFilter.addEventListener('input', function () {
 				adjustInputWidth(this);

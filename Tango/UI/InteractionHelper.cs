@@ -8,28 +8,34 @@ namespace Tango.UI
 {
 	public static class InteractionHelper
 	{
-		public static ActionResult RunEvent(IInteractionFlowElement recipient, string e)
+		public static MethodInfo GetEventMethod(IInteractionFlowElement recipient, string e)
 		{
 			var t = recipient.GetType();
 			var name = e.ToLower();
-			var filtersCollection = recipient.Context.GetService<FilterCollection>();
 			var m = FindMethod(t, name, recipient.Context.RequestMethod);
-			MulticastDelegate eventDelegate = null;
-			if (m == null)
-			{
-				var f = t.GetField(name, BindingFlags.IgnoreCase | BindingFlags.NonPublic | BindingFlags.Instance);
-				if (f != null)
-				{
-					eventDelegate = f.GetValue(recipient) as MulticastDelegate;
-					if (eventDelegate != null) m = eventDelegate.Method;
-				}
-			}
+			//MulticastDelegate eventDelegate = null;
+			//if (m == null)
+			//{
+			//	var f = t.GetField(name, BindingFlags.IgnoreCase | BindingFlags.NonPublic | BindingFlags.Instance);
+			//	if (f != null)
+			//	{
+			//		eventDelegate = f.GetValue(recipient) as MulticastDelegate;
+			//		if (eventDelegate != null) m = eventDelegate.Method;
+			//	}
+			//}
+			return m;
+		}
+
+		public static ActionResult RunEvent(IInteractionFlowElement recipient, string e)
+		{
+			var m = GetEventMethod(recipient, e);
 			if (m == null)
 				return new HttpResult { StatusCode = HttpStatusCode.Forbidden };
 
 			if (recipient is IWithCheckAccess secured && !secured.CheckAccess(m))
 				return secured.OnNoAccess();
 
+			var filtersCollection = recipient.Context.GetService<FilterCollection>();
 			var ps = m.GetParameters();
 
 			if (ps.Length == 1 && m.ReturnType == typeof(void))
@@ -61,10 +67,10 @@ namespace Tango.UI
 				RunBeforeActionFilters(filtersCollection.BeforeActionFilters, filterContext);
 				if (filterContext.CancelResult != null) return filterContext.CancelResult;
 
-				if (eventDelegate == null)
+				//if (eventDelegate == null)
 					m.Invoke(recipient, new object[] { resp });
-				else
-					eventDelegate.DynamicInvoke(resp);
+				//else
+				//	eventDelegate.DynamicInvoke(resp);
 
 				RunAfterActionFilters(filtersCollection.AfterActionFilters, filterContext);
 				if (filterContext.CancelResult != null) return filterContext.CancelResult;
@@ -76,10 +82,10 @@ namespace Tango.UI
 				var p = ProcessParameters(recipient.Context, ps);
 
 				ActionResult res = null;
-				if (eventDelegate == null)
+				//if (eventDelegate == null)
 					res = m.Invoke(recipient, p) as ActionResult;
-				else
-					res = eventDelegate.DynamicInvoke(p) as ActionResult;
+				//else
+				//	res = eventDelegate.DynamicInvoke(p) as ActionResult;
 
 				var filterContext = new ActionFilterContext(recipient, m, res);
 				RunAfterActionFilters(filtersCollection.AfterActionFilters, filterContext);
@@ -88,7 +94,7 @@ namespace Tango.UI
 				return res;
 			}
 
-			throw new Exception($"{t.Name}.{e} method is not a valid action");
+			throw new Exception($"{m.DeclaringType.Name}.{m.Name} method is not a valid action");
 		}
 
 		static object[] ProcessParameters(ActionContext context, ParameterInfo[] ps)

@@ -20,6 +20,9 @@ namespace Tango.UI
 		IViewElement ParentElement { get; set; }
 		DataCollection DataCollection { get; set; }
 		string GetClientID(string id);
+
+		void OnInit();
+		void AfterInit();
 	}
 
 	public interface IContainerItem

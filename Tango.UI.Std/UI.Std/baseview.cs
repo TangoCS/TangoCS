@@ -50,7 +50,7 @@ namespace Tango.UI.Std
 
 		public ActionResult OnNoAccess()
 		{
-			if (Context.RequestServices.GetService(typeof(IIdentity)) is IIdentity identity && identity.IsAuthenticated)
+			if (Context.IsCurrentUserAuthenticated())
 				return new HttpResult { StatusCode = HttpStatusCode.Forbidden };
 			else
 				return new ChallengeResult();
