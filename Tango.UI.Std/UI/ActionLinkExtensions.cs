@@ -10,14 +10,14 @@ namespace Tango.UI
 		//	w.SubmitButton(a => a.DataResult(1).OnClick("return ajaxUtils.processResult(this)"), w.Resources.Get("Common.OK"));
 		//}
 
-		public static void SubmitDeleteButton(this LayoutWriter w)
+		public static void SubmitDeleteButton(this LayoutWriter w, Action<ButtonTagAttributes> attrs = null)
 		{
-			w.SubmitButton(null, w.Resources.Get("Common.Delete"));
+			w.SubmitButton(attrs, w.Resources.Get("Common.Delete"));
 		}
 
-		public static void SubmitContinueButton(this LayoutWriter w)
+		public static void SubmitContinueButton(this LayoutWriter w, Action<ButtonTagAttributes> attrs = null)
 		{
-			w.SubmitButton(null, w.Resources.Get("Common.Continue"));
+			w.SubmitButton(attrs, w.Resources.Get("Common.Continue"));
 		}
 
 		public static void BackLink(this LayoutWriter w, Action<ATagAttributes> attrs = null, string title = null)

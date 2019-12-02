@@ -192,7 +192,7 @@ namespace Tango.UI
 		#region dom actions
 		public virtual void SetElementValue(string id, string value)
 		{
-			AddClientAction("domActions", "setValue", f => new { id = f(id), value });
+			AddClientAction("ajaxUtils", "setValue", f => new { id = f(id), value });
 		}
 
 		public virtual void SetElementVisibility(string id, bool visible)
