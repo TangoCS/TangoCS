@@ -91,9 +91,11 @@ namespace Tango.UI.Controls
 			});
 		}
 
+        ///TODO. Сделать автоматическое прокидываение всех полей из контекста.
 		public static void AddYesNoDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null, bool warningMode = false)
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
+                w.PushPrefix(IDPrefix);
 				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix), () => {
 					w.AjaxForm("form", a => a.DataResult(1), () => {
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
@@ -109,6 +111,7 @@ namespace Tango.UI.Controls
 						});
 					});
 				});
+                w.PopPrefix();
 			});
 		}
 
