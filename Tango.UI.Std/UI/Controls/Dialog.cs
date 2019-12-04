@@ -106,7 +106,7 @@ namespace Tango.UI.Controls
 									if (!w.Context.ResponseType.IsEmpty())
 										a.Data("responsetype", w.Context.ResponseType);
 								}, "Да");
-								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), "Нет");
+								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), warningMode ? "Назад" : "Нет");
 							});
 						});
 					});
