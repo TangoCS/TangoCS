@@ -82,7 +82,8 @@ namespace Tango.UI.Std
 					w.FormValidationBlock();
 				});
 
-				response.AddAdjacentWidget("form", "buttonsbar", AdjacentHTMLPosition.BeforeEnd, ButtonsBar);
+				if (EnableButtonsBar)
+					response.AddAdjacentWidget("form", "buttonsbar", AdjacentHTMLPosition.BeforeEnd, ButtonsBar);
 				if (EnableToolbar)
 					response.AddWidget("contenttoolbar", w => Toolbar(w));
 			}
@@ -131,6 +132,7 @@ namespace Tango.UI.Std
 			response.RedirectBack(Context, 1);
 		}
 
+		protected virtual bool EnableButtonsBar => true;
 		protected virtual bool EnableToolbar => false;
 
 		protected virtual void Toolbar(LayoutWriter w)

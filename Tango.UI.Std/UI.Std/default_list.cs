@@ -152,7 +152,7 @@ namespace Tango.UI.Std
 		public virtual void RenderPlaceHolder(LayoutWriter w)
 		{
 			w.PushPrefix(ID);
-			w.Div(a => a.DataContainer("default", w.IDPrefix), () => {
+			w.Div(a => a.ID("container").DataContainer("default", w.IDPrefix), () => {
 				w.Div(a => a.ID(Sections.ContentTitle));
 				w.Div(a => a.ID(Sections.ContentToolbar));
 				w.Div(a => a.ID(Sections.ContentBody));

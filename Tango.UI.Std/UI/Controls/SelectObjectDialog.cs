@@ -77,8 +77,8 @@ namespace Tango.UI.Controls
 			var data = Field.DataProvider.GetData(Paging, FilterValue);
 
 			// TODO решить проблему префиксов при name = prefix
+			response.AddWidget("body", w => List(w, data));
 			response.WithNamesAndWritersFor(this);
-			response.AddWidget(null, w => List(w, data));
 			response.AddWidget(Paging.ID, RenderPaging);
 		}
 

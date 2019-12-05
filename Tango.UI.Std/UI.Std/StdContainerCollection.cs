@@ -61,6 +61,13 @@ namespace Tango.UI.Std
 		}
 	}
 
+	public class EmptyContainer : ViewContainer
+	{
+		public override void Render(ApiResponse response)
+		{
+		}
+	}
+
 	public class ViewEntityContainer : ViewContainer
 	{
 		public ContainerWidth Width { get; set; } = ContainerWidth.WidthStd;

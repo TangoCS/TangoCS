@@ -27,7 +27,7 @@ namespace Tango.UI.Std
 		public override void Render(LayoutWriter w, IEnumerable<TResult> result, IFieldCollection<TResult> fields)
 		{
 			var rendererIsControl = !_id.IsEmpty() && w.IDPrefix != _id && !w.IDPrefix.EndsWith("_" + _id);
-			if (rendererIsControl) w.PushID(_id);
+			if (rendererIsControl) w.PushPrefix(_id);
 
 			fields.ListAttributes += a => a.ID();
 			if (fields.EnableSelect)
@@ -118,7 +118,7 @@ namespace Tango.UI.Std
 				}
 			});
 
-			if (rendererIsControl) w.PopID();
+			if (rendererIsControl) w.PopPrefix();
 		}
 	}
 

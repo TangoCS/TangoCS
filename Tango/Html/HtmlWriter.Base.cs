@@ -40,11 +40,11 @@ namespace Tango.Html
 			Write("<br/>");
 		}
 
-		public void PushID(string id)
-		{
-			_ids.Push(id.ToLower());
-			SetPrefix();
-		}
+		//public void PushID(string id)
+		//{
+		//	_ids.Push(id.ToLower());
+		//	SetPrefix();
+		//}
 
 		public void PushPrefix(string prefix)
 		{
@@ -52,11 +52,11 @@ namespace Tango.Html
 			SetPrefix();
 		}
 
-		public void PopID()
-		{
-			_ids.Pop();
-			SetPrefix();
-		}
+		//public void PopID()
+		//{
+		//	_ids.Pop();
+		//	SetPrefix();
+		//}
 
 		public void PopPrefix()
 		{
