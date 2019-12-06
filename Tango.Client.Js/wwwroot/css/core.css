@@ -43,6 +43,9 @@ td.r, th.r, .r td, .c th {
 td.c, th.c, .c td, .c th {
 	text-align: center !important;
 }
+.r input[type='text'] {
+	text-align: right !important;
+}
 
 h1 {
 	color: white;
@@ -274,7 +277,7 @@ hr {
 	background-color: #AFEEEE;
 }
 
-.listviewtable tr.selected {
+.listviewtable tr.checked {
 	background-color: #c2dbff;
 }
 
