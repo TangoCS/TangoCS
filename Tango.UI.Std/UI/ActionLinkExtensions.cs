@@ -218,11 +218,11 @@ namespace Tango.UI
 			w.ExternalImageLink(null, href);
 		}
 
-		public static void ExternalImageLink(this LayoutWriter w, Action<ATagAttributes> attrs, string href)
+		public static void ExternalImageLink(this LayoutWriter w, Action<ATagAttributes> attrs, string href, string image = "external-link")
 		{
 			if (href.IsEmpty()) return;
 			if (!href.StartsWith("http")) href = "http://" + href;
-			w.A(a => a.Href(href).Target(Target._blank).Set(attrs), () => w.Icon("external-link"));
+			w.A(a => a.Href(href).Target(Target._blank).Set(attrs), () => w.Icon(image));
 		}
 	}
 }

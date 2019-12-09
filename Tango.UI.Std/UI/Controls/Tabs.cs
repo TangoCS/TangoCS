@@ -12,29 +12,36 @@ namespace Tango.UI.Controls
 
 		public List<TabPage> Pages { get; set; } = new List<TabPage>();
 
-		string _curid;
-		TabPage _curpage;
-
-		public override void AfterInit()
+		TabPage GetCurPage()
 		{
-			_curid = GetArg(ID);
-			_curpage = Pages.Where(o => o.ID == _curid).FirstOrDefault() ?? Pages.FirstOrDefault();
+			var curid = GetArg(ID);
+			return Pages.Where(o => o.ID == curid).FirstOrDefault() ?? Pages.FirstOrDefault();
+		}
+
+		public T CreateTabPage<T>(string id, string title, Action<T> setProperties = null)
+			where T : ViewPagePart, new()
+		{
+			var c = CreateControl(id, setProperties);
+			Pages.Add(new TabPage(title, c));
+			return c;
 		}
 
 		public void OnPageSelect(ApiResponse response)
 		{
-			if (_curpage != null)
+			var curpage = GetCurPage();
+
+			if (curpage != null)
 			{
-				var el = _curpage.Content.Target as IViewElement;
+				var el = curpage.Content.Target as IViewElement;
 				//Context.AddContainer = true;
 				//Context.ContainerPrefix = ParentElement.ClientID;
 
-				_curpage.Container.ParentElement = ParentElement;
-				_curpage.Container.ID = $"{ID}_{_curpage.ID}";
-				_curpage.Container.ProcessResponse(response, true, ParentElement.ClientID);
+				curpage.Container.ParentElement = ParentElement;
+				curpage.Container.ID = $"{ID}_{curpage.ID}";
+				curpage.Container.ProcessResponse(response, true, ParentElement.ClientID);
 
-				response.WithWritersFor(_curpage.Container);
-				_curpage.Content(response);
+				response.WithWritersFor(curpage.Container);
+				curpage.Content(response);
 			}
 		}
 
@@ -46,9 +53,10 @@ namespace Tango.UI.Controls
 					{
 						var pid = $"{ID}_{p.ID}";
 						w.Li(() => {
-							w.RadioButton(ClientID, pid + "_title", null, _curpage.ID == p.ID);
+							var curpage = GetCurPage();
+							w.RadioButton(ClientID, pid + "_title", null, curpage.ID == p.ID);
 							w.Label(a => a.ID(pid + "_label").For(pid + "_title")
-								.Data("id", p.ID).Data("ajax", p.IsAjax).Data("useurlparm", true).Data("loaded", !p.IsAjax || _curpage.ID == p.ID)
+								.Data("id", p.ID).Data("ajax", p.IsAjax).Data("useurlparm", true).Data("loaded", !p.IsAjax || curpage.ID == p.ID)
 								.OnClick("tabs.onselect(this)"), () => w.Write(p.Title));
 						});
 					}
@@ -59,10 +67,11 @@ namespace Tango.UI.Controls
 		public void RenderPages(LayoutWriter w)
 		{
 			w.Div(a => a.Class("tabs2").ID(ID + "_pages"), () => {
+				var curpage = GetCurPage();
 				foreach (var p in Pages)
 				{
 					var pid = $"{ID}_{p.ID}";
-					w.Div(a => a.ID($"{pid}_{PageSuffix}").Class(_curpage.ID == p.ID ? "selected" : "").DataContainer("tabpage", pid));
+					w.Div(a => a.ID($"{pid}_{PageSuffix}").Class(curpage.ID == p.ID ? "selected" : "").DataContainer("tabpage", pid));
 				}
 			});
 		}

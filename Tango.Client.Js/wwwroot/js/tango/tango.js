@@ -595,7 +595,8 @@ var ajaxUtils = function ($, cu) {
 			var root = el;
 			if (root != document.head) {
 				root = cu.getParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-href'); });
-				if (!root) root = document.getElementById(META_CURRENT);
+				if (!root)
+					return document.location.pathname + document.location.search;
 			}
 			const home = document.getElementById(META_HOME);
 			return root.getAttribute('data-href') || home.getAttribute('data-href') || '/';
