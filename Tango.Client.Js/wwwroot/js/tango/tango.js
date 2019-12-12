@@ -3,13 +3,13 @@
 		getParams: function (query, raw) {
 			var p = {};
 			var e,
-				a = /\+/g, // Regex for replacing addition symbol with a space
-				r = /([^&;=]+)=?([^&;]*)/g,
-				d = function (s) {
-					const parm = s.replace(a, " ");
-					return raw ? parm : decodeURIComponent(parm);
-				},
-				q = query;
+                a = /\+/g, // Regex for replacing addition symbol with a space
+                r = /([^&;=]+)=?([^&;]*)/g,
+                d = function (s) {
+                	const parm = s.replace(a, " ");
+                	return raw ? parm : decodeURIComponent(parm);
+                },
+                q = query;
 
 			while (e = r.exec(q))
 				p[d(e[1])] = d(e[2]);
@@ -93,8 +93,8 @@
 			filename = decodeURIComponent(filename);
 
 			var blob = typeof File === 'function'
-				? new File([data], filename, { type: contenttype })
-				: new Blob([data], { type: contenttype });
+                ? new File([data], filename, { type: contenttype })
+                : new Blob([data], { type: contenttype });
 
 			if (typeof window.navigator.msSaveBlob !== 'undefined') {
 				// IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
@@ -300,18 +300,20 @@ var ajaxUtils = function ($, cu) {
 			for (var i = 0, el; el = els[i++];) {
 				processElementDataOnFormSubmit(el, function (key, value) { fd.append(key, value); });
 			}
-			var target = { data: fd };
-			target.e = sender.hasAttribute('data-e') ? sender.getAttribute('data-e') : 'onsubmit';
-			if (sender.hasAttribute('data-r')) target.r = sender.getAttribute('data-r');
-			target.url = instance.findServiceAction(form);
-			const container = cu.getThisOrParent(sender, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
-			if (container) {
-				target.containerPrefix = container.getAttribute('data-c-prefix');
-				target.containerType = container.getAttribute('data-c-type');
-			}
-			if (sender.hasAttribute('data-responsetype')) {
-				target.responsetype = sender.getAttribute('data-responsetype');
-			}
+			var target = { data: fd, method: 'POST' };
+			processElementDataOnEvent(sender, target, function (key, value) { fd.append(key, value); });
+			if (!target.e) target.e = 'onsubmit';
+			//target.e = sender.hasAttribute('data-e') ? sender.getAttribute('data-e') : 'onsubmit';
+			//if (sender.hasAttribute('data-r')) target.r = sender.getAttribute('data-r');
+			//target.url = instance.findServiceAction(form);
+			//const container = cu.getThisOrParent(sender, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
+			//if (container) {
+			//	target.containerPrefix = container.getAttribute('data-c-prefix');
+			//	target.containerType = container.getAttribute('data-c-type');
+			//}
+			//if (sender.hasAttribute('data-responsetype')) {
+			//	target.responsetype = sender.getAttribute('data-responsetype');
+			//}
 			runOnAjaxSend(sender, target);
 			const r = instance.postEventWithApiResponse(target);
 			if (form.hasAttribute('data-res-postponed'))
@@ -326,10 +328,31 @@ var ajaxUtils = function ($, cu) {
 			var text = '';
 			var title = 'System error';
 			var showinframe = false;
+			var severity = 'err';
 
 			if (e && e.message) {
 				title = 'Javascript error';
 				text = e.message + '<br>' + e.stack;
+			}
+			else if (xhr.status == '401') {
+				const location = xhr.getResponseHeader('location');
+				if (location)
+					window.location = location;
+				else {
+					title = 'Нет доступа';
+					text = 'Вы не авторизованы в системе';
+					severity = 'warn';
+				}
+			}
+			else if (xhr.status == '403') {
+				title = 'Нет доступа';
+				text = 'Недостаточно прав для выполнения операции';
+				severity = 'warn';
+			}
+			else if (xhr.status == '404') {
+				title = 'Страница отсутствует';
+				text = '<a href="/">Перейти на главную страницу</a>';
+				severity = 'warn';
 			}
 			else if (e && this.url && xhr.status != '500') {
 				title = 'Ajax error';
@@ -341,7 +364,7 @@ var ajaxUtils = function ($, cu) {
 			}
 
 			requestCompleted();
-			showError(title, text, showinframe);
+			showError(title, text, severity, showinframe);
 		},
 		delay: function (caller, func) {
 			if (timer) {
@@ -389,7 +412,7 @@ var ajaxUtils = function ($, cu) {
 			if (!target.data) target.data = {};
 			if (!target.query) target.query = {};
 			target.method = 'GET';
-			processElementDataOnEvent(el, target);
+			processElementDataOnEvent(el, target, function (key, value) { target.query[key] = value; });
 			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)
 				target.query[el.name] = el.value;
 			runOnAjaxSend(el, target);
@@ -446,7 +469,7 @@ var ajaxUtils = function ($, cu) {
 			}
 
 			target.method = 'POST';
-			processElementDataOnEvent(el, target);
+			processElementDataOnEvent(el, target, function (key, value) { target.data[key] = value; });
 			if (!form && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement))
 				target.data[el.name] = el.value;
 
@@ -595,8 +618,7 @@ var ajaxUtils = function ($, cu) {
 			var root = el;
 			if (root != document.head) {
 				root = cu.getParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-href'); });
-				if (!root)
-					return document.location.pathname + document.location.search;
+				if (!root) root = document.getElementById(META_CURRENT);
 			}
 			const home = document.getElementById(META_HOME);
 			return root.getAttribute('data-href') || home.getAttribute('data-href') || '/';
@@ -606,6 +628,26 @@ var ajaxUtils = function ($, cu) {
 			if (!ctrl) return null;
 			const id = ctrl.hasAttribute('data-ctrl-id') ? ctrl.getAttribute('data-ctrl-id') : ctrl.id;
 			return { root: ctrl, id: id, state: state.ctrl[id] };
+		},
+		setValue: function (args) {
+			var e = document.getElementById(args.id);
+			if (e) {
+				if (e instanceof HTMLInputElement || e instanceof HTMLSelectElement)
+					e.value = args.value;
+				else
+					e.innerHTML = args.value;
+			}
+			const st = getElementStateAttrs(e);
+			if (st) {
+				if (st.type == 'array') {
+					const values = args.value.split(',').filter(String);
+					const arr = state.ctrl[st.owner][st.name];
+					arr.splice(0, arr.length);
+					for (var i = 0; i < values.length; i++) {
+						arr.push(values[i]);
+					}
+				}
+			}
 		},
 		state: state
 	};
@@ -701,7 +743,7 @@ var ajaxUtils = function ($, cu) {
 			return $.Deferred().reject();
 	}
 
-	function processElementDataOnEvent(el, target) {
+	function processElementDataOnEvent(el, target, setvalfunc) {
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
 			attr = attrs[i];
 			var val = attr.value == '' ? null : attr.value;
@@ -723,7 +765,7 @@ var ajaxUtils = function ($, cu) {
 			} else if (attr.name.startsWith('data-c-')) {
 				target.data[attr.name.replace('data-c-', 'c-')] = val || '';
 			} else if (attr.name.startsWith('data-ref')) {
-				processElementValue(document.getElementById(val), target);
+				processElementValue(document.getElementById(val), setvalfunc);
 			} else if (attr.name == 'data-responsetype') {
 				target.responsetype = val;
 			}
@@ -746,7 +788,7 @@ var ajaxUtils = function ($, cu) {
 		}
 	}
 
-	function processElementValue(el, target) {
+	function processElementValue(el, setvalfunc) {
 		if (!el) return;
 
 		var val = null;
@@ -765,14 +807,11 @@ var ajaxUtils = function ($, cu) {
 			parmname = el.getAttribute('data-name');
 
 		if (val && parmname) {
-			if (target.method == 'POST')
-				target.data[parmname] = val;
-			else
-				target.query[parmname] = val;
+			setvalfunc(parmname, val);
 		}
 
 		for (var i = 0; i < el.children.length; i++) {
-			processElementValue(el.children[i], target);
+			processElementValue(el.children[i], setvalfunc);
 		}
 	}
 
@@ -805,12 +844,24 @@ var ajaxUtils = function ($, cu) {
 		return $.Deferred().resolve(apiResult);
 	}
 
+	function getElementStateAttrs(el) {
+		const type = el.getAttribute('data-hasclientstate');
+		var owner = el.getAttribute('data-clientstate-owner');
+		const name = el.getAttribute('data-clientstate-name') || el.name;
+		if (!owner) {
+			const parentctrl = instance.findControl(el);
+			if (!parentctrl) return null;
+			owner = parentctrl.id;
+		}
+		return { type: type, owner: owner, name: name };
+	}
+
 	function renderApiResult() {
 		var apiResult = state.com.apiResult;
 		state.com.apiResult = null;
 
 		if (apiResult.error) {
-			showError('Server error', apiResult.error);
+			showError('Server error', apiResult.error, 'err');
 			return;
 		}
 
@@ -848,19 +899,19 @@ var ajaxUtils = function ($, cu) {
 		};
 
 		var rtagName = /<([\w:]+)/,
-        // We have to close these tags to support XHTML (#13200)
-        wrapMap = {
-        	option: [1, "<select multiple='multiple'>", "</select>"],
-        	thead: [1, "<table>", "</table>"],
-        	col: [2, "<table><colgroup>", "</colgroup></table>"],
-        	tr: [2, "<table><tbody>", "</tbody></table>"],
-        	td: [3, "<table><tbody><tr>", "</tr></tbody></table>"],
-        	_default: [0, "", ""]
-        };
+            // We have to close these tags to support XHTML (#13200)
+            wrapMap = {
+            	option: [1, "<select multiple='multiple'>", "</select>"],
+            	thead: [1, "<table>", "</table>"],
+            	col: [2, "<table><colgroup>", "</colgroup></table>"],
+            	tr: [2, "<table><tbody>", "</tbody></table>"],
+            	td: [3, "<table><tbody><tr>", "</tr></tbody></table>"],
+            	_default: [0, "", ""]
+            };
 
 		function parseHTML(htmlString) {
 			var tag, wrap, j,
-            fragment = document.createElement('div');
+                fragment = document.createElement('div');
 
 			// Deserialize a standard representation
 			tag = (rtagName.exec(htmlString) || ["", ""])[1].toLowerCase();
@@ -938,18 +989,13 @@ var ajaxUtils = function ($, cu) {
 
 			for (var j = 0; j < bindels.length; j++) {
 				const node = bindels[j];
-				const type = node.getAttribute('data-hasclientstate');
-				var owner = node.getAttribute('data-clientstate-owner');
-				const name = node.getAttribute('data-clientstate-name') || node.name;
-				if (!owner) {
-					const parentctrl = instance.findControl(node);
-					if (!parentctrl) continue;
-					owner = parentctrl.id;
-				}
-				if (!state.ctrl[owner]) state.ctrl[owner] = {};
-				const nodectrl = state.ctrl[owner];
-				if (type == 'array') {
-					const ctrlvar = nodectrl[name] ? new ObservableArray(nodectrl[name]) : new ObservableArray();
+				const st = getElementStateAttrs(node);
+				if (!st) continue;
+
+				if (!state.ctrl[st.owner]) state.ctrl[st.owner] = {};
+				const nodectrl = state.ctrl[st.owner];
+				if (st.type == 'array') {
+					const ctrlvar = nodectrl[st.name] ? new ObservableArray(nodectrl[st.name]) : new ObservableArray();
 					const values = node.value.split(',').filter(String);
 					for (var i = 0; i < values.length; i++) {
 						if (ctrlvar.indexOf(values[i]) == -1)
@@ -958,9 +1004,9 @@ var ajaxUtils = function ($, cu) {
 					ctrlvar.on('pop push shift unshift splice reverse sort', function () {
 						node.value = this.join(',');
 					});
-					nodectrl[name] = ctrlvar;
-				} else if (type == 'value') {
-					Object.defineProperty(nodectrl, name, {
+					nodectrl[st.name] = ctrlvar;
+				} else if (st.type == 'value') {
+					Object.defineProperty(nodectrl, st.name, {
 						enumerable: true,
 						configurable: true,
 						get: function () { return node.value; },
@@ -1070,7 +1116,7 @@ var ajaxUtils = function ($, cu) {
 		}
 	}
 
-	function showError(title, text, showinframe) {
+	function showError(title, text, severity, showinframe) {
 		if (window.dialog) {
 			const placeholder = 'container_err';
 			const errd = document.getElementById(placeholder);
@@ -1081,20 +1127,34 @@ var ajaxUtils = function ($, cu) {
 				state.ctrl[placeholder].root = placeholder;
 			}
 			errt.innerHTML = title;
+			errd.classList.remove('err');
+			errd.classList.remove('warn');
+			errd.classList.remove('info');
+			errd.classList.add(severity);
 
 			var frame = document.getElementById(placeholder + '_frame');
-			if (!frame) {
-				frame = document.createElement('iframe');
-				frame.id = placeholder + '_frame';
-				errt.insertAdjacentElement('afterEnd', frame);
-			}
-			frame.contentWindow.contents = text;
-			frame.src = 'javascript:window["contents"]';
 
+			if (showinframe) {
+				if (!frame) {
+					frame = document.createElement('iframe');
+					frame.id = placeholder + '_frame';
+					errt.insertAdjacentElement('afterEnd', frame);
+				}
+				frame.classList.remove('hide');
+				errb.classList.add('hide');
+
+				frame.contentWindow.contents = '<pre>' + text + '</pre>';
+				frame.src = 'javascript:window["contents"]';
+			}
+			else {
+				if (frame) frame.classList.add('hide');
+				errb.classList.remove('hide');
+				errb.innerHTML = '<pre>' + text + '</pre>';
+			}
 			dialog.widgetWillMount(document, state.ctrl[placeholder]);
 		}
 		else
-			document.body.innerHTML = title + '<br/>' + text;
+			document.body.innerHTML = title + '<br/><pre>' + text + '</pre>';
 	}
 
 	function textDecode(str) {
@@ -1166,8 +1226,8 @@ var ajaxUtils = function ($, cu) {
 				runClientAction(s.onBack.service, s.onBack.callChain, 0);
 			else
 				$.get(getApiUrl(s.url, s.parms))
-				.fail(instance.error)
-				.then(onRequestResult).then(instance.loadScripts).then(processApiResponse);
+                    .fail(instance.error)
+                    .then(onRequestResult).then(instance.loadScripts).then(processApiResponse);
 		});
 
 
@@ -1257,21 +1317,21 @@ var ObservableArray = (function () {
 	var arrProto = Array.prototype;
 
 	'pop push shift unshift splice reverse sort'
-	.split(' ').forEach(function (methodName) {
-		var method = arrProto[methodName];
-		ObservableArray.prototype[methodName] = function () {
-			var returnValue = method.apply(this, arguments);
-			var args = [methodName].concat(arrProto.slice.call(arguments));
-			this.trigger.apply(this, args);
-			return returnValue;
-		};
-	});
+        .split(' ').forEach(function (methodName) {
+        	var method = arrProto[methodName];
+        	ObservableArray.prototype[methodName] = function () {
+        		var returnValue = method.apply(this, arguments);
+        		var args = [methodName].concat(arrProto.slice.call(arguments));
+        		this.trigger.apply(this, args);
+        		return returnValue;
+        	};
+        });
 
 	// add the above native array methods to ObservableArray.prototype
 	'slice concat join some every forEach map filter reduce reduceRight indexOf lastIndexOf toString toLocaleString'
-	.split(' ').forEach(function (methodName) {
-		ObservableArray.prototype[methodName] = arrProto[methodName];
-	});
+        .split(' ').forEach(function (methodName) {
+        	ObservableArray.prototype[methodName] = arrProto[methodName];
+        });
 
 	return ObservableArray;
 })();

@@ -255,6 +255,30 @@ namespace Tango.UI
 			if (b) return res;
 			return null;
 		}
+
+		public static decimal GetDecimalArg(this ActionContext ctx, string name, decimal defaultValue)
+		{
+			if (name == null) return defaultValue;
+			decimal res = 0;
+			bool b = ctx.AllArgs.TryGetValue(name, out object s);
+			var str = s.ToString();
+			str = str.Replace(" ", "").Replace(",", str.Contains(".") ? "" : ".");
+			if (b) b = decimal.TryParse(str, out res);
+			if (b) return res;
+			return defaultValue;
+		}
+		public static decimal? GetDecimalArg(this ActionContext ctx, string name)
+		{
+			if (name == null) return null;
+			decimal res = 0;
+			bool b = ctx.AllArgs.TryGetValue(name, out object s);
+			var str = s.ToString();
+			str = str.Replace(" ", "").Replace(",", str.Contains(".") ? "" : ".");
+			if (b) b = decimal.TryParse(str, out res);
+			if (b) return res;
+			return null;
+		}
+
 		public static Guid GetGuidArg(this ActionContext ctx, string name, Guid defaultValue)
 		{
 			if (name == null) return defaultValue;

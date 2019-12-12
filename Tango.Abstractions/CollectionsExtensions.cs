@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -79,5 +80,11 @@ namespace Tango
                 source = source.Skip(chunksize);
             }
         }
-    }
+
+		public static IEnumerable<bool> AsEnumerableBool(this BitArray ba)
+		{
+			for (int i = 0; i < ba.Length; i++)
+				yield return ba[i];
+		}
+	}
 }
