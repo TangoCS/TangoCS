@@ -38,15 +38,16 @@ namespace Tango.UI
 			);
 		}
 
-		public static void TextBox<TValue>(this LayoutWriter w, IField<TValue> field, Grid grid = Grid.OneWhole)
+		public static void TextBox<TValue>(this LayoutWriter w, IField<TValue> field, Grid grid = Grid.OneWhole, Action<InputTagAttributes> attributes = null)
 		{
 			w.FormField(field, grid, () => w.TextBox(field.ID, field.StringValue, a => {
 				if (field.Disabled) a.Disabled(true);
 				else if (field.ReadOnly) a.Readonly(true);
+                a.Set(attributes);
 			}));
-		}
+		}      
 
-		public static void Hidden<TValue>(this LayoutWriter w, IField<TValue> field)
+        public static void Hidden<TValue>(this LayoutWriter w, IField<TValue> field)
 		{
 			w.TextBox(field.ID, field.Value.ToString());
 		}
