@@ -246,10 +246,21 @@ namespace Tango.UI.Std
 		{
 			f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => render(w, o), Attributes = (a, o, i) => a.Class("r") });
 		}
-		#endregion
+        public static void AddCellAlignRight<TResult, T>(this IFieldCollection<TResult> f, string title, Func<TResult, T> value)
+        {
+            f.AddHeader(title);
+            f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => w.Write(value(o)?.ToString()), Attributes = (a, o, i) => a.Class("r") });
+        }
 
-		#region string title
-		public static void AddCell<TResult>(this IFieldCollection<TResult> f, string title, RenderRowCellDelegate<TResult> render)
+        public static void AddCellAlignRight<TResult>(this IFieldCollection<TResult> f, string title, Action<LayoutWriter, TResult> render)
+        {
+            f.AddHeader(title);
+            f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => render(w, o), Attributes = (a, o, i) => a.Class("r") });
+        }
+        #endregion
+
+        #region string title
+        public static void AddCell<TResult>(this IFieldCollection<TResult> f, string title, RenderRowCellDelegate<TResult> render)
 		{
 			f.AddHeader(title);
 			f.Cells.Add(new ListColumn<TResult> { Content = render });
@@ -308,17 +319,7 @@ namespace Tango.UI.Std
 		}
 		#endregion
 
-		public static void AddCellAlignRight<TResult, T>(this IFieldCollection<TResult> f, string title, Func<TResult, T> value)
-		{
-			f.AddHeader(title);
-			f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => w.Write(value(o)?.ToString()), Attributes = (a, o, i) => a.Class("r") });
-		}
-
-		public static void AddCellAlignRight<TResult>(this IFieldCollection<TResult> f, string title, Action<LayoutWriter, TResult> render)
-		{
-			f.AddHeader(title);
-			f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => render(w, o), Attributes = (a, o, i) => a.Class("r") });
-		}
+		
 
 		public static void AddActionsCell<TResult>(this IFieldCollection<TResult> f, params Func<TResult, Action<ActionLink>>[] actions)
 		{
