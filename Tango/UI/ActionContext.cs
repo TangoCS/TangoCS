@@ -262,8 +262,8 @@ namespace Tango.UI
 			decimal res = 0;
 			bool b = ctx.AllArgs.TryGetValue(name, out object s);
 			var str = s.ToString();
-			str = str.Replace(" ", "").Replace(",", str.Contains(".") ? "" : ".");
-			if (b) b = decimal.TryParse(str, out res);
+			str = str.Replace(" ", "").Replace(",", str.Contains(".") ? "" : ".");         
+            if (b) b = decimal.TryParse(str, NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out res);
 			if (b) return res;
 			return defaultValue;
 		}
