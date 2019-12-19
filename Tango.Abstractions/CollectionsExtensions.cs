@@ -86,9 +86,5 @@ namespace Tango
 			for (int i = 0; i < ba.Length; i++)
 				yield return ba[i];
 		}
-        public static bool IsInRange(this DateTime dateToCheck, DateTime startDate, DateTime endDate)
-        {
-            return dateToCheck >= startDate && dateToCheck < endDate;
-        }
     }
 }

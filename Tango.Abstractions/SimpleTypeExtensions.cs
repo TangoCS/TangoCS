@@ -245,6 +245,11 @@ namespace Tango
 			return defaultValue;
 		}
 
+		public static bool IsInRange(this DateTime dateToCheck, DateTime startDate, DateTime endDate)
+		{
+			return dateToCheck >= startDate && dateToCheck < endDate;
+		}
+
 		static int[] quarters = new int[] { 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4 };
 		public static int Quarter(this DateTime date)
 		{
@@ -345,6 +350,21 @@ namespace Tango
 		public static string GetAttributeValue(this XElement element, XName name)
 		{
 			return element.Attribute(name)?.Value;
+		}
+
+		public static IEnumerable<string> ReadLines(this Stream stream, Encoding encoding = null)
+		{
+			using (var reader = new StreamReader(stream, encoding ?? Encoding.UTF8))
+			{
+				List<string> res = new List<string>();
+				string line;
+				while ((line = reader.ReadLine()) != null)
+				{
+					res.Add(line);
+					//yield return line;
+				}
+				return res;
+			}
 		}
 
 		private enum State
