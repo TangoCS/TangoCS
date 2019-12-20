@@ -38,7 +38,8 @@ namespace Tango.UI
 		public Guid? RequestID { get; set; }
 		public string RequestMethod { get; set; }
 		public bool IsFirstLoad { get; set; }
-
+		public bool IsLocalRequest { get; set; }
+		
 		// target
 		public string RootReceiver { get; set; }
 		public string Service { get; set; }

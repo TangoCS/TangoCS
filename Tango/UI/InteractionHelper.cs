@@ -12,18 +12,7 @@ namespace Tango.UI
 		{
 			var t = recipient.GetType();
 			var name = e.ToLower();
-			var m = FindMethod(t, name, recipient.Context.RequestMethod);
-			//MulticastDelegate eventDelegate = null;
-			//if (m == null)
-			//{
-			//	var f = t.GetField(name, BindingFlags.IgnoreCase | BindingFlags.NonPublic | BindingFlags.Instance);
-			//	if (f != null)
-			//	{
-			//		eventDelegate = f.GetValue(recipient) as MulticastDelegate;
-			//		if (eventDelegate != null) m = eventDelegate.Method;
-			//	}
-			//}
-			return m;
+			return FindMethod(t, name, recipient.Context.RequestMethod);
 		}
 
 		public static ActionResult RunEvent(IInteractionFlowElement recipient, string e)
@@ -67,10 +56,7 @@ namespace Tango.UI
 				RunBeforeActionFilters(filtersCollection.BeforeActionFilters, filterContext);
 				if (filterContext.CancelResult != null) return filterContext.CancelResult;
 
-				//if (eventDelegate == null)
-					m.Invoke(recipient, new object[] { resp });
-				//else
-				//	eventDelegate.DynamicInvoke(resp);
+				m.Invoke(recipient, new object[] { resp });
 
 				RunAfterActionFilters(filtersCollection.AfterActionFilters, filterContext);
 				if (filterContext.CancelResult != null) return filterContext.CancelResult;
@@ -82,10 +68,7 @@ namespace Tango.UI
 				var p = ProcessParameters(recipient.Context, ps);
 
 				ActionResult res = null;
-				//if (eventDelegate == null)
-					res = m.Invoke(recipient, p) as ActionResult;
-				//else
-				//	res = eventDelegate.DynamicInvoke(p) as ActionResult;
+				res = m.Invoke(recipient, p) as ActionResult;
 
 				var filterContext = new ActionFilterContext(recipient, m, res);
 				RunAfterActionFilters(filtersCollection.AfterActionFilters, filterContext);
@@ -103,16 +86,17 @@ namespace Tango.UI
 
 			for (int i = 0; i < ps.Length; i++)
 			{
-				string val = WebUtility.UrlDecode(context.GetArg(ps[i].Name.ToLower()));
+				var name = ps[i].Name.ToLower();
 
-				if (!val.IsEmpty())
+				if (ps[i].ParameterType == typeof(Guid))
+					p[i] = context.GetGuidArg(name);
+				else if (ps[i].ParameterType == typeof(DateTime))
+					p[i] = context.GetDateTimeArg(name);
+				else
 				{
-					if (ps[i].ParameterType == typeof(Guid))
-						p[i] = val.ToGuid();
-					else
-					{
+					string val = WebUtility.UrlDecode(context.GetArg(name));
+					if (!val.IsEmpty())
 						p[i] = Convert.ChangeType(val, ps[i].ParameterType);
-					}
 				}
 			}
 
