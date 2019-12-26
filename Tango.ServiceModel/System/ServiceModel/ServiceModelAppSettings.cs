@@ -32,13 +32,13 @@
 		static bool disableOperationContextAsyncFlow = DefaultDisableOperationContextAsyncFlow;
 		static bool deferSslStreamServerCertificateCleanup;
 		static volatile bool settingsInitalized = false;
-		static object appSettingsLock = new object();
+		//static object appSettingsLock = new object();
 
 		internal static bool UseLegacyCertificateUsagePolicy
 		{
 			get
 			{
-				//EnsureSettingsLoaded();
+				EnsureSettingsLoaded();
 
 				return useLegacyCertificateUsagePolicy;
 			}
@@ -48,7 +48,7 @@
 		{
 			get
 			{
-				//EnsureSettingsLoaded();
+				EnsureSettingsLoaded();
 
 				return httpTransportPerFactoryConnectionPool;
 			}
@@ -58,7 +58,7 @@
 		{
 			get
 			{
-				//EnsureSettingsLoaded();
+				EnsureSettingsLoaded();
 
 				return ensureUniquePerformanceCounterInstanceNames;
 			}
@@ -68,7 +68,7 @@
 		{
 			get
 			{
-				//EnsureSettingsLoaded();
+				EnsureSettingsLoaded();
 				return disableOperationContextAsyncFlow;
 			}
 		}
@@ -77,7 +77,7 @@
 		{
 			get
 			{
-				//EnsureSettingsLoaded();
+				EnsureSettingsLoaded();
 
 				return useConfiguredTransportSecurityHeaderLayout;
 			}
@@ -87,7 +87,7 @@
 		{
 			get
 			{
-				//EnsureSettingsLoaded();
+				EnsureSettingsLoaded();
 
 				return useBestMatchNamedPipeUri;
 			}
@@ -97,70 +97,25 @@
 		{
 			get
 			{
-				//EnsureSettingsLoaded();
+				EnsureSettingsLoaded();
 
 				return deferSslStreamServerCertificateCleanup;
 			}
 		}
 
-		//static void EnsureSettingsLoaded()
-		//{
-		//	if (!settingsInitalized)
-		//	{
-		//		lock (appSettingsLock)
-		//		{
-		//			if (!settingsInitalized)
-		//			{
-		//				NameValueCollection appSettingsSection = null;
-		//				try
-		//				{
-		//					appSettingsSection = ConfigurationManager.AppSettings;
-		//				}
-		//				catch (ConfigurationErrorsException)
-		//				{
-		//				}
-		//				finally
-		//				{
-		//					if ((appSettingsSection == null) || !bool.TryParse(appSettingsSection[UseLegacyCertificateUsagePolicyString], out useLegacyCertificateUsagePolicy))
-		//					{
-		//						useLegacyCertificateUsagePolicy = DefaultUseLegacyCertificateUsagePolicy;
-		//					}
-
-		//					if ((appSettingsSection == null) || !bool.TryParse(appSettingsSection[HttpTransportPerFactoryConnectionPoolString], out httpTransportPerFactoryConnectionPool))
-		//					{
-		//						httpTransportPerFactoryConnectionPool = DefaultHttpTransportPerFactoryConnectionPool;
-		//					}
-
-		//					if ((appSettingsSection == null) || !bool.TryParse(appSettingsSection[EnsureUniquePerformanceCounterInstanceNamesString], out ensureUniquePerformanceCounterInstanceNames))
-		//					{
-		//						ensureUniquePerformanceCounterInstanceNames = DefaultEnsureUniquePerformanceCounterInstanceNames;
-		//					}
-
-		//					if ((appSettingsSection == null) || !bool.TryParse(appSettingsSection[DisableOperationContextAsyncFlowString], out disableOperationContextAsyncFlow))
-		//					{
-		//						disableOperationContextAsyncFlow = DefaultDisableOperationContextAsyncFlow;
-		//					}
-
-		//					if ((appSettingsSection == null) || !bool.TryParse(appSettingsSection[UseConfiguredTransportSecurityHeaderLayoutString], out useConfiguredTransportSecurityHeaderLayout))
-		//					{
-		//						useConfiguredTransportSecurityHeaderLayout = DefaultUseConfiguredTransportSecurityHeaderLayout;
-		//					}
-
-		//					if ((appSettingsSection == null) || !bool.TryParse(appSettingsSection[UseBestMatchNamedPipeUriString], out useBestMatchNamedPipeUri))
-		//					{
-		//						useBestMatchNamedPipeUri = DefaultUseBestMatchNamedPipeUri;
-		//					}
-
-		//					if ((appSettingsSection == null) || !bool.TryParse(appSettingsSection[DeferSslStreamServerCertificateCleanupString], out deferSslStreamServerCertificateCleanup))
-		//					{
-		//						deferSslStreamServerCertificateCleanup = DefaultDeferSslStreamServerCertificateCleanup;
-		//					}
-
-		//					settingsInitalized = true;
-		//				}
-		//			}
-		//		}
-		//	}
-		//}
+		static void EnsureSettingsLoaded()
+		{
+			if (!settingsInitalized)
+			{
+				useLegacyCertificateUsagePolicy = DefaultUseLegacyCertificateUsagePolicy;
+				httpTransportPerFactoryConnectionPool = DefaultHttpTransportPerFactoryConnectionPool;
+				ensureUniquePerformanceCounterInstanceNames = DefaultEnsureUniquePerformanceCounterInstanceNames;
+				disableOperationContextAsyncFlow = DefaultDisableOperationContextAsyncFlow;
+				useConfiguredTransportSecurityHeaderLayout = DefaultUseConfiguredTransportSecurityHeaderLayout;
+				useBestMatchNamedPipeUri = DefaultUseBestMatchNamedPipeUri;
+				deferSslStreamServerCertificateCleanup = DefaultDeferSslStreamServerCertificateCleanup;
+				settingsInitalized = true;
+			}
+		}
 	}
 }

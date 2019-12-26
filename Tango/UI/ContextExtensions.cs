@@ -20,7 +20,7 @@ namespace Tango.UI
 
 		public static ActionLink ToCurrent(this ActionLink a)
 		{
-			a = a.To(a.Context.Service, a.Context.Action).UseDefaultResolver()
+			a = a.RunAction(a.Context.Service, a.Context.Action).UseDefaultResolver()
 				.WithArgs(a.Context.AllArgs.Where(arg => !a.Context.FormData.ContainsKey(arg.Key)));
 			foreach(var r in a.Context.ReturnUrl)
 				a.WithArg(Constants.ReturnUrl + (r.Key == 1 ? "" : $"_{r.Key}"), r.Value);
@@ -31,7 +31,7 @@ namespace Tango.UI
 		{
 			var target = a.Context.ReturnTarget.Get(code);
 			if (target == null) return a;
-			return a.To(target.Service, target.Action).UseDefaultResolver().WithArgs(target.Args);
+			return a.RunAction(target.Service, target.Action).UseDefaultResolver().WithArgs(target.Args);
 		}
 
 		public static ActionLink BaseUrl(this ActionContext context)
@@ -41,7 +41,7 @@ namespace Tango.UI
 
 		public static ActionLink CallbackToCurrent(this ActionContext context, Action<ApiResponse> serverEvent)
 		{
-			return new ActionLink(context).To(context.Service, context.Action).UseDefaultResolver()
+			return new ActionLink(context).RunAction(context.Service, context.Action).UseDefaultResolver()
 						.WithArgs(context.AllArgs).WithArg(Constants.ContainerNew, "0")
 						.WithArg(Constants.EventName, serverEvent.Method.Name);
 		}

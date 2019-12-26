@@ -999,7 +999,7 @@ namespace System.ServiceModel.Channels
         BufferManager bufferManager;
         MessageEncoder messageEncoder;
         bool streamed;
-        static Action<object> onStreamSendTimeout;
+        //static Action<object> onStreamSendTimeout;
         string mtomBoundary;
         Stream outputStream;
         bool supportsConcurrentIO;

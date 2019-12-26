@@ -793,7 +793,10 @@ var ajaxUtils = function ($, cu) {
 
 		var val = null;
 
-		if (el.name !== undefined && el.value !== undefined) {
+		if (el.name !== undefined && el.type == 'checkbox') {
+			val = el.checked;
+		}
+		else if (el.name !== undefined && el.value !== undefined) {
 			val = el.value;
 		}
 		else if (el.isContentEditable) {

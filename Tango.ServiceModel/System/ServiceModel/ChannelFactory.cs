@@ -13,7 +13,7 @@ namespace System.ServiceModel
     
     public abstract class ChannelFactory : CommunicationObject, IChannelFactory, IDisposable
     {
-        string configurationName;
+        //string configurationName;
         IChannelFactory innerFactory;
         ServiceEndpoint serviceEndpoint;
         ClientCredentials readOnlyClientCredentials;
@@ -179,20 +179,13 @@ namespace System.ServiceModel
 
             if (this.Endpoint.Binding == null)
             {
-                if (this.configurationName != null)
-                {
-                    throw DiagnosticUtility.ExceptionUtility.ThrowHelperError(new InvalidOperationException(Res.GetString(Res.S("SFxChannelFactoryNoBindingFoundInConfig1"), configurationName)));
-                }
-                else
-                {
-                    throw DiagnosticUtility.ExceptionUtility.ThrowHelperError(new InvalidOperationException(Res.GetString(Res.S("SFxChannelFactoryNoBindingFoundInConfigOrCode"))));
-                }
+                throw DiagnosticUtility.ExceptionUtility.ThrowHelperError(new InvalidOperationException(Res.GetString(Res.S("SFxChannelFactoryNoBindingFoundInConfigOrCode"))));
             }
 
             return ServiceChannelFactory.BuildChannelFactory(this.Endpoint, this.UseActiveAutoClose);
         }
 
-        void IDisposable.Dispose()
+        public virtual void Dispose()
         {
             this.Close();
         }

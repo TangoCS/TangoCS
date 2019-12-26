@@ -19,11 +19,11 @@ namespace System.ServiceModel.Description
         OperationDescription operation;
         DataContractFormatAttribute dataContractFormatAttribute;
         internal bool ignoreExtensionDataObject = DataContractSerializerDefaults.IgnoreExtensionDataObject;
-        bool ignoreExtensionDataObjectSetExplicit;
+        //bool ignoreExtensionDataObjectSetExplicit;
         internal int maxItemsInObjectGraph = DataContractSerializerDefaults.MaxItemsInObjectGraph;
-        bool maxItemsInObjectGraphSetExplicit;
+        //bool maxItemsInObjectGraphSetExplicit;
         //IDataContractSurrogate dataContractSurrogate;
-        DataContractResolver dataContractResolver;
+        //DataContractResolver dataContractResolver;
 
         public DataContractFormatAttribute DataContractFormatAttribute
         {

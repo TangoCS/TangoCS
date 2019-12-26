@@ -34,8 +34,6 @@ namespace Tango.UI
 
         public static ValidationBuilder<T> NotEmpty<T>(this ValidationBuilder<T> val, T defaultValue = default(T), ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
         {
-            if (val is bool)
-                return val;
             if (val.Value == null || (val.Value is string && val.Value.ToString().IsEmpty()) || Equals(val.Value, defaultValue))
             {
 				val.AddMessage("NotEmpty", severity: severity);
