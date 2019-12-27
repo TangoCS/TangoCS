@@ -249,6 +249,11 @@ namespace Tango
 		{
 			return dateToCheck >= startDate && dateToCheck < endDate;
 		}
+		public static bool IsInside(this (DateTime start, DateTime finish) dateToCheck, DateTime startDate, DateTime endDate)
+		{
+			return dateToCheck.start <= startDate && endDate <= dateToCheck.finish;
+		}
+
 
 		static int[] quarters = new int[] { 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4 };
 		public static int Quarter(this DateTime date)
