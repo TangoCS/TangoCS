@@ -25,7 +25,7 @@ namespace System.ServiceModel.Channels
         : TransportChannelFactory<TChannel>,
         IHttpTransportFactorySettings
     {
-        static bool httpWebRequestWebPermissionDenied = false;
+        //static bool httpWebRequestWebPermissionDenied = false;
         static RequestCachePolicy requestCachePolicy = new RequestCachePolicy(RequestCacheLevel.BypassCache);
         //static long connectionGroupNamePrefix = 0;
 

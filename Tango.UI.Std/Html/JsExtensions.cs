@@ -151,12 +151,12 @@ namespace Tango.Html
 			return a.Data("href", url);
 		}
 
-		public static T DataHref<T>(this TagAttributes<T> a, ActionContext context, Action<IActionTarget> attrs)
+		public static T DataHref<T>(this TagAttributes<T> a, ActionContext context, Action<ActionLink> attrs)
 			where T : TagAttributes<T>
 		{
-			var link = new ActionTarget();
+			var link = new ActionLink(context);
 			attrs(link);
-			return a.Data("href", link.Resolve(context).Result);
+			return a.Data("href", link.Url);
 		}
 
 		//public static T DataAction<T>(this TagAttributes<T> a, string service, string action)

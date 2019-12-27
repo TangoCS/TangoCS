@@ -240,11 +240,11 @@ namespace Tango.UI
 
 	public static class ActionTargetExtensions
 	{
-		public static T RunEvent<T>(this T target, Action<ApiResponse> action)
+		public static T RunEvent<T>(this T target, Action<ApiResponse> eventMethod)
 			where T : IActionTarget
 		{
 			target.RequestMethod = "GET";
-			return target.SetEvent(action);
+			return target.SetEvent(eventMethod);
 		}
 
 		public static T RunEvent<T>(this T target, string eventName, string eventReceiver = null)
@@ -284,7 +284,7 @@ namespace Tango.UI
 			return target;
 		}
 
-		public static T To<T>(this T target, string serviceName, string actionName)
+		public static T RunAction<T>(this T target, string serviceName, string actionName)
 			where T : IActionTarget
 		{
 			target.Service = serviceName;
@@ -292,7 +292,7 @@ namespace Tango.UI
 			return target;
 		}
 
-		public static IActionTarget To<T>(this IActionTarget target, string actionName)
+		public static IActionTarget RunAction<T>(this IActionTarget target, string actionName)
 			where T : Controller
 		{
 			target.Service = typeof(T).Name.Replace("Controller", "");

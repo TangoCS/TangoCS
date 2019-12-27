@@ -152,11 +152,11 @@ namespace Tango.UI.Controls
 		}
 
 		public static void ItemDropDownButtonBulk(this MenuBuilder b, string id, string title,
-			Action<IActionTarget> serverAction, string icon = null,
+			Action<ActionLink> serverAction, string icon = null,
 			Action<TagAttributes> btnAttrs = null, Action<TagAttributes> popupAttrs = null, PopupOptions options = null)
 		{
 			b.Item(w => {
-				void attrs0(IActionTarget a) => a.Set(serverAction).WithReturnUrlToCurrent(w.Context);
+				void attrs0(ActionLink a) => a.Set(serverAction).WithReturnUrlToCurrent(w.Context);
 				void attrs1(TagAttributes a) => a.BulkOp(w.IDPrefix).Set(btnAttrs);
 				void attrs2(TagAttributes a) => a.DataHref(w.Context, attrs0).DataParm("owner", w.IDPrefix).Set(popupAttrs);
 				w.DropDownButton(id, title, (Action)null, icon, attrs1, attrs2, options);

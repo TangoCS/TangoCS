@@ -75,7 +75,7 @@ namespace Tango.Html
 			return _this; 
 		}
 
-		public T Extended<TValue>(string key, TValue value) { return _this; }
+		public T Extended<TValue>(string key, TValue value) { Data(key, value); return _this; }
 
 		protected string GetName(string value)
 		{

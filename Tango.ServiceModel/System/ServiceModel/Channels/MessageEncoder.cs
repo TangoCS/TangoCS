@@ -9,7 +9,7 @@ namespace System.ServiceModel.Channels
 
 	public abstract class MessageEncoder
     {
-        private string traceSourceString;
+        //private string traceSourceString;
 
         public abstract string ContentType { get; }
 

@@ -76,7 +76,6 @@ namespace Tango.UI.Navigation
 		public static void ChangeDBMenuIcon(this LayoutWriter w)
 		{
 			var settings = w.Context.RequestServices.GetService(typeof(IPersistentSettings)) as IPersistentSettings;
-			var ac = w.Context.RequestServices.GetService(typeof(IAccessControl)) as IAccessControl;
 
 			if (!settings.GetBool("canchangedb")) return;
 
@@ -91,7 +90,7 @@ namespace Tango.UI.Navigation
 					w.Div(() => {
 						foreach (var cs in ConnectionManager.ConnectionStrings)
 						{
-							w.ActionLink(al => al.To<ConnectionController>("changeconnection", ac).WithTitle(cs.Key).WithArg("newconn", cs.Key));
+							w.ActionLink(al => al.To<ConnectionController>("changeconnection").WithTitle(cs.Key).WithArg("newconn", cs.Key));
 						}
 					});
 				});

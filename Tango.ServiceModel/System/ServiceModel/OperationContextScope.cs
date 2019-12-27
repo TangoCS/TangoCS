@@ -6,8 +6,8 @@
 
 	public sealed class OperationContextScope : IDisposable
 	{
-		[ThreadStatic]
-		static OperationContextScope legacyCurrentScope;
+		//[ThreadStatic]
+		//static OperationContextScope legacyCurrentScope;
 
 		static AsyncLocal<OperationContextScope> currentScope = new AsyncLocal<OperationContextScope>();
 
@@ -31,19 +31,19 @@
 		{
 			get
 			{
-				return ServiceModelAppSettings.DisableOperationContextAsyncFlow ? legacyCurrentScope : currentScope.Value;
+				return /*ServiceModelAppSettings.DisableOperationContextAsyncFlow ? legacyCurrentScope :*/ currentScope.Value;
 			}
 
 			set
 			{
-				if (ServiceModelAppSettings.DisableOperationContextAsyncFlow)
-				{
-					legacyCurrentScope = value;
-				}
-				else
-				{
+				//if (ServiceModelAppSettings.DisableOperationContextAsyncFlow)
+				//{
+				//	legacyCurrentScope = value;
+				//}
+				//else
+				//{
 					currentScope.Value = value;
-				}
+				//}
 			}
 		}
 

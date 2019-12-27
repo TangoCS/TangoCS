@@ -30,7 +30,7 @@ namespace Tango.Data
 	public interface IRepository<T> : IRepository
 	{
 		new T GetById(object id);
-		new IEnumerable<T> List(Expression predicate = null);
+		IEnumerable<T> List(Expression predicate = null);
 		void Create(T entity);
 		object CreateFrom(Action<UpdateSetCollection<T>> sets, Expression<Func<T, bool>> predicate);
 

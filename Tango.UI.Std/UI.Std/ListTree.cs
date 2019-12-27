@@ -13,10 +13,10 @@ namespace Tango.UI.Std
 			f.RowAttributes += (a, o, i) => a.Data("level", o.Level);
 		}
 
-		static ListColumn<T> ListColumn<T>(Action<LayoutWriter, T> content, TreeCellOptions<T> options = null)
+		static RenderRowCellDelegate<T> TreeCellContent<T>(Action<LayoutWriter, T> content, TreeCellOptions<T> options = null)
 			where T : IListTree
 		{
-			return new ListColumn<T>((a, o, row) => { }, (w, o, row) => {
+			return (w, o, row) => {
 				w.Div(a => a.Class($"treerow l{o.Level}"), () => {
 					for (int i = 0; i < o.Level; i++)
 						w.Div(a => a.Class("level-padding" + (i == o.Level ? " last" : "")), "");
@@ -34,7 +34,19 @@ namespace Tango.UI.Std
 						content(w, o);
 					});
 				});
-			});
+			};
+		}
+
+		static ListColumn<T> ListColumn<T>(Action<LayoutWriter, T> content, TreeCellOptions<T> options = null)
+			where T : IListTree
+		{
+			return ListColumn((a, o, row) => { }, content, options);
+		}
+
+		static ListColumn<T> ListColumn<T>(RowCellAttributesDelegate<T> attrs, Action<LayoutWriter, T> content, TreeCellOptions<T> options = null)
+			where T : IListTree
+		{
+			return new ListColumn<T>(attrs, TreeCellContent(content, options));
 		}
 
 		public static void AddTreeCell<T>(this FieldCollectionBase<T> f, string title, Action<LayoutWriter, T> content, TreeCellOptions<T> options = null)
@@ -47,6 +59,11 @@ namespace Tango.UI.Std
 			where T : IListTree
 		{
 			f.AddCustomCell(ListColumn(content, options));
+		}
+		public static void AddTreeCell<T>(this FieldCollectionBase<T> f, RowCellAttributesDelegate<T> attrs, Action<LayoutWriter, T> content, TreeCellOptions<T> options = null)
+			where T : IListTree
+		{
+			f.AddCustomCell(ListColumn(attrs, content, options));
 		}
 
 	}

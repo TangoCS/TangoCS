@@ -15,7 +15,7 @@ namespace Tango.UI.Std
 			var taskAction = Context.GetArg("taskaction");
 
 			var taskUrl = new ActionLink(Context)
-				.To(taskService, taskAction)
+				.RunAction(taskService, taskAction)
 				.UseDefaultResolver()
 				.Url;
 
