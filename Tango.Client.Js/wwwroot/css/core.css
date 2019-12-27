@@ -303,6 +303,23 @@ hr {
 	visibility: visible;
 }
 
+.cellborders .border-l {
+	border-left: solid 1px #bbb;
+}
+
+.cellborders .border-r {
+	border-right: solid 1px #bbb;
+}
+
+.cellborders .border-b {
+	border-bottom: solid 1px #bbb;
+}
+
+.cellborders .border-t {
+	border-top: solid 1px #bbb;
+}
+
+
 /* two columns table/row*/
 .twocolumnstable {
 	display: table;

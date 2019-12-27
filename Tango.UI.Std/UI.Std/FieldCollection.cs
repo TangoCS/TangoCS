@@ -241,17 +241,21 @@ namespace Tango.UI.Std
 		{
 			f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => w.Write(value(o)?.ToString()), Attributes = (a, o, i) => a.Class("r") });
 		}
-
 		public static void AddCellAlignRight<TResult>(this IFieldCollection<TResult> f, Action<LayoutWriter, TResult> render)
 		{
 			f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => render(w, o), Attributes = (a, o, i) => a.Class("r") });
 		}
-        public static void AddCellAlignRight<TResult, T>(this IFieldCollection<TResult> f, string title, Func<TResult, T> value)
+		public static void AddCellAlignRight<TResult>(this IFieldCollection<TResult> f, RowCellAttributesDelegate<TResult> attrs, Action<LayoutWriter, TResult> render)
+		{
+			RowCellAttributesDelegate<TResult> a1 = (a, o, i) => a.Class("r");
+			a1 += attrs;
+			f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => render(w, o), Attributes = a1 });
+		}
+		public static void AddCellAlignRight<TResult, T>(this IFieldCollection<TResult> f, string title, Func<TResult, T> value)
         {
             f.AddHeader(title);
             f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => w.Write(value(o)?.ToString()), Attributes = (a, o, i) => a.Class("r") });
         }
-
         public static void AddCellAlignRight<TResult>(this IFieldCollection<TResult> f, string title, Action<LayoutWriter, TResult> render)
         {
             f.AddHeader(title);
