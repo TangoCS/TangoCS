@@ -95,7 +95,8 @@ namespace Tango.UI.Controls
 		public static void AddYesNoDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null, bool warningMode = false)
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
-                w.PushPrefix(IDPrefix);
+				if (IDPrefix != null)
+					w.PushPrefix(IDPrefix);
 				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix), () => {
 					w.AjaxForm("form", a => a.DataResult(1), () => {
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
@@ -111,10 +112,29 @@ namespace Tango.UI.Controls
 						});
 					});
 				});
-                w.PopPrefix();
+				if (IDPrefix != null)
+					w.PopPrefix();
 			});
 		}
 
+		public static void AddOKDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null)
+		{
+			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
+				if (IDPrefix != null)
+					w.PushPrefix(IDPrefix);
+				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix), () => {
+					w.AjaxForm("form", a => a.DataResult(1), () => {
+						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
+							w.Div(a => a.Style("width:100%; text-align:center"), () => {
+								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), "ОК");
+							});
+						});
+					});
+				});
+				if (IDPrefix != null)
+					w.PopPrefix();
+			});
+		}
 
 		public static ActionLink AsDialog(this ActionLink link, string dialogPrefix = null)
 		{
