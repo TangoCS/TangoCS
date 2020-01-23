@@ -35,7 +35,7 @@ namespace Tango.UI.Controls
 			});
 		}
 
-		public void Render(LayoutWriter w, DateTime? from = null, DateTime? to = null)
+		public void Render(LayoutWriter w, DateTime? from = null, DateTime? to = null, Action<InputTagAttributes> attributes = null)
 		{
 			dPeriodFrom.MinYear = MinYear;
 			dPeriodTo.MinYear = MinYear;
@@ -48,7 +48,7 @@ namespace Tango.UI.Controls
             if (to == null)
                 to = Context.GetDateTimeArg(ID + "_" + "dperiodto");
 
-			var options = new CalendarOptions { ShowButton = false };
+			var options = new CalendarOptions { ShowButton = false,Attributes = attributes };
 
             //w.PushID(ID);
 			w.Div(a => a.Class("periodpicker").ID(ID), () => {

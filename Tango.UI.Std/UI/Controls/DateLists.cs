@@ -26,7 +26,7 @@ namespace Tango.UI.Controls
 
 		DateTime IFieldValueProvider<DateTime>.Value => Value ?? DateTime.MinValue;
 
-		public void Render(HtmlWriter w, DateTime? value = null)
+		public void Render(HtmlWriter w, DateTime? value = null, Action<SelectTagAttributes> attributes = null)
 		{
 			var monthItems = new List<SelectListItem>();
 			var dayItems = new List<SelectListItem>();
@@ -89,9 +89,9 @@ namespace Tango.UI.Controls
 						w.Write("&nbsp;");
 					}
 
-					w.DropDownList($"{ID}_month", value?.Month.ToString(), monthItems, a => a.Class("months"));
+					w.DropDownList($"{ID}_month", value?.Month.ToString(), monthItems, a => a.Class("months").Set(attributes));
 					w.Write("&nbsp;");
-					w.DropDownList($"{ID}_year", value?.Year.ToString(), yearItems, a => a.Class("years"));
+					w.DropDownList($"{ID}_year", value?.Year.ToString(), yearItems, a => a.Class("years").Set(attributes));
 				}
 
 				if (ShowTime || TimeOnly)

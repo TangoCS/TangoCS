@@ -140,10 +140,11 @@ namespace Tango.UI
 			w.FormField(field, grid, () => w.DropDownList(field.ID, value, items, attrs));
 		}
 
-		public static void Calendar(this LayoutWriter w, IField<DateTime> field, Grid grid = Grid.OneWhole)
-		{
+		public static void Calendar(this LayoutWriter w, IField<DateTime> field, Action<InputTagAttributes> attributes = null, Grid grid = Grid.OneWhole)
+		{		
 			var state = field.Disabled ? EnabledState.Disabled : (field.ReadOnly ? EnabledState.ReadOnly : EnabledState.Enabled);
-			w.FormField(field, grid, () => w.Calendar(field.ID, field.Value, state));
+
+			w.FormField(field, grid, () => w.Calendar(field.ID, field.Value, state, attributes: attributes));
 		}
 
 		public static void Calendar(this LayoutWriter w, IField<DateTime?> field, CalendarOptions opt = null, Grid grid = Grid.OneWhole)
