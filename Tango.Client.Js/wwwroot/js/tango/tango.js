@@ -1055,7 +1055,16 @@ var ajaxUtils = function ($, cu) {
 				const ctrl = instance.findControl(root);
 				const t = root.getAttribute('data-ctrl');
 
-				if (window[t] && window[t]['widgetDidMount']) {
+                if (window[t] && window[t]['widgetDidMount']) {
+
+                    if (apiResult.state) {
+
+                        Object.defineProperty(ctrl.state, Object.getOwnPropertyNames(apiResult.state[t])[0], {
+                            value: apiResult.state[t][Object.getOwnPropertyNames(apiResult.state[t])[0]]
+                        });
+
+                    }
+
 					window[t]['widgetDidMount'](ctrl.state);
 					console.log('widget: ' + ctrl.id + ' widgetDidMount ' + t);
 				}
