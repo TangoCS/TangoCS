@@ -39,7 +39,7 @@ namespace Tango.UI.Std
 	public class EditEntityContainer : ViewContainer
 	{
 		public ContainerWidth Width { get; set; } = ContainerWidth.WidthStd;
-
+		public bool AddDataCtrl { get; set; }
 		public override void Render(ApiResponse response)
 		{
 			//response.AddAdjacentWidget("#container", "content", AdjacentHTMLPosition.BeforeEnd, w => {
@@ -54,7 +54,13 @@ namespace Tango.UI.Std
 					}
 					w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody").Class("contentbodypadding"), () => {
-						w.AjaxForm("form", a => a.Class(Width.ToString().ToLower()).DataResultPostponed(1), null);
+					w.AjaxForm("form", a => {
+						a.Class(Width.ToString().ToLower()).DataResultPostponed(1);
+						if (AddDataCtrl)
+						{
+							a.DataCtrl(w.IDPrefix);
+						}
+					}, null);
 					});
 				});
 			});

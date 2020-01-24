@@ -1055,7 +1055,16 @@ var ajaxUtils = function ($, cu) {
 				const ctrl = instance.findControl(root);
 				const t = root.getAttribute('data-ctrl');
 
-				if (window[t] && window[t]['widgetDidMount']) {
+                if (window[t] && window[t]['widgetDidMount']) {
+
+                    if (apiResult.state) {
+
+                        for (var key in apiResult.state[t]) {
+                            ctrl.state[key] = apiResult.state[t][key];
+                        }                         
+
+                    }
+
 					window[t]['widgetDidMount'](ctrl.state);
 					console.log('widget: ' + ctrl.id + ' widgetDidMount ' + t);
 				}
