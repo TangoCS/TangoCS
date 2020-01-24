@@ -1060,7 +1060,8 @@ var ajaxUtils = function ($, cu) {
                     if (apiResult.state) {
 
                         Object.defineProperty(ctrl.state, Object.getOwnPropertyNames(apiResult.state[t])[0], {
-                            value: apiResult.state[t][Object.getOwnPropertyNames(apiResult.state[t])[0]]
+                            value: apiResult.state[t][Object.getOwnPropertyNames(apiResult.state[t])[0]],
+                            configurable: true
                         });
 
                     }
