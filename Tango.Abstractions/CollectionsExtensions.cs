@@ -72,13 +72,17 @@ namespace Tango
                 }
             }
         }      
-        public static IEnumerable<IEnumerable<T>> Chunk<T>(this IEnumerable<T> source, int chunksize = 2000)
+        public static IEnumerable<IEnumerable<T>> Chunk<T>(this IEnumerable<T> source, int chunkSize = 2000)
         {
-            while (source.Any())
-            {
-                yield return source.Take(chunksize);
-                source = source.Skip(chunksize);
-            }
+			int itemsReturned = 0;
+			var list = source.ToList(); // Prevent multiple execution of IEnumerable.
+			int count = list.Count;
+			while (itemsReturned < count)
+			{
+				int currentChunkSize = Math.Min(chunkSize, count - itemsReturned);
+				yield return list.GetRange(itemsReturned, currentChunkSize);
+				itemsReturned += currentChunkSize;
+			}
         }
 
 		public static IEnumerable<bool> AsEnumerableBool(this BitArray ba)

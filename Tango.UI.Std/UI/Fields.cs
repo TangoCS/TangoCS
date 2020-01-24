@@ -22,6 +22,7 @@ namespace Tango.UI
 		//IInteractionFlowElement Form { get; set; }
 
 		bool FireOnChangeEvent { get; }
+		string EventReceiver { get; set; }
 
 		//IReadOnlyDictionary<string, IField> AllFields { get; set; }
 		IReadOnlyDictionary<string, object> Args { get; set; }
@@ -88,6 +89,8 @@ namespace Tango.UI
 		//public IInteractionFlowElement Form { get; set; }
 
 		public virtual bool FireOnChangeEvent => false;
+
+		public string EventReceiver { get; set; }
 	}
 
 	public abstract class Field<TValue, TFormValue> : Field, IField<TValue>, IFormField<TFormValue>, IFieldValueProvider<TFormValue>

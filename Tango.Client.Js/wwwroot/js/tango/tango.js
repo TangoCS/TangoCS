@@ -1146,7 +1146,7 @@ var ajaxUtils = function ($, cu) {
 				frame.classList.remove('hide');
 				errb.classList.add('hide');
 
-				frame.contentWindow.contents = '<pre>' + text + '</pre>';
+				frame.contentWindow.contents = text;
 				frame.src = 'javascript:window["contents"]';
 			}
 			else {

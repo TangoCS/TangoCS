@@ -6,7 +6,7 @@ namespace Tango.UI
 {
 	public interface IFieldGroup : IWithPropertyInjection
 	{
-		void Init(IInteractionFlowElement form);
+		void Init(IViewElement form);
 		void SetViewData<TViewData>(TViewData defaultViewData) where TViewData : class;
 		void SetViewData<TViewData>(IEntityField<TViewData> field, TViewData viewData) where TViewData: class; 
 
@@ -20,7 +20,7 @@ namespace Tango.UI
 	public abstract class FieldGroup : IFieldGroup
 	{
 		List<IField> fields = new List<IField>();
-		IInteractionFlowElement Form;
+		IViewElement Form;
 
 		public IEnumerable<IField> Fields => fields;
 
@@ -56,7 +56,7 @@ namespace Tango.UI
 			OnProcessFormData(val);
 		}
 
-		public void Init(IInteractionFlowElement form)
+		public void Init(IViewElement form)
 		{
 			Form = form;
 
@@ -77,7 +77,7 @@ namespace Tango.UI
 			{
 				//allFields.Add(f.GetType().Name, f);
 				f.Context = Form.Context;
-				//f.Form = Form;
+				f.EventReceiver = Form.ClientID;
 				f.InjectProperties(Form.Context.RequestServices);
 				//f.AllFields = allFields;
 				f.Args = Args;

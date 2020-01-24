@@ -249,8 +249,7 @@ namespace Tango.Excel
 
         public void Td(Action<ITdAttributes> attributes, decimal? n, string format)
         {
-            Td(attributes, () => 
-            {
+            Td(attributes, () => {
                 string formula = s.Cells[r, c].FormulaR1C1;
                 s.Cells[r, c].Value = n;
                 if ((formula ?? "") != "")
