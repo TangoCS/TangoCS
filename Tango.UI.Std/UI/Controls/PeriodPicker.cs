@@ -17,6 +17,8 @@ namespace Tango.UI.Controls
 
 		public PeriodValue DefaultValue { get; set; }
 
+		public string JSOnSelectCallback { get; set; }
+
 		public override void OnInit()
 		{
 			dPeriodFrom = CreateControl<DateLists>(ID + "_" + (UseCalendar ? $"dperiodfromtime" : $"dperiodfrom"), c => {
@@ -70,7 +72,8 @@ namespace Tango.UI.Controls
 			if (UseCalendar && ShowDays)
 			{
 				w.AddClientAction("daterangepickerproxy", "init", f => new {
-					triggerid = f(ID + "_" + "btn" + ID)
+					triggerid = f(ID + "_" + "btn" + ID),
+					onselectcallback = JSOnSelectCallback
 				});
 			}
 
