@@ -301,14 +301,17 @@ namespace Tango.Excel
 
             public ITdAttributes Extended<TValue>(string key, TValue value)
             {
-                if (key == Xlsx.FormulaR1C1)
-                    formula = value as string;
+				if (key == Xlsx.FormulaR1C1)
+					formula = value as string;
 				else if (key == Xlsx.AutoFilter)
 					writer.s.Cells[writer.r, writer.c].AutoFilter = true;
 				else if (key == Xlsx.OutlineLevel)
 					writer.s.Row(writer.r).OutlineLevel = Convert.ToInt32(value);
-                else if (key == Xlsx.XlsxHeight)
-                    writer.s.Row(writer.r).Height = Convert.ToInt32(value);
+				else if (key == Xlsx.Collapsed)
+					writer.s.Row(writer.r).Collapsed = Convert.ToBoolean(value);
+
+				else if (key == Xlsx.XlsxHeight)
+					writer.s.Row(writer.r).Height = Convert.ToInt32(value);
                 return this;
             }
 
@@ -586,6 +589,7 @@ namespace Tango.Excel
 		public const string OutlineLevel = "OutlineLevel";
         public const string XlsxHeight = "SetHeight";
 		public const string NoMerge = "NoMerge";
+		public const string Collapsed = "Collapsed";
 	}
 
 	public static class XlsxExtensions
@@ -602,10 +606,12 @@ namespace Tango.Excel
 			a.Extended(Xlsx.AutoFilter, "1");
 		}
 
-		public static void XlsxOutlineLevel<T>(this IContentItemAttributes<T> a, int level)
+		public static void XlsxOutlineLevel<T>(this IContentItemAttributes<T> a, int level, bool collapsed = false)
 			where T : IContentItemAttributes<T>
 		{
 			a.Extended(Xlsx.OutlineLevel, level);
+			if (collapsed)
+				a.Extended(Xlsx.Collapsed, true);
 		}
 
 		public static void XlsxOutlineLevel<T>(this IContentItemAttributes<T> a, int[] level)
