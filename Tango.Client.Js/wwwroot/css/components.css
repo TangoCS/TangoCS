@@ -684,7 +684,20 @@ div.tabs2 + div.tabs2 {
 .dropdownmenu {
 	background-color: white;
 	transition: opacity 80ms linear, visibility 80ms linear;
+	overflow: auto;
 }
+	.dropdownmenu::-webkit-scrollbar {
+		width: 6px;
+	}
+	.dropdownmenu::-webkit-scrollbar-track {
+		background: #f1f1f1;
+	}
+	.dropdownmenu::-webkit-scrollbar-thumb {
+		background: #888;
+	}
+		.dropdownmenu::-webkit-scrollbar-thumb:hover {
+			background: #555;
+		}
 
 .dropdownmenu > div > div {
 	background-color: #eff0f1;

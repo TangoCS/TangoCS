@@ -69,7 +69,7 @@ namespace Tango.UI.Navigation
 				w.Span(() => w.Icon("settings2"));
 				w.DropDownForElement("header-adminmenu", () => {
 					w.RenderTwoLevelMenu(rootItems, removed);
-				});
+				}, new PopupOptions { CloseOnScroll = false });
 			});
 		}
 

@@ -305,6 +305,7 @@ and lower(listname) = @listname
 		public virtual bool IsShared => SubjectID == null;
 
 		[Key]
+		[Identity]
 		[Column]
 		public virtual int FilterID { get; set; }
 		[Column]

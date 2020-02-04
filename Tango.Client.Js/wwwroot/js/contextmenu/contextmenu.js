@@ -47,7 +47,8 @@
 		left: 'auto',
 		closeOther: true, //to close other already opened context menu
 		containment: window,
-		winEventClose: true,
+		closeOnResize: true,
+		closeOnScroll: true,
 		position: 'auto', //allowed values are top, left, bottom and right
 		closeOnClick: false, //close context menu on click/ trigger of any item in menu
 		closeOnClickSelector: null,
@@ -397,6 +398,10 @@
 				}
 				cssObj.left = left + ha + 'px';
 				cssObj.top = top + va + 'px';
+				if (menuHeight > cHeight - top - va)
+					cssObj.bottom = '5px';
+				else
+					cssObj.bottom = '';
 
 				var res = option.beforeDisplay.call(this, clbckData, e);
 				if (res != 1) {
@@ -425,8 +430,11 @@
 
 				$('html').unbind('click', iMethods.clickEvent).click(dataParm, iMethods.clickEvent);
 
-				if (option.winEventClose) {
-					$(window).bind('scroll resize', dataParm, iMethods.scrollEvent);
+				if (option.closeOnResize) {
+					$(window).bind('resize', dataParm, iMethods.scrollEvent);
+				}
+				if (option.closeOnScroll) {
+					$(window).bind('scroll', dataParm, iMethods.scrollEvent);
 				}
 			};
 

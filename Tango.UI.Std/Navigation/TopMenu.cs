@@ -46,7 +46,7 @@ namespace Tango.UI.Navigation
 							//		w.Write(cm.Title);
 							//	});
 							//}
-						});
+						}, new PopupOptions { CloseOnScroll = false } );
 					}
 					else
 					{
