@@ -25,6 +25,8 @@ namespace Tango.Excel
 
 		Dictionary<string, Action<ExcelRange>> classes = new Dictionary<string, Action<ExcelRange>>();
 
+		public int CurrentRow => r;
+
         public void SetClassAction(string @class, Action<ExcelRange> cells)
         {
             classes[@class] = cells;
