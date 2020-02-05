@@ -87,14 +87,13 @@ var selectMultipleObjectsDialog = function (au, cu) {
 			cu.setFocus(filter);
 		},
 		onResult: function (res, state) {
-			if (res == 0)
-				delete state.dialogvalues;
-			else if (res == 1) {
+			if (res == 1) {
 				state.selectedvalues.splice(0, state.selectedvalues.length);
 				for (var i = 0; i < state.dialogvalues.length; i++) {
 					state.selectedvalues.push(state.dialogvalues[i]);
 				}
 			}
+			delete state.dialogvalues;
 		},
 		pagingEvent: function (caller, id) {
 			au.postEventFromElementWithApiResponse(caller, { e: 'renderlist', r: id }).done(function () {
@@ -158,7 +157,7 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 
 			elPh.addEventListener('click', function (e) {
 				const elSel = document.getElementById(id + '_selected');
-				if (e.target.id != elSel.id) elFilter.focus();
+				if (e.target.id != elSel.id && !e.target.closest('.selected')) elFilter.focus();
 			});
 
 			elFilter.addEventListener('click', function (e) {
