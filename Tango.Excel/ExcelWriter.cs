@@ -288,6 +288,12 @@ namespace Tango.Excel
 
 			public ITdAttributes Class(string value, bool replaceExisting = false)
             {
+				if (value == null)
+				{
+					if (replaceExisting)
+						classes = new string[0];
+					return this;
+				}
                 if (value == "r")
                     right = true;
                 else
