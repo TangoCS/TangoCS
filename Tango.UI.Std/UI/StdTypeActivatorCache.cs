@@ -21,12 +21,12 @@ namespace Tango.UI.Std
 	{
 		public ActionResult Invoke(ActionContext ctx, Type t)
 		{
+			var cache = ctx.GetService<ITypeActivatorCache>();
+			ViewPage oldPage = null;
+
 			var page = Activator.CreateInstance(t) as ViewPage;
 			page.Context = ctx;
 			page.InjectProperties(ctx.RequestServices);
-			page.OnInit();
-
-			ActionResult result = null;
 
 			if (ctx.Service.IsEmpty() && page.DefaultView != null)
 			{
@@ -34,19 +34,44 @@ namespace Tango.UI.Std
 				ctx.Action = page.DefaultView.Action;
 			}
 
+			(Type type, IActionInvoker invoker) view = (null, null);
+
 			if (!ctx.Service.IsEmpty())
+				view = cache.Get(ctx.Service + "." + ctx.Action) ?? (null, null);
+
+			if (ctx.RootReceiver != t.Name.ToLower() && !(view.type?.IsSubclassOf(typeof(Controller)) ?? false))
 			{
-				var cache = ctx.GetService<ITypeActivatorCache>();
-				(var type, var invoker) = cache?.Get(ctx.Service + "." + ctx.Action) ?? (null, null);
-				result = invoker?.Invoke(ctx, type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
+				ctx.IsFirstLoad = true;
+
+				var tOldPage = cache.Get(ctx.RootReceiver) ?? (null, null);
+				if (tOldPage.Type == null) 
+					return new HttpResult { StatusCode = HttpStatusCode.NotFound };
+				oldPage = Activator.CreateInstance(tOldPage.Type) as ViewPage;
+				oldPage.Context = ctx;
+				oldPage.InjectProperties(ctx.RequestServices);
 			}
+
+			page.OnInit();
+
+			ActionResult result;
+			if (!ctx.Service.IsEmpty())
+				result = view.invoker?.Invoke(ctx, view.type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
 			else
 				result = new ApiResult();
 
-			if (result is ApiResult ajax)
+			if (result is ApiResult ajax && ctx.IsFirstLoad)
 			{
 				var pageParts = new ApiResponse();
+
+				if (oldPage != null)
+				{
+					oldPage.OnInit();
+					oldPage.OnUnloadContent(pageParts);
+					pageParts.SetElementAttribute("head", "data-page", page.GetType().Name.ToLower());
+				}
+
 				page.OnLoadContent(pageParts);
+
 				ajax.ApiResponse.Insert(pageParts);
 			}
 

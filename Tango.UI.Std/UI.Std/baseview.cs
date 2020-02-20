@@ -80,7 +80,7 @@ namespace Tango.UI.Std
 
 			void headAttr(TagAttributes a)
 			{
-				a.Data("x-csrf-token", tokenString).Data("page", GetType().Name.ToLower());
+				a.ID("head").Data("x-csrf-token", tokenString).Data("page", GetType().Name.ToLower());
 			}
 
 			w.DocType();
@@ -102,6 +102,10 @@ namespace Tango.UI.Std
 		}
 
 		public virtual void OnLoadContent(ApiResponse response)
+		{
+		}
+
+		public virtual void OnUnloadContent(ApiResponse response)
 		{
 		}
 

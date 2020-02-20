@@ -45,6 +45,7 @@
 		horAdjust: 0,
 		top: 'auto',
 		left: 'auto',
+		width: 'auto',
 		closeOther: true, //to close other already opened context menu
 		containment: window,
 		closeOnResize: true,
@@ -370,14 +371,12 @@
 					left = cWidth - menuWidth;
 				}
 
-
 				//applying css property
 				var cssObj = {
 					'position': (cntWin || btChck) ? 'fixed' : 'absolute',
 					'height': '',
 					'width': ''
 				};
-
 
 				//to get position from offset parent
 				if (option.left != 'auto') {
@@ -402,6 +401,9 @@
 					cssObj.bottom = '5px';
 				else
 					cssObj.bottom = '';
+
+				if (option.width == 'trigger')
+					cssObj.width = baseEl.outerWidth(false) + 'px';
 
 				var res = option.beforeDisplay.call(this, clbckData, e);
 				if (res != 1) {

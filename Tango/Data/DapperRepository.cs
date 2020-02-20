@@ -435,6 +435,12 @@ namespace Tango.Data
 
 			Database.Connection.ExecuteScalar(query, where.parms, Database.Transaction);
 		}
+
+		public bool Any(Expression<Func<T, bool>> predicate)
+		{
+			return Count(Enumerable.Empty<T>().AsQueryable().Where(predicate).Expression) > 0;
+		}
+
 	}
 
 	public class UpdateSetCollection<TEntity>

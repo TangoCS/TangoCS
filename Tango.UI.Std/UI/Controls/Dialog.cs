@@ -92,7 +92,7 @@ namespace Tango.UI.Controls
 		}
 
         ///TODO. Сделать автоматическое прокидываение всех полей из контекста.
-		public static void AddYesNoDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null, bool warningMode = false)
+		public static void AddYesNoDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null, bool warningMode = false, Action<ButtonTagAttributes> btnAttrs = null)
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
 				if (IDPrefix != null)
@@ -104,9 +104,10 @@ namespace Tango.UI.Controls
 								
                                 if(!warningMode)
                                     w.SubmitButton(a => {
-									if (!w.Context.ResponseType.IsEmpty())
-										a.Data("responsetype", w.Context.ResponseType);
-								}, "Да");
+										if (!w.Context.ResponseType.IsEmpty())
+											a.Data("responsetype", w.Context.ResponseType);
+										a.Set(btnAttrs);
+									}, "Да");
 								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), warningMode ? "Назад" : "Нет");
 							});
 						});
