@@ -41,6 +41,7 @@ namespace Tango.UI.Std
 
 		protected virtual bool EnableViews => true;
 		protected virtual bool EnableQuickSearch => true;
+		protected virtual bool ShowFilterV2 => false;
 
 		protected virtual void Toolbar(LayoutWriter w)
 		{
@@ -52,6 +53,19 @@ namespace Tango.UI.Std
 				ToolbarRight(t);
 			});
 			//w.PopPrefix();
+
+			if (ShowFilterV2)
+			{
+				w.Div(a => a.Class("inlinefilter selectedcontainer"), () => {
+					foreach (var i in Filter.Criteria)
+					{
+						w.Div(a => a.Class("selected object"), () => {
+							w.Span(i.Title + " " + i.Condition + " " + i.ValueTitle);
+							w.A(a => a.Class("close").OnClickPostEvent(Filter.OnInlineCriterionRemoved).DataParm("removedcriterion", i.GetHashCode().ToString()), () => w.Icon("close"));
+						});
+					}
+				});
+			}
 		}
 
 		protected void ToCreateNew<T>(MenuBuilder t, Action<ActionLink> attrs = null)
@@ -169,7 +183,7 @@ namespace Tango.UI.Std
 		protected void RenderToolbar(ApiResponse response)
 		{
 			if (Sections.RenderToolbar)
-				response.ReplaceWidget(Sections.ContentToolbar, Toolbar);
+				response.AddWidget(Sections.ContentToolbar, Toolbar);
 		}
 
 		private void OnFilter(ApiResponse response)

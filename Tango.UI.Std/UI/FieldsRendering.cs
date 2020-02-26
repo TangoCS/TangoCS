@@ -114,7 +114,7 @@ namespace Tango.UI
 		public static void ToggleSwitch(this LayoutWriter w, IField<bool> field, Grid grid = Grid.OneWhole, Action<InputTagAttributes> attributes = null)
 		{
             if (field.FireOnChangeEvent && !field.Disabled && field.IsVisible)                         
-                attributes += a => a.Data("e", $"On{field.ID}Changed");
+                attributes += a => a.Data("e", $"On{field.ID}Changed").Data("r", field.EventReceiver);
             
             w.FormField(field.ID, field.Caption, () => w.ToggleSwitch(field.ID, field.Value, field.Disabled, attributes), 
 				false, field.ShowDescription ? field.Description : null, field.IsVisible );           

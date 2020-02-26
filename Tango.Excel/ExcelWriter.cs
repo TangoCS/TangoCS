@@ -205,7 +205,7 @@ namespace Tango.Excel
             return null;
         }
 
-		public void WriteFormula(string formula, bool r1c1format = true)
+		public void WriteFormula(string formula, bool r1c1format = true, bool calculate = false)
 		{
 			if (formula != null)
 			{
@@ -213,7 +213,10 @@ namespace Tango.Excel
 					s.Cells[r, c].FormulaR1C1 = formula;
 				else
 					s.Cells[r, c].Formula = formula;
-			}
+
+                if (calculate)
+                    s.Cells[r, c].Calculate();
+            }
 		}
 
 		public void Style(string range, Action<ExcelRange> cells)
