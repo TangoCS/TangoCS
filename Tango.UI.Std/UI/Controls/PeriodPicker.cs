@@ -113,6 +113,80 @@ namespace Tango.UI.Controls
 		}
 	}
 
+	public class DateTimePicker : ViewComponent, IFieldValueProvider<DateTime>
+	{
+		DateLists dFrom;
+
+		public int MinYear { get; set; }
+
+		public DateTime DefaultValue { get; set; }
+
+		public override string ID { 
+			get => base.ID; 
+			set 
+			{ 
+				if (dFrom != null)
+					dFrom.ID = value + "_dperiodfromtime"; 
+				base.ID = value; 
+			} 
+		}
+
+		public override void OnInit()
+		{
+			dFrom = CreateControl<DateLists>(ID + "_dperiodfromtime", c => {
+				c.ShowDays = false;
+				c.ShowTime = true;
+				c.TimeOnly = true;
+				c.MinutesStep = 30;
+				c.DefaultValue = DefaultValue;
+			});
+		}
+
+		public void Render(LayoutWriter w, DateTime? from = null, DateTime? to = null, Action<InputTagAttributes> attributes = null)
+		{
+			dFrom.MinYear = MinYear;
+			dFrom.MaxYear = DateTime.Today.Year;
+
+			if (from == null)
+				from = Context.GetDateTimeArg(ID + "_" + "dperiodfrom");
+
+			var options = new CalendarOptions { ShowButton = false, Attributes = attributes };
+
+			w.Div(a => a.Class("datetimepicker").ID(ID), () => {
+				w.Div(() => {
+					w.Calendar(ID + "_dperiodfrom", from ?? DefaultValue, options);
+					dFrom.Render(w, from ?? DefaultValue);
+				});
+				w.Span(a => a.ID(ID + "_btn").Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
+			});
+
+			w.AddClientAction("Calendar", "setup", f => new {
+				inputField = f(ID + "_dperiodfrom"),
+				button = f(ID + "_btn"),
+				showOthers = true,
+				weekNumbers = false,
+				showTime = options.ShowTime,
+				ifFormat = options.ShowTime ? "%d.%m.%Y %H:%M" : "%d.%m.%Y",
+				timeFormat = "24",
+				dateStatusFunc = options.UseCalendarDays ? "jscal_calendarDate" : null
+			});
+		}
+
+		public DateTime Value
+		{
+			get
+			{
+				var from = Context.GetDateTimeArg(ID + "_" + "dperiodfrom");
+				var fromtime = dFrom.Value?.TimeOfDay;
+
+				if (from == null) return DefaultValue;
+				if (fromtime != null) from = from.Value.Add(fromtime.Value);
+
+				return from.Value;
+			}
+		}
+	}
+
 	public class PeriodValue
 	{
 		public DateTime From { get; }

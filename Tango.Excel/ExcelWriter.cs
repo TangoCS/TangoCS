@@ -42,7 +42,12 @@ namespace Tango.Excel
             p = new ExcelPackage(template);
         }
 
-		public void CreateVBAProject()
+        public ExcelWriter(System.IO.FileInfo fileInfo)
+        {
+            p = new ExcelPackage(fileInfo);
+        }
+
+        public void CreateVBAProject()
 		{
 			p.Workbook.CreateVBAProject();
 		}
@@ -58,6 +63,13 @@ namespace Tango.Excel
 			s = p.Workbook.Worksheets[index];
 			Sheet(inner);
 		}
+
+        public void Sheet(int index, string name, Action inner)
+        {
+            s = p.Workbook.Worksheets[index];
+            s.Name = name;
+            Sheet(inner);
+        }
 
         public List<string> WorkSheetsNames()
         {
