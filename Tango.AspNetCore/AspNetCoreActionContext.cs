@@ -32,7 +32,7 @@ namespace Tango.AspNetCore
 
 			if (ctx.Request.ContentType != null)
 			{
-				if (ctx.Request.ContentType.ToLower() == "application/json; charset=utf-8")
+				if (ctx.Request.ContentType.ToLower().In("application/json; charset=utf-8", "text/plain;charset=utf-8"))
 				{
 					var jsonString = string.Empty;
 					if (ctx.Request.Body.CanSeek)

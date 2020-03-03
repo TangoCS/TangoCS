@@ -91,7 +91,7 @@ namespace Tango.UI.Std
 
 		
 
-		protected bool ProcessSubmit(ApiResponse response)
+		public bool ProcessSubmit(ApiResponse response)
 		{
 			if (Context.FormData == null) return false;
 

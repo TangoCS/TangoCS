@@ -110,6 +110,16 @@ namespace Tango.Data
 				sb.Append(")");
 				return m;
 			}
+			else if (m.Method.Name == "ToString")
+			{
+				ParseToStringMethod(m);
+				return m;
+			}
+			else if (m.Method.Name == "Substring")
+			{
+				ParseSubstringMethod(m);
+				return m;
+			}
 			else if (m.Method.Name == "get_Item")
 			{
 				sb.Append((m.Arguments[0] as ConstantExpression).Value);
@@ -184,6 +194,9 @@ namespace Tango.Data
 						break;
 					case ExpressionType.GreaterThanOrEqual:
 						cursb.Append(" >= ");
+						break;
+					case ExpressionType.Add:
+						cursb.Append(" + ");
 						break;
 					default:
 						throw new NotSupportedException(string.Format("The binary operator '{0}' is not supported", b.NodeType));
@@ -347,6 +360,24 @@ namespace Tango.Data
 			_beforeConstant = $"'%'{_dialect.Concat}";
 			Visit(m.Arguments[0]);
 			_beforeConstant = "";
+		}
+
+		protected void ParseSubstringMethod(MethodCallExpression m)
+		{
+			sb.Append(" substring(");
+			Visit(m.Object);
+			sb.Append(",");
+			Visit(m.Arguments[0]);
+			sb.Append(",");
+			Visit(m.Arguments[1]);
+			sb.Append(")");
+		}
+
+		protected void ParseToStringMethod(MethodCallExpression m)
+		{
+			sb.Append(" cast(");
+			Visit(m.Object);
+			sb.Append(" as nvarchar(max))");
 		}
 
 		private void ParseOrderByExpression(MethodCallExpression expression, string order)
