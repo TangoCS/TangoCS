@@ -279,7 +279,9 @@ namespace Tango.UI
 			if (b)
 			{
 				var str = s.ToString();
-				str = str.Replace(" ", "").Replace(",", str.Contains(".") ? "" : ".");
+
+                //первый Replace - замена обычно пробела, второй - замена &nbsp
+				str = str.Replace(" ", "").Replace(" ", "").Replace(",", str.Contains(".") ? "" : ".");
 				b = decimal.TryParse(str, NumberStyles.Number, CultureInfo.InvariantCulture, out res);
 			}
 			if (b) return res;
