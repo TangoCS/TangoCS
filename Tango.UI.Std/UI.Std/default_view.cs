@@ -96,7 +96,7 @@ namespace Tango.UI.Std
 		{
 		}
 
-		public override void OnLoad(ApiResponse response)
+        public override void OnLoad(ApiResponse response)
 		{
 			if (ObjectNotExists)
 			{
@@ -121,8 +121,9 @@ namespace Tango.UI.Std
 					response.AddWidget(Sections.ContentTitle, FormTitle);
 				if (Sections.SetPageTitle)
 					response.AddWidget("#title", FormTitle);
+                response.AddWidget("contenthelp", RenderHelp);
 
-				foreach (var r in Context.EventReceivers)
+                foreach (var r in Context.EventReceivers)
 					if (r.ParentElement.ClientID == this.ClientID && r is Tabs tabs)
 						tabs.OnPageSelect(response);
 			}
@@ -138,9 +139,11 @@ namespace Tango.UI.Std
 			public bool RenderToolbar { get; set; } = true;
 			public bool RenderContentTitle { get; set; } = true;
 		}
-	}
 
-	public abstract class default_view<T, TKey> : default_view<T>
+        protected virtual void RenderHelp(LayoutWriter w) { }
+    }
+
+    public abstract class default_view<T, TKey> : default_view<T>
 		where T : class, IWithKey<T, TKey>, new()
 	{
 		[Inject]

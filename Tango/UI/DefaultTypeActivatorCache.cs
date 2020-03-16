@@ -72,7 +72,12 @@ namespace Tango.UI
 			else
 				return null;
 		}
-	}
+
+        public Dictionary<string, (Type Type, IActionInvoker Invoker)> GetAll()
+        {
+            return _typeActivatorCache;
+        }
+    }
 
 	public class InvokeableTypeInfo
 	{

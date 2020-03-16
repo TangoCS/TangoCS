@@ -163,7 +163,7 @@ namespace Tango.UI.Std
 			//w.PopPrefix();
 		}
 
-		public virtual void RenderPlaceHolder(LayoutWriter w)
+        public virtual void RenderPlaceHolder(LayoutWriter w)
 		{
 			w.PushPrefix(ID);
 			w.Div(a => a.ID("container").DataContainer("default", w.IDPrefix), () => {
@@ -217,7 +217,8 @@ namespace Tango.UI.Std
 				response.AddWidget(Sections.ContentTitle, FormTitle);
 			if (Sections.SetPageTitle)
 				response.AddWidget("#title", FormTitle);
-			RenderPaging(response);
+            response.AddWidget("contenthelp", RenderHelp);
+            RenderPaging(response);
 		}
 
 		public void OnQuickSearch(ApiResponse response)
@@ -260,7 +261,9 @@ namespace Tango.UI.Std
 			public bool RenderPaging { get; set; } = true;
 			public bool RenderListOnLoad { get; set; } = true;			
 		}
-	}
+
+        protected virtual void RenderHelp(LayoutWriter w) { }
+    }
 
 
 	public abstract class default_list<TEntity, TResult> : abstract_list<TEntity, TResult>

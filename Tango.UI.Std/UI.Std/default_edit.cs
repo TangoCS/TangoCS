@@ -68,8 +68,9 @@ namespace Tango.UI.Std
 		{
 			response.AddWidget("contenttitle", Title);
 			response.AddWidget("#title", Title);
+            response.AddWidget("contenthelp", RenderHelp);
 
-			if (ObjectNotExists)
+            if (ObjectNotExists)
 			{
 				response.AddWidget("form", w => {
 					w.Div(Resources.Get("Common.ObjectNotExists"));
@@ -88,8 +89,6 @@ namespace Tango.UI.Std
 					response.AddWidget("contenttoolbar", w => Toolbar(w));
 			}
 		}
-
-		
 
 		public bool ProcessSubmit(ApiResponse response)
 		{
@@ -159,7 +158,9 @@ namespace Tango.UI.Std
 		{
 			response.WithNamesFor(this).ReplaceWidget(field.GetFieldID(), content);
 		}
-	}
+
+        protected virtual void RenderHelp(LayoutWriter w) { }
+    }
 
 	public abstract class default_edit<T> : default_edit
 		where T : class

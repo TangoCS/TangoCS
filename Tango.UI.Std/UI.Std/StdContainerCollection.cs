@@ -4,17 +4,22 @@ namespace Tango.UI.Std
 {
 	public class DefaultContainer : ViewContainer
 	{
-		public override void Render(ApiResponse response)
+        public override void Render(ApiResponse response)
 		{
 			//response.AddAdjacentWidget("#container", "content", AdjacentHTMLPosition.BeforeEnd, w => {
 			response.AddWidget("container", w => {
 				w.Div(a => a.ID("content").DataContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 					{
-						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
-							w.Div(a => a.ID("cramb"), "&nbsp;");
-							w.H2(a => a.ID("contenttitle"), "");
-						});
+                        w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
+                            w.Div(a => a.ID("cramb"), "&nbsp;");
+                            w.Table(() => {
+                                w.Tr(() => {
+                                    w.Td(() => w.H2(a => a.ID("contenttitle"), ""));
+                                    w.Td(a => a.Style("vertical-align:top"), () => w.Div(a => a.ID("contenthelp"), ""));
+                                });
+                            });
+                        });
 					}
 					w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody"));
@@ -49,8 +54,13 @@ namespace Tango.UI.Std
 					{
 						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
 							w.Div(a => a.ID("cramb"), "&nbsp;");
-							w.H2(a => a.ID("contenttitle"), "");
-						});
+                            w.Table(() => {
+                                w.Tr(() => {
+                                    w.Td(() => w.H2(a => a.ID("contenttitle"), ""));
+                                    w.Td(a => a.Style("vertical-align:top"), () => w.Div(a => a.ID("contenthelp"), ""));
+                                });
+                            });
+                        });
 					}
 					w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody").Class("contentbodypadding"), () => {
@@ -87,8 +97,13 @@ namespace Tango.UI.Std
 					{
 						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
 							w.Div(a => a.ID("cramb"), "&nbsp;");
-							w.H2(a => a.ID("contenttitle"), "");
-						});
+                            w.Table(() => {
+                                w.Tr(() => {
+                                    w.Td(() => w.H2(a => a.ID("contenttitle"), ""));
+                                    w.Td(a => a.Style("vertical-align:top"), () => w.Div(a => a.ID("contenthelp"), ""));
+                                });
+                            });
+                        });
 					}
 					w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody").Class("contentbodypadding"), () => {
@@ -110,8 +125,13 @@ namespace Tango.UI.Std
 					{
 						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
 							w.Div(a => a.ID("cramb"), "&nbsp;");
-							w.H2(a => a.ID("contenttitle"), "");
-						});
+                            w.Table(() => {
+                                w.Tr(() => {
+                                    w.Td(() => w.H2(a => a.ID("contenttitle"), ""));
+                                    w.Td(a => a.Style("vertical-align:top"), () => w.Div(a => a.ID("contenthelp"), ""));
+                                });
+                            });
+                        });
 					}
 					w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.Class("twocolumnsrow masterdetailcols"), () => {
