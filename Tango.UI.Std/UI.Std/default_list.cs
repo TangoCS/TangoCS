@@ -217,7 +217,7 @@ namespace Tango.UI.Std
 				response.AddWidget(Sections.ContentTitle, FormTitle);
 			if (Sections.SetPageTitle)
 				response.AddWidget("#title", FormTitle);
-            response.AddWidget("contenthelp", RenderHelp);
+
             RenderPaging(response);
 		}
 
@@ -261,8 +261,6 @@ namespace Tango.UI.Std
 			public bool RenderPaging { get; set; } = true;
 			public bool RenderListOnLoad { get; set; } = true;			
 		}
-
-        protected virtual void RenderHelp(LayoutWriter w) { }
     }
 
 

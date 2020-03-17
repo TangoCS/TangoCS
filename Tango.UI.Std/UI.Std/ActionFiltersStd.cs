@@ -23,12 +23,14 @@ namespace Tango.UI.Std
 					if (t != null)
 					{
 						containerObj = Activator.CreateInstance(t) as ViewContainer;
-					}
+                        containerObj?.InjectProperties(ctx.RequestServices);
+                    }
 				}
 				else if (element is IContainerItem)
 				{
 					containerObj = (element as IContainerItem).GetContainer();
-					selfContainerView = true;
+                    containerObj?.InjectProperties(ctx.RequestServices);
+                    selfContainerView = true;
 				}
 			}
 		}

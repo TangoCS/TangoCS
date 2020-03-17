@@ -121,7 +121,6 @@ namespace Tango.UI.Std
 					response.AddWidget(Sections.ContentTitle, FormTitle);
 				if (Sections.SetPageTitle)
 					response.AddWidget("#title", FormTitle);
-                response.AddWidget("contenthelp", RenderHelp);
 
                 foreach (var r in Context.EventReceivers)
 					if (r.ParentElement.ClientID == this.ClientID && r is Tabs tabs)
@@ -139,8 +138,6 @@ namespace Tango.UI.Std
 			public bool RenderToolbar { get; set; } = true;
 			public bool RenderContentTitle { get; set; } = true;
 		}
-
-        protected virtual void RenderHelp(LayoutWriter w) { }
     }
 
     public abstract class default_view<T, TKey> : default_view<T>

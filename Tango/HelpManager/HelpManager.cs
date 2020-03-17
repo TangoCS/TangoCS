@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Tango.UI;
 
 namespace Tango.Help
 {
@@ -19,7 +20,12 @@ namespace Tango.Help
 			return s;
 		}
 
-		public Guid this[string name]
+        public void Render(LayoutWriter w)
+        {
+            
+        }
+
+        public Guid this[string name]
 		{
 			get { return Get(name); }
 		}

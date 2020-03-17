@@ -1,4 +1,5 @@
 ﻿using System;
+using Tango.UI;
 
 namespace Tango
 {
@@ -7,5 +8,6 @@ namespace Tango
 		Guid Get(string name);
         Guid this[string name] { get; }
         void ResetCache();
+        void Render(LayoutWriter w);
     }
 }

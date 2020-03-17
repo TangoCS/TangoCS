@@ -4,6 +4,9 @@ namespace Tango.UI.Std
 {
 	public class DefaultContainer : ViewContainer
 	{
+        [Inject]
+        protected IHelpManager manager { get; set; }
+
         public override void Render(ApiResponse response)
 		{
 			//response.AddAdjacentWidget("#container", "content", AdjacentHTMLPosition.BeforeEnd, w => {
@@ -16,7 +19,7 @@ namespace Tango.UI.Std
                             w.Table(() => {
                                 w.Tr(() => {
                                     w.Td(() => w.H2(a => a.ID("contenttitle"), ""));
-                                    w.Td(a => a.Style("vertical-align:top"), () => w.Div(a => a.ID("contenthelp"), ""));
+                                    w.Td(a => a.Style("vertical-align:top"), () => w.Div(() => manager?.Render(w)));
                                 });
                             });
                         });
@@ -43,8 +46,12 @@ namespace Tango.UI.Std
 
 	public class EditEntityContainer : ViewContainer
 	{
-		public ContainerWidth Width { get; set; } = ContainerWidth.WidthStd;
+        [Inject]
+        protected IHelpManager manager { get; set; }
+
+        public ContainerWidth Width { get; set; } = ContainerWidth.WidthStd;
 		public bool AddDataCtrl { get; set; }
+
 		public override void Render(ApiResponse response)
 		{
 			//response.AddAdjacentWidget("#container", "content", AdjacentHTMLPosition.BeforeEnd, w => {
@@ -57,7 +64,7 @@ namespace Tango.UI.Std
                             w.Table(() => {
                                 w.Tr(() => {
                                     w.Td(() => w.H2(a => a.ID("contenttitle"), ""));
-                                    w.Td(a => a.Style("vertical-align:top"), () => w.Div(a => a.ID("contenthelp"), ""));
+                                    w.Td(a => a.Style("vertical-align:top"), () => w.Div(() => manager?.Render(w)));
                                 });
                             });
                         });
@@ -86,7 +93,10 @@ namespace Tango.UI.Std
 
 	public class ViewEntityContainer : ViewContainer
 	{
-		public ContainerWidth Width { get; set; } = ContainerWidth.WidthStd;
+        [Inject]
+        protected IHelpManager manager { get; set; }
+
+        public ContainerWidth Width { get; set; } = ContainerWidth.WidthStd;
 
 		public override void Render(ApiResponse response)
 		{
@@ -100,7 +110,7 @@ namespace Tango.UI.Std
                             w.Table(() => {
                                 w.Tr(() => {
                                     w.Td(() => w.H2(a => a.ID("contenttitle"), ""));
-                                    w.Td(a => a.Style("vertical-align:top"), () => w.Div(a => a.ID("contenthelp"), ""));
+                                    w.Td(a => a.Style("vertical-align:top"), () => w.Div(() => manager?.Render(w)));
                                 });
                             });
                         });
@@ -116,7 +126,10 @@ namespace Tango.UI.Std
 
 	public class ListMasterDetailContainer : ViewContainer
 	{
-		public override void Render(ApiResponse response)
+        [Inject]
+        protected IHelpManager manager { get; set; }
+
+        public override void Render(ApiResponse response)
 		{
 			//response.AddAdjacentWidget("container", "content", AdjacentHTMLPosition.BeforeEnd, w => {
 			response.AddWidget("container", w => {
@@ -128,7 +141,7 @@ namespace Tango.UI.Std
                             w.Table(() => {
                                 w.Tr(() => {
                                     w.Td(() => w.H2(a => a.ID("contenttitle"), ""));
-                                    w.Td(a => a.Style("vertical-align:top"), () => w.Div(a => a.ID("contenthelp"), ""));
+                                    w.Td(a => a.Style("vertical-align:top"), () => w.Div(() => manager?.Render(w)));
                                 });
                             });
                         });

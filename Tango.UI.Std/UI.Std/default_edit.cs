@@ -68,7 +68,6 @@ namespace Tango.UI.Std
 		{
 			response.AddWidget("contenttitle", Title);
 			response.AddWidget("#title", Title);
-            response.AddWidget("contenthelp", RenderHelp);
 
             if (ObjectNotExists)
 			{
@@ -158,8 +157,6 @@ namespace Tango.UI.Std
 		{
 			response.WithNamesFor(this).ReplaceWidget(field.GetFieldID(), content);
 		}
-
-        protected virtual void RenderHelp(LayoutWriter w) { }
     }
 
 	public abstract class default_edit<T> : default_edit
