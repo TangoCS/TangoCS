@@ -51,6 +51,13 @@ namespace Tango.UI.Controls
 		{
 			Class = "console";
 		}
+
+		public override void Render(ApiResponse response)
+		{
+			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
+				w.DialogControl(a => a.Class(Class).Data("reuse", "1"), () => w.DialogControlBody(null, null, null, null, null));
+			});
+		}
 	}
 
 	public static class DialogExtensions
