@@ -28,9 +28,9 @@ namespace Tango.UI.Std
 			var notificationContainer = prefix + "_link";
 			var title = Resources.Get(key);
 
-			response.AddWidget("#title", title);
-			response.AddAdjacentWidget("popup-backgroundworker", prefix + "_link", AdjacentHTMLPosition.AfterBegin, w => {
-				w.A(a => a.ID(notificationContainer).Class("task-progress").OnClick($"dialog.open('{prefix}_console')"), () => {
+			response.AddWidget("title", title);
+			response.AddAdjacentWidget("#popup-backgroundworker", notificationContainer, AdjacentHTMLPosition.AfterBegin, w => {
+				w.A(a => a.ID(notificationContainer).Class("task-progress").OnClick($"dialog.open('{prefix}_dialog')"), () => {
 					w.Div(() => {
 						w.Write(title);
 						w.Span("0%");
@@ -42,7 +42,7 @@ namespace Tango.UI.Std
 			});
 			response.AddClientAction("backgroundworker", "init", new {
 				taskUrl,
-				logContainer = ParentElement.ID,
+				logContainer = prefix,
 				notificationContainer
 			});
 		}
