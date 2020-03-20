@@ -27,6 +27,21 @@ namespace Tango.UI.Controls
 		}
 	}
 
+	public class DialogFormContainerNoCloseIcon : DialogFormContainer
+	{
+		public override void Render(ApiResponse response)
+		{
+			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
+				w.DialogControl(DialogExtensions.DialogContainerAttrs(w.Context, Type, w.IDPrefix), () => {
+					w.AjaxForm("form", a => a.DataResultPostponed(1), () => {
+						w.DialogControlBody(null, () => { }, null, null, () => { }, false);
+						w.Hidden(Constants.ReturnUrl, Context.ReturnUrl.Get(1));
+					});
+				});
+			});
+		}
+	}
+
 	public class DialogContainer : ViewContainer
 	{
 		public string Class { get; set; }
@@ -79,14 +94,17 @@ namespace Tango.UI.Controls
 			w.Div(a => a.ID("dialog").Class("modal-dialog").Role("dialog").Aria("modal", "true").DataCtrl("dialog").DataResultHandler().Set(attrs), () => content());
 		}
 
-		internal static void DialogControlBody(this LayoutWriter w, Action title, Action toolbar, Action body, Action bottomToolbar, Action footer)
+		internal static void DialogControlBody(this LayoutWriter w, Action title, Action toolbar, Action body, Action bottomToolbar, Action footer, bool showCloseIcon = true)
 		{
 			w.Div(a => a.Class("modal-container"), () => {
 				w.Div(a => a.Class("modal-header"), () => {
 					w.H3(a => a.ID("title").Class("modal-title"), title);
-					w.Button(a => a.Class("close").Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), () => {
-						w.Span(a => a.Aria("hidden", "true"), () => w.Icon("close"));
-					});
+					if (showCloseIcon)
+					{
+						w.Button(a => a.Class("close").Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), () => {
+							w.Span(a => a.Aria("hidden", "true"), () => w.Icon("close"));
+						});
+					}
 				});
 				if (toolbar != null)
 					w.Div(a => a.ID("toolbar").Class("modal-toolbar"), toolbar);
@@ -147,6 +165,11 @@ namespace Tango.UI.Controls
 		public static ActionLink AsDialog(this ActionLink link, string dialogPrefix = null)
 		{
 			return link.InContainer(typeof(DialogFormContainer), dialogPrefix).KeepTheSameUrl();
+		}
+
+		public static ActionLink AsNoCloseIconDialog(this ActionLink link, string dialogPrefix = null)
+		{
+			return link.InContainer(typeof(DialogFormContainerNoCloseIcon), dialogPrefix).KeepTheSameUrl();
 		}
 
 		public static ActionLink AsConsoleDialog(this ActionLink link, string dialogPrefix = null)
