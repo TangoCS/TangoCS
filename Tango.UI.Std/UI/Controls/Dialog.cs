@@ -27,7 +27,7 @@ namespace Tango.UI.Controls
 		}
 	}
 
-	public class DialogFormContainerNoCloseIcon : DialogFormContainer
+	public class NoCloseIconDialogFormContainer : DialogFormContainer
 	{
 		public override void Render(ApiResponse response)
 		{
@@ -169,7 +169,7 @@ namespace Tango.UI.Controls
 
 		public static ActionLink AsNoCloseIconDialog(this ActionLink link, string dialogPrefix = null)
 		{
-			return link.InContainer(typeof(DialogFormContainerNoCloseIcon), dialogPrefix).KeepTheSameUrl();
+			return link.InContainer(typeof(NoCloseIconDialogFormContainer), dialogPrefix).KeepTheSameUrl();
 		}
 
 		public static ActionLink AsConsoleDialog(this ActionLink link, string dialogPrefix = null)
