@@ -8,11 +8,13 @@ namespace Tango.UI
 {
 	public static class LayoutWriterExtensions
 	{
-		public static void FormField(this LayoutWriter w, string name, Action caption, Action content, bool isRequired = false, Action description = null, bool isVisible = true)
+		public static void FormField(this LayoutWriter w, string name, Action caption, Action content, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null)
 		{
 			w.Tr(a => a.ID(name + "_field").Style(isVisible ? "" : "display:none"), () => {
 				w.Td(a => a.Class("formlabel"), () => {
 					w.Span(a => a.ID(name + "_fieldcaption"), caption);
+					if (!String.IsNullOrEmpty(hint))
+						w.Sup(a => a.Style("margin-left:2px"), () => w.A(a => a.Title(hint), "?"));
 					if (isRequired)
 						w.Span(a => a.ID(name + "_fieldrequired").Class("formvalidation"), "&nbsp;*");
 					if (description != null)
@@ -69,9 +71,9 @@ namespace Tango.UI
 
 	public static class LayoutWriterHelpers
 	{
-		public static void FormField(this LayoutWriter w, string name, string caption, Action content, bool isRequired = false, string description = null, bool isVisible = true)
+		public static void FormField(this LayoutWriter w, string name, string caption, Action content, bool isRequired = false, string description = null, bool isVisible = true, string hint = null)
 		{
-			w.FormField(name, () => w.Write(caption), content, isRequired, description != null ? () => w.Write(description) : (Action)null, isVisible);
+			w.FormField(name, () => w.Write(caption), content, isRequired, description != null ? () => w.Write(description) : (Action)null, isVisible, hint);
 		}
 
 		//public static void FormFieldCaption(this LayoutWriter w, string name, string caption, bool isRequired = false, string description = null)

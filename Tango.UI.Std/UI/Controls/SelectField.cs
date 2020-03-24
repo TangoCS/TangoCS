@@ -276,16 +276,16 @@ namespace Tango.UI.Controls
 
 	public static class LayoutWriterSelectDialogExtensions
 	{
-		public static void FormFieldSelectDialog<TSelected, TSelectedKey>(this LayoutWriter w, string caption, TSelected obj, SelectSingleObjectField<TSelected, TSelectedKey> dialog, bool isRequired = false, string description = null)
+		public static void FormFieldSelectDialog<TSelected, TSelectedKey>(this LayoutWriter w, string caption, TSelected obj, SelectSingleObjectField<TSelected, TSelectedKey> dialog, bool isRequired = false, string description = null, string hint = null)
 			where TSelected : class, IWithKey<TSelected, TSelectedKey>, new()
 		{
-			w.FormField(dialog.ID, caption, () => dialog.Strategy.Render(w, obj), isRequired, description);
+			w.FormField(dialog.ID, caption, () => dialog.Strategy.Render(w, obj), isRequired, description, hint: hint);
 		}
 
-		public static void FormFieldSelectDialog<TSelected, TSelectedKey>(this LayoutWriter w, string caption, IEnumerable<TSelected> obj, SelectMultipleObjectsField<TSelected, TSelectedKey> dialog, bool isRequired = false, string description = null)
+		public static void FormFieldSelectDialog<TSelected, TSelectedKey>(this LayoutWriter w, string caption, IEnumerable<TSelected> obj, SelectMultipleObjectsField<TSelected, TSelectedKey> dialog, bool isRequired = false, string description = null, string hint = null)
 			where TSelected : class, IWithKey<TSelected, TSelectedKey>, IWithTitle, new()
 		{
-			w.FormField(dialog.ID, caption, () => dialog.Strategy.Render(w, obj), isRequired, description);
+			w.FormField(dialog.ID, caption, () => dialog.Strategy.Render(w, obj), isRequired, description, hint: hint);
 		}
 
 		public static void SelectSingleObject<TEntity, TValue, TRefClass, TRefKey>(

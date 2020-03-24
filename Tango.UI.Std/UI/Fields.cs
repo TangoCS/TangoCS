@@ -12,6 +12,7 @@ namespace Tango.UI
 	{
 		string Caption { get; }
 		string Description { get; }
+		string Hint { get; }
 		bool IsRequired { get; }
 		bool IsVisible { get; }
 		bool Disabled { get; }
@@ -75,6 +76,7 @@ namespace Tango.UI
 	public abstract class Field : InteractionFlowElement, IField
 	{
 		public abstract string Caption { get; }
+		public abstract string Hint { get; }
 		public virtual string Description => "";
 		public virtual bool IsRequired => false;
 		public virtual bool IsVisible => true;
@@ -171,6 +173,7 @@ namespace Tango.UI
 	{
 		public override string Caption => Resources.Get(TypeHelper.GetDeclaredType(ViewData), ID);
 		public override string Description => Resources.Get(TypeHelper.GetDeclaredType(ViewData), ID, "description");
+		public override string Hint => Resources.Get(TypeHelper.GetDeclaredType(ViewData), ID, "hint");
 
 		public TEntity ViewData { get; set; }
 		public Type EntityType => typeof(TEntity);
@@ -205,6 +208,21 @@ namespace Tango.UI
 	{
 		public override string Caption => Resources.Get(TypeHelper.GetDeclaredType(ViewData), ID);
 		public override string Description => Resources.Get(TypeHelper.GetDeclaredType(ViewData), ID, "description");
+		string hint;
+		public override string Hint
+		{
+			get
+			{
+				if (hint == null)
+				{
+					if (Resources.TryGet(TypeHelper.GetDeclaredType(ViewData) + "." + ID + "-hint", out hint))
+						return hint;
+					Resources.SetNotFound(TypeHelper.GetDeclaredType(ViewData) + "." + ID + "-hint;" + Caption);
+					hint = "";
+				}
+				return hint;
+			}
+		}
 
 		public TEntity ViewData { get; set; }
 		public Type EntityType => typeof(TEntity);
