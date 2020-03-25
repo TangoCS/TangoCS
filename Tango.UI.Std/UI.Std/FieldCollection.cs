@@ -419,8 +419,11 @@ namespace Tango.UI.Std
 		public static void AddCellWithSortAndFilter<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
 			Expression<Func<TEntity, T>> expr, RenderRowCellDelegate<TResult> render)
 		{
-			var title = f.GetTitle(expr);
-			f.AddHeader(title, new HeaderOptions {
+			var key = expr.GetResourceKey();
+			var titleShort = f.GetTitle(expr);
+			var title = f.Resources.Get(key);
+
+			f.AddHeader(titleShort, new HeaderOptions {
 				SortSeqNo = f.AddSort(expr),
 				FilterSeqNo = f.AddFilterCondition(title, expr)
 			});
@@ -430,8 +433,11 @@ namespace Tango.UI.Std
 		public static void AddCellWithSortAndFilter<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
 			Expression<Func<TEntity, T>> expr, Action<LayoutWriter, TResult> render)
 		{
-			var title = f.GetTitle(expr);
-			f.AddHeader(title, new HeaderOptions {
+			var key = expr.GetResourceKey();
+			var titleShort = f.GetTitle(expr);
+			var title = f.Resources.Get(key);
+
+			f.AddHeader(titleShort, new HeaderOptions {
 				SortSeqNo = f.AddSort(expr),
 				FilterSeqNo = f.AddFilterCondition(title, expr)
 			});
@@ -441,8 +447,11 @@ namespace Tango.UI.Std
 		public static void AddCellWithSortAndFilter<TEntity, TResult, T, T2>(this IFieldCollection<TEntity, TResult> f,
 			Expression<Func<TEntity, T>> expr, Func<TResult, T2> value)
 		{
-			var title = f.GetTitle(expr);
-			f.AddHeader(title, new HeaderOptions {
+			var key = expr.GetResourceKey();
+			var titleShort = f.GetTitle(expr);
+			var title = f.Resources.Get(key);
+
+			f.AddHeader(titleShort, new HeaderOptions {
 				SortSeqNo = f.AddSort(expr),
 				FilterSeqNo = f.AddFilterCondition(title, expr)
 			});
@@ -485,8 +494,11 @@ namespace Tango.UI.Std
 		public static void AddHeaderWithSortAndFilter<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
 			Expression<Func<TEntity, T>> expr)
 		{
-			var title = f.GetTitle(expr);
-			f.AddHeader(title, new HeaderOptions {
+			var key = expr.GetResourceKey();
+			var titleShort = f.GetTitle(expr);
+			var title = f.Resources.Get(key);
+
+			f.AddHeader(titleShort, new HeaderOptions {
 				SortSeqNo = f.AddSort(expr),
 				FilterSeqNo = f.AddFilterCondition(title, expr)
 			});
@@ -503,8 +515,11 @@ namespace Tango.UI.Std
 		public static void AddHeaderWithSortAndFilter<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
 			Action<ThTagAttributes> attrs, Expression<Func<TEntity, T>> expr)
 		{
-			var title = f.GetTitle(expr);
-			f.AddHeader(attrs, title, new HeaderOptions {
+			var key = expr.GetResourceKey();
+			var titleShort = f.GetTitle(expr);
+			var title = f.Resources.Get(key);
+
+			f.AddHeader(attrs, titleShort, new HeaderOptions {
 				SortSeqNo = f.AddSort(expr),
 				FilterSeqNo = f.AddFilterCondition(title, expr)
 			});
