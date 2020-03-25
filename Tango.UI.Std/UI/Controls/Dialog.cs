@@ -116,7 +116,7 @@ namespace Tango.UI.Controls
 			});
 		}
 
-        ///TODO. Сделать автоматическое прокидываение всех полей из контекста.
+		///TODO. Сделать автоматическое прокидываение всех полей из контекста.
 		public static void AddYesNoDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null, bool warningMode = false, Action<ButtonTagAttributes> btnAttrs = null)
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
@@ -126,9 +126,9 @@ namespace Tango.UI.Controls
 					w.AjaxForm("form", a => a.DataResult(1), () => {
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
 							w.ButtonsBarRight(() => {
-								
-                                if(!warningMode)
-                                    w.SubmitButton(a => {
+
+								if (!warningMode)
+									w.SubmitButton(a => {
 										if (!w.Context.ResponseType.IsEmpty())
 											a.Data("responsetype", w.Context.ResponseType);
 										a.Set(btnAttrs);
@@ -142,7 +142,25 @@ namespace Tango.UI.Controls
 					w.PopPrefix();
 			});
 		}
-
+		public static void AddYesNoDialogWidget2(this ApiResponse response, string title, Action<LayoutWriter> content, Func<ActionResult> action, string IDPrefix = null, Action<ButtonTagAttributes> btnAttrs = null, string dataKey = null, string dataValue = null, string value = null)
+		{
+			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
+				if (IDPrefix != null)
+					w.PushPrefix(IDPrefix);
+				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix), () => {
+					w.AjaxForm("form", a => a.DataResult(1), () => {
+						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
+							w.ButtonsBarRight(() => {
+								w.SubmitButton(a => a.Set(btnAttrs).DataEvent(action).Data(dataKey, dataValue).Value(value), "Да");
+								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), "Нет");
+							});
+						});
+					});
+				});
+				if (IDPrefix != null)
+					w.PopPrefix();
+			});
+		}
 		public static void AddOKDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null)
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
