@@ -204,9 +204,9 @@ namespace Tango.UI
 			w.FormField(name, caption, () => w.RadioButtonList(name, value, items, a => a.Set(attributes)));
 		}
 
-		public static void FormFieldCheckBoxList(this LayoutWriter w, string name, string caption, string[] value, IEnumerable<SelectListItem> items, Action<TagAttributes> attributes = null)
+		public static void FormFieldCheckBoxList(this LayoutWriter w, string name, string caption, string[] value, IEnumerable<SelectListItem> items, Action<TagAttributes> attributes = null, string hint = null)
 		{
-			w.FormField(name, caption, () => w.CheckBoxList(name, value, items, a => a.Set(attributes)));
+			w.FormField(name, caption, () => w.CheckBoxList(name, value, items, a => a.Set(attributes)), hint: hint);
 		}
 
 		public static void FormFieldPassword(this LayoutWriter w, string name, string caption, bool isRequired = false, string description = null, Action<InputTagAttributes> attributes = null)
