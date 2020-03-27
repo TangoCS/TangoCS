@@ -498,7 +498,7 @@ a.actionbtn, a.actionimg {
 
 .formbody input[readonly], .formbody input:read-only,
 .formbody textarea[readonly], .formbody textarea:read-only,
-.formbody select.readonly, .formbody select option:disabled,
+.formbody select[disabled], .formbody select.readonly, .formbody select option:disabled,
 .formbody div[data-disabled] {
     background-color: #e5e5e5;
 }
