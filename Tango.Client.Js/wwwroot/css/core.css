@@ -496,9 +496,12 @@ a.actionbtn, a.actionimg {
 	padding: 0px;
 }
 
-.formbody input[readonly], .formbody input:read-only,
-.formbody textarea[readonly], .formbody textarea:read-only,
+.formbody input[readonly], 
+.formbody textarea[readonly],
 .formbody select[disabled], .formbody select.readonly, .formbody select option:disabled,
 .formbody div[data-disabled] {
+    background-color: #e5e5e5;
+}
+.formbody input:read-only, .formbody textarea:read-only {
     background-color: #e5e5e5;
 }
