@@ -200,12 +200,14 @@ namespace Tango.UI.Std
 				else
 					response.RedirectTo(Context, a => a.ToReturnUrl(1)
 						.WithArg(Filter.ParameterName, Filter.PersistentFilter.ID)
-						.RemoveArg(Paging.ParameterName));
-			}
+						.RemoveArg(Paging.ParameterName)
+                        .RemoveArg("qsearch"));
+            }
 			else
 				response.RedirectTo(Context, a => a.ToReturnUrl(1)
 						.RemoveArg(Filter.ParameterName)
-						.RemoveArg(Paging.ParameterName));
+						.RemoveArg(Paging.ParameterName)
+                        .RemoveArg("qsearch"));
 		}
 
 		public override void OnLoad(ApiResponse response)
