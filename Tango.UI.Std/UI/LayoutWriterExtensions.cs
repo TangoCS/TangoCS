@@ -164,7 +164,7 @@ namespace Tango.UI
 
 		public static void ToggleSwitch(this LayoutWriter w, string name, bool value, bool disabled = false, bool read_only = false, Action<InputTagAttributes> attributes = null)
 		{
-			w.CheckBox(name, value, a =>  { a.Set(attributes); if (disabled) a.Disabled(true); if (read_only) a.Readonly(true).OnChange("event.preventDefault(); this.checked = !this.checked; return false;"); });
+			w.CheckBox(name, value, a =>  { a.Set(attributes); if (disabled) a.Disabled(true); if (read_only) a.Readonly(true); });
 			w.AddClientAction("$", f => "#" + f(name), ("btnSwitch", f => new { Theme = "Light" }));
 		}
 
