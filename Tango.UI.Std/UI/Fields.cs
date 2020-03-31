@@ -76,7 +76,7 @@ namespace Tango.UI
 	public abstract class Field : InteractionFlowElement, IField
 	{
 		public abstract string Caption { get; }
-		public abstract string Hint { get; }
+		public virtual string Hint => "";
 		public virtual string Description => "";
 		public virtual bool IsRequired => false;
 		public virtual bool IsVisible => true;
