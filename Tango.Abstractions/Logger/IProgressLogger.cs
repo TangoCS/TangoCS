@@ -2,6 +2,7 @@
 
 namespace Tango.Logger
 {
+	public interface IRealTimeProgressLogger : IProgressLogger { }
 	public interface IProgressLogger
 	{
 		void SetItemsCount(int itemsCount);
