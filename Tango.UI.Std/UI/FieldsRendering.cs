@@ -118,8 +118,8 @@ namespace Tango.UI
             if (field.FireOnChangeEvent && !field.Disabled && field.IsVisible)                         
                 attributes += a => a.Data("e", $"On{field.ID}Changed").Data("r", field.EventReceiver);
             
-            w.FormField(field.ID, field.Caption, () => w.ToggleSwitch(field.ID, field.Value, field.Disabled, attributes), 
-				false, field.ShowDescription ? field.Description : null, field.IsVisible, field.Hint );           
+            w.FormField(field.ID, field.Caption, () => w.ToggleSwitch(field.ID, field.Value, field.Disabled, field.ReadOnly, attributes), 
+				false, field.ShowDescription ? field.Description : null, field.IsVisible, field.Hint);           
         }
 
 		public static void DropDownList<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, Grid grid = Grid.OneWhole, Action<SelectTagAttributes> attrs = null)

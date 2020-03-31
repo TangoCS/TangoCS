@@ -165,6 +165,7 @@ var domActions = function () {
 					if (e.value != e.options[i].value)
 						e.options[i].setAttribute('disabled', 'disabled');
 				}
+                e.classList.add("readonly");
 			}
 			else
 				e.setAttribute(args.attrName, args.attrValue);
@@ -175,6 +176,7 @@ var domActions = function () {
 				for (i = 0; i < e.options.length; i++) {
 					e.options[i].removeAttribute('disabled');
 				}
+                e.classList.remove("readonly");
 			}
 			else
 				e.removeAttribute(args.attrName);
