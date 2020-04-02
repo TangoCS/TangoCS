@@ -111,9 +111,9 @@ namespace Tango.UI.Controls
 				{
 					w.DropDownForElement(paging.ID + "_cnt", () => {
 						if (pageIdx > 2)
-							w.ActionLink(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, 1).WithTitle(r => r.Get("Common.Paging.First")), a => a.Data(dc));
+							w.ActionLink(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, 1).WithTitle(r => r.Get("Common.Paging.First")), a => a.Data(dc).DataContainerExternal(paging.ParentElement.ClientID));
                         if (pageCount > 1 && pageCount - pageIdx >= 2)
-							w.ActionLink(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, pageCount).WithTitle(r => r.Get("Common.Paging.Last")),a => a.Data(dc));
+							w.ActionLink(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, pageCount).WithTitle(r => r.Get("Common.Paging.Last")),a => a.Data(dc).DataContainerExternal(paging.ParentElement.ClientID));
 					});
 				}
 			});
