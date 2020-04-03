@@ -91,9 +91,9 @@ namespace Tango.UI
 			w.FormField(prop.Name, w.Resources.Caption(prop), () => w.Write(value), false, w.Resources.Description(prop));
 		}
 
-		public static void FormFieldReadOnly(this LayoutWriter w, string name, string caption, string value, string description = null)
+		public static void FormFieldReadOnly(this LayoutWriter w, string name, string caption, string value, string description = null, string hint = null)
 		{
-			w.FormField(name, caption, () => w.Span(a => a.ID(name), value), false, description);
+			w.FormField(name, caption, () => w.Span(a => a.ID(name), value), false, description, hint: hint);
 		}
 
 		public static void FormField(this LayoutWriter w, IMetaProperty prop, Action content)

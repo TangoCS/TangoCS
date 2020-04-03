@@ -122,7 +122,7 @@ namespace Tango.UI
 				false, field.ShowDescription ? field.Description : null, field.IsVisible, field.Hint);           
         }
 
-		public static void DropDownList<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, Grid grid = Grid.OneWhole, Action<SelectTagAttributes> attrs = null)
+		public static void DropDownList<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, Grid grid = Grid.OneWhole, Action<SelectTagAttributes> attrs = null, string hint = null)
 		{
 			var value = typeof(TValue).IsEnum ?
 				field.Value == null ? "" : Convert.ChangeType(field.Value, Enum.GetUnderlyingType(typeof(TValue))).ToString() : 
