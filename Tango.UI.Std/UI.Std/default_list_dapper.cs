@@ -14,19 +14,23 @@ namespace Tango.UI.Std
 		protected virtual IQueryable<TResult> Data => Enumerable.Empty<TResult>().AsQueryable();
 		protected virtual IQueryable<TResult> DefaultOrderBy(IQueryable<TResult> data) { return data; }
 
-		IRepository<TResult> _repository;
+		IRepository<TResult> _repository = null;
 
-		public override void OnInit()
+		IRepository<TResult> Repository
 		{
-			base.OnInit();
-			_repository = GetRepository();
+			get
+			{
+				if (_repository == null)
+					_repository = GetRepository();
+				return _repository;
+			}
 		}
 
 		protected virtual IRepository<TResult> GetRepository() => Database.Repository<TResult>();
 
 		protected override int GetCount()
 		{
-			return _repository.Count(ApplyFilter(Data).Expression);
+			return Repository.Count(ApplyFilter(Data).Expression);
 		}
 
 		IEnumerable<TResult> _pageData = null;
@@ -41,12 +45,12 @@ namespace Tango.UI.Std
 			var filtered = ApplyFilter(Data);
 			var q = Paging.Apply(Sorter.Count > 0 ? Sorter.Apply(filtered) : DefaultOrderBy(filtered), true);
 
-			var (query, parms) = Filter.ApplyFilterSql(_repository.AllObjectsQuery);
-			_repository.AllObjectsQuery = query;
+			var (query, parms) = Filter.ApplyFilterSql(Repository.AllObjectsQuery);
+			Repository.AllObjectsQuery = query;
 			foreach (var pair in parms)
-				_repository.Parameters.Add(pair.Key, pair.Value);
+				Repository.Parameters.Add(pair.Key, pair.Value);
 
-			_pageData = _repository.List(q.Expression);
+			_pageData = Repository.List(q.Expression);
 
 			return _pageData;
 		}

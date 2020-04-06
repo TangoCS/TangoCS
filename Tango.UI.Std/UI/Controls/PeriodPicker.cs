@@ -73,7 +73,36 @@ namespace Tango.UI.Controls
 			{
 				w.AddClientAction("daterangepickerproxy", "init", f => new {
 					triggerid = f(ID + "_" + "btn" + ID),
-					onselectcallback = JSOnSelectCallback
+					onselectcallback = JSOnSelectCallback,
+					pickerparms = new {
+						showDropdowns = true,
+						timePicker = ShowTime,
+						timePicker24Hour = ShowTime,
+						timePickerIncrement = 30,
+						ranges = new Dictionary<string, DateTime[]> {
+							["Сегодня"] = new DateTime[] { new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day), new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddDays(1).AddMinutes(-30) },
+							["Вчера"] = new DateTime[] { new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddDays(-1), new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddMinutes(-30) },
+							["Текущий месяц"] = new DateTime[] { new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1), new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMonths(1).AddMinutes(-30) },
+							["Предыдущий месяц"] = new DateTime[] { new DateTime(DateTime.Today.AddMonths(-1).Year, DateTime.Today.AddMonths(-1).Month, 1), new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMinutes(-30) }
+						},
+						locale = new {
+							format = ShowTime ? "DD.MM.YYYY HH:mm" : "DD.MM.YYYY",
+							separator = " - ",
+							applyLabel = "Применить",
+							cancelLabel = "Отмена",
+							fromLabel = "С",
+							toLabel = "По",
+							customRangeLabel = "Пользовательский",
+							weekLabel = "W",
+							daysOfWeek = new string[] { "Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб" },
+							monthNames = new string[] { "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь" },
+							firstDay = 1
+						},
+						showCustomRangeLabel = false,
+						alwaysShowCalendars = true,
+						startDate = DefaultValue?.From,
+						endDate = DefaultValue?.To
+					}
 				});
 			}
 

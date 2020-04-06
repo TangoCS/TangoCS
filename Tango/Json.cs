@@ -13,11 +13,23 @@ namespace Tango
 			get
 			{
 				return new JsonSerializerSettings {
-					ContractResolver = new CamelCasePropertyNamesContractResolver(),
+					ContractResolver = new CamelCaseExceptDictionaryResolver(),
 					Converters = new List<JsonConverter> { new KeyValueListConverter(), new StringEnumConverter(true) }
 				};
 			}
 		}
+	}
+
+	public class CamelCaseExceptDictionaryResolver : CamelCasePropertyNamesContractResolver
+	{
+		#region Overrides of DefaultContractResolver
+
+		protected override string ResolveDictionaryKey(string dictionaryKey)
+		{
+			return dictionaryKey;
+		}
+
+		#endregion
 	}
 
 	public class KeyValue<TKey, TValue>

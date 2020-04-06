@@ -766,3 +766,82 @@ div.tabs2 + div.tabs2 {
 	background-color: #7fe0f8;
 	background-image: linear-gradient(#cef8ff, #7fe0f8);
 }
+
+
+/* period picker*/
+.periodpicker {
+	position: relative;
+	display: block;
+	padding: 0 2px;
+	background-color: white;
+	border: 1px solid #aaa;
+	min-width: 200px;
+}
+
+.periodpicker div, .datetimepicker div {
+	display: inline;
+	margin-right: 3px;
+}
+
+.periodpicker input, .periodpicker select {
+	display: inline;
+	border: none;
+	line-height: inherit;
+	outline: none;
+	background-color: transparent;
+}
+
+.periodpicker input[type=text].cal-date, .datetimepicker input[type=text].cal-date {
+	width: 75px;
+	padding: 0 0 0 3px;
+}
+
+.periodpicker .datelists .hours, .periodpicker .datelists .minutes,
+.datetimepicker .datelists .hours, .datetimepicker .datelists .minutes {
+	width: 20px;
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+	.periodpicker {
+		border: 1px inset #999;
+	}
+
+	.periodpicker .datelists .hours, .periodpicker .datelists .minutes,
+	.datetimepicker .datelists .hours, .datetimepicker .datelists .minutes {
+		width: 25px;
+	}
+}
+
+.periodpicker > div:first-of-type, .periodpicker > div:last-of-type {
+	background-color: #c2dbff;
+	border-radius: 7px;
+	padding: 0 3px;
+}
+
+.periodpicker .cal-openbtn {
+	position: absolute;
+	/*top: 6px;
+	bottom: 4px;*/
+	right: 3px;
+	margin-left: 0;
+	font-size: inherit;
+	width: inherit;
+	height: inherit;
+}
+
+.periodpicker select, .datetimepicker select {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	text-align: center;
+}
+
+.periodpicker select::-ms-expand, .datetimepicker select::-ms-expand {
+	display: none
+}
+
+.periodpicker select:focus {
+	-webkit-box-shadow: inset 0px 0px 0px 1px #205081;
+	-moz-box-shadow: inset 0px 0px 0px 1px #205081;
+	box-shadow: inset 0px 0px 0px 1px #205081;
+}
