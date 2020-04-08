@@ -45,10 +45,14 @@ namespace Tango.UI.Std
 			var filtered = ApplyFilter(Data);
 			var q = Paging.Apply(Sorter.Count > 0 ? Sorter.Apply(filtered) : DefaultOrderBy(filtered), true);
 
-			var (query, parms) = Filter.ApplyFilterSql(Repository.AllObjectsQuery);
-			Repository.AllObjectsQuery = query;
-			foreach (var pair in parms)
-				Repository.Parameters.Add(pair.Key, pair.Value);
+			if (Repository.AllObjectsQuery.StartsWith("@"))
+			{
+				var (filters, parms) = Filter.GetSqlFilters();
+				Repository.AllObjectsQuery = EmbeddedResourceManager.GetString(typeof(TResult), Repository.AllObjectsQuery.Substring(1), filters);
+
+				foreach (var pair in parms)
+					Repository.Parameters.Add(pair.Key, pair.Value);
+			}
 
 			_pageData = Repository.List(q.Expression);
 

@@ -47,23 +47,28 @@ namespace Tango.UI.Controls
 
             if (from == null)
                 from = Context.GetDateTimeArg(ID + "_" + "dperiodfrom");
-            if (to == null)
+			if (from == null)
+				from = DefaultValue?.From;
+
+			if (to == null)
                 to = Context.GetDateTimeArg(ID + "_" + "dperiodto");
+			if (to == null)
+				to = DefaultValue?.To;
 
 			var options = new CalendarOptions { ShowButton = false,Attributes = attributes };
 
             //w.PushID(ID);
 			w.Div(a => a.Class("periodpicker").ID(ID), () => {
 				w.Div(() => {
-					if (UseCalendar && ShowDays) w.Calendar(ID + "_" + "dperiodfrom", from ?? DefaultValue?.From, options);
+					if (UseCalendar && ShowDays) w.Calendar(ID + "_" + "dperiodfrom", from, options);
 					if (!UseCalendar || ShowTime)
-						dPeriodFrom.Render(w, from ?? DefaultValue?.From);
+						dPeriodFrom.Render(w, from);
 				});
 				w.Div("&ndash;");
 				w.Div(() => {
-					if (UseCalendar && ShowDays) w.Calendar(ID + "_" + "dperiodto", to ?? DefaultValue?.To, options);
+					if (UseCalendar && ShowDays) w.Calendar(ID + "_" + "dperiodto", to, options);
 					if (!UseCalendar || ShowTime)
-						dPeriodTo.Render(w, to ?? DefaultValue?.To);
+						dPeriodTo.Render(w, to);
 				});
 				if (UseCalendar && ShowDays)
 					w.Span(a => a.ID(ID + "_" + "btn" + ID).Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
@@ -100,8 +105,8 @@ namespace Tango.UI.Controls
 						},
 						showCustomRangeLabel = false,
 						alwaysShowCalendars = true,
-						startDate = DefaultValue?.From,
-						endDate = DefaultValue?.To
+						startDate = from,
+						endDate = to
 					}
 				});
 			}

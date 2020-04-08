@@ -239,7 +239,7 @@ namespace Tango.UI.Controls
 			return val;
 		}
 
-		public (string query, IDictionary<string, object> parms) ApplyFilterSql(string query, List<Field> fieldList, List<FilterItem> criteria)
+		public (List<string> filters, IDictionary<string, object> parms) GetSqlFilters(List<Field> fieldList, List<FilterItem> criteria)
 		{
 			var names = new List<string>();
 			var parms = new Dictionary<string, object>();
@@ -258,33 +258,7 @@ namespace Tango.UI.Controls
 			if (names.Count == 0)
 				names.Add("null");
 
-			var sb = new StringBuilder(query.Length);
-
-			using (var reader = new StringReader(query))
-			{
-				string line;
-				bool remove = false;
-				while ((line = reader.ReadLine()) != null)
-				{
-					if (line.StartsWith("--#filter"))
-					{
-						line = line.Trim().Substring(9);
-						line = line.Remove(line.Length - 1);
-						var blockNames = line.Split(',').Select(s => s.Trim());
-						if (blockNames.Intersect(names).Count() == 0)
-							remove = true;
-						continue;
-					}
-					if (line.StartsWith("--}"))
-					{
-						remove = false;
-						continue;
-					}
-					if (!remove) sb.AppendLine(line);
-				}
-			}
-
-			return (sb.ToString(), parms);
+			return (names, parms);
 		}
 
 		Expression<Func<T, bool>> Or<T>(Expression<Func<T, bool>> expr1, Expression<Func<T, bool>> expr2)
@@ -510,7 +484,8 @@ namespace Tango.UI.Controls
 		Date,
 		DateTime,
 		Boolean,
-        Guid
+        Guid,
+		Sql
 	}
 
 	public enum FilterItemOperation
