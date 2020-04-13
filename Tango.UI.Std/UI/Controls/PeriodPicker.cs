@@ -47,23 +47,28 @@ namespace Tango.UI.Controls
 
             if (from == null)
                 from = Context.GetDateTimeArg(ID + "_" + "dperiodfrom");
-            if (to == null)
+			if (from == null)
+				from = DefaultValue?.From;
+
+			if (to == null)
                 to = Context.GetDateTimeArg(ID + "_" + "dperiodto");
+			if (to == null)
+				to = DefaultValue?.To;
 
 			var options = new CalendarOptions { ShowButton = false,Attributes = attributes };
 
             //w.PushID(ID);
 			w.Div(a => a.Class("periodpicker").ID(ID), () => {
 				w.Div(() => {
-					if (UseCalendar && ShowDays) w.Calendar(ID + "_" + "dperiodfrom", from ?? DefaultValue?.From, options);
+					if (UseCalendar && ShowDays) w.Calendar(ID + "_" + "dperiodfrom", from, options);
 					if (!UseCalendar || ShowTime)
-						dPeriodFrom.Render(w, from ?? DefaultValue?.From);
+						dPeriodFrom.Render(w, from);
 				});
 				w.Div("&ndash;");
 				w.Div(() => {
-					if (UseCalendar && ShowDays) w.Calendar(ID + "_" + "dperiodto", to ?? DefaultValue?.To, options);
+					if (UseCalendar && ShowDays) w.Calendar(ID + "_" + "dperiodto", to, options);
 					if (!UseCalendar || ShowTime)
-						dPeriodTo.Render(w, to ?? DefaultValue?.To);
+						dPeriodTo.Render(w, to);
 				});
 				if (UseCalendar && ShowDays)
 					w.Span(a => a.ID(ID + "_" + "btn" + ID).Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
@@ -73,7 +78,36 @@ namespace Tango.UI.Controls
 			{
 				w.AddClientAction("daterangepickerproxy", "init", f => new {
 					triggerid = f(ID + "_" + "btn" + ID),
-					onselectcallback = JSOnSelectCallback
+					onselectcallback = JSOnSelectCallback,
+					pickerparms = new {
+						showDropdowns = true,
+						timePicker = ShowTime,
+						timePicker24Hour = ShowTime,
+						timePickerIncrement = 30,
+						ranges = new Dictionary<string, DateTime[]> {
+							["Сегодня"] = new DateTime[] { new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day), new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddDays(1).AddMinutes(-30) },
+							["Вчера"] = new DateTime[] { new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddDays(-1), new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddMinutes(-30) },
+							["Текущий месяц"] = new DateTime[] { new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1), new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMonths(1).AddMinutes(-30) },
+							["Предыдущий месяц"] = new DateTime[] { new DateTime(DateTime.Today.AddMonths(-1).Year, DateTime.Today.AddMonths(-1).Month, 1), new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMinutes(-30) }
+						},
+						locale = new {
+							format = ShowTime ? "DD.MM.YYYY HH:mm" : "DD.MM.YYYY",
+							separator = " - ",
+							applyLabel = "Применить",
+							cancelLabel = "Отмена",
+							fromLabel = "С",
+							toLabel = "По",
+							customRangeLabel = "Пользовательский",
+							weekLabel = "W",
+							daysOfWeek = new string[] { "Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб" },
+							monthNames = new string[] { "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь" },
+							firstDay = 1
+						},
+						showCustomRangeLabel = false,
+						alwaysShowCalendars = true,
+						startDate = from,
+						endDate = to
+					}
 				});
 			}
 

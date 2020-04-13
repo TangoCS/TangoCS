@@ -15,7 +15,7 @@ namespace Tango.UI
 		public List<ClientAction> ClientActions { get; private set; } = new List<ClientAction>();
 		public HashSet<string> Includes { get; private set; } = new HashSet<string>();
 
-		public LayoutWriter(ActionContext context, StringBuilder sb) : base(sb) 
+		LayoutWriter(ActionContext context, StringBuilder sb) : base(sb) 
 		{
 			Context = context;
 		}
@@ -25,7 +25,7 @@ namespace Tango.UI
 			Context = context;
 		}
 
-		public LayoutWriter(ActionContext context, string idPrefix, StringBuilder sb) : base(idPrefix, sb) 
+		LayoutWriter(ActionContext context, string idPrefix, StringBuilder sb) : base(idPrefix, sb) 
 		{
 			Context = context;
 		}

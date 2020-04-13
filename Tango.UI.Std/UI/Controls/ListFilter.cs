@@ -109,13 +109,13 @@ namespace Tango.UI.Controls
 		{
 			if (!_isPersistentLoaded) LoadPersistent();
 			if (Criteria.Count == 0) return query;
-			return _engine.ApplyFilter(query, FieldList, Criteria);
+			return _engine.ApplyFilter(query, FieldList, Criteria.Where(x => x.FieldType != FieldType.Sql).ToList());
 		}
 
-		public (string query, IDictionary<string, object> parms) ApplyFilterSql(string query)
+		public (List<string> filters, IDictionary<string, object> parms) GetSqlFilters()
 		{
 			if (!_isPersistentLoaded) LoadPersistent();
-			return _engine.ApplyFilterSql(query, FieldList, Criteria);
+			return _engine.GetSqlFilters(FieldList, Criteria.Where(x => x.FieldType == FieldType.Sql).ToList());
 		}
 
 		public void OpenFilterDialog(ApiResponse response)
@@ -205,7 +205,6 @@ namespace Tango.UI.Controls
 		{
 			var (item, success) = ProcessSubmit(response);
 			if (!success) return;
-			if (item != null) Criteria.Add(item);
 
 			response.WithNamesAndWritersFor(this);
 			response.AddWidget(eExpression, w => RenderSelectedFields(w));
@@ -256,7 +255,6 @@ namespace Tango.UI.Controls
 
 			var (item, success) = ProcessSubmit(response);
 			if (!success) return;
-			if (item != null) Criteria.Add(item);
 
 			//LoadPersistent();
 			PersistentFilter.Criteria = Criteria;
@@ -289,27 +287,41 @@ namespace Tango.UI.Controls
 		(FilterItem item, bool validationSuccess) ProcessSubmit(ApiResponse response)
 		{
 			var v = new ValidationMessageCollection();
+			FilterItem item = null;
 
 			var f = Context.GetIntArg(ddlField, -1);
-			var cond = Context.GetArg(ddlCondition);
-			if (f < 0) return (null, true);
 
-			var field = FieldList[f];
-			var op = field.Operators[cond];
-
-			FilterItem item = new FilterItem
+			if (f >= 0)
 			{
-				Title = field.Title,
-				Condition = cond,
-				FieldType = op.FieldType,
-				Value = op.FieldType == FieldType.Boolean ? 
-					Context.GetBoolArg(eFieldValue + field.SeqNo).ToString() : 
-					Context.GetArg(eFieldValue + field.SeqNo),
-			};
+				var cond = Context.GetArg(ddlCondition);
+				var field = FieldList[f];
+				var op = field.Operators[cond];
 
-			item.ValueTitle = op.StringValue(item);
+				item = new FilterItem
+				{
+					Title = field.Title,
+					Condition = cond,
+					FieldType = op.FieldType,
+					Value = op.FieldType == FieldType.Boolean ?
+						Context.GetBoolArg(eFieldValue + field.SeqNo).ToString() :
+						Context.GetArg(eFieldValue + field.SeqNo),
+				};
 
-			ValidateItem(field, item, v);
+				item.ValueTitle = op.StringValue(item);
+
+				Criteria.Add(item);
+
+				ValidateItem(field, item, v);
+			}
+
+			var duplicates = from c in Criteria
+							 where c.FieldType == FieldType.Sql
+							 group c by c.Title into grp
+							 where grp.Count() > 1
+							 select grp.Key;
+
+			foreach (var d in duplicates)
+				v.Add("entitycheck", eFieldValue, $"Множественные критерии \"{d}\" не поддерживаются");
 
 			if (v.Count > 0)
 			{
@@ -317,8 +329,9 @@ namespace Tango.UI.Controls
 				response.Success = false;
 			}
 			else
-				response.AddWidget(eValidation, w => w.Write(""));
-
+			{
+				response.AddWidget(eValidation, w => w.Write("")); 
+			}
 
 			return (item, v.Count == 0);
 		}
@@ -395,7 +408,6 @@ namespace Tango.UI.Controls
 
 			var (item, success) = ProcessSubmit(response);
 			if (!success) return;
-			if (item != null) Criteria.Add(item);
 
 			PersistentFilter.Criteria = Criteria;
 
@@ -715,13 +727,15 @@ namespace Tango.UI.Controls
 
 			return f.SeqNo;
 		}
-		public int AddConditionSqlDDL<TVal>(string title, string column, IEnumerable<SelectListItem> values)
+		public int AddConditionSqlDDL<TVal>(string title, string column, IEnumerable<SelectListItem> values, List<string> operators = null)
 		{
+			var ops = operators ?? new List<string> { "=" };
 			var f = CreateOrGetCondition(title);
 			var col = (column, typeof(TVal));
 			var data = FieldCriterionDDL(f.SeqNo, col, values);
-			f.Operators["="] = data;
-			f.Operators["<>"] = data;
+			data.FieldType = FieldType.Sql;
+			foreach (var op in ops)
+				f.Operators.Add(op, data);
 			return f.SeqNo;
 		}
 		public int AddConditionSqlSelectSingleObject<TRefClass, TRefKey>(string title, string column, SelectSingleObjectField<TRefClass, TRefKey> dialog)
