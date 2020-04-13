@@ -133,8 +133,7 @@ namespace Tango.UI.Controls
 						if (totime != null) to = to.Value.Add(totime.Value);
 					}
 					else
-					{
-						///Извлечь часы и минуты из def и прибавить их к to и from 
+					{						
 						if (fromtime != null) from = from.Value.AddHours(DefaultValue.From.Hour).AddMinutes(DefaultValue.From.Minute);
 						if (totime != null) to = to.Value.AddHours(DefaultValue.To.Hour).AddMinutes(DefaultValue.To.Minute);
 					}
