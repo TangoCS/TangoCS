@@ -6,6 +6,7 @@ using OfficeOpenXml;
 using System.Globalization;
 using AngleSharp.Css.Parser;
 using AngleSharp.Css.Dom;
+using System.Xml;
 
 namespace Tango.Excel
 {
@@ -32,22 +33,72 @@ namespace Tango.Excel
             classes[@class] = cells;
         }
 
-        public ExcelWriter()
+        public ExcelWriter(bool fullPrecision = true)
         {
-            p = new ExcelPackage();            
-        }
-
-        public ExcelWriter(System.IO.Stream template)
+            p = new ExcelPackage();
+			SetFullPrecisionAttribute(p, fullPrecision);
+		}
+		
+		public ExcelWriter(System.IO.Stream template)
         {
             p = new ExcelPackage(template);
         }
 
         public ExcelWriter(System.IO.FileInfo fileInfo)
         {
-            p = new ExcelPackage(fileInfo);
-        }
+            p = new ExcelPackage(fileInfo);		
 
-        public void CreateVBAProject()
+		}
+
+		private const string CalculationPropertiesNodeName = "calcPr";
+		private const string FullPrecisionAttributeName = "fullPrecision";
+		private const string FullPrecisionOffValue = "0";		
+		private void SetFullPrecisionAttribute(ExcelPackage ep, bool fullPrecision)
+		{
+			var attributeCollection = GetCalculationPropertiesAttributeCollection(ep); // If we can't get the attribute collection, then we can't set the attribute 
+			if (attributeCollection == null) return;
+			var fullPrecisionAttr = GetAttribute(ep, FullPrecisionAttributeName);
+			if (fullPrecision)
+			{
+				if (fullPrecisionAttr != null)
+					attributeCollection.Remove(fullPrecisionAttr);
+				else
+				{
+					if (fullPrecisionAttr == null)
+					{ // easiest way to set the value of the attribute 
+						var newAttr = ep.Workbook.WorkbookXml.CreateAttribute(FullPrecisionAttributeName);
+						newAttr.Value = FullPrecisionOffValue;
+
+						attributeCollection.Append(newAttr);
+					}
+					else
+					{
+						fullPrecisionAttr.Value = FullPrecisionOffValue;
+					}
+				}
+			}
+			
+		}
+		private XmlAttribute GetAttribute(ExcelPackage ep, string attributeName)
+		{
+			var attributeCollection = GetCalculationPropertiesAttributeCollection(ep); // return null if fullPrecision does not exists 
+			return attributeCollection?[attributeName];
+		}
+		private XmlAttributeCollection GetCalculationPropertiesAttributeCollection(ExcelPackage ep)
+		{
+			var xmlNode = GetCalculationPropertiesNode(ep); if (xmlNode == null || xmlNode.Attributes?.Count == 0) return null; return xmlNode.Attributes;
+		}
+		private XmlNode GetCalculationPropertiesNode(ExcelPackage ep)
+		{
+			var xmlNodeList = ep.Workbook.WorkbookXml.GetElementsByTagName(CalculationPropertiesNodeName);
+
+			if (xmlNodeList.Count == 0)
+				return null;
+
+			return xmlNodeList[0];
+		}
+
+		public void CreateVBAProject()
 		{
 			p.Workbook.CreateVBAProject();
 		}
@@ -657,4 +708,6 @@ namespace Tango.Excel
 			a.Extended(Xlsx.NoMerge, "1");
 		}
 	}
+
+
 }
