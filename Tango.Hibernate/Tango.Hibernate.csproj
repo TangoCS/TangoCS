@@ -17,6 +17,7 @@
 
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>Tango.Hibernate.snk</AssemblyOriginatorKeyFile>
+    <RunAnalyzersDuringBuild>false</RunAnalyzersDuringBuild>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">

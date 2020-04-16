@@ -271,14 +271,6 @@ namespace Tango.UI.Std
 			});
 			return updFields;
 		}
-
-		protected virtual void WriteObjectChanges<TEntity, TKey>(TEntity obj) where TEntity : IWithKey<TEntity, TKey>
-		{
-			if (CreateObjectMode)
-				EntityAudit?.WriteObjectChange<TEntity, TKey>(obj, EntityAuditAction.Insert, null);
-			else
-				EntityAudit?.WriteObjectChange<TEntity, TKey>(obj, EntityAuditAction.Update, Tracker.GetChanges(ViewData));
-		}
 	}
 
 	public abstract class default_edit<T, TKey> : default_edit<T>
@@ -308,6 +300,14 @@ namespace Tango.UI.Std
 
 		protected override void Submit(ApiResponse response)
 		{
+			if (EntityAudit != null)
+			{
+				if (CreateObjectMode)
+					EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Insert, null);
+				else
+					EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Update, Tracker.GetChanges(ViewData));
+			}
+
 			if (CreateObjectMode && BulkMode)
 			{
 				var sel = GetArg(Constants.SelectedValues);
@@ -334,7 +334,7 @@ namespace Tango.UI.Std
 			Action writeObjectChanges = () =>
 			{
 				Context.GetService<IDatabase>().Transaction = DataContext.Transaction;
-				WriteObjectChanges<T, TKey>(ViewData);
+				EntityAudit?.WriteObjectChange();
 			};
 			if (!DataContext.AfterSaveActions.Contains(writeObjectChanges))
 				DataContext.AfterSaveActions.Add(writeObjectChanges);
@@ -373,11 +373,18 @@ namespace Tango.UI.Std
 		{
 			var rep = Database.Repository<T>();
 
+			if (EntityAudit != null)
+			{
+				if (CreateObjectMode)
+					EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Insert, null);
+				else
+					EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Update, Tracker.GetChanges(ViewData));
+			}
+
 			if (CreateObjectMode)
 				InTransaction(() =>
 				{
 					rep.Create(ViewData);
-					WriteObjectChanges<T, TKey>(ViewData);
 				});
 			else if (BulkMode)
 			{
@@ -396,7 +403,6 @@ namespace Tango.UI.Std
 				InTransaction(() =>
 				{
 					rep.Update(ViewData);
-					WriteObjectChanges<T, TKey>(ViewData);
 				});
 				
 			}
@@ -409,6 +415,7 @@ namespace Tango.UI.Std
 				BeforeSaveEntity();
 				action();
 				AfterSaveEntity();
+				EntityAudit?.WriteObjectChange();
 				tran.Commit();
 			}
 		}
