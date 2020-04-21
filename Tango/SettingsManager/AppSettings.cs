@@ -4,7 +4,7 @@ namespace Tango.SettingsManager
 {
 	public class AppSettings : IPersistentSettings
 	{
-        public static void ResetCache()
+        public void ResetCache()
         {
 			Settings = null;
         }

@@ -4,7 +4,7 @@
 	{
 		string Get(string name, string defaultValue = "");
 		bool GetBool(string name);
-
-		string this[string name] { get; }
+        void ResetCache();
+        string this[string name] { get; }
 	}
 }
