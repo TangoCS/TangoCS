@@ -8,13 +8,13 @@ namespace Tango.UI
 {
 	public static class LayoutWriterExtensions
 	{
-		public static void FormField(this LayoutWriter w, string name, Action caption, Action content, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null)
+		public static void FormField(this LayoutWriter w, string name, Action caption, Action content, Grid grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null)
 		{
 			w.Tr(a => a.ID(name + "_field").Style(isVisible ? "" : "display:none"), () => {
 				w.Td(a => a.Class("formlabel"), () => {
 					w.Span(a => a.ID(name + "_fieldcaption"), caption);
-					if (!String.IsNullOrEmpty(hint))
-						w.Sup(a => a.Style("margin-left:2px"), () => w.A(a => a.Title(hint), "?"));
+					if (!string.IsNullOrEmpty(hint))
+						w.Sup(a => a.Style("margin-left:2px").Title(hint), "?");
 					if (isRequired)
 						w.Span(a => a.ID(name + "_fieldrequired").Class("formvalidation"), "&nbsp;*");
 					if (description != null)
@@ -71,9 +71,9 @@ namespace Tango.UI
 
 	public static class LayoutWriterHelpers
 	{
-		public static void FormField(this LayoutWriter w, string name, string caption, Action content, bool isRequired = false, string description = null, bool isVisible = true, string hint = null)
+		public static void FormField(this LayoutWriter w, string name, string caption, Action content, Grid grid = Grid.OneWhole, bool isRequired = false, string description = null, bool isVisible = true, string hint = null)
 		{
-			w.FormField(name, () => w.Write(caption), content, isRequired, description != null ? () => w.Write(description) : (Action)null, isVisible, hint);
+			w.FormField(name, () => w.Write(caption), content, grid, isRequired, description != null ? () => w.Write(description) : (Action)null, isVisible, hint);
 		}
 
 		//public static void FormFieldCaption(this LayoutWriter w, string name, string caption, bool isRequired = false, string description = null)
@@ -81,24 +81,24 @@ namespace Tango.UI
 		//	w.FormFieldCaption(name, () => w.Write(caption), isRequired, description);
 		//}
 
-		public static void FormFieldReadOnly<T, TValue>(this LayoutWriter w, IMetaProperty<T, TValue> prop, T model)
+		public static void FormFieldReadOnly<T, TValue>(this LayoutWriter w, IMetaProperty<T, TValue> prop, T model, Grid grid = Grid.OneWhole)
 		{
-			w.FormField(prop.Name, w.Resources.Caption(prop), () => w.Write(prop.GetStringValue(model)), false, w.Resources.Description(prop));
+			w.FormField(prop.Name, w.Resources.Caption(prop), () => w.Write(prop.GetStringValue(model)), grid, false, w.Resources.Description(prop));
 		}
 
-		public static void FormFieldReadOnly(this LayoutWriter w, IMetaProperty prop, string value)
+		public static void FormFieldReadOnly(this LayoutWriter w, IMetaProperty prop, string value, Grid grid = Grid.OneWhole)
 		{
-			w.FormField(prop.Name, w.Resources.Caption(prop), () => w.Write(value), false, w.Resources.Description(prop));
+			w.FormField(prop.Name, w.Resources.Caption(prop), () => w.Write(value), grid, false, w.Resources.Description(prop));
 		}
 
-		public static void FormFieldReadOnly(this LayoutWriter w, string name, string caption, string value, string description = null, string hint = null)
+		public static void FormFieldReadOnly(this LayoutWriter w, string name, string caption, string value, Grid grid = Grid.OneWhole, string description = null, string hint = null)
 		{
-			w.FormField(name, caption, () => w.Span(a => a.ID(name), value), false, description, hint: hint);
+			w.FormField(name, caption, () => w.Span(a => a.ID(name), value), grid, false, description, hint: hint);
 		}
 
-		public static void FormField(this LayoutWriter w, IMetaProperty prop, Action content)
+		public static void FormField(this LayoutWriter w, IMetaProperty prop, Action content, Grid grid = Grid.OneWhole)
 		{
-			w.FormField(prop.Name, w.Resources.Caption(prop), content, prop.IsRequired, w.Resources.Description(prop));
+			w.FormField(prop.Name, w.Resources.Caption(prop), content, grid, prop.IsRequired, w.Resources.Description(prop));
 		}
 
 		public static void FormFieldTextBox<T, TValue>(this LayoutWriter w, MetaAttribute<T, TValue> prop, T model) where T : class
@@ -117,9 +117,9 @@ namespace Tango.UI
 			);
 		}
 
-		public static void FormFieldTextBox<T>(this LayoutWriter w, string name, string caption, T value, bool isRequired = false, string description = null, Action<InputTagAttributes> attributes = null)
+		public static void FormFieldTextBox<T>(this LayoutWriter w, string name, string caption, T value, Grid grid = Grid.OneWhole, bool isRequired = false, string description = null, Action<InputTagAttributes> attributes = null)
 		{
-			w.FormField(name, caption, () => w.TextBox(name, value?.ToString(), a => a.Set(attributes)), isRequired, description);
+			w.FormField(name, caption, () => w.TextBox(name, value?.ToString(), a => a.Set(attributes)), grid, isRequired, description);
 		}
 
 		public static void FormFieldTextArea<T, TValue>(this LayoutWriter w, MetaAttribute<T, TValue> prop, T model, Action<TextAreaTagAttributes> attributes = null)
@@ -131,9 +131,9 @@ namespace Tango.UI
 		}
 
 
-		public static void FormFieldCalendar(this LayoutWriter w, string name, string caption, DateTime? value, bool isRequired = false, string description = "", EnabledState enabled = EnabledState.Enabled, bool showTime = false)
+		public static void FormFieldCalendar(this LayoutWriter w, string name, string caption, DateTime? value, Grid grid = Grid.OneWhole, bool isRequired = false, string description = "", EnabledState enabled = EnabledState.Enabled, bool showTime = false)
 		{
-			w.FormField(name, caption, () => w.Calendar(name, value, enabled, showTime), isRequired, description);
+			w.FormField(name, caption, () => w.Calendar(name, value, enabled, showTime), grid, isRequired, description);
 		}
 
 		public static void FormFieldCalendar<T>(this LayoutWriter w, MetaAttribute<T, DateTime> prop, T model, EnabledState enabled = EnabledState.Enabled, bool showTime = false)
@@ -152,14 +152,14 @@ namespace Tango.UI
 			);
 		}
 
-		public static void FormFieldCheckBox(this LayoutWriter w, string name, string caption, bool value = false, bool isRequired = false, string description = "")
+		public static void FormFieldCheckBox(this LayoutWriter w, string name, string caption, bool value = false, Grid grid = Grid.OneWhole, bool isRequired = false, string description = "")
 		{
-			w.FormField(name, caption, () => w.CheckBox(name, value), isRequired, description);
+			w.FormField(name, caption, () => w.CheckBox(name, value), grid, isRequired, description);
 		}
 
-		public static void FormFieldToggleSwitch(this LayoutWriter w, string name, string caption, bool value = false, bool isRequired = false, string description = "")
+		public static void FormFieldToggleSwitch(this LayoutWriter w, string name, string caption, bool value = false, Grid grid = Grid.OneWhole, bool isRequired = false, string description = "")
 		{
-			w.FormField(name, caption, () => w.ToggleSwitch(name, value), isRequired, description);
+			w.FormField(name, caption, () => w.ToggleSwitch(name, value), grid, isRequired, description);
 		}
 
 		public static void ToggleSwitch(this LayoutWriter w, string name, bool value, bool disabled = false, bool read_only = false, Action<InputTagAttributes> attributes = null)
@@ -168,11 +168,11 @@ namespace Tango.UI
 			w.AddClientAction("$", f => "#" + f(name), ("btnSwitch", f => new { Theme = "Light" }));
 		}
 
-		public static void FormFieldCheckBox<T>(this LayoutWriter w, MetaAttribute<T, bool> prop, T model)
+		public static void FormFieldCheckBox<T>(this LayoutWriter w, MetaAttribute<T, bool> prop, T model, Grid grid)
 		{
 			w.FormField(prop.Name, w.Resources.Caption(prop), 
-				() => w.CheckBox(prop.Name, model != null ? prop.GetValue(model) : false),
-				false, w.Resources.Description(prop));
+				() => w.CheckBox(prop.Name, model != null ? prop.GetValue(model) : false), 
+				grid, false, w.Resources.Description(prop));
 		}
 
 		public static void FormFieldDropDownList<T, TValue>(this LayoutWriter w, MetaAttribute<T, TValue> prop, T model, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
@@ -193,24 +193,24 @@ namespace Tango.UI
 			);
 		}
 
-		public static void FormFieldDropDownList(this LayoutWriter w, string name, string caption, string value, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
+		public static void FormFieldDropDownList(this LayoutWriter w, string name, string caption, string value, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null, Grid grid = Grid.OneWhole)
 		{
-			w.FormField(name, caption, () => w.DropDownList(name, value, items, a => a.Set(attributes)));
+			w.FormField(name, caption, () => w.DropDownList(name, value, items, a => a.Set(attributes)), grid);
 		}
 
-		public static void FormFieldRadioButtonsList(this LayoutWriter w, string name, string caption, string value, IEnumerable<SelectListItem> items, Action<TagAttributes> attributes = null)
+		public static void FormFieldRadioButtonsList(this LayoutWriter w, string name, string caption, string value, IEnumerable<SelectListItem> items, Action<TagAttributes> attributes = null, Grid grid = Grid.OneWhole)
 		{
-			w.FormField(name, caption, () => w.RadioButtonList(name, value, items, a => a.Set(attributes)));
+			w.FormField(name, caption, () => w.RadioButtonList(name, value, items, a => a.Set(attributes)), grid);
 		}
 
-		public static void FormFieldCheckBoxList(this LayoutWriter w, string name, string caption, string[] value, IEnumerable<SelectListItem> items, Action<TagAttributes> attributes = null, string hint = null)
+		public static void FormFieldCheckBoxList(this LayoutWriter w, string name, string caption, string[] value, IEnumerable<SelectListItem> items, Action<TagAttributes> attributes = null, Grid grid = Grid.OneWhole, string hint = null)
 		{
-			w.FormField(name, caption, () => w.CheckBoxList(name, value, items, a => a.Set(attributes)), hint: hint);
+			w.FormField(name, caption, () => w.CheckBoxList(name, value, items, a => a.Set(attributes)), grid, hint: hint);
 		}
 
-		public static void FormFieldPassword(this LayoutWriter w, string name, string caption, bool isRequired = false, string description = null, Action<InputTagAttributes> attributes = null)
+		public static void FormFieldPassword(this LayoutWriter w, string name, string caption, Grid grid, bool isRequired = false, string description = null, Action<InputTagAttributes> attributes = null)
 		{
-			w.FormField(name, caption, () => w.Password(name, null, a => a.Set(attributes)), isRequired, description);
+			w.FormField(name, caption, () => w.Password(name, null, a => a.Set(attributes)), grid, isRequired, description);
 		}
 	}
 
