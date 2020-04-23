@@ -16,6 +16,7 @@ namespace Tango.Data
 
 		List<StringBuilder> sbWhere = new List<StringBuilder>();
 		List<StringBuilder> sbOrder = new List<StringBuilder>();
+		List<StringBuilder> sbGroupBy = new List<StringBuilder>();
 
 		string _beforeConstant = "";
 		string _afterConstant = "";
@@ -23,8 +24,8 @@ namespace Tango.Data
 		Dictionary<string, object> _parms = new Dictionary<string, object>();
 
 		public string OrderBy { get; private set; } = string.Empty;
-
 		public string WhereClause { get; private set; } = string.Empty;
+		public string GroupBy { get; private set; } = string.Empty;
 
 		public IReadOnlyDictionary<string, object> Parms => _parms;
 
@@ -41,6 +42,7 @@ namespace Tango.Data
 			Visit(expression);
 			WhereClause = sbWhere.Select(o => o.ToString()).Join(" and ");
 			OrderBy = sbOrder.Select(o => o.ToString()).Join(", ");
+			GroupBy = sbGroupBy.Select(o => o.ToString()).Join(", ");
 		}
 
 		private static Expression StripQuotes(Expression e)
@@ -81,6 +83,16 @@ namespace Tango.Data
 			else if (m.Method.Name == "OrderBy")
 			{
 				ParseOrderByExpression(m, "ASC");
+				return Visit(m.Arguments[0]);
+			}
+			else if (m.Method.Name == "GroupBy")
+			{
+				sb = new StringBuilder();
+				sbGroupBy.Add(sb);
+
+				var lambda = (LambdaExpression)StripQuotes(m.Arguments[1]);
+				Visit(lambda.Body);
+
 				return Visit(m.Arguments[0]);
 			}
 			else if (m.Method.Name == "OrderByDescending")
@@ -125,8 +137,23 @@ namespace Tango.Data
 				sb.Append((m.Arguments[0] as ConstantExpression).Value);
 				return m;
 			}
+			else if (m.Method.Name == "Select")
+			{
+				return Visit(m.Arguments[0]);
+			}
 
 			throw new NotSupportedException(string.Format("The method '{0}' is not supported", m.Method.Name));
+		}
+
+		protected override Expression VisitMemberInit(MemberInitExpression node)
+		{
+			for (int i = 0; i < node.Bindings.Count; i++)
+			{
+				Visit((node.Bindings[i] as MemberAssignment).Expression);
+				if (i < node.Bindings.Count - 1)
+					sb.Append(", ");
+			}
+			return node;
 		}
 
 		protected override Expression VisitUnary(UnaryExpression u)

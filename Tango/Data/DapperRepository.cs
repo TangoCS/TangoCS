@@ -212,6 +212,7 @@ namespace Tango.Data
 				var translator = new QueryTranslator(Dialect);
 				translator.Translate(predicate);
 				if (!translator.WhereClause.IsEmpty()) query += " where " + translator.WhereClause;
+				if (!translator.GroupBy.IsEmpty()) query = $"select {translator.GroupBy} from ({query}) t group by {translator.GroupBy} ";
 				if (!translator.OrderBy.IsEmpty()) query += " order by " + translator.OrderBy;
 				if (DBType == DBType.POSTGRESQL)
 				{

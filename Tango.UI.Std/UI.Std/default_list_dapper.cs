@@ -16,7 +16,7 @@ namespace Tango.UI.Std
 
 		IRepository<TResult> _repository = null;
 
-		IRepository<TResult> Repository
+		protected IRepository<TResult> Repository
 		{
 			get
 			{
@@ -33,7 +33,7 @@ namespace Tango.UI.Std
 			return Repository.Count(ApplyFilter(Data).Expression);
 		}
 
-		IEnumerable<TResult> _pageData = null;
+		protected IEnumerable<TResult> _pageData = null;
 
 		protected override IEnumerable<TResult> GetPageData()
 		{
