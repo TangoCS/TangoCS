@@ -133,7 +133,16 @@ namespace Tango.UI
 				w.A(a => a.Set(attrs).SetTarget(link), () => w.Icon(link.Image, link.Title));
 		}
 
-		public static void ActionImageLink(this LayoutWriter w, Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null)
+        public static void Image(this LayoutWriter w, Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null)
+        {
+            if (urlAttributes == null) return;
+            var link = new ActionLink(w.Context);
+            urlAttributes(link);
+            //if (link.Enabled)
+                w.A(a => a.Set(attrs), () => w.Icon(link.Image, link.Title));
+        }
+
+        public static void ActionImageLink(this LayoutWriter w, Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null)
 		{
 			if (urlAttributes == null) return;
 			ActionLink link = new ActionLink(w.Context);
