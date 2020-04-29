@@ -39,7 +39,7 @@
 			const headstate = cbhead.getAttribute('data-state') || '0';
 
 			if (headstate == '2' || headstate == '1') {
-				instance.setPageUnchecked(vroot, c.state, cbhead);
+				instance.setPageUnchecked(c.root, c.state, cbhead);
 			}
 			else if (headstate == '0') {
 				instance.setPageChecked(c.root, c.state, cbhead);

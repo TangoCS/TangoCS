@@ -66,9 +66,7 @@ namespace Tango.Data
 
 		protected string noKeyMessage => $"Entity {Type.Name} doesn't contain any key property";
 
-		protected IQueryTranslatorDialect Dialect => DBType == DBType.MSSQL ? (IQueryTranslatorDialect)new QueryTranslatorMSSQL() :
-			DBType == DBType.POSTGRESQL ? new QueryTranslatorPostgres() :
-			throw new NotSupportedException();
+		protected IQueryTranslatorDialect Dialect => QueryHelper.CreateDialect(DBType);
 
 		public DapperRepository(IDatabase database, Type type)
 		{
@@ -145,22 +143,11 @@ namespace Tango.Data
 				throw new Exception(noKeyMessage);
 		}
 
-		protected string PrepareSelectFromAllObjectsQuery(string fieldExpression)
-		{
-			var i = AllObjectsQuery.IndexOf("--#select");
-			if (i == -1)
-				return $"select {fieldExpression} from ({AllObjectsQuery}) t";
-			else
-			{
-				var part1 = AllObjectsQuery.Substring(0, i);
-				var part2 = AllObjectsQuery.Substring(i + 9);
-				return $"{part1} select {fieldExpression} from ({part2}) t";
-			}
-		}
+		
 
 		public int Count(Expression predicate = null)
 		{
-			var query = PrepareSelectFromAllObjectsQuery("count(1)");
+			var query = QueryHelper.SetNewFieldExpression(AllObjectsQuery, "count(1)");
 			var args = new DynamicParameters();
 
 			foreach (var pair in Parameters)
@@ -208,28 +195,10 @@ namespace Tango.Data
 
 			if (predicate != null)
 			{
-				query = PrepareSelectFromAllObjectsQuery("*");
-				var translator = new QueryTranslator(Dialect);
-				translator.Translate(predicate);
-				if (!translator.WhereClause.IsEmpty()) query += " where " + translator.WhereClause;
-				if (!translator.GroupBy.IsEmpty()) query = $"select {translator.GroupBy} from ({query}) t group by {translator.GroupBy} ";
-				if (!translator.OrderBy.IsEmpty()) query += " order by " + translator.OrderBy;
-				if (DBType == DBType.POSTGRESQL)
-				{
-					if (translator.Parms.ContainsKey("take")) query += " limit @take";
-					if (translator.Parms.ContainsKey("skip")) query += " offset @skip";
-				}
-				else if (DBType == DBType.MSSQL)
-				{
-					if (translator.OrderBy.IsEmpty()) query += " order by (select null) ";
-					if (translator.Parms.ContainsKey("skip"))
-						query += " offset @skip rows";
-					else
-						query += " offset 0 rows";
-					if (translator.Parms.ContainsKey("take")) query += " fetch next @take rows only";			
-				}
+				var (q, a) = QueryHelper.ApplyExpressionToQuery(QueryHelper.SetNewFieldExpression(AllObjectsQuery, "*"), predicate, Dialect);
+				query = q;
 
-				foreach (var pair in translator.Parms)
+				foreach (var pair in a)
 					args.Add(pair.Key, pair.Value);
 			}
 

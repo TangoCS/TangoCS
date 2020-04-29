@@ -14,6 +14,8 @@ namespace Tango.UI.Std
 	{
 		string _id;
 
+		public bool RowsOnly { get; set; } = false;
+
 		public ListRenderer()
 		{
 			
@@ -27,37 +29,13 @@ namespace Tango.UI.Std
 		public override void Render(LayoutWriter w, IEnumerable<TResult> result, IFieldCollection<TResult> fields)
 		{
 			var rendererIsControl = !_id.IsEmpty() && w.IDPrefix != _id && !w.IDPrefix.EndsWith("_" + _id);
-			if (rendererIsControl) w.PushPrefix(_id);
 
-			fields.ListAttributes += a => a.ID();
-			if (fields.EnableSelect)
-				fields.ListAttributes += a => a.DataCtrl("listview");
-			fields.ListAttributes = (a => a.Class("listviewtable")) + fields.ListAttributes;
+			var i = 0;
+			var curLevel = 1;
+			var gvalue = new string[fields.Groups.Count];
 
-			if (fields.EnableSelect && fields.HeaderRows.Count > 0)
-				fields.AddCheckBoxCell();
-
-			if (fields.EnableSelect && !fields.RowAttributes.GetInvocationList().Any(o => o.Method.Name.Contains("SetRowID")))
-				fields.SetRowID(o => (o as dynamic).ID);
-
-			w.Table(fields.ListAttributes, () => {
-				int i = 0;
-				foreach (var hr in fields.HeaderRows)
-				{
-					w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
-						foreach (var h in hr)
-							w.Th(h.Attributes, () => h.Content(w));
-					});
-					i++;
-				}
-
-				i = 0;
-				int curLevel = 1;
-				string[] gvalue = new string[fields.Groups.Count];
-
-				if (fields.EnableSelect && fields.AllowSelectAllPages)
-					w.InfoRow(fields.Cells.Count);
-
+			void renderRows()
+			{
 				foreach (var o in result)
 				{
 					bool newGroupItem = false;
@@ -116,7 +94,46 @@ namespace Tango.UI.Std
 
 					i++;
 				}
-			});
+			}
+
+			if (rendererIsControl) w.PushPrefix(_id);
+
+			fields.ListAttributes += a => a.ID();
+			if (fields.EnableSelect)
+				fields.ListAttributes += a => a.DataCtrl("listview");
+			fields.ListAttributes = (a => a.Class("listviewtable")) + fields.ListAttributes;
+
+			if (fields.EnableSelect && fields.HeaderRows.Count > 0)
+				fields.AddCheckBoxCell();
+
+			if (fields.EnableSelect && !fields.RowAttributes.GetInvocationList().Any(o => o.Method.Name.Contains("SetRowID")))
+				fields.SetRowID(o => (o as dynamic).ID);
+
+			if (RowsOnly)
+			{
+				renderRows();
+			}
+			else
+			{
+				w.Table(fields.ListAttributes, () => {
+					foreach (var hr in fields.HeaderRows)
+					{
+						w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
+							foreach (var h in hr)
+								w.Th(h.Attributes, () => h.Content(w));
+						});
+						i++;
+					}
+
+					i = 0;
+
+
+					if (fields.EnableSelect && fields.AllowSelectAllPages)
+						w.InfoRow(fields.Cells.Count);
+
+					renderRows();
+				});
+			}
 
 			if (rendererIsControl) w.PopPrefix();
 		}
@@ -166,4 +183,13 @@ namespace Tango.UI.Std
 			});
 		}
 	}
+
+	public class ListTreeRenderer<TResult> : ListRenderer<TResult>
+	{
+		public ListTreeRenderer(string id, int level) : base(id)
+		{
+			RowsOnly = level > 0;
+		}
+	}
+
 }

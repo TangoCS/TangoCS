@@ -145,14 +145,20 @@ namespace Tango.Data
 			throw new NotSupportedException(string.Format("The method '{0}' is not supported", m.Method.Name));
 		}
 
-		protected override Expression VisitMemberInit(MemberInitExpression node)
+		//protected override Expression VisitMemberInit(MemberInitExpression node)
+		//{
+		//	for (int i = 0; i < node.Bindings.Count; i++)
+		//	{
+		//		Visit((node.Bindings[i] as MemberAssignment).Expression);
+		//		if (i < node.Bindings.Count - 1)
+		//			sb.Append(", ");
+		//	}
+		//	return node;
+		//}
+
+		protected override Expression VisitNew(NewExpression node)
 		{
-			for (int i = 0; i < node.Bindings.Count; i++)
-			{
-				Visit((node.Bindings[i] as MemberAssignment).Expression);
-				if (i < node.Bindings.Count - 1)
-					sb.Append(", ");
-			}
+			sb.Append(node.Members.Select(x => x.Name).Join(", "));
 			return node;
 		}
 
@@ -444,6 +450,51 @@ namespace Tango.Data
 
 			return false;
 		}
+	}
+
+	public static class QueryHelper
+	{
+		public static (string query, IReadOnlyDictionary<string, object> args) ApplyExpressionToQuery(string query, Expression expression, IQueryTranslatorDialect dialect)
+		{
+			var translator = new QueryTranslator(dialect);
+			translator.Translate(expression);
+			if (!translator.WhereClause.IsEmpty()) query += " where " + translator.WhereClause;
+			if (!translator.GroupBy.IsEmpty()) query = $"select {translator.GroupBy} from ({query}) t group by {translator.GroupBy} ";
+			if (!translator.OrderBy.IsEmpty()) query += " order by " + translator.OrderBy;
+			if (dialect is QueryTranslatorPostgres)
+			{
+				if (translator.Parms.ContainsKey("take")) query += " limit @take";
+				if (translator.Parms.ContainsKey("skip")) query += " offset @skip";
+			}
+			else if (dialect is QueryTranslatorMSSQL)
+			{
+				if (translator.OrderBy.IsEmpty()) query += " order by (select null) ";
+				if (translator.Parms.ContainsKey("skip"))
+					query += " offset @skip rows";
+				else
+					query += " offset 0 rows";
+				if (translator.Parms.ContainsKey("take")) query += " fetch next @take rows only";
+			}
+
+			return (query, translator.Parms);
+		}
+
+		public static string SetNewFieldExpression(string query, string fieldExpression)
+		{
+			var i = query.IndexOf("--#select");
+			if (i == -1)
+				return $"select {fieldExpression} from ({query}) t";
+			else
+			{
+				var part1 = query.Substring(0, i);
+				var part2 = query.Substring(i + 9);
+				return $"{part1} select {fieldExpression} from ({part2}) t";
+			}
+		}
+
+		public static IQueryTranslatorDialect CreateDialect(DBType dbType) => dbType == DBType.MSSQL ? (IQueryTranslatorDialect)new QueryTranslatorMSSQL() :
+			dbType == DBType.POSTGRESQL ? new QueryTranslatorPostgres() :
+			throw new NotSupportedException();
 	}
 
 	public interface IQueryTranslatorDialect

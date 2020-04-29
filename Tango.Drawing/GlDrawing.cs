@@ -229,6 +229,13 @@ namespace Tango.Drawing
 			}
 		}
 
+		public void DrawPoint(int x, int y)
+		{
+			GL.glBegin(GL.GL_POINTS);
+			GL.glVertex2f(x + 0.375f, y + 0.375f);
+			GL.glEnd();
+		}
+
 		public void DrawCircle(int x, int y, int r)
 		{
 			double x1, y1;

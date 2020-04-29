@@ -8,6 +8,7 @@ namespace Tango.Drawing
 	{
 		bool BeginDraw(Rgba32 backcolor);
 		bool BeginDraw();
+		void DrawPoint(int x, int y);
 		void DrawCircle(int x, int y, int r);
 		void DrawLine(int x1, int y1, int x2, int y2, DashStyle style);
 		void DrawLine(int x1, int y1, int x2, int y2);
