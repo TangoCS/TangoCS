@@ -27,6 +27,7 @@ namespace Tango.Excel
 		Dictionary<string, Action<ExcelRange>> classes = new Dictionary<string, Action<ExcelRange>>();
 
 		public int CurrentRow => r;
+		public ExcelRange CurrentCell => s.Cells[r, c];
 
 		public void SetClassAction(string @class, Action<ExcelRange> cells)
 		{
@@ -357,10 +358,12 @@ namespace Tango.Excel
 			List<string> errors = new List<string>();
 			foreach (var kv in values)
 			{
-				if (kv.Key.Value is OfficeOpenXml.eErrorType || !(kv.Key.Value is double))
+				if (kv.Key.Value is OfficeOpenXml.eErrorType || !(kv.Key.Value is double || kv.Key.Value is decimal))
 					errors.Add($"Значение в ячейке {kv.Key.FullAddress} не вычислено: \"{kv.Key.Text}\", формула: {kv.Key.Formula}");
-				else if (((double)kv.Key.Value).ToString(kv.Value.Item2) != kv.Value.Item1.ToString(kv.Value.Item2))
+				else if (kv.Key.Value is double && ((double)kv.Key.Value).ToString(kv.Value.Item2) != kv.Value.Item1.ToString(kv.Value.Item2))
 					errors.Add($"Вычисленное значение в ячейке {kv.Key.FullAddress} \"{((double)kv.Key.Value).ToString(kv.Value.Item2)}\" не равно \"{kv.Value.Item1.ToString(kv.Value.Item2)}\", формула: {kv.Key.Formula}");
+				else if (kv.Key.Value is decimal && ((decimal)kv.Key.Value).ToString(kv.Value.Item2) != kv.Value.Item1.ToString(kv.Value.Item2))
+					errors.Add($"Вычисленное значение в ячейке {kv.Key.FullAddress} \"{((decimal)kv.Key.Value).ToString(kv.Value.Item2)}\" не равно \"{kv.Value.Item1.ToString(kv.Value.Item2)}\", формула: {kv.Key.Formula}");
 			}
 			return errors;
 		}
