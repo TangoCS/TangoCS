@@ -239,6 +239,7 @@ namespace Tango.Data
 			sb = cursb;
 
 			sb.Append(")");
+			_nullconstant = false;
 			return b;
 		}
 

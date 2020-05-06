@@ -22,7 +22,7 @@ namespace Tango.UI.Std
 				if (hasChildren)
 				{
 					w.Div(a => a.Class("togglelevel").Class(options?.NodeClass(o)), () => {
-						w.Span(a => a.OnClick("listview.togglelevel(this)"), () => w.Icon("right"));
+						w.Span(a => a.OnClick("listview.togglelevel(this)"), () => w.I(a => a.Class("toggleicon").Icon("right")));
 					});
 				}
 				else
@@ -74,5 +74,10 @@ namespace Tango.UI.Std
 	{
 		int Level { get; }
 		bool HasChildren { get; }
+	}
+
+	public interface ILazyListTree
+	{
+		int Template { get; set; }
 	}
 }

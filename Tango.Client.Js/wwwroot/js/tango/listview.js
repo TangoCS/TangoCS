@@ -172,23 +172,35 @@ var listview = function (au, cu, cbcell) {
 			const level = parseInt(tr.getAttribute('data-level'));
 			const isCollapsed = tr.classList.contains('collapsed');
 
-			var row = tr.nextElementSibling;
+			const expand = function () {
+				var row = tr.nextElementSibling;
 
-			while (row && parseInt(row.getAttribute('data-level')) > level) {
-				if (isCollapsed) {
-					tr.classList.remove('collapsed');
-					if (parseInt(row.getAttribute('data-collapsedby')) == level) {
-						row.classList.remove('hide');
-						row.setAttribute('data-collapsedby', '');
+				while (row && parseInt(row.getAttribute('data-level')) > level) {
+					if (isCollapsed) {
+						tr.classList.remove('collapsed');
+						if (parseInt(row.getAttribute('data-collapsedby')) == level) {
+							row.classList.remove('hide');
+							row.setAttribute('data-collapsedby', '');
+						}
 					}
-				}
-				else if (!row.classList.contains('hide')) {
-					tr.classList.add('collapsed');
-					row.setAttribute('data-collapsedby', level);
-					row.classList.add('hide');
-				}
+					else if (!row.classList.contains('hide')) {
+						tr.classList.add('collapsed');
+						row.setAttribute('data-collapsedby', level);
+						row.classList.add('hide');
+					}
 
-				row = row.nextElementSibling;
+					row = row.nextElementSibling;
+				}
+			}
+
+			if (tr.hasAttribute('data-e') && !tr.hasAttribute('data-loaded')) {
+				au.postEventFromElementWithApiResponse(tr).then(function () {
+					tr.setAttribute('data-loaded', '');
+					expand();
+				});
+			}
+			else {
+				expand();
 			}
 		},
 		widgetWillMount: function (shadow, state) {
@@ -250,8 +262,8 @@ var listview = function (au, cu, cbcell) {
 				}
 			});
 		},
-		
-		
+
+
 		selectall: function (rootid) {
 			const root = document.getElementById(rootid);
 			const state = au.state.ctrl[rootid];

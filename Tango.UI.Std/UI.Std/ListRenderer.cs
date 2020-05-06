@@ -26,75 +26,75 @@ namespace Tango.UI.Std
 			_id = id?.ToLower();
 		}
 
+		protected virtual void RenderRows(LayoutWriter w, IEnumerable<TResult> result, IFieldCollection<TResult> fields)
+		{
+			var gvalue = new string[fields.Groups.Count];
+			var i = 0;
+			var curLevel = 1;
+
+			foreach (var o in result)
+			{
+				bool newGroupItem = false;
+				int j = 0;
+				int lev = 0;
+				foreach (var g in fields.Groups)
+				{
+					var val = g.ValueFunc(o);
+					if (val.IsEmpty()) val = g.DefaultValue;
+					if (val != gvalue[j] || newGroupItem)
+					{
+						if (!val.IsEmpty())
+						{
+							w.Tr(a => fields.GroupRowAttributes?.Invoke(a, o, new RowInfo { RowNum = i, Level = lev }), () => {
+								var colspan = fields.Cells.Count;
+								if (fields.EnableSelect)
+								{
+									w.Td(() => { });
+									colspan--;
+								}
+								if (g.Cells.Count == 0)
+									w.Td(a => a.Class("gr").ColSpan(colspan), () => g.Cell(w, o));
+								else
+								{
+									int firstCell = g.Cells.Keys.Min();
+									w.Td(a => a.Class("gr").ColSpan(firstCell), () => g.Cell(w, o));
+
+									for (int c = firstCell; c < colspan; c++)
+									{
+										if (g.Cells.ContainsKey(c))
+											w.Td(a => a.Class("gr"), () => g.Cells[c](w, o));
+										else
+											w.Td(a => a.Class("gr"), null);
+									}
+								}
+							});
+						}
+						gvalue[j] = val;
+						newGroupItem = true;
+					}
+					if (!val.IsEmpty()) lev++;
+					j++;
+				}
+				if (newGroupItem) curLevel = lev;
+
+				var r = new RowInfo { RowNum = i, Level = curLevel };
+				fields.BeforeRowContent?.Invoke(w, o, r);
+
+				w.Tr(a => fields.RowAttributes?.Invoke(a, o, r), () => {
+					foreach (var c in fields.Cells)
+						if (c.Visible(o, r))
+							w.Td(a => c.Attributes?.Invoke(a, o, r), () => c.Content(w, o, r));
+				});
+
+				fields.AfterRowContent?.Invoke(w, o, r);
+
+				i++;
+			}
+		}
+
 		public override void Render(LayoutWriter w, IEnumerable<TResult> result, IFieldCollection<TResult> fields)
 		{
 			var rendererIsControl = !_id.IsEmpty() && w.IDPrefix != _id && !w.IDPrefix.EndsWith("_" + _id);
-
-			var i = 0;
-			var curLevel = 1;
-			var gvalue = new string[fields.Groups.Count];
-
-			void renderRows()
-			{
-				foreach (var o in result)
-				{
-					bool newGroupItem = false;
-					int j = 0;
-					int lev = 0;
-					foreach (var g in fields.Groups)
-					{
-						var val = g.ValueFunc(o);
-						if (val.IsEmpty()) val = g.DefaultValue;
-						if (val != gvalue[j] || newGroupItem)
-						{
-							if (!val.IsEmpty())
-							{
-								w.Tr(a => fields.GroupRowAttributes?.Invoke(a, o, new RowInfo { RowNum = i, Level = lev }), () => {
-									var colspan = fields.Cells.Count;
-									if (fields.EnableSelect)
-									{
-										w.Td(() => { });
-										colspan--;
-									}
-									if (g.Cells.Count == 0)
-										w.Td(a => a.Class("gr").ColSpan(colspan), () => g.Cell(w, o));
-									else
-									{
-										int firstCell = g.Cells.Keys.Min();
-										w.Td(a => a.Class("gr").ColSpan(firstCell), () => g.Cell(w, o));
-
-										for (int c = firstCell; c < colspan; c++)
-										{
-											if (g.Cells.ContainsKey(c))
-												w.Td(a => a.Class("gr"), () => g.Cells[c](w, o));
-											else
-												w.Td(a => a.Class("gr"), null);
-										}
-									}
-								});
-							}
-							gvalue[j] = val;
-							newGroupItem = true;
-						}
-						if (!val.IsEmpty()) lev++;
-						j++;
-					}
-					if (newGroupItem) curLevel = lev;
-
-					var r = new RowInfo { RowNum = i, Level = curLevel };
-					fields.BeforeRowContent?.Invoke(w, o, r);
-
-					w.Tr(a => fields.RowAttributes?.Invoke(a, o, r), () => {
-						foreach (var c in fields.Cells)
-							if (c.Visible(o, r))
-								w.Td(a => c.Attributes?.Invoke(a, o, r), () => c.Content(w, o, r));
-					});
-
-					fields.AfterRowContent?.Invoke(w, o, r);
-
-					i++;
-				}
-			}
 
 			if (rendererIsControl) w.PushPrefix(_id);
 
@@ -111,11 +111,13 @@ namespace Tango.UI.Std
 
 			if (RowsOnly)
 			{
-				renderRows();
+				RenderRows(w, result, fields);
 			}
 			else
 			{
 				w.Table(fields.ListAttributes, () => {
+					var i = 0;
+
 					foreach (var hr in fields.HeaderRows)
 					{
 						w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
@@ -125,13 +127,10 @@ namespace Tango.UI.Std
 						i++;
 					}
 
-					i = 0;
-
-
 					if (fields.EnableSelect && fields.AllowSelectAllPages)
 						w.InfoRow(fields.Cells.Count);
 
-					renderRows();
+					RenderRows(w, result, fields);
 				});
 			}
 
@@ -186,9 +185,35 @@ namespace Tango.UI.Std
 
 	public class ListTreeRenderer<TResult> : ListRenderer<TResult>
 	{
-		public ListTreeRenderer(string id, int level) : base(id)
+		string _pagingid;
+		int _level;
+
+		public ListTreeRenderer(string id, string pagingid, int level) : base(id)
 		{
 			RowsOnly = level > 0;
+			_pagingid = pagingid;
+			_level = level;
+		}
+
+		protected override void RenderRows(LayoutWriter w, IEnumerable<TResult> result, IFieldCollection<TResult> fields)
+		{
+			base.RenderRows(w, result, fields);
+
+			w.Tr(a => a.Class("pagingrow").Data("level", _level), () => {
+				w.Td(a => a.ColSpan(fields.Cells.Count), () => {
+					w.Div(a => a.Class($"treerow l{_level}"), () => {
+						for (int i = 0; i < _level; i++)
+							w.Div(a => a.Class("level-padding" + (i == _level ? " last" : "")), "");
+						
+						w.Div(a => a.Class("leaf"), () => w.Span("&nbsp;"));
+
+						w.Div(() => {
+							w.Span(a => a.ID(w.Context.Sender + "_" + _pagingid));
+						});
+					});
+					
+				});
+			});
 		}
 	}
 

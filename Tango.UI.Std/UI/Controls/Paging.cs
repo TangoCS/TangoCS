@@ -32,7 +32,7 @@ namespace Tango.UI.Controls
 				return query.Take(paging.PageSize + (plusOneRow ? 1 : 0));
 		}
 
-		public static void Render(this Paging paging, LayoutWriter w, int? itemsCount, Action<ActionLink> actionAttributes)
+		public static void Render(this Paging paging, LayoutWriter w, int? itemsCount, Action<ActionLink> pageActionAttributes)
 		{
 			w.Span(a => a.ID(paging.ID).Class("paging"), () => {
 				var r = paging.Resources;
@@ -45,7 +45,7 @@ namespace Tango.UI.Controls
 				if (pageIdx > pageCount) pageIdx = pageCount;
 				if (pageIdx == 0) pageIdx = 1;
 
-				void attrs(ActionLink a) => a.ToCurrent().Set(actionAttributes).RequestMethod = "POST";
+				void attrs(ActionLink a) => a.ToCurrent().Set(pageActionAttributes);
 				var dc = paging.ParentElement.DataCollection;
 
 				if (pageIdx > 2)
@@ -68,9 +68,9 @@ namespace Tango.UI.Controls
 			});
 		}
 
-		public static void Render2(this Paging paging, LayoutWriter w, int? itemsCount, Action<ApiResponse> onPageSet, Action<ApiResponse> onObjCount)
+		public static void Render2(this Paging paging, LayoutWriter w, int? itemsCount, Action<ActionLink> pageActionAttributes, Action<ActionLink> objCountActionAttributes)
 		{
-			//void attrs(ActionLink a) => a.ToCurrent().Set(actionAttributes);
+			var res = paging.Resources;
 			var pageCount = 1;
 			var pageIdx = paging.PageIndex;
 			var pname = paging.ParameterName;
@@ -80,11 +80,10 @@ namespace Tango.UI.Controls
 			if (pageIdx > pageCount) pageIdx = pageCount;
 			if (pageIdx == 0) pageIdx = 1;
 
-			//w.PushPrefix(paging.ClientID);
 			w.Span(a => a.ID(paging.ID).Class("paging2"), () => {
 				if (itemsCount == 0) return;
 
-				w.Span(a => a.ID(paging.ID + "_cnt").Class("int"), () => {
+				w.Span(a => a.ID(paging.ID + "_cnt").Class(itemsCount > paging.PageSize ? "int" : ""), () => {
 					w.B(((pageIdx - 1) * paging.PageSize + 1).ToString());
 					w.Write("&ndash;");
 					w.B((itemsCount != null && pageIdx * paging.PageSize > itemsCount ? itemsCount : pageIdx * paging.PageSize).ToString());
@@ -92,32 +91,31 @@ namespace Tango.UI.Controls
 
                 var dc = paging.ParentElement.DataCollection;
 
-                w.Write("&nbsp;of&nbsp;");
+                w.Write($"&nbsp;{res.Get("Common.Paging.From")}&nbsp;");
 				w.B(() => {
                     if (itemsCount.HasValue)
                         w.Write(itemsCount.Value.ToString());
                     else
-                        w.ActionLink(a => a.ToCurrent().PostEvent(onObjCount).WithTitle("?"), a => a.Class("cnt").Data(dc));
+                        w.ActionLink(a => a.ToCurrent().Set(objCountActionAttributes).WithTitle("?"), a => a.Class("cnt").Data(dc));
 				});
 				w.Write("&nbsp;");
 
                 if (pageIdx > 1)
-                    w.ActionImageButton(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, pageIdx - 1).WithImage("left"), a => a.Data(dc));
+                    w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx - 1).WithImage("left"), a => a.Data(dc));
 
 				if (itemsCount == null || pageCount - pageIdx >= 1)
-					w.ActionImageButton(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, pageIdx + 1).WithImage("right"), a => a.Data(dc));
+					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx + 1).WithImage("right"), a => a.Data(dc));
 
                 if (itemsCount.HasValue)
 				{
 					w.DropDownForElement(paging.ID + "_cnt", () => {
 						if (pageIdx > 2)
-							w.ActionLink(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, 1).WithTitle(r => r.Get("Common.Paging.First")), a => a.Data(dc).DataContainerExternal(paging.ParentElement.ClientID));
+							w.ActionLink(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, 1).WithTitle(r => r.Get("Common.Paging.First")), a => a.Data(dc).DataContainerExternal(paging.ParentElement.ClientID));
                         if (pageCount > 1 && pageCount - pageIdx >= 2)
-							w.ActionLink(a => a.ToCurrent().RunEvent(onPageSet).WithArg(pname, pageCount).WithTitle(r => r.Get("Common.Paging.Last")),a => a.Data(dc).DataContainerExternal(paging.ParentElement.ClientID));
+							w.ActionLink(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageCount).WithTitle(r => r.Get("Common.Paging.Last")),a => a.Data(dc).DataContainerExternal(paging.ParentElement.ClientID));
 					});
 				}
 			});
-			//w.PopPrefix();
 		}
 	}
 }

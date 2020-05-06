@@ -19,7 +19,16 @@ namespace Tango.UI.Std
 
 
 		protected string _qSearch = "";
-		protected IFieldCollection<TEntity, TResult> _fields;
+		IFieldCollection<TEntity, TResult> _fields;
+		protected IFieldCollection<TEntity, TResult> Fields
+		{
+			get
+			{
+				if (_fields == null)
+					_fields = FieldsConstructor();
+				return _fields;
+			}
+		}
 		//protected Action<ActionLink> _pagingAttributes => a => a.RunEvent(OnSetPage);
 
 		protected IEnumerable<TResult> _result;
@@ -34,7 +43,7 @@ namespace Tango.UI.Std
 		public Sorter<TEntity> Sorter { get; private set; }
 		public ListRendererAbstract<TResult> Renderer { get; protected set; }
 
-		public int ColumnCount => _fields.Cells.Count;
+		public int ColumnCount => Fields.Cells.Count;
 
 		protected virtual string FormTitle => Resources.CaptionPlural<TEntity>();
 		protected virtual Func<string, Expression<Func<TEntity, bool>>> SearchExpression => null;
@@ -86,7 +95,7 @@ namespace Tango.UI.Std
 
 		protected void ToDeleteBulk(MenuBuilder t)
 		{
-			if (_fields.EnableSelect)
+			if (Fields.EnableSelect)
 			{
 				t.ItemSeparator();
 				t.ItemActionTextBulk(x => x.ToDeleteBulk<TEntity>(AccessControl).AsDialog());
@@ -132,7 +141,6 @@ namespace Tango.UI.Std
 			});
 
 			_qSearch = Context.GetArg("qsearch");
-			_fields = FieldsConstructor();
 		}
 
 		public void PrepareResult()
@@ -158,7 +166,7 @@ namespace Tango.UI.Std
 			//w.PushPrefix(ClientID);
 			PrepareResult();
 			BeforeList(w);
-			Renderer.Render(w, _result.Take(Paging.PageSize), _fields);
+			Renderer.Render(w, _result.Take(Paging.PageSize), Fields);
 			AfterList(w);
 			//w.PopPrefix();
 		}
@@ -177,7 +185,7 @@ namespace Tango.UI.Std
 		protected void RenderPaging(ApiResponse response)
 		{
 			if (Sections.RenderPaging)
-				response.ReplaceWidget(Paging.ID, w => Paging.Render2(w, _itemsCount, OnSetPage, GetObjCount));
+				response.ReplaceWidget(Paging.ID, w => Paging.Render2(w, _itemsCount, a => a.RunEvent(OnSetPage), a => a.PostEvent(GetObjCount)));
 		}
 
 		protected void RenderToolbar(ApiResponse response)
@@ -281,8 +289,8 @@ namespace Tango.UI.Std
 
 		protected override IEnumerable<TResult> GetPageData()
 		{
-			_fields.GroupSorting.Reverse();
-			foreach (var gs in _fields.GroupSorting)
+			Fields.GroupSorting.Reverse();
+			foreach (var gs in Fields.GroupSorting)
 				Sorter.InsertOrderBy(gs.SeqNo, gs.SortDesc, true);
 
 			var res = Selector(Paging.Apply(Sorter.Apply(ApplyFilter(Data)), true));

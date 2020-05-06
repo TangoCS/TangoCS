@@ -9,7 +9,9 @@ namespace Tango.UI.Controls
 	{
 		DateLists dPeriodFrom;
 		DateLists dPeriodTo;
-		
+
+		public (string From, string To) ParmName => (ID + "_" + "dperiodfrom", ID + "_" + "dperiodto");
+
 		public int MinYear { get; set; }
 		public bool ShowDays { get; set; } = true;
 		public bool ShowTime { get; set; } = false;
@@ -46,12 +48,12 @@ namespace Tango.UI.Controls
 			dPeriodTo.MaxYear = DateTime.Today.Year;
 
             if (from == null)
-                from = Context.GetDateTimeArg(ID + "_" + "dperiodfrom");
+                from = Context.GetDateTimeArg(ParmName.From);
 			if (from == null)
 				from = DefaultValue?.From;
 
 			if (to == null)
-                to = Context.GetDateTimeArg(ID + "_" + "dperiodto");
+                to = Context.GetDateTimeArg(ParmName.To);
 			if (to == null)
 				to = DefaultValue?.To;
 
@@ -60,24 +62,24 @@ namespace Tango.UI.Controls
             //w.PushID(ID);
 			w.Div(a => a.Class("periodpicker").ID(ID), () => {
 				w.Div(() => {
-					if (UseCalendar && ShowDays) w.Calendar(ID + "_" + "dperiodfrom", from, options);
+					if (UseCalendar && ShowDays) w.Calendar(ParmName.From, from, options);
 					if (!UseCalendar || ShowTime)
 						dPeriodFrom.Render(w, from);
 				});
 				w.Div("&ndash;");
 				w.Div(() => {
-					if (UseCalendar && ShowDays) w.Calendar(ID + "_" + "dperiodto", to, options);
+					if (UseCalendar && ShowDays) w.Calendar(ParmName.To, to, options);
 					if (!UseCalendar || ShowTime)
 						dPeriodTo.Render(w, to);
 				});
 				if (UseCalendar && ShowDays)
-					w.Span(a => a.ID(ID + "_" + "btn" + ID).Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
+					w.Span(a => a.ID(ID + "_btn").Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
 			});
 
 			if (UseCalendar && ShowDays)
 			{
 				w.AddClientAction("daterangepickerproxy", "init", f => new {
-					triggerid = f(ID + "_" + "btn" + ID),
+					triggerid = f(ID + "_btn"),
 					onselectcallback = JSOnSelectCallback,
 					pickerparms = new {
 						showDropdowns = true,
@@ -120,8 +122,8 @@ namespace Tango.UI.Controls
 			{
 				if (UseCalendar && ShowDays)
 				{
-					var from = Context.GetDateTimeArg(ID + "_" + "dperiodfrom");
-					var to = Context.GetDateTimeArg(ID + "_" + "dperiodto");
+					var from = Context.GetDateTimeArg(ParmName.From);
+					var to = Context.GetDateTimeArg(ParmName.To);
 					var fromtime = dPeriodFrom.Value?.TimeOfDay;
 					var totime = dPeriodTo.Value?.TimeOfDay;
 

@@ -40,7 +40,7 @@ namespace Tango.UI.Std
 			if (_pageData != null)
 				return _pageData;
 
-			foreach (var gs in _fields.GroupSorting)
+			foreach (var gs in Fields.GroupSorting)
 				Sorter.AddOrderBy(gs.SeqNo, gs.SortDesc, true);
 			var filtered = ApplyFilter(Data);
 			var q = Paging.Apply(Sorter.Count > 0 ? Sorter.Apply(filtered) : DefaultOrderBy(filtered), true);
