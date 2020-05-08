@@ -136,8 +136,8 @@ namespace Tango.UI.Controls
 					}
 					else
 					{						
-						if (fromtime != null) from = from.Value.AddHours(DefaultValue.From.Hour).AddMinutes(DefaultValue.From.Minute);
-						if (totime != null) to = to.Value.AddHours(DefaultValue.To.Hour).AddMinutes(DefaultValue.To.Minute);
+						if (DefaultValue != null) from = from.Value.AddHours(DefaultValue.From.Hour).AddMinutes(DefaultValue.From.Minute);
+						if (DefaultValue != null) to = to.Value.AddHours(DefaultValue.To.Hour).AddMinutes(DefaultValue.To.Minute);
 					}
 
 					return new PeriodValue(from.Value, to.Value);
