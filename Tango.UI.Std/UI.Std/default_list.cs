@@ -136,7 +136,10 @@ namespace Tango.UI.Std
 				s.OnSort = OnSetPage;
 			});
 			Filter = CreateControl<ListFilter<TEntity>>("filter", f => {
-				FilterInit(f);
+				f.FieldsInit = () => {
+					FilterInit(f);
+					_fields = FieldsConstructor();
+				};
 				f.FilterSubmitted += OnFilter;
 			});
 

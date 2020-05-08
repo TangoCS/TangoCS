@@ -23,6 +23,7 @@ namespace Tango.UI
 
 		void OnInit();
 		void AfterInit();
+		void OnEvent();
 	}
 
 	public interface IContainerItem
@@ -99,6 +100,7 @@ namespace Tango.UI
 
 		public virtual void OnInit() { }
 		public virtual void AfterInit() { }
+		public virtual void OnEvent() { }
 
 		public T CreateControl<T>(string id, Action<T> setProperties = null)
 			where T : ViewElement, new()

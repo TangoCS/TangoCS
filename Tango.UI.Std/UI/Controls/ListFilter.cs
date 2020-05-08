@@ -38,6 +38,7 @@ namespace Tango.UI.Controls
 
 		public string ParameterName { get; set; }
 		public List<Field> FieldList { get; private set; } = new List<Field>();
+		public Action FieldsInit { get; set; }
 
 		string ListName => Context.Service + "_" + Context.Action;
 
@@ -91,6 +92,11 @@ namespace Tango.UI.Controls
 		{
 			ParameterName = ClientID + "id";
 			_engine = new ListFilterEngine(Resources);
+		}
+
+		public override void OnEvent()
+		{
+			FieldsInit();
 		}
 
 		public void LoadPersistent()

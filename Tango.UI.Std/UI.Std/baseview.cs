@@ -28,6 +28,8 @@ namespace Tango.UI.Std
 			var recipient = r == null || r == ID?.ToLower() || r == ClientID?.ToLower() ? this : Context.EventReceivers.First(o => o.ClientID == r);
 			var e = Context.Event.IsEmpty() ? "onload" : Context.Event;
 
+			recipient.OnEvent();
+
 			return InteractionHelper.RunEvent(recipient, e);
 		}
 

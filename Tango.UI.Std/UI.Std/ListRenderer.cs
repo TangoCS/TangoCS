@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Tango.Html;
+using Tango.UI.Controls;
 using Tango.UI.Std.ListMassOperations;
 
 namespace Tango.UI.Std
@@ -185,13 +186,13 @@ namespace Tango.UI.Std
 
 	public class ListTreeRenderer<TResult> : ListRenderer<TResult>
 	{
-		string _pagingid;
+		Paging _paging;
 		int _level;
 
-		public ListTreeRenderer(string id, string pagingid, int level) : base(id)
+		public ListTreeRenderer(string id, Paging paging, int level) : base(id)
 		{
 			RowsOnly = level > 0;
-			_pagingid = pagingid;
+			_paging = paging;
 			_level = level;
 		}
 
@@ -199,21 +200,24 @@ namespace Tango.UI.Std
 		{
 			base.RenderRows(w, result, fields);
 
-			w.Tr(a => a.Class("pagingrow").Data("level", _level), () => {
-				w.Td(a => a.ColSpan(fields.Cells.Count), () => {
-					w.Div(a => a.Class($"treerow l{_level}"), () => {
-						for (int i = 0; i < _level; i++)
-							w.Div(a => a.Class("level-padding" + (i == _level ? " last" : "")), "");
-						
-						w.Div(a => a.Class("leaf"), () => w.Span("&nbsp;"));
+			if (result.Count() >= _paging.PageSize || _paging.PageIndex > 1)
+			{
+				w.Tr(a => a.ID(w.Context.Sender + "_" + _paging.ID + "_row").Class("pagingrow").Data("level", _level), () => {
+					w.Td(a => a.ColSpan(fields.Cells.Count), () => {
+						w.Div(a => a.Class($"treerow l{_level}"), () => {
+							for (int i = 0; i < _level; i++)
+								w.Div(a => a.Class("level-padding" + (i == _level ? " last" : "")), "");
 
-						w.Div(() => {
-							w.Span(a => a.ID(w.Context.Sender + "_" + _pagingid));
+							w.Div(a => a.Class("leaf"), () => w.Span("&nbsp;"));
+
+							w.Div(() => {
+								w.Span(a => a.ID(w.Context.Sender + "_" + _paging.ID));
+							});
 						});
+
 					});
-					
 				});
-			});
+			}
 		}
 	}
 

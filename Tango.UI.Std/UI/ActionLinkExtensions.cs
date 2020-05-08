@@ -87,6 +87,8 @@ namespace Tango.UI
 					a.OnClickRunEvent();
 			else if (link.RequestMethod == "POST")
 				a.OnClickPostEvent();
+			else
+				a.OnClick($"{link.RequestMethod}(this)");
 			return a;
 		}
 
