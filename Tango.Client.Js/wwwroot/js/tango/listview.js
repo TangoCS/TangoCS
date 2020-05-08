@@ -285,6 +285,38 @@ var listview = function (au, cu, cbcell) {
 			cbcell.setPageUnchecked(root, state, cbhead);
 			onCheckChange(document, root, state);
 		},
+		onlevelsetpage: function (el) {
+			const tr = getRow(el);
+			const level = parseInt(tr.getAttribute('data-level'));
+
+			var row = tr.previousElementSibling;
+			var toremove = [];
+			while (row && parseInt(row.getAttribute('data-level')) >= level) {
+				toremove.push(row);
+				row = row.previousElementSibling;
+			}
+
+			for (var i = 0; i < toremove.length; i++) {
+				toremove[i].parentNode.removeChild(toremove[i]);
+			}
+
+			row = tr.previousElementSibling;
+
+			var target = { data: {} };
+			for (var attr, i = 0, attrs = row.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
+				attr = attrs[i];
+				var val = attr.value == '' ? null : attr.value;
+				if (attr.name.startsWith('data-p-')) {
+					target.data[attr.name.replace('data-p-', '')] = val || '';
+				}
+			}
+
+			target.data['sender'] = row.id;
+
+			tr.parentNode.removeChild(tr);
+
+			au.postEventFromElementWithApiResponse(el, target);
+		}
 	}
 
 	function onCheckChange(document, root, state, keepInfoBlockState) {

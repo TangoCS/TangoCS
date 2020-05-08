@@ -462,19 +462,26 @@ namespace Tango.Data
 			if (!translator.WhereClause.IsEmpty()) query += " where " + translator.WhereClause;
 			if (!translator.GroupBy.IsEmpty()) query = $"select {translator.GroupBy} from ({query}) t group by {translator.GroupBy} ";
 			if (!translator.OrderBy.IsEmpty()) query += " order by " + translator.OrderBy;
+
+			var hasskip = translator.Parms.ContainsKey("skip");
+			var hastake = translator.Parms.ContainsKey("take");
+
 			if (dialect is QueryTranslatorPostgres)
 			{
-				if (translator.Parms.ContainsKey("take")) query += " limit @take";
-				if (translator.Parms.ContainsKey("skip")) query += " offset @skip";
+				if (hastake) query += " limit @take";
+				if (hasskip) query += " offset @skip";
 			}
 			else if (dialect is QueryTranslatorMSSQL)
 			{
-				if (translator.OrderBy.IsEmpty()) query += " order by (select null) ";
-				if (translator.Parms.ContainsKey("skip"))
-					query += " offset @skip rows";
-				else
-					query += " offset 0 rows";
-				if (translator.Parms.ContainsKey("take")) query += " fetch next @take rows only";
+				if (hasskip || hastake)
+				{
+					if (translator.OrderBy.IsEmpty()) query += " order by (select null) ";
+					if (hasskip)
+						query += " offset @skip rows";
+					else
+						query += " offset 0 rows";
+					if (hastake) query += " fetch next @take rows only";
+				}
 			}
 
 			return (query, translator.Parms);

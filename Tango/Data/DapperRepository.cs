@@ -147,7 +147,7 @@ namespace Tango.Data
 
 		public int Count(Expression predicate = null)
 		{
-			var query = QueryHelper.SetNewFieldExpression(AllObjectsQuery, "count(1)");
+			var query = "";
 			var args = new DynamicParameters();
 
 			foreach (var pair in Parameters)
@@ -155,14 +155,14 @@ namespace Tango.Data
 
 			if (predicate != null)
 			{
-				var translator = new QueryTranslator(Dialect);
-				translator.Translate(predicate);
+				var (q, a) = QueryHelper.ApplyExpressionToQuery(QueryHelper.SetNewFieldExpression(AllObjectsQuery, "*"), predicate, Dialect);
+				query = q;
 
-				if (!translator.WhereClause.IsEmpty()) query += " where " + translator.WhereClause;
-
-				foreach (var pair in translator.Parms)
+				foreach (var pair in a)
 					args.Add(pair.Key, pair.Value);
 			}
+
+			query = QueryHelper.SetNewFieldExpression(query, "count(1)");
 
 			return Database.Connection.QuerySingle<int>(query, args, Database.Transaction);
 		}

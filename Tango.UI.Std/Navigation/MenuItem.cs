@@ -32,7 +32,7 @@ namespace Tango.UI.Navigation
 
 	public static class MenuHelper
 	{
-		public static HashSet<Guid> ChechMenuItems(IAccessControl ac, IEnumerable<MenuItem> rootItems)
+		public static HashSet<Guid> CheckMenuItems(IAccessControl ac, IEnumerable<MenuItem> rootItems)
 		{
 			HashSet<Guid> removed = new HashSet<Guid>();
 
@@ -97,10 +97,8 @@ namespace Tango.UI.Navigation
 			});
 		}
 
-		public static void VersionMenuIcon(this LayoutWriter w)
+		public static void VersionMenuIcon(this LayoutWriter w, IVersionProvider verProvider)
 		{
-			var verProvider = w.Context.RequestServices.GetService(typeof(IVersionProvider)) as IVersionProvider;
-
 			w.Li(() => w.Span(() => {
 				var v = verProvider.Version;
 				w.Write($"v. {v.Major}.{v.Minor}.{v.Build}");
@@ -113,7 +111,7 @@ namespace Tango.UI.Navigation
 				return loader.Load(menuName);
 			});
 
-			var removed = ChechMenuItems(ac, rootItems);
+			var removed = CheckMenuItems(ac, rootItems);
 
 			return (rootItems.Where(o => !removed.Contains(o.ID)), removed);
 		}
