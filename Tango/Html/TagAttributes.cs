@@ -162,6 +162,7 @@ namespace Tango.Html
 		public InputTagAttributes MaxLength(int value) { Writer.WriteAttr("maxlength", value.ToString()); return this; }
 		public InputTagAttributes Min(string value) { Writer.WriteAttr("min", value); return this; }
 		public InputTagAttributes Multiple(bool value) { if (value) Writer.WriteAttr("multiple", "multiple"); return this; }
+		public InputTagAttributes OnInput(string value) { Writer.WriteAttr("oninput", value); return this; }
 		public InputTagAttributes Placeholder(string value) { Writer.WriteAttr("placeholder", value); return this; }
 		public InputTagAttributes Readonly(bool value) { if (value) Writer.WriteAttr("readonly", "readonly"); return this; }
 		public InputTagAttributes Size(int value) { Writer.WriteAttr("size", value.ToString()); return this; }

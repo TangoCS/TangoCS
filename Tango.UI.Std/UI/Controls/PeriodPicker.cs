@@ -57,20 +57,20 @@ namespace Tango.UI.Controls
 			if (to == null)
 				to = DefaultValue?.To;
 
-			var options = new CalendarOptions { ShowButton = false,Attributes = attributes };
-
+			var options = new CalendarOptions { ShowButton = false, Attributes = a => { attributes?.Invoke(a); a.OnInput(JSOnSelectCallback); } };
+			var dlOptions = new DateLists.DateListsOptions { HourAttributes = a => a.OnChange(JSOnSelectCallback), MinuteAttributes = a => a.OnChange(JSOnSelectCallback) };
             //w.PushID(ID);
 			w.Div(a => a.Class("periodpicker").ID(ID), () => {
 				w.Div(() => {
 					if (UseCalendar && ShowDays) w.Calendar(ParmName.From, from, options);
 					if (!UseCalendar || ShowTime)
-						dPeriodFrom.Render(w, from);
+						dPeriodFrom.Render(w, from, dlOptions);
 				});
 				w.Div("&ndash;");
 				w.Div(() => {
 					if (UseCalendar && ShowDays) w.Calendar(ParmName.To, to, options);
 					if (!UseCalendar || ShowTime)
-						dPeriodTo.Render(w, to);
+						dPeriodTo.Render(w, to, dlOptions);
 				});
 				if (UseCalendar && ShowDays)
 					w.Span(a => a.ID(ID + "_btn").Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
