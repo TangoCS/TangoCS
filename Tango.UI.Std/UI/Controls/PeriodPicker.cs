@@ -39,7 +39,7 @@ namespace Tango.UI.Controls
 			});
 		}
 
-		public void Render(LayoutWriter w, DateTime? from = null, DateTime? to = null, Action<InputTagAttributes> attributes = null)
+		public void Render(LayoutWriter w, DateTime? from = null, DateTime? to = null, Action<InputTagAttributes> attributes = null, Action<SelectTagAttributes> hourMinuteAttributes = null)
 		{
 			dPeriodFrom.MinYear = MinYear;
 			dPeriodTo.MinYear = MinYear;
@@ -47,18 +47,18 @@ namespace Tango.UI.Controls
 			dPeriodFrom.MaxYear = DateTime.Today.Year;
 			dPeriodTo.MaxYear = DateTime.Today.Year;
 
-            if (from == null)
-                from = Context.GetDateTimeArg(ParmName.From);
+			if (from == null)
+				from = Context.GetDateTimeArg(ParmName.From);
 			if (from == null)
 				from = DefaultValue?.From;
 
 			if (to == null)
-                to = Context.GetDateTimeArg(ParmName.To);
+				to = Context.GetDateTimeArg(ParmName.To);
 			if (to == null)
 				to = DefaultValue?.To;
 
-			var options = new CalendarOptions { ShowButton = false, Attributes = a => { attributes?.Invoke(a); a.OnInput(JSOnSelectCallback); } };
-			var dlOptions = new DateLists.DateListsOptions { HourAttributes = a => a.OnChange(JSOnSelectCallback), MinuteAttributes = a => a.OnChange(JSOnSelectCallback) };
+			var options = new CalendarOptions { ShowButton = false, Attributes = attributes };
+			var dlOptions = new DateLists.DateListsOptions { HourAttributes = hourMinuteAttributes, MinuteAttributes = hourMinuteAttributes };
             //w.PushID(ID);
 			w.Div(a => a.Class("periodpicker").ID(ID), () => {
 				w.Div(() => {
