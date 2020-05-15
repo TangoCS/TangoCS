@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Tango.Html;
 using Tango.UI.Controls;
@@ -13,9 +14,7 @@ namespace Tango.UI.Std
 
 	public class ListRenderer<TResult> : ListRendererAbstract<TResult>
 	{
-		string _id;
-
-		public bool RowsOnly { get; set; } = false;
+		protected string _id;
 
 		public ListRenderer()
 		{
@@ -110,30 +109,23 @@ namespace Tango.UI.Std
 			if (fields.EnableSelect && !fields.RowAttributes.GetInvocationList().Any(o => o.Method.Name.Contains("SetRowID")))
 				fields.SetRowID(o => (o as dynamic).ID);
 
-			if (RowsOnly)
-			{
+			w.Table(fields.ListAttributes, () => {
+				var i = 0;
+
+				foreach (var hr in fields.HeaderRows)
+				{
+					w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
+						foreach (var h in hr)
+							w.Th(h.Attributes, () => h.Content(w));
+					});
+					i++;
+				}
+
+				if (fields.EnableSelect && fields.AllowSelectAllPages)
+					w.InfoRow(fields.Cells.Count);
+
 				RenderRows(w, result, fields);
-			}
-			else
-			{
-				w.Table(fields.ListAttributes, () => {
-					var i = 0;
-
-					foreach (var hr in fields.HeaderRows)
-					{
-						w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
-							foreach (var h in hr)
-								w.Th(h.Attributes, () => h.Content(w));
-						});
-						i++;
-					}
-
-					if (fields.EnableSelect && fields.AllowSelectAllPages)
-						w.InfoRow(fields.Cells.Count);
-
-					RenderRows(w, result, fields);
-				});
-			}
+			});
 
 			if (rendererIsControl) w.PopPrefix();
 		}
@@ -184,21 +176,69 @@ namespace Tango.UI.Std
 		}
 	}
 
-	public class ListTreeRenderer<TResult> : ListRenderer<TResult>
+	public class TreeListRenderer<TResult> : ListRenderer<TResult>
 	{
 		Paging _paging;
 		int _level;
 
-		public ListTreeRenderer(string id, Paging paging, int level) : base(id)
+		public TreeListRenderer(string id, Paging paging, int level) : base(id)
 		{
-			RowsOnly = level > 0;
 			_paging = paging;
 			_level = level;
 		}
 
-		protected override void RenderRows(LayoutWriter w, IEnumerable<TResult> result, IFieldCollection<TResult> fields)
+		public override void Render(LayoutWriter w, IEnumerable<TResult> result, IFieldCollection<TResult> fields)
 		{
-			base.RenderRows(w, result, fields);
+			var rendererIsControl = !_id.IsEmpty() && w.IDPrefix != _id && !w.IDPrefix.EndsWith("_" + _id);
+
+			if (rendererIsControl) w.PushPrefix(_id);
+
+			Action<TagAttributes> listAttrs = a => a.ID().Class("listviewtable");
+			if (fields.EnableSelect)
+				listAttrs += a => a.DataCtrl("listview");
+			listAttrs += fields.ListAttributes;
+
+			if (_level > 0)
+				RenderRows(w, result, fields);
+			else
+			{
+				w.Table(listAttrs, () => {
+					var i = 0;
+
+					foreach (var hr in fields.HeaderRows)
+					{
+						w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
+							foreach (var h in hr)
+								w.Th(h.Attributes, () => h.Content(w));
+						});
+						i++;
+					}
+
+					RenderRows(w, result, fields);
+				});
+				w.Hidden("selectedvalues", null, a => a.DataHasClientState(ClientStateType.Array, _id));
+
+				if (fields.EnableSelect)
+				{
+					w.GroupTitle("Выбранные объекты");
+
+					Action<TagAttributes> selectedListAttrs = a => a.ID("selected").Class("listviewtable").DataCtrl("listview");
+					selectedListAttrs += fields.ListAttributes;
+
+					w.Table(selectedListAttrs, () => {
+						var i = 0;
+
+						foreach (var hr in fields.HeaderRows)
+						{
+							w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
+								foreach (var h in hr)
+									w.Th(h.Attributes, () => h.Content(w));
+							});
+							i++;
+						}
+					});
+				}
+			}
 
 			if (result.Count() >= _paging.PageSize || _paging.PageIndex > 1)
 			{
