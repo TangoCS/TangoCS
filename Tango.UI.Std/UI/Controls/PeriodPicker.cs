@@ -7,6 +7,14 @@ namespace Tango.UI.Controls
 {
 	public class PeriodPicker : ViewComponent, IFieldValueProvider<PeriodValue>
 	{
+		public class PeriodPickerOptions
+		{
+			public CalendarOptions FromCalendarOptions { get; set; } = new CalendarOptions { ShowButton = false };
+			public DateLists.DateListsOptions FromTimeOptions { get; set; }
+			public CalendarOptions ToCalendarOptions { get; set; } = new CalendarOptions { ShowButton = false };
+			public DateLists.DateListsOptions ToTimeOptions { get; set; }
+		}
+
 		DateLists dPeriodFrom;
 		DateLists dPeriodTo;
 
@@ -39,7 +47,7 @@ namespace Tango.UI.Controls
 			});
 		}
 
-		public void Render(LayoutWriter w, DateTime? from = null, DateTime? to = null, Action<InputTagAttributes> attributes = null, Action<SelectTagAttributes> hourMinuteAttributes = null)
+		public void Render(LayoutWriter w, DateTime? from = null, DateTime? to = null, PeriodPickerOptions options = null)
 		{
 			dPeriodFrom.MinYear = MinYear;
 			dPeriodTo.MinYear = MinYear;
@@ -56,21 +64,22 @@ namespace Tango.UI.Controls
 				to = Context.GetDateTimeArg(ParmName.To);
 			if (to == null)
 				to = DefaultValue?.To;
-
-			var options = new CalendarOptions { ShowButton = false, Attributes = attributes };
-			var dlOptions = new DateLists.DateListsOptions { HourAttributes = hourMinuteAttributes, MinuteAttributes = hourMinuteAttributes };
-            //w.PushID(ID);
+			if (options == null)
+				options = new PeriodPickerOptions();
+			options.FromCalendarOptions.ShowButton = false;
+			options.ToCalendarOptions.ShowButton = false;
+			//w.PushID(ID);
 			w.Div(a => a.Class("periodpicker").ID(ID), () => {
 				w.Div(() => {
-					if (UseCalendar && ShowDays) w.Calendar(ParmName.From, from, options);
+					if (UseCalendar && ShowDays) w.Calendar(ParmName.From, from, options.FromCalendarOptions);
 					if (!UseCalendar || ShowTime)
-						dPeriodFrom.Render(w, from, dlOptions);
+						dPeriodFrom.Render(w, from, options.FromTimeOptions);
 				});
 				w.Div("&ndash;");
 				w.Div(() => {
-					if (UseCalendar && ShowDays) w.Calendar(ParmName.To, to, options);
+					if (UseCalendar && ShowDays) w.Calendar(ParmName.To, to, options.ToCalendarOptions);
 					if (!UseCalendar || ShowTime)
-						dPeriodTo.Render(w, to, dlOptions);
+						dPeriodTo.Render(w, to, options.ToTimeOptions);
 				});
 				if (UseCalendar && ShowDays)
 					w.Span(a => a.ID(ID + "_btn").Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
