@@ -85,6 +85,12 @@
 			if (!caller.parentNode) return;
 			return instance.getThisOrParent(caller.parentNode, predicate);
 		},
+		getRow: function (caller) {
+			return instance.getThisOrParent(caller, function (el) { return el instanceof HTMLTableRowElement; });
+		},
+		getCell: function (caller) {
+			return instance.getThisOrParent(caller, function (el) { return el instanceof HTMLTableCellElement; });
+		},
 		processFile: function (contenttype, disposition, data) {
 			var filename = "";
 			var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
@@ -294,7 +300,7 @@ var ajaxUtils = function ($, cu) {
 				});
 			}
 		},
-		formSubmit: function (sender, form) {
+        formSubmit: function (sender, form, dict) {
 			if (form.hasAttribute('data-res') && instance.processResult(form) == false) return false;
 			var fd = new FormData(form);
 			fd.append('submit', sender.value);
@@ -304,7 +310,14 @@ var ajaxUtils = function ($, cu) {
 			}
 			var target = { data: fd, method: 'POST' };
 			processElementDataOnEvent(sender, target, function (key, value) { fd.append(key, value); });
-			if (!target.e) target.e = 'onsubmit';
+            if (!target.e) target.e = 'onsubmit';
+            if (dict) {
+                for (var i = 0; i < dict.length; i++) {
+                    target.url += '&' + dict[i].key + '=' + dict[i].value
+
+                }
+            }
+                   
 			//target.e = sender.hasAttribute('data-e') ? sender.getAttribute('data-e') : 'onsubmit';
 			//if (sender.hasAttribute('data-r')) target.r = sender.getAttribute('data-r');
 			//target.url = instance.findServiceAction(form);
@@ -325,7 +338,7 @@ var ajaxUtils = function ($, cu) {
 				});
 
 			return false;
-		},
+        },        
 		error: function (xhr, status, e) {
 			var text = '';
 			var title = 'System error';
@@ -1050,6 +1063,15 @@ var ajaxUtils = function ($, cu) {
 			nodes.forEach(function (n) {
 				if (n.nested) return;
 				n.func(n.el, n);
+
+				const ctrl = instance.findControl(n.el);
+				if (ctrl) {
+					const t = ctrl.root.getAttribute('data-ctrl');
+					if (window[t] && window[t]['widgetContentChanged']) {
+						window[t]['widgetContentChanged'](ctrl.state);
+						console.log('widget: ' + ctrl.id + ' widgetContentChanged ' + t);
+					}
+				}
 			});
 
 			for (var i = 0; i < ctrls.length; i++) {
@@ -1058,13 +1080,10 @@ var ajaxUtils = function ($, cu) {
 				const t = root.getAttribute('data-ctrl');
 
 				if (window[t] && window[t]['widgetDidMount']) {
-
 					if (apiResult.state) {
-
 						for (var key in apiResult.state[t]) {
 							ctrl.state[key] = apiResult.state[t][key];
 						}
-
 					}
 
 					window[t]['widgetDidMount'](ctrl.state);

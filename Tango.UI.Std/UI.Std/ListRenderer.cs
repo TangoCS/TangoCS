@@ -193,7 +193,7 @@ namespace Tango.UI.Std
 
 			if (rendererIsControl) w.PushPrefix(_id);
 
-			Action<TagAttributes> listAttrs = a => a.ID().Class("listviewtable");
+			Action<TagAttributes> listAttrs = a => a.ID().Class("listviewtable width100");
 			if (fields.EnableSelect)
 				listAttrs += a => a.DataCtrl("listview");
 			listAttrs += fields.ListAttributes;
@@ -222,7 +222,7 @@ namespace Tango.UI.Std
 				{
 					w.GroupTitle("Выбранные объекты");
 
-					Action<TagAttributes> selectedListAttrs = a => a.ID("selected").Class("listviewtable").DataCtrl("listview");
+					Action<TagAttributes> selectedListAttrs = a => a.ID("selected").Class("listviewtable width100").DataCtrl("listview");
 					selectedListAttrs += fields.ListAttributes;
 
 					w.Table(selectedListAttrs, () => {
