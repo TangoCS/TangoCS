@@ -12,7 +12,7 @@ namespace Tango.FileStorage.Std.Model
 {
 
 	[Table("N_DownloadLog")]
-	public partial class N_DownloadLog : IEntity, IWithKey<N_DownloadLog, int>, IWithTimeStamp, IWithLogicalDelete
+	public partial class N_DownloadLog : IEntity, IWithKey<N_DownloadLog, int>, IWithUserTimeStamp, IWithLogicalDelete
 	{
 		public N_DownloadLog()
 		{
@@ -59,7 +59,7 @@ namespace Tango.FileStorage.Std.Model
 	}
 
 	[Table("N_File")]
-	public partial class N_File : IEntity, IWithKey<N_File, int>, IWithTimeStamp, IWithTitle, IWithLogicalDelete
+	public partial class N_File : IEntity, IWithKey<N_File, int>, IWithUserTimeStamp, IWithTitle, IWithLogicalDelete
 	{
 		public N_File()
 		{
@@ -212,7 +212,7 @@ namespace Tango.FileStorage.Std.Model
 	}
 
 	[Table("N_FileLibraryType")]
-	public partial class N_FileLibraryType : IEntity, IWithKey<N_FileLibraryType, int>, IWithTimeStamp, IWithLogicalDelete, IWithTitle
+	public partial class N_FileLibraryType : IEntity, IWithKey<N_FileLibraryType, int>, IWithUserTimeStamp, IWithLogicalDelete, IWithTitle
 	{
 		public N_FileLibraryType()
 		{
@@ -244,7 +244,7 @@ namespace Tango.FileStorage.Std.Model
 	}
 
 	[Table("N_Folder")]
-	public partial class N_Folder : IEntity, IWithKey<N_Folder, int>, IWithTimeStamp, IWithTitle
+	public partial class N_Folder : IEntity, IWithKey<N_Folder, int>, IWithUserTimeStamp, IWithTitle
 	{
 		public N_Folder()
 		{
