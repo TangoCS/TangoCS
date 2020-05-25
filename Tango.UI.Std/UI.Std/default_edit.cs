@@ -298,16 +298,21 @@ namespace Tango.UI.Std
 			return obj;
 		}
 
-		protected override void Submit(ApiResponse response)
-		{
-			if (EntityAudit != null)
-			{
-				if (CreateObjectMode)
-					EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Insert, null);
-				else
-					EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Update, Tracker.GetChanges(ViewData));
-			}
+        protected override void PostProcessFormData(ApiResponse response, ValidationMessageCollection val)
+        {
+            base.PostProcessFormData(response, val);
 
+            if (EntityAudit != null)
+            {
+                if (CreateObjectMode)
+                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Insert, null);
+                else
+                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Update, Tracker?.GetChanges(ViewData));
+            }
+        }
+
+        protected override void Submit(ApiResponse response)
+		{
 			if (CreateObjectMode && BulkMode)
 			{
 				var sel = GetArg(Constants.SelectedValues);
@@ -369,17 +374,23 @@ namespace Tango.UI.Std
 		protected virtual void BeforeSaveEntity() { }
 		protected virtual void AfterSaveEntity() { }
 
-		protected override void Submit(ApiResponse response)
+        protected override void PostProcessFormData(ApiResponse response, ValidationMessageCollection val)
+        {
+            base.PostProcessFormData(response, val);
+
+            if (EntityAudit != null)
+            {
+                if (CreateObjectMode)
+                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Insert, null);
+                else
+                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Update, Tracker?.GetChanges(ViewData));
+            }
+
+        }
+
+        protected override void Submit(ApiResponse response)
 		{
 			var rep = Database.Repository<T>();
-
-			if (EntityAudit != null)
-			{
-				if (CreateObjectMode)
-					EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Insert, null);
-				else
-					EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Update, Tracker.GetChanges(ViewData));
-			}
 
 			if (CreateObjectMode)
 				InTransaction(() =>

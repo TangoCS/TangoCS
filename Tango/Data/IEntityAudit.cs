@@ -56,7 +56,7 @@ namespace Tango.Data
 			return new ObjectChange {
 				Action = action,
 				ID = () => entity.ID.ToString(),
-				Title = (entity as IWithTitle)?.Title ?? $"Объект {typeof(T).Name}, ID = {entity.ID}",
+				Title = (entity as IWithTitle)?.Title,
 				Type = typeof(T),
 				PropertyChanges = propertyChanges
 			};
