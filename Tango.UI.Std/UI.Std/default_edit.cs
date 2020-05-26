@@ -102,7 +102,9 @@ namespace Tango.UI.Std
 
 			ValidateFormData(m);
 			if (m.HasItems()) return prepareResponse();
-			ProcessFormData(m);
+            PreProcessFormData(response, m);
+            if (m.HasItems()) return prepareResponse();
+            ProcessFormData(m);
 			if (m.HasItems()) return prepareResponse();
 			PostProcessFormData(response, m);
 			if (m.HasItems()) return prepareResponse();
@@ -121,7 +123,8 @@ namespace Tango.UI.Std
 		}
 
 		protected virtual void ValidateFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ValidateFormData(val));
-		protected virtual void ProcessFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ProcessFormData(val));
+        protected virtual void PreProcessFormData(ApiResponse response, ValidationMessageCollection val) { }
+        protected virtual void ProcessFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ProcessFormData(val));
 		protected virtual void PostProcessFormData(ApiResponse response, ValidationMessageCollection val) { }
 
 		protected abstract void Submit(ApiResponse response);
@@ -298,22 +301,32 @@ namespace Tango.UI.Std
 			return obj;
 		}
 
-        protected override void PostProcessFormData(ApiResponse response, ValidationMessageCollection val)
+        protected override void PreProcessFormData(ApiResponse response, ValidationMessageCollection val)
         {
-            base.PostProcessFormData(response, val);
+            base.PreProcessFormData(response, val);
 
             if (EntityAudit != null)
             {
                 if (CreateObjectMode)
-                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Insert, null);
+                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Insert);
                 else
-                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Update, Tracker?.GetChanges(ViewData));
+                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Update);
             }
         }
 
         protected override void Submit(ApiResponse response)
 		{
-			if (CreateObjectMode && BulkMode)
+            if (EntityAudit != null)
+            {
+                if (!CreateObjectMode)
+                {
+                    var package = EntityAudit.Packages?.FirstOrDefault();
+                    if (package != null)
+                        package.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
+                }
+            }
+
+            if (CreateObjectMode && BulkMode)
 			{
 				var sel = GetArg(Constants.SelectedValues);
 				var cnt = sel?.Split(',').Count() ?? 0;
@@ -374,23 +387,32 @@ namespace Tango.UI.Std
 		protected virtual void BeforeSaveEntity() { }
 		protected virtual void AfterSaveEntity() { }
 
-        protected override void PostProcessFormData(ApiResponse response, ValidationMessageCollection val)
+        protected override void PreProcessFormData(ApiResponse response, ValidationMessageCollection val)
         {
-            base.PostProcessFormData(response, val);
+            base.PreProcessFormData(response, val);
 
             if (EntityAudit != null)
             {
                 if (CreateObjectMode)
-                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Insert, null);
+                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Insert);
                 else
-                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Update, Tracker?.GetChanges(ViewData));
+                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Update);
             }
-
         }
 
         protected override void Submit(ApiResponse response)
 		{
-			var rep = Database.Repository<T>();
+            if (EntityAudit != null)
+            {
+                if (!CreateObjectMode)
+                {
+                    var package = EntityAudit.Packages?.FirstOrDefault();
+                    if (package != null)
+                        package.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
+                }
+            }
+
+            var rep = Database.Repository<T>();
 
 			if (CreateObjectMode)
 				InTransaction(() =>
