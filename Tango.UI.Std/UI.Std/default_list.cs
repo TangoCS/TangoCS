@@ -276,6 +276,18 @@ namespace Tango.UI.Std
 		}
     }
 
+	public abstract class abstract_list<T> : abstract_list<T, T>
+	{
+		protected override IFieldCollection<T, T> FieldsConstructor()
+		{
+			var f = new FieldCollection<T>(Context, Sorter, Filter);
+			f.RowAttributes += (a, o, i) => a.ZebraStripping(i.RowNum);
+			FieldsInit(f);
+			return f;
+		}
+
+		protected abstract void FieldsInit(FieldCollection<T> fields);
+	}
 
 	public abstract class default_list<TEntity, TResult> : abstract_list<TEntity, TResult>
 	{
@@ -298,8 +310,6 @@ namespace Tango.UI.Std
 
 			var res = Selector(Paging.Apply(Sorter.Apply(ApplyFilter(Data)), true));
 			return res.ToList();
-			//var expr = SelectExpression();
-			//return expr != null ? res.Select(SelectExpression()).ToList() : res.Cast<TResult>().ToList();
 		}
 
 		protected override IFieldCollection<TEntity, TResult> FieldsConstructor()
@@ -311,12 +321,10 @@ namespace Tango.UI.Std
 		}
 
 		protected abstract void FieldsInit(FieldCollection<TEntity, TResult> fields);
-		//protected abstract Expression<Func<TEntity, TResult>> SelectExpression();
 	}
 
 	public abstract class default_list<T> : default_list<T, T>
 	{
-		//protected override Expression<Func<T, T>> SelectExpression() => o => o;
 		protected override IQueryable<T> Selector(IQueryable<T> data) => data;
 	}
 

@@ -164,6 +164,7 @@ namespace Tango.UI
 		public void RedirectBack(ActionContext context, int code)
 		{
 			var retctx = context.ReturnTargetContext(code);
+			if (retctx == null) return;
 			RunRedirect(retctx);
 			if (retctx.AddContainer)
 				RedirectTo(retctx.BaseUrl().Url, retctx.AllArgs);

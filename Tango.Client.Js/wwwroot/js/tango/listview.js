@@ -4,7 +4,7 @@
 			const tr = cu.getRow(el);
 			const c = au.findControl(el);
 			const cbhead = document.getElementById(c.id + "_sel_header");
-			const selected = tr.classList.contains('checked');
+			const selected = tr.classList.contains('checked') || tr.hasAttribute('data-checked');
 			const rowid = tr.getAttribute('data-rowid');
 
 			if (selected) {
@@ -223,14 +223,14 @@ var listview = function (au, cu, cbcell) {
 			for (var i = 0; i < cblist.length; i++) {
 				const el = cblist[i];
 				el.addEventListener('click', function (e) {
-					cbcell.setselected(el, onCheckChange);
-					updateSelected(el);
+					cbcell.setselected(e.currentTarget, onCheckChange);
+					updateSelected(e.currentTarget);
 				});
 				el.classList.add('initialized');
 			}
 
 			if (cbhead) {
-				cbhead.addEventListener('click', function (e) { cbcell.cbheadclicked(cbhead, onCheckChange); });
+				cbhead.addEventListener('click', function (e) { cbcell.cbheadclicked(e.currentTarget, onCheckChange); });
 				cbcell.setHeaderSelectorState(cbhead, j, cblist.length);
 			}
 			onCheckChange(shadow, root, state);
@@ -269,8 +269,8 @@ var listview = function (au, cu, cbcell) {
 			for (var i = 0; i < cblist.length; i++) {
 				const el = cblist[i];
 				el.addEventListener('click', function (e) {
-					cbcell.setselected(el, onCheckChange);
-					updateSelected(el);
+					cbcell.setselected(e.currentTarget, onCheckChange);
+					updateSelected(e.currentTarget);
 				});
 				el.classList.add('initialized');
 			}
@@ -372,6 +372,20 @@ var listview = function (au, cu, cbcell) {
 		}
 	}
 
+	function addDelIcon(el) {
+		var del = document.createElement("I");
+		del.className = 'icon icon-delete';
+		el.appendChild(del);
+
+		del.addEventListener('click', function (e) {
+			var seltr = cu.getRow(e.currentTarget);
+			var origtr = document.getElementById(seltr.id.replace('_selected', ''));
+			var origcb = origtr.querySelector('.sel');
+			cbcell.setselected(origcb, onCheckChange);
+			updateSelected(origcb);
+		});
+	}
+
 	function updateSelected(el) {
 		var tr = cu.getRow(el);
 		const root = tr.parentNode.parentNode;
@@ -385,18 +399,29 @@ var listview = function (au, cu, cbcell) {
 		while (tr) {
 			if (parseInt(tr.getAttribute('data-level')) == level) {
 				var copyTr = tr.cloneNode(true);
+				var isChecked = false;
 				copyTr.id = copyTr.id + '_selected';
 				if (copyTr.classList.contains('checked')) {
 					copyTr.classList.remove('checked');
 					copyTr.setAttribute('data-checked', '');
+					isChecked = true;
 				}
 				copyTr.removeAttribute('data-e');
+
 				var cb = copyTr.querySelector('.sel');
-				if (cb) cb.parentNode.removeChild(cb);
+				if (cb) {
+					if (isChecked) addDelIcon(cb.parentElement);
+					cb.parentNode.removeChild(cb);
+				}
+
+				var ddm = copyTr.querySelector('.dropdownimage');
+				if (ddm) ddm.parentNode.removeChild(ddm);
+
 				if (copyTr.classList.contains('collapsed') || i == 0) {
 					var arr = copyTr.querySelector('.togglelevel > span');
 					if (arr) arr.classList.add('hide');
 				}
+
 				tocopy.push(copyTr);
 				level--;
 				i++;
@@ -412,8 +437,11 @@ var listview = function (au, cu, cbcell) {
 				const unchecked = clickedEl || !el.hasAttribute('data-checked');
 				if (isLastLeaf && unchecked)
 					el.parentElement.removeChild(el);
-				else if (clickedEl)
+				else if (clickedEl) {
 					el.removeAttribute('data-checked');
+					var del = el.querySelector('.icon-delete');
+					if (del) del.parentElement.removeChild(del);
+				}
 				else if (isLastLeaf && !unchecked) {
 					var arr = el.querySelector('.togglelevel > span');
 					if (arr) arr.classList.add('hide');
@@ -440,8 +468,11 @@ var listview = function (au, cu, cbcell) {
 						hide = true;
 						collapsedby = el.getAttribute('data-collapsedby');
 					}
-					if (i == 0) 
+					if (i == 0) {
 						el.setAttribute('data-checked', '');
+						var content = el.querySelector('.treerow-content');
+						addDelIcon(content);
+					}
 					var arr = el.querySelector('.togglelevel > span');
 					if (arr && arr.classList.contains('hide')) {
 						arr.classList.remove('hide');

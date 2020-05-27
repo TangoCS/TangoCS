@@ -28,7 +28,7 @@ namespace Tango.UI.Std
 				else
 					w.Div(a => a.Class("leaf").Class(options?.NodeClass(o)), () => w.Span("&nbsp;"));
 
-				w.Div(() => {
+				w.Div(a => a.Class("treerow-content"), () => {
 					content(w, o);
 				});
 			});

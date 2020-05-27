@@ -19,7 +19,7 @@ namespace Tango.UI.Std
 		protected abstract string Title { get; }
 		protected abstract void Form(LayoutWriter w);
 
-		public override ViewContainer GetContainer() => new EditEntityContainer();
+		public override ViewContainer GetContainer() => new EditEntityContainer { IsNested = ParentElement != null };
 
 		[Inject]
 		protected IEntityAudit EntityAudit { get; set; }

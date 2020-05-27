@@ -767,6 +767,10 @@ div.tabs2 + div.tabs2 {
 	background-image: linear-gradient(#cef8ff, #7fe0f8);
 }
 
+.dropdownimage-inline {
+	display: inline-block;
+	margin-left: 4px;
+}
 
 /* period picker*/
 .periodpicker {

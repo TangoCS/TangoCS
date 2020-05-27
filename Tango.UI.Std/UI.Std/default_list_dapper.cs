@@ -6,7 +6,7 @@ using Tango.UI.Controls;
 
 namespace Tango.UI.Std
 {
-	public abstract class default_list_rep<TResult> : abstract_list<TResult, TResult>
+	public abstract class default_list_rep<TResult> : abstract_list<TResult>
 	{
 		[Inject]
 		protected IDatabase Database { get; set; }
@@ -58,15 +58,5 @@ namespace Tango.UI.Std
 
 			return _pageData;
 		}
-
-		protected override IFieldCollection<TResult, TResult> FieldsConstructor()
-		{
-			var f = new FieldCollection<TResult>(Context, Sorter, Filter);
-			f.RowAttributes += (a, o, i) => a.ZebraStripping(i.RowNum);
-			FieldsInit(f);
-			return f;
-		}
-
-		protected abstract void FieldsInit(FieldCollection<TResult> fields);
 	}
 }
