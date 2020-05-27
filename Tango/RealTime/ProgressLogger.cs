@@ -3,7 +3,7 @@ using Tango.Logger;
 
 namespace Tango.RealTime
 {
-	public class ProgressLogger : IProgressLogger
+	public class ProgressLogger : IRealTimeProgressLogger
 	{
 		readonly IBackgroundWorkerHubContext _hubContext;
 		readonly string _taskid;
@@ -12,7 +12,7 @@ namespace Tango.RealTime
 		int _itemsCount;
 
 		public ProgressLogger(IBackgroundWorkerHubContext hubContext, string taskid, Func<IHubContext, IClientProxy> clientSelector)
-		{
+		{			
 			_hubContext = hubContext;
 			_taskid = taskid.ToLower();
 			_clientSelector = clientSelector;
@@ -36,6 +36,7 @@ namespace Tango.RealTime
 			if (itemsCompleted != null)
 				SetProgress(itemsCompleted.Value);
 			_clientSelector(_hubContext).SendCoreAsync("message", new object[] { _taskid, message });
+			
 		}
-	}
+	}	
 }

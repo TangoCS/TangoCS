@@ -6,7 +6,7 @@ using Tango.UI.Controls;
 
 namespace Tango.UI.Std
 {
-	public abstract class default_list_rep<TResult> : abstract_list<TResult, TResult>
+	public abstract class default_list_rep<TResult> : abstract_list<TResult>
 	{
 		[Inject]
 		protected IDatabase Database { get; set; }
@@ -14,51 +14,49 @@ namespace Tango.UI.Std
 		protected virtual IQueryable<TResult> Data => Enumerable.Empty<TResult>().AsQueryable();
 		protected virtual IQueryable<TResult> DefaultOrderBy(IQueryable<TResult> data) { return data; }
 
-		IRepository<TResult> _repository;
+		IRepository<TResult> _repository = null;
 
-		public override void OnInit()
+		protected IRepository<TResult> Repository
 		{
-			base.OnInit();
-			_repository = GetRepository();
+			get
+			{
+				if (_repository == null)
+					_repository = GetRepository();
+				return _repository;
+			}
 		}
 
 		protected virtual IRepository<TResult> GetRepository() => Database.Repository<TResult>();
 
 		protected override int GetCount()
 		{
-			return _repository.Count(ApplyFilter(Data).Expression);
+			return Repository.Count(ApplyFilter(Data).Expression);
 		}
 
-		IEnumerable<TResult> _pageData = null;
+		protected IEnumerable<TResult> _pageData = null;
 
 		protected override IEnumerable<TResult> GetPageData()
 		{
 			if (_pageData != null)
 				return _pageData;
 
-			foreach (var gs in _fields.GroupSorting)
+			foreach (var gs in Fields.GroupSorting)
 				Sorter.AddOrderBy(gs.SeqNo, gs.SortDesc, true);
 			var filtered = ApplyFilter(Data);
 			var q = Paging.Apply(Sorter.Count > 0 ? Sorter.Apply(filtered) : DefaultOrderBy(filtered), true);
 
-			var (query, parms) = Filter.ApplyFilterSql(_repository.AllObjectsQuery);
-			_repository.AllObjectsQuery = query;
-			foreach (var pair in parms)
-				_repository.Parameters.Add(pair.Key, pair.Value);
+			if (Repository.AllObjectsQuery.StartsWith("@"))
+			{
+				var (filters, parms) = Filter.GetSqlFilters();
+				Repository.AllObjectsQuery = EmbeddedResourceManager.GetString(typeof(TResult), Repository.AllObjectsQuery.Substring(1), filters);
 
-			_pageData = _repository.List(q.Expression);
+				foreach (var pair in parms)
+					Repository.Parameters.Add(pair.Key, pair.Value);
+			}
+
+			_pageData = Repository.List(q.Expression);
 
 			return _pageData;
 		}
-
-		protected override IFieldCollection<TResult, TResult> FieldsConstructor()
-		{
-			var f = new FieldCollection<TResult>(Context, Sorter, Filter);
-			f.RowAttributes += (a, o, i) => a.ZebraStripping(i.RowNum);
-			FieldsInit(f);
-			return f;
-		}
-
-		protected abstract void FieldsInit(FieldCollection<TResult> fields);
 	}
 }

@@ -9,13 +9,16 @@ namespace Tango
 	public interface IHostingEnvironment
 	{
 		string WebRootPath { get; }
-	}
+        string ContentRootPath { get; }
+    }
 
 	public interface IRequestEnvironment
 	{
 		IDictionary<string, IReadOnlyList<string>> Headers { get; }
+        IDictionary<string, IReadOnlyList<string>> Query { get; }
+        IDictionary<string, string> Cookies { get; }
 
-		string Method { get; }
+        string Method { get; }
 		string Protocol { get; }
 		string Scheme { get; }
 		string Host { get; }

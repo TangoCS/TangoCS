@@ -8,6 +8,7 @@ namespace Tango.Drawing
 	{
 		bool BeginDraw(Rgba32 backcolor);
 		bool BeginDraw();
+		void DrawPoint(int x, int y);
 		void DrawCircle(int x, int y, int r);
 		void DrawLine(int x1, int y1, int x2, int y2, DashStyle style);
 		void DrawLine(int x1, int y1, int x2, int y2);
@@ -28,8 +29,8 @@ namespace Tango.Drawing
 		void FillRectangle(int x, int y, int w, int h);
 		void FillRectangle(int x, int y, int w, int h, Rgba32 gradientBottomColor, Rgba32 gradientTopColor);
 		void FillTriangle(Point p1, Point p2, Point p3);
-		void FrameViewDisable();
-		void FrameViewEnable(IFrame f);
+		//void FrameViewDisable();
+		//void FrameViewEnable(IFrame f);
 		void SetColor(Rgba32 c);
 		void SetColor(Rgba32 c, byte alpha);
 		void SetFont(string fontFile);
@@ -37,13 +38,13 @@ namespace Tango.Drawing
 		void DisableBlend();
 	}
 
-	public interface IFrame
-	{
-		int Height { get; set; }
-		int Width { get; set; }
-		int X { get; set; }
-		int Y { get; set; }
-	}
+	//public interface IFrame
+	//{
+	//	int Height { get; set; }
+	//	int Width { get; set; }
+	//	int X { get; set; }
+	//	int Y { get; set; }
+	//}
 
 	public enum DashStyle
 	{

@@ -28,6 +28,8 @@ namespace Tango.UI.Std
 			var recipient = r == null || r == ID?.ToLower() || r == ClientID?.ToLower() ? this : Context.EventReceivers.First(o => o.ClientID == r);
 			var e = Context.Event.IsEmpty() ? "onload" : Context.Event;
 
+			recipient.OnEvent();
+
 			return InteractionHelper.RunEvent(recipient, e);
 		}
 
@@ -80,7 +82,7 @@ namespace Tango.UI.Std
 
 			void headAttr(TagAttributes a)
 			{
-				a.Data("x-csrf-token", tokenString).Data("page", GetType().Name.ToLower());
+				a.ID("head").Data("x-csrf-token", tokenString).Data("page", GetType().Name.ToLower());
 			}
 
 			w.DocType();
@@ -102,6 +104,10 @@ namespace Tango.UI.Std
 		}
 
 		public virtual void OnLoadContent(ApiResponse response)
+		{
+		}
+
+		public virtual void OnUnloadContent(ApiResponse response)
 		{
 		}
 

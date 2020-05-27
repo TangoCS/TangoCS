@@ -27,6 +27,21 @@ namespace Tango.UI.Controls
 		}
 	}
 
+	public class NoCloseIconDialogFormContainer : DialogFormContainer
+	{
+		public override void Render(ApiResponse response)
+		{
+			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
+				w.DialogControl(DialogExtensions.DialogContainerAttrs(w.Context, Type, w.IDPrefix), () => {
+					w.AjaxForm("form", a => a.DataResultPostponed(1), () => {
+						w.DialogControlBody(null, () => { }, null, null, () => { }, false);
+						w.Hidden(Constants.ReturnUrl, Context.ReturnUrl.Get(1));
+					});
+				});
+			});
+		}
+	}
+
 	public class DialogContainer : ViewContainer
 	{
 		public string Class { get; set; }
@@ -51,6 +66,13 @@ namespace Tango.UI.Controls
 		{
 			Class = "console";
 		}
+
+		public override void Render(ApiResponse response)
+		{
+			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
+				w.DialogControl(a => a.Class(Class).Data("reuse", "1"), () => w.DialogControlBody(null, null, null, null, null));
+			});
+		}
 	}
 
 	public static class DialogExtensions
@@ -72,14 +94,17 @@ namespace Tango.UI.Controls
 			w.Div(a => a.ID("dialog").Class("modal-dialog").Role("dialog").Aria("modal", "true").DataCtrl("dialog").DataResultHandler().Set(attrs), () => content());
 		}
 
-		internal static void DialogControlBody(this LayoutWriter w, Action title, Action toolbar, Action body, Action bottomToolbar, Action footer)
+		internal static void DialogControlBody(this LayoutWriter w, Action title, Action toolbar, Action body, Action bottomToolbar, Action footer, bool showCloseIcon = true)
 		{
 			w.Div(a => a.Class("modal-container"), () => {
 				w.Div(a => a.Class("modal-header"), () => {
 					w.H3(a => a.ID("title").Class("modal-title"), title);
-					w.Button(a => a.Class("close").Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), () => {
-						w.Span(a => a.Aria("hidden", "true"), () => w.Icon("close"));
-					});
+					if (showCloseIcon)
+					{
+						w.Button(a => a.Class("close").Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), () => {
+							w.Span(a => a.Aria("hidden", "true"), () => w.Icon("close"));
+						});
+					}
 				});
 				if (toolbar != null)
 					w.Div(a => a.ID("toolbar").Class("modal-toolbar"), toolbar);
@@ -91,34 +116,78 @@ namespace Tango.UI.Controls
 			});
 		}
 
-        ///TODO. Сделать автоматическое прокидываение всех полей из контекста.
-		public static void AddYesNoDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null, bool warningMode = false)
+		///TODO. Сделать автоматическое прокидываение всех полей из контекста.
+		public static void AddYesNoDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null, bool warningMode = false, Action<ButtonTagAttributes> btnAttrs = null)
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
-                w.PushPrefix(IDPrefix);
+				if (IDPrefix != null)
+					w.PushPrefix(IDPrefix);
 				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix), () => {
 					w.AjaxForm("form", a => a.DataResult(1), () => {
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
 							w.ButtonsBarRight(() => {
-								
-                                if(!warningMode)
-                                    w.SubmitButton(a => {
-									if (!w.Context.ResponseType.IsEmpty())
-										a.Data("responsetype", w.Context.ResponseType);
-								}, "Да");
+
+								if (!warningMode)
+									w.SubmitButton(a => {
+										if (!w.Context.ResponseType.IsEmpty())
+											a.Data("responsetype", w.Context.ResponseType);
+										a.Set(btnAttrs);
+									}, "Да");
 								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), warningMode ? "Назад" : "Нет");
 							});
 						});
 					});
 				});
-                w.PopPrefix();
+				if (IDPrefix != null)
+					w.PopPrefix();
 			});
 		}
-
+		public static void AddYesNoDialogWidget2(this ApiResponse response, string title, Action<LayoutWriter> content, Func<ActionResult> action, string IDPrefix = null, Action<ButtonTagAttributes> btnAttrs = null, string dataKey = null, string dataValue = null, string value = null)
+		{
+			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
+				if (IDPrefix != null)
+					w.PushPrefix(IDPrefix);
+				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix), () => {
+					w.AjaxForm("form", a => a.DataResult(1), () => {
+						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
+							w.ButtonsBarRight(() => {
+								w.SubmitButton(a => a.Set(btnAttrs).DataEvent(action).Data(dataKey, dataValue).Value(value), "Да");
+								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), "Нет");
+							});
+						});
+					});
+				});
+				if (IDPrefix != null)
+					w.PopPrefix();
+			});
+		}
+		public static void AddOKDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null)
+		{
+			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
+				if (IDPrefix != null)
+					w.PushPrefix(IDPrefix);
+				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix), () => {
+					w.AjaxForm("form", a => a.DataResult(1), () => {
+						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
+							w.Div(a => a.Style("width:100%; text-align:center"), () => {
+								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), "ОК");
+							});
+						});
+					});
+				});
+				if (IDPrefix != null)
+					w.PopPrefix();
+			});
+		}
 
 		public static ActionLink AsDialog(this ActionLink link, string dialogPrefix = null)
 		{
 			return link.InContainer(typeof(DialogFormContainer), dialogPrefix).KeepTheSameUrl();
+		}
+
+		public static ActionLink AsNoCloseIconDialog(this ActionLink link, string dialogPrefix = null)
+		{
+			return link.InContainer(typeof(NoCloseIconDialogFormContainer), dialogPrefix).KeepTheSameUrl();
 		}
 
 		public static ActionLink AsConsoleDialog(this ActionLink link, string dialogPrefix = null)

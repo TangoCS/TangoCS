@@ -358,7 +358,9 @@ namespace Tango.Html
 		public static void Span(this HtmlWriter w, string text) { w.Span(null, () => w.Write(text)); }
 		public static void Span(this HtmlWriter w, Action<TagAttributes> attributes, string text) { w.Span(attributes, () => w.Write(text)); }
 		public static void Sub(this HtmlWriter w, string text) { w.Sub(null, () => w.Write(text)); }
+		public static void Sub(this HtmlWriter w, Action<TagAttributes> attributes, string text) { w.Sub(attributes, () => w.Write(text)); }
 		public static void Sup(this HtmlWriter w, string text) { w.Sup(null, () => w.Write(text)); }
+		public static void Sup(this HtmlWriter w, Action<TagAttributes> attributes, string text) { w.Sup(attributes, () => w.Write(text)); }
 		public static void H1(this HtmlWriter w, Action<TagAttributes> attributes, string text) { w.H1(attributes, () => w.Write(text)); }
 		public static void H2(this HtmlWriter w, Action<TagAttributes> attributes, string text) { w.H2(attributes, () => w.Write(text)); }
 		public static void H3(this HtmlWriter w, Action<TagAttributes> attributes, string text) { w.H3(attributes, () => w.Write(text)); }

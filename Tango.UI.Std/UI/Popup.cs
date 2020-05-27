@@ -25,7 +25,8 @@ namespace Tango.UI
 				triggeron = options.TriggerOn.ToString().ToLower(),
 				displaysaround = options.DisplaysAround.ToString().ToLower(),
 				position = options.Position.ToString().ToLower(),
-				closeonclick = options.CloseOnClick
+				closeonclick = options.CloseOnClick,
+				closeonscroll = options.CloseOnScroll
 			});
 		}
 	}
@@ -39,6 +40,7 @@ namespace Tango.UI
 		public PopupDispaysAround DisplaysAround { get; set; } = PopupDispaysAround.Trigger;
 		public PopupPosition Position { get; set; } = PopupPosition.Bottom;
 		public bool CloseOnClick { get; set; } = true;
+		public bool CloseOnScroll { get; set; } = true;
 	}
 
 	public enum PopupTriggersOn

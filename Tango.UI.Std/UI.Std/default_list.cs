@@ -19,7 +19,16 @@ namespace Tango.UI.Std
 
 
 		protected string _qSearch = "";
-		protected IFieldCollection<TEntity, TResult> _fields;
+		IFieldCollection<TEntity, TResult> _fields;
+		protected IFieldCollection<TEntity, TResult> Fields
+		{
+			get
+			{
+				if (_fields == null)
+					_fields = FieldsConstructor();
+				return _fields;
+			}
+		}
 		//protected Action<ActionLink> _pagingAttributes => a => a.RunEvent(OnSetPage);
 
 		protected IEnumerable<TResult> _result;
@@ -34,13 +43,14 @@ namespace Tango.UI.Std
 		public Sorter<TEntity> Sorter { get; private set; }
 		public ListRendererAbstract<TResult> Renderer { get; protected set; }
 
-		public int ColumnCount => _fields.Cells.Count;
+		public int ColumnCount => Fields.Cells.Count;
 
 		protected virtual string FormTitle => Resources.CaptionPlural<TEntity>();
 		protected virtual Func<string, Expression<Func<TEntity, bool>>> SearchExpression => null;
 
 		protected virtual bool EnableViews => true;
 		protected virtual bool EnableQuickSearch => true;
+		protected virtual bool ShowFilterV2 => false;
 
 		protected virtual void Toolbar(LayoutWriter w)
 		{
@@ -52,6 +62,19 @@ namespace Tango.UI.Std
 				ToolbarRight(t);
 			});
 			//w.PopPrefix();
+
+			if (ShowFilterV2)
+			{
+				w.Div(a => a.Class("inlinefilter selectedcontainer"), () => {
+					foreach (var i in Filter.Criteria)
+					{
+						w.Div(a => a.Class("selected object"), () => {
+							w.Span(i.Title + " " + i.Condition + " " + i.ValueTitle);
+							w.A(a => a.Class("close").OnClickPostEvent(Filter.OnInlineCriterionRemoved).DataParm("removedcriterion", i.GetHashCode().ToString()), () => w.Icon("close"));
+						});
+					}
+				});
+			}
 		}
 
 		protected void ToCreateNew<T>(MenuBuilder t, Action<ActionLink> attrs = null)
@@ -72,7 +95,7 @@ namespace Tango.UI.Std
 
 		protected void ToDeleteBulk(MenuBuilder t)
 		{
-			if (_fields.EnableSelect)
+			if (Fields.EnableSelect)
 			{
 				t.ItemSeparator();
 				t.ItemActionTextBulk(x => x.ToDeleteBulk<TEntity>(AccessControl).AsDialog());
@@ -113,12 +136,14 @@ namespace Tango.UI.Std
 				s.OnSort = OnSetPage;
 			});
 			Filter = CreateControl<ListFilter<TEntity>>("filter", f => {
-				FilterInit(f);
+				f.FieldsInit = () => {
+					FilterInit(f);
+					_fields = FieldsConstructor();
+				};
 				f.FilterSubmitted += OnFilter;
 			});
 
 			_qSearch = Context.GetArg("qsearch");
-			_fields = FieldsConstructor();
 		}
 
 		public void PrepareResult()
@@ -144,12 +169,12 @@ namespace Tango.UI.Std
 			//w.PushPrefix(ClientID);
 			PrepareResult();
 			BeforeList(w);
-			Renderer.Render(w, _result.Take(Paging.PageSize), _fields);
+			Renderer.Render(w, _result.Take(Paging.PageSize), Fields);
 			AfterList(w);
 			//w.PopPrefix();
 		}
 
-		public virtual void RenderPlaceHolder(LayoutWriter w)
+        public virtual void RenderPlaceHolder(LayoutWriter w)
 		{
 			w.PushPrefix(ID);
 			w.Div(a => a.ID("container").DataContainer("default", w.IDPrefix), () => {
@@ -163,13 +188,13 @@ namespace Tango.UI.Std
 		protected void RenderPaging(ApiResponse response)
 		{
 			if (Sections.RenderPaging)
-				response.ReplaceWidget(Paging.ID, w => Paging.Render2(w, _itemsCount, OnSetPage, GetObjCount));
+				response.ReplaceWidget(Paging.ID, w => Paging.Render2(w, _itemsCount, a => a.RunEvent(OnSetPage), a => a.PostEvent(GetObjCount)));
 		}
 
 		protected void RenderToolbar(ApiResponse response)
 		{
 			if (Sections.RenderToolbar)
-				response.ReplaceWidget(Sections.ContentToolbar, Toolbar);
+				response.AddWidget(Sections.ContentToolbar, Toolbar);
 		}
 
 		private void OnFilter(ApiResponse response)
@@ -186,12 +211,14 @@ namespace Tango.UI.Std
 				else
 					response.RedirectTo(Context, a => a.ToReturnUrl(1)
 						.WithArg(Filter.ParameterName, Filter.PersistentFilter.ID)
-						.RemoveArg(Paging.ParameterName));
-			}
+						.RemoveArg(Paging.ParameterName)
+                        .RemoveArg("qsearch"));
+            }
 			else
 				response.RedirectTo(Context, a => a.ToReturnUrl(1)
 						.RemoveArg(Filter.ParameterName)
-						.RemoveArg(Paging.ParameterName));
+						.RemoveArg(Paging.ParameterName)
+                        .RemoveArg("qsearch"));
 		}
 
 		public override void OnLoad(ApiResponse response)
@@ -203,7 +230,8 @@ namespace Tango.UI.Std
 				response.AddWidget(Sections.ContentTitle, FormTitle);
 			if (Sections.SetPageTitle)
 				response.AddWidget("#title", FormTitle);
-			RenderPaging(response);
+
+            RenderPaging(response);
 		}
 
 		public void OnQuickSearch(ApiResponse response)
@@ -246,8 +274,20 @@ namespace Tango.UI.Std
 			public bool RenderPaging { get; set; } = true;
 			public bool RenderListOnLoad { get; set; } = true;			
 		}
-	}
+    }
 
+	public abstract class abstract_list<T> : abstract_list<T, T>
+	{
+		protected override IFieldCollection<T, T> FieldsConstructor()
+		{
+			var f = new FieldCollection<T>(Context, Sorter, Filter);
+			f.RowAttributes += (a, o, i) => a.ZebraStripping(i.RowNum);
+			FieldsInit(f);
+			return f;
+		}
+
+		protected abstract void FieldsInit(FieldCollection<T> fields);
+	}
 
 	public abstract class default_list<TEntity, TResult> : abstract_list<TEntity, TResult>
 	{
@@ -264,14 +304,12 @@ namespace Tango.UI.Std
 
 		protected override IEnumerable<TResult> GetPageData()
 		{
-			_fields.GroupSorting.Reverse();
-			foreach (var gs in _fields.GroupSorting)
+			Fields.GroupSorting.Reverse();
+			foreach (var gs in Fields.GroupSorting)
 				Sorter.InsertOrderBy(gs.SeqNo, gs.SortDesc, true);
 
 			var res = Selector(Paging.Apply(Sorter.Apply(ApplyFilter(Data)), true));
 			return res.ToList();
-			//var expr = SelectExpression();
-			//return expr != null ? res.Select(SelectExpression()).ToList() : res.Cast<TResult>().ToList();
 		}
 
 		protected override IFieldCollection<TEntity, TResult> FieldsConstructor()
@@ -283,12 +321,10 @@ namespace Tango.UI.Std
 		}
 
 		protected abstract void FieldsInit(FieldCollection<TEntity, TResult> fields);
-		//protected abstract Expression<Func<TEntity, TResult>> SelectExpression();
 	}
 
 	public abstract class default_list<T> : default_list<T, T>
 	{
-		//protected override Expression<Func<T, T>> SelectExpression() => o => o;
 		protected override IQueryable<T> Selector(IQueryable<T> data) => data;
 	}
 

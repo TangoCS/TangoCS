@@ -1,10 +1,10 @@
 ﻿var checkBoxCell = function (au, cu) {
 	var instance = {
 		setselected: function (el, onCheckChangeDelegate) {
-			const tr = getRow(el);
+			const tr = cu.getRow(el);
 			const c = au.findControl(el);
 			const cbhead = document.getElementById(c.id + "_sel_header");
-			const selected = tr.classList.contains('checked');
+			const selected = tr.classList.contains('checked') || tr.hasAttribute('data-checked');
 			const rowid = tr.getAttribute('data-rowid');
 
 			if (selected) {
@@ -39,7 +39,7 @@
 			const headstate = cbhead.getAttribute('data-state') || '0';
 
 			if (headstate == '2' || headstate == '1') {
-				instance.setPageUnchecked(vroot, c.state, cbhead);
+				instance.setPageUnchecked(c.root, c.state, cbhead);
 			}
 			else if (headstate == '0') {
 				instance.setPageChecked(c.root, c.state, cbhead);
@@ -63,21 +63,19 @@
 		setRowChecked: function (tr, el) {
 			tr.classList.add('checked');
 			el.querySelector('i').className = 'icon icon-checkbox-checked';
-			//el.firstChild.className = 'icon icon-checkbox-checked';
 			el.setAttribute('data-state', 1);
 		},
 
 		setRowUnchecked: function (tr, el) {
 			tr.classList.remove('checked');
 			el.querySelector('i').className = 'icon icon-checkbox-unchecked';
-			//el.firstChild.className = 'icon icon-checkbox-unchecked';
 			el.setAttribute('data-state', 0);
 		},
 
 		setPageChecked: function (root, state, cbhead) {
 			const cblist = root.querySelectorAll('.sel');
 			for (var i = 0; i < cblist.length; i++) {
-				const tr = getRow(cblist[i]);
+				const tr = cu.getRow(cblist[i]);
 				instance.setRowChecked(tr, cblist[i]);
 				state.selectedvalues.push(tr.getAttribute('data-rowid'));
 			}
@@ -88,7 +86,7 @@
 		setPageUnchecked: function (root, state, cbhead) {
 			const cblist = root.querySelectorAll('.sel');
 			for (var i = 0; i < cblist.length; i++) {
-				const tr = getRow(cblist[i]);
+				const tr = cu.getRow(cblist[i]);
 				instance.setRowUnchecked(tr, cblist[i]);
 				const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
 				if (index > -1) {
@@ -100,17 +98,13 @@
 		}
 	};
 
-	function getRow(caller) {
-		return cu.getThisOrParent(caller, function (el) { return el instanceof HTMLTableRowElement; });
-	};
-
 	return instance;
 }(ajaxUtils, commonUtils);
 
 var listview = function (au, cu, cbcell) {
 	var instance = {
 		togglerow: function (el) {
-			const tr = getRow(el);
+			const tr = cu.getRow(el);
 			const root = tr.parentNode.parentNode;
 			const level = parseInt(tr.getAttribute('data-level')) || 0;
 			const elcellid = el.id || '';
@@ -165,37 +159,49 @@ var listview = function (au, cu, cbcell) {
 				n.classList.remove('expandedcell');
 			});
 
-			if (elcellid != '' && state == 'collapsed') getCell(el).classList.add('expandedcell');
+			if (elcellid != '' && state == 'collapsed') cu.getCell(el).classList.add('expandedcell');
 		},
 		togglelevel: function (el) {
-			const tr = getRow(el);
+			const tr = cu.getRow(el);
 			const level = parseInt(tr.getAttribute('data-level'));
 			const isCollapsed = tr.classList.contains('collapsed');
 
-			var row = tr.nextElementSibling;
+			const expand = function () {
+				var row = tr.nextElementSibling;
 
-			while (row && parseInt(row.getAttribute('data-level')) > level) {
-				if (isCollapsed) {
-					tr.classList.remove('collapsed');
-					if (parseInt(row.getAttribute('data-collapsedby')) == level) {
-						row.classList.remove('hide');
-						row.setAttribute('data-collapsedby', '');
+				while (row && parseInt(row.getAttribute('data-level')) > level) {
+					if (isCollapsed) {
+						tr.classList.remove('collapsed');
+						if (parseInt(row.getAttribute('data-collapsedby')) == level) {
+							row.classList.remove('hide');
+							row.setAttribute('data-collapsedby', '');
+						}
 					}
-				}
-				else if (!row.classList.contains('hide')) {
-					tr.classList.add('collapsed');
-					row.setAttribute('data-collapsedby', level);
-					row.classList.add('hide');
-				}
+					else if (!row.classList.contains('hide')) {
+						tr.classList.add('collapsed');
+						row.setAttribute('data-collapsedby', level);
+						row.classList.add('hide');
+					}
 
-				row = row.nextElementSibling;
+					row = row.nextElementSibling;
+				}
+			}
+
+			if (tr.hasAttribute('data-e') && !tr.hasAttribute('data-loaded')) {
+				au.postEventFromElementWithApiResponse(tr).then(function () {
+					tr.setAttribute('data-loaded', '');
+					expand();
+				});
+			}
+			else {
+				expand();
 			}
 		},
 		widgetWillMount: function (shadow, state) {
 			if (!state.selectedvalues) return;
 
 			const root = shadow.getElementById(state.root);
-			const cblist = root.querySelectorAll('.sel');
+			const cblist = root.querySelectorAll('.sel:not(.initialized)');
 			const cbhead = root.querySelector('.sel_header');
 
 			var j = 0;
@@ -205,7 +211,7 @@ var listview = function (au, cu, cbcell) {
 				j = cblist.length
 			} else {
 				for (var i = 0; i < cblist.length; i++) {
-					const tr = getRow(cblist[i]);
+					const tr = cu.getRow(cblist[i]);
 					const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
 					if (index > -1) {
 						cbcell.setRowChecked(tr, cblist[i]);
@@ -216,11 +222,17 @@ var listview = function (au, cu, cbcell) {
 
 			for (var i = 0; i < cblist.length; i++) {
 				const el = cblist[i];
-				el.addEventListener('click', function (e) { cbcell.setselected(el, onCheckChange); });
+				el.addEventListener('click', function (e) {
+					cbcell.setselected(e.currentTarget, onCheckChange);
+					updateSelected(e.currentTarget);
+				});
+				el.classList.add('initialized');
 			}
-			cbhead.addEventListener('click', function (e) { cbcell.cbheadclicked(cbhead, onCheckChange); });
 
-			cbcell.setHeaderSelectorState(cbhead, j, cblist.length);
+			if (cbhead) {
+				cbhead.addEventListener('click', function (e) { cbcell.cbheadclicked(e.currentTarget, onCheckChange); });
+				cbcell.setHeaderSelectorState(cbhead, j, cblist.length);
+			}
 			onCheckChange(shadow, root, state);
 		},
 		widgetDidMount: function (state) {
@@ -250,8 +262,19 @@ var listview = function (au, cu, cbcell) {
 				}
 			});
 		},
-		
-		
+		widgetContentChanged: function (state) {
+			const root = document.getElementById(state.root);
+			const cblist = root.querySelectorAll('.sel:not(.initialized)');
+
+			for (var i = 0; i < cblist.length; i++) {
+				const el = cblist[i];
+				el.addEventListener('click', function (e) {
+					cbcell.setselected(e.currentTarget, onCheckChange);
+					updateSelected(e.currentTarget);
+				});
+				el.classList.add('initialized');
+			}
+		},
 		selectall: function (rootid) {
 			const root = document.getElementById(rootid);
 			const state = au.state.ctrl[rootid];
@@ -273,6 +296,38 @@ var listview = function (au, cu, cbcell) {
 			cbcell.setPageUnchecked(root, state, cbhead);
 			onCheckChange(document, root, state);
 		},
+		onlevelsetpage: function (el) {
+			const tr = cu.getRow(el);
+			const level = parseInt(tr.getAttribute('data-level'));
+
+			var row = tr.previousElementSibling;
+			var toremove = [];
+			while (row && parseInt(row.getAttribute('data-level')) >= level) {
+				toremove.push(row);
+				row = row.previousElementSibling;
+			}
+
+			for (var i = 0; i < toremove.length; i++) {
+				toremove[i].parentNode.removeChild(toremove[i]);
+			}
+
+			row = tr.previousElementSibling;
+
+			var target = { data: {} };
+			for (var attr, i = 0, attrs = row.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
+				attr = attrs[i];
+				var val = attr.value == '' ? null : attr.value;
+				if (attr.name.startsWith('data-p-')) {
+					target.data[attr.name.replace('data-p-', '')] = val || '';
+				}
+			}
+
+			target.data['sender'] = row.id;
+
+			tr.parentNode.removeChild(tr);
+
+			au.postEventFromElementWithApiResponse(el, target);
+		}
 	}
 
 	function onCheckChange(document, root, state, keepInfoBlockState) {
@@ -317,13 +372,117 @@ var listview = function (au, cu, cbcell) {
 		}
 	}
 
-	function getRow(caller) {
-		return cu.getThisOrParent(caller, function (el) { return el instanceof HTMLTableRowElement; });
-	};
+	function addDelIcon(el) {
+		var del = document.createElement("I");
+		del.className = 'icon icon-delete';
+		el.appendChild(del);
 
-	function getCell(caller) {
-		return cu.getThisOrParent(caller, function (el) { return el instanceof HTMLTableCellElement; });
-	};
+		del.addEventListener('click', function (e) {
+			var seltr = cu.getRow(e.currentTarget);
+			var origtr = document.getElementById(seltr.id.replace('_selected', ''));
+			var origcb = origtr.querySelector('.sel');
+			cbcell.setselected(origcb, onCheckChange);
+			updateSelected(origcb);
+		});
+	}
 
+	function updateSelected(el) {
+		var tr = cu.getRow(el);
+		const root = tr.parentNode.parentNode;
+		const rootsel = document.getElementById(root.id + '_selected');
+		var level = parseInt(tr.getAttribute('data-level'));
+
+		const remove = !tr.classList.contains('checked');
+		var tocopy = [];
+
+		var i = 0; 
+		while (tr) {
+			if (parseInt(tr.getAttribute('data-level')) == level) {
+				var copyTr = tr.cloneNode(true);
+				var isChecked = false;
+				copyTr.id = copyTr.id + '_selected';
+				if (copyTr.classList.contains('checked')) {
+					copyTr.classList.remove('checked');
+					copyTr.setAttribute('data-checked', '');
+					isChecked = true;
+				}
+				copyTr.removeAttribute('data-e');
+
+				var cb = copyTr.querySelector('.sel');
+				if (cb) {
+					if (isChecked) addDelIcon(cb.parentElement);
+					cb.parentNode.removeChild(cb);
+				}
+
+				var ddm = copyTr.querySelector('.dropdownimage');
+				if (ddm) ddm.parentNode.removeChild(ddm);
+
+				if (copyTr.classList.contains('collapsed') || i == 0) {
+					var arr = copyTr.querySelector('.togglelevel > span');
+					if (arr) arr.classList.add('hide');
+				}
+
+				tocopy.push(copyTr);
+				level--;
+				i++;
+			}
+			tr = tr.previousElementSibling;
+		}
+
+		if (remove) {
+			for (var i = 0; i < tocopy.length; i++) {
+				const el = document.getElementById(tocopy[i].id);
+				const isLastLeaf = !el.nextElementSibling || parseInt(el.nextElementSibling.getAttribute('data-level')) <= parseInt(el.getAttribute('data-level'));
+				const clickedEl = i == 0;
+				const unchecked = clickedEl || !el.hasAttribute('data-checked');
+				if (isLastLeaf && unchecked)
+					el.parentElement.removeChild(el);
+				else if (clickedEl) {
+					el.removeAttribute('data-checked');
+					var del = el.querySelector('.icon-delete');
+					if (del) del.parentElement.removeChild(del);
+				}
+				else if (isLastLeaf && !unchecked) {
+					var arr = el.querySelector('.togglelevel > span');
+					if (arr) arr.classList.add('hide');
+				}
+			}
+		}
+		else {
+			var parent = rootsel;
+			var pos = 'beforeend';
+			var hide = false;
+			var collapsedby = '';
+
+			for (var i = tocopy.length - 1; i >= 0; i--) {
+				const el = document.getElementById(tocopy[i].id);
+				if (!el) {
+					if (hide) {
+						tocopy[i].classList.add('hide');
+						tocopy[i].setAttribute('data-collapsedby', collapsedby);
+					}
+					parent.insertAdjacentElement(pos, tocopy[i]);
+				}
+				else {
+					if (el.classList.contains('hide')) {
+						hide = true;
+						collapsedby = el.getAttribute('data-collapsedby');
+					}
+					if (i == 0) {
+						el.setAttribute('data-checked', '');
+						var content = el.querySelector('.treerow-content');
+						addDelIcon(content);
+					}
+					var arr = el.querySelector('.togglelevel > span');
+					if (arr && arr.classList.contains('hide')) {
+						arr.classList.remove('hide');
+						el.classList.remove('collapsed');
+					}
+				}
+				parent = el ? el : tocopy[i];
+				pos = 'afterend';
+			}
+		}
+	}
 	return instance;
 }(ajaxUtils, commonUtils, checkBoxCell);

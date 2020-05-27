@@ -21,9 +21,7 @@ namespace Tango.UI.Std
 				{
 					var t = new ContainersCache().Get(ctx.ContainerType);
 					if (t != null)
-					{
 						containerObj = Activator.CreateInstance(t) as ViewContainer;
-					}
 				}
 				else if (element is IContainerItem)
 				{
@@ -47,6 +45,8 @@ namespace Tango.UI.Std
 				{
 					containerObj.Context = ctx;
 					containerObj.ID = selfContainerView ? view.ClientID : ctx.ContainerPrefix;
+					containerObj.InjectProperties(ctx.RequestServices);
+					containerObj.OnInit();
 					containerObj.ProcessResponse(response, ctx.AddContainer, ctx.ContainerPrefix);
 				}
 				//else if (context.Method.Name != "OnLoad")

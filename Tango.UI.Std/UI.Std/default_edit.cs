@@ -19,7 +19,7 @@ namespace Tango.UI.Std
 		protected abstract string Title { get; }
 		protected abstract void Form(LayoutWriter w);
 
-		public override ViewContainer GetContainer() => new EditEntityContainer();
+		public override ViewContainer GetContainer() => new EditEntityContainer { IsNested = ParentElement != null };
 
 		[Inject]
 		protected IEntityAudit EntityAudit { get; set; }
@@ -69,7 +69,7 @@ namespace Tango.UI.Std
 			response.AddWidget("contenttitle", Title);
 			response.AddWidget("#title", Title);
 
-			if (ObjectNotExists)
+            if (ObjectNotExists)
 			{
 				response.AddWidget("form", w => {
 					w.Div(Resources.Get("Common.ObjectNotExists"));
@@ -89,9 +89,7 @@ namespace Tango.UI.Std
 			}
 		}
 
-		
-
-		protected bool ProcessSubmit(ApiResponse response)
+		public bool ProcessSubmit(ApiResponse response)
 		{
 			if (Context.FormData == null) return false;
 
@@ -104,7 +102,9 @@ namespace Tango.UI.Std
 
 			ValidateFormData(m);
 			if (m.HasItems()) return prepareResponse();
-			ProcessFormData(m);
+            PreProcessFormData(response, m);
+            if (m.HasItems()) return prepareResponse();
+            ProcessFormData(m);
 			if (m.HasItems()) return prepareResponse();
 			PostProcessFormData(response, m);
 			if (m.HasItems()) return prepareResponse();
@@ -123,7 +123,8 @@ namespace Tango.UI.Std
 		}
 
 		protected virtual void ValidateFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ValidateFormData(val));
-		protected virtual void ProcessFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ProcessFormData(val));
+        protected virtual void PreProcessFormData(ApiResponse response, ValidationMessageCollection val) { }
+        protected virtual void ProcessFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ProcessFormData(val));
 		protected virtual void PostProcessFormData(ApiResponse response, ValidationMessageCollection val) { }
 
 		protected abstract void Submit(ApiResponse response);
@@ -159,7 +160,7 @@ namespace Tango.UI.Std
 		{
 			response.WithNamesFor(this).ReplaceWidget(field.GetFieldID(), content);
 		}
-	}
+    }
 
 	public abstract class default_edit<T> : default_edit
 		where T : class
@@ -273,14 +274,6 @@ namespace Tango.UI.Std
 			});
 			return updFields;
 		}
-
-		protected virtual void WriteObjectChanges<TEntity, TKey>(TEntity obj) where TEntity : IWithKey<TEntity, TKey>
-		{
-			if (CreateObjectMode)
-				EntityAudit?.WriteObjectChange<TEntity, TKey>(obj, EntityAuditAction.Insert, null);
-			else
-				EntityAudit?.WriteObjectChange<TEntity, TKey>(obj, EntityAuditAction.Update, Tracker.GetChanges(ViewData));
-		}
 	}
 
 	public abstract class default_edit<T, TKey> : default_edit<T>
@@ -308,9 +301,32 @@ namespace Tango.UI.Std
 			return obj;
 		}
 
-		protected override void Submit(ApiResponse response)
+        protected override void PreProcessFormData(ApiResponse response, ValidationMessageCollection val)
+        {
+            base.PreProcessFormData(response, val);
+
+            if (EntityAudit != null)
+            {
+                if (CreateObjectMode)
+                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Insert);
+                else
+                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Update);
+            }
+        }
+
+        protected override void Submit(ApiResponse response)
 		{
-			if (CreateObjectMode && BulkMode)
+            if (EntityAudit != null)
+            {
+                if (!CreateObjectMode)
+                {
+                    var package = EntityAudit.Packages?.FirstOrDefault();
+                    if (package != null)
+                        package.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
+                }
+            }
+
+            if (CreateObjectMode && BulkMode)
 			{
 				var sel = GetArg(Constants.SelectedValues);
 				var cnt = sel?.Split(',').Count() ?? 0;
@@ -336,7 +352,7 @@ namespace Tango.UI.Std
 			Action writeObjectChanges = () =>
 			{
 				Context.GetService<IDatabase>().Transaction = DataContext.Transaction;
-				WriteObjectChanges<T, TKey>(ViewData);
+				EntityAudit?.WriteObjectChange();
 			};
 			if (!DataContext.AfterSaveActions.Contains(writeObjectChanges))
 				DataContext.AfterSaveActions.Add(writeObjectChanges);
@@ -371,15 +387,37 @@ namespace Tango.UI.Std
 		protected virtual void BeforeSaveEntity() { }
 		protected virtual void AfterSaveEntity() { }
 
-		protected override void Submit(ApiResponse response)
+        protected override void PreProcessFormData(ApiResponse response, ValidationMessageCollection val)
+        {
+            base.PreProcessFormData(response, val);
+
+            if (EntityAudit != null)
+            {
+                if (CreateObjectMode)
+                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Insert);
+                else
+                    EntityAudit.AddChanges<T, TKey>(ViewData, EntityAuditAction.Update);
+            }
+        }
+
+        protected override void Submit(ApiResponse response)
 		{
-			var rep = Database.Repository<T>();
+            if (EntityAudit != null)
+            {
+                if (!CreateObjectMode)
+                {
+                    var package = EntityAudit.Packages?.FirstOrDefault();
+                    if (package != null)
+                        package.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
+                }
+            }
+
+            var rep = Database.Repository<T>();
 
 			if (CreateObjectMode)
 				InTransaction(() =>
 				{
 					rep.Create(ViewData);
-					WriteObjectChanges<T, TKey>(ViewData);
 				});
 			else if (BulkMode)
 			{
@@ -398,7 +436,6 @@ namespace Tango.UI.Std
 				InTransaction(() =>
 				{
 					rep.Update(ViewData);
-					WriteObjectChanges<T, TKey>(ViewData);
 				});
 				
 			}
@@ -411,6 +448,7 @@ namespace Tango.UI.Std
 				BeforeSaveEntity();
 				action();
 				AfterSaveEntity();
+				EntityAudit?.WriteObjectChange();
 				tran.Commit();
 			}
 		}

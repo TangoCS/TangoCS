@@ -25,9 +25,19 @@ namespace Tango.UI.Controls
 		public DateTime? Value => HasValue ? new DateTime(Year, Month, Day, Hour, Minute, 0) : (DateTime?)null;
 
 		DateTime IFieldValueProvider<DateTime>.Value => Value ?? DateTime.MinValue;
+		public class DateListsOptions
+		{			
+			public Action<SelectTagAttributes> YearAttributes { get; set; }
+			public Action<SelectTagAttributes> MonthAttributes { get; set; }
+			public Action<SelectTagAttributes> DayAttributes { get; set; }
+			public Action<SelectTagAttributes> HourAttributes { get; set; }
+			public Action<SelectTagAttributes> MinuteAttributes { get; set; }
+		}
 
-		public void Render(HtmlWriter w, DateTime? value = null)
+		public void Render(HtmlWriter w, DateTime? value = null, DateListsOptions options = null)
 		{
+			if (options == null) options = new DateListsOptions();
+
 			var monthItems = new List<SelectListItem>();
 			var dayItems = new List<SelectListItem>();
 			var yearItems = new List<SelectListItem>();
@@ -85,21 +95,21 @@ namespace Tango.UI.Controls
 				{
 					if (ShowDays)
 					{
-						w.DropDownList($"{ID}_day", value?.Day.ToString(), dayItems, a => a.Class("days"));
+						w.DropDownList($"{ID}_day", value?.Day.ToString(), dayItems, a => a.Class("days").Set(options.DayAttributes));
 						w.Write("&nbsp;");
 					}
 
-					w.DropDownList($"{ID}_month", value?.Month.ToString(), monthItems, a => a.Class("months"));
+					w.DropDownList($"{ID}_month", value?.Month.ToString(), monthItems, a => a.Class("months").Set(options.MonthAttributes));
 					w.Write("&nbsp;");
-					w.DropDownList($"{ID}_year", value?.Year.ToString(), yearItems, a => a.Class("years"));
+					w.DropDownList($"{ID}_year", value?.Year.ToString(), yearItems, a => a.Class("years").Set(options.YearAttributes));
 				}
 
 				if (ShowTime || TimeOnly)
 				{
 					w.Write("&nbsp;");
-					w.DropDownList($"{ID}_hour", value?.Hour.ToString(), hourItems, a => a.Class("hours"));
+					w.DropDownList($"{ID}_hour", value?.Hour.ToString(), hourItems, a => a.Class("hours").Set(options.HourAttributes));
 					w.Write(":");
-					w.DropDownList($"{ID}_minute", value?.Minute.ToString(), minuteItems, a => a.Class("minutes"));
+					w.DropDownList($"{ID}_minute", value?.Minute.ToString(), minuteItems, a => a.Class("minutes").Set(options.MinuteAttributes));
 				}
 			});
 		}

@@ -46,7 +46,7 @@ namespace Tango.UI
 			public string prefix;
 			public Action<LayoutWriter> content;
 		}
-
+		public Dictionary<string, object> State = new Dictionary<string, object>();
 		public List<IWidget> Widgets { get; set; } = new List<IWidget>();
 		public List<ClientAction> ClientActions { get; set; } = new List<ClientAction>();
 		public HashSet<string> Includes { get; set; } = new HashSet<string>();
@@ -164,6 +164,7 @@ namespace Tango.UI
 		public void RedirectBack(ActionContext context, int code)
 		{
 			var retctx = context.ReturnTargetContext(code);
+			if (retctx == null) return;
 			RunRedirect(retctx);
 			if (retctx.AddContainer)
 				RedirectTo(retctx.BaseUrl().Url, retctx.AllArgs);
@@ -318,6 +319,9 @@ namespace Tango.UI
 
 				if (Includes.Count > 0)
 					Data.Add("includes", Includes.Select(o => GlobalSettings.JSPath + o));
+
+				if (State.Count > 0)
+					Data.Add("state", State);
 			}
 			catch (Exception ex)
 			{

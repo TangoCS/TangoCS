@@ -10,6 +10,7 @@ namespace Tango.UI.Std
 		public RowCellFlagDelegate<TResult> ContentVisible { get; set; } = (o, i) => true;
 		public RowCellFlagDelegate<TResult> Visible { get; set; } = (o, i) => true;
 		public Action<ThTagAttributes> HeaderAttributes { get; set; }
+		public string Tip { get; set; }
 	}
 
 	public static class ExpandableRowExtensions
@@ -32,7 +33,9 @@ namespace Tango.UI.Std
 					},
 					Content = (w, o, i) => {
 						if (options.ContentVisible(o, i))
-							w.Icon(options.Collapsed(o, i) ? "collapsed" : "expanded");
+						{
+							w.Icon(options.Collapsed(o, i) ? "collapsed" : "expanded", tip: options.Tip);
+						}
 					},
 					Visible = options.Visible
 				}

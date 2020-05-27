@@ -63,5 +63,12 @@ namespace Tango.FileStorage
 			ContentType = MimeMapping.GetMimeType(file.Extension);
 			ContentFunc = ctx => file.ReadAllBytes();
 		}
+
+		public FileStreamResult(string name, string extensions, byte[] file)
+		{
+			Headers.Add("content-disposition", "Attachment; FileName=\"" + Uri.EscapeDataString(name) + "\"");
+			ContentType = MimeMapping.GetMimeType(extensions);
+			ContentFunc = ctx => file;
+		}
 	}
 }

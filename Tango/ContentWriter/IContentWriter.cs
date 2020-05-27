@@ -12,7 +12,7 @@ namespace Tango
 		void Tr(Action<IContentItemAttributes> attributes, Action inner);
 		void Td(Action<ITdAttributes> attributes, Action inner);
         void Td(Action<ITdAttributes> attributes, decimal? n, string format);
-        void Th(Action<IThAttributes> attributes, Action inner);
+		void Th(Action<IThAttributes> attributes, Action inner);
 		void Div(Action<IContentItemAttributes> attributes, Action inner);
         string Write(IEnumerable<string> text);
     }

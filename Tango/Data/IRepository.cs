@@ -40,6 +40,8 @@ namespace Tango.Data
 
 		void Delete(Expression<Func<T, bool>> predicate);
 		void Delete<TKey>(IEnumerable<TKey> ids);
+
+		bool Any(Expression<Func<T, bool>> predicate);
 	}
 
 	public class IdentityAttribute : Attribute

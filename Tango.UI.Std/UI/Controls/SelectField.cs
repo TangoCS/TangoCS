@@ -276,16 +276,16 @@ namespace Tango.UI.Controls
 
 	public static class LayoutWriterSelectDialogExtensions
 	{
-		public static void FormFieldSelectDialog<TSelected, TSelectedKey>(this LayoutWriter w, string caption, TSelected obj, SelectSingleObjectField<TSelected, TSelectedKey> dialog, bool isRequired = false, string description = null)
+		public static void FormFieldSelectDialog<TSelected, TSelectedKey>(this LayoutWriter w, string caption, TSelected obj, SelectSingleObjectField<TSelected, TSelectedKey> dialog, Grid grid = Grid.OneWhole, bool isRequired = false, string description = null, string hint = null)
 			where TSelected : class, IWithKey<TSelected, TSelectedKey>, new()
 		{
-			w.FormField(dialog.ID, caption, () => dialog.Strategy.Render(w, obj), isRequired, description);
+			w.FormField(dialog.ID, caption, () => dialog.Strategy.Render(w, obj), grid, isRequired, description, hint: hint);
 		}
 
-		public static void FormFieldSelectDialog<TSelected, TSelectedKey>(this LayoutWriter w, string caption, IEnumerable<TSelected> obj, SelectMultipleObjectsField<TSelected, TSelectedKey> dialog, bool isRequired = false, string description = null)
+		public static void FormFieldSelectDialog<TSelected, TSelectedKey>(this LayoutWriter w, string caption, IEnumerable<TSelected> obj, SelectMultipleObjectsField<TSelected, TSelectedKey> dialog, Grid grid = Grid.OneWhole, bool isRequired = false, string description = null, string hint = null)
 			where TSelected : class, IWithKey<TSelected, TSelectedKey>, IWithTitle, new()
 		{
-			w.FormField(dialog.ID, caption, () => dialog.Strategy.Render(w, obj), isRequired, description);
+			w.FormField(dialog.ID, caption, () => dialog.Strategy.Render(w, obj), grid, isRequired, description, hint: hint);
 		}
 
 		public static void SelectSingleObject<TEntity, TValue, TRefClass, TRefKey>(
@@ -299,7 +299,7 @@ namespace Tango.UI.Controls
 			var id = dialog.Context.GetArg<TRefKey>(dialog.ID);
 			var v = dialog.Context.RequestMethod == "POST" ? dialog.GetObjectByID(id) : field.Value;
 			dialog.Disabled = field.Disabled || field.ReadOnly;
-			w.FormField(field, grid, () => dialog.Strategy.Render(w, v));
+			w.FormField(field, () => dialog.Strategy.Render(w, v), grid);
 		}
 
 		public static void SelectSingleObject<TEntity, TRefClass, TRefKey>(
@@ -315,7 +315,7 @@ namespace Tango.UI.Controls
 				field.Value;
 			var v =  dialog.GetObjectByID(id);
 			dialog.Disabled = field.Disabled || field.ReadOnly;
-			w.FormField(field, grid, () => dialog.Strategy.Render(w, v));
+			w.FormField(field, () => dialog.Strategy.Render(w, v), grid);
 		}
 
 		public static void SelectMultipleObjects<TEntity, TRefClass, TRefKey>(
@@ -329,7 +329,7 @@ namespace Tango.UI.Controls
 			var ids = dialog.Context.GetListArg<TRefKey>(dialog.ID);
 			var v = dialog.Context.RequestMethod == "POST" ? dialog.GetObjectsByIDs(ids) : field.Value;
 			dialog.Disabled = field.Disabled || field.ReadOnly;
-			w.FormField(field, grid, () => dialog.Strategy.Render(w, v));
+			w.FormField(field, () => dialog.Strategy.Render(w, v), grid);
 		}
 
 		public static void SelectMultipleObjects<TEntity, TRefClass, TRefKey>(
@@ -345,7 +345,7 @@ namespace Tango.UI.Controls
 				field.Value;
 			var v = dialog.GetObjectsByIDs(ids);
 			dialog.Disabled = field.Disabled || field.ReadOnly;
-			w.FormField(field, grid, () => dialog.Strategy.Render(w, v));
+			w.FormField(field, () => dialog.Strategy.Render(w, v), grid);
 		}
 
 		public static void SelectMultipleObjects<TEntity, TRefClass, TRefKey>(
@@ -361,7 +361,7 @@ namespace Tango.UI.Controls
 				field.Value;
 			var v = dialog.GetObjectsByIDs(ids);
 			dialog.Disabled = field.Disabled || field.ReadOnly;
-			w.FormField(field, grid, () => dialog.Strategy.Render(w, v));
+			w.FormField(field, () => dialog.Strategy.Render(w, v), grid);
 		}
 	}
 }

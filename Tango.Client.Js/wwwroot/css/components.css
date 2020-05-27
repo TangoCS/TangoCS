@@ -684,7 +684,20 @@ div.tabs2 + div.tabs2 {
 .dropdownmenu {
 	background-color: white;
 	transition: opacity 80ms linear, visibility 80ms linear;
+	overflow: auto;
 }
+	.dropdownmenu::-webkit-scrollbar {
+		width: 6px;
+	}
+	.dropdownmenu::-webkit-scrollbar-track {
+		background: #f1f1f1;
+	}
+	.dropdownmenu::-webkit-scrollbar-thumb {
+		background: #888;
+	}
+		.dropdownmenu::-webkit-scrollbar-thumb:hover {
+			background: #555;
+		}
 
 .dropdownmenu > div > div {
 	background-color: #eff0f1;
@@ -752,4 +765,184 @@ div.tabs2 + div.tabs2 {
 .dropdownimage:hover, .dropdownimage.iw-opened {
 	background-color: #7fe0f8;
 	background-image: linear-gradient(#cef8ff, #7fe0f8);
+}
+
+.dropdownimage-inline {
+	display: inline-block;
+	margin-left: 4px;
+}
+
+/* period picker*/
+.periodpicker {
+	position: relative;
+	display: block;
+	padding: 0 2px;
+	background-color: white;
+	border: 1px solid #aaa;
+	min-width: 200px;
+}
+
+.periodpicker div, .datetimepicker div {
+	display: inline;
+	margin-right: 3px;
+}
+
+.periodpicker input, .periodpicker select {
+	display: inline;
+	border: none;
+	line-height: inherit;
+	outline: none;
+	background-color: transparent;
+}
+
+.periodpicker input[type=text].cal-date, .datetimepicker input[type=text].cal-date {
+	width: 75px;
+	padding: 0 0 0 3px;
+}
+
+.periodpicker .datelists .hours, .periodpicker .datelists .minutes,
+.datetimepicker .datelists .hours, .datetimepicker .datelists .minutes {
+	width: 20px;
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+	.periodpicker {
+		border: 1px inset #999;
+	}
+
+	.periodpicker .datelists .hours, .periodpicker .datelists .minutes,
+	.datetimepicker .datelists .hours, .datetimepicker .datelists .minutes {
+		width: 25px;
+	}
+}
+
+.periodpicker > div:first-of-type, .periodpicker > div:last-of-type {
+	background-color: #c2dbff;
+	border-radius: 7px;
+	padding: 0 3px;
+}
+
+.periodpicker .cal-openbtn {
+	position: absolute;
+	/*top: 6px;
+	bottom: 4px;*/
+	right: 3px;
+	margin-left: 0;
+	font-size: inherit;
+	width: inherit;
+	height: inherit;
+}
+
+.periodpicker select, .datetimepicker select {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	text-align: center;
+}
+
+.periodpicker select::-ms-expand, .datetimepicker select::-ms-expand {
+	display: none
+}
+
+.periodpicker select:focus {
+	-webkit-box-shadow: inset 0px 0px 0px 1px #205081;
+	-moz-box-shadow: inset 0px 0px 0px 1px #205081;
+	box-shadow: inset 0px 0px 0px 1px #205081;
+}
+
+/* selectsingleobject drop down*/
+.selectsingleobject {
+	position: relative;
+	display: block;
+	padding: 2px 24px 2px 2px;
+	background-color: white;
+	border: 1px solid #aaa;
+}
+
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+	.selectsingleobject {
+		border: 1px inset #999;
+	}
+}
+
+.selectsingleobject .selected {
+	display: inline;
+	background-color: #c2dbff;
+	border-radius: 7px;
+	padding: 0 3px;
+	margin-right: 3px;
+}
+
+.selectsingleobject .filter {
+	display: inline;
+	border: none;
+	/*background-color: aquamarine;*/
+	line-height: inherit;
+	width: 20px;
+	outline: none;
+	padding: 0;
+	margin: 0;
+}
+
+.selectsingleobject .selectedcontainer {
+	display: inline;
+}
+
+.selectsingleobject .btn {
+	position: absolute;
+	top: 6px;
+	bottom: 4px;
+	right: 3px;
+	margin-left: 0;
+	font-size: inherit;
+	width: inherit;
+	height: inherit;
+}
+
+	.selectsingleobject .btn:hover {
+		background-color: #ebecf0;
+	}
+
+.selectsingleobject .close {
+	margin-left: 3px;
+	font-weight: 700;
+	vertical-align: bottom;
+	float: inherit;
+	font-size: x-small;
+	line-height: inherit;
+}
+
+	.selectsingleobject .close:hover {
+		background-color: #ebecf0;
+	}
+
+.selectsingleobject-popup {
+	width: 600px;
+	background-color: inherit;
+}
+
+	.selectsingleobject-popup label {
+		padding: 2px 4px;
+	}
+
+	.selectsingleobject-popup .selected {
+		background-color: #ebecf0;
+	}
+
+		.selectsingleobject-popup .selected.checked {
+			background-color: #d7e4f8;
+		}
+
+	.selectsingleobject-popup label input[type=radio] {
+		display: none;
+	}
+
+	.selectsingleobject-popup .listviewtable td {
+		padding: 4px 4px;
+	}
+
+.input-measure {
+	position: absolute;
+	white-space: nowrap;
+	color: transparent;
 }

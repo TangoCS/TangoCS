@@ -15,7 +15,7 @@ namespace Tango.AspNetCore
 			var ctx = new AspNetCoreActionContext(c);
 
 			if (isAjax)
-				await RunResource.Ajax(ctx);
+				await RunResource.Ajax<T>(ctx);
 			else
 				await RunResource.Page<T>(ctx);
 		}

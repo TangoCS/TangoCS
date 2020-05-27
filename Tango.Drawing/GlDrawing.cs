@@ -229,6 +229,13 @@ namespace Tango.Drawing
 			}
 		}
 
+		public void DrawPoint(int x, int y)
+		{
+			GL.glBegin(GL.GL_POINTS);
+			GL.glVertex2f(x + 0.375f, y + 0.375f);
+			GL.glEnd();
+		}
+
 		public void DrawCircle(int x, int y, int r)
 		{
 			double x1, y1;
@@ -322,16 +329,16 @@ namespace Tango.Drawing
 			
 		}
 
-		public void FrameViewEnable(IFrame f)
-		{
+		//public void FrameViewEnable(IFrame f)
+		//{
 			//GL.glScissor(f.X, _height - f.Height - f.Y, f.Width, f.Height);
 			//GL.glEnable(GL.GL_SCISSOR_TEST);
-		}
+		//}
 
-		public void FrameViewDisable()
-		{
+		//public void FrameViewDisable()
+		//{
 			//GL.glDisable(GL.GL_SCISSOR_TEST);
-		}
+		//}
 
 		public void DrawTexture(uint textureno, int x, int y, int width, int height, int[] map = null)
 		{

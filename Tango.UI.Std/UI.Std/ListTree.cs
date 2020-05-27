@@ -13,28 +13,25 @@ namespace Tango.UI.Std
 			f.RowAttributes += (a, o, i) => a.Data("level", o.Level);
 		}
 
-		static RenderRowCellDelegate<T> TreeCellContent<T>(Action<LayoutWriter, T> content, TreeCellOptions<T> options = null)
-			where T : IListTree
+		public static void TreeCellContent<T>(LayoutWriter w, T o, int level, bool hasChildren, Action<LayoutWriter, T> content, TreeCellOptions<T> options = null)
 		{
-			return (w, o, row) => {
-				w.Div(a => a.Class($"treerow l{o.Level}"), () => {
-					for (int i = 0; i < o.Level; i++)
-						w.Div(a => a.Class("level-padding" + (i == o.Level ? " last" : "")), "");
+			w.Div(a => a.Class($"treerow l{level}"), () => {
+				for (int i = 0; i < level; i++)
+					w.Div(a => a.Class("level-padding" + (i == level ? " last" : "")), "");
 
-					if (o.HasChildren)
-					{
-						w.Div(a => a.Class("togglelevel").Class(options?.NodeClass(o)), () => {
-							w.Span(a => a.OnClick("listview.togglelevel(this)"), () => w.Icon("right"));
-						});
-					}
-					else
-						w.Div(a => a.Class("leaf").Class(options?.NodeClass(o)), () => w.Span("&nbsp;"));
-
-					w.Div(() => {
-						content(w, o);
+				if (hasChildren)
+				{
+					w.Div(a => a.Class("togglelevel").Class(options?.NodeClass(o)), () => {
+						w.Span(a => a.OnClick("listview.togglelevel(this)"), () => w.I(a => a.Class("toggleicon").Icon("right")));
 					});
+				}
+				else
+					w.Div(a => a.Class("leaf").Class(options?.NodeClass(o)), () => w.Span("&nbsp;"));
+
+				w.Div(a => a.Class("treerow-content"), () => {
+					content(w, o);
 				});
-			};
+			});
 		}
 
 		static ListColumn<T> ListColumn<T>(Action<LayoutWriter, T> content, TreeCellOptions<T> options = null)
@@ -46,7 +43,7 @@ namespace Tango.UI.Std
 		static ListColumn<T> ListColumn<T>(RowCellAttributesDelegate<T> attrs, Action<LayoutWriter, T> content, TreeCellOptions<T> options = null)
 			where T : IListTree
 		{
-			return new ListColumn<T>(attrs, TreeCellContent(content, options));
+			return new ListColumn<T>(attrs, (w, o, row) => TreeCellContent(w, o, o.Level, o.HasChildren, content, options));
 		}
 
 		public static void AddTreeCell<T>(this FieldCollectionBase<T> f, string title, Action<LayoutWriter, T> content, TreeCellOptions<T> options = null)
@@ -69,7 +66,6 @@ namespace Tango.UI.Std
 	}
 
 	public class TreeCellOptions<T>
-		where T: IListTree
 	{
 		public Func<T, string> NodeClass { get; set; }
 	}
@@ -78,5 +74,10 @@ namespace Tango.UI.Std
 	{
 		int Level { get; }
 		bool HasChildren { get; }
+	}
+
+	public interface ILazyListTree
+	{
+		int Template { get; set; }
 	}
 }

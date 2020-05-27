@@ -33,21 +33,25 @@ namespace Tango
 
 			var resourceName = assembly.GetName().Name + "." + name;
 			using (Stream stream = assembly.GetManifestResourceStream(resourceName))
-			using (StreamReader reader = new StreamReader(stream))
 			{
-				if (!name.ToLower().EndsWith(".sql"))
-					return reader.ReadToEnd();
-
-				State state = new State { assembly = assembly, filters = filters };
-				while ((state.line = reader.ReadLine()) != null)
+				if (stream == null)
+					throw new FileNotFoundException($"Resource file {name} not found");
+				using (StreamReader reader = new StreamReader(stream))
 				{
-					foreach (var lineParser in lineParsers)
-						if (lineParser(state)) break;
+					if (!name.ToLower().EndsWith(".sql"))
+						return reader.ReadToEnd();
 
-					if (state.skip == Skip.Default) state.sb.AppendLine(state.line);
-					if (state.skip == Skip.SkipOnce) state.skip = Skip.Default;
+					State state = new State { assembly = assembly, filters = filters };
+					while ((state.line = reader.ReadLine()) != null)
+					{
+						foreach (var lineParser in lineParsers)
+							if (lineParser(state)) break;
+
+						if (state.skip == Skip.Default) state.sb.AppendLine(state.line);
+						if (state.skip == Skip.SkipOnce) state.skip = Skip.Default;
+					}
+					return state.sb.ToString();
 				}
-				return state.sb.ToString();
 			}
 		}
 

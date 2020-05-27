@@ -11,9 +11,10 @@ namespace Tango.AspNetCore
 			_env = env;
 
 			if (string.IsNullOrWhiteSpace(_env.WebRootPath))
-				env.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+				_env.WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
 		}
 
 		public string WebRootPath => _env.WebRootPath;
-	}
+        public string ContentRootPath => _env.ContentRootPath;
+    }
 }

@@ -12,6 +12,7 @@ namespace Tango.UI
 	{
 		string Caption { get; }
 		string Description { get; }
+		string Hint { get; set; }
 		bool IsRequired { get; }
 		bool IsVisible { get; }
 		bool Disabled { get; }
@@ -22,6 +23,7 @@ namespace Tango.UI
 		//IInteractionFlowElement Form { get; set; }
 
 		bool FireOnChangeEvent { get; }
+		string EventReceiver { get; set; }
 
 		//IReadOnlyDictionary<string, IField> AllFields { get; set; }
 		IReadOnlyDictionary<string, object> Args { get; set; }
@@ -74,6 +76,7 @@ namespace Tango.UI
 	public abstract class Field : InteractionFlowElement, IField
 	{
 		public abstract string Caption { get; }
+		public virtual string Hint { get; set; }
 		public virtual string Description => "";
 		public virtual bool IsRequired => false;
 		public virtual bool IsVisible => true;
@@ -88,6 +91,8 @@ namespace Tango.UI
 		//public IInteractionFlowElement Form { get; set; }
 
 		public virtual bool FireOnChangeEvent => false;
+
+		public string EventReceiver { get; set; }
 	}
 
 	public abstract class Field<TValue, TFormValue> : Field, IField<TValue>, IFormField<TFormValue>, IFieldValueProvider<TFormValue>
@@ -136,7 +141,7 @@ namespace Tango.UI
 		public virtual void ValidateFormValue(ValidationMessageCollection val)
 		{
 			if (IsRequired && ValidationFunc != null) ValidationFunc(val.Check(Resources, ID, Caption, FormValue));
-		}
+		}		
 		public virtual Func<ValidationBuilder<TFormValue>, ValidationBuilder<TFormValue>> ValidationFunc=> vb => vb.NotEmpty();
 
 		protected TValue ProceedFormValue
@@ -168,6 +173,25 @@ namespace Tango.UI
 	{
 		public override string Caption => Resources.Get(TypeHelper.GetDeclaredType(ViewData), ID);
 		public override string Description => Resources.Get(TypeHelper.GetDeclaredType(ViewData), ID, "description");
+		string hint;
+		public override string Hint
+		{
+			get
+			{
+				if (hint == null)
+				{
+					if (Resources.TryGet(TypeHelper.GetDeclaredType(ViewData) + "." + ID + "-hint", out hint))
+						return hint;
+					Resources.SetNotFound(TypeHelper.GetDeclaredType(ViewData) + "." + ID + "-hint;" + Caption);
+					hint = "";
+				}
+				return hint;
+			}
+			set
+			{
+				hint = value;
+			}
+		}
 
 		public TEntity ViewData { get; set; }
 		public Type EntityType => typeof(TEntity);
@@ -202,6 +226,25 @@ namespace Tango.UI
 	{
 		public override string Caption => Resources.Get(TypeHelper.GetDeclaredType(ViewData), ID);
 		public override string Description => Resources.Get(TypeHelper.GetDeclaredType(ViewData), ID, "description");
+		string hint;
+		public override string Hint
+		{
+			get
+			{
+				if (hint == null)
+				{
+					if (Resources.TryGet(TypeHelper.GetDeclaredType(ViewData) + "." + ID + "-hint", out hint))
+						return hint;
+					Resources.SetNotFound(TypeHelper.GetDeclaredType(ViewData) + "." + ID + "-hint;" + Caption);
+					hint = "";
+				}
+				return hint;
+			}
+			set
+			{
+				hint = value;
+			}
+		}
 
 		public TEntity ViewData { get; set; }
 		public Type EntityType => typeof(TEntity);

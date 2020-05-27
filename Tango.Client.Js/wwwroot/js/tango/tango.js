@@ -3,13 +3,13 @@
 		getParams: function (query, raw) {
 			var p = {};
 			var e,
-                a = /\+/g, // Regex for replacing addition symbol with a space
-                r = /([^&;=]+)=?([^&;]*)/g,
-                d = function (s) {
-                	const parm = s.replace(a, " ");
-                	return raw ? parm : decodeURIComponent(parm);
-                },
-                q = query;
+				a = /\+/g, // Regex for replacing addition symbol with a space
+				r = /([^&;=]+)=?([^&;]*)/g,
+				d = function (s) {
+					const parm = s.replace(a, " ");
+					return raw ? parm : decodeURIComponent(parm);
+				},
+				q = query;
 
 			while (e = r.exec(q))
 				p[d(e[1])] = d(e[2]);
@@ -35,7 +35,7 @@
 			var overflowRegex = includeHidden ? /(auto|scroll|hidden)/ : /(auto|scroll)/;
 
 			if (style.position === "fixed") return document.body;
-			for (var parent = element; (parent = parent.parentElement) ;) {
+			for (var parent = element; (parent = parent.parentElement);) {
 				style = getComputedStyle(parent);
 				if (excludeStaticParent && style.position === "static") {
 					continue;
@@ -85,6 +85,12 @@
 			if (!caller.parentNode) return;
 			return instance.getThisOrParent(caller.parentNode, predicate);
 		},
+		getRow: function (caller) {
+			return instance.getThisOrParent(caller, function (el) { return el instanceof HTMLTableRowElement; });
+		},
+		getCell: function (caller) {
+			return instance.getThisOrParent(caller, function (el) { return el instanceof HTMLTableCellElement; });
+		},
 		processFile: function (contenttype, disposition, data) {
 			var filename = "";
 			var filenameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
@@ -93,8 +99,8 @@
 			filename = decodeURIComponent(filename);
 
 			var blob = typeof File === 'function'
-                ? new File([data], filename, { type: contenttype })
-                : new Blob([data], { type: contenttype });
+				? new File([data], filename, { type: contenttype })
+				: new Blob([data], { type: contenttype });
 
 			if (typeof window.navigator.msSaveBlob !== 'undefined') {
 				// IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
@@ -165,6 +171,7 @@ var domActions = function () {
 					if (e.value != e.options[i].value)
 						e.options[i].setAttribute('disabled', 'disabled');
 				}
+                e.classList.add("readonly");
 			}
 			else
 				e.setAttribute(args.attrName, args.attrValue);
@@ -175,6 +182,7 @@ var domActions = function () {
 				for (i = 0; i < e.options.length; i++) {
 					e.options[i].removeAttribute('disabled');
 				}
+                e.classList.remove("readonly");
 			}
 			else
 				e.removeAttribute(args.attrName);
@@ -292,7 +300,7 @@ var ajaxUtils = function ($, cu) {
 				});
 			}
 		},
-		formSubmit: function (sender, form) {
+        formSubmit: function (sender, form, dict) {
 			if (form.hasAttribute('data-res') && instance.processResult(form) == false) return false;
 			var fd = new FormData(form);
 			fd.append('submit', sender.value);
@@ -302,7 +310,14 @@ var ajaxUtils = function ($, cu) {
 			}
 			var target = { data: fd, method: 'POST' };
 			processElementDataOnEvent(sender, target, function (key, value) { fd.append(key, value); });
-			if (!target.e) target.e = 'onsubmit';
+            if (!target.e) target.e = 'onsubmit';
+            if (dict) {
+                for (var i = 0; i < dict.length; i++) {
+                    target.url += '&' + dict[i].key + '=' + dict[i].value
+
+                }
+            }
+                   
 			//target.e = sender.hasAttribute('data-e') ? sender.getAttribute('data-e') : 'onsubmit';
 			//if (sender.hasAttribute('data-r')) target.r = sender.getAttribute('data-r');
 			//target.url = instance.findServiceAction(form);
@@ -323,7 +338,7 @@ var ajaxUtils = function ($, cu) {
 				});
 
 			return false;
-		},
+        },        
 		error: function (xhr, status, e) {
 			var text = '';
 			var title = 'System error';
@@ -793,10 +808,10 @@ var ajaxUtils = function ($, cu) {
 
 		var val = null;
 
-		if (el.name !== undefined && el.type == 'checkbox') {
+		if (el.name !== undefined && el.type == 'checkbox' && !el.hasAttribute('disabled')) {
 			val = el.checked;
 		}
-		else if (el.name !== undefined && el.value !== undefined) {
+		else if (el.name !== undefined && el.value !== undefined && !el.hasAttribute('disabled')) {
 			val = el.value;
 		}
 		else if (el.isContentEditable) {
@@ -902,19 +917,19 @@ var ajaxUtils = function ($, cu) {
 		};
 
 		var rtagName = /<([\w:]+)/,
-            // We have to close these tags to support XHTML (#13200)
-            wrapMap = {
-            	option: [1, "<select multiple='multiple'>", "</select>"],
-            	thead: [1, "<table>", "</table>"],
-            	col: [2, "<table><colgroup>", "</colgroup></table>"],
-            	tr: [2, "<table><tbody>", "</tbody></table>"],
-            	td: [3, "<table><tbody><tr>", "</tr></tbody></table>"],
-            	_default: [0, "", ""]
-            };
+			// We have to close these tags to support XHTML (#13200)
+			wrapMap = {
+				option: [1, "<select multiple='multiple'>", "</select>"],
+				thead: [1, "<table>", "</table>"],
+				col: [2, "<table><colgroup>", "</colgroup></table>"],
+				tr: [2, "<table><tbody>", "</tbody></table>"],
+				td: [3, "<table><tbody><tr>", "</tr></tbody></table>"],
+				_default: [0, "", ""]
+			};
 
 		function parseHTML(htmlString) {
 			var tag, wrap, j,
-                fragment = document.createElement('div');
+				fragment = document.createElement('div');
 
 			// Deserialize a standard representation
 			tag = (rtagName.exec(htmlString) || ["", ""])[1].toLowerCase();
@@ -1048,6 +1063,15 @@ var ajaxUtils = function ($, cu) {
 			nodes.forEach(function (n) {
 				if (n.nested) return;
 				n.func(n.el, n);
+
+				const ctrl = instance.findControl(n.el);
+				if (ctrl) {
+					const t = ctrl.root.getAttribute('data-ctrl');
+					if (window[t] && window[t]['widgetContentChanged']) {
+						window[t]['widgetContentChanged'](ctrl.state);
+						console.log('widget: ' + ctrl.id + ' widgetContentChanged ' + t);
+					}
+				}
 			});
 
 			for (var i = 0; i < ctrls.length; i++) {
@@ -1056,6 +1080,12 @@ var ajaxUtils = function ($, cu) {
 				const t = root.getAttribute('data-ctrl');
 
 				if (window[t] && window[t]['widgetDidMount']) {
+					if (apiResult.state) {
+						for (var key in apiResult.state[t]) {
+							ctrl.state[key] = apiResult.state[t][key];
+						}
+					}
+
 					window[t]['widgetDidMount'](ctrl.state);
 					console.log('widget: ' + ctrl.id + ' widgetDidMount ' + t);
 				}
@@ -1146,7 +1176,7 @@ var ajaxUtils = function ($, cu) {
 				frame.classList.remove('hide');
 				errb.classList.add('hide');
 
-				frame.contentWindow.contents = '<pre>' + text + '</pre>';
+				frame.contentWindow.contents = text;
 				frame.src = 'javascript:window["contents"]';
 			}
 			else {
@@ -1229,8 +1259,8 @@ var ajaxUtils = function ($, cu) {
 				runClientAction(s.onBack.service, s.onBack.callChain, 0);
 			else
 				$.get(getApiUrl(s.url, s.parms))
-                    .fail(instance.error)
-                    .then(onRequestResult).then(instance.loadScripts).then(processApiResponse);
+					.fail(instance.error)
+					.then(onRequestResult).then(instance.loadScripts).then(processApiResponse);
 		});
 
 
@@ -1320,21 +1350,21 @@ var ObservableArray = (function () {
 	var arrProto = Array.prototype;
 
 	'pop push shift unshift splice reverse sort'
-        .split(' ').forEach(function (methodName) {
-        	var method = arrProto[methodName];
-        	ObservableArray.prototype[methodName] = function () {
-        		var returnValue = method.apply(this, arguments);
-        		var args = [methodName].concat(arrProto.slice.call(arguments));
-        		this.trigger.apply(this, args);
-        		return returnValue;
-        	};
-        });
+		.split(' ').forEach(function (methodName) {
+			var method = arrProto[methodName];
+			ObservableArray.prototype[methodName] = function () {
+				var returnValue = method.apply(this, arguments);
+				var args = [methodName].concat(arrProto.slice.call(arguments));
+				this.trigger.apply(this, args);
+				return returnValue;
+			};
+		});
 
 	// add the above native array methods to ObservableArray.prototype
 	'slice concat join some every forEach map filter reduce reduceRight indexOf lastIndexOf toString toLocaleString'
-        .split(' ').forEach(function (methodName) {
-        	ObservableArray.prototype[methodName] = arrProto[methodName];
-        });
+		.split(' ').forEach(function (methodName) {
+			ObservableArray.prototype[methodName] = arrProto[methodName];
+		});
 
 	return ObservableArray;
 })();

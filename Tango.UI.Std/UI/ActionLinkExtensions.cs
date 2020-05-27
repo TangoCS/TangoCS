@@ -87,6 +87,8 @@ namespace Tango.UI
 					a.OnClickRunEvent();
 			else if (link.RequestMethod == "POST")
 				a.OnClickPostEvent();
+			else
+				a.OnClick($"{link.RequestMethod}(this)");
 			return a;
 		}
 
@@ -130,10 +132,10 @@ namespace Tango.UI
 			var link = new ActionLink(w.Context);
 			urlAttributes(link);
 			if (link.Enabled)
-				w.A(a => a.Set(attrs).SetTarget(link), () => w.Icon(link.Image));
+				w.A(a => a.Set(attrs).SetTarget(link), () => w.Icon(link.Image, link.Title));
 		}
 
-		public static void ActionImageLink(this LayoutWriter w, Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null)
+        public static void ActionImageLink(this LayoutWriter w, Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null)
 		{
 			if (urlAttributes == null) return;
 			ActionLink link = new ActionLink(w.Context);
@@ -223,6 +225,19 @@ namespace Tango.UI
 			if (href.IsEmpty()) return;
 			if (!href.StartsWith("http")) href = "http://" + href;
 			w.A(a => a.Href(href).Target(Target._blank).Set(attrs), () => w.Icon(image));
+		}
+
+		public static void ExternalLink(this LayoutWriter w, string href)
+		{
+			w.ExternalLink(null, href);
+		}
+
+		public static void ExternalLink(this LayoutWriter w, Action<ATagAttributes> attrs, string href)
+		{
+			if (href.IsEmpty()) return;
+			var title = href;
+			if (!href.StartsWith("http")) href = "http://" + href;
+			w.A(a => a.Href(href).Target(Target._blank).Set(attrs), title);
 		}
 	}
 }

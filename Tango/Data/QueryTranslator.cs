@@ -16,6 +16,7 @@ namespace Tango.Data
 
 		List<StringBuilder> sbWhere = new List<StringBuilder>();
 		List<StringBuilder> sbOrder = new List<StringBuilder>();
+		List<StringBuilder> sbGroupBy = new List<StringBuilder>();
 
 		string _beforeConstant = "";
 		string _afterConstant = "";
@@ -23,8 +24,8 @@ namespace Tango.Data
 		Dictionary<string, object> _parms = new Dictionary<string, object>();
 
 		public string OrderBy { get; private set; } = string.Empty;
-
 		public string WhereClause { get; private set; } = string.Empty;
+		public string GroupBy { get; private set; } = string.Empty;
 
 		public IReadOnlyDictionary<string, object> Parms => _parms;
 
@@ -41,6 +42,7 @@ namespace Tango.Data
 			Visit(expression);
 			WhereClause = sbWhere.Select(o => o.ToString()).Join(" and ");
 			OrderBy = sbOrder.Select(o => o.ToString()).Join(", ");
+			GroupBy = sbGroupBy.Select(o => o.ToString()).Join(", ");
 		}
 
 		private static Expression StripQuotes(Expression e)
@@ -83,6 +85,16 @@ namespace Tango.Data
 				ParseOrderByExpression(m, "ASC");
 				return Visit(m.Arguments[0]);
 			}
+			else if (m.Method.Name == "GroupBy")
+			{
+				sb = new StringBuilder();
+				sbGroupBy.Add(sb);
+
+				var lambda = (LambdaExpression)StripQuotes(m.Arguments[1]);
+				Visit(lambda.Body);
+
+				return Visit(m.Arguments[0]);
+			}
 			else if (m.Method.Name == "OrderByDescending")
 			{
 				ParseOrderByExpression(m, "DESC");
@@ -110,13 +122,44 @@ namespace Tango.Data
 				sb.Append(")");
 				return m;
 			}
+			else if (m.Method.Name == "ToString")
+			{
+				ParseToStringMethod(m);
+				return m;
+			}
+			else if (m.Method.Name == "Substring")
+			{
+				ParseSubstringMethod(m);
+				return m;
+			}
 			else if (m.Method.Name == "get_Item")
 			{
 				sb.Append((m.Arguments[0] as ConstantExpression).Value);
 				return m;
 			}
+			else if (m.Method.Name == "Select")
+			{
+				return Visit(m.Arguments[0]);
+			}
 
 			throw new NotSupportedException(string.Format("The method '{0}' is not supported", m.Method.Name));
+		}
+
+		//protected override Expression VisitMemberInit(MemberInitExpression node)
+		//{
+		//	for (int i = 0; i < node.Bindings.Count; i++)
+		//	{
+		//		Visit((node.Bindings[i] as MemberAssignment).Expression);
+		//		if (i < node.Bindings.Count - 1)
+		//			sb.Append(", ");
+		//	}
+		//	return node;
+		//}
+
+		protected override Expression VisitNew(NewExpression node)
+		{
+			sb.Append(node.Members.Select(x => x.Name).Join(", "));
+			return node;
 		}
 
 		protected override Expression VisitUnary(UnaryExpression u)
@@ -185,6 +228,9 @@ namespace Tango.Data
 					case ExpressionType.GreaterThanOrEqual:
 						cursb.Append(" >= ");
 						break;
+					case ExpressionType.Add:
+						cursb.Append(" + ");
+						break;
 					default:
 						throw new NotSupportedException(string.Format("The binary operator '{0}' is not supported", b.NodeType));
 				}
@@ -193,6 +239,7 @@ namespace Tango.Data
 			sb = cursb;
 
 			sb.Append(")");
+			_nullconstant = false;
 			return b;
 		}
 
@@ -349,6 +396,24 @@ namespace Tango.Data
 			_beforeConstant = "";
 		}
 
+		protected void ParseSubstringMethod(MethodCallExpression m)
+		{
+			sb.Append(" substring(");
+			Visit(m.Object);
+			sb.Append(",");
+			Visit(m.Arguments[0]);
+			sb.Append(",");
+			Visit(m.Arguments[1]);
+			sb.Append(")");
+		}
+
+		protected void ParseToStringMethod(MethodCallExpression m)
+		{
+			sb.Append(" cast(");
+			Visit(m.Object);
+			sb.Append(" as nvarchar(max))");
+		}
+
 		private void ParseOrderByExpression(MethodCallExpression expression, string order)
 		{
 			sb = new StringBuilder();
@@ -386,6 +451,58 @@ namespace Tango.Data
 
 			return false;
 		}
+	}
+
+	public static class QueryHelper
+	{
+		public static (string query, IReadOnlyDictionary<string, object> args) ApplyExpressionToQuery(string query, Expression expression, IQueryTranslatorDialect dialect)
+		{
+			var translator = new QueryTranslator(dialect);
+			translator.Translate(expression);
+			if (!translator.WhereClause.IsEmpty()) query += " where " + translator.WhereClause;
+			if (!translator.GroupBy.IsEmpty()) query = $"select {translator.GroupBy} from ({query}) t group by {translator.GroupBy} ";
+			if (!translator.OrderBy.IsEmpty()) query += " order by " + translator.OrderBy;
+
+			var hasskip = translator.Parms.ContainsKey("skip");
+			var hastake = translator.Parms.ContainsKey("take");
+
+			if (dialect is QueryTranslatorPostgres)
+			{
+				if (hastake) query += " limit @take";
+				if (hasskip) query += " offset @skip";
+			}
+			else if (dialect is QueryTranslatorMSSQL)
+			{
+				if (hasskip || hastake)
+				{
+					if (translator.OrderBy.IsEmpty()) query += " order by (select null) ";
+					if (hasskip)
+						query += " offset @skip rows";
+					else
+						query += " offset 0 rows";
+					if (hastake) query += " fetch next @take rows only";
+				}
+			}
+
+			return (query, translator.Parms);
+		}
+
+		public static string SetNewFieldExpression(string query, string fieldExpression)
+		{
+			var i = query.IndexOf("--#select");
+			if (i == -1)
+				return $"select {fieldExpression} from ({query}) t";
+			else
+			{
+				var part1 = query.Substring(0, i);
+				var part2 = query.Substring(i + 9);
+				return $"{part1} select {fieldExpression} from ({part2}) t";
+			}
+		}
+
+		public static IQueryTranslatorDialect CreateDialect(DBType dbType) => dbType == DBType.MSSQL ? (IQueryTranslatorDialect)new QueryTranslatorMSSQL() :
+			dbType == DBType.POSTGRESQL ? new QueryTranslatorPostgres() :
+			throw new NotSupportedException();
 	}
 
 	public interface IQueryTranslatorDialect

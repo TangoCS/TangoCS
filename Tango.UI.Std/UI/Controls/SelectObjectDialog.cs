@@ -96,7 +96,7 @@ namespace Tango.UI.Controls
 		public abstract void Render(LayoutWriter w, TValue selectedValue);
 		public virtual void RenderPaging(LayoutWriter w)
 		{
-			Paging.Render(w, Field.DataProvider.GetCount(FilterValue), a => a.RunEvent(RenderList));
+			Paging.Render(w, Field.DataProvider.GetCount(FilterValue), a => a.PostEvent(RenderList));
 		}
 	}
 

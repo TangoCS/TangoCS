@@ -9,7 +9,7 @@ namespace Tango.Meta.Database
 {
 	public class UpdateScriptBuilder2
 	{
-		SqlConnection conn;
+		//SqlConnection conn;
 		TableExport export;
 		StringBuilder result;
 		string _dbname;

@@ -50,16 +50,12 @@ namespace Tango.UI.Std
 
 		protected virtual void Delete(IEnumerable<TKey> ids)
 		{
-			foreach (var id in ids)
-			{
-				// TODO переделать метод, чтобы при удалении не требовался объект целиком
-				T obj = Database.Repository<T>().GetById(id);
-				EntityAudit?.WriteObjectChange<T, TKey>(obj, EntityAuditAction.Delete, null);
-			}
 			if (typeof(IWithLogicalDelete).IsAssignableFrom(typeof(T)))
 				Database.Repository<T>().Update(u => u.Set(o => (o as IWithLogicalDelete).IsDeleted, true), ids);
 			else
 				Database.Repository<T>().Delete(ids);
+
+			EntityAudit?.WriteObjectChange();
 		}
 
 		protected virtual void BeforeDelete(IEnumerable<TKey> ids) { }
@@ -78,6 +74,16 @@ namespace Tango.UI.Std
 		public void OnSubmit(ApiResponse response)
 		{
 			var sel = GetPostedList<TKey>(Constants.SelectedValues);
+
+			if (EntityAudit != null)
+			{
+				var rep = Database.Repository<T>();
+				foreach (var id in sel)
+				{
+					// TODO переделать метод, чтобы при удалении не требовался объект целиком
+					EntityAudit.AddChanges(ObjectChange.Create<T, TKey>(rep.GetById(id), EntityAuditAction.Delete, null));
+				}
+			}
 
 			var res = ProcessSubmit(sel);
 			if (!res.Result)

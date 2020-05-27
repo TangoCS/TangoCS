@@ -14,37 +14,40 @@ namespace Tango.UI
 			content(field);
 		}
 
-		public static void FormField(this LayoutWriter w, IField field, Action content)
-		{
-			w.FormField(
-				field.ID,
-				field.Caption,
-				content,
-				field.IsRequired,
-				field.ShowDescription ? field.Description : null,
-				field.IsVisible
-			);
-		}
+		//public static void FormField(this LayoutWriter w, IField field, Action content)
+		//{
+		//	w.FormField(
+		//		field.ID,
+		//		field.Caption,
+		//		content,
+		//		field.IsRequired,
+		//		field.ShowDescription ? field.Description : null,
+		//		field.IsVisible,
+		//		field.Hint
+		//	);
+		//}
 
-		public static void FormField(this LayoutWriter w, IField field, Grid grid, Action content)
+		public static void FormField(this LayoutWriter w, IField field, Action content, Grid grid = Grid.OneWhole)
 		{
 			w.FormField(
 				field.ID,
 				field.Caption,
 				content,
+				grid,
 				field.IsRequired,
 				field.ShowDescription ? field.Description : null,
-				field.IsVisible
+				field.IsVisible,
+				field.Hint
 			);
 		}
 
 		public static void TextBox<TValue>(this LayoutWriter w, IField<TValue> field, Grid grid = Grid.OneWhole, Action<InputTagAttributes> attributes = null)
 		{
-			w.FormField(field, grid, () => w.TextBox(field.ID, field.StringValue, a => {
+			w.FormField(field, () => w.TextBox(field.ID, field.StringValue, a => {
 				if (field.Disabled) a.Disabled(true);
 				else if (field.ReadOnly) a.Readonly(true);
                 a.Set(attributes);
-			}));
+			}), grid);
 		}      
 
         public static void Hidden<TValue>(this LayoutWriter w, IField<TValue> field)
@@ -57,22 +60,22 @@ namespace Tango.UI
 			var val = field.StringValue;
 			if (typeof(TValue) == typeof(bool) && (val == "True" || val == "False"))
 				val = (field as IField<bool>).Value.Icon();
-			w.FormField(field.ID, field.Caption, () => w.Span(a => a.ID(field.ID), val), false, field.ShowDescription ? field.Description : null, field.IsVisible);
+			w.FormField(field.ID, field.Caption, () => w.Span(a => a.ID(field.ID), val), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
 		}
 
 		public static void PlainText(this LayoutWriter w, IField field, Action content, Grid grid = Grid.OneWhole)
 		{
-			w.FormField(field.ID, field.Caption, () => w.Span(a => a.ID(field.ID), content), false, field.ShowDescription ? field.Description : null, field.IsVisible);
+			w.FormField(field.ID, field.Caption, () => w.Span(a => a.ID(field.ID), content), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
 		}
 
 		public static void PlainText(this LayoutWriter w, string caption, Action content, string description = null, Grid grid = Grid.OneWhole)
 		{
-			w.FormField(null, caption, content, false, description);
+			w.FormField(null, caption, content, grid, false, description);
 		}
 
 		public static void PlainText<T>(this LayoutWriter w, string caption, T value, string description  = null, Grid grid = Grid.OneWhole)
 		{
-			w.FormField(null, caption, () => w.Write(value), false, description);
+			w.FormField(null, caption, () => w.Write(value), grid, false, description);
 		}
 
 		public static void PlainText<TEntity, TRefClass, TRefKey>(this LayoutWriter w, EntityReferenceManyField<TEntity, TRefClass, TRefKey> field, Grid grid = Grid.OneWhole)
@@ -80,19 +83,19 @@ namespace Tango.UI
 			where TRefClass : class, IWithTitle, IWithKey<TRefKey>
 		{
 			void val() => w.Span(a => a.ID(field.ID), () => w.Write(field.StringValueCollection.Join("<br/>")));
-			w.FormField(field.ID, field.Caption, val, false, field.ShowDescription ? field.Description : null, field.IsVisible);
+			w.FormField(field.ID, field.Caption, val, grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
 		}
 
 		public static void Password(this LayoutWriter w, IField<string> field, Grid grid = Grid.OneWhole)
 		{
-			w.FormField(field, grid, () => w.Password(field.ID));
+			w.FormField(field, () => w.Password(field.ID), grid);
 		}
 
 		public static void TextArea(this LayoutWriter w, IField<string> field, Grid grid = Grid.OneWhole)
 		{
-			w.FormField(field, grid, () => w.TextArea(field.ID, field.Value, a => {
+			w.FormField(field, () => w.TextArea(field.ID, field.Value, a => {
 				if (field.Disabled) a.Disabled(true);
-			}));
+			}), grid);
 		}
 
 		public static void CheckBox(this LayoutWriter w, IField<bool> field, Grid grid = Grid.OneWhole)
@@ -100,7 +103,7 @@ namespace Tango.UI
 			w.FormField(field.ID, field.Caption, () => w.CheckBox(field.ID, field.Value, a => {
 				if (field.Disabled) a.Disabled(true);
 				if (field.ReadOnly) a.Readonly(true).OnChange("event.preventDefault(); this.checked = !this.checked; return false;");
-			}), false, field.ShowDescription ? field.Description : null, field.IsVisible);
+			}), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
 		}
 
 		public static void CheckBox(this LayoutWriter w, IField<bool?> field, Grid grid = Grid.OneWhole)
@@ -108,28 +111,26 @@ namespace Tango.UI
 			w.FormField(field.ID, field.Caption, () => w.CheckBox(field.ID, field.Value ?? false, a => {
 				if (field.Disabled) a.Disabled(true);
 				if (field.ReadOnly) a.Readonly(true).OnChange("event.preventDefault(); this.checked = !this.checked; return false;");
-			}), false, field.ShowDescription ? field.Description : null, field.IsVisible);
+			}), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
 		}
 
 		public static void ToggleSwitch(this LayoutWriter w, IField<bool> field, Grid grid = Grid.OneWhole, Action<InputTagAttributes> attributes = null)
 		{
             if (field.FireOnChangeEvent && !field.Disabled && field.IsVisible)                         
-                attributes += a => a.Data("e", $"On{field.ID}Changed");
+                attributes += a => a.Data("e", $"On{field.ID}Changed").Data("r", field.EventReceiver);
             
-            w.FormField(field.ID, field.Caption, () => w.ToggleSwitch(field.ID, field.Value, field.Disabled, attributes), 
-				false, field.ShowDescription ? field.Description : null, field.IsVisible );
-
-            
+            w.FormField(field.ID, field.Caption, () => w.ToggleSwitch(field.ID, field.Value, field.Disabled, field.ReadOnly, attributes), 
+				grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, field.Hint);           
         }
 
-		public static void DropDownList<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, Grid grid = Grid.OneWhole, Action<SelectTagAttributes> attrs = null)
+		public static void DropDownList<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, Grid grid = Grid.OneWhole, Action<SelectTagAttributes> attrs = null, string hint = null)
 		{
 			var value = typeof(TValue).IsEnum ?
 				field.Value == null ? "" : Convert.ChangeType(field.Value, Enum.GetUnderlyingType(typeof(TValue))).ToString() : 
 				field.Value?.ToString();
 
 			if (field.FireOnChangeEvent && !field.Disabled && field.IsVisible)
-				attrs += a => a.OnChangePostEvent($"On{field.ID}Changed");
+				attrs += a => a.OnChangePostEvent($"On{field.ID}Changed", field.EventReceiver);
 
 			if (field.Disabled)
 				attrs += a => a.Disabled(true);
@@ -137,24 +138,25 @@ namespace Tango.UI
 			if (field.ReadOnly)
 				w.AddClientAction("domActions", "setAttribute", f => new { id = f(field.ID), attrName = "readonly", attrValue = "readonly" });
 
-			w.FormField(field, grid, () => w.DropDownList(field.ID, value, items, attrs));
+			w.FormField(field, () => w.DropDownList(field.ID, value, items, attrs), grid);
 		}
 
-		public static void Calendar(this LayoutWriter w, IField<DateTime> field, Grid grid = Grid.OneWhole)
-		{
+		public static void Calendar(this LayoutWriter w, IField<DateTime> field, Action<InputTagAttributes> attributes = null, Grid grid = Grid.OneWhole)
+		{		
 			var state = field.Disabled ? EnabledState.Disabled : (field.ReadOnly ? EnabledState.ReadOnly : EnabledState.Enabled);
-			w.FormField(field, grid, () => w.Calendar(field.ID, field.Value, state));
+
+			w.FormField(field, () => w.Calendar(field.ID, field.Value, state, attributes: attributes), grid);
 		}
 
 		public static void Calendar(this LayoutWriter w, IField<DateTime?> field, CalendarOptions opt = null, Grid grid = Grid.OneWhole)
 		{
 			var state = field.Disabled ? EnabledState.Disabled : (field.ReadOnly ? EnabledState.ReadOnly : EnabledState.Enabled);
             if (opt == null)
-                w.FormField(field, grid, () => w.Calendar(field.ID, field.Value, state));
+                w.FormField(field, () => w.Calendar(field.ID, field.Value, state), grid);
             else
             {
                 opt.Enabled = state;
-                w.FormField(field, grid, () => w.Calendar(field.ID, field.Value, opt));
+                w.FormField(field, () => w.Calendar(field.ID, field.Value, opt), grid);
             }
         }
     }

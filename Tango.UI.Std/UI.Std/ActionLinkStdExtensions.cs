@@ -85,7 +85,17 @@ namespace Tango.UI.Std
 			return url.To<T>("CreateNew", returnUrl).WithImage("New");
 		}
 
-		public static ActionLink ToDelete<T>(this ActionLink url, IAccessControl ac, object id, object predicateContext = null, string returnUrl = "this")
+        public static ActionLink ToCreateNewVersion<T>(this ActionLink url, IAccessControl ac, object predicateContext = null, string returnUrl = "this")
+        {
+            return url.To<T>("CreateNewVersion", ac, predicateContext, returnUrl).WithImage("Edit");
+        }
+
+        public static ActionLink ToCreateNewVersion<T>(this ActionLink url, string returnUrl = "this")
+        {
+            return url.To<T>("CreateNewVersion", returnUrl).WithImage("Edit");
+        }
+
+        public static ActionLink ToDelete<T>(this ActionLink url, IAccessControl ac, object id, object predicateContext = null, string returnUrl = "this")
 		{
 			return url.To<T>("Delete", ac, predicateContext, returnUrl).WithArg("oid", id).WithImage("Delete");
 		}
