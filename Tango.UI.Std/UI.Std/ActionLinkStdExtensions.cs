@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Reflection;
 using Tango.AccessControl;
 using Tango.Localization;
 
@@ -22,8 +24,14 @@ namespace Tango.UI.Std
 		static (string serviceName, string fullServiceName) ProcessType(Type entityType)
 		{
 			entityType = entityType.GetResourceType();
-			var serviceName = entityType.Name.Replace("Controller", "");
+			var serviceName = "";
 			var fullServiceName = entityType.FullName.Replace("Controller", "");
+			var attrs = entityType.GetCustomAttributes<OnActionAttribute>();
+			if (attrs != null && attrs.Count() == 1)
+				serviceName = attrs.First().Service;
+			else
+				serviceName = entityType.Name.Replace("Controller", "");
+			
 			return (serviceName, fullServiceName);
 		}
 

@@ -16,6 +16,11 @@ namespace Tango
 		string Title { get; }
 	}
 
+	public interface IWithName
+	{
+		string Name { get; }
+	}
+
 	public interface IWithDefaultOrder<T>
 	{
 		Func<T, string> DefaultOrderBy();

@@ -79,10 +79,7 @@ namespace Tango.UI.Std
 			{
 				var rep = Database.Repository<T>();
 				foreach (var id in sel)
-				{
-					// TODO переделать метод, чтобы при удалении не требовался объект целиком
-					EntityAudit.AddChanges(ObjectChange.Create<T, TKey>(rep.GetById(id), EntityAuditAction.Delete, null));
-				}
+					EntityAudit.AddChanges(ObjectChange.Delete<T>(id));
 			}
 
 			var res = ProcessSubmit(sel);
