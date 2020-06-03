@@ -320,9 +320,8 @@ namespace Tango.UI.Std
             {
                 if (!CreateObjectMode)
                 {
-                    var package = EntityAudit.Packages?.FirstOrDefault();
-                    if (package != null)
-                        package.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
+                    if (EntityAudit != null)
+						EntityAudit.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
                 }
             }
 
@@ -406,9 +405,8 @@ namespace Tango.UI.Std
             {
                 if (!CreateObjectMode)
                 {
-                    var package = EntityAudit.Packages?.FirstOrDefault();
-                    if (package != null)
-                        package.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
+                    if (EntityAudit != null)
+						EntityAudit.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
                 }
             }
 

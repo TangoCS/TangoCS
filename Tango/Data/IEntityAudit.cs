@@ -6,10 +6,8 @@ namespace Tango.Data
 {
 	public interface IEntityAudit
 	{
-		//Guid? WriteObjectChange<T, TKey>(T entity, EntityAuditAction action, List<PropertyChange> propertyChanges, Guid? parentObjectChange_ID = null) 
-		//	where T : IWithKey<TKey>;
-
-		List<ObjectChangePackage> Packages { get; }
+		ObjectChange PrimaryObject { get; set; }
+		List<ObjectChange> SecondaryObjects { get; set; }
 
 		void WriteObjectChange();
 	}
@@ -18,34 +16,21 @@ namespace Tango.Data
 	{
 		public static void AddChanges(this IEntityAudit audit, ObjectChange primaryObject, List<ObjectChange> secondaryObjects = null)
 		{
-			var pack = new ObjectChangePackage {
-				PrimaryObject = primaryObject
-			};
+			audit.PrimaryObject = primaryObject;
 
 			if (secondaryObjects != null)
-				pack.SecondaryObjects = secondaryObjects;
-
-			audit.Packages.Add(pack);
+				audit.SecondaryObjects = secondaryObjects;
 		}
 
 		public static void AddChanges<TKey>(this IEntityAudit audit, IWithKey<TKey> entity, EntityAuditAction action, List<PropertyChange> propertyChanges = null, List<ObjectChange> secondaryObjects = null)
 		{
-			var pack = new ObjectChangePackage {
-				PrimaryObject = ObjectChange.RegisterAction(entity, action, propertyChanges)
-			};
+			audit.PrimaryObject = ObjectChange.RegisterAction(entity, action, propertyChanges);
 
 			if (secondaryObjects != null)
-				pack.SecondaryObjects = secondaryObjects;
-
-			audit.Packages.Add(pack);
+				audit.SecondaryObjects = secondaryObjects;
 		}
 	}
 
-	public class ObjectChangePackage
-	{
-		public ObjectChange PrimaryObject { get; set; }
-		public List<ObjectChange> SecondaryObjects { get; set; } = new List<ObjectChange>();
-	}
 
 	public class ObjectChange
 	{
