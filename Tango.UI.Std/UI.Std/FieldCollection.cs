@@ -261,6 +261,31 @@ namespace Tango.UI.Std
             f.AddHeader(title);
             f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => render(w, o), Attributes = (a, o, i) => a.Class("r") });
         }
+        public static void AddCellAlignCenter<TResult, T>(this IFieldCollection<TResult> f, Func<TResult, T> value)
+        {
+            f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => w.Write(value(o)?.ToString()), Attributes = (a, o, i) => a.Class("c") });
+        }
+        public static void AddCellAlignCenter<TResult>(this IFieldCollection<TResult> f, Action<LayoutWriter, TResult> render)
+        {
+            f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => render(w, o), Attributes = (a, o, i) => a.Class("c") });
+        }
+        public static void AddCellAlignCenter<TResult>(this IFieldCollection<TResult> f, RowCellAttributesDelegate<TResult> attrs, Action<LayoutWriter, TResult> render)
+        {
+            RowCellAttributesDelegate<TResult> a1 = (a, o, i) => a.Class("c");
+            a1 += attrs;
+            f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => render(w, o), Attributes = a1 });
+        }
+        public static void AddCellAlignCenter<TResult, T>(this IFieldCollection<TResult> f, string title, Func<TResult, T> value)
+        {
+            f.AddHeader(title);
+            f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => w.Write(value(o)?.ToString()), Attributes = (a, o, i) => a.Class("c") });
+        }
+        public static void AddCellAlignCenter<TResult>(this IFieldCollection<TResult> f, string title, Action<LayoutWriter, TResult> render)
+        {
+            f.AddHeader(title);
+            f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => render(w, o), Attributes = (a, o, i) => a.Class("c") });
+        }
+
         #endregion
 
         #region string title
