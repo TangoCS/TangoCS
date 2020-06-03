@@ -5,9 +5,9 @@ using System.Xml.Linq;
 
 namespace Tango.FileStorage
 {
-	public interface IStorageFile
+	public interface IStorageFile : IWithName
 	{
-		string Name { get; set; }
+		new string Name { get; set; }
 		string Extension { get; set; }
 		long Length { get; }
 		DateTime LastModifiedDate { get; set; }
@@ -17,9 +17,8 @@ namespace Tango.FileStorage
 		void Delete();
 	}
 
-	public interface IStorageFile<TKey> : IStorageFile
+	public interface IStorageFile<TKey> : IStorageFile, IWithKey<TKey>
 	{
-		TKey ID { get; }
 	}
 
 	public static class IStorageFileExtensions
