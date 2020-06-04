@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?2dpw8q');
-  src:  url('fonts/icomoon.eot?2dpw8q#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?2dpw8q') format('truetype'),
-    url('fonts/icomoon.woff?2dpw8q') format('woff'),
-    url('fonts/icomoon.svg?2dpw8q#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?91zq8o');
+  src:  url('fonts/icomoon.eot?91zq8o#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?91zq8o') format('truetype'),
+    url('fonts/icomoon.woff?91zq8o') format('woff'),
+    url('fonts/icomoon.svg?91zq8o#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,33 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-askue_balance:before {
+  content: "\e96e";
+}
+.icon-askue_tp:before {
+  content: "\e966";
+}
+.icon-askue_ti:before {
+  content: "\e967";
+}
+.icon-askue_section:before {
+  content: "\e968";
+}
+.icon-askue_in:before {
+  content: "\e969";
+}
+.icon-askue_ps:before {
+  content: "\e96a";
+}
+.icon-askue_hierlev2:before {
+  content: "\e96b";
+}
+.icon-askue_out:before {
+  content: "\e96c";
+}
+.icon-askue_hierlev1:before {
+  content: "\e96d";
+}
 .icon-scissors:before {
   content: "\e964";
 }
