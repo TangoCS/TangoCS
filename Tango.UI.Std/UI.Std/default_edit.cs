@@ -320,7 +320,7 @@ namespace Tango.UI.Std
             {
                 if (!CreateObjectMode)
                 {
-                    if (EntityAudit != null)
+                    if (EntityAudit != null && EntityAudit.PrimaryObject != null)
 						EntityAudit.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
                 }
             }
