@@ -111,6 +111,11 @@ namespace Tango.Localization
 			return textResource.Get(key + "-" + suffix);
 		}
 
+		public static bool TryGet(this IResourceManager textResource, string key, string suffix, out string res)
+		{
+			return textResource.TryGet(key + "-" + suffix, out res);
+		}
+
 		public static string GetExt<T>(this IResourceManager textResource, string suffix)
 		{
 			return textResource.Get(typeof(T).GetResourceName(), suffix);

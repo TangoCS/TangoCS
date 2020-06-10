@@ -11,17 +11,22 @@ namespace Tango.UI
 		public static void FormField(this LayoutWriter w, string name, Action caption, Action content, Grid grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null)
 		{
 			w.Tr(a => a.ID(name + "_field").Style(isVisible ? "" : "display:none"), () => {
-				w.Td(a => a.Class("formlabel"), () => {
+				w.Td(a => a.ID(name + "_fieldlabel").Class("formlabel"), () => {
 					w.Span(a => a.ID(name + "_fieldcaption"), caption);
 					if (!string.IsNullOrEmpty(hint))
 						w.Sup(a => a.Style("margin-left:2px").Title(hint), "?");
 					if (isRequired)
 						w.Span(a => a.ID(name + "_fieldrequired").Class("formvalidation"), "&nbsp;*");
-					if (description != null)
-						w.Div(a => a.ID(name + "_fielddescription").Class("descriptiontext"), description);
+					w.FormFieldDescription(name, description);
 				});
 				w.Td(a => a.ID(name + "_fieldbody").Class("formbody"), content);
 			});
+		}
+
+		public static void FormFieldDescription(this LayoutWriter w, string name, Action description = null)
+		{
+			if (description != null)
+				w.Div(a => a.ID(name + "_fielddescription").Class("descriptiontext"), description);
 		}
 
 		public static string GetFieldID(this IField field) => field.ID + "_field";

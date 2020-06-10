@@ -21,7 +21,9 @@ namespace Tango.UI.Controls
 		protected const string ddlField = "ddlField";
 		protected const string eConditionContainer = "ddlCondition_fieldbody";
 		protected const string ddlCondition = "ddlCondition";
+		protected const string eFieldLabelContainer = "fieldValue_fieldlabel";
 		protected const string eFieldValueContainer = "fieldValue_fieldbody";
+		protected const string eFieldDescriptionContainer = "fieldValue_fielddescription";
 		protected const string eFieldValue = "fieldValue";
 		protected const string eExpression = "expression";
 		protected const string eValidation = "validation";
@@ -180,14 +182,21 @@ namespace Tango.UI.Controls
 				var cond = FillConditions(field);
 
 				var op = field.Operators.Values.First();
+				var showHint = Resources.TryGet($"{ListName}.{field.Title}", "hint", out var hint);
 
 				response.AddWidget(eConditionContainer, w => w.DropDownList(ddlCondition, cond.FirstOrDefault()?.Value, cond, a => a.OnChangePostEvent(OnConditionChanged)));
 				response.AddWidget(eFieldValueContainer, w => op.Renderer(w));
+				if (showHint)
+					response.AddAdjacentWidget(eFieldLabelContainer, eFieldDescriptionContainer, AdjacentHTMLPosition.BeforeEnd,
+						w => w.FormFieldDescription(eFieldValue, () => w.Write(hint)));
+				else
+					response.RemoveWidget(eFieldDescriptionContainer);
 			}
 			else
 			{
 				response.AddWidget(eConditionContainer, w => w.DropDownList(ddlCondition, null, null, a => a.OnChangePostEvent(OnConditionChanged)));
 				response.AddWidget(eFieldValueContainer, "");
+				response.RemoveWidget(eFieldDescriptionContainer);
 			}
 		}
 
@@ -204,7 +213,10 @@ namespace Tango.UI.Controls
 				response.AddWidget(eFieldValueContainer, w => op.Renderer(w));
 			}
 			else
+			{
 				response.AddWidget(eFieldValueContainer, "");
+				response.RemoveWidget(eFieldDescriptionContainer);
+			}
 		}
 
 		public void OnCriterionAdded(ApiResponse response)
@@ -216,6 +228,7 @@ namespace Tango.UI.Controls
 			response.AddWidget(eExpression, w => RenderSelectedFields(w));
 			response.AddWidget(eConditionContainer, w => w.DropDownList(ddlCondition, null, null, a => a.OnChangePostEvent(OnConditionChanged)));
 			response.AddWidget(eFieldValueContainer, "");
+			response.RemoveWidget(eFieldDescriptionContainer);
 			response.AddChildWidget("content", hValue, w => w.Hidden(hValue, SerializedCriteria));
 			response.SetElementValue(ddlField, "");
 		}
@@ -671,7 +684,10 @@ namespace Tango.UI.Controls
 			{
 				var data = FieldCriterionDate(f.SeqNo, expr);
 				AddStdOps(f, data);
-				f.Operators.AddIfNotExists(Resources.Get("System.Filter.LastXDays"), data);
+
+				var data2 = FieldCriterionDateTime(f.SeqNo, column);
+				data2.Renderer = Renderers.TextBox(f.SeqNo);
+				f.Operators.AddIfNotExists(Resources.Get("System.Filter.LastXDays"), data2);
 			}
 			else if (t.In(typeof(int), typeof(int?)))
 				AddStdOps(f, FieldCriterionInt(f.SeqNo, expr));
