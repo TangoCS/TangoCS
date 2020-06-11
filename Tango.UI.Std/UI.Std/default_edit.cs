@@ -305,7 +305,7 @@ namespace Tango.UI.Std
         {
             base.PreProcessFormData(response, val);
 
-            if (EntityAudit != null)
+			if (EntityAudit != null && ViewData != null)
             {
                 if (CreateObjectMode)
                     EntityAudit.AddChanges(ViewData, EntityAuditAction.Insert);
@@ -316,11 +316,11 @@ namespace Tango.UI.Std
 
         protected override void Submit(ApiResponse response)
 		{
-            if (EntityAudit != null)
+            if (EntityAudit != null && ViewData != null)
             {
                 if (!CreateObjectMode)
                 {
-                    if (EntityAudit != null)
+                    if (EntityAudit != null && EntityAudit.PrimaryObject != null)
 						EntityAudit.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
                 }
             }
@@ -384,13 +384,16 @@ namespace Tango.UI.Std
 		}
 
 		protected virtual void BeforeSaveEntity() { }
-		protected virtual void AfterSaveEntity() { }
+		protected virtual void AfterSaveEntity()
+		{
+			
+		}
 
-        protected override void PreProcessFormData(ApiResponse response, ValidationMessageCollection val)
+		protected override void PreProcessFormData(ApiResponse response, ValidationMessageCollection val)
         {
             base.PreProcessFormData(response, val);
 
-            if (EntityAudit != null)
+            if (EntityAudit != null && ViewData != null)
             {
                 if (CreateObjectMode)
                     EntityAudit.AddChanges(ViewData, EntityAuditAction.Insert);
@@ -401,7 +404,7 @@ namespace Tango.UI.Std
 
         protected override void Submit(ApiResponse response)
 		{
-            if (EntityAudit != null)
+            if (EntityAudit != null && ViewData != null)
             {
                 if (!CreateObjectMode)
                 {

@@ -40,10 +40,14 @@ namespace Tango.UI.Std
 			if (_pageData != null)
 				return _pageData;
 
+			var defSort = Sorter.Count == 0;
 			foreach (var gs in Fields.GroupSorting)
 				Sorter.AddOrderBy(gs.SeqNo, gs.SortDesc, true);
-			var filtered = ApplyFilter(Data);
-			var q = Paging.Apply(Sorter.Count > 0 ? Sorter.Apply(filtered) : DefaultOrderBy(filtered), true);
+			var filtered = Sorter.Apply(ApplyFilter(Data));
+			if (defSort)
+				filtered = DefaultOrderBy(filtered);
+
+			var q = Paging.Apply(filtered, true);
 
 			if (Repository.AllObjectsQuery.StartsWith("@"))
 			{

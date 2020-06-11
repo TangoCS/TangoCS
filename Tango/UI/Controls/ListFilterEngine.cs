@@ -157,7 +157,7 @@ namespace Tango.UI.Controls
 				{
 					if (!double.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out double d))
 						d = 0;
-					val = DateTime.Now.AddDays(-d);
+					val = DateTime.Today.AddDays(-d);
 				}
 				else
 				{
@@ -180,7 +180,7 @@ namespace Tango.UI.Controls
 				}
 				else
 				{
-					if (!DateTime.TryParseExact(item.Value, "d.MM.yyyy", null, DateTimeStyles.None, out DateTime dt))
+					if (!DateTime.TryParseExact(item.Value, "d.MM.yyyy HH:mm", null, DateTimeStyles.None, out DateTime dt))
 					{
 						DateTime? dtn = null;
 						val = dtn;
