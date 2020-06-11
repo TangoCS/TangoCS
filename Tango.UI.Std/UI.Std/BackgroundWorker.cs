@@ -1,4 +1,7 @@
-﻿using Tango.Html;
+﻿using System.Collections.Concurrent;
+using Tango.Cache;
+using Tango.Html;
+using Tango.Logger;
 using Tango.UI.Controls;
 
 namespace Tango.UI.Std
@@ -79,5 +82,28 @@ namespace Tango.UI.Std
 				.AsConsoleDialog(dialogPrefix)
 				.WithTitle(link.Resources.Get(key));
 		}
+		[OnAction(typeof(BackgroundWorkerHistoryLog), "run")]
+		public class BackgroundWorkerHistoryLog : ViewPagePart
+		{
+			[Inject]
+			public ICache Cache { get; set; }
+
+			public override void OnLoad(ApiResponse response)
+			{
+				var oid = Context.GetArg<int>("oid");
+				var loggercollection = Cache.Get<ConcurrentDictionary<int, IRealTimeProgressLogger>>("RealTimeLoggers");
+
+				string message = "";
+
+				if (loggercollection.TryGetValue(oid, out IRealTimeProgressLogger logger))
+					message = logger.WriteLogHistory();
+
+				response.AddWidget("contentbody", w => {
+					w.Div(() => {
+						w.Write(message);
+					});
+				});
+			}
+		};
 	}
 }

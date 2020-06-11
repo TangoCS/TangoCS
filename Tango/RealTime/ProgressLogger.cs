@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Tango.Logger;
 
 namespace Tango.RealTime
@@ -9,10 +10,11 @@ namespace Tango.RealTime
 		readonly string _taskid;
 		readonly Func<IHubContext, IClientProxy> _clientSelector;
 
+		public StringBuilder sb = new StringBuilder();
 		int _itemsCount;
 
 		public ProgressLogger(IBackgroundWorkerHubContext hubContext, string taskid, Func<IHubContext, IClientProxy> clientSelector)
-		{			
+		{
 			_hubContext = hubContext;
 			_taskid = taskid.ToLower();
 			_clientSelector = clientSelector;
@@ -27,16 +29,24 @@ namespace Tango.RealTime
 		public void SetProgress(int itemsCompleted)
 		{
 			_clientSelector(_hubContext).SendCoreAsync("progress", new object[] { _taskid, itemsCompleted });
-			if (itemsCompleted == _itemsCount)
-				_clientSelector(_hubContext).SendCoreAsync("complete", new object[] { _taskid, _itemsCount });
+			//if (itemsCompleted == _itemsCount)
+			//	_clientSelector(_hubContext).SendCoreAsync("complete", new object[] { _taskid, _itemsCount });
 		}
 
 		public void WriteMessage(string message, int? itemsCompleted = null)
-		{			
+		{
 			if (itemsCompleted != null)
 				SetProgress(itemsCompleted.Value);
+
 			_clientSelector(_hubContext).SendCoreAsync("message", new object[] { _taskid, message });
-			
+
+			sb.AppendLine(message);
+
 		}
-	}	
+		
+		public string WriteLogHistory()
+		{
+			return sb.ToString();
+		}		
+	}
 }
