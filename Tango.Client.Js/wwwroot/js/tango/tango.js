@@ -758,33 +758,39 @@ var ajaxUtils = function ($, cu) {
 			return $.Deferred().reject();
 	}
 
-	function processElementDataOnEvent(el, target, setvalfunc) {
-		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
-			attr = attrs[i];
-			var val = attr.value == '' ? null : attr.value;
-			if (attr.name.startsWith('data-p-')) {
-				if (target.method == 'POST')
-					target.data[attr.name.replace('data-p-', '')] = val || '';
-				else
-					target.query[attr.name.replace('data-p-', '')] = val || '';
-			} else if (attr.name == 'href') {
-				target.url = val;
-			} else if (attr.name == 'data-href') {
-				target.url = val;
-			} else if (attr.name == 'data-e') {
-				target.e = val;
-			} else if (attr.name == 'data-r') {
-				target.r = val;
-			} else if (attr.name.startsWith('data-format')) {
-				target.data[FORMAT_PREFIX + el.name] = val;
-			} else if (attr.name.startsWith('data-c-')) {
-				target.data[attr.name.replace('data-c-', 'c-')] = val || '';
-			} else if (attr.name.startsWith('data-ref')) {
-				processElementValue(document.getElementById(val), setvalfunc);
-			} else if (attr.name == 'data-responsetype') {
-				target.responsetype = val;
-			}
-		}
+    function processElementDataOnEvent(el, target, setvalfunc) {
+        for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
+            attr = attrs[i];
+            var val = attr.value == '' ? null : attr.value;
+            if (attr.name.startsWith('data-p-')) {
+                if (target.method == 'POST') {
+                    if (target.data instanceof FormData) {
+                        target.data.append(attr.name.replace('data-p-', ''), val || '');
+
+                    }
+                    else
+                        target.data[attr.name.replace('data-p-', '')] = val || '';
+                }
+                else
+                    target.query[attr.name.replace('data-p-', '')] = val || '';
+            } else if (attr.name == 'href') {
+                target.url = val;
+            } else if (attr.name == 'data-href') {
+                target.url = val;
+            } else if (attr.name == 'data-e') {
+                target.e = val;
+            } else if (attr.name == 'data-r') {
+                target.r = val;
+            } else if (attr.name.startsWith('data-format')) {
+                target.data[FORMAT_PREFIX + el.name] = val;
+            } else if (attr.name.startsWith('data-c-')) {
+                target.data[attr.name.replace('data-c-', 'c-')] = val || '';
+            } else if (attr.name.startsWith('data-ref')) {
+                processElementValue(document.getElementById(val), setvalfunc);
+            } else if (attr.name == 'data-responsetype') {
+                target.responsetype = val;
+            }
+        }
 
 		target.currenturl = instance.findServiceAction(el);
 		if (!target.url) {
