@@ -77,4 +77,23 @@ namespace Tango.UI.Std
 			return attr.OnClick($"listview.togglerow(this)");
 		}
 	}
+
+	public static class TreeRowExtensions
+	{
+		public static void TreeRow(this LayoutWriter w, int level, Action content)
+		{
+			w.Div(a => a.Class($"treerow l{level}"), () => {
+				for (int i = 0; i < level - 1; i++)
+					w.Div(a => a.Class("level-padding"));
+				if (level > 0)
+					w.Div(a => a.Class("level-padding last"));
+				w.Div(a => a.Class("treerowtitle"), content);
+			});
+		}
+
+		public static void TreeRow(this LayoutWriter w, int level, string content)
+		{
+			w.TreeRow(level, () => w.Write(content));
+		}
+	}
 }
