@@ -4,7 +4,7 @@ namespace Tango.Logger
 {
 	public interface IRealTimeProgressLogger : IProgressLogger
 	{
-		string WriteLogHistory();
+		//string WriteLogHistory();
 
 	}
 	public interface IProgressLogger

@@ -44,9 +44,9 @@ namespace Tango.RealTime
 
 		}
 		
-		public string WriteLogHistory()
-		{
-			return sb.ToString();
-		}		
+		//public string WriteLogHistory()
+		//{
+		//	return sb.ToString();
+		//}		
 	}
 }

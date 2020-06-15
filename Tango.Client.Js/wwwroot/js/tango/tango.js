@@ -310,13 +310,7 @@ var ajaxUtils = function ($, cu) {
 			}
 			var target = { data: fd, method: 'POST' };
 			processElementDataOnEvent(sender, target, function (key, value) { fd.append(key, value); });
-            if (!target.e) target.e = 'onsubmit';
-            if (dict) {
-                for (var i = 0; i < dict.length; i++) {
-                    target.url += '&' + dict[i].key + '=' + dict[i].value
-
-                }
-            }
+            if (!target.e) target.e = 'onsubmit';            
                    
 			//target.e = sender.hasAttribute('data-e') ? sender.getAttribute('data-e') : 'onsubmit';
 			//if (sender.hasAttribute('data-r')) target.r = sender.getAttribute('data-r');
