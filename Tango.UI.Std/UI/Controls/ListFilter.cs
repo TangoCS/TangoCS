@@ -21,7 +21,9 @@ namespace Tango.UI.Controls
 		protected const string ddlField = "ddlField";
 		protected const string eConditionContainer = "ddlCondition_fieldbody";
 		protected const string ddlCondition = "ddlCondition";
+		protected const string eFieldLabelContainer = "fieldValue_fieldlabel";
 		protected const string eFieldValueContainer = "fieldValue_fieldbody";
+		protected const string eFieldDescriptionContainer = "fieldValue_fielddescription";
 		protected const string eFieldValue = "fieldValue";
 		protected const string eExpression = "expression";
 		protected const string eValidation = "validation";
@@ -180,14 +182,21 @@ namespace Tango.UI.Controls
 				var cond = FillConditions(field);
 
 				var op = field.Operators.Values.First();
+				var showHint = Resources.TryGet($"{ListName}.{field.Title}", "hint", out var hint);
 
 				response.AddWidget(eConditionContainer, w => w.DropDownList(ddlCondition, cond.FirstOrDefault()?.Value, cond, a => a.OnChangePostEvent(OnConditionChanged)));
 				response.AddWidget(eFieldValueContainer, w => op.Renderer(w));
+				if (showHint)
+					response.AddAdjacentWidget(eFieldLabelContainer, eFieldDescriptionContainer, AdjacentHTMLPosition.BeforeEnd,
+						w => w.FormFieldDescription(eFieldValue, () => w.Write(hint)));
+				else
+					response.RemoveWidget(eFieldDescriptionContainer);
 			}
 			else
 			{
 				response.AddWidget(eConditionContainer, w => w.DropDownList(ddlCondition, null, null, a => a.OnChangePostEvent(OnConditionChanged)));
 				response.AddWidget(eFieldValueContainer, "");
+				response.RemoveWidget(eFieldDescriptionContainer);
 			}
 		}
 
@@ -204,7 +213,10 @@ namespace Tango.UI.Controls
 				response.AddWidget(eFieldValueContainer, w => op.Renderer(w));
 			}
 			else
+			{
 				response.AddWidget(eFieldValueContainer, "");
+				response.RemoveWidget(eFieldDescriptionContainer);
+			}
 		}
 
 		public void OnCriterionAdded(ApiResponse response)
@@ -216,6 +228,7 @@ namespace Tango.UI.Controls
 			response.AddWidget(eExpression, w => RenderSelectedFields(w));
 			response.AddWidget(eConditionContainer, w => w.DropDownList(ddlCondition, null, null, a => a.OnChangePostEvent(OnConditionChanged)));
 			response.AddWidget(eFieldValueContainer, "");
+			response.RemoveWidget(eFieldDescriptionContainer);
 			response.AddChildWidget("content", hValue, w => w.Hidden(hValue, SerializedCriteria));
 			response.SetElementValue(ddlField, "");
 		}
@@ -668,7 +681,14 @@ namespace Tango.UI.Controls
 				f.Operators.AddIfNotExists(Resources.Get("System.Filter.Contains"), data);
 			}
 			else if (t.In(typeof(DateTime), typeof(DateTime?)))
-				AddStdOps(f, FieldCriterionDate(f.SeqNo, expr));
+			{
+				var data = FieldCriterionDate(f.SeqNo, expr);
+				AddStdOps(f, data);
+
+				var data2 = FieldCriterionDateTime(f.SeqNo, column);
+				data2.Renderer = Renderers.TextBox(f.SeqNo);
+				f.Operators.AddIfNotExists(Resources.Get("System.Filter.LastXDays"), data2);
+			}
 			else if (t.In(typeof(int), typeof(int?)))
 				AddStdOps(f, FieldCriterionInt(f.SeqNo, expr));
 			else if (t.In(typeof(decimal), typeof(decimal?), typeof(long), typeof(long?)))
@@ -676,13 +696,13 @@ namespace Tango.UI.Controls
 			else if (t.In(typeof(bool), typeof(bool?)))
 				f.Operators.AddIfNotExists("=", FieldCriterionBoolean(f.SeqNo, expr));
 			else if (t == typeof(Guid) || t == typeof(Guid?))
-            {
-                var data = FieldCriterionGuid(f.SeqNo, column);
-                f.Operators.AddIfNotExists("=", data);
-                f.Operators.AddIfNotExists("<>", data);
-            }
-            else
-            throw new Exception($"Field type {t.Name} not supported");
+			{
+				var data = FieldCriterionGuid(f.SeqNo, column);
+				f.Operators.AddIfNotExists("=", data);
+				f.Operators.AddIfNotExists("<>", data);
+			}
+			else
+				throw new Exception($"Field type {t.Name} not supported");
 			
 			return f.SeqNo;
 		}
@@ -696,14 +716,22 @@ namespace Tango.UI.Controls
 		{
 			var title = Resources.Get(column.GetResourceKey());
 			var f = CreateOrGetCondition(title);
-			AddStdOps(f, FieldCriterionDateTime(f.SeqNo, column));
+			var data = FieldCriterionDateTime(f.SeqNo, column);
+			AddStdOps(f, data);
+			var data2 = FieldCriterionDateTime(f.SeqNo, column);
+			data2.Renderer = Renderers.TextBox(f.SeqNo);
+			f.Operators.AddIfNotExists(Resources.Get("System.Filter.LastXDays"), data2);
 			return f.SeqNo;
 		}
 		public int AddConditionDateWithTime(Expression<Func<T, DateTime?>> column)
 		{
 			var title = Resources.Get(column.GetResourceKey());
 			var f = CreateOrGetCondition(title);
-			AddStdOps(f, FieldCriterionDateTime(f.SeqNo, column));
+			var data = FieldCriterionDateTime(f.SeqNo, column);
+			AddStdOps(f, data);
+			var data2 = FieldCriterionDateTime(f.SeqNo, column);
+			data2.Renderer = Renderers.TextBox(f.SeqNo);
+			f.Operators.AddIfNotExists(Resources.Get("System.Filter.LastXDays"), data2);
 			return f.SeqNo;
 		}
 		public int AddConditionSql<TVal>(string title, string column, List<string> operators = null)

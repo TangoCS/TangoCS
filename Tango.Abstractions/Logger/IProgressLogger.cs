@@ -2,12 +2,16 @@
 
 namespace Tango.Logger
 {
-	public interface IRealTimeProgressLogger : IProgressLogger { }
+	public interface IRealTimeProgressLogger : IProgressLogger
+	{
+		//string WriteLogHistory();
+
+	}
 	public interface IProgressLogger
 	{
 		void SetItemsCount(int itemsCount);
 		void SetProgress(int itemsCompleted);
-		void WriteMessage(string message, int? itemsCompleted = null);
+		void WriteMessage(string message, int? itemsCompleted = null);	
 	}
 
 	public class ConsoleLogger : IProgressLogger
@@ -26,5 +30,6 @@ namespace Tango.Logger
 		{
 			Console.WriteLine(message);
 		}
+		
 	}
 }

@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?2dpw8q');
-  src:  url('fonts/icomoon.eot?2dpw8q#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?2dpw8q') format('truetype'),
-    url('fonts/icomoon.woff?2dpw8q') format('woff'),
-    url('fonts/icomoon.svg?2dpw8q#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?3xr9du');
+  src:  url('fonts/icomoon.eot?3xr9du#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?3xr9du') format('truetype'),
+    url('fonts/icomoon.woff?3xr9du') format('woff'),
+    url('fonts/icomoon.svg?3xr9du#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -13,7 +13,7 @@
 [class^="icon-"], [class*=" icon-"] {
   /* use !important to prevent issues with browser extensions that change fonts */
   font-family: 'icomoon' !important;
-  speak: none;
+  speak: never;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
@@ -25,6 +25,36 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-eraser:before {
+  content: "\e96f";
+}
+.icon-InterCo_balance:before {
+  content: "\e96e";
+}
+.icon-InterCo_tp:before {
+  content: "\e966";
+}
+.icon-InterCo_ti:before {
+  content: "\e967";
+}
+.icon-InterCo_section:before {
+  content: "\e968";
+}
+.icon-InterCo_in:before {
+  content: "\e969";
+}
+.icon-InterCo_ps:before {
+  content: "\e96a";
+}
+.icon-InterCo_hierlev2:before {
+  content: "\e96b";
+}
+.icon-InterCo_out:before {
+  content: "\e96c";
+}
+.icon-InterCo_hierlev1:before {
+  content: "\e96d";
+}
 .icon-scissors:before {
   content: "\e964";
 }

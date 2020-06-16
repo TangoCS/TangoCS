@@ -54,8 +54,6 @@ namespace Tango.UI.Std
 				Database.Repository<T>().Update(u => u.Set(o => (o as IWithLogicalDelete).IsDeleted, true), ids);
 			else
 				Database.Repository<T>().Delete(ids);
-
-			EntityAudit?.WriteObjectChange();
 		}
 
 		protected virtual void BeforeDelete(IEnumerable<TKey> ids) { }
@@ -93,6 +91,7 @@ namespace Tango.UI.Std
 			using (var tran = Database.BeginTransaction())
 			{
 				Delete(sel);
+				EntityAudit?.WriteObjectChange();
 				tran.Commit();
 			}
 			AfterDelete(sel);
