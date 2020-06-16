@@ -85,24 +85,24 @@ namespace Tango.UI.Std
 		[OnAction(typeof(BackgroundWorkerHistoryLog), "run")]
 		public class BackgroundWorkerHistoryLog : ViewPagePart
 		{
-			[Inject]
-			public ICache Cache { get; set; }
+			//[Inject]
+			//public ICache Cache { get; set; }
 
 			public override void OnLoad(ApiResponse response)
 			{
-				var oid = Context.GetArg<int>("oid");
-				var loggercollection = Cache.Get<ConcurrentDictionary<int, IRealTimeProgressLogger>>("RealTimeLoggers");
+				//var oid = Context.GetArg<int>("oid");
+				//var loggercollection = Cache.Get<ConcurrentDictionary<int, IRealTimeProgressLogger>>("RealTimeLoggers");
 
-				string message = "";
+				//string message = "";
 
-				if (loggercollection.TryGetValue(oid, out IRealTimeProgressLogger logger))
-					message = logger.WriteLogHistory();
+				//if (loggercollection.TryGetValue(oid, out IRealTimeProgressLogger logger))
+				//	message = logger.WriteLogHistory();
 
-				response.AddWidget("contentbody", w => {
-					w.Div(() => {
-						w.Write(message);
-					});
-				});
+				//response.AddWidget("contentbody", w => {
+				//	w.Div(() => {
+				//		w.Write(message);
+				//	});
+				//});
 			}
 		};
 	}

@@ -127,7 +127,7 @@ namespace Tango.UI
 
 		static MethodInfo FindMethod(Type type, string methodName, string httpMethod)
 		{
-			var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+			var methods = type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
 			MethodInfo method = null;
 			for (int i = 0; i < methods.Length; i++)
 			{

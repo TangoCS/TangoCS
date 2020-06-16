@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
+using System.Data.SqlClient;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -89,7 +90,7 @@ namespace Tango.Data
 				if (p.GetCustomAttributes(typeof(KeyAttribute), false).Any())
 					keys.Add(p.Name, p);
 				if (!p.GetCustomAttributes(typeof(ComputedAttribute), false).Any() &&
-                    !p.GetCustomAttributes(typeof(KeyAttribute), false).Any())
+					!p.GetCustomAttributes(typeof(KeyAttribute), false).Any())
 					columns.Add(p.Name, p);
 			}
 		}
@@ -143,7 +144,7 @@ namespace Tango.Data
 				throw new Exception(noKeyMessage);
 		}
 
-		
+
 
 		public int Count(Expression predicate = null)
 		{
@@ -180,11 +181,11 @@ namespace Tango.Data
 	public class DapperRepository<T> : DapperRepository, IRepository<T>
 	{
 		//protected Dictionary<string, object> parms = new Dictionary<string, object>();
-		
-		public DapperRepository(IDatabase database) :base(database, typeof(T))
-		{			
+
+		public DapperRepository(IDatabase database) : base(database, typeof(T))
+		{
 		}
-				
+
 		public IEnumerable<T> List(Expression predicate = null)
 		{
 			var query = AllObjectsQuery;
@@ -215,7 +216,7 @@ namespace Tango.Data
 			else
 				return Database.Connection.Query<T>(query, args, Database.Transaction);
 		}
-				
+
 		protected (string clause, Dictionary<string, object> parms) GetByIdsWhereClause<TKey>(IEnumerable<TKey> ids)
 		{
 			var cnt = keys.Count();
@@ -240,7 +241,7 @@ namespace Tango.Data
 			if (id == null) return default;
 			return (T)base.GetById(id);
 		}
-				
+
 		public virtual void Create(T entity)
 		{
 			var props = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public)
@@ -271,12 +272,12 @@ namespace Tango.Data
 			}
 
 			var colsClause = cols.Join(", ");
-			var valuesClause = vals.Join(", ");         
-            var returning = identity == null ? "" : string.Format(Dialect.ReturningIdentity, identity.Name.ToLower());
-            
-            var query = props.Count() > 1 ? $"insert into {Table}({colsClause}) values({valuesClause}) {returning}" : string.Format(Dialect.InsertDefault, Table) + " " + returning;          
+			var valuesClause = vals.Join(", ");
+			var returning = identity == null ? "" : string.Format(Dialect.ReturningIdentity, identity.Name.ToLower());
 
-            var ret = Database.Connection.ExecuteScalar(query, parms, Database.Transaction);
+			var query = props.Count() > 1 ? $"insert into {Table}({colsClause}) values({valuesClause}) {returning}" : string.Format(Dialect.InsertDefault, Table) + " " + returning;
+
+			var ret = Database.Connection.ExecuteScalar(query, parms, Database.Transaction);
 
 			if (identity != null)
 				identity.SetValue(entity, identity.PropertyType == typeof(Int32) ? Convert.ToInt32(ret) : ret);
@@ -299,7 +300,8 @@ namespace Tango.Data
 			foreach (var i in setCollection.GetParms())
 				where.parms.Add(i.Key, i.Value);
 
-			Database.Connection.ExecuteScalar(query, where.parms, Database.Transaction);
+
+			Database.Connection.Execute(query, where.parms, Database.Transaction);
 		}
 
 		public void Update(Action<UpdateSetCollection<T>> sets, Expression<Func<T, bool>> predicate)
@@ -316,7 +318,7 @@ namespace Tango.Data
 			foreach (var i in collection.GetParms())
 				args.Add(i.Key, i.Value);
 
-			Database.Connection.ExecuteScalar(query, args, Database.Transaction);
+			Database.Connection.Execute(query, args, Database.Transaction);
 		}
 
 		public virtual void Update<TKey>(Action<UpdateSetCollection<T>> sets, IEnumerable<TKey> ids)
@@ -330,7 +332,7 @@ namespace Tango.Data
 			foreach (var i in collection.GetParms())
 				where.parms.Add(i.Key, i.Value);
 
-			Database.Connection.ExecuteScalar(query, where.parms, Database.Transaction);
+			Database.Connection.Execute(query, where.parms, Database.Transaction);
 		}
 
 		public virtual object CreateFrom(Action<UpdateSetCollection<T>> sets, Expression<Func<T, bool>> predicate)
