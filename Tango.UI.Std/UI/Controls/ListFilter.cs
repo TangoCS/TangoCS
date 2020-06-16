@@ -755,6 +755,7 @@ namespace Tango.UI.Controls
 				data = FieldCriterionDate(f.SeqNo, col);
 			else
 				throw new Exception($"Field type {t.Name} not supported");
+			data.FieldType = FieldType.Sql;
 
 			foreach (var op in ops)
 				f.Operators.Add(op, data);
