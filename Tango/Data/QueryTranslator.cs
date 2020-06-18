@@ -254,9 +254,9 @@ namespace Tango.Data
 
 			if (c.Value is IQueryable)
 				return c;
-			
 
-			switch (Type.GetTypeCode(c.Value.GetType()))
+			var t = c.Value.GetType();
+			switch (Type.GetTypeCode(t))
 			{
 				case TypeCode.Boolean:
 					if (_hasvalueexpression)
@@ -275,8 +275,10 @@ namespace Tango.Data
 					break;
 
 				case TypeCode.Object:
-					throw new NotSupportedException(string.Format("The constant for '{0}' is not supported", c.Value));
-
+					if (t != typeof(Guid))
+						throw new NotSupportedException(string.Format("The constant for '{0}' is not supported", c.Value));
+					sb.Append(ConvertConstantToParm(c.Value));
+					break;
 				default:
 					sb.Append(ConvertConstantToParm(c.Value));
 					break;

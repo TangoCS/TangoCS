@@ -86,23 +86,28 @@ namespace Tango.UI.Controls
 					}
 					else
 					{
+						var colexpr = Expression.Convert(column.Body, valType);
+						var valexpr = item.FieldType == FieldType.Guid ?
+							(Expression)Expression.Constant(Guid.Parse(val.ToString().Trim())) :
+							Expression.Convert(Expression.Constant(val), valType);
+
 						if (item.Condition == "=")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
+							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(colexpr, valexpr), column.Parameters);
 
 						else if(item.Condition == ">=" || item.Condition == Resources.Get("System.Filter.LastXDays"))
-							expr = Expression.Lambda<Func<T, bool>>(Expression.GreaterThanOrEqual(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
+							expr = Expression.Lambda<Func<T, bool>>(Expression.GreaterThanOrEqual(colexpr, valexpr), column.Parameters);
 
 						else if(item.Condition == ">")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.GreaterThan(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
+							expr = Expression.Lambda<Func<T, bool>>(Expression.GreaterThan(colexpr, valexpr), column.Parameters);
 
 						else if(item.Condition == "<")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.LessThan(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
+							expr = Expression.Lambda<Func<T, bool>>(Expression.LessThan(colexpr, valexpr), column.Parameters);
 
 						else if(item.Condition == "<=")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.LessThanOrEqual(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
+							expr = Expression.Lambda<Func<T, bool>>(Expression.LessThanOrEqual(colexpr, valexpr), column.Parameters);
 
 						else if(item.Condition == "<>")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(Expression.Convert(column.Body, valType), Expression.Convert(Expression.Constant(val), valType)), column.Parameters);
+							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(colexpr, valexpr), column.Parameters);
 					}
 
 					if (expr != null)
