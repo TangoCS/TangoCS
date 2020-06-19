@@ -13,8 +13,9 @@ namespace Tango.UI.Controls
 		public int MinYear { get; set; }
 		public int MaxYear { get; set; }
 		public int MinutesStep { get; set; } = 5;
+        public bool ShowMonthName { get; set; } = true;
 
-		int Day => ShowDays ? Context.GetArg($"{ID}_day", DefaultValue.Day) : 1;
+        int Day => ShowDays ? Context.GetArg($"{ID}_day", DefaultValue.Day) : 1;
 		int Month => Context.GetArg($"{ID}_month", DefaultValue.Month);
 		int Year => Context.GetArg($"{ID}_year", DefaultValue.Year);
 		int Hour => ShowTime ? Context.GetArg($"{ID}_hour", DefaultValue.Hour) : 0;
@@ -58,7 +59,8 @@ namespace Tango.UI.Controls
 				if (MinYear == 0) MinYear = 1900;
 				if (MaxYear == 0) MaxYear = DateTime.Now.Year + 1;
 
-				monthItems.Add(new SelectListItem { Value = "0", Text = "Месяц" });
+                if(ShowMonthName)
+				    monthItems.Add(new SelectListItem { Value = "0", Text = "Месяц" });
 				monthItems.Add(new SelectListItem { Value = "1", Text = ShowDays ? "января" : "январь" });
 				monthItems.Add(new SelectListItem { Value = "2", Text = ShowDays ? "февраля" : "февраль" });
 				monthItems.Add(new SelectListItem { Value = "3", Text = ShowDays ? "марта" : "март" });
