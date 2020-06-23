@@ -952,7 +952,7 @@ var ajaxUtils = function ($, cu) {
 					var el = obj.name == 'body' ? document.body : document.getElementById(obj.name);
 
 					if (obj.action == 'remove') {
-						if (el) el.remove();
+						if (el) el.parentElement.removeChild(el);
 						continue;
 					}
 
