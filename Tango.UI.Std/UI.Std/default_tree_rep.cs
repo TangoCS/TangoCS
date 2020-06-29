@@ -88,7 +88,7 @@ namespace Tango.UI.Std
 				new List<ChildTreeLevelDescription<TResult>> { new ChildTreeLevelDescription<TResult> { Child = curTemplate } } :
 				curTemplate.Children;
 
-			var sqlTemplate = $"select * from ({Repository.AllObjectsQuery}) t";
+			var origAllObjectsQuery = Repository.AllObjectsQuery;
 
 			using (var tran = Database.BeginTransaction())
 			{
@@ -109,18 +109,20 @@ namespace Tango.UI.Std
 					
 					nodeQuery = t.Child.OrderBy(nodeQuery);					
 									
-					var expr = t.Child.GroupBy != null ? nodeQuery.GroupBy(t.Child.GroupBy).Select(x => x.Key).Expression : nodeQuery.Expression;
+					var expr = t.Child.GroupBy != null ? nodeQuery.GroupBy(t.Child.GroupBy).Select(t.Child.GroupBySelector).Expression : nodeQuery.Expression;
 					var exprCnt = t.Child.GroupBy != null ? nodeQueryCnt.GroupBy(t.Child.GroupBy).Select(x => x.Key).Expression : nodeQueryCnt.Expression;
-					
 
-					Repository.AllObjectsQuery = sqlTemplate;
+					var sqlTemplate = "select *";
+					sqlTemplate += $" from ({origAllObjectsQuery}) t";
 
-					foreach (var p in t.Child.KeyProperties)
-						nodeWhere.Add($"{p} is not null");
+					if (!t.Child.AllowNulls)
+						foreach (var p in t.Child.KeyProperties)
+							nodeWhere.Add($"{p} is not null");
 
 					if (nodeWhere.Count > 0)
-						Repository.AllObjectsQuery += " where " + nodeWhere.Join(" and ");
+						sqlTemplate += " where " + nodeWhere.Join(" and ");
 
+					Repository.AllObjectsQuery = sqlTemplate;
 					var res = Repository.List(expr);
 					var resCnt = Repository.Count(exprCnt);
 
@@ -226,6 +228,7 @@ namespace Tango.UI.Std
 	{
 		public int ID { get; set; }
 		public Expression<Func<TResult, object>> GroupBy { get; set; }
+		public Expression<Func<IGrouping<object, TResult>, object>> GroupBySelector { get; set; } = x => x.Key;
 		public Func<IQueryable<TResult>, IQueryable<TResult>> OrderBy { get; set; } = data => data;
 		public Action<LayoutWriter, TResult> Cell { get; set; }
 		public bool IsTerminal { get; set; } = false;
@@ -233,6 +236,7 @@ namespace Tango.UI.Std
 		public Func<TResult, string> Icon { get; set; }
 		public Expression<Func<TResult, object>> Key { get; set; }
 		public bool EnableSelect { get; set; }
+		public bool AllowNulls { get; set; } = false;
 
 		List<ChildTreeLevelDescription<TResult>> _children = new List<ChildTreeLevelDescription<TResult>>();
 

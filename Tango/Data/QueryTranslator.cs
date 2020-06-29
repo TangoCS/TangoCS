@@ -17,6 +17,7 @@ namespace Tango.Data
 		List<StringBuilder> sbWhere = new List<StringBuilder>();
 		List<StringBuilder> sbOrder = new List<StringBuilder>();
 		List<StringBuilder> sbGroupBy = new List<StringBuilder>();
+		List<StringBuilder> sbGroupBySelector = new List<StringBuilder>();
 
 		string _beforeConstant = "";
 		string _afterConstant = "";
@@ -26,6 +27,7 @@ namespace Tango.Data
 		public string OrderBy { get; private set; } = string.Empty;
 		public string WhereClause { get; private set; } = string.Empty;
 		public string GroupBy { get; private set; } = string.Empty;
+		public string GroupBySelector { get; private set; } = string.Empty;
 
 		public IReadOnlyDictionary<string, object> Parms => _parms;
 
@@ -43,6 +45,7 @@ namespace Tango.Data
 			WhereClause = sbWhere.Select(o => o.ToString()).Join(" and ");
 			OrderBy = sbOrder.Select(o => o.ToString()).Join(", ");
 			GroupBy = sbGroupBy.Select(o => o.ToString()).Join(", ");
+			GroupBySelector = sbGroupBySelector.Select(o => o.ToString()).Join(", ").Replace("@@KEY", GroupBy);
 		}
 
 		private static Expression StripQuotes(Expression e)
@@ -139,26 +142,35 @@ namespace Tango.Data
 			}
 			else if (m.Method.Name == "Select")
 			{
+				sb = new StringBuilder();
+				sbGroupBySelector.Add(sb);
+
+				var lambda = (LambdaExpression)StripQuotes(m.Arguments[1]);
+				Visit(lambda.Body);
+
 				return Visit(m.Arguments[0]);
 			}
 
 			throw new NotSupportedException(string.Format("The method '{0}' is not supported", m.Method.Name));
 		}
 
-		//protected override Expression VisitMemberInit(MemberInitExpression node)
-		//{
-		//	for (int i = 0; i < node.Bindings.Count; i++)
-		//	{
-		//		Visit((node.Bindings[i] as MemberAssignment).Expression);
-		//		if (i < node.Bindings.Count - 1)
-		//			sb.Append(", ");
-		//	}
-		//	return node;
-		//}
-
 		protected override Expression VisitNew(NewExpression node)
 		{
-			sb.Append(node.Members.Select(x => x.Name).Join(", "));
+			var s = new List<string>();
+			for (int i = 0; i < node.Arguments.Count; i++)
+			{
+				var arg = node.Arguments[i];
+				var m = node.Members[i];
+
+				if (arg is MemberExpression me)
+					s.Add(me.Member.Name == "Key" ? "@@KEY" : me.Member.Name);
+				else if (arg is MethodCallExpression mce && mce.Method.Name == "Count")
+					s.Add("count(1) as " + m.Name);
+				else
+					throw new NotSupportedException($"Unsupported expression {arg.NodeType}");
+			}
+
+			sb.Append(s.Join(", "));
 			return node;
 		}
 
@@ -299,7 +311,7 @@ namespace Tango.Data
 			if (m.Expression?.NodeType == ExpressionType.Parameter ||
 				(m.NodeType == ExpressionType.MemberAccess && m.Expression?.NodeType == ExpressionType.Convert))
 			{
-				sb.Append(m.Member.Name);
+				sb.Append(m.Member.Name == "Key" ? "@@KEY" : m.Member.Name);
 				return m;
 			}
 
@@ -462,7 +474,7 @@ namespace Tango.Data
 			var translator = new QueryTranslator(dialect);
 			translator.Translate(expression);
 			if (!translator.WhereClause.IsEmpty()) query += " where " + translator.WhereClause;
-			if (!translator.GroupBy.IsEmpty()) query = $"select {translator.GroupBy} from ({query}) t group by {translator.GroupBy} ";
+			if (!translator.GroupBy.IsEmpty()) query = $"select {translator.GroupBySelector} from ({query}) t group by {translator.GroupBy} ";
 			if (!translator.OrderBy.IsEmpty()) query += " order by " + translator.OrderBy;
 
 			var hasskip = translator.Parms.ContainsKey("skip");
