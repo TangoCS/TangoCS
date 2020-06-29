@@ -232,10 +232,10 @@ namespace Tango.UI.Std
 			f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => w.Write(value(o)?.ToString()) });
 		}
 
-		public static void AddCell<TResult>(this IFieldCollection<TResult> f, ListColumn<TResult> listColumn)
-		{
-			f.Cells.Add(listColumn);
-		}
+		//public static void AddCell<TResult>(this IFieldCollection<TResult> f, ListColumn<TResult> listColumn)
+		//{
+		//	f.Cells.Add(listColumn);
+		//}
 
 		public static void AddCellAlignRight<TResult, T>(this IFieldCollection<TResult> f, Func<TResult, T> value)
 		{

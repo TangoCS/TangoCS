@@ -24,6 +24,10 @@ namespace Tango.UI.Std
 					_repository = GetRepository();
 				return _repository;
 			}
+			set
+			{
+				_repository = value;
+			}
 		}
 
 		protected virtual IRepository<TResult> GetRepository() => Database.Repository<TResult>();

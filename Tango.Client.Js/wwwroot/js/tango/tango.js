@@ -46,7 +46,7 @@
 			return document.body;
 		},
 		scrollToView: function (element) {
-			if (!element.getBoundingClientRect) return;
+			if (!element || !element.getBoundingClientRect) return;
 			var r = element.getBoundingClientRect();
 			if (r.bottom > window.innerHeight) {
 				var scrl = instance.getScrollParent(element);
