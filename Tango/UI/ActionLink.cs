@@ -108,6 +108,9 @@ namespace Tango.UI
 				Resolve();
 				return _enabled;
 			}
+			set {
+				_enabled = value;
+			}
 		}
 
 		void Resolve()
