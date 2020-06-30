@@ -151,25 +151,7 @@ namespace Tango.UI.Std
 		public static ActionLink ToView<TKey>(this ActionLink url, IWithKey<TKey> obj, string returnUrl = "this")
 		{
 			return url.To(obj.GetType(), "View", returnUrl).WithArg("oid", obj.ID).WithImage("Documents");
-		}
-		public static ActionLink ToSplit<TKey>(this ActionLink url, IAccessControl ac, IWithKey<TKey> obj, string returnUrl = "this", bool enableLink = false)
-		{
-			var logdelobj = obj as IWithLogicalDelete;
-			if (!enableLink)
-			{
-				return url.To(obj.GetType(), "Split", ac, obj, returnUrl)
-				.WithArg("oid", obj.ID)
-				.WithCondition(logdelobj == null || !logdelobj.IsDeleted)
-				.WithImage("scissors");
-			}
-			else
-			{
-				url.Enabled = false;
-				return url;
-			}
-				
-
-		}
+		}		
 		public static ActionLink ToEdit<TKey>(this ActionLink url, IAccessControl ac, IWithKey<TKey> obj, string returnUrl = "this")
 		{
 			var logdelobj = obj as IWithLogicalDelete;
