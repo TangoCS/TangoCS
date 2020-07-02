@@ -159,7 +159,15 @@ namespace Tango.UI
                 w.FormField(field, () => w.Calendar(field.ID, field.Value, opt), grid);
             }
         }
-    }
+
+		public static void FileUpload(this LayoutWriter w, IField<byte[]> field, Grid grid = Grid.OneWhole, Action<InputTagAttributes> attributes = null)
+		{
+			w.FormField(field, () => w.FileUpload(field.ID, a => {
+				if (field.Disabled) a.Disabled(true);
+				a.Set(attributes);
+			}), grid);
+		}
+	}
 
 	public static class FieldActionLinkExtensions
 	{
