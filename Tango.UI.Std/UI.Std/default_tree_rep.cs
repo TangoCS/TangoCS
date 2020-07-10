@@ -138,7 +138,7 @@ namespace Tango.UI.Std
 
 			return _pageData;
 		}
-
+		
 		protected override IFieldCollection<TResult, TResult> FieldsConstructor()
 		{
 			var enableSelect = false;
@@ -172,9 +172,9 @@ namespace Tango.UI.Std
 				var coll = nodeTemplate.GetKeyCollection(o);
 				foreach (var p in coll)
 					a.DataParm(p.Key, p.Value);
-				a.ID("r_" + Guid.NewGuid().ToString());
+				a.ID(nodeTemplate.RowID(o));
 				a.DataEvent(OnExpandRow);
-				if (nodeTemplate.EnableSelect)
+				if (nodeTemplate.EnableSelect || nodeTemplate.SetRowId)
 					a.Data("rowid", nodeTemplate.GetRowID(_level, o));
 			};
 
@@ -230,12 +230,15 @@ namespace Tango.UI.Std
 		public Expression<Func<TResult, object>> GroupBy { get; set; }
 		public Expression<Func<IGrouping<object, TResult>, object>> GroupBySelector { get; set; } = x => x.Key;
 		public Func<IQueryable<TResult>, IQueryable<TResult>> OrderBy { get; set; } = data => data;
+		public Func<TResult, string> RowID { get; set; } = o => "r_" + Guid.NewGuid().ToString();
 		public Action<LayoutWriter, TResult> Cell { get; set; }
 		public bool IsTerminal { get; set; } = false;
 		//public string Icon { get; set; }
 		public Func<TResult, string> Icon { get; set; }
 		public Expression<Func<TResult, object>> Key { get; set; }
 		public bool EnableSelect { get; set; }
+		public bool SetRowId { get; set; }
+
 		public bool AllowNulls { get; set; } = false;
 
 		List<ChildTreeLevelDescription<TResult>> _children = new List<ChildTreeLevelDescription<TResult>>();
