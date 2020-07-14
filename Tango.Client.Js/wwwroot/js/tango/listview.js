@@ -317,7 +317,48 @@ var listview = function (au, cu, cbcell) {
 			tr.parentNode.removeChild(tr);
 
 			au.postEventFromElementWithApiResponse(el, target);
-		}
+        },
+        openlevel: function (args, counter) {
+
+            if (!counter) counter = 0;
+
+            if (args && args[counter]) {
+
+                var rowid = '[data-rowid="' + args[counter] + '"]';
+                var el = document.querySelector(rowid)
+                var level = parseInt(el.getAttribute('data-level'))
+                el.attributes['class'] = '';
+                //Если обновляем дерево, необходимо удалить страные элементы
+                var rows = el.parentNode.children;
+                var toremove = [];
+
+                for (var i = 0; i < rows.length; i++) {
+                    if (parseInt(rows[i].getAttribute('data-level')) > level) {
+                        toremove.push(rows[i]);
+                    }
+                }
+
+                for (var i = 0; i < toremove.length; i++) {
+                    toremove[i].parentNode.removeChild(toremove[i]);
+                }
+
+
+                ajaxUtils.postEventFromElementWithApiResponse(el, { data: { rowid: args[counter], level: level } }).done(function () {
+
+                    var rowid = '[data-rowid="' + args[counter] + '"]';
+                    var el = document.querySelector(rowid)
+
+                    el.removeAttribute("class");
+                    el.setAttribute('data-loaded', '')
+
+                    instance.openlevel(args, counter + 1)
+
+                }
+                );
+
+            }
+
+        }
 	}
 
 	function initCheckBoxes(cblist) {
