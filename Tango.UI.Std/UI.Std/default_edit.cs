@@ -94,22 +94,27 @@ namespace Tango.UI.Std
 			if (Context.FormData == null) return false;
 
 			var m = new ValidationMessageCollection();
-			bool prepareResponse()
-			{
-				RenderValidation(response, m);
-				return false;
-			}
 
 			ValidateFormData(m);
-			if (m.HasItems()) return prepareResponse();
-            PreProcessFormData(response, m);
-            if (m.HasItems()) return prepareResponse();
-            ProcessFormData(m);
-			if (m.HasItems()) return prepareResponse();
+			if (m.HasItems(ValidationMessageSeverity.Error)) goto err;
+			PreProcessFormData(response, m);
+			if (m.HasItems(ValidationMessageSeverity.Error)) goto err;
+			ProcessFormData(m);
+			if (m.HasItems(ValidationMessageSeverity.Error)) goto err;
 			PostProcessFormData(response, m);
-			if (m.HasItems()) return prepareResponse();
+			if (m.HasItems(ValidationMessageSeverity.Error)) goto err;
 
-			return response.Success;
+			if (m.HasItems(ValidationMessageSeverity.Information, ValidationMessageSeverity.Warning))
+				RenderValidation(response, m);
+			else
+				response.AddWidget("validation", w => w.Write(""));
+
+			return true;
+
+			err:
+			RenderValidation(response, m);
+			response.Success = false;
+			return false;
 		}
 
 		public virtual void OnSubmit(ApiResponse response)
@@ -119,7 +124,6 @@ namespace Tango.UI.Std
 
 			Submit(response);
 			AfterSubmit(response);
-			response.AddWidget("validation", w => w.Write(""));
 		}
 
 		protected virtual void ValidateFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ValidateFormData(val));
@@ -153,7 +157,6 @@ namespace Tango.UI.Std
 		protected virtual void RenderValidation(ApiResponse response, ValidationMessageCollection m)
 		{
 			response.WithNamesFor(this).AddWidget("validation", w => w.ValidationBlock(m));
-			response.Success = false;
 		}
 
 		protected void RefreshField(ApiResponse response, IField field, Action<LayoutWriter> content)

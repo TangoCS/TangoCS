@@ -27,7 +27,7 @@ namespace Tango.UI.Controls
 
 		public PeriodValue DefaultValue { get; set; }
 
-		public string JSOnSelectCallback { get; set; }
+		//public string JSOnSelectCallback { get; set; }
 
 		public override void OnInit()
 		{
@@ -89,7 +89,7 @@ namespace Tango.UI.Controls
 			{
 				w.AddClientAction("daterangepickerproxy", "init", f => new {
 					triggerid = f(ID + "_btn"),
-					onselectcallback = JSOnSelectCallback,
+					//onselectcallback = JSOnSelectCallback,
 					pickerparms = new {
 						showDropdowns = true,
 						timePicker = ShowTime,
