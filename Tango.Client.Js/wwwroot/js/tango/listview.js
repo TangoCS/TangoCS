@@ -198,9 +198,12 @@ var listview = function (au, cu, cbcell) {
 			}
 		},
 		widgetWillMount: function (shadow, state) {
+			const root = shadow.getElementById(state.root);
+
+			initHighlight(root);
+
 			if (!state.selectedvalues) return;
 
-			const root = shadow.getElementById(state.root);
 			const cblist = root.querySelectorAll('.sel:not(.initialized)');
 			const cbhead = root.querySelector('.sel_header');
 
@@ -220,14 +223,7 @@ var listview = function (au, cu, cbcell) {
 				}
 			}
 
-			for (var i = 0; i < cblist.length; i++) {
-				const el = cblist[i];
-				el.addEventListener('click', function (e) {
-					cbcell.setselected(e.currentTarget, onCheckChange);
-					updateSelected(e.currentTarget);
-				});
-				el.classList.add('initialized');
-			}
+			initCheckBoxes(cblist);
 
 			if (cbhead) {
 				cbhead.addEventListener('click', function (e) { cbcell.cbheadclicked(e.currentTarget, onCheckChange); });
@@ -265,15 +261,9 @@ var listview = function (au, cu, cbcell) {
 		widgetContentChanged: function (state) {
 			const root = document.getElementById(state.root);
 			const cblist = root.querySelectorAll('.sel:not(.initialized)');
+			initCheckBoxes(cblist);
 
-			for (var i = 0; i < cblist.length; i++) {
-				const el = cblist[i];
-				el.addEventListener('click', function (e) {
-					cbcell.setselected(e.currentTarget, onCheckChange);
-					updateSelected(e.currentTarget);
-				});
-				el.classList.add('initialized');
-			}
+			initHighlight(root);
 		},
 		selectall: function (rootid) {
 			const root = document.getElementById(rootid);
@@ -327,6 +317,43 @@ var listview = function (au, cu, cbcell) {
 			tr.parentNode.removeChild(tr);
 
 			au.postEventFromElementWithApiResponse(el, target);
+		}
+	}
+
+	function initCheckBoxes(cblist) {
+		for (var i = 0; i < cblist.length; i++) {
+			const el = cblist[i];
+			el.addEventListener('click', function (e) {
+				cbcell.setselected(e.currentTarget, onCheckChange);
+				updateSelected(e.currentTarget);
+			});
+			el.classList.add('initialized');
+		}
+	}
+
+	function initHighlight(root) {
+		const highlightlist = root.querySelectorAll('*[data-highlight]:not(.initialized)');
+
+		for (var i = 0; i < highlightlist.length; i++) {
+			const el = highlightlist[i];
+			el.addEventListener('click', function (e) {
+				const tr = cu.getRow(e.currentTarget);
+				const table = tr.parentNode.parentNode;
+				const currentSelected = table.getAttribute('data-highlighted');
+				if (currentSelected) {
+					const selEl = table.querySelector('.selected');
+					if (selEl) selEl.classList.remove('selected');
+				}
+				e.currentTarget.classList.add('selected');
+				table.setAttribute('data-highlighted', tr.getAttribute('data-rowid'));
+			});
+			el.classList.add('initialized');
+		}
+
+		const currentSelected = root.getAttribute('data-highlighted');
+		if (currentSelected) {
+			const selEl = root.querySelector("tr[data-rowid='" + currentSelected + "'] *[data-highlight]");
+			if (selEl) selEl.classList.add('selected');
 		}
 	}
 
@@ -395,7 +422,7 @@ var listview = function (au, cu, cbcell) {
 		const remove = !tr.classList.contains('checked');
 		var tocopy = [];
 
-		var i = 0; 
+		var i = 0;
 		while (tr) {
 			if (parseInt(tr.getAttribute('data-level')) == level) {
 				var copyTr = tr.cloneNode(true);

@@ -184,7 +184,8 @@ namespace Tango.UI.Std
 					w.Span(a => a.Class("sel"), () => w.Icon("checkbox-unchecked"));
 
 				if (nodeTemplate.Icon != null)
-					w.I(a => a.Class("nodeicon").Icon(nodeTemplate.Icon(o)));
+					foreach (var ic in nodeTemplate.Icon(o).Split(','))
+						w.I(a => a.Class("nodeicon").Icon(ic.Trim()));
 
 				nodeTemplate.Cell(w, o);
 			}

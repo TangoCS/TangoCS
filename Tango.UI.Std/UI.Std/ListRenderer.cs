@@ -194,8 +194,7 @@ namespace Tango.UI.Std
 			if (rendererIsControl) w.PushPrefix(_id);
 
 			Action<TagAttributes> listAttrs = a => a.ID().Class("listviewtable width100");
-			if (fields.EnableSelect)
-				listAttrs += a => a.DataCtrl("listview");
+			listAttrs += a => a.DataCtrl("listview");
 			listAttrs += fields.ListAttributes;
 
 			if (_level > 0)
