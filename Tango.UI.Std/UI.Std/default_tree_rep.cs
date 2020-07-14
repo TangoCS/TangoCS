@@ -26,7 +26,7 @@ namespace Tango.UI.Std
 		int _count = 0;
 
 		protected override bool EnableViews => false;
-
+		protected virtual string ExpandRef { get; set; }
 		public override void OnInit()
 		{
 			base.OnInit();
@@ -46,6 +46,7 @@ namespace Tango.UI.Std
 		{
 
 		}
+
 
 		protected override IEnumerable<TResult> GetPageData()
 		{
@@ -95,20 +96,20 @@ namespace Tango.UI.Std
 				BeforeGetPageData(tran);
 
 				foreach (var t in nodeTemplates)
-				{					
+				{
 					var nodeQuery = Paging.Apply(q, true);
 					var nodeQueryCnt = q;
 
-					var nodeWhere = new List<string>(where);				
+					var nodeWhere = new List<string>(where);
 
 					if (t.Where != null)
 					{
 						nodeQuery = nodeQuery.Where(t.Where);
 						nodeQueryCnt = nodeQueryCnt.Where(t.Where);
 					}
-					
-					nodeQuery = t.Child.OrderBy(nodeQuery);					
-									
+
+					nodeQuery = t.Child.OrderBy(nodeQuery);
+
 					var expr = t.Child.GroupBy != null ? nodeQuery.GroupBy(t.Child.GroupBy).Select(t.Child.GroupBySelector).Expression : nodeQuery.Expression;
 					var exprCnt = t.Child.GroupBy != null ? nodeQueryCnt.GroupBy(t.Child.GroupBy).Select(x => x.Key).Expression : nodeQueryCnt.Expression;
 
@@ -138,7 +139,7 @@ namespace Tango.UI.Std
 
 			return _pageData;
 		}
-		
+
 		protected override IFieldCollection<TResult, TResult> FieldsConstructor()
 		{
 			var enableSelect = false;
@@ -173,7 +174,8 @@ namespace Tango.UI.Std
 				foreach (var p in coll)
 					a.DataParm(p.Key, p.Value);
 				a.ID(nodeTemplate.RowID(o));
-				a.DataEvent(OnExpandRow);
+				a.DataEvent(OnExpandRow).DataRef("#" + ExpandRef);
+
 				if (nodeTemplate.EnableSelect || nodeTemplate.SetRowId)
 					a.Data("rowid", nodeTemplate.GetRowID(_level, o));
 			};
