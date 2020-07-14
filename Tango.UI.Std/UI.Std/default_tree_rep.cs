@@ -25,7 +25,7 @@ namespace Tango.UI.Std
 
 		int _count = 0;
 
-		protected override bool EnableViews => false;	
+		protected override bool EnableViews => false;
 		public override void OnInit()
 		{
 			base.OnInit();
@@ -139,40 +139,72 @@ namespace Tango.UI.Std
 			return _pageData;
 		}
 
-		//public void ExpandTree(ApiResponse response, string rowId, int level)
-		//{
-		//	if (_fields == null)
-		//		_fields = FieldsConstructor();
+		public void ExpandTree(ApiResponse response, string rowId, int level, bool refreshtree)
+		{					
+			if (_fields == null)
+				_fields = FieldsConstructor();
 
-		//	var where = new List<string>();
+			if (refreshtree)
+				response.AddWidget(Sections.ContentBody, Render);
 
-		//	var test = rowId.Split('&');
+			if (!rowId.IsEmpty())
+			{
+				var nodeWhere = new List<string>();
 
-		//	//$"level=0&Tree_Version_ID={o.Tree_Version_ID.ToString()}"
-		//	List<string> rowsId = new List<string>();
-		//	// Split по & и потом Split по =
-		//	var origAllObjectsQuery = Repository.AllObjectsQuery;
+				var whereDict = new Dictionary<string, string>();
 
-		//	var sqlTemplate = "select *";
-		//	sqlTemplate += $" from ({origAllObjectsQuery}) t";
+				foreach (var item in rowId.Split('&'))
+					foreach (var (cur, next) in item.Split('=').PairwiseWithNext())
+					{
+						if (next == null) continue;
+						whereDict.Add(cur, next);
+					}
 
-		//	//sqlTemplate += " where " + nodeWhere.Join(" and ");
+				whereDict.Remove("level");
 
-		//	var temp = Database.Connection.QueryFirst<TResult>(sqlTemplate);
+				foreach (var pair in whereDict)
+					nodeWhere.Add($"{pair.Key} = {pair.Value}");
 
-		//	var template = _templatesDict[temp.Template];
+				var origAllObjectsQuery = Repository.AllObjectsQuery;
 
-		//	var parent = template.ParentTemplate;
+				var sqlTemplate = "select *";
+				sqlTemplate += $" from ({origAllObjectsQuery}) t";
 
-		//	while (parent != null)
-		//	{
-		//		var row = parent.GetRowID(level, temp);
-		//		rowsId.Add(row);
 
-		//		level = level - 1;
-		//		parent = parent.ParentTemplate;
-		//	}
-		//}
+				if (nodeWhere.Count > 0)
+					sqlTemplate += " where " + nodeWhere.Join(" and ");
+
+				List<string> rowsId = new List<string>();
+
+				using (var tran = Database.BeginTransaction())
+				{
+					BeforeGetPageData(tran);
+
+					var temp = Database.Connection.QueryFirst<TResult>(sqlTemplate, transaction: tran);
+
+					var template = _templatesDict[level];
+
+					var parent = template.ParentTemplate;
+
+					level = level - 2;
+
+					while (parent != null)
+					{
+						var row = parent.GetRowID(level, temp);
+						rowsId.Add(row);
+
+						level = level - 1;
+						parent = parent.ParentTemplate;
+					}
+
+					rowsId.Add(rowId);
+
+				}
+				response.AddClientAction("listview", "openlevel", rowsId.OrderBy(x => x.Length));
+			}			
+			
+			
+		}
 		protected override IFieldCollection<TResult, TResult> FieldsConstructor()
 		{
 			var enableSelect = false;
@@ -210,9 +242,9 @@ namespace Tango.UI.Std
 				a.DataEvent(OnExpandRow);
 
 				if (nodeTemplate.DataRef != null)
-					foreach (var _ref in nodeTemplate.DataRef(o))					
-						a.DataRef(_ref);						
-								
+					foreach (var _ref in nodeTemplate.DataRef(o))
+						a.DataRef("#"+_ref);
+
 				if (nodeTemplate.EnableSelect || nodeTemplate.SetRowId)
 					a.Data("rowid", nodeTemplate.GetRowID(_level, o));
 			};
@@ -274,7 +306,7 @@ namespace Tango.UI.Std
 		public bool IsTerminal { get; set; } = false;
 		//public string Icon { get; set; }
 		public Func<TResult, string> Icon { get; set; }
-		public Func<TResult,List<string>> DataRef { get; set; }
+		public Func<TResult, List<string>> DataRef { get; set; }
 		public Expression<Func<TResult, object>> Key { get; set; }
 		public bool EnableSelect { get; set; }
 		public bool SetRowId { get; set; }
