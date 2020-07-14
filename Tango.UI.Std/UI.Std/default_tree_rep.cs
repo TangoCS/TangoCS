@@ -25,8 +25,7 @@ namespace Tango.UI.Std
 
 		int _count = 0;
 
-		protected override bool EnableViews => false;
-		protected virtual string ExpandRef { get; set; }
+		protected override bool EnableViews => false;	
 		public override void OnInit()
 		{
 			base.OnInit();
@@ -140,6 +139,40 @@ namespace Tango.UI.Std
 			return _pageData;
 		}
 
+		//public void ExpandTree(ApiResponse response, string rowId, int level)
+		//{
+		//	if (_fields == null)
+		//		_fields = FieldsConstructor();
+
+		//	var where = new List<string>();
+
+		//	var test = rowId.Split('&');
+
+		//	//$"level=0&Tree_Version_ID={o.Tree_Version_ID.ToString()}"
+		//	List<string> rowsId = new List<string>();
+		//	// Split по & и потом Split по =
+		//	var origAllObjectsQuery = Repository.AllObjectsQuery;
+
+		//	var sqlTemplate = "select *";
+		//	sqlTemplate += $" from ({origAllObjectsQuery}) t";
+
+		//	//sqlTemplate += " where " + nodeWhere.Join(" and ");
+
+		//	var temp = Database.Connection.QueryFirst<TResult>(sqlTemplate);
+
+		//	var template = _templatesDict[temp.Template];
+
+		//	var parent = template.ParentTemplate;
+
+		//	while (parent != null)
+		//	{
+		//		var row = parent.GetRowID(level, temp);
+		//		rowsId.Add(row);
+
+		//		level = level - 1;
+		//		parent = parent.ParentTemplate;
+		//	}
+		//}
 		protected override IFieldCollection<TResult, TResult> FieldsConstructor()
 		{
 			var enableSelect = false;
@@ -174,8 +207,12 @@ namespace Tango.UI.Std
 				foreach (var p in coll)
 					a.DataParm(p.Key, p.Value);
 				a.ID(nodeTemplate.RowID(o));
-				a.DataEvent(OnExpandRow).DataRef("#" + ExpandRef);
+				a.DataEvent(OnExpandRow);
 
+				if (nodeTemplate.DataRef != null)
+					foreach (var _ref in nodeTemplate.DataRef(o))					
+						a.DataRef(_ref);						
+								
 				if (nodeTemplate.EnableSelect || nodeTemplate.SetRowId)
 					a.Data("rowid", nodeTemplate.GetRowID(_level, o));
 			};
@@ -237,10 +274,11 @@ namespace Tango.UI.Std
 		public bool IsTerminal { get; set; } = false;
 		//public string Icon { get; set; }
 		public Func<TResult, string> Icon { get; set; }
+		public Func<TResult,List<string>> DataRef { get; set; }
 		public Expression<Func<TResult, object>> Key { get; set; }
 		public bool EnableSelect { get; set; }
 		public bool SetRowId { get; set; }
-
+		public TreeLevelDescription<TResult> ParentTemplate { get; set; }
 		public bool AllowNulls { get; set; } = false;
 
 		List<ChildTreeLevelDescription<TResult>> _children = new List<ChildTreeLevelDescription<TResult>>();
@@ -279,6 +317,8 @@ namespace Tango.UI.Std
 
 		public void AddChild(TreeLevelDescription<TResult> template, Expression<Func<TResult, bool>> where = null)
 		{
+			template.ParentTemplate = this;
+
 			_children.Add(new ChildTreeLevelDescription<TResult> { Child = template, Where = where });
 		}
 	}
