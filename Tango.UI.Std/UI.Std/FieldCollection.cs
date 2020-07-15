@@ -358,7 +358,7 @@ namespace Tango.UI.Std
         public static void AddActionsCell<TResult>(this IFieldCollection<TResult> f, string title, params Func<TResult, Action<ActionLink>>[] actions)
         {
             f.AddCustomCell(title, new ListColumn<TResult>(
-                (a, o, i) => a.Style("text-align:center"),
+                (a, o, i) => a.Style("text-align:center; white-space:nowrap"),
                 (w, o, i) => {
                     foreach (var action in actions.Select(a => a(o)))
                         w.ActionImage(action);
