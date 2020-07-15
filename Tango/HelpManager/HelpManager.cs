@@ -20,7 +20,7 @@ namespace Tango.Help
 			return s;
 		}
 
-        public void Render(LayoutWriter w)
+        public void Render(LayoutWriter w, string service = null, string action = null)
         {
             
         }

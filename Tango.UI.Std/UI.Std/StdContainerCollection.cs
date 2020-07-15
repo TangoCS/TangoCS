@@ -34,11 +34,11 @@ namespace Tango.UI.Std
 		{
 			//response.AddAdjacentWidget("#container", "content", AdjacentHTMLPosition.BeforeEnd, w => {
 			response.AddWidget("container", w => {
-				w.Div(a => a.ID("content").DataContainer(Type, w.IDPrefix), () => {
+				w.Div(a => a.ID("content").Class("content").DataContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 						w.ContentHeader();
 					w.Div(a => a.ID("contenttoolbar"));
-					w.Div(a => a.ID("contentbody"));
+					w.Div(a => a.ID("contentbody").Class("contentbody"));
 				});
 			});
 		}
@@ -68,14 +68,14 @@ namespace Tango.UI.Std
 		{
 			//response.AddAdjacentWidget("#container", "content", AdjacentHTMLPosition.BeforeEnd, w => {
 			response.AddWidget("container", w => {
-				w.Div(a => a.ID("content").DataContainer(Type, w.IDPrefix), () => {
+				w.Div(a => a.ID("content").Class("content").DataContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 						if (IsNested)
 							w.ContentHeaderNested();
 						else
 							w.ContentHeader();
 					w.Div(a => a.ID("contenttoolbar"));
-					w.Div(a => a.ID("contentbody").Class("contentbodypadding"), () => {
+					w.Div(a => a.ID("contentbody").Class("contentbody contentbodypadding"), () => {
 						w.AjaxForm("form", a => {
 							a.Class(Width.ToString().ToLower()).DataResultPostponed(1);
 							if (AddDataCtrl)
@@ -102,11 +102,11 @@ namespace Tango.UI.Std
 		{
 			//response.AddAdjacentWidget("#container", "content", AdjacentHTMLPosition.BeforeEnd, w => {
 			response.AddWidget("container", w => {
-				w.Div(a => a.ID("content").DataContainer(Type, w.IDPrefix), () => {
+				w.Div(a => a.ID("content").Class("content").DataContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 						w.ContentHeader();
 					w.Div(a => a.ID("contenttoolbar"));
-					w.Div(a => a.ID("contentbody").Class("contentbodypadding"), () => {
+					w.Div(a => a.ID("contentbody").Class("contentbody contentbodypadding"), () => {
 						w.Div(a => a.ID("form").Class(Width.ToString().ToLower()));
 					});
 				});

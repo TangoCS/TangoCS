@@ -26,23 +26,24 @@ body {
 
 /*home*/
 #container {
-	margin-top: 37px;
-	margin-bottom: 37px;
-	/*height: 100%;
+	padding-top: 37px;
+	height: 100%;
+	/*
 	display: flex;
 	flex-direction: column;*/
 }
 
-#content {
-	/*height: 100%;
+.content {
+	height: 100%;
 	display: flex;
-	flex-direction: column;*/
+	flex-direction: column;
 }
 
-#contentbody {
+.contentbody {
+	height: 100%;
 	width: 100%;
-	/*height: 100%;
-	overflow: auto;*/
+	overflow-y: auto;
+	padding-bottom: 16px;
 }
 
 /*header*/

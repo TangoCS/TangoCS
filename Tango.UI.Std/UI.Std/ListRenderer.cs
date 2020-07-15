@@ -187,74 +187,92 @@ namespace Tango.UI.Std
 			_level = level;
 		}
 
+		void PagingRow(LayoutWriter w, int colSpan)
+		{
+			w.Tr(a => a.ID(w.Context.Sender + "_" + _paging.ID + "_row").Class("pagingrow").Data("level", _level), () => {
+				w.Td(a => a.ColSpan(colSpan), () => {
+					w.Div(a => a.Class($"treerow l{_level}"), () => {
+						for (int i = 0; i < _level; i++)
+							w.Div(a => a.Class("level-padding" + (i == _level ? " last" : "")), "");
+
+						w.Div(a => a.Class("leaf"), () => w.Span("&nbsp;"));
+
+						w.Div(() => {
+							w.Span(a => a.ID(w.Context.Sender + "_" + _paging.ID));
+						});
+					});
+
+				});
+			});
+		}
+
+		void SelectedBlock(LayoutWriter w, IFieldCollection<TResult> fields)
+		{
+			Action<TagAttributes> selectedListAttrs = a => a.ID("selected").Class("listviewtable width100").DataCtrl("listview");
+			selectedListAttrs += fields.ListAttributes;
+
+			w.Table(selectedListAttrs, () => {
+				var i = 0;
+
+				foreach (var hr in fields.HeaderRows)
+				{
+					w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
+						foreach (var h in hr)
+							w.Th(h.Attributes, () => h.Content(w));
+					});
+					i++;
+				}
+			});
+		}
+
+		void MainBlock(LayoutWriter w, IEnumerable<TResult> result, IFieldCollection<TResult> fields)
+		{
+			Action<TagAttributes> listAttrs = a => a.ID().Class("listviewtable width100");
+			listAttrs += a => a.DataCtrl("listview");
+			listAttrs += fields.ListAttributes;
+
+			w.Table(listAttrs, () => {
+				var i = 0;
+
+				foreach (var hr in fields.HeaderRows)
+				{
+					w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
+						foreach (var h in hr)
+							w.Th(h.Attributes, () => h.Content(w));
+					});
+					i++;
+				}
+
+				RenderRows(w, result, fields);
+			});
+			w.Hidden("selectedvalues", null, a => a.DataHasClientState(ClientStateType.Array, _id));
+		}
+
 		public override void Render(LayoutWriter w, IEnumerable<TResult> result, IFieldCollection<TResult> fields)
 		{
 			var rendererIsControl = !_id.IsEmpty() && w.IDPrefix != _id && !w.IDPrefix.EndsWith("_" + _id);
 
 			if (rendererIsControl) w.PushPrefix(_id);
 
-			Action<TagAttributes> listAttrs = a => a.ID().Class("listviewtable width100");
-			listAttrs += a => a.DataCtrl("listview");
-			listAttrs += fields.ListAttributes;
-
 			if (_level > 0)
+			{
 				RenderRows(w, result, fields);
+				if (result.Count() >= _paging.PageSize || _paging.PageIndex > 1)
+					PagingRow(w, fields.Cells.Count);
+			}
 			else
 			{
-				w.Table(listAttrs, () => {
-					var i = 0;
-
-					foreach (var hr in fields.HeaderRows)
+				w.Div(a => a.Class("treecontainer"), () => {
+					if (fields.EnableSelect)
 					{
-						w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
-							foreach (var h in hr)
-								w.Th(h.Attributes, () => h.Content(w));
-						});
-						i++;
+						w.Div(a => a.Style("flex:7;overflow-y:auto;"), () => MainBlock(w, result, fields));
+						w.GroupTitle("Выбранные объекты");
+						w.Div(a => a.Style("flex:3;overflow-y:auto;"), () => SelectedBlock(w, fields));
 					}
-
-					RenderRows(w, result, fields);
-				});
-				w.Hidden("selectedvalues", null, a => a.DataHasClientState(ClientStateType.Array, _id));
-
-				if (fields.EnableSelect)
-				{
-					w.GroupTitle("Выбранные объекты");
-
-					Action<TagAttributes> selectedListAttrs = a => a.ID("selected").Class("listviewtable width100").DataCtrl("listview");
-					selectedListAttrs += fields.ListAttributes;
-
-					w.Table(selectedListAttrs, () => {
-						var i = 0;
-
-						foreach (var hr in fields.HeaderRows)
-						{
-							w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
-								foreach (var h in hr)
-									w.Th(h.Attributes, () => h.Content(w));
-							});
-							i++;
-						}
-					});
-				}
-			}
-
-			if (result.Count() >= _paging.PageSize || _paging.PageIndex > 1)
-			{
-				w.Tr(a => a.ID(w.Context.Sender + "_" + _paging.ID + "_row").Class("pagingrow").Data("level", _level), () => {
-					w.Td(a => a.ColSpan(fields.Cells.Count), () => {
-						w.Div(a => a.Class($"treerow l{_level}"), () => {
-							for (int i = 0; i < _level; i++)
-								w.Div(a => a.Class("level-padding" + (i == _level ? " last" : "")), "");
-
-							w.Div(a => a.Class("leaf"), () => w.Span("&nbsp;"));
-
-							w.Div(() => {
-								w.Span(a => a.ID(w.Context.Sender + "_" + _paging.ID));
-							});
-						});
-
-					});
+					else
+					{
+						w.Div(() => MainBlock(w, result, fields));
+					}
 				});
 			}
 		}
