@@ -238,6 +238,13 @@ namespace Tango.UI.Std
 			RenderPaging(response);
 		}
 
+		public void OnSetView(ApiResponse response)
+		{
+			response.AddWidget(Sections.ContentBody, Render);
+			RenderToolbar(response);
+			RenderPaging(response);
+		}
+
 		public void OnQuickSearch(ApiResponse response)
 		{
 			response.AddWidget(Sections.ContentBody, Render);

@@ -162,8 +162,17 @@ namespace Tango.UI.Std
 
 				whereDict.Remove("level");
 
+				var t = typeof(TResult);
 				foreach (var pair in whereDict)
-					nodeWhere.Add($"{pair.Key} = {pair.Value}");
+				{
+					var p = t.GetProperty(pair.Key);
+					if (p.PropertyType.In(typeof(int), typeof(int?), typeof(decimal), typeof(decimal?)))
+						nodeWhere.Add($"{pair.Key} = {pair.Value}");
+					else if (p.PropertyType.In(typeof(string), typeof(Guid), typeof(Guid?)))
+						nodeWhere.Add($"{pair.Key} = '{pair.Value}'");
+					else if (p.PropertyType.In(typeof(DateTime), typeof(DateTime?)))
+						nodeWhere.Add($"{pair.Key} = '{pair.Value:yyyy-MM-dd HH:mm:ss}'");
+				}
 
 				var origAllObjectsQuery = Repository.AllObjectsQuery;
 
@@ -182,25 +191,21 @@ namespace Tango.UI.Std
 
 					var temp = Database.Connection.QueryFirst<TResult>(sqlTemplate, transaction: tran);
 
-					var template = _templatesDict[level];
+					var id = level;
+					var template = _templatesDict[id + 1];
 
-					var parent = template.ParentTemplate;
-
-					level = level - 2;
-
-					while (parent != null)
+					while (template != null)
 					{
-						var row = parent.GetRowID(level, temp);
-						rowsId.Add(row);
+						var row = template.GetRowID(id, temp);
+						if (!template.IsTerminal)
+							rowsId.Add(row);
 
-						level = level - 1;
-						parent = parent.ParentTemplate;
+						id--;
+						template = template.ParentTemplate;
 					}
-
-					rowsId.Add(rowId);
-
 				}
-				response.AddClientAction("listview", "openlevel", rowsId.OrderBy(x => x.Length));
+				rowsId.Reverse();
+				response.AddClientAction("listview", "openlevel", rowsId);
 			}			
 			
 			

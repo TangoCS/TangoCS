@@ -446,11 +446,13 @@ namespace Tango.UI.Controls
 				var views = PersistentFilter.GetViews(ListName, Context.AllArgs);
 				LoadPersistent();
 
-				w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, 0).WithTitle(r => r.Get("Common.AllItems")), a => a.DataContainerExternal(ParentElement.ClientID));
+				w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, 0).WithTitle(r => r.Get("Common.AllItems")), 
+					a => a.DataContainerExternal(ParentElement.ClientID).DataEvent("onsetview", ParentElement.ClientID));
 
 				foreach (var view in views)
 				{
-					void link() => w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, view.ID).WithTitle(view.Name), a => a.DataContainerExternal(ParentElement.ClientID));
+					void link() => w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, view.ID).WithTitle(view.Name), 
+						a => a.DataContainerExternal(ParentElement.ClientID).DataEvent("onsetview", ParentElement.ClientID));
 					if (view.IsDefault)
 						w.B(link);
 					else
