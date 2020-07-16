@@ -46,9 +46,9 @@ namespace Tango.UI.Controls
 			Item(w => w.DropDownButton(id, title, content, icon, btnAttrs, popupAttrs, options));
 		}
 
-		public void QuickSearch(IViewElement list, Paging paging)
+		public void QuickSearch(IViewElement list, Paging paging, string qSearchParmName)
 		{
-			Item(w => w.TextBox("qsearch", w.Context.GetArg("qsearch"), a =>
+			Item(w => w.TextBox(qSearchParmName, w.Context.GetArg(qSearchParmName), a =>
 				a.Class("filterInput")
 				.Autocomplete(false)
 				.DataParm(paging.ClientID, 1)
@@ -69,7 +69,7 @@ namespace Tango.UI.Controls
 					.WithImage("filter")
 					.WithTitle(r => r.Get("Common.Filter")));
 
-				if (filter.PersistentFilter.ID > 0)
+				if (filter.Criteria.Count > 0)
 					w.B(button);
 				else
 					button();

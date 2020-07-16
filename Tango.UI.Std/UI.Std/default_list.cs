@@ -19,6 +19,7 @@ namespace Tango.UI.Std
 
 
 		protected string _qSearch = "";
+		protected string _qSearchParmName => ClientID + "_qsearch";
 		protected IFieldCollection<TEntity, TResult> _fields;
 		protected IFieldCollection<TEntity, TResult> Fields
 		{
@@ -112,7 +113,7 @@ namespace Tango.UI.Std
 		protected virtual void ToolbarRight(MenuBuilder t)
 		{
 			if (EnableQuickSearch)
-				t.QuickSearch(this, Paging);
+				t.QuickSearch(this, Paging, _qSearchParmName);
 			if (EnableViews && Filter.FieldList.Count > 0)
 			{
 				t.ItemSeparator();
@@ -143,7 +144,7 @@ namespace Tango.UI.Std
 				f.FilterSubmitted += OnFilter;
 			});
 
-			_qSearch = Context.GetArg("qsearch");
+			_qSearch = Context.GetArg(_qSearchParmName);
 		}
 
 		public void PrepareResult()
@@ -199,26 +200,29 @@ namespace Tango.UI.Std
 
 		private void OnFilter(ApiResponse response)
 		{
+			response.WithNamesAndWritersFor(this);
+
 			if (Filter.Criteria.Count > 0)
 			{
-				if (Context.GetIntArg(Filter.ParameterName) == Filter.PersistentFilter.ID)
+				if (Context.GetIntArg(Filter.ParameterName) != Filter.PersistentFilter.ID)
 				{
-					Paging.PageIndex = 1;
-					response.AddWidget(Sections.ContentBody, Render);
-					RenderToolbar(response);
-					RenderPaging(response);
+					response.AddClientAction("ajaxUtils", "changeUrl", new {
+						remove = new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName },
+						add = new Dictionary<string, object> { [Filter.ParameterName] = Filter.PersistentFilter.ID }
+					});
 				}
-				else
-					response.RedirectTo(Context, a => a.ToReturnUrl(1)
-						.WithArg(Filter.ParameterName, Filter.PersistentFilter.ID)
-						.RemoveArg(Paging.ParameterName)
-						.RemoveArg("qsearch"));
 			}
 			else
-				response.RedirectTo(Context, a => a.ToReturnUrl(1)
-						.RemoveArg(Filter.ParameterName)
-						.RemoveArg(Paging.ParameterName)
-						.RemoveArg("qsearch"));
+			{
+				response.AddClientAction("ajaxUtils", "changeUrl", new {
+					remove = new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName }
+				});
+			}
+
+			Paging.PageIndex = 1;
+			response.AddWidget(Sections.ContentBody, Render);
+			RenderToolbar(response);
+			RenderPaging(response);
 		}
 
 		public override void OnLoad(ApiResponse response)
