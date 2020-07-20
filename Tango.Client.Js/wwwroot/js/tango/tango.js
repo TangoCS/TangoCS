@@ -1113,6 +1113,15 @@ var ajaxUtils = function ($, cu) {
 			}
 		}
 
+		if (apiResult.redirect) {
+			state.loc.url = apiResult.redirect.url;
+			state.loc.parms = apiResult.redirect.parms;
+			window.history.pushState(state.loc, "", apiResult.redirect.url);
+		}
+
+		const current = document.getElementById(META_CURRENT);
+		current.setAttribute('data-href', state.loc.url);
+
 		if (apiResult.clientactions) {
 			var ca;
 			for (var i = 0; i < apiResult.clientactions.length; i++) {
@@ -1124,15 +1133,6 @@ var ajaxUtils = function ($, cu) {
 		if (apiResult.hardredirect) {
 			window.location = apiResult.hardredirect.url;
 		}
-
-		if (apiResult.redirect) {
-			state.loc.url = apiResult.redirect.url;
-			state.loc.parms = apiResult.redirect.parms;
-			window.history.pushState(state.loc, "", apiResult.redirect.url);
-		}
-
-		const current = document.getElementById(META_CURRENT);
-		current.setAttribute('data-href', state.loc.url);
 
 		if (window.homePage) homePage.countNavBodyHeight();
 		console.log("renderApiResult complete");
