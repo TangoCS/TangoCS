@@ -43,7 +43,20 @@ namespace Tango.RealTime
 			sb.AppendLine(message);
 
 		}
-		
+		public void WriteExeptionMessage(Exception ex)
+		{
+			string message = string.Empty;
+
+			if (ex.InnerException != null)
+				message = ex.InnerException.Message;
+			else
+				message = "Ошибка выполнения";
+
+			_clientSelector(_hubContext).SendCoreAsync("message", new object[] { _taskid, message });
+
+			sb.AppendLine(message);
+
+		}
 		//public string WriteLogHistory()
 		//{
 		//	return sb.ToString();
