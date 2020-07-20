@@ -59,15 +59,22 @@ namespace Tango.UI.Controls
 			);
 		}
 
-		public void ItemFilter(ListFilter filter)
+		public void ItemFilter(ListFilter filter, bool imageOnly = false)
 		{
 			void render(LayoutWriter w)
 			{
 				filter.LoadPersistent();
 
-				void button() => w.ActionImageTextButton(a => a.CallbackToCurrent().AsDialog(filter.OpenFilterDialog)
-					.WithImage("filter")
-					.WithTitle(r => r.Get("Common.Filter")));
+				void attrs(ActionLink a) => a.CallbackToCurrent().AsDialog(filter.OpenFilterDialog)
+					.WithImage("filter").WithTitle(r => r.Get("Common.Filter"));
+
+				void button()
+				{
+					if (imageOnly)
+						w.ActionImageButton(attrs);
+					else
+						w.ActionImageTextButton(attrs);
+				}
 
 				if (filter.Criteria.Count > 0)
 					w.B(button);

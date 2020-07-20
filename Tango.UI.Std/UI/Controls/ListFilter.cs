@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using Tango.Html;
 using Newtonsoft.Json;
 using Tango.Localization;
@@ -42,7 +43,21 @@ namespace Tango.UI.Controls
 		public List<Field> FieldList { get; private set; } = new List<Field>();
 		public Action FieldsInit { get; set; }
 
-		string ListName => Context.Service + "_" + Context.Action;
+		string ListName
+		{
+			get
+			{
+				var t = ParentElement.GetType();
+				var attrs = t.GetCustomAttributes<OnActionAttribute>();
+				if (attrs != null && attrs.Count() == 1)
+				{
+					var a = attrs.First();
+					return a.Service + "_" + a.Action;
+				}
+				else
+					return t.Name;
+			}
+		}
 
 		List<FilterItem> _criteria = null;
 		public List<FilterItem> Criteria {

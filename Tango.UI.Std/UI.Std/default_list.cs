@@ -78,20 +78,26 @@ namespace Tango.UI.Std
 			}
 		}
 
-		protected void ToCreateNew<T>(MenuBuilder t, Action<ActionLink> attrs = null)
+		protected void ToCreateNew<T>(MenuBuilder t, Action<ActionLink> attrs = null, bool imageOnly = false)
 		{
 			t.ItemSeparator();
 			var key = typeof(T).GetResourceType().Name + "." + Constants.OpView;
+			Action<ActionLink> attrs1 = null;
 			if (TypeActivatorCache.Get(key).HasValue)
 			{
 				var retUrl1 = new ActionLink(Context).To<T>(Constants.OpView).WithArg(Constants.Id, "@ID").Url;
 				var retUrl0 = Context.CreateReturnUrl(1);
-				t.ItemActionImageText(x => x.ToCreateNew<T>(AccessControl, null, retUrl1)
+				attrs1 = x => x.ToCreateNew<T>(AccessControl, null, retUrl1)
 					.WithArg(Constants.ReturnUrl + "_0", retUrl0)
-					.Set(attrs));
+					.Set(attrs);
 			}
 			else
-				t.ItemActionImageText(x => x.ToCreateNew<T>(AccessControl).Set(attrs));
+				attrs1 = x => x.ToCreateNew<T>(AccessControl).Set(attrs);
+
+			if (imageOnly)
+				t.ItemActionImage(attrs1);
+			else
+				t.ItemActionImageText(attrs1);
 		}
 
 		protected void ToDeleteBulk(MenuBuilder t)
