@@ -180,6 +180,11 @@ namespace Tango.UI
 				RedirectTo(target.Url, retctx.AllArgs);
 		}
 
+		public void RedirectToCurrent(ActionContext context)
+		{
+			RedirectTo(context, a => a.ToCurrent());
+		}
+
 		public void RedirectTo(string url, DynamicDictionary parms = null)
 		{
 			Data.Add("redirect", new { url, parms });

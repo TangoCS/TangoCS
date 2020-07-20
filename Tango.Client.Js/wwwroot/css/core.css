@@ -33,6 +33,10 @@ a, .actionbtn, .icon-collapsed, .icon-expanded,
 	cursor: pointer;
 }
 
+[class^="icon-"], [class*=" icon-"] {
+	font-weight: inherit;
+}
+
 
 table {
 	border: none;
