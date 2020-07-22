@@ -147,6 +147,19 @@ namespace Tango.UI
 			AddClientAction(service, method, f => args);
 		}
 
+		public void ChangeUrl(List<string> remove, Dictionary<string, object> add)
+		{
+			AddClientAction("ajaxUtils", "changeUrl", new { remove, add	});
+		}
+		public void ChangeUrl(Dictionary<string, object> add)
+		{
+			AddClientAction("ajaxUtils", "changeUrl", new { add });
+		}
+		public void ChangeUrl(List<string> remove)
+		{
+			AddClientAction("ajaxUtils", "changeUrl", new { remove });
+		}
+
 		void RunRedirect(ActionContext retctx)
 		{
 			var cache = retctx.GetService<ITypeActivatorCache>();

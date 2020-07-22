@@ -212,17 +212,15 @@ namespace Tango.UI.Std
 			{
 				if (Context.GetIntArg(Filter.ParameterName) != Filter.PersistentFilter.ID)
 				{
-					response.AddClientAction("ajaxUtils", "changeUrl", new {
-						remove = new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName },
-						add = new Dictionary<string, object> { [Filter.ParameterName] = Filter.PersistentFilter.ID }
-					});
+					response.ChangeUrl(
+						new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName },
+						new Dictionary<string, object> { [Filter.ParameterName] = Filter.PersistentFilter.ID }
+					);
 				}
 			}
 			else
 			{
-				response.AddClientAction("ajaxUtils", "changeUrl", new {
-					remove = new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName }
-				});
+				response.ChangeUrl(new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName });
 			}
 
 			Paging.PageIndex = 1;
