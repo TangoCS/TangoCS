@@ -19,7 +19,8 @@ namespace Tango.UI.Std
 
 
 		protected string _qSearch = "";
-		IFieldCollection<TEntity, TResult> _fields;
+		protected string _qSearchParmName => ClientID + "_qsearch";
+		protected IFieldCollection<TEntity, TResult> _fields;
 		protected IFieldCollection<TEntity, TResult> Fields
 		{
 			get
@@ -56,7 +57,7 @@ namespace Tango.UI.Std
 		{
 			PrepareResult();
 			//w.PushPrefix(ID);
-			w.Toolbar(t => ToolbarLeft(t), t => {	
+			w.Toolbar(t => ToolbarLeft(t), t => {
 				t.Item(tw => tw.Span(a => a.ID(Paging.ID)));
 				t.ItemSeparator();
 				ToolbarRight(t);
@@ -77,20 +78,26 @@ namespace Tango.UI.Std
 			}
 		}
 
-		protected void ToCreateNew<T>(MenuBuilder t, Action<ActionLink> attrs = null)
+		protected void ToCreateNew<T>(MenuBuilder t, Action<ActionLink> attrs = null, bool imageOnly = false)
 		{
 			t.ItemSeparator();
 			var key = typeof(T).GetResourceType().Name + "." + Constants.OpView;
+			Action<ActionLink> attrs1 = null;
 			if (TypeActivatorCache.Get(key).HasValue)
 			{
 				var retUrl1 = new ActionLink(Context).To<T>(Constants.OpView).WithArg(Constants.Id, "@ID").Url;
 				var retUrl0 = Context.CreateReturnUrl(1);
-				t.ItemActionImageText(x => x.ToCreateNew<T>(AccessControl, null, retUrl1)
+				attrs1 = x => x.ToCreateNew<T>(AccessControl, null, retUrl1)
 					.WithArg(Constants.ReturnUrl + "_0", retUrl0)
-					.Set(attrs));
+					.Set(attrs);
 			}
 			else
-				t.ItemActionImageText(x => x.ToCreateNew<T>(AccessControl).Set(attrs));
+				attrs1 = x => x.ToCreateNew<T>(AccessControl).Set(attrs);
+
+			if (imageOnly)
+				t.ItemActionImage(attrs1);
+			else
+				t.ItemActionImageText(attrs1);
 		}
 
 		protected void ToDeleteBulk(MenuBuilder t)
@@ -112,7 +119,7 @@ namespace Tango.UI.Std
 		protected virtual void ToolbarRight(MenuBuilder t)
 		{
 			if (EnableQuickSearch)
-				t.QuickSearch(this, Paging);
+				t.QuickSearch(this, Paging, _qSearchParmName);
 			if (EnableViews && Filter.FieldList.Count > 0)
 			{
 				t.ItemSeparator();
@@ -128,7 +135,7 @@ namespace Tango.UI.Std
 			if (ID.IsEmpty()) ID = GetType().Name;
 
 			Renderer = new ListRenderer<TResult>(ID);
-
+			
 			Paging = CreateControl<Paging>("page", p => {
 				p.PageIndex = Context.GetIntArg(p.ClientID, 1);
 			});
@@ -143,12 +150,12 @@ namespace Tango.UI.Std
 				f.FilterSubmitted += OnFilter;
 			});
 
-			_qSearch = Context.GetArg("qsearch");
+			_qSearch = Context.GetArg(_qSearchParmName);
 		}
 
 		public void PrepareResult()
 		{
-			if (_result != null) return; 
+			if (_result != null) return;
 
 			_result = GetPageData();
 
@@ -162,19 +169,19 @@ namespace Tango.UI.Std
 		}
 
 		public virtual void BeforeList(LayoutWriter w) { }
-		public virtual void AfterList(LayoutWriter w) { }
-
+		public virtual void AfterList(LayoutWriter w) { }	
+		
 		public virtual void Render(LayoutWriter w)
 		{
 			//w.PushPrefix(ClientID);
 			PrepareResult();
 			BeforeList(w);
 			Renderer.Render(w, _result.Take(Paging.PageSize), Fields);
-			AfterList(w);
+			AfterList(w);			
 			//w.PopPrefix();
 		}
 
-        public virtual void RenderPlaceHolder(LayoutWriter w)
+		public virtual void RenderPlaceHolder(LayoutWriter w)
 		{
 			w.PushPrefix(ID);
 			w.Div(a => a.ID("container").DataContainer("default", w.IDPrefix), () => {
@@ -199,26 +206,27 @@ namespace Tango.UI.Std
 
 		private void OnFilter(ApiResponse response)
 		{
+			response.WithNamesAndWritersFor(this);
+
 			if (Filter.Criteria.Count > 0)
 			{
-				if (Context.GetIntArg(Filter.ParameterName) == Filter.PersistentFilter.ID)
+				if (Context.GetIntArg(Filter.ParameterName) != Filter.PersistentFilter.ID)
 				{
-					Paging.PageIndex = 1;
-					response.AddWidget(Sections.ContentBody, Render);
-					RenderToolbar(response);
-					RenderPaging(response);
+					response.ChangeUrl(
+						new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName },
+						new Dictionary<string, object> { [Filter.ParameterName] = Filter.PersistentFilter.ID }
+					);
 				}
-				else
-					response.RedirectTo(Context, a => a.ToReturnUrl(1)
-						.WithArg(Filter.ParameterName, Filter.PersistentFilter.ID)
-						.RemoveArg(Paging.ParameterName)
-                        .RemoveArg("qsearch"));
-            }
+			}
 			else
-				response.RedirectTo(Context, a => a.ToReturnUrl(1)
-						.RemoveArg(Filter.ParameterName)
-						.RemoveArg(Paging.ParameterName)
-                        .RemoveArg("qsearch"));
+			{
+				response.ChangeUrl(new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName });
+			}
+
+			Paging.PageIndex = 1;
+			response.AddWidget(Sections.ContentBody, Render);
+			RenderToolbar(response);
+			RenderPaging(response);
 		}
 
 		public override void OnLoad(ApiResponse response)
@@ -231,7 +239,14 @@ namespace Tango.UI.Std
 			if (Sections.SetPageTitle)
 				response.AddWidget("#title", FormTitle);
 
-            RenderPaging(response);
+			RenderPaging(response);
+		}
+
+		public void OnSetView(ApiResponse response)
+		{
+			response.AddWidget(Sections.ContentBody, Render);
+			RenderToolbar(response);
+			RenderPaging(response);
 		}
 
 		public void OnQuickSearch(ApiResponse response)
@@ -272,9 +287,9 @@ namespace Tango.UI.Std
 			public bool RenderToolbar { get; set; } = true;
 			public bool RenderContentTitle { get; set; } = true;
 			public bool RenderPaging { get; set; } = true;
-			public bool RenderListOnLoad { get; set; } = true;			
+			public bool RenderListOnLoad { get; set; } = true;
 		}
-    }
+	}
 
 	public abstract class abstract_list<T> : abstract_list<T, T>
 	{
@@ -333,14 +348,14 @@ namespace Tango.UI.Std
 		public Func<TResult, string> ValueFunc;
 		public RenderGroupCellDelegate<TResult> Cell;
 		public string DefaultValue { get; set; }
-		public Dictionary<int, Action<LayoutWriter,TResult>> Cells { get; private set; } = new Dictionary<int, Action<LayoutWriter, TResult>>();
+		public Dictionary<int, Action<LayoutWriter, TResult>> Cells { get; private set; } = new Dictionary<int, Action<LayoutWriter, TResult>>();
 	}
 
 	public class ColumnHeader
 	{
 		public Action<LayoutWriter> Content { get; set; }
 		public Action<ThTagAttributes> Attributes { get; set; }
-		
+
 		public ColumnHeader() { }
 		public ColumnHeader(Action<ThTagAttributes> attrs, Action<LayoutWriter> content)
 		{

@@ -24,7 +24,7 @@ namespace Tango.UI.Std
 		}
 
 		bool _viewDataLoaded = false;
-		protected virtual T ViewData
+		public virtual T ViewData
 		{
 			get
 			{
@@ -34,6 +34,11 @@ namespace Tango.UI.Std
 					_viewDataLoaded = true;
 				}
 				return _viewData;
+			}
+			set
+			{
+				_viewData = value;
+				_viewDataLoaded = true;
 			}
 		}
 
@@ -106,7 +111,8 @@ namespace Tango.UI.Std
 			}
 			else
 			{
-				response.AddWidget(Sections.ContentToolbar, w => Toolbar(w));
+				if (Sections.RenderToolbar)
+					response.AddWidget(Sections.ContentToolbar, w => Toolbar(w));
 				response.AddWidget(Sections.ContentBody, w => {
 					Form(w);
 					ButtonsBar(w);

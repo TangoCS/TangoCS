@@ -78,6 +78,13 @@ namespace Tango.UI
 			w.FormField(null, caption, () => w.Write(value), grid, false, description);
 		}
 
+		public static void PlainText<TEntity, T, T2>(this LayoutWriter w, Expression<Func<TEntity, T>> expr, T2 value, Grid grid = Grid.OneWhole)
+		{
+			var key = expr.GetResourceKey();
+			var caption = w.Resources.Get(key);
+			w.FormField(null, caption, () => w.Write(value.ToString()), grid);
+		}
+
 		public static void PlainText<TEntity, TRefClass, TRefKey>(this LayoutWriter w, EntityReferenceManyField<TEntity, TRefClass, TRefKey> field, Grid grid = Grid.OneWhole)
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefKey>
@@ -159,7 +166,15 @@ namespace Tango.UI
                 w.FormField(field, () => w.Calendar(field.ID, field.Value, opt), grid);
             }
         }
-    }
+
+		public static void FileUpload(this LayoutWriter w, IField<byte[]> field, Grid grid = Grid.OneWhole, Action<InputTagAttributes> attributes = null)
+		{
+			w.FormField(field, () => w.FileUpload(field.ID, a => {
+				if (field.Disabled) a.Disabled(true);
+				a.Set(attributes);
+			}), grid);
+		}
+	}
 
 	public static class FieldActionLinkExtensions
 	{

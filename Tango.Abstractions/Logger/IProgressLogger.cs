@@ -11,7 +11,9 @@ namespace Tango.Logger
 	{
 		void SetItemsCount(int itemsCount);
 		void SetProgress(int itemsCompleted);
-		void WriteMessage(string message, int? itemsCompleted = null);	
+		void WriteMessage(string message, int? itemsCompleted = null);
+		void WriteExeptionMessage(Exception ex);
+
 	}
 
 	public class ConsoleLogger : IProgressLogger
@@ -24,6 +26,11 @@ namespace Tango.Logger
 		public void SetProgress(int itemsCompleted)
 		{
 
+		}
+		public void WriteExeptionMessage(Exception ex)
+		{		
+		
+			
 		}
 
 		public void WriteMessage(string message, int? itemsCompleted = null)

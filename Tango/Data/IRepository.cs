@@ -56,6 +56,7 @@ namespace Tango.Data
 	{
 		public static IRepository<T> WithAllObjectsQuery<T>(this IRepository<T> rep, string allObjectsQuery, object parameters = null)
 		{
+
 			rep.AllObjectsQuery = allObjectsQuery;
 			if (parameters != null)
 				foreach (var p in parameters.GetType().GetProperties())

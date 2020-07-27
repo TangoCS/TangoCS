@@ -26,7 +26,7 @@ namespace Tango.UI
 				w.Context.ReturnUrl[0] :
 				w.Context.ReturnUrl.ContainsKey(1) ?
 				w.Context.ReturnUrl[1] : null;
-			if (url == null) return;
+			if (url.IsEmpty()) return;
 
 			if (title.IsEmpty()) title = w.Resources.Get("Common.Back");
 			

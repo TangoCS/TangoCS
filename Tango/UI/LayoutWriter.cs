@@ -108,12 +108,12 @@ namespace Tango.UI
 
 		public static void FieldsBlockStd(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
-			w.FormTable(a => a.ID().Class("widthstd").Set(attributes), content);
+			w.Div(a => a.Class("widthstd"), () => w.FormTable(a => a.ID().Set(attributes), content));
 		}
 
 		public static void FieldsBlock100Percent(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
-			w.FormTable(a => a.ID().Class("width100").Set(attributes), content);
+			w.Div(a => a.Class("width100"), () => w.FormTable(a => a.ID().Set(attributes), content));
 		}
 
 

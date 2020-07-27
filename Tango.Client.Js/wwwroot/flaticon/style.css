@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?3xr9du');
-  src:  url('fonts/icomoon.eot?3xr9du#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?3xr9du') format('truetype'),
-    url('fonts/icomoon.woff?3xr9du') format('woff'),
-    url('fonts/icomoon.svg?3xr9du#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?exns3g');
+  src:  url('fonts/icomoon.eot?exns3g#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?exns3g') format('truetype'),
+    url('fonts/icomoon.woff?exns3g') format('woff'),
+    url('fonts/icomoon.svg?exns3g#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,15 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-askue_contractsap:before {
+  content: "\e970";
+}
+.icon-askue_bd:before {
+  content: "\e971";
+}
+.icon-askue_contract:before {
+  content: "\e972";
+}
 .icon-eraser:before {
   content: "\e96f";
 }

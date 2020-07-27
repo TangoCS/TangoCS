@@ -23,12 +23,18 @@ a, a:visited {
 	text-decoration: none;
 }
 
-a:hover {
-	text-decoration: underline;
+	a:hover {
+		text-decoration: underline;
+	}
+
+a, .actionbtn, .icon-collapsed, .icon-expanded,
+.icon-checkbox-unchecked, .icon-checkbox-checked,
+.icon-minus-box, .icon-delete {
+	cursor: pointer;
 }
 
-a, .actionbtn, .icon-collapsed, .icon-expanded {
-	cursor: pointer;
+[class^="icon-"], [class*=" icon-"] {
+	font-weight: inherit;
 }
 
 
@@ -40,9 +46,11 @@ table {
 td.r, th.r, .r td, .c th {
 	text-align: right !important;
 }
+
 td.c, th.c, .c td, .c th {
 	text-align: center !important;
 }
+
 .r input[type='text'] {
 	text-align: right !important;
 }
@@ -61,9 +69,9 @@ h2 {
 	margin: 0px 0px 8px 0px;
 }
 
-h2 a {
-	text-decoration: none;
-}
+	h2 a {
+		text-decoration: none;
+	}
 
 h3 {
 	font-size: 1.2em;
@@ -80,6 +88,7 @@ img {
 		width: 80%;
 	}
 }
+
 @media (resolution: 150dpi) {
 	img.fixscale {
 		width: 50%;
@@ -97,6 +106,7 @@ img.loading {
 .hide {
 	display: none !important;
 }
+
 .smaller {
 	font-size: smaller;
 }
@@ -155,12 +165,14 @@ input.text {
 	display: flex;
 	margin: 2px 0 2px 0;
 }
+
 .radiobuttonlist.horizontal {
 	display: flex;
 }
-.radiobuttonlist.horizontal label:not(:first-child), .checkboxlist.horizontal label:not(:first-child) {
-	margin: 2px 0 2px 12px;
-}
+
+	.radiobuttonlist.horizontal label:not(:first-child), .checkboxlist.horizontal label:not(:first-child) {
+		margin: 2px 0 2px 12px;
+	}
 
 
 hr {
@@ -189,12 +201,12 @@ hr {
 	padding: 3px 6px 4px 6px;
 }
 
-.formbody input[type=text],
-.formbody input[type=password],
-.formbody select,
-.formbody textarea {
-	width: 100%;
-}
+	.formbody input[type=text],
+	.formbody input[type=password],
+	.formbody select,
+	.formbody textarea {
+		width: 100%;
+	}
 
 .inpstd .formbody input[type=text],
 .inpstd .formbody input[type=password],
@@ -232,13 +244,13 @@ hr {
 	min-height: 30px;
 }
 
-.modal-footer .right, .buttonsbar .right {
-	margin-left: auto;
-}
+	.modal-footer .right, .buttonsbar .right {
+		margin-left: auto;
+	}
 
-.modal-footer .right *, .buttonsbar .right *, .buttonsbar .left * {
-	margin-left: 4px;
-}
+		.modal-footer .right *, .buttonsbar .right *, .buttonsbar .left * {
+			margin-left: 4px;
+		}
 
 
 /* lists */
@@ -285,23 +297,25 @@ hr {
 	text-align: center;
 }
 
-.listviewtable .sel_info span {
-	font-weight: bold;
-}
+	.listviewtable .sel_info span {
+		font-weight: bold;
+	}
 
 .listviewtable th {
 	position: relative;
 }
-.listviewtable th .dropdownimage {
-	font-size: x-small;
-	visibility: hidden;
-	position: absolute;
-	right: 0;
-	top: 0;
-}
-.listviewtable th:hover .dropdownimage {
-	visibility: visible;
-}
+
+	.listviewtable th .dropdownimage {
+		font-size: x-small;
+		visibility: hidden;
+		position: absolute;
+		right: 0;
+		top: 0;
+	}
+
+	.listviewtable th:hover .dropdownimage {
+		visibility: visible;
+	}
 
 .cellborders .border-l {
 	border-left: solid 1px #bbb;
@@ -317,6 +331,22 @@ hr {
 
 .cellborders .border-t {
 	border-top: solid 1px #bbb;
+}
+
+.cellborders .border-l-wide {
+	border-left: solid 3px #bbb;
+}
+
+.cellborders .border-r-wide {
+	border-right: solid 3px #bbb;
+}
+
+.cellborders .border-b-wide {
+	border-bottom: solid 3px #bbb;
+}
+
+.cellborders .border-t-wide {
+	border-top: solid 3px #bbb;
 }
 
 
@@ -336,14 +366,14 @@ hr {
 	display: table-row;
 }
 
-.twocolumnstable .twocolumnsrow:not(:first-child) > div {
-	padding-top: 4px;
-}
+	.twocolumnstable .twocolumnsrow:not(:first-child) > div {
+		padding-top: 4px;
+	}
 
-.twocolumnstable .twocolumnsrow input[type=text], .twocolumnstable .twocolumnsrow input[type=password],
-.twocolumnstable .twocolumnsrow select, .twocolumnstable .twocolumnsrow textarea {
-	width: 100%;
-}
+	.twocolumnstable .twocolumnsrow input[type=text], .twocolumnstable .twocolumnsrow input[type=password],
+	.twocolumnstable .twocolumnsrow select, .twocolumnstable .twocolumnsrow textarea {
+		width: 100%;
+	}
 
 .twocolumnsrow > div {
 	display: table-cell;
@@ -381,20 +411,20 @@ hr {
 	width: 100%;
 }
 
-.menutoolbar ul {
-	margin: 0;
-	padding: 0px 8px;
-	border: 0;
-	list-style-type: none;
-	height: 34px;
-}
+	.menutoolbar ul {
+		margin: 0;
+		padding: 0px 8px;
+		border: 0;
+		list-style-type: none;
+		height: 34px;
+	}
 
-.menutoolbar li {
-	display: table-cell;
-	border: 0;
-	vertical-align: middle;
-	height: 34px;
-}
+	.menutoolbar li {
+		display: table-cell;
+		border: 0;
+		vertical-align: middle;
+		height: 34px;
+	}
 
 .menutoolbar-left {
 	float: left;
@@ -467,14 +497,14 @@ a.actionbtn, a.actionimg {
 	padding: 4px 12px 12px 12px;
 }
 
-.dropdownmenu a.task-progress:hover {
-	background-color: #eff0f1;
-	color: #333;
-}
+	.dropdownmenu a.task-progress:hover {
+		background-color: #eff0f1;
+		color: #333;
+	}
 
-.dropdownmenu a.task-progress:not(:last-child) {
-	border-bottom: #ccc;
-}
+	.dropdownmenu a.task-progress:not(:last-child) {
+		border-bottom: #ccc;
+	}
 
 .task-progress > div:first-child > span {
 	text-align: right;
@@ -487,21 +517,22 @@ a.actionbtn, a.actionimg {
 	background-color: #eee;
 }
 
-.task-progress > div:last-child > span {
-	position: absolute;
-	overflow: hidden;
-	float: left;
-	height: 100%;
-	background-color: #57889c;
-	padding: 0px;
-}
+	.task-progress > div:last-child > span {
+		position: absolute;
+		overflow: hidden;
+		float: left;
+		height: 100%;
+		background-color: #57889c;
+		padding: 0px;
+	}
 
-.formbody input[readonly], 
+.formbody input[readonly],
 .formbody textarea[readonly],
 .formbody select[disabled], .formbody select.readonly, .formbody select option:disabled,
 .formbody div[data-disabled] {
-    background-color: #e5e5e5;
+	background-color: #e5e5e5;
 }
+
 .formbody input:read-only, .formbody textarea:read-only {
-    background-color: #e5e5e5;
+	background-color: #e5e5e5;
 }

@@ -26,7 +26,6 @@ namespace Tango.UI.Std
 		int _count = 0;
 
 		protected override bool EnableViews => false;
-
 		public override void OnInit()
 		{
 			base.OnInit();
@@ -46,6 +45,7 @@ namespace Tango.UI.Std
 		{
 
 		}
+
 
 		protected override IEnumerable<TResult> GetPageData()
 		{
@@ -88,39 +88,41 @@ namespace Tango.UI.Std
 				new List<ChildTreeLevelDescription<TResult>> { new ChildTreeLevelDescription<TResult> { Child = curTemplate } } :
 				curTemplate.Children;
 
-			var sqlTemplate = $"select * from ({Repository.AllObjectsQuery}) t";
+			var origAllObjectsQuery = Repository.AllObjectsQuery;
 
 			using (var tran = Database.BeginTransaction())
 			{
 				BeforeGetPageData(tran);
 
 				foreach (var t in nodeTemplates)
-				{					
+				{
 					var nodeQuery = Paging.Apply(q, true);
 					var nodeQueryCnt = q;
 
-					var nodeWhere = new List<string>(where);				
+					var nodeWhere = new List<string>(where);
 
 					if (t.Where != null)
 					{
 						nodeQuery = nodeQuery.Where(t.Where);
 						nodeQueryCnt = nodeQueryCnt.Where(t.Where);
 					}
-					
-					nodeQuery = t.Child.OrderBy(nodeQuery);					
-									
-					var expr = t.Child.GroupBy != null ? nodeQuery.GroupBy(t.Child.GroupBy).Select(x => x.Key).Expression : nodeQuery.Expression;
+
+					nodeQuery = t.Child.OrderBy(nodeQuery);
+
+					var expr = t.Child.GroupBy != null ? nodeQuery.GroupBy(t.Child.GroupBy).Select(t.Child.GroupBySelector).Expression : nodeQuery.Expression;
 					var exprCnt = t.Child.GroupBy != null ? nodeQueryCnt.GroupBy(t.Child.GroupBy).Select(x => x.Key).Expression : nodeQueryCnt.Expression;
-					
 
-					Repository.AllObjectsQuery = sqlTemplate;
+					var sqlTemplate = "select *";
+					sqlTemplate += $" from ({origAllObjectsQuery}) t";
 
-					foreach (var p in t.Child.KeyProperties)
-						nodeWhere.Add($"{p} is not null");
+					if (!t.Child.AllowNulls)
+						foreach (var p in t.Child.KeyProperties)
+							nodeWhere.Add($"{p} is not null");
 
 					if (nodeWhere.Count > 0)
-						Repository.AllObjectsQuery += " where " + nodeWhere.Join(" and ");
+						sqlTemplate += " where " + nodeWhere.Join(" and ");
 
+					Repository.AllObjectsQuery = sqlTemplate;
 					var res = Repository.List(expr);
 					var resCnt = Repository.Count(exprCnt);
 
@@ -137,6 +139,77 @@ namespace Tango.UI.Std
 			return _pageData;
 		}
 
+		public void ExpandTree(ApiResponse response, string rowId, int level, bool refreshtree)
+		{					
+			if (_fields == null)
+				_fields = FieldsConstructor();
+
+			if (refreshtree)
+				response.AddWidget(Sections.ContentBody, Render);			
+
+			if (!rowId.IsEmpty())
+			{
+				var nodeWhere = new List<string>();
+
+				var whereDict = new Dictionary<string, string>();
+
+				foreach (var item in rowId.Split('&'))
+					foreach (var (cur, next) in item.Split('=').PairwiseWithNext())
+					{
+						if (next == null) continue;
+						whereDict.Add(cur, next);
+					}				
+
+				whereDict.Remove("level");
+
+				var t = typeof(TResult);
+				foreach (var pair in whereDict)
+				{
+					var p = t.GetProperty(pair.Key);
+					if (p.PropertyType.In(typeof(int), typeof(int?), typeof(decimal), typeof(decimal?)))
+						nodeWhere.Add($"{pair.Key} = {pair.Value}");
+					else if (p.PropertyType.In(typeof(string), typeof(Guid), typeof(Guid?)))
+						nodeWhere.Add($"{pair.Key} = '{pair.Value}'");
+					else if (p.PropertyType.In(typeof(DateTime), typeof(DateTime?)))
+						nodeWhere.Add($"{pair.Key} = '{pair.Value:yyyy-MM-dd HH:mm:ss}'");
+				}
+
+				var origAllObjectsQuery = Repository.AllObjectsQuery;
+
+				var sqlTemplate = "select *";
+				sqlTemplate += $" from ({origAllObjectsQuery}) t";
+
+
+				if (nodeWhere.Count > 0)
+					sqlTemplate += " where " + nodeWhere.Join(" and ");
+
+				List<string> rowsId = new List<string>();
+
+				using (var tran = Database.BeginTransaction())
+				{
+					BeforeGetPageData(tran);
+
+					var temp = Database.Connection.QueryFirst<TResult>(sqlTemplate, transaction: tran);
+
+					var id = level;
+					var template = _templatesDict[id + 1];
+
+					while (template != null)
+					{
+						var row = template.GetRowID(id, temp);
+						if (!template.IsTerminal)
+							rowsId.Add(row);
+
+						id--;
+						template = template.ParentTemplate;
+					}
+				}
+				rowsId.Reverse();
+				response.AddClientAction("listview", "openlevel", rowsId);
+			}			
+			
+			
+		}
 		protected override IFieldCollection<TResult, TResult> FieldsConstructor()
 		{
 			var enableSelect = false;
@@ -170,9 +243,14 @@ namespace Tango.UI.Std
 				var coll = nodeTemplate.GetKeyCollection(o);
 				foreach (var p in coll)
 					a.DataParm(p.Key, p.Value);
-				a.ID("r_" + Guid.NewGuid().ToString());
+				a.ID(nodeTemplate.RowID(o));
 				a.DataEvent(OnExpandRow);
-				if (nodeTemplate.EnableSelect)
+
+				if (nodeTemplate.DataRef != null)
+					foreach (var _ref in nodeTemplate.DataRef(o))
+						a.DataRef("#"+_ref);
+
+				if (nodeTemplate.EnableSelect || nodeTemplate.SetRowId)
 					a.Data("rowid", nodeTemplate.GetRowID(_level, o));
 			};
 
@@ -182,7 +260,8 @@ namespace Tango.UI.Std
 					w.Span(a => a.Class("sel"), () => w.Icon("checkbox-unchecked"));
 
 				if (nodeTemplate.Icon != null)
-					w.I(a => a.Class("nodeicon").Icon(nodeTemplate.Icon(o)));
+					foreach (var ic in nodeTemplate.Icon(o).Split(','))
+						w.I(a => a.Class("nodeicon").Icon(ic.Trim()));
 
 				nodeTemplate.Cell(w, o);
 			}
@@ -226,13 +305,19 @@ namespace Tango.UI.Std
 	{
 		public int ID { get; set; }
 		public Expression<Func<TResult, object>> GroupBy { get; set; }
+		public Expression<Func<IGrouping<object, TResult>, object>> GroupBySelector { get; set; } = x => x.Key;
 		public Func<IQueryable<TResult>, IQueryable<TResult>> OrderBy { get; set; } = data => data;
+		public Func<TResult, string> RowID { get; set; } = o => "r_" + Guid.NewGuid().ToString();
 		public Action<LayoutWriter, TResult> Cell { get; set; }
 		public bool IsTerminal { get; set; } = false;
 		//public string Icon { get; set; }
 		public Func<TResult, string> Icon { get; set; }
+		public Func<TResult, List<string>> DataRef { get; set; }
 		public Expression<Func<TResult, object>> Key { get; set; }
 		public bool EnableSelect { get; set; }
+		public bool SetRowId { get; set; }
+		public TreeLevelDescription<TResult> ParentTemplate { get; set; }
+		public bool AllowNulls { get; set; } = false;
 
 		List<ChildTreeLevelDescription<TResult>> _children = new List<ChildTreeLevelDescription<TResult>>();
 
@@ -270,6 +355,8 @@ namespace Tango.UI.Std
 
 		public void AddChild(TreeLevelDescription<TResult> template, Expression<Func<TResult, bool>> where = null)
 		{
+			template.ParentTemplate = this;
+
 			_children.Add(new ChildTreeLevelDescription<TResult> { Child = template, Where = where });
 		}
 	}
