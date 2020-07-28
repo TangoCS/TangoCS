@@ -343,7 +343,7 @@ var listview = function (au, cu, cbcell) {
                 }
 
 
-                ajaxUtils.postEventFromElementWithApiResponse(el, { data: { rowid: args[counter], level: level } }).done(function () {
+                ajaxUtils.postEventFromElementWithApiResponse(el, { data: { rowid: args[counter], level: level, selectedRow: args[args.length - 1] } }).done(function () {
 
                     var rowid = '[data-rowid="' + args[counter] + '"]';
                     var el = document.querySelector(rowid)
@@ -380,11 +380,11 @@ var listview = function (au, cu, cbcell) {
 			el.addEventListener('click', function (e) {
 				const tr = cu.getRow(e.currentTarget);
 				const table = tr.parentNode.parentNode;
-				const currentSelected = table.getAttribute('data-highlighted');
-				if (currentSelected) {
+				//const currentSelected = table.getAttribute('data-highlighted');
+				//if (currentSelected) {
 					const selEl = table.querySelector('.selected');
 					if (selEl) selEl.classList.remove('selected');
-				}
+				//}
 				e.currentTarget.classList.add('selected');
 				table.setAttribute('data-highlighted', tr.getAttribute('data-rowid'));
 			});
