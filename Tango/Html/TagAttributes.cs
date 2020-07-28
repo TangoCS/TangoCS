@@ -36,34 +36,34 @@ namespace Tango.Html
 		public T TabIndex(int value) { Writer.WriteAttr("tabindex", value.ToString()); return _this; }
 		public T Title(string value) { Writer.WriteAttr("title", value); return _this; }
 
-		public T OnLoad(string value) { Writer.WriteAttr("onload", value); return _this; }
-		public T OnResize(string value) { Writer.WriteAttr("onresize", value); return _this; }
-		public T OnUnload(string value) { Writer.WriteAttr("onunload", value); return _this; }
+		public T OnLoad(string value) { Writer.WriteAttr("onload", value, false); return _this; }
+		public T OnResize(string value) { Writer.WriteAttr("onresize", value, false); return _this; }
+		public T OnUnload(string value) { Writer.WriteAttr("onunload", value, false); return _this; }
 
-		public T OnBlur(string value) { Writer.WriteAttr("onblur", value); return _this; }
-		public T OnChange(string value) { Writer.WriteAttr("onchange", value); return _this; }
-		public T OnFocus(string value) { Writer.WriteAttr("onfocus", value); return _this; }
-		public T OnSelect(string value) { Writer.WriteAttr("onselect", value); return _this; }
-		public T OnSubmit(string value) { Writer.WriteAttr("onsubmit", value); return _this; }
+		public T OnBlur(string value) { Writer.WriteAttr("onblur", value, false); return _this; }
+		public T OnChange(string value) { Writer.WriteAttr("onchange", value, false); return _this; }
+		public T OnFocus(string value) { Writer.WriteAttr("onfocus", value, false); return _this; }
+		public T OnSelect(string value) { Writer.WriteAttr("onselect", value, false); return _this; }
+		public T OnSubmit(string value) { Writer.WriteAttr("onsubmit", value, false); return _this; }
 
-		public T OnKeyDown(string value) { Writer.WriteAttr("onkeydown", value); return _this; }
-		public T OnKeyPress(string value) { Writer.WriteAttr("onkeypress", value); return _this; }
-		public T OnKeyUp(string value) { Writer.WriteAttr("onkeyup", value); return _this; }
+		public T OnKeyDown(string value) { Writer.WriteAttr("onkeydown", value, false); return _this; }
+		public T OnKeyPress(string value) { Writer.WriteAttr("onkeypress", value, false); return _this; }
+		public T OnKeyUp(string value) { Writer.WriteAttr("onkeyup", value, false); return _this; }
 
-		public T OnClick(string value) { Writer.WriteAttr("onclick", value); return _this; }
-		public T OnDblClick(string value) { Writer.WriteAttr("ondblclick", value); return _this; }
-		public T OnDrag(string value) { Writer.WriteAttr("ondrag", value); return _this; }
-		public T OnDragEnd(string value) { Writer.WriteAttr("ondragend", value); return _this; }
-		public T OnDragEnter(string value) { Writer.WriteAttr("ondragenter", value); return _this; }
-		public T OnDragLeave(string value) { Writer.WriteAttr("ondragleave", value); return _this; }
-		public T OnDragOver(string value) { Writer.WriteAttr("ondragover", value); return _this; }
-		public T OnDragStart(string value) { Writer.WriteAttr("ondragstart", value); return _this; }
-		public T OnDrop(string value) { Writer.WriteAttr("ondrop", value); return _this; }
-		public T OnMouseDown(string value) { Writer.WriteAttr("onmousedown", value); return _this; }
-		public T OnMouseMove(string value) { Writer.WriteAttr("onmousemove", value); return _this; }
-		public T OnMouseOut(string value) { Writer.WriteAttr("onmouseout", value); return _this; }
-		public T OnMouseOver(string value) { Writer.WriteAttr("onmouseover", value); return _this; }
-		public T OnMouseUp(string value) { Writer.WriteAttr("onmouseup", value); return _this; }
+		public T OnClick(string value) { Writer.WriteAttr("onclick", value, false); return _this; }
+		public T OnDblClick(string value) { Writer.WriteAttr("ondblclick", value, false); return _this; }
+		public T OnDrag(string value) { Writer.WriteAttr("ondrag", value, false); return _this; }
+		public T OnDragEnd(string value) { Writer.WriteAttr("ondragend", value, false); return _this; }
+		public T OnDragEnter(string value) { Writer.WriteAttr("ondragenter", value, false); return _this; }
+		public T OnDragLeave(string value) { Writer.WriteAttr("ondragleave", value, false); return _this; }
+		public T OnDragOver(string value) { Writer.WriteAttr("ondragover", value, false); return _this; }
+		public T OnDragStart(string value) { Writer.WriteAttr("ondragstart", value, false); return _this; }
+		public T OnDrop(string value) { Writer.WriteAttr("ondrop", value, false); return _this; }
+		public T OnMouseDown(string value) { Writer.WriteAttr("onmousedown", value, false); return _this; }
+		public T OnMouseMove(string value) { Writer.WriteAttr("onmousemove", value, false); return _this; }
+		public T OnMouseOut(string value) { Writer.WriteAttr("onmouseout", value, false); return _this; }
+		public T OnMouseOver(string value) { Writer.WriteAttr("onmouseover", value, false); return _this; }
+		public T OnMouseUp(string value) { Writer.WriteAttr("onmouseup", value, false); return _this; }
 
 		public T Set(Action<T> attrs) { attrs?.Invoke(_this); return _this; }
 
@@ -162,7 +162,7 @@ namespace Tango.Html
 		public InputTagAttributes MaxLength(int value) { Writer.WriteAttr("maxlength", value.ToString()); return this; }
 		public InputTagAttributes Min(string value) { Writer.WriteAttr("min", value); return this; }
 		public InputTagAttributes Multiple(bool value) { if (value) Writer.WriteAttr("multiple", "multiple"); return this; }
-		public InputTagAttributes OnInput(string value) { Writer.WriteAttr("oninput", value); return this; }
+		public InputTagAttributes OnInput(string value) { Writer.WriteAttr("oninput", value, false); return this; }
 		public InputTagAttributes Placeholder(string value) { Writer.WriteAttr("placeholder", value); return this; }
 		public InputTagAttributes Readonly(bool value) { if (value) Writer.WriteAttr("readonly", "readonly"); return this; }
 		public InputTagAttributes Size(int value) { Writer.WriteAttr("size", value.ToString()); return this; }
