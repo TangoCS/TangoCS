@@ -59,7 +59,7 @@ namespace Tango.UI.Controls
 			);
 		}
 
-		public void ItemFilter(ListFilter filter, bool imageOnly = false, Action<ATagAttributes> atagattrs = null)
+		public void ItemFilter(ListFilter filter, bool imageOnly = false)
 		{
 			void render(LayoutWriter w)
 			{
@@ -71,9 +71,9 @@ namespace Tango.UI.Controls
 				void button()
 				{
 					if (imageOnly)
-						w.ActionImageButton(attrs, atagattrs);
+						w.ActionImageButton(attrs, a => a.Data(filter.DataCollection));
 					else
-						w.ActionImageTextButton(attrs, atagattrs);
+						w.ActionImageTextButton(attrs, a => a.Data(filter.DataCollection));
 				}
 
 				if (filter.Criteria.Count > 0)
