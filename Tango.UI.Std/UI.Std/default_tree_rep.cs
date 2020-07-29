@@ -139,13 +139,15 @@ namespace Tango.UI.Std
 			return _pageData;
 		}
 
-		public void ExpandTree(ApiResponse response, string rowId, int level, bool refreshtree)
+		public void ExpandTree(ApiResponse response, string rowId, bool refreshtree)
 		{					
 			if (_fields == null)
 				_fields = FieldsConstructor();
 
 			if (refreshtree)
-				response.AddWidget(Sections.ContentBody, Render);			
+				response.AddWidget(Sections.ContentBody, Render);
+
+			int level;
 
 			if (!rowId.IsEmpty())
 			{
@@ -158,7 +160,12 @@ namespace Tango.UI.Std
 					{
 						if (next == null) continue;
 						whereDict.Add(cur, next);
-					}				
+					}
+
+				if (whereDict.TryGetValue("level", out var value))
+					level = Int32.Parse(value);
+				else
+					throw new Exception("Невозможно определить уровень строки");
 
 				whereDict.Remove("level");
 
