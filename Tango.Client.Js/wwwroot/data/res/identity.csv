@@ -26,6 +26,7 @@ Abc.Model.SPM_Subject.Activate;Активировать;
 Abc.Model.SPM_Subject.ChangePassword;Изменить пароль;
 Abc.Model.SPM_Subject.Deactivate;Деактивировать;
 
+Abc.Model.SPM_Subject.PasswordHash;Пароль
 Abc.Model.SPM_Subject.PasswordHash-new;Новый пароль;New password
 Abc.Model.SPM_Subject.PasswordHash-new-title;Введите новый пароль для пользователя;Enter new password
 Abc.Model.SPM_Subject.ChangePassword-val-badconfirmation;Новый пароль и подтверждение пароля не совпадают;Your password and confirmation password do not match
