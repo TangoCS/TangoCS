@@ -71,9 +71,9 @@ namespace Tango.UI.Controls
 				void button()
 				{
 					if (imageOnly)
-						w.ActionImageButton(attrs);
+						w.ActionImageButton(attrs, a => a.Data(filter.DataCollection));
 					else
-						w.ActionImageTextButton(attrs);
+						w.ActionImageTextButton(attrs, a => a.Data(filter.DataCollection));
 				}
 
 				if (filter.Criteria.Count > 0)
