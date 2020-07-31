@@ -108,9 +108,10 @@ Abc.Model.N_FileLibraryType.Title;Наименование;Title
 Abc.Model.N_Filter;Фильтр;Filter
 Abc.Model.N_Filter.FilterName;Наименование фильтра;
 Abc.Model.N_Filter.FilterValue;Значение;
-Abc.Model.N_Filter.IsDefault;Удален;Deleted
+Abc.Model.N_Filter.IsDefault;Признак "представление по умолчанию"
 Abc.Model.N_Filter.ListName;Наименование;Title
 Abc.Model.N_Filter.Subject;Пользователь;
+Abc.Model.N_Filter.ListParms;Параметры списка
 Abc.Model.N_Folder;Папка;Folder
 Abc.Model.N_Folder-pl;Папки;Folders
 Abc.Model.N_Folder.CreateNew;Создать папку;

@@ -27,6 +27,7 @@ namespace Tango.UI.Controls
 
 		public PeriodValue DefaultValue { get; set; }
 
+		public int MinutesStep { get; set; } = 30;
 		//public string JSOnSelectCallback { get; set; }
 
 		public override void OnInit()
@@ -35,14 +36,14 @@ namespace Tango.UI.Controls
 				c.ShowDays = ShowDays && !UseCalendar;
 				c.ShowTime = ShowTime;
 				c.TimeOnly = UseCalendar && ShowDays;
-				c.MinutesStep = 30;
+				c.MinutesStep = MinutesStep;
 				if (DefaultValue != null) c.DefaultValue = DefaultValue.From;
 			});
 			dPeriodTo = CreateControl<DateLists>(ID + "_" + (UseCalendar ? $"dperiodtotime" : $"dperiodto"), c => {
 				c.ShowDays = ShowDays && !UseCalendar;
 				c.ShowTime = ShowTime;
 				c.TimeOnly = UseCalendar && ShowDays;
-				c.MinutesStep = 30;
+				c.MinutesStep = MinutesStep;
 				if (DefaultValue != null) c.DefaultValue = DefaultValue.To;
 			});
 		}
@@ -94,7 +95,7 @@ namespace Tango.UI.Controls
 						showDropdowns = true,
 						timePicker = ShowTime,
 						timePicker24Hour = ShowTime,
-						timePickerIncrement = 30,
+						timePickerIncrement = MinutesStep,
 						ranges = new Dictionary<string, DateTime[]> {
 							["Сегодня"] = new DateTime[] { new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day), new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddDays(1).AddMinutes(-30) },
 							["Вчера"] = new DateTime[] { new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddDays(-1), new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddMinutes(-30) },
@@ -170,6 +171,7 @@ namespace Tango.UI.Controls
 		public int MinYear { get; set; }
 
 		public DateTime DefaultValue { get; set; }
+		public int MinutesStep { get; set; } = 30;
 
 		public override string ID { 
 			get => base.ID; 
@@ -187,7 +189,7 @@ namespace Tango.UI.Controls
 				c.ShowDays = false;
 				c.ShowTime = true;
 				c.TimeOnly = true;
-				c.MinutesStep = 30;
+				c.MinutesStep = MinutesStep;
 				c.DefaultValue = DefaultValue;
 			});
 		}

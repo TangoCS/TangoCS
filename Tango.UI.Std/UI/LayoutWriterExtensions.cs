@@ -62,7 +62,7 @@ namespace Tango.UI
 				a.Icon(name).Title(tip);
 				if (color != null)
 					a.Style("color:" + color);
-			});
+			});			
 		}
 
 		public static T Icon<T>(this TagAttributes<T> a, string name)
@@ -70,7 +70,13 @@ namespace Tango.UI
 		{
 			return a.Class("icon icon-" + name?.ToLower());
 		}
-
+		public static void IconFlag(this HtmlWriter w, string name, bool issquare = false)
+		{
+			if(!issquare)
+				w.Span(a => a.Class("flag-icon flag-icon-" + name?.ToLower()));
+			else
+				w.Span(a => a.Class("flag-icon flag-icon-" + name?.ToLower() + " flag-icon-squared"));
+		}
 
 	}
 
