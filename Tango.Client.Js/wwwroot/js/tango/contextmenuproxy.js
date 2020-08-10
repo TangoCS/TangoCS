@@ -1,7 +1,10 @@
 ﻿var contextmenuproxy = function () {
 	var instance = {
 		init: function (args) {
-			$('#' + args.triggerid).contextMenu('#' + args.popupid, {
+			$('#' + args.triggerid).contextMenu('#' + args.popupid, instance.parms(args));
+		},
+		parms: function(args) {
+			return {
 				triggerOn: args.triggerson,
 				displayAround: args.displaysaround,
 				position: args.position,
@@ -13,7 +16,22 @@
 
 					return $.when();
 				}
-			});
+			};
+		}
+	};
+
+	return instance;
+}();
+
+var contextmenuproxy_closeonlink = function () {
+	var instance = {
+		init: function (args) {
+			var parms = contextmenuproxy.parms(args);
+			parms.closeOnClickSelector = function (el) {
+				return el instanceof HTMLAnchorElement;
+			};
+
+			$('#' + args.triggerid).contextMenu('#' + args.popupid, parms);
 		}
 	};
 

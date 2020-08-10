@@ -19,7 +19,7 @@ namespace Tango.UI
 		public static void BindPopup(this LayoutWriter w, string elementid, string popupid, PopupOptions options = null)
 		{
 			if (options == null) options = PopupOptions.ShowOnClick;
-			w.AddClientAction("contextmenuproxy", "init", f => new {
+			w.AddClientAction(options.ProxyName, "init", f => new {
 				triggerid = f(elementid),
 				popupid = f(popupid),
 				triggeron = options.TriggerOn.ToString().ToLower(),
@@ -36,6 +36,7 @@ namespace Tango.UI
 		public static PopupOptions ShowOnClick = new PopupOptions();
 		public static PopupOptions ShowOnHover = new PopupOptions { TriggerOn = PopupTriggersOn.Hover };
 
+		public string ProxyName { get; set; } = "contextmenuproxy";
 		public PopupTriggersOn TriggerOn { get; set; } = PopupTriggersOn.Click;
 		public PopupDispaysAround DisplaysAround { get; set; } = PopupDispaysAround.Trigger;
 		public PopupPosition Position { get; set; } = PopupPosition.Bottom;

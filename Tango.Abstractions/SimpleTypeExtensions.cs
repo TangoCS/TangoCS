@@ -297,6 +297,11 @@ namespace Tango
 			return String.Empty;
 		}
 
+		public static string YesNo(this bool src)
+		{
+			return src ? "да" : "нет";
+		}
+
 		public static string MakeValidFileName(this string name)
 		{
 			string invalidChars = Regex.Escape(new string(System.IO.Path.GetInvalidFileNameChars()));
