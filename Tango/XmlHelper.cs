@@ -1,7 +1,10 @@
-﻿using System.Text;
+﻿using System.IO;
+using System.Reflection;
+using System.Text;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using System.Xml.Xsl;
 
 namespace Tango
 {
@@ -39,6 +42,15 @@ namespace Tango
 			return e;
 		}
 
+		public static T Deserialize<T>(string xml)
+		{
+			XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
+			XDocument doc = XDocument.Parse(xml);
+
+			using (var reader = doc.Root.CreateReader())
+				return (T)xmlSerializer.Deserialize(reader);
+		}
+
 		public static T Deserialize<T>(XElement xe)
 			where T : class, new()
 		{
@@ -57,6 +69,25 @@ namespace Tango
                 NewLineHandling = NewLineHandling.None
             };
             return settings;
-        }
-    }
+		}
+
+		/// <summary>
+		/// Преобразовывает xml в соответствии с xsl-шаблоном
+		/// </summary>
+		/// <param name="xml">Преобразуемый xml</param>
+		/// <param name="assembly">Сборка с ресурсами (xslt)</param>
+		/// <param name="xslResource">Имя ресурса xslt</param>
+		/// <param name="output">Куда выводится результат</param>
+		public static void Transform(string xml, Assembly assembly, string xslResource, TextWriter output)
+		{
+			var xslStream = assembly.GetManifestResourceStream(xslResource);
+			XslCompiledTransform xct = new XslCompiledTransform();
+			XmlReader styleSheet = XmlReader.Create(xslStream);
+			XsltSettings settings = new XsltSettings(true, true);
+			XmlResolver res = new XmlResolver(assembly);
+			xct.Load(styleSheet, settings, res);
+			XmlReader xr = XmlReader.Create(new StringReader(xml));
+			xct.Transform(xr, null, output);
+		}
+	}
 }

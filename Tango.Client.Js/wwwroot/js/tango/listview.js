@@ -139,7 +139,7 @@ var listview = function (au, cu, cbcell) {
 
 				const e = el.getAttribute('data-e');
 				if (load && e)
-					au.postEventFromElementWithApiResponse(el, { data: { rowid: tr.id, level: level } }).then(hideOthers);
+                    au.postEventFromElementWithApiResponse(el, { data: { rowid: tr.id, level: level, dataid: tr.getAttribute('data-rowid') } }).then(hideOthers);
 				else
 					hideOthers();
 			} else {
