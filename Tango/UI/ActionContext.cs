@@ -351,6 +351,13 @@ namespace Tango.UI
 		{
 			return ctx.AllArgs.ParseList<T>(name);
 		}
+
+		public static ActionResult RunAction(this ActionContext ctx)
+		{
+			var cache = ctx.RequestServices.GetService(typeof(ITypeActivatorCache)) as ITypeActivatorCache;
+			(var type, var invoker) = cache.Get(ctx.Service + "." + ctx.Action) ?? (null, null);
+			return invoker?.Invoke(ctx, type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
+		}
 	}
 
 	public static class ActionContextIdentityExtension

@@ -33,6 +33,17 @@ namespace Tango.UI
 		}
 	}
 
+	public class ContentResult : HttpResult
+	{
+		public string Content { get; set; }
+
+		public ContentResult()
+		{
+			Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+			ContentFunc = ctx => Encoding.UTF8.GetBytes(Content);
+		}
+	}
+
 	public class HtmlResult : HttpResult
 	{
 		public string Html { get; set; }

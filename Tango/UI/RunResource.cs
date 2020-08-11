@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Tango.Logger;
 
 namespace Tango.UI
@@ -9,6 +10,7 @@ namespace Tango.UI
 	{
 		public static async Task Ajax<T>(ActionContext ctx) where T : ViewRootElement, new() => await Run(ctx, RunAjax<T>, OnAjaxError);
 		public static async Task Page<T>(ActionContext ctx) where T : ViewRootElement, new() => await Run(ctx, RunPage<T>, OnError);
+		public static async Task RunXml(ActionContext ctx) => await Run(ctx, c => c.RunAction(), OnErrorXml);
 
 		public static async Task Run(ActionContext ctx, Func<ActionContext, ActionResult> run, Func<ActionContext, Exception, ActionResult> onError)
 		{
@@ -31,6 +33,13 @@ namespace Tango.UI
 		static ActionResult OnError(ActionContext ctx, Exception e)
 		{
 			return new HtmlResult(e.ToString().Replace(Environment.NewLine, "<br/>"), "");
+		}
+
+		static ActionResult OnErrorXml(ActionContext ctx, Exception e)
+		{
+			var text = e.ToString().Replace(Environment.NewLine, "<br/>");
+			var xml = new XDocument(new XElement("error", new XElement("errorcode", -1), new XElement("errortext", text)));
+			return new ContentResult { Content = xml.ToString(), ContentType = "text/xml" };
 		}
 
 		static ActionResult OnAjaxError(ActionContext ctx, Exception e)
