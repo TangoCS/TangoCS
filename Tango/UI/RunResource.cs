@@ -12,7 +12,7 @@ namespace Tango.UI
 		public static async Task Page<T>(ActionContext ctx) where T : ViewRootElement, new() => await Run(ctx, RunPage<T>, OnError);
 		public static async Task RunXml(ActionContext ctx) => await Run(ctx, c => c.RunAction(), OnErrorXml);
 
-		public static async Task Run(ActionContext ctx, Func<ActionContext, ActionResult> run, Func<ActionContext, Exception, ActionResult> onError)
+		public static async Task Run(ActionContext ctx, Func<ActionContext, ActionResult> run, Func<Exception, ActionResult> onError)
 		{
 			ActionResult r = null;
 			try
@@ -24,25 +24,29 @@ namespace Tango.UI
 				if (ctx.RequestServices.GetService(typeof(IErrorLogger)) is IErrorLogger errLogger)
 					errLogger.Log(e);
 
-				r = onError(ctx, e);
+				r = onError(e);
 			}
 
 			await r.ExecuteResultAsync(ctx);
 		}
 
-		static ActionResult OnError(ActionContext ctx, Exception e)
+		static ActionResult OnError(Exception e)
 		{
 			return new HtmlResult(e.ToString().Replace(Environment.NewLine, "<br/>"), "");
 		}
 
-		static ActionResult OnErrorXml(ActionContext ctx, Exception e)
+		public static XDocument ErrorMessage(int code, string text)
 		{
-			var text = e.ToString().Replace(Environment.NewLine, "<br/>");
-			var xml = new XDocument(new XElement("error", new XElement("errorcode", -1), new XElement("errortext", text)));
-			return new ContentResult { Content = xml.ToString(), ContentType = "text/xml" };
+			return new XDocument(new XElement("error", new XElement("errorcode", code), new XElement("errortext", text)));
 		}
 
-		static ActionResult OnAjaxError(ActionContext ctx, Exception e)
+		public static ActionResult OnErrorXml(Exception e)
+		{
+			var text = e.ToString().Replace(Environment.NewLine, "<br/>");
+			return new ContentResult { Content = ErrorMessage(-1, text).ToString(), ContentType = "text/xml" };
+		}
+
+		static ActionResult OnAjaxError(Exception e)
 		{
 			var api = new ApiResult();
 			api.ApiResponse.Data.Add("error", e.ToString().Replace(Environment.NewLine, "<br/>"));
