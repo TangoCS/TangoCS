@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Xml;
@@ -78,14 +81,13 @@ namespace Tango
 		/// <param name="assembly">Сборка с ресурсами (xslt)</param>
 		/// <param name="xslResource">Имя ресурса xslt</param>
 		/// <param name="output">Куда выводится результат</param>
-		public static void Transform(string xml, Assembly assembly, string xslResource, TextWriter output)
+		public static void Transform(string xml, string xslPath, TextWriter output)
 		{
-			var xslStream = assembly.GetManifestResourceStream(xslResource);
+			AppContext.SetSwitch("Switch.System.Xml.AllowDefaultResolver", true);
 			XslCompiledTransform xct = new XslCompiledTransform();
-			XmlReader styleSheet = XmlReader.Create(xslStream);
+			XmlReader styleSheet = XmlReader.Create(xslPath);
 			XsltSettings settings = new XsltSettings(true, true);
-			XmlResolver res = new XmlResolver(assembly);
-			xct.Load(styleSheet, settings, res);
+			xct.Load(styleSheet, settings, new XmlUrlResolver());
 			XmlReader xr = XmlReader.Create(new StringReader(xml));
 			xct.Transform(xr, null, output);
 		}
