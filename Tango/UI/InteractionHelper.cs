@@ -90,7 +90,7 @@ namespace Tango.UI
 
 				if (ps[i].ParameterType == typeof(Guid))
 					p[i] = context.GetGuidArg(name);
-				else if (ps[i].ParameterType == typeof(DateTime))
+				else if (ps[i].ParameterType == typeof(DateTime) || ps[i].ParameterType == typeof(DateTime?))
 					p[i] = context.GetDateTimeArg(name);
 				else
 				{
