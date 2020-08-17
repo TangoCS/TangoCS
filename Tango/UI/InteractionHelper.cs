@@ -92,6 +92,12 @@ namespace Tango.UI
 					p[i] = context.GetGuidArg(name);
 				else if (ps[i].ParameterType == typeof(DateTime) || ps[i].ParameterType == typeof(DateTime?))
 					p[i] = context.GetDateTimeArg(name);
+				else if (ps[i].ParameterType == typeof(int) || ps[i].ParameterType == typeof(int?))
+					p[i] = context.GetIntArg(name);
+				else if (ps[i].ParameterType == typeof(long) || ps[i].ParameterType == typeof(long?))
+					p[i] = context.GetLongArg(name);
+				else if (ps[i].ParameterType == typeof(bool) || ps[i].ParameterType == typeof(bool?))
+					p[i] = context.GetBoolArg(name);
 				else
 				{
 					string val = WebUtility.UrlDecode(context.GetArg(name));
