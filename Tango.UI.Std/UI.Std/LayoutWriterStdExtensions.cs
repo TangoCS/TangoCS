@@ -1,4 +1,5 @@
-﻿using Tango.Html;
+﻿using System;
+using Tango.Html;
 
 namespace Tango.UI.Std
 {
@@ -69,6 +70,24 @@ namespace Tango.UI.Std
 				w.ButtonsBarRight(() => {
 					w.SubmitButton();
 					w.BackButton();
+				});
+			});
+		}
+
+		public static void CollapsibleSidebar(this LayoutWriter w, string title, Action content)
+		{
+			w.Div(a => a.ID("sidebar").Class("sidebar").DataCtrl("sidebar"), () => {
+				w.Div(a => a.Class("sidebar-menu"), () => {
+					w.Ul(() => {
+						w.Li(() => w.Span(title));
+					});
+				});
+				w.Div(a => a.Class("sidebar-panel"), () => {
+					w.Div(a => a.Class("sidebar-header"), () => {
+						w.H3(title);
+						w.Div(a => a.Class("sidebar-close"), () => w.Icon("begin"));
+					});
+					content();
 				});
 			});
 		}
