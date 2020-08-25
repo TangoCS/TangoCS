@@ -43,7 +43,7 @@ namespace Tango.UI
 		public static ActionResult OnErrorXml(Exception e)
 		{
 			var text = e.ToString().Replace(Environment.NewLine, "<br/>");
-			return new ContentResult { Content = ErrorMessage(-1, text).ToString(), ContentType = "text/xml" };
+			return new ContentResult { Content = ErrorMessage(-1, text).ToString(), ContentType = "text/xml", StatusCode = HttpStatusCode.InternalServerError };
 		}
 
 		static ActionResult OnAjaxError(Exception e)

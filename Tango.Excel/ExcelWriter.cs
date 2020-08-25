@@ -128,6 +128,30 @@ namespace Tango.Excel
 			return p.Workbook.Worksheets.Select(x => x.Name.ToLower()).ToList();
 		}
 
+		/// <summary>
+		/// Расположение итоговых данных
+		/// Итоги в строках под данными 
+		/// </summary>
+		/// <param name="flag"></param>
+		/// <param name="index">Индекс Sheet</param>
+		public void SetOutLineSummaryBelow(int index, bool flag)
+        {
+            p.Workbook.Worksheets[index].OutLineSummaryBelow = flag;
+        }
+
+        /// <summary>
+        /// Расположение итоговых данных
+        /// Итоги в строках под данными 
+        /// </summary>
+        /// <param name="flag"></param>
+        public void SetOutLineSummaryBelowAllSheet(bool flag)
+        {
+            for (int i = 0; i < p.Workbook.Worksheets.Count; i++)
+            {
+                SetOutLineSummaryBelow(i, flag);
+            }
+        }
+
 		public void SetActiveSheet(int pos)
 		{
 			s = p.Workbook.Worksheets[pos];

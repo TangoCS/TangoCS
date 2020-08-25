@@ -132,7 +132,7 @@ namespace Tango
 			src = src.Replace("%3a", ":");
 			src = src.Replace("+", " ");
 
-			var formats = new List<string>(customFormats ?? new string[] { }) { "dd.MM.yyyy", "yyyy-MM-dd", "yyyyMMdd" }
+			var formats = new List<string>(customFormats ?? new string[] { }) { "dd.MM.yyyy HH:mm:ss", "dd.MM.yyyy HH:mm", "dd.MM.yyyy", "yyyy-MM-dd", "yyyyMMdd" }
 					.Where(x => x != null).ToArray();
 
 			if (DateTime.TryParseExact(src, formats, null, DateTimeStyles.None, out DateTime dt))

@@ -138,7 +138,7 @@ var listview = function (au, cu, cbcell) {
 				};
 
 				const e = el.getAttribute('data-e');
-				if (load && e)
+                if (load && e)
                     au.postEventFromElementWithApiResponse(el, { data: { rowid: tr.id, level: level, dataid: tr.getAttribute('data-rowid') } }).then(hideOthers);
 				else
 					hideOthers();
@@ -554,3 +554,25 @@ var listview = function (au, cu, cbcell) {
 	}
 	return instance;
 }(ajaxUtils, commonUtils, checkBoxCell);
+
+var sidebar = function () {
+	var instance = {
+		widgetWillMount: function (shadow, state) {
+			var handler = function (e) {
+				const root = document.getElementById(state.root);
+				if (root.classList.contains('collapsed'))
+					root.classList.remove('collapsed');
+				else
+					root.classList.add('collapsed');
+			};
+
+			const root = shadow.getElementById(state.root);
+			var btn = root.getElementsByClassName('sidebar-close')[0];
+			var menu = root.getElementsByClassName('sidebar-menu')[0];
+			btn.addEventListener('click', handler);
+			menu.addEventListener('click', handler);
+		}
+	}
+
+	return instance;
+}();
