@@ -25,7 +25,7 @@ namespace Tango.UI.Controls
 				for (int i = 0; i < tabPages.Length; i++)
 				{                   
                     var p = tabPages[i];
-                    w.Div(a => a.ID(p.ID + "_tabpage").Class(tabPages[i].Selected.HasValue ? (tabPages[i].Selected.Value ? "selected" : "") : (i == 0 ? "selected": "")), () => p.Content(w));                    
+                    w.Div(a => a.ID(p.ID + "_tabpage").Style(tabPages[i].Style).Class(tabPages[i].Selected.HasValue ? (tabPages[i].Selected.Value ? "selected" : "") : (i == 0 ? "selected": "")), () => p.Content(w));                    
                 }
 			});
 		}
@@ -37,15 +37,16 @@ namespace Tango.UI.Controls
 		public string Title { get; set; }
 		public Action<LayoutWriter> Content { get; set; }
         public bool? Selected { get; set; }
-
-		public StaticTabPage(string id, string title, Action<LayoutWriter> content, bool? selected = null)
+		public string Style { get; set; }
+		public StaticTabPage(string id, string title, Action<LayoutWriter> content, bool? selected = null, string style = null)
 		{
 			ID = id;
 			Title = title;
 			Content = content;
             Selected = selected;
+			Style = style;
 
-        }
+		}
 
 		public void Render(LayoutWriter w)
 		{
