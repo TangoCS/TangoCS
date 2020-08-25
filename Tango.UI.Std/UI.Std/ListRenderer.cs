@@ -206,7 +206,7 @@ namespace Tango.UI.Std
 			});
 		}
 
-		void SelectedBlock(LayoutWriter w, IFieldCollection<TResult> fields)
+		public void SelectedBlock(LayoutWriter w, IFieldCollection<TResult> fields)
 		{
 			Action<TagAttributes> selectedListAttrs = a => a.ID("selected").Class("listviewtable width100").DataCtrl("listview");
 			selectedListAttrs += fields.ListAttributes;
@@ -262,18 +262,19 @@ namespace Tango.UI.Std
 			}
 			else
 			{
-				w.Div(a => a.Class("treecontainer"), () => {
-					if (fields.EnableSelect)
-					{
-						w.Div(a => a.Style("flex:7;overflow-y:auto;"), () => MainBlock(w, result, fields));
-						w.GroupTitle("Выбранные объекты");
-						w.Div(a => a.Style("flex:3;overflow-y:auto;"), () => SelectedBlock(w, fields));
-					}
-					else
-					{
-						w.Div(() => MainBlock(w, result, fields));
-					}
-				});
+				MainBlock(w, result, fields);
+				//w.Div(a => a.Class("treecontainer"), () => {
+				//	if (fields.EnableSelect)
+				//	{
+				//		w.Div(a => a.Style("flex:7;overflow-y:auto;"), () => MainBlock(w, result, fields));
+				//		w.GroupTitle("Выбранные объекты");
+				//		w.Div(a => a.Style("flex:3;overflow-y:auto;"), () => SelectedBlock(w, fields));
+				//	}
+				//	else
+				//	{
+				//		w.Div(() => MainBlock(w, result, fields));
+				//	}
+				//});
 			}
 		}
 	}

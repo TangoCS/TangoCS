@@ -558,7 +558,6 @@ var listview = function (au, cu, cbcell) {
 var sidebar = function () {
 	var instance = {
 		widgetWillMount: function (shadow, state) {
-
 			var handler = function (e) {
 				const root = document.getElementById(state.root);
 				if (root.classList.contains('collapsed'))
@@ -567,8 +566,9 @@ var sidebar = function () {
 					root.classList.add('collapsed');
 			};
 
-			var btn = shadow.getElementsByClassName('sidebar-close')[0];
-			var menu = shadow.getElementsByClassName('sidebar-menu')[0];
+			const root = shadow.getElementById(state.root);
+			var btn = root.getElementsByClassName('sidebar-close')[0];
+			var menu = root.getElementsByClassName('sidebar-menu')[0];
 			btn.addEventListener('click', handler);
 			menu.addEventListener('click', handler);
 		}

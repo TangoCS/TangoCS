@@ -92,4 +92,10 @@ namespace Tango.UI.Std
 			});
 		}
 	}
+
+	public enum CollapsibleSidebarPosition
+	{
+		Left,
+		Right
+	}
 }

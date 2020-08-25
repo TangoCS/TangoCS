@@ -116,6 +116,20 @@ namespace Tango.UI
 			w.Div(a => a.Class("width100"), () => w.FormTable(a => a.ID().Set(attributes), content));
 		}
 
+		public static void FieldsBlockCollapsible(this LayoutWriter w, string title, Action content)
+		{
+			var id = Guid.NewGuid().ToString();
+			var js = "domActions.toggleClass({id: '" + w.GetID(id) + "', clsName: 'collapsed' })";
+
+			w.Div(a => a.ID(id).Class("fieldsblock"), () => {
+				w.Div(a => a.Class("fieldsblock-header").OnClick(js), () => {
+					w.Div(a => a.Class("fieldsblock-btn"), () => w.Icon("right"));
+					w.Div(a => a.Class("fieldsblock-title"), title);
+				});
+				w.Div(() => w.FormTable(a => a.ID(), content));
+			});
+		}
+
 
 
 		public static void GroupTitle(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
@@ -152,5 +166,20 @@ namespace Tango.UI
         {
             w.Div(a => a.Class("left"), content);
         }
-    }
+
+		public static void Icon(this HtmlWriter w, string name, string tip = null, string color = null)
+		{
+			w.I(a => {
+				a.Icon(name).Title(tip);
+				if (color != null)
+					a.Style("color:" + color);
+			});
+		}
+
+		public static T Icon<T>(this TagAttributes<T> a, string name)
+			where T : TagAttributes<T>
+		{
+			return a.Class("icon icon-" + name?.ToLower());
+		}
+	}
 }

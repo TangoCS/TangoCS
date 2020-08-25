@@ -221,7 +221,7 @@ namespace Tango.UI.Std
 			}
 		}
 
-		protected virtual bool CreateObjectMode => !Context.AllArgs.ContainsKey(Constants.Id);
+		protected virtual bool CreateObjectMode => !BulkMode && !Context.AllArgs.ContainsKey(Constants.Id);
 		protected virtual bool BulkMode => Context.AllArgs.ContainsKey(Constants.SelectedValues);
 		protected override string Title => CreateObjectMode ? CreateNewFormTitle : EditFormTitle;
 
@@ -272,7 +272,7 @@ namespace Tango.UI.Std
 			attr.SetValueID(ViewData, FormData.Parse(attr.Name, defaultValue));
 		}
 
-		protected IEnumerable<string> GetBulkEditProperties()
+		protected virtual IEnumerable<string> GetBulkEditProperties()
 		{
 			var updFields = new List<string>();
 			groups.ForEach(g => {

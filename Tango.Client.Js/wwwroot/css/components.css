@@ -1109,13 +1109,16 @@ div.tabs2 + div.tabs2 {
 	flex-direction: row;
 }
 
-	.sidebar > div:last-child {
+	.sidebar .sidebar-panel {
 		flex: 1;
+		
 	}
+
 
 .sidebar-header {
 	display: flex;
-	padding: 0 8px;
+	padding: 0px 8px 4px 8px;
+	/*margin-bottom: 4px;*/
 }
 
 .sidebar-menu:hover {
@@ -1180,6 +1183,7 @@ div.tabs2 + div.tabs2 {
 			transform-origin: 0 0;
 			white-space: nowrap;
 			margin: 10px 0;
+			width: 20px;
 		}
 
 .sidebar-panel {
@@ -1189,11 +1193,60 @@ div.tabs2 + div.tabs2 {
 
 	.sidebar-panel > div:last-child {
 		flex: 1;
-		height: 100%;
+		overflow-y: auto;
 	}
 
 .sidebar.collapsed {
 	width: 20px;
 	flex: inherit !important;
 	min-width: 0px !important;
+}
+
+/* collapsible fields block */
+.fieldsblock-btn {
+	width: 16px;
+	height: 14px;
+	display: inline-block;
+	background-color: #eee;
+	border-radius: 4px;
+	line-height: 11px;
+}
+
+	.fieldsblock-btn .icon {
+		min-width: 14px;
+		font-size: x-small;
+		font-weight: bold;
+	}
+
+	.fieldsblock-btn:hover {
+		background-color: #e5e5e5;
+	}
+
+	.fieldsblock-btn .icon {
+		transform: rotate(90deg);
+	}
+
+.collapsed .fieldsblock-btn {
+	padding: 0 2px;
+}
+
+	.collapsed .fieldsblock-btn .icon {
+		transform: inherit;
+	}
+
+.fieldsblock-header {
+	margin-bottom: 4px;
+	cursor: pointer;
+}
+
+.fieldsblock-title {
+	display: inline-block;
+	margin-left: 6px;
+	color: #5e6c84;
+	font-weight: 600;
+	vertical-align: middle;
+}
+
+.fieldsblock.collapsed > div:last-child {
+	display: none;
 }

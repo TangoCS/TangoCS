@@ -26,6 +26,12 @@ namespace Tango.UI.Std
 		int _count = 0;
 
 		protected override bool EnableViews => false;
+
+		public override ViewContainer GetContainer() => new SelectableTreeContainer {
+			EnableSelect = Fields.EnableSelect,
+			SelectedBlock = w => (Renderer as TreeListRenderer<TResult>).SelectedBlock(w, Fields)
+		};
+
 		public override void OnInit()
 		{
 			base.OnInit();
@@ -35,6 +41,7 @@ namespace Tango.UI.Std
 
 			Renderer = new TreeListRenderer<TResult>(ID, Paging, _level);
 		}
+
 
 		protected override int GetCount()
 		{
@@ -375,4 +382,32 @@ namespace Tango.UI.Std
 
 	}
 
+	public class SelectableTreeContainer : ViewContainer
+	{
+		public bool EnableSelect { get; set; }
+		public Action<LayoutWriter> SelectedBlock { get; set; }
+
+
+		public override void Render(ApiResponse response)
+		{
+			response.AddWidget("container", w => {
+				w.Div(a => a.ID("content").Class("content").DataContainer(Type, w.IDPrefix), () => {
+					if (!ToRemove.Contains("contentheader"))
+						w.ContentHeader();
+					w.Div(a => a.ID("contenttoolbar"));
+					if (EnableSelect)
+					{
+						w.Div(a => a.ID("contentbody").Class("contentbody").Style("flex:7;overflow-y:auto;"));
+						w.GroupTitle("Выбранные объекты");
+						w.Div(a => a.Style("flex:3;overflow-y:auto;"), () => SelectedBlock(w));
+					}
+					else
+					{
+						w.Div(a => a.ID("contentbody").Class("contentbody"));
+					}
+
+				});
+			});
+		}
+	}
 }
