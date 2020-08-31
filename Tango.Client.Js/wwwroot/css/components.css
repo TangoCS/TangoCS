@@ -461,6 +461,8 @@ button.close {
 
 	.paging2 .int {
 		cursor: pointer;
+		border-bottom: 1px dashed;
+		color: #3b73af;
 	}
 
 	.paging2 a.cnt {
