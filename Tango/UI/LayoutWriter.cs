@@ -116,7 +116,7 @@ namespace Tango.UI
 			w.Div(a => a.Class("width100"), () => w.FormTable(a => a.ID().Set(attributes), content));
 		}
 
-		public static void FieldsBlockCollapsible(this LayoutWriter w, string title, Action content)
+		public static void FieldsBlockCollapsible(this LayoutWriter w, string title, Action content, Action<TagAttributes> attributes = null)
 		{
 			var id = Guid.NewGuid().ToString();
 			var js = "domActions.toggleClass({id: '" + w.GetID(id) + "', clsName: 'collapsed' })";
@@ -126,7 +126,7 @@ namespace Tango.UI
 					w.Div(a => a.Class("fieldsblock-btn"), () => w.Icon("right"));
 					w.Div(a => a.Class("fieldsblock-title"), title);
 				});
-				w.Div(() => w.FormTable(a => a.ID(), content));
+				w.Div(() => w.FormTable(a => a.ID().Set(attributes), content));
 			});
 		}
 
