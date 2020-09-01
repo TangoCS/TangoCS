@@ -417,6 +417,10 @@ namespace Tango.Html
 		{
 			w.WriteTag("title", attributes, inner);
 		}
+		public static void HeadBase(this HtmlWriter w, Action<BaseTagAttributes> attributes)
+		{
+			w.WriteSelfClosingTag("base", attributes);
+		}
 
 		public static void Body(this HtmlWriter w, Action inner) { w.Body(null, inner); }
 		public static void Head(this HtmlWriter w, Action inner) { w.Head(null, inner); }
