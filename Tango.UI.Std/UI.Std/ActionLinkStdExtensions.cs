@@ -187,7 +187,10 @@ namespace Tango.UI.Std
 			else
 				return url.ToDelete(ac, obj, returnUrl);
 		}
-
+		public static ActionLink ToTree<T>(this ActionLink url, IAccessControl ac, string returnUrl = null)
+		{
+			return url.To(typeof(T), "tree", ac, returnurl: returnUrl);
+		}
 		public static ActionLink ToList<T>(this ActionLink url, IAccessControl ac, string returnUrl = null)
 		{
 			return url.To(typeof(T), "ViewList", ac, returnurl: returnUrl);
