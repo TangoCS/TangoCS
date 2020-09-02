@@ -114,6 +114,7 @@ namespace Tango.AspNetCore
 				parms = returnUrl.Substring(i);
 				returnUrl = returnUrl.Substring(0, i);
 			}
+			if (!returnUrl.StartsWith("/")) returnUrl = "/" + returnUrl;
 
 			var routes = RouteData.Routers.OfType<RouteCollection>().First();
 

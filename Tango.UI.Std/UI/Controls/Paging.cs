@@ -106,7 +106,7 @@ namespace Tango.UI.Controls
 				if (itemsCount == null || pageCount - pageIdx >= 1)
 					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx + 1).WithImage("right"), a => a.Data(dc));
 
-                if (itemsCount.HasValue)
+                if (itemsCount.HasValue && ((pageIdx > 2) || (pageCount > 1 && pageCount - pageIdx >= 2)))
 				{
 					w.DropDownForElement(paging.ID + "_cnt", () => {
 						if (pageIdx > 2)

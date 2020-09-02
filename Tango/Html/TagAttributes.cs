@@ -105,6 +105,12 @@ namespace Tango.Html
 		public ATagAttributes Type(string value) { Writer.WriteAttr("type", value); return this; }
 	}
 
+	public class BaseTagAttributes : TagAttributes<BaseTagAttributes>
+	{
+		public BaseTagAttributes Href(string value) { Writer.WriteAttr("href", value); return this; }
+		public BaseTagAttributes Target(Target value) { Writer.WriteAttr("target", value.ToString().ToLower()); return this; }
+	}
+
 	public class CanvasTagAttributes : TagAttributes<CanvasTagAttributes>
 	{
 		public CanvasTagAttributes Height(int value) { Writer.WriteAttr("height", value.ToString()); return this; }

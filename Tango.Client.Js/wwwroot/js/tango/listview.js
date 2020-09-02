@@ -352,12 +352,8 @@ var listview = function (au, cu, cbcell) {
                     el.setAttribute('data-loaded', '')
 
                     instance.openlevel(args, counter + 1)
-
-                }
-                );
-
+                });
             }
-
         }
 	}
 
@@ -448,9 +444,30 @@ var listview = function (au, cu, cbcell) {
 		del.addEventListener('click', function (e) {
 			var seltr = cu.getRow(e.currentTarget);
 			var origtr = document.getElementById(seltr.id.replace('_selected', ''));
-			var origcb = origtr.querySelector('.sel');
-			cbcell.setselected(origcb, onCheckChange);
-			updateSelected(origcb);
+			if (origtr) {
+				var origcb = origtr.querySelector('.sel');
+				cbcell.setselected(origcb, onCheckChange);
+				updateSelected(origcb);
+			} else {
+				var tr = seltr;
+				const level = parseInt(tr.getAttribute('data-level'));
+				while (tr) {
+					if (parseInt(tr.getAttribute('data-level')) > level) {
+						tr.parentNode.removeChild(tr);
+					}
+					tr = tr.nextElementSibling;
+				}
+				tr = seltr;
+				var isLastLeaf = false;
+				do {
+					var prev = tr.previousElementSibling;
+					tr.parentNode.removeChild(tr);
+					tr = prev;
+					var l = parseInt(tr.getAttribute('data-level'));
+					isLastLeaf = !tr.nextElementSibling ||
+						(parseInt(tr.nextElementSibling.getAttribute('data-level')) < l && parseInt(tr.previousElementSibling.getAttribute('data-level')) < l);
+				} while (tr && tr instanceof HTMLTableRowElement && isLastLeaf)
+			}
 		});
 	}
 
