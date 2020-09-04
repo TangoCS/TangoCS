@@ -60,7 +60,10 @@ namespace Tango.AspNetCore
 
 		public async Task SignIn(IIdentity user)
 		{
-			await _context.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(user));
+			var principal = new ClaimsPrincipal(user);
+			var scheme = CookieAuthenticationDefaults.AuthenticationScheme;
+
+			await _context.SignInAsync(scheme, principal);
 		}
 
 		public async Task SignOut()
