@@ -39,13 +39,6 @@ namespace Tango.UI.Navigation
 
 						w.DropDownForElement(menuid, () => {
 							w.RenderTwoLevelMenu(children, removed);
-							//foreach (var cm in children)
-							//{
-							//	w.A(a => a.Href(cm.Url).OnClickRunHref(), () => {
-							//		if (!cm.Image.IsEmpty()) w.Icon(cm.Image);
-							//		w.Write(cm.Title);
-							//	});
-							//}
 						}, new PopupOptions { CloseOnScroll = false } );
 					}
 					else
