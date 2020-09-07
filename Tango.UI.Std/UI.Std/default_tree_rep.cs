@@ -210,7 +210,7 @@ namespace Tango.UI.Std
 
 					while (template != null)
 					{
-						var row = template.GetRowID(id, temp);
+						var row = template.GetDataRowID(id, temp);
 						if (!template.IsTerminal)
 							rowsId.Add(row);
 
@@ -257,15 +257,15 @@ namespace Tango.UI.Std
 				var coll = nodeTemplate.GetKeyCollection(o);
 				foreach (var p in coll)
 					a.DataParm(p.Key, p.Value);
-				a.ID(nodeTemplate.RowID(o));
+				a.ID(nodeTemplate.GetHtmlRowID(_level, o));
 				a.DataEvent(OnExpandRow);
 
 				if (nodeTemplate.DataRef != null)
 					foreach (var _ref in nodeTemplate.DataRef(o))
 						a.DataRef("#"+_ref);
 
-				if (nodeTemplate.EnableSelect || nodeTemplate.SetRowId)
-					a.Data("rowid", nodeTemplate.GetRowID(_level, o));
+				if (nodeTemplate.EnableSelect || nodeTemplate.SetDataRowId)
+					a.Data("rowid", nodeTemplate.GetDataRowID(_level, o));
 			};
 
 			void content(LayoutWriter w, TResult o)
@@ -321,7 +321,6 @@ namespace Tango.UI.Std
 		public Expression<Func<TResult, object>> GroupBy { get; set; }
 		public Expression<Func<IGrouping<object, TResult>, object>> GroupBySelector { get; set; } = x => x.Key;
 		public Func<IQueryable<TResult>, IQueryable<TResult>> OrderBy { get; set; } = data => data;
-		public Func<TResult, string> RowID { get; set; } = o => "r_" + Guid.NewGuid().ToString();
 		public Action<LayoutWriter, TResult> Cell { get; set; }
 		public bool IsTerminal { get; set; } = false;
 		//public string Icon { get; set; }
@@ -329,7 +328,7 @@ namespace Tango.UI.Std
 		public Func<TResult, List<string>> DataRef { get; set; }
 		public Expression<Func<TResult, object>> Key { get; set; }
 		public bool EnableSelect { get; set; }
-		public bool SetRowId { get; set; }
+		public bool SetDataRowId { get; set; }
 		public TreeLevelDescription<TResult> ParentTemplate { get; set; }
 		public bool AllowNulls { get; set; } = false;
 
@@ -346,7 +345,8 @@ namespace Tango.UI.Std
 			return keyProperties;
 		}
 
-		public string GetRowID(int level, TResult o) => $"level={level}&" + (keyProperties ?? InitKeyProperties()).Select(p => p.Name + "=" + p.GetValue(o).ToString()).Join("&");
+		public string GetDataRowID(int level, TResult o) => $"level={level}&" + (keyProperties ?? InitKeyProperties()).Select(p => p.Name + "=" + p.GetValue(o).ToString()).Join("&");
+		public string GetHtmlRowID(int level, TResult o) => $"r_{level}_" + (keyProperties ?? InitKeyProperties()).Select(p => p.GetValue(o).ToString()).Join("_");
 
 		public IEnumerable<string> KeyProperties => (keyProperties ?? InitKeyProperties()).Select(p => p.Name);
 

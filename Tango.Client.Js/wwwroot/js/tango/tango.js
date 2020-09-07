@@ -1057,6 +1057,7 @@ var ajaxUtils = function ($, cu) {
 						node.value = this.join(',');
 					});
 					nodectrl[st.name] = ctrlvar;
+					node.value = ctrlvar.join(',');
 				} else if (st.type == 'value') {
 					Object.defineProperty(nodectrl, st.name, {
 						enumerable: true,

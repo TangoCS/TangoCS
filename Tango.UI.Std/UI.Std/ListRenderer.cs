@@ -227,25 +227,29 @@ namespace Tango.UI.Std
 
 		void MainBlock(LayoutWriter w, IEnumerable<TResult> result, IFieldCollection<TResult> fields)
 		{
-			Action<TagAttributes> listAttrs = a => a.ID().Class("listviewtable width100");
-			listAttrs += a => a.DataCtrl("listview");
+			Action<TagAttributes> listAttrs = a => a.ID("tree").Class("listviewtable width100");
+			//listAttrs += a => a.DataCtrl("listview");
 			listAttrs += fields.ListAttributes;
 
-			w.Table(listAttrs, () => {
-				var i = 0;
+			w.Div(a => a.ID().DataCtrl("listview"), () => {
+				w.Table(listAttrs, () => {
+					var i = 0;
 
-				foreach (var hr in fields.HeaderRows)
-				{
-					w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
-						foreach (var h in hr)
-							w.Th(h.Attributes, () => h.Content(w));
-					});
-					i++;
-				}
+					foreach (var hr in fields.HeaderRows)
+					{
+						w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
+							foreach (var h in hr)
+								w.Th(h.Attributes, () => h.Content(w));
+						});
+						i++;
+					}
 
-				RenderRows(w, result, fields);
+					RenderRows(w, result, fields);
+				});
+
+				if (fields.EnableSelect)
+					w.Hidden("selectedvalues", null, a => a.DataHasClientState(ClientStateType.Array, _id));
 			});
-			w.Hidden("selectedvalues", null, a => a.DataHasClientState(ClientStateType.Array, _id));
 		}
 
 		public override void Render(LayoutWriter w, IEnumerable<TResult> result, IFieldCollection<TResult> fields)
@@ -263,19 +267,9 @@ namespace Tango.UI.Std
 			else
 			{
 				MainBlock(w, result, fields);
-				//w.Div(a => a.Class("treecontainer"), () => {
-				//	if (fields.EnableSelect)
-				//	{
-				//		w.Div(a => a.Style("flex:7;overflow-y:auto;"), () => MainBlock(w, result, fields));
-				//		w.GroupTitle("Выбранные объекты");
-				//		w.Div(a => a.Style("flex:3;overflow-y:auto;"), () => SelectedBlock(w, fields));
-				//	}
-				//	else
-				//	{
-				//		w.Div(() => MainBlock(w, result, fields));
-				//	}
-				//});
 			}
+
+			if (rendererIsControl) w.PopPrefix();
 		}
 	}
 

@@ -105,7 +105,6 @@ var listview = function (au, cu, cbcell) {
 	var instance = {
 		togglerow: function (el) {
 			const tr = cu.getRow(el);
-			const root = tr.parentNode.parentNode;
 			const level = parseInt(tr.getAttribute('data-level')) || 0;
 			const elcellid = el.id || '';
 			const state = el.getAttribute('data-state') || 'collapsed';
@@ -262,7 +261,13 @@ var listview = function (au, cu, cbcell) {
 			const root = document.getElementById(state.root);
 			const cblist = root.querySelectorAll('.sel:not(.initialized)');
 			initCheckBoxes(cblist);
-
+			for (var i = 0; i < cblist.length; i++) {
+				const tr = cu.getRow(cblist[i]);
+				const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
+				if (index > -1) {
+					cbcell.setRowChecked(tr, cblist[i]);
+				}
+			}
 			initHighlight(root);
 		},
 		selectall: function (rootid) {
@@ -447,33 +452,53 @@ var listview = function (au, cu, cbcell) {
 			if (origtr) {
 				var origcb = origtr.querySelector('.sel');
 				cbcell.setselected(origcb, onCheckChange);
-				updateSelected(origcb);
-			} else {
-				var tr = seltr;
-				const level = parseInt(tr.getAttribute('data-level'));
-				while (tr) {
-					if (parseInt(tr.getAttribute('data-level')) > level) {
-						tr.parentNode.removeChild(tr);
-					}
-					tr = tr.nextElementSibling;
-				}
-				tr = seltr;
-				var isLastLeaf = false;
-				do {
-					var prev = tr.previousElementSibling;
-					tr.parentNode.removeChild(tr);
-					tr = prev;
-					var l = parseInt(tr.getAttribute('data-level'));
-					isLastLeaf = !tr.nextElementSibling ||
-						(parseInt(tr.nextElementSibling.getAttribute('data-level')) < l && parseInt(tr.previousElementSibling.getAttribute('data-level')) < l);
-				} while (tr && tr instanceof HTMLTableRowElement && isLastLeaf)
 			}
+			else {
+				const rootsel = au.findControl(seltr);
+				const state = au.state.ctrl[rootsel.id.replace('_selected', '')];
+				const rowid = seltr.getAttribute('data-rowid');
+				const index = state.selectedvalues.indexOf(rowid);
+				if (index > -1) {
+					state.selectedvalues.splice(index, 1);
+				}
+			}
+
+			var tocopy = [];
+			var level = parseInt(seltr.getAttribute('data-level'));
+			while (seltr) {
+				if (parseInt(seltr.getAttribute('data-level')) == level) {
+					tocopy.push(seltr);
+					level--;
+				}
+				seltr = seltr.previousElementSibling;
+			}
+			removeSelected(tocopy);
 		});
+	}
+
+	function removeSelected(tocopy) {
+		for (var i = 0; i < tocopy.length; i++) {
+			const el = document.getElementById(tocopy[i].id);
+			const isLastLeaf = !el.nextElementSibling || parseInt(el.nextElementSibling.getAttribute('data-level')) <= parseInt(el.getAttribute('data-level'));
+			const clickedEl = i == 0;
+			const unchecked = clickedEl || !el.hasAttribute('data-checked');
+			if (isLastLeaf && unchecked)
+				el.parentElement.removeChild(el);
+			else if (clickedEl) {
+				el.removeAttribute('data-checked');
+				var del = el.querySelector('.icon-delete');
+				if (del) del.parentElement.removeChild(del);
+			}
+			else if (isLastLeaf && !unchecked) {
+				var arr = el.querySelector('.togglelevel > span');
+				if (arr) arr.classList.add('hide');
+			}
+		}
 	}
 
 	function updateSelected(el) {
 		var tr = cu.getRow(el);
-		const root = tr.parentNode.parentNode;
+		const root = au.findControl(el);
 		const rootsel = document.getElementById(root.id + '_selected');
 		var level = parseInt(tr.getAttribute('data-level'));
 
@@ -515,23 +540,7 @@ var listview = function (au, cu, cbcell) {
 		}
 
 		if (remove) {
-			for (var i = 0; i < tocopy.length; i++) {
-				const el = document.getElementById(tocopy[i].id);
-				const isLastLeaf = !el.nextElementSibling || parseInt(el.nextElementSibling.getAttribute('data-level')) <= parseInt(el.getAttribute('data-level'));
-				const clickedEl = i == 0;
-				const unchecked = clickedEl || !el.hasAttribute('data-checked');
-				if (isLastLeaf && unchecked)
-					el.parentElement.removeChild(el);
-				else if (clickedEl) {
-					el.removeAttribute('data-checked');
-					var del = el.querySelector('.icon-delete');
-					if (del) del.parentElement.removeChild(del);
-				}
-				else if (isLastLeaf && !unchecked) {
-					var arr = el.querySelector('.togglelevel > span');
-					if (arr) arr.classList.add('hide');
-				}
-			}
+			removeSelected(tocopy);
 		}
 		else {
 			var parent = rootsel;

@@ -108,7 +108,7 @@ namespace Tango.UI
 	{
 		public TextResult(Func<ActionContext, string> getText)
 		{
-			ContentType = "text/plain";
+			ContentType = "text/plain; charset=UTF-8";
 			ContentFunc = ctx => Encoding.UTF8.GetBytes(getText(ctx));
 		}
 	}
