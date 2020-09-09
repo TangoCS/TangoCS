@@ -827,26 +827,39 @@ var ajaxUtils = function ($, cu) {
 	function processElementValue(el, setvalfunc) {
 		if (!el) return;
 
-		var val = null;
-
-		if (el.name !== undefined && el.type == 'checkbox' && !el.hasAttribute('disabled')) {
-			val = el.checked;
-		}
-		else if (el.name !== undefined && el.value !== undefined && !el.hasAttribute('disabled')) {
-			val = el.value;
-		}
-		else if (el.isContentEditable) {
-			val = el.innerText;
-		}
-
 		var parmname = null;
 		if (el.name)
 			parmname = el.name;
 		else if (el.hasAttribute('data-name'))
 			parmname = el.getAttribute('data-name');
 
-		if (val && parmname) {
-			setvalfunc(parmname, val);
+		if (parmname) {
+			var val = null;
+
+			if (el.name !== undefined && el.type == 'checkbox' && !el.hasAttribute('disabled')) {
+				val = el.checked;
+			}
+			else if (el.name !== undefined && el.type == 'select-multiple' && !el.hasAttribute('disabled')) {
+				parmname = parmname.replace('[]', '');
+				var result = [];
+				for (var i = 0, iLen = el.options.length; i < iLen; i++) {
+					const opt = el.options[i];
+					if (opt.selected) {
+						result.push(opt.value || opt.text);
+					}
+				}
+				val = result.join(',');
+			}
+			else if (el.name !== undefined && el.value !== undefined && !el.hasAttribute('disabled')) {
+				val = el.value;
+			}
+			else if (el.isContentEditable) {
+				val = el.innerText;
+			}
+
+			if (val) {
+				setvalfunc(parmname, val);
+			}
 		}
 
 		for (var i = 0; i < el.children.length; i++) {
@@ -1044,6 +1057,7 @@ var ajaxUtils = function ($, cu) {
 						node.value = this.join(',');
 					});
 					nodectrl[st.name] = ctrlvar;
+					node.value = ctrlvar.join(',');
 				} else if (st.type == 'value') {
 					Object.defineProperty(nodectrl, st.name, {
 						enumerable: true,
@@ -1267,6 +1281,12 @@ var ajaxUtils = function ($, cu) {
 		window.addEventListener('popstate', function (event) {
 			const s = window.history.state;
 			if (!s) return;
+
+			if (!s.parms) {
+				s.parms = [];
+				s.parms['p'] = state.loc.parms['p'];
+				s.url = window.location.pathname + window.location.search;
+			}
 
 			if (state.loc.parms['c-new'] == 1) {
 				s.parms['c-new'] = 1;

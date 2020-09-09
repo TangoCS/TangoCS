@@ -21,15 +21,21 @@ namespace Tango.AspNetCore
 
 			if (result.Headers.Count > 0)
 				foreach (var header in result.Headers)
-					context.Response.Headers.Add(header.Key, header.Value);
+					if (!context.Response.Headers.ContainsKey(header.Key))
+						context.Response.Headers.Add(header.Key, header.Value);
 
 			if (!result.ContentType.IsEmpty())
 				context.Response.ContentType = result.ContentType;
+			else
+				context.Response.ContentType = "text/html; charset=UTF-8";
 
 			context.Response.StatusCode = (int)result.StatusCode;
 
 			if (actionContext.RequestID != null)
 				context.Response.Headers["X-Request-Guid"] = actionContext.RequestID.ToString();
+
+			if (!result.Location.IsEmpty())
+				context.Response.Redirect(result.Location);
 
 			if (result.ContentFunc != null)
 			{

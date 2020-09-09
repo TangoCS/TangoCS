@@ -25,6 +25,8 @@ namespace Tango.UI
 		public Dictionary<string, string> Cookies { get; private set; } = new Dictionary<string, string>();
 		[JsonIgnore]
 		public Func<ActionContext, byte[]> ContentFunc { get; protected set; }
+		[JsonIgnore]
+		public string Location { get; set; }
 
 		public override Task ExecuteResultAsync(ActionContext context)
 		{
@@ -106,7 +108,7 @@ namespace Tango.UI
 	{
 		public TextResult(Func<ActionContext, string> getText)
 		{
-			ContentType = "text/plain";
+			ContentType = "text/plain; charset=UTF-8";
 			ContentFunc = ctx => Encoding.UTF8.GetBytes(getText(ctx));
 		}
 	}
@@ -115,11 +117,19 @@ namespace Tango.UI
 	{
 		public string Url { get; set; }
 
-		public RedirectResult(string url)
+		public RedirectResult(string url, bool isHardRedirect = false)
 		{
-			Url = url;
-			ContentType = "application/json";
-			ContentFunc = ctx => Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(this, Json.StdSettings));
+			if (isHardRedirect)
+			{
+				Location = url;
+				StatusCode = HttpStatusCode.Found;
+			}
+			else
+			{
+				Url = url;
+				ContentType = "application/json";
+				ContentFunc = ctx => Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(this, Json.StdSettings));
+			}
 		}
 	}
 
@@ -128,7 +138,7 @@ namespace Tango.UI
 		int _code = 0;
 
 		public RedirectBackResult(int code) : base(null) { _code = code; }
-		public RedirectBackResult(string url = null) : base(url) { }
+		public RedirectBackResult(string url = null, bool isHardRedirect = false) : base(url, isHardRedirect) { }
 
 		public override Task ExecuteResultAsync(ActionContext context)
 		{
@@ -143,7 +153,8 @@ namespace Tango.UI
 	public class SignInResult : RedirectBackResult
 	{
 		IIdentity _user;
-		public SignInResult(IIdentity user)
+
+		public SignInResult(IIdentity user, string redirecturi = null) : base(redirecturi, redirecturi != null)
 		{
 			_user = user;
 		}

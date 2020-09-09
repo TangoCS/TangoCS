@@ -610,9 +610,9 @@ namespace Tango.Excel
 			{
 				writer.s.Cells[writer.r, writer.c].Style.WrapText = true;
 				writer.s.Cells[writer.r, writer.c].Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-				writer.s.Cells[writer.r, writer.c + 1].Style.Border.Left.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+				writer.s.Cells[writer.r, writer.c].Style.Border.Right.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
 				writer.s.Cells[writer.r, writer.c].Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
-				writer.s.Cells[writer.r + 1, writer.c].Style.Border.Top.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
+				writer.s.Cells[writer.r, writer.c].Style.Border.Bottom.Style = OfficeOpenXml.Style.ExcelBorderStyle.Thin;
 
 				if (rowSpan > 1 || colSpan > 1)
 					writer.s.Cells[writer.r, writer.c, writer.r + rowSpan - 1, writer.c + colSpan - 1].Merge = true; ;
