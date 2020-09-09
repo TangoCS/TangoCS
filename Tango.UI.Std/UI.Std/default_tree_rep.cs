@@ -273,9 +273,13 @@ namespace Tango.UI.Std
 				if (nodeTemplate.EnableSelect)
 					w.Span(a => a.Class("sel"), () => w.Icon("checkbox-unchecked"));
 
+				if (nodeTemplate.IconFlag != null)
+					foreach (var ic in nodeTemplate.IconFlag(o).Split(','))
+						w.I(a => a.Class("nodeicon").IconFlag(ic.Trim()));
+
 				if (nodeTemplate.Icon != null)
 					foreach (var ic in nodeTemplate.Icon(o).Split(','))
-						w.I(a => a.Class("nodeicon").Icon(ic.Trim()));
+						w.I(a => a.Class("nodeicon").Icon(ic.Trim()));				
 
 				nodeTemplate.Cell(w, o);
 			}
@@ -326,6 +330,7 @@ namespace Tango.UI.Std
 		public bool IsTerminal { get; set; } = false;
 		//public string Icon { get; set; }
 		public Func<TResult, string> Icon { get; set; }
+		public Func<TResult, string> IconFlag { get; set; }
 		public Func<TResult, List<string>> DataRef { get; set; }
 		public Expression<Func<TResult, object>> Key { get; set; }
 		public bool EnableSelect { get; set; }
