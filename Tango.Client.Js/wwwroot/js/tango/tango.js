@@ -1282,6 +1282,12 @@ var ajaxUtils = function ($, cu) {
 			const s = window.history.state;
 			if (!s) return;
 
+			if (!s.parms) {
+				s.parms = [];
+				s.parms['p'] = state.loc.parms['p'];
+				s.url = window.location.pathname + window.location.search;
+			}
+
 			if (state.loc.parms['c-new'] == 1) {
 				s.parms['c-new'] = 1;
 				s.parms['e'] = DEF_EVENT_NAME;
