@@ -17,6 +17,8 @@ namespace Tango.UI.Std
 		[Inject]
 		protected ITypeActivatorCache TypeActivatorCache { get; set; }
 		[Inject]
+		protected IListPagingRenderer PagingRenderer { get; set; }
+		[Inject]
 		protected IPersistentFilterStore<int> filterStore { get; set; }
 
 		protected string _qSearch = "";
@@ -196,7 +198,16 @@ namespace Tango.UI.Std
 		protected void RenderPaging(ApiResponse response)
 		{
 			if (Sections.RenderPaging)
-				response.ReplaceWidget(Paging.ID, w => Paging.Render2(w, _itemsCount, a => a.RunEvent(OnSetPage), a => a.PostEvent(GetObjCount)));
+			{
+				response.ReplaceWidget(Paging.ID, w => {
+					var opt = new PagingRenderOptions {
+						ItemsCount = _itemsCount,
+						PageActionAttributes = a => a.RunEvent(OnSetPage),
+						ObjCountActionAttributes = a => a.PostEvent(GetObjCount)
+					};
+					PagingRenderer.Render(Paging, w, opt);
+				});
+			}
 		}
 
 		protected void RenderToolbar(ApiResponse response)

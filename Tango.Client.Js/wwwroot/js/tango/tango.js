@@ -568,6 +568,13 @@ var ajaxUtils = function ($, cu) {
 				if (curpath == '/') curpath = alias || '/';
 				if (targetpath == '/') targetpath = alias || '/';
 			}
+			var base = document.getElementsByTagName('base')[0];
+			base = base ? base.getAttribute('href') : '';
+			if (base && !targetpath.startsWith(base))
+				targetpath = base + targetpath;
+			if (base && !curpath.startsWith(base))
+				curpath = base + curpath;
+
 			if (targetpath != curpath) {
 				parms['c-new'] = 1;
 			}
