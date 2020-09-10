@@ -506,6 +506,8 @@ namespace Tango.Excel
 					writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
 				if (style?.GetVerticalAlign() == "middle")
 					writer.s.Cells[writer.r, writer.c].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+				if (style?.GetVerticalAlign() == "top")
+					writer.s.Cells[writer.r, writer.c].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
 				if (style?.GetFontWeight() == "bold")
 					writer.s.Cells[writer.r, writer.c].Style.Font.Bold = true;
 				if (style?.GetFontStyle() == "italic")
@@ -626,6 +628,10 @@ namespace Tango.Excel
 					writer.s.Cells[writer.r, writer.c].Style.HorizontalAlignment = OfficeOpenXml.Style.ExcelHorizontalAlignment.Left;
 				if (style?.GetVerticalAlign() == "middle")
 					writer.s.Cells[writer.r, writer.c].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Center;
+				if (style?.GetVerticalAlign() == "top")
+					writer.s.Cells[writer.r, writer.c].Style.VerticalAlignment = OfficeOpenXml.Style.ExcelVerticalAlignment.Top;
+				if ((style?.GetPaddingLeft() ?? "") != "")
+					writer.s.Cells[writer.r, writer.c].Style.Indent = style.GetPaddingLeft().Replace("px", "").Trim().ToInt32(0) / 10;
 				if (style?.GetFontWeight() == "bold")
 					writer.s.Cells[writer.r, writer.c].Style.Font.Bold = true;
 				if (style?.GetFontStyle() == "italic")
