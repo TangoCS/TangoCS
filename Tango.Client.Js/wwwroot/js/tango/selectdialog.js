@@ -168,7 +168,7 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 					const elSel = document.getElementById(id + '_selected');
 					const isSingleMode = state && state.hasOwnProperty('selectedvalue');
 
-					if (e.keyCode == 8 && elFilter.value == '') {
+					if (e.keyCode == 8 && elFilter.value == '' && !elFilter.hasAttribute('readonly')) {
 						instance.clear(elSel.lastChild);
 						return;
 					}

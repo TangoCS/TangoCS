@@ -341,8 +341,15 @@ namespace Tango.UI
 			return null;
 		}
 
+        public static byte[] GetBytesArg(this ActionContext ctx, string name)
+        {
+            if (name == null) return null;
+            bool b = ctx.AllArgs.TryGetValue(name, out object s);
+            if (b) return Convert.FromBase64String(s.ToString());
+            return null;
+        }
 
-		public static T GetArg<T>(this ActionContext ctx, string name, T defaultValue = default)
+        public static T GetArg<T>(this ActionContext ctx, string name, T defaultValue = default)
 		{
 			return ctx.AllArgs.Parse<T>(name, defaultValue);
 		}

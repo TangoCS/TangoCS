@@ -568,6 +568,13 @@ var ajaxUtils = function ($, cu) {
 				if (curpath == '/') curpath = alias || '/';
 				if (targetpath == '/') targetpath = alias || '/';
 			}
+			var base = document.getElementsByTagName('base')[0];
+			base = base ? base.getAttribute('href') : '';
+			if (base && !targetpath.startsWith(base))
+				targetpath = base + targetpath;
+			if (base && !curpath.startsWith(base))
+				curpath = base + curpath;
+
 			if (targetpath != curpath) {
 				parms['c-new'] = 1;
 			}
@@ -1281,6 +1288,12 @@ var ajaxUtils = function ($, cu) {
 		window.addEventListener('popstate', function (event) {
 			const s = window.history.state;
 			if (!s) return;
+
+			if (!s.parms) {
+				s.parms = [];
+				s.parms['p'] = state.loc.parms['p'];
+				s.url = window.location.pathname + window.location.search;
+			}
 
 			if (state.loc.parms['c-new'] == 1) {
 				s.parms['c-new'] = 1;

@@ -181,5 +181,13 @@ namespace Tango.UI
 		{
 			return a.Class("icon icon-" + name?.ToLower());
 		}
+		public static void IconFlag<T>(this TagAttributes<T> a, string name, bool issquare = false)
+			where T : TagAttributes<T>
+		{
+			if (!issquare)
+				 a.Class("flag-icon flag-icon-" + name?.ToLower());
+			else
+				a.Class("flag-icon flag-icon-" + name?.ToLower() + " flag-icon-squared");
+		}
 	}
 }

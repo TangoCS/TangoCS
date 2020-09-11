@@ -98,8 +98,10 @@ namespace Tango.UI
 					p[i] = context.GetLongArg(name);
 				else if (ps[i].ParameterType == typeof(bool) || ps[i].ParameterType == typeof(bool?))
 					p[i] = context.GetBoolArg(name);
-				else
-				{
+                else if (ps[i].ParameterType == typeof(byte[]))
+                    p[i] = context.GetBytesArg(name);
+                else
+                {
 					string val = WebUtility.UrlDecode(context.GetArg(name));
 					if (!val.IsEmpty())
 						p[i] = Convert.ChangeType(val, ps[i].ParameterType);
