@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Tango.Html;
 
@@ -36,6 +37,8 @@ namespace Tango.UI.Controls
 		public int? ItemsCount { get; set; }
 		public Action<ActionLink> PageActionAttributes { get; set; }
 		public Action<ActionLink> ObjCountActionAttributes { get; set; }
+		public Action<InputTagAttributes> GoToPageActionAttributes { get; set; }
+		public Action<SelectTagAttributes> SetPageSizeActionAttributes { get; set; }
 	}
 
 	// для окна выбора
@@ -162,19 +165,16 @@ namespace Tango.UI.Controls
 				var to = itemsCount != null && pageIdx * paging.PageSize > itemsCount ? itemsCount : pageIdx * paging.PageSize;
 
 				w.Span(a => a.ID(paging.ID + "_cnt"), () => {
-					w.Write($"Показаны&nbsp;позиции&nbsp;с&nbsp;{from}&nbsp;по&nbsp;{to}&nbsp;из&nbsp;{itemsCount}&nbsp;");
+					w.Write($"Показаны&nbsp;позиции&nbsp;с&nbsp;");
+					w.B(from.ToString());
+					w.Write($"&nbsp;по&nbsp;");
+					w.B(to.ToString());
+					w.Write($"&nbsp;из&nbsp;");
+					w.B(itemsCount.ToString());
+					w.Write($"&nbsp;&nbsp;");
 				});
 
 				var dc = paging.ParentElement.DataCollection;
-
-				//w.Write($"&nbsp;{res.Get("Common.Paging.From")}&nbsp;");
-				//w.B(() => {
-				//	if (itemsCount.HasValue)
-				//		w.Write(itemsCount.Value.ToString());
-				//	else
-				//		w.ActionLink(a => a.ToCurrent().Set(objCountActionAttributes).WithTitle("?"), a => a.Class("cnt").Data(dc));
-				//});
-				//w.Write("&nbsp;");
 
 				if (pageIdx > 2)
 					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, 1).WithImage("begin"), a => a.Data(dc));
@@ -182,9 +182,12 @@ namespace Tango.UI.Controls
 				if (pageIdx > 1)
 					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx - 1).WithImage("left"), a => a.Data(dc));
 
-				w.Span("&nbsp;Страница&nbsp;");
-				w.TextBox(paging.ID + "_go", pageIdx.ToString(), a => a.Style("width:30px"));
-				w.Span($"&nbsp;из&nbsp;{pageCount}&nbsp;");
+				if (pageCount > 1)
+				{
+					w.Span("&nbsp;Страница&nbsp;");
+					w.TextBox("go", pageIdx.ToString(), a => a.Style("width:30px").Set(options.GoToPageActionAttributes));
+					w.Span($"&nbsp;из&nbsp;{pageCount}&nbsp;");
+				}
 
 				if (itemsCount == null || pageCount - pageIdx >= 1)
 					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx + 1).WithImage("right"), a => a.Data(dc));
@@ -192,15 +195,14 @@ namespace Tango.UI.Controls
 				if (pageCount > 1 && pageCount - pageIdx >= 2)
 					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageCount).WithImage("end"), a => a.Data(dc));
 
-				//if (itemsCount.HasValue && ((pageIdx > 2) || (pageCount > 1 && pageCount - pageIdx >= 2)))
-				//{
-				//	w.DropDownForElement(paging.ID + "_cnt", () => {
-				//		if (pageIdx > 2)
-				//			w.ActionLink(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, 1).WithTitle(r => r.Get("Common.Paging.First")), a => a.Data(dc).DataContainerExternal(paging.ParentElement.ClientID));
-				//		if (pageCount > 1 && pageCount - pageIdx >= 2)
-				//			w.ActionLink(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageCount).WithTitle(r => r.Get("Common.Paging.Last")), a => a.Data(dc).DataContainerExternal(paging.ParentElement.ClientID));
-				//	});
-				//}
+				w.Span("&nbsp;Элементов&nbsp;на&nbsp;странице:&nbsp;");
+				w.DropDownList(new InputName { ID = "psize", Name = paging.ParentElement.GetClientID("psize") }, 
+					paging.PageSize.ToString(), new List<SelectListItem> {
+					new SelectListItem("10", "10"),
+					new SelectListItem("50", "50"),
+					new SelectListItem("100", "100"),
+					new SelectListItem("1000", "1000")
+				}, a => a.Set(options.SetPageSizeActionAttributes));
 			});
 		}
 	}

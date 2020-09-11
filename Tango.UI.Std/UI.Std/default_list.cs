@@ -22,7 +22,7 @@ namespace Tango.UI.Std
 		protected IPersistentFilterStore<int> filterStore { get; set; }
 
 		protected string _qSearch = "";
-		protected string _qSearchParmName => ClientID + "_qsearch";
+		protected string _qSearchParmName => GetClientID("qsearch");
 		protected IFieldCollection<TEntity, TResult> _fields;
 		protected IFieldCollection<TEntity, TResult> Fields
 		{
@@ -141,6 +141,9 @@ namespace Tango.UI.Std
 			
 			Paging = CreateControl<Paging>("page", p => {
 				p.PageIndex = Context.GetIntArg(p.ClientID, 1);
+				var size = Context.GetIntArg(GetClientID("psize"));
+				if (size != null)
+					p.PageSize = size.Value;
 			});
 			Sorter = CreateControl<Sorter<TEntity>>("sort", s => {
 				s.OnSort = OnSetPage;
@@ -203,7 +206,9 @@ namespace Tango.UI.Std
 					var opt = new PagingRenderOptions {
 						ItemsCount = _itemsCount,
 						PageActionAttributes = a => a.RunEvent(OnSetPage),
-						ObjCountActionAttributes = a => a.PostEvent(GetObjCount)
+						ObjCountActionAttributes = a => a.PostEvent(GetObjCount),
+						GoToPageActionAttributes = a => a.OnEnterPostEvent(OnSetPage),
+						SetPageSizeActionAttributes = a => a.DataEvent(OnSetPage).OnChangeRunHref()
 					};
 					PagingRenderer.Render(Paging, w, opt);
 				});
@@ -280,6 +285,10 @@ namespace Tango.UI.Std
 
 		public void OnSetPage(ApiResponse response)
 		{
+			var page_go = Context.GetIntArg("go");
+			if (page_go != null)
+				Paging.PageIndex = page_go.Value;
+			
 			response.AddWidget(Sections.ContentBody, Render);
 			RenderPaging(response);
 		}

@@ -23,6 +23,12 @@ namespace Tango.Html
 			return a.OnClick("ajaxUtils.runHrefWithApiResponse(this); return false;");
 		}
 
+		public static T OnChangeRunHref<T>(this T a)
+			where T : TagAttributes<T>
+		{
+			return a.OnChange("ajaxUtils.runHrefWithApiResponse(this); return false;");
+		}
+
 		public static T OnClickRunEvent<T>(this TagAttributes<T> a)
 			where T : TagAttributes<T>
 		{
@@ -87,6 +93,11 @@ namespace Tango.Html
             if (receiver != null) a.Data("r", receiver);
             return a.Data("e", name).OnChange("ajaxUtils.postEventFromElementWithApiResponse(this)");
         }
+
+		public static InputTagAttributes OnEnterPostEvent(this InputTagAttributes a, Action<ApiResponse> action)
+		{
+			return a.DataEvent(action).OnKeyUp("if (event.key=='Enter') ajaxUtils.postEventFromElementWithApiResponse(this)");
+		}
 
 		public static InputTagAttributes OnChangeRunEvent(this InputTagAttributes a, Action<ApiResponse> action)
 		{
