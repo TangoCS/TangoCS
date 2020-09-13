@@ -67,7 +67,7 @@ namespace Tango.UI.Controls
 
 		void RenderFilter(LayoutWriter w)
 		{
-			w.Input(FilterFieldName, a => {
+			w.TextBox(FilterFieldName, "", a => {
 				a.ID(FilterFieldName).Class("filter").Autocomplete(false);
 				if (Field.Disabled) a.Readonly(true);
 			});
