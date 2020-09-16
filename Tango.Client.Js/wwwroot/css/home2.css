@@ -103,7 +103,7 @@ header {
 	margin: 0;
 }
 
-	.header-buttons a {
+	.header-buttons li > a {
 		text-decoration: none;
 		color: white;
 		padding: 0px 10px;
