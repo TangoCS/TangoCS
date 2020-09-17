@@ -81,27 +81,7 @@ namespace Tango.UI.Std
 			}
 		}
 
-		protected void ToCreateNew<T>(MenuBuilder t, Action<ActionLink> attrs = null, bool imageOnly = false)
-		{
-			t.ItemSeparator();
-			var key = typeof(T).GetResourceType().Name + "." + Constants.OpView;
-			Action<ActionLink> attrs1 = null;
-			if (TypeActivatorCache.Get(key).HasValue)
-			{
-				var retUrl1 = new ActionLink(Context).To<T>(Constants.OpView).WithArg(Constants.Id, "@ID").Url;
-				var retUrl0 = Context.CreateReturnUrl(1);
-				attrs1 = x => x.ToCreateNew<T>(AccessControl, null, retUrl1)
-					.WithArg(Constants.ReturnUrl + "_0", retUrl0)
-					.Set(attrs);
-			}
-			else
-				attrs1 = x => x.ToCreateNew<T>(AccessControl).Set(attrs);
-
-			if (imageOnly)
-				t.ItemActionImage(attrs1);
-			else
-				t.ItemActionImageText(attrs1);
-		}
+		
 
 		protected void ToDeleteBulk(MenuBuilder t)
 		{
@@ -115,7 +95,7 @@ namespace Tango.UI.Std
 		protected virtual void ToolbarLeft(MenuBuilder t)
 		{
 			t.ItemFilter(Filter);
-			ToCreateNew<TEntity>(t);
+			t.ToCreateNew<TEntity>();
 			ToDeleteBulk(t);
 		}
 
@@ -435,6 +415,34 @@ namespace Tango.UI.Std
 		public static void ZebraStripping(this TagAttributes a, int rnum)
 		{
 			if (rnum % 2 != 0) a.Class("alt");
+		}
+	}
+
+	public static class ToolbarExtensions
+	{
+		public static void ToCreateNew<T>(this MenuBuilder t, Action<ActionLink> attrs = null, bool imageOnly = false)
+		{
+			var ac = t.Context.RequestServices.GetService(typeof(IAccessControl)) as IAccessControl;
+			var tac = t.Context.RequestServices.GetService(typeof(ITypeActivatorCache)) as ITypeActivatorCache;
+
+			t.ItemSeparator();
+			var key = typeof(T).GetResourceType().Name + "." + Constants.OpView;
+			Action<ActionLink> attrs1 = null;
+			if (tac.Get(key).HasValue)
+			{
+				var retUrl1 = new ActionLink(t.Context).To<T>(Constants.OpView).WithArg(Constants.Id, "@ID").Url;
+				var retUrl0 = t.Context.CreateReturnUrl(1);
+				attrs1 = x => x.ToCreateNew<T>(ac, null, retUrl1)
+					.WithArg(Constants.ReturnUrl + "_0", retUrl0)
+					.Set(attrs);
+			}
+			else
+				attrs1 = x => x.ToCreateNew<T>(ac).Set(attrs);
+
+			if (imageOnly)
+				t.ItemActionImage(attrs1);
+			else
+				t.ItemActionImageText(attrs1);
 		}
 	}
 }
