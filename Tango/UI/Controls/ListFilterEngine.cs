@@ -87,9 +87,15 @@ namespace Tango.UI.Controls
 					else
 					{
 						var colexpr = Expression.Convert(column.Body, valType);
-						var valexpr = item.FieldType == FieldType.Guid ?
-							(Expression)Expression.Constant(Guid.Parse(val.ToString().Trim())) :
-							Expression.Convert(Expression.Constant(val), valType);
+						Expression valexpr = default;
+						if (item.FieldType == FieldType.Guid)
+						{
+							if (!Guid.TryParse(val.ToString().Trim(), out var g))
+								g = Guid.Empty;
+							valexpr = Expression.Constant(g);
+						}
+						else
+							valexpr = Expression.Convert(Expression.Constant(val), valType);
 
 						if (item.Condition == "=")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(colexpr, valexpr), column.Parameters);
