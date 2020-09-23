@@ -355,12 +355,12 @@ var ajaxUtils = function ($, cu) {
 		},
 		error: function (xhr, status, e) {
 			var text = '';
-			var title = 'System error';
+			var title = 'Системная ошибка';
 			var showinframe = false;
 			var severity = 'err';
 
 			if (e && e.message) {
-				title = 'Javascript error';
+				title = 'Ошибка javascript';
 				text = e.message + '<br>' + e.stack;
 			}
 			else if (xhr.status == '401') {
@@ -384,7 +384,7 @@ var ajaxUtils = function ($, cu) {
 				severity = 'warn';
 			}
 			else if (e && this.url && xhr.status != '500') {
-				title = 'Ajax error';
+				title = 'Ошибка ajax';
 				text = this.url + '<br>' + xhr.status + ' ' + e;
 			}
 			else {
@@ -940,7 +940,7 @@ var ajaxUtils = function ($, cu) {
 		state.com.apiResult = null;
 
 		if (apiResult.error) {
-			showError('Server error', apiResult.error, 'err');
+			showError('Системная ошибка', apiResult.error, 'err');
 			return;
 		}
 

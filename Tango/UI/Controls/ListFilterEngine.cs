@@ -50,6 +50,7 @@ namespace Tango.UI.Controls
 
 					Type valType = ColumnType(column);
 					object val = ConvertValue(valType, item);
+					var isEmptyValue = item.Value == "";
 
 					if (item.FieldType == FieldType.String && item.Condition == Resources.Get("System.Filter.Contains"))
 					{
@@ -79,10 +80,17 @@ namespace Tango.UI.Controls
 					}
 					else if (item.FieldType == FieldType.Boolean || item.FieldType == FieldType.String)
 					{
+						var colexpr = Expression.Convert(column.Body, valType);
+						var valexpr = Expression.Constant(val, valType);
 						if (item.Condition == "=")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);
+						{
+							var cond = Expression.Equal(colexpr, valexpr);
+							if (isEmptyValue && item.FieldType == FieldType.String)
+								cond = Expression.Or(cond, Expression.Equal(colexpr, Expression.Constant(null, typeof(object))));
+							expr = Expression.Lambda<Func<T, bool>>(cond, column.Parameters);
+						}
 						else if (item.Condition == "<>")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(Expression.Convert(column.Body, valType), Expression.Constant(val, valType)), column.Parameters);
+							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(colexpr, valexpr), column.Parameters);
 					}
 					else
 					{
@@ -98,21 +106,26 @@ namespace Tango.UI.Controls
 							valexpr = Expression.Convert(Expression.Constant(val), valType);
 
 						if (item.Condition == "=")
-							expr = Expression.Lambda<Func<T, bool>>(Expression.Equal(colexpr, valexpr), column.Parameters);
+						{
+							var cond = Expression.Equal(colexpr, valexpr);
+							if (isEmptyValue)
+								cond = Expression.Or(cond, Expression.Equal(colexpr, Expression.Constant(null, typeof(object))));
+							expr = Expression.Lambda<Func<T, bool>>(cond, column.Parameters);
+						}
 
-						else if(item.Condition == ">=" || item.Condition == Resources.Get("System.Filter.LastXDays"))
+						else if (item.Condition == ">=" || item.Condition == Resources.Get("System.Filter.LastXDays"))
 							expr = Expression.Lambda<Func<T, bool>>(Expression.GreaterThanOrEqual(colexpr, valexpr), column.Parameters);
 
-						else if(item.Condition == ">")
+						else if (item.Condition == ">")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.GreaterThan(colexpr, valexpr), column.Parameters);
 
-						else if(item.Condition == "<")
+						else if (item.Condition == "<")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.LessThan(colexpr, valexpr), column.Parameters);
 
-						else if(item.Condition == "<=")
+						else if (item.Condition == "<=")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.LessThanOrEqual(colexpr, valexpr), column.Parameters);
 
-						else if(item.Condition == "<>")
+						else if (item.Condition == "<>")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(colexpr, valexpr), column.Parameters);
 					}
 
