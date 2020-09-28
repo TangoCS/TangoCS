@@ -28,7 +28,7 @@ namespace Tango.UI.Controls
 					foreach (var item in data.Select(o => Field.GetListItem(o, FilterValue, HighlightSearchResults)))
 					{
 						w.Label(a => a.Class("row").For("item" + item.Value).DataResultPostponed(1), () => {
-							w.RadioButton("item", "item" + item.Value, item.Value, false, a => { if (Field.PostOnChangeEvent) a.OnChangePostEvent(SubmitDialog); a.Data(DataCollection); }); //DataCollection
+							w.RadioButton("item", "item" + item.Value, item.Value, false, a => { if (Field.PostOnChangeEvent) a.OnChangePostEvent(SubmitDialog); a.Data(DataCollection).DataRef(Field.ParentElement, Field.ID); }); //DataCollection
 							w.Write(item.Text);
 						});
 					}
@@ -103,10 +103,13 @@ namespace Tango.UI.Controls
 
 		public override void SubmitDialog(ApiResponse response)
 		{
-			var id = Context.GetArg<TRefKey>("item");
-			var selectedValue = Field.GetObjectByID(id);
+			if (Field.PostOnChangeEvent)
+			{
+				var id = Context.GetArg<TRefKey>(Field.ID);
+				var selectedValue = Field.GetObjectByID(id);
 
-			Field.OnChange(response, selectedValue);
+				Field.OnChange(response, selectedValue);
+			}
 		}
 	}
 
