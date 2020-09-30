@@ -51,7 +51,7 @@ namespace Tango.UI.Std
 
 		public void OnSubmit(ApiResponse response)
 		{
-			var sel = GetPostedList<TKey>(Constants.SelectedValues);
+			var sel = Context.GetListArg<TKey>(Constants.SelectedValues);
 			using (var tran = Database.BeginTransaction())
 			{
 				Undelete(sel);

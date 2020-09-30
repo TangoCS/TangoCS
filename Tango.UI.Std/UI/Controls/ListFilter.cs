@@ -63,7 +63,7 @@ namespace Tango.UI.Controls
 		public List<FilterItem> Criteria {
 			get {
 				if (_criteria == null)
-					_criteria = GetPostedJson(hValue, () => new List<FilterItem>());
+					_criteria = Context.GetJsonArg(hValue, () => new List<FilterItem>());
 				return _criteria;
 			}
 			set {
@@ -250,7 +250,7 @@ namespace Tango.UI.Controls
 
 		public void OnCriterionRemoved(ApiResponse response)
 		{
-			var del = Criteria.Where(o => o.GetHashCode().ToString() == GetArg<string>("removedcriterion")).ToList();
+			var del = Criteria.Where(o => o.GetHashCode().ToString() == Context.GetArg("removedcriterion")).ToList();
 			foreach (var d in del)
 				Criteria.Remove(d);
 
@@ -262,7 +262,7 @@ namespace Tango.UI.Controls
 		public void OnInlineCriterionRemoved(ApiResponse response)
 		{
 			LoadPersistent();
-			var del = Criteria.Where(o => o.GetHashCode().ToString() == GetArg<string>("removedcriterion")).ToList();
+			var del = Criteria.Where(o => o.GetHashCode().ToString() == Context.GetArg("removedcriterion")).ToList();
 			foreach (var d in del)
 				Criteria.Remove(d);
 
@@ -285,7 +285,7 @@ namespace Tango.UI.Controls
 
 		public void OnSubmit(ApiResponse response)
 		{
-			Criteria = GetPostedJson<List<FilterItem>>(hValue, () => new List<FilterItem>());
+			Criteria = Context.GetJsonArg(hValue, () => new List<FilterItem>());
 
 			var (item, success) = ProcessSubmit(response);
 			if (!success) return;
@@ -438,7 +438,7 @@ namespace Tango.UI.Controls
 		{
 			LoadPersistent();
 
-			Criteria = GetPostedJson(hValue, () => new List<FilterItem>());
+			Criteria = Context.GetJsonArg(hValue, () => new List<FilterItem>());
 
 			var (item, success) = ProcessSubmit(response);
 			if (!success) return;

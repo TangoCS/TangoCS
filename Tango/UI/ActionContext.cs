@@ -5,6 +5,7 @@ using System.Net;
 using System.Globalization;
 using System.Linq;
 using System.Security.Principal;
+using Newtonsoft.Json;
 
 namespace Tango.UI
 {
@@ -358,6 +359,16 @@ namespace Tango.UI
 		public static List<T> GetListArg<T>(this ActionContext ctx, string name)
 		{
 			return ctx.AllArgs.ParseList<T>(name);
+		}
+
+		public static T GetJsonArg<T>(this ActionContext ctx, string name, Func<T> defaultValue = null)
+		{
+			var s = ctx.GetArg(name);
+			s = WebUtility.HtmlDecode(s);
+			T res = default;
+			if (!s.IsEmpty()) res = JsonConvert.DeserializeObject<T>(s);
+			if (res == null && defaultValue != null) res = defaultValue();
+			return res;
 		}
 
 		public static ActionResult RunAction(this ActionContext ctx)

@@ -131,7 +131,7 @@ namespace Tango.UI
 		}
 
 		TFormValue IFieldValueProvider<TFormValue>.Value => ValueProvider == this ? GetFormValue() : ValueProvider.Value;
-		public virtual TFormValue GetFormValue() => GetArg<TFormValue>(ID);
+		public virtual TFormValue GetFormValue() => Context.GetArg<TFormValue>(ID);
 
 		public void SetValueProvider(IFieldValueProvider<TFormValue> provider)
 		{
