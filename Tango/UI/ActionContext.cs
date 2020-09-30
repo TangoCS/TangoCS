@@ -202,8 +202,7 @@ namespace Tango.UI
 	public class PostedFileInfo
 	{
 		public string FileName { get; set; }
-		public byte[] FileBytes { get; set; }
-		public string FileExtension { get; set; }
+		public byte[] FileBytes { get; set; }		
 	}
 
 	public class RoutesCollection : Dictionary<string, string> { }
