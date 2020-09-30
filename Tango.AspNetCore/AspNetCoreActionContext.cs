@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Template;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Net.Http.Headers;
+using Microsoft.Win32;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -63,10 +64,11 @@ namespace Tango.AspNetCore
 						var cd = ContentDispositionHeaderValue.Parse(file.ContentDisposition);
 						var name = cd.Name.Value.Trim('"');
 						var fileName = cd.FileName.Value.Trim('"');
+						var fileExtension = GetDefaultExtension(file.ContentType);
 
 						if (!string.IsNullOrEmpty(fileName) && file.Length > 0 && file.Length < 2147483648)
 						{
-							var fi = new PostedFileInfo { FileName = fileName };
+							var fi = new PostedFileInfo { FileName = fileName, FileExtension = fileExtension };
 							using (var fs = file.OpenReadStream())
 							{
 								fi.FileBytes = new byte[fs.Length];
@@ -102,7 +104,7 @@ namespace Tango.AspNetCore
 			foreach(var ret in ReturnUrl)
 				ReturnTarget[ret.Key] = ParseReturnUrl(ret.Value);
 		}
-
+		
 		protected override ActionTarget ParseReturnUrl(string returnUrl)
 		{
 			var parms = "";
@@ -150,6 +152,19 @@ namespace Tango.AspNetCore
 		public override IServiceScope CreateServiceScope()
 		{
 			return new ServiceScopeProxy(RequestServices);
+		}
+
+		static string GetDefaultExtension(string mimeType)
+		{
+			string result;
+			RegistryKey key;
+			object value;
+
+			key = Registry.ClassesRoot.OpenSubKey(@"MIME\Database\Content Type\" + mimeType, false);
+			value = key != null ? key.GetValue("Extension", null) : null;
+			result = value != null ? value.ToString().Replace(".", string.Empty) : string.Empty;
+
+			return result;
 		}
 	}
 

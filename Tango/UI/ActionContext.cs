@@ -201,6 +201,7 @@ namespace Tango.UI
 	{
 		public string FileName { get; set; }
 		public byte[] FileBytes { get; set; }
+		public string FileExtension { get; set; }
 	}
 
 	public class RoutesCollection : Dictionary<string, string> { }
