@@ -6,6 +6,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Principal;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace Tango.UI
 {
@@ -350,7 +351,15 @@ namespace Tango.UI
             return null;
         }
 
-        public static T GetArg<T>(this ActionContext ctx, string name, T defaultValue = default)
+		/// <summary>
+		/// Для типов int, long, decimal, string, bool, DateTime, Guid нужно использовать специализированные методы!
+		/// </summary>
+		/// <typeparam name="T"></typeparam>
+		/// <param name="ctx"></param>
+		/// <param name="name"></param>
+		/// <param name="defaultValue"></param>
+		/// <returns></returns>
+		public static T GetArg<T>(this ActionContext ctx, string name, T defaultValue = default)
 		{
 			return ctx.AllArgs.Parse<T>(name, defaultValue);
 		}
