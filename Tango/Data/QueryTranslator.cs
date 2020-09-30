@@ -421,12 +421,15 @@ namespace Tango.Data
 			sb.Append(")");
 		}
 
-		protected void ParseToStringMethod(MethodCallExpression m)
-		{
-			sb.Append(" cast(");
-			Visit(m.Object);
-			sb.Append(" as nvarchar(max))");
-		}
+        protected void ParseToStringMethod(MethodCallExpression m)
+        {
+            sb.Append(" cast(");
+            Visit(m.Object);
+            if (_dialect is QueryTranslatorPostgres)
+                sb.Append(" as text)");
+            else
+                sb.Append(" as nvarchar(max))");
+        }
 
 		private void ParseOrderByExpression(MethodCallExpression expression, string order)
 		{
