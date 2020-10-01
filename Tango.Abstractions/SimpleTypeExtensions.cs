@@ -253,6 +253,10 @@ namespace Tango
 			return defaultValue;
 		}
 
+		public static DateTime EndDay(this DateTime date)
+		{
+			return date.Date.AddMinutes(1439);
+		}
 		public static bool IsInRange(this DateTime dateToCheck, DateTime startDate, DateTime endDate)
 		{
 			return dateToCheck >= startDate && dateToCheck < endDate;
