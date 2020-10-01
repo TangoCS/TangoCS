@@ -45,6 +45,28 @@ namespace Tango
 			return e;
 		}
 
+		public static MemoryStream SerializeWin1251<T>(T obj)
+		{
+			return Serialize(obj, new XmlWriterSettings {
+				Encoding = Encoding.GetEncoding("windows-1251"),
+				Indent = true,
+				NewLineHandling = NewLineHandling.None
+			});
+		}
+
+		public static MemoryStream Serialize<T>(T obj, XmlWriterSettings settings)
+		{
+			using (MemoryStream stream = new MemoryStream())
+			{
+				using (XmlWriter writer = XmlWriter.Create(stream, settings))
+				{
+					var serializer = new System.Xml.Serialization.XmlSerializer(typeof(T));
+					serializer.Serialize(writer, obj);
+				}
+				return stream;
+			}
+		}
+
 		public static T Deserialize<T>(string xml)
 		{
 			XmlSerializer xmlSerializer = new XmlSerializer(typeof(T));
@@ -64,14 +86,12 @@ namespace Tango
 
         public static XmlWriterSettings GetSettings()
         {
-            XmlWriterSettings settings = new XmlWriterSettings
+           return new XmlWriterSettings
             {
-                
                 Encoding = Encoding.GetEncoding("windows-1251"),
                 Indent = true,
                 NewLineHandling = NewLineHandling.None
             };
-            return settings;
 		}
 
 		/// <summary>
