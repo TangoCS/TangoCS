@@ -48,45 +48,51 @@ namespace Tango.UI
 		protected dynamic FormBag { get { return Context.FormData; } }
 		protected DynamicDictionary FormData { get { return Context.FormData; } }
 
-		//public T GetPosted<T>(string name, T defaultValue = default)
-		//{
-		//	return Context.FormData.Parse<T>(name, defaultValue);
-		//}
+		[Obsolete]
+		public T GetPosted<T>(string name, T defaultValue = default)
+		{
+			return Context.FormData.Parse<T>(name, defaultValue);
+		}
 
-		//public List<T> GetPostedList<T>(string name)
-		//{
-		//	return Context.FormData.ParseList<T>(name);
-		//}
+		[Obsolete]
+		public List<T> GetPostedList<T>(string name)
+		{
+			return Context.FormData.ParseList<T>(name);
+		}
 
-		//public DateTime? GetPostedDateTime(string name, string format, DateTime? defaultValue = null)
-		//{
-		//	return Context.FormData.ParseDateTime(name, format);
-		//}
+		[Obsolete]
+		public DateTime? GetPostedDateTime(string name, string format, DateTime? defaultValue = null)
+		{
+			return Context.FormData.ParseDateTime(name, format);
+		}
 
-		//public DateTime GetPostedDateTime(string name, string format, DateTime defaultValue)
-		//{
-		//	return Context.FormData.ParseDateTime(name, format, defaultValue);
-		//}
+		[Obsolete]
+		public DateTime GetPostedDateTime(string name, string format, DateTime defaultValue)
+		{
+			return Context.FormData.ParseDateTime(name, format, defaultValue);
+		}
 
-		//public T GetPostedJson<T>(string name, Func<T> defaultValue = null)
-		//{
-		//	var s = Context.GetArg(name);
-		//	s = WebUtility.HtmlDecode(s);
-		//	T res = default;
-		//	if (!s.IsEmpty()) res = JsonConvert.DeserializeObject<T>(s);
-		//	if (res == null && defaultValue != null) res = defaultValue();
-		//	return res;
-		//}
+		[Obsolete]
+		public T GetPostedJson<T>(string name, Func<T> defaultValue = null)
+		{
+			var s = Context.GetArg(name);
+			s = WebUtility.HtmlDecode(s);
+			T res = default;
+			if (!s.IsEmpty()) res = JsonConvert.DeserializeObject<T>(s);
+			if (res == null && defaultValue != null) res = defaultValue();
+			return res;
+		}
 
 		public string GetArg(string name)
 		{
 			return Context.GetArg(name);
 		}
 
-		//public T GetArg<T>(string name)
-		//{
-		//	return Context.GetArg<T>(name);
-		//}
+		[Obsolete]
+		public T GetArg<T>(string name)
+		{
+			return Context.GetArg<T>(name);
+		}
 	}
 
 	public abstract class ViewElement : InteractionFlowElement, IViewElement
