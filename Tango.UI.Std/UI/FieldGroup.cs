@@ -132,9 +132,10 @@ namespace Tango.UI
 
 	public static class ValidationMessageCollectionExtensions
 	{
-		public static void Add(this ValidationMessageCollection coll, IField field, string message)
+		public static void Add(this ValidationMessageCollection coll, IField field, string message, 
+			ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
 		{
-			coll.Add("entitycheck", field.ID, message);
+			coll.Add("entitycheck", field.ID, message, severity);
 		}
 
 	}
