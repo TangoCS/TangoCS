@@ -19,10 +19,16 @@ namespace Tango.RealTime
 		/// <param name="form">Форма с которой запускается backgroundworker.js</param>
 		/// <param name="messagemethod">Формат отображения сообщений. По умолчанию = toast (всплывающие сообщения)</param>
 		/// <returns></returns>
-		public static TagAttributes<T> RunWithSignalR<T>(this TagAttributes<T> a, string action, int actionId, string form, string messageAction = null, MessageMethod messagemethod = MessageMethod.Popupmessage)
+		public static TagAttributes<T> RunWithSignalR<T>(this TagAttributes<T> a, string action, int actionId, string form, string messageAction = null, MessageMethod messagemethod = MessageMethod.Popupmessage, string notificationContainer = null)
 			where T : TagAttributes<T>
 		{
-			return a.Data("action", action).Data("id", actionId).Data("messageaction", messageAction).Data("messagemethod", messagemethod).OnClick($"return backgroundworker.firstinit(this,{form});");
+			return a.Data("action", action)
+				    .Data("id", actionId)
+					.Data("messageaction", messageAction)
+					.Data("messagemethod", messagemethod)
+					.Data("notificationContainer", notificationContainer)
+
+					.OnClick($"return backgroundworker.firstinit(this,{form});");
 			
 		}
 		
