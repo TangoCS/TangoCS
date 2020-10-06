@@ -462,9 +462,8 @@ namespace Tango.Excel
 					writer.s.Row(writer.r).OutlineLevel = Convert.ToInt32(value);
 				else if (key == Xlsx.Collapsed)
 					writer.s.Row(writer.r).Collapsed = Convert.ToBoolean(value);
-
 				else if (key == Xlsx.XlsxHeight)
-					writer.s.Row(writer.r).Height = Convert.ToInt32(value);
+					writer.s.Row(writer.r).Height = Convert.ToDouble(value);
 				return this;
 			}
 
@@ -514,6 +513,8 @@ namespace Tango.Excel
 					writer.s.Cells[writer.r, writer.c].Style.Font.Italic = true;
 				if (style?.GetWhiteSpace() == "nowrap")
 					writer.s.Cells[writer.r, writer.c].Style.WrapText = false;
+				if ((style?.GetFontSize() ?? "") != "")
+					writer.s.Cells[writer.r, writer.c].Style.Font.Size = style.GetFontSize().Replace("pt", "").Trim().ToInt32(0);
 				if (width > 0)
 					writer.s.Column(writer.c).Width = width;
 				if ((style?.GetPaddingLeft() ?? "") != "")
@@ -635,7 +636,7 @@ namespace Tango.Excel
 				if (style?.GetFontWeight() == "bold")
 					writer.s.Cells[writer.r, writer.c].Style.Font.Bold = true;
 				if (style?.GetFontStyle() == "italic")
-					writer.s.Cells[writer.r, writer.c].Style.Font.Italic = true;
+					writer.s.Cells[writer.r, writer.c].Style.Font.Italic = true;				
 				if (width > 0)
 					writer.s.Column(writer.c).Width = width;
 				if (formula != null)
