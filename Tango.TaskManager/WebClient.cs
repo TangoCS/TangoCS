@@ -10,7 +10,7 @@ namespace Tango.TaskManager
 		public static void Post(string url, string userName, string password, string data, int timeOut = 20)
 		{
 			var wr = HttpWebRequest.Create(url);
-			wr.Timeout = timeOut * 1000;
+			wr.Timeout = timeOut == -1 ? -1 : (timeOut * 1000);
             if (!string.IsNullOrWhiteSpace(userName))
                 wr.Credentials = new NetworkCredential(userName, password);
 			wr.Method = "POST";
