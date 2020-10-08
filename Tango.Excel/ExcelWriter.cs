@@ -754,11 +754,11 @@ namespace Tango.Excel
 
 	public static class XlsxExtensions
 	{
-		public static void XlsxFormula<T>(this IContentItemAttributes<T> a, string formula, string _class = null)
+		public static IContentItemAttributes<T> XlsxFormula<T>(this IContentItemAttributes<T> a, string formula)
 			where T : IContentItemAttributes<T>
 		{
-			a.Class(_class).Extended(Xlsx.FormulaR1C1, formula);
-						
+			a.Extended(Xlsx.FormulaR1C1, formula);
+			return a;
 		}
 
 		public static void XlsxEnableAutoFilter<T>(this IContentItemAttributes<T> a)
