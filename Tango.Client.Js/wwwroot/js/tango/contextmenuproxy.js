@@ -15,7 +15,8 @@
 						return ajaxUtils.runEventFromElementWithApiResponse(data.menu[0]);
 
 					return $.when();
-				}
+				},
+				type: args.type
 			};
 		}
 	};

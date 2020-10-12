@@ -684,10 +684,12 @@ div.tabs2 + div.tabs2 {
 /* dropdownmenu */
 .dropdownmenu {
 	background-color: white;
-	transition: opacity 80ms linear, visibility 80ms linear;
+	transition: opacity 80ms linear;
 	overflow: auto;
 }
-
+	.dropdownmenu.iw-display {
+		transition: opacity 0ms;
+	}
 	.dropdownmenu::-webkit-scrollbar {
 		width: 6px;
 	}
@@ -739,8 +741,6 @@ div.tabs2 + div.tabs2 {
 		border-bottom: 1px solid #ccc;
 		margin-bottom: 3px;
 	}
-
-
 
 	.dropdownmenu a:hover, .dropdownmenu a.selected {
 		background-color: #296ca3;

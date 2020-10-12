@@ -5,7 +5,7 @@
  *Copyright (c) 2013-2015 Sudhanshu Yadav.
  *Dual licensed under the MIT and GPL licenses
  */
-; (function ($, window, document, undefined) {
+; (function ($, window, document) {
 	"use strict";
 
 	$.single = (function () {
@@ -33,26 +33,16 @@
 		return callMethod(this, 'popup', selector, option);
 	};
 
-	//$.fn.contextMenuMethod = function (method, selector, option) {
-	//	return callMethod(this, method, selector, option);
-	//};
-
 	$.fn.contextMenu.defaults = {
 		triggerOn: 'click', //avaliable options are all event related mouse plus enter option
 		displayAround: 'cursor', // cursor or trigger
 		mouseClick: 'left',
-		verAdjust: 0,
-		horAdjust: 0,
-		top: 'auto',
-		left: 'auto',
-		width: 'auto',
 		closeOther: true, //to close other already opened context menu
-		containment: window,
 		closeOnResize: true,
 		closeOnScroll: true,
-		position: 'auto', //allowed values are top, left, bottom and right
 		closeOnClick: false, //close context menu on click/ trigger of any item in menu
 		closeOnClickSelector: null,
+		type: 'default',
 
 		//callback
 		beforeOpen: function (data, event) { return 0; },
@@ -186,15 +176,17 @@
 				menuData = {
 					'menuId': menuId,
 					'noTrigger': 1,
-					'trigger': trigger
+					'trigger': trigger,
+					'option': option
 				};
 
 				//to set data on selector
-				menu.data('iw-menuData', menuData).attr('menuId', menuId);
+				menu.attr('menuId', menuId);
 			} else {
 				menuData.noTrigger++;
-				menu.data('iw-menuData', menuData);
 			}
+
+			menu.data('iw-menuData', menuData);
 
 			//to set data on trigger
 			trigger.addClass('iw-mTrigger').data('iw-menuData', {
@@ -241,6 +233,18 @@
 			if (option.closeOnClick) {
 				menu.bind('click', function (e) {
 					var b = true;
+					var submenu = false;
+					var a = e.target;
+					while (a && !(a instanceof HTMLBodyElement) && !(a instanceof HTMLDocument)) {
+						if (a.classList.contains('iw-contextMenu')) {
+							break;
+						} else if (a.classList.contains('iw-mTrigger')) {
+							submenu = true;
+							break;
+						}
+						a = a.parentNode;
+					}
+					if (submenu) return;
 					if (option.closeOnClickSelector) b = option.closeOnClickSelector(e.target);
 					if (b) iMethods.closeContextMenu(option, trigger, menu, e);
 				});
@@ -260,22 +264,39 @@
                 menu = trgrData.menu,
                 menuData = menu.data('iw-menuData'),
                 option = trgrData.option,
-                cntnmnt = option.containment,
                 clbckData = {
                 	trigger: trigger,
                 	menu: menu
-                },
-                //check conditions
-                cntWin = cntnmnt == window;
-			//btChck = option.baseTrigger.index(trigger) == -1;
+                };
 
 			var baseEl = option.baseTrigger ? option.baseTrigger : trigger;
 			var res = option.beforeOpen.call(this, clbckData, e);
 
+			if (res != 0 && res != 1)
+				return;
+
+			var menus = $('.iw-contextMenu').not(menu.selector);
+			var a = trigger[0];
+			var parentMenu = null;
+			var parentMenuData = null;
+			while (a && !(a instanceof HTMLBodyElement) && !(a instanceof HTMLDocument)) {
+				if (a.classList.contains('iw-contextMenu')) {
+					menus = menus.not('#' + a.id);
+					if (!parentMenu) parentMenu = a;
+				}
+				a = a.parentNode;
+			}
+
+			if (parentMenu) {
+				parentMenuData = $(parentMenu).data('iw-menuData');
+				option.type = parentMenuData.option.type;
+				option.displayAround = parentMenuData.option.displayAround;
+			}
+
 			if (res == 0) {
 				//to close previous open menu.
 				if (option.closeOther) {
-					$('.iw-contextMenu').not(menu.selector).removeClass('iw-display');
+					iMethods.clearMenuStyle(menus);
 				}
 
 				//to reset already selected menu item
@@ -285,39 +306,25 @@
 			else if (res == 1) {
 				//to close previous open menu.
 				if (option.closeOther) {
-					$('.iw-contextMenu').removeClass('iw-display');
+					iMethods.clearMenuStyle($('.iw-contextMenu'));
 				}
 				//to reset already selected menu item
 				menu.find('.iw-mSelected').removeClass('iw-mSelected');
 				$('.iw-opened').removeClass('iw-opened');
 				return;
 			}
-			else
-				return;
+
 
 			var openMenu = function () {
-				var cObj = $(cntnmnt),
+				var cObj = $(window),
 					cHeight = cObj.innerHeight(),
 					cWidth = cObj.innerWidth(),
 					cTop = 0,
 					cLeft = 0,
-					va, ha,
-					left = 0,
-					top = 0,
-					bottomMenu,
-					rightMenu,
-					verAdjust = va = parseInt(option.verAdjust),
-					horAdjust = ha = parseInt(option.horAdjust);
+					left = null,
+					top = null;
 
-				if (!cntWin) {
-					cTop = cObj.offset().top;
-					cLeft = cObj.offset().left;
-
-					//to add relative position if no position is defined on containment
-					if (cObj.css('position') == 'static') {
-						cObj.css('position', 'relative');
-					}
-				}
+				menu.addClass('iw-type-' + option.type);
 
 				if (!menuData.menuHeight) {
 					var cloneMenu = menu.clone();
@@ -330,86 +337,69 @@
 				var menuWidth = menuData.menuWidth;
 
 				if (option.displayAround == 'cursor') {
-					left = cntWin ? e.clientX : e.clientX + $(window).scrollLeft() - cLeft;
-					top = cntWin ? e.clientY : e.clientY + $(window).scrollTop() - cTop;
-				} else if (option.displayAround == 'trigger') {
+					left = e.clientX;
+					top = e.clientY;
+				} else if (option.displayAround.startsWith('trigger')) {
 					var triggerHeight = baseEl.outerHeight(true),
 						triggerWidth = baseEl.outerWidth(true),
-						triggerLeft = cntWin ? baseEl.offset().left - cObj.scrollLeft() : baseEl.offset().left - cLeft,
-						triggerTop = cntWin ? baseEl.offset().top - cObj.scrollTop() : baseEl.offset().top - cTop,
+						triggerLeft = baseEl.offset().left - cObj.scrollLeft(),
+						triggerTop = baseEl.offset().top - cObj.scrollTop(),
 						leftShift = triggerWidth;
 
-					if (option.position == 'top') {
+					if (option.displayAround == 'triggertop') {
 						top = triggerTop - menuHeight;
-						va = verAdjust;
 						left = triggerLeft;
-					} else if (option.position == 'left') {
+					} else if (option.displayAround == 'triggerleft') {
 						top = triggerTop;
 						left = triggerLeft - menuWidth;
-						ha = horAdjust;
-					} else if (option.position == 'bottom') {
+					} else if (option.displayAround == 'triggerbottom') {
 						top = triggerTop + triggerHeight;
-						va = verAdjust;
 						left = triggerLeft;
-					} else if (option.position == 'right') {
+					} else if (option.displayAround == 'triggerright') {
 						top = triggerTop;
 						left = triggerLeft + triggerWidth;
-						ha = horAdjust;
 					}
-				}
-
-				bottomMenu = top + menuHeight;
-				rightMenu = left + menuWidth;
-
-				//max height and width of context menu
-				if (bottomMenu > cHeight && top - menuHeight > 0) {
-					va = -1 * va;
-					top = top - menuHeight;
-				}
-				if (rightMenu > cWidth && cWidth - menuWidth > 0) {
-					ha = -1 * ha;
-					left = cWidth - menuWidth;
 				}
 
 				//applying css property
-				var cssObj = {
-					'position': (cntWin || btChck) ? 'fixed' : 'absolute',
-					'height': '',
-					'width': ''
-				};
+				var cssObj = { 'opacity': '1' };
 
-				//to get position from offset parent
-				if (option.left != 'auto') {
-					left = iMethods.getPxSize(option.left, cWidth);
-				}
-				if (option.top != 'auto') {
-					top = iMethods.getPxSize(option.top, cHeight);
-				}
-				if (!cntWin) {
-					var oParPos = baseEl.offsetParent().offset();
-					if (btChck) {
-						left = left + cLeft - $(window).scrollLeft();
-						top = top + cTop - $(window).scrollTop();
-					} else {
-						left = left - (cLeft - oParPos.left);
-						top = top - (cTop - oParPos.top);
+				//max height and width of context menu
+				if (top) {
+					if (top + menuHeight > cHeight && top - menuHeight > 0) {
+						top = top - menuHeight;
 					}
+					cssObj.top = top + 'px';
 				}
-				cssObj.left = left + ha + 'px';
-				cssObj.top = top + va + 'px';
-				if (menuHeight > cHeight - top - va)
+
+				if (left) {
+					if (left + menuWidth > cWidth && cWidth - menuWidth > 0) {
+						left = cWidth - menuWidth;
+					}
+					cssObj.left = left + 'px';
+				}
+
+				if (menuHeight > cHeight - top)
 					cssObj.bottom = '5px';
 				else
 					cssObj.bottom = '';
 
-				if (option.width == 'trigger')
-					cssObj.width = baseEl.outerWidth(false) + 'px';
-
 				var res = option.beforeDisplay.call(this, clbckData, e);
 				if (res != 1) {
-					$('.iw-contextMenu').removeClass('iw-display');
+					iMethods.clearMenuStyle($('.iw-contextMenu'));
 					return;
 				}
+
+				//if (parentMenu) {
+					//cssObj.left = parentMenu.style.left;
+					//cssObj.top = parentMenu.style.top;
+					//var positionInfo = parentMenu.getBoundingClientRect();
+					//if (positionInfo.width > menu.width())
+					//	cssObj.width = positionInfo.width;
+					//if (positionInfo.height > menu.height())
+					//	cssObj.height = positionInfo.height;
+					//parentMenu.classList.remove('iw-display');
+				//}
 
 				menu.css(cssObj).addClass('iw-display');
 
@@ -418,10 +408,10 @@
 				option.baseTrigger.addClass('iw-opened');
 
 				//to add current menu class
-				if (trigger.closest('.iw-contextMenu').length == 0) {
-					$('.iw-curMenu').removeClass('iw-curMenu');
-					menu.addClass('iw-curMenu');
-				}
+				//if (trigger.closest('.iw-contextMenu').length == 0) {
+				//	$('.iw-curMenu').removeClass('iw-curMenu');
+				//	menu.addClass('iw-curMenu');
+				//}
 
 				var dataParm = {
 					trigger: trigger,
@@ -460,7 +450,7 @@
 			//unbind all events from top DOM
 			$('html').unbind('click', iMethods.clickEvent);
 			$(window).unbind('scroll resize', iMethods.scrollEvent);
-			$('.iw-contextMenu').removeClass('iw-display');
+			iMethods.clearMenuStyle($('.iw-contextMenu'));
 			$(document).focus();
 
 			option.baseTrigger.removeClass('iw-opened');
@@ -470,16 +460,6 @@
 				trigger: trigger,
 				menu: menu
 			}, e);
-		},
-		getPxSize: function (size, of) {
-			if (!isNaN(size)) {
-				return size;
-			}
-			if (size.indexOf('%') != -1) {
-				return parseInt(size) * of / 100;
-			} else {
-				return parseInt(size);
-			}
 		},
 		optionOptimizer: function (method, option) {
 			if (!option) {
@@ -498,6 +478,12 @@
 				option.displayAround = 'trigger';
 			}
 			return option;
+		},
+		clearMenuStyle: function (menu) {
+			menu.removeClass('iw-display').css('opacity', '0')
+				//.removeClass('iw-curMenu')
+				.removeClass('iw-type-default').removeClass('iw-type-slidermenu')
+				.css('left', '').css('top', '').css('bottom', '').css('width', '').css('height', '');
 		}
 	};
 })(jQuery, window, document);

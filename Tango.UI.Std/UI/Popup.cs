@@ -24,9 +24,9 @@ namespace Tango.UI
 				popupid = f(popupid),
 				triggeron = options.TriggerOn.ToString().ToLower(),
 				displaysaround = options.DisplaysAround.ToString().ToLower(),
-				position = options.Position.ToString().ToLower(),
 				closeonclick = options.CloseOnClick,
-				closeonscroll = options.CloseOnScroll
+				closeonscroll = options.CloseOnScroll,
+				type = options.Type.ToString().ToLower()
 			});
 		}
 	}
@@ -38,10 +38,10 @@ namespace Tango.UI
 
 		public string ProxyName { get; set; } = "contextmenuproxy";
 		public PopupTriggersOn TriggerOn { get; set; } = PopupTriggersOn.Click;
-		public PopupDispaysAround DisplaysAround { get; set; } = PopupDispaysAround.Trigger;
-		public PopupPosition Position { get; set; } = PopupPosition.Bottom;
+		public PopupDispaysAround DisplaysAround { get; set; } = PopupDispaysAround.TriggerBottom;
 		public bool CloseOnClick { get; set; } = true;
 		public bool CloseOnScroll { get; set; } = true;
+		public PopupType Type { get; set; } = PopupType.Default;
 	}
 
 	public enum PopupTriggersOn
@@ -50,11 +50,10 @@ namespace Tango.UI
 	}
 	public enum PopupDispaysAround
 	{
-		Cursor, Trigger
+		Cursor, TriggerBottom, TriggerRight, TriggerTop, TriggerLeft, Custom
 	}
-
-	public enum PopupPosition
+	public enum PopupType
 	{
-		Left, Top, Right, Bottom
+		Default, SliderMenuLeft, SliderMenuRight
 	}
 }
