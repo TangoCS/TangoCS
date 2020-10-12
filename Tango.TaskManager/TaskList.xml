@@ -5,6 +5,6 @@
     <Argument Name="userName" Value="" />
     <Argument Name="password" Value="" />
     <Argument Name="data" Value="" />
-    <Argument Name="timeOut" Value="600" />
+    <Argument Name="timeOut" Value="120" />
   </Task>
 </TaskList>
