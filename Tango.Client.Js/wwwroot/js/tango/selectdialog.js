@@ -114,8 +114,7 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 
 			const opt = {
 				triggerOn: 'keyup paste',
-				displayAround: 'trigger',
-				position: 'bottom',
+				displayAround: 'triggerbottom',
 				delayedTrigger: true,
 				onOpen: function (data, event) {
 					return au.postEventFromElementWithApiResponse(data.menu[0]);
