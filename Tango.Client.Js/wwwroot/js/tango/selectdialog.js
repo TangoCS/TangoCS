@@ -205,9 +205,9 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 							e.preventDefault();
 							if (isSingleMode) {
 								cur.firstChild.checked = true;
-								if (cur.firstChild.onchange) cur.firstChild.onchange();
 								state.selectedvalue = cur.firstChild.value;
 								instance.setselected_singlemode(elPh, cur);
+								if (cur.firstChild.onchange) cur.firstChild.onchange();
 							}
 							else {
 								instance.setselected(elPh, cur);
