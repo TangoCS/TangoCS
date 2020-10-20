@@ -57,20 +57,32 @@ namespace Tango.TaskManager
 
             foreach (var xe in doc.Root.Elements("Task"))
             {
-                Task t = new Task
-                {
-                    TaskName = xe.Attribute("Name").Value,
-                    MethodName = xe.Attribute("Method").Value,
-                    TypeName = xe.Attribute("Type").Value,
-                    Interval = new TimeSpan(int.Parse(xe.Attribute("Hours").Value), int.Parse(xe.Attribute("Minutes").Value), 0),
-                    StartType = xe.Attribute("StartType").Value == "Interval" ? TaskStartType.Interval : TaskStartType.Schedule,
-                    MethodArgs = new NameValueCollection()
-                };
+                if (!int.TryParse(xe.Attribute("ThreadCount").Value, out int threadCount))
+                    threadCount = 1;
+
+                var TaskName = xe.Attribute("Name").Value;
+                var MethodName = xe.Attribute("Method").Value;
+                var TypeName = xe.Attribute("Type").Value;
+                var Interval = new TimeSpan(int.Parse(xe.Attribute("Hours").Value), int.Parse(xe.Attribute("Minutes").Value), 0);
+                var StartType = xe.Attribute("StartType").Value == "Interval" ? TaskStartType.Interval : TaskStartType.Schedule;
+                var MethodArgs = new NameValueCollection();
                 foreach (var arg in xe.Elements())
                 {
-                    t.MethodArgs.Add(arg.Attribute("Name").Value, arg.Attribute("Value").Value);
+                    MethodArgs.Add(arg.Attribute("Name").Value, arg.Attribute("Value").Value);
                 }
-                tasks.Add(t);
+                for (int i = 0; i < threadCount; i++)
+                {
+                    Task t = new Task
+                    {
+                        TaskName = TaskName,
+                        MethodName = MethodName,
+                        TypeName = TypeName,
+                        Interval = Interval,
+                        StartType = StartType,
+                        MethodArgs = new NameValueCollection(MethodArgs)
+                    };
+                    tasks.Add(t);
+                }
             }
         }
 
@@ -89,6 +101,7 @@ namespace Tango.TaskManager
                         t.LastStartTime = DateTime.Now;
                         t.Thread = new Thread(new ParameterizedThreadStart(RunTask));
                         t.Thread.Start(t);
+                        Thread.Sleep(1000);
                     }
                 }
             }
