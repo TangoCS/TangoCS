@@ -55,7 +55,7 @@ td.c, th.c, .c td, .c th {
 	text-align: right !important;
 }
 
-h1 {
+header h1 {
 	color: white;
 	margin: 0px;
 	padding: 0px;
@@ -63,21 +63,21 @@ h1 {
 	font-weight: normal;
 }
 
-h2 {
+.contentheader h2 {
 	font-size: 1.5em;
 	font-weight: normal;
 	margin: 0px 0px 8px 0px;
 }
 
-	h2 a {
+	.contentheader h2 a {
 		text-decoration: none;
 	}
 
-h3 {
+/*h3 {
 	font-size: 1.2em;
 	font-weight: 500;
 	margin: 0px 0px 8px 0px;
-}
+}*/
 
 img {
 	border: 0;
