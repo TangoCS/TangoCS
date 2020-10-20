@@ -16,15 +16,15 @@ namespace Tango.TaskManager
 		public DateTime LastStartTime = DateTime.MinValue;
 		public DateTime LastEndTime = DateTime.MinValue;
 		public Thread Thread;
-		//public bool IsRunning = false;
+        //public bool IsRunning = false;
 
-		//AppDomain domain;
+        //AppDomain domain;
 
-		//public void Run()
-		//{
-		//	domain = AppDomain.CreateDomain(TaskName);
-		//}
-	}
+        //public void Run()
+        //{
+        //	domain = AppDomain.CreateDomain(TaskName);
+        //}
+    }
 
 	public enum TaskStartType
 	{

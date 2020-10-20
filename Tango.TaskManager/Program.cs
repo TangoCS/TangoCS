@@ -31,7 +31,7 @@ namespace Tango.TaskManager
             Host.CreateDefaultBuilder(args)
             .ConfigureServices((hostContext, services) =>
             {
-                services.AddSingleton<IHostedService, TaskHostedService>();
+                services.AddHostedService<TaskHostedService>();
             });
     }
 }

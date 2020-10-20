@@ -22,7 +22,8 @@
             <xs:attribute type="xs:integer" name="Hours"/>
             <xs:attribute type="xs:integer" name="Minutes"/>
             <xs:attribute type="xs:string" name="Type"/>
-            <xs:attribute type="xs:string" name="Method"/>
+            <xs:attribute type="xs:string" name="Method"/> 
+            <xs:attribute type="xs:string" name="ThreadCount"/>
           </xs:complexType>
         </xs:element>
       </xs:sequence>
