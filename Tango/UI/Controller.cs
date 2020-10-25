@@ -9,7 +9,7 @@ namespace Tango.UI
 		[NonAction]
 		public ActionResult RedirectBack(int code = 0)
 		{
-			return new RedirectBackResult(0);
+			return new RedirectBackResult(code);
 		}
 
 		[NonAction]

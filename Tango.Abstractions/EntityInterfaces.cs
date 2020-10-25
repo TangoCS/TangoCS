@@ -89,4 +89,11 @@ namespace Tango
 	public interface IEnum
 	{
 	}
+
+	public interface IScheduledTask : IWithKey<int>, IWithTitle
+	{
+		string Class { get; }
+		string Method { get; }
+		int ExecutionTimeout { get; }
+	}
 }
