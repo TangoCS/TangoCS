@@ -57,7 +57,7 @@ namespace Tango.TaskManager
 
             foreach (var xe in doc.Root.Elements("Task"))
             {
-                if (!int.TryParse(xe.Attribute("ThreadCount").Value, out int threadCount))
+                if (xe.Attribute("ThreadCount") == null || !int.TryParse(xe.Attribute("ThreadCount").Value, out int threadCount))
                     threadCount = 1;
 
                 var TaskName = xe.Attribute("Name").Value;
