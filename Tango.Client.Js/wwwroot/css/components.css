@@ -683,7 +683,6 @@ div.tabs2 + div.tabs2 {
 
 /* dropdownmenu */
 .dropdownmenu {
-	background-color: white;
 	transition: opacity 80ms linear;
 	overflow: auto;
 }
@@ -923,7 +922,6 @@ div.tabs2 + div.tabs2 {
 
 .selectsingleobject-popup {
 	width: 600px;
-	background-color: inherit;
 }
 
 	.selectsingleobject-popup label {
