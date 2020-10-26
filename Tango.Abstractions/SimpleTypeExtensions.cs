@@ -94,15 +94,23 @@ namespace Tango
 
         public static DateTime ToDate(this string src, string format, DateTime defaultValue)
         {
-            if (DateTime.TryParseExact(src, format ?? "d.MM.yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime dt))
-                return dt;
+			var formats = new List<string>() { format, "dd.MM.yyyy", "yyyy-MM-dd", "yyyyMMdd" }
+					.Where(x => x != null).ToArray();
+
+			if (DateTime.TryParseExact(src, formats, null, DateTimeStyles.None, out DateTime dt))
+				return dt;
+
             return defaultValue;
         }
 
         public static DateTime? ToDate(this string src)
 		{
-			if (DateTime.TryParseExact(src, "d.MM.yyyy", null, System.Globalization.DateTimeStyles.None, out DateTime dt))
+			var formats = new List<string>() { "dd.MM.yyyy", "yyyy-MM-dd", "yyyyMMdd" }
+					.Where(x => x != null).ToArray();
+
+			if (DateTime.TryParseExact(src, formats, null, DateTimeStyles.None, out DateTime dt))
 				return dt;
+
 			return null;
 		}
 
