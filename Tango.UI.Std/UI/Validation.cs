@@ -70,7 +70,7 @@ namespace Tango.UI
 		{
 			if (!(Comparer<T>.Default.Compare(val.Value, valueToCompare) > 0))
 			{
-				val.AddMessage("GreaterThan", severity: severity);
+				val.AddMessage("GreaterThan", valueToCompare.ToString(), severity);
 			}
 			return val;
 		}
@@ -78,14 +78,14 @@ namespace Tango.UI
 		public static ValidationBuilder<T> GreaterOrEqualThan<T>(this ValidationBuilder<T> val, T valueToCompare, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
 		{
 			if (!(Comparer<T>.Default.Compare(val.Value, valueToCompare) >= 0))
-				val.AddMessage("GreaterOrEqualThan", severity: severity);
+				val.AddMessage("GreaterOrEqualThan", valueToCompare.ToString(), severity);
 			return val;
 		}
 
 		public static ValidationBuilder<T> LessThan<T>(this ValidationBuilder<T> val, T valueToCompare, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
 		{
 			if (!(Comparer<T>.Default.Compare(val.Value, valueToCompare) < 0))
-				val.AddMessage("LessThan", severity: severity);
+				val.AddMessage("LessThan", valueToCompare.ToString(), severity);
 			return val;
 		}
 
@@ -93,7 +93,7 @@ namespace Tango.UI
 			
 		{
 			if (!(Comparer<T>.Default.Compare(val.Value, valueToCompare) <= 0))
-				val.AddMessage("LessOrEqualThan", severity: severity);
+				val.AddMessage("LessOrEqualThan", valueToCompare.ToString(), severity);
 
 			return val;
 		}

@@ -4,5 +4,6 @@ common.validation.NotNull;Необходимо заполнить значени
 common.validation.MinLength;Количество символов в поле {0} не должно быть меньше {1}
 common.validation.MaxLength;Количество символов в поле {0} не должно быть больше {1}
 common.validation.MSSQLDateInterval;Введена дата вне пределов разрешенного диапазона
+common.validation.GreaterOrEqualThan;Значение поля {0} должно быть больше, либо равно {1}
 
 

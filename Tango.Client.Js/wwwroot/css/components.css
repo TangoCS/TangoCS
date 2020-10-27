@@ -723,7 +723,7 @@ div.tabs2 + div.tabs2 {
 		padding: 0px 12px;
 		line-height: 28px;
 		text-align: left;
-		color: initial;
+		color: #333;
 		white-space: nowrap;
 	}
 
