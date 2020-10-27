@@ -53,6 +53,14 @@ namespace Tango
 				NewLineHandling = NewLineHandling.None
 			});
 		}
+		public static MemoryStream SerializeKoi8r<T>(T obj)
+		{
+			return Serialize(obj, new XmlWriterSettings {
+				Encoding = Encoding.GetEncoding("KOI8-R"),
+				Indent = true,
+				NewLineHandling = NewLineHandling.None
+			});
+		}
 
 		public static MemoryStream Serialize<T>(T obj, XmlWriterSettings settings)
 		{
