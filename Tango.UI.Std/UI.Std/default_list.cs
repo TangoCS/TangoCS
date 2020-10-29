@@ -51,6 +51,7 @@ namespace Tango.UI.Std
 
 		protected virtual string FormTitle => Resources.CaptionPlural<TEntity>();
 		protected virtual Func<string, Expression<Func<TEntity, bool>>> SearchExpression => null;
+		protected virtual string SearchExpressionTooltip { get; }
 
 		protected virtual bool EnableViews => true;
 		protected virtual bool EnableQuickSearch => true;
@@ -102,7 +103,7 @@ namespace Tango.UI.Std
 		protected virtual void ToolbarRight(MenuBuilder t)
 		{
 			if (EnableQuickSearch)
-				t.QuickSearch(this, Paging, _qSearchParmName);
+				t.QuickSearch(this, Paging, _qSearchParmName, SearchExpressionTooltip);
 			if (EnableViews && Filter.FieldList.Count > 0)
 			{
 				t.ItemSeparator();

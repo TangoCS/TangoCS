@@ -46,7 +46,7 @@ namespace Tango.UI.Controls
 			Item(w => w.DropDownButton(id, title, content, icon, btnAttrs, popupAttrs, options));
 		}
 
-		public void QuickSearch(IViewElement list, Paging paging, string qSearchParmName)
+		public void QuickSearch(IViewElement list, Paging paging, string qSearchParmName, string tooltip = null)
 		{
 			Item(w => w.TextBox(qSearchParmName, w.Context.GetArg(qSearchParmName), a =>
 				a.Class("filterInput")
@@ -55,7 +55,8 @@ namespace Tango.UI.Controls
 				.DataEvent("OnQuickSearch", list.ClientID)
 				.OnKeyUpRunHrefDelayed()
 				.Placeholder(w.Resources.Get("Common.Search"))
-                .Data(list.DataCollection))                
+                .Data(list.DataCollection)
+				.Title(tooltip))
 			);
 		}
 
