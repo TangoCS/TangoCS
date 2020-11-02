@@ -111,8 +111,6 @@ namespace Tango.UI.Std
 			}
 			else
 			{
-				if (Sections.RenderToolbar)
-					response.AddWidget(Sections.ContentToolbar, w => Toolbar(w));
 				response.AddWidget(Sections.ContentBody, w => {
 					Form(w);
 					ButtonsBar(w);
@@ -127,8 +125,10 @@ namespace Tango.UI.Std
 					response.AddWidget(Sections.ContentTitle, FormTitle);
 				if (Sections.SetPageTitle)
 					response.AddWidget("#title", FormTitle);
+				if (Sections.RenderToolbar)
+					response.AddWidget(Sections.ContentToolbar, w => Toolbar(w));
 
-                foreach (var r in Context.EventReceivers)
+				foreach (var r in Context.EventReceivers)
 					if (r.ParentElement.ClientID == this.ClientID && r is Tabs tabs)
 						tabs.OnPageSelect(response);
 			}

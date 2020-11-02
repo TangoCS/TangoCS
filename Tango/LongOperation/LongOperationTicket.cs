@@ -14,7 +14,11 @@ namespace Tango.LongOperation
 		public DateTime? RunDate { get; private set; }
 		// timeout (min)
 		public int Timeout { get; }
+
 		public LongOperationStatus Status { get; set; }
+		public string DefaultTaskAssembly { get; set; }
+
+		protected IServiceProvider provider;
 
 		public LongOperationTicket(int timeout = 60)
 		{
@@ -26,6 +30,7 @@ namespace Tango.LongOperation
 		public virtual void Run(IServiceProvider provider, IProgressLogger progressLogger)
 		{
 			RunDate = DateTime.Now;
+			this.provider = provider;
 		}
 	}
 

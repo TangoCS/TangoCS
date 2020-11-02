@@ -21,8 +21,6 @@ namespace Tango.LongOperation
 		public Dictionary<string, string> Parameters { get; protected set; }
 		public bool IsManualStart { get; }
 
-		protected readonly IServiceProvider provider;
-
 		public ScheduledTaskTicket(
 			IScheduledTask task,
 			Dictionary<string, string> parameters = null, bool isManualStart = false) : base(task.ExecutionTimeout)
@@ -131,7 +129,11 @@ namespace Tango.LongOperation
 
 			try
 			{
-				Type type = Type.GetType(Task.Class, true);
+				var cls = Task.Class;
+				if (!DefaultTaskAssembly.IsEmpty())
+					cls += "," + DefaultTaskAssembly;
+
+				Type type = Type.GetType(cls, true);
 				var obj = CreateTask(type);
 				InjectDependences(obj);
 
@@ -148,9 +150,9 @@ namespace Tango.LongOperation
 
 				SetTaskCompleted(connection, context);
 			}
-			catch (ThreadAbortException)
-			{
-			}
+			//catch (ThreadAbortException)
+			//{
+			//}
 			catch (Exception ex)
 			{
 				if (progressLogger != null)

@@ -119,6 +119,11 @@ namespace Tango.UI
 			w.FormField(name, caption, () => w.TextBox(name, value?.ToString(), a => a.Set(attributes)), grid, isRequired, description);
 		}
 
+		public static void FormFieldTextArea<T>(this LayoutWriter w, string name, string caption, T value, Grid grid = Grid.OneWhole, bool isRequired = false, string description = null, Action<TextAreaTagAttributes> attributes = null)
+		{
+			w.FormField(name, caption, () => w.TextArea(name, value?.ToString(), a => a.Set(attributes)), grid, isRequired, description);
+		}
+
 		public static void FormFieldTextArea<T, TValue>(this LayoutWriter w, MetaAttribute<T, TValue> prop, T model, Action<TextAreaTagAttributes> attributes = null)
 		{
 			w.FormField(
@@ -126,6 +131,8 @@ namespace Tango.UI
 				() => w.TextArea(prop.Name, model != null ? prop.GetValue(model)?.ToString() : null, a => a.Set(attributes))
 			);
 		}
+
+		
 
 
 		public static void FormFieldCalendar(this LayoutWriter w, string name, string caption, DateTime? value, Grid grid = Grid.OneWhole, bool isRequired = false, string description = "", EnabledState enabled = EnabledState.Enabled, bool showTime = false)

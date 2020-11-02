@@ -14,21 +14,21 @@ namespace Tango.AspNetCore
 		}
 
 		public IDictionary<string, IReadOnlyList<string>> Headers =>
-			_ctx.Request.Headers.ToDictionary(o => o.Key, o => o.Value as IReadOnlyList<string>);
+			_ctx?.Request.Headers.ToDictionary(o => o.Key, o => o.Value as IReadOnlyList<string>);
         public IDictionary<string, IReadOnlyList<string>> Query =>
-            _ctx.Request.Query.ToDictionary(o => o.Key, o => o.Value as IReadOnlyList<string>);
+            _ctx?.Request.Query.ToDictionary(o => o.Key, o => o.Value as IReadOnlyList<string>);
         public IDictionary<string, string> Cookies =>
-            _ctx.Request.Cookies.ToDictionary(o => o.Key, o => o.Value);
+            _ctx?.Request.Cookies.ToDictionary(o => o.Key, o => o.Value);
 
-        public string Method => _ctx.Request.Method;
-		public string Protocol => _ctx.Request.Protocol;
-		public string Scheme => _ctx.Request.Scheme;
-		public string Host => _ctx.Request.Host.Value;
-		public string Path => _ctx.Request.Path.Value;
-		public string QueryString => _ctx.Request.QueryString.Value;
+        public string Method => _ctx?.Request.Method;
+		public string Protocol => _ctx?.Request.Protocol;
+		public string Scheme => _ctx?.Request.Scheme;
+		public string Host => _ctx?.Request.Host.Value;
+		public string Path => _ctx?.Request.Path.Value;
+		public string QueryString => _ctx?.Request.QueryString.Value;
 
-		public string Referrer => _ctx.Request.Headers["Referer"];
-		public string UserAgent => _ctx.Request.Headers["User-Agent"];
-		public IPAddress IP => _ctx.Connection.RemoteIpAddress;
+		public string Referrer => _ctx?.Request.Headers["Referer"];
+		public string UserAgent => _ctx?.Request.Headers["User-Agent"];
+		public IPAddress IP => _ctx?.Connection.RemoteIpAddress;
 	}
 }
