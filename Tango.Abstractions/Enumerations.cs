@@ -8,37 +8,30 @@ namespace Tango
 {
 	public static class Enumerations
 	{
-		public static string GetEnumDescription(Enum value)
-		{
-			return value.ToString().Split(',').Select(s => {
-				var fi = value.GetType().GetField(s.Trim());
-				if (fi == null) return "";
-				var attributes = fi.GetCustomAttributes<DescriptionAttribute>(false);
-				return (attributes != null && attributes.Count() > 0) ? attributes.First().Description : value.ToString();
-			}).Join(", ");
-		}
+        private static string GetDescriptionAttribute(Enum value)
+        {
+            var fi = value.GetType().GetField(value.ToString());
+            if (fi == null) return "";
+            var attributes = fi.GetCustomAttributes<DescriptionAttribute>(false);
+            return (attributes != null && attributes.Count() > 0) ? attributes.First().Description : null;
+        }
 
-		public static IEnumerable<SelectListItem> AsSelectList<T>()
-			where T: Enum
-		{
-			var ut = Enum.GetUnderlyingType(typeof(T));
-			return Enum.GetValues(typeof(T))
-				.Cast<T>()
-				.Select(v => new SelectListItem(
-					GetEnumDescription(v),
-					Convert.ChangeType(v, ut).ToString()
-				));
-		}
-        public static IEnumerable<SelectListItem> AsSelectListWithSelected<T>(T selected)
+        public static string GetEnumDescription(Enum value)
+        {
+            var p = GetDescriptionAttribute(value);
+            return p ?? value.ToString();
+        }
+
+        public static IEnumerable<SelectListItem> AsSelectList<T>()
             where T : Enum
         {
             var ut = Enum.GetUnderlyingType(typeof(T));
             return Enum.GetValues(typeof(T))
                 .Cast<T>()
                 .Select(v => new SelectListItem(
-                    GetEnumDescription(v),
-                    Convert.ChangeType(v, ut).ToString(), v.Equals(selected) ? true : false
-                ));
+                    GetDescriptionAttribute(v),
+                    Convert.ChangeType(v, ut).ToString()
+                )).Where(x => x.Text != null);
         }
     }
 }
