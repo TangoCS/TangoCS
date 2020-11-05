@@ -370,6 +370,16 @@ namespace Tango.Excel
 					s.Cells[r, c].Style.Numberformat.Format = "#,##0.0000000";
 			});
 		}
+
+        public void Td(Action<ITdAttributes> attributes, string text, string fontName)
+        {
+            Td(attributes, () =>
+            {
+                s.Cells[r, c].Style.Font.Name = fontName;
+                s.Cells[r, c].Value = text;
+            });
+        }
+
 		public void Th(Action<IThAttributes> attributes, decimal? n, string format)
 		{
 			Th(attributes, () => {
