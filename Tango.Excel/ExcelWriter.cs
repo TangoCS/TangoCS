@@ -370,16 +370,7 @@ namespace Tango.Excel
 					s.Cells[r, c].Style.Numberformat.Format = "#,##0.0000000";
 			});
 		}
-
-        public void Td(Action<ITdAttributes> attributes, string text, string fontName)
-        {
-            Td(attributes, () =>
-            {
-                s.Cells[r, c].Style.Font.Name = fontName;
-                s.Cells[r, c].Value = text;
-            });
-        }
-
+		
 		public void Th(Action<IThAttributes> attributes, decimal? n, string format)
 		{
 			Th(attributes, () => {
@@ -494,8 +485,8 @@ namespace Tango.Excel
 			}
 
 			public ITdAttributes Style(string value, bool replaceExisting = false)
-			{
-				var ss = writer.cssParser.ParseStyleSheet(".someClass{" + value + "}");
+            {
+                var ss = writer.cssParser.ParseStyleSheet(".someClass{" + value + "}");
 				style = (ss.Rules.First() as ICssStyleRule).Style;
 				return this;
 			}
@@ -529,6 +520,8 @@ namespace Tango.Excel
 					writer.s.Column(writer.c).Width = width;
 				if ((style?.GetPaddingLeft() ?? "") != "")
 					writer.s.Cells[writer.r, writer.c].Style.Indent = style.GetPaddingLeft().Replace("px", "").Trim().ToInt32(0) / 10;
+                if (string.IsNullOrEmpty(style?.GetFontFamily()) == false)
+                    writer.s.Cells[writer.r, writer.c].Style.Font.Name = style?.GetFontFamily();
 				if (formula != null)
 				{
 					writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
