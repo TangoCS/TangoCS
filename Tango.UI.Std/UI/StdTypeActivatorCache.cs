@@ -10,7 +10,7 @@ namespace Tango.UI.Std
 		{
 			typeInfos.Add(new InvokeableTypeInfo
 			{
-				Filter = t => t.IsSubclassOf(typeof(ViewPage)) && !t.IsAbstract,
+				Filter = t => t.IsSubclassOf(typeof(AbstractViewPage)) && !t.IsAbstract,
 				Keys = t => new List<string> { t.Name },
 				Invoker = new CsPageInvoker()
 			});
@@ -22,9 +22,9 @@ namespace Tango.UI.Std
 		public ActionResult Invoke(ActionContext ctx, Type t)
 		{
 			var cache = ctx.GetService<ITypeActivatorCache>();
-			ViewPage oldPage = null;
+			AbstractViewPage oldPage = null;
 
-			var page = Activator.CreateInstance(t) as ViewPage;
+			var page = Activator.CreateInstance(t) as AbstractViewPage;
 			page.Context = ctx;
 			page.InjectProperties(ctx.RequestServices);
 
@@ -46,7 +46,7 @@ namespace Tango.UI.Std
 				var tOldPage = cache.Get(ctx.RootReceiver) ?? (null, null);
 				if (tOldPage.Type == null) 
 					return new HttpResult { StatusCode = HttpStatusCode.NotFound };
-				oldPage = Activator.CreateInstance(tOldPage.Type) as ViewPage;
+				oldPage = Activator.CreateInstance(tOldPage.Type) as AbstractViewPage;
 				oldPage.Context = ctx;
 				oldPage.InjectProperties(ctx.RequestServices);
 			}

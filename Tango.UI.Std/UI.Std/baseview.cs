@@ -59,10 +59,12 @@ namespace Tango.UI.Std
 		}
 	}
 
-	public abstract class ViewPage : ViewRootElement
+	public abstract class AbstractViewPage : ViewRootElement
 	{
 		[Inject]
 		public IIdentity User { get; set; }
+
+		protected abstract HtmlResult RenderContent();
 
 		public override ActionResult Execute()
 		{
@@ -71,6 +73,33 @@ namespace Tango.UI.Std
 			OnInit();
 			AfterInit();
 
+			return RenderContent();
+		}
+
+		public virtual void OnLoadContent(ApiResponse response)
+		{
+		}
+
+		public virtual void OnUnloadContent(ApiResponse response)
+		{
+		}
+
+		bool CheckAccess()
+		{
+			var anon = GetType().GetCustomAttribute<AllowAnonymousAttribute>();
+			if (anon != null) return true;
+
+			return User != null && User.IsAuthenticated;
+		}
+
+
+		public virtual ActionTarget DefaultView => null;
+	}
+
+	public abstract class ViewPage : AbstractViewPage
+	{
+		protected override HtmlResult RenderContent()
+		{
 			var w = new HtmlWriter();
 
 			byte[] token = new byte[32];
@@ -102,26 +131,7 @@ namespace Tango.UI.Std
 
 			return new HtmlResult(w.ToString(), tokenString);
 		}
-
-		public virtual void OnLoadContent(ApiResponse response)
-		{
-		}
-
-		public virtual void OnUnloadContent(ApiResponse response)
-		{
-		}
-
-		bool CheckAccess()
-		{
-			var anon = GetType().GetCustomAttribute<AllowAnonymousAttribute>();
-			if (anon != null) return true;
-
-			return User != null && User.IsAuthenticated;
-		}
-
-
-		public virtual ActionTarget DefaultView => null;
-
+		
 		protected abstract void Body(HtmlWriter w);
 		protected abstract void HeadContent(HtmlWriter w);
 	}

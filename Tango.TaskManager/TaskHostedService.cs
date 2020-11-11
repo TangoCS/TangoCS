@@ -17,7 +17,7 @@ namespace Tango.TaskManager
     {
         Timer _timer;
         static string taskListFile = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}tasklist.xml";
-        static string errorLogFile = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}errorlog.txt";
+        static string errorLogFile = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}errorlog_{{0}}.txt";
         static List<Task> tasks = new List<Task>();
 
         public TaskHostedService()
@@ -186,7 +186,7 @@ namespace Tango.TaskManager
                 e = e.InnerException;
             }
 
-            File.AppendAllText(errorLogFile, str, Encoding.UTF8);
+            File.AppendAllText(string.Format(errorLogFile, taskname ?? "main"), str, Encoding.UTF8);
         }
     }
 }

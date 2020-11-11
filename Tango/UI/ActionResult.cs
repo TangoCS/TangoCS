@@ -50,10 +50,11 @@ namespace Tango.UI
 	{
 		public string Html { get; set; }
 
-		public HtmlResult(string html, string csrfToken)
+		public HtmlResult(string html, string csrfToken = null)
 		{
 			Html = html;
-			Cookies.Add("x-csrf-token", csrfToken);
+			if (csrfToken != null)
+				Cookies.Add("x-csrf-token", csrfToken);
 			Headers.Add("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
 			ContentFunc = ctx => Encoding.UTF8.GetBytes(Html);
 		}
