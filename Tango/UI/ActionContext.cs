@@ -203,7 +203,6 @@ namespace Tango.UI
 	{
 		public string FileName { get; set; }
 		public byte[] FileBytes { get; set; }
-        public string HashCodeFile { get; set; }
 	}
 
 	public class RoutesCollection : Dictionary<string, string> { }
