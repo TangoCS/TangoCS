@@ -33,8 +33,16 @@ namespace Tango.Identity
 
 				var name = GetUserName();
 				_currentUser = _dataContext.UserFromName(name) ?? DefaultUser;
+
+				InitCurrentUser(_currentUser, _user);
+
 				return _currentUser;
 			}
+		}
+
+		protected virtual void InitCurrentUser(TUser user, IIdentity identity)
+
+		{
 		}
 
 		protected string GetUserName()
