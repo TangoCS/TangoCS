@@ -28,7 +28,9 @@ namespace Tango.UI.Controls
 		public PeriodValue DefaultValue { get; set; }
 
 		public int MinutesStep { get; set; } = 30;
-		//public string JSOnSelectCallback { get; set; }
+
+		public event Action<ApiResponse> Change;
+		public void OnChange(ApiResponse response) => Change?.Invoke(response);
 
 		public override void OnInit()
 		{
@@ -70,7 +72,10 @@ namespace Tango.UI.Controls
 			options.FromCalendarOptions.ShowButton = false;
 			options.ToCalendarOptions.ShowButton = false;
 			//w.PushID(ID);
-			w.Div(a => a.Class("periodpicker").ID(ID), () => {
+			w.Div(a => {
+				a.Class("periodpicker").ID(ID);
+				if (Change != null) a.DataEvent(OnChange).DataRef(ParentElement, ID);
+			}, () => {
 				w.Div(() => {
 					if (UseCalendar && ShowDays) w.Calendar(ParmName.From, from, options.FromCalendarOptions);
 					if (!UseCalendar || ShowTime)

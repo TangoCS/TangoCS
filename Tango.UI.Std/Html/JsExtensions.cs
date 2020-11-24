@@ -99,6 +99,12 @@ namespace Tango.Html
 			return a.DataEvent(action).OnKeyUp("if (event.key=='Enter') ajaxUtils.postEventFromElementWithApiResponse(this)");
 		}
 
+		public static InputTagAttributes OnInputPostEvent(this InputTagAttributes a, Action<ApiResponse> action)
+		{
+			return a.DataEvent(action).OnInput("ajaxUtils.postEventFromElementWithApiResponse(this)");
+		}
+
+
 		public static InputTagAttributes OnChangeRunEvent(this InputTagAttributes a, Action<ApiResponse> action)
 		{
 			return a.DataEvent(action).OnChange("ajaxUtils.runEventFromElementWithApiResponse(this)");

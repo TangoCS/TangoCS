@@ -68,6 +68,11 @@ namespace Tango.UI.Std
 			});
 			//w.PopPrefix();
 
+			ToolbarBottom(w);
+		}
+
+		protected virtual void ToolbarBottom(LayoutWriter w)
+		{
 			if (ShowFilterV2)
 			{
 				w.Div(a => a.Class("inlinefilter selectedcontainer"), () => {
@@ -82,7 +87,6 @@ namespace Tango.UI.Std
 			}
 		}
 
-		
 
 		protected void ToDeleteBulk(MenuBuilder t)
 		{

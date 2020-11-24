@@ -1,4 +1,4 @@
-﻿var daterangepickerproxy = function () {
+﻿var daterangepickerproxy = function (au) {
     var instance = {
         init: function (args) {
             const ctrl = document.getElementById(args.triggerid).parentElement;
@@ -8,6 +8,37 @@
             const finishDate = document.getElementById(ctrl.id + '_dperiodto');
             const finishDate_h = document.getElementById(ctrl.id + '_dperiodtotime_hour');
             const finishDate_m = document.getElementById(ctrl.id + '_dperiodtotime_minute');
+
+            const doPostback = ctrl.hasAttribute('data-e');
+
+            if (doPostback) {
+            	startDate.addEventListener('keyup', function (e) {
+            		au.delay(ctrl, function (caller) { ajaxUtils.postEventFromElementWithApiResponse(caller); });
+            	});
+            	finishDate.addEventListener('keyup', function (e) {
+            		au.delay(ctrl, function (caller) { ajaxUtils.postEventFromElementWithApiResponse(caller); });
+            	});
+            	if (startDate_h) {
+            		startDate_h.addEventListener('change', function (e) {
+            			ajaxUtils.postEventFromElementWithApiResponse(ctrl);
+            		});
+            	}
+            	if (startDate_m) {
+            		startDate_m.addEventListener('change', function (e) {
+            			ajaxUtils.postEventFromElementWithApiResponse(ctrl);
+            		});
+            	}
+            	if (finishDate_h) {
+            		finishDate_h.addEventListener('change', function (e) {
+            			ajaxUtils.postEventFromElementWithApiResponse(ctrl);
+            		});
+            	}
+            	if (finishDate_m) {
+            		finishDate_m.addEventListener('change', function (e) {
+            			ajaxUtils.postEventFromElementWithApiResponse(ctrl);
+            		});
+            	}
+            };
 
             $('#' + args.triggerid).daterangepicker(args.pickerparms, function (start, end, label) {
                 if (startDate.value !== start.format('DD.MM.YYYY')) {
@@ -34,9 +65,12 @@
                     finishDate_m.value = end.minute();
                     $(finishDate_m).trigger('change');
                 }
+
+                if (doPostback)
+                	au.postEventFromElementWithApiResponse(ctrl);
             });
         }
     };
 
     return instance;
-}();
+}(ajaxUtils);
