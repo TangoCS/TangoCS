@@ -60,17 +60,19 @@ namespace Tango.UI.Std
 		protected virtual void Toolbar(LayoutWriter w)
 		{
 			PrepareResult();
-			//w.PushPrefix(ID);
+
+			ToolbarTop(w);
+
 			w.Toolbar(t => ToolbarLeft(t), t => {
 				t.Item(tw => tw.Span(a => a.ID(Paging.ID)));
 				t.ItemSeparator();
 				ToolbarRight(t);
 			});
-			//w.PopPrefix();
 
 			ToolbarBottom(w);
 		}
 
+		protected virtual void ToolbarTop(LayoutWriter w) { }
 		protected virtual void ToolbarBottom(LayoutWriter w)
 		{
 			if (ShowFilterV2)
