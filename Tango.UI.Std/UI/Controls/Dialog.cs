@@ -5,6 +5,7 @@ namespace Tango.UI.Controls
 {
 	public class DialogFormContainer : ViewContainer
 	{
+		protected virtual string ContainerWidth => "";
 		public DialogFormContainer()
 		{
 			Mapping.Add("contentbody", "body");
@@ -15,9 +16,9 @@ namespace Tango.UI.Controls
 			Mapping.Add("contenttoolbar", "toolbar");
 		}
 		public override void Render(ApiResponse response)
-		{
+		{			
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
-				w.DialogControl(DialogExtensions.DialogContainerAttrs(w.Context, Type, w.IDPrefix), () => {
+			w.DialogControl(DialogExtensions.DialogContainerAttrs(w.Context, Type, w.IDPrefix, ContainerWidth), () => {
 					w.AjaxForm("form", a => a.DataResultPostponed(1), () => {
 						w.DialogControlBody(null, () => { }, null, null, () => { });
 						w.Hidden(Constants.ReturnUrl, Context.ReturnUrl.Get(1));
@@ -26,7 +27,10 @@ namespace Tango.UI.Controls
 			});
 		}
 	}
-
+	public class WideDialogFormContainer : DialogFormContainer
+	{
+		protected override string ContainerWidth => "width: 70%;";
+	}
 	public class NoCloseIconDialogFormContainer : DialogFormContainer
 	{
 		public override void Render(ApiResponse response)
@@ -77,10 +81,12 @@ namespace Tango.UI.Controls
 
 	public static class DialogExtensions
 	{
-		internal static Action<TagAttributes> DialogContainerAttrs(ActionContext ctx, string containerType, string prefix)
+		internal static Action<TagAttributes> DialogContainerAttrs(ActionContext ctx, string containerType, string prefix, params string[] styles)
 		{
 			void attrs(TagAttributes a)
-			{
+			{				
+				a.Style(styles.Join(" ").ToString());
+
 				a.DataHref(ctx.BaseUrl().Url).DataContainer(containerType, prefix);
 				var parent = ctx.GetArg("c-parent");
 				if (!parent.IsEmpty())
@@ -92,8 +98,7 @@ namespace Tango.UI.Controls
 		internal static void DialogControl(this LayoutWriter w, Action<TagAttributes> attrs, Action content)
 		{
 			w.Div(a => a.ID("dialog").Class("modal-dialog").Role("dialog").Aria("modal", "true").DataCtrl("dialog").DataResultHandler().Set(attrs), () => content());
-		}
-
+		}		
 		internal static void DialogControlBody(this LayoutWriter w, Action title, Action toolbar, Action body, Action bottomToolbar, Action footer, bool showCloseIcon = true)
 		{
 			w.Div(a => a.Class("modal-container"), () => {
@@ -180,6 +185,10 @@ namespace Tango.UI.Controls
 			});
 		}
 
+		public static ActionLink AsDialog<T>(this ActionLink link, string dialogPrefix = null)
+		{
+			return link.InContainer(typeof(T), dialogPrefix).KeepTheSameUrl();
+		}
 		public static ActionLink AsDialog(this ActionLink link, string dialogPrefix = null)
 		{
 			return link.InContainer(typeof(DialogFormContainer), dialogPrefix).KeepTheSameUrl();
