@@ -109,6 +109,8 @@ var listview = function (au, cu, cbcell) {
 			const elcellid = el.id || '';
 			const state = el.getAttribute('data-state') || 'collapsed';
 			const isButton = (el.className == 'rowexpandercell');
+			const expandedrows = document.getElementById(el.getAttribute('data-r') + "_expandedrows");
+            const expandedValue = tr.getAttribute('data-rowid') + ";";
 
 			if (state == 'collapsed') {
 				el.setAttribute('data-state', 'expanded');
@@ -141,6 +143,9 @@ var listview = function (au, cu, cbcell) {
                     au.postEventFromElementWithApiResponse(el, { data: { rowid: tr.id, level: level, dataid: tr.getAttribute('data-rowid') } }).then(hideOthers);
 				else
 					hideOthers();
+
+				if (expandedrows != null && !expandedrows.value.includes(expandedValue))
+				    expandedrows.value += expandedValue;
 			} else {
 				el.setAttribute('data-state', 'collapsed');
 				if (isButton) el.firstChild.className = 'icon icon-collapsed';
@@ -152,7 +157,11 @@ var listview = function (au, cu, cbcell) {
 					}
 					row = row.nextElementSibling;
 				}
-			}
+
+				if (expandedrows != null && expandedrows.value.includes(expandedValue)) {
+					expandedrows.value = expandedrows.value.replace(expandedValue, '');
+                }
+            }
 
 			tr.querySelectorAll('.expandedcell').forEach(function (n) {
 				n.classList.remove('expandedcell');
@@ -451,7 +460,7 @@ var listview = function (au, cu, cbcell) {
 			var origtr = document.getElementById(seltr.id.replace('_selected', ''));
 			if (origtr) {
 				var origcb = origtr.querySelector('.sel');
-				cbcell.setselected(origcb, onCheckChange);
+				if (origcb && seltr.hasAttribute('data-checked')) cbcell.setselected(origcb, onCheckChange);
 			}
 			else {
 				const rootsel = au.findControl(seltr);
@@ -465,6 +474,24 @@ var listview = function (au, cu, cbcell) {
 
 			var tocopy = [];
 			var level = parseInt(seltr.getAttribute('data-level'));
+
+			var childEl = seltr.nextElementSibling;
+			if (childEl) {
+				var childLevel = parseInt(childEl.getAttribute('data-level'));
+				while (level < childLevel) {
+					var el = childEl;
+					var origChildEl = document.getElementById(childEl.id.replace('_selected', ''));
+					if (origChildEl) {
+						var origcb = origChildEl.querySelector('.sel');
+						if (origcb && el.hasAttribute('data-checked')) cbcell.setselected(origcb, onCheckChange);
+					}
+					childEl = childEl.nextElementSibling;
+					el.parentElement.removeChild(el);
+					if (!childEl) break;
+					childLevel = parseInt(childEl.getAttribute('data-level'))
+				}
+			}
+
 			while (seltr) {
 				if (parseInt(seltr.getAttribute('data-level')) == level) {
 					tocopy.push(seltr);
@@ -486,8 +513,8 @@ var listview = function (au, cu, cbcell) {
 				el.parentElement.removeChild(el);
 			else if (clickedEl) {
 				el.removeAttribute('data-checked');
-				var del = el.querySelector('.icon-delete');
-				if (del) del.parentElement.removeChild(del);
+				//var del = el.querySelector('.icon-delete');
+				//if (del) del.parentElement.removeChild(del);
 			}
 			else if (isLastLeaf && !unchecked) {
 				var arr = el.querySelector('.togglelevel > span');
@@ -520,9 +547,12 @@ var listview = function (au, cu, cbcell) {
 
 				var cb = copyTr.querySelector('.sel');
 				if (cb) {
-					if (isChecked) addDelIcon(cb.parentElement);
+					//if (isChecked) addDelIcon(cb.parentElement);
 					cb.parentNode.removeChild(cb);
 				}
+
+				var content = copyTr.querySelector('.treerow-content');
+				addDelIcon(content);
 
 				var ddm = copyTr.querySelector('.dropdownimage');
 				if (ddm) ddm.parentNode.removeChild(ddm);
@@ -564,9 +594,10 @@ var listview = function (au, cu, cbcell) {
 					}
 					if (i == 0) {
 						el.setAttribute('data-checked', '');
-						var content = el.querySelector('.treerow-content');
-						addDelIcon(content);
+						//var content = el.querySelector('.treerow-content');
+						//addDelIcon(content);
 					}
+
 					var arr = el.querySelector('.togglelevel > span');
 					if (arr && arr.classList.contains('hide')) {
 						arr.classList.remove('hide');

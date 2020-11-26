@@ -597,6 +597,8 @@ var ajaxUtils = function ($, cu) {
 
 			if (targetpath != curpath) {
 				parms['c-new'] = 1;
+				if (target.changeloc)
+					state.ctrl = {};
 			}
 			else if (!parms['c-prefix'] && target.containerPrefix) {
 				parms['c-prefix'] = target.containerPrefix;
@@ -1322,7 +1324,14 @@ var ajaxUtils = function ($, cu) {
 				if (s.parms['c-prefix']) delete s.parms['c-prefix'];
 			}
 
+			var parser = document.createElement('a');
+			parser.href = state.loc.url;
+
+			if (window.location.pathname != parser.pathname)
+				state.ctrl = {};
+
 			state.loc = s;
+
 			if (s.onBack && !s.parms['c-new'])
 				runClientAction(s.onBack.service, s.onBack.callChain, 0);
 			else
