@@ -21,7 +21,7 @@ namespace Tango.UI.Controls
                     }
                 });
 			});
-			w.Div(a => a.ID(id + "_pages").Class("tabs2"), () => {
+			w.Div(a => a.ID(id + "_pages").Class("tabs2_pages"), () => {
 				for (int i = 0; i < tabPages.Length; i++)
 				{                   
                     var p = tabPages[i];
