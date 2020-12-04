@@ -41,6 +41,13 @@ namespace Tango.LongOperation
 				}
 
 				var val = Parameters.Single(o => o.Key == mp[i].Name.ToLower()).Value;
+				var defValueAttr = mp[i].GetCustomAttribute<DefaultValueAttribute>(false);
+				if (val.IsEmpty() && defValueAttr != null)
+				{
+					var providerType = defValueAttr.Value as Type;
+					var dvProvider = Activator.CreateInstance(providerType, provider) as ITaskParameterDefaultValueProvider;
+					val = dvProvider.GetValue(Task, mp[i]);
+				}
 
 				var typeConverter = TypeDescriptor.GetConverter(mp[i].ParameterType);
 
