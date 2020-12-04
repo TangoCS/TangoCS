@@ -368,6 +368,12 @@ namespace Tango.Excel
 					s.Cells[r, c].Style.Numberformat.Format = "#,##0.000000";
 				if (format == "n7")
 					s.Cells[r, c].Style.Numberformat.Format = "#,##0.0000000";
+				if (format == "n8")
+					s.Cells[r, c].Style.Numberformat.Format = "#,##0.00000000";
+				if (format == "n9")
+					s.Cells[r, c].Style.Numberformat.Format = "#,##0.000000000";
+				if (format == "n10")
+					s.Cells[r, c].Style.Numberformat.Format = "#,##0.0000000000";
 			});
 		}
 		
