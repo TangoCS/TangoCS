@@ -540,22 +540,22 @@ button.close {
 			display: none;
 			user-select: none;
 		}
+			.tabs2 > ul > li > input[type="radio"]:disabled + label {
+				opacity: .5;
+				cursor: no-drop;
+			}
 
-.tabs2 > div {
+
+.tabs2_pages > div {
 	display: none;
 }
 
-	.tabs2 > div.selected {
-		display: block;
-	}
-
-
-.tabs2 > ul > li > input[type="radio"]:disabled + label {
-	opacity: .5;
-	cursor: no-drop;
+.tabs2_pages > div.selected {
+	display: block;
+	height: 100%;
 }
 
-div.tabs2 + div.tabs2 {
+div.tabs2 + div.tabs2_pages {
 	margin-top: 8px;
 }
 

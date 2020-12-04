@@ -46,7 +46,7 @@ main {
 	height: 100%;
 	width: 100%;
 	overflow-y: auto;
-	padding-bottom: 16px;
+	/*padding-bottom: 16px;*/
 }
 
 *::-webkit-scrollbar {
