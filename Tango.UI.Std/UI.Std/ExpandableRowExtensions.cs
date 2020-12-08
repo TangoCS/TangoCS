@@ -8,7 +8,6 @@ namespace Tango.UI.Std
 		public RowCellFlagDelegate<TResult> Collapsed { get; set; } = (o, i) => true;
 		public RowCellAttributesDelegate<TResult> Attributes { get; set; }
 		public RowCellFlagDelegate<TResult> ContentVisible { get; set; } = (o, i) => true;
-		public RowCellFlagDelegate<TResult> Visible { get; set; } = (o, i) => true;
 		public Action<ThTagAttributes> HeaderAttributes { get; set; }
 		public string Tip { get; set; }
 	}
@@ -36,8 +35,7 @@ namespace Tango.UI.Std
 						{
 							w.Icon(options.Collapsed(o, i) ? "collapsed" : "expanded", tip: options.Tip);
 						}
-					},
-					Visible = options.Visible
+					}
 				}
 			);
         }

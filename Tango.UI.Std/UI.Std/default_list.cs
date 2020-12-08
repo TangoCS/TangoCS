@@ -370,7 +370,17 @@ namespace Tango.UI.Std
 		public Dictionary<int, Action<LayoutWriter, TResult>> Cells { get; private set; } = new Dictionary<int, Action<LayoutWriter, TResult>>();
 	}
 
-	public class ColumnHeader
+	public interface IColumnHeader
+	{
+		IEnumerable<ColumnHeader> AsEnumerable();
+	}
+
+	public interface IListColumn<TResult>
+	{
+		IEnumerable<ListColumn<TResult>> AsEnumerable();
+	}
+
+	public class ColumnHeader : IColumnHeader
 	{
 		public Action<LayoutWriter> Content { get; set; }
 		public Action<ThTagAttributes> Attributes { get; set; }
@@ -381,13 +391,33 @@ namespace Tango.UI.Std
 			Attributes = attrs;
 			Content = content;
 		}
+		public ColumnHeader(string title)
+		{
+			Content = w => w.Write(title);
+		}
+
+		public IEnumerable<ColumnHeader> AsEnumerable()
+		{
+			yield return this;
+		}
 	}
 
-	public class ListColumn<TResult>
+	public class CustomColumnHeader : IColumnHeader
+	{
+		Func<IEnumerable<ColumnHeader>> _headers;
+
+		public CustomColumnHeader(Func<IEnumerable<ColumnHeader>> headers)
+		{
+			_headers = headers;
+		}
+
+		public IEnumerable<ColumnHeader> AsEnumerable() => _headers?.Invoke();
+	}
+
+	public class ListColumn<TResult> : IListColumn<TResult>
 	{
 		public RenderRowCellDelegate<TResult> Content { get; set; }
 		public RowCellAttributesDelegate<TResult> Attributes { get; set; }
-		public RowCellFlagDelegate<TResult> Visible { get; set; } = (o, i) => true;
 
 		public ListColumn() { }
 		public ListColumn(RowCellAttributesDelegate<TResult> attrs, RenderRowCellDelegate<TResult> content)
@@ -395,6 +425,23 @@ namespace Tango.UI.Std
 			Attributes = attrs;
 			Content = content;
 		}
+
+		public IEnumerable<ListColumn<TResult>> AsEnumerable()
+		{
+			yield return this;
+		}
+	}
+
+	public class CustomListColumn<TResult> : IListColumn<TResult>
+	{
+		Func<IEnumerable<ListColumn<TResult>>> _columns;
+
+		public CustomListColumn(Func<IEnumerable<ListColumn<TResult>>> columns)
+		{
+			_columns = columns;
+		}
+
+		public IEnumerable<ListColumn<TResult>> AsEnumerable() => _columns?.Invoke();
 	}
 
 	public delegate void RenderHeaderDelegate(LayoutWriter w, IEnumerable<Action<LayoutWriter>> headers);

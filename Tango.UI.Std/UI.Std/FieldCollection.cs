@@ -16,15 +16,16 @@ namespace Tango.UI.Std
 		bool AllowSelectAllPages { get; }
 		bool EnableHeadersMenu { get; }
 
-		List<List<ColumnHeader>> HeaderRows { get; }
-		List<ColumnHeader> Headers { get; }
-		List<ListColumn<TResult>> Cells { get; }
+		List<List<IColumnHeader>> HeaderRows { get; }
+		List<IColumnHeader> Headers { get; }
+		List<IListColumn<TResult>> Cells { get; }
 		Action<TagAttributes> ListAttributes { get; set; }
 		Action<TagAttributes, TResult, RowInfo> RowAttributes { get; set; }
 		Action<TagAttributes, TResult, RowInfo> GroupRowAttributes { get; set; }
 		Action<TagAttributes, int> HeaderRowAttributes { get; set; }
 		List<ListGroup<TResult>> Groups { get; }
 
+		Action<LayoutWriter, IEnumerable<TResult>> BeforeHeader { get; set; }
 		Action<LayoutWriter, TResult, RowInfo> BeforeRowContent { get; set; }
 		Action<LayoutWriter, TResult, RowInfo> AfterRowContent { get; set; }
 
@@ -50,9 +51,9 @@ namespace Tango.UI.Std
 
 	public class FieldCollectionBase<TResult> : IFieldCollection<TResult>
 	{
-		public List<List<ColumnHeader>> HeaderRows { get; } = new List<List<ColumnHeader>> { new List<ColumnHeader>() };
-		public List<ColumnHeader> Headers => HeaderRows[HeaderRows.Count - 1];
-		public List<ListColumn<TResult>> Cells { get; } = new List<ListColumn<TResult>>();
+		public List<List<IColumnHeader>> HeaderRows { get; } = new List<List<IColumnHeader>> { new List<IColumnHeader>() };
+		public List<IColumnHeader> Headers => HeaderRows[HeaderRows.Count - 1];
+		public List<IListColumn<TResult>> Cells { get; } = new List<IListColumn<TResult>>();
 
 		public Action<TagAttributes> ListAttributes { get; set; }
 		public Action<TagAttributes, int> HeaderRowAttributes { get; set; }
@@ -71,6 +72,7 @@ namespace Tango.UI.Std
 
 		public Action<LayoutWriter, TResult, RowInfo> BeforeRowContent { get; set; }
 		public Action<LayoutWriter, TResult, RowInfo> AfterRowContent { get; set; }
+		public Action<LayoutWriter, IEnumerable<TResult>> BeforeHeader { get; set; }
 
 		public void AddHeader(Action<ThTagAttributes> attrs, Action<LayoutWriter> content)
 		{
@@ -171,7 +173,7 @@ namespace Tango.UI.Std
 
 		public static void AddHeaderRow<TResult>(this IFieldCollection<TResult> f)
 		{
-			f.HeaderRows.Add(new List<ColumnHeader>());
+			f.HeaderRows.Add(new List<IColumnHeader>());
 		}
 
 		#region header only
@@ -198,19 +200,19 @@ namespace Tango.UI.Std
 		#endregion
 
 		#region custom
-		public static void AddCustomCell<TResult>(this IFieldCollection<TResult> f, ColumnHeader header, ListColumn<TResult> cell)
+		public static void AddCustomCell<TResult>(this IFieldCollection<TResult> f, IColumnHeader header, IListColumn<TResult> cell)
 		{
 			f.Headers.Add(header);
 			f.Cells.Add(cell);
 		}
 
-		public static void AddCustomCell<TResult>(this IFieldCollection<TResult> f, string title, ListColumn<TResult> cell)
+		public static void AddCustomCell<TResult>(this IFieldCollection<TResult> f, string title, IListColumn<TResult> cell)
 		{
 			f.AddHeader(title);
 			f.Cells.Add(cell);
 		}
 
-		public static void AddCustomCell<TResult>(this IFieldCollection<TResult> f, ListColumn<TResult> cell)
+		public static void AddCustomCell<TResult>(this IFieldCollection<TResult> f, IListColumn<TResult> cell)
 		{
 			f.Cells.Add(cell);
 		}

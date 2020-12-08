@@ -81,8 +81,8 @@ namespace Tango.UI.Std
 				fields.BeforeRowContent?.Invoke(w, o, r);
 
 				w.Tr(a => fields.RowAttributes?.Invoke(a, o, r), () => {
-					foreach (var c in fields.Cells)
-						if (c.Visible(o, r))
+					foreach (var cols in fields.Cells)
+						foreach (var c in cols.AsEnumerable())
 							w.Td(a => c.Attributes?.Invoke(a, o, r), () => c.Content(w, o, r));
 				});
 
@@ -110,13 +110,16 @@ namespace Tango.UI.Std
 				fields.SetRowID(o => (o as dynamic).ID);
 
 			w.Table(fields.ListAttributes, () => {
+				fields.BeforeHeader?.Invoke(w, result);
+
 				var i = 0;
 
 				foreach (var hr in fields.HeaderRows)
 				{
 					w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
 						foreach (var h in hr)
-							w.Th(h.Attributes, () => h.Content(w));
+							foreach (var hdr in h.AsEnumerable())
+								w.Th(hdr.Attributes, () => hdr.Content(w));
 					});
 					i++;
 				}
@@ -137,6 +140,8 @@ namespace Tango.UI.Std
 		{
 			fields.ListAttributes = (a => a.Class("blockslist")) + fields.ListAttributes;
 			w.Div(fields.ListAttributes, () => {
+				fields.BeforeHeader?.Invoke(w, result);
+
 				int i = 1;
 				string[] gvalue = new string[fields.Groups.Count];
 
@@ -163,8 +168,9 @@ namespace Tango.UI.Std
 
 					var r = new RowInfo { RowNum = i, Level = j };
 					w.Div(a => fields.RowAttributes?.Invoke(a, o, r), () => {
-						foreach (var c in fields.Cells)
-							c.Content(w, o, r);
+						foreach (var cols in fields.Cells)
+							foreach (var c in cols.AsEnumerable())
+								c.Content(w, o, r);
 					});
 
 					i++;
@@ -218,7 +224,8 @@ namespace Tango.UI.Std
 				{
 					w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
 						foreach (var h in hr)
-							w.Th(h.Attributes, () => h.Content(w));
+							foreach (var hdr in h.AsEnumerable())
+								w.Th(hdr.Attributes, () => hdr.Content(w));
 					});
 					i++;
 				}
@@ -233,13 +240,15 @@ namespace Tango.UI.Std
 
 			w.Div(a => a.ID().DataCtrl("listview"), () => {
 				w.Table(listAttrs, () => {
+					fields.BeforeHeader?.Invoke(w, result);
 					var i = 0;
 
 					foreach (var hr in fields.HeaderRows)
 					{
 						w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
 							foreach (var h in hr)
-								w.Th(h.Attributes, () => h.Content(w));
+								foreach (var hdr in h.AsEnumerable())
+									w.Th(hdr.Attributes, () => hdr.Content(w));
 						});
 						i++;
 					}

@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
 using System.Xml.Linq;
-using Tango.Html;
 using Tango.Localization;
 
 namespace Tango.UI.Controls
