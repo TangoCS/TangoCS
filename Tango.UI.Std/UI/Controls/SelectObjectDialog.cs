@@ -22,7 +22,7 @@ namespace Tango.UI.Controls
 
 		public string Width { get; set; } = "700px";
 		public bool HighlightSearchResults { get; set; } = false;
-		protected Paging Paging { get; set; }
+		public Paging Paging { get; set; }
 
 		public TField Field { get; set; }
 
@@ -198,7 +198,14 @@ namespace Tango.UI.Controls
 				pw.Hidden(Field.ID, selectedValues?.Select(o => Field.DataValueField(o)).Join(","), a => a.DataHasClientState(ClientStateType.Array, ClientID, "selectedvalues"));
 				if (!Field.Disabled)
 				{
-					cw.A(a => a.Data(Field.DataCollection).CallbackToCurrent(Context).AsDialog(OpenDialog, Field.ClientID), Resources.Get("Common.SelectObjects_Field"));
+					cw.A(a =>
+					{
+						a.Data(Field.DataCollection);
+						if (Field.DoCallbackToCurrent)
+							a.CallbackToCurrent(Context);
+
+						a.AsDialog(OpenDialog, Field.ClientID);
+					}, Resources.Get("Common.SelectObjects_Field"));
 					cw.Write("&nbsp;");
 					if (!Field.PostOnClearEvent)
 						cw.A(a => a.OnClick($"selectMultipleObjectsDialog.clear('{Field.ClientID}', true)"), Resources.Get("Common.Clear"));

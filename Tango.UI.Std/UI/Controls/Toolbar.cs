@@ -66,7 +66,9 @@ namespace Tango.UI.Controls
 			{
 				filter.LoadPersistent();
 
-				void attrs(ActionLink a) => a.CallbackToCurrent().AsDialog(filter.OpenFilterDialog)
+				//void attrs(ActionLink a) => a.CallbackToCurrent().AsDialog(filter.OpenFilterDialog)
+				//	.WithImage("filter").WithTitle(r => r.Get("Common.Filter"));
+				void attrs(ActionLink a) => a.AsDialogPost(filter.OpenFilterDialog)
 					.WithImage("filter").WithTitle(r => r.Get("Common.Filter"));
 
 				void button()

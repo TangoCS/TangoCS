@@ -215,6 +215,17 @@ namespace Tango.UI.Controls
 			return link.InContainer(typeof(DialogFormContainer), dialogPrefix).KeepTheSameUrl().RunEvent(serverEvent.Method.Name, el.ClientID);
 		}
 
+		public static ActionLink AsDialogPost(this ActionLink link, Action<ApiResponse> serverEvent, string dialogPrefix = null)
+		{
+			var el = serverEvent.Target as ViewElement;
+			if (el == null) throw new InvalidCastException("Invalid class type for serverEvent.Target; must be of type ViewElement");
+
+			if (dialogPrefix == null)
+				dialogPrefix = el.ClientID;
+
+			return link.InContainer(typeof(DialogFormContainer), dialogPrefix).KeepTheSameUrl().PostEvent(serverEvent.Method.Name, el.ClientID);
+		}
+
 		public static TagAttributes<T> AsDialog<T>(this TagAttributes<T> a, Action<ApiResponse> serverEvent, string dialogPrefix = null)
 			where T : TagAttributes<T>
 		{

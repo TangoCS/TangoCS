@@ -282,9 +282,10 @@ var ajaxUtils = function ($, cu) {
 			url: null,
 			parms: {},
 			onBack: null,
-			clientArgs: {}
+			clientArgs: {},
+			onBackArgs: {}
 		},
-		ctrl: {}
+		ctrl: {}		
 	};
 
 	var instance = {
@@ -836,6 +837,14 @@ var ajaxUtils = function ($, cu) {
 			}
 		}
 
+		// TODO: доработать для определения модальных контейнеров + обработка открытия модального окна из модального окна.
+		if(el.hasAttribute('data-c-new')) {
+			for (var key in target.data) {
+				if(!key.startsWith('c-'))
+					state.loc.onBackArgs[key] = target.data[key];
+			}			
+		}
+
 		target.currenturl = instance.findServiceAction(el);
 		if (!target.url) {
 			target.url = target.currenturl;
@@ -844,12 +853,17 @@ var ajaxUtils = function ($, cu) {
 		if (el.id) target.sender = el.id;
 
 		const startEl = el.hasAttribute('data-c-external') ? document.getElementById(el.getAttribute('data-c-external')) : el;
-		const container = cu.getThisOrParent(startEl, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
+		const container = cu.getThisOrParent(startEl, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });	
+
 		if (container) {
 			target.containerPrefix = container.getAttribute('data-c-prefix');
 			target.containerType = container.getAttribute('data-c-type');
-			if (container.getAttribute('aria-modal') == 'true')
-				target.changeloc = false;
+			if (container.getAttribute('aria-modal') == 'true'){					
+					target.changeloc = false;
+					for (var key in state.loc.onBackArgs) {
+						target.data[key] = state.loc.onBackArgs[key];
+					}
+				}
 		}
 	}
 

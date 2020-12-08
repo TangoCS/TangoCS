@@ -84,6 +84,7 @@ namespace Tango.UI.Controls
 			DataProvider = new ORMSelectObjectFieldDataProvider<TRef>(this);
 			Title = () => Resources.Get(typeof(TRef).GetResourceType().FullName + "-pl");
 		}
+		public bool DoCallbackToCurrent { get; set; } = false;
 	}
 
 	public static class SelectObjectDialogHelpers
