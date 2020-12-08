@@ -35,7 +35,7 @@
 			var overflowRegex = includeHidden ? /(auto|scroll|hidden)/ : /(auto|scroll)/;
 
 			if (style.position === "fixed") return document.body;
-			for (var parent = element; (parent = parent.parentElement) ;) {
+			for (var parent = element; (parent = parent.parentElement);) {
 				style = getComputedStyle(parent);
 				if (excludeStaticParent && style.position === "static") {
 					continue;
@@ -285,7 +285,7 @@ var ajaxUtils = function ($, cu) {
 			clientArgs: {},
 			onBackArgs: {}
 		},
-		ctrl: {}		
+		ctrl: {}
 	};
 
 	var instance = {
@@ -838,11 +838,11 @@ var ajaxUtils = function ($, cu) {
 		}
 
 		// TODO: доработать для определения модальных контейнеров + обработка открытия модального окна из модального окна.
-		if(el.hasAttribute('data-c-new')) {
+		if (el.hasAttribute('data-c-new')) {
 			for (var key in target.data) {
-				if(!key.startsWith('c-'))
+				if (!key.startsWith('c-'))
 					state.loc.onBackArgs[key] = target.data[key];
-			}			
+			}
 		}
 
 		target.currenturl = instance.findServiceAction(el);
@@ -853,17 +853,23 @@ var ajaxUtils = function ($, cu) {
 		if (el.id) target.sender = el.id;
 
 		const startEl = el.hasAttribute('data-c-external') ? document.getElementById(el.getAttribute('data-c-external')) : el;
-		const container = cu.getThisOrParent(startEl, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });	
+		const container = cu.getThisOrParent(startEl, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
 
 		if (container) {
 			target.containerPrefix = container.getAttribute('data-c-prefix');
 			target.containerType = container.getAttribute('data-c-type');
-			if (container.getAttribute('aria-modal') == 'true'){					
-					target.changeloc = false;
-					for (var key in state.loc.onBackArgs) {
+			if (container.getAttribute('aria-modal') == 'true') {
+				target.changeloc = false;
+				for (var key in state.loc.onBackArgs) {
+					if (target.data[key] == null) {
 						target.data[key] = state.loc.onBackArgs[key];
 					}
 				}
+			}
+		}
+
+		if (el.hasAttribute('data-res')) {
+			state.loc.onBackArgs = {};
 		}
 	}
 
