@@ -108,7 +108,9 @@ var selectMultipleObjectsDialog = function (au, cu) {
 			if (!state.dialogvalues) state.dialogvalues = state.selectedvalues.slice();
 			checkBoxes.forEach(function(element) {
 				element.checked = true;
-				state.dialogvalues.push(element.value);
+				if (!state.dialogvalues.includes(element.value)) {
+					state.dialogvalues.push(element.value);
+				}
 			});
 		}
 	}
