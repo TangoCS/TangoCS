@@ -1,17 +1,28 @@
 ﻿using System;
+using Tango.Logger;
 
 namespace Tango.UI
 {
     public interface IErrorResult
     {
-        string OnError(Exception e, int errorId);
+        string OnError(Exception e);
     }
 
-    public class ErrorResult : IErrorResult
-    {
-        public string OnError(Exception e, int errorId)
+	public interface IErrorResultXml : IErrorResult { }
+
+	public class ErrorResult : IErrorResultXml
+	{
+		readonly IErrorLogger _logger;
+
+		public ErrorResult(IErrorLogger logger)
+		{
+			_logger = logger;
+		}
+        public string OnError(Exception e)
         {
-            return e.ToString().Replace(Environment.NewLine, "<br/>");
+			_logger?.Log(e);
+
+			return e.ToString().Replace(Environment.NewLine, "<br/>");
         }
     }
 }
