@@ -355,13 +355,13 @@ var ajaxUtils = function ($, cu) {
 			return false;
 		},
 		error: function (xhr, status, e) {
-			var text = '';
-			var title = 'Системная ошибка';
+            var text = '';
+			var title = localization.resources.title.systemError;
 			var showinframe = false;
 			var severity = 'err';
 
 			if (e && e.message) {
-				title = 'Ошибка javascript';
+				title = localization.resources.title.javascriptError;
 				text = e.message + '<br>' + e.stack;
 			}
 			else if (xhr.status == '401') {
@@ -369,23 +369,23 @@ var ajaxUtils = function ($, cu) {
 				if (location)
 					window.location = location;
 				else {
-					title = 'Нет доступа';
-					text = 'Вы не авторизованы в системе';
+					title = localization.resources.title.noAccess;
+					text = localization.resources.text.notLoggedSystem;
 					severity = 'warn';
 				}
 			}
 			else if (xhr.status == '403') {
-				title = 'Нет доступа';
-				text = 'Недостаточно прав для выполнения операции';
+				title = localization.resources.title.noAccess;
+				text = localization.resources.text.insufficientPermissionsOperation;
 				severity = 'warn';
 			}
 			else if (xhr.status == '404') {
-				title = 'Страница отсутствует';
-				text = '<a href="/">Перейти на главную страницу</a>';
+				title = localization.resources.title.pageMissing;
+				text = localization.resources.text.linkGoMainPage;
 				severity = 'warn';
 			}
 			else if (e && this.url && xhr.status != '500') {
-				title = 'Ошибка ajax';
+				title = localization.resources.title.ajaxError;
 				text = this.url + '<br>' + xhr.status + ' ' + e;
 			}
 			else {
@@ -962,7 +962,7 @@ var ajaxUtils = function ($, cu) {
 		state.com.apiResult = null;
 
 		if (apiResult.error) {
-			showError('Системная ошибка', apiResult.error, 'err');
+			showError(localization.resources.title.systemError, apiResult.error, 'err');
 			return;
 		}
 

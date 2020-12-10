@@ -10,9 +10,9 @@ namespace Tango.UI
 	{
 		public static async Task Ajax<T>(ActionContext ctx) where T : ViewRootElement, new() => await Run(ctx, RunAjax<T>, OnAjaxError);
 		public static async Task Page<T>(ActionContext ctx) where T : ViewRootElement, new() => await Run(ctx, RunPage<T>, OnError);
-		public static async Task RunXml(ActionContext ctx) => await Run(ctx, c => c.RunAction(), OnErrorXml);
+		public static async Task RunXml(ActionContext ctx) => await Run(ctx, c => c.RunAction(), (e, r, id) => OnErrorXml(e));
 
-		public static async Task Run(ActionContext ctx, Func<ActionContext, ActionResult> run, Func<Exception, ActionResult> onError)
+		public static async Task Run(ActionContext ctx, Func<ActionContext, ActionResult> run, Func<Exception, IErrorResult, int, ActionResult> onError)
 		{
 			ActionResult r = null;
 			try
@@ -20,19 +20,21 @@ namespace Tango.UI
 				r = ctx.RunResourceFilter() ?? run(ctx);
 			}
 			catch (Exception e)
-			{
+            {
+                int errorId = 0;
 				if (ctx.RequestServices.GetService(typeof(IErrorLogger)) is IErrorLogger errLogger)
-					errLogger.Log(e);
+                    errorId = errLogger.Log(e);
 
-				r = onError(e);
+                if (ctx.RequestServices.GetService(typeof(IErrorResult)) is IErrorResult result)
+					r = onError(e, result, errorId);
 			}
 
 			await r.ExecuteResultAsync(ctx);
 		}
 
-		static ActionResult OnError(Exception e)
+		static ActionResult OnError(Exception e, IErrorResult result, int errorId)
 		{
-			return new HtmlResult(e.ToString().Replace(Environment.NewLine, "<br/>"), "");
+			return new HtmlResult(result.OnError(e, errorId), "");
 		}
 
 		public static XDocument ErrorMessage(int code, string text)
@@ -46,10 +48,10 @@ namespace Tango.UI
 			return new ContentResult { Content = ErrorMessage(-1, text).ToString(), ContentType = "text/xml", StatusCode = HttpStatusCode.InternalServerError };
 		}
 
-		static ActionResult OnAjaxError(Exception e)
+		static ActionResult OnAjaxError(Exception e, IErrorResult result, int errorId)
 		{
 			var api = new ApiResult();
-			api.ApiResponse.Data.Add("error", e.ToString().Replace(Environment.NewLine, "<br/>"));
+			api.ApiResponse.Data.Add("error", result.OnError(e, errorId));
 			return api;
 		}
 
