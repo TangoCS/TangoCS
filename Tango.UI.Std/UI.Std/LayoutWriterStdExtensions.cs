@@ -1,5 +1,6 @@
 ﻿using System;
 using Tango.Html;
+using Tango.UI.Controls;
 
 namespace Tango.UI.Std
 {
@@ -88,6 +89,26 @@ namespace Tango.UI.Std
 						w.Div(a => a.Class("sidebar-close"), () => w.Icon("begin"));
 					});
 					content();
+				});
+			});
+		}
+
+		public static void CollapsibleSidebar(this LayoutWriter w, Tabs tabs)
+		{
+			w.Div(a => a.ID("sidebar").Class("sidebar").DataCtrl("sidebar"), () => {
+				w.Div(a => a.Class("sidebar-menu"), () => {
+					w.Ul(() => {
+						w.Li(() => w.Span(tabs.Pages[0].Title));
+					});
+				});
+				w.Div(a => a.Class("sidebar-panel"), () => {
+					w.Div(a => a.Class("sidebar-header"), () => {
+						tabs.RenderTabs(w);
+						//w.H3(title);
+						w.Div(a => a.Class("sidebar-close"), () => w.Icon("begin"));
+					});
+					tabs.RenderPages(w);
+					//content();
 				});
 			});
 		}

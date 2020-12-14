@@ -882,7 +882,7 @@ div.tabs2 + div.tabs2_pages {
 	border: none;
 	/*background-color: aquamarine;*/
 	line-height: inherit;
-	width: 20px;
+	width: 100%;
 	outline: none;
 	padding: 0;
 	margin: 0;

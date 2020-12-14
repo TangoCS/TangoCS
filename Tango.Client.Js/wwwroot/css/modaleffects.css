@@ -717,7 +717,8 @@ perspective effects (not including the modals and the overlay).
 
 /* err */
 #container_err.modal-dialog.err {
-	/*width: 90%;*/
+	max-width: 90%;
+	width: fit-content;
 }
 
 #container_err iframe {

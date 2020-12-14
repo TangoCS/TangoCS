@@ -118,7 +118,11 @@ namespace Tango.UI.Std
 			err:
 			RenderValidation(response, m);
 			response.Success = false;
+			return false;
+
 			ret:
+			if (m.Count == 0)
+				response.AddWidget("validation", w => w.Write(""));
 			return false;
 		}
 
