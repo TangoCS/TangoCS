@@ -11,22 +11,9 @@ namespace Tango.UI.Controls
 		where TRef : class, IWithKey<TRefKey>
 		where TField : ISelectObjectField<TRef>
 	{
-		string _filterValue = null;
-		public string FilterValue {
-			get
-			{
-				if (_filterValue == null) _filterValue = Context.GetArg(FilterFieldName);
-				return _filterValue;
-			}
-		}
-
 		public string Width { get; set; } = "700px";
-		public bool HighlightSearchResults { get; set; } = false;
 		public Paging Paging { get; set; }
-
 		public TField Field { get; set; }
-
-		public string FilterFieldName { get; set; } = "filter";
 
 		public override void OnInit()
 		{
@@ -40,7 +27,7 @@ namespace Tango.UI.Controls
 
 		public void OpenDialog(ApiResponse response)
 		{
-			var data = Field.DataProvider.GetData(Paging, FilterValue);
+			var data = Field.DataProvider.GetData(Paging);
 			if (data.Count() == 1)
 				RenderSingleObjectFound(response, data.First());
 			else
@@ -62,7 +49,7 @@ namespace Tango.UI.Controls
 
 		public virtual void ToolbarLeft(MenuBuilder t)
 		{
-			t.Item(w => w.TextBox(FilterFieldName, FilterValue, a =>
+			t.Item(w => w.TextBox(Field.FilterFieldName, Field.FilterValue, a =>
 				a.Class("selectdialog_filter").Data(DataCollection).Placeholder("Поиск").Autofocus(true).Autocomplete(false)
 			));
 		}
@@ -74,7 +61,7 @@ namespace Tango.UI.Controls
 
 		public virtual void RenderList(ApiResponse response)
 		{
-			var data = Field.DataProvider.GetData(Paging, FilterValue);
+			var data = Field.DataProvider.GetData(Paging);
 
 			// TODO решить проблему префиксов при name = prefix
 			response.AddWidget("body", w => List(w, data));
@@ -96,7 +83,7 @@ namespace Tango.UI.Controls
 		public abstract void Render(LayoutWriter w, TValue selectedValue);
 		public virtual void RenderPaging(LayoutWriter w)
 		{
-			Paging.Render(w, Field.DataProvider.GetCount(FilterValue), a => a.PostEvent(RenderList));
+			Paging.Render(w, Field.DataProvider.GetCount(), a => a.PostEvent(RenderList));
 		}
 	}
 
@@ -107,11 +94,12 @@ namespace Tango.UI.Controls
 		{
 			w.Div(a => a.ID().DataCtrl("selectSingleObjectDialog"), () => {
 				w.Div(a => a.Class("radiobuttonlist"), () => {
-					foreach (var item in data.Select(o => Field.GetListItem(o, FilterValue, HighlightSearchResults)))
+					foreach (var o in data)
 					{
-						w.Label(a => a.For("item" + item.Value), () => {
-							w.RadioButton("item", "item" + item.Value, item.Value);
-							w.Write(item.Text);
+						var value = Field.DataValueField(o);
+						w.Label(a => a.For("item" + value), () => {
+							w.RadioButton("item", "item" + value, value);
+							Field.DataRow(w, o);
 						});
 					}
 				});
@@ -176,13 +164,12 @@ namespace Tango.UI.Controls
 		{
 			w.Div(a => a.ID().DataCtrl("selectMultipleObjectsDialog"), () => {
 				w.Div(a => a.Class("checkboxlist"), () => {
-					foreach (var item in data.Select(o => Field.GetListItem(o, FilterValue, HighlightSearchResults)))
+					foreach (var o in data)
 					{
-						w.Label(a => a.For("item" + item.Value), () => {
-							w.CheckBox("item", false, a =>
-								a.ID("item" + item.Value).Value(item.Value)
-							);
-							w.Write(item.Text);
+						var value = Field.DataValueField(o);
+						w.Label(a => a.For("item" + value), () => {
+							w.CheckBox("item", false, a => a.ID("item" + value).Value(value));
+							Field.DataRow(w, o);
 						});
 					}
 				});

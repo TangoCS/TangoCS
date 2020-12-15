@@ -19,8 +19,13 @@ namespace Tango.UI.Controls
 
 		Func<TRef, string> DataTextField { get; }
 		Func<TRef, string> DataValueField { get;  }
+		Action<LayoutWriter, TRef> DataRow { get; }
 		Func<TRef, string> SelectedObjectTextField { get; }
+
 		string FilterValue { get; }
+		bool HighlightSearchResults { get; }
+		string FilterFieldName { get; }
+
 		bool Disabled { get; }
 		Action<LayoutWriter> TextWhenDisabled { get; }
 		Action<LayoutWriter> TextWhenNothingSelected { get; }
@@ -54,12 +59,24 @@ namespace Tango.UI.Controls
 
 		public Func<TRef, string> DataTextField { get; set; } = o => o != null && o is IWithTitle ? (o as IWithTitle).Title : "";
 		public Func<TRef, string> DataValueField { get; set; } = o => o.ID.ToString();
+		public Action<LayoutWriter, TRef> DataRow { get; set; }
 		public Func<TRef, string> SelectedObjectTextField { get; set; } = o => o != null && o is IWithTitle ? (o as IWithTitle).Title : "";
 		public Expression<Func<TRef, TRefKey>> ByParentSelector { get; set; }
 		public TRefKey RootObjectID { get; set; }
 		public bool IsHierarchic => ByParentSelector != null;
 
-		public string FilterValue { get; set; }
+		string _filterValue = null;
+		public string FilterValue
+		{
+			get
+			{
+				if (_filterValue == null) _filterValue = Context.GetArg(FilterFieldName);
+				return _filterValue;
+			}
+		}
+		public bool HighlightSearchResults { get; set; } = false;
+		public string FilterFieldName { get; set; } = "filter";
+
 		public bool Disabled { get; set; }
 		public Action<LayoutWriter> TextWhenDisabled { get; set; }
 		public Action<LayoutWriter> TextWhenNothingSelected { get; set; }
@@ -83,23 +100,41 @@ namespace Tango.UI.Controls
 		{
 			DataProvider = new ORMSelectObjectFieldDataProvider<TRef>(this);
 			Title = () => Resources.Get(typeof(TRef).GetResourceType().FullName + "-pl");
+			DataRow = (w, o) => w.Write(GetDataText(o));
 		}
+
+		public string GetDataText(TRef o)
+		{
+			var text = DataTextField(o);
+
+			if (HighlightSearchResults && !FilterValue.IsEmpty())
+			{
+				string fv = FilterValue.Replace("<", "").
+					Replace(">", "").Replace("(", "").Replace(")", "").Replace("[", "").Replace("]", "").
+					Replace("{", "").Replace("}", "").Replace("?", "").Replace("*", "");
+				text = Regex.Replace(text, "(?i)(?<1>" + fv + ")",
+					"<span style='color:Red; font-weight:bold'>$1</span>");
+			}
+
+			return text;
+		}
+
 		public bool DoCallbackToCurrent { get; set; } = false;
 	}
 
 	public static class SelectObjectDialogHelpers
 	{
-		public static IQueryable<TRef> DataQuery<TRef>(this ISelectObjectField<TRef> field, Paging paging, string filterValue)
+		public static IQueryable<TRef> DataQuery<TRef>(this ISelectObjectField<TRef> field, Paging paging)
 		{
-			if (!filterValue.IsEmpty())
+			if (!field.FilterValue.IsEmpty())
 			{
 				if (field.SearchQuery != null)
 				{
-					return field.SearchQuery(filterValue, paging.PageIndex, paging.PageSize);
+					return field.SearchQuery(field.FilterValue, paging.PageIndex, paging.PageSize);
 				}
 				else
 				{
-					return paging.Apply(field.AllObjects.Where(field.SearchExpression(filterValue)));
+					return paging.Apply(field.AllObjects.Where(field.SearchExpression(field.FilterValue)));
 				}
 			}
 			else
@@ -108,36 +143,36 @@ namespace Tango.UI.Controls
 			}
 		}
 
-		public static SelectListItem GetListItem<TRef>(this ISelectObjectField<TRef> field,	TRef obj, string filterValue, bool highlightSearchResults)
-		{
-			string text = field.DataTextField(obj);
-			string value = field.DataValueField(obj);
+		//public static SelectListItem GetListItem<TRef>(this ISelectObjectField<TRef> field,	TRef obj, string filterValue, bool highlightSearchResults)
+		//{
+		//	string text = field.DataTextField(obj);
+		//	string value = field.DataValueField(obj);
 
-			if (highlightSearchResults && !filterValue.IsEmpty())
-			{
-				string fv = filterValue.Replace("<", "").
-					Replace(">", "").Replace("(", "").Replace(")", "").Replace("[", "").Replace("]", "").
-					Replace("{", "").Replace("}", "").Replace("?", "").Replace("*", "");
-				text = Regex.Replace(text, "(?i)(?<1>" + fv + ")",
-					"<span style='color:Red; font-weight:bold'>$1</span>");
-			}
-			return new SelectListItem(text, value);
-		}
+		//	if (highlightSearchResults && !filterValue.IsEmpty())
+		//	{
+		//		string fv = filterValue.Replace("<", "").
+		//			Replace(">", "").Replace("(", "").Replace(")", "").Replace("[", "").Replace("]", "").
+		//			Replace("{", "").Replace("}", "").Replace("?", "").Replace("*", "");
+		//		text = Regex.Replace(text, "(?i)(?<1>" + fv + ")",
+		//			"<span style='color:Red; font-weight:bold'>$1</span>");
+		//	}
+		//	return new SelectListItem(text, value);
+		//}
 
-		public static IQueryable<TRef> ItemsCountQuery<TRef>(this ISelectObjectField<TRef> field, string filterValue)
+		public static IQueryable<TRef> ItemsCountQuery<TRef>(this ISelectObjectField<TRef> field)
 		{
-			return field.SearchCountQuery != null ? field.SearchCountQuery(filterValue) : (
-				filterValue.IsEmpty() ?
+			return field.SearchCountQuery != null ? field.SearchCountQuery(field.FilterValue) : (
+				field.FilterValue.IsEmpty() ?
 				field.AllObjects :
-				field.AllObjects.Where(field.SearchExpression(filterValue))
+				field.AllObjects.Where(field.SearchExpression(field.FilterValue))
 			);
 		}
 	}
 
 	public interface ISelectObjectFieldDataProvider<TRef>
 	{
-		int GetCount(string filterValue);
-		IEnumerable<TRef> GetData(Paging paging, string filterValue);
+		int GetCount();
+		IEnumerable<TRef> GetData(Paging paging);
 		IEnumerable<TRef> GetAllData();
 		TRef GetObjectByID<T>(T id, Expression<Func<TRef, bool>> predicate);
 		IEnumerable<TRef> GetObjectsByID<T>(IEnumerable<T> id, Expression<Func<TRef, bool>> predicate);
@@ -157,14 +192,14 @@ namespace Tango.UI.Controls
 			return field.AllObjects;
 		}
 
-		public int GetCount(string filterValue)
+		public int GetCount()
 		{
-			return field.ItemsCountQuery(filterValue).Count();
+			return field.ItemsCountQuery().Count();
 		}
 
-		public IEnumerable<TRef> GetData(Paging paging, string filterValue)
+		public IEnumerable<TRef> GetData(Paging paging)
 		{
-			return field.DataQuery(paging, filterValue);
+			return field.DataQuery(paging);
 		}
 
 		public TRef GetObjectByID<T>(T id, Expression<Func<TRef, bool>> predicate)
@@ -202,17 +237,17 @@ namespace Tango.UI.Controls
 			return rep.List(q.Expression);
 		}
 
-		public int GetCount(string filterValue)
+		public int GetCount()
 		{
 			var rep = database.Repository<TRef>().WithAllObjectsQuery(AllObjectsSql, AllObjectsSqlParms);
-			var q = field.ItemsCountQuery(filterValue);
+			var q = field.ItemsCountQuery();
 			return rep.Count(q.Expression);
 		}
 
-		public IEnumerable<TRef> GetData(Paging paging, string filterValue)
+		public IEnumerable<TRef> GetData(Paging paging)
 		{
 			var rep = database.Repository<TRef>().WithAllObjectsQuery(AllObjectsSql, AllObjectsSqlParms);
-			var q = field.DataQuery(paging, filterValue);
+			var q = field.DataQuery(paging);
 			if (PostProcessing != null) q = PostProcessing(q);
 			return rep.List(q.Expression);
 		}

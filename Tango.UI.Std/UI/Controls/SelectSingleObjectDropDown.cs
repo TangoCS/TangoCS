@@ -25,11 +25,12 @@ namespace Tango.UI.Controls
 		{
 			w.Div(a => a.ID().DataCtrl(ctrlName, Field.ClientID).DataResultHandler(), () => {
 				w.Div(a => a.Class("radiobuttonlist"), () => {
-					foreach (var item in data.Select(o => Field.GetListItem(o, FilterValue, HighlightSearchResults)))
+					foreach (var o in data)
 					{
-						w.Label(a => a.Class("row").For("item" + item.Value).DataResultPostponed(1), () => {
-							w.RadioButton("item", "item" + item.Value, item.Value, false, a => { if (Field.PostOnChangeEvent) a.OnChangePostEvent(SubmitDialog); a.Data(DataCollection).DataRef(Field.ParentElement, Field.ID); }); //DataCollection
-							w.Write(item.Text);
+						var value = Field.DataValueField(o);
+						w.Label(a => a.Class("row").For("item" + value).DataResultPostponed(1), () => {
+							w.RadioButton("item", "item" + value, value, false, a => { if (Field.PostOnChangeEvent) a.OnChangePostEvent(SubmitDialog); a.Data(DataCollection).DataRef(Field.ParentElement, Field.ID); }); //DataCollection
+							Field.DataRow(w, o);
 						});
 					}
 				});
@@ -67,8 +68,8 @@ namespace Tango.UI.Controls
 
 		void RenderFilter(LayoutWriter w)
 		{
-			w.TextBox(FilterFieldName, "", a => {
-				a.ID(FilterFieldName).Class("filter").Autocomplete(false);
+			w.TextBox(Field.FilterFieldName, "", a => {
+				a.ID(Field.FilterFieldName).Class("filter").Autocomplete(false);
 				if (Field.Disabled) a.Readonly(true);
 			});
 			w.Span(a => a.Class("input-measure").ID("measure"), "");
@@ -93,7 +94,7 @@ namespace Tango.UI.Controls
 				pw.Hidden(Field.ID, value, a => a.DataHasClientState(ClientStateType.Value, Field.ClientID, "selectedvalue"));
 			});
 
-			cw.Div(a => a.ID("popup").Class("selectsingleobject-popup").DataRef(FilterFieldName).Data(DataCollection).DataEvent(OpenDialog).DataContainer(typeof(SelectObjectPopupContainer), Field.ClientID));
+			cw.Div(a => a.ID("popup").Class("selectsingleobject-popup").DataRef(Field.FilterFieldName).Data(DataCollection).DataEvent(OpenDialog).DataContainer(typeof(SelectObjectPopupContainer), Field.ClientID));
 		}
 
 		public void OnClear(ApiResponse response)
