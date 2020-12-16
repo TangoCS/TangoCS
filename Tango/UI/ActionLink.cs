@@ -263,6 +263,13 @@ namespace Tango.UI
 			return target.SetEvent(action);
 		}
 
+		public static T PostEvent<T>(this T target, Func<ActionResult> action)
+			where T : IActionTarget
+		{
+			target.RequestMethod = "POST";
+			return target.SetEvent(action);
+		}
+
 		public static T PostEvent<T>(this T target, string eventName, string eventReceiver = null)
 			where T : IActionTarget
 		{
@@ -274,6 +281,18 @@ namespace Tango.UI
 
 		static T SetEvent<T>(this T target, Action<ApiResponse> action)
 			where T: IActionTarget
+		{
+			var el = action.Target as ViewElement;
+			if (el == null) throw new InvalidCastException("Invalid class type for action.Target; must be of type ViewElement");
+
+			if (!el.ClientID.IsEmpty()) target.EventReceiver = el.ClientID;
+			target.Event = action.Method.Name.ToLower();
+
+			return target;
+		}
+
+		static T SetEvent<T>(this T target, Func<ActionResult> action)
+			where T : IActionTarget
 		{
 			var el = action.Target as ViewElement;
 			if (el == null) throw new InvalidCastException("Invalid class type for action.Target; must be of type ViewElement");
