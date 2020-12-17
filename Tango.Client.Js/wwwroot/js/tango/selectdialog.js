@@ -123,7 +123,7 @@ var selectMultipleObjectsDialog = function (au, cu) {
                 element.checked = false;
             });
 
-			state.dialogvalues.splice(0, state.selectedvalues.length);
+            state.dialogvalues.splice(0, state.dialogvalues.length);
 			//this.clear(id.replace("_str", ""), true);
         }
 	}
