@@ -343,8 +343,10 @@ namespace Tango.UI
 			}
 			catch (Exception ex)
 			{
+                var res = context.RequestServices.GetService(typeof(IErrorResult)) as IErrorResult;
+                var message = res?.OnError(ex) ?? ex.ToString();
 				Data.Clear();
-				Data.Add("error", ex.ToString());
+				Data.Add("error", message);
 			}
 
 			return JsonConvert.SerializeObject(Data, Json.StdSettings);
