@@ -68,7 +68,7 @@ namespace Tango.UI.Controls
 
 				//void attrs(ActionLink a) => a.CallbackToCurrent().AsDialog(filter.OpenFilterDialog)
 				//	.WithImage("filter").WithTitle(r => r.Get("Common.Filter"));
-				void attrs(ActionLink a) => a.AsDialogPost(filter.OpenFilterDialog)
+				void attrs(ActionLink a) => a.CallbackToCurrent().AsDialogPost(filter.OpenFilterDialog)
 					.WithImage("filter").WithTitle(r => r.Get("Common.Filter"));
 
 				void button()
