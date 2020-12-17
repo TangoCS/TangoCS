@@ -203,7 +203,8 @@ namespace Tango.UI.Std
 				{
 					BeforeGetPageData(tran);
 
-					var temp = Database.Connection.QueryFirst<TResult>(sqlTemplate, transaction: tran);
+					var temp = Database.Connection.QueryFirstOrDefault<TResult>(sqlTemplate, transaction: tran);
+					if (temp == null) return;
 
 					var id = level;
 					var template = _templatesDict[id + 1];
