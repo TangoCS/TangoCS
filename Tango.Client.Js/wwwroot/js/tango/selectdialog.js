@@ -121,10 +121,10 @@ var selectMultipleObjectsDialog = function (au, cu) {
             if (!state.dialogvalues) state.dialogvalues = state.selectedvalues.slice();
             checkBoxes.forEach(function (element) {
                 element.checked = false;
-                if (!state.dialogvalues.includes(element.value)) {
-                    state.dialogvalues.push(element.value);
-                }
             });
+
+			state.dialogvalues.splice(0, state.selectedvalues.length);
+			//this.clear(id.replace("_str", ""), true);
         }
 	}
 	return instance;
