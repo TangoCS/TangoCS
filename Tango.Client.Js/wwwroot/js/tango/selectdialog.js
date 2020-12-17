@@ -112,7 +112,20 @@ var selectMultipleObjectsDialog = function (au, cu) {
 					state.dialogvalues.push(element.value);
 				}
 			});
-		}
+        },
+        selectNone: function (id) {
+            const container = document.querySelector("#" + id);
+            const checkBoxes = container.getElementsByTagName('input');
+            const state = au.state.ctrl[id];
+
+            if (!state.dialogvalues) state.dialogvalues = state.selectedvalues.slice();
+            checkBoxes.forEach(function (element) {
+                element.checked = false;
+                if (!state.dialogvalues.includes(element.value)) {
+                    state.dialogvalues.push(element.value);
+                }
+            });
+        }
 	}
 	return instance;
 }(ajaxUtils, commonUtils);
