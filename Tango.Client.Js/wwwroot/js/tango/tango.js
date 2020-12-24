@@ -102,9 +102,9 @@
 				? new File([data], filename, { type: contenttype })
 				: new Blob([data], { type: contenttype });
 
-			if (typeof window.navigator.msSaveBlob !== 'undefined') {
+			if (typeof window.navigator.msSaveOrOpenBlob !== 'undefined') {
 				// IE workaround for "HTML7007: One or more blob URLs were revoked by closing the blob for which they were created. These URLs will no longer resolve as the data backing the URL has been freed."
-				window.navigator.msSaveBlob(blob, filename);
+				window.navigator.msSaveOrOpenBlob(blob, filename);
 			} else {
 				var URL = window.URL || window.webkitURL;
 				var downloadUrl = URL.createObjectURL(blob);
@@ -355,7 +355,7 @@ var ajaxUtils = function ($, cu) {
 			return false;
 		},
 		error: function (xhr, status, e) {
-            var text = '';
+			var text = '';
 			var title = localization.resources.title.systemError;
 			var showinframe = false;
 			var severity = 'err';
