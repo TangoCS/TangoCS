@@ -47,7 +47,14 @@ namespace Tango.UI
 	public class FieldsBlockCollapsibleOptions
 	{
 		public Action<TagAttributes> Attributes { get; set; }
-		public bool IsDefaultCollapsed { get; set; }
+		/// <summary>
+		/// Признак свернутого состояния
+		/// </summary>
+		public bool IsCollapsed { get; set; }
+		/// <summary>
+		/// Позволяет вставлять таблицу
+		/// </summary>
+		public bool IncludeTable { get; set; }
 	}
 
 	public static class LayoutWriterMainExtensions
@@ -130,19 +137,24 @@ namespace Tango.UI
 			w.Div(a =>
 			{
 				a.ID(id).Class("fieldsblock");
-				if (collapsibleOptions != null && collapsibleOptions.IsDefaultCollapsed)
+				if (collapsibleOptions != null && collapsibleOptions.IsCollapsed)
 					a.Class("collapsed");
 			}, () => {
 				w.Div(a => a.Class("fieldsblock-header").OnClick(js), () => {
 					w.Div(a => a.Class("fieldsblock-btn"), () => w.Icon("right"));
 					w.Div(a => a.Class("fieldsblock-title"), title);
 				});
-				w.Div(() => w.FormTable(a =>
+				if(collapsibleOptions != null && collapsibleOptions.IncludeTable)
+					w.Div(a => a.Set(collapsibleOptions.Attributes), content);
+				else
 				{
-					a.ID();
-					if (collapsibleOptions != null)
-						a.Set(collapsibleOptions.Attributes);
-				}, content));
+					w.Div(() => w.FormTable(a =>
+					{
+						a.ID();
+						if (collapsibleOptions != null)
+							a.Set(collapsibleOptions.Attributes);
+					}, content));
+				}
 			});
 		}
 
