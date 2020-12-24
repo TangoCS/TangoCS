@@ -64,9 +64,9 @@ namespace Tango.UI.Controls
 			});
 		}
 
-		public void RenderPages(LayoutWriter w)
+		public void RenderPages(LayoutWriter w, Action<TagAttributes> pagesContainerAttrs = null)
 		{
-			w.Div(a => a.Class("tabs2_pages").ID(ID + "_pages"), () => {
+			w.Div(a => a.Class("tabs2_pages").ID(ID + "_pages").Set(pagesContainerAttrs), () => {
 				var curpage = GetCurPage();
 				foreach (var p in Pages)
 				{

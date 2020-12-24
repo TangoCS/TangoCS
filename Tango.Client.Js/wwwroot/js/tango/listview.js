@@ -615,15 +615,27 @@ var listview = function (au, cu, cbcell) {
 var sidebar = function () {
 	var instance = {
 		widgetWillMount: function (shadow, state) {
+			var key = function (id) {
+				return (location.pathname + '/' + root.id + '/collapsed').toLowerCase();
+			}
+
 			var handler = function (e) {
 				const root = document.getElementById(state.root);
-				if (root.classList.contains('collapsed'))
+
+				if (root.classList.contains('collapsed')) {
 					root.classList.remove('collapsed');
-				else
+					localStorage.removeItem(key(root.id));
+				}
+				else {
 					root.classList.add('collapsed');
+					localStorage.setItem(key(root.id), '1');
+				}
 			};
 
 			const root = shadow.getElementById(state.root);
+			var val = localStorage.getItem(key(root.id));
+			if (val == '1') root.classList.add('collapsed');
+
 			var btn = root.getElementsByClassName('sidebar-close')[0];
 			var menu = root.getElementsByClassName('sidebar-menu')[0];
 			btn.addEventListener('click', handler);
