@@ -122,7 +122,7 @@ namespace Tango.UI.Controls
 		}
 
 		///TODO. Сделать автоматическое прокидываение всех полей из контекста.
-		public static void AddYesNoDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null, bool warningMode = false, Action<ButtonTagAttributes> btnAttrs = null)
+		public static void AddYesNoDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null, bool warningMode = false, Action<ButtonTagAttributes> btnAttrs = null, Func<ActionResult> action = null)
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
 				if (IDPrefix != null)
@@ -131,12 +131,12 @@ namespace Tango.UI.Controls
 					w.AjaxForm("form", a => a.DataResult(1), () => {
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
 							w.ButtonsBarRight(() => {
-
 								if (!warningMode)
 									w.SubmitButton(a => {
 										if (!w.Context.ResponseType.IsEmpty())
 											a.Data("responsetype", w.Context.ResponseType);
 										a.Set(btnAttrs);
+										if(action != null) a.DataEvent(action);
 									}, "Да");
 								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), warningMode ? "Назад" : "Нет");
 							});
@@ -156,7 +156,7 @@ namespace Tango.UI.Controls
 					w.AjaxForm("form", a => a.DataResult(1), () => {
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
 							w.ButtonsBarRight(() => {
-								w.SubmitButton(a => a.Set(btnAttrs).DataEvent(action).Data(dataKey, dataValue).Value(value), "Да");
+								w.SubmitButton(a => a.Set(btnAttrs).DataEvent(action).Data(dataKey, dataValue).Value(value), "Продолжить");
 								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), "Нет");
 							});
 						});
