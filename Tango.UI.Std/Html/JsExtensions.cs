@@ -16,6 +16,13 @@ namespace Tango.Html
 		{
 			return a.OnKeyUp("ajaxUtils.delay(this, function(caller) { ajaxUtils.runHrefWithApiResponse(caller); })");
 		}
+		
+		public static T OnKeyUpRunHrefDelayed<T>(this TagAttributes<T> a, int timeout)
+			where T : TagAttributes<T>
+		{
+			return a.OnKeyUp("ajaxUtils.delay(this, function(caller) { ajaxUtils.runHrefWithApiResponse(caller); }, " +
+			                 $"{timeout})");
+		}
 
 		public static T OnClickRunHref<T>(this T a)
 			where T : TagAttributes<T>

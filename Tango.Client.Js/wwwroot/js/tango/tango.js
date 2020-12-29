@@ -396,12 +396,12 @@ var ajaxUtils = function ($, cu) {
 			requestCompleted();
 			showError(title, text, severity, showinframe);
 		},
-		delay: function (caller, func) {
+		delay: function (caller, func, timeout = 400) {
 			if (timer) {
 				window.clearTimeout(timer);
 				timer = null;
 			}
-			timer = window.setTimeout(function () { func(caller); }, 400);
+			timer = window.setTimeout(function () { func(caller); }, timeout);
 		},
 		bindevent: function (args) {
 			$('#' + args.id).on(args.clientEvent, { serverEvent: args.serverEvent, receiver: args.serverEventReceiver, method: args.method }, function (e) {
