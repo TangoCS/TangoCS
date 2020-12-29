@@ -838,10 +838,12 @@ var ajaxUtils = function ($, cu) {
 		}
 
 		// TODO: доработать для определения модальных контейнеров + обработка открытия модального окна из модального окна.
-		if (el.hasAttribute('data-c-new')) {
-			for (var key in target.data) {
-				if (!key.startsWith('c-'))
-					state.loc.onBackArgs[key] = target.data[key];
+		if (el.hasAttribute('data-c-new') && el.hasAttribute('data-c-type')) {
+			if(el.getAttribute('data-c-type') === 'dialogform') {
+				for (var key in target.data) {
+					if (!key.startsWith('c-'))
+						state.loc.onBackArgs[key] = target.data[key];
+				}
 			}
 		}
 
@@ -860,9 +862,11 @@ var ajaxUtils = function ($, cu) {
 			target.containerType = container.getAttribute('data-c-type');
 			if (container.getAttribute('aria-modal') == 'true') {
 				target.changeloc = false;
-				for (var key in state.loc.onBackArgs) {
-					if (target.data[key] == null) {
-						target.data[key] = state.loc.onBackArgs[key];
+				if (el.hasAttribute('data-res')) {
+					for (var key in state.loc.onBackArgs) {
+						if (target.data[key] == null) {
+							target.data[key] = state.loc.onBackArgs[key];
+						}
 					}
 				}
 			}
