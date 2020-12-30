@@ -186,7 +186,7 @@ namespace Tango.Data
 		{
 		}
 
-		public IEnumerable<T> List(Expression predicate = null)
+		public IEnumerable<T> List(Expression predicate = null, Func<IDictionary<string, object>, T> selector = null)
 		{
 			var query = AllObjectsQuery;
 			var args = new DynamicParameters();
@@ -203,16 +203,20 @@ namespace Tango.Data
 					args.Add(pair.Key, pair.Value);
 			}
 
-			if (typeof(T) == typeof(ExpandoObject))
-				return Database.Connection.Query(query, args, Database.Transaction).Select(x => {
-					var dapperRowProperties = x as IDictionary<string, object>;
-					IDictionary<string, object> expando = new ExpandoObject();
+			if (typeof(T) == typeof(ExpandoObject) && selector == null)
+			{
+				selector = x => {
+					var expando = new ExpandoObject() as IDictionary<string, object>;
 
-					foreach (KeyValuePair<string, object> property in dapperRowProperties)
+					foreach (KeyValuePair<string, object> property in x)
 						expando.Add(property.Key, property.Value);
 
 					return (T)expando;
-				});
+				};
+			}
+
+			if (selector != null)
+				return Database.Connection.Query(query, args, Database.Transaction).Select(x => selector(x as IDictionary<string, object>));
 			else
 				return Database.Connection.Query<T>(query, args, Database.Transaction);
 		}

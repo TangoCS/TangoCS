@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Tango.Data;
@@ -13,6 +14,7 @@ namespace Tango.UI.Std
 
 		protected virtual IQueryable<TResult> Data => Enumerable.Empty<TResult>().AsQueryable();
 		protected virtual IQueryable<TResult> DefaultOrderBy(IQueryable<TResult> data) { return data; }
+		protected virtual Func<IDictionary<string, object>, TResult> Selector => null;
 
 		IRepository<TResult> _repository = null;
 
@@ -62,7 +64,7 @@ namespace Tango.UI.Std
 					Repository.Parameters.Add(pair.Key, pair.Value);
 			}
 
-			_pageData = Repository.List(q.Expression);
+			_pageData = Repository.List(q.Expression, Selector);
 
 			return _pageData;
 		}
