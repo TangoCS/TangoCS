@@ -135,7 +135,7 @@ namespace Tango.UI.Controls
 	public static class SelectSingleObjectDropDownExtensions
 	{
 		public static void FormFieldSelectDialog<TSelected, TSelectedKey>(this LayoutWriter w, string caption, TSelected obj, 
-			SelectSingleObjectDropDownField<TSelected, TSelectedKey> dialog, Grid grid = Grid.OneWhole, bool isRequired = false, string description = null)
+			SelectSingleObjectDropDownField<TSelected, TSelectedKey> dialog, GridPosition grid = null, bool isRequired = false, string description = null)
 			where TSelected : class, IWithKey<TSelected, TSelectedKey>, new()
 		{
 			w.FormField(dialog.ID, caption, () => dialog.Strategy.Render(w, obj), grid, isRequired, description);

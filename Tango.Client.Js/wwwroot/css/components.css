@@ -540,6 +540,7 @@ button.close {
 			display: none;
 			user-select: none;
 		}
+
 			.tabs2 > ul > li > input[type="radio"]:disabled + label {
 				opacity: .5;
 				cursor: no-drop;
@@ -550,10 +551,10 @@ button.close {
 	display: none;
 }
 
-.tabs2_pages > div.selected {
-	display: block;
-	height: 100%;
-}
+	.tabs2_pages > div.selected {
+		display: block;
+		height: 100%;
+	}
 
 div.tabs2 + div.tabs2_pages {
 	margin-top: 8px;
@@ -686,9 +687,11 @@ div.tabs2 + div.tabs2_pages {
 	transition: opacity 80ms linear;
 	overflow: auto;
 }
+
 	.dropdownmenu.iw-display {
 		transition: opacity 0ms;
 	}
+
 	.dropdownmenu::-webkit-scrollbar {
 		width: 6px;
 	}
@@ -1111,7 +1114,6 @@ div.tabs2 + div.tabs2_pages {
 
 	.sidebar .sidebar-panel {
 		flex: 1;
-		
 	}
 
 
@@ -1202,8 +1204,8 @@ div.tabs2 + div.tabs2_pages {
 	min-width: 0px !important;
 }
 
-/* collapsible fields block */
-.fieldsblock-btn {
+/* collapsible block */
+.block-btn {
 	width: 16px;
 	height: 14px;
 	display: inline-block;
@@ -1212,41 +1214,54 @@ div.tabs2 + div.tabs2_pages {
 	line-height: 11px;
 }
 
-	.fieldsblock-btn .icon {
+	.block-btn .icon {
 		min-width: 14px;
 		font-size: x-small;
 		font-weight: bold;
 	}
 
-	.fieldsblock-btn:hover {
+	.block-btn:hover {
 		background-color: #e5e5e5;
 	}
 
-	.fieldsblock-btn .icon {
+	.block-btn .icon {
 		transform: rotate(90deg);
 	}
 
-.collapsed .fieldsblock-btn {
+.collapsed .block-btn {
 	padding: 0 2px;
 }
 
-	.collapsed .fieldsblock-btn .icon {
+	.collapsed .block-btn .icon {
 		transform: inherit;
 	}
 
-.fieldsblock-header {
+.block-header {
 	margin-bottom: 4px;
 	cursor: pointer;
 }
 
-.fieldsblock-title {
+.block-title {
 	display: inline-block;
 	margin-left: 6px;
-	color: #5e6c84;
+	/*color: #5e6c84;*/
 	font-weight: 600;
 	vertical-align: middle;
 }
 
-.fieldsblock.collapsed > div:last-child {
+
+.block.collapsed > *:not(:first-child) {
 	display: none;
+}
+
+.block > *:not(:first-child) {
+	padding-left: 22px;
+}
+
+.block > *:last-child {
+	padding-bottom: 20px;
+}
+
+.block .menutoolbar ul {
+	padding: 0
 }

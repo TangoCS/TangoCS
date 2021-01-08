@@ -312,13 +312,13 @@ namespace Tango.UI.Controls
 
 	public static class LayoutWriterSelectDialogExtensions
 	{
-		public static void FormFieldSelectDialog<TSelected, TSelectedKey>(this LayoutWriter w, string caption, TSelected obj, SelectSingleObjectField<TSelected, TSelectedKey> dialog, Grid grid = Grid.OneWhole, bool isRequired = false, string description = null, string hint = null)
+		public static void FormFieldSelectDialog<TSelected, TSelectedKey>(this LayoutWriter w, string caption, TSelected obj, SelectSingleObjectField<TSelected, TSelectedKey> dialog, GridPosition grid = null, bool isRequired = false, string description = null, string hint = null)
 			where TSelected : class, IWithKey<TSelected, TSelectedKey>, new()
 		{
 			w.FormField(dialog.ID, caption, () => dialog.Strategy.Render(w, obj), grid, isRequired, description, hint: hint);
 		}
 
-		public static void FormFieldSelectDialog<TSelected, TSelectedKey>(this LayoutWriter w, string caption, IEnumerable<TSelected> obj, SelectMultipleObjectsField<TSelected, TSelectedKey> dialog, Grid grid = Grid.OneWhole, bool isRequired = false, string description = null, string hint = null)
+		public static void FormFieldSelectDialog<TSelected, TSelectedKey>(this LayoutWriter w, string caption, IEnumerable<TSelected> obj, SelectMultipleObjectsField<TSelected, TSelectedKey> dialog, GridPosition grid = null, bool isRequired = false, string description = null, string hint = null)
 			where TSelected : class, IWithKey<TSelected, TSelectedKey>, IWithTitle, new()
 		{
 			w.FormField(dialog.ID, caption, () => dialog.Strategy.Render(w, obj), grid, isRequired, description, hint: hint);
@@ -328,7 +328,7 @@ namespace Tango.UI.Controls
 			this LayoutWriter w,
 			EntityField<TEntity, TRefClass, TValue> field,
 			SelectSingleObjectField<TRefClass, TRefKey> dialog,
-			Grid grid = Grid.OneWhole)
+			GridPosition grid = null)
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
@@ -342,7 +342,7 @@ namespace Tango.UI.Controls
 			this LayoutWriter w,
 			EntityField<TEntity, TRefKey> field,
 			SelectSingleObjectField<TRefClass, TRefKey> dialog,
-			Grid grid = Grid.OneWhole)
+			GridPosition grid = null)
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
@@ -358,7 +358,7 @@ namespace Tango.UI.Controls
 			this LayoutWriter w,
 			EntityReferenceManyField<TEntity, TRefClass, TRefKey> field,
 			SelectMultipleObjectsField<TRefClass, TRefKey> dialog,
-			Grid grid = Grid.OneWhole)
+			GridPosition grid = null)
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefKey>
 		{
@@ -372,7 +372,7 @@ namespace Tango.UI.Controls
 			this LayoutWriter w,
 			EntityReferenceManyField<TEntity, TRefKey> field,
 			SelectMultipleObjectsField<TRefClass, TRefKey> dialog,
-			Grid grid = Grid.OneWhole)
+			GridPosition grid = null)
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefKey>
 		{
@@ -388,7 +388,7 @@ namespace Tango.UI.Controls
 			this LayoutWriter w,
 			EntityField<TEntity, List<TRefKey>> field,
 			SelectMultipleObjectsField<TRefClass, TRefKey> dialog,
-			Grid grid = Grid.OneWhole)
+			GridPosition grid = null)
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefKey>
 		{

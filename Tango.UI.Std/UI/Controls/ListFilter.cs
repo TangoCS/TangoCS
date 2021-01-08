@@ -171,7 +171,7 @@ namespace Tango.UI.Controls
 				var addtitle = Resources.Get("System.Filter.AddCriteria");
 
 				w.Legend(criteriontitle);
-				w.FormTable100Percent(() => {
+				w.FieldsBlock100Percent(() => {
 					var fieldtitle = Resources.Get("System.Filter.Field");
 					var conditiontitle = Resources.Get("System.Filter.Condition");
 					var valuetitle = Resources.Get("System.Filter.Value");
@@ -404,7 +404,7 @@ namespace Tango.UI.Controls
 		{
 			response.AddWidget("contenttitle", Resources.Get("System.Filter.ViewSettings"));
 			response.AddWidget("contentbody", w => {
-				w.FormTable100Percent(() => {
+				w.FieldsBlock100Percent(() => {
 					w.FormFieldTextBox("title", Resources.Get("Common.Title"), formData.Title);
 					w.FormField("visibility", Resources.Get("System.Filter.PropertiesOfVisibility"), () => {
 						w.RadioButtonList("isshared", formData.IsShared, new List<SelectListItem> {

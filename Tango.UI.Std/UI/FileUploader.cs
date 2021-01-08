@@ -15,7 +15,7 @@ namespace Tango.UI
 			w.Input(name, a);
 		}
 
-		public static void FormFieldFileUpload(this LayoutWriter w, string name, string caption, Grid grid = Grid.OneWhole, bool isRequired = false, string description = null, Action<InputTagAttributes> attributes = null)
+		public static void FormFieldFileUpload(this LayoutWriter w, string name, string caption, GridPosition grid = null, bool isRequired = false, string description = null, Action<InputTagAttributes> attributes = null)
 		{
 			w.FormField(name, caption, () => w.FileUpload(name, a => a.Style("width:100%").Set(attributes)), grid, isRequired, description);
 		}

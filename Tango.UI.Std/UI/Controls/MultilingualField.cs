@@ -26,7 +26,7 @@ namespace Tango.UI.Controls
 			});
 		}
 
-		public static void FormFieldMultilingualTextBox<T, TValue>(this LayoutWriter w, MetaAttribute<T, TValue> prop, ILanguage lang, List<T> objects, Grid grid = Grid.OneWhole)
+		public static void FormFieldMultilingualTextBox<T, TValue>(this LayoutWriter w, MetaAttribute<T, TValue> prop, ILanguage lang, List<T> objects, GridPosition grid = null)
 			where T : IMultilingual
 		{
 			w.FormField(prop.Name, w.Resources.Caption(prop), 

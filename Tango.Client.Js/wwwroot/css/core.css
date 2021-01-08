@@ -536,3 +536,121 @@ a.actionbtn, a.actionimg {
 .formbody input:read-only, .formbody textarea:read-only {
 	background-color: #e5e5e5;
 }
+
+.grid60, .fieldsblock-grid, .block-body {
+	display: grid;
+	grid-template-columns: repeat(60, 1fr);
+	align-items: flex-start;
+}
+
+@media (min-width: 600px) {
+	.grid60 .grid-cols2 {
+		width: 100%;
+		columns: 100px 2;
+		column-gap: 20px;
+	}
+
+	.grid-cols2 > * {
+		-webkit-column-break-inside: avoid;
+		page-break-inside: avoid;
+		break-inside: avoid;
+	}
+}
+
+@media (max-width: 600px) {
+	.grid60, .fieldsblock-grid, .block-body {
+		width: 100%;
+		max-width: 600px;
+	}
+
+		.grid60 > *, .fieldsblock-grid > *, .block-body > * {
+			grid-column-end: span 60 !important
+		}
+
+	.field-label {
+		width: 30% !important;
+	}
+
+	.field-body {
+		width: 70% !important;
+	}
+}
+
+.fieldsblock-grid, .grid60 > *, .block-body > * {
+	grid-column-end: span 60;
+}
+
+
+.viewform.grid60, .editform.grid60 {
+	grid-column-gap: 20px;
+}
+
+.fieldsblock-grid > div {
+	display: flex;
+	flex-direction: row;
+	grid-column-end: span 60;
+}
+
+.field-label {
+	text-align: left;
+	padding-top: 3px;
+	padding-right: 8px;
+	padding-bottom: 6px;
+	color: #6b778c;
+	font-weight: 500;
+}
+
+.viewform .field-label, .block-collapsible .field-label {
+	font-weight: normal;
+}
+
+.field-body {
+	vertical-align: top;
+	/*background: #ebf3ff;*/
+	padding: 3px 6px 4px 6px;
+}
+
+	/*.fieldsblock-grid > div:not(:first-child) {
+	border-top: 1px solid #bad6dd;
+}*/
+	.field-body input[type=text],
+	.field-body input[type=password],
+	.field-body select,
+	.field-body textarea {
+		width: 100%;
+		background-color: #fafbfc;
+		border-color: #aaa;
+		border-width: thin;
+	}
+
+.inpstd .field-body input[type=text],
+.inpstd .field-body input[type=password],
+.inpstd .field-body select,
+.inpstd .field-body textarea {
+	width: auto;
+}
+
+.field-validation {
+	color: #ff0000;
+}
+
+.field-description {
+	font-weight: normal;
+	font-size: smaller !important;
+	margin: 3px 0 0 1px
+}
+
+.field-plaintext {
+	display: block;
+	background-color: #ebf3ff;
+	padding: 2px;
+}
+
+	.field-plaintext::before {
+		content: '\00a0';
+	}
+
+.field-body input[type=text].cal-date {
+	width: 85px;
+	background-color: transparent;
+}

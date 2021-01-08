@@ -60,6 +60,7 @@ namespace Tango.UI.Std
 	public class EditEntityContainer : ViewContainer
 	{
         public ContainerWidth Width { get; set; } = ContainerWidth.WidthStd;
+		public bool GridMode { get; set; }
 
 		public bool AddDataCtrl { get; set; }
 		public bool IsNested { get; set; }
@@ -76,8 +77,10 @@ namespace Tango.UI.Std
 							w.ContentHeader();
 					w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody").Class("contentbody contentbodypadding"), () => {
+						var cls = "editform " + Width.ToString().ToLower();
+						if (GridMode) cls += " grid60";
 						w.AjaxForm("form", a => {
-							a.Class(Width.ToString().ToLower()).DataResultPostponed(1);
+							a.Class(cls).DataResultPostponed(1);
 							if (AddDataCtrl)
 								a.DataCtrl(w.IDPrefix);
 						}, null);
@@ -97,6 +100,7 @@ namespace Tango.UI.Std
 	public class ViewEntityContainer : ViewContainer
 	{
         public ContainerWidth Width { get; set; } = ContainerWidth.WidthStd;
+		public bool GridMode { get; set; }
 
 		public override void Render(ApiResponse response)
 		{
@@ -107,7 +111,9 @@ namespace Tango.UI.Std
 						w.ContentHeader();
 					w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody").Class("contentbody contentbodypadding"), () => {
-						w.Div(a => a.ID("form").Class(Width.ToString().ToLower()));
+						var cls = "viewform " + Width.ToString().ToLower();
+						if (GridMode) cls += " grid60";
+						w.Div(a => a.ID("form").Class(cls));
 					});
 				});
 			});
