@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Tango.Html;
 using Tango.Localization;
@@ -15,25 +16,35 @@ namespace Tango.UI
 		public List<ClientAction> ClientActions { get; private set; } = new List<ClientAction>();
 		public HashSet<string> Includes { get; private set; } = new HashSet<string>();
 
-		LayoutWriter(ActionContext context, StringBuilder sb) : base(sb) 
+		IFieldBlockRenderer fieldBlockRenderer;
+
+		//LayoutWriter(ActionContext context, StringBuilder sb) : base(sb) 
+		//{
+		//	Context = context;
+		//}
+
+		public LayoutWriter(ActionContext context, string idPrefix = null) : base(idPrefix) 
 		{
 			Context = context;
-		}
-		
-		public LayoutWriter(ActionContext context, string idPrefix) : base(idPrefix) 
-		{
-			Context = context;
+
+			var reqEnv = context.RequestServices.GetService(typeof(IRequestEnvironment)) as IRequestEnvironment;
+			fieldBlockRenderer = context.RequestServices.GetService(typeof(IFieldBlockRenderer)) as IFieldBlockRenderer ??
+				(reqEnv.IsIE() ? (IFieldBlockRenderer)new TableFieldBlockRenderer() : new GridFieldBlockRenderer());
 		}
 
 		LayoutWriter(ActionContext context, string idPrefix, StringBuilder sb) : base(idPrefix, sb) 
 		{
 			Context = context;
+
+			var reqEnv = context.RequestServices.GetService(typeof(IRequestEnvironment)) as IRequestEnvironment;
+			fieldBlockRenderer = context.RequestServices.GetService(typeof(IFieldBlockRenderer)) as IFieldBlockRenderer ??
+				(reqEnv.IsIE() ? (IFieldBlockRenderer)new TableFieldBlockRenderer() : new GridFieldBlockRenderer());
 		}
 
-		public LayoutWriter(ActionContext context)
-        {
-			Context = context;
-		}
+		//public LayoutWriter(ActionContext context)
+		//{
+		//	Context = context;
+		//}
 
 		public LayoutWriter Clone(string newIdPrefix)
 		{
@@ -42,6 +53,145 @@ namespace Tango.UI
 				Includes = Includes
 			};
 		}
+
+		public void FieldsBlock(Action<TagAttributes> attributes, Action content)
+		{
+			fieldBlockRenderer.FieldsBlock(this, attributes, content);
+		}
+
+		public void FormField(string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null)
+		{
+			fieldBlockRenderer.FormField(this, name, caption, content, grid, isRequired, description, isVisible, hint);
+		}
+
+		public void FormFieldDescription(string name, Action description = null)
+		{
+			fieldBlockRenderer.FormFieldDescription(this, name, description);
+		}
+	}
+
+	public interface IFieldBlockRenderer
+	{
+		void FieldsBlock(LayoutWriter w, Action<TagAttributes> attributes, Action content);
+		void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null);
+		void FormFieldDescription(LayoutWriter w, string name, Action description = null);
+	}
+
+	public class TableFieldBlockRenderer : IFieldBlockRenderer
+	{
+		public void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null)
+		{
+			w.Tr(a => a.ID(name + "_field").Style(isVisible ? "" : "display:none"), () => {
+				w.Td(a => a.ID(name + "_fieldlabel").Class("formlabel"), () => {
+					w.Span(a => a.ID(name + "_fieldcaption"), caption);
+					if (!string.IsNullOrEmpty(hint))
+						w.Sup(a => a.Style("margin-left:2px").Title(hint), "?");
+					if (isRequired)
+						w.Span(a => a.ID(name + "_fieldrequired").Class("formvalidation"), "&nbsp;*");
+
+					FormFieldDescription(w, name, description);
+				});
+				w.Td(a => a.ID(name + "_fieldbody").Class("formbody"), content);
+			});
+		}
+
+		public void FormFieldDescription(LayoutWriter w, string name, Action description = null)
+		{
+			if (description != null)
+				w.Div(a => a.ID(name + "_fielddescription").Class("descriptiontext"), description);
+		}
+
+		public void FieldsBlock(LayoutWriter w, Action<TagAttributes> attributes, Action content)
+		{
+			w.Table(a => a.Class("formtable").Set(attributes), content);
+		}
+	}
+
+
+	public class GridFieldBlockRenderer : IFieldBlockRenderer
+	{
+		public void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null)
+		{
+			if (grid == null) grid = Grid.OneWhole;
+
+			var width = "grid-column-end: span " + (int)grid.Field;
+			var br = grid.BreakRow ? "grid-column-start: 1" : "";
+			var vis = isVisible ? "" : "display:none";
+
+			var style = new string[] { width, br, vis }.Where(s => s != "").Join(";");
+
+			var labelWidth = (int)Math.Round(100 / (60 / (double)grid.Caption), 0, MidpointRounding.AwayFromZero);
+			var bodyWidth = 100 - labelWidth;
+
+			w.Div(a => a.ID(name + "_field").Style(style), () => {
+				w.Div(a => a.ID(name + "_fieldlabel").Class("field-label").Style($"width:{labelWidth}%"), () => {
+					w.Span(a => a.ID(name + "_fieldcaption"), caption);
+					if (isRequired)
+						w.Span(a => a.ID(name + "_fieldrequired").Class("field-validation"), "&nbsp;*");
+					if (!string.IsNullOrEmpty(hint))
+						w.I(a => a.Style("margin-left:2px").Icon("hint").Title(hint));
+
+					FormFieldDescription(w, name, description);
+				});
+				w.Div(a => a.ID(name + "_fieldbody").Class("field-body").Style($"width:{bodyWidth}%"), content);
+			});
+		}
+
+		public void FormFieldDescription(LayoutWriter w, string name, Action description = null)
+		{
+			if (description != null)
+				w.Div(a => a.ID(name + "_fielddescription").Class("field-description"), description);
+		}
+
+		public void FieldsBlock(LayoutWriter w, Action<TagAttributes> attributes, Action content)
+		{
+			w.Div(a => a.Class("fieldsblock-grid").Set(attributes), content);
+		}
+	}
+
+	public class GridPosition
+	{
+		public Grid Field { get; set; }
+		public Grid Caption { get; set; }
+		public bool BreakRow { get; set; }
+
+		public static implicit operator GridPosition((Grid field, Grid caption, bool br) rec)
+		{
+			return new GridPosition { Field = rec.field, Caption = rec.caption, BreakRow = rec.br };
+		}
+
+		public static implicit operator GridPosition((Grid field, Grid caption) rec)
+		{ 
+			return new GridPosition { Field = rec.field, Caption = rec.caption };
+		}
+
+		public static implicit operator GridPosition(Grid field)
+		{
+			return new GridPosition { Field = field, Caption = Grid.ThreeTenth };
+		}
+	}
+
+	public enum Grid
+	{
+		OneWhole = 60,
+
+		OneHalf = 30,
+
+		OneThird = 20,
+		TwoThirds = 40,
+
+		OneQuater = 15,
+		ThreeQuaters = 45,
+
+		OneFifth = 12,
+		TwoFifths = 24,
+		ThreeFiths = 36,
+		FourFifths = 48,
+
+		OneTenth = 6,
+		ThreeTenth = 18,
+		SevenTenth = 42,
+		NineTenth = 54
 	}
 
 	public class FieldsBlockCollapsibleOptions
@@ -55,6 +205,8 @@ namespace Tango.UI
 		/// Позволяет вставлять таблицу
 		/// </summary>
 		public bool IncludeTable { get; set; }
+
+		public Grid? Grid { get; set; }
 	}
 
 	public static class LayoutWriterMainExtensions
@@ -89,73 +241,89 @@ namespace Tango.UI
 			w.AddClientAction("ajaxUtils", "initForm", f => new { ID = f(name), SubmitOnEnter = submitOnEnter });
 		}
 
-		public static void FormTable(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
-		{
-			w.Table(a => a.Class("formtable").Set(attributes), content);
-		}
-
-		public static void FormTable100Percent(this LayoutWriter w, Action content)
-		{
-			w.FormTable(a => a.Class("width100"), content);
-		}
+		//public static void FormTable100Percent(this LayoutWriter w, Action content)
+		//{
+		//	w.FieldsBlock(a => a.Class("width100"), content);
+		//}
 
 		public static void FieldsBlockStd(this LayoutWriter w, Action content)
 		{
-			w.FieldsBlockStd(null, content);
+			FieldsBlockStd(w, null, content);
 		}
 
 		public static void FieldsBlock100Percent(this LayoutWriter w, Action content)
 		{
-			w.FieldsBlock100Percent(null, content);
+			FieldsBlock100Percent(w, null, content);
 		}
 
 		public static void FieldsBlock(this LayoutWriter w, Action content)
 		{
-			w.FormTable(a => a.ID(), content);
+			w.FieldsBlock(null, content);
 		}
 
-		public static void FieldsBlock(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
-		{
-			w.FormTable(a => a.ID().Set(attributes), content);
-		}
+		//public static void FieldsBlock(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+		//{
+		//	w.FormTable(a => a.ID().Set(attributes), content);
+		//}
 
 		public static void FieldsBlockStd(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
-			w.Div(a => a.Class("widthstd"), () => w.FormTable(a => a.ID().Set(attributes), content));
+			w.Div(a => a.Class("widthstd"), () => w.FieldsBlock(attributes, content));
 		}
 
 		public static void FieldsBlock100Percent(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
 		{
-			w.Div(a => a.Class("width100"), () => w.FormTable(a => a.ID().Set(attributes), content));
+			w.Div(a => a.Class("width100"), () => w.FieldsBlock(attributes, content));
 		}
 
-		public static void FieldsBlockCollapsible(this LayoutWriter w, string title, Action content, FieldsBlockCollapsibleOptions collapsibleOptions = null)
+		static void BlockCollapsibleInt(this LayoutWriter w, string title, Action content, FieldsBlockCollapsibleOptions options = null)
 		{
 			var id = Guid.NewGuid().ToString();
 			var js = "domActions.toggleClass({id: '" + w.GetID(id) + "', clsName: 'collapsed' })";
 
-			w.Div(a =>
-			{
-				a.ID(id).Class("fieldsblock");
-				if (collapsibleOptions != null && collapsibleOptions.IsCollapsed)
+			var grid = options?.Grid;
+			if (grid == null) grid = Grid.OneWhole;
+			var width = $"grid-column-end: span {(int)grid}";
+
+			w.Div(a => {
+				a.ID(id).Class("block block-collapsible").Style(width);
+				if (options?.IsCollapsed ?? false)
 					a.Class("collapsed");
 			}, () => {
-				w.Div(a => a.Class("fieldsblock-header").OnClick(js), () => {
-					w.Div(a => a.Class("fieldsblock-btn"), () => w.Icon("right"));
-					w.Div(a => a.Class("fieldsblock-title"), title);
+				w.Div(a => a.Class("block-header").OnClick(js), () => {
+					w.Div(a => a.Class("block-btn"), () => w.Icon("right"));
+					w.Div(a => a.Class("block-title"), title);
 				});
-				if(collapsibleOptions != null && collapsibleOptions.IncludeTable)
-					w.Div(a => a.Set(collapsibleOptions.Attributes), content);
-				else
-				{
-					w.Div(() => w.FormTable(a =>
-					{
-						a.ID();
-						if (collapsibleOptions != null)
-							a.Set(collapsibleOptions.Attributes);
-					}, content));
-				}
+				content();
 			});
+		}
+
+		public static T GridColumn<T>(this TagAttributes<T> a, Grid? value)
+			where T : TagAttributes<T>
+		{
+			if (value == null) value = Grid.OneWhole;
+			var width = $"grid-column-end: span {(int)value};";
+			return a.Style(width);
+		}
+
+		public static void Block(this LayoutWriter w, Action content, Grid? grid = null)
+		{
+			w.Div(a => a.Class("grid60").GridColumn(grid), content);
+		}
+
+		public static void BlockCollapsible(this LayoutWriter w, string title, Action content, FieldsBlockCollapsibleOptions options = null)
+		{
+			w.BlockCollapsibleInt(title, () => w.Div(a => a.Class("block-body").Set(options?.Attributes), content), options);
+		}
+
+		public static void FieldsBlockCollapsible(this LayoutWriter w, string title, Action content, FieldsBlockCollapsibleOptions options = null)
+		{
+			w.BlockCollapsibleInt(title, () => 
+				w.Div(a => a.Class("block-body"), () => 
+					w.FieldsBlock(a => a.Set(options?.Attributes), 
+						content)
+				), options
+			);
 		}
 
 

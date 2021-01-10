@@ -18,14 +18,23 @@ namespace Tango.UI.Std
 	{
 		protected abstract string Title { get; }
 		protected abstract void Form(LayoutWriter w);
+		protected virtual ContainerWidth FormWidth => ContainerWidth.WidthStd;
+		protected virtual bool FormGridMode => false;
 
-		public override ViewContainer GetContainer() => new EditEntityContainer { IsNested = ParentElement != null };
+		public override ViewContainer GetContainer() => new EditEntityContainer {
+			IsNested = ParentElement != null,
+			GridMode = FormGridMode,
+			Width = FormWidth
+		};
 
 		[Inject]
 		protected IEntityAudit EntityAudit { get; set; }
 
 		[Inject]
 		protected IObjectTracker Tracker { get; set; }
+
+		[Inject]
+		protected IRequestEnvironment RequestEnvironment { get; set; }
 
 		protected List<IFieldGroup> groups = new List<IFieldGroup>();
 		protected T AddFieldGroup<T>(T group)

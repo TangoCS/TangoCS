@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Tango.AccessControl;
+using Tango.Html;
 using Tango.Data;
 using Tango.UI.Controls;
 
@@ -13,8 +14,13 @@ namespace Tango.UI.Std
 	{
 		[Inject]
 		protected IAccessControl AccessControl { get; set; }
+		[Inject]
+		protected IRequestEnvironment RequestEnvironment { get; set; }
 
-		public override ViewContainer GetContainer() => new ViewEntityContainer();
+		protected virtual ContainerWidth FormWidth => ContainerWidth.WidthStd;
+		protected virtual bool FormGridMode => false;
+
+		public override ViewContainer GetContainer() => new ViewEntityContainer { GridMode = FormGridMode, Width = FormWidth };
 
 		T _viewData = null;
 
@@ -111,11 +117,11 @@ namespace Tango.UI.Std
 			}
 			else
 			{
-				response.AddWidget(Sections.ContentBody, w => {
-					Form(w);
+				response.AddWidget("form", w => Form(w));
+				response.SetContentBodyMargin();
+				response.AddAdjacentWidget(Sections.ContentBody, "buttonsbar", AdjacentHTMLPosition.BeforeEnd, w => {
 					ButtonsBar(w);
 				});
-				response.SetContentBodyMargin();
 				response.AddAdjacentWidget(Sections.ContentBody, "linked", AdjacentHTMLPosition.BeforeEnd, w => {
 					LinkedData(w);
 					Footer(w);

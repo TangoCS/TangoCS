@@ -60,10 +60,10 @@ namespace Tango.UI
 		//	w.Td(a => a.Class("ms-gb").ColSpan(colSpan), () => w.Write(value));
 		//}
 
-		public static void FormTable(this LayoutWriter w, Action content)
-		{
-			w.FormTable(null, content);
-		}
+		//public static void FormTable(this LayoutWriter w, Action content)
+		//{
+		//	w.FormTable(null, content);
+		//}
 
 		public static void GroupTitle(this LayoutWriter w, Action<TagAttributes> attributes, string content)
 		{
