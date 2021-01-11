@@ -129,11 +129,15 @@ input.text {
 /* forms */
 .width100 {
 	width: 100%;
-	max-width: 1400px;
 }
 
 .widthstd {
 	width: 700px;
+}
+
+.widthstd2x {
+	width: 100%;
+	max-width: 1400px;
 }
 
 .formtable .formlabel {
@@ -648,7 +652,7 @@ a.actionbtn, a.actionimg {
 }
 
 .field-plaintext::before {
-	content: '\00a0';
+	content: '\200B';
 }
 
 .field-body input[type=text].cal-date {
