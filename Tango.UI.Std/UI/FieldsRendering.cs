@@ -75,7 +75,7 @@ namespace Tango.UI
 
 		public static void PlainText<T>(this LayoutWriter w, string caption, T value, string description  = null, GridPosition grid = null)
 		{
-			w.FormField(null, caption, () => w.Span(a => a.Class("field-plaintext"), value.ToString()), grid, false, description);
+			w.FormField(null, caption, () => w.Span(a => a.Class("field-plaintext"), value?.ToString()), grid, false, description);
 		}
 
 		public static void PlainText<TEntity, T, T2>(this LayoutWriter w, Expression<Func<TEntity, T>> expr, T2 value, GridPosition grid = null)
