@@ -69,6 +69,12 @@
                 if (doPostback)
                 	au.postEventFromElementWithApiResponse(ctrl);
             });
+        },
+        setStartDate: function(args) {
+            $('#' + args.triggerid).data('daterangepicker').setStartDate(args.date);
+        },
+        setFinishDate: function(args) {
+            $('#' + args.triggerid).data('daterangepicker').setEndDate(args.date);
         }
     };
 
