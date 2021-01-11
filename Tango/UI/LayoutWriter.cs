@@ -201,10 +201,6 @@ namespace Tango.UI
 		/// Признак свернутого состояния
 		/// </summary>
 		public bool IsCollapsed { get; set; }
-		/// <summary>
-		/// Позволяет вставлять таблицу
-		/// </summary>
-		public bool IncludeTable { get; set; }
 
 		public Grid? Grid { get; set; }
 	}
