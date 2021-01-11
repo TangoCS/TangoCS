@@ -396,7 +396,10 @@ var ajaxUtils = function ($, cu) {
 			requestCompleted();
 			showError(title, text, severity, showinframe);
 		},
-		delay: function (caller, func, timeout = 400) {
+		delay: function (caller, func, timeout) {
+			if(!timeout) {
+				timeout = 400;
+			}
 			if (timer) {
 				window.clearTimeout(timer);
 				timer = null;

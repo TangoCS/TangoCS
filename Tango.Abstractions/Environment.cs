@@ -69,18 +69,22 @@ namespace Tango
 		public static bool IsMobileBrowser(this IRequestEnvironment requestEnv)
 		{
 			var userAgent = requestEnv.UserAgent;
+			if (userAgent == null)
+				return false;
 			return b.IsMatch(userAgent) || v.IsMatch(userAgent.Substring(0, 4));
 		}
 
 		public static bool IsIE(this IRequestEnvironment requestEnv)
 		{
 			var userAgent = requestEnv.UserAgent;
+			if (userAgent == null)
+				return false;
 			return userAgent.Contains("MSIE") || userAgent.Contains("Trident");
 		}
 
 		public static bool IsFirefox(this IRequestEnvironment requestEnv)
 		{
-			return requestEnv.UserAgent.Contains("Firefox");
+			return requestEnv.UserAgent?.Contains("Firefox") ?? false;
 		}
 	}
 }
