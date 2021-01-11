@@ -160,6 +160,7 @@ namespace Tango.UI.Std
 	public enum ContainerWidth
 	{
 		WidthStd,
+		WidthStd2x,
 		Width100
 	}
 }

@@ -23,9 +23,9 @@ a, a:visited {
 	text-decoration: none;
 }
 
-	a:hover {
-		text-decoration: underline;
-	}
+a:hover {
+	text-decoration: underline;
+}
 
 a, .actionbtn, .icon-collapsed, .icon-expanded,
 .icon-checkbox-unchecked, .icon-checkbox-checked,
@@ -69,9 +69,9 @@ header h1 {
 	margin: 0px 0px 8px 0px;
 }
 
-	.contentheader h2 a {
-		text-decoration: none;
-	}
+.contentheader h2 a {
+	text-decoration: none;
+}
 
 /*h3 {
 	font-size: 1.2em;
@@ -135,6 +135,11 @@ input.text {
 	width: 700px;
 }
 
+.widthstd2x {
+	width: 100%;
+	max-width: 1400px;
+}
+
 .formtable .formlabel {
 	width: 30%;
 }
@@ -170,9 +175,9 @@ input.text {
 	display: flex;
 }
 
-	.radiobuttonlist.horizontal label:not(:first-child), .checkboxlist.horizontal label:not(:first-child) {
-		margin: 2px 0 2px 12px;
-	}
+.radiobuttonlist.horizontal label:not(:first-child), .checkboxlist.horizontal label:not(:first-child) {
+	margin: 2px 0 2px 12px;
+}
 
 
 hr {
@@ -201,12 +206,12 @@ hr {
 	padding: 3px 6px 4px 6px;
 }
 
-	.formbody input[type=text],
-	.formbody input[type=password],
-	.formbody select,
-	.formbody textarea {
-		width: 100%;
-	}
+.formbody input[type=text],
+.formbody input[type=password],
+.formbody select,
+.formbody textarea {
+	width: 100%;
+}
 
 .inpstd .formbody input[type=text],
 .inpstd .formbody input[type=password],
@@ -244,13 +249,13 @@ hr {
 	min-height: 30px;
 }
 
-	.modal-footer .right, .buttonsbar .right {
-		margin-left: auto;
-	}
+.modal-footer .right, .buttonsbar .right {
+	margin-left: auto;
+}
 
-		.modal-footer .right *, .buttonsbar .right *, .buttonsbar .left * {
-			margin-left: 4px;
-		}
+.modal-footer .right *, .buttonsbar .right *, .buttonsbar .left * {
+	margin-left: 4px;
+}
 
 
 /* lists */
@@ -297,25 +302,25 @@ hr {
 	text-align: center;
 }
 
-	.listviewtable .sel_info span {
-		font-weight: bold;
-	}
+.listviewtable .sel_info span {
+	font-weight: bold;
+}
 
 .listviewtable th {
 	position: relative;
 }
 
-	.listviewtable th .dropdownimage {
-		font-size: x-small;
-		visibility: hidden;
-		position: absolute;
-		right: 0;
-		top: 0;
-	}
+.listviewtable th .dropdownimage {
+	font-size: x-small;
+	visibility: hidden;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
 
-	.listviewtable th:hover .dropdownimage {
-		visibility: visible;
-	}
+.listviewtable th:hover .dropdownimage {
+	visibility: visible;
+}
 
 .cellborders .border-l {
 	border-left: solid 1px #bbb;
@@ -366,14 +371,14 @@ hr {
 	display: table-row;
 }
 
-	.twocolumnstable .twocolumnsrow:not(:first-child) > div {
-		padding-top: 4px;
-	}
+.twocolumnstable .twocolumnsrow:not(:first-child) > div {
+	padding-top: 4px;
+}
 
-	.twocolumnstable .twocolumnsrow input[type=text], .twocolumnstable .twocolumnsrow input[type=password],
-	.twocolumnstable .twocolumnsrow select, .twocolumnstable .twocolumnsrow textarea {
-		width: 100%;
-	}
+.twocolumnstable .twocolumnsrow input[type=text], .twocolumnstable .twocolumnsrow input[type=password],
+.twocolumnstable .twocolumnsrow select, .twocolumnstable .twocolumnsrow textarea {
+	width: 100%;
+}
 
 .twocolumnsrow > div {
 	display: table-cell;
@@ -411,20 +416,20 @@ hr {
 	width: 100%;
 }
 
-	.menutoolbar ul {
-		margin: 0;
-		padding: 0px 8px;
-		border: 0;
-		list-style-type: none;
-		height: 34px;
-	}
+.menutoolbar ul {
+	margin: 0;
+	padding: 0px 8px;
+	border: 0;
+	list-style-type: none;
+	height: 34px;
+}
 
-	.menutoolbar li {
-		display: table-cell;
-		border: 0;
-		vertical-align: middle;
-		height: 34px;
-	}
+.menutoolbar li {
+	display: table-cell;
+	border: 0;
+	vertical-align: middle;
+	height: 34px;
+}
 
 .menutoolbar-left {
 	float: left;
@@ -497,14 +502,14 @@ a.actionbtn, a.actionimg {
 	padding: 4px 12px 12px 12px;
 }
 
-	.dropdownmenu a.task-progress:hover {
-		background-color: #eff0f1;
-		color: #333;
-	}
+.dropdownmenu a.task-progress:hover {
+	background-color: #eff0f1;
+	color: #333;
+}
 
-	.dropdownmenu a.task-progress:not(:last-child) {
-		border-bottom: #ccc;
-	}
+.dropdownmenu a.task-progress:not(:last-child) {
+	border-bottom: #ccc;
+}
 
 .task-progress > div:first-child > span {
 	text-align: right;
@@ -517,14 +522,14 @@ a.actionbtn, a.actionimg {
 	background-color: #eee;
 }
 
-	.task-progress > div:last-child > span {
-		position: absolute;
-		overflow: hidden;
-		float: left;
-		height: 100%;
-		background-color: #57889c;
-		padding: 0px;
-	}
+.task-progress > div:last-child > span {
+	position: absolute;
+	overflow: hidden;
+	float: left;
+	height: 100%;
+	background-color: #57889c;
+	padding: 0px;
+}
 
 .formbody input[readonly],
 .formbody textarea[readonly],
@@ -563,9 +568,9 @@ a.actionbtn, a.actionimg {
 		max-width: 600px;
 	}
 
-		.grid60 > *, .fieldsblock-grid > *, .block-body > * {
-			grid-column-end: span 60 !important
-		}
+	.grid60 > *, .fieldsblock-grid > *, .block-body > * {
+		grid-column-end: span 60 !important
+	}
 
 	.field-label {
 		width: 30% !important;
@@ -585,7 +590,7 @@ a.actionbtn, a.actionimg {
 	grid-column-gap: 20px;
 }
 
-.fieldsblock-grid > div {
+.fieldsblock-grid .field {
 	display: flex;
 	flex-direction: row;
 	grid-column-end: span 60;
@@ -610,18 +615,18 @@ a.actionbtn, a.actionimg {
 	padding: 3px 6px 4px 6px;
 }
 
-	/*.fieldsblock-grid > div:not(:first-child) {
+/*.fieldsblock-grid > div:not(:first-child) {
 	border-top: 1px solid #bad6dd;
 }*/
-	.field-body input[type=text],
-	.field-body input[type=password],
-	.field-body select,
-	.field-body textarea {
-		width: 100%;
-		background-color: #fafbfc;
-		border-color: #aaa;
-		border-width: thin;
-	}
+.field-body input[type=text],
+.field-body input[type=password],
+.field-body select,
+.field-body textarea {
+	width: 100%;
+	background-color: #fafbfc;
+	border-color: #aaa;
+	border-width: thin;
+}
 
 .inpstd .field-body input[type=text],
 .inpstd .field-body input[type=password],
@@ -646,9 +651,9 @@ a.actionbtn, a.actionimg {
 	padding: 2px;
 }
 
-	.field-plaintext::before {
-		content: '\00a0';
-	}
+.field-plaintext::before {
+	content: '\200B';
+}
 
 .field-body input[type=text].cal-date {
 	width: 85px;

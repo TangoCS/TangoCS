@@ -14,19 +14,6 @@ namespace Tango.UI
 			content(field);
 		}
 
-		//public static void FormField(this LayoutWriter w, IField field, Action content)
-		//{
-		//	w.FormField(
-		//		field.ID,
-		//		field.Caption,
-		//		content,
-		//		field.IsRequired,
-		//		field.ShowDescription ? field.Description : null,
-		//		field.IsVisible,
-		//		field.Hint
-		//	);
-		//}
-
 		public static void FormField(this LayoutWriter w, IField field, Action content, GridPosition grid = null)
 		{
 			w.FormField(
@@ -60,36 +47,36 @@ namespace Tango.UI
 			var val = field.StringValue;
 			if (typeof(TValue) == typeof(bool) && (val == "True" || val == "False"))
 				val = (field as IField<bool>).Value.Icon();
-			w.FormField(field.ID, field.Caption, () => w.Span(a => a.ID(field.ID).Class("field-plaintext"), val), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
+			w.FormField(field.ID, field.Caption, () => w.Div(a => a.ID(field.ID).Class("field-plaintext"), val), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
 		}
 
 		public static void PlainText(this LayoutWriter w, IField field, Action content, GridPosition grid = null)
 		{
-			w.FormField(field.ID, field.Caption, () => w.Span(a => a.ID(field.ID).Class("field-plaintext"), content), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
+			w.FormField(field.ID, field.Caption, () => w.Div(a => a.ID(field.ID).Class("field-plaintext"), content), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
 		}
 
 		public static void PlainText(this LayoutWriter w, string caption, Action content, string description = null, GridPosition grid = null)
 		{
-			w.FormField(null, caption, content, grid, false, description);
+			w.FormField(null, caption, () => w.Div(a => a.Class("field-plaintext"), content), grid, false, description);
 		}
 
 		public static void PlainText<T>(this LayoutWriter w, string caption, T value, string description  = null, GridPosition grid = null)
 		{
-			w.FormField(null, caption, () => w.Span(a => a.Class("field-plaintext"), value == null ? string.Empty : value.ToString()), grid, false, description);
+			w.FormField(null, caption, () => w.Div(a => a.Class("field-plaintext"), value?.ToString()), grid, false, description);
 		}
 
 		public static void PlainText<TEntity, T, T2>(this LayoutWriter w, Expression<Func<TEntity, T>> expr, T2 value, GridPosition grid = null)
 		{
 			var key = expr.GetResourceKey();
 			var caption = w.Resources.Get(key);
-			w.FormField(null, caption, () => w.Span(a => a.Class("field-plaintext"), value.ToString()), grid);
+			w.FormField(null, caption, () => w.Div(a => a.Class("field-plaintext"), value.ToString()), grid);
 		}
 
 		public static void PlainText<TEntity, TRefClass, TRefKey>(this LayoutWriter w, EntityReferenceManyField<TEntity, TRefClass, TRefKey> field, GridPosition grid = null)
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefKey>
 		{
-			void val() => w.Span(a => a.ID(field.ID).Class("field-plaintext"), () => w.Write(field.StringValueCollection.Join("<br/>")));
+			void val() => w.Div(a => a.ID(field.ID).Class("field-plaintext"), () => w.Write(field.StringValueCollection.Join("<br/>")));
 			w.FormField(field.ID, field.Caption, val, grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
 		}
 

@@ -123,7 +123,7 @@ namespace Tango.UI
 			var labelWidth = (int)Math.Round(100 / (60 / (double)grid.Caption), 0, MidpointRounding.AwayFromZero);
 			var bodyWidth = 100 - labelWidth;
 
-			w.Div(a => a.ID(name + "_field").Style(style), () => {
+			w.Div(a => a.ID(name + "_field").Class("field").Style(style), () => {
 				w.Div(a => a.ID(name + "_fieldlabel").Class("field-label").Style($"width:{labelWidth}%"), () => {
 					w.Span(a => a.ID(name + "_fieldcaption"), caption);
 					if (isRequired)
