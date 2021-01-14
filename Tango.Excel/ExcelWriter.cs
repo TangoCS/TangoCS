@@ -187,6 +187,14 @@ namespace Tango.Excel
 			}
 		}
 
+        public void SetAutoFit(int col, double width = double.NaN)
+        {
+            var column = s.Column(col);
+            if (double.IsNaN(width))
+                column.AutoFit();
+            else
+                column.AutoFit(width);
+        }
 
 		public void SetWidth(int col, double width)
 		{
