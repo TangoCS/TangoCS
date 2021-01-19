@@ -408,6 +408,9 @@ td.showDragHandle {
 	display: flex;
 	flex-direction: column;
 }
+.modal-body .widthstd {
+	width: 100%
+}
 
 .modal-footer, .modal-container .buttonsbar {
 	padding: 8px 15px;
