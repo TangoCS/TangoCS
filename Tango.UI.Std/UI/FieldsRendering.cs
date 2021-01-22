@@ -153,6 +153,13 @@ namespace Tango.UI
                 w.FormField(field, () => w.Calendar(field.ID, field.Value, opt), grid);
             }
         }
+		
+		public static void Calendar(this LayoutWriter w, IField<DateTime?> field, Action<InputTagAttributes> attributes, GridPosition grid = null)
+		{
+			var state = field.Disabled ? EnabledState.Disabled : (field.ReadOnly ? EnabledState.ReadOnly : EnabledState.Enabled);
+
+			w.FormField(field, () => w.Calendar(field.ID, field.Value, state, attributes: attributes), grid);
+		}
 
 		public static void FileUpload(this LayoutWriter w, IField<byte[]> field, GridPosition grid = null, Action<InputTagAttributes> attributes = null)
 		{
