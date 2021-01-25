@@ -73,6 +73,23 @@ namespace Tango.UI.Navigation
 			});
 		}
 
+		public static void HelpTopMenuIcon(this LayoutWriter w)
+		{
+			var cache = w.Context.RequestServices.GetService(typeof(ICache)) as ICache;
+			var loader = w.Context.RequestServices.GetService(typeof(IMenuDataLoader)) as IMenuDataLoader;
+			var ac = w.Context.RequestServices.GetService(typeof(IAccessControl)) as IAccessControl;
+
+			var (rootItems, removed) = GetMenu(cache, loader, ac, "helpmenu");
+			if (rootItems.Count() == 0) return;
+
+			w.Li(a => a.ID("header-helpmenu"), () => {
+				w.Span(() => w.Icon("help"));
+				w.DropDownForElement("header-helpmenu", () => {
+					w.RenderTwoLevelMenu(rootItems, removed);
+				}, new PopupOptions { CloseOnScroll = false });
+			});
+		}
+
 		public static void ChangeDBMenuIcon(this LayoutWriter w)
 		{
 			var settings = w.Context.RequestServices.GetService(typeof(IPersistentSettings)) as IPersistentSettings;
