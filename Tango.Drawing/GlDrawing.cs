@@ -1,5 +1,5 @@
-﻿using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.Primitives;
+﻿using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
 using System;
 
 namespace Tango.Drawing
@@ -410,14 +410,14 @@ namespace Tango.Drawing
 
 			var r = GL.glCheckFramebufferStatus(GL.GL_FRAMEBUFFER);
 
-			BeginDraw(width, height, Rgba32.Black);
+			BeginDraw(width, height, Color.Black);
 
 			content();
 
 			GL.glBindFramebuffer(GL.GL_FRAMEBUFFER, 0);
 
 			BeginDraw();
-			SetColor(Rgba32.White);
+			SetColor(Color.White);
 
 			return renderedTexture[0];
 		}
