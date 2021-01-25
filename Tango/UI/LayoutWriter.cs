@@ -59,9 +59,9 @@ namespace Tango.UI
 			fieldBlockRenderer.FieldsBlock(this, attributes, content);
 		}
 
-		public void FormField(string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null)
+		public void FormField(string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null, bool withCheck = false)
 		{
-			fieldBlockRenderer.FormField(this, name, caption, content, grid, isRequired, description, isVisible, hint);
+			fieldBlockRenderer.FormField(this, name, caption, content, grid, isRequired, description, isVisible, hint, withCheck);
 		}
 
 		public void FormFieldDescription(string name, Action description = null)
@@ -73,13 +73,13 @@ namespace Tango.UI
 	public interface IFieldBlockRenderer
 	{
 		void FieldsBlock(LayoutWriter w, Action<TagAttributes> attributes, Action content);
-		void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null);
+		void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null, bool withCheck = false);
 		void FormFieldDescription(LayoutWriter w, string name, Action description = null);
 	}
 
 	public class TableFieldBlockRenderer : IFieldBlockRenderer
 	{
-		public void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null)
+		public void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null, bool withCheck = false)
 		{
 			w.Tr(a => a.ID(name + "_field").Style(isVisible ? "" : "display:none"), () => {
 				w.Td(a => a.ID(name + "_fieldlabel").Class("formlabel"), () => {
@@ -106,11 +106,11 @@ namespace Tango.UI
 			w.Table(a => a.Class("formtable").Set(attributes), content);
 		}
 	}
-
+	
 
 	public class GridFieldBlockRenderer : IFieldBlockRenderer
-	{
-		public void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null)
+	{		
+		public void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null, bool withCheck = false)
 		{
 			if (grid == null) grid = Grid.OneWhole;
 
@@ -122,6 +122,7 @@ namespace Tango.UI
 
 			var labelWidth = (int)Math.Round(100 / (60 / (double)grid.Caption), 0, MidpointRounding.AwayFromZero);
 			var bodyWidth = 100 - labelWidth;
+			
 
 			w.Div(a => a.ID(name + "_field").Class("field").Style(style), () => {
 				w.Div(a => a.ID(name + "_fieldlabel").Class("field-label").Style($"width:{labelWidth}%"), () => {
@@ -134,6 +135,11 @@ namespace Tango.UI
 					FormFieldDescription(w, name, description);
 				});
 				w.Div(a => a.ID(name + "_fieldbody").Class("field-body").Style($"width:{bodyWidth}%"), content);
+
+				if (withCheck) w.Div(a => a.ID(name + "_field_check"), () => {
+						w.CheckBox("", attributes: a => a.ID(name + "_check").Data("field_id", w.IDPrefix + $"_{name}"));
+					});
+
 			});
 		}
 

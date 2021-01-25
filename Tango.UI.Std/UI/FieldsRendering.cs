@@ -24,7 +24,8 @@ namespace Tango.UI
 				field.IsRequired,
 				field.ShowDescription ? field.Description : null,
 				field.IsVisible,
-				field.Hint
+				field.Hint,
+				field.WithCheckBox
 			);
 		}
 
@@ -114,7 +115,7 @@ namespace Tango.UI
                 attributes += a => a.Data("e", $"On{field.ID}Changed").Data("r", field.EventReceiver);
             
             w.FormField(field.ID, field.Caption, () => w.ToggleSwitch(field.ID, field.Value, field.Disabled, field.ReadOnly, attributes), 
-				grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, field.Hint);           
+				grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, field.Hint, field.WithCheckBox);           
         }
 
 		public static void DropDownList<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, GridPosition grid = null, Action<SelectTagAttributes> attrs = null, string hint = null)
