@@ -10,6 +10,7 @@ namespace Tango.UI
 {
 	public interface IField : IInteractionFlowElement, IWithPropertyInjection
 	{
+		bool WithCheckBox { get; }
 		string Caption { get; }
 		string Description { get; }
 		string Hint { get; set; }
@@ -75,6 +76,7 @@ namespace Tango.UI
 
 	public abstract class Field : InteractionFlowElement, IField
 	{
+		public virtual bool WithCheckBox => false;
 		public abstract string Caption { get; }
 		public virtual string Hint { get; set; }
 		public virtual string Description => "";
