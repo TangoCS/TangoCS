@@ -87,6 +87,14 @@ Calendar._C = null;
 //        library, at some point.
 
 Calendar.getAbsolutePos = function (el) {
+    // 20.01.2021 Fixed calendar positioning bug
+    var rect = el.getBoundingClientRect();
+    var win = el.ownerDocument.defaultView;
+    return {
+        y: rect.top + win.pageYOffset,
+        x: rect.left + win.pageXOffset
+    };
+    /*
 	var SL = 0, ST = 0;
 	var is_div = /^div$/i.test(el.tagName);
 	if (is_div && el.scrollLeft)
@@ -99,7 +107,7 @@ Calendar.getAbsolutePos = function (el) {
 		r.x += tmp.x;
 		r.y += tmp.y;
 	}
-	return r;
+	return r;*/
 };
 
 Calendar.isRelated = function (el, evt) {
