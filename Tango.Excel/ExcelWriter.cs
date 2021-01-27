@@ -553,6 +553,15 @@ namespace Tango.Excel
 					var b = byte.Parse(match.Groups[3].Value);
 					writer.s.Cells[writer.r, writer.c].Style.Fill.BackgroundColor.SetColor(0, r, g, b);
 				}
+				if ((style?.GetColor() ?? "") != "")
+				{
+					const string pattern = @"rgba?[(](\d{1,3})\s?,\s?(\d{1,3})\s?,\s?(\d{1,3})\s?,\s?(\d{1,3})\s?[)]";
+					var match = Regex.Match(style?.GetColor(), pattern);
+					var r = byte.Parse(match.Groups[1].Value);
+					var g = byte.Parse(match.Groups[2].Value);
+					var b = byte.Parse(match.Groups[3].Value);
+					writer.s.Cells[writer.r, writer.c].Style.Font.Color.SetColor(0, r, g, b);
+				}
 			}
 
 			public ITdAttributes Title(string value)
