@@ -33,6 +33,8 @@ namespace Tango
 
 	public class ValidationMessageCollection : ObservableCollection<ValidationMessage>
 	{
+		public const string DEF_GROUP = "entitycheck";
+
 		Dictionary<ValidationMessageSeverity, int> _messagesCount = new Dictionary<ValidationMessageSeverity, int>();
 
 		public ValidationMessageCollection()
@@ -66,6 +68,11 @@ namespace Tango
 			Add(new ValidationMessage(group, name, message, severity));
 		}
 
+		public void Add(string name, string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		{
+			Add(new ValidationMessage(DEF_GROUP, name, message, severity));
+		}
+
 		//public void Add(string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
 		//{
 		//	Add(new ValidationMessage(message, severity));
@@ -89,8 +96,6 @@ namespace Tango
 
 	public class ValidationBuilder<T>
 	{
-		const string GROUP = "entitycheck";
-
 		public string ElementID { get; private set; }
 		public string ElementName { get; set; }
 		public T Value { get; private set; }
@@ -114,7 +119,7 @@ namespace Tango
 
 		public void AddMessage(string msgType, string data = null, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
 		{
-			Collection.Add(GROUP, ElementID, GetMesssageText(msgType, data), severity);
+			Collection.Add(ValidationMessageCollection.DEF_GROUP, ElementID, GetMesssageText(msgType, data), severity);
 		}
 	}
 

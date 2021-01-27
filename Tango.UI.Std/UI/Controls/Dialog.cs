@@ -122,12 +122,12 @@ namespace Tango.UI.Controls
 		}
 
 		///TODO. Сделать автоматическое прокидываение всех полей из контекста.
-		public static void AddYesNoDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null, bool warningMode = false, Action<ButtonTagAttributes> btnAttrs = null, Func<ActionResult> action = null)
+		public static void AddYesNoDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null, bool warningMode = false, Action<ButtonTagAttributes> btnAttrs = null, Func<ActionResult> action = null, params string[] styles)
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
 				if (IDPrefix != null)
 					w.PushPrefix(IDPrefix);
-				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix), () => {
+				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix, styles), () => {
 					w.AjaxForm("form", a => a.DataResult(1), () => {
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
 							w.ButtonsBarRight(() => {
@@ -166,12 +166,12 @@ namespace Tango.UI.Controls
 					w.PopPrefix();
 			});
 		}
-		public static void AddOKDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null)
+		public static void AddOKDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null, params string[] styles)
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
 				if (IDPrefix != null)
 					w.PushPrefix(IDPrefix);
-				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix), () => {
+				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix, styles), () => {
 					w.AjaxForm("form", a => a.DataResult(1), () => {
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
 							w.Div(a => a.Style("width:100%; text-align:center"), () => {
