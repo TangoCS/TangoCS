@@ -8,7 +8,7 @@
   <ItemGroup>
     <PackageReference Include="AngleSharp" Version="0.12.1" />
     <PackageReference Include="AngleSharp.Css" Version="0.12.1" />
-    <PackageReference Include="EPPlus" Version="4.5.3.2" />
+    <PackageReference Include="EPPlus" Version="5.5.2" />
   </ItemGroup>
 
   <ItemGroup>
