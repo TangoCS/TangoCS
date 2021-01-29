@@ -27,7 +27,7 @@ namespace Tango.UI
 		protected F AddField<F>(F field)
 			where F : InteractionFlowElement, IField
 		{
-			fields.Add(field);
+			fields.Add(field);			
 			return field;
 		}
 
@@ -81,6 +81,7 @@ namespace Tango.UI
 				f.InjectProperties(Form.Context.RequestServices);
 				//f.AllFields = allFields;
 				f.Args = Args;
+				f.ValueSource = Form.Context.RequestMethod == "POST" ? ValueSource.Form : ValueSource.Model;
 			}
 		}
 

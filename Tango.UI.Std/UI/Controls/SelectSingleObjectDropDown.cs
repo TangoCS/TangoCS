@@ -71,6 +71,7 @@ namespace Tango.UI.Controls
 			w.TextBox(Field.FilterFieldName, "", a => {
 				a.ID(Field.FilterFieldName).Class("filter").Autocomplete(false);
 				if (Field.Disabled) a.Readonly(true);
+				if (Field.Disabled) a.Disabled(true);
 			});
 			w.Span(a => a.Class("input-measure").ID("measure"), "");
 		}
@@ -87,11 +88,15 @@ namespace Tango.UI.Controls
 				RenderSelected(w, selectedValue);
 				RenderFilter(cw);
 
-				if (!Field.Disabled)
+				if (!Field.Disabled)//делать класс Hide
 					cw.I(a => a.ID("btn").Class("btn").Icon("dropdownarrow-angle"));
 
 				var value = selectedValue != null ? Field.DataValueField(selectedValue) : "";
-				pw.Hidden(Field.ID, value, a => a.DataHasClientState(ClientStateType.Value, Field.ClientID, "selectedvalue"));
+				pw.Hidden(Field.ID, value, a => { 
+					a.DataHasClientState(ClientStateType.Value, Field.ClientID, "selectedvalue");
+					if (Field.Disabled) a.Readonly(true);
+					if (Field.Disabled) a.Disabled(true);
+				});
 			});
 
 			cw.Div(a => a.ID("popup").Class("selectsingleobject-popup").DataRef(Field.FilterFieldName).Data(DataCollection).DataEvent(OpenDialog).DataContainer(typeof(SelectObjectPopupContainer), Field.ClientID));

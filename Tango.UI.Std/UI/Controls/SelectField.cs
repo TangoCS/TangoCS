@@ -333,7 +333,8 @@ namespace Tango.UI.Controls
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
 			var id = dialog.Context.GetArg<TRefKey>(dialog.ID);
-			var v = dialog.Context.RequestMethod == "POST" ? dialog.GetObjectByID(id) : field.Value;
+			var v = field.ValueSource == ValueSource.Model ? field.Value : dialog.GetObjectByID(id);		
+			
 			dialog.Disabled = field.Disabled || field.ReadOnly;
 			w.FormField(field, () => dialog.Strategy.Render(w, v), grid);
 		}
