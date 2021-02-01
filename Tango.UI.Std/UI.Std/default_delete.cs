@@ -16,6 +16,15 @@ namespace Tango.UI.Std
 		protected IEntityAudit EntityAudit { get; set; }
 
 		public override ViewContainer GetContainer() => new EditEntityContainer();
+		
+		public virtual void RenderConfirm(LayoutWriter w, int cnt)
+		{
+			var confirm = cnt > 1 ?
+				string.Format(Resources.Get("Common.Delete.Bulk.Confirm"), cnt) :
+				Resources.Get("Common.Delete.Confirm");
+			
+			w.P(confirm);
+		}
 
 		public override void OnLoad(ApiResponse response)
 		{
@@ -24,12 +33,8 @@ namespace Tango.UI.Std
 			var cnt = sel?.Split(',').Count() ?? 0;
 			var bulk = cnt > 1;
 
-			var confirm = bulk ?
-				string.Format(Resources.Get("Common.Delete.Bulk.Confirm"), cnt) :
-				Resources.Get("Common.Delete.Confirm");
-
 			response.AddWidget("form", w => {
-				w.P(confirm);
+				RenderConfirm(w, cnt);
 				if (cnt > 0) w.Hidden(Constants.SelectedValues, sel);
 				w.FormValidationBlock();
 			});
