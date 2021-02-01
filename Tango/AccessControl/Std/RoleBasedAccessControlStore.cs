@@ -105,6 +105,11 @@ namespace Tango.AccessControl.Std
 		{
 			return AllRoleAsso().Where(o => o.RoleID.Equals(id)).Select(o => o.ParentRoleID).ToList();
 		}
+
+		public IEnumerable<IdentityRole<string>> GetUserRoles(string userKey)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	public class RoleAsso<TKey>

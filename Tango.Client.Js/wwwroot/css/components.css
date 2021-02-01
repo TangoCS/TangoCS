@@ -1137,6 +1137,8 @@ div.tabs2 + div.tabs2_pages {
 
 .sidebar.collapsed .sidebar-menu {
 	display: block;
+	overflow-x: hidden;
+	overflow-y: hidden;
 }
 
 .sidebar.collapsed .sidebar-panel {
