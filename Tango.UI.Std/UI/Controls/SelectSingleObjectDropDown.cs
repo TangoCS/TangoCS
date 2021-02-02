@@ -48,14 +48,14 @@ namespace Tango.UI.Controls
 
 			cw.Div(a => a.ID("selected").Class("selectedcontainer"), () => {
 				if (Field.TextWhenDisabled != null)
-					cw.Div(a => a.Class("selected disabledtext").Class(Field.Disabled ? "" : "hide"), () => Field.TextWhenDisabled.Invoke(cw));
+					cw.Div(a => a.Class("selected disabledtext").Class(Field.Disabled || Field.ReadOnly ? "" : "hide"), () => Field.TextWhenDisabled.Invoke(cw));
 
 				if (Field.TextWhenNothingSelected != null)
 					cw.Div(a => a.Class("selected nothingselectedtext").Class(selectedValue == null ? "" : "hide"), () => Field.TextWhenNothingSelected.Invoke(cw));
 
 				cw.Div(a => a.Class("selected object").Class(val.IsEmpty() ? "hide" : ""), () => {
 					cw.Span(val);
-					if (!Field.Disabled)
+					if (!Field.Disabled && !Field.ReadOnly)
 					{
 						cw.A(a => {
 							a.Class("close").OnClick($"{ctrlName}Field.clear(this)");
@@ -70,7 +70,7 @@ namespace Tango.UI.Controls
 		{
 			w.TextBox(Field.FilterFieldName, "", a => {
 				a.ID(Field.FilterFieldName).Class("filter").Autocomplete(false);
-				if (Field.Disabled) a.Readonly(true);
+				if (Field.ReadOnly) a.Readonly(true);
 				if (Field.Disabled) a.Disabled(true);
 			});
 			w.Span(a => a.Class("input-measure").ID("measure"), "");
@@ -83,18 +83,18 @@ namespace Tango.UI.Controls
 			
 			cw.Div(a => {
 				a.ID("placeholder").Class("selectsingleobject").DataCtrl("selectObjectDropDownField", Field.ClientID);
-				if (Field.Disabled) a.Data("disabled", true);
+				if (Field.Disabled || Field.ReadOnly) a.Data("disabled", true);
 			}, () => {
 				RenderSelected(w, selectedValue);
 				RenderFilter(cw);
 
-				if (!Field.Disabled)//делать класс Hide
+				if (!Field.Disabled && !Field.ReadOnly)//делать класс Hide
 					cw.I(a => a.ID("btn").Class("btn").Icon("dropdownarrow-angle"));
 
 				var value = selectedValue != null ? Field.DataValueField(selectedValue) : "";
 				pw.Hidden(Field.ID, value, a => { 
 					a.DataHasClientState(ClientStateType.Value, Field.ClientID, "selectedvalue");
-					if (Field.Disabled) a.Readonly(true);
+					if (Field.ReadOnly) a.Readonly(true);
 					if (Field.Disabled) a.Disabled(true);
 				});
 			});
