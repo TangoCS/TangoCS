@@ -153,8 +153,9 @@ namespace Tango.Excel
         }
 
 		public void SetActiveSheet(int pos)
-		{
-			s = p.Workbook.Worksheets[pos];
+		{			
+			p.Workbook.View.ActiveTab = pos;
+			//s = p.Workbook.Worksheets[pos];	
 		}
 
 		public void Sheet(string name, Action inner, Action<ExcelWorksheet> style = null)
