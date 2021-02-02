@@ -127,7 +127,7 @@ namespace Tango.UI.Controls
 						showCustomRangeLabel = false,
 						alwaysShowCalendars = true,
 						startDate = from ?? DateTime.Today,
-						endDate = to ?? Date.Today
+						endDate = to ?? DateTime.Today.AddDays(1).AddMinutes(-1)
 					}
 				});
 			}
