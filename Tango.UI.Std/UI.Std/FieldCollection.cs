@@ -382,7 +382,6 @@ namespace Tango.UI.Std
 			f.Groups.Add(g);
 			return g;
 		}
-
 		public static ListGroup<TResult> AddGroup<TResult>(this IFieldCollection<TResult> f, Func<TResult, string> value)
 		{
 			var g = new ListGroup<TResult> { ValueFunc = value, Cell = (w, o) => w.Write(value(o)) };
@@ -566,6 +565,16 @@ namespace Tango.UI.Std
 			Expression<Func<TEntity, T>> sortExpression, RenderGroupCellDelegate<TResult> cell, bool sortDesc = false)
 		{
 			var g = f.AddGroup(value, cell);
+			f.AddGroupSorting(sortExpression, sortDesc);
+			return g;
+		}
+		
+		public static ListGroup<TResult> AddGroupWithCells<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f, Func<TResult, string> value,
+			Expression<Func<TEntity, T>> sortExpression, 
+			Action<TResult, GroupRowDescription<TResult>> cells, bool sortDesc = false)
+		{
+			var g = new ListGroup<TResult> { ValueFunc = value, Cells = cells };
+			f.Groups.Add(g);
 			f.AddGroupSorting(sortExpression, sortDesc);
 			return g;
 		}

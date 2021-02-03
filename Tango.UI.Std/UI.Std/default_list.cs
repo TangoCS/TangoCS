@@ -367,7 +367,18 @@ namespace Tango.UI.Std
 		public Func<TResult, string> ValueFunc;
 		public RenderGroupCellDelegate<TResult> Cell;
 		public string DefaultValue { get; set; }
-		public Dictionary<int, Action<LayoutWriter, TResult>> Cells { get; private set; } = new Dictionary<int, Action<LayoutWriter, TResult>>();
+		public Action<TResult, GroupRowDescription<TResult>> Cells { get; set; }
+	}
+
+	public class GroupRowDescription<TResult>
+	{
+		public List<(Action<TdTagAttributes> attributes, Action<LayoutWriter> inner)> Cells { get; } =
+			new List<(Action<TdTagAttributes> attributes, Action<LayoutWriter> inner)>();
+		public int? ColumnsCount { get; set; }
+		public void AddCell(Action<TdTagAttributes> attributes = null, Action<LayoutWriter> inner = null)
+		{
+			Cells.Add((attributes, inner));
+		}
 	}
 
 	public interface IColumnHeader

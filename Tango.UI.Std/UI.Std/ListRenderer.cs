@@ -45,28 +45,9 @@ namespace Tango.UI.Std
 					{
 						if (!val.IsEmpty())
 						{
-							w.Tr(a => fields.GroupRowAttributes?.Invoke(a, o, new RowInfo { RowNum = i, Level = lev }), () => {
-								var colspan = fields.Cells.Count;
-								if (fields.EnableSelect)
-								{
-									w.Td(() => { });
-									colspan--;
-								}
-								if (g.Cells.Count == 0)
-									w.Td(a => a.Class("gr").ColSpan(colspan), () => g.Cell(w, o));
-								else
-								{
-									int firstCell = g.Cells.Keys.Min();
-									w.Td(a => a.Class("gr").ColSpan(firstCell), () => g.Cell(w, o));
-
-									for (int c = firstCell; c < colspan; c++)
-									{
-										if (g.Cells.ContainsKey(c))
-											w.Td(a => a.Class("gr"), () => g.Cells[c](w, o));
-										else
-											w.Td(a => a.Class("gr"), null);
-									}
-								}
+							w.Tr(a => fields.GroupRowAttributes?.Invoke(a, o, new RowInfo { RowNum = i, Level = lev }), () =>
+							{
+								RenderGroupRow(w, fields, g, o);
 							});
 						}
 						gvalue[j] = val;
@@ -89,6 +70,31 @@ namespace Tango.UI.Std
 				fields.AfterRowContent?.Invoke(w, o, r);
 
 				i++;
+			}
+		}
+
+		protected virtual void RenderGroupRow(LayoutWriter w, IFieldCollection<TResult> fields, ListGroup<TResult> g, TResult o)
+		{
+			var colspan = fields.Cells.Count;
+			if (fields.EnableSelect)
+			{
+				w.Td(() => { });
+				colspan--;
+			}
+			
+			
+			if (g.Cells != null)
+			{
+				var r = new GroupRowDescription<TResult>();
+				g.Cells(o, r);
+				foreach (var (attr, lw) in r.Cells)
+				{
+					w.Td(a => { a.Class("gr").Set(attr); }, () => lw?.Invoke(w));
+				}
+			}
+			else
+			{
+				w.Td(a => a.Class("gr").ColSpan(colspan), () => g.Cell(w, o));
 			}
 		}
 
