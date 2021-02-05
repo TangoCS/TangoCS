@@ -4,10 +4,16 @@
             const el = document.getElementById(elid);
             el.onkeydown = onkeydown;
             el.onkeypress = onkeypress;
+            el.onkeyup = onkeyup;
             el.ondrop = ondrop;
             el.onpaste = onpaste;
         }
     };
+    
+    function onkeyup(event) {
+        $(this).trigger('input');
+        return true;
+    }
 
     function ondrop(event) {
         const str = event.dataTransfer.getData("text");
