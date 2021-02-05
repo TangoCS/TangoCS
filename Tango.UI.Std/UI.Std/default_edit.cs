@@ -73,6 +73,11 @@ namespace Tango.UI.Std
 
 		protected virtual bool ObjectNotExists => false;
 
+		/// <summary>
+		/// Информация после формы и валидации. Для показа необходимо установить флаг EnableAfterFormInfo.
+		/// </summary>
+		public virtual void AfterForm(LayoutWriter w) {}
+		
 		public override void OnLoad(ApiResponse response)
 		{
 			response.AddWidget("contenttitle", Title);
@@ -89,6 +94,8 @@ namespace Tango.UI.Std
 				response.AddWidget("form", w => {
 					Form(w);
 					w.FormValidationBlock();
+					if(EnableAfterFormInfo)
+						AfterForm(w);
 				});
 
 				if (EnableButtonsBar)
@@ -156,6 +163,10 @@ namespace Tango.UI.Std
 		}
 
 		protected virtual bool EnableButtonsBar => true;
+		/// <summary>
+		/// Признак показа информации после формы
+		/// </summary>
+		protected virtual bool EnableAfterFormInfo => false;
 		protected virtual bool EnableToolbar => false;
 
 		protected virtual void Toolbar(LayoutWriter w)
