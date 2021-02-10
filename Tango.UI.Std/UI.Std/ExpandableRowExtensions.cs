@@ -63,6 +63,21 @@ namespace Tango.UI.Std
 			});
 		}
 
+		public static void AddListTreeExpandableRowContent(this ApiResponse response, ActionContext context, int colspan, Action<LayoutWriter> content)
+		{
+			var level = context.FormData.Parse<int>("level");
+			level++;
+			var contentId = $"{context.Sender}_content";
+
+			response.AddAdjacentWidget(context.Sender, contentId, AdjacentHTMLPosition.AfterEnd, w => {
+				w.Tr(a => a.Data("level", level), () => {
+					w.Td(a => a.Class("expandablerowcontent").ColSpan(colspan), () => {
+						content(w.Clone(contentId));
+					});
+				});
+			});
+		}
+
 		public static T OnClickExpandRow<T>(this TagAttributes<T> attr, object cellid, Action<ApiResponse> e)
 			where T: TagAttributes<T>
 		{

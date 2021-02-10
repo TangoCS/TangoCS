@@ -203,7 +203,7 @@ namespace Tango.UI.Std
 				{
 					BeforeGetPageData(tran);
 
-					var temp = Database.Connection.QueryFirstOrDefault<TResult>(sqlTemplate, transaction: tran);
+					var temp = Database.Connection.QueryFirstOrDefault<TResult>(sqlTemplate, Repository.Parameters, tran);
 					if (temp == null) return;
 
 					var id = level;
@@ -259,7 +259,7 @@ namespace Tango.UI.Std
 				foreach (var p in coll)
 					a.DataParm(p.Key, p.Value);
 				a.ID(nodeTemplate.GetHtmlRowID(_level, o));
-				a.DataEvent(OnExpandRow);
+				a.DataEvent(nodeTemplate.ToggleLevelAction ?? OnExpandRow);
 
 				if (nodeTemplate.DataRef != null)
 					foreach (var _ref in nodeTemplate.DataRef(o))
@@ -337,6 +337,8 @@ namespace Tango.UI.Std
 		public bool SetDataRowId { get; set; }
 		public TreeLevelDescription<TResult> ParentTemplate { get; set; }
 		public bool AllowNulls { get; set; } = false;
+
+		public Action<ApiResponse> ToggleLevelAction { get; set; }
 
 		List<ChildTreeLevelDescription<TResult>> _children = new List<ChildTreeLevelDescription<TResult>>();
 
