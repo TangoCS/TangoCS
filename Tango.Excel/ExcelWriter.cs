@@ -135,27 +135,36 @@ namespace Tango.Excel
 		/// <param name="flag"></param>
 		/// <param name="index">Индекс Sheet</param>
 		public void SetOutLineSummaryBelow(int index, bool flag)
-        {
-            p.Workbook.Worksheets[index].OutLineSummaryBelow = flag;
-        }
+		{
+			p.Workbook.Worksheets[index].OutLineSummaryBelow = flag;
+		}
 
-        /// <summary>
-        /// Расположение итоговых данных
-        /// Итоги в строках под данными 
-        /// </summary>
-        /// <param name="flag"></param>
-        public void SetOutLineSummaryBelowAllSheet(bool flag)
-        {
-            for (int i = 0; i < p.Workbook.Worksheets.Count; i++)
-            {
-                SetOutLineSummaryBelow(i, flag);
-            }
-        }
+		/// <summary>
+		/// Расположение итоговых данных
+		/// Итоги в строках под данными 
+		/// </summary>
+		/// <param name="flag"></param>
+		public void SetOutLineSummaryBelowAllSheet(bool flag)
+		{
+			for (int i = 0; i < p.Workbook.Worksheets.Count; i++)
+			{
+				SetOutLineSummaryBelow(i, flag);
+			}
+		}
 
 		public void SetActiveSheet(int pos)
-		{			
+		{
 			p.Workbook.View.ActiveTab = pos;
 			//s = p.Workbook.Worksheets[pos];	
+		}
+		public void GroupColumns(int startCol, int finishCol, int sheetIndex, bool isCollapsed)
+		{		
+			for (int i = startCol; i <= finishCol; i++)
+			{
+				p.Workbook.Worksheets[sheetIndex].Column(i).OutlineLevel = 1;
+				p.Workbook.Worksheets[sheetIndex].Column(i).Collapsed = isCollapsed;
+			}
+						
 		}
 
 		public void Sheet(string name, Action inner, Action<ExcelWorksheet> style = null)
@@ -188,14 +197,14 @@ namespace Tango.Excel
 			}
 		}
 
-        public void SetAutoFit(int col, double width = double.NaN)
-        {
-            var column = s.Column(col);
-            if (double.IsNaN(width))
-                column.AutoFit();
-            else
-                column.AutoFit(width);
-        }
+		public void SetAutoFit(int col, double width = double.NaN)
+		{
+			var column = s.Column(col);
+			if (double.IsNaN(width))
+				column.AutoFit();
+			else
+				column.AutoFit(width);
+		}
 
 		public void SetWidth(int col, double width)
 		{
@@ -385,7 +394,7 @@ namespace Tango.Excel
 					s.Cells[r, c].Style.Numberformat.Format = "#,##0.0000000000";
 			});
 		}
-		
+
 		public void Th(Action<IThAttributes> attributes, decimal? n, string format)
 		{
 			Th(attributes, () => {
@@ -435,7 +444,7 @@ namespace Tango.Excel
 			}
 			return errors;
 		}
-		
+
 		class TdAttributes : ITdAttributes
 		{
 			ExcelWriter writer;
@@ -500,8 +509,8 @@ namespace Tango.Excel
 			}
 
 			public ITdAttributes Style(string value, bool replaceExisting = false)
-            {
-                var ss = writer.cssParser.ParseStyleSheet(".someClass{" + value + "}");
+			{
+				var ss = writer.cssParser.ParseStyleSheet(".someClass{" + value + "}");
 				style = (ss.Rules.First() as ICssStyleRule).Style;
 				return this;
 			}
@@ -535,8 +544,8 @@ namespace Tango.Excel
 					writer.s.Column(writer.c).Width = width;
 				if ((style?.GetPaddingLeft() ?? "") != "")
 					writer.s.Cells[writer.r, writer.c].Style.Indent = style.GetPaddingLeft().Replace("px", "").Trim().ToInt32(0) / 10;
-                if (string.IsNullOrEmpty(style?.GetFontFamily()) == false)
-                    writer.s.Cells[writer.r, writer.c].Style.Font.Name = style?.GetFontFamily();
+				if (string.IsNullOrEmpty(style?.GetFontFamily()) == false)
+					writer.s.Cells[writer.r, writer.c].Style.Font.Name = style?.GetFontFamily();
 				if (formula != null)
 				{
 					writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
@@ -663,7 +672,7 @@ namespace Tango.Excel
 				if (style?.GetFontWeight() == "bold")
 					writer.s.Cells[writer.r, writer.c].Style.Font.Bold = true;
 				if (style?.GetFontStyle() == "italic")
-					writer.s.Cells[writer.r, writer.c].Style.Font.Italic = true;				
+					writer.s.Cells[writer.r, writer.c].Style.Font.Italic = true;
 				if (width > 0)
 					writer.s.Column(writer.c).Width = width;
 				if (formula != null)
