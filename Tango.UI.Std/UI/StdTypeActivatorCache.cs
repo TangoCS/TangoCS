@@ -41,14 +41,16 @@ namespace Tango.UI.Std
 
 			if (ctx.RootReceiver != t.Name.ToLower() && !(view.type?.IsSubclassOf(typeof(Controller)) ?? false))
 			{
-				ctx.IsFirstLoad = true;
-
-				var tOldPage = cache.Get(ctx.RootReceiver) ?? (null, null);
-				if (tOldPage.Type == null) 
-					return new HttpResult { StatusCode = HttpStatusCode.NotFound };
-				oldPage = Activator.CreateInstance(tOldPage.Type) as AbstractViewPage;
-				oldPage.Context = ctx;
-				oldPage.InjectProperties(ctx.RequestServices);
+				if (ctx.RootReceiver != null)
+				{
+					ctx.IsFirstLoad = true;
+					var tOldPage = cache.Get(ctx.RootReceiver) ?? (null, null);
+					if (tOldPage.Type == null)
+						return new HttpResult { StatusCode = HttpStatusCode.NotFound };
+					oldPage = Activator.CreateInstance(tOldPage.Type) as AbstractViewPage;
+					oldPage.Context = ctx;
+					oldPage.InjectProperties(ctx.RequestServices);
+				}
 			}
 
 			page.OnInit();
