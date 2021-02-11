@@ -4,7 +4,6 @@
 			const isBack = !el.nodeType;
 			if (isBack) el = document.getElementById(el);
 			const tabs = el.parentNode.parentNode.parentNode;
-			const ctrlid = tabs.getAttribute('data-parmname').toLowerCase();
 			const index = [].indexOf.call(el.parentNode.parentNode.children, el.parentNode);
 			const pages = document.getElementById(tabs.id + '_pages').children;
 			for (i = 0; i < pages.length; i++) {
@@ -14,6 +13,7 @@
 				el.previousSibling.checked = true;
 
 			if (el.getAttribute('data-useurlparm') == "True") {
+				const ctrlid = tabs.getAttribute('data-parmname').toLowerCase();
 				var target = {};
 				target = { e: "OnPageSelect", r: tabs.id, query: {} };
 				target.query[ctrlid] = el.getAttribute('data-id');
@@ -28,7 +28,13 @@
 				}
 
 				if (!isBack) {
-					au.prepareTarget(target);
+					//au.prepareTarget(target);
+					var args = {
+						remove: [ctrlid],
+						add: {}
+					};
+					args.add[ctrlid] = target.query[ctrlid];
+					au.changeUrl(args);
 				}
 			}
 		}
