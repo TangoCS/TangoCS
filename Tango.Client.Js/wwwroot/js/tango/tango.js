@@ -1338,7 +1338,7 @@ var ajaxUtils = function ($, cu) {
 			const s = window.history.state;
 			if (!s) return;
 
-			if (!s.parms) {
+			if (!s.parms || Object.keys(s.parms).length == 0) {
 				s.parms = [];
 				s.parms['p'] = state.loc.parms['p'];
 				s.url = window.location.pathname + window.location.search;
