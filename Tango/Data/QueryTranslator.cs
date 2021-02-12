@@ -166,7 +166,7 @@ namespace Tango.Data
 					s.Add(me.Member.Name == "Key" ? "@@KEY" : me.Member.Name);
 				else if (arg is MethodCallExpression mce && mce.Method.Name == "Count")
 				{
-					if (mce.Arguments.Count == 0)
+					if (mce.Arguments[0] is ParameterExpression)
 					{
 						s.Add("count(1) as " + m.Name);
 					}
