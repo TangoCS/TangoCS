@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net;
+using Tango.Html;
 
 namespace Tango.UI.Std
 {
@@ -59,7 +60,11 @@ namespace Tango.UI.Std
 			if (!ctx.Service.IsEmpty())
 				result = view.invoker?.Invoke(ctx, view.type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
 			else
-				result = new ApiResult();
+			{
+				var res = new ApiResult();
+				result = res;
+				res.ApiResponse.ReplaceWidget("container", w => w.Article(a => a.ID("container")));
+			}
 
 			if (result is ApiResult ajax && ctx.IsFirstLoad)
 			{
