@@ -80,7 +80,7 @@ namespace Tango.UI.Controls
 			w.Write("&nbsp;");
 			w.BackButton();
 		}
-		public abstract void Render(LayoutWriter w, TValue selectedValue);
+		public abstract void Render(LayoutWriter w, TValue selectedValue, Action<TagAttributes> attributes = null);
 		public virtual void RenderPaging(LayoutWriter w)
 		{
 			Paging.Render(w, Field.DataProvider.GetCount(), a => a.PostEvent(RenderList));
@@ -108,11 +108,16 @@ namespace Tango.UI.Controls
 			AfterList?.Invoke(w);
 		}
 
-		public override void Render(LayoutWriter w, TRef selectedValue)
+		public override void Render(LayoutWriter w, TRef selectedValue, Action<TagAttributes> attributes = null)
 		{
 			var cw = w.Clone(Field);
 			var pw = w.Clone(Field.ParentElement);
-			cw.Div(a => a.ID("placeholder"), () => {
+			cw.Div(a =>
+			{
+				a.ID("placeholder");
+				if (attributes != null)
+					a.Set(attributes);
+			}, () => {
 				var value = selectedValue != null ? Field.DataValueField(selectedValue) : "";
 				pw.Hidden(Field.ID, value, a => a.DataHasClientState(ClientStateType.Value, ClientID, "selectedvalue"));
 				if (!Field.Disabled)
@@ -177,11 +182,16 @@ namespace Tango.UI.Controls
 			AfterList?.Invoke(w);
 		}
 
-		public override void Render(LayoutWriter w, IEnumerable<TRef> selectedValues)
+		public override void Render(LayoutWriter w, IEnumerable<TRef> selectedValues, Action<TagAttributes> attributes = null)
 		{
 			var cw = w.Clone(Field);
 			var pw = w.Clone(Field.ParentElement);
-			cw.Div(a => a.ID("placeholder"), () => {
+			cw.Div(a =>
+			{
+				a.ID("placeholder");
+				if (attributes != null)
+					a.Set(attributes);
+			}, () => {
 				pw.Hidden(Field.ID, selectedValues?.Select(o => Field.DataValueField(o)).Join(","), a => a.DataHasClientState(ClientStateType.Array, ClientID, "selectedvalues"));
 				if (!Field.Disabled)
 				{

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using Tango.Data;
+using Tango.Html;
 using Tango.Localization;
 
 namespace Tango.UI.Controls
@@ -372,6 +373,21 @@ namespace Tango.UI.Controls
 			dialog.Disabled = field.Disabled;
 			dialog.ReadOnly = field.ReadOnly;
 			w.FormField(field, () => dialog.Strategy.Render(w, v), grid);
+		}
+		
+		public static void SelectMultipleObjects<TEntity, TRefClass, TRefKey>(
+			this LayoutWriter w,
+			EntityReferenceManyField<TEntity, TRefClass, TRefKey> field,
+			SelectMultipleObjectsField<TRefClass, TRefKey> dialog, Action<TagAttributes> attributes,
+			GridPosition grid = null)
+			where TEntity : class
+			where TRefClass : class, IWithTitle, IWithKey<TRefKey>
+		{
+			var ids = dialog.Context.GetListArg<TRefKey>(dialog.ID);
+			var v = dialog.Context.RequestMethod == "POST" ? dialog.GetObjectsByIDs(ids) : field.Value;
+			dialog.Disabled = field.Disabled;
+			dialog.ReadOnly = field.ReadOnly;
+			w.FormField(field, () => dialog.Strategy.Render(w, v, attributes), grid);
 		}
 
 		public static void SelectMultipleObjects<TEntity, TRefClass, TRefKey>(
