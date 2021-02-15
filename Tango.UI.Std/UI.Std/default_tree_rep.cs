@@ -251,6 +251,7 @@ namespace Tango.UI.Std
 				a.Class("collapsed");
 				a.Data("level", _level);
 				a.DataParm("level", _level);
+				a.TabIndex(0);
 
 				nodeTemplate = _templatesDict[o.Template];
 
