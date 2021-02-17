@@ -23,19 +23,26 @@
 
 				if (el.getAttribute('data-ajax') == "True" && el.getAttribute('data-loaded') != "True") {
 					el.setAttribute('data-loaded', 'True');
-					au.runEventFromElementWithApiResponse(el, target);
+					//au.runEventFromElementWithApiResponse(el, target);
+
+					changeUrl(target, ctrlid);
+					
+					au.postEventFromElementWithApiResponse(el, target);
 					return;
 				}
 
 				if (!isBack) {
-					//au.prepareTarget(target);
-					var args = {
-						remove: [ctrlid],
-						add: {}
-					};
-					args.add[ctrlid] = target.query[ctrlid];
-					au.changeUrl(args);
+					changeUrl(target, ctrlid);
 				}
+			}
+			
+			function changeUrl(target, ctrlid) {
+				var args = {
+					remove: [ctrlid],
+					add: {}
+				};
+				args.add[ctrlid] = target.query[ctrlid];
+				au.changeUrl(args);
 			}
 		}
 	};
