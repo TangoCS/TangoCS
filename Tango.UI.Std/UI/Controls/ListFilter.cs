@@ -562,7 +562,6 @@ namespace Tango.UI.Controls
 		FieldCriterion FieldCriterionDDL(int seqNo, object column, IEnumerable<SelectListItem> values) =>
 			new FieldCriterion {
 				Column = column,
-				FieldType = FieldType.String,
 				Renderer = w => w.DropDownList(eFieldValue + seqNo, null, values),
 				StringValue = item => values.Where(o => o.Value == item.Value).Select(o => o.Text).FirstOrDefault()
 			};
@@ -632,25 +631,33 @@ namespace Tango.UI.Controls
 			return f.SeqNo;
 		}
 
-		public int AddConditionDDL(string title, Expression<Func<T, object>> column, IEnumerable<SelectListItem> values)
+		public int AddConditionDDL<TVal>(string title, Expression<Func<T, TVal>> column, IEnumerable<SelectListItem> values)
 		{
 			var f = CreateOrGetCondition(title);
 			var data = FieldCriterionDDL(f.SeqNo, column, values);
+			if (column.Body.Type == typeof(Guid))
+				data.FieldType = FieldType.Guid;
+			else
+				data.FieldType = FieldType.String;
 			f.Operators["="] = data;
 			f.Operators["<>"] = data;
 			return f.SeqNo;
 		}
 
-		public int AddConditionDDL(string title, string opname, Expression<Func<T, object, bool>> column, 
+		public int AddConditionDDL<TVal>(string title, string opname, Expression<Func<T, TVal, bool>> column, 
 			IEnumerable<SelectListItem> values)
 		{
 			var f = CreateOrGetCondition(title);
 			var data = FieldCriterionDDL(f.SeqNo, column, values);
+			if (column.Body.Type == typeof(Guid))
+				data.FieldType = FieldType.Guid;
+			else
+				data.FieldType = FieldType.String;
 			f.Operators[opname] = data;
 			return f.SeqNo;
 		}
 
-		public int AddConditionDDL(Expression<Func<T, object>> column, IEnumerable<SelectListItem> values)
+		public int AddConditionDDL<TVal>(Expression<Func<T, TVal>> column, IEnumerable<SelectListItem> values)
 		{
 			var title = Resources.Get(column.GetResourceKey());
 			return AddConditionDDL(title, column, values);

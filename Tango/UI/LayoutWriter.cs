@@ -48,6 +48,9 @@ namespace Tango.UI
 
 		public LayoutWriter Clone(string newIdPrefix)
 		{
+			if (newIdPrefix != null && newIdPrefix.StartsWith("#"))
+				newIdPrefix = newIdPrefix.Substring(1);
+
 			return new LayoutWriter(Context, newIdPrefix, GetStringBuilder()) {
 				ClientActions = ClientActions,
 				Includes = Includes
