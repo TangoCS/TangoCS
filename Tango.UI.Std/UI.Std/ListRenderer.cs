@@ -199,6 +199,11 @@ namespace Tango.UI.Std
 			_level = level;
 		}
 
+		public void SetLevel(int level)
+		{
+			_level = level;
+		}
+
 		void PagingRow(LayoutWriter w, int colSpan)
 		{
 			w.Tr(a => a.ID(w.Context.Sender + "_" + _paging.ID + "_row").Class("pagingrow").Data("level", _level), () => {

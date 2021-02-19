@@ -18,12 +18,15 @@ namespace Tango.UI.Std
 	public abstract class default_tree_rep<TResult> : default_list_rep<TResult>
 		where TResult : ILazyListTree
 	{
+
 		readonly List<TreeLevelDescription<TResult>> _templateCollection = new List<TreeLevelDescription<TResult>>();
 		Dictionary<int, TreeLevelDescription<TResult>> _templatesDict = new Dictionary<int, TreeLevelDescription<TResult>>();
-
-		int _level;
+		TreeListRenderer<TResult> _treeListRenderer = null;
 
 		int _count = 0;
+
+		State InitialState = new State { };
+		State CurrentState = new State { };
 
 		protected override bool EnableViews => false;
 
@@ -36,10 +39,13 @@ namespace Tango.UI.Std
 		{
 			base.OnInit();
 
-			_level = Context.GetIntArg("level", -1);
-			_level++;
+			var level = Context.GetIntArg("level", -1);
+			level++;
 
-			Renderer = new TreeListRenderer<TResult>(ID, Paging, _level);
+			InitialState.Level = level;
+			CurrentState = InitialState;
+
+			Renderer = new TreeListRenderer<TResult>(ID, Paging, level);
 		}
 
 
@@ -73,27 +79,27 @@ namespace Tango.UI.Std
 					Repository.Parameters.Add(pair.Key, pair.Value);
 			}
 
-			var curTemplate = _templatesDict.Get(Context.GetIntArg("template", 0)) ?? _templateCollection[0];
-			var curParms = curTemplate.GetKeyCollection(Context);
+			//var curTemplate = _templatesDict.Get(Context.GetIntArg("template", 0)) ?? _templateCollection[0];
+			//var curParms = CurrentState.Template.GetKeyCollection(Context);
 
 			var where = new List<string>();
 
-			if (curParms != null)
+			if (CurrentState.Parms != null)
 			{
-				foreach (var pair in curParms)
+				foreach (var pair in CurrentState.Parms)
 				{
 					if (pair.Value == null) continue;
 					where.Add($"{pair.Key} = @lf_{pair.Key}");
-					Repository.Parameters.Add("lf_" + pair.Key, pair.Value);
+					Repository.Parameters["lf_" + pair.Key] = pair.Value;
 				}
 			}
 
 			var dialect = QueryHelper.CreateDialect(Database.GetDBType());
 			var q = Sorter.Count > 0 ? Sorter.Apply(filtered) : DefaultOrderBy(filtered);
 
-			var nodeTemplates = _level == 0 ?
-				new List<ChildTreeLevelDescription<TResult>> { new ChildTreeLevelDescription<TResult> { Child = curTemplate } } :
-				curTemplate.Children;
+			var nodeTemplates = CurrentState.Level == 0 ?
+				new List<ChildTreeLevelDescription<TResult>> { new ChildTreeLevelDescription<TResult> { Child = CurrentState.Template } } :
+				CurrentState.Template.Children;
 
 			var origAllObjectsQuery = Repository.AllObjectsQuery;
 
@@ -146,6 +152,75 @@ namespace Tango.UI.Std
 			return _pageData;
 		}
 
+		public void SetHightlighed(FieldCollection<TResult> f, int templateID, Dictionary<string, object> parms)
+		{
+			var s = $"level={templateID - 1}&" + parms.Select(x => $"{x.Key}={x.Value}").Join("&");
+			f.ListAttributes += a => a.Data("highlighted", s);
+		}
+
+		public void SetExpandedItem(int templateID, Dictionary<string, object> parms)
+		{
+			var nodeWhere = new List<string>();
+			var t = typeof(TResult);
+			foreach (var pair in parms)
+			{
+				var p = t.GetProperty(pair.Key);
+				if (p.PropertyType.In(typeof(int), typeof(int?), typeof(decimal), typeof(decimal?)))
+					nodeWhere.Add($"{pair.Key} = {pair.Value}");
+				else if (p.PropertyType.In(typeof(string), typeof(Guid), typeof(Guid?)))
+					nodeWhere.Add($"{pair.Key} = '{pair.Value}'");
+				else if (p.PropertyType.In(typeof(DateTime), typeof(DateTime?)))
+					nodeWhere.Add($"{pair.Key} = '{pair.Value:yyyy-MM-dd HH:mm:ss}'");
+			}
+
+			var origAllObjectsQuery = Repository.AllObjectsQuery;
+
+			var sqlTemplate = "select *";
+			sqlTemplate += $" from ({origAllObjectsQuery}) t";
+
+			if (nodeWhere.Count > 0)
+				sqlTemplate += " where " + nodeWhere.Join(" and ");
+
+			using (var tran = Database.BeginTransaction())
+			{
+				BeforeGetPageData(tran);
+
+				var temp = Database.Connection.QueryFirstOrDefault<TResult>(sqlTemplate, Repository.Parameters, tran);
+				if (temp == null) return;
+
+				var template = _templatesDict[templateID].ParentTemplate;
+				var states = new List<State>();
+				var senders = new List<string>();
+
+				while (template != null)
+				{
+					states.Add(new State
+					{
+						Level = template.ID,
+						Template = template,
+						Parms = template.GetKeyCollection(temp)
+					});
+					senders.Add(template.GetHtmlRowID(template.ID - 1, temp));
+
+					template = template.ParentTemplate;
+				}
+
+				senders.Reverse();
+				states.Reverse();
+
+				var s = CurrentState;
+				for (int i = 0; i < states.Count; i++)
+				{
+					if (!s.Children.ContainsKey(senders[i]))
+						s.Children.Add(senders[i], states[i]);
+
+					s = states[i];
+				}
+			}
+		}
+
+		
+		[Obsolete]
 		public void ExpandTree(ApiResponse response, string rowId, bool refreshtree)
 		{
 			if (_fields == null)
@@ -221,10 +296,9 @@ namespace Tango.UI.Std
 				}
 				rowsId.Reverse();
 				response.AddClientAction("listview", "openlevel", rowsId);
-			}			
-			
-			
+			}
 		}
+
 		protected override IFieldCollection<TResult, TResult> FieldsConstructor()
 		{
 			var enableSelect = false;
@@ -242,24 +316,32 @@ namespace Tango.UI.Std
 			}
 			buildTemplateDictionary(_templateCollection);
 
+			CurrentState.Template = _templatesDict.Get(Context.GetIntArg("template", 0)) ?? _templateCollection[0];
+			CurrentState.Parms = CurrentState.Template.GetKeyCollection(Context);
+
 			TreeLevelDescription<TResult> nodeTemplate = null;
 
 			var f = new FieldCollection<TResult>(Context, Sorter, Filter);
 			f.EnableSelect = enableSelect;
 			f.ListAttributes += a => a.Class("tree");
 			f.RowAttributes += (a, o, i) => {
-				a.Class("collapsed");
-				a.Data("level", _level);
-				a.DataParm("level", _level);
-				a.TabIndex(0);
 
 				nodeTemplate = _templatesDict[o.Template];
+				var htmlRowID = nodeTemplate.GetHtmlRowID(CurrentState.Level, o);
 
+				if (!CurrentState.Children.ContainsKey(htmlRowID))
+					a.Class("collapsed");
+				else
+					a.Data("loaded");
+
+				a.Data("level", CurrentState.Level);
+				a.DataParm("level", CurrentState.Level);
+				a.TabIndex(0);
 				a.DataParm("template", o.Template);
 				var coll = nodeTemplate.GetKeyCollection(o);
 				foreach (var p in coll)
 					a.DataParm(p.Key, p.Value);
-				a.ID(nodeTemplate.GetHtmlRowID(_level, o));
+				a.ID(htmlRowID);
 				a.DataEvent(nodeTemplate.ToggleLevelAction ?? OnExpandRow);
 
 				if (nodeTemplate.DataRef != null)
@@ -267,7 +349,7 @@ namespace Tango.UI.Std
 						a.DataRef("#"+_ref);
 
 				if (nodeTemplate.EnableSelect || nodeTemplate.SetDataRowId)
-					a.Data("rowid", nodeTemplate.GetDataRowID(_level, o));
+					a.Data("rowid", nodeTemplate.GetDataRowID(CurrentState.Level, o));
 			};
 
 			void content(LayoutWriter w, TResult o)
@@ -287,7 +369,7 @@ namespace Tango.UI.Std
 			}
 
 			f.AddCell("Наименование", (w, o) => {
-				ListTreeExtensions.TreeCellContent(w, o, _level, !nodeTemplate.IsTerminal, content);
+				ListTreeExtensions.TreeCellContent(w, o, CurrentState.Level, !nodeTemplate.IsTerminal, content);
 			});
 
 			FieldsInit(f);
@@ -301,9 +383,23 @@ namespace Tango.UI.Std
 
 		public void OnExpandRow(ApiResponse response)
 		{
-			response.AddAdjacentWidget(Context.Sender, "childlevel", AdjacentHTMLPosition.AfterEnd, Render);
+			OnExpandRow(response, Context.Sender);
+		}
 
-			response.ReplaceWidget(Context.Sender + "_" + Paging.ID, w => {
+		void OnExpandRow(ApiResponse response, string sender, State state = null)
+		{
+			response.AddAdjacentWidget(sender, "childlevel", AdjacentHTMLPosition.AfterEnd, w => {
+				if (state != null)
+				{
+					CurrentState = state;
+					_result = null;
+					_pageData = null;
+					(Renderer as TreeListRenderer<TResult>).SetLevel(state.Level);
+				}
+				Render(w);
+			});
+
+			response.ReplaceWidget(sender + "_" + Paging.ID, w => {
 				Paging.Render2(w, _itemsCount, a => a.PostEvent(OnLevelSetPage).KeepTheSameUrl()
 					.WithRequestMethod("listview.onlevelsetpage"), a => a.PostEvent(GetObjCount));
 			});
@@ -318,6 +414,36 @@ namespace Tango.UI.Std
 			response.ReplaceWidget(Context.Sender + "_" + Paging.ID, w => {
 				Paging.Render2(w, _itemsCount, a => a.PostEvent(OnLevelSetPage).KeepTheSameUrl().WithRequestMethod("listview.onlevelsetpage"), a => a.PostEvent(GetObjCount));
 			});
+		}
+
+		public override void OnLoad(ApiResponse response)
+		{
+			base.OnLoad(response);
+
+			void expandChildren(Dictionary<string, State> children)
+			{
+				foreach (var ch in children)
+				{
+					OnExpandRow(response, ch.Key, ch.Value);
+
+					if (ch.Value.Children.Count > 0)
+						expandChildren(ch.Value.Children);
+				}
+			}
+
+			if (CurrentState.Children.Count > 0)
+				expandChildren(CurrentState.Children);
+		}
+
+
+
+		public class State
+		{
+			public TreeLevelDescription<TResult> Template { get; set; }
+			public int Level { get; set; }
+			public Dictionary<string, object> Parms { get; set; }
+
+			public Dictionary<string, State> Children { get; } = new Dictionary<string, State>();
 		}
 	}
 
