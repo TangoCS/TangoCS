@@ -21,12 +21,14 @@ namespace Tango.UI.Std
 
 		readonly List<TreeLevelDescription<TResult>> _templateCollection = new List<TreeLevelDescription<TResult>>();
 		Dictionary<int, TreeLevelDescription<TResult>> _templatesDict = new Dictionary<int, TreeLevelDescription<TResult>>();
-		TreeListRenderer<TResult> _treeListRenderer = null;
 
 		int _count = 0;
 
+		string _highlightedRowID = null;
+
 		State InitialState = new State { };
 		State CurrentState = new State { };
+		
 
 		protected override bool EnableViews => false;
 
@@ -59,7 +61,6 @@ namespace Tango.UI.Std
 
 		}
 
-
 		protected override IEnumerable<TResult> GetPageData()
 		{
 			if (_pageData != null)
@@ -78,9 +79,6 @@ namespace Tango.UI.Std
 				foreach (var pair in parms)
 					Repository.Parameters.Add(pair.Key, pair.Value);
 			}
-
-			//var curTemplate = _templatesDict.Get(Context.GetIntArg("template", 0)) ?? _templateCollection[0];
-			//var curParms = CurrentState.Template.GetKeyCollection(Context);
 
 			var where = new List<string>();
 
@@ -152,13 +150,13 @@ namespace Tango.UI.Std
 			return _pageData;
 		}
 
-		public void SetHightlighed(FieldCollection<TResult> f, int templateID, Dictionary<string, object> parms)
-		{
-			var s = $"level={templateID - 1}&" + parms.Select(x => $"{x.Key}={x.Value}").Join("&");
-			f.ListAttributes += a => a.Data("highlighted", s);
-		}
+		//public void SetHightlighed(int templateID, Dictionary<string, object> parms)
+		//{
+		//	var s = $"level={templateID - 1}&" + parms.Select(x => $"{x.Key}={x.Value}").Join("&");
+		//	_highlightedRowID = s;
+		//}
 
-		public void SetExpandedItem(int templateID, Dictionary<string, object> parms)
+		public void SetExpandedItem(int templateID, Dictionary<string, object> parms, bool highlight = true)
 		{
 			var nodeWhere = new List<string>();
 			var t = typeof(TResult);
@@ -188,9 +186,13 @@ namespace Tango.UI.Std
 				var temp = Database.Connection.QueryFirstOrDefault<TResult>(sqlTemplate, Repository.Parameters, tran);
 				if (temp == null) return;
 
-				var template = _templatesDict[templateID].ParentTemplate;
+				var initialTemplate = _templatesDict[templateID];
+				var template = initialTemplate.ParentTemplate;
 				var states = new List<State>();
 				var senders = new List<string>();
+
+				if (highlight)
+					_highlightedRowID = GetClientID(initialTemplate.GetHtmlRowID(initialTemplate.ID - 1, temp));
 
 				while (template != null)
 				{
@@ -319,15 +321,18 @@ namespace Tango.UI.Std
 			CurrentState.Template = _templatesDict.Get(Context.GetIntArg("template", 0)) ?? _templateCollection[0];
 			CurrentState.Parms = CurrentState.Template.GetKeyCollection(Context);
 
+			AfterTemplateInit();
+
 			TreeLevelDescription<TResult> nodeTemplate = null;
 
 			var f = new FieldCollection<TResult>(Context, Sorter, Filter);
 			f.EnableSelect = enableSelect;
-			f.ListAttributes += a => a.Class("tree");
+			f.ListAttributes += a => a.Class("tree").Data("highlightedid", _highlightedRowID);
 			f.RowAttributes += (a, o, i) => {
 
 				nodeTemplate = _templatesDict[o.Template];
 				var htmlRowID = nodeTemplate.GetHtmlRowID(CurrentState.Level, o);
+				var dataRowID = nodeTemplate.GetDataRowID(CurrentState.Level, o);
 
 				if (!CurrentState.Children.ContainsKey(htmlRowID))
 					a.Class("collapsed");
@@ -349,7 +354,7 @@ namespace Tango.UI.Std
 						a.DataRef("#"+_ref);
 
 				if (nodeTemplate.EnableSelect || nodeTemplate.SetDataRowId)
-					a.Data("rowid", nodeTemplate.GetDataRowID(CurrentState.Level, o));
+					a.Data("rowid", dataRowID);
 			};
 
 			void content(LayoutWriter w, TResult o)
@@ -377,7 +382,8 @@ namespace Tango.UI.Std
 			return f;
 		}
 
-		protected abstract void TemplateInit(List<TreeLevelDescription<TResult>> templateColletion);
+		protected abstract void TemplateInit(List<TreeLevelDescription<TResult>> templateCollection);
+		protected virtual void AfterTemplateInit() { }
 
 		protected override void FieldsInit(FieldCollection<TResult> fields) { }
 
@@ -407,8 +413,6 @@ namespace Tango.UI.Std
 
 		public void OnLevelSetPage(ApiResponse response)
 		{
-			//var root = "#" + Context.GetArg("root");
-
 			response.AddAdjacentWidget(Context.Sender, "childlevel", AdjacentHTMLPosition.AfterEnd, Render);
 
 			response.ReplaceWidget(Context.Sender + "_" + Paging.ID, w => {
@@ -416,9 +420,14 @@ namespace Tango.UI.Std
 			});
 		}
 
-		public override void OnLoad(ApiResponse response)
+		public override void OnEvent()
 		{
-			base.OnLoad(response);
+			
+		}
+
+		protected override void AfterRender(ApiResponse response)
+		{
+			base.AfterRender(response);
 
 			void expandChildren(Dictionary<string, State> children)
 			{
@@ -431,11 +440,10 @@ namespace Tango.UI.Std
 				}
 			}
 
+			ForceFieldsInit();
 			if (CurrentState.Children.Count > 0)
 				expandChildren(CurrentState.Children);
 		}
-
-
 
 		public class State
 		{

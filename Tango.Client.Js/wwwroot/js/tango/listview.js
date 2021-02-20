@@ -207,8 +207,7 @@ var listview = function (au, cu, cbcell) {
 		},
 		widgetWillMount: function (shadow, state) {
 			const root = shadow.getElementById(state.root);
-
-			initHighlight(root);
+			//initHighlight(root);
 
 			if (!state.selectedvalues) return;
 
@@ -240,6 +239,11 @@ var listview = function (au, cu, cbcell) {
 			onCheckChange(shadow, root, state);
 		},
 		widgetDidMount: function (state) {
+			const root = document.getElementById(state.root);
+			const tree = document.querySelector('.listviewtable.tree');
+			if (tree)
+				initHighlight(tree);
+
 			var el = $('#' + state.root);
 			if (!el.tableDnD || !el.hasClass("draggablerows")) return;
 			el.tableDnD({
@@ -399,9 +403,16 @@ var listview = function (au, cu, cbcell) {
 			el.classList.add('initialized');
 		}
 
+		// obsolete
 		const currentSelected = root.getAttribute('data-highlighted');
 		if (currentSelected) {
 			const selEl = root.querySelector("tr[data-rowid='" + currentSelected + "'] *[data-highlight]");
+			if (selEl) selEl.classList.add('selected');
+		}
+		/////
+		const currentSelectedid = root.getAttribute('data-highlightedid');
+		if (currentSelectedid) {
+			const selEl = root.querySelector("#" + currentSelectedid + " *[data-highlight]");
 			if (selEl) selEl.classList.add('selected');
 		}
 

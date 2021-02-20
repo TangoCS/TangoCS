@@ -28,10 +28,14 @@ namespace Tango.UI.Std
 		{
 			get
 			{
-				if (_fields == null)
-					_fields = FieldsConstructor();
+				ForceFieldsInit();
 				return _fields;
 			}
+		}
+		protected void ForceFieldsInit()
+		{
+			if (_fields == null)
+				_fields = FieldsConstructor();
 		}
 		//protected Action<ActionLink> _pagingAttributes => a => a.RunEvent(OnSetPage);
 
@@ -185,7 +189,7 @@ namespace Tango.UI.Std
 			w.PopPrefix();
 		}
 
-		protected void RenderPaging(ApiResponse response)
+		protected virtual void AfterRender(ApiResponse response)
 		{
 			if (Sections.RenderPaging)
 			{
@@ -241,7 +245,7 @@ namespace Tango.UI.Std
 			Paging.PageIndex = 1;
 			response.AddWidget(Sections.ContentBody, Render);
 			RenderToolbar(response);
-			RenderPaging(response);
+			AfterRender(response);
 		}
 
 		public override void OnLoad(ApiResponse response)
@@ -254,20 +258,20 @@ namespace Tango.UI.Std
 			if (Sections.SetPageTitle)
 				response.AddWidget("#title", FormTitle);
 
-			RenderPaging(response);
+			AfterRender(response);
 		}
 
 		public void OnSetView(ApiResponse response)
 		{
 			response.AddWidget(Sections.ContentBody, Render);
 			RenderToolbar(response);
-			RenderPaging(response);
+			AfterRender(response);
 		}
 
 		public void OnQuickSearch(ApiResponse response)
 		{
 			response.AddWidget(Sections.ContentBody, Render);
-			RenderPaging(response);
+			AfterRender(response);
 		}
 
 		public void OnSetPage(ApiResponse response)
@@ -277,13 +281,13 @@ namespace Tango.UI.Std
 				Paging.PageIndex = page_go.Value;
 			
 			response.AddWidget(Sections.ContentBody, Render);
-			RenderPaging(response);
+			AfterRender(response);
 		}
 
 		public void GetObjCount(ApiResponse response)
 		{
 			_itemsCount = GetCount();
-			RenderPaging(response);
+			AfterRender(response);
 		}
 
 		protected IQueryable<TEntity> ApplyFilter(IQueryable<TEntity> q)
