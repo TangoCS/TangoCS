@@ -96,7 +96,7 @@ namespace Tango.UI.Std
 			var q = Sorter.Count > 0 ? Sorter.Apply(filtered) : DefaultOrderBy(filtered);
 
 			var nodeTemplates = CurrentState.Level == 0 ?
-				new List<ChildTreeLevelDescription<TResult>> { new ChildTreeLevelDescription<TResult> { Child = CurrentState.Template } } :
+				new List<TreeLevelDescriptionItem<TResult>> { new TreeLevelDescriptionItem<TResult> { Template = CurrentState.Template } } :
 				CurrentState.Template.Children;
 
 			var origAllObjectsQuery = Repository.AllObjectsQuery;
@@ -118,16 +118,16 @@ namespace Tango.UI.Std
 						nodeQueryCnt = nodeQueryCnt.Where(t.Where);
 					}
 
-					nodeQuery = t.Child.OrderBy(nodeQuery);
+					nodeQuery = t.Template.OrderBy(nodeQuery);
 
-					var expr = t.Child.GroupBy != null ? nodeQuery.GroupBy(t.Child.GroupBy).Select(t.Child.GroupBySelector).Expression : nodeQuery.Expression;
-					var exprCnt = t.Child.GroupBy != null ? nodeQueryCnt.GroupBy(t.Child.GroupBy).Select(x => x.Key).Expression : nodeQueryCnt.Expression;
+					var expr = t.Template.GroupBy != null ? nodeQuery.GroupBy(t.Template.GroupBy).Select(t.Template.GroupBySelector).Expression : nodeQuery.Expression;
+					var exprCnt = t.Template.GroupBy != null ? nodeQueryCnt.GroupBy(t.Template.GroupBy).Select(x => x.Key).Expression : nodeQueryCnt.Expression;
 
 					var sqlTemplate = "select *";
 					sqlTemplate += $" from ({origAllObjectsQuery}) t";
 
-					if (!t.Child.AllowNulls)
-						foreach (var p in t.Child.KeyProperties)
+					if (!t.Template.AllowNulls)
+						foreach (var p in t.Template.KeyProperties)
 							nodeWhere.Add($"{p} is not null");
 
 					if (nodeWhere.Count > 0)
@@ -138,7 +138,7 @@ namespace Tango.UI.Std
 					var resCnt = Repository.Count(exprCnt);
 
 					foreach (var o in res)
-						o.Template = t.Child.ID;
+						o.Template = t.Template.ID;
 
 
 					_pageData = _pageData == null ? res : _pageData.Concat(res);
@@ -156,7 +156,7 @@ namespace Tango.UI.Std
 		//	_highlightedRowID = s;
 		//}
 
-		public void SetExpandedItem(int templateID, Dictionary<string, object> parms, bool highlight = true)
+		public void SetExpandedItem(int templateID, int level, Dictionary<string, object> parms, bool highlight = true)
 		{
 			var nodeWhere = new List<string>();
 			var t = typeof(TResult);
@@ -192,19 +192,20 @@ namespace Tango.UI.Std
 				var senders = new List<string>();
 
 				if (highlight)
-					_highlightedRowID = GetClientID(initialTemplate.GetHtmlRowID(initialTemplate.ID - 1, temp));
+					_highlightedRowID = GetClientID(initialTemplate.GetHtmlRowID(level, temp));
 
 				while (template != null)
 				{
 					states.Add(new State
 					{
-						Level = template.ID,
+						Level = level,
 						Template = template,
 						Parms = template.GetKeyCollection(temp)
 					});
-					senders.Add(template.GetHtmlRowID(template.ID - 1, temp));
+					senders.Add(template.GetHtmlRowID(level - 1, temp));
 
 					template = template.ParentTemplate;
+					level--;
 				}
 
 				senders.Reverse();
@@ -313,7 +314,7 @@ namespace Tango.UI.Std
 					enableSelect = enableSelect || t.EnableSelect;
 					if (!_templatesDict.ContainsKey(t.ID))
 						_templatesDict.Add(t.ID, t);
-					buildTemplateDictionary(t.Children.Select(x => x.Child));
+					buildTemplateDictionary(t.Children.Select(x => x.Template));
 				}
 			}
 			buildTemplateDictionary(_templateCollection);
@@ -475,9 +476,9 @@ namespace Tango.UI.Std
 
 		public Action<ApiResponse> ToggleLevelAction { get; set; }
 
-		List<ChildTreeLevelDescription<TResult>> _children = new List<ChildTreeLevelDescription<TResult>>();
+		List<TreeLevelDescriptionItem<TResult>> _children = new List<TreeLevelDescriptionItem<TResult>>();
 
-		public IReadOnlyList<ChildTreeLevelDescription<TResult>> Children => _children;
+		public IReadOnlyList<TreeLevelDescriptionItem<TResult>> Children => _children;
 
 		List<PropertyInfo> keyProperties = null;
 
@@ -514,15 +515,14 @@ namespace Tango.UI.Std
 		{
 			template.ParentTemplate = this;
 
-			_children.Add(new ChildTreeLevelDescription<TResult> { Child = template, Where = where });
+			_children.Add(new TreeLevelDescriptionItem<TResult> { Template = template, Where = where });
 		}
 	}
 
-	public class ChildTreeLevelDescription<TResult>
+	public class TreeLevelDescriptionItem<TResult>
 	{
-		public TreeLevelDescription<TResult> Child { get; set; }
+		public TreeLevelDescription<TResult> Template { get; set; }
 		public Expression<Func<TResult, bool>> Where { get; set; }
-
 	}
 
 	public class SelectableTreeContainer : ViewContainer
