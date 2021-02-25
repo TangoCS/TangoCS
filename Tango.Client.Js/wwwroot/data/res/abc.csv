@@ -229,50 +229,6 @@ Abc.Model.N_VirusScanLog.LastModifiedDate;Дата проверки;Check date
 Abc.Model.N_VirusScanLog.LastModifiedUser;Загрузивший пользователь;User
 Abc.Model.N_VirusScanLog.ResultCode;Код результата;Result code
 Abc.Model.N_VirusScanLog.Title;Имя файла;File name
-Abc.Model.TM_Task;Задача;Task
-Abc.Model.TM_Task-pl;Задачи;Tasks
-Abc.Model.TM_Task.Class;Класс;Class
-Abc.Model.TM_Task.ErrorLogID;Ид ошибки в журнале;Error
-Abc.Model.TM_Task.ExecutionTimeout;Таймаут выполнения задачи, мин;Execution timeout
-Abc.Model.TM_Task.Interval;Интервал;
-Abc.Model.TM_Task.Interval-False;Интервал запуска;Invoke interval
-Abc.Model.TM_Task.Interval-True;Время запуска;Run time
-Abc.Model.TM_Task.IsActive;Активна;Is active
-Abc.Model.TM_Task.IsSuccessfull;Признак успешности;Last run was successful
-Abc.Model.TM_Task.LastStartDate;Последний запуск;Last start date
-Abc.Model.TM_Task.Method;Метод;Method
-Abc.Model.TM_Task.Parameters;Параметры;
-Abc.Model.TM_Task.Start;Запуск;Run
-Abc.Model.TM_Task.StartFromService;Старт службой;Start from service
-Abc.Model.TM_Task.StartType;Тип старта;Start type
-Abc.Model.TM_Task.StartType-False;С заданным интервалом;At a specific intervals
-Abc.Model.TM_Task.StartType-True;В определенное время;At a specific time
-Abc.Model.TM_Task.Title;Название;Title
-Abc.Model.TM_Task.ViewList;Список задач;Task list
-Abc.Model.TM_TaskExecution;Запуск задачи;Task execution log
-Abc.Model.TM_TaskExecution-pl;Лог запуска задач;Task execution log
-Abc.Model.TM_TaskExecution.ExecutionLog;Журнал выполнения;Execution log
-Abc.Model.TM_TaskExecution.FinishDate;Дата/время окончания;Finish date
-Abc.Model.TM_TaskExecution.IsSuccessfull;Результат;Is successful
-Abc.Model.TM_TaskExecution.LastModifiedDate;Дата записи;Last modified date
-Abc.Model.TM_TaskExecution.LastModifiedUser;Пользователь;Last modified by
-Abc.Model.TM_TaskExecution.LastModifiedUser.Title;Пользователь;Last modified by
-Abc.Model.TM_TaskExecution.MachineName;Имя машины;Host name
-Abc.Model.TM_TaskExecution.ResultXml;Результат XML;Result
-Abc.Model.TM_TaskExecution.StartDate;Дата/время запуска;Start date
-Abc.Model.TM_TaskExecution.Task;Задача;Task
-Abc.Model.TM_TaskExecution.Task.Title;Задача;Task
-Abc.Model.TM_TaskExecution.Title;Наименование;Title
-Abc.Model.TM_TaskExecution.ViewList;Лог запуска задач;Execution log
-Abc.Model.TM_TaskParameter;Параметр задачи;Task parameter
-Abc.Model.TM_TaskParameter-pl;Параметры задачи;Task parameters
-Abc.Model.TM_TaskParameter.MoveDown;Переместить вниз;Move down
-Abc.Model.TM_TaskParameter.MoveUp;Переместить вверх;Move up
-Abc.Model.TM_TaskParameter.Parent;Задача;
-Abc.Model.TM_TaskParameter.SeqNo;Порядковый номер;Seq no
-Abc.Model.TM_TaskParameter.SysName;Системное имя;System name
-Abc.Model.TM_TaskParameter.Title;Название;Title
-Abc.Model.TM_TaskParameter.Value;Значение;Value
 Abc.Model.WF_Activity;Активность;Activity
 Abc.Model.WF_Activity-pl;Состояния;Activities
 Abc.Model.WF_Activity.ChildActivities;Дочерние активности;

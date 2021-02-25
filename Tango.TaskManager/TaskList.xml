@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <TaskList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="tasklist.xsd">
   <Task Name="LicInt" ThreadCount="1" StartType="Interval" Hours="0" Minutes="5" Type="Tango.TaskManager.WebClient" Method="Post">
-    <Argument Name="url" Value="http://localhost:8006/runtasks/runtasks" />
+    <Argument Name="url" Value="http://localhost:8006/task/runtasks" />
     <Argument Name="userName" Value="" />
     <Argument Name="password" Value="" />
     <Argument Name="data" Value="" />
