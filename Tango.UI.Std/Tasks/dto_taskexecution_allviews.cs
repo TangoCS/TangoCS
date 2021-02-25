@@ -137,7 +137,7 @@ namespace Tango.Tasks
 
         protected virtual void ResultXmlField(LayoutWriter w)
         {
-            w.Write(gr.ResultXml);
+            w.Write(gr.ResultXml.Value);
         }
     }
 
