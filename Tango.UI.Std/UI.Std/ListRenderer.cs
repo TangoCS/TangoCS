@@ -105,9 +105,11 @@ namespace Tango.UI.Std
 			if (rendererIsControl) w.PushPrefix(_id);
 
 			fields.ListAttributes += a => a.ID();
-			if (fields.EnableSelect)
-				fields.ListAttributes += a => a.DataCtrl("listview");
-			fields.ListAttributes = (a => a.Class("listviewtable")) + fields.ListAttributes;
+            
+            if (fields.EnableSelect || fields.EnableFixedHeader) fields.ListAttributes += a => a.DataCtrl("listview");
+            if (fields.EnableFixedHeader) fields.ListAttributes += a => a.Class("fixedheader");
+			
+            fields.ListAttributes = (a => a.Class("listviewtable")) + fields.ListAttributes;
 
 			if (fields.EnableSelect && fields.HeaderRows.Count > 0)
 				fields.AddCheckBoxCell();

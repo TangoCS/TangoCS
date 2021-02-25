@@ -15,6 +15,7 @@ namespace Tango.UI.Std
 		bool EnableSelect { get; }
 		bool AllowSelectAllPages { get; }
 		bool EnableHeadersMenu { get; }
+		bool EnableFixedHeader { get; }
 
 		List<List<IColumnHeader>> HeaderRows { get; }
 		List<IColumnHeader> Headers { get; }
@@ -51,7 +52,7 @@ namespace Tango.UI.Std
 
 	public class FieldCollectionBase<TResult> : IFieldCollection<TResult>
 	{
-		public List<List<IColumnHeader>> HeaderRows { get; } = new List<List<IColumnHeader>> { new List<IColumnHeader>() };
+        public List<List<IColumnHeader>> HeaderRows { get; } = new List<List<IColumnHeader>> { new List<IColumnHeader>() };
 		public List<IColumnHeader> Headers => HeaderRows[HeaderRows.Count - 1];
 		public List<IListColumn<TResult>> Cells { get; } = new List<IListColumn<TResult>>();
 
@@ -67,6 +68,7 @@ namespace Tango.UI.Std
 		public ActionContext Context { get; protected set; }
 
 		public bool EnableHeadersMenu { get; set; } = false;
+        public bool EnableFixedHeader { get; set; } = false;
 		public bool EnableSelect { get; set; }
 		public bool AllowSelectAllPages { get; set; } = false;
 
