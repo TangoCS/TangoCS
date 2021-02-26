@@ -60,10 +60,15 @@ namespace Tango.UI.Std
 	public class EditEntityContainer : ViewContainer
 	{
         public ContainerWidth Width { get; set; } = ContainerWidth.WidthStd;
+		public ContainerHeight Height { get; set; } = ContainerHeight.HeightStd;
+
 		public bool GridMode { get; set; }
 
 		public bool AddDataCtrl { get; set; }
 		public bool IsNested { get; set; }
+
+		public bool ShowResultBlock { get; set; } = false;
+		
 
 		public override void Render(ApiResponse response)
 		{
@@ -76,7 +81,7 @@ namespace Tango.UI.Std
 						else
 							w.ContentHeader();
 					w.Div(a => a.ID("contenttoolbar"));
-					w.Div(a => a.ID("contentbody").Class("contentbody contentbodypadding"), () => {
+					w.Div(a => a.ID("contentbody").Class("contentbody contentbodypadding").Style(Height == ContainerHeight.Height100 ? "display:flex;flex-direction:column;" : null), () => {
 						var cls = "editform " + Width.ToString().ToLower();
 						if (GridMode) cls += " grid60";
 						w.AjaxForm("form", a => {
@@ -84,6 +89,9 @@ namespace Tango.UI.Std
 							if (AddDataCtrl)
 								a.DataCtrl(w.IDPrefix);
 						}, null);
+
+						if (ShowResultBlock)
+							w.Div(a => a.ID("result").Style(Height == ContainerHeight.Height100 ? "overflow-y: auto;" : null));
 					});
 				});
 			});
@@ -162,5 +170,11 @@ namespace Tango.UI.Std
 		WidthStd,
 		WidthStd2x,
 		Width100
+	}
+
+	public enum ContainerHeight
+	{
+		HeightStd,
+		Height100
 	}
 }

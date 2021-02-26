@@ -19,12 +19,16 @@ namespace Tango.UI.Std
 		protected abstract string Title { get; }
 		protected abstract void Form(LayoutWriter w);
 		protected virtual ContainerWidth FormWidth => ContainerWidth.WidthStd;
+		protected virtual ContainerHeight FormHeight => ContainerHeight.HeightStd;
 		protected virtual bool FormGridMode => false;
+		protected virtual bool ShowResultBlock => false;
 
 		public override ViewContainer GetContainer() => new EditEntityContainer {
 			IsNested = ParentElement != null,
 			GridMode = FormGridMode,
-			Width = FormWidth
+			Width = FormWidth,
+			Height = FormHeight,
+			ShowResultBlock = ShowResultBlock
 		};
 
 		[Inject]
