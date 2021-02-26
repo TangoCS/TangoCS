@@ -1206,6 +1206,7 @@ div.tabs2 + div.tabs2_pages {
 .sidebar-panel {
 	display: flex;
 	flex-direction: column;
+    width: 100%;
 }
 
 	.sidebar-panel > div:last-child {
@@ -1279,4 +1280,11 @@ div.tabs2 + div.tabs2_pages {
 
 .block .menutoolbar ul {
 	padding: 0
+}
+
+.fixedheader th, fixedheader thead {
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }

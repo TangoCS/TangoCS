@@ -241,8 +241,10 @@ var listview = function (au, cu, cbcell) {
 		widgetDidMount: function (state) {
 			const root = document.getElementById(state.root);
 			const tree = document.querySelector('.listviewtable.tree');
-			if (tree)
-				initHighlight(tree);
+			if (tree) initHighlight(tree);
+
+            const fixedHeaders = document.querySelectorAll('.listviewtable.fixedheader');
+            if (fixedHeaders.length > 0) initFixedheader(fixedHeaders);
 
 			var el = $('#' + state.root);
 			if (!el.tableDnD || !el.hasClass("draggablerows")) return;
@@ -384,6 +386,59 @@ var listview = function (au, cu, cbcell) {
 			});
 			el.classList.add('initialized');
 		}
+	}
+
+	function initFixedheader(roots) {
+		for (var j = 0; j < roots.length; j++) {
+			const ths = roots[j].querySelectorAll('th');
+			for (let i = 0; i < ths.length; i++) {
+				const th = ths[i];
+				let padding = window.getComputedStyle(th, null).getPropertyValue('padding-top');
+				let paddingParent = calculatePadding(th);
+				if (paddingParent != null) {
+					padding = padding.replace("px", "");
+					paddingParent = paddingParent.replace("px", "");
+					// Не хватает 2 px
+					th.style.top = (((parseInt(padding) / 2) + parseInt(paddingParent)) * -1) + "px";
+				}
+			}
+		}
+		/*// Для сложного заголовка
+		fixedheader: function () {
+		var tableHeaderTop = document.querySelector('.fixedheader thead');
+		if (tableHeaderTop == null || tableHeaderTop.length === 0) {
+			tableHeaderTop = document.querySelector('.fixedheader');}
+		if (tableHeaderTop == null)
+			return;
+		tableHeaderTop = tableHeaderTop.getBoundingClientRect().top;
+		var ths = document.querySelectorAll('.fixedheader thead th');
+		if (ths == null || ths.length === 0) {
+			ths = document.querySelectorAll('.fixedheader th');}
+		for (let i = 0; i < ths.length; i++) {
+			const th = ths[i];
+			th.style.top = th.getBoundingClientRect().top - tableHeaderTop + "px";}},
+		*/
+	}
+
+	function calculatePadding(node) {
+		node = getScrollParent(node);
+		if (node != null)
+			return window.getComputedStyle(node, null).getPropertyValue('padding-bottom');
+		return null;
+	}
+
+	function getScrollParent(node) {
+		const isElement = node instanceof HTMLElement;
+		const overflowY = isElement && window.getComputedStyle(node).overflowY;
+		const isScrollable = overflowY !== 'visible' && overflowY !== 'hidden';
+
+		if (!node) {
+			return null;
+		} else if (isScrollable && node.scrollHeight >= node.clientHeight) {
+			return node;
+		}
+
+		return getScrollParent(node.parentNode) || document.body;
 	}
 
 	function initHighlight(root) {
