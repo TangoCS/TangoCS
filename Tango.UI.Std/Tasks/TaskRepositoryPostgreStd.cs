@@ -27,19 +27,24 @@ left outer join tm_taskstarttype tt on t.starttypeid = tt.taskstarttypeid");
             return database.Connection.QuerySingle<int>(@"insert into 
 tm_task(title, class, starttypeid, method, interval, status, isactive, startfromservice, executiontimeout, taskgroupid)
 values (@title, @class, @starttypeid, @method, @interval, @status, @isactive, @startfromservice, @executiontimeout, @taskgroupid) 
-returning taskid", task);
+returning taskid", task, database.Transaction);
         }
 
         public void UpdateTask(DTO_Task task)
         {
             database.Connection.ExecuteScalar(@"update tm_task set title=@title, class=@class, starttypeid=@starttypeid, method=@method, interval=@interval, 
 isactive=@isactive, executiontimeout=@executiontimeout, taskgroupid=@taskgroupid
-where taskid=@taskid", task);
+where taskid=@taskid", task, database.Transaction);
         }
 
         public void DeleteTask(IEnumerable<int> ids)
         {
-            database.Connection.Execute(@"delete from tm_task where taskid = any(@ids)", new { ids });
+            database.Connection.Execute(@"delete from tm_task where taskid = any(@ids)", new { ids }, database.Transaction);
+        }
+
+        public void DeactivationTasks(IEnumerable<int> ids)
+        {
+            database.Connection.Execute("update tm_task set isactive=false where taskid = any(@ids)", new { ids }, database.Transaction);
         }
 
         public IRepository<DTO_TaskParameter> GetTaskParameters()
@@ -52,18 +57,18 @@ from tm_taskparameter tp join tm_task t on tp.parentid = t.taskid");
         public int CreateTaskParameter(DTO_TaskParameter taskparameter)
         {
             return database.Connection.QuerySingle<int>(@"insert into tm_taskparameter(title, sysname, value, parentid, seqno)
-values (@title, @sysname, @value, @parentid, @seqno) returning taskparameterid", taskparameter);
+values (@title, @sysname, @value, @parentid, @seqno) returning taskparameterid", taskparameter, database.Transaction);
         }
 
         public void UpdateTaskParameter(DTO_TaskParameter taskparameter)
         {
             database.Connection.ExecuteScalar(@"update tm_taskparameter set title=@title, sysname=@sysname, value=@value
-where taskparameterid=@taskparameterid", taskparameter);
+where taskparameterid=@taskparameterid", taskparameter, database.Transaction);
         }
 
         public void DeleteTaskParameter(IEnumerable<int> ids)
         {
-            database.Connection.Execute(@"delete from tm_taskparameter where taskparameterid = any(@ids)", new { ids });
+            database.Connection.Execute(@"delete from tm_taskparameter where taskparameterid = any(@ids)", new { ids }, database.Transaction);
         }
 
         public IRepository<DTO_TaskExecution> GetTaskExecutions()
@@ -72,6 +77,11 @@ where taskparameterid=@taskparameterid", taskparameter);
 from tm_taskexecution te 
 join tm_task t on te.taskid = t.taskid
 left outer join spm_subject u on te.lastmodifieduserid = u.subjectid");
+        }
+
+        public void ClearTasksExecution(DateTime date)
+        {
+            database.Connection.Execute("delete from tm_taskexecution where lastmodifieddate < @date", new { date }, database.Transaction);
         }
 
         public IEnumerable<DTO_TaskGroup> GetTaskGroups()
@@ -95,16 +105,6 @@ where te.finishdate is null and t.startfromservice");
             return database.Connection.Query<DTO_Task>(@"select t.* from tm_task t
 where t.isactive and t.startfromservice 
 and not exists (select 1 from tm_taskexecution te where te.taskid = t.taskid and te.finishdate is null)");
-        }
-
-        public void DeactivationTasks(IEnumerable<int> ids)
-        {
-            database.Connection.Execute("update tm_task set isactive=false where taskid = any(@ids)", new { ids });
-        }
-
-        public void ClearTasksExecution(DateTime date)
-        {
-            database.Connection.Execute("delete from tm_taskexecution where lastmodifieddate < @date", new { date });
         }
 
         public int CreateTaskExecution(DTO_TaskExecution execution)
