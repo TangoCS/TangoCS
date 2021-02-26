@@ -127,6 +127,17 @@
 
 				setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
 			}
+		},
+		copyToClipboard: function (sourceId) {
+			var source = document.querySelector('#' + sourceId);
+			if(source) {
+				var dummy = document.createElement("textarea");
+				document.body.appendChild(dummy);
+				dummy.value = source.value;
+				dummy.select();
+				document.execCommand("copy");
+				document.body.removeChild(dummy);
+			}
 		}
 	}
 
