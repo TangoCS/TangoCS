@@ -93,7 +93,7 @@ namespace Tango.Tasks
 
 			try
 			{
-				Type type = Type.GetType($"{task.Class}, {task.Class.Substring(0, task.Class.IndexOf('.'))}", true);
+				Type type = Type.GetType(task.Class, true);
 				object obj = null;
 				ConstructorInfo ci = type.GetConstructors().FirstOrDefault();
 				if (ci != null)
