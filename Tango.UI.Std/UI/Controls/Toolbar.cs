@@ -46,9 +46,9 @@ namespace Tango.UI.Controls
 			Item(w => w.DropDownButton(id, title, content, icon, btnAttrs, popupAttrs, options));
 		}
 
-		public void QuickSearch(IViewElement list, Paging paging, string qSearchParmName, string tooltip = null)
+		public void QuickSearch(IViewElement list, Paging paging, InputName qSearchParmName, string tooltip = null)
 		{
-			Item(w => w.TextBox(qSearchParmName, w.Context.GetArg(qSearchParmName), a =>
+			Item(w => w.TextBox(qSearchParmName, w.Context.GetArg(qSearchParmName.Name), a =>
 				a.Class("filterInput")
 				.Autocomplete(false)
 				.DataParm(paging.ClientID, 1)

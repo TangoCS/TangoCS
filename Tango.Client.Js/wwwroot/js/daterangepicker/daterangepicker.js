@@ -291,7 +291,7 @@
             }
         }
 
-        if (typeof options.ranges === 'object') {
+        if (typeof options.ranges === 'object' && options.ranges) {
             for (range in options.ranges) {
 
                 if (typeof options.ranges[range][0] === 'string' && this.rangeformat)
@@ -358,7 +358,7 @@
             this.container.addClass('auto-apply');
         }
 
-        if (typeof options.ranges === 'object')
+        if (typeof options.ranges === 'object' && options.ranges)
             this.container.addClass('show-ranges');
 
         if (this.singleDatePicker) {
