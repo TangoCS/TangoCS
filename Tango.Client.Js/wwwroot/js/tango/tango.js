@@ -138,6 +138,14 @@
 				document.execCommand("copy");
 				document.body.removeChild(dummy);
 			}
+		},
+		copyTextToClipboard: function (str) {
+			var dummy = document.createElement("textarea");
+			document.body.appendChild(dummy);
+			dummy.value = str;
+			dummy.select();
+			document.execCommand("copy");
+			document.body.removeChild(dummy);			
 		}
 	}
 
