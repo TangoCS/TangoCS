@@ -22,7 +22,7 @@ namespace Tango.UI.Std
 		protected IPersistentFilterStore<int> filterStore { get; set; }
 
 		protected string _qSearch = "";
-		protected string _qSearchParmName => GetClientID("qsearch");
+		protected InputName _qSearchParmName => new InputName { Name = GetClientID("qsearch"), ID = "qsearch" };
 		protected IFieldCollection<TEntity, TResult> _fields;
 		protected IFieldCollection<TEntity, TResult> Fields
 		{
@@ -147,7 +147,7 @@ namespace Tango.UI.Std
 				f.FilterSubmitted += OnFilter;
 			});
 
-			_qSearch = Context.GetArg(_qSearchParmName);
+			_qSearch = Context.GetArg(_qSearchParmName.Name);
 		}
 
 		public void PrepareResult()
@@ -222,10 +222,10 @@ namespace Tango.UI.Std
 				{
 					//TODO: изменение Context.AllArgs надо бы сделать внутри ChangeUrl
 					Context.AllArgs.Remove(Paging.ParameterName);
-					Context.AllArgs.Remove(_qSearchParmName);
+					Context.AllArgs.Remove(_qSearchParmName.Name);
 					Context.AllArgs[Filter.ParameterName] = Filter.PersistentFilter.ID;
 					response.ChangeUrl(
-						new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName },
+						new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName.Name },
 						new Dictionary<string, object> { [Filter.ParameterName] = Filter.PersistentFilter.ID }
 					);
 				}
@@ -234,10 +234,10 @@ namespace Tango.UI.Std
 			{
 				//TODO: изменение Context.AllArgs надо бы сделать внутри ChangeUrl
 				Context.AllArgs.Remove(Paging.ParameterName);
-				Context.AllArgs.Remove(_qSearchParmName);
+				Context.AllArgs.Remove(_qSearchParmName.Name);
 				Context.AllArgs[Filter.ParameterName] = 0;
 				response.ChangeUrl(
-						new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName },
+						new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName.Name },
 						new Dictionary<string, object> { [Filter.ParameterName] = 0 }
 					);
 			}

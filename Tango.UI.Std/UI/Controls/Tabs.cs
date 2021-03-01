@@ -72,7 +72,8 @@ namespace Tango.UI.Controls
 				foreach (var p in Pages)
 				{
 					var pid = $"{ID}_{p.ID}";
-					w.Div(a => a.ID($"{pid}_{PageSuffix}").Class(curpage.ID == p.ID ? "selected" : "").DataContainer("tabpage", pid));
+					var container = $"{ClientID}_{p.ID}";
+					w.Div(a => a.ID($"{pid}_{PageSuffix}").Class(curpage.ID == p.ID ? "selected" : "").DataContainer("tabpage", container));
 				}
 			});
 		}

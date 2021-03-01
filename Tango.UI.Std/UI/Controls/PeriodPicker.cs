@@ -5,8 +5,16 @@ using Tango.Html;
 
 namespace Tango.UI.Controls
 {
+	public interface IDefaultPeriodPickerRanges
+	{
+		Dictionary<string, DateTime[]> GetRanges(int minutesStep);
+	}
+
 	public class PeriodPicker : ViewComponent, IFieldValueProvider<PeriodValue>
 	{
+		[Inject]
+		protected IDefaultPeriodPickerRanges DefaultPeriodPickerRanges { get; set; }
+
 		public class PeriodPickerOptions
 		{
 			public CalendarOptions FromCalendarOptions { get; set; } = new CalendarOptions { ShowButton = false };
@@ -28,6 +36,8 @@ namespace Tango.UI.Controls
 		public PeriodValue DefaultValue { get; set; }
 
 		public int MinutesStep { get; set; } = 30;
+
+		public Dictionary<string, DateTime[]> Ranges { get; set; }
 
 		public event Action<ApiResponse> Change;
 		public void OnChange(ApiResponse response) => Change?.Invoke(response);
@@ -93,23 +103,19 @@ namespace Tango.UI.Controls
 
 			if (UseCalendar && ShowDays)
 			{
+				if (Ranges == null)
+					Ranges = DefaultPeriodPickerRanges?.GetRanges(MinutesStep);
+
 				w.AddClientAction("daterangepickerproxy", "init", f => new
 				{
 					triggerid = f(ID + "_btn"),
-					//onselectcallback = JSOnSelectCallback,
 					pickerparms = new
 					{
 						showDropdowns = true,
 						timePicker = ShowTime,
 						timePicker24Hour = ShowTime,
 						timePickerIncrement = MinutesStep,
-						ranges = new Dictionary<string, DateTime[]>
-						{
-							["Сегодня"] = new DateTime[] { new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day), new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddDays(1).AddMinutes(-30).RoundDown(new TimeSpan(0, MinutesStep, 0)) },
-							["Вчера"] = new DateTime[] { new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddDays(-1), new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddMinutes(-30).RoundDown(new TimeSpan(0, MinutesStep, 0)) },
-							["Текущий месяц"] = new DateTime[] { new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1), new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMonths(1).AddMinutes(-30).RoundDown(new TimeSpan(0, MinutesStep, 0)) },
-							["Предыдущий месяц"] = new DateTime[] { new DateTime(DateTime.Today.AddMonths(-1).Year, DateTime.Today.AddMonths(-1).Month, 1), new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).AddMinutes(-30).RoundDown(new TimeSpan(0, MinutesStep, 0)) }
-						},
+						ranges = Ranges,
 						locale = new
 						{
 							format = ShowTime ? "DD.MM.YYYY HH:mm" : "DD.MM.YYYY",
