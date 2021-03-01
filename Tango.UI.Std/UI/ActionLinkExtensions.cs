@@ -217,8 +217,8 @@ namespace Tango.UI
 
 		public static void CopyToClipboardButton(this LayoutWriter w, Action<ATagAttributes> attrs, string contentElementId, Action content)
 		{
-			var el = w.GetID(contentElementId);
-			w.A(a => a.Class("actionbtn").Set(attrs).OnClick($"commonUtils.copyToClipboard('{el}');"), content);
+			//var el = w.GetID(contentElementId);
+			w.A(a => a.Class("actionbtn").Set(attrs).OnClick($"commonUtils.copyToClipboard('{contentElementId}');"), content);
 		}
 
 		public static void ExternalImageLink(this LayoutWriter w, string href)
