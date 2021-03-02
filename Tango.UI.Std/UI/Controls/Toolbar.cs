@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Tango.Html;
+using Tango.UI.Std;
 
 namespace Tango.UI.Controls
 {
@@ -46,17 +47,21 @@ namespace Tango.UI.Controls
 			Item(w => w.DropDownButton(id, title, content, icon, btnAttrs, popupAttrs, options));
 		}
 
-		public void QuickSearch(IViewElement list, Paging paging, InputName qSearchParmName, string tooltip = null)
+		public void QuickSearch<T, K>(abstract_list<T, K> list, Paging paging, InputName qSearchParmName, string tooltip = null)
 		{
 			Item(w => w.TextBox(qSearchParmName, w.Context.GetArg(qSearchParmName.Name), a =>
-				a.Class("filterInput")
-				.Autocomplete(false)
-				.DataParm(paging.ClientID, 1)
-				.DataEvent("OnQuickSearch", list.ClientID)
-				.OnKeyUpRunHrefDelayed()
-				.Placeholder(w.Resources.Get("Common.Search"))
-                .Data(list.DataCollection)
-				.Title(tooltip))
+				{
+					a.Class("filterInput")
+						.Autocomplete(false);
+					if (list.Sections.RenderPaging)
+						a.DataParm(paging.ClientID, 1);
+						
+					a.DataEvent("OnQuickSearch", list.ClientID)
+						.OnKeyUpRunHrefDelayed()
+						.Placeholder(w.Resources.Get("Common.Search"))
+						.Data(list.DataCollection)
+						.Title(tooltip);
+				})
 			);
 		}
 
