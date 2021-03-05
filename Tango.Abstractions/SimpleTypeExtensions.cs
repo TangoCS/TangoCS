@@ -13,6 +13,16 @@ namespace Tango
 {
 	public static partial class SimpleTypeExtensions
 	{
+		public static bool ToBoolean(this string src, bool defaultValue)
+		{
+			return src?.ToLower().In("true", "1") ?? defaultValue;
+		}
+
+		public static bool? ToBoolean(this string src)
+		{
+			return src?.ToLower().In("true", "1");
+		}
+
 		public static int ToInt32(this string src, int defaultValue)
 		{
 			if (int.TryParse(src, out int x))
