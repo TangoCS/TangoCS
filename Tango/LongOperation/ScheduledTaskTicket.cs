@@ -131,7 +131,7 @@ namespace Tango.LongOperation
 				IsManual = IsManualStart,
 				ExecutionID = taskexecid,
 				ProgressLogger = progressLogger,
-				Task_ID = Task.ID
+				TaskID = Task.ID
 			};
 
 			try
@@ -176,6 +176,6 @@ namespace Tango.LongOperation
 		public bool IsManual { get; set; } = false;
 		public int ExecutionID { get; set; } = 0;
 		public IProgressLogger ProgressLogger { get; set; }
-		public int Task_ID { get; set; }
+		public int TaskID { get; set; }
 	}
 }
