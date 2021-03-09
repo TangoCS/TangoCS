@@ -24,7 +24,7 @@ namespace Tango.Tasks
 		protected ITaskRepository TaskRepository { get; set; }
 
 		protected override string Title => "Параметры запуска";
-		Dictionary<string, ParameterData> parameters = new Dictionary<string, ParameterData>();
+		protected Dictionary<string, ParameterData> parameters = new Dictionary<string, ParameterData>();
 
 		protected override DTO_Task GetExistingEntity()
 		{
@@ -37,7 +37,7 @@ namespace Tango.Tasks
 		{
 			base.OnInit();
 			
-			var ps = TaskRepository.GetTaskParameters().List().Where(o => o.ParentID == ViewData.TaskID).ToDictionary(o => o.SysName, o => o);
+			var ps = TaskRepository.GetTaskParameters().List().Where(o => o.ParentID == ViewData.ID).ToDictionary(o => o.SysName, o => o);
 			Type type = Type.GetType(ViewData.Class, true);
 			MethodInfo mi = type.GetMethod(ViewData.Method);
 			parameters = mi.GetParameters().Where(o => o.ParameterType.Name != typeof(TaskExecutionContext).Name)
@@ -92,7 +92,7 @@ namespace Tango.Tasks
 			response.RedirectBack(Context, 1);
 		}
 
-		public class ParameterData
+		protected class ParameterData
 		{
 			public ParameterInfo ParameterInfo { get; set; }
 			public string Caption { get; set; }

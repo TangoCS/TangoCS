@@ -215,7 +215,7 @@ namespace Tango.Tasks
 		{
 			base.ValidateFormData(val);
 
-			if (TaskRepository.GetTasks().List().Any(o => o.TaskID != ViewData.TaskID && o.Title == gr.Title.Value))
+			if (TaskRepository.GetTasks().List().Any(o => o.TaskID != ViewData.ID && o.Title == gr.Title.Value))
 			{
 				val.Add(gr.Title, "Задача с указанным названием уже существует");
 			}
