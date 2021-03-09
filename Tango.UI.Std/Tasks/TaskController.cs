@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading;
 using Cronos;
 using Tango.Cache;
+using Tango.Identity;
 using Tango.Identity.Std;
 using Tango.Logger;
 using Tango.LongOperation;
@@ -16,219 +17,249 @@ using Tango.UI.Std;
 
 namespace Tango.Tasks
 {
-	public class TaskController : BaseController
+	public class TaskController : BaseTaskController
 	{
-		[Inject]
-		protected ITaskRepository TaskRepository { get; set; }
-		[Inject]
-		IIdentityManager Identity { get; set; }
-		[Inject]
-		IErrorLogger errorLogger { get; set; }
-		[Inject]
-		public ICache Cache { get; set; }
+        [Inject]
+        protected IIdentityManager Identity { get; set; }
 
-		[AllowAnonymous]
-		[HttpPost]
-		public ActionResult RunTasks()
-		{
-			var running = TaskRepository.TasksRunning();
-			foreach (var t in running)
-			{
-				if (t.StartDate.AddMinutes(t.ExecutionTimeout) < DateTime.Now)
-				{
-					TaskRepository.UpdateTaskExecutionTimeOut(t);
-				}
-			}
+        protected override void ExecutingTaskUser(IScheduledTask task)
+        {
+            Identity.RunAs(Identity.SystemUser, () => Run(task));
+        }
 
-			var tasks = TaskRepository.TasksForExecute();
+        protected override void SetLastModifiedUser(DTO_TaskExecution execution, bool isManual)
+        {
+            execution.LastModifiedUserID = isManual ? Identity.CurrentUser.Id : Identity.SystemUser.Id;
+        }
+    }
 
-			foreach (var task in tasks)
-			{
-				if (task.LastStartDate.HasValue)
-				{
-					if (task.StartTypeID == 1) // В заданное время суток
-					{
-						// в случае применения для интервалов, работает не совсем корректно
-						var oldTimeUtc = new DateTimeOffset(task.LastStartDate.Value);
-						CronExpression expression = CronExpression.Parse(task.Interval);
-						var next = expression.GetNextOccurrence(oldTimeUtc, TimeZoneInfo.Local);
-						DateTime? nextTime = next?.DateTime;
+    public abstract class BaseTaskController : BaseController
+    {
+        [Inject]
+        protected ITaskRepository TaskRepository { get; set; }
+        [Inject]
+        protected IErrorLogger errorLogger { get; set; }
+        [Inject]
+        protected ICache Cache { get; set; }
 
-						if (nextTime == null || nextTime > DateTime.Now)
-							continue; // Еще не время или время не корректно
-					}
-					else // Задан интервал в минутах
-					{
-						if (DateTime.Now.Subtract(task.LastStartDate.Value).TotalMinutes < task.Interval.ToInt32(0))
-							continue; // Ещё не прошло нужное количество минут
-					}
-				}
-				Identity.RunAs(Identity.SystemUser, () => Run(task));
-			}
-			return new HttpResult();
-		}
+        /// <summary>
+        /// Запуск задачи от имени пользователя
+        /// </summary>
+        /// <param name="task"></param>
+        protected abstract void ExecutingTaskUser(IScheduledTask task);
 
-		[HttpGet]
-		public ActionResult RunTask(int id)
-		{
-			var task = TaskRepository.GetTasks().GetById(id);
+        /// <summary>
+        /// Установка занчения id пользователя последнего запустившего задачу
+        /// </summary>
+        /// <param name="execution"></param>
+        /// <param name="isManual"></param>
+        protected abstract void SetLastModifiedUser(DTO_TaskExecution execution, bool isManual);
 
-			Identity.RunAs(Identity.SystemUser, () => Run(task));
-			return new HttpResult();
-		}
+        [AllowAnonymous]
+        [HttpPost]
+        public ActionResult RunTasks()
+        {
+            var running = TaskRepository.TasksRunning();
+            foreach (var t in running)
+            {
+                if (t.StartDate.AddMinutes(t.ExecutionTimeout) < DateTime.Now)
+                {
+                    TaskRepository.UpdateTaskExecutionTimeOut(t);
+                }
+            }
 
-		public void Run(DTO_Task task, bool isManual = false, Dictionary<string, string> param = null, bool withLogger = false)
-		{
-			var taskexec = new DTO_TaskExecution {
-				LastModifiedDate = DateTime.Now,
-				StartDate = DateTime.Now,
-				MachineName = Environment.MachineName,
-				TaskID = task.TaskID,
-				LastModifiedUserID = isManual ? Identity.CurrentUser.Id : Identity.SystemUser.Id,
-				IsSuccessfull = false
-			};
+            var tasks = TaskRepository.TasksForExecute();
 
-			int taskexecid = TaskRepository.CreateTaskExecution(taskexec);
-			IRealTimeProgressLogger progressLogger = null;
+            foreach (var task in tasks)
+            {
+                if (task.LastStartDate.HasValue)
+                {
+                    if (task.StartTypeID == 1) // В заданное время суток
+                    {
+                        // в случае применения для интервалов, работает не совсем корректно
+                        var oldTimeUtc = new DateTimeOffset(task.LastStartDate.Value);
+                        CronExpression expression = CronExpression.Parse(task.Interval);
+                        var next = expression.GetNextOccurrence(oldTimeUtc, TimeZoneInfo.Local);
+                        DateTime? nextTime = next?.DateTime;
 
-			try
-			{
-				Type type = Type.GetType(task.Class, true);
-				object obj = null;
-				ConstructorInfo ci = type.GetConstructors().FirstOrDefault();
-				if (ci != null)
-				{
-					ParameterInfo[] pi = ci.GetParameters();
-					object[] pr = new object[pi.Length];
-					for (int i = 0; i < pi.Length; i++)
-					{
-						if (pi[i].ParameterType.IsInterface)
-							pr[i] = base.Context.RequestServices.GetService(pi[i].ParameterType);
-					}
-					obj = ci.Invoke(pr);
-				}
-				foreach (var prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
-											.Where(prop => Attribute.IsDefined(prop, typeof(InjectAttribute))))
-					prop.SetValue(obj, base.Context.RequestServices.GetService(prop.PropertyType));
+                        if (nextTime == null || nextTime > DateTime.Now)
+                            continue; // Еще не время или время не корректно
+                    }
+                    else // Задан интервал в минутах
+                    {
+                        if (DateTime.Now.Subtract(task.LastStartDate.Value).TotalMinutes < task.Interval.ToInt32(0))
+                            continue; // Ещё не прошло нужное количество минут
+                    }
+                }
+                ExecutingTaskUser(task);
+            }
+            return new HttpResult();
+        }
 
-				MethodInfo mi = type.GetMethod(task.Method);
-				ParameterInfo[] mp = mi.GetParameters();
-				object[] p = new object[mp.Length];
+        [HttpGet]
+        public ActionResult RunTask(int id)
+        {
+            var task = TaskRepository.GetTasks().GetById(id);
+            ExecutingTaskUser(task);
 
-				TaskExecutionContext context = null;
-				DTO_TaskParameter[] taskparam = param != null ? null : TaskRepository.GetTaskParameters().List().Where(o => o.ParentID == task.TaskID).ToArray();
+            return new HttpResult();
+        }
 
-				if (withLogger)
-				{
-					var connid = Context.GetArg("connid");
-					var loggercollection = Cache.GetOrAdd("RealTimeLoggers", () => new ConcurrentDictionary<string, IRealTimeProgressLogger>());
+        public void Run(IScheduledTask task, bool isManual = false, Dictionary<string, string> param = null, bool withLogger = false)
+        {
+            DTO_TaskExecution taskexec = new DTO_TaskExecution
+            {
+                LastModifiedDate = DateTime.Now,
+                StartDate = DateTime.Now,
+                MachineName = Environment.MachineName,
+                TaskID = task.ID,
+                IsSuccessfull = false
+            };
 
-					if (loggercollection.TryGetValue(connid, out IRealTimeProgressLogger logger))
-						progressLogger = logger;
-					else
-					{
-						progressLogger = base.Context.RequestServices.GetService(typeof(IRealTimeProgressLogger)) as IRealTimeProgressLogger;
-						loggercollection.AddIfNotExists(connid, progressLogger);
-					}
-				}
+            SetLastModifiedUser(taskexec, isManual);
 
-				for (int i = 0; i < mp.Length; i++)
-				{
-					if (mp[i].ParameterType.Name == typeof(TaskExecutionContext).Name)
-					{
-						context = new TaskExecutionContext() {
-							ExecutionDetails = new Tango.Html.HtmlWriter(),
-							IsManual = isManual,
-							ExecutionID = taskexecid,
-							ProgressLogger = progressLogger,
-							Task_ID = task.TaskID
-						};
-						p[i] = context;
-						continue;
-					}
-					string val;
-					if (param == null)
-					{
-						val = taskparam.Single(o => o.ParentID == task.TaskID && o.SysName.ToLower() == mp[i].Name.ToLower()).Value;
-						var defValueAttr = mp[i].GetCustomAttribute<DefaultValueAttribute>(false);
-						if (val.IsEmpty() && defValueAttr != null)
-						{
-							var providerType = defValueAttr.Value as Type;
-							var provider = Activator.CreateInstance(providerType, Context.RequestServices) as ITaskParameterDefaultValueProvider;
-							val = provider.GetValue(task, mp[i]);
-						}
-					}
-					else
-						val = param.Single(o => o.Key.ToLower() == mp[i].Name.ToLower()).Value;
+            int taskexecid = TaskRepository.CreateTaskExecution(taskexec);
+            IRealTimeProgressLogger progressLogger = null;
 
-					var typeConverter = TypeDescriptor.GetConverter(mp[i].ParameterType);
+            try
+            {
+                Type type = Type.GetType(task.Class, true);
+                object obj = null;
+                ConstructorInfo ci = type.GetConstructors().FirstOrDefault();
+                if (ci != null)
+                {
+                    ParameterInfo[] pi = ci.GetParameters();
+                    object[] pr = new object[pi.Length];
+                    for (int i = 0; i < pi.Length; i++)
+                    {
+                        if (pi[i].ParameterType.IsInterface)
+                            pr[i] = base.Context.RequestServices.GetService(pi[i].ParameterType);
+                    }
+                    obj = ci.Invoke(pr);
+                }
+                foreach (var prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
+                                            .Where(prop => Attribute.IsDefined(prop, typeof(InjectAttribute))))
+                    prop.SetValue(obj, base.Context.RequestServices.GetService(prop.PropertyType));
 
-					if (mp[i].ParameterType == typeof(DateTime) || mp[i].ParameterType == typeof(DateTime?))
-					{
-						if (!DateTime.TryParseExact(val, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
-						{
-							if (!DateTime.TryParseExact(val, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
-								p[i] = null;
-							else
-								p[i] = dt;
-						}
-						else
-							p[i] = dt;
+                MethodInfo mi = type.GetMethod(task.Method);
+                ParameterInfo[] mp = mi.GetParameters();
+                object[] p = new object[mp.Length];
 
-					}
-					else if (typeConverter != null && typeConverter.CanConvertFrom(typeof(string)) && typeConverter.IsValid(val))
-					{
-						p[i] = typeConverter.ConvertFromString(val);
-					}
-					else
-					{
-						switch (mp[i].ParameterType.Name)
-						{
-							case "DateTime":
-								p[i] = DateTime.Today; break;
-							case "Int32":
-								p[i] = 0; break;
-							case "Boolean":
-								p[i] = false; break;
-							default:
-								p[i] = null; break;
-						}
-					}
-				}
-				mi.Invoke(obj, p);
+                TaskExecutionContext context = null;
+                DTO_TaskParameter[] taskparam = param != null ? null : TaskRepository.GetTaskParameters().List().Where(o => o.ParentID == task.ID).ToArray();
 
-				taskexec = new DTO_TaskExecution
-				{
-					TaskExecutionID = taskexecid,
-					LastModifiedDate = DateTime.Now,
-					FinishDate = DateTime.Now,
-					TaskID = task.TaskID,
-					IsSuccessfull = true
-				};
-				if (context != null)
-					taskexec.ResultXml = context.ExecutionDetails.GetStringBuilder().ToString();
+                if (withLogger)
+                {
+                    var connid = Context.GetArg("connid");
+                    var loggercollection = Cache.GetOrAdd("RealTimeLoggers", () => new ConcurrentDictionary<string, IRealTimeProgressLogger>());
 
-				TaskRepository.UpdateTaskExecution(taskexec);
-			}
-			catch (ThreadAbortException)
-			{
-			}
-			catch (Exception ex)
-			{
-				if (progressLogger != null)
-					progressLogger.WriteExeptionMessage(ex);
+                    if (loggercollection.TryGetValue(connid, out IRealTimeProgressLogger logger))
+                        progressLogger = logger;
+                    else
+                    {
+                        progressLogger = base.Context.RequestServices.GetService(typeof(IRealTimeProgressLogger)) as IRealTimeProgressLogger;
+                        loggercollection.AddIfNotExists(connid, progressLogger);
+                    }
+                }
 
-				int errorid = errorLogger.Log(ex);
-				taskexec = new DTO_TaskExecution
-				{
-					TaskExecutionID = taskexecid,
-					LastModifiedDate = DateTime.Now,
-					FinishDate = DateTime.Now,
-					TaskID = task.TaskID,
-					IsSuccessfull = false
-				};
-				TaskRepository.UpdateTaskExecutionError(taskexec, errorid);
-			}
-		}
-	}
+                for (int i = 0; i < mp.Length; i++)
+                {
+                    if (mp[i].ParameterType.Name == typeof(TaskExecutionContext).Name)
+                    {
+                        context = new TaskExecutionContext()
+                        {
+                            ExecutionDetails = new Tango.Html.HtmlWriter(),
+                            IsManual = isManual,
+                            ExecutionID = taskexecid,
+                            ProgressLogger = progressLogger,
+                            TaskID = task.ID
+                        };
+                        p[i] = context;
+                        continue;
+                    }
+                    string val;
+                    if (param == null)
+                    {
+                        val = taskparam.Single(o => o.ParentID == task.ID && o.SysName.ToLower() == mp[i].Name.ToLower()).Value;
+                        var defValueAttr = mp[i].GetCustomAttribute<DefaultValueAttribute>(false);
+                        if (val.IsEmpty() && defValueAttr != null)
+                        {
+                            var providerType = defValueAttr.Value as Type;
+                            var provider = Activator.CreateInstance(providerType, Context.RequestServices) as ITaskParameterDefaultValueProvider;
+                            val = provider.GetValue(task, mp[i]);
+                        }
+                    }
+                    else
+                        val = param.Single(o => o.Key.ToLower() == mp[i].Name.ToLower()).Value;
+
+                    var typeConverter = TypeDescriptor.GetConverter(mp[i].ParameterType);
+
+                    if (mp[i].ParameterType == typeof(DateTime) || mp[i].ParameterType == typeof(DateTime?))
+                    {
+                        if (!DateTime.TryParseExact(val, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
+                        {
+                            if (!DateTime.TryParseExact(val, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                                p[i] = null;
+                            else
+                                p[i] = dt;
+                        }
+                        else
+                            p[i] = dt;
+
+                    }
+                    else if (typeConverter != null && typeConverter.CanConvertFrom(typeof(string)) && typeConverter.IsValid(val))
+                    {
+                        p[i] = typeConverter.ConvertFromString(val);
+                    }
+                    else
+                    {
+                        switch (mp[i].ParameterType.Name)
+                        {
+                            case "DateTime":
+                                p[i] = DateTime.Today; break;
+                            case "Int32":
+                                p[i] = 0; break;
+                            case "Boolean":
+                                p[i] = false; break;
+                            default:
+                                p[i] = null; break;
+                        }
+                    }
+                }
+                mi.Invoke(obj, p);
+
+                taskexec = new DTO_TaskExecution
+                {
+                    TaskExecutionID = taskexecid,
+                    LastModifiedDate = DateTime.Now,
+                    FinishDate = DateTime.Now,
+                    TaskID = task.ID,
+                    IsSuccessfull = true
+                };
+                if (context != null)
+                    taskexec.ResultXml = context.ExecutionDetails.GetStringBuilder().ToString();
+
+                TaskRepository.UpdateTaskExecution(taskexec);
+            }
+            catch (ThreadAbortException)
+            {
+            }
+            catch (Exception ex)
+            {
+                if (progressLogger != null)
+                    progressLogger.WriteExeptionMessage(ex);
+
+                int errorid = errorLogger.Log(ex);
+                taskexec = new DTO_TaskExecution
+                {
+                    TaskExecutionID = taskexecid,
+                    LastModifiedDate = DateTime.Now,
+                    FinishDate = DateTime.Now,
+                    TaskID = task.ID,
+                    IsSuccessfull = false
+                };
+                TaskRepository.UpdateTaskExecutionError(taskexec, errorid);
+            }
+        }
+    }
 }
