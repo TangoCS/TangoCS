@@ -137,7 +137,7 @@ namespace Tango.LongOperation
 			try
 			{
 				var cls = Task.Class;
-				if (!DefaultTaskAssembly.IsEmpty())
+				if (cls.Split(',').Length == 1 && !DefaultTaskAssembly.IsEmpty())
 					cls += "," + DefaultTaskAssembly;
 
 				Type type = Type.GetType(cls, true);
