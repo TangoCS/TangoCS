@@ -280,9 +280,9 @@ namespace Tango.Tasks
 				if (isParam)
 				{
 					bool ischange = false;
-					
-					var seqno = TaskRepository.GetTaskParameters().List().Where(o => o.ParentID == task.ID).Max(o => (int?)o.SeqNo) ?? 0;
-					var oldpars = TaskRepository.GetTaskParameters().List().Where(o => o.ParentID == task.ID);
+
+					var oldpars = TaskRepository.GetTaskParameters().List().Where(o => o.ParentID == task.ID); 
+					var seqno = oldpars.Max(o => (int?)o.SeqNo) ?? 0;
 
 					using (var tran = Database.BeginTransaction())
 					{
@@ -306,7 +306,7 @@ namespace Tango.Tasks
 						{
 							if (!newpars.Any(o => o.Name.ToLower() == oldpar.SysName.ToLower()))
 							{
-								TaskRepository.DeleteTaskParameter(new[] { oldpar.TaskParameterID });
+								TaskRepository.DeleteTaskParameter(new[] { oldpar.ID });
 								ischange = true;
 							}
 						}

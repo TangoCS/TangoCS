@@ -107,7 +107,7 @@ namespace Tango.Tasks
 		[Inject]
 		protected ITaskRepository TaskRepository { get; set; }
 
-		DTO_TaskParameterFields.DefaultGroup gr;
+		protected DTO_TaskParameterFields.DefaultGroup gr;
 
 		protected override DTO_TaskParameter GetExistingEntity()
 		{
