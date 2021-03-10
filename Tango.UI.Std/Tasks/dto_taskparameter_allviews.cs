@@ -22,6 +22,7 @@ namespace Tango.Tasks
 	{
 		[Inject]
 		protected ITaskRepository TaskRepository { get; set; }
+		protected virtual string DefaultTaskAssembly => null;
 
 		protected override string Title => "Параметры запуска";
 		protected Dictionary<string, ParameterData> parameters = new Dictionary<string, ParameterData>();
@@ -38,7 +39,12 @@ namespace Tango.Tasks
 			base.OnInit();
 			
 			var ps = TaskRepository.GetTaskParameters().List().Where(o => o.ParentID == ViewData.ID).ToDictionary(o => o.SysName, o => o);
-			Type type = Type.GetType(ViewData.Class, true);
+
+			var taskclass = ViewData.Class;
+			if (taskclass.Split(',').Length == 1 && !DefaultTaskAssembly.IsEmpty())
+				taskclass += "," + DefaultTaskAssembly;
+
+			Type type = Type.GetType(taskclass, true);
 			MethodInfo mi = type.GetMethod(ViewData.Method);
 			parameters = mi.GetParameters().Where(o => o.ParameterType.Name != typeof(TaskExecutionContext).Name)
 										   .ToDictionary(o => o.Name, o => new ParameterData { ParameterInfo = o });
@@ -106,6 +112,7 @@ namespace Tango.Tasks
 	{
 		[Inject]
 		protected ITaskRepository TaskRepository { get; set; }
+		protected virtual string DefaultTaskAssembly => null;
 
 		protected DTO_TaskParameterFields.DefaultGroup gr;
 
@@ -131,7 +138,11 @@ namespace Tango.Tasks
 
 		protected override void Form(LayoutWriter w)
 		{
-			var type = Type.GetType(ViewData.ParentClass, true);
+			var taskclass = ViewData.ParentClass;
+			if (taskclass.Split(',').Length == 1 && !DefaultTaskAssembly.IsEmpty())
+				taskclass += "," + DefaultTaskAssembly;
+
+			var type = Type.GetType(taskclass, true);
 			var mi = type.GetMethod(ViewData.ParentMethod);
 			var parameter = mi.GetParameters().First(o => o.Name == ViewData.SysName);
 

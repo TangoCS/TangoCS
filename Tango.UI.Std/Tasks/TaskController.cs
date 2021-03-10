@@ -125,11 +125,11 @@ namespace Tango.Tasks
 
             try
             {
-                var cls = task.Class;
-                if (cls.Split(',').Length == 1 && !DefaultTaskAssembly.IsEmpty())
-                    cls += "," + DefaultTaskAssembly;
+                var taskclass = task.Class;
+                if (taskclass.Split(',').Length == 1 && !DefaultTaskAssembly.IsEmpty())
+                    taskclass += "," + DefaultTaskAssembly;
 
-                Type type = Type.GetType(cls, true);
+                Type type = Type.GetType(taskclass, true);
                 object obj = null;
                 ConstructorInfo ci = type.GetConstructors().FirstOrDefault();
                 if (ci != null)
