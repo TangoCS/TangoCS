@@ -267,7 +267,7 @@ namespace Tango.Tasks
 		}
 		void setTaskParamerers(DTO_Task task)
 		{
-			Type type = Type.GetType(task.Class, true);
+			Type type = Type.GetType(task.Class, false);
 			if (type != null)
 			{
 				ParameterInfo[] newpars = new ParameterInfo[0];

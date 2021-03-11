@@ -24,7 +24,7 @@ left outer join tm_taskstarttype tt on t.starttypeid = tt.taskstarttypeid");
 
         public int CreateTask(DTO_Task task)
         {
-            return database.Connection.QuerySingle<int>(@"insert into 
+            return task.TaskID = database.Connection.QuerySingle<int>(@"insert into 
 tm_task(title, class, starttypeid, method, interval, status, isactive, startfromservice, executiontimeout, taskgroupid)
 values (@title, @class, @starttypeid, @method, @interval, @status, @isactive, @startfromservice, @executiontimeout, @taskgroupid) 
 returning taskid", task, database.Transaction);
@@ -56,7 +56,7 @@ from tm_taskparameter tp join tm_task t on tp.parentid = t.taskid");
 
         public int CreateTaskParameter(DTO_TaskParameter taskparameter)
         {
-            return database.Connection.QuerySingle<int>(@"insert into tm_taskparameter(title, sysname, value, parentid, seqno)
+            return taskparameter.TaskParameterID = database.Connection.QuerySingle<int>(@"insert into tm_taskparameter(title, sysname, value, parentid, seqno)
 values (@title, @sysname, @value, @parentid, @seqno) returning taskparameterid", taskparameter, database.Transaction);
         }
 
@@ -109,7 +109,7 @@ not exists (select 1 from tm_taskexecution te where te.taskid = t.taskid and te.
 
         public int CreateTaskExecution(DTO_TaskExecution execution)
         {
-            return database.Connection.QuerySingle<int>(@"
+            return execution.TaskExecutionID = database.Connection.QuerySingle<int>(@"
 update tm_task set status = 1, laststartdate = now() where taskid = @TaskID;
 insert into tm_taskexecution (lastmodifieddate, startdate, machinename, taskid, lastmodifieduserid, issuccessfull)
 values (@LastModifiedDate, @StartDate, @MachineName, @TaskID, @LastModifiedUserID, @IsSuccessfull) 
