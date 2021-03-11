@@ -150,7 +150,7 @@ namespace Tango.UI.Std
 			_qSearch = Context.GetArg(_qSearchParmName.Name);
 		}
 
-		public void PrepareResult()
+		public virtual void PrepareResult()
 		{
 			if (_result != null) return;
 
@@ -206,7 +206,7 @@ namespace Tango.UI.Std
 			}
 		}
 
-		protected void RenderToolbar(ApiResponse response)
+		public void RenderToolbar(ApiResponse response)
 		{
 			if (Sections.RenderToolbar)
 				response.AddWidget(Sections.ContentToolbar, Toolbar);
