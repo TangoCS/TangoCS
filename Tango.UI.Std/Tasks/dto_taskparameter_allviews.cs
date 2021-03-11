@@ -81,24 +81,29 @@ namespace Tango.Tasks
 			});
 		}
 
-		public override void OnSubmit(ApiResponse response)
-		{
-			var param = new Dictionary<string, string>();
-			foreach (var p in parameters)
-			{
-				param[p.Key] = FormData.Parse<string>(p.Key);
-			}
+		public sealed override void OnSubmit(ApiResponse response)
+        {
+            var param = new Dictionary<string, string>();
+            foreach (var p in parameters)
+            {
+                param[p.Key] = FormData.Parse<string>(p.Key);
+            }
 
-			var c = new TaskController { Context = Context };
+            RunTaskController(param);
 
-			c.InjectProperties(Context.RequestServices);
+            response.RedirectBack(Context, 1);
+        }
 
-			c.Run(ViewData, true, param);
+        protected virtual void RunTaskController(Dictionary<string, string> param)
+        {
+            var c = new TaskController { Context = Context };
 
-			response.RedirectBack(Context, 1);
-		}
+            c.InjectProperties(Context.RequestServices);
 
-		protected class ParameterData
+            c.Run(ViewData, true, param);
+        }
+
+        protected class ParameterData
 		{
 			public ParameterInfo ParameterInfo { get; set; }
 			public string Caption { get; set; }
