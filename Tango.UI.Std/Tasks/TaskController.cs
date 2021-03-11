@@ -70,7 +70,7 @@ namespace Tango.Tasks
                 }
             }
 
-            var tasks = TaskRepository.TasksForExecute();
+            var tasks = TaskRepository.TasksForExecute().Where(o => o.IsActive);
 
             foreach (var task in tasks)
             {

@@ -396,15 +396,20 @@ namespace Tango.Tasks
 
             if (exec)
             {
-                var c = new TaskController { Context = Context };
+				RunTaskController();
 
-                c.InjectProperties(Context.RequestServices);
-
-                c.Run(ViewData, true);
-            }
+			}
 			response.RedirectTo(Context, a => a.ToCurrent());
 		}
 
+		protected virtual void RunTaskController()
+		{
+			var c = new TaskController { Context = Context };
+
+			c.InjectProperties(Context.RequestServices);
+
+			c.Run(ViewData, true);
+		}
 		protected override void LinkedData(LayoutWriter w)
 		{
 			w.Br();

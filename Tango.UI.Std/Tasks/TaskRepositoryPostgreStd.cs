@@ -103,8 +103,8 @@ where te.finishdate is null and t.startfromservice");
         public IEnumerable<DTO_Task> TasksForExecute()
         {
             return database.Connection.Query<DTO_Task>(@"select t.* from tm_task t
-where t.isactive and t.startfromservice 
-and not exists (select 1 from tm_taskexecution te where te.taskid = t.taskid and te.finishdate is null)");
+where t.startfromservice and 
+not exists (select 1 from tm_taskexecution te where te.taskid = t.taskid and te.finishdate is null)");
         }
 
         public int CreateTaskExecution(DTO_TaskExecution execution)
