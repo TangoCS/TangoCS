@@ -141,7 +141,9 @@ namespace Tango.Tasks
             public override string StringValue => ViewData.GroupTitle;
 		}
 
-		public class DefaultGroup : FieldGroup
+        public class SystemName : EntityField<DTO_Task, string> { }
+
+        public class DefaultGroup : FieldGroup
 		{
 			public CommonFields.Title Title { get; set; }
 			public StartFromService StartFromService { get; set; }
@@ -153,8 +155,9 @@ namespace Tango.Tasks
 			public IsActive IsActive { get; set; }
 			public Status Status { get; set; }
 			public TaskGroup TaskGroup { get; set; }
+            public SystemName SystemName { get; set; }
 
-			public DefaultGroup(int startType)
+            public DefaultGroup(int startType)
             {
                 Title = AddField(new CommonFields.Title());
                 StartFromService = AddField(new StartFromService());
@@ -166,7 +169,8 @@ namespace Tango.Tasks
                 IsActive = AddField(new IsActive());
                 Status = AddField(new Status());
 				TaskGroup = AddField(new TaskGroup());
-			}
+                SystemName = AddField(new SystemName());
+            }
         }
     }
 

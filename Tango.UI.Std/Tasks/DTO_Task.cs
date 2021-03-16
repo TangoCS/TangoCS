@@ -17,6 +17,7 @@ namespace Tango.Tasks
 		[Column]
 		public virtual int TaskID { get; set; }
 		public virtual string Title { get; set; }
+		public virtual string SystemName { get; set; }
 		public virtual string Class { get; set; }
 		public virtual string Method { get; set; }
 		public virtual string Interval { get; set; }

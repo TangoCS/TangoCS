@@ -3,6 +3,7 @@ tango.tasks.dto_task;Задача;Task
 tango.tasks.dto_task-pl;Задачи;Tasks
 tango.tasks.dto_task.viewlist;Реестр задач
 tango.tasks.dto_task.Title;Название;Title
+tango.tasks.dto_task.SystemName;Системное имя;System Name
 tango.tasks.dto_task.Class;Класс;Class
 tango.tasks.dto_task.ExecutionTimeout;Таймаут выполнения задачи, мин;Execution timeout
 tango.tasks.dto_task.Interval;Интервал;

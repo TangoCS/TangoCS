@@ -25,15 +25,15 @@ left outer join tm_taskstarttype tt on t.starttypeid = tt.taskstarttypeid");
         public int CreateTask(DTO_Task task)
         {
             return task.TaskID = database.Connection.QuerySingle<int>(@"insert into 
-tm_task(title, class, starttypeid, method, interval, status, isactive, startfromservice, executiontimeout, taskgroupid)
-values (@title, @class, @starttypeid, @method, @interval, @status, @isactive, @startfromservice, @executiontimeout, @taskgroupid) 
+tm_task(title, systemname, class, starttypeid, method, interval, status, isactive, startfromservice, executiontimeout, taskgroupid)
+values (@title, @systemname, @class, @starttypeid, @method, @interval, @status, @isactive, @startfromservice, @executiontimeout, @taskgroupid) 
 returning taskid", task, database.Transaction);
         }
 
         public void UpdateTask(DTO_Task task)
         {
-            database.Connection.ExecuteScalar(@"update tm_task set title=@title, class=@class, starttypeid=@starttypeid, method=@method, interval=@interval, 
-isactive=@isactive, executiontimeout=@executiontimeout, taskgroupid=@taskgroupid
+            database.Connection.ExecuteScalar(@"update tm_task set title=@title, systemname=@systemname, class=@class, starttypeid=@starttypeid, 
+method=@method, interval=@interval, isactive=@isactive, executiontimeout=@executiontimeout, taskgroupid=@taskgroupid
 where taskid=@taskid", task, database.Transaction);
         }
 

@@ -195,6 +195,7 @@ namespace Tango.Tasks
 		{
 			w.FieldsBlockStd(() => {
 				w.TextBox(gr.Title);
+				w.TextBox(gr.SystemName);
 				w.DropDownList(gr.TaskGroup, Groups());
 				w.DropDownList(gr.StartType, Types(), attrs: a => a.OnChangePostEvent(OnStartTypeChanged));
 				w.TextBox(gr.Interval);
@@ -215,9 +216,13 @@ namespace Tango.Tasks
 		{
 			base.ValidateFormData(val);
 
-			if (TaskRepository.GetTasks().List().Any(o => o.TaskID != ViewData.ID && o.Title == gr.Title.Value))
+			if (TaskRepository.GetTasks().List().Any(o => o.TaskID != ViewData.ID && o.Title?.ToLower() == gr.Title.Value?.ToLower()))
 			{
 				val.Add(gr.Title, "Задача с указанным названием уже существует");
+			}
+			if (!gr.SystemName.Value.IsEmpty() && TaskRepository.GetTasks().List().Any(o => o.TaskID != ViewData.ID && o.SystemName?.ToLower() == gr.SystemName.Value?.ToLower()))
+			{
+				val.Add(gr.SystemName, "Задача с указанным системным именем уже существует");
 			}
 		}
 
@@ -331,6 +336,7 @@ namespace Tango.Tasks
 		{
 			w.FieldsBlockStd(() => {
 				w.PlainText(gr.Title);
+				w.PlainText(gr.SystemName);
 				w.PlainText(gr.TaskGroup);
 				w.PlainText(gr.StartType);
 				void content()
