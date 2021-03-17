@@ -60,6 +60,11 @@ namespace Tango.Html
 		{
 			return a.OnClick("ajaxUtils.postEventFromElementWithApiResponse(this); return false;");
 		}
+        public static T OnClickClipboardToElementId<T>(this TagAttributes<T> a, string id)
+            where T : TagAttributes<T>
+        {
+            return a.OnClick($"commonUtils.clipboardToElementId('#{id}');");
+        }
 
 		public static T OnClickPostEvent<T>(this TagAttributes<T> a, Action<ApiResponse> action)
 			where T : TagAttributes<T>

@@ -146,8 +146,16 @@
 			dummy.select();
 			document.execCommand("copy");
 			document.body.removeChild(dummy);			
-		}
-	}
+		},
+        clipboardToElementId: function(id) {
+			navigator.clipboard.readText()
+				.then(
+					clipText => document.querySelector(id).innerText = clipText )
+                .catch(err => {
+					console.log('Failed to read clipboard contents: ', err);
+                });
+        }
+    }
 
 	return instance;
 }($);
