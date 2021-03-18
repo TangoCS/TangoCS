@@ -27,7 +27,7 @@ namespace Tango.UI.Std
 		string _highlightedRowID = null;
 
 		State InitialState = new State { };
-		State CurrentState = new State { };
+		State CurrentState = null;
 		
 
 		protected override bool EnableViews => false;
@@ -37,6 +37,11 @@ namespace Tango.UI.Std
 			SelectedBlock = w => (Renderer as TreeListRenderer<TResult>).SelectedBlock(w, Fields)
 		};
 
+		public default_tree_rep()
+		{
+			CurrentState = InitialState;
+		}
+
 		public override void OnInit()
 		{
 			base.OnInit();
@@ -45,7 +50,6 @@ namespace Tango.UI.Std
 			level++;
 
 			InitialState.Level = level;
-			CurrentState = InitialState;
 
 			Renderer = new TreeListRenderer<TResult>(ID, Paging, level);
 		}
@@ -123,6 +127,9 @@ namespace Tango.UI.Std
 					var expr = t.Template.GroupBy != null ? nodeQuery.GroupBy(t.Template.GroupBy).Select(t.Template.GroupBySelector).Expression : nodeQuery.Expression;
 					var exprCnt = t.Template.GroupBy != null ? nodeQueryCnt.GroupBy(t.Template.GroupBy).Select(x => x.Key).Expression : nodeQueryCnt.Expression;
 
+					if (!t.Template.CustomQuery.IsEmpty())
+						origAllObjectsQuery = t.Template.CustomQuery;
+
 					var sqlTemplate = "select *";
 					sqlTemplate += $" from ({origAllObjectsQuery}) t";
 
@@ -175,7 +182,6 @@ namespace Tango.UI.Std
 
 			var sqlTemplate = "select *";
 			sqlTemplate += $" from ({origAllObjectsQuery}) t";
-
 			if (nodeWhere.Count > 0)
 				sqlTemplate += " where " + nodeWhere.Join(" and ");
 
@@ -473,6 +479,7 @@ namespace Tango.UI.Std
 		public bool SetDataRowId { get; set; }
 		public TreeLevelDescription<TResult> ParentTemplate { get; set; }
 		public bool AllowNulls { get; set; } = false;
+		public string CustomQuery { get; set; }
 
 		public Action<ApiResponse> ToggleLevelAction { get; set; }
 
