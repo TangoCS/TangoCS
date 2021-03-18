@@ -148,26 +148,17 @@
 			document.body.removeChild(dummy);			
 		},
         clipboardToElementId: function(id) {
-            if (window.clipboardData && window.clipboardData.getData) { //IE
+			if (window.clipboardData && window.clipboardData.getData) { //IE
                 document.querySelector(id).innerText = window.clipboardData.getData("Text");
             }
             else {
-                /*
-                document.addEventListener('paste', function (evt) {
-                    var qwe = evt.originalEvent.clipboardData.getData('Text');
-                }, false);
-
-                var event = new Event("paste", { bubbles: true, cancelable: true });
-                document.documentElement.dispatchEvent(event);
-                */
-                /*
-                 navigator.clipboard.readText()
-                .then(
-                    clipText => document.querySelector(id).innerText = clipText )
-                .catch(err => {
-                    console.log('Failed to read clipboard contents: ', err);
-                });
-                 */
+                navigator.clipboard.readText()
+                    .then(function (clipText) {
+                        document.querySelector(id).innerText = clipText;
+                    })
+                    .catch(function (err) {
+                        console.log('Failed to read clipboard contents: ', err);
+                    });
             }
         }
     }
