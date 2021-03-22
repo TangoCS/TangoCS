@@ -40,7 +40,7 @@ namespace Tango.AspNetCore
 						ctx.Request.Body.Position = 0;
 					using (var inputStream = new StreamReader(ctx.Request.Body))
 					{
-						jsonString = inputStream.ReadToEnd();
+						jsonString = inputStream.ReadToEndAsync().Result;
 					}
 
 					var postData = JsonConvert.DeserializeObject<DynamicDictionary>(jsonString, new DynamicDictionaryConverter());
