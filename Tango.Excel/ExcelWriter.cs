@@ -216,6 +216,11 @@ namespace Tango.Excel
 			s.Row(row).Height = height;
 		}
 
+		public void SetOddFooterCenterNumPage()
+		{
+			s.HeaderFooter.OddFooter.CenteredText = $"Страница {ExcelHeaderFooter.PageNumber} из {ExcelHeaderFooter.NumberOfPages}";
+		}
+
 		public void Div(Action<IContentItemAttributes> attributes, Action inner)
 		{
 			inner?.Invoke();
