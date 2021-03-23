@@ -253,6 +253,11 @@ namespace Tango.UI.Controls
 			});
 		}
 
+		public static int GetPageCount(this Paging paging, int? itemsCount)
+		{
+			return (int) Math.Ceiling((float) itemsCount / (float) paging.PageSize);
+		}
+
 		public static void Render2(this Paging paging, LayoutWriter w, int? itemsCount, Action<ActionLink> pageActionAttributes, Action<ActionLink> objCountActionAttributes)
 		{
 			var res = paging.Resources;
