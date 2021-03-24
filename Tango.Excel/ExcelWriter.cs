@@ -224,7 +224,8 @@ namespace Tango.Excel
 		[Obsolete]
 		public void SetOddFooterCenterNumPage()
 		{
-			s.HeaderFooter.OddFooter.CenteredText = $"Страница {ExcelHeaderFooter.PageNumber} из {ExcelHeaderFooter.NumberOfPages}";
+			foreach(var list in s.Workbook.Worksheets)
+				list.HeaderFooter.OddFooter.CenteredText = $"Страница {ExcelHeaderFooter.PageNumber} из {ExcelHeaderFooter.NumberOfPages}";
 		}
 
 		public void Div(Action<IContentItemAttributes> attributes, Action inner)

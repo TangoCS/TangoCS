@@ -52,6 +52,7 @@
 			el.className = 'tgl-sw tgl-sw-' + prefix;
 
 			div.addEventListener('click', function (e) {
+				e.preventDefault();
                 if (el.disabled || el.hasAttribute('readonly')) return;
 				el.checked = !el.checked;
 				setClass(el, prefix);
