@@ -38,4 +38,8 @@
     <ProjectReference Include="..\Tango\Tango.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ErrorLogger\" />
+  </ItemGroup>
+
 </Project>
