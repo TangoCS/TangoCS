@@ -218,7 +218,8 @@ namespace Tango.Excel
 
 		public void SetOddFooterCenteredNumPage(Func<string, string, string> content)
 		{
-			s.HeaderFooter.OddFooter.CenteredText = content(ExcelHeaderFooter.PageNumber, ExcelHeaderFooter.NumberOfPages);
+			foreach(var list in s.Workbook.Worksheets)
+				s.HeaderFooter.OddFooter.CenteredText = content(ExcelHeaderFooter.PageNumber, ExcelHeaderFooter.NumberOfPages);
 		}
 
 		[Obsolete]
