@@ -513,5 +513,18 @@ namespace Tango.UI.Std
 			else
 				t.ItemActionImageText(attrs1);
 		}
+
+		public static void ToCreateNew(this MenuBuilder t, string service, string action,
+			Action<ActionLink> attrs = null, bool imageOnly = false)
+		{
+			var ac = t.Context.RequestServices.GetService(typeof(IAccessControl)) as IAccessControl;
+			t.ItemSeparator();
+			Action<ActionLink> attrs1 = x => x.To(service, action, ac).WithImage("New").Set(attrs);
+
+			if (imageOnly)
+				t.ItemActionImage(attrs1);
+			else
+				t.ItemActionImageText(attrs1);
+		}
 	}
 }
