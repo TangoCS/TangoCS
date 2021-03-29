@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?sya1yo');
-  src:  url('fonts/icomoon.eot?sya1yo#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?sya1yo') format('truetype'),
-    url('fonts/icomoon.woff?sya1yo') format('woff'),
-    url('fonts/icomoon.svg?sya1yo#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?cw27ar');
+  src:  url('fonts/icomoon.eot?cw27ar#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?cw27ar') format('truetype'),
+    url('fonts/icomoon.woff?cw27ar') format('woff'),
+    url('fonts/icomoon.svg?cw27ar#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-excel_summary:before {
+  content: "\e979";
+}
 .icon-clipboard:before {
   content: "\e978";
 }
