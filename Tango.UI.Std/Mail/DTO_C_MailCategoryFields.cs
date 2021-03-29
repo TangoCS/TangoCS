@@ -25,15 +25,9 @@ namespace Tango.Mail
             public override string StringValue => ViewData.GetMailTypes().FirstOrDefault(i => i.Value == Value.ToString())?.Text;
         }
         
-        public class Title : EntityField<DTO_C_MailCategory, string>
-        {
-            public override bool IsRequired { get; set; } = true;
-            public override string Hint { get; set; } = string.Empty;
-        }
-        
         public class DefaultGroup : FieldGroup
         {
-            public Title Title { get; set; }
+            public CommonFields.Title Title { get; set; }
             public SystemName SystemName { get; set; }
             public SystemID SystemID { get; set; }
             public MailType MailType { get; set; }
