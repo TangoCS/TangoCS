@@ -13,12 +13,9 @@ namespace Tango.Mail
     [OnAction("mailCategory", "viewlist")]
     public class dto_c_mailCategory_allviews : default_list_rep<DTO_C_MailCategory>
     {
-        [Inject] protected IMailRepository MailRepository { get; set; }
         protected override Func<string, Expression<Func<DTO_C_MailCategory, bool>>> SearchExpression => s => 
             o => o.Title.ToLower().Contains(s.ToLower());
-        
-        protected override IRepository<DTO_C_MailCategory> GetRepository() => MailRepository.GetMailCategories();
-        
+
         protected override void FieldsInit(FieldCollection<DTO_C_MailCategory> fields)
         {
             fields.AddCellWithSortAndFilter(o => o.ID, o => o.ID);
@@ -44,74 +41,36 @@ namespace Tango.Mail
 
     [OnAction("mailCategory", "createnew")]
     [OnAction("mailCategory", "edit")]
-    public class dto_c_mailCategory_edit : default_edit_rep<DTO_C_MailCategory, int>
+    public class dto_c_mailCategory_edit : default_edit_rep<DTO_C_MailCategory, int, IMailCategoryRepository>
     {
-        [Inject] protected IMailRepository MailRepository { get; set; }
-        private DTO_C_MailCategoryFields.DefaultGroup _group;
+        protected DTO_C_MailCategoryFields.DefaultGroup Group { get; set; }
 
-        private IEnumerable<SelectListItem> GetSystemNames() => MailRepository.GetSystemNames().OrderBy(x => x.Item1)
+        private IEnumerable<SelectListItem> GetSystemNames() => Repository.GetSystemNames().OrderBy(x => x.Item1)
             .Select(o => new SelectListItem(o.Item1, o.Item2));
         
         protected override void Form(LayoutWriter w)
         {
             w.FieldsBlockStd(() =>
             {
-                w.TextBox(_group.Title);
-                w.DropDownList(_group.SystemID, GetSystemNames());
-                w.DropDownList(_group.MailType, ViewData.GetMailTypes());
+                w.TextBox(Group.Title);
+                w.DropDownList(Group.SystemID, GetSystemNames());
+                w.DropDownList(Group.MailType, ViewData.GetMailTypes());
             });
-        }
-        
-        public override void OnInit()
-        {
-            _group = AddFieldGroup(new DTO_C_MailCategoryFields.DefaultGroup());
-        }
-
-        protected override DTO_C_MailCategory GetExistingEntity()
-        {
-            var id = Context.GetArg<int>(Constants.Id);
-            var obj = MailRepository.GetMailCategories().GetById(id);
-            return obj;
-        }
-        
-        protected override void Submit(ApiResponse response)
-        {
-            if (EntityAudit != null && ViewData != null)
-            {
-                if (!CreateObjectMode)
-                {
-                    if (EntityAudit != null)
-                        EntityAudit.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
-                }
-            }
-
-            if (CreateObjectMode)
-                InTransaction(() =>
-                {
-                    MailRepository.CreateMailCategory(ViewData);
-                });
-            else
-            {
-                InTransaction(() =>
-                {
-                    MailRepository.UpdateMailCategory(ViewData);
-                });
-            }
         }
     }
 
     [OnAction("mailCategory", "view")]
-    public class dto_c_mailCategory_view : default_view_rep<DTO_C_MailCategory, int>
+    public class dto_c_mailCategory_view : default_view_rep<DTO_C_MailCategory, int, IMailCategoryRepository>
     {
-        [Inject] protected IMailRepository MailRepository { get; set; }
-        private DTO_C_MailCategoryFields.DefaultGroup _group;
+        protected DTO_C_MailCategoryFields.DefaultGroup Group { get; set; }
+        
         protected override void Form(LayoutWriter w)
         {
             w.FieldsBlockStd(() =>
             {
-                w.PlainText(_group.Title);
-                w.PlainText(_group.SystemName);
-                w.PlainText(_group.MailType);
+                w.PlainText(Group.Title);
+                w.PlainText(Group.SystemName);
+                w.PlainText(Group.MailType);
             });
         }
         
@@ -126,27 +85,10 @@ namespace Tango.Mail
                 .WithImage("delete")
                 .WithArg(Constants.Id, ViewData.ID));
         }
-
-        public override void OnInit()
-        {
-            _group = AddFieldGroup(new DTO_C_MailCategoryFields.DefaultGroup());
-        }
-
-        protected override DTO_C_MailCategory GetExistingEntity()
-        {
-            var id = Context.GetArg<int>(Constants.Id);
-            var obj = MailRepository.GetMailCategories().GetById(id);
-            return obj;
-        }
     }
 
     [OnAction("mailCategory", "delete")]
     public class dto_c_mailCategory_delete : default_delete<DTO_C_MailCategory, int>
     {
-        [Inject] protected IMailRepository MailRepository { get; set; }
-        protected override void Delete(IEnumerable<int> ids)
-        {
-            MailRepository.DeleteMailCategory(ids);
-        }
     }
 }

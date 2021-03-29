@@ -3,7 +3,7 @@ using Tango.UI;
 
 namespace Tango.Mail
 {
-    public class DTO_C_MailCategoryFields
+    public static class DTO_C_MailCategoryFields
     {
         public class SystemName : EntityField<DTO_C_MailCategory, string>
         {

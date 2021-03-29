@@ -3,7 +3,7 @@ using Tango.UI;
 
 namespace Tango.Mail
 {
-    public class DTO_MailTemplateFields
+    public static class DTO_MailTemplateFields
     {
         public class DefaultGroup : FieldGroup
         {

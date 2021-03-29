@@ -22,7 +22,6 @@ namespace Tango.Mail
         public virtual string TemplateBody { get; set; }
         public virtual string Comment { get; set; }
         public virtual bool IsSystem { get; set; }
-        public virtual string LastModifiedUser_ID { get; set; }
         public virtual DateTime LastModifiedDate { get; set; }
     }
 }

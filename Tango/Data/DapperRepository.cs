@@ -146,7 +146,7 @@ namespace Tango.Data
 
 
 
-		public int Count(Expression predicate = null)
+		public virtual int Count(Expression predicate = null)
 		{
 			var query = "";
 			var args = new DynamicParameters();
@@ -168,7 +168,7 @@ namespace Tango.Data
 			return Database.Connection.QuerySingle<int>(query, args, Database.Transaction);
 		}
 
-		public object GetById(object id)
+		public virtual object GetById(object id)
 		{
 			if (id == null) return null;
 			var (clause, parms) = GetByIdWhereClause(id);
@@ -186,7 +186,7 @@ namespace Tango.Data
 		{
 		}
 
-		public IEnumerable<T> List(Expression predicate = null, Func<IDictionary<string, object>, T> selector = null)
+		public virtual IEnumerable<T> List(Expression predicate = null, Func<IDictionary<string, object>, T> selector = null)
 		{
 			var query = AllObjectsQuery;
 			var args = new DynamicParameters();
@@ -287,7 +287,7 @@ namespace Tango.Data
 				identity.SetValue(entity, identity.PropertyType == typeof(Int32) ? Convert.ToInt32(ret) : ret);
 		}
 
-		public void Update(T entity)
+		public virtual void Update(T entity)
 		{
 			var keyCollection = new Dictionary<string, object>();
 			var setCollection = new UpdateSetCollection<T>();

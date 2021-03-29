@@ -32,7 +32,8 @@ namespace Tango.UI.Std
 			}
 		}
 
-		protected virtual IRepository<TResult> GetRepository() => Database.Repository<TResult>();
+		protected virtual IRepository<TResult> GetRepository() => Context.RequestServices.GetService(typeof(IRepository<TResult>)) as IRepository<TResult> ??
+		 	Database.Repository<TResult>();
 
 		protected override int GetCount()
 		{
