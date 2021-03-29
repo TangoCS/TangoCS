@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using Tango.AccessControl;
 using Tango.Data;
+using Tango.Identity.Std;
 using Tango.UI;
 using Tango.UI.Controls;
 using Tango.UI.Std;
@@ -23,8 +24,8 @@ namespace Tango.Mail
             fields.AddCellWithSortAndFilter(o => o.ID, o => o.ID);
             fields.AddCellWithSortAndFilter(o => o.Title, (w, o) => 
                 w.ActionLink(al => al.To("mailTemplate", "view", AccessControl).WithArg(Constants.Id, o.ID).WithTitle(o.Title)));
-            // fields.AddCellWithSortAndFilter(o => o.Subject, o=>o.Subject);
-            // fields.AddCellWithSortAndFilter(o => o.Body, o => o.Body);
+            fields.AddCellWithSortAndFilter(o => o.TemplateSubject, o=>o.TemplateSubject);
+            fields.AddCellWithSortAndFilter(o => o.TemplateBody, o => o.TemplateBody);
             fields.AddActionsCell(
                 o => al => al.To("mailTemplate", "edit", AccessControl).WithArg(Constants.Id, o.ID)
                     .WithImage("edit").WithTitle("Редактировать"),
@@ -59,6 +60,7 @@ namespace Tango.Mail
                 w.PlainText(_group.Comment);
                 if(devMode)
                     w.PlainText(_group.IsSystem);
+                w.PlainText(_group.LastModifiedDate);
             });
         }
         
@@ -94,6 +96,8 @@ namespace Tango.Mail
         [Inject] protected IMailRepository MailRepository { get; set; }
         [Inject] protected AccessControlOptions AccessControlOptions { get; set; }
         [Inject] protected IAccessControl AccessControl { get; set; }
+        [Inject] protected IIdentityManager IdentityManager { get; set; }
+        
         private DTO_MailTemplateFields.DefaultGroup _group;
 
         protected override void Form(LayoutWriter w)
@@ -107,6 +111,7 @@ namespace Tango.Mail
                 w.TextArea(_group.Comment);
                 if(devMode)
                     w.ToggleSwitch(_group.IsSystem);
+                w.PlainText(_group.LastModifiedDate);
             });
         }
         

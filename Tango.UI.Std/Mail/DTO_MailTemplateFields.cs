@@ -1,4 +1,5 @@
-﻿using Tango.UI;
+﻿using System;
+using Tango.UI;
 
 namespace Tango.Mail
 {
@@ -11,6 +12,7 @@ namespace Tango.Mail
             public TemplateBody TemplateBody { get; set; }
             public Comment Comment { get; set; }
             public IsSystem IsSystem { get; set; }
+            public LastModifiedDate LastModifiedDate { get; set; }
         }
         
         public class TemplateSubject : EntityField<DTO_MailTemplate, string>
@@ -29,6 +31,11 @@ namespace Tango.Mail
         }
         
         public class IsSystem : EntityField<DTO_MailTemplate, bool>
+        {
+            public override string Hint { get; set; } = string.Empty;
+        }
+        
+        public class LastModifiedDate : EntityDateTimeField<DTO_MailTemplate>
         {
             public override string Hint { get; set; } = string.Empty;
         }
