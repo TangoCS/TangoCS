@@ -277,9 +277,12 @@ namespace Tango.Excel
 			attributes?.Invoke(tha);
 			tha.Apply();
 			inner?.Invoke();
-			if (c > totalColumns)
-				totalColumns = c;
-			c++;
+			do
+			{
+				if (c > totalColumns)
+					totalColumns = c;
+				c++;
+			} while (s.Cells[r, c].Merge);
 		}
 
 		public void Tr(Action<IContentItemAttributes> attributes, Action inner = null)
