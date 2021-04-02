@@ -54,7 +54,9 @@ namespace Tango.UI.Std
 			if (defSort)
 				filtered = DefaultOrderBy(filtered);
 
-			var q = Paging.Apply(filtered, true);
+			IQueryable<TResult> q = null;
+			if(Sections.RenderPaging)
+				q = Paging.Apply(filtered, true);
 
 			if (Repository.AllObjectsQuery.StartsWith("@"))
 			{
@@ -65,7 +67,7 @@ namespace Tango.UI.Std
 					Repository.Parameters.Add(pair.Key, pair.Value);
 			}
 
-			return Repository.List(q.Expression, Selector);
+			return Repository.List(q?.Expression, Selector);
 		}
 	}
 }
