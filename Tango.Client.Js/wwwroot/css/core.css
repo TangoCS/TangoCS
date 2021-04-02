@@ -241,7 +241,12 @@ hr {
 
 .btn {
 	width: 7.5em;
-	height: 2.1em;
+	height: 1.9em;
+	cursor: pointer;
+}
+
+.btn-primary:focus {
+	outline: 0;
 }
 
 .buttonsbar {
@@ -451,7 +456,7 @@ hr {
 	margin-top: 12px;
 }
 
-.actionbtn, .actionimg {
+.actionbtn, .actionimg, .btn-primary {
 	border: 1px solid #d5d5d5;
 	padding: 3px 9px;
 	background-color: #eee;
@@ -465,13 +470,13 @@ a.actionbtn, a.actionimg {
 	color: #333;
 }
 
-.actionbtn:hover, .actionimg:hover {
+.actionbtn:hover, .actionimg:hover, .btn-primary:hover {
 	background-image: -webkit-linear-gradient(#fcfcfc, #ddd);
 	background-image: linear-gradient(#fcfcfc, #ddd);
 	border: 1px solid #c6c6c6;
 }
 
-.actionbtn:active, .actionimg:active {
+.actionbtn:active, .actionimg:active, .btn:active {
 	background-image: -webkit-linear-gradient(#ddd, #fcfcfc);
 	background-image: linear-gradient(#ddd, #fcfcfc);
 	border: 1px solid #4d90fe;

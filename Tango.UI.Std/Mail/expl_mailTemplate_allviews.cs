@@ -13,7 +13,6 @@ namespace Tango.Mail
     [OnAction("mailTemplate", "viewlist")]
     public class expl_mailTemplate_viewlist : default_list_rep<DTO_MailTemplate>
     {
-        [Inject] protected IAccessControl AccessControl { get; set; }
         protected override Func<string, Expression<Func<DTO_MailTemplate, bool>>> SearchExpression => s => 
             o => o.Title.ToLower().Contains(s.ToLower());
         
@@ -44,7 +43,6 @@ namespace Tango.Mail
     public class expl_mailTemplate_view : default_view_rep<DTO_MailTemplate, int>
     {
         [Inject] protected AccessControlOptions AccessControlOptions { get; set; }
-        [Inject] protected IAccessControl AccessControl { get; set; }
         protected DTO_MailTemplateFields.DefaultGroup Group { get; set; }
         protected override void Form(LayoutWriter w)
         {

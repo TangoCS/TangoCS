@@ -122,3 +122,8 @@ header {
 	.header-buttons li:hover, .header-buttons li.iw-opened {
 		background-color: #296ca3;
 	}
+
+.header-buttons > li > span > a {
+	color: white;
+}
+

@@ -31,6 +31,7 @@ namespace Tango.UI.Std
 		
 
 		protected override bool EnableViews => false;
+		public bool AutoExpandSingles { get; set; } = true;
 
 		public override ViewContainer GetContainer() => new SelectableTreeContainer {
 			EnableSelect = Fields.EnableSelect,
@@ -67,8 +68,11 @@ namespace Tango.UI.Std
 
 		protected override IEnumerable<TResult> GetPageData()
 		{
-			if (_pageData != null)
-				return _pageData;
+			if (_result != null)
+				return _result;
+
+			IEnumerable<TResult> pageData = null;
+			_count = 0;
 
 			foreach (var gs in Fields.GroupSorting)
 				Sorter.AddOrderBy(gs.SeqNo, gs.SortDesc, true);
@@ -148,13 +152,12 @@ namespace Tango.UI.Std
 						o.Template = t.Template.ID;
 
 
-					_pageData = _pageData == null ? res : _pageData.Concat(res);
+					pageData = pageData == null ? res : pageData.Concat(res);
 					_count += resCnt;
 				}
 			}
 
-
-			return _pageData;
+			return pageData;
 		}
 
 		//public void SetHightlighed(int templateID, Dictionary<string, object> parms)
@@ -406,7 +409,6 @@ namespace Tango.UI.Std
 				{
 					CurrentState = state;
 					_result = null;
-					_pageData = null;
 					(Renderer as TreeListRenderer<TResult>).SetLevel(state.Level);
 				}
 				Render(w);
@@ -450,6 +452,34 @@ namespace Tango.UI.Std
 			ForceFieldsInit();
 			if (CurrentState.Children.Count > 0)
 				expandChildren(CurrentState.Children);
+			else if (AutoExpandSingles)
+			{
+				var curResult = _result;
+				var curCount = _count;
+				var state = CurrentState;
+
+				while (_count == 1)
+				{
+					var obj = _result.First();
+					var t = _templatesDict[obj.Template];
+					if (t.IsTerminal) break;
+					var sender = t.GetHtmlRowID(CurrentState.Level, obj);
+
+					CurrentState = new State
+					{
+						Level = CurrentState.Level + 1,
+						Template = t,
+						Parms = t.GetKeyCollection(obj)
+					};
+					OnExpandRow(response, sender, CurrentState);
+					_result = null;
+					_result = GetPageData();
+				}
+
+				_result = curResult;
+				_count = curCount;
+				CurrentState = state;
+			}
 		}
 
 		public class State

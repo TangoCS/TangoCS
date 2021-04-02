@@ -40,12 +40,12 @@ namespace Tango.UI.Std
 			return Repository.Count(ApplyFilter(Data).Expression);
 		}
 
-		protected IEnumerable<TResult> _pageData = null;
+		//protected IEnumerable<TResult> _pageData = null;
 
 		protected override IEnumerable<TResult> GetPageData()
 		{
-			if (_pageData != null)
-				return _pageData;
+			if (_result != null)
+				return _result;
 
 			var defSort = Sorter.Count == 0;
 			foreach (var gs in Fields.GroupSorting)
@@ -65,9 +65,7 @@ namespace Tango.UI.Std
 					Repository.Parameters.Add(pair.Key, pair.Value);
 			}
 
-			_pageData = Repository.List(q.Expression, Selector);
-
-			return _pageData;
+			return Repository.List(q.Expression, Selector);
 		}
 	}
 }
