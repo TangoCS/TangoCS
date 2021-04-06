@@ -14,6 +14,14 @@ namespace Tango.UI.Std
 
 		[Inject]
 		protected IEntityAudit EntityAudit { get; set; }
+		
+		protected IRepository<T> Repository { get; set; }
+
+		public override void OnInit()
+		{
+			base.OnInit();
+			Repository = Context.RequestServices.GetService(typeof(IRepository<T>)) as IRepository<T> ?? Database.Repository<T>();
+		}
 
 		public override ViewContainer GetContainer() => new EditEntityContainer();
 		
@@ -56,9 +64,9 @@ namespace Tango.UI.Std
 		protected virtual void Delete(IEnumerable<TKey> ids)
 		{
 			if (typeof(IWithLogicalDelete).IsAssignableFrom(typeof(T)))
-				Database.Repository<T>().Update(u => u.Set(o => (o as IWithLogicalDelete).IsDeleted, true), ids);
+				Repository.Update(u => u.Set(o => (o as IWithLogicalDelete).IsDeleted, true), ids);
 			else
-				Database.Repository<T>().Delete(ids);
+				Repository.Delete(ids);
 		}
 
 		protected virtual void BeforeDelete(IEnumerable<TKey> ids) { }
@@ -80,7 +88,6 @@ namespace Tango.UI.Std
 
 			if (EntityAudit != null)
 			{
-				var rep = Database.Repository<T>();
 				foreach (var id in sel)
 					EntityAudit.AddChanges(ObjectChange.Delete<T>(id));
 			}

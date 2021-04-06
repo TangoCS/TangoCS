@@ -384,12 +384,22 @@ namespace Tango.UI.Std
 		}
 	}
 
-
-	public abstract class default_edit_rep<T, TKey> : default_edit<T>
+	public abstract class default_edit_rep<T, TKey, TRep> : default_edit<T>
 		where T : class, IWithKey<T, TKey>, new()
+		where TRep : IRepository<T>
 	{
-		[Inject]
-		protected IDatabase Database { get; set; }
+		TRep _repository = default;
+		protected TRep Repository { 
+			get 
+			{ 
+				if (_repository == null)
+					_repository = RepositoryExtensions.GetRepository<TRep, T>(Context.RequestServices, Database);
+
+				return _repository;
+			} 
+		}
+		
+		[Inject] protected IDatabase Database { get; set; }
 
 		protected virtual void SetDefaultValues(T obj) { }
 
@@ -403,7 +413,7 @@ namespace Tango.UI.Std
 		protected override T GetExistingEntity()
 		{
 			var id = Context.GetArg<TKey>(Constants.Id);
-			var obj = Database.Repository<T>().GetById(id);
+			var obj = Repository.GetById(id);
 			Tracker?.StartTracking(obj);
 			return obj;
 		}
@@ -438,12 +448,12 @@ namespace Tango.UI.Std
                 }
             }
 
-            var rep = Database.Repository<T>();
+            //var rep = Database.Repository<T>();
 
 			if (CreateObjectMode)
 				InTransaction(() =>
 				{
-					rep.Create(ViewData);
+					Repository.Create(ViewData);
 				});
 			else if (BulkMode)
 			{
@@ -451,7 +461,7 @@ namespace Tango.UI.Std
 				var ids = Context.AllArgs.ParseList<TKey>(Constants.SelectedValues);
 
 				InTransaction(() => {
-					rep.Update(s => {
+					Repository.Update(s => {
 						foreach (var f in updFields)
 							s.Set(f, typeof(T).GetProperty(f).GetValue(ViewData));
 					}, ids);
@@ -461,7 +471,7 @@ namespace Tango.UI.Std
 			{
 				InTransaction(() =>
 				{
-					rep.Update(ViewData);
+					Repository.Update(ViewData);
 				});
 				
 			}
@@ -478,5 +488,11 @@ namespace Tango.UI.Std
 				tran.Commit();
 			}
 		}
+	}
+
+	public abstract class default_edit_rep<T, TKey> : default_edit_rep<T, TKey, IRepository<T>>
+		where T : class, IWithKey<T, TKey>, new()
+	{
+		
 	}
 }

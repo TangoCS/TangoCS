@@ -63,5 +63,18 @@ namespace Tango.Data
 					rep.Parameters.Add(p.Name, p.GetValue(parameters));
 			return rep;
 		}
+
+		public static TRep GetRepository<TRep, T>(IServiceProvider serviceProvider, IDatabase database)
+		{
+			var rep = serviceProvider.GetService(typeof(TRep));
+			if (rep != null)
+				return (TRep) rep;
+			
+			var baseRep = database.Repository<T>();
+			if(baseRep is TRep repository)
+				return repository;
+
+			return default;
+		}
 	}
 }

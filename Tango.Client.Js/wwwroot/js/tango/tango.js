@@ -1382,6 +1382,7 @@ var ajaxUtils = function ($, cu) {
 				s.parms['e'] = DEF_EVENT_NAME;
 				if (s.parms['r']) delete s.parms['r'];
 				if (s.parms['c-prefix']) delete s.parms['c-prefix'];
+				if (s.parms['c-type']) delete s.parms['c-type'];
 			}
 
 			var parser = document.createElement('a');

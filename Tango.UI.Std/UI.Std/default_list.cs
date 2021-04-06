@@ -166,8 +166,14 @@ namespace Tango.UI.Std
 		}
 
 		public virtual void BeforeList(LayoutWriter w) { }
-		public virtual void AfterList(LayoutWriter w) { }	
-		
+		public virtual void AfterList(LayoutWriter w) { }
+
+		void Render(ApiResponse response)
+		{
+			PrepareResult();
+			response.AddWidget(Sections.ContentBody, Render);
+		}
+
 		public virtual void Render(LayoutWriter w)
 		{
 			//w.PushPrefix(ClientID);
@@ -243,7 +249,7 @@ namespace Tango.UI.Std
 			}
 
 			Paging.PageIndex = 1;
-			response.AddWidget(Sections.ContentBody, Render);
+			Render(response);
 			RenderToolbar(response);
 			AfterRender(response);
 		}
@@ -251,7 +257,7 @@ namespace Tango.UI.Std
 		public override void OnLoad(ApiResponse response)
 		{
 			if (Sections.RenderListOnLoad || !_qSearch.IsEmpty())
-				response.AddWidget(Sections.ContentBody, Render);
+				Render(response);
 			RenderToolbar(response);
 			if (Sections.RenderContentTitle)
 				response.AddWidget(Sections.ContentTitle, FormTitle);
@@ -263,14 +269,14 @@ namespace Tango.UI.Std
 
 		public void OnSetView(ApiResponse response)
 		{
-			response.AddWidget(Sections.ContentBody, Render);
+			Render(response);
 			RenderToolbar(response);
 			AfterRender(response);
 		}
 
 		public void OnQuickSearch(ApiResponse response)
 		{
-			response.AddWidget(Sections.ContentBody, Render);
+			Render(response);
 			AfterRender(response);
 		}
 
@@ -279,8 +285,8 @@ namespace Tango.UI.Std
 			var page_go = Context.GetIntArg("go");
 			if (page_go != null)
 				Paging.PageIndex = page_go.Value;
-			
-			response.AddWidget(Sections.ContentBody, Render);
+
+			Render(response);
 			AfterRender(response);
 		}
 
@@ -507,6 +513,19 @@ namespace Tango.UI.Std
 			}
 			else
 				attrs1 = x => x.ToCreateNew<T>(ac).Set(attrs);
+
+			if (imageOnly)
+				t.ItemActionImage(attrs1);
+			else
+				t.ItemActionImageText(attrs1);
+		}
+
+		public static void ToCreateNew(this MenuBuilder t, string service, string action,
+			Action<ActionLink> attrs = null, bool imageOnly = false)
+		{
+			var ac = t.Context.RequestServices.GetService(typeof(IAccessControl)) as IAccessControl;
+			t.ItemSeparator();
+			Action<ActionLink> attrs1 = x => x.To(service, action, ac).WithImage("New").Set(attrs);
 
 			if (imageOnly)
 				t.ItemActionImage(attrs1);

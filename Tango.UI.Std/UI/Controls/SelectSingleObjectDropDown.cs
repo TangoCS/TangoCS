@@ -91,7 +91,7 @@ namespace Tango.UI.Controls
 				RenderFilter(cw);
 
 				if (!Field.Disabled && !Field.ReadOnly)//делать класс Hide
-					cw.I(a => a.ID("btn").Class("btn").Icon("dropdownarrow-angle"));
+					cw.I(a => a.ID("btn").Class("btn").Icon("dropdownarrow-angle-classic"));
 
 				var value = selectedValue != null ? Field.DataValueField(selectedValue) : "";
 				pw.Hidden(Field.ID, value, a => { 

@@ -206,6 +206,43 @@ namespace Tango.UI.Std
 			return obj;
 		}
 	}
+	
+	public abstract class default_view_rep<T, TKey, TRep> : default_view<T>
+		where T : class, IWithKey<T, TKey>, new()
+		where TRep : IRepository<T>
+	{
+		[Inject]
+		protected IDatabase Database { get; set; }
+		
+		protected TRep Repository { get; set; }
+
+		public override void OnInit()
+		{
+			base.OnInit();
+			Repository = RepositoryExtensions.GetRepository<TRep, T>(Context.RequestServices, Database);
+			if (Repository == null)
+				throw new Exception("Репозиторий не настроен.");
+		}
+
+		protected override void ToolbarLeft(MenuBuilder t)
+		{
+			base.ToolbarLeft(t);
+			t.ItemSeparator();
+			t.ItemActionImageText(x => x.ToEdit(AccessControl, ViewData));
+			t.ItemSeparator();
+			t.ItemActionImageText(x => x.ToDelete(AccessControl, ViewData, Context.ReturnUrl.Get(1))
+				.WithArg(Constants.ReturnUrl + "_0", Context.CreateReturnUrl(1)));
+			if (ViewData is IWithLogicalDelete)
+				t.ItemActionImageText(x => x.ToUndelete(AccessControl, ViewData));
+		}
+
+		protected override T GetExistingEntity()
+		{
+			var id = Context.GetArg<TKey>(Constants.Id);
+			var obj = Repository.GetById(id);
+			return obj;
+		}
+	}
 
 	public abstract class default_view<T, TKey, TUser> : default_view<T, TKey>
 		where T : class, IWithKey<T, TKey>, new()

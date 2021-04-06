@@ -32,19 +32,20 @@ namespace Tango.UI.Std
 			}
 		}
 
-		protected virtual IRepository<TResult> GetRepository() => Database.Repository<TResult>();
+		protected virtual IRepository<TResult> GetRepository() => Context.RequestServices.GetService(typeof(IRepository<TResult>)) as IRepository<TResult> ??
+		 	Database.Repository<TResult>();
 
 		protected override int GetCount()
 		{
 			return Repository.Count(ApplyFilter(Data).Expression);
 		}
 
-		protected IEnumerable<TResult> _pageData = null;
+		//protected IEnumerable<TResult> _pageData = null;
 
 		protected override IEnumerable<TResult> GetPageData()
 		{
-			if (_pageData != null)
-				return _pageData;
+			if (_result != null)
+				return _result;
 
 			var defSort = Sorter.Count == 0;
 			foreach (var gs in Fields.GroupSorting)
@@ -53,7 +54,9 @@ namespace Tango.UI.Std
 			if (defSort)
 				filtered = DefaultOrderBy(filtered);
 
-			var q = Paging.Apply(filtered, true);
+			IQueryable<TResult> q = null;
+			if(Sections.RenderPaging)
+				q = Paging.Apply(filtered, true);
 
 			if (Repository.AllObjectsQuery.StartsWith("@"))
 			{
@@ -64,9 +67,7 @@ namespace Tango.UI.Std
 					Repository.Parameters.Add(pair.Key, pair.Value);
 			}
 
-			_pageData = Repository.List(q.Expression, Selector);
-
-			return _pageData;
+			return Repository.List(q?.Expression, Selector);
 		}
 	}
 }
