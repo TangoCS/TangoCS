@@ -328,6 +328,12 @@ namespace Tango.Meta.Fluent
 			return _this;
 		}
 
+		public T AssignStereotype(IMetaStereotype stereotype)
+		{
+			MetaClass.AssignStereotype(stereotype);
+			return _this;
+		}
+
 	}
 
 	public class MetaClassBuilder<TClass> : AbstractMetaClassBuilder<MetaClassBuilder<TClass>, TClass>

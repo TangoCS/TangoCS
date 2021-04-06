@@ -35,7 +35,12 @@ namespace Tango.Data
 	{
 		public static DBType GetDBType(this IDatabase db)
 		{
-			switch (db.Connection.GetType().Name)
+			return GetDBTypeByConnectionName(db.Connection.GetType().Name);
+		}
+
+		public static DBType GetDBTypeByConnectionName(string cName)
+		{
+			switch (cName)
 			{
 				case "NpgsqlConnection":
 					return DBType.POSTGRESQL;
