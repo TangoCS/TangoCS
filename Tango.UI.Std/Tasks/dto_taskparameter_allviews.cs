@@ -17,28 +17,19 @@ using Tango.UI.Std;
 
 namespace Tango.Tasks
 {
-	[OnAction(typeof(DTO_Task), "Parameters")]
-	public class tm_taskparameters : default_edit_rep<DTO_Task, int>
+	[OnAction(typeof(DTO_Task), "parameters")]
+	public class tm_taskparameters : default_edit_rep<DTO_Task, int, ITaskRepository>
 	{
-		[Inject]
-		protected ITaskRepository TaskRepository { get; set; }
 		protected virtual string DefaultTaskAssembly => null;
 
 		protected override string Title => "Параметры запуска";
 		protected Dictionary<string, ParameterData> parameters = new Dictionary<string, ParameterData>();
 
-		protected override DTO_Task GetExistingEntity()
-		{
-			var id = Context.GetArg<int>(Constants.Id);
-			var obj = TaskRepository.GetTasks().GetById(id);
-			return obj;
-		}
-
 		public override void OnInit()
 		{
 			base.OnInit();
 			
-			var ps = TaskRepository.GetTaskParameters().List().Where(o => o.ParentID == ViewData.ID).ToDictionary(o => o.SysName, o => o);
+			var ps = Repository.GetParameters(ViewData.ID).ToDictionary(o => o.SysName, o => o);
 
 			var taskclass = ViewData.Class;
 			if (taskclass.Split(',').Length == 1 && !DefaultTaskAssembly.IsEmpty())
@@ -113,27 +104,17 @@ namespace Tango.Tasks
 
 	[OnAction(typeof(DTO_TaskParameter), "createnew")]
 	[OnAction(typeof(DTO_TaskParameter), "edit")]
-	public class tm_taskparameter_edit : default_edit_rep<DTO_TaskParameter, int>
+	public class tm_taskparameter_edit : default_edit_rep<DTO_TaskParameter, int, ITaskParameterRepository>
 	{
-		[Inject]
-		protected ITaskRepository TaskRepository { get; set; }
 		protected virtual string DefaultTaskAssembly => null;
 
 		protected DTO_TaskParameterFields.DefaultGroup gr;
-
-		protected override DTO_TaskParameter GetExistingEntity()
-		{
-			var id = Context.GetArg<int>(Constants.Id);
-			var obj = TaskRepository.GetTaskParameters().GetById(id);
-			Tracker?.StartTracking(obj);
-			return obj;
-		}
 
 		protected override void SetDefaultValues(DTO_TaskParameter obj)
 		{
 			var id = Context.GetIntArg("taskid", ViewData.ParentID);
 			obj.ParentID = id;
-			obj.SeqNo = (TaskRepository.GetTaskParameters().List().Where(o => o.ParentID == id).Max(o => (int?)o.SeqNo) ?? 0) + 1;
+			obj.SeqNo = Repository.MaximumSequenceNumber(id) + 1;
 		}
 
 		public override void OnInit()
@@ -160,41 +141,8 @@ namespace Tango.Tasks
 					w.TextBox(gr.Value);
 			});
 		}
-
-		protected override void Submit(ApiResponse response)
-		{
-			if (EntityAudit != null && ViewData != null)
-			{
-				if (!CreateObjectMode)
-				{
-					if (EntityAudit != null)
-						EntityAudit.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
-				}
-			}
-
-			if (CreateObjectMode)
-				InTransaction(() =>
-				{
-					TaskRepository.CreateTaskParameter(ViewData);
-				});
-			else
-			{
-				InTransaction(() =>
-				{
-					TaskRepository.UpdateTaskParameter(ViewData);
-				});
-			}
-		}
 	}
 
 	[OnAction(typeof(DTO_TaskParameter), "delete")]
-	public class tm_taskparameter_delete : default_delete<DTO_TaskParameter, int> 
-	{
-		[Inject]
-		protected ITaskRepository TaskRepository { get; set; }
-		protected override void Delete(IEnumerable<int> ids)
-        {
-			TaskRepository.DeleteTaskParameter(ids);
-        }
-    }
+	public class tm_taskparameter_delete : default_delete<DTO_TaskParameter, int> { }
 }

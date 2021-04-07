@@ -18,35 +18,27 @@ using Tango.UI.Std;
 namespace Tango.Tasks
 {
 	[OnAction(typeof(DTO_Task), "viewlist")]
-	public class tm_task_bycategories : ViewPagePart, IHasEmbeddedResources
+	public class tm_task_bycategories : default_view_rep<DTO_Task, int, ITaskRepository>, IHasEmbeddedResources
 	{
-		[Inject]
-		protected IAccessControl AccessControl { get; set; }
-		[Inject]
-		protected ITaskRepository TaskRepository { get; set; }
-
 		Tabs tabs;
 
-		protected void ToolbarLeft(MenuBuilder t)
+		protected override string FormTitle => Resources.Get<DTO_Task>("viewlist");
+		protected override ContainerWidth FormWidth => ContainerWidth.Width100;
+		protected override bool ObjectNotExists => false;
+		protected override DTO_Task GetExistingEntity() { return null; }
+
+		protected override void ToolbarLeft(MenuBuilder t)
 		{
 			t.ToCreateNew<DTO_Task>();
 			t.ItemSeparator();
 			t.ItemActionImageText(x => x.To<DTO_TaskExecution>("viewlist", AccessControl).WithImage("log"));
 		}
 
-		protected void Toolbar(LayoutWriter w)
-		{
-			w.Toolbar(t => ToolbarLeft(t), t => { });
-		}
-
-		protected string FormTitle => Resources.Get<DTO_Task>("viewlist");
-
-
 		public override void OnInit()
 		{
 			base.OnInit();
-			
-			var groups = TaskRepository.GetTaskGroups().OrderBy(o => o.Title);
+
+			var groups = Repository.GetGroups().OrderBy(o => o.Title);
 
 			tabs = CreateControl<Tabs>("tasktabs");
 
@@ -63,7 +55,7 @@ namespace Tango.Tasks
 				}
 			}
 			
-			if (TaskRepository.GetTasks().Any(o => o.TaskGroupID == null))
+			if (Repository.Any(o => o.TaskGroupID == null))
 			{
 				var list_null = new tm_task_list {
 					ID = "tasks_null"
@@ -73,44 +65,18 @@ namespace Tango.Tasks
 			}
 		}
 
-		public override void OnLoad(ApiResponse response)
-		{
-			response.AddWidget(Sections.ContentToolbar, w => Toolbar(w));
-			response.AddWidget(Sections.ContentBody, w => {
-				tabs.RenderTabs(w);
-				tabs.RenderPages(w);
-			});
-
-			response.AddWidget(Sections.ContentTitle, FormTitle);
-			response.AddWidget("#title", FormTitle);
-
-			foreach (var r in Context.EventReceivers)
-				if (r.ParentElement.ClientID == this.ClientID && r is Tabs tabs)
-					tabs.OnPageSelect(response);
+        protected override void Form(LayoutWriter w)
+        {
+			tabs.RenderTabs(w);
+			tabs.RenderPages(w);
 		}
-
-		public ViewSections Sections { get; set; } = new ViewSections();
-		public class ViewSections
-		{
-			public string ContentBody { get; set; } = "contentbody";
-			public string ContentToolbar { get; set; } = "contenttoolbar";
-			public string ContentTitle { get; set; } = "contenttitle";
-			public bool SetPageTitle { get; set; } = true;
-			public bool RenderToolbar { get; set; } = true;
-			public bool RenderContentTitle { get; set; } = true;
-		}
-	}
+    }
 
 	public class tm_task_list : default_list_rep<DTO_Task>
 	{
-		[Inject]
-		protected ITaskRepository TaskRepository { get; set; }
-
 		public int? GroupID { get; set; }
 
 		protected override Func<string, Expression<Func<DTO_Task, bool>>> SearchExpression => s => o => o.Title.Contains(s);
-
-		protected override IRepository<DTO_Task> GetRepository() => TaskRepository.GetTasks();
 
 		protected override IQueryable<DTO_Task> Data => GroupID.HasValue ? base.Data.Where(o => o.TaskGroupID == GroupID) : base.Data.Where(o => o.TaskGroupID == null);
 
@@ -157,27 +123,17 @@ namespace Tango.Tasks
 
 	[OnAction(typeof(DTO_Task), "createnew")]
 	[OnAction(typeof(DTO_Task), "edit")]
-	public class tm_task_edit : default_edit_rep<DTO_Task, int>
+	public class tm_task_edit : default_edit_rep<DTO_Task, int, ITaskRepository>
 	{
 		[Inject]
 		protected IAccessControl AccessControl { get; set; }
-		[Inject]
-		protected ITaskRepository TaskRepository { get; set; }
 
 		DTO_TaskFields.DefaultGroup gr { get; set; }
 
-		IEnumerable<SelectListItem> Types() => TaskRepository.GetTaskStartTypes().OrderBy(o => o.Title).Select(o => new SelectListItem(o.Title, o.TaskStartTypeID));
-		IEnumerable<SelectListItem> Groups() => TaskRepository.GetTaskGroups().OrderBy(o => o.Title).ToList()
+		IEnumerable<SelectListItem> Types() => Repository.GetStartTypes().OrderBy(o => o.Title).Select(o => new SelectListItem(o.Title, o.TaskStartTypeID));
+		IEnumerable<SelectListItem> Groups() => Repository.GetGroups().OrderBy(o => o.Title).ToList()
 			.Where(o => AccessControl.Check($"{typeof(DTO_TaskGroup).Name}.view_{o.TaskGroupID}"))
-			.Select(o => new SelectListItem(o.Title, o.TaskGroupID));
-
-		protected override DTO_Task GetExistingEntity()
-		{
-			var id = Context.GetArg<int>(Constants.Id);
-			var obj = TaskRepository.GetTasks().GetById(id);
-			Tracker?.StartTracking(obj);
-			return obj;
-		}
+			.Select(o => new SelectListItem(o.Title, o.TaskGroupID)).AddEmptyItem();
 
 		protected override void SetDefaultValues(DTO_Task obj)
 		{
@@ -216,60 +172,35 @@ namespace Tango.Tasks
 		{
 			base.ValidateFormData(val);
 
-			if (TaskRepository.GetTasks().List().Any(o => o.TaskID != ViewData.ID && o.Title?.ToLower() == gr.Title.Value?.ToLower()))
+			if (Repository.List().Any(o => o.TaskID != ViewData.ID && o.Title?.ToLower() == gr.Title.Value?.ToLower()))
 			{
 				val.Add(gr.Title, "Задача с указанным названием уже существует");
 			}
-			if (!gr.SystemName.Value.IsEmpty() && TaskRepository.GetTasks().List().Any(o => o.TaskID != ViewData.ID && o.SystemName?.ToLower() == gr.SystemName.Value?.ToLower()))
+			if (!gr.SystemName.Value.IsEmpty() && Repository.List().Any(o => o.TaskID != ViewData.ID && o.SystemName?.ToLower() == gr.SystemName.Value?.ToLower()))
 			{
 				val.Add(gr.SystemName, "Задача с указанным системным именем уже существует");
-			}
-		}
-
-		protected override void Submit(ApiResponse response)
-		{
-			if (EntityAudit != null && ViewData != null)
-			{
-				if (!CreateObjectMode)
-				{
-					if (EntityAudit != null)
-						EntityAudit.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
-				}
-			}
-
-			if (CreateObjectMode)
-				InTransaction(() =>
-				{
-					TaskRepository.CreateTask(ViewData);
-				});
-			else
-			{
-				InTransaction(() =>
-				{
-					TaskRepository.UpdateTask(ViewData);
-				});
 			}
 		}
 	}
 
 	[OnAction(typeof(DTO_Task), "view")]
-	public class tm_task_view : default_view_rep<DTO_Task, int>
+	public class tm_task_view : default_view_rep<DTO_Task, int, ITaskRepository>
 	{
-		[Inject]
-		protected ITaskRepository TaskRepository { get; set; }
+		tm_taskexecution_list2 taskexecution;
+		protected virtual bool ShowBaseTaskExecutionList => true;
 
 		DTO_TaskFields.DefaultGroup gr { get; set; }
-		tm_taskexecution_list2 taskexecution;
 		bool isParam = false;
 
 		protected override DTO_Task GetExistingEntity()
 		{
 			var id = Context.GetArg<int>(Constants.Id);
-			var obj = TaskRepository.GetTasks().GetById(id);
+			var obj = Repository.GetById(id);
 			if (obj != null)
 				setTaskParamerers(obj);
 			return obj;
 		}
+
 		void setTaskParamerers(DTO_Task task)
 		{
 			Type type = Type.GetType(task.Class, false);
@@ -286,7 +217,7 @@ namespace Tango.Tasks
 				{
 					bool ischange = false;
 
-					var oldpars = TaskRepository.GetTaskParameters().List().Where(o => o.ParentID == task.ID); 
+					var oldpars = Repository.GetParameters(task.ID); 
 					var seqno = oldpars.Max(o => (int?)o.SeqNo) ?? 0;
 
 					using (var tran = Database.BeginTransaction())
@@ -303,7 +234,7 @@ namespace Tango.Tasks
 									title = attr.Description;
 
 								var par = new DTO_TaskParameter { ParentID = task.ID, SysName = newpar.Name, Title = title, SeqNo = seqno };
-								TaskRepository.CreateTaskParameter(par);
+								Repository.CreateParameter(par);
 								ischange = true;
 							}
 						}
@@ -311,7 +242,7 @@ namespace Tango.Tasks
 						{
 							if (!newpars.Any(o => o.Name.ToLower() == oldpar.SysName.ToLower()))
 							{
-								TaskRepository.DeleteTaskParameter(new[] { oldpar.ID });
+								Repository.DeleteParameter(oldpar.ID);
 								ischange = true;
 							}
 						}
@@ -322,14 +253,45 @@ namespace Tango.Tasks
 			}
 		}
 
+		protected override void ToolbarLeft(MenuBuilder t)
+		{
+			base.ToolbarLeft(t);
+
+			if (AccessControl.Check($"{typeof(DTO_Task).Name}.start"))
+			{
+				t.ItemSeparator();
+				if (isParam)
+					t.Item(w => w.ActionImageTextButton(al => al.To<DTO_Task>("Parameters").WithArg(Constants.Id, ViewData.ID).WithTitle("Старт").WithImage("settings2").AsNoCloseIconDialog()));
+				else
+					t.Item(w => w.ActionImageTextButton(al => al.ToCurrent().KeepTheSameUrl().PostEvent(OnRunTask).WithTitle("Старт").WithImage("settings2")));
+			}
+		}
+
 		public override void OnInit()
 		{
+			base.OnInit();
 			gr = AddFieldGroup(new DTO_TaskFields.DefaultGroup(ViewData.StartTypeID));
-			taskexecution = CreateControl<tm_taskexecution_list2>("taskexecution", c => {
-				c.TaskID = ViewData.ID;
-				c.Sections.RenderContentTitle = false;
-				c.Sections.SetPageTitle = false;
-			});
+
+			if (ShowBaseTaskExecutionList)
+			{
+				taskexecution = CreateControl<tm_taskexecution_list2>("taskexecution", c =>
+				{
+					c.TaskID = ViewData.ID;
+					c.Sections.RenderContentTitle = false;
+					c.Sections.SetPageTitle = false;
+				});
+			}
+		}
+
+		public override void OnLoad(ApiResponse response)
+		{
+			base.OnLoad(response);
+
+			if (ShowBaseTaskExecutionList)
+			{
+				response.WithNamesAndWritersFor(taskexecution);
+				taskexecution.OnLoad(response);
+			}
 		}
 
 		protected override void Form(LayoutWriter w)
@@ -382,23 +344,9 @@ namespace Tango.Tasks
 			});
 		}
 
-		protected override void ToolbarLeft(MenuBuilder t)
-		{
-			base.ToolbarLeft(t);
-
-			if (AccessControl.Check($"{typeof(DTO_Task).Name}.start"))
-			{
-				t.ItemSeparator();
-				if (isParam)
-					t.Item(w => w.ActionImageTextButton(al => al.To<DTO_Task>("Parameters").WithArg(Constants.Id, ViewData.ID).WithTitle("Старт").WithImage("settings2").AsNoCloseIconDialog()));
-				else
-					t.Item(w => w.ActionImageTextButton(al => al.ToCurrent().KeepTheSameUrl().PostEvent(OnRunTask).WithTitle("Старт").WithImage("settings2")));
-			}
-		}
-
 		public void OnRunTask(ApiResponse response)
 		{
-            var exec = TaskRepository.TasksForExecute().Where(o => o.TaskID == ViewData.ID).Any();
+            var exec = Repository.IsExecuteTask(ViewData.ID);
 
             if (exec)
             {
@@ -416,22 +364,19 @@ namespace Tango.Tasks
 
 			c.Run(ViewData, true);
 		}
+
 		protected override void LinkedData(LayoutWriter w)
 		{
 			w.Br();
 			w.GroupTitle("Параметры");
 			ParamList(w);
-			w.Br();
-			w.GroupTitle("Лог запуска задачи");
-			taskexecution.RenderPlaceHolder(w);
-		}
 
-		public override void OnLoad(ApiResponse response)
-		{
-			base.OnLoad(response);
-			response.WithNamesAndWritersFor(taskexecution);
-			taskexecution.OnLoad(response);
-
+			if (ShowBaseTaskExecutionList)
+			{
+				w.Br();
+				w.GroupTitle("Лог запуска задачи");
+				taskexecution.RenderPlaceHolder(w);
+			}
 		}
 
 		void ParamList(LayoutWriter w)
@@ -444,64 +389,38 @@ namespace Tango.Tasks
 			f.AddCell(o => o.Value, o => o.Value);
 			f.AddActionsCell(o => al => al.ToDelete(AccessControl, o).AsDialog());
 
-			var result = TaskRepository.GetTaskParameters().List().Where(o => o.ParentID == ViewData.ID).OrderBy(o => o.SeqNo);
+			var result = Repository.GetParameters(ViewData.ID).OrderBy(o => o.SeqNo);
 			new ListRenderer<DTO_TaskParameter>("param").Render(w, result, f);
 		}
 	}
 
 	[OnAction(typeof(DTO_Task), "delete")]
-	public class tm_task_delete : default_delete<DTO_Task, int> 
-	{
-		[Inject]
-		protected ITaskRepository TaskRepository { get; set; }
-		protected override void Delete(IEnumerable<int> ids)
-        {
-			TaskRepository.DeleteTask(ids);
-		}
-    }
+	public class tm_task_delete : default_delete<DTO_Task, int> { }
 
 	[OnAction(typeof(DTO_Task), "deactivation")]
-	public class tm_task_deactivation : ViewPagePart
+	public class tm_task_deactivation : default_edit_rep<DTO_Task, int, ITaskRepository>
 	{
-		[Inject]
-		protected ITaskRepository TaskRepository { get; set; }
+		protected override string Title => Resources.Get<DTO_Task>(BulkMode ? "Deactivation.Bulk.Title" : "Deactivation.Title");
+		protected override bool BulkMode => Context.GetListArg<int>(Constants.SelectedValues)?.Count > 1;
+		protected override bool ObjectNotExists => false;
+		protected override DTO_Task GetNewEntity() { return null; }
+		protected override DTO_Task GetExistingEntity()	{ return null; }
 
-		public override ViewContainer GetContainer() => new EditEntityContainer();
-
-		public override void OnLoad(ApiResponse response)
-		{
-			var sel = GetArg(Constants.SelectedValues);
-			if (sel == null) sel = GetArg(Constants.Id);
-			var cnt = sel?.Split(',').Count() ?? 0;
-			var bulk = cnt > 1;
-
-			var confirm = bulk ?
+        protected override void Form(LayoutWriter w)
+        {
+			var cnt = Context.GetListArg<int>(Constants.SelectedValues)?.Count ?? 0;
+			var confirm = BulkMode ?
 				string.Format(Resources.Get<DTO_Task>("Deactivation.Bulk.Confirm"), cnt) : Resources.Get<DTO_Task>("Deactivation.Confirm");
 
-			response.AddWidget("form", w => {
-				w.P(confirm);
-				if (cnt > 0) w.Hidden(Constants.SelectedValues, sel);
-				w.FormValidationBlock();
-			});
-
-			var title = Resources.Get<DTO_Task>(bulk ? "Deactivation.Bulk.Title" : "Deactivation.Title");
-			response.AddWidget("contenttitle", title);
-			response.AddWidget("#title", title);
-
-			response.AddAdjacentWidget("form", "buttonsbar", AdjacentHTMLPosition.BeforeEnd, w => {
-				w.ButtonsBar(() => {
-					w.ButtonsBarRight(() => {
-						w.SubmitButton();
-						w.BackButton();
-					});
-				});
+			w.P(() => {
+				w.Write(confirm);
 			});
 		}
 
-		public void OnSubmit(ApiResponse response)
+		public override void OnSubmit(ApiResponse response)
 		{
 			var sel = Context.GetListArg<int>(Constants.SelectedValues);
-			TaskRepository.DeactivationTasks(sel);
+			Repository.Deactivation(sel);
 
 			response.RedirectBack(Context, 1);
 		}

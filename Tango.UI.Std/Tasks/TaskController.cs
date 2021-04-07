@@ -36,7 +36,7 @@ namespace Tango.Tasks
     public abstract class BaseTaskController : BaseController
     {
         [Inject]
-        protected ITaskRepository TaskRepository { get; set; }
+        protected ITaskControllerRepository Repository { get; set; }
         [Inject]
         protected IErrorLogger errorLogger { get; set; }
         [Inject]
@@ -61,16 +61,16 @@ namespace Tango.Tasks
         [HttpPost]
         public ActionResult RunTasks()
         {
-            var running = TaskRepository.TasksRunning();
+            var running = Repository.TasksRunning();
             foreach (var t in running)
             {
                 if (t.StartDate.AddMinutes(t.ExecutionTimeout) < DateTime.Now)
                 {
-                    TaskRepository.UpdateTaskExecutionTimeOut(t);
+                    Repository.UpdateTaskExecutionTimeOut(t);
                 }
             }
 
-            var tasks = TaskRepository.TasksForExecute().Where(o => o.IsActive);
+            var tasks = Repository.TasksForExecute().Where(o => o.IsActive);
 
             foreach (var task in tasks)
             {
@@ -101,7 +101,7 @@ namespace Tango.Tasks
         [HttpGet]
         public ActionResult RunTask(int id)
         {
-            var task = TaskRepository.GetTasks().GetById(id);
+            var task = Repository.GetTask(id);
             ExecutingTaskUser(task);
 
             return new HttpResult();
@@ -120,7 +120,7 @@ namespace Tango.Tasks
 
             SetLastModifiedUser(taskexec, isManual);
 
-            int taskexecid = TaskRepository.CreateTaskExecution(taskexec);
+            int taskexecid = Repository.CreateTaskExecution(taskexec);
             IRealTimeProgressLogger progressLogger = null;
 
             try
@@ -152,7 +152,7 @@ namespace Tango.Tasks
                 object[] p = new object[mp.Length];
 
                 TaskExecutionContext context = null;
-                DTO_TaskParameter[] taskparam = param != null ? null : TaskRepository.GetTaskParameters().List().Where(o => o.ParentID == task.ID).ToArray();
+                DTO_TaskParameter[] taskparam = param != null ? null : Repository.GetTaskParameters(task.ID).ToArray();
 
                 if (withLogger)
                 {
@@ -245,7 +245,7 @@ namespace Tango.Tasks
                 if (context != null)
                     taskexec.ResultXml = context.ExecutionDetails.GetStringBuilder().ToString();
 
-                TaskRepository.UpdateTaskExecution(taskexec);
+                Repository.UpdateTaskExecution(taskexec);
             }
             catch (ThreadAbortException)
             {
@@ -264,7 +264,7 @@ namespace Tango.Tasks
                     TaskID = task.ID,
                     IsSuccessfull = false
                 };
-                TaskRepository.UpdateTaskExecutionError(taskexec, errorid);
+                Repository.UpdateTaskExecutionError(taskexec, errorid);
             }
         }
     }
