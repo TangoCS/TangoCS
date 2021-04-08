@@ -275,6 +275,10 @@ namespace Tango
 		{
 			return date.Date.AddMinutes(1439);
 		}
+		public static DateTime EndMonth(this DateTime date)
+		{
+			return date.AddMonths(1).AddDays(-1).EndDay();
+		}
 		public static bool IsInRange(this DateTime dateToCheck, DateTime startDate, DateTime endDate)
 		{
 			return dateToCheck >= startDate && dateToCheck < endDate;
@@ -690,6 +694,23 @@ namespace Tango
 			sb.Append(str.Substring(previousIndex));
 
 			return sb.ToString();
+		}
+
+		public static byte[] ReadAllBytes(this Stream input)
+		{
+			if (input is MemoryStream)
+				return ((MemoryStream)input).ToArray();
+
+			byte[] buffer = new byte[16 * 1024];
+			using (MemoryStream ms = new MemoryStream())
+			{
+				int read;
+				while ((read = input.ReadAsync(buffer, 0, buffer.Length).Result) > 0)
+				{
+					ms.Write(buffer, 0, read);
+				}
+				return ms.ToArray();
+			}
 		}
 	}
 }
