@@ -9,8 +9,7 @@ using Tango.UI.Controls;
 
 namespace Tango.UI.Std
 {
-	public abstract class default_view<T> : ViewPagePart
-		where T: class
+	public abstract class default_view : ViewPagePart
 	{
 		[Inject]
 		protected IAccessControl AccessControl { get; set; }
@@ -22,12 +21,78 @@ namespace Tango.UI.Std
 
 		public override ViewContainer GetContainer() => new ViewEntityContainer { GridMode = FormGridMode, Width = FormWidth };
 
-		T _viewData = null;
-
 		public default_view()
 		{
 			ID = GetType().Name;
 		}
+
+		protected virtual string FormTitle => "";
+
+		protected virtual void Toolbar(LayoutWriter w)
+		{
+			w.Toolbar(t => ToolbarLeft(t), t => ToolbarRight(t));
+		}
+
+		protected virtual void ToolbarLeft(MenuBuilder t)
+		{
+			t.ItemBack();
+		}
+
+		protected virtual void ToolbarRight(MenuBuilder t) { }
+
+		protected abstract void Form(LayoutWriter w);
+
+		protected virtual void ButtonsBar(LayoutWriter w)
+		{
+			//w.ButtonsBar_view();
+		}
+
+		protected virtual void LinkedData(LayoutWriter w) { }
+		protected virtual void Footer(LayoutWriter w) { }
+
+		public override void OnLoad(ApiResponse response)
+		{
+			response.AddWidget("form", w => Form(w));
+			response.SetContentBodyMargin();
+			response.AddAdjacentWidget(Sections.ContentBody, "buttonsbar", AdjacentHTMLPosition.BeforeEnd, w => {
+				ButtonsBar(w);
+			});
+			response.AddAdjacentWidget(Sections.ContentBody, "linked", AdjacentHTMLPosition.BeforeEnd, w => {
+				LinkedData(w);
+				Footer(w);
+			});
+
+			if (Sections.RenderContentTitle)
+				response.AddWidget(Sections.ContentTitle, FormTitle);
+			if (Sections.SetPageTitle)
+				response.AddWidget("#title", FormTitle);
+
+			response.AddWidget(Sections.ContentToolbar, w => {
+				if (Sections.RenderToolbar)
+					Toolbar(w);
+			});
+
+			foreach (var r in Context.EventReceivers)
+				if (r.ParentElement.ClientID == this.ClientID && r is Tabs tabs)
+					tabs.OnPageSelect(response);
+		}
+
+		public ViewSections Sections { get; set; } = new ViewSections();
+		public class ViewSections
+		{
+			public string ContentBody { get; set; } = "contentbody";
+			public string ContentToolbar { get; set; } = "contenttoolbar";
+			public string ContentTitle { get; set; } = "contenttitle";
+			public bool SetPageTitle { get; set; } = true;
+			public bool RenderToolbar { get; set; } = true;
+			public bool RenderContentTitle { get; set; } = true;
+		}
+	}
+
+	public abstract class default_view<T> : default_view
+		where T: class
+	{
+		T _viewData = null;
 
 		bool _viewDataLoaded = false;
 		public virtual T ViewData
@@ -59,31 +124,9 @@ namespace Tango.UI.Std
 			return group;
 		}
 
-		protected virtual string FormTitle => ViewData is IWithTitle ? (ViewData as IWithTitle).Title : "";
+		protected override string FormTitle => ViewData is IWithTitle ? (ViewData as IWithTitle).Title : "";
 
 		protected abstract T GetExistingEntity();
-
-		protected virtual void Toolbar(LayoutWriter w)
-		{
-			w.Toolbar(t => ToolbarLeft(t), t => ToolbarRight(t));
-		}
-
-		protected virtual void ToolbarLeft(MenuBuilder t)
-		{
-			t.ItemBack();
-		}
-
-		protected virtual void ToolbarRight(MenuBuilder t) { }
-
-		protected abstract void Form(LayoutWriter w);
-
-		protected virtual void ButtonsBar(LayoutWriter w)
-		{
-			//w.ButtonsBar_view();
-		}
-
-		protected virtual void LinkedData(LayoutWriter w) { }
-		protected virtual void Footer(LayoutWriter w) { }
 
 		public override void AfterInit()
 		{
@@ -117,41 +160,8 @@ namespace Tango.UI.Std
 			}
 			else
 			{
-				response.AddWidget("form", w => Form(w));
-				response.SetContentBodyMargin();
-				response.AddAdjacentWidget(Sections.ContentBody, "buttonsbar", AdjacentHTMLPosition.BeforeEnd, w => {
-					ButtonsBar(w);
-				});
-				response.AddAdjacentWidget(Sections.ContentBody, "linked", AdjacentHTMLPosition.BeforeEnd, w => {
-					LinkedData(w);
-					Footer(w);
-				});
-
-				if (Sections.RenderContentTitle)
-					response.AddWidget(Sections.ContentTitle, FormTitle);
-				if (Sections.SetPageTitle)
-					response.AddWidget("#title", FormTitle);
-
-				response.AddWidget(Sections.ContentToolbar, w => {
-					if (Sections.RenderToolbar)
-						Toolbar(w);
-				});
-
-				foreach (var r in Context.EventReceivers)
-					if (r.ParentElement.ClientID == this.ClientID && r is Tabs tabs)
-						tabs.OnPageSelect(response);
+				base.OnLoad(response);
 			}
-		}
-
-		public ViewSections Sections { get; set; } = new ViewSections();
-		public class ViewSections
-		{
-			public string ContentBody { get; set; } = "contentbody";
-			public string ContentToolbar { get; set; } = "contenttoolbar";
-			public string ContentTitle { get; set; } = "contenttitle";
-			public bool SetPageTitle { get; set; } = true;
-			public bool RenderToolbar { get; set; } = true;
-			public bool RenderContentTitle { get; set; } = true;
 		}
     }
 

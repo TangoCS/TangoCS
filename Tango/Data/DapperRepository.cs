@@ -33,7 +33,7 @@ namespace Tango.Data
 
 	public static class StoreExtensions
 	{
-		public static DBType GetDBType(this IDatabase db)
+		public static DBType GetDBType(this IAbstractDatabase db)
 		{
 			return GetDBTypeByConnectionName(db.Connection.GetType().Name);
 		}
