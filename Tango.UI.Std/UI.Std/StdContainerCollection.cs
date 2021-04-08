@@ -28,61 +28,65 @@ namespace Tango.UI.Std
 		}
 	}
 
-	public class DefaultContainer : ViewContainer
+	public abstract class AbstractDefaultContainer : ViewContainer
 	{
-        public override void Render(ApiResponse response)
-		{
-			//response.AddAdjacentWidget("#container", "content", AdjacentHTMLPosition.BeforeEnd, w => {
-			response.AddWidget("container", w => {
-				w.Div(a => a.ID("content").Class("content").DataContainer(Type, w.IDPrefix), () => {
-					if (!ToRemove.Contains("contentheader"))
-						w.ContentHeader();
-					w.Div(a => a.ID("contenttoolbar"));
-					w.Div(a => a.ID("contentbody").Class("contentbody"));
-				});
-			});
-		}
-	}
-
-	public class DefaultNoHeaderContainer : ViewContainer
-	{
-		public override void Render(ApiResponse response)
-		{
-			response.AddWidget("container", w => {
-				w.Div(a => a.ID("content").DataContainer(Type, w.IDPrefix), () => {
-					w.Div(a => a.ID("contenttoolbar"));
-					w.Div(a => a.ID("contentbody").Class("contentbodypadding"));
-				});
-			});
-		}
-	}
-
-	public class EditEntityContainer : ViewContainer
-	{
-        public ContainerWidth Width { get; set; } = ContainerWidth.WidthStd;
+		public ContainerWidth Width { get; set; } = ContainerWidth.WidthStd;
 		public ContainerHeight Height { get; set; } = ContainerHeight.HeightStd;
 
 		public bool GridMode { get; set; }
 
+		public string ContainerClass { get; set; } = "content";
+		public string BodyClass { get; set; } = "contentbody";
+	}
+
+	public class DefaultContainer : AbstractDefaultContainer
+	{
+        public override void Render(ApiResponse response)
+		{
+			response.AddWidget("container", w => {
+				w.Div(a => a.ID("content").Class(ContainerClass).DataContainer(Type, w.IDPrefix), () => {
+					if (!ToRemove.Contains("contentheader"))
+						w.ContentHeader();
+					w.Div(a => a.ID("contenttoolbar"));
+					w.Div(a => a.ID("contentbody").Class(BodyClass));
+				});
+			});
+		}
+	}
+
+	public class DefaultNoHeaderContainer : AbstractDefaultContainer
+	{
+		public override void Render(ApiResponse response)
+		{
+			response.AddWidget("container", w => {
+				w.Div(a => a.ID("content").Class(ContainerClass).DataContainer(Type, w.IDPrefix), () => {
+					w.Div(a => a.ID("contenttoolbar"));
+					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding"));
+				});
+			});
+		}
+	}
+
+	public class EditEntityContainer : AbstractDefaultContainer
+	{
 		public bool AddDataCtrl { get; set; }
 		public bool IsNested { get; set; }
 
 		public bool ShowResultBlock { get; set; } = false;
 		
-
 		public override void Render(ApiResponse response)
 		{
-			//response.AddAdjacentWidget("#container", "content", AdjacentHTMLPosition.BeforeEnd, w => {
 			response.AddWidget("container", w => {
-				w.Div(a => a.ID("content").Class("content").DataContainer(Type, w.IDPrefix), () => {
+				w.Div(a => a.ID("content").Class(ContainerClass).DataContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 						if (IsNested)
 							w.ContentHeaderNested();
 						else
 							w.ContentHeader();
 					w.Div(a => a.ID("contenttoolbar"));
-					w.Div(a => a.ID("contentbody").Class("contentbody contentbodypadding").Style(Height == ContainerHeight.Height100 ? "display:flex;flex-direction:column;" : null), () => {
-						var cls = "editform " + Width.ToString().ToLower();
+					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding").Style(Height == ContainerHeight.Height100 ? "display:flex;flex-direction:column;" : null), () => {
+						var cls = "editform";
+						if (Width != ContainerWidth.Undefined) cls += " " + Width.ToString().ToLower();
 						if (GridMode) cls += " grid60";
 						w.AjaxForm("form", a => {
 							a.Class(cls).DataResultPostponed(1);
@@ -105,21 +109,18 @@ namespace Tango.UI.Std
 		}
 	}
 
-	public class ViewEntityContainer : ViewContainer
+	public class ViewEntityContainer : AbstractDefaultContainer
 	{
-        public ContainerWidth Width { get; set; } = ContainerWidth.WidthStd;
-		public bool GridMode { get; set; }
-
 		public override void Render(ApiResponse response)
 		{
-			//response.AddAdjacentWidget("#container", "content", AdjacentHTMLPosition.BeforeEnd, w => {
 			response.AddWidget("container", w => {
-				w.Div(a => a.ID("content").Class("content").DataContainer(Type, w.IDPrefix), () => {
+				w.Div(a => a.ID("content").Class(ContainerClass).DataContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 						w.ContentHeader();
 					w.Div(a => a.ID("contenttoolbar"));
-					w.Div(a => a.ID("contentbody").Class("contentbody contentbodypadding"), () => {
-						var cls = "viewform " + Width.ToString().ToLower();
+					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding"), () => {
+						var cls = "viewform";
+						if (Width != ContainerWidth.Undefined) cls += " " + Width.ToString().ToLower();
 						if (GridMode) cls += " grid60";
 						w.Div(a => a.ID("form").Class(cls));
 					});
@@ -128,18 +129,17 @@ namespace Tango.UI.Std
 		}
 	}
 
-	public class ListMasterDetailContainer : ViewContainer
+	public class ListMasterDetailContainer : AbstractDefaultContainer
 	{
         public override void Render(ApiResponse response)
 		{
-			//response.AddAdjacentWidget("container", "content", AdjacentHTMLPosition.BeforeEnd, w => {
 			response.AddWidget("container", w => {
-				w.Div(a => a.ID("content").DataContainer(Type, w.IDPrefix), () => {
+				w.Div(a => a.ID("content").Class(ContainerClass).DataContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 						w.ContentHeader();
 					w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.Class("twocolumnsrow masterdetailcols"), () => {
-						w.Div(a => a.ID("contentbody"));
+						w.Div(a => a.ID("contentbody").Class(BodyClass));
 						w.Div(a => a.ID("detail"));
 					});
 				});
@@ -169,7 +169,8 @@ namespace Tango.UI.Std
 	{
 		WidthStd,
 		WidthStd2x,
-		Width100
+		Width100,
+		Undefined
 	}
 
 	public enum ContainerHeight
