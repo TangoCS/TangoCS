@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Net;
+using Tango.UI;
 
 namespace Tango.Html
 {
@@ -81,10 +82,14 @@ namespace Tango.Html
 			Action<ButtonTagAttributes> a = ta => ta.Type(ButtonType.Submit).Set(attributes);
 			w.WriteTag("button", a, inner);
 		}
-		public static void SubmitButton(this HtmlWriter w, Action<ButtonTagAttributes> attributes = null, string text = "OK")
-		{
+		public static void SubmitButton(this HtmlWriter w, Action<ButtonTagAttributes> attributes = null, string text = "OK", IViewElement receiver = null)
+		{		
+			if (receiver != null)
+				attributes += a => a.Data("r", receiver.ClientID);
+
 			w.SubmitButton(a => a.Class("btn btn-primary").Set(attributes), () => w.Write(text));
 		}
+
 		public static void SubmitButtonConfirm(this HtmlWriter w, Action<ButtonTagAttributes> attributes, string text, string message)
 		{
 			w.SubmitButton(a => a.Class("btn btn-primary").Data("confirm", message).Set(attributes), () => w.Write(text));
