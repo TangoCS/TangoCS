@@ -97,13 +97,16 @@ namespace Tango.AspNetCore
                 enc.MessageVersion = MessageVersion.Soap11WSAddressing10;
 
 				var encoder = GetEncoder(cust);
-				var requestMessage = encoder.ReadMessage(context.Request.Body, 0x10000, context.Request.ContentType);
+                var bufferManager = BufferManager.CreateBufferManager(0, int.MaxValue);
+                var reqBytes = context.Request.Body.ReadAllBytes();
+                var requestMessage = encoder.ReadMessage(new ArraySegment<byte>(reqBytes), bufferManager, context.Request.ContentType);
 				requestMessage.Headers.Action = context.Request.Headers["SOAPAction"].ToString().Trim('\"');
 				var responseMessage = Run<T>(context.RequestServices, requestMessage, true);
 				context.Response.Headers["SOAPAction"] = responseMessage.Headers.Action;
 				context.Response.ContentType = context.Request.ContentType;
                 responseMessage.Headers.Clear();
-                encoder.WriteMessage(responseMessage, context.Response.Body);
+                var respBytes = encoder.WriteMessage(responseMessage, int.MaxValue, bufferManager).Array;
+                await context.Response.Body.WriteAsync(respBytes, 0, respBytes.Length);
 			}
 			catch (Exception e)
 			{
