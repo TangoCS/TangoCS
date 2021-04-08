@@ -39,6 +39,12 @@ namespace Tango.Mail
         public virtual int? AttemptsToSendCount { get; set; }
         [Column]
         public virtual int? MailCategoryID { get; set; }
+        [Column]
+        public virtual DateTime LastModifiedDate { get; set; }
+        [Column]
+        public virtual object LastModifiedUserID { get; set; }
+        [Column]
+        public virtual DateTime CreateDate { get; set; }
         
         public string MailTemplateTitle { get; set; }
         public string MailCategoryTitle { get; set; }
