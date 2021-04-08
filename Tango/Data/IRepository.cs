@@ -5,15 +5,17 @@ using System.Linq.Expressions;
 
 namespace Tango.Data
 {
-	public interface IDatabase
+	public interface IAbstractDatabase
 	{
 		IDbConnection Connection { get; }
 		IDbTransaction Transaction { get; set; }
+		IDbTransaction BeginTransaction(IsolationLevel il = IsolationLevel.Unspecified);
+	}
 
+	public interface IDatabase: IAbstractDatabase
+	{
 		IRepository<T> Repository<T>();
 		IRepository Repository(Type type);
-
-		IDbTransaction BeginTransaction(IsolationLevel il = IsolationLevel.Unspecified);
 	}
 
 	public interface IRepository
