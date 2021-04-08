@@ -5,16 +5,16 @@ namespace Tango.Mail
 {
     public static class DTO_C_MailCategoryFields
     {
-        public class SystemName : EntityField<DTO_C_MailCategory, string>
+        public class SystemName : EntityField<C_MailCategory, string>
         {
             public override string Hint { get; set; } = string.Empty;
         }
-        public class SystemID : EntityField<DTO_C_MailCategory, int>
+        public class SystemID : EntityField<C_MailCategory, int>
         {
             public override bool IsRequired { get; set; } = true;
             public override string Hint { get; set; } = string.Empty;
         }
-        public class MailType : EntityField<DTO_C_MailCategory, int>
+        public class MailType : EntityField<C_MailCategory, int>
         {
             public override bool IsRequired { get; set; } = true;
             public override string Hint { get; set; } = string.Empty;

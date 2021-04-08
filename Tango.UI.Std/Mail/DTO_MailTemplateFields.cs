@@ -15,27 +15,27 @@ namespace Tango.Mail
             public LastModifiedDate LastModifiedDate { get; set; }
         }
         
-        public class TemplateSubject : EntityField<DTO_MailTemplate, string>
+        public class TemplateSubject : EntityField<MailTemplate, string>
         {
             public override string Hint { get; set; } = string.Empty;
         }
         
-        public class TemplateBody : EntityField<DTO_MailTemplate, string>
+        public class TemplateBody : EntityField<MailTemplate, string>
         {
             public override string Hint { get; set; } = string.Empty;
         }
         
-        public class Comment : EntityField<DTO_MailTemplate, string>
+        public class Comment : EntityField<MailTemplate, string>
         {
             public override string Hint { get; set; } = string.Empty;
         }
         
-        public class IsSystem : EntityField<DTO_MailTemplate, bool>
+        public class IsSystem : EntityField<MailTemplate, bool>
         {
             public override string Hint { get; set; } = string.Empty;
         }
         
-        public class LastModifiedDate : EntityDateTimeField<DTO_MailTemplate>
+        public class LastModifiedDate : EntityDateTimeField<MailTemplate>
         {
             public override string Hint { get; set; } = string.Empty;
         }

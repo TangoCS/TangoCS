@@ -7,19 +7,24 @@ using Tango.Data;
 
 namespace Tango.Mail
 {
-    public class DTO_C_MailCategory: IEntity, IWithKey<DTO_C_MailCategory, int>, IWithTitle
+    [BaseNamingConventions(Category = BaseNamingEntityCategory.Dictionary)]
+    public class C_MailCategory: IEntity, IWithKey<C_MailCategory, int>, IWithTitle
     {
         public int ID => MailCategoryID;
-        public Expression<Func<DTO_C_MailCategory, bool>> KeySelector(int id)
+        public Expression<Func<C_MailCategory, bool>> KeySelector(int id)
         {
             return o => o.MailCategoryID == id;
         }
 
         [Key]
+        [Identity]
         [Column]
         public virtual int MailCategoryID { get; set; }
+        [Column]
         public virtual int SystemID { get; set; }
+        [Column]
         public virtual int MailType { get; set; }
+        [Column]
         public virtual string Title { get; set; }
         public string SystemName { get; set; }
         

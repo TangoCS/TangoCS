@@ -79,7 +79,24 @@ namespace Tango.Data
 			Database = database;
 			Type = type;
 
-			Table = Type.GetCustomAttribute<TableAttribute>()?.Name ?? Type.Name.ToLower();
+			var baseNaming = type.GetCustomAttribute(typeof(BaseNamingConventionsAttribute)) as BaseNamingConventionsAttribute;
+
+			Table = Type.GetCustomAttribute<TableAttribute>()?.Name;
+
+			if (Table == null)
+			{
+				var table = Type.Name.ToLower();
+				if (baseNaming != null)
+				{
+					var prefix = BaseNamingConventions.EntityPrefix[baseNaming.Category];
+					if (table.StartsWith(prefix.ToLower()))
+					{
+						table = DBConventions.EntityPrefix[baseNaming.Category].ToLower() + table.Substring(2);
+					}
+				}
+				Table = table;
+			}
+			
 			if (Table.ToLower().EndsWith(".sql"))
 			{
 				Table = $"({EmbeddedResourceManager.GetString(Type, Table)})";
@@ -87,17 +104,73 @@ namespace Tango.Data
 			}
 			else
 				AllObjectsQuery = "select * from " + Table;
+			
 			DBType = database.GetDBType();
+
+			if (SqlMapper.GetTypeMap(type) is DefaultTypeMap && baseNaming != null)
+			{
+				var custom = new CustomPropertyTypeMap(
+					type,
+					(t, columnName) =>
+					{
+						var name = columnName;
+						
+						if (name.EndsWith(DBConventions.IDSuffix))
+						{
+							name = name.Substring(0, name.Length - DBConventions.IDSuffix.Length) + "ID";
+							var pid = t.GetProperty(name);
+							if (pid != null)
+								return pid;
+						}
+						if (name.EndsWith(DBConventions.GUIDSuffix))
+						{
+							name = name.Substring(0, name.Length - DBConventions.GUIDSuffix.Length) + "GUID";
+							var pguid = t.GetProperty(name);
+							if (pguid != null)
+								return pguid;
+						}
+
+						var p = t.GetProperty(name);
+						if (p != null)
+							return p;
+
+						throw new Exception();
+					});
+				
+				SqlMapper.SetTypeMap(type, custom);
+			}
 
 			var props = Type.GetProperties().Where(o => o.GetCustomAttribute<ColumnAttribute>() != null);
 			foreach (var p in props)
 			{
+				var name = ChangePropertyName(p);
+
 				if (p.GetCustomAttributes(typeof(KeyAttribute), false).Any())
-					keys.Add(p.Name, p);
+					keys.Add(name, p);
 				if (!p.GetCustomAttributes(typeof(ComputedAttribute), false).Any() &&
-					!p.GetCustomAttributes(typeof(KeyAttribute), false).Any())
-					columns.Add(p.Name, p);
+				    !p.GetCustomAttributes(typeof(KeyAttribute), false).Any())
+				{
+					//if(p.GetCustomAttributes(typeof())) - если поле содержит NonID - игнорировать
+					
+					columns.Add(name, p);
+				}
 			}
+		}
+
+		protected string ChangePropertyName(PropertyInfo p)
+		{
+			var name = p.Name;
+
+			var conventions = p.PropertyType == typeof(Guid) || p.PropertyType == typeof(Guid?)
+				? DBConventions.GUIDSuffix
+				: DBConventions.IDSuffix;
+
+			if (name.EndsWith(BaseNamingConventions.IDSuffix) && !name.EndsWith(conventions))
+			{
+				name = name.Substring(0, name.Length - BaseNamingConventions.IDSuffix.Length) + conventions;
+			}
+
+			return name;
 		}
 
 		public bool Exists(object id)
@@ -273,7 +346,8 @@ namespace Tango.Data
 				var val = prop.GetValue(entity);
 				if (val != null)
 				{
-					cols.Add(prop.Name.ToLower());
+					var name = ChangePropertyName(prop);
+					cols.Add(name.ToLower());
 					vals.Add("@i" + n);
 					parms.Add("i" + n, val);
 					n++;
@@ -281,7 +355,7 @@ namespace Tango.Data
 			}
 
 			var colsClause = cols.Join(", ");
-			var valuesClause = vals.Join(", ");
+			var valuesClause =  vals.Join(", ");
 			var returning = identity == null ? "" : string.Format(Dialect.ReturningIdentity, identity.Name.ToLower());
 
 			var query = props.Count() > 1 ? $"insert into {Table}({colsClause}) values({valuesClause}) {returning}" : string.Format(Dialect.InsertDefault, Table) + " " + returning;

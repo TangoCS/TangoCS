@@ -1,4 +1,7 @@
-﻿namespace Tango
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace Tango
 {
 	public static class Constants
 	{
@@ -42,5 +45,30 @@
 	{
 		public static string IDSuffix = "ID";
 		public static string GUIDSuffix = "GUID";
+
+		public static Dictionary<BaseNamingEntityCategory, string> EntityPrefix = 
+			BaseNamingConventions.EntityPrefix.ToDictionary(i => i.Key, i => i.Value);
+	}
+	
+	public static class BaseNamingConventions
+	{
+		public const string IDSuffix = "ID";
+		public const string GUIDSuffix = "GUID";
+
+		public static IReadOnlyDictionary<BaseNamingEntityCategory, string> EntityPrefix =
+			new Dictionary<BaseNamingEntityCategory, string>
+			{
+				{BaseNamingEntityCategory.Dictionary, "C_"},
+				{BaseNamingEntityCategory.Mail, string.Empty}
+			};
+	}
+
+	public enum BaseNamingEntityCategory
+	{
+		Dictionary,
+		Tasks,
+		UsersAndRoles,
+		Mail,
+		Notifications
 	}
 }

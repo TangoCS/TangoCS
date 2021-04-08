@@ -11,12 +11,12 @@ using Tango.UI.Std;
 namespace Tango.Mail
 {
     [OnAction("mailTemplate", "viewlist")]
-    public class expl_mailTemplate_viewlist : default_list_rep<DTO_MailTemplate>
+    public class expl_mailTemplate_viewlist : default_list_rep<MailTemplate>
     {
-        protected override Func<string, Expression<Func<DTO_MailTemplate, bool>>> SearchExpression => s => 
+        protected override Func<string, Expression<Func<MailTemplate, bool>>> SearchExpression => s => 
             o => o.Title.ToLower().Contains(s.ToLower());
         
-        protected override void FieldsInit(FieldCollection<DTO_MailTemplate> fields)
+        protected override void FieldsInit(FieldCollection<MailTemplate> fields)
         {
             fields.AddCellWithSortAndFilter(o => o.ID, o => o.ID);
             fields.AddCellWithSortAndFilter(o => o.Title, (w, o) => 
@@ -40,7 +40,7 @@ namespace Tango.Mail
     }
     
     [OnAction("mailTemplate", "view")]
-    public class expl_mailTemplate_view : default_view_rep<DTO_MailTemplate, int>
+    public class expl_mailTemplate_view : default_view_rep<MailTemplate, int, IRepository<MailTemplate>>
     {
         [Inject] protected AccessControlOptions AccessControlOptions { get; set; }
         protected DTO_MailTemplateFields.DefaultGroup Group { get; set; }
@@ -74,7 +74,7 @@ namespace Tango.Mail
     
     [OnAction("mailTemplate", "createnew")]
     [OnAction("mailTemplate", "edit")]
-    public class expl_mailTemplate_edit : default_edit_rep<DTO_MailTemplate, int>
+    public class expl_mailTemplate_edit : default_edit_rep<MailTemplate, int>
     {
         [Inject] protected AccessControlOptions AccessControlOptions { get; set; }
         [Inject] protected IAccessControl AccessControl { get; set; }
@@ -99,7 +99,7 @@ namespace Tango.Mail
     }
     
     [OnAction("mailTemplate", "delete")]
-    public class expl_mailTemplate_delete : default_delete<DTO_MailTemplate, int>
+    public class expl_mailTemplate_delete : default_delete<MailTemplate, int>
     {
     }
 }
