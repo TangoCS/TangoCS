@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -189,11 +188,10 @@ namespace Tango.Tasks
 	{
 		tm_taskexecution_list2 taskexecution;
 		protected virtual bool ShowBaseTaskExecutionList => true;
+		protected virtual string DefaultTaskAssembly => null;
 
 		DTO_TaskFields.DefaultGroup gr { get; set; }
 		bool isParam = false;
-
-		static ConcurrentDictionary<string, Type> types = new ConcurrentDictionary<string, Type>();
 
 		protected override DTO_Task GetExistingEntity()
 		{
@@ -206,17 +204,11 @@ namespace Tango.Tasks
 
 		void setTaskParamerers(DTO_Task task)
 		{
-			if (!types.TryGetValue(task.Class, out var type))
-			{
-				type = AppDomain.CurrentDomain
-					.GetAssemblies()
-					.SelectMany(x => x.GetTypes())
-					.FirstOrDefault(x => x.FullName.ToLower() == task.Class.ToLower());
+			var taskclass = task.Class;
+			if (taskclass.Split(',').Length == 1 && !DefaultTaskAssembly.IsEmpty())
+				taskclass += "," + DefaultTaskAssembly;
 
-				types.AddIfNotExists(task.Class, type);
-			}
-
-			//Type type = Type.GetType(task.Class, false);
+			Type type = Type.GetType(taskclass, false);
 			if (type != null)
 			{
 				ParameterInfo[] newpars = new ParameterInfo[0];

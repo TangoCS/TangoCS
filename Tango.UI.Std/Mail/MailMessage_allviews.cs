@@ -33,7 +33,7 @@ namespace Tango.Mail
             f.AddCellWithSortAndFilter(o => o.CopyRecipients, o => o.CopyRecipients);
             f.AddCellWithSortAndFilter(o => o.LastSendAttemptDate, o => o.LastSendAttemptDate.DateTimeToString());
             f.AddCellWithSortAndFilter(o => o.AttemptsToSendCount, o => o.AttemptsToSendCount);
-            f.AddCellWithSortAndFilter(o => o.LastModifiedDate, o => o.LastModifiedDate.DateTimeToString());
+            f.AddCellWithSortAndFilter(o => o.CreateDate, o => o.CreateDate.DateTimeToString());
         }
     }
 }

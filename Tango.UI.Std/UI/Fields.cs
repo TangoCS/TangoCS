@@ -388,6 +388,16 @@ namespace Tango.UI
 	{
     }
 
+	public abstract class EntityTimeField<TEntity> : EntityField<TEntity, TimeSpan>, IFormattedField
+		where TEntity : class
+	{
+		public override TimeSpan DefaultValue => DateTime.Now.TimeOfDay;
+		public string Format => "hh:mm:ss";
+		
+		public override Func<ValidationBuilder<TimeSpan>, ValidationBuilder<TimeSpan>> ValidationFunc =>
+			v => base.ValidationFunc(v).ValidateTimeInterval();
+	}
+
 	public abstract class EntityDateTimeField<TEntity> : EntityField<TEntity, DateTime>, IFormattedField
 		where TEntity : class
 	{

@@ -151,5 +151,14 @@ namespace Tango.UI
 
 			return val;
 		}
+
+		public static ValidationBuilder<TimeSpan> ValidateTimeInterval(this ValidationBuilder<TimeSpan> val,
+			ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
+		{
+			if (ConnectionManager.DBType == DBType.MSSQL /*&& (val.Value < new DateTime(1753, 1, 1) || val.Value > new DateTime(9999, 12, 31))*/)
+				val.AddMessage("MSSQLTimeInterval", severity: severity);
+
+			return val;
+		}
 	}
 }

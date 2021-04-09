@@ -22,8 +22,6 @@ namespace Tango.Mail
         [Column]
         public virtual string Title { get; set; }
         [Column]
-        public virtual int MailTemplateID { get; set; }
-        [Column]
         public virtual string CreateMailMethod { get; set; }
         [Column]
         public virtual string PostProcessingMethod { get; set; }
@@ -31,6 +29,8 @@ namespace Tango.Mail
         public virtual string RecipientsMethod { get; set; }
         [Column]
         public virtual int TimeoutValue { get; set; }
+        [Column]
+        public virtual int SendMailDayInterval { get; set; }
         [Column]
         public virtual TimeSpan SendMailStartInterval { get; set; }
         [Column]
