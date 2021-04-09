@@ -43,7 +43,7 @@ namespace Tango.Mail
         [Column]
         public virtual int AttemptsToSendCount { get; set; }
         [Column]
-        public virtual DateTime LastModifiedDate { get; set; }
+        public virtual DateTime CreateDate { get; set; }
         
         public string MailMessageStatus { get; set; }
     }

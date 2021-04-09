@@ -15,24 +15,18 @@ namespace Tango.Mail
             public PostProcessingMethod PostProcessingMethod { get; set; }
             public RecipientsMethod RecipientsMethod { get; set; }
             public TimeoutValue TimeoutValue { get; set; }
+            public SendMailDayInterval SendMailDayInterval { get; set; }
             public SendMailStartInterval SendMailStartInterval { get; set; }
             public SendMailFinishInterval SendMailFinishInterval { get; set; }
             public AttemptsToSendCount AttemptsToSendCount { get; set; }
             public MailCategoryTitle MailCategoryTitle { get; set; }
             public LastModifiedDate LastModifiedDate { get; set; }
-            public MailTemplateID MailTemplateID { get; set; }
             public MailCategoryID MailCategoryID { get; set; }
         }
         
         public class MailTemplateTitle : EntityField<MailSettings, string>
         {
             public override string Hint { get; set; } = string.Empty;
-        }
-        
-        public class MailTemplateID : EntityField<MailSettings, int>
-        {
-            public override string Hint { get; set; } = string.Empty;
-            public override bool IsRequired => true;
         }
         
         public class MailCategoryID : EntityField<MailSettings, int>
@@ -62,7 +56,13 @@ namespace Tango.Mail
             public override string Hint { get; set; } = string.Empty;
         }
         
-        public class SendMailStartInterval : EntityField<MailSettings, TimeSpan>
+        public class SendMailDayInterval : EntityField<MailSettings, int>
+        {
+            public override bool IsRequired { get; set; } = false;
+            public override string Hint { get; set; } = string.Empty;
+        }
+        
+        public class SendMailStartInterval : /*EntityTimeField<MailSettings> //*/EntityField<MailSettings, TimeSpan>
         {
             public override bool IsRequired { get; set; } = false;
             public override string Hint { get; set; } = string.Empty;

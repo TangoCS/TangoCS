@@ -29,6 +29,7 @@ namespace Tango.Mail
             fields.AddCellWithSortAndFilter(o => o.CreateMailMethod, o => o.CreateMailMethod);
             fields.AddCellWithSortAndFilter(o => o.PostProcessingMethod, o => o.PostProcessingMethod);
             fields.AddCellWithSortAndFilter(o => o.RecipientsMethod, o => o.RecipientsMethod);
+            fields.AddCell(o => o.SendMailDayInterval, o => o.SendMailDayInterval);
             fields.AddCell(o => o.SendMailStartInterval, o => o.SendMailStartInterval);
             fields.AddCell(o => o.SendMailFinishInterval, o => o.SendMailFinishInterval);
             fields.AddActionsCell(
@@ -55,6 +56,7 @@ namespace Tango.Mail
                 w.PlainText(Group.PostProcessingMethod);
                 w.PlainText(Group.RecipientsMethod);
                 w.PlainText(Group.TimeoutValue);
+                w.PlainText(Group.SendMailDayInterval);
                 w.PlainText(Group.SendMailStartInterval);
                 w.PlainText(Group.SendMailFinishInterval);
                 w.PlainText(Group.AttemptsToSendCount);
@@ -90,12 +92,14 @@ namespace Tango.Mail
             w.FieldsBlockStd(() =>
             {
                 w.TextBox(Group.Title);
-                w.DropDownList(Group.MailTemplateID, _selectMailTemplate);
+                // if(CreateObjectMode)
+                //     w.DropDownList(Group.MailTemplateID, _selectMailTemplate);
                 w.DropDownList(Group.MailCategoryID, _selectMailCategory);
                 w.TextBox(Group.CreateMailMethod);
                 w.TextBox(Group.PostProcessingMethod);
                 w.TextBox(Group.RecipientsMethod);
                 w.TextBox(Group.TimeoutValue);
+                w.TextBox(Group.SendMailDayInterval);
                 w.TextBox(Group.SendMailStartInterval);
                 w.TextBox(Group.SendMailFinishInterval);
                 w.TextBox(Group.AttemptsToSendCount);
