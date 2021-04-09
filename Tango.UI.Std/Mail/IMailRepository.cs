@@ -16,7 +16,7 @@ namespace Tango.Mail
 
     public interface IMailSettingsRepository : IRepository<MailSettings>
     {
-        Action<SelectSingleObjectField<MailTemplate, int>> GetMailTemplateObjectField();
-        IEnumerable<C_MailCategory> GetMailCategories();
+        string GetMailTemplateSql();
+        string GetMailCategorySql();
     }
 }

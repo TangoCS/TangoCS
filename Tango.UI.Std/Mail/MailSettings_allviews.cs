@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using Dapper;
 using Tango.Data;
+using Tango.Identity;
 using Tango.UI;
 using Tango.UI.Controls;
 using Tango.UI.Std;
@@ -19,27 +23,20 @@ namespace Tango.Mail
             fields.AddCellWithSortAndFilter(o => o.Title, (w, o) => 
                 w.ActionLink(al => al.To("mailSettings", "view", AccessControl).WithArg(Constants.Id, o.ID).WithTitle(o.Title)));
             fields.AddCellWithSortAndFilter(o => o.MailTemplateTitle, o=>o.MailTemplateTitle);
+            fields.AddCellWithSortAndFilter(o => o.MailCategoryTitle, o=>o.MailCategoryTitle);
             fields.AddCellWithSortAndFilter(o => o.AttemptsToSendCount, o=>o.AttemptsToSendCount);
             fields.AddCellWithSortAndFilter(o => o.TimeoutValue, o=>o.TimeoutValue);
-            fields.AddCellWithSortAndFilter(o => o.MailCategoryTitle, o=>o.MailCategoryTitle);
             fields.AddCellWithSortAndFilter(o => o.CreateMailMethod, o => o.CreateMailMethod);
             fields.AddCellWithSortAndFilter(o => o.PostProcessingMethod, o => o.PostProcessingMethod);
             fields.AddCellWithSortAndFilter(o => o.RecipientsMethod, o => o.RecipientsMethod);
             fields.AddCell(o => o.SendMailStartInterval, o => o.SendMailStartInterval);
             fields.AddCell(o => o.SendMailFinishInterval, o => o.SendMailFinishInterval);
             fields.AddActionsCell(
-                o => al => al.To("mailSettings", "edit", AccessControl).WithArg(Constants.Id, o.ID)
+                o => al => al.ToEdit<MailSettings>(AccessControl, o.ID)
                     .WithImage("edit").WithTitle("Редактировать"),
-                o => al => al.To("mailSettings", "delete", AccessControl).WithArg(Constants.Id, o.ID)
+                o => al => al.ToDelete<MailSettings>(AccessControl, o.ID)
                     .WithImage("delete").WithTitle("Удалить")
             );
-        }
-        
-        protected override void ToolbarLeft(MenuBuilder t)
-        {
-            t.ItemFilter(Filter);
-            t.ToCreateNew("mailSettings", "createnew");
-            ToDeleteBulk(t);
         }
     }
     
@@ -53,6 +50,7 @@ namespace Tango.Mail
             {
                 w.PlainText(Group.Title);
                 w.PlainText(Group.MailTemplateTitle);
+                w.PlainText(Group.MailCategoryTitle);
                 w.PlainText(Group.CreateMailMethod);
                 w.PlainText(Group.PostProcessingMethod);
                 w.PlainText(Group.RecipientsMethod);
@@ -60,7 +58,6 @@ namespace Tango.Mail
                 w.PlainText(Group.SendMailStartInterval);
                 w.PlainText(Group.SendMailFinishInterval);
                 w.PlainText(Group.AttemptsToSendCount);
-                w.PlainText(Group.MailCategoryTitle);
                 w.PlainText(Group.LastModifiedDate);
             });
         }
@@ -70,17 +67,20 @@ namespace Tango.Mail
     [OnAction(typeof(MailSettings), "edit")]
     public class MailSettings_edit : default_edit_rep<MailSettings, int, IMailSettingsRepository>
     {
-        // [Inject] protected AccessControlOptions AccessControlOptions { get; set; }
-        // [Inject] protected IAccessControl AccessControl { get; set; }
-        // [Inject] protected IUserIdAccessor<object> UserIdAccessor { get; set; }
+        [Inject] protected IUserIdAccessor<object> UserIdAccessor { get; set; }
         
-        private SelectSingleObjectField<MailTemplate, int> _selectMailTemplate;
-        private SelectSingleObjectField<C_MailCategory, int> _selectMailCategory;
+        private IEnumerable<SelectListItem> _selectMailTemplate;
+        private IEnumerable<SelectListItem> _selectMailCategory;
 
         public override void OnInit()
         {
             base.OnInit();
-            _selectMailTemplate = CreateControl("mailtemplate", Repository.GetMailTemplateObjectField());
+            _selectMailTemplate = Database.Connection.Query<MailTemplate>(Repository.GetMailTemplateSql()).ToList()
+                .OrderBy(x => x.MailTemplateID)
+                .Select(o => new SelectListItem(o.Title, o.MailTemplateID));
+            _selectMailCategory = Database.Connection.Query<C_MailCategory>(Repository.GetMailCategorySql()).ToList()
+                .OrderBy(x => x.MailCategoryID)
+                .Select(o => new SelectListItem(o.Title, o.MailCategoryID));
         }
 
         protected MailSettingsFields.DefaultGroup Group { get; set; }
@@ -90,8 +90,8 @@ namespace Tango.Mail
             w.FieldsBlockStd(() =>
             {
                 w.TextBox(Group.Title);
-                w.SelectSingleObject(Group.MailTemplate, _selectMailTemplate);
-                //w.PlainText(Group.MailTemplateTitle);
+                w.DropDownList(Group.MailTemplateID, _selectMailTemplate);
+                w.DropDownList(Group.MailCategoryID, _selectMailCategory);
                 w.TextBox(Group.CreateMailMethod);
                 w.TextBox(Group.PostProcessingMethod);
                 w.TextBox(Group.RecipientsMethod);
@@ -99,21 +99,7 @@ namespace Tango.Mail
                 w.TextBox(Group.SendMailStartInterval);
                 w.TextBox(Group.SendMailFinishInterval);
                 w.TextBox(Group.AttemptsToSendCount);
-                w.PlainText(Group.MailCategoryTitle);
-                w.TextBox(Group.LastModifiedDate);
             });
-            // var devMode = AccessControlOptions.DeveloperAccess(AccessControl);
-            // w.FieldsBlockStd(() =>
-            // {
-            //     w.TextBox(Group.Title);
-            //     w.TextBox(Group.TemplateSubject);
-            //     w.TextArea(Group.TemplateBody);
-            //     w.TextArea(Group.Comment);
-            //     if(devMode)
-            //         w.ToggleSwitch(Group.IsSystem);
-            //     if(!CreateObjectMode)
-            //         w.PlainText(Group.LastModifiedDate);
-            // });
         }
 
         protected override MailSettings GetNewEntity()
@@ -127,8 +113,16 @@ namespace Tango.Mail
         {
             obj.CreateDate = DateTime.Now;
             obj.LastModifiedDate = DateTime.Now;
-            var i = IdentityManager;
-            //obj.LastModifiedUserID = UserIdAccessor.CurrentUserID;
+            obj.LastModifiedUserID = UserIdAccessor.CurrentUserID;
+        }
+
+        protected override MailSettings GetExistingEntity()
+        {
+            var obj = base.GetExistingEntity();
+            obj.LastModifiedDate = DateTime.Now;
+            obj.LastModifiedUserID = UserIdAccessor.CurrentUserID;
+
+            return obj;
         }
     }
     

@@ -31,13 +31,6 @@ namespace Tango.Mail
                     .WithImage("delete").WithTitle("Удалить")
             );
         }
-
-        // protected override void ToolbarLeft(MenuBuilder t)
-        // {
-        //     t.ItemFilter(Filter);
-        //     t.ToCreateNew("mailTemplate", "createnew");
-        //     ToDeleteBulk(t);
-        // }
     }
     
     [OnAction(typeof(MailTemplate), "view")]
@@ -99,6 +92,15 @@ namespace Tango.Mail
             obj.CreateDate = DateTime.Now;
             obj.LastModifiedDate = DateTime.Now;
             obj.LastModifiedUserID = UserIdAccessor.CurrentUserID;
+        }
+        
+        protected override MailTemplate GetExistingEntity()
+        {
+            var obj = base.GetExistingEntity();
+            obj.LastModifiedDate = DateTime.Now;
+            obj.LastModifiedUserID = UserIdAccessor.CurrentUserID;
+
+            return obj;
         }
     }
     
