@@ -91,7 +91,8 @@ namespace Tango.Data
 					var prefix = BaseNamingConventions.EntityPrefix[baseNaming.Category];
 					if (table.StartsWith(prefix.ToLower()))
 					{
-						table = DBConventions.EntityPrefix[baseNaming.Category].ToLower() + table.Substring(2);
+						var tbl = !string.IsNullOrEmpty(prefix) ? table.Substring(2) : table;
+						table = $"{DBConventions.EntityPrefix[baseNaming.Category].ToLower()}{tbl}";
 					}
 				}
 				Table = table;
@@ -143,7 +144,7 @@ namespace Tango.Data
 			var props = Type.GetProperties().Where(o => o.GetCustomAttribute<ColumnAttribute>() != null);
 			foreach (var p in props)
 			{
-				var name = ChangePropertyName(p);
+				var name = baseNaming != null ? ChangePropertyName(p) : p.Name;
 
 				if (p.GetCustomAttributes(typeof(KeyAttribute), false).Any())
 					keys.Add(name, p);

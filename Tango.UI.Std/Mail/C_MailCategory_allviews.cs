@@ -11,7 +11,7 @@ using Tango.UI.Std;
 namespace Tango.Mail
 {
     [OnAction("mailCategory", "viewlist")]
-    public class dto_c_mailCategory_allviews : default_list_rep<C_MailCategory>
+    public class C_MailCategory_viewlist : default_list_rep<C_MailCategory>
     {
         protected override Func<string, Expression<Func<C_MailCategory, bool>>> SearchExpression => s => 
             o => o.Title.ToLower().Contains(s.ToLower());
@@ -41,9 +41,9 @@ namespace Tango.Mail
 
     [OnAction("mailCategory", "createnew")]
     [OnAction("mailCategory", "edit")]
-    public class dto_c_mailCategory_edit : default_edit_rep<C_MailCategory, int, IMailCategoryRepository>
+    public class C_MailCategory_edit : default_edit_rep<C_MailCategory, int, IMailCategoryRepository>
     {
-        protected DTO_C_MailCategoryFields.DefaultGroup Group { get; set; }
+        protected C_MailCategoryFields.DefaultGroup Group { get; set; }
 
         private IEnumerable<SelectListItem> GetSystemNames() => Repository.GetSystemNames().OrderBy(x => x.Item1)
             .Select(o => new SelectListItem(o.Item1, o.Item2));
@@ -60,9 +60,9 @@ namespace Tango.Mail
     }
 
     [OnAction("mailCategory", "view")]
-    public class dto_c_mailCategory_view : default_view_rep<C_MailCategory, int, IMailCategoryRepository>
+    public class C_MailCategory_view : default_view_rep<C_MailCategory, int, IMailCategoryRepository>
     {
-        protected DTO_C_MailCategoryFields.DefaultGroup Group { get; set; }
+        protected C_MailCategoryFields.DefaultGroup Group { get; set; }
         
         protected override void Form(LayoutWriter w)
         {
@@ -88,7 +88,7 @@ namespace Tango.Mail
     }
 
     [OnAction("mailCategory", "delete")]
-    public class dto_c_mailCategory_delete : default_delete<C_MailCategory, int>
+    public class C_MailCategory_delete : default_delete<C_MailCategory, int>
     {
     }
 }
