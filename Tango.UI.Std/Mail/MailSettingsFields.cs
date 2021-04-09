@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using Tango.Data;
 using Tango.UI;
 
 namespace Tango.Mail
@@ -26,9 +28,27 @@ namespace Tango.Mail
             public override string Hint { get; set; } = string.Empty;
         }
         
-        public class MailTemplate : EntityField<MailSettings, int>
+        public class MailTemplate : EntityField<MailSettings, Mail.MailTemplate, int>
         {
             public override string Hint { get; set; } = string.Empty;
+            
+            [Inject] public IDatabase Database { get; set; }
+
+            public override string StringValue => Database.Repository<Mail.MailTemplate>().List()
+                .Where(o => o.MailTemplateID == ViewData.MailTemplateID)
+                .Select(o => o.Title).FirstOrDefault();
+
+            public override void SubmitProperty(ValidationMessageCollection val)
+            {
+                ViewData.MailTemplateID = FormValue;
+            }
+
+            public override Mail.MailTemplate PropertyValue => Database.Repository<Mail.MailTemplate>().List()
+                .FirstOrDefault(o => o.MailTemplateID == ViewData.MailTemplateID);
+
+            public override Func<ValidationBuilder<int>, ValidationBuilder<int>> ValidationFunc => vb => vb.NotNull();
+            //public override bool IsRequired => true;
+            //public override bool ReadOnly => ViewData.ConsumerContract_SAP_ID != null || (bool)Args["editSAPLinkOnly"];
         }
         
         public class CreateMailMethod : EntityField<MailSettings, string>

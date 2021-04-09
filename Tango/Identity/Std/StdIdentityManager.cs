@@ -2,7 +2,7 @@
 
 namespace Tango.Identity.Std
 {
-	public class IdentityManager : IdentityManager<IdentityUser, int>, IIdentityManager, IUserIdAccessor<int>
+	public class IdentityManager : IdentityManager<IdentityUser, int>, IIdentityManager, IUserIdAccessor<int>, IUserIdAccessor<object>
 	{
 		public IdentityManager(IIdentity user, IIdentityStore dataContext, IIdentityOptions options) : base(user, dataContext, options)
 		{
@@ -12,6 +12,10 @@ namespace Tango.Identity.Std
 		public int CurrentUserID => CurrentUser.Id;
 
 		public int SystemUserID => SystemUser.Id;
+		
+		object IUserIdAccessor<object>.SystemUserID => SystemUserID;
+
+		object IUserIdAccessor<object>.CurrentUserID => CurrentUserID;
 
 		public override IdentityUser DefaultUser => new IdentityUser { Id = -1, UserName = "anonymous" };
 	}

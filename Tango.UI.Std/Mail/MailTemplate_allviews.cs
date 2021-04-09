@@ -68,7 +68,7 @@ namespace Tango.Mail
         [Inject] protected AccessControlOptions AccessControlOptions { get; set; }
         [Inject] protected IAccessControl AccessControl { get; set; }
         [Inject] protected IUserIdAccessor<object> UserIdAccessor { get; set; }
-        
+
         protected MailTemplateFields.DefaultGroup Group { get; set; }
 
         protected override void Form(LayoutWriter w)
@@ -98,7 +98,6 @@ namespace Tango.Mail
         {
             obj.CreateDate = DateTime.Now;
             obj.LastModifiedDate = DateTime.Now;
-            var i = IdentityManager;
             obj.LastModifiedUserID = UserIdAccessor.CurrentUserID;
         }
     }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
+using Tango.Data;
 using Tango.Localization;
 using Tango.Logic;
 
@@ -316,6 +317,7 @@ namespace Tango.UI
 				var prop = ViewData.GetType().GetProperty(propName);
 				if (prop == null || GetFromID(prop.PropertyType))
 				{
+					//var baseNaming = ViewData.GetType().GetCustomAttribute(typeof(BaseNamingConventionsAttribute)) as BaseNamingConventionsAttribute;
 					propName = ConvertToID(propName);
 					prop = ViewData.GetType().GetProperty(propName);
 				}
@@ -332,6 +334,22 @@ namespace Tango.UI
 				else
 					return (TValue)v;
 			}
+		}
+		
+		protected string ChangePropertyName(PropertyInfo p)
+		{
+			var name = p.Name;
+
+			var conventions = p.PropertyType == typeof(Guid) || p.PropertyType == typeof(Guid?)
+				? DBConventions.GUIDSuffix
+				: DBConventions.IDSuffix;
+
+			if (name.EndsWith(BaseNamingConventions.IDSuffix) && !name.EndsWith(conventions))
+			{
+				name = name.Substring(0, name.Length - BaseNamingConventions.IDSuffix.Length) + conventions;
+			}
+
+			return name;
 		}
 
 		public virtual void SubmitProperty(ValidationMessageCollection val)
