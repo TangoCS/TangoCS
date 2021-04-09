@@ -204,7 +204,7 @@ namespace Tango.Tasks
 
 		void setTaskParamerers(DTO_Task task)
 		{
-			var taskclass = ViewData.Class;
+			var taskclass = task.Class;
 			if (taskclass.Split(',').Length == 1 && !DefaultTaskAssembly.IsEmpty())
 				taskclass += "," + DefaultTaskAssembly;
 

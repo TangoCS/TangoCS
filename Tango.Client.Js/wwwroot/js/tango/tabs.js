@@ -1,11 +1,11 @@
-﻿var tabs = function (au) {
+﻿var tabs = function (au, lv) {
 	var instance = {
 		onselect: function (el) {
 
             const fixedHeaders = document.querySelectorAll('.listviewtable.fixedheader');
-            if (fixedHeaders.length > 0) checkBoxCell.initFixedheader(fixedHeaders);
+            if (fixedHeaders.length > 0) lv.fixedHeader(fixedHeaders);
 
-			const isBack = !el.nodeType;
+            const isBack = !el.nodeType;
 			if (isBack) el = document.getElementById(el);
 			const tabs = el.parentNode.parentNode.parentNode;
 			const index = [].indexOf.call(el.parentNode.parentNode.children, el.parentNode);
@@ -52,4 +52,4 @@
 	};
 
 	return instance;
-}(ajaxUtils);
+}(ajaxUtils, listview);
