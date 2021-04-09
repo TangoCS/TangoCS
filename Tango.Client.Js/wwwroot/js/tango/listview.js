@@ -374,7 +374,7 @@ var listview = function (au, cu, cbcell) {
                     instance.openlevel(args, counter + 1)
                 });
             }
-        }
+		}
 	}
 
 	function initCheckBoxes(cblist) {
