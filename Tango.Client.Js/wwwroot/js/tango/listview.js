@@ -244,7 +244,7 @@ var listview = function (au, cu, cbcell) {
 			if (tree) initHighlight(tree);
 
             const fixedHeaders = document.querySelectorAll('.listviewtable.fixedheader');
-            if (fixedHeaders.length > 0) initFixedheader(fixedHeaders);
+			if (fixedHeaders.length > 0) initFixedHeader(fixedHeaders);
 
 			var el = $('#' + state.root);
 			if (!el.tableDnD || !el.hasClass("draggablerows")) return;
@@ -374,7 +374,10 @@ var listview = function (au, cu, cbcell) {
                     instance.openlevel(args, counter + 1)
                 });
             }
-		}
+		},
+        fixedHeader: function (roots) {
+            initFixedHeader(roots);
+        }
 	}
 
 	function initCheckBoxes(cblist) {
@@ -388,10 +391,12 @@ var listview = function (au, cu, cbcell) {
 		}
 	}
 
-	function initFixedheader(roots) {
+	function initFixedHeader(roots) {
         for (var j = 0; j < roots.length; j++) {
             const root = roots[j];
-            const tableHeaderTop = root.querySelector('th').getBoundingClientRect().top;
+			const tableHeaderTop = root.querySelector('th').getBoundingClientRect().top;
+            if (tableHeaderTop === 0)
+                continue;
             const ths = root.querySelectorAll('th');
             for (let i = 0; i < ths.length; i++) {
                 const th = ths[i];
