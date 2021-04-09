@@ -389,36 +389,27 @@ var listview = function (au, cu, cbcell) {
 	}
 
 	function initFixedheader(roots) {
-		for (var j = 0; j < roots.length; j++) {
-			const ths = roots[j].querySelectorAll('th');
-			for (let i = 0; i < ths.length; i++) {
-				const th = ths[i];
-				let padding = window.getComputedStyle(th, null).getPropertyValue('padding-top');
-				let paddingParent = calculatePadding(th);
-				if (paddingParent != null) {
-					padding = padding.replace("px", "");
-					paddingParent = paddingParent.replace("px", "");
-					// Не хватает 2 px
-					th.style.top = (((parseInt(padding) / 2) + parseInt(paddingParent)) * -1) + "px";
-				}
-			}
-		}
-		/*// Для сложного заголовка
-		fixedheader: function () {
-		var tableHeaderTop = document.querySelector('.fixedheader thead');
-		if (tableHeaderTop == null || tableHeaderTop.length === 0) {
-			tableHeaderTop = document.querySelector('.fixedheader');}
-		if (tableHeaderTop == null)
-			return;
-		tableHeaderTop = tableHeaderTop.getBoundingClientRect().top;
-		var ths = document.querySelectorAll('.fixedheader thead th');
-		if (ths == null || ths.length === 0) {
-			ths = document.querySelectorAll('.fixedheader th');}
-		for (let i = 0; i < ths.length; i++) {
-			const th = ths[i];
-			th.style.top = th.getBoundingClientRect().top - tableHeaderTop + "px";}},
-		*/
-	}
+        for (var j = 0; j < roots.length; j++) {
+            const root = roots[j];
+            const tableHeaderTop = root.querySelector('th').getBoundingClientRect().top;
+            const ths = root.querySelectorAll('th');
+            for (let i = 0; i < ths.length; i++) {
+                const th = ths[i];
+                let padding = window.getComputedStyle(th, null).getPropertyValue('padding-top');
+                let paddingParent = calculatePadding(th);
+                if (paddingParent != null) {
+                    padding = padding.replace("px", "");
+                    paddingParent = paddingParent.replace("px", "");
+                    const currentTop = th.getBoundingClientRect().top - tableHeaderTop;
+                    // Не хватает 2 px
+                    const offsetTop = (((parseInt(padding) / 2) + parseInt(paddingParent)) * -1);
+                    th.style.top = offsetTop + currentTop + "px";
+                } else {
+                    th.style.top = th.getBoundingClientRect().top - tableHeaderTop + "px";
+                }
+            }
+        }
+    }
 
 	function calculatePadding(node) {
 		node = getScrollParent(node);

@@ -1,6 +1,10 @@
 ﻿var tabs = function (au) {
 	var instance = {
 		onselect: function (el) {
+
+            const fixedHeaders = document.querySelectorAll('.listviewtable.fixedheader');
+            if (fixedHeaders.length > 0) checkBoxCell.initFixedheader(fixedHeaders);
+
 			const isBack = !el.nodeType;
 			if (isBack) el = document.getElementById(el);
 			const tabs = el.parentNode.parentNode.parentNode;
