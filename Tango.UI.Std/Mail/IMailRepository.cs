@@ -20,9 +20,9 @@ namespace Tango.Mail
         string GetMailCategorySql();
     }
 
-    public interface IMailSettingsTemplateRepository : IRepository<MailTemplate>
+    public interface IMailSettingsTemplateRepository : IRepository<MailSettingsTemplate>
     {
         string GetMailTemplateWhereMailSettingsIdSql();
-        //string DeleteSql();
+        string GetMailTemplateSql();
     }
 }

@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using Dapper;
 using Tango.Data;
 using Tango.UI;
 using Tango.UI.Std;
@@ -28,6 +30,47 @@ namespace Tango.Mail
                     .WithArg("t", o.ID)
                     .WithImage("delete").WithTitle("Удалить")
             );
+        }
+    }
+
+    [OnAction(typeof(MailSettingsTemplate), "createnew")]
+    public class MailSettingsTemplate_new : default_edit_rep<MailSettingsTemplate, int, IMailSettingsTemplateRepository>
+    {
+        public static readonly DateTime StartDate = new DateTime(1900, 1, 1, 0, 0, 0);
+        public static readonly DateTime FinishDate = new DateTime(2099, 12, 31, 23, 59, 0);
+        
+        private IEnumerable<SelectListItem> _selectMailTemplate;
+        
+        protected MailSettingsTemplateFields.DefaultGroup Group { get; set; }
+
+        public override void OnInit()
+        {
+            _selectMailTemplate = Database.Connection.Query<MailTemplate>(Repository.GetMailTemplateSql()).ToList()
+                .OrderBy(x => x.MailTemplateID)
+                .Select(o => new SelectListItem(o.Title, o.MailTemplateID));
+        }
+
+        protected override void Form(LayoutWriter w)
+        {
+            w.FieldsBlockStd(() =>
+            {
+                if (CreateObjectMode)
+                    w.DropDownList(Group.MailTemplateID, _selectMailTemplate);
+            });
+        }
+        
+        protected override MailSettingsTemplate GetNewEntity()
+        {
+            var obj = new MailSettingsTemplate();
+            SetDefaultValues(obj);
+            return obj;
+        }
+
+        protected override void SetDefaultValues(MailSettingsTemplate obj)
+        {
+            obj.FinishDate = FinishDate;
+            obj.StartDate = StartDate;
+            obj.MailSettingsID = Context.GetIntArg("s", 0);
         }
     }
 
