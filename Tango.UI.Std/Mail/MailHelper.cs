@@ -111,9 +111,9 @@ namespace Tango.Mail
                     var (subject, body) = ParseTemplate(mailTemplate.TemplateSubject, mailTemplate.TemplateBody, viewData);
 
                     var context = new CreateMailMessageContext();
-                    if (!string.IsNullOrEmpty(mailSettings.CreateAttachmentMethod))
+                    if (!string.IsNullOrEmpty(mailSettings.AttachmentMethod))
                     {
-                        var mailMethod = JsonConvert.DeserializeObject<MethodSettings>(mailSettings.CreateAttachmentMethod);
+                        var mailMethod = JsonConvert.DeserializeObject<MethodSettings>(mailSettings.AttachmentMethod);
                         
                         context.AttachmentMailResult = ParseAndExecuteMethod<AttachmentMailResult>(mailMethod);
                     }

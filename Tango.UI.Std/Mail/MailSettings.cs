@@ -23,7 +23,7 @@ namespace Tango.Mail
         [Column]
         public virtual string Title { get; set; }
         [Column]
-        public virtual string CreateAttachmentMethod { get; set; }
+        public virtual string AttachmentMethod { get; set; }
         [Column]
         public virtual string PostProcessingMethod { get; set; }
         [Column]
