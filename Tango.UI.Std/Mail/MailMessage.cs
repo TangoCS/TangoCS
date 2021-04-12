@@ -6,6 +6,14 @@ using Tango.Data;
 
 namespace Tango.Mail
 {
+    public enum MailMessageStatus
+    {
+        New = 1,
+        Sent = 2,
+        SendError = 3,
+        StopSending = 4
+    }
+    
     [BaseNamingConventions(Category = BaseNamingEntityCategory.Mail)]
     public class MailMessage: IEntity, IWithKey<MailMessage, int>, IWithTitle
     {

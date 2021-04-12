@@ -29,6 +29,7 @@ namespace Tango.Mail
             fields.AddCellWithSortAndFilter(o => o.CreateMailMethod, o => o.CreateMailMethod);
             fields.AddCellWithSortAndFilter(o => o.PostProcessingMethod, o => o.PostProcessingMethod);
             fields.AddCellWithSortAndFilter(o => o.RecipientsMethod, o => o.RecipientsMethod);
+            fields.AddCellWithSortAndFilter(o => o.SystemName, o => o.SystemName);
             fields.AddCell(o => o.SendMailDayInterval, o => o.SendMailDayInterval);
             fields.AddCell(o => o.SendMailStartInterval, o => o.SendMailStartInterval);
             fields.AddCell(o => o.SendMailFinishInterval, o => o.SendMailFinishInterval);
@@ -44,24 +45,41 @@ namespace Tango.Mail
     [OnAction(typeof(MailSettings), "view")]
     public class MailSettings_view : default_view_rep<MailSettings, int, IRepository<MailSettings>>
     {
+        private MailSettingsTemplate_list _mailSettingsTemplateList;
+
+        public override void OnInit()
+        {
+            base.OnInit();
+            _mailSettingsTemplateList = CreateControl<MailSettingsTemplate_list>("mstlst", c => {
+                c.MailSettingsID = ViewData.MailSettingsID;
+                c.Sections.RenderContentTitle = false;
+            });
+        }
+
         protected MailSettingsFields.DefaultGroup Group { get; set; }
         protected override void Form(LayoutWriter w)
         {
             w.FieldsBlockStd(() =>
             {
                 w.PlainText(Group.Title);
-                w.PlainText(Group.MailTemplateTitle);
                 w.PlainText(Group.MailCategoryTitle);
                 w.PlainText(Group.CreateMailMethod);
                 w.PlainText(Group.PostProcessingMethod);
                 w.PlainText(Group.RecipientsMethod);
                 w.PlainText(Group.TimeoutValue);
+                w.PlainText(Group.SystemName);
                 w.PlainText(Group.SendMailDayInterval);
                 w.PlainText(Group.SendMailStartInterval);
                 w.PlainText(Group.SendMailFinishInterval);
                 w.PlainText(Group.AttemptsToSendCount);
                 w.PlainText(Group.LastModifiedDate);
             });
+        }
+
+        protected override void LinkedData(LayoutWriter w)
+        {
+            w.GroupTitle("Шаблон письма");
+            _mailSettingsTemplateList.Render(w);
         }
     }
     
@@ -92,18 +110,46 @@ namespace Tango.Mail
             w.FieldsBlockStd(() =>
             {
                 w.TextBox(Group.Title);
-                // if(CreateObjectMode)
-                //     w.DropDownList(Group.MailTemplateID, _selectMailTemplate);
+                if(CreateObjectMode)
+                    w.DropDownList(Group.MailTemplateID, _selectMailTemplate);
                 w.DropDownList(Group.MailCategoryID, _selectMailCategory);
                 w.TextBox(Group.CreateMailMethod);
                 w.TextBox(Group.PostProcessingMethod);
                 w.TextBox(Group.RecipientsMethod);
                 w.TextBox(Group.TimeoutValue);
+                w.TextBox(Group.SystemName);
                 w.TextBox(Group.SendMailDayInterval);
                 w.TextBox(Group.SendMailStartInterval);
                 w.TextBox(Group.SendMailFinishInterval);
                 w.TextBox(Group.AttemptsToSendCount);
             });
+        }
+
+        protected override void FieldsPreInit()
+        {
+            base.FieldsPreInit();
+            Group.MailTemplateID.CanRequired = CreateObjectMode;
+        }
+
+        public static readonly DateTime StartDate = new DateTime(1900, 1, 1, 0, 0, 0);
+        public static readonly DateTime FinishDate = new DateTime(2099, 12, 31, 23, 59, 0);
+        
+        protected override void AfterSaveEntity()
+        {
+            base.AfterSaveEntity();
+            
+            if (CreateObjectMode)
+            {
+                var rep = Database.Repository<MailSettingsTemplate>();
+                var mailSettingsTemplate = new MailSettingsTemplate
+                {
+                    MailTemplateID = Group.MailTemplateID.Value,
+                    MailSettingsID = ViewData.MailSettingsID,
+                    StartDate = StartDate,
+                    FinishDate = FinishDate
+                };
+                rep.Create(mailSettingsTemplate);
+            }
         }
 
         protected override MailSettings GetNewEntity()

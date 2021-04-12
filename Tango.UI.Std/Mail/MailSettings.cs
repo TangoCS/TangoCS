@@ -19,6 +19,7 @@ namespace Tango.Mail
         [Identity]
         [Column]
         public virtual int MailSettingsID { get; set; }
+        public int MailTemplateID { get; set; }
         [Column]
         public virtual string Title { get; set; }
         [Column]
@@ -45,6 +46,8 @@ namespace Tango.Mail
         public virtual object LastModifiedUserID { get; set; }
         [Column]
         public virtual DateTime CreateDate { get; set; }
+        [Column]
+        public virtual string SystemName { get; set; }
         
         public string MailTemplateTitle { get; set; }
         public string MailCategoryTitle { get; set; }

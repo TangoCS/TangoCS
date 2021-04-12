@@ -22,6 +22,8 @@ namespace Tango.Mail
             public MailCategoryTitle MailCategoryTitle { get; set; }
             public LastModifiedDate LastModifiedDate { get; set; }
             public MailCategoryID MailCategoryID { get; set; }
+            public MailTemplateID MailTemplateID { get; set; }
+            public SystemName SystemName { get; set; } 
         }
         
         public class MailTemplateTitle : EntityField<MailSettings, string>
@@ -33,6 +35,13 @@ namespace Tango.Mail
         {
             public override string Hint { get; set; } = string.Empty;
             public override bool IsRequired => true;
+        }
+        
+        public class MailTemplateID : EntityField<MailSettings, int>
+        {
+            public bool CanRequired { get; set; }
+            public override string Hint { get; set; } = string.Empty;
+            public override bool IsRequired => CanRequired;
         }
         
         public class CreateMailMethod : EntityField<MailSettings, string>
@@ -86,6 +95,12 @@ namespace Tango.Mail
         }
         
         public class LastModifiedDate : EntityDateTimeField<MailSettings>
+        {
+            public override bool IsRequired { get; set; } = false;
+            public override string Hint { get; set; } = string.Empty;
+        }
+        
+        public class SystemName : EntityField<MailSettings, string>
         {
             public override bool IsRequired { get; set; } = false;
             public override string Hint { get; set; } = string.Empty;
