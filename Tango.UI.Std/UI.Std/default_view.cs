@@ -128,7 +128,7 @@ namespace Tango.UI.Std
 
 		protected abstract T GetExistingEntity();
 
-		public override void AfterInit()
+		public override void OnEvent()
 		{
 			if (groups.Count == 0)
 			{

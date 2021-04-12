@@ -54,7 +54,7 @@ namespace Tango.UI.Std
 			ID = GetType().Name;
 		}
 
-		public override void AfterInit()
+		public override void OnEvent()
 		{
 			if (groups.Count == 0)
 			{
@@ -213,13 +213,14 @@ namespace Tango.UI.Std
 			return CreateObjectMode || BulkMode ? GetNewEntity() : GetExistingEntity();
 		}
 
-		public override void AfterInit()
+		public override void OnEvent()
 		{
-			base.AfterInit();
+			base.OnEvent();
 			groups.ForEach(g => {
 				g.Args.Add("IsNewObject", CreateObjectMode);
 				g.Args.Add("IsBulkMode", BulkMode);
 				g.SetViewData(ViewData);
+				g.SetValueSource(Context.RequestMethod == "POST" ? ValueSource.Form : ValueSource.Model);
 			});
 		}
 

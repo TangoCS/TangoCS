@@ -22,6 +22,7 @@ namespace Tango.UI.Controls
 			where T : ViewPagePart, new()
 		{
 			var c = CreateControl(id, setProperties);
+			c.IsLazyLoad = true;
 			Pages.Add(new TabPage(title, c));
 			return c;
 		}
@@ -103,7 +104,11 @@ namespace Tango.UI.Controls
 		{
 			ID = element.ID;
 			Title = title;
-			Content = response => element.OnLoad(response);
+			Content = response => {
+				element.IsLazyLoad = false;
+				element.RunOnEvent();
+				element.OnLoad(response);
+			};
 			IsAjax = true;
 			Container = new TabPageContainer2(element.GetContainer());
 		}

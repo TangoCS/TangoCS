@@ -8,7 +8,8 @@ namespace Tango.UI
 	{
 		void Init(IViewElement form);
 		void SetViewData<TViewData>(TViewData defaultViewData) where TViewData : class;
-		void SetViewData<TViewData>(IEntityField<TViewData> field, TViewData viewData) where TViewData: class; 
+		void SetViewData<TViewData>(IEntityField<TViewData> field, TViewData viewData) where TViewData: class;
+		void SetValueSource(ValueSource valueSource);
 
 		void ValidateFormData(ValidationMessageCollection val);
 		void ProcessFormData(ValidationMessageCollection val);
@@ -81,7 +82,7 @@ namespace Tango.UI
 				f.InjectProperties(Form.Context.RequestServices);
 				//f.AllFields = allFields;
 				f.Args = Args;
-				f.ValueSource = Form.Context.RequestMethod == "POST" ? ValueSource.Form : ValueSource.Model;
+				f.ValueSource = ValueSource.Model;
 			}
 		}
 
@@ -113,6 +114,12 @@ namespace Tango.UI
 				_customViewData[field.GetType().Name] = viewData;
 				field.SetViewData(viewData);
 			}
+		}
+
+		public void SetValueSource(ValueSource valueSource)
+		{
+			foreach (var f in fields)
+				f.ValueSource = valueSource;
 		}
 
 		//public void AssignViewData<TViewData>(TViewData viewData)

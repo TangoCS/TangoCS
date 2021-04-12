@@ -276,7 +276,7 @@ namespace Tango.FileStorage.Std.Views
             var r = Context.EventReceiver;
             var recipient = r == null || r == ID?.ToLower() || r == ClientID?.ToLower() ? this : Context.EventReceivers.First(o => o.ClientID == r);
 
-            return InteractionHelper.RunEvent(recipient, "onfiledownload");
+            return recipient.RunEvent("onfiledownload");
         }
 
         public ActionResult OnFileDownload()
