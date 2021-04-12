@@ -7,9 +7,25 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tango.Data;
 
+namespace Tango
+{
+    public class MethodSettings
+    {
+        public string ClassName { get; set; }
+        public string MethodName { get; set; }
+        public Dictionary<string, string> Params { get; set; }
+    }
+    
+    public class MethodSettingsReturnTypeAttribute : Attribute
+    {
+        public Type ReturnType { get; set; }
+    }
+}
+
 namespace Tango.Mail
 {
-    public interface ICreateMail
+    [MethodSettingsReturnType(ReturnType = typeof(List<string>))]
+    public interface IAttachmentMail
     {
     }
 
@@ -20,12 +36,27 @@ namespace Tango.Mail
     public interface IRecipientsMail
     {
     }
-
-    public class MailMethod
+    
+    public class CreateMailMessageContext
     {
-        public string ClassName { get; set; }
-        public string MethodName { get; set; }
-        public Dictionary<string, string> Params { get; set; }
+        public AttachmentMailResult AttachmentMailResult { get; set; }
+        public PostProcessingMailResult PostProcessingMailResult { get; set; }
+        public RecipientsMailResult RecipientsMailResult { get; set; }
+    }
+
+    public class AttachmentMailResult
+    {
+        
+    }
+    
+    public class PostProcessingMailResult
+    {
+        
+    }
+    
+    public class RecipientsMailResult
+    {
+        
     }
 
     public class MailHelper
@@ -36,7 +67,7 @@ namespace Tango.Mail
             _database = database;
         }
 
-        public void CreateMailMessage<T>(string systemName, T viewData)
+        public void CreateMailMessage<TEntity>(string systemName, TEntity viewData)
         {
             const string templateSubj = "Техническая ошибка в журнале загрузки: [IntegrationLogRecord_ID]";
             const string templateBody = @"Ошибка в журнале загрузки:
@@ -63,7 +94,8 @@ namespace Tango.Mail
 ";
             var (s, t) = ParseTemplate(templateSubj, templateBody, viewData);
 
-            ParseAndExecuteMethod(json);
+            var json1 = JsonConvert.DeserializeObject<MethodSettings>(json);
+            var v = ParseAndExecuteMethod<AttachmentMailResult>(json1);
 
             Trace.Write(s);
 
@@ -76,14 +108,30 @@ namespace Tango.Mail
 
                 if (mailTemplate != null)
                 {
-                    var (subject, body) = ParseTemplate(mailTemplate.TemplateSubject, mailTemplate.TemplateBody,
-                        viewData);
+                    var (subject, body) = ParseTemplate(mailTemplate.TemplateSubject, mailTemplate.TemplateBody, viewData);
 
-                    if (!string.IsNullOrEmpty(mailSettings.CreateMailMethod))
+                    var context = new CreateMailMessageContext();
+                    if (!string.IsNullOrEmpty(mailSettings.CreateAttachmentMethod))
                     {
-                        ParseAndExecuteMethod(mailSettings.CreateMailMethod);
+                        var mailMethod = JsonConvert.DeserializeObject<MethodSettings>(mailSettings.CreateAttachmentMethod);
+                        
+                        context.AttachmentMailResult = ParseAndExecuteMethod<AttachmentMailResult>(mailMethod);
                     }
-
+                    
+                    if (!string.IsNullOrEmpty(mailSettings.PostProcessingMethod))
+                    {
+                        var mailMethod = JsonConvert.DeserializeObject<MethodSettings>(mailSettings.PostProcessingMethod);
+                        
+                        context.PostProcessingMailResult = ParseAndExecuteMethod<PostProcessingMailResult>(mailMethod);
+                    }
+                    
+                    if (!string.IsNullOrEmpty(mailSettings.RecipientsMethod))
+                    {
+                        var mailMethod = JsonConvert.DeserializeObject<MethodSettings>(mailSettings.RecipientsMethod);
+                        
+                        context.RecipientsMailResult = ParseAndExecuteMethod<RecipientsMailResult>(mailMethod);
+                    }
+                    
                     // Запись в реестр почты.
                     var mailMessage = new MailMessage
                     {
@@ -113,25 +161,24 @@ namespace Tango.Mail
             return null;
         }
 
-        private void ParseAndExecuteMethod(string methodJson)
+        private T ParseAndExecuteMethod<T>(MethodSettings methodSettings)
         {
-            var mailMethod = JsonConvert.DeserializeObject<MailMethod>(methodJson);
-
             var objectType = AppDomain.CurrentDomain
                 .GetAssemblies()
                 .SelectMany(x => x.GetTypes())
-                .FirstOrDefault(i => i.FullName == mailMethod.ClassName);
+                .FirstOrDefault(i => i.FullName == methodSettings.ClassName);
 
-            var method = objectType?.GetMethod(mailMethod.MethodName);
+            var method = objectType?.GetMethod(methodSettings.MethodName);
             var ps = method?.GetParameters();
+            
             object[] values = null;
-            if (mailMethod.Params != null && mailMethod.Params.Any() && ps != null)
+            if (methodSettings.Params != null && methodSettings.Params.Any() && ps != null)
             {
-                values = new object[mailMethod.Params.Count];
+                values = new object[methodSettings.Params.Count];
                 for (int i = 0; i < ps.Length; i++)
                 {
                     var key = ps[i].Name.ToLower();
-                    if (mailMethod.Params.TryGetValue(key, out var value))
+                    if (methodSettings.Params.TryGetValue(key, out var value))
                     {
                         if (ps[i].ParameterType == typeof(Guid))
                             values[i] = value.ToGuid();
@@ -161,8 +208,10 @@ namespace Tango.Mail
             {
                 var obj = Activator.CreateInstance(method.DeclaringType);
                 //obj.InjectProperties(serviceProvider);
-                method.Invoke(obj, values);
+                return (T)method.Invoke(obj, values);
             }
+
+            return default;
         }
 
         private (string subject, string body) ParseTemplate<T>(string templateSubject, string templateBody, T viewData)

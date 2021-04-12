@@ -20,13 +20,12 @@ namespace Tango.Mail
         protected override void FieldsInit(FieldCollection<MailSettings> fields)
         {
             fields.AddCellWithSortAndFilter(o => o.ID, o => o.ID);
-            fields.AddCellWithSortAndFilter(o => o.Title, (w, o) => 
-                w.ActionLink(al => al.To("mailSettings", "view", AccessControl).WithArg(Constants.Id, o.ID).WithTitle(o.Title)));
+            fields.AddCellWithSortAndFilter(o => o.Title, o => o.Title);
             fields.AddCellWithSortAndFilter(o => o.MailTemplateTitle, o=>o.MailTemplateTitle);
             fields.AddCellWithSortAndFilter(o => o.MailCategoryTitle, o=>o.MailCategoryTitle);
             fields.AddCellWithSortAndFilter(o => o.AttemptsToSendCount, o=>o.AttemptsToSendCount);
             fields.AddCellWithSortAndFilter(o => o.TimeoutValue, o=>o.TimeoutValue);
-            fields.AddCellWithSortAndFilter(o => o.CreateMailMethod, o => o.CreateMailMethod);
+            fields.AddCellWithSortAndFilter(o => o.CreateAttachmentMethod, o => o.CreateAttachmentMethod);
             fields.AddCellWithSortAndFilter(o => o.PostProcessingMethod, o => o.PostProcessingMethod);
             fields.AddCellWithSortAndFilter(o => o.RecipientsMethod, o => o.RecipientsMethod);
             fields.AddCellWithSortAndFilter(o => o.SystemName, o => o.SystemName);
@@ -34,11 +33,27 @@ namespace Tango.Mail
             fields.AddCell(o => o.SendMailStartInterval, o => o.SendMailStartInterval);
             fields.AddCell(o => o.SendMailFinishInterval, o => o.SendMailFinishInterval);
             fields.AddActionsCell(
+                o => al => al.ToView<MailSettings>(AccessControl, o.ID)
+                    .WithImage("mail").WithTitle("Тема и Текст письма"),
+                o => al => al.ToView<MailSettings>(AccessControl, o.ID)
+                    .WithImage("hie").WithTitle("Состав письма"),
                 o => al => al.ToEdit<MailSettings>(AccessControl, o.ID)
                     .WithImage("edit").WithTitle("Редактировать"),
                 o => al => al.ToDelete<MailSettings>(AccessControl, o.ID)
-                    .WithImage("delete").WithTitle("Удалить")
-            );
+                    .WithImage("delete").WithTitle("Удалить"),
+                o =>
+                {
+                    if (!o.HasTemplate)
+                    {
+                        return al =>
+                        {
+                            al.ToView<MailSettings>(AccessControl, o.ID)
+                                .WithImage("warning").WithTitle("На текущий момент для письма не определен шаблон");
+                        };
+                    }
+
+                    return null;
+                });
         }
     }
     
