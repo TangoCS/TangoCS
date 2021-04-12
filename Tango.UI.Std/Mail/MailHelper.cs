@@ -29,15 +29,17 @@ namespace Tango.Mail
     {
     }
 
+    [MethodSettingsReturnType(ReturnType = typeof(List<string>))]
     public interface IPostProcessingMail
     {
     }
 
+    [MethodSettingsReturnType(ReturnType = typeof(byte[]))]
     public interface IRecipientsMail
     {
     }
     
-    public class CreateMailMessageContext
+    public class MailMessageContext
     {
         public AttachmentMailResult AttachmentMailResult { get; set; }
         public PostProcessingMailResult PostProcessingMailResult { get; set; }
@@ -110,7 +112,7 @@ namespace Tango.Mail
                 {
                     var (subject, body) = ParseTemplate(mailTemplate.TemplateSubject, mailTemplate.TemplateBody, viewData);
 
-                    var context = new CreateMailMessageContext();
+                    var context = new MailMessageContext();
                     if (!string.IsNullOrEmpty(mailSettings.AttachmentMethod))
                     {
                         var mailMethod = JsonConvert.DeserializeObject<MethodSettings>(mailSettings.AttachmentMethod);
@@ -132,7 +134,6 @@ namespace Tango.Mail
                         context.RecipientsMailResult = ParseAndExecuteMethod<RecipientsMailResult>(mailMethod);
                     }
                     
-                    // Запись в реестр почты.
                     var mailMessage = new MailMessage
                     {
                         MailMessageStatusID = (int) MailMessageStatus.New,
