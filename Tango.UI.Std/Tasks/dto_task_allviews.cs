@@ -188,7 +188,7 @@ namespace Tango.Tasks
 	{
 		tm_taskexecution_list2 taskexecution;
 		protected virtual bool ShowBaseTaskExecutionList => true;
-		protected virtual string DefaultTaskAssembly => null;
+		//protected virtual string DefaultTaskAssembly => null;
 
 		DTO_TaskFields.DefaultGroup gr { get; set; }
 		bool isParam = false;
@@ -204,11 +204,12 @@ namespace Tango.Tasks
 
 		void setTaskParamerers(DTO_Task task)
 		{
-			var taskclass = task.Class;
-			if (taskclass.Split(',').Length == 1 && !DefaultTaskAssembly.IsEmpty())
-				taskclass += "," + DefaultTaskAssembly;
+			//var taskclass = task.Class;
+			//if (taskclass.Split(',').Length == 1 && !DefaultTaskAssembly.IsEmpty())
+			//	taskclass += "," + DefaultTaskAssembly;
+			//Type type = Type.GetType(taskclass, false);
 
-			Type type = Type.GetType(taskclass, false);
+			var type = TaskTypeCollection.GetType(task.Class);
 			if (type != null)
 			{
 				ParameterInfo[] newpars = new ParameterInfo[0];

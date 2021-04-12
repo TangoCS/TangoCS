@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Tango.Tasks
 {
@@ -21,5 +23,27 @@ namespace Tango.Tasks
 		public int TaskExecutionID { get; set; }
 		public DateTime StartDate { get; set; }
 		public int ExecutionTimeout { get; set; }
+	}
+
+	public static class TaskTypeCollection
+	{
+		static ConcurrentDictionary<string, Type> types = new ConcurrentDictionary<string, Type>();
+	
+		public static Type GetType(string fullnameclass)
+        {
+			string taskclass = fullnameclass.Split(',')[0];
+
+			if (!types.TryGetValue(taskclass, out var type))
+			{
+				type = AppDomain.CurrentDomain
+					.GetAssemblies()
+					.SelectMany(x => x.GetTypes())
+					.FirstOrDefault(x => x.FullName.ToLower() == taskclass.ToLower());
+
+				types.AddIfNotExists(taskclass, type);
+			}
+
+			return type;
+        }
 	}
 }
