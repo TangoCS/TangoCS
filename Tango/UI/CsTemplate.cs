@@ -18,11 +18,13 @@ namespace Tango.UI
 	{
 		string ClientID { get; }
 		IViewElement ParentElement { get; set; }
+		List<IViewElement> ChildElements { get; }
 		DataCollection DataCollection { get; set; }
+		bool IsLazyLoad { get; set; }
 		string GetClientID(string id);
 
 		void OnInit();
-		void AfterInit();
+		//void AfterInit();
 		void OnEvent();
 	}
 
@@ -100,13 +102,24 @@ namespace Tango.UI
 		public DataCollection DataCollection { get; set; } = new DataCollection();
 
 		public string ClientID => ID != null ? ParentElement?.GetClientID(ID) ?? ID.ToLower() : null;
-		public IViewElement ParentElement { get; set; }
+		IViewElement _parentElement;
+		public IViewElement ParentElement {
+			get => _parentElement;
+			set
+			{
+				_parentElement?.ChildElements.Remove(this);
+				_parentElement = value;
+				_parentElement?.ChildElements.Add(this);
+			}
+		}
+		public List<IViewElement> ChildElements { get; set; } = new List<IViewElement>();
 
 		public string GetClientID(string id) => (!ClientID.IsEmpty() ? ClientID + (!id.IsEmpty() ? "_" + id : "") : (id ?? "")).ToLower();
 
 		public virtual void OnInit() { }
-		public virtual void AfterInit() { }
+		//public virtual void AfterInit() { }
 		public virtual void OnEvent() { }
+		public bool IsLazyLoad { get; set; }
 
 		public T CreateControl<T>(string id, Action<T> setProperties = null)
 			where T : ViewElement, new()
@@ -121,7 +134,7 @@ namespace Tango.UI
 
 			setProperties?.Invoke(c);
 			c.OnInit();
-			c.AfterInit();
+			//c.AfterInit();
 			return c;
 		}
 
@@ -136,7 +149,7 @@ namespace Tango.UI
 
 			Context.EventReceivers.Add(c);
 			c.OnInit();
-			c.AfterInit();
+			//c.AfterInit();
 			return c;
 		}
 	}

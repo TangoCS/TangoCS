@@ -22,15 +22,23 @@ namespace Tango.UI.Std
 		public override ActionResult Execute()
 		{
 			OnInit();
-			AfterInit();
+			//AfterInit();
 
 			var r = Context.EventReceiver;
 			var recipient = r == null || r == ID?.ToLower() || r == ClientID?.ToLower() ? this : Context.EventReceivers.First(o => o.ClientID == r);
 			var e = Context.Event.IsEmpty() ? "onload" : Context.Event;
 
-			recipient.OnEvent();
+			var el = recipient;
+			do
+			{
+				el.IsLazyLoad = false;
+				el = el.ParentElement;
+			}
+			while (el != null);
 
-			return InteractionHelper.RunEvent(recipient, e);
+			this.RunOnEvent();
+
+			return recipient.RunEvent(e);
 		}
 
 		public virtual void OnFirstLoad(ApiResponse response) { }
@@ -71,7 +79,7 @@ namespace Tango.UI.Std
 			if (!CheckAccess()) return new ChallengeResult();
 
 			OnInit();
-			AfterInit();
+			//AfterInit();
 
 			return RenderContent();
 		}

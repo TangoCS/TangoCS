@@ -14,7 +14,7 @@ namespace Tango.UI
 			var controller = Activator.CreateInstance(t) as Controller;
 			controller.Context = actionContext;
 			controller.InjectProperties(actionContext.RequestServices);
-			return controller.RunActionInvokingFilter() ?? InteractionHelper.RunEvent(controller, actionContext.Action);
+			return controller.RunActionInvokingFilter() ?? controller.RunEvent(actionContext.Action);
 		}		
 	}
 }

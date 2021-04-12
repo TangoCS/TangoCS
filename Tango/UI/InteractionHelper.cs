@@ -8,16 +8,24 @@ namespace Tango.UI
 {
 	public static class InteractionHelper
 	{
-		public static MethodInfo GetEventMethod(IInteractionFlowElement recipient, string e)
+		static MethodInfo GetEventMethod(this IInteractionFlowElement recipient, string e)
 		{
 			var t = recipient.GetType();
 			var name = e.ToLower();
 			return FindMethod(t, name, recipient.Context.RequestMethod);
 		}
 
-		public static ActionResult RunEvent(IInteractionFlowElement recipient, string e)
+		public static void RunOnEvent(this IViewElement element)
 		{
-			var m = GetEventMethod(recipient, e);
+			if (element.IsLazyLoad) return;
+			element.OnEvent();
+			foreach (var child in element.ChildElements)
+				child.RunOnEvent();
+		}
+
+		public static ActionResult RunEvent(this IInteractionFlowElement recipient, string e)
+		{
+			var m = recipient.GetEventMethod(e);
 			if (m == null)
 				return new HttpResult { StatusCode = HttpStatusCode.Forbidden };
 
