@@ -68,6 +68,9 @@ namespace Tango.UI.Std
 					prop.SetValue(this, gr);
 				}
 			}
+			groups.ForEach(g => {
+				g.SetValueSource(Context.RequestMethod == "POST" ? ValueSource.Form : ValueSource.Model);
+			});
 			FieldsPreInit();
 		}
 
@@ -220,7 +223,6 @@ namespace Tango.UI.Std
 				g.Args.Add("IsNewObject", CreateObjectMode);
 				g.Args.Add("IsBulkMode", BulkMode);
 				g.SetViewData(ViewData);
-				g.SetValueSource(Context.RequestMethod == "POST" ? ValueSource.Form : ValueSource.Model);
 			});
 		}
 
