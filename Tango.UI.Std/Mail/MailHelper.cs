@@ -45,14 +45,15 @@ namespace Tango
             object[] values = null;
             if (methodSettings.Params != null && methodSettings.Params.Any() && ps != null)
             {
-                var count = methodSettings.Params.Count;
+                var parms = methodSettings.Params.ToDictionary(i => i.Key.ToLower(), i => i.Value);
+                var count = parms.Count;
                 if (ps.Any(p => p.ParameterType == typeof(TContext)))
                     count += 1;
                 values = new object[count];
                 for (var i = 0; i < ps.Length; i++)
                 {
                     var key = ps[i].Name.ToLower();
-                    if (methodSettings.Params.TryGetValue(key, out var value))
+                    if (parms.TryGetValue(key, out var value))
                     {
                         if (ps[i].ParameterType == typeof(Guid))
                             values[i] = (Guid) value; // value.ToGuid();
@@ -166,9 +167,19 @@ namespace Tango.Mail
         }
     }
     
-    public class AttachmentMail
+    public class ExistAttachmentMail
     {
-        public void Run(MailMessageContext context)
+        public void Run(MailMessageContext context, string attachmentIds)
+        {
+            var ids = attachmentIds.Split(';');
+            var aIds = ids.Select(Guid.Parse);
+            context.ExistingFileIds = aIds.ToList();
+        }
+    }
+    
+    public class NewAttachmentMail
+    {
+        public void Run(MailMessageContext contexts)
         {
             //context.MailMessage.Recipients = recipients.Join(";");
         }
@@ -221,7 +232,15 @@ namespace Tango.Mail
         }
     },
     {
-        'ClassName':'Tango.Mail.AttachmentMail',
+        'ClassName':'Tango.Mail.ExistAttachmentMail',
+        'MethodName':'Run',
+        'Params':
+        {
+            'attachmentIds': 'fb1cd464-8c1d-4016-930a-a9c540eae9e5;d44d0b21-3fb2-4b01-b9ea-e47f5072c42c;44c253a6-4002-4d2b-810e-59b895eec6be;f946232b-02f6-4599-a8c4-a165ac234009;878310ad-7b17-498c-a072-fb59bab8eb08;6ba33718-52f8-4256-b8db-087f801b3bf0'            
+        }
+    },
+    {
+        'ClassName':'Tango.Mail.NewAttachmentMail',
         'MethodName':'Run',
         'Params':null
     }
@@ -250,46 +269,51 @@ namespace Tango.Mail
             Trace.Write(context);
         }
 
-        public void CreateMailMessage<TEntity>(string systemName, TEntity viewData)
+        public MailMessage CreateMailMessage<TEntity>(string systemName, TEntity viewData)
         {
             var mailSettings = _database.Repository<MailSettings>().List()
                 .FirstOrDefault(item => item.SystemName != null && item.SystemName.ToLower().Equals(systemName.ToLower()));
             if (mailSettings != null)
             {
                 var mailTemplate = GetMailTemplate(mailSettings);
-
                 if (mailTemplate != null)
                 {
                     var (subject, body) = ParseTemplate(mailTemplate.TemplateSubject, mailTemplate.TemplateBody, viewData);
 
-                    var mailMessage = new MailMessage
+                    var mailMessageContext = new MailMessageContext
                     {
-                        MailMessageStatusID = (int) MailMessageStatus.New,
-                        AttemptsToSendCount = mailSettings.AttemptsToSendCount ?? 0,
-                        LastSendAttemptDate = null,
-                        CreateDate = DateTime.Now,
-                        Subject = subject,
-                        Body = body,
-                        TimeoutValue = mailSettings.TimeoutValue
+                        MailMessage = new MailMessage
+                        {
+                            MailMessageStatusID = (int) MailMessageStatus.New,
+                            AttemptsToSendCount = mailSettings.AttemptsToSendCount ?? 0,
+                            LastSendAttemptDate = null,
+                            CreateDate = DateTime.Now,
+                            Subject = subject,
+                            Body = body,
+                            TimeoutValue = mailSettings.TimeoutValue
+                        }
                     };
                     
                     if (!string.IsNullOrEmpty(mailSettings.PreProcessingMethod))
                     {
                         var mailMethod = JsonConvert.DeserializeObject<MethodSettings>(mailSettings.PreProcessingMethod);
                         
-                        _methodHelper.ExecuteMethod(mailMethod, mailMessage);
+                        _methodHelper.ExecuteMethod(mailMethod, mailMessageContext);
                     }
                     
                     if (!string.IsNullOrEmpty(mailSettings.PostProcessingMethod))
                     {
                         var mailMethod = JsonConvert.DeserializeObject<MethodSettings>(mailSettings.PostProcessingMethod);
                         
-                        _methodHelper.ExecuteMethod(mailMethod, mailMessage);
+                        _methodHelper.ExecuteMethod(mailMethod, mailMessageContext);
                     }
 
-                    _database.Repository<MailMessage>().Create(mailMessage);
+                    return mailMessageContext.MailMessage;
+                    //_database.Repository<MailMessage>().Create(mailMessageContext.MailMessage);
                 }
             }
+
+            return null;
         }
 
         private MailTemplate GetMailTemplate(MailSettings mailSettings)
@@ -304,9 +328,7 @@ namespace Tango.Mail
 
             return null;
         }
-
         
-
         private (string subject, string body) ParseTemplate<T>(string templateSubject, string templateBody, T viewData)
         {
             var type = viewData.GetType();

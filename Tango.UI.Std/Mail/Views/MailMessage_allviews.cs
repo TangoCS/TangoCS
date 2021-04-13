@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq.Expressions;
+using Tango.Data;
 using Tango.UI;
 using Tango.UI.Controls;
 using Tango.UI.Std;
@@ -34,6 +35,37 @@ namespace Tango.Mail
             f.AddCellWithSortAndFilter(o => o.LastSendAttemptDate, o => o.LastSendAttemptDate.DateTimeToString());
             f.AddCellWithSortAndFilter(o => o.AttemptsToSendCount, o => o.AttemptsToSendCount);
             f.AddCellWithSortAndFilter(o => o.CreateDate, o => o.CreateDate.DateTimeToString());
+            f.AddActionsCell(o => al => al.To<MailMessageAttachment>("viewlist", AccessControl)
+                .WithArg(Constants.Id, o.ID).WithArg("title", o.Subject).WithImage("hie").WithTitle("Состав письма"));
+        }
+    }
+    
+    [OnAction(typeof(MailMessageAttachment), "viewlist")]
+    public class MailMessageAttachment_viewlist : default_list_rep<MailMessageAttachment>
+    {
+        public int MailMessageId { get; set; }
+
+        protected override string FormTitle => $"Состав письма \"{Context.GetArg("title")}\"";
+
+        protected override IRepository<MailMessageAttachment> GetRepository()
+        {
+            var rep = base.GetRepository();
+            var mailmessageid = Context.GetIntArg(Constants.Id, 0);
+            rep.Parameters.Add("mailmessageid", mailmessageid);
+            return rep;
+        }
+
+        protected override void ToolbarLeft(MenuBuilder t)
+        {
+            t.ItemBack();
+            t.ItemSeparator();
+            t.ItemFilter(Filter);
+        }
+
+        protected override void FieldsInit(FieldCollection<MailMessageAttachment> fields)
+        {
+            fields.AddCellWithSortAndFilter(o => o.FileType, o => o.FileType);
+            fields.AddCellWithSortAndFilter(o => o.FileTitle, o => o.FileTitle);
         }
     }
 }

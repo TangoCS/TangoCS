@@ -17,8 +17,9 @@ namespace Tango.Mail
         [Column]
         public virtual int MailMessageID { get; set; }
         [Column]
-        public virtual Guid FileID { get; set; } 
-
+        public virtual Guid FileID { get; set; }
+        public string FileTitle { get; set; }
+        public string FileType { get; set; }
         public string Title { get; }
     }
 

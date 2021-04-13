@@ -34,8 +34,6 @@ namespace Tango.Mail
             fields.AddActionsCell(
                 o => al => al.ToView<MailSettings>(AccessControl, o.ID)
                     .WithImage("mail").WithTitle("Тема и Текст письма"),
-                o => al => al.ToView<MailSettings>(AccessControl, o.ID)
-                    .WithImage("hie").WithTitle("Состав письма"),
                 o => al => al.ToEdit<MailSettings>(AccessControl, o.ID)
                     .WithImage("edit").WithTitle("Редактировать"),
                 o => al => al.ToDelete<MailSettings>(AccessControl, o.ID)
