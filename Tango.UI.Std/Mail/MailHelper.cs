@@ -12,14 +12,14 @@ namespace Tango
 {
     public class MethodSettingsCollection
     {
-        public List<MethodSettings> MethodSettings { get; set; }
+        public MethodSettings[] MethodSettings { get; set; }
     }
     
     public class MethodSettings
     {
         public string ClassName { get; set; }
         public string MethodName { get; set; }
-        public Dictionary<string, string> Params { get; set; }
+        public Dictionary<string, object> Params { get; set; }
     }
 
     public class MethodHelper
@@ -45,41 +45,47 @@ namespace Tango
             object[] values = null;
             if (methodSettings.Params != null && methodSettings.Params.Any() && ps != null)
             {
-                values = new object[methodSettings.Params.Count];
-                for (int i = 0; i < ps.Length; i++)
+                var count = methodSettings.Params.Count;
+                if (ps.Any(p => p.ParameterType == typeof(TContext)))
+                    count += 1;
+                values = new object[count];
+                for (var i = 0; i < ps.Length; i++)
                 {
                     var key = ps[i].Name.ToLower();
                     if (methodSettings.Params.TryGetValue(key, out var value))
                     {
                         if (ps[i].ParameterType == typeof(Guid))
-                            values[i] = value.ToGuid();
+                            values[i] = (Guid) value; // value.ToGuid();
                         else if (ps[i].ParameterType == typeof(DateTime?))
-                            values[i] = value.ToDateTime();
+                            values[i] = (DateTime?) value; //value.ToDateTime();
                         else if (ps[i].ParameterType == typeof(DateTime))
-                            values[i] = value.ToDateTime(DateTime.MinValue);
+                            values[i] = (DateTime) value; //value.ToDateTime(DateTime.MinValue);
                         else if (ps[i].ParameterType == typeof(int?))
-                            values[i] = value.ToInt32();
+                            values[i] = (int?) value; //value.ToInt32();
                         else if (ps[i].ParameterType == typeof(int))
-                            values[i] = value.ToInt32(0);
+                            values[i] = (int) value; // value.ToInt32(0);
                         else if (ps[i].ParameterType == typeof(long?))
-                            values[i] = value.ToInt64();
+                            values[i] = (long?) value; //value.ToInt64();
                         else if (ps[i].ParameterType == typeof(long))
-                            values[i] = value.ToInt64(0);
+                            values[i] = (long) value; // value.ToInt64(0);
                         else if (ps[i].ParameterType == typeof(bool?))
-                            values[i] = value.ToBoolean();
+                            values[i] = (bool?) value; // value.ToBoolean();
                         else if (ps[i].ParameterType == typeof(bool))
-                            values[i] = value.ToBoolean(false);
+                            values[i] = (bool) value; // value.ToBoolean(false);
                         else
                             values[i] = value;
                     }
                     else
                     {
                         if (ps[i].ParameterType == typeof(TContext))
-                        {
                             values[i] = context;
-                        }
                     }
                 }
+            }
+            else
+            {
+                values = new object[1];
+                values[0] = context;
             }
 
             if (method != null)
@@ -108,25 +114,25 @@ namespace Tango
                     var key = ps[i].Name.ToLower();
                     if (methodSettings.Params.TryGetValue(key, out var value))
                     {
-                        if (ps[i].ParameterType == typeof(Guid))
-                            values[i] = value.ToGuid();
-                        else if (ps[i].ParameterType == typeof(DateTime?))
-                            values[i] = value.ToDateTime();
-                        else if (ps[i].ParameterType == typeof(DateTime))
-                            values[i] = value.ToDateTime(DateTime.MinValue);
-                        else if (ps[i].ParameterType == typeof(int?))
-                            values[i] = value.ToInt32();
-                        else if (ps[i].ParameterType == typeof(int))
-                            values[i] = value.ToInt32(0);
-                        else if (ps[i].ParameterType == typeof(long?))
-                            values[i] = value.ToInt64();
-                        else if (ps[i].ParameterType == typeof(long))
-                            values[i] = value.ToInt64(0);
-                        else if (ps[i].ParameterType == typeof(bool?))
-                            values[i] = value.ToBoolean();
-                        else if (ps[i].ParameterType == typeof(bool))
-                            values[i] = value.ToBoolean(false);
-                        else
+                        // if (ps[i].ParameterType == typeof(Guid))
+                        //     values[i] = value.ToGuid();
+                        // else if (ps[i].ParameterType == typeof(DateTime?))
+                        //     values[i] = value.ToDateTime();
+                        // else if (ps[i].ParameterType == typeof(DateTime))
+                        //     values[i] = value.ToDateTime(DateTime.MinValue);
+                        // else if (ps[i].ParameterType == typeof(int?))
+                        //     values[i] = value.ToInt32();
+                        // else if (ps[i].ParameterType == typeof(int))
+                        //     values[i] = value.ToInt32(0);
+                        // else if (ps[i].ParameterType == typeof(long?))
+                        //     values[i] = value.ToInt64();
+                        // else if (ps[i].ParameterType == typeof(long))
+                        //     values[i] = value.ToInt64(0);
+                        // else if (ps[i].ParameterType == typeof(bool?))
+                        //     values[i] = value.ToBoolean();
+                        // else if (ps[i].ParameterType == typeof(bool))
+                        //     values[i] = value.ToBoolean(false);
+                        // else
                             values[i] = value;
                     }
                     else
@@ -154,9 +160,17 @@ namespace Tango.Mail
 {
     public class RecipientsMail
     {
-        public void Run(MailMessageContext context, List<string> recipients)
+        public void Run(MailMessageContext context, string recipients)
         {
-            context.MailMessage.Recipients = recipients.Join(";");
+            context.MailMessage.Recipients = recipients;
+        }
+    }
+    
+    public class AttachmentMail
+    {
+        public void Run(MailMessageContext context)
+        {
+            //context.MailMessage.Recipients = recipients.Join(";");
         }
     }
     
@@ -195,43 +209,25 @@ namespace Tango.Mail
             LastInfo: [LastInfo]
             ";
 
-            const string methodSettingsJson = @"
+            const string preProcessingJson = @"
 {
-    methodSettings: {
-        className: 'Askue2.TestAttachmentMail',
-        methodName: 'Run',
-        params: {
-            
+'MethodSettings':
+[
+    {
+        'ClassName':'Tango.Mail.RecipientsMail',
+        'MethodName':'Run',
+        'Params': {
+            'recipients': 'aa@aa.ru;bb@bb.ru'
         }
     },
     {
-        className: 'Askue2.TestRecipientsMail',
-        methodName: 'Run',
-        params: {
-            
-        }
+        'ClassName':'Tango.Mail.AttachmentMail',
+        'MethodName':'Run',
+        'Params':null
     }
-}
+]}
 ";
             
-            
-            
-            const string attachmentJson = @"
-{
-    className: 'Askue2.TestAttachmentMail',
-    methodName: 'Run',
-    params: {
-        
-    }
-}";
-            const string recipientsJson = @"
-{
-    className: 'Askue2.TestRecipientsMail',
-    methodName: 'Run',
-    params: {
-        
-    }
-}";
             var (subject, body) = ParseTemplate(templateSubj, templateBody, viewData);
 
             var context = new MailMessageContext
@@ -247,19 +243,11 @@ namespace Tango.Mail
                 }
             };
             
-            var settings = JsonConvert.DeserializeObject<MethodSettingsCollection>(methodSettingsJson);
+            var settings = JsonConvert.DeserializeObject<MethodSettingsCollection>(preProcessingJson);
+            
             _methodHelper.ExecuteMethodCollection(settings, context);
 
-            Trace.Write(settings);
-            // var attachmentSettings = JsonConvert.DeserializeObject<MethodSettings>(attachmentJson);
-            // _methodHelper.ExecuteMethod(attachmentSettings, context);
-            //
-            // var recipientsSettings = JsonConvert.DeserializeObject<MethodSettings>(recipientsJson);
-            // _methodHelper.ExecuteMethod(recipientsSettings, context);
-            
-            
-            
-            //Trace.Write(mailMessage);
+            Trace.Write(context);
         }
 
         public void CreateMailMessage<TEntity>(string systemName, TEntity viewData)
