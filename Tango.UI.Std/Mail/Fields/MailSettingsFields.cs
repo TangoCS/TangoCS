@@ -11,9 +11,8 @@ namespace Tango.Mail
         {
             public CommonFields.Title Title { get; set; }
             public MailTemplateTitle MailTemplateTitle { get; set; }
-            public CreateMailMethod CreateMailMethod { get; set; }
+            public PreProcessingMethod PreProcessingMethod { get; set; }
             public PostProcessingMethod PostProcessingMethod { get; set; }
-            public RecipientsMethod RecipientsMethod { get; set; }
             public TimeoutValue TimeoutValue { get; set; }
             public SendMailDayInterval SendMailDayInterval { get; set; }
             public SendMailStartInterval SendMailStartInterval { get; set; }
@@ -44,18 +43,15 @@ namespace Tango.Mail
             public override bool IsRequired => CanRequired;
         }
         
-        public class CreateMailMethod : EntityField<MailSettings, string>
+        public class PreProcessingMethod : EntityField<MailSettings, string>
         {
+            public override bool IsRequired { get; set; } = false;
             public override string Hint { get; set; } = string.Empty;
         }
         
         public class PostProcessingMethod : EntityField<MailSettings, string>
         {
-            public override string Hint { get; set; } = string.Empty;
-        }
-        
-        public class RecipientsMethod : EntityField<MailSettings, string>
-        {
+            public override bool IsRequired { get; set; } = false;
             public override string Hint { get; set; } = string.Empty;
         }
         

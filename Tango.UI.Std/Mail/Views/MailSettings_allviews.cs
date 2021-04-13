@@ -25,9 +25,8 @@ namespace Tango.Mail
             fields.AddCellWithSortAndFilter(o => o.MailCategoryTitle, o=>o.MailCategoryTitle);
             fields.AddCellWithSortAndFilter(o => o.AttemptsToSendCount, o=>o.AttemptsToSendCount);
             fields.AddCellWithSortAndFilter(o => o.TimeoutValue, o=>o.TimeoutValue);
-            fields.AddCellWithSortAndFilter(o => o.AttachmentMethod, o => o.AttachmentMethod);
+            fields.AddCellWithSortAndFilter(o => o.PreProcessingMethod, o => o.PreProcessingMethod);
             fields.AddCellWithSortAndFilter(o => o.PostProcessingMethod, o => o.PostProcessingMethod);
-            fields.AddCellWithSortAndFilter(o => o.RecipientsMethod, o => o.RecipientsMethod);
             fields.AddCellWithSortAndFilter(o => o.SystemName, o => o.SystemName);
             fields.AddCell(o => o.SendMailDayInterval, o => o.SendMailDayInterval);
             fields.AddCell(o => o.SendMailStartInterval, o => o.SendMailStartInterval);
@@ -78,9 +77,8 @@ namespace Tango.Mail
             {
                 w.PlainText(Group.Title);
                 w.PlainText(Group.MailCategoryTitle);
-                w.PlainText(Group.CreateMailMethod);
+                w.PlainText(Group.PreProcessingMethod);
                 w.PlainText(Group.PostProcessingMethod);
-                w.PlainText(Group.RecipientsMethod);
                 w.PlainText(Group.TimeoutValue);
                 w.PlainText(Group.SystemName);
                 w.PlainText(Group.SendMailDayInterval);
@@ -139,9 +137,8 @@ namespace Tango.Mail
                 if(CreateObjectMode)
                     w.DropDownList(Group.MailTemplateID, _selectMailTemplate);
                 w.DropDownList(Group.MailCategoryID, _selectMailCategory);
-                w.TextBox(Group.CreateMailMethod);
+                w.TextBox(Group.PreProcessingMethod);
                 w.TextBox(Group.PostProcessingMethod);
-                w.TextBox(Group.RecipientsMethod);
                 w.TextBox(Group.TimeoutValue);
                 w.TextBox(Group.SystemName);
                 w.TextBox(Group.SendMailDayInterval);
