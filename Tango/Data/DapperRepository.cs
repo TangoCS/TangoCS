@@ -14,8 +14,8 @@ namespace Tango.Data
 {
 	public class Store
 	{
-		public IDbConnection Connection { get; }
-		public IDbTransaction Transaction { get; set; }
+		public virtual IDbConnection Connection { get; }
+		public virtual IDbTransaction Transaction { get; set; }
 
 		public Store(IDbConnection connection)
 		{
