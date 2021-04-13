@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -48,17 +49,17 @@ namespace Tango.Mail
 
     public class AttachmentMailResult
     {
-        
+        public List<string> Result { get; set; }
     }
     
     public class PostProcessingMailResult
     {
-        
+        public List<string> Result { get; set; }
     }
     
     public class RecipientsMailResult
     {
-        
+        public List<string> Result { get; set; }
     }
     
     // 1. Контекст должен быть общий. Не просто MailMessageContext. Например, абстрактный TangoMethodResultContex
@@ -72,7 +73,7 @@ namespace Tango.Mail
             _database = database;
         }
 
-        public void CreateMailMessage<TEntity>(string systemName, TEntity viewData)
+        public void CreateMailMessageTest<TEntity>(string systemName, TEntity viewData)
         {
             const string templateSubj = "Техническая ошибка в журнале загрузки: [IntegrationLogRecord_ID]";
             const string templateBody = @"Ошибка в журнале загрузки:
@@ -88,23 +89,48 @@ namespace Tango.Mail
             UpdateInfo: [UpdateInfo]
             LastInfo: [LastInfo]
             ";
-            const string json = @"
+            const string attachmentJson = @"
 {
-    className: 'Askue2.MGLEP.Views.Test',
-    methodName: 'Hello',
+    className: 'Askue2.TestAttachmentMail',
+    methodName: 'Run',
     params: {
-        'a': 'user'
+        
     }
-}
-";
-            var (s, t) = ParseTemplate(templateSubj, templateBody, viewData);
+}";
+            const string recipientsJson = @"
+{
+    className: 'Askue2.TestRecipientsMail',
+    methodName: 'Run',
+    params: {
+        
+    }
+}";
+            var (subject, body) = ParseTemplate(templateSubj, templateBody, viewData);
+            
+            var context = new MailMessageContext();
 
-            var json1 = JsonConvert.DeserializeObject<MethodSettings>(json);
-            var v = ExecuteMethod<AttachmentMailResult>(json1);
+            var attachmentSettings = JsonConvert.DeserializeObject<MethodSettings>(attachmentJson);
+            context.AttachmentMailResult = ExecuteMethod<AttachmentMailResult>(attachmentSettings);
+            
+            var recipientsSettings = JsonConvert.DeserializeObject<MethodSettings>(recipientsJson);
+            context.RecipientsMailResult = ExecuteMethod<RecipientsMailResult>(recipientsSettings);
+            
+            var mailMessage = new MailMessage
+            {
+                MailMessageStatusID = (int) MailMessageStatus.New,
+                AttemptsToSendCount = 0,
+                LastSendAttemptDate = null,
+                CreateDate = DateTime.Now,
+                Subject = subject,
+                Body = body,
+                Recipients = context.RecipientsMailResult.Result.Join(";")
+            };
+            
+            Trace.Write(mailMessage);
+        }
 
-            Trace.Write(s);
-
-
+        public void CreateMailMessage<TEntity>(string systemName, TEntity viewData)
+        {
             var mailSettings = _database.Repository<MailSettings>().List()
                 .FirstOrDefault(item => item.SystemName != null && item.SystemName.ToLower().Equals(systemName.ToLower()));
             if (mailSettings != null)
@@ -140,11 +166,13 @@ namespace Tango.Mail
                     var mailMessage = new MailMessage
                     {
                         MailMessageStatusID = (int) MailMessageStatus.New,
-                        AttemptsToSendCount = 0,
+                        AttemptsToSendCount = mailSettings.AttemptsToSendCount ?? 0,
                         LastSendAttemptDate = null,
                         CreateDate = DateTime.Now,
                         Subject = subject,
-                        Body = body
+                        Body = body,
+                        TimeoutValue = mailSettings.TimeoutValue,
+                        Recipients = context.RecipientsMailResult.Result.Join(";")
                     };
                     
                     _database.Repository<MailMessage>().Create(mailMessage);
