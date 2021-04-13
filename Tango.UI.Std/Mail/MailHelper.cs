@@ -188,8 +188,8 @@ namespace Tango.Mail
     public class MailMessageContext
     {
         public MailMessage MailMessage { get; set; }
-        public List<Guid> ExistingFileIds { get; set; }
-        public List<FileData> NewFiles { get; set; }
+        public List<Guid> ExistingFileIds { get; set; } = new List<Guid>();
+        public List<FileData> NewFiles { get; set; } = new List<FileData>();
     }
 
     public class MailHelper
@@ -269,7 +269,7 @@ namespace Tango.Mail
             Trace.Write(context);
         }
 
-        public MailMessage CreateMailMessage<TEntity>(string systemName, TEntity viewData)
+        public void CreateMailMessage<TEntity>(string systemName, TEntity viewData)
         {
             var mailSettings = _database.Repository<MailSettings>().List()
                 .FirstOrDefault(item => item.SystemName != null && item.SystemName.ToLower().Equals(systemName.ToLower()));
@@ -308,12 +308,19 @@ namespace Tango.Mail
                         _methodHelper.ExecuteMethod(mailMethod, mailMessageContext);
                     }
 
-                    return mailMessageContext.MailMessage;
-                    //_database.Repository<MailMessage>().Create(mailMessageContext.MailMessage);
+                    _database.Repository<MailMessage>().Create(mailMessageContext.MailMessage);
+
+                    foreach (var existFileId in mailMessageContext.ExistingFileIds)
+                    {
+                        var mailMessageAttachment = new MailMessageAttachment
+                        {
+                            MailMessageID = mailMessageContext.MailMessage.MailMessageID,
+                            FileID = existFileId
+                        };
+                        _database.Repository<MailMessageAttachment>().Create(mailMessageAttachment);
+                    }
                 }
             }
-
-            return null;
         }
 
         private MailTemplate GetMailTemplate(MailSettings mailSettings)
