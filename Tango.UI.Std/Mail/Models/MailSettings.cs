@@ -23,11 +23,9 @@ namespace Tango.Mail
         [Column]
         public virtual string Title { get; set; }
         [Column]
-        public virtual string AttachmentMethod { get; set; }
+        public virtual string PreProcessingMethod { get; set; }
         [Column]
         public virtual string PostProcessingMethod { get; set; }
-        [Column]
-        public virtual string RecipientsMethod { get; set; }
         [Column]
         public virtual int TimeoutValue { get; set; }
         [Column]
