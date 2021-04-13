@@ -8,9 +8,21 @@ namespace Tango.Mail
 {
     public enum MailMessageStatus
     {
+        /// <summary>
+        /// Новое
+        /// </summary>
         New = 1,
+        /// <summary>
+        /// Отправлено
+        /// </summary>
         Sent = 2,
+        /// <summary>
+        /// Ошибка отправки
+        /// </summary>
         SendError = 3,
+        /// <summary>
+        /// Остановка отправки
+        /// </summary>
         StopSending = 4
     }
     

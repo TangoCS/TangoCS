@@ -60,6 +60,9 @@ namespace Tango.Mail
     {
         
     }
+    
+    // 1. Контекст должен быть общий. Не просто MailMessageContext. Например, абстрактный TangoMethodResultContex
+    // 2. Метод обработки методов должен быть общий и возможно находиться в общем контексте
 
     public class MailHelper
     {
@@ -97,7 +100,7 @@ namespace Tango.Mail
             var (s, t) = ParseTemplate(templateSubj, templateBody, viewData);
 
             var json1 = JsonConvert.DeserializeObject<MethodSettings>(json);
-            var v = ParseAndExecuteMethod<AttachmentMailResult>(json1);
+            var v = ExecuteMethod<AttachmentMailResult>(json1);
 
             Trace.Write(s);
 
@@ -117,21 +120,21 @@ namespace Tango.Mail
                     {
                         var mailMethod = JsonConvert.DeserializeObject<MethodSettings>(mailSettings.AttachmentMethod);
                         
-                        context.AttachmentMailResult = ParseAndExecuteMethod<AttachmentMailResult>(mailMethod);
+                        context.AttachmentMailResult = ExecuteMethod<AttachmentMailResult>(mailMethod);
                     }
                     
                     if (!string.IsNullOrEmpty(mailSettings.PostProcessingMethod))
                     {
                         var mailMethod = JsonConvert.DeserializeObject<MethodSettings>(mailSettings.PostProcessingMethod);
                         
-                        context.PostProcessingMailResult = ParseAndExecuteMethod<PostProcessingMailResult>(mailMethod);
+                        context.PostProcessingMailResult = ExecuteMethod<PostProcessingMailResult>(mailMethod);
                     }
                     
                     if (!string.IsNullOrEmpty(mailSettings.RecipientsMethod))
                     {
                         var mailMethod = JsonConvert.DeserializeObject<MethodSettings>(mailSettings.RecipientsMethod);
                         
-                        context.RecipientsMailResult = ParseAndExecuteMethod<RecipientsMailResult>(mailMethod);
+                        context.RecipientsMailResult = ExecuteMethod<RecipientsMailResult>(mailMethod);
                     }
                     
                     var mailMessage = new MailMessage
@@ -162,7 +165,7 @@ namespace Tango.Mail
             return null;
         }
 
-        private T ParseAndExecuteMethod<T>(MethodSettings methodSettings)
+        private T ExecuteMethod<T>(MethodSettings methodSettings)
         {
             var objectType = AppDomain.CurrentDomain
                 .GetAssemblies()
@@ -208,7 +211,6 @@ namespace Tango.Mail
             if (method != null)
             {
                 var obj = Activator.CreateInstance(method.DeclaringType);
-                //obj.InjectProperties(serviceProvider);
                 return (T)method.Invoke(obj, values);
             }
 
