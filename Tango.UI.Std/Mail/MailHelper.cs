@@ -7,6 +7,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tango.Data;
+using Tango.Identity;
 
 namespace Tango
 {
@@ -159,47 +160,23 @@ namespace Tango
 
 namespace Tango.Mail
 {
-    public class RecipientsMail
-    {
-        public void Run(MailMessageContext context, string recipients)
-        {
-            context.MailMessage.Recipients = recipients;
-        }
-    }
-    
-    public class ExistAttachmentMail
-    {
-        public void Run(MailMessageContext context, string attachmentIds)
-        {
-            var ids = attachmentIds.Split(';');
-            var aIds = ids.Select(Guid.Parse);
-            context.ExistingFileIds = aIds.ToList();
-        }
-    }
-    
-    public class NewAttachmentMail
-    {
-        public void Run(MailMessageContext contexts)
-        {
-            //context.MailMessage.Recipients = recipients.Join(";");
-        }
-    }
-    
     public class MailMessageContext
     {
         public MailMessage MailMessage { get; set; }
-        public List<Guid> ExistingFileIds { get; set; }
-        public List<FileData> NewFiles { get; set; }
+        public List<Guid> ExistingFileIds { get; set; } = new List<Guid>();
+        public List<FileData> NewFiles { get; set; } = new List<FileData>();
     }
 
     public class MailHelper
     {
         private readonly IDatabase _database;
+        private readonly IUserIdAccessor<object> _userIdAccessor;
         private readonly MethodHelper _methodHelper;
-
-        public MailHelper(IDatabase database, MethodHelper methodHelper)
+        
+        public MailHelper(IDatabase database, IUserIdAccessor<object> userIdAccessor, MethodHelper methodHelper)
         {
             _database = database;
+            _userIdAccessor = userIdAccessor;
             _methodHelper = methodHelper;
         }
 
@@ -232,6 +209,13 @@ namespace Tango.Mail
         }
     },
     {
+        'ClassName':'Tango.Mail.CopyRecipientsMail',
+        'MethodName':'Run',
+        'Params': {
+            'recipients': 'tt@tt.ru;cc@cc.ru'
+        }
+    },
+    {
         'ClassName':'Tango.Mail.ExistAttachmentMail',
         'MethodName':'Run',
         'Params':
@@ -258,7 +242,8 @@ namespace Tango.Mail
                     LastSendAttemptDate = null,
                     CreateDate = DateTime.Now,
                     Subject = subject,
-                    Body = body
+                    Body = body,
+                    LastModifiedUserID = _userIdAccessor.CurrentUserID ?? _userIdAccessor.SystemUserID
                 }
             };
             
@@ -269,7 +254,7 @@ namespace Tango.Mail
             Trace.Write(context);
         }
 
-        public MailMessage CreateMailMessage<TEntity>(string systemName, TEntity viewData)
+        public void CreateMailMessage<TEntity>(string systemName, TEntity viewData)
         {
             var mailSettings = _database.Repository<MailSettings>().List()
                 .FirstOrDefault(item => item.SystemName != null && item.SystemName.ToLower().Equals(systemName.ToLower()));
@@ -290,7 +275,8 @@ namespace Tango.Mail
                             CreateDate = DateTime.Now,
                             Subject = subject,
                             Body = body,
-                            TimeoutValue = mailSettings.TimeoutValue
+                            TimeoutValue = mailSettings.TimeoutValue,
+                            LastModifiedUserID = _userIdAccessor.CurrentUserID ?? _userIdAccessor.SystemUserID
                         }
                     };
                     
@@ -308,12 +294,19 @@ namespace Tango.Mail
                         _methodHelper.ExecuteMethod(mailMethod, mailMessageContext);
                     }
 
-                    return mailMessageContext.MailMessage;
-                    //_database.Repository<MailMessage>().Create(mailMessageContext.MailMessage);
+                    _database.Repository<MailMessage>().Create(mailMessageContext.MailMessage);
+
+                    foreach (var existFileId in mailMessageContext.ExistingFileIds)
+                    {
+                        var mailMessageAttachment = new MailMessageAttachment
+                        {
+                            MailMessageID = mailMessageContext.MailMessage.MailMessageID,
+                            FileID = existFileId
+                        };
+                        _database.Repository<MailMessageAttachment>().Create(mailMessageAttachment);
+                    }
                 }
             }
-
-            return null;
         }
 
         private MailTemplate GetMailTemplate(MailSettings mailSettings)
