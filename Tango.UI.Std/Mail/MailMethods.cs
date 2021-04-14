@@ -1,14 +1,18 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 
-namespace Tango.Mail
+namespace Tango.Mail.Methods
 {
     /// <summary>
     /// Получение списка адресатов
     /// </summary>
+    [TypeCache(MailTypeCacheKeys.PreProcessingMethod)]
+    [Description("Предварительная обработка")]
     public class RecipientsMail
     {
-        public void Run(MailMessageContext context, string recipients)
+        [Description("Заполнить список адресатов")]
+        public void Run(MailMessageContext context, [Description("Список адресатов")]string recipients, [Description("Список адресатов2")]string recipients2)
         {
             context.MailMessage.Recipients = recipients;
         }
@@ -17,9 +21,12 @@ namespace Tango.Mail
     /// <summary>
     /// Получение списка адресатов для постановки в копию
     /// </summary>
+    [TypeCache(MailTypeCacheKeys.PreProcessingMethod)]
+    [Description("Предварительная обработка")]
     public class CopyRecipientsMail
     {
-        public void Run(MailMessageContext context, string recipients)
+        [Description("Заполнить список копий адресатов")]
+        public void Run(MailMessageContext context, [Description("Список адресатов")]string recipients)
         {
             context.MailMessage.CopyRecipients = recipients;
         }
@@ -28,9 +35,12 @@ namespace Tango.Mail
     /// <summary>
     /// Получение списка известных вложений
     /// </summary>
+    [TypeCache(MailTypeCacheKeys.PreProcessingMethod)]
+    [Description("Предварительная обработка")]
     public class ExistAttachmentMail
     {
-        public void Run(MailMessageContext context, string attachmentIds)
+        [Description("Заполнить вложения")]
+        public void Run(MailMessageContext context, [Description("Список вложений")]string attachmentIds)
         {
             if(string.IsNullOrEmpty(attachmentIds))
                 return;
@@ -39,6 +49,14 @@ namespace Tango.Mail
             var aIds = ids.Select(Guid.Parse);
             context.ExistingFileIds = aIds.ToList();
         }
+    }
+
+    [TypeCache(MailTypeCacheKeys.PostProcessingMethod)]
+    [Description("post")]
+    public class PostProcessingMailCls
+    {
+        [Description("run")]
+        public void Run() {}
     }
     
     public class NewAttachmentMail
