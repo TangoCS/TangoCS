@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Newtonsoft.Json;
 using Tango.Data;
 using Tango.UI;
 
@@ -43,16 +44,24 @@ namespace Tango.Mail
             public override bool IsRequired => CanRequired;
         }
         
-        public class PreProcessingMethod : EntityField<MailSettings, string>
+        public class PreProcessingMethod : EntityField<MailSettings, MethodSettings>
         {
             public override bool IsRequired { get; set; } = false;
             public override string Hint { get; set; } = string.Empty;
+            public override void SubmitProperty(ValidationMessageCollection val)
+            {
+                //base.SubmitProperty(val);
+            }
         }
         
-        public class PostProcessingMethod : EntityField<MailSettings, string>
+        public class PostProcessingMethod : EntityField<MailSettings, MethodSettings>
         {
             public override bool IsRequired { get; set; } = false;
             public override string Hint { get; set; } = string.Empty;
+            public override void SubmitProperty(ValidationMessageCollection val)
+            {
+                //base.SubmitProperty(val);
+            }
         }
         
         public class TimeoutValue : EntityField<MailSettings, int>

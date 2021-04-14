@@ -52,9 +52,12 @@ namespace Tango.UI.Controls
 					return new SelectListItem { Value = t.FullName + "|" + m.Name, Text = clsName + "." + mName };
 				});
 			});
-			w.DropDownList(ID + "_ddl", $"{value.ClassName}|{value.MethodName}", list.AddEmptyItem(), a => a.OnChangePostEvent(OnChangeMethod));
+			w.Div(a => a.ID(ID + "_fld"), () =>
+			{
+				w.DropDownList(ID + "_ddl", $"{value.ClassName}|{value.MethodName}", list.AddEmptyItem(), a => a.OnChangePostEvent(OnChangeMethod));
 
-			w.Div(a => a.ID(ID + "_parms"), () => Parms(w, value));
+				w.Div(a => a.ID(ID + "_parms"), () => Parms(w, value));
+			});
 		}
 
 		public void OnChangeMethod(ApiResponse response)
