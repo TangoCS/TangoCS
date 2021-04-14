@@ -43,27 +43,23 @@ namespace Tango
 
 	public static class SelectListItemExtensions
 	{
-		public static List<SelectListItem> AddEmptyItem(this List<SelectListItem> list, string text = null)
+		public static List<SelectListItem> AddEmptyItem(this List<SelectListItem> list)
 		{
-			var sl = new SelectListItem();
-			
-			if (text != null)
-				sl.Text = text;
-			
-			list.Insert(0, sl);
+			list.Insert(0, new SelectListItem());
 			return list;
 		}
 
-		public static List<SelectListItem> AddItem(this IEnumerable<SelectListItem> list, string text, string value)
+		public static List<SelectListItem> AddItem(this IEnumerable<SelectListItem> list, string text, string value = null)
 		{
 			var l = list.ToList();
 			l.Add(new SelectListItem(text, value));
 			return l;
 		}
 
-		public static List<SelectListItem> AddEmptyItem(this IEnumerable<SelectListItem> list, string text = null)
+		public static List<SelectListItem> AddEmptyItem(this IEnumerable<SelectListItem> list)
 		{
-			return list.ToList().AddEmptyItem(text);
+			return list.ToList().AddEmptyItem();
 		}
+		
 	}
 }
