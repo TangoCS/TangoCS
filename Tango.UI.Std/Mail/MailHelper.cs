@@ -7,6 +7,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tango.Data;
+using Tango.Identity;
 
 namespace Tango
 {
@@ -159,32 +160,6 @@ namespace Tango
 
 namespace Tango.Mail
 {
-    public class RecipientsMail
-    {
-        public void Run(MailMessageContext context, string recipients)
-        {
-            context.MailMessage.Recipients = recipients;
-        }
-    }
-    
-    public class ExistAttachmentMail
-    {
-        public void Run(MailMessageContext context, string attachmentIds)
-        {
-            var ids = attachmentIds.Split(';');
-            var aIds = ids.Select(Guid.Parse);
-            context.ExistingFileIds = aIds.ToList();
-        }
-    }
-    
-    public class NewAttachmentMail
-    {
-        public void Run(MailMessageContext contexts)
-        {
-            //context.MailMessage.Recipients = recipients.Join(";");
-        }
-    }
-    
     public class MailMessageContext
     {
         public MailMessage MailMessage { get; set; }
@@ -195,11 +170,13 @@ namespace Tango.Mail
     public class MailHelper
     {
         private readonly IDatabase _database;
+        private readonly IUserIdAccessor<object> _userIdAccessor;
         private readonly MethodHelper _methodHelper;
-
-        public MailHelper(IDatabase database, MethodHelper methodHelper)
+        
+        public MailHelper(IDatabase database, IUserIdAccessor<object> userIdAccessor, MethodHelper methodHelper)
         {
             _database = database;
+            _userIdAccessor = userIdAccessor;
             _methodHelper = methodHelper;
         }
 
@@ -258,7 +235,8 @@ namespace Tango.Mail
                     LastSendAttemptDate = null,
                     CreateDate = DateTime.Now,
                     Subject = subject,
-                    Body = body
+                    Body = body,
+                    LastModifiedUserID = _userIdAccessor.CurrentUserID ?? _userIdAccessor.SystemUserID
                 }
             };
             
@@ -290,7 +268,8 @@ namespace Tango.Mail
                             CreateDate = DateTime.Now,
                             Subject = subject,
                             Body = body,
-                            TimeoutValue = mailSettings.TimeoutValue
+                            TimeoutValue = mailSettings.TimeoutValue,
+                            LastModifiedUserID = _userIdAccessor.CurrentUserID ?? _userIdAccessor.SystemUserID
                         }
                     };
                     
