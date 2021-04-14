@@ -15,6 +15,17 @@ namespace Tango.Mail
     }
     
     /// <summary>
+    /// Получение списка адресатов для постановки в копию
+    /// </summary>
+    public class CopyRecipientsMail
+    {
+        public void Run(MailMessageContext context, string recipients)
+        {
+            context.MailMessage.CopyRecipients = recipients;
+        }
+    }
+    
+    /// <summary>
     /// Получение списка известных вложений
     /// </summary>
     public class ExistAttachmentMail

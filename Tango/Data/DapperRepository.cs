@@ -9,6 +9,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using Tango.Exceptions;
 
 namespace Tango.Data
 {
@@ -135,7 +136,7 @@ namespace Tango.Data
 						if (p != null)
 							return p;
 
-						throw new Exception();
+						throw new PropertyInfoNotFoundException($"В моделе {type.Name} отсутствует свойство {name}");
 					});
 				
 				SqlMapper.SetTypeMap(type, custom);

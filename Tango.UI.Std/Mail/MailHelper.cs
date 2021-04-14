@@ -209,6 +209,13 @@ namespace Tango.Mail
         }
     },
     {
+        'ClassName':'Tango.Mail.CopyRecipientsMail',
+        'MethodName':'Run',
+        'Params': {
+            'recipients': 'tt@tt.ru;cc@cc.ru'
+        }
+    },
+    {
         'ClassName':'Tango.Mail.ExistAttachmentMail',
         'MethodName':'Run',
         'Params':
