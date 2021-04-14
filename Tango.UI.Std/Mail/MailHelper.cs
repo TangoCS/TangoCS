@@ -220,7 +220,7 @@ namespace Tango.Mail
         'MethodName':'Run',
         'Params':
         {
-            'attachmentIds': 'fb1cd464-8c1d-4016-930a-a9c540eae9e5;d44d0b21-3fb2-4b01-b9ea-e47f5072c42c;44c253a6-4002-4d2b-810e-59b895eec6be;f946232b-02f6-4599-a8c4-a165ac234009;878310ad-7b17-498c-a072-fb59bab8eb08;6ba33718-52f8-4256-b8db-087f801b3bf0'            
+            'attachmentIds': '3F632E7B-FB9D-4488-82A8-7F47FDE0E2F1;639E91BC-A671-472B-A50E-85E8CF1C07BC;0E6D07FD-9D2B-4B70-B552-70D8729BBDD9;2F92D8AF-5191-4849-977F-D3D79D10BE2B;DF4C3F79-AD53-4863-95A6-F04DBB26AF5C'            
         }
     },
     {
@@ -252,6 +252,18 @@ namespace Tango.Mail
             _methodHelper.ExecuteMethodCollection(settings, context);
 
             Trace.Write(context);
+            
+            _database.Repository<MailMessage>().Create(context.MailMessage);
+
+            foreach (var existFileId in context.ExistingFileIds)
+            {
+                var mailMessageAttachment = new MailMessageAttachment
+                {
+                    MailMessageID = context.MailMessage.MailMessageID,
+                    FileID = existFileId
+                };
+                _database.Repository<MailMessageAttachment>().Create(mailMessageAttachment);
+            }
         }
 
         public void CreateMailMessage<TEntity>(string systemName, TEntity viewData)
