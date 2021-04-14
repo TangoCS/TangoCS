@@ -479,7 +479,7 @@ namespace Tango.UI.Std
 		public bool SortDesc;
 	}
 
-	public struct RowInfo
+	public class RowInfo
 	{
 		public int RowNum { get; set; }
 		public int Level { get; set; }

@@ -367,8 +367,7 @@ namespace Tango.UI.Std
 					a.Data("rowid", dataRowID);
 			};
 
-			void content(LayoutWriter w, TResult o)
-			{
+			RenderRowCellDelegate<TResult> content = (w, o, i) => {
 				if (nodeTemplate.EnableSelect)
 					w.Span(a => a.Class("sel"), () => w.Icon("checkbox-unchecked"));
 
@@ -378,13 +377,13 @@ namespace Tango.UI.Std
 
 				if (nodeTemplate.Icon != null)
 					foreach (var ic in nodeTemplate.Icon(o).Split(','))
-						w.I(a => a.Class("nodeicon").Icon(ic.Trim()));				
+						w.I(a => a.Class("nodeicon").Icon(ic.Trim()));
 
-				nodeTemplate.Cell(w, o);
-			}
+				nodeTemplate.Cell(w, o, i);
+			};
 
-			f.AddCell("Наименование", (w, o) => {
-				ListTreeExtensions.TreeCellContent(w, o, CurrentState.Level, !nodeTemplate.IsTerminal, content);
+			f.AddCell("Наименование", (w, o, i) => {
+				ListTreeExtensions.TreeCellContent(w, o, i, CurrentState.Level, !nodeTemplate.IsTerminal, content);
 			});
 
 			FieldsInit(f);
@@ -498,7 +497,7 @@ namespace Tango.UI.Std
 		public Expression<Func<TResult, object>> GroupBy { get; set; }
 		public Expression<Func<IGrouping<object, TResult>, object>> GroupBySelector { get; set; } = x => x.Key;
 		public Func<IQueryable<TResult>, IQueryable<TResult>> OrderBy { get; set; } = data => data;
-		public Action<LayoutWriter, TResult> Cell { get; set; }
+		public RenderRowCellDelegate<TResult> Cell { get; set; }
 		public bool IsTerminal { get; set; } = false;
 		//public string Icon { get; set; }
 		public Func<TResult, string> Icon { get; set; }
