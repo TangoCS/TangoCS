@@ -166,6 +166,13 @@ namespace Tango.UI.Std
 		//	_highlightedRowID = s;
 		//}
 
+		/// <summary>
+		/// Предраскрытие уровня
+		/// </summary>
+		/// <param name="templateID">ID шаблона уровня с заданным элементом</param>
+		/// <param name="level">Уровень, где находится заданный элемент (корневой уровень = 0)</param>
+		/// <param name="parms">Параметры для построения уровня с заданным элементом</param>
+		/// <param name="highlight">Нужно ли подсвечивать элемент, до которого раскрываем</param>
 		public void SetExpandedItem(int templateID, int level, Dictionary<string, object> parms, bool highlight = true)
 		{
 			var nodeWhere = new List<string>();
@@ -181,7 +188,12 @@ namespace Tango.UI.Std
 					nodeWhere.Add($"{pair.Key} = '{pair.Value:yyyy-MM-dd HH:mm:ss}'");
 			}
 
+			var initialTemplate = _templatesDict[templateID];
+			var template = initialTemplate.ParentTemplate;
+
 			var origAllObjectsQuery = Repository.AllObjectsQuery;
+			if (!template.CustomQuery.IsEmpty())
+				origAllObjectsQuery = template.CustomQuery;
 
 			var sqlTemplate = "select *";
 			sqlTemplate += $" from ({origAllObjectsQuery}) t";
@@ -195,10 +207,10 @@ namespace Tango.UI.Std
 				var temp = Database.Connection.QueryFirstOrDefault<TResult>(sqlTemplate, Repository.Parameters, tran);
 				if (temp == null) return;
 
-				var initialTemplate = _templatesDict[templateID];
-				var template = initialTemplate.ParentTemplate;
 				var states = new List<State>();
 				var senders = new List<string>();
+
+				level--;
 
 				if (highlight)
 					_highlightedRowID = GetClientID(initialTemplate.GetHtmlRowID(level, temp));
