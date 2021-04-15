@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -202,21 +203,21 @@ namespace Tango.Mail
 'MethodSettings':
 [
     {
-        'ClassName':'Tango.Mail.RecipientsMail',
+        'ClassName':'Tango.Mail.Methods.RecipientsMail',
         'MethodName':'Run',
         'Params': {
-            'recipients': 'aa@aa.ru;bb@bb.ru'
+            'recipients': '@Askue2.Te8st'
         }
     },
     {
-        'ClassName':'Tango.Mail.CopyRecipientsMail',
+        'ClassName':'Tango.Mail.Methods.CopyRecipientsMail',
         'MethodName':'Run',
         'Params': {
             'recipients': 'tt@tt.ru;cc@cc.ru'
         }
     },
     {
-        'ClassName':'Tango.Mail.ExistAttachmentMail',
+        'ClassName':'Tango.Mail.Methods.ExistAttachmentMail',
         'MethodName':'Run',
         'Params':
         {
@@ -224,7 +225,7 @@ namespace Tango.Mail
         }
     },
     {
-        'ClassName':'Tango.Mail.NewAttachmentMail',
+        'ClassName':'Tango.Mail.Methods.NewAttachmentMail',
         'MethodName':'Run',
         'Params':null
     }
@@ -249,6 +250,19 @@ namespace Tango.Mail
             
             var settings = JsonConvert.DeserializeObject<MethodSettingsCollection>(preProcessingJson);
             
+            var mailMethods = JsonConvert.DeserializeObject<MethodSettingsCollection>(preProcessingJson);
+            foreach (var methodSetting in mailMethods.MethodSettings)
+            {
+                foreach (var param in methodSetting.Params)
+                {
+                    if (param.Value.ToString().StartsWith("@"))
+                    {
+                        methodSetting.Params[param.Key] = GetValue(param, viewData);
+                    }
+                }
+                _methodHelper.ExecuteMethod(methodSetting, context);
+            }
+            
             _methodHelper.ExecuteMethodCollection(settings, context);
 
             Trace.Write(context);
@@ -264,6 +278,24 @@ namespace Tango.Mail
                 };
                 _database.Repository<MailMessageAttachment>().Create(mailMessageAttachment);
             }
+        }
+
+        private object GetValue<TEntity>(KeyValuePair<string, object> param, TEntity viewData)
+        {
+            var cls = MailTypeCollection.GetType(param.Value.ToString().Replace("@", ""));
+            object value;
+            if (cls == null)
+                value = param.Value;
+            else
+            {
+                var propInfo = cls.GetProperty(param.Key,
+                    BindingFlags.Instance | 
+                    BindingFlags.Public | 
+                    BindingFlags.IgnoreCase);
+                value = propInfo != null ? propInfo.GetValue(viewData) : param.Value;
+            }
+
+            return value;
         }
 
         public void CreateMailMessage<TEntity>(string systemName, TEntity viewData)
@@ -294,28 +326,56 @@ namespace Tango.Mail
                     
                     if (!string.IsNullOrEmpty(mailSettings.PreProcessingMethod))
                     {
-                        var mailMethod = JsonConvert.DeserializeObject<MethodSettings>(mailSettings.PreProcessingMethod);
-                        
-                        _methodHelper.ExecuteMethod(mailMethod, mailMessageContext);
-                    }
-                    
-                    if (!string.IsNullOrEmpty(mailSettings.PostProcessingMethod))
-                    {
-                        var mailMethod = JsonConvert.DeserializeObject<MethodSettings>(mailSettings.PostProcessingMethod);
-                        
-                        _methodHelper.ExecuteMethod(mailMethod, mailMessageContext);
-                    }
-
-                    _database.Repository<MailMessage>().Create(mailMessageContext.MailMessage);
-
-                    foreach (var existFileId in mailMessageContext.ExistingFileIds)
-                    {
-                        var mailMessageAttachment = new MailMessageAttachment
+                        var mailMethods = JsonConvert.DeserializeObject<MethodSettingsCollection>(mailSettings.PreProcessingMethod);
+                        foreach (var methodSetting in mailMethods.MethodSettings)
                         {
-                            MailMessageID = mailMessageContext.MailMessage.MailMessageID,
-                            FileID = existFileId
-                        };
-                        _database.Repository<MailMessageAttachment>().Create(mailMessageAttachment);
+                            foreach (var param in methodSetting.Params)
+                            {
+                                methodSetting.Params[param.Key] = GetValue(param, viewData);
+                            }
+                            _methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
+                        }
+                    }
+
+                    using (var transaction = _database.BeginTransaction())
+                    {
+                        try
+                        {
+                            _database.Repository<MailMessage>().Create(mailMessageContext.MailMessage);
+
+                            foreach (var existFileId in mailMessageContext.ExistingFileIds)
+                            {
+                                var mailMessageAttachment = new MailMessageAttachment
+                                {
+                                    MailMessageID = mailMessageContext.MailMessage.MailMessageID,
+                                    FileID = existFileId
+                                };
+                                _database.Repository<MailMessageAttachment>().Create(mailMessageAttachment);
+                            }
+
+                            if (!string.IsNullOrEmpty(mailSettings.PostProcessingMethod))
+                            {
+                                var mailMethods = JsonConvert.DeserializeObject<MethodSettingsCollection>(mailSettings.PostProcessingMethod);
+                                foreach (var methodSetting in mailMethods.MethodSettings)
+                                {
+                                    foreach (var param in methodSetting.Params)
+                                    {
+                                        if (param.Value.ToString().StartsWith("@"))
+                                        {
+                                            methodSetting.Params[param.Key] = GetValue(param, viewData);
+                                        }
+                                    }
+
+                                    _methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
+                                }
+                            }
+                            
+                            transaction.Commit();
+                        }
+                        catch
+                        {
+                            transaction.Rollback();
+                        }
                     }
                 }
             }
@@ -346,6 +406,28 @@ namespace Tango.Mail
             }
 
             return (templateSubject, templateBody);
+        }
+    }
+    
+    public static class MailTypeCollection
+    {
+        static ConcurrentDictionary<string, Type> types = new ConcurrentDictionary<string, Type>();
+	
+        public static Type GetType(string fullnameclass)
+        {
+            string taskclass = fullnameclass.Split(',')[0];
+
+            if (!types.TryGetValue(taskclass, out var type))
+            {
+                type = AppDomain.CurrentDomain
+                    .GetAssemblies()
+                    .SelectMany(x => x.GetTypes())
+                    .FirstOrDefault(x => x.FullName.ToLower() == taskclass.ToLower());
+
+                types.AddIfNotExists(taskclass, type);
+            }
+
+            return type;
         }
     }
 }

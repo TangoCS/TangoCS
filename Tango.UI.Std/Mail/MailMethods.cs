@@ -8,10 +8,10 @@ namespace Tango.Mail.Methods
     /// Получение списка адресатов
     /// </summary>
     [TypeCache(MailTypeCacheKeys.PreProcessingMethod)]
-    [Description("Предварительная обработка")]
+    [Description("Заполнить список адресатов")]
     public class RecipientsMail
     {
-        [Description("Заполнить список адресатов")]
+        [Description("Заполнение списка")]
         public void Run(MailMessageContext context, [Description("Список адресатов")]string recipients)
         {
             context.MailMessage.Recipients = recipients;
@@ -22,10 +22,10 @@ namespace Tango.Mail.Methods
     /// Получение списка адресатов для постановки в копию
     /// </summary>
     [TypeCache(MailTypeCacheKeys.PreProcessingMethod)]
-    [Description("Предварительная обработка")]
+    [Description("Заполнить список копий адресатов")]
     public class CopyRecipientsMail
     {
-        [Description("Заполнить список копий адресатов")]
+        [Description("Заполнение списка")]
         public void Run(MailMessageContext context, [Description("Список адресатов")]string recipients)
         {
             context.MailMessage.CopyRecipients = recipients;
@@ -36,11 +36,11 @@ namespace Tango.Mail.Methods
     /// Получение списка известных вложений
     /// </summary>
     [TypeCache(MailTypeCacheKeys.PreProcessingMethod)]
-    [Description("Предварительная обработка")]
+    [Description("Заполнить вложения")]
     public class ExistAttachmentMail
     {
-        [Description("Заполнить вложения")]
-        public void Run(MailMessageContext context, [Description("Список вложений")]string attachmentIds)
+        [Description("По типу документа")]
+        public void Run(MailMessageContext context, [Description("Идентификаторы документа")]string attachmentIds)
         {
             if(string.IsNullOrEmpty(attachmentIds))
                 return;
@@ -56,12 +56,12 @@ namespace Tango.Mail.Methods
     public class PostProcessingMailCls
     {
         [Description("Запуск")]
-        public void Run() {}
+        public void Run(MailMessageContext context) {}
     }
     
     public class NewAttachmentMail
     {
-        public void Run(MailMessageContext contexts)
+        public void Run(MailMessageContext context)
         {
             //context.MailMessage.Recipients = recipients.Join(";");
         }
