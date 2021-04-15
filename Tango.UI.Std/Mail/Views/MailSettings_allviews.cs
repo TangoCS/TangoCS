@@ -15,12 +15,86 @@ using Tango.UI.Std;
 
 namespace Tango.Mail
 {
+    public static class MailSettingsHelper
+    {
+        public static IEnumerable<MethodSettings> GetMethodSettingsByTypesKey(string typesKey)
+        {
+            var cache = new TypeCache();
+            var types = cache.Get(typesKey).SelectMany(t =>
+            {
+                return t.GetMethods()
+                    .Where(m => m.GetCustomAttribute<DescriptionAttribute>() != null)
+                    .Select(m => new MethodSettings
+                    {
+                        ClassName = t.FullName,
+                        MethodName = m.Name,
+                        Params = new Dictionary<string, object>()
+                    });
+            });
+
+            return types;
+        }
+
+        public static Dictionary<string, string> GetFullNameDictionary(string typesKey)
+        {
+            var cache = new TypeCache();
+            var list = cache.Get(typesKey).SelectMany(t => {
+                var clsName = t.GetCustomAttribute<DescriptionAttribute>()?.Description ?? t.Name;
+                return t.GetMethods()
+                    .Where(m => m.GetCustomAttribute<DescriptionAttribute>() != null)
+                    .Select(m => {
+                        var mName = m.GetCustomAttribute<DescriptionAttribute>().Description;
+                        return ($"{t.FullName}|{m.Name}", $"{clsName}.{mName}");
+                    });
+            });
+
+            var dict = list.ToDictionary(i => i.Item1, i => i.Item2);
+
+            return dict;
+        }
+
+        public static string GetMethodName(string typesKey, string methodJson)
+        {
+            var methods = MailSettingsHelper.GetFullNameDictionary(typesKey);
+            var result = string.Empty;
+            var methodSettingsCollection = JsonConvert.DeserializeObject<MethodSettingsCollection>(methodJson);
+            foreach (var ms in methodSettingsCollection.MethodSettings)
+            {
+                var msKey = $"{ms.ClassName}|{ms.MethodName}";
+                if (methods.TryGetValue(msKey, out var r))
+                    result += $"{r}{Environment.NewLine}";
+            }
+
+            return result;
+        }
+    }
+    
     [OnAction(typeof(MailSettings), "viewlist")]
     public class MailSettings_viewlist : default_list_rep<MailSettings>
     {
         protected override Func<string, Expression<Func<MailSettings, bool>>> SearchExpression => s => 
             o => o.Title.ToLower().Contains(s.ToLower());
-        
+
+        protected override IEnumerable<MailSettings> GetPageData()
+        {
+            var items = base.GetPageData();
+            foreach (var item in items)
+            {
+                if (!string.IsNullOrEmpty(item.PreProcessingMethod))
+                {
+                    item.PreProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PreProcessingMethod,
+                        item.PreProcessingMethod);
+                }
+                if (!string.IsNullOrEmpty(item.PostProcessingMethod))
+                {
+                    item.PostProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PostProcessingMethod,
+                        item.PostProcessingMethod);
+                }
+            }
+
+            return items;
+        }
+
         protected override void FieldsInit(FieldCollection<MailSettings> fields)
         {
             fields.AddCellWithSortAndFilter(o => o.ID, o => o.ID);
@@ -62,6 +136,8 @@ namespace Tango.Mail
     public class MailSettings_view : default_view_rep<MailSettings, int, IRepository<MailSettings>>
     {
         private MailSettingsTemplate_list _mailSettingsTemplateList;
+        private string _preProcessingMethods;
+        private string _postProcessingMethods;
 
         public override void OnInit()
         {
@@ -70,6 +146,18 @@ namespace Tango.Mail
                 c.MailSettingsID = ViewData.MailSettingsID;
                 c.Sections.RenderContentTitle = false;
             });
+
+            if (!string.IsNullOrEmpty(ViewData.PreProcessingMethod))
+            {
+                ViewData.PreProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PreProcessingMethod,
+                    ViewData.PreProcessingMethod);
+            }
+            
+            if (!string.IsNullOrEmpty(ViewData.PostProcessingMethod))
+            {
+                ViewData.PostProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PostProcessingMethod,
+                    ViewData.PostProcessingMethod);
+            }
         }
 
         protected MailSettingsFields.DefaultGroup Group { get; set; }
@@ -79,6 +167,14 @@ namespace Tango.Mail
             {
                 w.PlainText(Group.Title);
                 w.PlainText(Group.MailCategoryTitle);
+                w.PlainText("Методы предварительной обработки", () =>
+                {
+                    w.Write(ViewData.PreProcessingMethod);
+                });
+                w.PlainText("Методы постобработки", () =>
+                {
+                    w.Write(ViewData.PostProcessingMethod);
+                });
                 // w.PlainText(Group.PreProcessingMethod);
                 // w.PlainText(Group.PostProcessingMethod);
                 w.PlainText(Group.TimeoutValue);
@@ -123,24 +219,6 @@ namespace Tango.Mail
         private List<(MethodSettingsField, MethodSettings)> _preProcessMethodFields;
         private List<(MethodSettingsField, MethodSettings)> _postProcessMethodFields;
         
-        private IEnumerable<MethodSettings> GetMethodSettingsByTypesKey(string typesKey)
-        {
-            var cache = new TypeCache();
-            var types = cache.Get(typesKey).SelectMany(t =>
-            {
-                return t.GetMethods()
-                    .Where(m => m.GetCustomAttribute<DescriptionAttribute>() != null)
-                    .Select(m => new MethodSettings
-                    {
-                        ClassName = t.FullName,
-                        MethodName = m.Name,
-                        Params = new Dictionary<string, object>()
-                    });
-            });
-
-            return types;
-        }
-        
         public override void OnInit()
         {
             base.OnInit();
@@ -160,7 +238,7 @@ namespace Tango.Mail
         {
             var fields = new List<(MethodSettingsField, MethodSettings)>();
             
-            var methodSettings = GetMethodSettingsByTypesKey(typeCacheKey);
+            var methodSettings = MailSettingsHelper.GetMethodSettingsByTypesKey(typeCacheKey);
             
             if (!string.IsNullOrEmpty(json))
             {

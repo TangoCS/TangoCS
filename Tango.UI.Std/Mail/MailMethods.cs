@@ -12,7 +12,7 @@ namespace Tango.Mail.Methods
     public class RecipientsMail
     {
         [Description("Заполнить список адресатов")]
-        public void Run(MailMessageContext context, [Description("Список адресатов")]string recipients, [Description("Список адресатов2")]string recipients2)
+        public void Run(MailMessageContext context, [Description("Список адресатов")]string recipients)
         {
             context.MailMessage.Recipients = recipients;
         }
@@ -52,10 +52,10 @@ namespace Tango.Mail.Methods
     }
 
     [TypeCache(MailTypeCacheKeys.PostProcessingMethod)]
-    [Description("post")]
+    [Description("Постобработка")]
     public class PostProcessingMailCls
     {
-        [Description("run")]
+        [Description("Запуск")]
         public void Run() {}
     }
     
