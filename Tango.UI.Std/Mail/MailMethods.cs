@@ -7,7 +7,7 @@ namespace Tango.Mail.Methods
     /// <summary>
     /// Получение списка адресатов
     /// </summary>
-    [TypeCache(MailTypeCacheKeys.PreProcessingMethod)]
+    [TypeCache(MailTypeCacheKeys.PreProcessingMailMethod)]
     [Description("Заполнить список адресатов")]
     public class RecipientsMail
     {
@@ -21,16 +21,16 @@ namespace Tango.Mail.Methods
     /// <summary>
     /// Получение списка адресатов для постановки в копию
     /// </summary>
-    [TypeCache(MailTypeCacheKeys.PreProcessingMethod)]
-    [Description("Заполнить список копий адресатов")]
-    public class CopyRecipientsMail
-    {
-        [Description("Заполнение списка")]
-        public void Run(MailMessageContext context, [Description("Список адресатов")]string recipients)
-        {
-            context.MailMessage.CopyRecipients = recipients;
-        }
-    }
+    // [TypeCache(MailTypeCacheKeys.PreProcessingMethod)]
+    // [Description("Заполнить список копий адресатов")]
+    // public class CopyRecipientsMail
+    // {
+    //     [Description("Заполнение списка")]
+    //     public void Run(MailMessageContext context, [Description("Список адресатов")]string recipients)
+    //     {
+    //         context.MailMessage.CopyRecipients = recipients;
+    //     }
+    // }
     
     // /// <summary>
     // /// Получение списка известных вложений
@@ -51,7 +51,7 @@ namespace Tango.Mail.Methods
     //     }
     // }
 
-    [TypeCache(MailTypeCacheKeys.PostProcessingMethod)]
+    [TypeCache(MailTypeCacheKeys.PostProcessingMailMethod)]
     [Description("Постобработка")]
     public class PostProcessingMailCls
     {
@@ -59,11 +59,11 @@ namespace Tango.Mail.Methods
         public void Run(MailMessageContext context) {}
     }
     
-    public class NewAttachmentMail
-    {
-        public void Run(MailMessageContext context)
-        {
-            //context.MailMessage.Recipients = recipients.Join(";");
-        }
-    }
+    // public class NewAttachmentMail
+    // {
+    //     public void Run(MailMessageContext context)
+    //     {
+    //         //context.MailMessage.Recipients = recipients.Join(";");
+    //     }
+    // }
 }

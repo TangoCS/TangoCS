@@ -82,12 +82,12 @@ namespace Tango.Mail
             {
                 if (!string.IsNullOrEmpty(item.PreProcessingMethod))
                 {
-                    item.PreProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PreProcessingMethod,
+                    item.PreProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PreProcessingMailMethod,
                         item.PreProcessingMethod);
                 }
                 if (!string.IsNullOrEmpty(item.PostProcessingMethod))
                 {
-                    item.PostProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PostProcessingMethod,
+                    item.PostProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PostProcessingMailMethod,
                         item.PostProcessingMethod);
                 }
             }
@@ -149,13 +149,13 @@ namespace Tango.Mail
 
             if (!string.IsNullOrEmpty(ViewData.PreProcessingMethod))
             {
-                ViewData.PreProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PreProcessingMethod,
+                ViewData.PreProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PreProcessingMailMethod,
                     ViewData.PreProcessingMethod);
             }
             
             if (!string.IsNullOrEmpty(ViewData.PostProcessingMethod))
             {
-                ViewData.PostProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PostProcessingMethod,
+                ViewData.PostProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PostProcessingMailMethod,
                     ViewData.PostProcessingMethod);
             }
         }
@@ -223,8 +223,8 @@ namespace Tango.Mail
         {
             base.OnInit();
 
-            _preProcessMethodFields = GenetateFields(MailTypeCacheKeys.PreProcessingMethod, PreProcessMethodID, ViewData.PreProcessingMethod);
-            _postProcessMethodFields = GenetateFields(MailTypeCacheKeys.PostProcessingMethod, PostProcessMethodID, ViewData.PostProcessingMethod);
+            _preProcessMethodFields = GenetateFields(MailTypeCacheKeys.PreProcessingMailMethod, PreProcessMethodID, ViewData.PreProcessingMethod);
+            _postProcessMethodFields = GenetateFields(MailTypeCacheKeys.PostProcessingMailMethod, PostProcessMethodID, ViewData.PostProcessingMethod);
 
             _selectMailTemplate = Database.Connection.Query<MailTemplate>(Repository.GetMailTemplateSql()).ToList()
                 .OrderBy(x => x.MailTemplateID)
