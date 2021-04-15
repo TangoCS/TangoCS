@@ -163,9 +163,14 @@ namespace Tango.Mail
 {
     public class MailMessageContext
     {
+        public MailMessageContext(IDatabase database)
+        {
+            Database = database;
+        }
         public MailMessage MailMessage { get; set; }
         public List<Guid> ExistingFileIds { get; set; } = new List<Guid>();
         public List<FileData> NewFiles { get; set; } = new List<FileData>();
+        public IDatabase Database { get; }
     }
 
     public class MailHelper
@@ -217,24 +222,19 @@ namespace Tango.Mail
         }
     },
     {
-        'ClassName':'Tango.Mail.Methods.ExistAttachmentMail',
+        'ClassName':'Askue2.Model.Mail.Methods.ExistAttachmentMail',
         'MethodName':'Run',
         'Params':
         {
-            'attachmentIds': '3F632E7B-FB9D-4488-82A8-7F47FDE0E2F1;639E91BC-A671-472B-A50E-85E8CF1C07BC;0E6D07FD-9D2B-4B70-B552-70D8729BBDD9;2F92D8AF-5191-4849-977F-D3D79D10BE2B;DF4C3F79-AD53-4863-95A6-F04DBB26AF5C'            
+            'documentsIds': '2,44,9,79'            
         }
-    },
-    {
-        'ClassName':'Tango.Mail.Methods.NewAttachmentMail',
-        'MethodName':'Run',
-        'Params':null
     }
 ]}
 ";
             
             var (subject, body) = ParseTemplate(templateSubj, templateBody, viewData);
 
-            var context = new MailMessageContext
+            var context = new MailMessageContext(_database)
             {
                 MailMessage = new MailMessage
                 {
@@ -244,7 +244,7 @@ namespace Tango.Mail
                     CreateDate = DateTime.Now,
                     Subject = subject,
                     Body = body,
-                    LastModifiedUserID = _userIdAccessor.CurrentUserID ?? _userIdAccessor.SystemUserID
+                    LastModifiedUserID = _userIdAccessor.CurrentUserID ?? _userIdAccessor.SystemUserID,
                 }
             };
             
@@ -309,7 +309,7 @@ namespace Tango.Mail
                 {
                     var (subject, body) = ParseTemplate(mailTemplate.TemplateSubject, mailTemplate.TemplateBody, viewData);
 
-                    var mailMessageContext = new MailMessageContext
+                    var mailMessageContext = new MailMessageContext(_database)
                     {
                         MailMessage = new MailMessage
                         {

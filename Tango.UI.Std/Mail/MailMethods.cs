@@ -32,24 +32,24 @@ namespace Tango.Mail.Methods
         }
     }
     
-    /// <summary>
-    /// Получение списка известных вложений
-    /// </summary>
-    [TypeCache(MailTypeCacheKeys.PreProcessingMethod)]
-    [Description("Заполнить вложения")]
-    public class ExistAttachmentMail
-    {
-        [Description("По типу документа")]
-        public void Run(MailMessageContext context, [Description("Идентификаторы документа")]string attachmentIds)
-        {
-            if(string.IsNullOrEmpty(attachmentIds))
-                return;
-            
-            var ids = attachmentIds.Split(';');
-            var aIds = ids.Select(Guid.Parse);
-            context.ExistingFileIds = aIds.ToList();
-        }
-    }
+    // /// <summary>
+    // /// Получение списка известных вложений
+    // /// </summary>
+    // [TypeCache(MailTypeCacheKeys.PreProcessingMethod)]
+    // [Description("Заполнить вложения")]
+    // public class ExistAttachmentMail
+    // {
+    //     [Description("По типу документа")]
+    //     public void Run(MailMessageContext context, [Description("Идентификаторы документа")]string documentsIds)
+    //     {
+    //         if(string.IsNullOrEmpty(documentsIds))
+    //             return;
+    //         
+    //         var ids = documentsIds.Split(';');
+    //         var aIds = ids.Select(Guid.Parse);
+    //         context.ExistingFileIds = aIds.ToList();
+    //     }
+    // }
 
     [TypeCache(MailTypeCacheKeys.PostProcessingMethod)]
     [Description("Постобработка")]

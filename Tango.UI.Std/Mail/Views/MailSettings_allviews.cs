@@ -238,22 +238,30 @@ namespace Tango.Mail
         {
             var fields = new List<(MethodSettingsField, MethodSettings)>();
             
-            var methodSettings = MailSettingsHelper.GetMethodSettingsByTypesKey(typeCacheKey);
+            var methodSettings = MailSettingsHelper.GetMethodSettingsByTypesKey(typeCacheKey).ToList();
             
             if (!string.IsNullOrEmpty(json))
             {
                 var methodSettingsCollection = JsonConvert.DeserializeObject<MethodSettingsCollection>(json);
-                
+
+                var exists = new HashSet<string>();
                 var cnt = 0;
                 foreach (var ms in methodSettingsCollection.MethodSettings)
                 {
                     var cntr = CreateControl<MethodSettingsField>($"{id}{cnt + 1}",
                         c => { c.TypesKey = typeCacheKey; });
                     fields.Add((cntr, ms));
+                    exists.Add($"{ms.ClassName}|{ms.MethodName}");
                     cnt++;
                 }
 
-                var excl = methodSettings.Except(methodSettingsCollection.MethodSettings);
+                var excl = new List<MethodSettings>();
+                foreach (var ms in methodSettings)
+                {
+                    if(!exists.Contains($"{ms.ClassName}|{ms.MethodName}"))
+                        excl.Add(ms);
+                }
+                
                 foreach (var ms in excl)
                 {
                     CreateControl<MethodSettingsField>($"{id}{cnt + 1}",
