@@ -170,7 +170,7 @@ namespace Tango.UI.Std
 		/// Предраскрытие уровня
 		/// </summary>
 		/// <param name="templateID">ID шаблона уровня с заданным элементом</param>
-		/// <param name="level">Уровень, где находится заданный элемент (корневой уровень = 0)</param>
+		/// <param name="level">Уровень, где находится заданный элемент (корневой уровень = 1)</param>
 		/// <param name="parms">Параметры для построения уровня с заданным элементом</param>
 		/// <param name="highlight">Нужно ли подсвечивать элемент, до которого раскрываем</param>
 		public void SetExpandedItem(int templateID, int level, Dictionary<string, object> parms, bool highlight = true)
