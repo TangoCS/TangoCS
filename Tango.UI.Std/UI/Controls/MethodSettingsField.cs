@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Tango;
+using Tango.Data;
 using Tango.Html;
 using Tango.UI;
 
@@ -12,8 +13,6 @@ namespace Tango.UI.Controls
 	public class MethodSettingsField : ViewComponent, IFieldValueProvider<MethodSettings>
 	{
 		public string TypesKey { get; set; }
-
-		FieldGroup gr = new FieldGroup();
 
 		public MethodSettings DefaultValue { get; set; }
 		public MethodSettings Value
@@ -27,10 +26,16 @@ namespace Tango.UI.Controls
 				{
 					var parts = ddlVal.Split('|');
 					var parms = new Dictionary<string, object>();
-					foreach (var fv in Context.AllArgs.Where(x => x.Key.StartsWith(ID + "_parm_")))
+					foreach (var par in GetMethodParameters(parts[0], parts[1]))
 					{
-						var name = fv.Key.Replace(ID + "_parm_", "");
-						parms.Add(name, fv.Value);
+						var name = ParameterFieldID(par);
+						var r = par.GetCustomAttribute<RenderWithAttribute>();
+						if (r != null)
+						{
+							parms.Add(par.Name.ToLower(), r.GetFormValue(Context.AllArgs, name));
+						}
+						else
+							parms.Add(par.Name.ToLower(), Context.GetArg(name));
 					}
 					return new MethodSettings
 					{
@@ -89,12 +94,9 @@ namespace Tango.UI.Controls
 			if (value.ClassName.IsEmpty() || value.MethodName.IsEmpty())
 				return;
 
-			var cache = new TypeCache();
-			var type = cache.Get(TypesKey).Where(t => t.FullName == value.ClassName).First();
-			var method = type.GetMethods().Where(m => m.Name == value.MethodName).First();
-
 			w.FieldsBlock(() => {
-				foreach (var par in method.GetParameters())
+				var ctx = new RenderingContext { RequestServices = Context.RequestServices };
+				foreach (var par in GetMethodParameters(value.ClassName, value.MethodName))
 				{
 					var caption = par.GetCustomAttribute<DescriptionAttribute>()?.Description;
 					if (caption == null)
@@ -102,19 +104,100 @@ namespace Tango.UI.Controls
 
 					value.Params.TryGetValue(par.Name.ToLower(), out var val);
 
-					if (par.ParameterType == typeof(DateTime) || par.ParameterType == typeof(DateTime?))
-						w.FormFieldCalendar(ID + "_parm_" + par.Name, caption, val != null ? (DateTime)val : (DateTime?)null);
+					var r = par.GetCustomAttribute<RenderWithAttribute>();
+					if (r != null)
+					{
+						var field = new ParameterField
+						{
+							ID = ParameterFieldID(par),
+							Caption = caption,
+							Value = val
+						};
+						r.Render(ctx, w, field, Grid.OneWhole);
+					}
 					else
 						w.FormFieldTextBox(ID + "_parm_" + par.Name, caption, val);
 				}
 			});
 		}
+
+		string ParameterFieldID(ParameterInfo par) => ID + "_parm_" + par.Name;
+
+		ParameterInfo[] GetMethodParameters(string className, string methodName)
+		{
+			var cache = new TypeCache();
+			var type = cache.Get(TypesKey).Where(t => t.FullName == className).First();
+			var method = type.GetMethods().Where(m => m.Name == methodName).First();
+			return method.GetParameters();
+		}
 	}
 
-	public class ParameterField<TValue> : Tango.UI.Field, IField<TValue>
+	public class ParameterField : Tango.UI.Field, IField<object>
 	{
-		public override string Caption { get; set; }
+		public object Value { get; set; }
+	}
 
-		public TValue Value => throw new NotImplementedException();
+	public abstract class RenderWithAttribute : Attribute
+	{
+		public abstract void Render<TValue>(RenderingContext ctx, LayoutWriter w, IField<TValue> field, GridPosition grid = null);
+		public abstract string GetStringValue(RenderingContext ctx, object value);
+		public virtual object GetFormValue(IReadOnlyDictionary<string, object> args, string fieldID)
+		{
+			return args[fieldID];
+		}
+	}
+
+	public class RenderingContext
+	{
+		public IServiceProvider RequestServices { get; set; }
+		public Dictionary<Type, IEnumerable<SelectListItem>> SelectListCache { get; }
+			= new Dictionary<Type, IEnumerable<SelectListItem>>();
+	}
+
+	public interface ISelectListDataSource
+	{
+		IEnumerable<SelectListItem> GetList();
+	}
+
+	public class EntityDataSource<T> : ISelectListDataSource
+		where T : IWithTitle
+	{
+		IDatabase db;
+
+		public EntityDataSource(IDatabase db)
+		{
+			this.db = db;
+		}
+
+		public IEnumerable<SelectListItem> GetList()
+		{
+			return db.Repository<T>().List().OrderBy(o => o.Title).Select(o => {
+				if (o is IWithKey<int> o1)
+					return new SelectListItem { Text = o.Title, Value = o1.ID.ToString() };
+				else if (o is IWithKey<Guid> o2)
+					return new SelectListItem { Text = o.Title, Value = o2.ID.ToString() };
+
+				throw new Exception("Unknown key property");
+			});
+		}
+	}
+
+	public class EnumDataSource<T> : ISelectListDataSource
+		where T : Enum
+	{
+		public IEnumerable<SelectListItem> GetList()
+		{
+			var result = new List<SelectListItem>();
+			var values = Enum.GetValues(typeof(T));
+
+			foreach (int item in values)
+				result.Add(new SelectListItem
+				{
+					Value = item.ToString(),
+					Text = Enumerations.GetEnumDescription((T)(object)item)
+				});
+
+			return result;
+		}
 	}
 }

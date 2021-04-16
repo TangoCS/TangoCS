@@ -28,7 +28,7 @@ namespace Tango.UI
 		protected F AddField<F>(F field)
 			where F : InteractionFlowElement, IField
 		{
-			fields.Add(field);			
+			fields.Add(field);
 			return field;
 		}
 
