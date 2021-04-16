@@ -13,13 +13,15 @@ namespace Tango.UI.Controls
 	{
 		public string TypesKey { get; set; }
 
+		FieldGroup gr = new FieldGroup();
+
 		public MethodSettings DefaultValue { get; set; }
 		public MethodSettings Value
 		{
 			get
 			{
 				var ddlVal = Context.GetArg(ID + "_ddl");
-				if (ddlVal == null)
+				if (ddlVal.IsEmpty())
 					return DefaultValue;
 				else
 				{
@@ -84,6 +86,9 @@ namespace Tango.UI.Controls
 
 		void Parms(LayoutWriter w, MethodSettings value)
 		{
+			if (value.ClassName.IsEmpty() || value.MethodName.IsEmpty())
+				return;
+
 			var cache = new TypeCache();
 			var type = cache.Get(TypesKey).Where(t => t.FullName == value.ClassName).First();
 			var method = type.GetMethods().Where(m => m.Name == value.MethodName).First();
@@ -95,7 +100,7 @@ namespace Tango.UI.Controls
 					if (caption == null)
 						continue;
 
-					value.Params.TryGetValue(par.Name, out var val);
+					value.Params.TryGetValue(par.Name.ToLower(), out var val);
 
 					if (par.ParameterType == typeof(DateTime) || par.ParameterType == typeof(DateTime?))
 						w.FormFieldCalendar(ID + "_parm_" + par.Name, caption, val != null ? (DateTime)val : (DateTime?)null);
@@ -104,5 +109,12 @@ namespace Tango.UI.Controls
 				}
 			});
 		}
+	}
+
+	public class ParameterField<TValue> : Tango.UI.Field, IField<TValue>
+	{
+		public override string Caption { get; set; }
+
+		public TValue Value => throw new NotImplementedException();
 	}
 }

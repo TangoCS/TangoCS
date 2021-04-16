@@ -17,27 +17,22 @@ namespace Tango.Mail
         
         public class TemplateSubject : EntityField<MailTemplate, string>
         {
-            public override string Hint { get; set; } = string.Empty;
         }
         
         public class TemplateBody : EntityField<MailTemplate, string>
         {
-            public override string Hint { get; set; } = string.Empty;
         }
         
         public class Comment : EntityField<MailTemplate, string>
         {
-            public override string Hint { get; set; } = string.Empty;
         }
         
         public class IsSystem : EntityField<MailTemplate, bool>
         {
-            public override string Hint { get; set; } = string.Empty;
         }
         
         public class LastModifiedDate : EntityDateTimeField<MailTemplate>
         {
-            public override string Hint { get; set; } = string.Empty;
         }
     }
 }

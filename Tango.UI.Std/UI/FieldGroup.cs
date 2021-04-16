@@ -18,7 +18,7 @@ namespace Tango.UI
 		IEnumerable<IField> Fields { get; }
 	}
 
-	public abstract class FieldGroup : IFieldGroup
+	public class FieldGroup : IFieldGroup
 	{
 		List<IField> fields = new List<IField>();
 		IViewElement Form;

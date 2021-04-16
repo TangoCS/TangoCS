@@ -7,18 +7,12 @@ namespace Tango.Mail
     {
         public class SystemName : EntityField<C_MailCategory, string>
         {
-            public override string Hint { get; set; } = string.Empty;
         }
         public class SystemID : EntityField<C_MailCategory, int>
         {
-            public override bool IsRequired { get; set; } = true;
-            public override string Hint { get; set; } = string.Empty;
         }
         public class MailType : EntityField<C_MailCategory, int>
         {
-            public override bool IsRequired { get; set; } = true;
-            public override string Hint { get; set; } = string.Empty;
-            public override string Caption { get; } = "Тип";
             public override int DefaultValue => 0;
             public override void ValidateFormValue(ValidationMessageCollection val) { }
 
