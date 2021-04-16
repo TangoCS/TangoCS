@@ -20,8 +20,6 @@ namespace Tango.Tasks
 	[OnAction(typeof(DTO_Task), "parameters")]
 	public class tm_taskparameters : default_edit_rep<DTO_Task, int, ITaskRepository>
 	{
-		//protected virtual string DefaultTaskAssembly => null;
-
 		protected override string Title => "Параметры запуска";
 		protected Dictionary<string, ParameterData> parameters = new Dictionary<string, ParameterData>();
 
@@ -30,11 +28,6 @@ namespace Tango.Tasks
 			base.OnInit();
 			
 			var ps = Repository.GetParameters(ViewData.ID).ToDictionary(o => o.SysName, o => o);
-
-			//var taskclass = ViewData.Class;
-			//if (taskclass.Split(',').Length == 1 && !DefaultTaskAssembly.IsEmpty())
-			//	taskclass += "," + DefaultTaskAssembly;
-			//Type type = Type.GetType(taskclass, true);
 
 			var type = TaskTypeCollection.GetType(ViewData.Class);
 			MethodInfo mi = type.GetMethod(ViewData.Method);
@@ -107,8 +100,6 @@ namespace Tango.Tasks
 	[OnAction(typeof(DTO_TaskParameter), "edit")]
 	public class tm_taskparameter_edit : default_edit_rep<DTO_TaskParameter, int, ITaskParameterRepository>
 	{
-		//protected virtual string DefaultTaskAssembly => null;
-
 		protected DTO_TaskParameterFields.DefaultGroup gr;
 
 		protected override void SetDefaultValues(DTO_TaskParameter obj)
@@ -125,11 +116,6 @@ namespace Tango.Tasks
 
 		protected override void Form(LayoutWriter w)
 		{
-			//var taskclass = ViewData.ParentClass;
-			//if (taskclass.Split(',').Length == 1 && !DefaultTaskAssembly.IsEmpty())
-			//	taskclass += "," + DefaultTaskAssembly;
-			//var type = Type.GetType(taskclass, true);
-
 			var type = TaskTypeCollection.GetType(ViewData.ParentClass);
 			var mi = type.GetMethod(ViewData.ParentMethod);
 			var parameter = mi.GetParameters().First(o => o.Name == ViewData.SysName);
