@@ -32,7 +32,6 @@ namespace Tango.Mail
         
         public class MailCategoryID : EntityField<MailSettings, int>
         {
-            public override bool IsRequired => true;
         }
         
         public class MailTemplateID : EntityField<MailSettings, int>

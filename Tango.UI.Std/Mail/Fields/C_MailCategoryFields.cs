@@ -13,7 +13,6 @@ namespace Tango.Mail
         }
         public class MailType : EntityField<C_MailCategory, int>
         {
-            //public override string Caption { get; } = "Тип";
             public override int DefaultValue => 0;
             public override void ValidateFormValue(ValidationMessageCollection val) { }
 

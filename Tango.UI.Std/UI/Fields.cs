@@ -12,8 +12,8 @@ namespace Tango.UI
 	public interface IField : IInteractionFlowElement, IWithPropertyInjection
 	{
 		ValueSource ValueSource { get; set; }
-		bool WithCheckBox { get; }
-		string Caption { get;  }
+		bool WithCheckBox { get; set; }
+		string Caption { get; set; }
 		string Description { get; set; }
 		string Hint { get; set; }
 		bool IsRequired { get; set; }
@@ -21,7 +21,7 @@ namespace Tango.UI
 		bool Disabled { get; set; }
 		bool ReadOnly { get; set; }
 		bool ShowDescription { get; set; }
-		string StringValue { get; }
+		string StringValue { get; set; }
 
 		//IInteractionFlowElement Form { get; set; }
 
@@ -86,7 +86,7 @@ namespace Tango.UI
 	{
 		public ValueSource ValueSource { get; set; }
 		public virtual bool WithCheckBox { get; set; } = false;
-		public abstract string Caption { get;  }
+		public virtual string Caption { get; set; } = "";
 		public virtual string Hint { get; set; }
 		public virtual string Description { get; set; } = "";
 		public virtual bool IsRequired { get; set; } = false;
@@ -94,7 +94,7 @@ namespace Tango.UI
 		public virtual bool Disabled { get; set; } = false;
 		public virtual bool ReadOnly { get; set; } = false;
 		public virtual bool ShowDescription { get; set; } = false;
-		public virtual string StringValue => "";
+		public virtual string StringValue { get; set; } = "";
 
 		//public IReadOnlyDictionary<string, IField> AllFields { get; set; }
 		public IReadOnlyDictionary<string, object> Args { get; set; }
