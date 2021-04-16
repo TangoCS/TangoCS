@@ -15,7 +15,6 @@ namespace Tango.Mail
         public class MailTemplateID : EntityField<MailSettingsTemplate, int>
         {
             public bool CanRequired { get; set; }
-            public override string Hint { get; set; } = string.Empty;
             public override bool IsRequired => CanRequired;
         }
         

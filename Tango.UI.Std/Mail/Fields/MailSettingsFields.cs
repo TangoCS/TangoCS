@@ -28,26 +28,22 @@ namespace Tango.Mail
         
         public class MailTemplateTitle : EntityField<MailSettings, string>
         {
-            public override string Hint { get; set; } = string.Empty;
         }
         
         public class MailCategoryID : EntityField<MailSettings, int>
         {
-            public override string Hint { get; set; } = string.Empty;
             public override bool IsRequired => true;
         }
         
         public class MailTemplateID : EntityField<MailSettings, int>
         {
             public bool CanRequired { get; set; }
-            public override string Hint { get; set; } = string.Empty;
             public override bool IsRequired => CanRequired;
         }
         
         public class PreProcessingMethod : EntityField<MailSettings, MethodSettings>
         {
             public override bool IsRequired { get; set; } = false;
-            public override string Hint { get; set; } = string.Empty;
             public override void SubmitProperty(ValidationMessageCollection val)
             {
                 //base.SubmitProperty(val);
@@ -57,7 +53,6 @@ namespace Tango.Mail
         public class PostProcessingMethod : EntityField<MailSettings, MethodSettings>
         {
             public override bool IsRequired { get; set; } = false;
-            public override string Hint { get; set; } = string.Empty;
             public override void SubmitProperty(ValidationMessageCollection val)
             {
                 //base.SubmitProperty(val);
@@ -67,48 +62,40 @@ namespace Tango.Mail
         public class TimeoutValue : EntityField<MailSettings, int>
         {
             public override bool IsRequired { get; set; } = false;
-            public override string Hint { get; set; } = string.Empty;
         }
         
         public class SendMailDayInterval : EntityField<MailSettings, int>
         {
             public override bool IsRequired { get; set; } = false;
-            public override string Hint { get; set; } = string.Empty;
         }
         
         public class SendMailStartInterval : /*EntityTimeField<MailSettings> //*/EntityField<MailSettings, TimeSpan>
         {
             public override bool IsRequired { get; set; } = false;
-            public override string Hint { get; set; } = string.Empty;
         }
         
         public class SendMailFinishInterval : EntityField<MailSettings, TimeSpan>
         {
             public override bool IsRequired { get; set; } = false;
-            public override string Hint { get; set; } = string.Empty;
         }
         
         public class AttemptsToSendCount : EntityField<MailSettings, int>
         {
             public override bool IsRequired { get; set; } = false;
-            public override string Hint { get; set; } = string.Empty;
         }
         
         public class MailCategoryTitle : EntityField<MailSettings, string>
         {
-            public override string Hint { get; set; } = string.Empty;
         }
         
         public class LastModifiedDate : EntityDateTimeField<MailSettings>
         {
             public override bool IsRequired { get; set; } = false;
-            public override string Hint { get; set; } = string.Empty;
         }
         
         public class SystemName : EntityField<MailSettings, string>
         {
             public override bool IsRequired { get; set; } = false;
-            public override string Hint { get; set; } = string.Empty;
         }
     }
 }
