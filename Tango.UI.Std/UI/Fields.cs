@@ -12,24 +12,24 @@ namespace Tango.UI
 	public interface IField : IInteractionFlowElement, IWithPropertyInjection
 	{
 		ValueSource ValueSource { get; set; }
-		bool WithCheckBox { get; }
-		string Caption { get; }
-		string Description { get; }
-		string Hint { get; }
-		bool IsRequired { get; }
-		bool IsVisible { get; }
-		bool Disabled { get; }
-		bool ReadOnly { get; }
-		bool ShowDescription { get; }
-		string StringValue { get; }
+		bool WithCheckBox { get; set; }
+		string Caption { get; set; }
+		string Description { get; set; }
+		string Hint { get; set; }
+		bool IsRequired { get; set; }
+		bool IsVisible { get; set; }
+		bool Disabled { get; set; }
+		bool ReadOnly { get; set; }
+		bool ShowDescription { get; set; }
+		string StringValue { get; set; }
 
 		//IInteractionFlowElement Form { get; set; }
 
-		bool FireOnChangeEvent { get; }
-		string EventReceiver { get; }
+		bool FireOnChangeEvent { get; set; }
+		string EventReceiver { get; set; }
 
 		//IReadOnlyDictionary<string, IField> AllFields { get; set; }
-		IReadOnlyDictionary<string, object> Args { get; }
+		IReadOnlyDictionary<string, object> Args { get; set; }
 	}
 
 	public interface IField<TValue> : IField
@@ -87,14 +87,14 @@ namespace Tango.UI
 		public ValueSource ValueSource { get; set; }
 		public virtual bool WithCheckBox { get; set; } = false;
 		public virtual string Caption { get; set; } = "";
-		public virtual string Hint { get; set; } = "";
+		public virtual string Hint { get; set; }
 		public virtual string Description { get; set; } = "";
 		public virtual bool IsRequired { get; set; } = false;
 		public virtual bool IsVisible { get; set; } = true;
 		public virtual bool Disabled { get; set; } = false;
 		public virtual bool ReadOnly { get; set; } = false;
 		public virtual bool ShowDescription { get; set; } = false;
-		public virtual string StringValue => "";
+		public virtual string StringValue { get; set; } = "";
 
 		//public IReadOnlyDictionary<string, IField> AllFields { get; set; }
 		public IReadOnlyDictionary<string, object> Args { get; set; }
