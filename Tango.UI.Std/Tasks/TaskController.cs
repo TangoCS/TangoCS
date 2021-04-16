@@ -42,8 +42,6 @@ namespace Tango.Tasks
         [Inject]
         protected ICache Cache { get; set; }
 
-        //protected virtual string DefaultTaskAssembly => null;
-
         /// <summary>
         /// Запуск задачи от имени пользователя
         /// </summary>
@@ -125,11 +123,6 @@ namespace Tango.Tasks
 
             try
             {
-                //var taskclass = task.Class;
-                //if (taskclass.Split(',').Length == 1 && !DefaultTaskAssembly.IsEmpty())
-                //    taskclass += "," + DefaultTaskAssembly;
-                //Type type = Type.GetType(taskclass, true);
-
                 var type = TaskTypeCollection.GetType(task.Class);
                 object obj = null;
                 ConstructorInfo ci = type.GetConstructors().FirstOrDefault();

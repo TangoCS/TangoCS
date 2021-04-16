@@ -282,20 +282,28 @@ namespace Tango.Mail
 
          private object GetValue<TEntity>(KeyValuePair<string, object> param, TEntity viewData)
          {
-             var cls = MailTypeCollection.GetType(param.Value.ToString().Replace("@", ""));
-             object value;
-             if (cls == null)
-                 value = param.Value;
-             else
+             if (param.Value.ToString().StartsWith("@"))
              {
-                 var propInfo = cls.GetProperty(param.Key,
+                 var propInfo = typeof(TEntity).GetProperty(param.Value.ToString().Replace("@", ""),
                      BindingFlags.Instance | 
                      BindingFlags.Public | 
                      BindingFlags.IgnoreCase);
-                 value = propInfo != null ? propInfo.GetValue(viewData) : param.Value;
+                 return propInfo != null ? propInfo.GetValue(viewData) : param.Value;
              }
+             // var cls = MailTypeCollection.GetType(param.Value.ToString().Replace("@", ""));
+             // object value;
+             // if (cls == null)
+             //     value = param.Value;
+             // else
+             // {
+             //     var propInfo = cls.GetProperty(param.Key,
+             //         BindingFlags.Instance | 
+             //         BindingFlags.Public | 
+             //         BindingFlags.IgnoreCase);
+             //     value = propInfo != null ? propInfo.GetValue(viewData) : param.Value;
+             // }
 
-             return value;
+             return param.Value;
          }
 
         public void CreateMailMessage<TEntity>(string systemName, TEntity viewData)
