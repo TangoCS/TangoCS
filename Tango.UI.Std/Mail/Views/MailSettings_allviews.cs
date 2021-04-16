@@ -82,12 +82,12 @@ namespace Tango.Mail
             {
                 if (!string.IsNullOrEmpty(item.PreProcessingMethod))
                 {
-                    item.PreProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PreProcessingMethod,
+                    item.PreProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PreProcessingMailMethod,
                         item.PreProcessingMethod);
                 }
                 if (!string.IsNullOrEmpty(item.PostProcessingMethod))
                 {
-                    item.PostProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PostProcessingMethod,
+                    item.PostProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PostProcessingMailMethod,
                         item.PostProcessingMethod);
                 }
             }
@@ -149,13 +149,13 @@ namespace Tango.Mail
 
             if (!string.IsNullOrEmpty(ViewData.PreProcessingMethod))
             {
-                ViewData.PreProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PreProcessingMethod,
+                ViewData.PreProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PreProcessingMailMethod,
                     ViewData.PreProcessingMethod);
             }
             
             if (!string.IsNullOrEmpty(ViewData.PostProcessingMethod))
             {
-                ViewData.PostProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PostProcessingMethod,
+                ViewData.PostProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PostProcessingMailMethod,
                     ViewData.PostProcessingMethod);
             }
         }
@@ -223,8 +223,8 @@ namespace Tango.Mail
         {
             base.OnInit();
 
-            _preProcessMethodFields = GenetateFields(MailTypeCacheKeys.PreProcessingMethod, PreProcessMethodID, ViewData.PreProcessingMethod);
-            _postProcessMethodFields = GenetateFields(MailTypeCacheKeys.PostProcessingMethod, PostProcessMethodID, ViewData.PostProcessingMethod);
+            _preProcessMethodFields = GenetateFields(MailTypeCacheKeys.PreProcessingMailMethod, PreProcessMethodID, ViewData.PreProcessingMethod);
+            _postProcessMethodFields = GenetateFields(MailTypeCacheKeys.PostProcessingMailMethod, PostProcessMethodID, ViewData.PostProcessingMethod);
 
             _selectMailTemplate = Database.Connection.Query<MailTemplate>(Repository.GetMailTemplateSql()).ToList()
                 .OrderBy(x => x.MailTemplateID)
@@ -238,26 +238,53 @@ namespace Tango.Mail
         {
             var fields = new List<(MethodSettingsField, MethodSettings)>();
             
-            var methodSettings = MailSettingsHelper.GetMethodSettingsByTypesKey(typeCacheKey);
+            var systemMethodSettings = MailSettingsHelper.GetMethodSettingsByTypesKey(typeCacheKey).ToList();
             
             if (!string.IsNullOrEmpty(json))
             {
                 var methodSettingsCollection = JsonConvert.DeserializeObject<MethodSettingsCollection>(json);
+
+                var methodSettings = methodSettingsCollection.MethodSettings.ToList();
+                var removedMsList = new List<MethodSettings>();
+                foreach (var methodSetting in methodSettings)
+                {
+                    if (!systemMethodSettings.Any(m =>
+                        m.ClassName.Equals(methodSetting.ClassName) && 
+                        m.MethodName.Equals(methodSetting.MethodName)))
+                    {
+                        removedMsList.Add(methodSetting);
+                    }
+                }
+
+                foreach (var ms in removedMsList)
+                {
+                    methodSettings.Remove(ms);
+                }
                 
+                var exists = new HashSet<string>();
                 var cnt = 0;
-                foreach (var ms in methodSettingsCollection.MethodSettings)
+                foreach (var ms in methodSettings)
                 {
                     var cntr = CreateControl<MethodSettingsField>($"{id}{cnt + 1}",
                         c => { c.TypesKey = typeCacheKey; });
                     fields.Add((cntr, ms));
+                    exists.Add($"{ms.ClassName}|{ms.MethodName}");
                     cnt++;
                 }
 
-                var excl = methodSettings.Except(methodSettingsCollection.MethodSettings);
+                var excl = new List<MethodSettings>();
+                foreach (var ms in systemMethodSettings)
+                {
+                    if(!exists.Contains($"{ms.ClassName}|{ms.MethodName}"))
+                        excl.Add(ms);
+                }
+                
                 foreach (var ms in excl)
                 {
-                    CreateControl<MethodSettingsField>($"{id}{cnt + 1}",
+                    var ctrl = CreateControl<MethodSettingsField>($"{id}{cnt + 1}",
                         c => { c.TypesKey = typeCacheKey; });
+                    if(!fields.Any() && cnt == 0)
+                        fields.Add( (ctrl, ms) );
                     cnt++;
                 }
             }
@@ -267,12 +294,12 @@ namespace Tango.Mail
                 
                 // TODO: нужно решить что-то с умолчательными значениями. Сейчас падает (14.04.2021)
                 
-                if (methodSettings.Any())
+                if (systemMethodSettings.Any())
                 {
-                    fields.Add((cntr, methodSettings.First()));
-                    if (methodSettings.Count() > 1)
+                    fields.Add((cntr, systemMethodSettings.First()));
+                    if (systemMethodSettings.Count() > 1)
                     {
-                        for (var i = 1; i < methodSettings.Count(); i++)
+                        for (var i = 1; i < systemMethodSettings.Count(); i++)
                         {
                             CreateControl<MethodSettingsField>($"{id}{i + 1}",
                                 c => { c.TypesKey = typeCacheKey; });

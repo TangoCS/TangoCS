@@ -9,7 +9,7 @@ namespace Tango.Mail
     }
     public static class MailTypeCacheKeys
     {
-        public const string PreProcessingMethod = "PreProcessingMethod";
-        public const string PostProcessingMethod = "PostProcessingMethod";
+        public const string PreProcessingMailMethod = "PreProcessingMailMethod";
+        public const string PostProcessingMailMethod = "PostProcessingMailMethod";
     }
 }
