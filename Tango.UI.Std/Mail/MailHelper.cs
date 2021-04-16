@@ -185,118 +185,118 @@ namespace Tango.Mail
             _userIdAccessor = userIdAccessor;
             _methodHelper = methodHelper;
         }
+//
+//         public void CreateMailMessageTest<TEntity>(string systemName, TEntity viewData)
+//         {
+//             const string templateSubj = "Техническая ошибка в журнале загрузки: [IntegrationLogRecord_ID]";
+//             const string templateBody = @"Ошибка в журнале загрузки:
+//             Дата/время: [CreateDate]
+//             Направление: [Direction]
+//             Тип интеграционного процесса: [Process_ID]
+//             Тип шага интеграционного процесса: [ProcessStep_ID]
+//             XML: [Xml]
+//             External_ID: [External_ID]
+//             Result: [Result]
+//             Код ошибки: [ErrorCode]
+//             Текст ошибки: [ErrorText]
+//             UpdateInfo: [UpdateInfo]
+//             LastInfo: [LastInfo]
+//             ";
+//
+//             const string preProcessingJson = @"
+// {
+// 'MethodSettings':
+// [
+//     {
+//         'ClassName':'Tango.Mail.Methods.RecipientsMail',
+//         'MethodName':'Run',
+//         'Params': {
+//             'recipients': '@Askue2.Te8st'
+//         }
+//     },
+//     {
+//         'ClassName':'Tango.Mail.Methods.CopyRecipientsMail',
+//         'MethodName':'Run',
+//         'Params': {
+//             'recipients': 'tt@tt.ru;cc@cc.ru'
+//         }
+//     },
+//     {
+//         'ClassName':'Askue2.Model.Mail.Methods.ExistAttachmentMail',
+//         'MethodName':'Run',
+//         'Params':
+//         {
+//             'documentsIds': '2,44,9,79'            
+//         }
+//     }
+// ]}
+// ";
+//             
+//             var (subject, body) = ParseTemplate(templateSubj, templateBody, viewData);
+//
+//             var context = new MailMessageContext(_database)
+//             {
+//                 MailMessage = new MailMessage
+//                 {
+//                     MailMessageStatusID = (int) MailMessageStatus.New,
+//                     AttemptsToSendCount = 0,
+//                     LastSendAttemptDate = null,
+//                     CreateDate = DateTime.Now,
+//                     Subject = subject,
+//                     Body = body,
+//                     LastModifiedUserID = _userIdAccessor.CurrentUserID ?? _userIdAccessor.SystemUserID,
+//                 }
+//             };
+//             
+//             var settings = JsonConvert.DeserializeObject<MethodSettingsCollection>(preProcessingJson);
+//             
+//             var mailMethods = JsonConvert.DeserializeObject<MethodSettingsCollection>(preProcessingJson);
+//             foreach (var methodSetting in mailMethods.MethodSettings)
+//             {
+//                 foreach (var param in methodSetting.Params)
+//                 {
+//                     if (param.Value.ToString().StartsWith("@"))
+//                     {
+//                         methodSetting.Params[param.Key] = GetValue(param, viewData);
+//                     }
+//                 }
+//                 _methodHelper.ExecuteMethod(methodSetting, context);
+//             }
+//             
+//             _methodHelper.ExecuteMethodCollection(settings, context);
+//
+//             Trace.Write(context);
+//             
+//             _database.Repository<MailMessage>().Create(context.MailMessage);
+//
+//             foreach (var existFileId in context.ExistingFileIds)
+//             {
+//                 var mailMessageAttachment = new MailMessageAttachment
+//                 {
+//                     MailMessageID = context.MailMessage.MailMessageID,
+//                     FileID = existFileId
+//                 };
+//                 _database.Repository<MailMessageAttachment>().Create(mailMessageAttachment);
+//             }
+//         }
 
-        public void CreateMailMessageTest<TEntity>(string systemName, TEntity viewData)
-        {
-            const string templateSubj = "Техническая ошибка в журнале загрузки: [IntegrationLogRecord_ID]";
-            const string templateBody = @"Ошибка в журнале загрузки:
-            Дата/время: [CreateDate]
-            Направление: [Direction]
-            Тип интеграционного процесса: [Process_ID]
-            Тип шага интеграционного процесса: [ProcessStep_ID]
-            XML: [Xml]
-            External_ID: [External_ID]
-            Result: [Result]
-            Код ошибки: [ErrorCode]
-            Текст ошибки: [ErrorText]
-            UpdateInfo: [UpdateInfo]
-            LastInfo: [LastInfo]
-            ";
+         private object GetValue<TEntity>(KeyValuePair<string, object> param, TEntity viewData)
+         {
+             var cls = MailTypeCollection.GetType(param.Value.ToString().Replace("@", ""));
+             object value;
+             if (cls == null)
+                 value = param.Value;
+             else
+             {
+                 var propInfo = cls.GetProperty(param.Key,
+                     BindingFlags.Instance | 
+                     BindingFlags.Public | 
+                     BindingFlags.IgnoreCase);
+                 value = propInfo != null ? propInfo.GetValue(viewData) : param.Value;
+             }
 
-            const string preProcessingJson = @"
-{
-'MethodSettings':
-[
-    {
-        'ClassName':'Tango.Mail.Methods.RecipientsMail',
-        'MethodName':'Run',
-        'Params': {
-            'recipients': '@Askue2.Te8st'
-        }
-    },
-    {
-        'ClassName':'Tango.Mail.Methods.CopyRecipientsMail',
-        'MethodName':'Run',
-        'Params': {
-            'recipients': 'tt@tt.ru;cc@cc.ru'
-        }
-    },
-    {
-        'ClassName':'Askue2.Model.Mail.Methods.ExistAttachmentMail',
-        'MethodName':'Run',
-        'Params':
-        {
-            'documentsIds': '2,44,9,79'            
-        }
-    }
-]}
-";
-            
-            var (subject, body) = ParseTemplate(templateSubj, templateBody, viewData);
-
-            var context = new MailMessageContext(_database)
-            {
-                MailMessage = new MailMessage
-                {
-                    MailMessageStatusID = (int) MailMessageStatus.New,
-                    AttemptsToSendCount = 0,
-                    LastSendAttemptDate = null,
-                    CreateDate = DateTime.Now,
-                    Subject = subject,
-                    Body = body,
-                    LastModifiedUserID = _userIdAccessor.CurrentUserID ?? _userIdAccessor.SystemUserID,
-                }
-            };
-            
-            var settings = JsonConvert.DeserializeObject<MethodSettingsCollection>(preProcessingJson);
-            
-            var mailMethods = JsonConvert.DeserializeObject<MethodSettingsCollection>(preProcessingJson);
-            foreach (var methodSetting in mailMethods.MethodSettings)
-            {
-                foreach (var param in methodSetting.Params)
-                {
-                    if (param.Value.ToString().StartsWith("@"))
-                    {
-                        methodSetting.Params[param.Key] = GetValue(param, viewData);
-                    }
-                }
-                _methodHelper.ExecuteMethod(methodSetting, context);
-            }
-            
-            _methodHelper.ExecuteMethodCollection(settings, context);
-
-            Trace.Write(context);
-            
-            _database.Repository<MailMessage>().Create(context.MailMessage);
-
-            foreach (var existFileId in context.ExistingFileIds)
-            {
-                var mailMessageAttachment = new MailMessageAttachment
-                {
-                    MailMessageID = context.MailMessage.MailMessageID,
-                    FileID = existFileId
-                };
-                _database.Repository<MailMessageAttachment>().Create(mailMessageAttachment);
-            }
-        }
-
-        private object GetValue<TEntity>(KeyValuePair<string, object> param, TEntity viewData)
-        {
-            var cls = MailTypeCollection.GetType(param.Value.ToString().Replace("@", ""));
-            object value;
-            if (cls == null)
-                value = param.Value;
-            else
-            {
-                var propInfo = cls.GetProperty(param.Key,
-                    BindingFlags.Instance | 
-                    BindingFlags.Public | 
-                    BindingFlags.IgnoreCase);
-                value = propInfo != null ? propInfo.GetValue(viewData) : param.Value;
-            }
-
-            return value;
-        }
+             return value;
+         }
 
         public void CreateMailMessage<TEntity>(string systemName, TEntity viewData)
         {
