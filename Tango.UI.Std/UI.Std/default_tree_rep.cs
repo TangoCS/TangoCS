@@ -476,12 +476,14 @@ namespace Tango.UI.Std
 					if (t.IsTerminal) break;
 					var sender = t.GetHtmlRowID(CurrentState.Level, obj);
 
-					CurrentState = new State
+					var nextState = new State
 					{
 						Level = CurrentState.Level + 1,
 						Template = t,
 						Parms = t.GetKeyCollection(obj)
 					};
+					CurrentState.Children.Add(sender, nextState);
+					CurrentState = nextState;
 					OnExpandRow(response, sender, CurrentState);
 					_result = null;
 					_result = GetPageData();

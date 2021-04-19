@@ -177,6 +177,11 @@ namespace Tango.Tasks
                         p[i] = context;
                         continue;
                     }
+                    else if (mp[i].ParameterType.IsInterface)
+                    {
+                        p[i] = Context.RequestServices.GetService(mp[i].ParameterType);
+                        continue;
+                    }
                     string val;
                     if (param == null)
                     {

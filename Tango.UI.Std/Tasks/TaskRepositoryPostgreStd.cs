@@ -132,7 +132,7 @@ where taskid=@taskid", entity, Database.Transaction);
 
         public bool IsExecuteTask(int id)
         {
-            return Database.Connection.QuerySingle<bool>(@"
+            return Database.Connection.QuerySingleOrDefault<bool>(@"
 select 1 from tm_task t where t.startfromservice and t.taskid = @id and
 not exists (select 1 from tm_taskexecution te where te.taskid = t.taskid and te.finishdate is null)", new { id });
         }

@@ -210,7 +210,7 @@ namespace Tango.Tasks
 				var mi = type.GetMethod(task.Method);
 				if (mi != null)
 				{
-					newpars = mi.GetParameters().Where(o => o.ParameterType.Name != typeof(TaskExecutionContext).Name).ToArray();
+					newpars = mi.GetParameters().Where(o => !o.ParameterType.IsInterface && o.ParameterType.Name != typeof(TaskExecutionContext).Name).ToArray();
 					isParam = newpars.Length > 0;
 				}
 				if (isParam)
