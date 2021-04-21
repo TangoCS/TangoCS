@@ -3,28 +3,24 @@ using Tango.Html;
 
 namespace Tango.UI.Std
 {
-	public static class ContainerHelpers
+	public static class ContentHeaders
 	{
-		public static void ContentHeader(this LayoutWriter w)
+		public static void Default(LayoutWriter w)
 		{
 			IHelpManager manager = w.Context.RequestServices.GetService(typeof(IHelpManager)) as IHelpManager;
 
-			w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
-				w.Div(a => a.ID("cramb"), "&nbsp;");
-				w.Table(() => {
-					w.Tr(() => {
-						w.Td(() => w.H2(a => a.ID("contenttitle"), ""));
-						w.Td(a => a.Style("vertical-align:top"), () => w.Div(() => manager?.Render(w)));
-					});
+			w.Div(a => a.ID("cramb").Class("cramb"));
+			w.Table(() => {
+				w.Tr(() => {
+					w.Td(() => w.H2(a => a.ID("contenttitle"), ""));
+					w.Td(a => a.Style("vertical-align:top"), () => w.Div(() => manager?.Render(w)));
 				});
 			});
 		}
 
-		public static void ContentHeaderNested(this LayoutWriter w)
+		public static void Nested(LayoutWriter w)
 		{
-			w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
-				w.H3(a => a.ID("contenttitle"), "");
-			});
+			w.H3(a => a.ID("contenttitle"), "");
 		}
 	}
 
@@ -41,12 +37,16 @@ namespace Tango.UI.Std
 
 	public class DefaultContainer : AbstractDefaultContainer
 	{
-        public override void Render(ApiResponse response)
+		public Action<LayoutWriter> ContentHeader { get; set; } = ContentHeaders.Default;
+
+		public override void Render(ApiResponse response)
 		{
 			response.AddWidget("container", w => {
 				w.Div(a => a.ID("content").Class(ContainerClass).DataContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
-						w.ContentHeader();
+						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
+							ContentHeader(w);
+						});
 					w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody").Class(BodyClass));
 				});
@@ -69,8 +69,9 @@ namespace Tango.UI.Std
 
 	public class EditEntityContainer : AbstractDefaultContainer
 	{
+		public Action<LayoutWriter> ContentHeader { get; set; } = ContentHeaders.Default;
+
 		public bool AddDataCtrl { get; set; }
-		public bool IsNested { get; set; }
 
 		public bool ShowResultBlock { get; set; } = false;
 		
@@ -79,10 +80,9 @@ namespace Tango.UI.Std
 			response.AddWidget("container", w => {
 				w.Div(a => a.ID("content").Class(ContainerClass).DataContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
-						if (IsNested)
-							w.ContentHeaderNested();
-						else
-							w.ContentHeader();
+						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
+							ContentHeader(w);
+						});
 					w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding").Style(Height == ContainerHeight.Height100 ? "display:flex;flex-direction:column;" : null), () => {
 						var cls = "editform";
@@ -111,12 +111,16 @@ namespace Tango.UI.Std
 
 	public class ViewEntityContainer : AbstractDefaultContainer
 	{
+		public Action<LayoutWriter> ContentHeader { get; set; } = ContentHeaders.Default;
+
 		public override void Render(ApiResponse response)
 		{
 			response.AddWidget("container", w => {
 				w.Div(a => a.ID("content").Class(ContainerClass).DataContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
-						w.ContentHeader();
+						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
+							ContentHeader(w);
+						});
 					w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding"), () => {
 						var cls = "viewform";
@@ -131,12 +135,16 @@ namespace Tango.UI.Std
 
 	public class ListMasterDetailContainer : AbstractDefaultContainer
 	{
-        public override void Render(ApiResponse response)
+		public Action<LayoutWriter> ContentHeader { get; set; } = ContentHeaders.Default;
+
+		public override void Render(ApiResponse response)
 		{
 			response.AddWidget("container", w => {
 				w.Div(a => a.ID("content").Class(ContainerClass).DataContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
-						w.ContentHeader();
+						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
+							ContentHeader(w);
+						});
 					w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.Class("twocolumnsrow masterdetailcols"), () => {
 						w.Div(a => a.ID("contentbody").Class(BodyClass));

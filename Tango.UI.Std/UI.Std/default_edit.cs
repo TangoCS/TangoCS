@@ -23,13 +23,21 @@ namespace Tango.UI.Std
 		protected virtual bool FormGridMode => false;
 		protected virtual bool ShowResultBlock => false;
 
-		public override ViewContainer GetContainer() => new EditEntityContainer {
-			IsNested = ParentElement != null,
-			GridMode = FormGridMode,
-			Width = FormWidth,
-			Height = FormHeight,
-			ShowResultBlock = ShowResultBlock
-		};
+		public override ViewContainer GetContainer()
+		{
+			Action<LayoutWriter> header = ContentHeaders.Default;
+			if (ParentElement != null)
+				header = ContentHeaders.Nested;
+
+			return new EditEntityContainer
+			{
+				ContentHeader = header,
+				GridMode = FormGridMode,
+				Width = FormWidth,
+				Height = FormHeight,
+				ShowResultBlock = ShowResultBlock
+			};
+		}
 
 		[Inject]
 		protected IEntityAudit EntityAudit { get; set; }
