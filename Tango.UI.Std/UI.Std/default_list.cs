@@ -86,7 +86,7 @@ namespace Tango.UI.Std
 					{
 						w.Div(a => a.Class("selected object"), () => {
 							w.Span(i.Title + " " + i.Condition + " " + i.ValueTitle);
-							w.A(a => a.Class("close").OnClickPostEvent(Filter.OnInlineCriterionRemoved).DataParm("removedcriterion", i.GetHashCode().ToString()), () => w.Icon("close"));
+							//w.A(a => a.Class("close").OnClickPostEvent(Filter.OnInlineCriterionRemoved).DataParm("removedcriterion", i.GetHashCode().ToString()), () => w.Icon("close"));
 						});
 					}
 				});

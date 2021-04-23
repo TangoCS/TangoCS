@@ -579,14 +579,15 @@ namespace Tango.UI.Std
 	{
 		public bool EnableSelect { get; set; }
 		public Action<LayoutWriter> SelectedBlock { get; set; }
-
-
+		
 		public override void Render(ApiResponse response)
 		{
 			response.AddWidget("container", w => {
 				w.Div(a => a.ID("content").Class("content").DataContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
-						w.ContentHeader();
+						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
+							ContentHeaders.Default(w);
+						});
 					w.Div(a => a.ID("contenttoolbar"));
 					if (EnableSelect)
 					{
