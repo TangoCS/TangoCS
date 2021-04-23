@@ -152,7 +152,7 @@ values (@title, @sysname, @value, @parentid, @seqno) returning taskparameterid",
 
         public void DeleteParameter(int id)
         {
-            Database.Connection.Execute(@"delete from tm_taskparameter where taskparameterid = @id)", new { id }, Database.Transaction);
+            Database.Connection.Execute(@"delete from tm_taskparameter where taskparameterid = @id", new { id }, Database.Transaction);
         }
     }
 
