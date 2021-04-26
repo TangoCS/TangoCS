@@ -322,7 +322,7 @@ namespace Tango.Mail
                         MailMessage = new MailMessage
                         {
                             MailMessageStatusID = (int) MailMessageStatus.New,
-                            AttemptsToSendCount = mailSettings.AttemptsToSendCount ?? 0,
+                            //AttemptsToSendCount = mailSettings.AttemptsToSendCount ?? 0,
                             LastSendAttemptDate = null,
                             CreateDate = DateTime.Now,
                             Subject = subject,
