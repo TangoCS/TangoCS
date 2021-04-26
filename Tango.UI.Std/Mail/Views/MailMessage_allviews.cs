@@ -35,8 +35,11 @@ namespace Tango.Mail
             f.AddCellWithSortAndFilter(o => o.LastSendAttemptDate, o => o.LastSendAttemptDate.DateTimeToString());
             f.AddCellWithSortAndFilter(o => o.AttemptsToSendCount, o => o.AttemptsToSendCount);
             f.AddCellWithSortAndFilter(o => o.CreateDate, o => o.CreateDate.DateTimeToString());
-            f.AddActionsCell(o => al => al.To<MailMessageAttachment>("viewlist", AccessControl)
-                .WithArg(Constants.Id, o.ID).WithArg("title", o.Subject).WithImage("hie").WithTitle("Состав письма"));
+            f.AddCellWithSortAndFilter(o => o.LastModifiedUserTitle, o => o.LastModifiedUserTitle);
+            f.AddActionsCell(
+                o => al => al.To<MailMessageAttachment>("viewlist", AccessControl)
+                .WithArg(Constants.Id, o.ID).WithArg("title", o.Subject).WithImage("hie").WithTitle("Состав письма"),
+                o => al => al.ToDelete(AccessControl, o));
         }
     }
     
@@ -67,5 +70,10 @@ namespace Tango.Mail
             fields.AddCellWithSortAndFilter(o => o.FileType, o => o.FileType);
             fields.AddCellWithSortAndFilter(o => o.FileTitle, o => o.FileTitle);
         }
+    }
+
+    [OnAction(typeof(MailMessage), "delete")]
+    public class MailMessage_delete : default_delete<MailMessage, int>
+    {
     }
 }

@@ -67,6 +67,8 @@ namespace Tango.Mail
         [Column]
         public virtual object LastModifiedUserID { get; set; }
         
+        public string LastModifiedUserTitle { get; set; }
+        
         public string MailMessageStatus { get; set; }
     }
 }
