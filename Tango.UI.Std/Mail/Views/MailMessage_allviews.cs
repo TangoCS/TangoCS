@@ -35,6 +35,7 @@ namespace Tango.Mail
             f.AddCellWithSortAndFilter(o => o.LastSendAttemptDate, o => o.LastSendAttemptDate.DateTimeToString());
             f.AddCellWithSortAndFilter(o => o.AttemptsToSendCount, o => o.AttemptsToSendCount);
             f.AddCellWithSortAndFilter(o => o.CreateDate, o => o.CreateDate.DateTimeToString());
+            f.AddCellWithSortAndFilter(o => o.LastModifiedUserTitle, o => o.LastModifiedUserTitle);
             f.AddActionsCell(o => al => al.To<MailMessageAttachment>("viewlist", AccessControl)
                 .WithArg(Constants.Id, o.ID).WithArg("title", o.Subject).WithImage("hie").WithTitle("Состав письма"));
         }
