@@ -250,6 +250,14 @@ namespace Tango.Tasks
 							tran.Commit();
 					}
 				}
+                else
+                {
+                    var oldpars = Repository.GetParameters(task.ID);
+                    foreach (var oldpar in oldpars)
+                    {
+                            Repository.DeleteParameter(oldpar.ID);
+                    }
+                }    
 			}
 		}
 
