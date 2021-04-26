@@ -44,14 +44,16 @@ namespace Tango.UI.Controls
 
 		public override void OnInit()
 		{
-			dPeriodFrom = CreateControl<DateLists>(ID + "_" + (UseCalendar ? $"dperiodfromtime" : $"dperiodfrom"), c => {
+			dPeriodFrom = CreateControl<DateLists>(ID + "_" + (UseCalendar ? $"dperiodfromtime" : $"dperiodfrom"), c =>
+			{
 				c.ShowDays = ShowDays && !UseCalendar;
 				c.ShowTime = ShowTime;
 				c.TimeOnly = UseCalendar && ShowDays;
 				c.MinutesStep = MinutesStep;
 				if (DefaultValue != null) c.DefaultValue = DefaultValue.From;
 			});
-			dPeriodTo = CreateControl<DateLists>(ID + "_" + (UseCalendar ? $"dperiodtotime" : $"dperiodto"), c => {
+			dPeriodTo = CreateControl<DateLists>(ID + "_" + (UseCalendar ? $"dperiodtotime" : $"dperiodto"), c =>
+			{
 				c.ShowDays = ShowDays && !UseCalendar;
 				c.ShowTime = ShowTime;
 				c.TimeOnly = UseCalendar && ShowDays;
@@ -82,17 +84,21 @@ namespace Tango.UI.Controls
 			options.FromCalendarOptions.ShowButton = false;
 			options.ToCalendarOptions.ShowButton = false;
 			//w.PushID(ID);
-			w.Div(a => {
+			w.Div(a =>
+			{
 				a.Class("periodpicker").ID(ID);
 				if (Change != null) a.DataEvent(OnChange).DataRef(ParentElement, ID);
-			}, () => {
-				w.Div(() => {
+			}, () =>
+			{
+				w.Div(() =>
+				{
 					if (UseCalendar && ShowDays) w.Calendar(ParmName.From, from, options.FromCalendarOptions);
 					if (!UseCalendar || ShowTime)
 						dPeriodFrom.Render(w, from, options.FromTimeOptions);
 				});
 				w.Div("&ndash;");
-				w.Div(() => {
+				w.Div(() =>
+				{
 					if (UseCalendar && ShowDays) w.Calendar(ParmName.To, to, options.ToCalendarOptions);
 					if (!UseCalendar || ShowTime)
 						dPeriodTo.Render(w, to, options.ToTimeOptions);
@@ -160,7 +166,7 @@ namespace Tango.UI.Controls
 						if (totime != null) to = to.Value.Add(totime.Value);
 					}
 					else
-					{						
+					{
 						if (DefaultValue != null) from = from.Value.AddHours(DefaultValue.From.Hour).AddMinutes(DefaultValue.From.Minute);
 						if (DefaultValue != null) to = to.Value.AddHours(DefaultValue.To.Hour).AddMinutes(DefaultValue.To.Minute);
 					}
@@ -179,8 +185,16 @@ namespace Tango.UI.Controls
 		}
 	}
 
-	public class DateTimePicker : ViewComponent, IFieldValueProvider<DateTime>
+	public class DateTimePicker : ViewComponent, IFieldValueProvider<DateTime?>
 	{
+		
+		DateTime Date => Context.GetDateTimeArg($"{ID}_dperiodfrom", DateTime.MinValue);
+		int Hour => Context.GetArg($"{ID}_dperiodfromtime_hour", DefaultValue.Hour) ;
+		int Minute => Context.GetArg($"{ID}_dperiodfromtime_minute", DefaultValue.Minute);
+
+		public bool HasValue => Date > DateTime.MinValue && Hour >= 0 && Minute >= 0;
+		DateTime? IFieldValueProvider<DateTime?>.Value => HasValue ? new DateTime(Date.Year, Date.Month, Date.Day, Hour, Minute, 0) : (DateTime?)null;
+
 		DateLists dFrom;
 
 		public int MinYear { get; set; }
@@ -188,19 +202,21 @@ namespace Tango.UI.Controls
 		public DateTime DefaultValue { get; set; }
 		public int MinutesStep { get; set; } = 30;
 
-		public override string ID { 
-			get => base.ID; 
-			set 
-			{ 
+		public override string ID
+		{
+			get => base.ID;
+			set
+			{
 				if (dFrom != null)
-					dFrom.ID = value + "_dperiodfromtime"; 
-				base.ID = value; 
-			} 
+					dFrom.ID = value + "_dperiodfromtime";
+				base.ID = value;
+			}
 		}
 
 		public override void OnInit()
 		{
-			dFrom = CreateControl<DateLists>(ID + "_dperiodfromtime", c => {
+			dFrom = CreateControl<DateLists>(ID + "_dperiodfromtime", c =>
+			{
 				c.ShowDays = false;
 				c.ShowTime = true;
 				c.TimeOnly = true;
@@ -209,25 +225,28 @@ namespace Tango.UI.Controls
 			});
 		}
 
-		public void Render(LayoutWriter w, DateTime? from = null, DateTime? to = null, Action<InputTagAttributes> attributes = null)
+		public void Render(LayoutWriter w, DateTime? value = null, Action<InputTagAttributes> attributes = null)
 		{
 			dFrom.MinYear = MinYear;
 			dFrom.MaxYear = DateTime.Today.Year;
 
-			if (from == null)
-				from = Context.GetDateTimeArg(ID + "_" + "dperiodfrom");
+			if (value == null)
+				value = Context.GetDateTimeArg(ID + "_" + "dperiodfrom");
 
 			var options = new CalendarOptions { ShowButton = false, Attributes = attributes };
 
-			w.Div(a => a.Class("datetimepicker").ID(ID), () => {
-				w.Div(() => {
-					w.Calendar(ID + "_dperiodfrom", from ?? DefaultValue, options);
-					dFrom.Render(w, from ?? DefaultValue);
+			w.Div(a => a.Class("datetimepicker").ID(ID), () =>
+			{
+				w.Div(() =>
+				{
+					w.Calendar(ID + "_dperiodfrom", value ?? DefaultValue, options);
+					dFrom.Render(w, value ?? DefaultValue);
 				});
 				w.Span(a => a.ID(ID + "_btn").Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
 			});
 
-			w.AddClientAction("Calendar", "setup", f => new {
+			w.AddClientAction("Calendar", "setup", f => new
+			{
 				inputField = f(ID + "_dperiodfrom"),
 				button = f(ID + "_btn"),
 				showOthers = true,
@@ -252,6 +271,7 @@ namespace Tango.UI.Controls
 				return from.Value;
 			}
 		}
+
 	}
 
 	public class PeriodValue
