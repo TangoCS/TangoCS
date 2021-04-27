@@ -60,6 +60,51 @@ namespace Tango.Data
 		public IRepository Repository(Type type) => new DapperRepository(this, type);
 	}
 
+	public static class ConnectionExtensions
+	{
+		public static void InitDbConventions(this IDbConnection dbConnection, Type type)
+		{
+			var baseNaming = type.GetCustomAttribute(typeof(BaseNamingConventionsAttribute)) as BaseNamingConventionsAttribute;
+			if (SqlMapper.GetTypeMap(type) is DefaultTypeMap && baseNaming != null)
+			{
+				var custom = new CustomPropertyTypeMap(
+					type,
+					(t, columnName) =>
+					{
+						var name = columnName;
+						
+						if (name.EndsWith(DBConventions.IDSuffix))
+						{
+							name = name.Substring(0, name.Length - DBConventions.IDSuffix.Length) + "ID";
+							var pid = t.GetProperty(name);
+							if (pid != null)
+								return pid;
+						}
+						if (name.EndsWith(DBConventions.GUIDSuffix))
+						{
+							name = name.Substring(0, name.Length - DBConventions.GUIDSuffix.Length) + "GUID";
+							var pguid = t.GetProperty(name);
+							if (pguid != null)
+								return pguid;
+						}
+
+						var p = t.GetProperty(name);
+						if (p != null)
+							return p;
+
+						throw new PropertyInfoNotFoundException($"В моделе {type.Name} отсутствует свойство {name}");
+					});
+				
+				SqlMapper.SetTypeMap(type, custom);
+			}
+		} 
+		public static void InitDbConventions<T>(this IDbConnection dbConnection)
+		{
+			var type = typeof(T);
+			dbConnection.InitDbConventions(type);
+		}
+	}
+
 	public class DapperRepository : IRepository
 	{
 		public IDatabase Database { get; }
@@ -108,39 +153,8 @@ namespace Tango.Data
 				AllObjectsQuery = "select * from " + Table;
 			
 			DBType = database.GetDBType();
-
-			if (SqlMapper.GetTypeMap(type) is DefaultTypeMap && baseNaming != null)
-			{
-				var custom = new CustomPropertyTypeMap(
-					type,
-					(t, columnName) =>
-					{
-						var name = columnName;
-						
-						if (name.EndsWith(DBConventions.IDSuffix))
-						{
-							name = name.Substring(0, name.Length - DBConventions.IDSuffix.Length) + "ID";
-							var pid = t.GetProperty(name);
-							if (pid != null)
-								return pid;
-						}
-						if (name.EndsWith(DBConventions.GUIDSuffix))
-						{
-							name = name.Substring(0, name.Length - DBConventions.GUIDSuffix.Length) + "GUID";
-							var pguid = t.GetProperty(name);
-							if (pguid != null)
-								return pguid;
-						}
-
-						var p = t.GetProperty(name);
-						if (p != null)
-							return p;
-
-						throw new PropertyInfoNotFoundException($"В моделе {type.Name} отсутствует свойство {name}");
-					});
-				
-				SqlMapper.SetTypeMap(type, custom);
-			}
+			
+			database.Connection.InitDbConventions(type);
 
 			var props = Type.GetProperties().Where(o => o.GetCustomAttribute<ColumnAttribute>() != null);
 			foreach (var p in props)

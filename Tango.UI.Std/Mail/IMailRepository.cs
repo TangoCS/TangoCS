@@ -25,4 +25,10 @@ namespace Tango.Mail
         string GetMailTemplateWhereMailSettingsIdSql();
         string GetMailTemplateSql();
     }
+
+    public interface IMailHelperRepository
+    {
+        MailSettings GetMailSettingsBySystemName(string systemName);
+        MailSettingsTemplate GetMailSettingsTemplateByMailSettingsId(int mailSettingsId);
+    }
 }
