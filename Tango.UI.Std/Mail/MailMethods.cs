@@ -4,9 +4,6 @@ using System.Linq;
 
 namespace Tango.Mail.Methods
 {
-    /// <summary>
-    /// Получение списка адресатов
-    /// </summary>
     [TypeCache(MailTypeCacheKeys.PreProcessingMailMethod)]
     [Description("Заполнить список адресатов")]
     public class RecipientsMail
@@ -15,6 +12,20 @@ namespace Tango.Mail.Methods
         public void Run(MailMessageContext context, [Description("Список адресатов")]string recipients)
         {
             context.MailMessage.Recipients = recipients;
+        }
+    }
+    
+    [TypeCache(MailTypeCacheKeys.PreProcessingMailMethod)]
+    [Description("Указать отправителя")]
+    public class SendersMail
+    {
+        [Description("Email и имя отправителя")]
+        public void Run(MailMessageContext context, 
+            [Description("Email отправителя")]string email, 
+            [Description("Имя отправителя")]string name)
+        {
+            context.MailMessage.FromEmail = email;
+            context.MailMessage.FromName = name;
         }
     }
 }

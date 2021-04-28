@@ -23,19 +23,21 @@ namespace Tango.Mail
         protected override void FieldsInit(FieldCollection<MailMessage> f)
         {
             f.SetRowID(o => o.MailMessageID.ToString());
-
-            f.AddCellWithSortAndFilter(o => o.Recipients, o => o.Recipients);
+            
+            f.AddCellWithSortAndFilter(o => o.MailCategoryTitle, o => o.MailCategoryTitle);
             f.AddCellWithSortAndFilter(o => o.Subject, o => o.Subject);
             f.AddCellWithSortAndFilter(o => o.Body, o => o.Body);
-            f.AddCellWithSortAndFilter(o => o.MailMessageStatus, o => o.MailMessageStatus);
-            f.AddCellWithSortAndFilter(o => o.TimeoutValue, o => o.TimeoutValue);
             f.AddCellWithSortAndFilter(o => o.AttachmentName, o => o.AttachmentName);
-            f.AddCellWithSortAndFilter(o => o.Error, o => o.Error);
-            f.AddCellWithSortAndFilter(o => o.CopyRecipients, o => o.CopyRecipients);
-            f.AddCellWithSortAndFilter(o => o.LastSendAttemptDate, o => o.LastSendAttemptDate.DateTimeToString());
-            f.AddCellWithSortAndFilter(o => o.AttemptsToSendCount, o => o.AttemptsToSendCount);
             f.AddCellWithSortAndFilter(o => o.CreateDate, o => o.CreateDate.DateTimeToString());
+            f.AddCellWithSortAndFilter(o => o.TimeoutValue, o => o.TimeoutValue);
+            f.AddCellWithSortAndFilter(o => o.MaxAttemptsToSendCount, o => o.MaxAttemptsToSendCount);
+            f.AddCellWithSortAndFilter(o => o.Recipients, o => o.Recipients);
+            f.AddCellWithSortAndFilter(o => o.CopyRecipients, o => o.CopyRecipients);
             f.AddCellWithSortAndFilter(o => o.LastModifiedUserTitle, o => o.LastModifiedUserTitle);
+            f.AddCellWithSortAndFilter(o => o.MailMessageStatus, o => o.MailMessageStatus);
+            f.AddCellWithSortAndFilter(o => o.AttemptsToSendCount, o => o.AttemptsToSendCount);
+            f.AddCellWithSortAndFilter(o => o.LastSendAttemptDate, o => o.LastSendAttemptDate.DateTimeToString());
+            f.AddCellWithSortAndFilter(o => o.Error, o => o.Error);
             f.AddActionsCell(
                 o => al => al.To<MailMessageAttachment>("viewlist", AccessControl)
                 .WithArg(Constants.Id, o.ID).WithArg("title", o.Subject).WithImage("hie").WithTitle("Состав письма"),

@@ -94,7 +94,7 @@ namespace Tango.Mail
         
         public class SystemName : EntityField<MailSettings, string>
         {
-            public override bool IsRequired { get; set; } = false;
+            public override bool IsRequired { get; set; } = true;
         }
     }
 }
