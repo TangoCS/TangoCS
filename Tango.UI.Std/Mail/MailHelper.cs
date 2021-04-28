@@ -218,11 +218,12 @@ namespace Tango.Mail
                         MailMessage = new MailMessage
                         {
                             MailMessageStatusID = (int) MailMessageStatus.New,
-                            //AttemptsToSendCount = mailSettings.AttemptsToSendCount ?? 0,
                             LastSendAttemptDate = null,
                             CreateDate = DateTime.Now,
                             Subject = subject,
                             Body = body,
+                            MaxAttemptsToSendCount = mailSettings.AttemptsToSendCount ?? 5,
+                            MailCategoryID = mailSettings.MailCategoryID,
                             TimeoutValue = mailSettings.TimeoutValue,
                             LastModifiedUserID = _userIdAccessor.CurrentUserID ?? _userIdAccessor.SystemUserID
                         }
@@ -241,6 +242,13 @@ namespace Tango.Mail
                             _methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
                         }
                     }
+                    
+                    // Валидация на обязательные поля: Email отправителя, Email получателя
+                    if (string.IsNullOrEmpty(mailMessageContext.MailMessage.Recipients))
+                        throw new MailHelperValidateException($"Не заполнены адреса получателей в настройке {mailSettings.Title}");
+                    
+                    if (string.IsNullOrEmpty(mailMessageContext.MailMessage.FromEmail))
+                        throw new MailHelperValidateException($"Не заполнен Email отправителя в настройке {mailSettings.Title}");
 
                     using (var transaction = _database.BeginTransaction())
                     {
@@ -326,6 +334,17 @@ namespace Tango.Mail
             }
 
             return type;
+        }
+    }
+
+    public class MailHelperValidateException : Exception
+    {
+        public MailHelperValidateException(string message) : base(message)
+        {
+        }
+
+        public MailHelperValidateException(string message, Exception ex) : base(message, ex)
+        {
         }
     }
 }

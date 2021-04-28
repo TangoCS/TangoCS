@@ -70,5 +70,15 @@ namespace Tango.Mail
         public string LastModifiedUserTitle { get; set; }
         
         public string MailMessageStatus { get; set; }
+        
+        [Column]
+        public virtual string FromName { get; set; }
+        [Column]
+        public virtual string FromEmail { get; set; }
+        [Column]
+        public virtual int MaxAttemptsToSendCount { get; set; }
+        [Column]
+        public virtual int MailCategoryID { get; set; }
+        public string MailCategoryTitle { get; set; }
     }
 }

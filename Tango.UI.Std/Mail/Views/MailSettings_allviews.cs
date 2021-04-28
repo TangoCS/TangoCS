@@ -20,7 +20,10 @@ namespace Tango.Mail
         public static IEnumerable<MethodSettings> GetMethodSettingsByTypesKey(string typesKey)
         {
             var cache = new TypeCache();
-            var types = cache.Get(typesKey).SelectMany(t =>
+            var caches = cache.Get(typesKey);
+            if (caches == null || !caches.Any())
+                return new List<MethodSettings>();
+            var types = caches.SelectMany(t =>
             {
                 return t.GetMethods()
                     .Where(m => m.GetCustomAttribute<DescriptionAttribute>() != null)
@@ -38,12 +41,17 @@ namespace Tango.Mail
         public static Dictionary<string, string> GetFullNameDictionary(string typesKey)
         {
             var cache = new TypeCache();
-            var list = cache.Get(typesKey).SelectMany(t => {
+            var caches = cache.Get(typesKey);
+            if (caches == null || !caches.Any())
+                return new Dictionary<string, string>();
+            
+            var list = caches.SelectMany(t => {
                 var clsName = t.GetCustomAttribute<DescriptionAttribute>()?.Description ?? t.Name;
                 return t.GetMethods()
                     .Where(m => m.GetCustomAttribute<DescriptionAttribute>() != null)
                     .Select(m => {
-                        var mName = m.GetCustomAttribute<DescriptionAttribute>().Description;
+                        var mName = m.GetCustomAttribute<DescriptionAttribute>()?.Description;
+                        
                         return ($"{t.FullName}|{m.Name}", $"{clsName}.{mName}");
                     });
             });
@@ -166,6 +174,7 @@ namespace Tango.Mail
             w.FieldsBlockStd(() =>
             {
                 w.PlainText(Group.Title);
+                w.PlainText(Group.SystemName);
                 w.PlainText(Group.MailCategoryTitle);
                 w.PlainText("Методы предварительной обработки", () =>
                 {
@@ -175,10 +184,7 @@ namespace Tango.Mail
                 {
                     w.Write(ViewData.PostProcessingMethod);
                 });
-                // w.PlainText(Group.PreProcessingMethod);
-                // w.PlainText(Group.PostProcessingMethod);
                 w.PlainText(Group.TimeoutValue);
-                w.PlainText(Group.SystemName);
                 w.PlainText(Group.SendMailDayInterval);
                 w.PlainText(Group.SendMailStartInterval);
                 w.PlainText(Group.SendMailFinishInterval);
@@ -321,6 +327,8 @@ namespace Tango.Mail
                 if(CreateObjectMode)
                     w.DropDownList(Group.MailTemplateID, _selectMailTemplate);
                 w.DropDownList(Group.MailCategoryID, _selectMailCategory);
+                
+                w.TextBox(Group.SystemName);
 
                 w.FormField(Group.PreProcessingMethod, () =>
                 {
@@ -366,7 +374,7 @@ namespace Tango.Mail
                     w.A(a => a.OnClickPostEvent(OnPostMethodsAdd), "добавить");
                 });
                 w.TextBox(Group.TimeoutValue);
-                w.TextBox(Group.SystemName);
+                
                 w.TextBox(Group.SendMailDayInterval);
                 w.TextBox(Group.SendMailStartInterval);
                 w.TextBox(Group.SendMailFinishInterval);
@@ -507,6 +515,7 @@ namespace Tango.Mail
             obj.CreateDate = DateTime.Now;
             obj.LastModifiedDate = DateTime.Now;
             obj.LastModifiedUserID = UserIdAccessor.CurrentUserID;
+            obj.AttemptsToSendCount = 5;
         }
 
         protected override MailSettings GetExistingEntity()

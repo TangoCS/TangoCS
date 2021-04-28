@@ -195,6 +195,7 @@ hr {
 	display: inline-block;
 	width: 100%;
 }
+
 .contentheader .cramb {
 	padding: 6px 0 4px 0;
 }
@@ -360,6 +361,19 @@ hr {
 
 .cellborders .border-t-wide {
 	border-top: solid 3px #bbb;
+}
+
+.inlinefilter {
+	padding: 4px;
+	font-size: smaller;
+}
+
+.filterbtn.hascriteria {
+	font-weight: bold;
+}
+
+.actionimg.filterbtn.hascriteria {
+	color: blue;
 }
 
 
