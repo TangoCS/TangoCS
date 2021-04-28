@@ -86,18 +86,13 @@ namespace Tango.UI.Controls
 				void attrs(ActionLink a) => a.CallbackToCurrent().AsDialogPost(filter.OpenFilterDialog)
 					.WithImage("filter").WithTitle(r => r.Get("Common.Filter"));
 
-				void button()
-				{
-					if (imageOnly)
-						w.ActionImageButton(attrs, a => a.Data(filter.DataCollection));
-					else
-						w.ActionImageTextButton(attrs, a => a.Data(filter.DataCollection));
-				}
+				var cls = filter.Criteria.Count > 0 ? "hascriteria" : "";
 
-				if (filter.Criteria.Count > 0)
-					w.B(button);
+				if (imageOnly)
+					w.ActionImageButton(attrs, a => a.Data(filter.DataCollection).Class("filterbtn").Class(cls));
 				else
-					button();
+					w.ActionImageTextButton(attrs, a => a.Data(filter.DataCollection).Class("filterbtn").Class(cls));
+
 			}
 			Item(render);
 		}

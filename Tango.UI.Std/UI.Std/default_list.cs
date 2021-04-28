@@ -59,7 +59,7 @@ namespace Tango.UI.Std
 
 		protected virtual bool EnableViews => true;
 		protected virtual bool EnableQuickSearch => true;
-		protected virtual bool ShowFilterV2 => false;
+		protected virtual bool ShowFilterV2 => true;
 
 		protected virtual void Toolbar(LayoutWriter w)
 		{
@@ -79,7 +79,7 @@ namespace Tango.UI.Std
 		protected virtual void ToolbarTop(LayoutWriter w) { }
 		protected virtual void ToolbarBottom(LayoutWriter w)
 		{
-			if (ShowFilterV2)
+			if (ShowFilterV2 && Filter.Criteria.Count > 0)
 			{
 				w.Div(a => a.Class("inlinefilter selectedcontainer"), () => {
 					foreach (var i in Filter.Criteria)
