@@ -41,4 +41,21 @@ namespace Tango.Mail.Methods
             context.MailMessage.CopyRecipients = recipients;
         }
     }
+
+    /// <summary>
+    /// Получение списка адресатов
+    /// </summary>
+    [TypeCache(MailTypeCacheKeys.PreProcessingMailMethod)]
+    [Description("Вложить файл из реестра файлов")]
+    public class FileAttachmentFromFileData
+    {
+        [Description("Простое вложение")]
+        public void Run(MailMessageContext context, [Description("Список вложений (ID файлов через запятую)")] string fileIDs)
+        {
+            var ids = fileIDs.Split(',').Select(Guid.Parse);
+
+            context.ExistingFileIds.AddRange(ids);
+        }
+    }
+
 }
