@@ -229,6 +229,23 @@ namespace Tango.Mail
                         }
                     };
 
+                    var date = mailMessageContext.MailMessage.CreateDate.Date;
+                    if (mailSettings.SendMailStartInterval != TimeSpan.Zero || mailSettings.SendMailFinishInterval != TimeSpan.Zero)
+                    {
+                        mailMessageContext.MailMessage.StartSendDate = date
+                            .AddDays(mailSettings.SendMailDayInterval)
+                            .Add(mailSettings.SendMailStartInterval);
+                        
+                        mailMessageContext.MailMessage.FinishSendDate = date
+                            .AddDays(mailSettings.SendMailDayInterval)
+                            .Add(mailSettings.SendMailFinishInterval);
+                    }
+                    else if(mailSettings.SendMailDayInterval > 0)
+                    {
+                        mailMessageContext.MailMessage.StartSendDate = date.AddDays(mailSettings.SendMailDayInterval);
+                        mailMessageContext.MailMessage.FinishSendDate = date.AddDays(mailSettings.SendMailDayInterval).EndDay();
+                    }
+
                     if (!string.IsNullOrEmpty(mailSettings.PreProcessingMethod))
                     {
                         var mailMethods = JsonConvert.DeserializeObject<MethodSettingsCollection>(mailSettings.PreProcessingMethod);

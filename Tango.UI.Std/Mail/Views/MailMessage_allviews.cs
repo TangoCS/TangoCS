@@ -30,6 +30,8 @@ namespace Tango.Mail
             f.AddCellWithSortAndFilter(o => o.AttachmentName, o => o.AttachmentName);
             f.AddCellWithSortAndFilter(o => o.CreateDate, o => o.CreateDate.DateTimeToString());
             f.AddCellWithSortAndFilter(o => o.TimeoutValue, o => o.TimeoutValue);
+            f.AddCellWithSortAndFilter(o => o.StartSendDate, o => o.StartSendDate.DateTimeToString());
+            f.AddCellWithSortAndFilter(o => o.FinishSendDate, o => o.FinishSendDate.DateTimeToString());
             f.AddCellWithSortAndFilter(o => o.MaxAttemptsToSendCount, o => o.MaxAttemptsToSendCount);
             f.AddCellWithSortAndFilter(o => o.Recipients, o => o.Recipients);
             f.AddCellWithSortAndFilter(o => o.CopyRecipients, o => o.CopyRecipients);

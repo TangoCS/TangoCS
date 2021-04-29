@@ -80,5 +80,10 @@ namespace Tango.Mail
         [Column]
         public virtual int MailCategoryID { get; set; }
         public string MailCategoryTitle { get; set; }
+        
+        [Column]
+        public virtual DateTime? StartSendDate { get; set; }
+        [Column]
+        public virtual DateTime? FinishSendDate { get; set; }
     }
 }
