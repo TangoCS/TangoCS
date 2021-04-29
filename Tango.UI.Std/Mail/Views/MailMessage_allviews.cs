@@ -27,7 +27,6 @@ namespace Tango.Mail
             f.AddCellWithSortAndFilter(o => o.MailCategoryTitle, o => o.MailCategoryTitle);
             f.AddCellWithSortAndFilter(o => o.Subject, o => o.Subject);
             f.AddCellWithSortAndFilter(o => o.Body, o => o.Body);
-            f.AddCellWithSortAndFilter(o => o.AttachmentName, o => o.AttachmentName);
             f.AddCellWithSortAndFilter(o => o.CreateDate, o => o.CreateDate.DateTimeToString());
             f.AddCellWithSortAndFilter(o => o.TimeoutValue, o => o.TimeoutValue);
             f.AddCellWithSortAndFilter(o => o.StartSendDate, o => o.StartSendDate.DateTimeToString());

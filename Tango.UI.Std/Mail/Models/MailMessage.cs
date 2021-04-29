@@ -49,10 +49,6 @@ namespace Tango.Mail
         [Column]
         public virtual int MailMessageStatusID { get; set; }
         [Column]
-        public virtual string AttachmentName { get; set; }
-        [Column]
-        public virtual byte[] Attachment { get; set; }
-        [Column]
         public virtual string Error { get; set; }
         [Column]
         public virtual string CopyRecipients { get; set; }
