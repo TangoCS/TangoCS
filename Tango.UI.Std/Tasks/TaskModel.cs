@@ -31,6 +31,9 @@ namespace Tango.Tasks
 	
 		public static Type GetType(string fullnameclass)
         {
+            if (fullnameclass.IsEmpty())
+                return null;
+
 			string taskclass = fullnameclass.Split(',')[0];
 
 			if (!types.TryGetValue(taskclass, out var type))

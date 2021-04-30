@@ -27,12 +27,12 @@ namespace Tango.Tasks
 		{
 			base.OnInit();
 			
-			var ps = Repository.GetParameters(ViewData.ID).ToDictionary(o => o.SysName, o => o);
+			var ps = Repository.GetParameters(ViewData.ID).ToDictionary(o => o.SysName.ToLower(), o => o);
 
 			var type = TaskTypeCollection.GetType(ViewData.Class);
 			MethodInfo mi = type.GetMethod(ViewData.Method);
 			parameters = mi.GetParameters().Where(o => o.ParameterType.Name != typeof(TaskExecutionContext).Name)
-										   .ToDictionary(o => o.Name, o => new ParameterData { ParameterInfo = o });
+										   .ToDictionary(o => o.Name.ToLower(), o => new ParameterData { ParameterInfo = o });
 
 			foreach (var p in ps)
 			{
@@ -104,7 +104,7 @@ namespace Tango.Tasks
 
 		protected override void SetDefaultValues(DTO_TaskParameter obj)
 		{
-			var id = Context.GetIntArg("taskid", ViewData.ParentID);
+			var id = Context.GetIntArg("taskid", 0);
 			obj.ParentID = id;
 			obj.SeqNo = Repository.MaximumSequenceNumber(id) + 1;
 		}
@@ -114,22 +114,33 @@ namespace Tango.Tasks
 			gr = AddFieldGroup(new DTO_TaskParameterFields.DefaultGroup());
 		}
 
-		protected override void Form(LayoutWriter w)
-		{
-			var type = TaskTypeCollection.GetType(ViewData.ParentClass);
-			var mi = type.GetMethod(ViewData.ParentMethod);
-			var parameter = mi.GetParameters().First(o => o.Name == ViewData.SysName);
+        protected override void Form(LayoutWriter w)
+        {
+            var type = TaskTypeCollection.GetType(ViewData.ParentClass);
+            if (type != null)
+            {
+                var mi = type.GetMethod(ViewData.ParentMethod);
+                var parameter = mi.GetParameters().First(o => o.Name.ToLower() == ViewData.SysName.ToLower());
 
-			w.FieldsBlockStd(() => {
-				w.TextBox(gr.Title);
-				w.TextBox(gr.SysName);
-				if (parameter.ParameterType == typeof(DateTime) || parameter.ParameterType == typeof(DateTime?))
-					w.FormFieldCalendar(gr.Value.ID, gr.Value.Caption, gr.Value.Value.ToDateTime());
-				else
-					w.TextBox(gr.Value);
-			});
-		}
-	}
+                w.FieldsBlockStd(() =>
+                {
+                    w.TextBox(gr.Title);
+                    w.TextBox(gr.SysName);
+                    if (parameter.ParameterType == typeof(DateTime) || parameter.ParameterType == typeof(DateTime?))
+                        w.FormFieldCalendar(gr.Value.ID, gr.Value.Caption, gr.Value.Value.ToDateTime());
+                    else
+                        w.TextBox(gr.Value);
+                });
+            }
+            else
+            {
+                w.FieldsBlockStd(() =>
+                {
+                    w.PlainText("Информация", () => w.Write("Параметры в ручную не создаются."));
+                });
+            }
+        }
+    }
 
 	[OnAction(typeof(DTO_TaskParameter), "delete")]
 	public class tm_taskparameter_delete : default_delete<DTO_TaskParameter, int> { }
