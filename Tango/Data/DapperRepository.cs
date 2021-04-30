@@ -111,7 +111,7 @@ namespace Tango.Data
 		protected Type Type;
 		public string Table { get; }
 		protected DBType DBType { get; }
-		public string AllObjectsQuery { get; set; }
+		public virtual string AllObjectsQuery { get; set; }
 		protected Dictionary<string, PropertyInfo> keys = new Dictionary<string, PropertyInfo>();
 		protected Dictionary<string, PropertyInfo> columns = new Dictionary<string, PropertyInfo>();
 		public IDictionary<string, object> Parameters { get; } = new Dictionary<string, object>();
