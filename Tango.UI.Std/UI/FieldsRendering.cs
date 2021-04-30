@@ -41,7 +41,7 @@ namespace Tango.UI
 
         public static void Hidden<TValue>(this LayoutWriter w, IField<TValue> field)
 		{
-			w.TextBox(field.ID, field.Value.ToString());
+			w.TextBox(field.ID, field.Value.ToString(), a => a.Type(InputType.Hidden));
 		}
 
 		public static void PlainText<TValue>(this LayoutWriter w, IField<TValue> field, GridPosition grid = null)
