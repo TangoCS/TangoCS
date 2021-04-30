@@ -154,8 +154,10 @@ namespace Tango.Excel
 
 		public void SetActiveSheet(int pos)
 		{
+			p.Workbook.Worksheets[pos].Select();
 			p.Workbook.View.ActiveTab = pos;
-			//s = p.Workbook.Worksheets[pos];	
+			//s = p.Workbook.Worksheets[pos];
+			//s.Select();
 		}
 		public void GroupColumns(int startCol, int finishCol, int sheetIndex, bool isCollapsed)
 		{		
