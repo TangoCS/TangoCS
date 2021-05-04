@@ -495,17 +495,20 @@ namespace Tango.UI.Std
 
 	public static class ToolbarExtensions
 	{
-		public static void ToCreateNew<T>(this MenuBuilder t, Action<ActionLink> attrs = null, bool imageOnly = false)
+		public static void ToCreateNew<T>(this MenuBuilder t, Action<ActionLink> attrs = null, bool imageOnly = false, string returnAction = null, string returnID = "@ID")
 		{
+			if (returnAction is null)
+				returnAction = Constants.OpView;
+			
 			var ac = t.Context.RequestServices.GetService(typeof(IAccessControl)) as IAccessControl;
 			var tac = t.Context.RequestServices.GetService(typeof(ITypeActivatorCache)) as ITypeActivatorCache;
 
 			t.ItemSeparator();
-			var key = typeof(T).GetResourceType().Name + "." + Constants.OpView;
+			var key = typeof(T).GetResourceType().Name + "." + returnAction;
 			Action<ActionLink> attrs1 = null;
 			if (tac.Get(key).HasValue)
 			{
-				var retUrl1 = new ActionLink(t.Context).To<T>(Constants.OpView).WithArg(Constants.Id, "@ID").Url;
+				var retUrl1 = new ActionLink(t.Context).To<T>(returnAction).WithArg(Constants.Id, returnID).Url;
 				var retUrl0 = t.Context.CreateReturnUrl(1);
 				attrs1 = x => x.ToCreateNew<T>(ac, null, retUrl1)
 					.WithArg(Constants.ReturnUrl + "_0", retUrl0)
