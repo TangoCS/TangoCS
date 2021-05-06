@@ -17,21 +17,21 @@ using Tango.UI.Std;
 
 namespace Tango.Tasks
 {
-	[OnAction(typeof(DTO_Task), "viewlist")]
-	public class tm_task_bycategories : default_view_rep<DTO_Task, int, ITaskRepository>, IHasEmbeddedResources
+	[OnAction(typeof(Task), "viewlist")]
+	public class tm_task_bycategories : default_view_rep<Task, int, ITaskRepository>, IHasEmbeddedResources
 	{
 		Tabs tabs;
 
-		protected override string FormTitle => Resources.Get<DTO_Task>("viewlist");
+		protected override string FormTitle => Resources.Get<Task>("viewlist");
 		protected override ContainerWidth FormWidth => ContainerWidth.Width100;
 		protected override bool ObjectNotExists => false;
-		protected override DTO_Task GetExistingEntity() { return null; }
+		protected override Task GetExistingEntity() { return null; }
 
 		protected override void ToolbarLeft(MenuBuilder t)
 		{
-			t.ToCreateNew<DTO_Task>();
+			t.ToCreateNew<Task>();
 			t.ItemSeparator();
-			t.ItemActionImageText(x => x.To<DTO_TaskExecution>("viewlist", AccessControl).WithImage("log"));
+			t.ItemActionImageText(x => x.ToList<TaskExecution>(AccessControl).WithImage("log"));
 		}
 
 		public override void OnInit()
@@ -44,7 +44,7 @@ namespace Tango.Tasks
 
 			foreach (var group in groups)
 			{
-				if (AccessControl.Check($"{typeof(DTO_TaskGroup).Name}.view_{group.ID}"))
+				if (AccessControl.Check($"{typeof(TaskGroup).Name}.view_{group.ID}"))
 				{
 					var list = new tm_task_list {
 						ID = "tasks_" + group.ID,
@@ -72,24 +72,27 @@ namespace Tango.Tasks
 		}
     }
 
-	public class tm_task_list : default_list_rep<DTO_Task>
+	public class tm_task_list : default_list_rep<Task>
 	{
 		public int? GroupID { get; set; }
 
-		protected override Func<string, Expression<Func<DTO_Task, bool>>> SearchExpression => s => o => o.Title.Contains(s);
+		protected override Func<string, Expression<Func<Task, bool>>> SearchExpression => s => o => o.Title.Contains(s);
 
-		protected override IQueryable<DTO_Task> Data => GroupID.HasValue ? base.Data.Where(o => o.TaskGroupID == GroupID) : base.Data.Where(o => o.TaskGroupID == null);
+		protected override IQueryable<Task> Data => GroupID.HasValue ? base.Data.Where(o => o.TaskGroupID == GroupID) : base.Data.Where(o => o.TaskGroupID == null);
 
 		protected override void ToolbarLeft(MenuBuilder t)
 		{
 			t.ItemFilter(Filter);
-			t.ItemSeparator();
-			t.ItemActionTextBulk(x => x.To<DTO_Task>("Deactivation", AccessControl).AsDialog());
-			t.ItemSeparator();
-			ToDeleteBulk(t);
+            if (Fields.EnableSelect)
+            {
+                t.ItemSeparator();
+                t.ItemActionTextBulk(x => x.To<Task>("deactivation", AccessControl).AsDialog());
+                t.ItemSeparator();
+                t.ItemActionTextBulk(x => x.ToDeleteBulk<Task>(AccessControl).AsDialog());
+            }
 		}
 
-		protected override void FieldsInit(FieldCollection<DTO_Task> f)
+		protected override void FieldsInit(FieldCollection<Task> f)
 		{
 			f.EnableSelect = true;
 
@@ -97,7 +100,7 @@ namespace Tango.Tasks
 			f.AddCellWithSortAndFilter(o => o.StartTypeTitle, o => o.StartTypeTitle);
 			f.AddCell(o => o.Interval, o => o.StartTypeID == 2 ? (new TimeSpan(0, o.Interval.ToInt32(0), 0)).ToString(@"hh\:mm") : o.Interval);
 			f.AddCellWithSortAndFilter(o => o.LastStartDate, o => o.LastStartDate.DateTimeToString());
-			f.AddCell(Resources.Get<DTO_Task>("NextTime"), (w, o) => {
+			f.AddCell(Resources.Get<Task>("NextTime"), (w, o) => {
 				DateTime? nextTime = null;
 				if (o.StartTypeID == 1)
 				{
@@ -121,21 +124,21 @@ namespace Tango.Tasks
 		}
 	}
 
-	[OnAction(typeof(DTO_Task), "createnew")]
-	[OnAction(typeof(DTO_Task), "edit")]
-	public class tm_task_edit : default_edit_rep<DTO_Task, int, ITaskRepository>
+	[OnAction(typeof(Task), "createnew")]
+	[OnAction(typeof(Task), "edit")]
+	public class tm_task_edit : default_edit_rep<Task, int, ITaskRepository>
 	{
 		[Inject]
 		protected IAccessControl AccessControl { get; set; }
 
-		DTO_TaskFields.DefaultGroup gr { get; set; }
+		TaskFields.DefaultGroup gr { get; set; }
 
 		IEnumerable<SelectListItem> Types() => Repository.GetStartTypes().OrderBy(o => o.Title).Select(o => new SelectListItem(o.Title, o.TaskStartTypeID));
 		IEnumerable<SelectListItem> Groups() => Repository.GetGroups().OrderBy(o => o.Title).ToList()
-			.Where(o => AccessControl.Check($"{typeof(DTO_TaskGroup).Name}.view_{o.TaskGroupID}"))
+			.Where(o => AccessControl.Check($"{typeof(TaskGroup).Name}.view_{o.TaskGroupID}"))
 			.Select(o => new SelectListItem(o.Title, o.TaskGroupID)).AddEmptyItem();
 
-		protected override void SetDefaultValues(DTO_Task obj)
+		protected override void SetDefaultValues(Task obj)
 		{
 			base.SetDefaultValues(obj);
 			obj.StartTypeID = 1;
@@ -144,7 +147,7 @@ namespace Tango.Tasks
 
 		public override void OnInit()
 		{
-			gr = AddFieldGroup(new DTO_TaskFields.DefaultGroup(ViewData.StartTypeID));
+			gr = AddFieldGroup(new TaskFields.DefaultGroup(ViewData.StartTypeID));
 		}
 
 		protected override void Form(LayoutWriter w)
@@ -164,7 +167,7 @@ namespace Tango.Tasks
 
 		public void OnStartTypeChanged(ApiResponse response)
 		{
-			response.WithNamesFor(this).SetElementValue(gr.Interval.ID + "_fieldcaption", Resources.Get<DTO_Task>(o => o.Interval, gr.StartType.FormValue.ToString()));
+			response.WithNamesFor(this).SetElementValue(gr.Interval.ID + "_fieldcaption", Resources.Get<Task>(o => o.Interval, gr.StartType.FormValue.ToString()));
 			response.WithNamesFor(this).SetElementValue(gr.Interval.ID + "_fielddescription", gr.Interval.Description);
 		}
 
@@ -172,27 +175,29 @@ namespace Tango.Tasks
 		{
 			base.ValidateFormData(val);
 
-			if (Repository.List().Any(o => o.TaskID != ViewData.ID && o.Title?.ToLower() == gr.Title.Value?.ToLower()))
+            var value = gr.Title.Value?.ToLower();
+            if (Repository.Any(o => o.TaskID != ViewData.ID && o.Title.ToLower() == value))
 			{
 				val.Add(gr.Title, "Задача с указанным названием уже существует");
 			}
-			if (!gr.SystemName.Value.IsEmpty() && Repository.List().Any(o => o.TaskID != ViewData.ID && o.SystemName?.ToLower() == gr.SystemName.Value?.ToLower()))
+            value = gr.SystemName.Value?.ToLower();
+            if (!gr.SystemName.Value.IsEmpty() && Repository.Any(o => o.TaskID != ViewData.ID && o.SystemName.ToLower() == value))
 			{
 				val.Add(gr.SystemName, "Задача с указанным системным именем уже существует");
 			}
 		}
 	}
 
-	[OnAction(typeof(DTO_Task), "view")]
-	public class tm_task_view : default_view_rep<DTO_Task, int, ITaskRepository>
+	[OnAction(typeof(Task), "view")]
+	public class tm_task_view : default_view_rep<Task, int, ITaskRepository>
 	{
 		tm_taskexecution_list2 taskexecution;
 		protected virtual bool ShowBaseTaskExecutionList => true;
 
-		DTO_TaskFields.DefaultGroup gr { get; set; }
+		TaskFields.DefaultGroup gr { get; set; }
 		bool isParam = false;
 
-		protected override DTO_Task GetExistingEntity()
+		protected override Task GetExistingEntity()
 		{
 			var id = Context.GetArg<int>(Constants.Id);
 			var obj = Repository.GetById(id);
@@ -201,7 +206,7 @@ namespace Tango.Tasks
 			return obj;
 		}
 
-		void setTaskParamerers(DTO_Task task)
+		void setTaskParamerers(Task task)
 		{
 			var type = TaskTypeCollection.GetType(task.Class);
 			if (type != null)
@@ -233,7 +238,7 @@ namespace Tango.Tasks
 								if (attr != null)
 									title = attr.Description;
 
-								var par = new DTO_TaskParameter { ParentID = task.ID, SysName = newpar.Name, Title = title, SeqNo = seqno };
+								var par = new TaskParameter { ParentID = task.ID, SysName = newpar.Name, Title = title, SeqNo = seqno };
 								Repository.CreateParameter(par);
 								ischange = true;
 							}
@@ -263,13 +268,18 @@ namespace Tango.Tasks
 
 		protected override void ToolbarLeft(MenuBuilder t)
 		{
-			base.ToolbarLeft(t);
+            t.ItemBack();
+            t.ItemSeparator();
+            t.ItemActionImageText(x => x.ToEdit(AccessControl, ViewData));
+            t.ItemSeparator();
+            t.ItemActionImageText(x => x.ToDelete(AccessControl, ViewData, Context.ReturnUrl.Get(1))
+				.WithArg(Constants.ReturnUrl + "_0", Context.CreateReturnUrl(1)).AsDialog());
 
-			if (AccessControl.Check($"{typeof(DTO_Task).Name}.start"))
+            if (AccessControl.Check("task.start"))
 			{
 				t.ItemSeparator();
 				if (isParam)
-					t.Item(w => w.ActionImageTextButton(al => al.To<DTO_Task>("Parameters").WithArg(Constants.Id, ViewData.ID).WithTitle("Старт").WithImage("settings2").AsNoCloseIconDialog()));
+					t.Item(w => w.ActionImageTextButton(al => al.To<Task>("parameters", AccessControl).WithArg(Constants.Id, ViewData.ID).WithTitle("Старт").WithImage("settings2").AsNoCloseIconDialog()));
 				else
 					t.Item(w => w.ActionImageTextButton(al => al.ToCurrent().KeepTheSameUrl().PostEvent(OnRunTask).WithTitle("Старт").WithImage("settings2")));
 			}
@@ -278,7 +288,7 @@ namespace Tango.Tasks
 		public override void OnInit()
 		{
 			base.OnInit();
-			gr = AddFieldGroup(new DTO_TaskFields.DefaultGroup(ViewData.StartTypeID));
+			gr = AddFieldGroup(new TaskFields.DefaultGroup(ViewData.StartTypeID));
 
 			if (ShowBaseTaskExecutionList)
 			{
@@ -342,12 +352,12 @@ namespace Tango.Tasks
 				if (nextTime < DateTime.Now)
 					nextTime = DateTime.Now.AddMinutes(1);
 
-				w.PlainText(Resources.Get<DTO_Task>("NextTime"), ViewData.IsActive ? nextTime?.ToString("dd.MM.yyyy HH:mm:ss") : "");
+				w.PlainText(Resources.Get<Task>("NextTime"), ViewData.IsActive ? nextTime?.ToString("dd.MM.yyyy HH:mm:ss") : "");
 
-				w.PlainText(Resources.Get<DTO_Task>(o => o.Method), ViewData.Class + "." + ViewData.Method);
+				w.PlainText(Resources.Get<Task>(o => o.Method), ViewData.Class + "." + ViewData.Method);
 				w.PlainText(gr.ExecutionTimeout);
 				w.PlainText(gr.IsActive);
-				w.PlainText(Resources.Get<DTO_Task>(o => o.LastStartDate), ViewData.LastStartDate?.ToString("dd.MM.yyyy HH:mm:ss"));
+				w.PlainText(Resources.Get<Task>(o => o.LastStartDate), ViewData.LastStartDate?.ToString("dd.MM.yyyy HH:mm:ss"));
 				w.PlainText(gr.Status, () => w.Write(Enumerations.GetEnumDescription((TaskStatusType)gr.Status.Value)));
 			});
 		}
@@ -389,7 +399,7 @@ namespace Tango.Tasks
 
 		void ParamList(LayoutWriter w)
 		{
-			var f = new FieldCollectionBase<DTO_TaskParameter>(Context);
+			var f = new FieldCollectionBase<TaskParameter>(Context);
 
 			f.AddCell(o => o.SeqNo, o => o.SeqNo);
 			f.AddCell(o => o.Title, (cw, o) => cw.ActionLink(al => al.ToEdit(AccessControl, o).WithTitle(o.Title).AsDialog()));
@@ -398,27 +408,27 @@ namespace Tango.Tasks
 			f.AddActionsCell(o => al => al.ToDelete(AccessControl, o).AsDialog());
 
 			var result = Repository.GetParameters(ViewData.ID).OrderBy(o => o.SeqNo);
-			new ListRenderer<DTO_TaskParameter>("param").Render(w, result, f);
+			new ListRenderer<TaskParameter>("param").Render(w, result, f);
 		}
 	}
 
-	[OnAction(typeof(DTO_Task), "delete")]
-	public class tm_task_delete : default_delete<DTO_Task, int> { }
+	[OnAction(typeof(Task), "delete")]
+	public class tm_task_delete : default_delete<Task, int> { }
 
-	[OnAction(typeof(DTO_Task), "deactivation")]
-	public class tm_task_deactivation : default_edit_rep<DTO_Task, int, ITaskRepository>
+	[OnAction(typeof(Task), "deactivation")]
+	public class tm_task_deactivation : default_edit_rep<Task, int, ITaskRepository>
 	{
-		protected override string Title => Resources.Get<DTO_Task>(BulkMode ? "Deactivation.Bulk.Title" : "Deactivation.Title");
+		protected override string Title => Resources.Get<Task>(BulkMode ? "Deactivation.Bulk.Title" : "Deactivation.Title");
 		protected override bool BulkMode => Context.GetListArg<int>(Constants.SelectedValues)?.Count > 1;
 		protected override bool ObjectNotExists => false;
-		protected override DTO_Task GetNewEntity() { return null; }
-		protected override DTO_Task GetExistingEntity()	{ return null; }
+		protected override Task GetNewEntity() { return null; }
+		protected override Task GetExistingEntity()	{ return null; }
 
         protected override void Form(LayoutWriter w)
         {
 			var cnt = Context.GetListArg<int>(Constants.SelectedValues)?.Count ?? 0;
 			var confirm = BulkMode ?
-				string.Format(Resources.Get<DTO_Task>("Deactivation.Bulk.Confirm"), cnt) : Resources.Get<DTO_Task>("Deactivation.Confirm");
+				string.Format(Resources.Get<Task>("Deactivation.Bulk.Confirm"), cnt) : Resources.Get<Task>("Deactivation.Confirm");
 
 			w.P(() => {
 				w.Write(confirm);

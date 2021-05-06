@@ -5,22 +5,22 @@ using Tango.UI;
 
 namespace Tango.Tasks
 {
-	public static class DTO_TaskFields
+	public static class TaskFields
 	{
-		public class StartFromService : EntityField<DTO_Task, bool>
+		public class StartFromService : EntityField<Task, bool>
         {
             public override bool DefaultValue => true;
             public override void SubmitProperty(ValidationMessageCollection val) { }
             public override void ValidateFormValue(ValidationMessageCollection val) { }
         }
 
-		public class StartType : EntityField<DTO_Task, int>
+		public class StartType : EntityField<Task, int>
 		{
             protected override string IDSuffix => "ID";
             public override string StringValue => ViewData.StartTypeTitle;
 		}
 
-        public class Interval : EntityField<DTO_Task, string>
+        public class Interval : EntityField<Task, string>
         {
             public override bool IsRequired => true;
 
@@ -30,7 +30,7 @@ namespace Tango.Tasks
                 _startType = startType;
             }
 
-            public override string Caption => Resources.Get<DTO_Task>(o => o.Interval, Context.GetArg<int>("StartType") != 0 ? Context.GetArg("StartType") : _startType.ToString());
+            public override string Caption => Resources.Get<Task>(o => o.Interval, Context.GetArg<int>("StartType") != 0 ? Context.GetArg("StartType") : _startType.ToString());
             public override bool ShowDescription => true;
             public override string Description
             {
@@ -111,37 +111,37 @@ namespace Tango.Tasks
             }
 		}
 
-		public class ExecutionTimeout : EntityField<DTO_Task, int>
+		public class ExecutionTimeout : EntityField<Task, int>
 		{
 			public override int DefaultValue => 60;
 		}
 
-		public class Class : EntityField<DTO_Task, string>
+		public class Class : EntityField<Task, string>
 		{
 			public override bool IsRequired => true;
 		}
 
-		public class Method : EntityField<DTO_Task, string>
+		public class Method : EntityField<Task, string>
 		{
 			public override bool IsRequired => true;
 		}
 
-		public class IsActive : EntityField<DTO_Task, bool> { }
+		public class IsActive : EntityField<Task, bool> { }
 
-		public class Status : EntityField<DTO_Task, int>
+		public class Status : EntityField<Task, int>
         {
             public override int DefaultValue => 0;
             public override void SubmitProperty(ValidationMessageCollection val) { }
             public override void ValidateFormValue(ValidationMessageCollection val) { }
         }
 
-		public class TaskGroup : EntityField<DTO_Task, int?>
+		public class TaskGroup : EntityField<Task, int?>
 		{
             protected override string IDSuffix => "ID";
             public override string StringValue => ViewData.GroupTitle;
 		}
 
-        public class SystemName : EntityField<DTO_Task, string> { }
+        public class SystemName : EntityField<Task, string> { }
 
         public class DefaultGroup : FieldGroup
 		{
@@ -171,65 +171,6 @@ namespace Tango.Tasks
 				TaskGroup = AddField(new TaskGroup());
                 SystemName = AddField(new SystemName());
             }
-        }
-    }
-
-    public static class DTO_TaskParameterFields
-    {
-        public class SysName : EntityField<DTO_TaskParameter, string>
-        {
-            public override bool IsRequired => true;
-        }
-
-        public class Value : EntityField<DTO_TaskParameter, string> { }
-
-        public class DefaultGroup : FieldGroup
-        {
-            public CommonFields.Title Title { get; set; }
-            public SysName SysName { get; set; }
-            public Value Value { get; set; }
-        }
-    }
-
-    public static class DTO_TaskExecutionFields
-    {
-        public class StartDate : EntityDateTimeField<DTO_TaskExecution> { }
-
-        public class FinishDate : EntityNullableDateTimeField<DTO_TaskExecution> { }
-
-        public class Task : EntityField<DTO_TaskExecution, int>
-        {
-            protected override string IDSuffix => "ID";
-            public override string StringValue => ViewData.TaskName;
-        }
-
-        public class IsSuccessfull : EntityField<DTO_TaskExecution, bool> { }
-
-        public class MachineName : EntityField<DTO_TaskExecution, string> { }
-
-        public class LastModifiedDate : EntityDateTimeField<DTO_TaskExecution> { }
-
-        public class LastModifiedUser : EntityField<DTO_TaskExecution, object>
-        {
-            protected override string IDSuffix => "ID";
-            public override string StringValue => ViewData.UserName;
-        }
-
-        public class ResultXml : EntityField<DTO_TaskExecution, string> { }
-
-        public class ExecutionLog : EntityField<DTO_TaskExecution, string> { }
-
-        public class DefaultGroup : FieldGroup
-        {
-            public StartDate StartDate { get; set; }
-            public FinishDate FinishDate { get; set; }
-            public Task Task { get; set; }
-            public IsSuccessfull IsSuccessfull { get; set; }
-            public MachineName MachineName { get; set; }
-            public LastModifiedDate LastModifiedDate { get; set; }
-            public LastModifiedUser LastModifiedUser { get; set; }
-            public ResultXml ResultXml { get; set; }
-            public ExecutionLog ExecutionLog { get; set; }
         }
     }
 }

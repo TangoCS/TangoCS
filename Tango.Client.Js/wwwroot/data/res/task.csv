@@ -1,69 +1,69 @@
 ﻿name;ru;en
-tango.tasks.dto_task;Задача;Task
-tango.tasks.dto_task-pl;Задачи;Tasks
-tango.tasks.dto_task.viewlist;Реестр задач
-tango.tasks.dto_task.Title;Название;Title
-tango.tasks.dto_task.SystemName;Системное имя;System Name
-tango.tasks.dto_task.Class;Класс;Class
-tango.tasks.dto_task.ExecutionTimeout;Таймаут выполнения задачи, мин;Execution timeout
-tango.tasks.dto_task.Interval;Интервал;
-tango.tasks.dto_task.Interval-1;Время запуска;Run time
-tango.tasks.dto_task.Interval-2;Интервал запуска;Invoke interval
-tango.tasks.dto_task.IsActive;Активна;Is active
-tango.tasks.dto_task.Status;Состояние;Status
-tango.tasks.dto_task.LastStartDate;Последний запуск;Last start date
-tango.tasks.dto_task.Method;Метод;Method
-tango.tasks.dto_task.Parameters;Параметры;
-tango.tasks.dto_task.Start;Запуск;Run
-tango.tasks.dto_task.Start-op;Запуск;Run
-tango.tasks.dto_task.StartFromService;Старт службой;Start from service
-tango.tasks.dto_task.StartType;Тип старта;Start type
-tango.tasks.dto_task.StartTypeTitle;Тип старта;Start type
-tango.tasks.dto_task.StartType-1;С заданным интервалом;At a specific intervals
-tango.tasks.dto_task.StartType-2;В определенное время;At a specific time
-tango.tasks.dto_task.TaskGroup;Категория
-tango.tasks.dto_task.GroupTitle;Категория
-tango.tasks.dto_task.NextTime;Следующий запуск;Next Time
-tango.tasks.dto_task.deactivation;Деактивировать;Deactivation
-tango.tasks.dto_task.deactivation.Title;Деактивация объекта;Deactivation object
-tango.tasks.dto_task.deactivation.Bulk.Title;Деактивация объектов;Deactivation multiple objects
-tango.tasks.dto_task.deactivation.Confirm;Вы действительно хотите деактивировать выбранный объект?;Are you sure you want to deactivation this object?
-tango.tasks.dto_task.deactivation.Bulk.Confirm;Вы действительно хотите деактивировать выбранные объекты ({0})?;Are you sure you want to deactivation these {0} objects?
-tango.tasks.dto_task.deactivation-op;Деактивировать
-tango.tasks.dto_task.parameters-op;Параметры запуска
+tango.tasks.task;Задача;Task
+tango.tasks.task-pl;Задачи;Tasks
+tango.tasks.task.viewlist;Реестр задач;Tasks
+tango.tasks.task.Title;Название;Title
+tango.tasks.task.SystemName;Системное имя;System Name
+tango.tasks.task.Class;Класс;Class
+tango.tasks.task.ExecutionTimeout;Таймаут выполнения задачи, мин;Execution timeout
+tango.tasks.task.Interval;Интервал;Interval
+tango.tasks.task.Interval-1;Время запуска;Run time
+tango.tasks.task.Interval-2;Интервал запуска;Invoke interval
+tango.tasks.task.IsActive;Активна;Is active
+tango.tasks.task.Status;Состояние;Status
+tango.tasks.task.LastStartDate;Последний запуск;Last start date
+tango.tasks.task.Method;Метод;Method
+tango.tasks.task.Parameters;Параметры;Parameters
+tango.tasks.task.Start;Запуск;Run
+tango.tasks.task.Start-op;Запуск;Run
+tango.tasks.task.StartFromService;Старт службой;Start from service
+tango.tasks.task.StartType;Тип старта;Start type
+tango.tasks.task.StartTypeTitle;Тип старта;Start type
+tango.tasks.task.StartType-1;С заданным интервалом;At a specific intervals
+tango.tasks.task.StartType-2;В определенное время;At a specific time
+tango.tasks.task.TaskGroup;Категория;Category
+tango.tasks.task.GroupTitle;Категория;Category
+tango.tasks.task.NextTime;Следующий запуск;Next Time
+tango.tasks.task.deactivation;Деактивировать;Deactivation
+tango.tasks.task.deactivation.Title;Деактивация объекта;Deactivation object
+tango.tasks.task.deactivation.Bulk.Title;Деактивация объектов;Deactivation multiple objects
+tango.tasks.task.deactivation.Confirm;Вы действительно хотите деактивировать выбранный объект?;Are you sure you want to deactivation this object?
+tango.tasks.task.deactivation.Bulk.Confirm;Вы действительно хотите деактивировать выбранные объекты ({0})?;Are you sure you want to deactivation these {0} objects?
+tango.tasks.task.deactivation-op;Деактивировать;Deactivate
+tango.tasks.task.parameters-op;Параметры запуска;Parameters
 
-tango.tasks.dto_taskexecution;Запуск задачи;Task execution log
-tango.tasks.dto_taskexecution-pl;Лог запуска задач;Task execution log
-tango.tasks.dto_taskexecution.viewlist;Лог запуска;Execution log
-tango.tasks.dto_taskexecution.Title;Наименование;Title
-tango.tasks.dto_taskexecution.ExecutionLog;Журнал выполнения;Execution log
-tango.tasks.dto_taskexecution.FinishDate;Дата/время окончания;Finish date
-tango.tasks.dto_taskexecution.IsSuccessfull;Результат;Is successful
-tango.tasks.dto_taskexecution.LastModifiedDate;Дата записи;Last modified date
-tango.tasks.dto_taskexecution.LastModifiedUser;Пользователь;User
-tango.tasks.dto_taskexecution.MachineName;Имя машины;Host name
-tango.tasks.dto_taskexecution.ResultXml;Дополнительная информация;Add information
-tango.tasks.dto_taskexecution.StartDate;Дата/время запуска;Start date
-tango.tasks.dto_taskexecution.Task;Задача;Task
-tango.tasks.dto_taskexecution.TaskName;Задача;Task
-tango.tasks.dto_taskexecution.UserName;Пользователь;User
-tango.tasks.dto_taskexecution.deleteallrecordsbefore;Удалить все записи до;Delete all records before
+tango.tasks.taskexecution;Запуск задачи;Task execution log
+tango.tasks.taskexecution-pl;Лог запуска задач;Task execution log
+tango.tasks.taskexecution.viewlist;Лог запуска;Execution log
+tango.tasks.taskexecution.Title;Наименование;Title
+tango.tasks.taskexecution.ExecutionLog;Журнал выполнения;Execution log
+tango.tasks.taskexecution.FinishDate;Дата/время окончания;Finish date
+tango.tasks.taskexecution.IsSuccessfull;Результат;Is successful
+tango.tasks.taskexecution.LastModifiedDate;Дата записи;Last modified date
+tango.tasks.taskexecution.LastModifiedUser;Пользователь;User
+tango.tasks.taskexecution.MachineName;Имя машины;Host name
+tango.tasks.taskexecution.ResultXml;Дополнительная информация;Add information
+tango.tasks.taskexecution.StartDate;Дата/время запуска;Start date
+tango.tasks.taskexecution.Task;Задача;Task
+tango.tasks.taskexecution.TaskName;Задача;Task
+tango.tasks.taskexecution.UserName;Пользователь;User
+tango.tasks.taskexecution.deleteallrecordsbefore;Удалить все записи до;Delete all records before
 
-tango.tasks.dto_taskparameter;Параметр задачи;Task parameter
-tango.tasks.dto_taskparameter-pl;Параметры задачи;Task parameters
-tango.tasks.dto_taskparameter.MoveDown;Переместить вниз;Move down
-tango.tasks.dto_taskparameter.MoveUp;Переместить вверх;Move up
-tango.tasks.dto_taskparameter.SeqNo;Порядковый номер;Seq no
-tango.tasks.dto_taskparameter.SysName;Системное имя;System name
-tango.tasks.dto_taskparameter.Title;Название;Title
-tango.tasks.dto_taskparameter.Value;Значение;Value
-tango.tasks.dto_taskparameter.Parent;Задача;
-tango.tasks.dto_taskparameter.ParentTitle;Задача;
-tango.tasks.dto_taskparameter.ParentClass;Класс;
-tango.tasks.dto_taskparameter.ParentMethod;Метод;
+tango.tasks.taskparameter;Параметр задачи;Task parameter
+tango.tasks.taskparameter-pl;Параметры задачи;Task parameters
+tango.tasks.taskparameter.MoveDown;Переместить вниз;Move down
+tango.tasks.taskparameter.MoveUp;Переместить вверх;Move up
+tango.tasks.taskparameter.SeqNo;Порядковый номер;Seq no
+tango.tasks.taskparameter.SysName;Системное имя;System name
+tango.tasks.taskparameter.Title;Название;Title
+tango.tasks.taskparameter.Value;Значение;Value
+tango.tasks.taskparameter.Parent;Задача;
+tango.tasks.taskparameter.ParentTitle;Задача;
+tango.tasks.taskparameter.ParentClass;Класс;
+tango.tasks.taskparameter.ParentMethod;Метод;
 
-tango.tasks.dto_taskstarttype-pl;Тип старта задач
-tango.tasks.dto_taskstarttype.viewlist;Тип старта задач
-tango.tasks.dto_taskstarttype.taskstarttypeid;Код
+tango.tasks.taskstarttype-pl;Тип старта задач
+tango.tasks.taskstarttype.viewlist;Тип старта задач
+tango.tasks.taskstarttype.taskstarttypeid;Код
 
-tango.tasks.dto_taskgroup;Категория задач
+tango.tasks.taskgroup;Категория задач

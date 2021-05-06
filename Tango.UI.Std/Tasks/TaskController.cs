@@ -27,7 +27,7 @@ namespace Tango.Tasks
             Identity.RunAs(Identity.SystemUser, () => Run(task));
         }
 
-        protected override void SetLastModifiedUser(DTO_TaskExecution execution, bool isManual)
+        protected override void SetLastModifiedUser(TaskExecution execution, bool isManual)
         {
             execution.LastModifiedUserID = isManual ? Identity.CurrentUser.Id : Identity.SystemUser.Id;
         }
@@ -53,7 +53,7 @@ namespace Tango.Tasks
         /// </summary>
         /// <param name="execution"></param>
         /// <param name="isManual"></param>
-        protected abstract void SetLastModifiedUser(DTO_TaskExecution execution, bool isManual);
+        protected abstract void SetLastModifiedUser(TaskExecution execution, bool isManual);
 
         [AllowAnonymous]
         [HttpPost]
@@ -107,7 +107,7 @@ namespace Tango.Tasks
 
         public void Run(IScheduledTask task, bool isManual = false, Dictionary<string, string> param = null, bool withLogger = false)
         {
-            DTO_TaskExecution taskexec = new DTO_TaskExecution
+            var taskexec = new TaskExecution
             {
                 LastModifiedDate = DateTime.Now,
                 StartDate = DateTime.Now,
@@ -146,7 +146,7 @@ namespace Tango.Tasks
                 object[] p = new object[mp.Length];
 
                 TaskExecutionContext context = null;
-                DTO_TaskParameter[] taskparam = param != null ? null : Repository.GetTaskParameters(task.ID).ToArray();
+                TaskParameter[] taskparam = param != null ? null : Repository.GetTaskParameters(task.ID).ToArray();
 
                 if (withLogger)
                 {
@@ -233,7 +233,7 @@ namespace Tango.Tasks
                 }
                 mi.Invoke(obj, p);
 
-                taskexec = new DTO_TaskExecution
+                taskexec = new TaskExecution
                 {
                     TaskExecutionID = taskexecid,
                     LastModifiedDate = DateTime.Now,
@@ -255,7 +255,7 @@ namespace Tango.Tasks
                     progressLogger.WriteExeptionMessage(ex);
 
                 int errorid = errorLogger.Log(ex);
-                taskexec = new DTO_TaskExecution
+                taskexec = new TaskExecution
                 {
                     TaskExecutionID = taskexecid,
                     LastModifiedDate = DateTime.Now,

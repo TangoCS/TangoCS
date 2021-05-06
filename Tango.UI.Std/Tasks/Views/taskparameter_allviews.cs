@@ -17,8 +17,8 @@ using Tango.UI.Std;
 
 namespace Tango.Tasks
 {
-	[OnAction(typeof(DTO_Task), "parameters")]
-	public class tm_taskparameters : default_edit_rep<DTO_Task, int, ITaskRepository>
+	[OnAction(typeof(Task), "parameters")]
+	public class tm_taskparameters : default_edit_rep<Task, int, ITaskRepository>
 	{
 		protected override string Title => "Параметры запуска";
 		protected Dictionary<string, ParameterData> parameters = new Dictionary<string, ParameterData>();
@@ -96,13 +96,13 @@ namespace Tango.Tasks
 		}
 	}
 
-	[OnAction(typeof(DTO_TaskParameter), "createnew")]
-	[OnAction(typeof(DTO_TaskParameter), "edit")]
-	public class tm_taskparameter_edit : default_edit_rep<DTO_TaskParameter, int, ITaskParameterRepository>
+	[OnAction(typeof(TaskParameter), "createnew")]
+	[OnAction(typeof(TaskParameter), "edit")]
+	public class tm_taskparameter_edit : default_edit_rep<TaskParameter, int, ITaskParameterRepository>
 	{
-		protected DTO_TaskParameterFields.DefaultGroup gr;
+		protected TaskParameterFields.DefaultGroup gr;
 
-		protected override void SetDefaultValues(DTO_TaskParameter obj)
+		protected override void SetDefaultValues(TaskParameter obj)
 		{
 			var id = Context.GetIntArg("taskid", 0);
 			obj.ParentID = id;
@@ -111,7 +111,7 @@ namespace Tango.Tasks
 
 		public override void OnInit()
 		{
-			gr = AddFieldGroup(new DTO_TaskParameterFields.DefaultGroup());
+			gr = AddFieldGroup(new TaskParameterFields.DefaultGroup());
 		}
 
         protected override void Form(LayoutWriter w)
@@ -142,6 +142,6 @@ namespace Tango.Tasks
         }
     }
 
-	[OnAction(typeof(DTO_TaskParameter), "delete")]
-	public class tm_taskparameter_delete : default_delete<DTO_TaskParameter, int> { }
+	[OnAction(typeof(TaskParameter), "delete")]
+	public class tm_taskparameter_delete : default_delete<TaskParameter, int> { }
 }
