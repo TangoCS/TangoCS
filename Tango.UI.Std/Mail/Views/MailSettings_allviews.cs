@@ -399,11 +399,8 @@ namespace Tango.Mail
 
             if (processings.Any())
             {
-                var cnt = 0;
-                var processingsColl = new MethodSettingsCollection
-                {
-                    MethodSettings = new MethodSettings[processings.Count()]
-                };
+                var ms = new List<MethodSettings>();
+                var processingsColl = new MethodSettingsCollection();
                 foreach (var preProcessing in processings)
                 {
                     var className = string.Empty;
@@ -430,17 +427,13 @@ namespace Tango.Mail
                     if (string.IsNullOrEmpty(className) || string.IsNullOrEmpty(methodName))
                         continue;
 
-                    processingsColl.MethodSettings[cnt] = new MethodSettings
-                    {
-                        ClassName = className,
-                        MethodName = methodName,
-                        Params = parms
-                    };
-                    cnt++;
+                    if(!ms.Any(x => x.ClassName.Equals(className) && x.MethodName.Equals(methodName)))
+                        ms.Add(new MethodSettings { ClassName = className, MethodName = methodName, Params = parms});
                 }
 
-                var json = JsonConvert.SerializeObject(processingsColl);
-                return json;
+                processingsColl.MethodSettings = ms.ToArray();
+
+                return JsonConvert.SerializeObject(processingsColl);
             }
 
             return null;
