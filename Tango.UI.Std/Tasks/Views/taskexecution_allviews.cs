@@ -10,30 +10,30 @@ using Tango.UI.Std;
 
 namespace Tango.Tasks
 {
-    [OnAction(typeof(DTO_TaskExecution), "viewlist")]
-	public class tm_taskexecution_list : default_list_rep<DTO_TaskExecution>
+    [OnAction(typeof(TaskExecution), "viewlist")]
+	public class tm_taskexecution_list : default_list_rep<TaskExecution>
     {
 		//[Inject]
 		//protected ITaskRepository TaskRepository { get; set; }
 
-		protected override Func<string, Expression<Func<DTO_TaskExecution, bool>>> SearchExpression =>
+		protected override Func<string, Expression<Func<TaskExecution, bool>>> SearchExpression =>
 			s => o => o.UserName.Contains(s) || o.MachineName.Contains(s) || o.TaskName.Contains(s);
 
-        protected override IQueryable<DTO_TaskExecution> DefaultOrderBy(IQueryable<DTO_TaskExecution> data)
+        protected override IQueryable<TaskExecution> DefaultOrderBy(IQueryable<TaskExecution> data)
 		{
 			return data.OrderByDescending(o => o.StartDate);
 		}
 
 		protected override void ToolbarLeft(MenuBuilder left)
 		{
-            left.ItemActionImageText(x => x.ToList<DTO_Task>(AccessControl).WithImage("back").WithTitle("Назад"));
+            left.ItemActionImageText(x => x.ToList<Task>(AccessControl).WithImage("back").WithTitle("Назад"));
             left.ItemSeparator();
 			left.ItemFilter(Filter);
             left.ItemSeparator();
-            left.ItemActionText(x => x.To<DTO_TaskExecution>("Clear", AccessControl).AsDialog());
+            left.ItemActionText(x => x.To<TaskExecution>("clear", AccessControl).AsDialog());
         }
 
-        protected override void FieldsInit(FieldCollection<DTO_TaskExecution> f)
+        protected override void FieldsInit(FieldCollection<TaskExecution> f)
 		{
 			f.AddCellWithSortAndFilter(o => o.StartDate, (w, o) => w.ActionLink(al => al.ToView(AccessControl, o).WithTitle(o.StartDate.DateTimeToString())));
 			f.AddCellWithSortAndFilter(o => o.FinishDate, o => o.FinishDate.DateTimeToString());
@@ -49,19 +49,16 @@ namespace Tango.Tasks
         }
 	}
 
-    public class tm_taskexecution_list2 : default_list_rep<DTO_TaskExecution>
+    public class tm_taskexecution_list2 : default_list_rep<TaskExecution>
     {
         public int TaskID { get; set; }
 
-        protected override Func<string, Expression<Func<DTO_TaskExecution, bool>>> SearchExpression =>
+        protected override Func<string, Expression<Func<TaskExecution, bool>>> SearchExpression =>
             s => o => o.UserName.Contains(s) || o.MachineName.Contains(s);
 
-        protected override IQueryable<DTO_TaskExecution> Data => base.Data.Where(o => o.TaskID == TaskID);
+        protected override IQueryable<TaskExecution> Data => base.Data.Where(o => o.TaskID == TaskID);
 
-        protected override IQueryable<DTO_TaskExecution> DefaultOrderBy(IQueryable<DTO_TaskExecution> data)
-        {
-            return data.OrderByDescending(o => o.StartDate);
-        }
+        protected override IQueryable<TaskExecution> DefaultOrderBy(IQueryable<TaskExecution> data) => data.OrderByDescending(o => o.StartDate);
 
         protected override bool EnableQuickSearch => true;
         protected override bool EnableViews => false;
@@ -71,7 +68,7 @@ namespace Tango.Tasks
             t.ItemFilter(Filter);
         }
 
-        protected override void FieldsInit(FieldCollection<DTO_TaskExecution> f)
+        protected override void FieldsInit(FieldCollection<TaskExecution> f)
         {
             f.AddCellWithSortAndFilter(o => o.StartDate, (w, o) => w.ActionLink(al => al.ToView(AccessControl, o).WithTitle(o.StartDate.DateTimeToString())));
             f.AddCellWithSortAndFilter(o => o.FinishDate, o => o.FinishDate.DateTimeToString());
@@ -83,22 +80,22 @@ namespace Tango.Tasks
         }
     }
 
-    [OnAction(typeof(DTO_TaskExecution), "view")]
-    public class tm_taskexecution_view : default_view_rep<DTO_TaskExecution, int, ITaskExecutionRepository>
+    [OnAction(typeof(TaskExecution), "view")]
+    public class tm_taskexecution_view : default_view_rep<TaskExecution, int, ITaskExecutionRepository>
     {
-        DTO_TaskExecutionFields.DefaultGroup gr { get; set; }
+        TaskExecutionFields.DefaultGroup gr { get; set; }
 
         protected override void ToolbarLeft(MenuBuilder t)
         {
 			t.ItemBack();
 		}
 
-        protected override string FormTitle => Resources.Get(typeof(DTO_TaskExecution).FullName);
+        protected override string FormTitle => Resources.Get(typeof(TaskExecution).FullName);
 
         public override void OnInit()
         {
             base.OnInit();
-            gr = AddFieldGroup(new DTO_TaskExecutionFields.DefaultGroup());
+            gr = AddFieldGroup(new TaskExecutionFields.DefaultGroup());
         }
 
         protected override void Form(LayoutWriter w)
@@ -122,15 +119,15 @@ namespace Tango.Tasks
         }
     }
 
-    [OnAction(typeof(DTO_TaskExecution), "clear")]
-    public class tm_taskexecution_clear : default_edit_rep<DTO_TaskExecution, int, ITaskExecutionRepository>
+    [OnAction(typeof(TaskExecution), "clear")]
+    public class tm_taskexecution_clear : default_edit_rep<TaskExecution, int, ITaskExecutionRepository>
     {
         protected override string Title => "Очистить";
 
         protected override void Form(LayoutWriter w)
         {
             w.FieldsBlockStd(() => {
-                w.FormFieldCalendar("date", Resources.Get<DTO_TaskExecution>("DeleteAllRecordsBefore"), DateTime.Today.AddMonths(-2));
+                w.FormFieldCalendar("date", Resources.Get<TaskExecution>("DeleteAllRecordsBefore"), DateTime.Today.AddMonths(-2));
             });
         }
 
