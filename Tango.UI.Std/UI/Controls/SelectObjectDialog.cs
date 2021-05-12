@@ -80,7 +80,8 @@ namespace Tango.UI.Controls
 			w.Write("&nbsp;");
 			w.BackButton();
 		}
-		public abstract void Render(LayoutWriter w, TValue selectedValue, Action<TagAttributes> attributes = null);
+		public abstract void Render(LayoutWriter w, TValue selectedValue);
+		public abstract void RenderSelected(LayoutWriter w, TValue selectedValue);
 		public virtual void RenderPaging(LayoutWriter w)
 		{
 			Paging.Render(w, Field.DataProvider.GetCount(), a => a.PostEvent(RenderList));
@@ -108,16 +109,11 @@ namespace Tango.UI.Controls
 			AfterList?.Invoke(w);
 		}
 
-		public override void Render(LayoutWriter w, TRef selectedValue, Action<TagAttributes> attributes = null)
+		public override void Render(LayoutWriter w, TRef selectedValue)
 		{
 			var cw = w.Clone(Field);
 			var pw = w.Clone(Field.ParentElement);
-			cw.Div(a =>
-			{
-				a.ID("placeholder");
-				if (attributes != null)
-					a.Set(attributes);
-			}, () => {
+			cw.Div(a => a.ID("placeholder"), () => {
 				var value = selectedValue != null ? Field.DataValueField(selectedValue) : "";
 				pw.Hidden(Field.ID, value, a => a.DataHasClientState(ClientStateType.Value, ClientID, "selectedvalue"));
 				if (!Field.Disabled)
@@ -130,14 +126,19 @@ namespace Tango.UI.Controls
 						cw.A(a => a.OnClickPostEvent(OnClear), Resources.Get("Common.Clear"));
 					if (Field.FieldExtensions != null) { cw.Write("&nbsp;"); Field.FieldExtensions(cw); }
 				}
-				cw.Div(a => a.ID("selected"), () => {
-					if (Field.Disabled && Field.TextWhenDisabled != null)
-						Field.TextWhenDisabled.Invoke(cw);
-					else if (selectedValue != null)
-						cw.Write(Field.SelectedObjectTextField(selectedValue));
-					else
-						Field.TextWhenNothingSelected?.Invoke(cw);
-				});
+				RenderSelected(cw, selectedValue);
+			});
+		}
+
+		public override void RenderSelected(LayoutWriter cw, TRef selectedValue)
+		{
+			cw.Div(a => a.ID("selected"), () => {
+				if (Field.Disabled && Field.TextWhenDisabled != null)
+					Field.TextWhenDisabled.Invoke(cw);
+				else if (selectedValue != null)
+					cw.Write(Field.SelectedObjectTextField(selectedValue));
+				else
+					Field.TextWhenNothingSelected?.Invoke(cw);
 			});
 		}
 
@@ -161,10 +162,12 @@ namespace Tango.UI.Controls
 		}
 	}
 
-	public abstract class SelectMultipleObjectsDialog<TRef, TRefKey, TField> : SelectObjectDialog<TRef, TRefKey, IEnumerable<TRef>, TField>
+	public class SelectMultipleObjectsDialog<TRef, TRefKey> : 
+		SelectObjectDialog<TRef, TRefKey, IEnumerable<TRef>, AbstractSelectMultipleObjectsField<TRef, TRefKey>>
 		where TRef : class, IWithTitle, IWithKey<TRefKey>
-		where TField : SelectObjectField<TRef, TRefKey, IEnumerable<TRef>>
 	{
+		public string OpenDialogLinkTitle { get; set; } = null;
+
 		public override void List(LayoutWriter w, IEnumerable<TRef> data)
 		{
 			w.Div(a => a.ID().DataCtrl("selectMultipleObjectsDialog"), () => {
@@ -182,17 +185,13 @@ namespace Tango.UI.Controls
 			AfterList?.Invoke(w);
 		}
 
-		public override void Render(LayoutWriter w, IEnumerable<TRef> selectedValues, Action<TagAttributes> attributes = null)
+		public override void Render(LayoutWriter w, IEnumerable<TRef> selectedValues)
 		{
 			var cw = w.Clone(Field);
 			var pw = w.Clone(Field.ParentElement);
-			cw.Div(a =>
-			{
-				a.ID("placeholder");
-				if (attributes != null)
-					a.Set(attributes);
-			}, () => {
-				pw.Hidden(Field.ID, selectedValues?.Select(o => Field.DataValueField(o)).Join(","), a => a.DataHasClientState(ClientStateType.Array, ClientID, "selectedvalues"));
+			cw.Div(a => a.ID("placeholder"), () => {
+				pw.Hidden(Field.ID, selectedValues?.Select(o => Field.DataValueField(o)).Join(","), 
+					a => a.DataHasClientState(ClientStateType.Array, ClientID, "selectedvalues"));
 				if (!Field.Disabled)
 				{
 					cw.A(a =>
@@ -202,22 +201,32 @@ namespace Tango.UI.Controls
 							a.CallbackToCurrent(Context);
 
 						a.AsDialog(OpenDialog, Field.ClientID);
-					}, Resources.Get("Common.SelectObjects_Field"));
+					}, OpenDialogLinkTitle ?? Resources.Get("Common.SelectObjects_Field"));
 					cw.Write("&nbsp;");
 					if (!Field.PostOnClearEvent)
-						cw.A(a => a.OnClick($"selectMultipleObjectsDialog.clear('{Field.ClientID}', true)"), Resources.Get("Common.Clear"));
+						cw.A(a => a.OnClick($"selectMultipleObjectsDialog.clear('{Field.ClientID}', true)"), 
+							Resources.Get("Common.Clear"));
 					else
 						cw.A(a => a.OnClickPostEvent(OnClear), Resources.Get("Common.Clear"));
-					if (Field.FieldExtensions != null) { cw.Write("&nbsp;"); Field.FieldExtensions(cw); }
+					if (Field.FieldExtensions != null) 
+					{ 
+						cw.Write("&nbsp;"); 
+						Field.FieldExtensions(cw); 
+					}
 				}
-				cw.Div(a => a.ID("selected"), () => {
-					if (Field.Disabled && Field.TextWhenDisabled != null)
-						Field.TextWhenDisabled?.Invoke(cw);
-					else if (selectedValues != null && selectedValues.Count() > 0)
-						cw.WriteLines(selectedValues.Select(o => Field.SelectedObjectTextField(o)));
-					else
-						Field.TextWhenNothingSelected?.Invoke(cw);
-				});
+				RenderSelected(cw, selectedValues);
+			});
+		}
+
+		public override void RenderSelected(LayoutWriter cw, IEnumerable<TRef> selectedValues)
+		{
+			cw.Div(a => a.ID("selected"), () => {
+				if (Field.Disabled && Field.TextWhenDisabled != null)
+					Field.TextWhenDisabled?.Invoke(cw);
+				else if (selectedValues != null && selectedValues.Count() > 0)
+					cw.WriteLines(selectedValues.Select(o => Field.SelectedObjectTextField(o)));
+				else
+					Field.TextWhenNothingSelected?.Invoke(cw);
 			});
 		}
 
@@ -227,11 +236,7 @@ namespace Tango.UI.Controls
 			response.AddClientAction("selectMultipleObjectsDialog", "clear", Field.ClientID);
 			Field.OnClear(response);
 		}
-	}
 
-	public class SelectMultipleObjectsDialog<TRef, TRefKey> : SelectMultipleObjectsDialog<TRef, TRefKey, SelectMultipleObjectsField<TRef, TRefKey>>
-		where TRef : class, IWithTitle, IWithKey<TRefKey>
-	{
 		public override void SubmitDialog(ApiResponse response)
 		{
 			var ids = Context.GetListArg<TRefKey>(Field.ID);

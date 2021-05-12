@@ -325,20 +325,26 @@ namespace Tango.Html
 	{
 		public DataCollection Ref(string id)
 		{
-			Add("ref-" + id, id);
+			var key = "ref-" + id;
+			if (!ContainsKey(key))
+				Add(key, id);
 			return this;
 		}
 
 		public DataCollection Ref(IViewElement owner, string id)
 		{
 			var clientid = owner.GetClientID(id);
-			Add("ref-" + clientid, clientid);
+			var key = "ref-" + clientid;
+			if (!ContainsKey(key))
+				Add(key, clientid);
 			return this;
 		}
 
 		public DataCollection Parm<T>(string key, T value)
 		{
-			Add("p-" + key, value?.ToString());
+			var pkey = "p-" + key;
+			if (!ContainsKey(pkey))
+				Add(pkey, value?.ToString());
 			return this;
 		}
 
