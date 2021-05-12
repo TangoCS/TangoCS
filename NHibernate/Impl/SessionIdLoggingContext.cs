@@ -1,20 +1,14 @@
 using System;
-#if !NETSTANDARD2_0 && !NETCOREAPP2_0 
-using System.Runtime.Remoting.Messaging;
-#else
 using System.Threading;
-#endif
 
 namespace NHibernate.Impl
 {
 	public class SessionIdLoggingContext : IDisposable
 	{
-#if NETSTANDARD2_0 || NETCOREAPP2_0
+
 		private static readonly Lazy<AsyncLocal<Guid?>> _currentSessionId =
 			new Lazy<AsyncLocal<Guid?>>(() => new AsyncLocal<Guid?>(), true);
-#else
-		private const string LogicalCallContextVariableName = "__" + nameof(SessionIdLoggingContext) + "__";
-#endif
+
 		private readonly Guid? _oldSessonId;
 		private readonly bool _hasChanged;
 		
@@ -38,19 +32,12 @@ namespace NHibernate.Impl
 		{
 			get
 			{
-#if NETSTANDARD2_0 || NETCOREAPP2_0
+
 				return _currentSessionId.IsValueCreated ? _currentSessionId.Value.Value : null;
-#else
-				return (Guid?) CallContext.LogicalGetData(LogicalCallContextVariableName);
-#endif
 			}
 			set
 			{
-#if NETSTANDARD2_0 || NETCOREAPP2_0
 				_currentSessionId.Value.Value = value;
-#else
-				CallContext.LogicalSetData(LogicalCallContextVariableName, value);
-#endif
 			}
 		}
 

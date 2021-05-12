@@ -40,7 +40,7 @@ namespace Tango.UI.Controls
 
 		public override void ToolbarLeft(MenuBuilder t) { }
 
-		void RenderSelected(LayoutWriter w, TRef selectedValue)
+		public override void RenderSelected(LayoutWriter w, TRef selectedValue)
 		{
 			var cw = w.Clone(Field);
 
@@ -76,15 +76,13 @@ namespace Tango.UI.Controls
 			w.Span(a => a.Class("input-measure").ID("measure"), "");
 		}
 
-		public override void Render(LayoutWriter w, TRef selectedValue, Action<TagAttributes> attributes = null)
+		public override void Render(LayoutWriter w, TRef selectedValue)
 		{
 			var cw = w.Clone(Field);
 			var pw = w.Clone(Field.ParentElement);
 			
 			cw.Div(a => {
 				a.ID("placeholder").Class("selectsingleobject").DataCtrl("selectObjectDropDownField", Field.ClientID);
-				if (attributes != null)
-					a.Set(attributes);
 				if (Field.Disabled || Field.ReadOnly) a.Data("disabled", true);
 			}, () => {
 				RenderSelected(w, selectedValue);
@@ -121,7 +119,7 @@ namespace Tango.UI.Controls
 		}
 	}
 
-	public class SelectSingleObjectDropDownField<TRef, TRefKey> : SelectObjectField<TRef, TRefKey, TRef>, ISelectSingleObjectField<TRef, TRefKey, TRef>
+	public class SelectSingleObjectDropDownField<TRef, TRefKey> : AbstractSelectObjectField<TRef, TRefKey, TRef>, ISelectSingleObjectField<TRef, TRefKey, TRef>
 		where TRef : class, IWithKey<TRef, TRefKey>, new()
 	{
 		public Func<TRefKey, Expression<Func<TRef, bool>>> FilterSelected { get; set; }
