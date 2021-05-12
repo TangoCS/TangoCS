@@ -67,34 +67,7 @@ namespace Tango.Data
 			var baseNaming = type.GetCustomAttribute(typeof(BaseNamingConventionsAttribute)) as BaseNamingConventionsAttribute;
 			if (SqlMapper.GetTypeMap(type) is DefaultTypeMap && baseNaming != null)
 			{
-				var custom = new CustomPropertyTypeMap(
-					type,
-					(t, columnName) =>
-					{
-						var name = columnName;
-						
-						if (name.EndsWith(DBConventions.IDSuffix))
-						{
-							name = name.Substring(0, name.Length - DBConventions.IDSuffix.Length) + "ID";
-							var pid = t.GetProperty(name);
-							if (pid != null)
-								return pid;
-						}
-						if (name.EndsWith(DBConventions.GUIDSuffix))
-						{
-							name = name.Substring(0, name.Length - DBConventions.GUIDSuffix.Length) + "GUID";
-							var pguid = t.GetProperty(name);
-							if (pguid != null)
-								return pguid;
-						}
-
-						var p = t.GetProperty(name);
-						if (p != null)
-							return p;
-
-						throw new PropertyInfoNotFoundException($"В моделе {type.Name} отсутствует свойство {name}");
-					});
-				
+				var custom = new CustomPropertyTypeMap(type, QueryHelper.GetPropertyByName);
 				SqlMapper.SetTypeMap(type, custom);
 			}
 		} 

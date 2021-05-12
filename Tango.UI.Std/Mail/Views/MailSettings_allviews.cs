@@ -105,7 +105,7 @@ namespace Tango.Mail
 
         protected override void FieldsInit(FieldCollection<MailSettings> fields)
         {
-            fields.AddCellWithSortAndFilter(o => o.ID, o => o.ID);
+            fields.AddCellWithSortAndFilter(o => o.MailSettingsID, o => o.MailSettingsID);
             fields.AddCellWithSortAndFilter(o => o.Title, o => o.Title);
             fields.AddCellWithSortAndFilter(o => o.MailTemplateTitle, o=>o.MailTemplateTitle);
             fields.AddCellWithSortAndFilter(o => o.MailCategoryTitle, o=>o.MailCategoryTitle);
