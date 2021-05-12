@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'icomoon';
-  src:  url('fonts/icomoon.eot?9bgbrq');
-  src:  url('fonts/icomoon.eot?9bgbrq#iefix') format('embedded-opentype'),
-    url('fonts/icomoon.ttf?9bgbrq') format('truetype'),
-    url('fonts/icomoon.woff?9bgbrq') format('woff'),
-    url('fonts/icomoon.svg?9bgbrq#icomoon') format('svg');
+  src:  url('fonts/icomoon.eot?7ztj1s');
+  src:  url('fonts/icomoon.eot?7ztj1s#iefix') format('embedded-opentype'),
+    url('fonts/icomoon.ttf?7ztj1s') format('truetype'),
+    url('fonts/icomoon.woff?7ztj1s') format('woff'),
+    url('fonts/icomoon.svg?7ztj1s#icomoon') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,9 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-check-mail:before {
+  content: "\e97c";
+}
 .icon-dropdownarrow-angle-classic:before {
   content: "\e97a";
 }

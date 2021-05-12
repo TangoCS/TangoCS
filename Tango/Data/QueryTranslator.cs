@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
+using Tango.Exceptions;
 
 namespace Tango.Data
 {
@@ -328,7 +329,11 @@ namespace Tango.Data
 			if (m.Expression?.NodeType == ExpressionType.Parameter ||
 				(m.NodeType == ExpressionType.MemberAccess && m.Expression?.NodeType == ExpressionType.Convert))
 			{
-				sb.Append(m.Member.Name == "Key" ? "@@KEY" : m.Member.Name);
+				var name = m.Member is PropertyInfo pi && 
+					m.Member.DeclaringType.GetCustomAttribute<BaseNamingConventionsAttribute>() != null ? 
+					QueryHelper.GetPropertyName(pi) : m.Member.Name;
+
+				sb.Append(name == "Key" ? "@@KEY" : name);
 				return m;
 			}
 
@@ -532,6 +537,49 @@ namespace Tango.Data
 				var part2 = query.Substring(i + 9);
 				return $"{part1} select {fieldExpression} from ({part2}) t";
 			}
+		}
+
+		public static PropertyInfo GetPropertyByName(Type t, string name)
+		{
+			if (name.EndsWith(DBConventions.IDSuffix))
+			{
+				name = name.Substring(0, name.Length - DBConventions.IDSuffix.Length) + "ID";
+				var pid = t.GetProperty(name);
+				if (pid != null)
+					return pid;
+			}
+			if (name.EndsWith(DBConventions.GUIDSuffix))
+			{
+				name = name.Substring(0, name.Length - DBConventions.GUIDSuffix.Length) + "GUID";
+				var pguid = t.GetProperty(name);
+				if (pguid != null)
+					return pguid;
+			}
+
+			var p = t.GetProperty(name);
+			if (p != null)
+				return p;
+
+			throw new PropertyInfoNotFoundException($"В моделе {t.Name} отсутствует свойство {name}");
+		}
+
+		public static string GetPropertyName(PropertyInfo p)
+		{
+			var name = p.Name;
+
+			if (p.PropertyType == typeof(Guid) || p.PropertyType == typeof(Guid?))
+			{
+				if (name.EndsWith(BaseNamingConventions.GUIDSuffix) && !name.EndsWith(DBConventions.GUIDSuffix))
+					return name.Substring(0, name.Length - BaseNamingConventions.GUIDSuffix.Length) + DBConventions.GUIDSuffix;
+			}
+			else if (p.PropertyType == typeof(int) || p.PropertyType == typeof(int?) ||
+				p.PropertyType == typeof(long) || p.PropertyType == typeof(long?))
+			{
+				if (name.EndsWith(BaseNamingConventions.IDSuffix) && !name.EndsWith(DBConventions.IDSuffix))
+					return name.Substring(0, name.Length - BaseNamingConventions.IDSuffix.Length) + DBConventions.IDSuffix;
+			}
+
+			return name;
 		}
 
 		public static IQueryTranslatorDialect CreateDialect(DBType dbType) => dbType == DBType.MSSQL ? (IQueryTranslatorDialect)new QueryTranslatorMSSQL() :

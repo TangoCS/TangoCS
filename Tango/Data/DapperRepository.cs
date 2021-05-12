@@ -4,12 +4,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
-using System.Data.SqlClient;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Tango.Exceptions;
 
 namespace Tango.Data
 {
@@ -64,37 +62,10 @@ namespace Tango.Data
 	{
 		public static void InitDbConventions(this IDbConnection dbConnection, Type type)
 		{
-			var baseNaming = type.GetCustomAttribute(typeof(BaseNamingConventionsAttribute)) as BaseNamingConventionsAttribute;
+			var baseNaming = type.GetCustomAttribute<BaseNamingConventionsAttribute>();
 			if (SqlMapper.GetTypeMap(type) is DefaultTypeMap && baseNaming != null)
 			{
-				var custom = new CustomPropertyTypeMap(
-					type,
-					(t, columnName) =>
-					{
-						var name = columnName;
-						
-						if (name.EndsWith(DBConventions.IDSuffix))
-						{
-							name = name.Substring(0, name.Length - DBConventions.IDSuffix.Length) + "ID";
-							var pid = t.GetProperty(name);
-							if (pid != null)
-								return pid;
-						}
-						if (name.EndsWith(DBConventions.GUIDSuffix))
-						{
-							name = name.Substring(0, name.Length - DBConventions.GUIDSuffix.Length) + "GUID";
-							var pguid = t.GetProperty(name);
-							if (pguid != null)
-								return pguid;
-						}
-
-						var p = t.GetProperty(name);
-						if (p != null)
-							return p;
-
-						throw new PropertyInfoNotFoundException($"В моделе {type.Name} отсутствует свойство {name}");
-					});
-				
+				var custom = new CustomPropertyTypeMap(type, QueryHelper.GetPropertyByName);
 				SqlMapper.SetTypeMap(type, custom);
 			}
 		} 
@@ -125,7 +96,7 @@ namespace Tango.Data
 			Database = database;
 			Type = type;
 
-			var baseNaming = type.GetCustomAttribute(typeof(BaseNamingConventionsAttribute)) as BaseNamingConventionsAttribute;
+			var baseNaming = type.GetCustomAttribute<BaseNamingConventionsAttribute>();
 
 			Table = Type.GetCustomAttribute<TableAttribute>()?.Name;
 
@@ -159,7 +130,7 @@ namespace Tango.Data
 			var props = Type.GetProperties().Where(o => o.GetCustomAttribute<ColumnAttribute>() != null);
 			foreach (var p in props)
 			{
-				var name = baseNaming != null ? ChangePropertyName(p) : p.Name;
+				var name = baseNaming != null ? QueryHelper.GetPropertyName(p) : p.Name;
 
 				if (p.GetCustomAttributes(typeof(KeyAttribute), false).Any())
 					keys.Add(name, p);
@@ -173,21 +144,7 @@ namespace Tango.Data
 			}
 		}
 
-		protected string ChangePropertyName(PropertyInfo p)
-		{
-			var name = p.Name;
-
-			var conventions = p.PropertyType == typeof(Guid) || p.PropertyType == typeof(Guid?)
-				? DBConventions.GUIDSuffix
-				: DBConventions.IDSuffix;
-
-			if (name.EndsWith(BaseNamingConventions.IDSuffix) && !name.EndsWith(conventions))
-			{
-				name = name.Substring(0, name.Length - BaseNamingConventions.IDSuffix.Length) + conventions;
-			}
-
-			return name;
-		}
+		
 
 		public bool Exists(object id)
 		{
@@ -362,7 +319,7 @@ namespace Tango.Data
 				var val = prop.GetValue(entity);
 				if (val != null)
 				{
-					var name = ChangePropertyName(prop);
+					var name = QueryHelper.GetPropertyName(prop);
 					cols.Add(name.ToLower());
 					vals.Add("@i" + n);
 					parms.Add("i" + n, val);
