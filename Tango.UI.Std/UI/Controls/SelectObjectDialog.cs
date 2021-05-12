@@ -162,9 +162,10 @@ namespace Tango.UI.Controls
 		}
 	}
 
-	public class SelectMultipleObjectsDialog<TRef, TRefKey> : 
-		SelectObjectDialog<TRef, TRefKey, IEnumerable<TRef>, AbstractSelectMultipleObjectsField<TRef, TRefKey>>
+	public class SelectMultipleObjectsDialog<TRef, TRefKey, TField> : 
+		SelectObjectDialog<TRef, TRefKey, IEnumerable<TRef>, TField>
 		where TRef : class, IWithTitle, IWithKey<TRefKey>
+		where TField : AbstractSelectMultipleObjectsField<TRef, TRefKey>
 	{
 		public string OpenDialogLinkTitle { get; set; } = null;
 
@@ -248,5 +249,11 @@ namespace Tango.UI.Controls
 			});
 			Field.OnChange(response, selectedValues);
 		}
+	}
+
+	public class SelectMultipleObjectsDialog<TRef, TRefKey> :
+		SelectMultipleObjectsDialog<TRef, TRefKey, AbstractSelectMultipleObjectsField<TRef, TRefKey>>
+		where TRef : class, IWithTitle, IWithKey<TRefKey>
+	{
 	}
 }
