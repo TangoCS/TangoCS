@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>Tango.Meta.Database.PostgreSQL</AssemblyName>
     <PackageId>Tango.Meta.Database.PostgreSQL</PackageId>
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
@@ -38,10 +38,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Tango.Abstractions\Tango.Abstractions.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Update="NETStandard.Library" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup>
