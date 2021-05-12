@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
     <AssemblyName>Tango.Abstractions</AssemblyName>
     <PackageId>Tango.Abstractions</PackageId>
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
