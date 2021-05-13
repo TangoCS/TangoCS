@@ -44,7 +44,7 @@ namespace Tango.Tasks
 			f.AddCellWithSortAndFilter(o => o.LastModifiedDate, o => o.LastModifiedDate.DateTimeToString());
 			f.AddCell(o => o.ResultXml, o => o.ResultXml);
 
-            //Filter.AddConditionDDL(Resources.Get<DTO_TaskExecution>(o => o.TaskName), o => o.TaskID,
+            //Filter.AddConditionDDL(Resources.Get<TaskExecution>(o => o.TaskName), o => o.TaskID,
             //    TaskRepository.List().OrderBy(o => o.Title).Select(o => new SelectListItem(o.Title, o.TaskID)));
         }
 	}

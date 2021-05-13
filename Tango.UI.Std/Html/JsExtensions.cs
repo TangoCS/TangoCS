@@ -30,9 +30,13 @@ namespace Tango.Html
 			                 $"{timeout})");
 		}
 
-		public static T OnClickRunHref<T>(this T a)
+		public static T OnClickRunHref<T>(this T a, Action<ApiResponse> action = null)
 			where T : TagAttributes<T>
 		{
+			if (action != null)
+				a.DataEvent(action);
+			else
+				a.Data(Constants.ContainerNew, 1);
 			return a.OnClick("ajaxUtils.runHrefWithApiResponse(this); return false;");
 		}
 
@@ -42,9 +46,11 @@ namespace Tango.Html
 			return a.OnChange("ajaxUtils.runHrefWithApiResponse(this); return false;");
 		}
 
-		public static T OnClickRunEvent<T>(this TagAttributes<T> a)
+		public static T OnClickRunEvent<T>(this TagAttributes<T> a, Action<ApiResponse> action = null)
 			where T : TagAttributes<T>
 		{
+			if (action != null)
+				a.DataEvent(action);
 			return a.OnClick("ajaxUtils.runEventFromElementWithApiResponse(this); return false;");
 		}
 
@@ -55,6 +61,7 @@ namespace Tango.Html
 			return a.Data("e", name).OnClick("ajaxUtils.runEventFromElementWithApiResponse(this); return false;");
 		}
 
+	
 		public static T OnClickPostEvent<T>(this TagAttributes<T> a)
 			where T : TagAttributes<T>
 		{
