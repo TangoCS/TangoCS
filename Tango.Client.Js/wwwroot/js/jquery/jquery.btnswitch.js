@@ -31,14 +31,6 @@
 		var setHtml = function (id, prefix) {
 			const el = document.getElementById(id);
 			const parent = el.parentElement;
-			
-			const existDiv = document.getElementById(id + '_bsh');
-			if(existDiv)
-			{
-				el.checked = !el.checked;
-				setClass(el, prefix);
-				return;
-			}
 
 			const div = document.createElement('div');
 			div.id = id + '_bsh';
