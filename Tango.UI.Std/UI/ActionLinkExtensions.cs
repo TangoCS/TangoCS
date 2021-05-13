@@ -195,9 +195,9 @@ namespace Tango.UI
 			w.PostBackLink(attrs, () => w.Write(title));
 		}
 
-		public static void AjaxActionLink(this LayoutWriter w, Action<ATagAttributes> attrs, Action content)
+		static void AjaxActionLink(this LayoutWriter w, Action<ATagAttributes> attrs, Action content)
 		{
-			w.A(a => a.Set(attrs).OnClickRunHref(), content);
+			w.A(a => a.Set(attrs).OnClick("ajaxUtils.runHrefWithApiResponse(this); return false;"), content);
 		}
 
 		public static void PostBackLink(this LayoutWriter w, Action<ATagAttributes> attrs, Action content)
