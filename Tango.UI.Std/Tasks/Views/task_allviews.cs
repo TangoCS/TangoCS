@@ -133,7 +133,7 @@ namespace Tango.Tasks
 
 		TaskFields.DefaultGroup gr { get; set; }
 
-		IEnumerable<SelectListItem> Types() => Repository.GetStartTypes().OrderBy(o => o.Title).Select(o => new SelectListItem(o.Title, o.TaskStartTypeID));
+		IEnumerable<SelectListItem> Types() => Repository.GetStartTypes().OrderBy(o => o.Title).Select(o => new SelectListItem(o.Title, o.TaskTypeID));
 		IEnumerable<SelectListItem> Groups() => Repository.GetGroups().OrderBy(o => o.Title).ToList()
 			.Where(o => AccessControl.Check($"{typeof(TaskGroup).Name}.view_{o.TaskGroupID}"))
 			.Select(o => new SelectListItem(o.Title, o.TaskGroupID)).AddEmptyItem();

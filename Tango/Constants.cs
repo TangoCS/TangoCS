@@ -59,8 +59,9 @@ namespace Tango
 			new Dictionary<BaseNamingEntityCategory, string>
 			{
 				{BaseNamingEntityCategory.Dictionary, "C_"},
-				{BaseNamingEntityCategory.Mail, string.Empty}
-			};
+				{BaseNamingEntityCategory.Mail, string.Empty},
+                {BaseNamingEntityCategory.Tasks, "TM_"},
+            };
 	}
 
 	public enum BaseNamingEntityCategory
