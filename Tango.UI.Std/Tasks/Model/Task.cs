@@ -6,16 +6,17 @@ using Tango.Data;
 
 namespace Tango.Tasks
 {
-    //[BaseNamingConventions(Category = BaseNamingEntityCategory.Tasks)]
+    [BaseNamingConventions(Category = BaseNamingEntityCategory.Tasks)]
     public partial class Task : IEntity, IWithKey<Task, int>, IWithTitle, IScheduledTask
 	{
 		public virtual Expression<Func<Task, bool>> KeySelector(int id)
 		{
 			return o => o.TaskID == id;
 		}
-		public virtual int ID { get { return TaskID; } }
+        public virtual int ID => TaskID;
 		[Key]
-		[Column]
+        [Identity]
+        [Column]
 		public virtual int TaskID { get; set; }
         [Column]
         public virtual string Title { get; set; }

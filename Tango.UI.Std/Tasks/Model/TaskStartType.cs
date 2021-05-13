@@ -6,16 +6,18 @@ using Tango.Data;
 
 namespace Tango.Tasks
 {
-    //[BaseNamingConventions(Category = BaseNamingEntityCategory.Dictionary)]
+    [BaseNamingConventions(Category = BaseNamingEntityCategory.Dictionary)]
     public partial class TaskStartType : IEntity, IWithKey<TaskStartType, int>, IWithTitle
 	{
 		public virtual Expression<Func<TaskStartType, bool>> KeySelector(int id)
 		{
-			return o => o.TaskStartTypeID == id;
+			return o => o.TaskTypeID == id;
 		}
-		public virtual int ID { get { return TaskStartTypeID; } }
+		public virtual int ID => TaskTypeID;
+        [Key]
+        [Identity]
         [Column]
-        public virtual int TaskStartTypeID { get; set; }
+        public virtual int TaskTypeID { get; set; }
         [Column]
         public virtual string Title { get; set; }
 	}
