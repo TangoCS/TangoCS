@@ -40,13 +40,17 @@ namespace Tango.Mail
             f.AddCellWithSortAndFilter(o => o.LastSendAttemptDate, o => o.LastSendAttemptDate.DateTimeToString());
             f.AddCellWithSortAndFilter(o => o.Error, o => o.Error);
             f.AddActionsCell(
-                o => al => al.To<MailMessageAttachment>("viewlist", AccessControl)
+                o => al => al.To<MailMessageAttachment>("attachments", AccessControl)
                 .WithArg(Constants.Id, o.ID).WithArg("title", o.Subject).WithImage("hie").WithTitle("Состав письма"),
-                o => al => al.ToDelete(AccessControl, o));
+                o => al =>
+                {
+                    if(o.ShowDeleteButton)
+                        al.ToDelete<MailMessage>(o.MailMessageID);
+                });
         }
     }
     
-    [OnAction(typeof(MailMessageAttachment), "viewlist")]
+    [OnAction(typeof(MailMessageAttachment), "attachments")]
     public class MailMessageAttachment_viewlist : default_list_rep<MailMessageAttachment>
     {
         public int MailMessageId { get; set; }
