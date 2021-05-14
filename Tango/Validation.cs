@@ -33,6 +33,7 @@ namespace Tango
 
 	public class ValidationMessageCollection : ObservableCollection<ValidationMessage>
 	{
+		public bool IsError { get; set; }
 		public const string DEF_GROUP = "entitycheck";
 
 		Dictionary<ValidationMessageSeverity, int> _messagesCount = new Dictionary<ValidationMessageSeverity, int>();
@@ -61,16 +62,19 @@ namespace Tango
 		{
 			foreach (var i in collection)
 				Add(i);
-		}
+            IsError = true;
+        }
 
 		public void Add(string group, string name, string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
 		{
 			Add(new ValidationMessage(group, name, message, severity));
+            IsError = true;
 		}
 
 		public void Add(string name, string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
 		{
 			Add(new ValidationMessage(DEF_GROUP, name, message, severity));
+            IsError = true;
 		}
 
 		//public void Add(string message, ValidationMessageSeverity severity = ValidationMessageSeverity.Error)
