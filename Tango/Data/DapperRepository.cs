@@ -95,26 +95,18 @@ namespace Tango.Data
 		{
 			Database = database;
 			Type = type;
+			Table = Type.GetCustomAttribute<TableAttribute>()?.Name.ToLower() ?? Type.Name.ToLower();
 
 			var baseNaming = type.GetCustomAttribute<BaseNamingConventionsAttribute>();
-
-			Table = Type.GetCustomAttribute<TableAttribute>()?.Name;
-
-			if (Table == null)
+			if (baseNaming != null)
 			{
-				var table = Type.Name.ToLower();
-				if (baseNaming != null)
-				{
-					var prefix = BaseNamingConventions.EntityPrefix[baseNaming.Category];
-					if (table.StartsWith(prefix.ToLower()))
-					{
-						var tbl = !string.IsNullOrEmpty(prefix) ? table.Substring(2) : table;
-						table = $"{DBConventions.EntityPrefix[baseNaming.Category].ToLower()}{tbl}";
-					}
-				}
-				Table = table;
+				var basePrefix = BaseNamingConventions.EntityPrefix[baseNaming.Category]?.ToLower() ?? "";
+				var dbPrefix = DBConventions.EntityPrefix[baseNaming.Category]?.ToLower() ?? "";
+
+				if (Table.StartsWith(basePrefix))
+					Table = $"{dbPrefix}{Table.Substring(basePrefix.Length)}";
 			}
-			
+
 			if (Table.ToLower().EndsWith(".sql"))
 			{
 				Table = $"({EmbeddedResourceManager.GetString(Type, Table)})";

@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Tango.Data;
 using Tango.Html;
 using Tango.Localization;
+using Tango.UI.Std;
 
 namespace Tango.UI.Controls
 {
@@ -231,9 +232,10 @@ namespace Tango.UI.Controls
 		
 	}
 
-	public class SelectMultipleObjectsTreeField<TRef, TRefKey> :
-		AbstractSelectMultipleObjectsField<TRef, TRefKey, SelectMultipleObjectsTreeDialog<TRef, TRefKey>>
+	public class SelectMultipleObjectsTreeField<TRef, TRefKey, TControl> :
+		AbstractSelectMultipleObjectsField<TRef, TRefKey, SelectMultipleObjectsTreeDialog<TRef, TRefKey, TControl>>
 		where TRef : class, IWithTitle, IWithKey<TRefKey>
+		where TControl : ViewPagePart, new()
 	{
 
 	}

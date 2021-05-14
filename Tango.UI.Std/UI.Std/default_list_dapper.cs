@@ -18,7 +18,7 @@ namespace Tango.UI.Std
 
 		IRepository<TResult> _repository = null;
 
-		protected IRepository<TResult> Repository
+		public IRepository<TResult> Repository
 		{
 			get
 			{

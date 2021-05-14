@@ -59,6 +59,8 @@ namespace Tango.UI.Controls
 		public object AllObjectsSqlParms { get; set; }
 		public Func<IQueryable<TRef>, IQueryable<TRef>> PostProcessing { get; set; }
 
+		public IRepository<TRef> Repository => database.Repository<TRef>().WithAllObjectsQuery(AllObjectsSql, AllObjectsSqlParms);
+
 		public DapperSelectObjectFieldDataProvider(ISelectObjectField<TRef> field, IDatabase database)
 		{
 			this.field = field;
@@ -68,39 +70,34 @@ namespace Tango.UI.Controls
 
 		public IEnumerable<TRef> GetAllData()
 		{
-			var rep = database.Repository<TRef>().WithAllObjectsQuery(AllObjectsSql, AllObjectsSqlParms);
 			var q = field.AllObjects;
 			if (PostProcessing != null) q = PostProcessing(q);
-			return rep.List(q.Expression);
+			return Repository.List(q.Expression);
 		}
 
 		public int GetCount()
 		{
-			var rep = database.Repository<TRef>().WithAllObjectsQuery(AllObjectsSql, AllObjectsSqlParms);
 			var q = field.ItemsCountQuery();
-			return rep.Count(q.Expression);
+			return Repository.Count(q.Expression);
 		}
 
 		public IEnumerable<TRef> GetData(Paging paging)
 		{
-			var rep = database.Repository<TRef>().WithAllObjectsQuery(AllObjectsSql, AllObjectsSqlParms);
 			var q = field.DataQuery(paging);
 			if (PostProcessing != null) q = PostProcessing(q);
-			return rep.List(q.Expression);
+			return Repository.List(q.Expression);
 		}
 
 		public TRef GetObjectByID<T>(T id, Expression<Func<TRef, bool>> predicate)
 		{
-			var rep = database.Repository<TRef>().WithAllObjectsQuery(AllObjectsSql, AllObjectsSqlParms);
 			var q = field.AllObjects.Where(predicate);
-			return rep.List(q.Expression).FirstOrDefault();
+			return Repository.List(q.Expression).FirstOrDefault();
 		}
 
 		public IEnumerable<TRef> GetObjectsByID<T>(IEnumerable<T> id, Expression<Func<TRef, bool>> predicate)
 		{
-			var rep = database.Repository<TRef>().WithAllObjectsQuery(AllObjectsSql, AllObjectsSqlParms);
 			var q = field.AllObjects.Where(predicate);
-			return rep.List(q.Expression);
+			return Repository.List(q.Expression);
 		}
 	}
 }

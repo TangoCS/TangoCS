@@ -25,26 +25,14 @@ namespace Tango.UI.Controls
 			DataCollection.Ref(Field.GetClientID("filter"));
 		}
 
-		public void OpenDialog(ApiResponse response)
+		public virtual void OpenDialog(ApiResponse response)
 		{
 			var data = Field.DataProvider.GetData(Paging);
-			if (data.Count() == 1)
-				RenderSingleObjectFound(response, data.First());
-			else
-				RenderMultipleObjectsFound(response, data);
 
-		}
-
-		protected virtual void RenderMultipleObjectsFound(ApiResponse response, IEnumerable<TRef> data)
-		{
 			response.AddWidget("contenttitle", Field.Title());
 			response.AddWidget("contentbody", w => List(w, data));
 			response.AddWidget("contenttoolbar", w => w.Toolbar(ToolbarLeft, ToolbarRight));
 			response.AddWidget("buttonsbar", Footer);
-		}
-		protected virtual void RenderSingleObjectFound(ApiResponse response, TRef data)
-		{
-			RenderMultipleObjectsFound(response, new List<TRef> { data });
 		}
 
 		public virtual void ToolbarLeft(MenuBuilder t)
