@@ -95,15 +95,15 @@ namespace Tango.Data
 		{
 			Database = database;
 			Type = type;
-			Table = Type.GetCustomAttribute<TableAttribute>()?.Name.ToLower() ?? Type.Name.ToLower();
+			Table = Type.GetCustomAttribute<TableAttribute>()?.Name ?? Type.Name;
 
 			var baseNaming = type.GetCustomAttribute<BaseNamingConventionsAttribute>();
 			if (baseNaming != null)
 			{
 				var basePrefix = BaseNamingConventions.EntityPrefix[baseNaming.Category]?.ToLower() ?? "";
-				var dbPrefix = DBConventions.EntityPrefix[baseNaming.Category]?.ToLower() ?? "";
+				var dbPrefix = DBConventions.EntityPrefix[baseNaming.Category] ?? "";
 
-				if (Table.StartsWith(basePrefix))
+				if (Table.ToLower().StartsWith(basePrefix))
 					Table = $"{dbPrefix}{Table.Substring(basePrefix.Length)}";
 			}
 

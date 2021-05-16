@@ -27,7 +27,8 @@ namespace Tango.UI.Controls
 
 		public virtual void OpenDialog(ApiResponse response)
 		{
-			var data = Field.DataProvider.GetData(Paging);
+			var q = Field.DataQuery(Paging);
+			var data = Field.DataProvider.MaterializeList(q);
 
 			response.AddWidget("contenttitle", Field.Title());
 			response.AddWidget("contentbody", w => List(w, data));
@@ -49,7 +50,8 @@ namespace Tango.UI.Controls
 
 		public virtual void RenderList(ApiResponse response)
 		{
-			var data = Field.DataProvider.GetData(Paging);
+			var q = Field.DataQuery(Paging);
+			var data = Field.DataProvider.MaterializeList(q);
 
 			// TODO решить проблему префиксов при name = prefix
 			response.AddWidget("body", w => List(w, data));
@@ -72,7 +74,8 @@ namespace Tango.UI.Controls
 		public abstract void RenderSelected(LayoutWriter w, TValue selectedValue);
 		public virtual void RenderPaging(LayoutWriter w)
 		{
-			Paging.Render(w, Field.DataProvider.GetCount(), a => a.PostEvent(RenderList));
+			var q = Field.ItemsCountQuery();
+			Paging.Render(w, Field.DataProvider.MaterializeCount(q), a => a.PostEvent(RenderList));
 		}
 	}
 

@@ -23,7 +23,9 @@ namespace Tango.UI.Controls
 
 		public override void OpenDialog(ApiResponse response)
 		{
-			response.WithNamesAndWritersFor(Control);
+			response.WithWritersFor(Control);
+			response.AddWidget("body", w => w.Div(a => a.ID("container")));
+			response.WithNamesFor(Control);
 			var rc = Control.GetContainer();
 			rc.ToRemove.Add("contentheader");
 			rc.Render(response);

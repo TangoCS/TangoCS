@@ -102,6 +102,7 @@ namespace Tango.UI.Controls
 
 		public AbstractSelectObjectField()
 		{
+			AllObjects = Enumerable.Empty<TRef>().AsQueryable();
 			DataProvider = new ORMSelectObjectFieldDataProvider<TRef>(this);
 			Title = () => Resources.Get(typeof(TRef).GetResourceType().FullName + "-pl");
 			DataRow = (w, o) => w.Write(GetDataText(o));
@@ -141,7 +142,10 @@ namespace Tango.UI.Controls
 
 		public IEnumerable<TRef> GetObjectsByIDs(IEnumerable<TRefKey> ids)
 		{
-			return ids == null || ids.Count() == 0 ? null : DataProvider.GetObjectsByID(ids, FilterSelected(ids));
+			if (ids == null || ids.Count() == 0)
+				return null;
+
+			return DataProvider.MaterializeList(AllObjects.Where(FilterSelected(ids)));
 		}
 	}
 
@@ -219,7 +223,7 @@ namespace Tango.UI.Controls
 		public TRef GetObjectByID(TRefKey id)
 		{
 			var keySelector = FilterSelected ?? new TRef().KeySelector;
-			return DataProvider.GetObjectByID(id, keySelector(id));
+			return DataProvider.MaterializeList(AllObjects.Where(keySelector(id))).FirstOrDefault();
 		}
 	}
 
