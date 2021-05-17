@@ -11,5 +11,6 @@ namespace Tango.Mail
     {
         public const string PreProcessingMailMethod = "PreProcessingMailMethod";
         public const string PostProcessingMailMethod = "PostProcessingMailMethod";
+        public const string DeleteMailMethod = "DeleteMailMethod";
     }
 }

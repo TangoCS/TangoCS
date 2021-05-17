@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using Dapper;
 using Tango.Data;
 using Tango.UI;
 using Tango.UI.Controls;
@@ -41,12 +43,9 @@ namespace Tango.Mail
             f.AddCellWithSortAndFilter(o => o.Error, o => o.Error);
             f.AddActionsCell(
                 o => al => al.To<MailMessageAttachment>("attachments", AccessControl)
-                .WithArg(Constants.Id, o.ID).WithArg("title", o.Subject).WithImage("hie").WithTitle("Состав письма"),
-                o => al =>
-                {
-                    if(o.ShowDeleteButton)
-                        al.ToDelete<MailMessage>(o.MailMessageID);
-                });
+                    .WithArg(Constants.Id, o.ID).WithArg("title", o.Subject).WithImage("hie")
+                    .WithTitle("Состав письма"),
+                o => al => al.ToDelete<MailMessage>(AccessControl, o.MailMessageID, o));
         }
     }
     
@@ -82,5 +81,16 @@ namespace Tango.Mail
     [OnAction(typeof(MailMessage), "delete")]
     public class MailMessage_delete : default_delete<MailMessage, int>
     {
+        [Inject] protected MailHelper MailHelper { get; set; }
+        protected override void BeforeDelete(IEnumerable<int> ids)
+        {
+            //Database.Connection.InitDbConventions<MailMessage>();
+            foreach (var id in ids)
+            {
+                var mailMessage = Database.Repository<MailMessage>().GetById(id);
+                if(mailMessage != null)
+                    MailHelper.DeleteMailMessage(mailMessage);
+            }
+        }
     }
 }
