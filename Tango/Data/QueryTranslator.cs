@@ -541,26 +541,28 @@ namespace Tango.Data
 
 		public static PropertyInfo GetPropertyByName(Type t, string name)
 		{
-			if (name.EndsWith(DBConventions.IDSuffix))
+			name = name.ToLower();
+
+			if (name.EndsWith(DBConventions.IDSuffix.ToLower()))
 			{
-				name = name.Substring(0, name.Length - DBConventions.IDSuffix.Length) + "ID";
-				var pid = t.GetProperty(name);
+				name = name.Substring(0, name.Length - DBConventions.IDSuffix.Length) + BaseNamingConventions.IDSuffix;
+				var pid = t.GetProperty(name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 				if (pid != null)
 					return pid;
 			}
-			if (name.EndsWith(DBConventions.GUIDSuffix))
+			if (name.EndsWith(DBConventions.GUIDSuffix.ToLower()))
 			{
-				name = name.Substring(0, name.Length - DBConventions.GUIDSuffix.Length) + "GUID";
-				var pguid = t.GetProperty(name);
+				name = name.Substring(0, name.Length - DBConventions.GUIDSuffix.Length) + BaseNamingConventions.GUIDSuffix;
+				var pguid = t.GetProperty(name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 				if (pguid != null)
 					return pguid;
 			}
 
-			var p = t.GetProperty(name);
+			var p = t.GetProperty(name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
 			if (p != null)
 				return p;
 
-			throw new PropertyInfoNotFoundException($"В моделе {t.Name} отсутствует свойство {name}");
+			throw new PropertyInfoNotFoundException($"В модели {t.Name} отсутствует свойство {name}");
 		}
 
 		public static string GetPropertyName(PropertyInfo p)

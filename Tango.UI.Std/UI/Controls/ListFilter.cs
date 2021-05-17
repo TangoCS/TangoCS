@@ -667,7 +667,7 @@ namespace Tango.UI.Controls
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
 			var f = CreateOrGetCondition(title);
-			dialog.ID = eFieldValue + f.SeqNo;
+			//dialog.ID = eFieldValue + f.SeqNo;
 			var data = new FieldCriterion {
 				Column = column,
 				FieldType = FieldType.Int,

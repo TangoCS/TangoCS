@@ -342,8 +342,8 @@
 				} else if (option.displayAround.startsWith('trigger')) {
 					var triggerHeight = baseEl.outerHeight(true),
 						triggerWidth = baseEl.outerWidth(true),
-						triggerLeft = baseEl.offset().left - cObj.scrollLeft(),
-						triggerTop = baseEl.offset().top - cObj.scrollTop(),
+						triggerLeft = baseEl[0].offsetLeft - cObj.scrollLeft(),
+						triggerTop = baseEl[0].offsetTop - cObj.scrollTop(),
 						leftShift = triggerWidth;
 
 					if (option.displayAround == 'triggertop') {

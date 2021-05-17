@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using Dapper;
 using Tango.Data;
 using Tango.UI;
 using Tango.UI.Controls;
@@ -79,5 +81,16 @@ namespace Tango.Mail
     [OnAction(typeof(MailMessage), "delete")]
     public class MailMessage_delete : default_delete<MailMessage, int>
     {
+        [Inject] protected MailHelper MailHelper { get; set; }
+        protected override void BeforeDelete(IEnumerable<int> ids)
+        {
+            //Database.Connection.InitDbConventions<MailMessage>();
+            foreach (var id in ids)
+            {
+                var mailMessage = Database.Repository<MailMessage>().GetById(id);
+                if(mailMessage != null)
+                    MailHelper.DeleteMailMessage(mailMessage);
+            }
+        }
     }
 }
