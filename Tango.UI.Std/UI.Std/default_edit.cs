@@ -249,6 +249,7 @@ namespace Tango.UI.Std
 			}
 		}
 
+		protected virtual bool DeleteMode => Context.Action.ToLower() == "delete";
 		protected virtual bool CreateObjectMode => !BulkMode && !Context.AllArgs.ContainsKey(Constants.Id);
 		protected virtual bool BulkMode => Context.AllArgs.ContainsKey(Constants.SelectedValues);
 		protected override string Title => CreateObjectMode ? CreateNewFormTitle : EditFormTitle;
@@ -459,13 +460,15 @@ namespace Tango.UI.Std
                 }
             }
 
-            //var rep = Database.Repository<T>();
-
-			if (CreateObjectMode)
+            if (CreateObjectMode)
 				InTransaction(() =>
 				{
 					Repository.Create(ViewData);
 				});
+			else if (DeleteMode)
+			{
+				Repository.Delete(new List<TKey>(){ViewData.ID});
+			}
 			else if (BulkMode)
 			{
 				var updFields = GetBulkEditProperties();

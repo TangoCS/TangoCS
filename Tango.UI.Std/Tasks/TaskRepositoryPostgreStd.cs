@@ -87,7 +87,7 @@ where taskexecutionid = @TaskExecutionID;", task);
     /// </summary>
     public class TaskRepositoryPostgreStd : DapperRepository<Task>, ITaskRepository
     {
-        public TaskRepositoryPostgreStd(IDatabase database) : base(database)
+        public TaskRepositoryPostgreStd(IDatabase database, IServiceProvider provider) : base(database,provider)
         {
             AllObjectsQuery = @"select t.*, tt.title as starttypetitle, tg.title as grouptitle
 from tm_task t 
@@ -166,7 +166,7 @@ values (@title, @sysname, @value, @parentid, @seqno) returning taskparameterid",
     /// </summary>
     public class TaskParameterRepositoryPostgreStd : DapperRepository<TaskParameter>, ITaskParameterRepository
     {
-        public TaskParameterRepositoryPostgreStd(IDatabase database) : base(database)
+        public TaskParameterRepositoryPostgreStd(IDatabase database,IServiceProvider provider) : base(database,provider)
         {
             AllObjectsQuery = @"select tp.*, t.title as parenttitle, 
 t.class as parentclass, t.method as parentmethod 
@@ -201,7 +201,7 @@ where taskparameterid=@taskparameterid", entity, Database.Transaction);
     /// </summary>
     public class TaskExecutionRepositoryPostgreStd : DapperRepository<TaskExecution>, ITaskExecutionRepository
     {
-        public TaskExecutionRepositoryPostgreStd(IDatabase database) : base(database)
+        public TaskExecutionRepositoryPostgreStd(IDatabase database, IServiceProvider provider) : base(database,provider)
         {
             AllObjectsQuery = @"select te.*, t.title as taskname, u.title as username
 from tm_taskexecution te 

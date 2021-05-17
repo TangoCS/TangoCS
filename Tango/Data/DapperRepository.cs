@@ -9,6 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
+
 namespace Tango.Data
 {
 	public class Store
@@ -53,8 +54,13 @@ namespace Tango.Data
 
 	public class DapperDatabase : Store, IDatabase
 	{
-		public DapperDatabase(IDbConnection connection) : base(connection) { }
-		public IRepository<T> Repository<T>() => new DapperRepository<T>(this);
+		private IServiceProvider provider;
+		
+		public DapperDatabase(IDbConnection connection, IServiceProvider provider) : base(connection)
+		{
+			this.provider = provider;
+		}
+		public IRepository<T> Repository<T>() => new DapperRepository<T>(this, this.provider);
 		public IRepository Repository(Type type) => new DapperRepository(this, type);
 	}
 
@@ -224,9 +230,10 @@ namespace Tango.Data
 	public class DapperRepository<T> : DapperRepository, IRepository<T>
 	{
 		//protected Dictionary<string, object> parms = new Dictionary<string, object>();
-
-		public DapperRepository(IDatabase database) : base(database, typeof(T))
+		private IServiceProvider provider;
+		public DapperRepository(IDatabase database, IServiceProvider provider) : base(database, typeof(T))
 		{
+			this.provider = provider;
 		}
 
 		public virtual IEnumerable<T> List(Expression predicate = null, Func<IDictionary<string, object>, T> selector = null)
@@ -440,20 +447,60 @@ namespace Tango.Data
 
 		public virtual void Delete(Expression<Func<T, bool>> predicate)
 		{
-			var translator = new QueryTranslator(Dialect);
-			translator.Translate(Enumerable.Empty<T>().AsQueryable().Where(predicate).Expression);
-			var args = new DynamicParameters(translator.Parms);
-			var query = $"delete from {Table} where {translator.WhereClause}";
+			var strategy = provider.GetService(typeof(IDeleteStrategy<T>)) as IDeleteStrategy<T>;
 
-			Database.Connection.ExecuteScalar(query, args, Database.Transaction);
+			var query = string.Empty;
+			
+			if (strategy != null)
+			{
+				query = strategy.GetDeleteQuery(new EntityInfo
+				{
+					Table = Table,
+					Dialect = Dialect,
+					Keys = keys
+					
+				}, predicate);
+				
+				Database.Connection.ExecuteScalar(query, Database.Transaction);
+			}
+			else
+			{
+				var translator = new QueryTranslator(Dialect);
+				translator.Translate(Enumerable.Empty<T>().AsQueryable().Where(predicate).Expression);
+				var args = new DynamicParameters(translator.Parms);
+				query = $"delete from {Table} where {translator.WhereClause}";
+
+				Database.Connection.ExecuteScalar(query, args, Database.Transaction);
+			}
+			
 		}
 
 		public virtual void Delete<TKey>(IEnumerable<TKey> ids)
 		{
-			var where = ids.Count() == 1 ? GetByIdWhereClause(ids.First()) : GetByIdsWhereClause(ids);
-			var query = $"delete from {Table} where {where.clause}";
+			var strategy = provider.GetService(typeof(IDeleteStrategy<T>)) as IDeleteStrategy<T>;
 
-			Database.Connection.ExecuteScalar(query, where.parms, Database.Transaction);
+			var query = string.Empty;
+
+			if (strategy != null)
+			{
+				query = strategy.GetDeleteQuery(new EntityInfo
+				{
+					Table = Table,
+					Dialect = Dialect,
+					Keys = keys
+					
+				},ids);
+				
+				Database.Connection.ExecuteScalar(query, Database.Transaction);
+			}
+			else
+			{
+				var where = ids.Count() == 1 ? GetByIdWhereClause(ids.First()) : GetByIdsWhereClause(ids); 
+			
+				query = $"delete from {Table} where {where.clause}";
+
+				Database.Connection.ExecuteScalar(query, where.parms, Database.Transaction);
+			}
 		}
 
 		public bool Any(Expression<Func<T, bool>> predicate)
@@ -463,6 +510,12 @@ namespace Tango.Data
 
 	}
 
+	public class EntityInfo
+	{
+		public string Table { get; set; }
+		public Dictionary<string, PropertyInfo> Keys { get; set; }
+		public IQueryTranslatorDialect Dialect { get; set; }
+	}
 	public class UpdateSetCollection<TEntity>
 	{
 		List<string> _columns = new List<string>();
