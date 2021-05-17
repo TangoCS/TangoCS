@@ -41,12 +41,9 @@ namespace Tango.Mail
             f.AddCellWithSortAndFilter(o => o.Error, o => o.Error);
             f.AddActionsCell(
                 o => al => al.To<MailMessageAttachment>("attachments", AccessControl)
-                .WithArg(Constants.Id, o.ID).WithArg("title", o.Subject).WithImage("hie").WithTitle("Состав письма"),
-                o => al =>
-                {
-                    if(o.ShowDeleteButton)
-                        al.ToDelete<MailMessage>(o.MailMessageID);
-                });
+                    .WithArg(Constants.Id, o.ID).WithArg("title", o.Subject).WithImage("hie")
+                    .WithTitle("Состав письма"),
+                o => al => al.ToDelete<MailMessage>(AccessControl, o.MailMessageID, o));
         }
     }
     

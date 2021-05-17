@@ -81,6 +81,5 @@ namespace Tango.Mail
         public virtual DateTime? StartSendDate { get; set; }
         [Column]
         public virtual DateTime? FinishSendDate { get; set; }
-        public bool ShowDeleteButton { get; set; }
     }
 }
