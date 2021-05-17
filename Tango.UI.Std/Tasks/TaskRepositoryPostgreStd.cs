@@ -87,32 +87,12 @@ where taskexecutionid = @TaskExecutionID;", task);
     /// </summary>
     public class TaskRepositoryPostgreStd : DapperRepository<Task>, ITaskRepository
     {
-        public TaskRepositoryPostgreStd(IDatabase database, IServiceProvider provider) : base(database,provider)
+        public TaskRepositoryPostgreStd(IDatabase database, IServiceProvider provider) : base(database, provider)
         {
             AllObjectsQuery = @"select t.*, tt.title as starttypetitle, tg.title as grouptitle
 from tm_task t 
 left outer join tm_taskgroup tg on t.taskgroupid = tg.taskgroupid
 left outer join tm_taskstarttype tt on t.starttypeid = tt.taskstarttypeid";
-        }
-
-        public override void Create(Task entity)
-        {
-            entity.TaskID = Database.Connection.QuerySingle<int>(@"insert into 
-tm_task(title, systemname, class, starttypeid, method, interval, status, isactive, startfromservice, executiontimeout, taskgroupid)
-values (@title, @systemname, @class, @starttypeid, @method, @interval, @status, @isactive, @startfromservice, @executiontimeout, @taskgroupid) 
-returning taskid", entity, Database.Transaction);
-        }
-
-        public override void Update(Task entity)
-        {
-            Database.Connection.ExecuteScalar(@"update tm_task set title=@title, systemname=@systemname, class=@class, starttypeid=@starttypeid, 
-method=@method, interval=@interval, isactive=@isactive, executiontimeout=@executiontimeout, taskgroupid=@taskgroupid
-where taskid=@taskid", entity, Database.Transaction);
-        }
-
-        public override void Delete<TKey>(IEnumerable<TKey> ids)
-        {
-            Database.Connection.Execute(@"delete from tm_task where taskid = any(@ids)", new { ids }, Database.Transaction);
         }
 
         public void Deactivation(IEnumerable<int> ids)
@@ -154,11 +134,6 @@ values (@title, @sysname, @value, @parentid, @seqno) returning taskparameterid",
         {
             Database.Connection.Execute(@"delete from tm_taskparameter where taskparameterid = @id", new { id }, Database.Transaction);
         }
-
-        //public bool IsEmptyGroup()
-        //{
-        //    return Database.Connection.QuerySingleOrDefault<bool>("select 1 from tm_task where taskgroupid is null");
-        //}
     }
 
     /// <summary>
@@ -166,28 +141,11 @@ values (@title, @sysname, @value, @parentid, @seqno) returning taskparameterid",
     /// </summary>
     public class TaskParameterRepositoryPostgreStd : DapperRepository<TaskParameter>, ITaskParameterRepository
     {
-        public TaskParameterRepositoryPostgreStd(IDatabase database,IServiceProvider provider) : base(database,provider)
+        public TaskParameterRepositoryPostgreStd(IDatabase database,IServiceProvider provider) : base(database, provider)
         {
             AllObjectsQuery = @"select tp.*, t.title as parenttitle, 
 t.class as parentclass, t.method as parentmethod 
 from tm_taskparameter tp join tm_task t on tp.parentid = t.taskid";
-        }
-
-        public override void Create(TaskParameter entity)
-        {
-            entity.TaskParameterID = Database.Connection.QuerySingle<int>(@"insert into tm_taskparameter(title, sysname, value, parentid, seqno)
-values (@title, @sysname, @value, @parentid, @seqno) returning taskparameterid", entity, Database.Transaction);
-        }
-
-        public override void Update(TaskParameter entity)
-        {
-            Database.Connection.ExecuteScalar(@"update tm_taskparameter set title=@title, sysname=@sysname, value=@value
-where taskparameterid=@taskparameterid", entity, Database.Transaction);
-        }
-
-        public override void Delete<TKey>(IEnumerable<TKey> ids)
-        {
-            Database.Connection.Execute(@"delete from tm_taskparameter where taskparameterid = any(@ids)", new { ids }, Database.Transaction);
         }
 
         public int MaximumSequenceNumber(int id)
@@ -201,7 +159,7 @@ where taskparameterid=@taskparameterid", entity, Database.Transaction);
     /// </summary>
     public class TaskExecutionRepositoryPostgreStd : DapperRepository<TaskExecution>, ITaskExecutionRepository
     {
-        public TaskExecutionRepositoryPostgreStd(IDatabase database, IServiceProvider provider) : base(database,provider)
+        public TaskExecutionRepositoryPostgreStd(IDatabase database, IServiceProvider provider) : base(database, provider)
         {
             AllObjectsQuery = @"select te.*, t.title as taskname, u.title as username
 from tm_taskexecution te 
@@ -209,31 +167,31 @@ join tm_task t on te.taskid = t.taskid
 left outer join spm_subject u on te.lastmodifieduserid = u.subjectid";
         }
 
-        public override void Create(TaskExecution entity)
-        {
-            entity.TaskExecutionID = Database.Connection.QuerySingle<int>(@"
-update tm_task set status = 1, laststartdate = now() where taskid = @TaskID;
-insert into tm_taskexecution (lastmodifieddate, startdate, machinename, taskid, lastmodifieduserid, issuccessfull)
-values (@LastModifiedDate, @StartDate, @MachineName, @TaskID, @LastModifiedUserID, @IsSuccessfull) 
-returning taskexecutionid;", entity, Database.Transaction);
-        }
-
-        public override void Update(TaskExecution entity)
-        {
-            Database.Connection.ExecuteScalar(@"
-update tm_task set status = 2, laststartdate = now() where taskid = @TaskID;
-update tm_taskexecution set issuccessfull = @IsSuccessfull, finishdate = @FinishDate, lastmodifieddate = @LastModifiedDate, resultxml = @ResultXml 
-where taskexecutionid = @TaskExecutionID;", entity, Database.Transaction);
-        }
-
-        public override void Delete<TKey>(IEnumerable<TKey> ids)
-        {
-            Database.Connection.Execute(@"delete from tm_taskexecution where taskexecutionid = any(@ids)", new { ids }, Database.Transaction);
-        }
-
         public void Clear(DateTime date)
         {
             Database.Connection.Execute("delete from tm_taskexecution where lastmodifieddate < @date", new { date }, Database.Transaction);
+        }
+    }
+
+    /// <summary>
+    /// Postgre SQL стандартный репозиторий для типа задач
+    /// </summary>
+    public class TaskStartTypeRepositoryPostgreStd : DapperRepository<TaskStartType>
+    {
+        public TaskStartTypeRepositoryPostgreStd(IDatabase database, IServiceProvider provider) : base(database, provider)
+        {
+            AllObjectsQuery = "select * from tm_taskstarttype";
+        }
+    }
+
+    /// <summary>
+    /// Postgre SQL стандартный репозиторий для категории задач
+    /// </summary>
+    public class TaskGroupRepositoryPostgreStd : DapperRepository<TaskGroup>
+    {
+        public TaskGroupRepositoryPostgreStd(IDatabase database, IServiceProvider provider) : base(database, provider)
+        {
+            AllObjectsQuery = "select * from tm_taskgroup";
         }
     }
 }

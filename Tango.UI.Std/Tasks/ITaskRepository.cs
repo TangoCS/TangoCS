@@ -24,7 +24,6 @@ namespace Tango.Tasks
         IEnumerable<TaskGroup> GetGroups();
         IEnumerable<TaskStartType> GetStartTypes();
         bool IsExecuteTask(int id);
-        //bool IsEmptyGroup();
         IEnumerable<TaskParameter> GetParameters(int id);
         int CreateParameter(TaskParameter taskparameter);
         void DeleteParameter(int id);
