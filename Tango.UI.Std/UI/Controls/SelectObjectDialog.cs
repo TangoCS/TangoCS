@@ -25,26 +25,15 @@ namespace Tango.UI.Controls
 			DataCollection.Ref(Field.GetClientID("filter"));
 		}
 
-		public void OpenDialog(ApiResponse response)
+		public virtual void OpenDialog(ApiResponse response)
 		{
-			var data = Field.DataProvider.GetData(Paging);
-			if (data.Count() == 1)
-				RenderSingleObjectFound(response, data.First());
-			else
-				RenderMultipleObjectsFound(response, data);
+			var q = Field.DataQuery(Paging);
+			var data = Field.DataProvider.MaterializeList(q);
 
-		}
-
-		protected virtual void RenderMultipleObjectsFound(ApiResponse response, IEnumerable<TRef> data)
-		{
 			response.AddWidget("contenttitle", Field.Title());
 			response.AddWidget("contentbody", w => List(w, data));
 			response.AddWidget("contenttoolbar", w => w.Toolbar(ToolbarLeft, ToolbarRight));
 			response.AddWidget("buttonsbar", Footer);
-		}
-		protected virtual void RenderSingleObjectFound(ApiResponse response, TRef data)
-		{
-			RenderMultipleObjectsFound(response, new List<TRef> { data });
 		}
 
 		public virtual void ToolbarLeft(MenuBuilder t)
@@ -61,7 +50,8 @@ namespace Tango.UI.Controls
 
 		public virtual void RenderList(ApiResponse response)
 		{
-			var data = Field.DataProvider.GetData(Paging);
+			var q = Field.DataQuery(Paging);
+			var data = Field.DataProvider.MaterializeList(q);
 
 			// TODO решить проблему префиксов при name = prefix
 			response.AddWidget("body", w => List(w, data));
@@ -84,7 +74,8 @@ namespace Tango.UI.Controls
 		public abstract void RenderSelected(LayoutWriter w, TValue selectedValue);
 		public virtual void RenderPaging(LayoutWriter w)
 		{
-			Paging.Render(w, Field.DataProvider.GetCount(), a => a.PostEvent(RenderList));
+			var q = Field.ItemsCountQuery();
+			Paging.Render(w, Field.DataProvider.MaterializeCount(q), a => a.PostEvent(RenderList));
 		}
 	}
 

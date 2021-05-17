@@ -34,7 +34,7 @@ namespace Tango.UI.Std
 		public bool AutoExpandSingles { get; set; } = true;
 
 		public override ViewContainer GetContainer() => new SelectableTreeContainer {
-			EnableSelect = Fields.EnableSelect,
+			EnableSelect = () => Fields.EnableSelect,
 			SelectedBlock = w => (Renderer as TreeListRenderer<TResult>).SelectedBlock(w, Fields)
 		};
 
@@ -577,7 +577,7 @@ namespace Tango.UI.Std
 
 	public class SelectableTreeContainer : ViewContainer
 	{
-		public bool EnableSelect { get; set; }
+		public Func<bool> EnableSelect { get; set; }
 		public Action<LayoutWriter> SelectedBlock { get; set; }
 		
 		public override void Render(ApiResponse response)
@@ -589,7 +589,7 @@ namespace Tango.UI.Std
 							ContentHeaders.Default(w);
 						});
 					w.Div(a => a.ID("contenttoolbar"));
-					if (EnableSelect)
+					if (EnableSelect())
 					{
 						w.Div(a => a.ID("contentbody").Class("contentbody").Style("flex:7;overflow-y:auto;"));
 						w.GroupTitle("Выбранные объекты");

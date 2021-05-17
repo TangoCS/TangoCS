@@ -133,7 +133,7 @@ namespace Tango.UI.Controls
 		public TRef GetObjectByID(TRefKey id)
 		{
 			var keySelector = FilterSelected ?? new TRef().KeySelector;
-			return DataProvider.GetObjectByID(id, keySelector(id));
+			return DataProvider.MaterializeList(AllObjects.Where(keySelector(id))).FirstOrDefault();
 		}
 	}
 

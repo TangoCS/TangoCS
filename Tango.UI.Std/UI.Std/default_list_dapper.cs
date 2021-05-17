@@ -18,7 +18,7 @@ namespace Tango.UI.Std
 
 		IRepository<TResult> _repository = null;
 
-		protected IRepository<TResult> Repository
+		public IRepository<TResult> Repository
 		{
 			get
 			{
@@ -50,13 +50,12 @@ namespace Tango.UI.Std
 			var defSort = Sorter.Count == 0;
 			foreach (var gs in Fields.GroupSorting)
 				Sorter.AddOrderBy(gs.SeqNo, gs.SortDesc, true);
-			var filtered = Sorter.Apply(ApplyFilter(Data));
-			if (defSort)
-				filtered = DefaultOrderBy(filtered);
 
-			IQueryable<TResult> q = filtered;
-			if(Sections.RenderPaging)
-				q = Paging.Apply(filtered, true);
+			var q = Sorter.Apply(ApplyFilter(Data));
+			if (defSort)
+				q = DefaultOrderBy(q);
+			if (Sections.RenderPaging)
+				q = Paging.Apply(q, true);
 
 			if (Repository.AllObjectsQuery.StartsWith("@"))
 			{

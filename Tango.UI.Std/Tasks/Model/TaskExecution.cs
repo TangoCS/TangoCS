@@ -7,7 +7,8 @@ using Tango.Data;
 namespace Tango.Tasks
 {
     [BaseNamingConventions(Category = BaseNamingEntityCategory.Tasks)]
-    public partial class TaskExecution : IEntity, IWithKey<TaskExecution, int>
+	[Table("tm_taskexecution")]
+	public partial class TaskExecution : IEntity, IWithKey<TaskExecution, int>
 	{
 		public virtual Expression<Func<TaskExecution, bool>> KeySelector(int id)
 		{
