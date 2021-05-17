@@ -203,6 +203,32 @@ namespace Tango.Mail
             return param.Value;
         }
 
+        public void DeleteMailMessage(MailMessage mailMessage)
+        {
+            if (!string.IsNullOrEmpty(mailMessage.DeleteMethod))
+            {
+                var mailMessageContext = new MailMessageContext(_database) {MailMessage = mailMessage};
+
+                using (var transaction = _database.BeginTransaction())
+                {
+                    try
+                    {
+                        var mailMethods = JsonConvert.DeserializeObject<MethodSettingsCollection>(mailMessage.DeleteMethod);
+                        foreach (var methodSetting in mailMethods.MethodSettings)
+                        {
+                            _methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
+                        }
+                        
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                    }
+                }
+            }
+        }
+
         public void CreateMailMessage<TEntity>(string systemName, TEntity viewData)
         {
             var mailSettings = _mailHelperRepository.GetMailSettingsBySystemName(systemName);
