@@ -225,7 +225,8 @@ namespace Tango.Mail
                             MaxAttemptsToSendCount = mailSettings.AttemptsToSendCount ?? 5,
                             MailCategoryID = mailSettings.MailCategoryID,
                             TimeoutValue = mailSettings.TimeoutValue,
-                            LastModifiedUserID = _userIdAccessor.CurrentUserID ?? _userIdAccessor.SystemUserID
+                            LastModifiedUserID = _userIdAccessor.CurrentUserID ?? _userIdAccessor.SystemUserID,
+                            DeleteMethod = mailSettings.DeleteMethod
                         }
                     };
 
