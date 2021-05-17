@@ -250,7 +250,7 @@ namespace Tango.Mail
 
             _preProcessMethodFields = GenetateFields(MailTypeCacheKeys.PreProcessingMailMethod, PreProcessMethodID, ViewData.PreProcessingMethod);
             _postProcessMethodFields = GenetateFields(MailTypeCacheKeys.PostProcessingMailMethod, PostProcessMethodID, ViewData.PostProcessingMethod);
-            _deleteMethodFields = GenetateFields(MailTypeCacheKeys.DeleteMailMethod, PostProcessMethodID, ViewData.DeleteMethod);
+            _deleteMethodFields = GenetateFields(MailTypeCacheKeys.DeleteMailMethod, DeleteMethodID, ViewData.DeleteMethod);
 
             _selectMailTemplate = Database.Connection.Query<MailTemplate>(Repository.GetMailTemplateSql()).ToList()
                 .OrderBy(x => x.MailTemplateID)

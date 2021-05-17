@@ -117,26 +117,26 @@ namespace Tango
                     var key = ps[i].Name.ToLower();
                     if (methodSettings.Params.TryGetValue(key, out var value))
                     {
-                        // if (ps[i].ParameterType == typeof(Guid))
-                        //     values[i] = value.ToGuid();
-                        // else if (ps[i].ParameterType == typeof(DateTime?))
-                        //     values[i] = value.ToDateTime();
-                        // else if (ps[i].ParameterType == typeof(DateTime))
-                        //     values[i] = value.ToDateTime(DateTime.MinValue);
-                        // else if (ps[i].ParameterType == typeof(int?))
-                        //     values[i] = value.ToInt32();
-                        // else if (ps[i].ParameterType == typeof(int))
-                        //     values[i] = value.ToInt32(0);
-                        // else if (ps[i].ParameterType == typeof(long?))
-                        //     values[i] = value.ToInt64();
-                        // else if (ps[i].ParameterType == typeof(long))
-                        //     values[i] = value.ToInt64(0);
-                        // else if (ps[i].ParameterType == typeof(bool?))
-                        //     values[i] = value.ToBoolean();
-                        // else if (ps[i].ParameterType == typeof(bool))
-                        //     values[i] = value.ToBoolean(false);
-                        // else
-                        values[i] = value;
+                        if (ps[i].ParameterType == typeof(Guid))
+                            values[i] = (Guid) value; // value.ToGuid();
+                        else if (ps[i].ParameterType == typeof(DateTime?))
+                            values[i] = (DateTime?) value; //value.ToDateTime();
+                        else if (ps[i].ParameterType == typeof(DateTime))
+                            values[i] = (DateTime) value; //value.ToDateTime(DateTime.MinValue);
+                        else if (ps[i].ParameterType == typeof(int?))
+                            values[i] = (int?) value; //value.ToInt32();
+                        else if (ps[i].ParameterType == typeof(int))
+                            values[i] = (int) value; // value.ToInt32(0);
+                        else if (ps[i].ParameterType == typeof(long?))
+                            values[i] = (long?) value; //value.ToInt64();
+                        else if (ps[i].ParameterType == typeof(long))
+                            values[i] = (long) value; // value.ToInt64(0);
+                        else if (ps[i].ParameterType == typeof(bool?))
+                            values[i] = (bool?) value; // value.ToBoolean();
+                        else if (ps[i].ParameterType == typeof(bool))
+                            values[i] = (bool) value; // value.ToBoolean(false);
+                        else
+                            values[i] = value;
                     }
                     else
                     {
@@ -305,7 +305,7 @@ namespace Tango.Mail
                                 var mailMessageAttachment = new MailMessageAttachment
                                 {
                                     MailMessageID = mailMessageContext.MailMessage.MailMessageID,
-                                    FileID = existFileId
+                                    FileGUID = existFileId
                                 };
                                 _database.Repository<MailMessageAttachment>().Create(mailMessageAttachment);
                             }
@@ -329,7 +329,7 @@ namespace Tango.Mail
 
                             transaction.Commit();
                         }
-                        catch
+                        catch(Exception ex)
                         {
                             transaction.Rollback();
                         }
