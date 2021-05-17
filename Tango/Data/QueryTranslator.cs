@@ -598,17 +598,36 @@ namespace Tango.Data
         string ReturningIdentity { get; }
         string InsertDefault { get; }
 
-    }
+        string GetDBType(Type type);
+
+	}
 
 	public class QueryTranslatorMSSQL : IQueryTranslatorDialect
 	{
         public string InsertDefault => @"insert into {0} default values";
+        
         public string ReturningIdentity => "select SCOPE_IDENTITY()";
 
         public string LikeKeyword => "LIKE";
 		public string Concat => "+";
 		public string In => "IN";
 		public bool BracketsForIn => false;
+		
+		public string GetDBType(Type type)
+		{
+			switch (Type.GetTypeCode(type))
+			{
+				case TypeCode.Int32:
+					return "int";
+				case TypeCode.Object when type == typeof(Guid):
+					return "uniqueidentifier";
+				case TypeCode.Int64:
+					return "bigint";
+				default:
+					throw new NotSupportedException($"Unsupported type {type.Name}");
+			}
+		}
+
 	}
 
 	public class QueryTranslatorPostgres : IQueryTranslatorDialect
@@ -620,5 +639,20 @@ namespace Tango.Data
 		public string Concat => "||";
 		public string In => "= ANY";
 		public bool BracketsForIn => true;
+		
+		public string GetDBType(Type type)
+		{
+			switch (Type.GetTypeCode(type))
+			{
+				case TypeCode.Int32:
+					return "int";
+				case TypeCode.Object when type == typeof(Guid):
+					return "uuid";
+				case TypeCode.Int64:
+					return "bigint";
+				default:
+					throw new NotSupportedException($"Unsupported type {type.Name}");
+			}
+		}
 	}
 }

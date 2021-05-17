@@ -44,8 +44,14 @@ namespace Tango.Data
 		void Delete<TKey>(IEnumerable<TKey> ids);
 
 		bool Any(Expression<Func<T, bool>> predicate);
+
+	}
+
+	public interface IDeleteStrategy<T>
+	{
+		string GetDeleteQuery<TKey>(EntityInfo entityInfo, IEnumerable<TKey> ids);
 		
-		
+		string GetDeleteQuery(EntityInfo entityInfo, Expression<Func<T, bool>> predicate);
 	}
 
 	public class IdentityAttribute : Attribute
