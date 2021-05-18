@@ -24,13 +24,15 @@ namespace Tango.UI.Controls
 		public override void OpenDialog(ApiResponse response)
 		{
 			response.WithWritersFor(Control);
-			response.AddWidget("body", w => w.Div(a => a.ID("container")));
+			response.AddWidget("body", w => w.Div(a => a.ID("container").Style("height:100%")));
+			response.AddWidget("footer", Footer);
 			response.WithNamesFor(Control);
 			var rc = Control.GetContainer();
 			rc.ToRemove.Add("contentheader");
 			rc.Render(response);
 
 			Control.OnLoad(response);
+
 		}
 	}
 }

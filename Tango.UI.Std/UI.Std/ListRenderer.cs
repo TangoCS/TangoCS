@@ -270,7 +270,7 @@ namespace Tango.UI.Std
 				});
 
 				if (fields.EnableSelect)
-					w.Hidden("selectedvalues", null, a => a.DataHasClientState(ClientStateType.Array, _id));
+					w.Hidden("selectedvalues", null, a => a.DataHasClientState(ClientStateType.Array));
 			});
 		}
 
