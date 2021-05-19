@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Dapper;
 using Tango.Data;
@@ -21,7 +22,12 @@ namespace Tango.Mail
         {
             t.ItemFilter(Filter);
         }
-		
+
+        protected override IQueryable<MailMessage> DefaultOrderBy(IQueryable<MailMessage> data)
+        {
+            return data.OrderByDescending(x => x.CreateDate);
+        }
+
         protected override void FieldsInit(FieldCollection<MailMessage> f)
         {
             f.SetRowID(o => o.MailMessageID.ToString());
