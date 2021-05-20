@@ -6,17 +6,6 @@
  *Dual licensed under the MIT and GPL licenses
  */
 
-if (!HTMLElement.prototype.getOffsetTop) {
-	HTMLElement.prototype.getOffsetTop = function () {
-		var offsetTop = 0;
-		var element = this;
-		while (element && getComputedStyle(element).getPropertyValue('position') != 'fixed') {
-			offsetTop += element.offsetTop;
-			element = element.offsetParent;
-		}
-		return offsetTop;
-	}
-}
 
 ; (function ($, window, document) {
 	"use strict";
@@ -40,6 +29,18 @@ if (!HTMLElement.prototype.getOffsetTop) {
 		}
 		methods[method].call(el, selector, myoptions);
 		return this;
+	}
+
+	function getParentOffset(element) {
+		var offset = { top: 0, left: 0 };
+		while (element && getComputedStyle(element).getPropertyValue('position') != 'fixed') {
+			element = element.offsetParent;
+		}
+		if (element) {
+			offset.top = element.offsetTop;
+			offset.left = element.offsetLeft;
+		}
+		return offset;
 	}
 
 	$.fn.contextMenu = function (selector, option) {
@@ -353,10 +354,13 @@ if (!HTMLElement.prototype.getOffsetTop) {
 					left = e.clientX;
 					top = e.clientY;
 				} else if (option.displayAround.startsWith('trigger')) {
+					var rect = baseEl[0].getBoundingClientRect();
+					var parentOffset = getParentOffset(baseEl[0]);
+
 					var triggerHeight = baseEl.outerHeight(true),
 						triggerWidth = baseEl.outerWidth(true),
-						triggerLeft = baseEl[0].offsetLeft - cObj.scrollLeft(),
-						triggerTop = baseEl[0].getOffsetTop() - cObj.scrollTop(),
+						triggerLeft = rect.left - parentOffset.left,
+						triggerTop = rect.top - parentOffset.top,
 						leftShift = triggerWidth;
 
 					if (option.displayAround == 'triggertop') {
