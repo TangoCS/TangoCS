@@ -5,6 +5,19 @@
  *Copyright (c) 2013-2015 Sudhanshu Yadav.
  *Dual licensed under the MIT and GPL licenses
  */
+
+if (!HTMLElement.prototype.getOffsetTop) {
+	HTMLElement.prototype.getOffsetTop = function () {
+		var offsetTop = 0;
+		var element = this;
+		while (element && getComputedStyle(element).getPropertyValue('position') != 'fixed') {
+			offsetTop += element.offsetTop;
+			element = element.offsetParent;
+		}
+		return offsetTop;
+	}
+}
+
 ; (function ($, window, document) {
 	"use strict";
 
@@ -343,7 +356,7 @@
 					var triggerHeight = baseEl.outerHeight(true),
 						triggerWidth = baseEl.outerWidth(true),
 						triggerLeft = baseEl[0].offsetLeft - cObj.scrollLeft(),
-						triggerTop = baseEl[0].offsetTop - cObj.scrollTop(),
+						triggerTop = baseEl[0].getOffsetTop() - cObj.scrollTop(),
 						leftShift = triggerWidth;
 
 					if (option.displayAround == 'triggertop') {
