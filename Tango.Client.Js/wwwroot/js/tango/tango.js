@@ -891,12 +891,19 @@ var ajaxUtils = function ($, cu) {
 		if (el.id) target.sender = el.id;
 
 		const startEl = el.hasAttribute('data-c-external') ? document.getElementById(el.getAttribute('data-c-external')) : el;
-		const container = cu.getThisOrParent(startEl, function (n) { return n.hasAttribute && n.hasAttribute('data-c-prefix'); });
 
-		if (container) {
-			target.containerPrefix = container.getAttribute('data-c-prefix');
-			target.containerType = container.getAttribute('data-c-type');
-			if (container.getAttribute('aria-modal') == 'true') {
+		var firstContainer, modalContainer;
+		cu.getThisOrParent(startEl, function (n) {
+			if (!firstContainer && n.hasAttribute && n.hasAttribute('data-c-prefix'))
+				firstContainer = n;
+			if (!modalContainer && n.hasAttribute && n.getAttribute('aria-modal') == 'true')
+				modalContainer = n;
+		});
+
+		if (firstContainer) {
+			target.containerPrefix = firstContainer.getAttribute('data-c-prefix');
+			target.containerType = firstContainer.getAttribute('data-c-type');
+			if (modalContainer) {
 				target.changeloc = false;
 				if (el.hasAttribute('data-res')) {
 					for (var key in state.loc.onBackArgs) {

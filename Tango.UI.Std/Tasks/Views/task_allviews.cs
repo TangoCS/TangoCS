@@ -279,9 +279,12 @@ namespace Tango.Tasks
 			{
 				t.ItemSeparator();
 				if (isParam)
-					t.Item(w => w.ActionImageTextButton(al => al.To<Task>("parameters", AccessControl).WithArg(Constants.Id, ViewData.ID).WithTitle("Старт").WithImage("settings2").AsNoCloseIconDialog()));
+					t.Item(w => w.ActionImageTextButton(al => al.To<Task>("parameters", AccessControl)
+						.WithArg(Constants.Id, ViewData.ID).WithTitle("Старт").WithImage("settings2")
+						.AsDialog(options: new DialogOptions { ShowCloseIcon = false })));
 				else
-					t.Item(w => w.ActionImageTextButton(al => al.ToCurrent().KeepTheSameUrl().PostEvent(OnRunTask).WithTitle("Старт").WithImage("settings2")));
+					t.Item(w => w.ActionImageTextButton(al => al.ToCurrent().KeepTheSameUrl()
+						.PostEvent(OnRunTask).WithTitle("Старт").WithImage("settings2")));
 			}
 		}
 

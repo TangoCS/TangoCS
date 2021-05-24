@@ -238,8 +238,8 @@ namespace Tango.UI.Controls
 
 	public class SelectMultipleObjectsTreeField<TRef, TRefKey, TControl> :
 		AbstractSelectMultipleObjectsField<TRef, TRefKey, SelectMultipleObjectsTreeDialog<TRef, TRefKey, TControl>>
-		where TRef : class, IWithTitle, IWithKey<TRefKey>
-		where TControl : ViewPagePart, new()
+		where TRef : class, IWithTitle, IWithKey<TRefKey>, ILazyListTree
+		where TControl : default_tree_rep<TRef>, new()
 	{
 
 	}

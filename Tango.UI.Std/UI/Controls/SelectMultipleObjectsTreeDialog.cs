@@ -10,20 +10,23 @@ namespace Tango.UI.Controls
 {
 	public class SelectMultipleObjectsTreeDialog<TRef, TRefKey, TControl> :
 		SelectMultipleObjectsDialog<TRef, TRefKey, AbstractSelectMultipleObjectsField<TRef, TRefKey>>
-		where TRef : class, IWithTitle, IWithKey<TRefKey>
-		where TControl : ViewPagePart, new()
+		where TRef : class, IWithTitle, IWithKey<TRefKey>, ILazyListTree
+		where TControl : default_tree_rep<TRef>, new()
 	{
 		public TControl Control { get; private set; }
+		public bool ClearSelectionOnSubmit { get; set; } = false;
 
 		public override void OnInit()
 		{
 			base.OnInit();
 			Control = CreateControl<TControl>("list");
+			DialogOptions.ModalBodyPadding = false;
 		}
 
 		public override void OpenDialog(ApiResponse response)
 		{
 			response.WithWritersFor(Control);
+			response.AddWidget("title", Field.Title());
 			response.AddWidget("body", w => w.Div(a => a.ID("container").Style("height:100%")));
 			response.AddWidget("footer", Footer);
 			response.WithNamesFor(Control);
@@ -33,6 +36,20 @@ namespace Tango.UI.Controls
 
 			Control.OnLoad(response);
 
+		}
+
+		public override void SubmitDialog(ApiResponse response)
+		{
+			var selectedValues = Control.GetSelectedObjects();
+
+			response.WithNamesAndWritersFor(Field);
+			response.ReplaceWidget("placeholder", w => {
+				Render(w, selectedValues);
+			});
+			Field.OnChange(response, selectedValues);
+
+			if (ClearSelectionOnSubmit)
+				response.AddClientAction("listview", "clearselection", f => Control.ClientID);
 		}
 	}
 }

@@ -87,7 +87,7 @@ namespace Tango.UI
 		public bool HideDisabled { get; private set; } = false;
 
 		public List<string> References { get; } = new List<string>();
-		public (string Type, string Prefix) Container { get; private set; }
+		public (string Type, string Prefix, Dictionary<string, string> Parms) Container { get; private set; }
 
 		public string CallbackUrl { get; private set; }
 
@@ -196,21 +196,21 @@ namespace Tango.UI
 			return this;
 		}
 
-		public ActionLink InContainer(string type, string prefix)
+		public ActionLink InContainer(string type, string prefix, Dictionary<string, string> parms)
 		{
-			Container = (type, prefix);
+			Container = (type, prefix, parms);
 			return this;
 		}
 
-		public ActionLink InContainer(Type type, string prefix)
+		public ActionLink InContainer(Type type, string prefix, Dictionary<string, string> parms)
 		{
-			Container = (type.Name.Replace("Container", ""), prefix);
+			Container = (type.Name.Replace("Container", ""), prefix, parms);
 			return this;
 		}
 
 		public ActionLink InDefaultContainer()
 		{
-			Container = ("default", null);
+			Container = ("default", null, null);
 			return this;
 		}
 

@@ -14,11 +14,9 @@ using System.Data;
 
 namespace Tango.UI.Std
 {
-
 	public abstract class default_tree_rep<TResult> : default_list_rep<TResult>
 		where TResult : ILazyListTree
 	{
-
 		readonly List<TreeLevelDescription<TResult>> _templateCollection = new List<TreeLevelDescription<TResult>>();
 		Dictionary<int, TreeLevelDescription<TResult>> _templatesDict = new Dictionary<int, TreeLevelDescription<TResult>>();
 
@@ -175,30 +173,10 @@ namespace Tango.UI.Std
 		/// <param name="highlight">Нужно ли подсвечивать элемент, до которого раскрываем</param>
 		public void SetExpandedItem(int templateID, int level, Dictionary<string, object> parms, bool highlight = true)
 		{
-			var nodeWhere = new List<string>();
-			var t = typeof(TResult);
-			foreach (var pair in parms)
-			{
-				var p = t.GetProperty(pair.Key);
-				if (p.PropertyType.In(typeof(int), typeof(int?), typeof(decimal), typeof(decimal?)))
-					nodeWhere.Add($"{pair.Key} = {pair.Value}");
-				else if (p.PropertyType.In(typeof(string), typeof(Guid), typeof(Guid?)))
-					nodeWhere.Add($"{pair.Key} = '{pair.Value}'");
-				else if (p.PropertyType.In(typeof(DateTime), typeof(DateTime?)))
-					nodeWhere.Add($"{pair.Key} = '{pair.Value:yyyy-MM-dd HH:mm:ss}'");
-			}
-
 			var initialTemplate = _templatesDict[templateID];
 			var template = initialTemplate.ParentTemplate;
 
-			var origAllObjectsQuery = Repository.AllObjectsQuery;
-			if (!template.CustomQuery.IsEmpty())
-				origAllObjectsQuery = template.CustomQuery;
-
-			var sqlTemplate = "select *";
-			sqlTemplate += $" from ({origAllObjectsQuery}) t";
-			if (nodeWhere.Count > 0)
-				sqlTemplate += " where " + nodeWhere.Join(" and ");
+			var sqlTemplate = PrepareQuery(template, new List<Dictionary<string, object>> { parms });
 
 			using (var tran = Database.BeginTransaction())
 			{
@@ -243,6 +221,81 @@ namespace Tango.UI.Std
 			}
 		}
 
+		string PrepareQuery(TreeLevelDescription<TResult> template, List<Dictionary<string, object>> parms)
+		{
+			var t = typeof(TResult);
+			var nodeWhere = new List<string>();
+
+			foreach (var gr in parms)
+			{
+				var s = new List<string>();
+				foreach (var pair in gr)
+				{
+					var p = t.GetProperty(pair.Key);
+					if (p.PropertyType.In(typeof(int), typeof(int?), typeof(decimal), typeof(decimal?)))
+						s.Add($"{pair.Key} = {pair.Value}");
+					else if (p.PropertyType.In(typeof(string), typeof(Guid), typeof(Guid?)))
+						s.Add($"{pair.Key} = '{pair.Value}'");
+					else if (p.PropertyType.In(typeof(DateTime), typeof(DateTime?)))
+						s.Add($"{pair.Key} = '{pair.Value:yyyy-MM-dd HH:mm:ss}'");
+				}
+				if (s.Count > 0)
+					nodeWhere.Add("(" + s.Join(" and ") + ")");
+			}
+
+			var origAllObjectsQuery = Repository.AllObjectsQuery;
+			if (!template.CustomQuery.IsEmpty())
+				origAllObjectsQuery = template.CustomQuery;
+
+			var sqlTemplate = "select *";
+			sqlTemplate += $" from ({origAllObjectsQuery}) t";
+			if (nodeWhere.Count > 0)
+				sqlTemplate += " where " + nodeWhere.Join(" or ");
+
+			return sqlTemplate;
+		}
+
+		public IEnumerable<TResult> GetSelectedObjects()
+		{
+			var ids = Context.GetListArg<string>(Constants.SelectedValues);
+
+			var dict = new Dictionary<int, List<Dictionary<string, object>>>();
+
+			foreach (var id in ids)
+			{
+				var parms = new Dictionary<string, object>();
+				int templateid = -1;
+				foreach (var item in id.Split('&'))
+					foreach (var (cur, next) in item.Split('=').PairwiseWithNext())
+					{
+						if (next == null) continue;
+						if (cur == "level") continue;
+						if (cur == "template")
+						{
+							templateid = next.ToInt32(-1);
+							continue;
+						}
+						parms.Add(cur, next);
+					}
+
+				if (templateid > 0)
+					if (dict.TryGetValue(templateid, out var list))
+						list.Add(parms);
+					else
+						dict.Add(templateid, new List<Dictionary<string, object>> { parms });
+			}
+
+			var res = new List<TResult>();
+			foreach (var d in dict)
+			{
+				var t = _templatesDict[d.Key];
+				var sql = PrepareQuery(t, d.Value);
+				var objs = Database.Connection.Query<TResult>(sql, Repository.Parameters);
+				res.AddRange(objs);
+			}
+
+			return res;
+		}
 		
 		[Obsolete]
 		public void ExpandTree(ApiResponse response, string rowId, bool refreshtree)
@@ -274,6 +327,7 @@ namespace Tango.UI.Std
 					throw new Exception("Невозможно определить уровень строки");
 
 				whereDict.Remove("level");
+				whereDict.Remove("template");
 
 				var t = typeof(TResult);
 				foreach (var pair in whereDict)
@@ -545,8 +599,8 @@ namespace Tango.UI.Std
 			return keyProperties;
 		}
 
-		public string GetDataRowID(int level, TResult o) => $"level={level}&" + (keyProperties ?? InitKeyProperties()).Select(p => p.Name + "=" + p.GetValue(o).ToString()).Join("&");
-		public string GetHtmlRowID(int level, TResult o) => $"r_{level}_" + (keyProperties ?? InitKeyProperties()).Select(p => p.GetValue(o).ToString()).Join("_");
+		public string GetDataRowID(int level, TResult o) => $"level={level}&template={ID}&" + (keyProperties ?? InitKeyProperties()).Select(p => p.Name + "=" + p.GetValue(o).ToString()).Join("&");
+		public string GetHtmlRowID(int level, TResult o) => $"r_{level}_{ID}_" + (keyProperties ?? InitKeyProperties()).Select(p => p.GetValue(o).ToString()).Join("_");
 
 		public IEnumerable<string> KeyProperties => (keyProperties ?? InitKeyProperties()).Select(p => p.Name);
 
