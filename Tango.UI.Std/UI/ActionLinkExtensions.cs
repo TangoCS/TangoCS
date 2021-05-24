@@ -64,6 +64,9 @@ namespace Tango.UI
 			if (link.Service.IsEmpty())
 				a.DataParm(link.Args);
 
+			foreach (var data in link.Data)
+				a.Data(data.Key, data.Value);
+
 			if (!link.CallbackUrl.IsEmpty())
 				a.DataParm(Constants.ReturnUrl, link.CallbackUrl);
 

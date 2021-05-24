@@ -21,6 +21,7 @@ namespace Tango.UI
 		string EventReceiver { get; set; }
 
 		Dictionary<string, string> Args { get; }
+		Dictionary<string, string> Data { get; }
 
 		ActionRequestType RequestType { get; set; }
 		string RequestMethod { get; set; }
@@ -37,6 +38,8 @@ namespace Tango.UI
 		public string EventReceiver { get; set; }
 
 		public Dictionary<string, string> Args { get; } = new Dictionary<string, string>();
+		
+		public Dictionary<string, string> Data { get; } = new Dictionary<string, string>();
 
 		public ActionRequestType RequestType { get; set; } = ActionRequestType.Text;
 		public string RequestMethod { get; set; } = "GET";
@@ -336,6 +339,15 @@ namespace Tango.UI
 			return target;
 		}
 
+		public static T WithData<T, TValue>(this T target, string key, TValue value)
+			where T : IActionTarget
+		{
+			if (value != null)
+				target.Data[key] = value.ToString();
+			else
+				target.Data.Remove(key);
+			return target;
+		}
 		public static T WithArg<T, TValue>(this T target, string key, TValue value)
 			where T : IActionTarget
 		{
