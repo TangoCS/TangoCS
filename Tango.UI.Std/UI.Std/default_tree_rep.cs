@@ -441,9 +441,15 @@ namespace Tango.UI.Std
 					foreach (var ic in nodeTemplate.IconFlag(o).Split(','))
 						w.I(a => a.Class("nodeicon").IconFlag(ic.Trim()));
 
+				// if (nodeTemplate.Icon != null)
+				// 	foreach (var ic in nodeTemplate.Icon(o).Split(','))
+				// 		w.I(a => a.Class("nodeicon").Icon(ic.Trim()));
+
 				if (nodeTemplate.Icon != null)
-					foreach (var ic in nodeTemplate.Icon(o).Split(','))
-						w.I(a => a.Class("nodeicon").Icon(ic.Trim()));
+				{
+					foreach (var ic in nodeTemplate.Icon(o))
+						w.I(a => a.Class("nodeicon").Icon(ic.iconName.Trim()).Set(ic.attributes));
+				}
 
 				nodeTemplate.Cell(w, o, i);
 			};
@@ -568,7 +574,7 @@ namespace Tango.UI.Std
 		public RenderRowCellDelegate<TResult> Cell { get; set; }
 		public bool IsTerminal { get; set; } = false;
 		//public string Icon { get; set; }
-		public Func<TResult, string> Icon { get; set; }
+		public Func<TResult, IconInfoCollection> Icon { get; set; }
 		public Func<TResult, string> IconFlag { get; set; }
 		public Func<TResult, List<string>> DataRef { get; set; }
 		public Expression<Func<TResult, object>> Key { get; set; }
@@ -623,6 +629,28 @@ namespace Tango.UI.Std
 		}
 	}
 
+	public class IconInfo
+	{
+		public string iconName;
+		public Action<TagAttributes> attributes;
+
+		public IconInfo(string iconName,Action<TagAttributes> attributes = null)
+		{
+			this.iconName = iconName;
+			this.attributes = attributes;
+		}
+	}
+
+	public class IconInfoCollection : List<IconInfo>
+	{
+		public static implicit operator IconInfoCollection(string iconName)
+		{
+			return new IconInfoCollection
+			{
+				new IconInfo(iconName)
+			};
+		}
+	}
 	public class TreeLevelDescriptionItem<TResult>
 	{
 		public TreeLevelDescription<TResult> Template { get; set; }
