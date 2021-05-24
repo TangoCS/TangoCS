@@ -370,12 +370,8 @@ hr {
 
 .filterbtn.hascriteria {
 	font-weight: bold;
+	color: #F36F38;
 }
-
-.actionimg.filterbtn.hascriteria {
-	color: blue;
-}
-
 
 /* two columns table/row*/
 .twocolumnstable {
@@ -569,6 +565,7 @@ a.actionbtn, a.actionimg {
 	grid-template-columns: repeat(60, 1fr);
 	align-items: flex-start;
 }
+
 .grid_sidebar_2col {
 	display: grid;
 	grid-template-columns: max-content 1fr;
