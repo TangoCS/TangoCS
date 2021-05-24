@@ -6,7 +6,7 @@ using Tango.Data;
 
 namespace Tango.Tasks
 {
-    [BaseNamingConventions(Category = BaseNamingEntityCategory.Dictionary)]
+    [BaseNamingConventions(Category = BaseNamingEntityCategory.Tasks)]
 	[Table("tm_taskgroup")]
 	public partial class TaskGroup : IEntity, IWithKey<TaskGroup, int>, IWithTitle
 	{
