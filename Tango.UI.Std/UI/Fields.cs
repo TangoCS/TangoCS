@@ -429,7 +429,12 @@ namespace Tango.UI
 		public override DateTime GetFormValue() => Context.GetDateTimeArg(ID, Format, DefaultValue);
 
 		public override Func<ValidationBuilder<DateTime>, ValidationBuilder<DateTime>> ValidationFunc => 
-			v => base.ValidationFunc(v).ValidateDateInterval();
+			v => {
+				var vf = base.ValidationFunc(v);
+				if (!vf.Collection.IsError)
+					vf = vf.ValidateDateInterval();
+				return vf;
+			};
 
     }
 
