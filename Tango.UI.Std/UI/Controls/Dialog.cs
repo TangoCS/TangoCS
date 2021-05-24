@@ -1,11 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using Tango.Html;
 
 namespace Tango.UI.Controls
 {
 	public class DialogFormContainer : ViewContainer
 	{
-		protected virtual string ContainerWidth => "";
 		public DialogFormContainer()
 		{
 			Mapping.Add("contentbody", "body");
@@ -16,29 +16,12 @@ namespace Tango.UI.Controls
 			Mapping.Add("contenttoolbar", "toolbar");
 		}
 		public override void Render(ApiResponse response)
-		{			
-			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
-			w.DialogControl(DialogExtensions.DialogContainerAttrs(w.Context, Type, w.IDPrefix, ContainerWidth), () => {
-					w.AjaxForm("form", a => a.DataResultPostponed(1), () => {
-						w.DialogControlBody(null, () => { }, null, null, () => { });
-						w.Hidden(Constants.ReturnUrl, Context.ReturnUrl.Get(1));
-					});
-				});
-			});
-		}
-	}
-	public class WideDialogFormContainer : DialogFormContainer
-	{
-		protected override string ContainerWidth => "width: 70%;";
-	}
-	public class NoCloseIconDialogFormContainer : DialogFormContainer
-	{
-		public override void Render(ApiResponse response)
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
-				w.DialogControl(DialogExtensions.DialogContainerAttrs(w.Context, Type, w.IDPrefix), () => {
+				var options = DialogOptions.FromParms(w.Context);
+				w.DialogControl(a => a.DialogContainerAttrs(w.Context, Type, w.IDPrefix, options), () => {
 					w.AjaxForm("form", a => a.DataResultPostponed(1), () => {
-						w.DialogControlBody(null, () => { }, null, null, () => { }, false);
+						w.DialogControlBody(null, () => { }, null, null, () => { }, options.ShowCloseIcon);
 						w.Hidden(Constants.ReturnUrl, Context.ReturnUrl.Get(1));
 					});
 				});
@@ -81,24 +64,25 @@ namespace Tango.UI.Controls
 
 	public static class DialogExtensions
 	{
-		internal static Action<TagAttributes> DialogContainerAttrs(ActionContext ctx, string containerType, string prefix, params string[] styles)
+		internal static TagAttributes DialogContainerAttrs(this TagAttributes a, ActionContext ctx, string type, string prefix, DialogOptions options)
 		{
-			void attrs(TagAttributes a)
-			{				
-				a.Style(styles.Join(" ").ToString());
-
-				a.DataHref(ctx.BaseUrl().Url).DataContainer(containerType, prefix);
-				var parent = ctx.GetArg("c-parent");
-				if (!parent.IsEmpty())
-					a.Data("c-parent", parent);
-			}
-			return attrs;
+			if (options == null)
+				options = new DialogOptions();
+			if (options.ModalBodyPadding)
+				a.Class("modalbodypadding");
+			a.Style("width:" + options.Width);
+			a.DataHref(ctx.BaseUrl().Url).DataContainer(type, prefix);
+			var parent = ctx.GetArg("c-parent");
+			if (!parent.IsEmpty())
+				a.Data("c-parent", parent);
+			return a;
 		}
 
 		internal static void DialogControl(this LayoutWriter w, Action<TagAttributes> attrs, Action content)
 		{
 			w.Div(a => a.ID("dialog").Class("modal-dialog").Role("dialog").Aria("modal", "true").DataCtrl("dialog").DataResultHandler().Set(attrs), () => content());
-		}		
+		}
+
 		internal static void DialogControlBody(this LayoutWriter w, Action title, Action toolbar, Action body, Action bottomToolbar, Action footer, bool showCloseIcon = true)
 		{
 			w.Div(a => a.Class("modal-container"), () => {
@@ -122,12 +106,17 @@ namespace Tango.UI.Controls
 		}
 
 		///TODO. Сделать автоматическое прокидываение всех полей из контекста.
-		public static void AddYesNoDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null, bool warningMode = false, Action<ButtonTagAttributes> btnAttrs = null, Func<ActionResult> action = null, params string[] styles)
+		public static void AddYesNoDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content,
+			string IDPrefix = null, DialogOptions options = null, 
+			bool warningMode = false,
+			Action<ButtonTagAttributes> btnAttrs = null,
+			Func<ActionResult> action = null)
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
 				if (IDPrefix != null)
 					w.PushPrefix(IDPrefix);
-				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix, styles), () => {
+
+				w.DialogControl(a => a.DialogContainerAttrs(w.Context, "", IDPrefix, options), () => {
 					w.AjaxForm("form", a => a.DataResult(1), () => {
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
 							w.ButtonsBarRight(() => {
@@ -136,7 +125,7 @@ namespace Tango.UI.Controls
 										if (!w.Context.ResponseType.IsEmpty())
 											a.Data("responsetype", w.Context.ResponseType);
 										a.Set(btnAttrs);
-										if(action != null) a.DataEvent(action);
+										if (action != null) a.DataEvent(action);
 									}, "Да");
 								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), warningMode ? "Назад" : "Нет");
 							});
@@ -147,12 +136,14 @@ namespace Tango.UI.Controls
 					w.PopPrefix();
 			});
 		}
-		public static void AddYesNoDialogWidget2(this ApiResponse response, string title, Action<LayoutWriter> content, Func<ActionResult> action, string IDPrefix = null, Action<ButtonTagAttributes> btnAttrs = null, string dataKey = null, string dataValue = null, string value = null)
+		public static void AddYesNoDialogWidget2(this ApiResponse response, string title, Action<LayoutWriter> content,
+			Func<ActionResult> action, string IDPrefix = null, DialogOptions options = null, Action<ButtonTagAttributes> btnAttrs = null,
+			string dataKey = null, string dataValue = null, string value = null)
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
 				if (IDPrefix != null)
 					w.PushPrefix(IDPrefix);
-				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix), () => {
+				w.DialogControl(a => a.DialogContainerAttrs(w.Context, "", IDPrefix, options), () => {
 					w.AjaxForm("form", a => a.DataResult(1), () => {
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
 							w.ButtonsBarRight(() => {
@@ -166,12 +157,14 @@ namespace Tango.UI.Controls
 					w.PopPrefix();
 			});
 		}
-		public static void AddOKDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, string IDPrefix = null, params string[] styles)
+
+		public static void AddOKDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, 
+			string IDPrefix = null, DialogOptions options = null)
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
 				if (IDPrefix != null)
 					w.PushPrefix(IDPrefix);
-				w.DialogControl(DialogContainerAttrs(w.Context, "", IDPrefix, styles), () => {
+				w.DialogControl(a => a.DialogContainerAttrs(w.Context, "", IDPrefix, options), () => {
 					w.AjaxForm("form", a => a.DataResult(1), () => {
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
 							w.Div(a => a.Style("width:100%; text-align:center"), () => {
@@ -185,26 +178,21 @@ namespace Tango.UI.Controls
 			});
 		}
 
-		public static ActionLink AsDialog<T>(this ActionLink link, string dialogPrefix = null)
+		public static ActionLink AsDialog<T>(this ActionLink link, string dialogPrefix = null, DialogOptions options = null)
 		{
-			return link.InContainer(typeof(T), dialogPrefix).KeepTheSameUrl();
+			return link.InContainer(typeof(T), dialogPrefix, options?.ToParms()).KeepTheSameUrl();
 		}
-		public static ActionLink AsDialog(this ActionLink link, string dialogPrefix = null)
+		public static ActionLink AsDialog(this ActionLink link, string dialogPrefix = null, DialogOptions options = null)
 		{
-			return link.InContainer(typeof(DialogFormContainer), dialogPrefix).KeepTheSameUrl();
-		}
-
-		public static ActionLink AsNoCloseIconDialog(this ActionLink link, string dialogPrefix = null)
-		{
-			return link.InContainer(typeof(NoCloseIconDialogFormContainer), dialogPrefix).KeepTheSameUrl();
+			return link.InContainer(typeof(DialogFormContainer), dialogPrefix, options?.ToParms()).KeepTheSameUrl();
 		}
 
-		public static ActionLink AsConsoleDialog(this ActionLink link, string dialogPrefix = null)
+		public static ActionLink AsConsoleDialog(this ActionLink link, string dialogPrefix = null, DialogOptions options = null)
 		{
-			return link.InContainer(typeof(ConsoleContainer), dialogPrefix).KeepTheSameUrl();
+			return link.InContainer(typeof(ConsoleContainer), dialogPrefix, options?.ToParms()).KeepTheSameUrl();
 		}
 
-		public static ActionLink AsDialog(this ActionLink link, Action<ApiResponse> serverEvent, string dialogPrefix = null)
+		public static ActionLink AsDialog(this ActionLink link, Action<ApiResponse> serverEvent, string dialogPrefix = null, DialogOptions options = null)
 		{
 			var el = serverEvent.Target as ViewElement;
 			if (el == null) throw new InvalidCastException("Invalid class type for serverEvent.Target; must be of type ViewElement");
@@ -212,10 +200,10 @@ namespace Tango.UI.Controls
 			if (dialogPrefix == null)
 				dialogPrefix = el.ClientID;
 
-			return link.InContainer(typeof(DialogFormContainer), dialogPrefix).KeepTheSameUrl().RunEvent(serverEvent.Method.Name, el.ClientID);
+			return link.InContainer(typeof(DialogFormContainer), dialogPrefix, options?.ToParms()).KeepTheSameUrl().RunEvent(serverEvent.Method.Name, el.ClientID);
 		}
 
-		public static ActionLink AsDialogPost(this ActionLink link, Action<ApiResponse> serverEvent, string dialogPrefix = null)
+		public static ActionLink AsDialogPost(this ActionLink link, Action<ApiResponse> serverEvent, string dialogPrefix = null, DialogOptions options = null)
 		{
 			var el = serverEvent.Target as ViewElement;
 			if (el == null) throw new InvalidCastException("Invalid class type for serverEvent.Target; must be of type ViewElement");
@@ -223,7 +211,7 @@ namespace Tango.UI.Controls
 			if (dialogPrefix == null)
 				dialogPrefix = el.ClientID;
 
-			return link.InContainer(typeof(DialogFormContainer), dialogPrefix).KeepTheSameUrl().PostEvent(serverEvent.Method.Name, el.ClientID);
+			return link.InContainer(typeof(DialogFormContainer), dialogPrefix, options?.ToParms()).KeepTheSameUrl().PostEvent(serverEvent.Method.Name, el.ClientID);
 		}
 
 		public static TagAttributes<T> AsDialog<T>(this TagAttributes<T> a, Action<ApiResponse> serverEvent, string dialogPrefix = null)
@@ -276,6 +264,32 @@ namespace Tango.UI.Controls
 			where T : TagAttributes<T>
 		{
 			return a.DataParm(Constants.ReturnUrl, context.BaseUrl().Url);
+		}
+	}
+
+	public class DialogOptions
+	{
+		public Unit Width { get; set; } = new Unit(600, UnitType.Pixel);
+		public bool ModalBodyPadding { get; set; } = true;
+		public bool ShowCloseIcon { get; set; } = true;
+
+		public Dictionary<string, string> ToParms()
+		{
+			return new Dictionary<string, string> {
+				["Width"] = Width.ToString(),
+				["ModalBodyPadding"] = ModalBodyPadding.ToString(),
+				["ShowCloseIcon"] = ShowCloseIcon.ToString()
+			};
+		}
+
+		public static DialogOptions FromParms(ActionContext context)
+		{
+			return new DialogOptions
+			{
+				ModalBodyPadding = context.GetBoolArg("c-modalbodypadding", true),
+				ShowCloseIcon = context.GetBoolArg("c-showcloseicon", true),
+				Width = new Unit(context.GetArg("c-width", "600px"))
+			};
 		}
 	}
 

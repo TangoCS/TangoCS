@@ -14,11 +14,13 @@ namespace Tango.UI.Controls
 		where TControl : default_tree_rep<TRef>, new()
 	{
 		public TControl Control { get; private set; }
+		public bool ClearSelectionOnSubmit { get; set; } = false;
 
 		public override void OnInit()
 		{
 			base.OnInit();
 			Control = CreateControl<TControl>("list");
+			DialogOptions.ModalBodyPadding = false;
 		}
 
 		public override void OpenDialog(ApiResponse response)
@@ -45,6 +47,9 @@ namespace Tango.UI.Controls
 				Render(w, selectedValues);
 			});
 			Field.OnChange(response, selectedValues);
+
+			if (ClearSelectionOnSubmit)
+				response.AddClientAction("listview", "clearselection", f => Control.ClientID);
 		}
 	}
 }

@@ -403,7 +403,6 @@ td.showDragHandle {
 }
 
 .modal-body {
-	padding: 15px;
 	overflow-y: auto;
 	display: flex;
 	flex-direction: column;
@@ -451,6 +450,9 @@ button.close {
 .modal-open .modal {
 	overflow-x: hidden;
 	overflow-y: auto;
+}
+.modal-dialog.modalbodypadding .modal-body {
+	padding: 15px;
 }
 
 

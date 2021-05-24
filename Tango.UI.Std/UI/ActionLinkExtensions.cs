@@ -76,6 +76,9 @@ namespace Tango.UI
 				a.Data(Constants.ContainerPrefix, link.Container.Prefix.IsEmpty() ? $"{link.Service}_{link.Action}" : link.Container.Prefix);
 				a.Data(Constants.ContainerNew, "1");
 			}
+			if (link.Container.Parms != null)
+				foreach (var p in link.Container.Parms)
+					a.DataParm("c-" + p.Key, p.Value);
 
 			foreach (var r in link.References)
 				a.DataRef(r);

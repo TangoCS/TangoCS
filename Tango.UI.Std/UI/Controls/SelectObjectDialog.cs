@@ -159,6 +159,11 @@ namespace Tango.UI.Controls
 		where TField : AbstractSelectMultipleObjectsField<TRef, TRefKey>
 	{
 		public string OpenDialogLinkTitle { get; set; } = null;
+		public OpenDialogLinkStyle OpenDialogLinkStyle { get; set; } = OpenDialogLinkStyle.Link;
+
+		public bool ShowSelectedValues { get; set; } = true;
+		public bool ShowClearAction { get; set; } = true;
+		public DialogOptions DialogOptions { get; set; } = new DialogOptions();
 
 		public override void List(LayoutWriter w, IEnumerable<TRef> data)
 		{
@@ -186,20 +191,28 @@ namespace Tango.UI.Controls
 					a => a.DataHasClientState(ClientStateType.Array, ClientID, "selectedvalues"));
 				if (!Field.Disabled)
 				{
-					cw.A(a =>
-					{
+					cw.A(a => {
+						if (OpenDialogLinkStyle == OpenDialogLinkStyle.Button)
+							a.Class("actionbtn");
 						a.Data(Field.DataCollection);
 						if (Field.DoCallbackToCurrent)
 							a.CallbackToCurrent(Context);
-
-						a.AsDialog(OpenDialog, Field.ClientID);
+						a.AsDialogPost(OpenDialog, Field.ClientID);
+						if (DialogOptions != null)
+							foreach (var parm in DialogOptions.ToParms())
+								a.DataParm("c-" + parm.Key, parm.Value);
 					}, OpenDialogLinkTitle ?? Resources.Get("Common.SelectObjects_Field"));
-					cw.Write("&nbsp;");
-					if (!Field.PostOnClearEvent)
-						cw.A(a => a.OnClick($"selectMultipleObjectsDialog.clear('{Field.ClientID}', true)"), 
-							Resources.Get("Common.Clear"));
-					else
-						cw.A(a => a.OnClickPostEvent(OnClear), Resources.Get("Common.Clear"));
+
+					if (ShowClearAction)
+					{
+						cw.Write("&nbsp;");
+						if (!Field.PostOnClearEvent)
+							cw.A(a => a.OnClick($"selectMultipleObjectsDialog.clear('{Field.ClientID}', true)"),
+								Resources.Get("Common.Clear"));
+						else
+							cw.A(a => a.OnClickPostEvent(OnClear), Resources.Get("Common.Clear"));
+					}
+
 					if (Field.FieldExtensions != null) 
 					{ 
 						cw.Write("&nbsp;"); 
@@ -212,6 +225,8 @@ namespace Tango.UI.Controls
 
 		public override void RenderSelected(LayoutWriter cw, IEnumerable<TRef> selectedValues)
 		{
+			if (!ShowSelectedValues) return;
+
 			cw.Div(a => a.ID("selected"), () => {
 				if (Field.Disabled && Field.TextWhenDisabled != null)
 					Field.TextWhenDisabled?.Invoke(cw);
@@ -246,5 +261,10 @@ namespace Tango.UI.Controls
 		SelectMultipleObjectsDialog<TRef, TRefKey, AbstractSelectMultipleObjectsField<TRef, TRefKey>>
 		where TRef : class, IWithTitle, IWithKey<TRefKey>
 	{
+	}
+
+	public enum OpenDialogLinkStyle
+	{
+		Link, Button
 	}
 }

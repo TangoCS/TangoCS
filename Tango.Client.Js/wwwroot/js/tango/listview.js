@@ -297,14 +297,15 @@ var listview = function (au, cu, cbcell) {
 			onCheckChange(document, root, state);
 		},
 		clearselection: function (rootid) {
-			const root = document.getElementById(rootid);
 			const state = au.state.ctrl[rootid];
-			const cbhead = document.getElementById(root.id + "_sel_header");
-
 			state.selectedvalues = [];
 
-			cbcell.setPageUnchecked(root, state, cbhead);
-			onCheckChange(document, root, state);
+			const root = document.getElementById(rootid);
+			if (root) {
+				const cbhead = document.getElementById(root.id + "_sel_header");
+				cbcell.setPageUnchecked(root, state, cbhead);
+				onCheckChange(document, root, state);
+			}
 		},
 		onlevelsetpage: function (el) {
 			const tr = cu.getRow(el);
