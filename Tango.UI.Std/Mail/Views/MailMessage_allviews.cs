@@ -13,10 +13,19 @@ namespace Tango.Mail
     [OnAction(typeof(MailMessage), "viewlist")]
     public class MailMessage_viewlist : default_list_rep<MailMessage>
     {
-        
         protected override Func<string, Expression<Func<MailMessage, bool>>> SearchExpression => s => {
-            return o => o.Subject.Contains(s) || o.Recipients.Contains(s); 
+            return o => 
+                o.Subject.ToLower().Contains(s.ToLower()) || 
+                o.Recipients.ToLower().Contains(s.ToLower()) ||
+                o.Body.ToLower().Contains(s.ToLower()); 
         };
+
+        // protected override IRepository<MailMessage> GetRepository()
+        // {
+        //     var mailmessageid = Context.GetIntArg("mailmessageid");
+        //     base.GetRepository().Parameters.Add("mailmessageid", mailmessageid);
+        //     return base.GetRepository();
+        // }
 
         protected override void ToolbarLeft(MenuBuilder t)
         {
@@ -52,6 +61,68 @@ namespace Tango.Mail
                     .WithArg(Constants.Id, o.ID).WithArg("title", o.Subject).WithImage("hie")
                     .WithTitle("Состав письма"),
                 o => al => al.ToDelete<MailMessage>(AccessControl, o.MailMessageID, o));
+        }
+    }
+
+    [OnAction(typeof(MailMessage), "view")]
+    public class MailMessage_view : default_view_rep<MailMessage, int>
+    {
+        [Inject] public IMailMessageRepository MailMessageRepository { get; set; }
+        protected override string FormTitle => ViewData.Subject;
+        protected MailMessageFields.DefaultGroup Group { get; set; }
+        
+        private MailMessageAttachment_viewlist _attachmentViewlist;
+
+        public override void OnInit()
+        {
+            base.OnInit();
+            _attachmentViewlist = CreateControl<MailMessageAttachment_viewlist>("attachmentlist", c => {
+                c.MailMessageId = ViewData.MailMessageID;
+                c.Sections.RenderContentTitle = false;
+            });
+        }
+
+        protected override void Form(LayoutWriter w)
+        {
+            w.FieldsBlockStd(() =>
+            {
+                w.PlainText(Group.MailCategoryTitle);
+                w.PlainText(Group.Subject);
+                w.PlainText(Group.Body);
+                w.PlainText(Group.CreateDate);
+                w.PlainText(Group.TimeoutValue);
+                w.PlainText(Group.StartSendDate);
+                w.PlainText(Group.FinishSendDate);
+                w.PlainText(Group.MaxAttemptsToSendCount);
+                w.PlainText(Group.Recipients);
+                w.PlainText(Group.CopyRecipients);
+                w.PlainText(Group.LastModifiedUserTitle);
+                w.PlainText(Group.MailMessageStatus);
+                w.PlainText(Group.AttemptsToSendCount);
+                w.PlainText(Group.LastSendAttemptDate);
+                w.PlainText(Group.Error);
+            });
+        }
+
+        protected override void ToolbarLeft(MenuBuilder t)
+        {
+            t.ItemBack();
+        }
+
+        protected override MailMessage GetExistingEntity()
+        {
+            var id = Context.GetIntArg(Constants.Id);
+            var obj = Database.Connection.QueryFirstOrDefault<MailMessage>(MailMessageRepository.GetMailMessageByIdSql(), new {@mailmessageid = id});
+            return obj;
+        }
+        
+        protected override void LinkedData(LayoutWriter w)
+        {
+            w.GroupTitle(() =>
+            {
+                w.Write("Состав письма");
+            });
+            _attachmentViewlist.Render(w);
         }
     }
     
