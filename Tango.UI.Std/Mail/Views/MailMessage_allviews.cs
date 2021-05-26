@@ -40,7 +40,9 @@ namespace Tango.Mail
         protected override void FieldsInit(FieldCollection<MailMessage> f)
         {
             f.SetRowID(o => o.MailMessageID.ToString());
-            
+            f.AddCellWithSortAndFilter(o => o.MailMessageID,
+                (w, o) => w.ActionLink(al => al.ToView<MailMessage>(AccessControl, o.MailMessageID).WithTitle(o.MailMessageID),
+                    a => a.Title("Карточка письма")));
             f.AddCellWithSortAndFilter(o => o.MailCategoryTitle, o => o.MailCategoryTitle);
             f.AddCellWithSortAndFilter(o => o.Subject, o => o.Subject);
             f.AddCellWithSortAndFilter(o => o.Body, o => o.Body);
