@@ -24,17 +24,15 @@ namespace Tango.UI.Std
 
 		string _highlightedRowID = null;
 
+		bool _renderSelectedBlockMode = false;
+
 		State InitialState = new State { };
 		State CurrentState = null;
 		
 
 		protected override bool EnableViews => false;
-		public bool AutoExpandSingles { get; set; } = true;
 
-		public override ViewContainer GetContainer() => new SelectableTreeContainer {
-			EnableSelect = () => Fields.EnableSelect,
-			SelectedBlock = w => (Renderer as TreeListRenderer<TResult>).SelectedBlock(w, Fields)
-		};
+		public bool AutoExpandSingles { get; set; } = true;
 
 		public default_tree_rep()
 		{
@@ -220,6 +218,51 @@ namespace Tango.UI.Std
 				}
 			}
 		}
+
+		Dictionary<string, TreeNode<(State state, TResult row)>> _selectedDataRows = new Dictionary<string, TreeNode<(State state, TResult row)>>();
+		List<TreeNode<(State state, TResult row)>> _selectedDataRoot = new List<TreeNode<(State state, TResult row)>>();
+		HashSet<string> _selectedValues = new HashSet<string>();
+
+		public void SetSelectedItems(int templateID, int level, Expression<Func<TResult, bool>> predicate)
+		{
+			var expr = Enumerable.Empty<TResult>().AsQueryable().Where(predicate);
+
+			var data = Repository.List(expr.Expression);
+
+			var template = _templatesDict[templateID];
+			foreach (var row in data)
+			{
+				var t = template;
+				var lev = level;
+
+				var key = t.GetDataRowID(lev, row);
+				_selectedValues.Add(key);
+
+				while (t.ParentTemplate != null)
+				{
+					var parentKey = t.ParentTemplate.GetHtmlRowID(lev - 1, row);
+					var rowState = new State { Level = lev, Template = t };
+					var parentState = new State { Level = lev - 1, Template = t.ParentTemplate };
+
+					if (_selectedDataRows.TryGetValue(parentKey, out var parent))
+					{
+						parent.AddChild((rowState, row));
+						break;
+					}
+					else
+					{
+						parent = new TreeNode<(State state, TResult row)>((parentState, row));
+						parent.AddChild((rowState, row));
+						_selectedDataRows.Add(parentKey, parent);
+						if (lev - 1 == 0)
+							_selectedDataRoot.Add(parent);
+					}
+					t = t.ParentTemplate;
+					lev--;
+				}
+			}
+		}
+
 
 		string PrepareQuery(TreeLevelDescription<TResult> template, List<Dictionary<string, object>> parms)
 		{
@@ -410,7 +453,7 @@ namespace Tango.UI.Std
 				var htmlRowID = nodeTemplate.GetHtmlRowID(CurrentState.Level, o);
 				var dataRowID = nodeTemplate.GetDataRowID(CurrentState.Level, o);
 
-				if (!CurrentState.Children.ContainsKey(htmlRowID))
+				if (!CurrentState.Children.ContainsKey(htmlRowID) && !_renderSelectedBlockMode)
 					a.Class("collapsed");
 				else
 					a.Data("loaded");
@@ -422,8 +465,13 @@ namespace Tango.UI.Std
 				var coll = nodeTemplate.GetKeyCollection(o);
 				foreach (var p in coll)
 					a.DataParm(p.Key, p.Value);
-				a.ID(htmlRowID);
-				a.DataEvent(nodeTemplate.ToggleLevelAction ?? OnExpandRow);
+				foreach (var d in DataCollection)
+					a.Data(d.Key, d.Value);
+
+				a.ID(htmlRowID + (_renderSelectedBlockMode ? "_selected" : ""));
+
+				if (!_renderSelectedBlockMode)
+					a.DataEvent(nodeTemplate.ToggleLevelAction ?? OnExpandRow);
 
 				if (nodeTemplate.DataRef != null)
 					foreach (var _ref in nodeTemplate.DataRef(o))
@@ -434,7 +482,7 @@ namespace Tango.UI.Std
 			};
 
 			RenderRowCellDelegate<TResult> content = (w, o, i) => {
-				if (nodeTemplate.EnableSelect)
+				if (nodeTemplate.EnableSelect && !_renderSelectedBlockMode)
 					w.Span(a => a.Class("sel"), () => w.Icon("checkbox-unchecked"));
 
 				if (nodeTemplate.IconFlag != null)
@@ -452,6 +500,9 @@ namespace Tango.UI.Std
 				}
 
 				nodeTemplate.Cell(w, o, i);
+
+				if (_renderSelectedBlockMode)
+					w.I(a => a.Icon("delete").OnClick("listview.onRemoveIconClick(event)"));
 			};
 
 			f.AddCell("Наименование", (w, o, i) => {
@@ -552,6 +603,42 @@ namespace Tango.UI.Std
 				_result = curResult;
 				_count = curCount;
 				CurrentState = state;
+			}
+
+			if (Fields.EnableSelect)
+			{
+				IEnumerable<TResult> getSelectedValues()
+				{
+					var stack = new Stack<TreeNode<(State state, TResult row)>>();
+
+					foreach (var node in _selectedDataRoot)
+						stack.Push(node);
+
+					while (stack.Count > 0)
+					{
+						var current = stack.Pop();
+						var row = current.Data.row;
+						row.Template = current.Data.state.Template.ID;
+						CurrentState = current.Data.state;
+						yield return row;
+						foreach (var child in current.Children)
+							stack.Push(child);
+					}
+				}
+
+				response.SetElementClass("content", "selectable");
+				response.AddAdjacentWidget("contentbody", "contenttitle_selected", AdjacentHTMLPosition.AfterEnd, w => {
+					(Renderer as TreeListRenderer<TResult>).SelectedBlockTitle(w);
+				});
+				response.AddAdjacentWidget("contenttitle_selected", "contentbody_selected", AdjacentHTMLPosition.AfterEnd, w => {
+					var values = getSelectedValues();
+					var state = CurrentState;
+					_renderSelectedBlockMode = true;
+					(Renderer as TreeListRenderer<TResult>).SelectedBlock(w, values, Fields);
+					CurrentState = state;
+					_renderSelectedBlockMode = false;
+				});
+				response.SetElementValue("selectedvalues", _selectedValues.Join(","));
 			}
 		}
 
@@ -655,35 +742,5 @@ namespace Tango.UI.Std
 	{
 		public TreeLevelDescription<TResult> Template { get; set; }
 		public Expression<Func<TResult, bool>> Where { get; set; }
-	}
-
-	public class SelectableTreeContainer : ViewContainer
-	{
-		public Func<bool> EnableSelect { get; set; }
-		public Action<LayoutWriter> SelectedBlock { get; set; }
-		
-		public override void Render(ApiResponse response)
-		{
-			response.AddWidget("container", w => {
-				w.Div(a => a.ID("content").Class("content").DataContainer(Type, w.IDPrefix), () => {
-					if (!ToRemove.Contains("contentheader"))
-						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
-							ContentHeaders.Default(w);
-						});
-					w.Div(a => a.ID("contenttoolbar"));
-					if (EnableSelect())
-					{
-						w.Div(a => a.ID("contentbody").Class("contentbody").Style("flex:7;overflow-y:auto;"));
-						w.GroupTitle("Выбранные объекты");
-						w.Div(a => a.Style("flex:3;overflow-y:auto;"), () => SelectedBlock(w));
-					}
-					else
-					{
-						w.Div(a => a.ID("contentbody").Class("contentbody"));
-					}
-
-				});
-			});
-		}
 	}
 }

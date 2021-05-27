@@ -225,24 +225,33 @@ namespace Tango.UI.Std
 			});
 		}
 
-		public void SelectedBlock(LayoutWriter w, IFieldCollection<TResult> fields)
+		public void SelectedBlockTitle(LayoutWriter w)
+		{
+			w.GroupTitle(a => a.ID("contenttitle_selected"), "Выбранные объекты");
+		}
+		public void SelectedBlock(LayoutWriter w, IEnumerable<TResult> selectedValues, IFieldCollection<TResult> fields)
 		{
 			Action<TagAttributes> selectedListAttrs = a => a.ID("selected").Class("listviewtable width100").DataCtrl("listview");
 			selectedListAttrs += fields.ListAttributes;
 
-			w.Table(selectedListAttrs, () => {
-				var i = 0;
+			w.Div(a => a.ID("contentbody_selected").Class("contentbody-selected"), () => {
+				w.Table(selectedListAttrs, () => {
+					var i = 0;
 
-				foreach (var hr in fields.HeaderRows)
-				{
-					w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
-						foreach (var h in hr)
-							foreach (var hdr in h.AsEnumerable())
-								w.Th(hdr.Attributes, () => hdr.Content(w));
-					});
-					i++;
-				}
+					foreach (var hr in fields.HeaderRows)
+					{
+						w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
+							foreach (var h in hr)
+								foreach (var hdr in h.AsEnumerable())
+									w.Th(hdr.Attributes, () => hdr.Content(w));
+						});
+						i++;
+					}
+
+					RenderRows(w, selectedValues, fields);
+				});
 			});
+			
 		}
 
 		void MainBlock(LayoutWriter w, IEnumerable<TResult> result, IFieldCollection<TResult> fields)

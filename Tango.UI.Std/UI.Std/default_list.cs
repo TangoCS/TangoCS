@@ -44,6 +44,7 @@ namespace Tango.UI.Std
 
 		protected abstract int GetCount();
 		protected abstract IEnumerable<TResult> GetPageData();
+		public abstract IEnumerable<TResult> GetAllData();
 		protected abstract IFieldCollection<TEntity, TResult> FieldsConstructor();
 
 		public ListFilter<TEntity> Filter { get; private set; }
@@ -60,6 +61,7 @@ namespace Tango.UI.Std
 		protected virtual bool EnableViews => true;
 		protected virtual bool EnableQuickSearch => true;
 		protected virtual bool ShowFilterV2 => true;
+		protected virtual bool EnableSelect => false;
 
 		protected virtual void Toolbar(LayoutWriter w)
 		{
@@ -354,6 +356,11 @@ namespace Tango.UI.Std
 
 			var res = Selector(Paging.Apply(Sorter.Apply(ApplyFilter(Data)), true));
 			return res.ToList();
+		}
+
+		public override IEnumerable<TResult> GetAllData()
+		{
+			return Selector(Sorter.Apply(Data));
 		}
 
 		protected override IFieldCollection<TEntity, TResult> FieldsConstructor()

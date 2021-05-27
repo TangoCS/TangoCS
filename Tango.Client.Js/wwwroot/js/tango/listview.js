@@ -93,8 +93,10 @@
 					state.selectedvalues.splice(index, 1);
 				}
 			}
-			cbhead.setAttribute('data-state', '0');
-			cbhead.firstChild.className = 'icon icon-checkbox-unchecked';
+			if (cbhead) {
+				cbhead.setAttribute('data-state', '0');
+				cbhead.firstChild.className = 'icon icon-checkbox-unchecked';
+			}
 		}
 	};
 
@@ -378,7 +380,53 @@ var listview = function (au, cu, cbcell) {
 		},
         fixedHeader: function (roots) {
             initFixedHeader(roots);
-        }
+		},
+		onRemoveIconClick: function (e) {
+			var seltr = cu.getRow(e.currentTarget);
+			var origtr = document.getElementById(seltr.id.replace('_selected', ''));
+			if (origtr) {
+				var origcb = origtr.querySelector('.sel');
+				if (origcb && seltr.hasAttribute('data-checked')) cbcell.setselected(origcb, onCheckChange);
+			}
+			else {
+				const rootsel = au.findControl(seltr);
+				const state = au.state.ctrl[rootsel.id.replace('_selected', '')];
+				const rowid = seltr.getAttribute('data-rowid');
+				const index = state.selectedvalues.indexOf(rowid);
+				if (index > -1) {
+					state.selectedvalues.splice(index, 1);
+				}
+			}
+
+			var tocopy = [];
+			var level = parseInt(seltr.getAttribute('data-level'));
+
+			var childEl = seltr.nextElementSibling;
+			if (childEl) {
+				var childLevel = parseInt(childEl.getAttribute('data-level'));
+				while (level < childLevel) {
+					var el = childEl;
+					var origChildEl = document.getElementById(childEl.id.replace('_selected', ''));
+					if (origChildEl) {
+						var origcb = origChildEl.querySelector('.sel');
+						if (origcb && el.hasAttribute('data-checked')) cbcell.setselected(origcb, onCheckChange);
+					}
+					childEl = childEl.nextElementSibling;
+					el.parentElement.removeChild(el);
+					if (!childEl) break;
+					childLevel = parseInt(childEl.getAttribute('data-level'))
+				}
+			}
+
+			while (seltr) {
+				if (parseInt(seltr.getAttribute('data-level')) == level) {
+					tocopy.push(seltr);
+					level--;
+				}
+				seltr = seltr.previousElementSibling;
+			}
+			removeSelected(tocopy);
+		}
 	}
 
 	function initCheckBoxes(cblist) {
@@ -610,52 +658,7 @@ var listview = function (au, cu, cbcell) {
 		del.className = 'icon icon-delete';
 		el.appendChild(del);
 
-		del.addEventListener('click', function (e) {
-			var seltr = cu.getRow(e.currentTarget);
-			var origtr = document.getElementById(seltr.id.replace('_selected', ''));
-			if (origtr) {
-				var origcb = origtr.querySelector('.sel');
-				if (origcb && seltr.hasAttribute('data-checked')) cbcell.setselected(origcb, onCheckChange);
-			}
-			else {
-				const rootsel = au.findControl(seltr);
-				const state = au.state.ctrl[rootsel.id.replace('_selected', '')];
-				const rowid = seltr.getAttribute('data-rowid');
-				const index = state.selectedvalues.indexOf(rowid);
-				if (index > -1) {
-					state.selectedvalues.splice(index, 1);
-				}
-			}
-
-			var tocopy = [];
-			var level = parseInt(seltr.getAttribute('data-level'));
-
-			var childEl = seltr.nextElementSibling;
-			if (childEl) {
-				var childLevel = parseInt(childEl.getAttribute('data-level'));
-				while (level < childLevel) {
-					var el = childEl;
-					var origChildEl = document.getElementById(childEl.id.replace('_selected', ''));
-					if (origChildEl) {
-						var origcb = origChildEl.querySelector('.sel');
-						if (origcb && el.hasAttribute('data-checked')) cbcell.setselected(origcb, onCheckChange);
-					}
-					childEl = childEl.nextElementSibling;
-					el.parentElement.removeChild(el);
-					if (!childEl) break;
-					childLevel = parseInt(childEl.getAttribute('data-level'))
-				}
-			}
-
-			while (seltr) {
-				if (parseInt(seltr.getAttribute('data-level')) == level) {
-					tocopy.push(seltr);
-					level--;
-				}
-				seltr = seltr.previousElementSibling;
-			}
-			removeSelected(tocopy);
-		});
+		del.addEventListener('click', instance.onRemoveIconClick);
 	}
 
 	function removeSelected(tocopy) {

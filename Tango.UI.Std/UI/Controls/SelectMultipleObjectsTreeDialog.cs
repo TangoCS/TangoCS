@@ -21,6 +21,8 @@ namespace Tango.UI.Controls
 			base.OnInit();
 			Control = CreateControl<TControl>("list");
 			DialogOptions.ModalBodyPadding = false;
+			Control.DataCollection = Field.DataCollection;
+			Control.Filter.DataCollection = Field.DataCollection;
 		}
 
 		public override void OpenDialog(ApiResponse response)
@@ -34,14 +36,39 @@ namespace Tango.UI.Controls
 			rc.ToRemove.Add("contentheader");
 			rc.Render(response);
 
+			var ids = Context.GetListArg<TRefKey>(Field.ID);
+			Control.SetSelectedItems(2, 1, Field.FilterSelected(ids));
 			Control.OnLoad(response);
+		}
 
+		public override void Footer(LayoutWriter w)
+		{
+			if (Field.AllowSelectAll)
+			{
+				w.Button(a => a.OnClickPostEvent(SubmitDialogAll)
+					.DataResult(1).DataRef($"{Field.ClientID}").Data(DataCollection)
+					.Style("float:left"), "Выбрать все");
+			}
+
+			base.Footer(w);
+		}
+
+		public void SubmitDialogAll(ApiResponse response)
+		{
+			var selectedValues = Control.GetAllData();
+			SubmitDialog(response, selectedValues);
 		}
 
 		public override void SubmitDialog(ApiResponse response)
 		{
 			var selectedValues = Control.GetSelectedObjects();
+			SubmitDialog(response, selectedValues);
+		}
 
+		void SubmitDialog(ApiResponse response, IEnumerable<TRef> selectedValues)
+		{
+			response.WithNamesAndWritersFor(Field.ParentElement);
+			response.SetElementValue(Field.ID, selectedValues.Select(x => Field.DataValueField(x).ToString()).Join(","));
 			response.WithNamesAndWritersFor(Field);
 			response.ReplaceWidget("placeholder", w => {
 				Render(w, selectedValues);

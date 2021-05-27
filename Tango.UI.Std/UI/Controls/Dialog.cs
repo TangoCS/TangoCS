@@ -71,6 +71,7 @@ namespace Tango.UI.Controls
 			if (options.ModalBodyPadding)
 				a.Class("modalbodypadding");
 			a.Style("width:" + options.Width);
+			a.Data("c-changeloc", "false");
 			a.DataHref(ctx.BaseUrl().Url).DataContainer(type, prefix);
 			var parent = ctx.GetArg("c-parent");
 			if (!parent.IsEmpty())

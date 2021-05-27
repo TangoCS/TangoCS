@@ -892,10 +892,12 @@ var ajaxUtils = function ($, cu) {
 
 		const startEl = el.hasAttribute('data-c-external') ? document.getElementById(el.getAttribute('data-c-external')) : el;
 
-		var firstContainer, modalContainer;
+		var firstContainer, modalContainer, noChangeLoc;
 		cu.getThisOrParent(startEl, function (n) {
 			if (!firstContainer && n.hasAttribute && n.hasAttribute('data-c-prefix'))
 				firstContainer = n;
+			if (!noChangeLoc && n.hasAttribute && n.getAttribute('data-c-changeloc') == 'false')
+				noChangeLoc = n;
 			if (!modalContainer && n.hasAttribute && n.getAttribute('aria-modal') == 'true')
 				modalContainer = n;
 		});
@@ -904,7 +906,6 @@ var ajaxUtils = function ($, cu) {
 			target.containerPrefix = firstContainer.getAttribute('data-c-prefix');
 			target.containerType = firstContainer.getAttribute('data-c-type');
 			if (modalContainer) {
-				target.changeloc = false;
 				if (el.hasAttribute('data-res')) {
 					for (var key in state.loc.onBackArgs) {
 						if (target.data[key] == null) {
@@ -913,6 +914,8 @@ var ajaxUtils = function ($, cu) {
 					}
 				}
 			}
+			if (noChangeLoc)
+				target.changeloc = false;
 		}
 
 		if (el.hasAttribute('data-res')) {

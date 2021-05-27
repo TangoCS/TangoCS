@@ -41,6 +41,10 @@ namespace Tango.UI.Std
 		}
 
 		//protected IEnumerable<TResult> _pageData = null;
+		public override IEnumerable<TResult> GetAllData()
+		{
+			return Repository.List(DefaultOrderBy(Data).Expression);
+		}
 
 		protected override IEnumerable<TResult> GetPageData()
 		{
