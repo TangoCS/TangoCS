@@ -467,7 +467,10 @@ namespace Tango.UI.Std
 				});
 			else if (DeleteMode)
 			{
-				Repository.Delete(new List<TKey>(){ViewData.ID});
+				InTransaction(() =>
+				{
+					Repository.Delete(new List<TKey>(){ViewData.ID});
+				});
 			}
 			else if (BulkMode)
 			{

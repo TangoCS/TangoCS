@@ -461,7 +461,7 @@ namespace Tango.Data
 					
 				}, predicate);
 				
-				Database.Connection.ExecuteScalar(query, Database.Transaction);
+				Database.Connection.ExecuteScalar(query, transaction: Database.Transaction);
 			}
 			else
 			{
@@ -491,7 +491,7 @@ namespace Tango.Data
 					
 				},ids);
 				
-				Database.Connection.ExecuteScalar(query, Database.Transaction);
+				Database.Connection.ExecuteScalar(query, transaction: Database.Transaction);
 			}
 			else
 			{
