@@ -32,185 +32,185 @@ div.calendar {
 	background-color: white;
 }
 
-	/* Header part -- contains navigation buttons and day names. */
-	.calendar .cal-button { /* "<<", "<", ">", ">>" buttons have this class */
-		text-align: center;
-		padding: 2px; /* Make the buttons seem like they're pressing */
-		font-weight: bold;
-		cursor: pointer;
-	}
+/* Header part -- contains navigation buttons and day names. */
+.calendar .cal-button { /* "<<", "<", ">", ">>" buttons have this class */
+	text-align: center;
+	padding: 2px; /* Make the buttons seem like they're pressing */
+	font-weight: bold;
+	cursor: pointer;
+}
 
-	.calendar .cal-nav > div {
-		position: relative;
-	}
+.calendar .cal-nav > div {
+	position: relative;
+}
 
-		.calendar .cal-nav > div:after {
-			content: "";
-			position: absolute;
-			right: 2px;
-			top: 50%;
-			width: 0;
-			height: 0;
-			margin-top: 3px;
-			border-left: 2px solid #fff;
-			border-right: 2px solid #fff;
-			border-top: 4px solid;
-		}
+.calendar .cal-nav > div:after {
+	content: "";
+	position: absolute;
+	right: 2px;
+	top: 50%;
+	width: 0;
+	height: 0;
+	margin-top: 3px;
+	border-left: 2px solid #fff;
+	border-right: 2px solid #fff;
+	border-top: 4px solid;
+}
 
-	.calendar thead .cal-title { /* This holds the current "month, year" */
-		font-weight: bold; /* Pressing it will take you to the current date */
-		text-align: center;
-		padding: 2px;
-	}
+.calendar thead .cal-title { /* This holds the current "month, year" */
+	font-weight: bold; /* Pressing it will take you to the current date */
+	text-align: center;
+	padding: 2px;
+}
 
-	.calendar thead .name { /* Cells <TD> containing the day names */
-		padding: 2px;
-		text-align: center;
-	}
+.calendar thead .name { /* Cells <TD> containing the day names */
+	padding: 2px;
+	text-align: center;
+}
 
-	.calendar thead .active { /* Active (pressed) buttons in header */
-		padding: 3px 1px 0px 3px;
-	}
+.calendar thead .active { /* Active (pressed) buttons in header */
+	padding: 3px 1px 0px 3px;
+}
 
-	.calendar thead .daynames { /* Row <TR> containing the day names */
-		font-size: smaller;
-		height: 24px;
-		color: #FF9A19;
-	}
+.calendar thead .daynames { /* Row <TR> containing the day names */
+	font-size: smaller;
+	height: 24px;
+	color: #FF9A19;
+}
 
-	/* The body part -- contains all the days in month. */
-	.calendar tbody .day { /* Cells <TD> containing month days dates */
-		width: 32px;
-		height: 32px;
-		text-align: center;
-		cursor: pointer;
-		border-radius: 50%;
-		background-color: transparent;
-	}
+/* The body part -- contains all the days in month. */
+.calendar tbody .day { /* Cells <TD> containing month days dates */
+	width: 32px;
+	height: 32px;
+	text-align: center;
+	cursor: pointer;
+	border-radius: 50%;
+	background-color: transparent;
+}
 
-		.calendar tbody .day:hover {
-			background-color: #F0F0F0;
-		}
+.calendar tbody .day:hover {
+	background-color: #F0F0F0;
+}
 
-		.calendar tbody .day.othermonth {
-			font-size: 80%;
-			color: #999;
-		}
+.calendar tbody .day.othermonth {
+	font-size: 80%;
+	color: #999;
+}
 
-			.calendar tbody .day.othermonth.oweekend {
-				color: #f99;
-			}
+.calendar tbody .day.othermonth.oweekend {
+	color: #f99;
+}
 
-	.calendar tbody td.today {
-		font-weight: bold;
-	}
+.calendar tbody td.today {
+	font-weight: bold;
+}
 
-	.calendar tbody td.weekend { /* Cells showing weekend days */
-		color: #c44;
-	}
+.calendar tbody td.weekend { /* Cells showing weekend days */
+	color: #c44;
+}
 
-	.calendar tbody td.selected, .calendar tbody td.selected:hover { /* Cell showing selected date */
-		font-weight: bold;
-		background: #45bced;
-		border-radius: 50%;
-		color: white;
-	}
+.calendar tbody td.selected, .calendar tbody td.selected:hover { /* Cell showing selected date */
+	font-weight: bold;
+	background: #45bced;
+	border-radius: 50%;
+	color: white;
+}
 
-	.calendar .headrow .cal-button {
-		background-color: transparent;
-		border-radius: 8px;
-	}
+.calendar .headrow .cal-button {
+	background-color: transparent;
+	border-radius: 8px;
+}
 
-		.calendar .headrow .cal-button:hover {
-			background-color: #F0F0F0;
-		}
+.calendar .headrow .cal-button:hover {
+	background-color: #F0F0F0;
+}
 
-	.calendar tbody .disabled {
-		color: #999;
-	}
+.calendar tbody .disabled {
+	color: #999;
+}
 
-	.calendar tbody .emptycell { /* Empty cells (the best is to hide them) */
-		visibility: hidden;
-	}
+.calendar tbody .emptycell { /* Empty cells (the best is to hide them) */
+	visibility: hidden;
+}
 
-	.calendar tbody .emptyrow { /* Empty row (some months need less than 6 rows) */
-		display: none;
-	}
+.calendar tbody .emptyrow { /* Empty row (some months need less than 6 rows) */
+	display: none;
+}
 
-	/* The footer part -- status bar and "Close" button */
-	.calendar tfoot .footrow { /* The <TR> in footer (only one right now) */
-		text-align: center;
-		font-size: small;
-	}
+/* The footer part -- status bar and "Close" button */
+.calendar tfoot .footrow { /* The <TR> in footer (only one right now) */
+	text-align: center;
+	font-size: small;
+}
 
-	.calendar tfoot .ttip { /* Tooltip (status bar) cell <TD> */
-		padding: 2px;
-	}
+.calendar tfoot .ttip { /* Tooltip (status bar) cell <TD> */
+	padding: 2px;
+}
 
-	.calendar tfoot .hilite { /* Hover style for buttons in footer */
-		background: #afa;
-	}
+.calendar tfoot .hilite { /* Hover style for buttons in footer */
+	background: #afa;
+}
 
-	.calendar tfoot .active { /* Active (pressed) style for buttons in footer */
-		background: #7c7;
-		padding: 2px 0px 0px 2px;
-	}
+.calendar tfoot .active { /* Active (pressed) style for buttons in footer */
+	background: #7c7;
+	padding: 2px 0px 0px 2px;
+}
 
-	/* Combo boxes (menus that display months/years for direct selection) */
-	.calendar .cal-combo {
-		position: absolute;
-		display: none;
-		top: 0px;
-		left: 0px;
-		width: 4em;
-		cursor: default;
-		border-width: 1px;
-		border-style: solid;
-		border-color: #797979;
-		z-index: 100;
-		font-size: 90%;
-		background-color: white;
-	}
+/* Combo boxes (menus that display months/years for direct selection) */
+.calendar .cal-combo {
+	position: absolute;
+	display: none;
+	top: 0px;
+	left: 0px;
+	width: 4em;
+	cursor: default;
+	border-width: 1px;
+	border-style: solid;
+	border-color: #797979;
+	z-index: 100;
+	font-size: 90%;
+	background-color: white;
+}
 
-		.calendar .cal-combo .cal-label {
-			text-align: center;
-			padding: 1px;
-		}
+.calendar .cal-combo .cal-label {
+	text-align: center;
+	padding: 1px;
+}
 
-		.calendar .cal-combo .active {
-			font-weight: bold;
-		}
+.calendar .cal-combo .active {
+	font-weight: bold;
+}
 
-		.calendar .cal-combo .cal-label:hover {
-			background-color: #F0F0F0;
-		}
+.calendar .cal-combo .cal-label:hover {
+	background-color: #F0F0F0;
+}
 
-	.calendar td.time {
-		border-top: 1px solid #797979;
-		padding: 1px 0px;
-		text-align: center;
-	}
+.calendar td.time {
+	border-top: 1px solid #797979;
+	padding: 1px 0px;
+	text-align: center;
+}
 
-		.calendar td.time .hour,
-		.calendar td.time .minute,
-		.calendar td.time .ampm {
-			padding: 0px 5px 0px 6px;
-			font-weight: bold;
-		}
+.calendar td.time .hour,
+.calendar td.time .minute,
+.calendar td.time .ampm {
+	padding: 0px 5px 0px 6px;
+	font-weight: bold;
+}
 
-		.calendar td.time .hour,
-		.calendar td.time .minute {
-			font-family: monospace;
-		}
+.calendar td.time .hour,
+.calendar td.time .minute {
+	font-family: monospace;
+}
 
-		.calendar td.time .ampm {
-			text-align: center;
-		}
+.calendar td.time .ampm {
+	text-align: center;
+}
 
-		.calendar td.time .colon {
-			padding: 0px 2px 0px 3px;
-			font-weight: bold;
-		}
+.calendar td.time .colon {
+	padding: 0px 2px 0px 3px;
+	font-weight: bold;
+}
 
 .cal-openbtn {
 	margin-left: 3px;
@@ -231,9 +231,9 @@ div.calendar {
 	display: inline-block;
 }
 
-	.datelists select {
-		width: auto;
-	}
+.datelists select {
+	width: auto;
+}
 
 /* td drag'n'drop */
 td.showDragHandle {
@@ -286,16 +286,16 @@ td.showDragHandle {
 	display: inline-block;
 }
 
-	.grouptoolbar a {
-		margin-left: 4px;
-		padding: 3px 9px;
-		border: 1px solid #fff;
-	}
+.grouptoolbar a {
+	margin-left: 4px;
+	padding: 3px 9px;
+	border: 1px solid #fff;
+}
 
-		.grouptoolbar a:hover {
-			background-color: #fcfcfc;
-			border: 1px solid #aaa;
-		}
+.grouptoolbar a:hover {
+	background-color: #fcfcfc;
+	border: 1px solid #aaa;
+}
 
 /* Twitter bootstrap labels */
 .label {
@@ -366,11 +366,11 @@ td.showDragHandle {
 	visibility: hidden;
 }
 
-	.modal-dialog form {
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-	}
+.modal-dialog form {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+}
 
 .modal-container {
 	max-height: 99%; /*ie 11 hack*/
@@ -380,9 +380,9 @@ td.showDragHandle {
 	border: 1px solid rgba(0,0,0,.5);
 }
 
-	.modal-header, .modal-body, .modal-footer, .modal-toolbar, .modal-container .buttonsbar {
-		background-color: #fff;
-	}
+.modal-header, .modal-body, .modal-footer, .modal-toolbar, .modal-container .buttonsbar {
+	background-color: #fff;
+}
 
 .modal-header {
 	padding: 3px 10px;
@@ -390,13 +390,13 @@ td.showDragHandle {
 	background-color: #f3f3f3;
 }
 
-	.modal-header h3 {
-		padding-top: 4px;
-		font-size: 0.9em;
-		font-weight: normal;
-		text-transform: uppercase;
-		display: inline-block;
-	}
+.modal-header h3 {
+	padding-top: 4px;
+	font-size: 0.9em;
+	font-weight: normal;
+	text-transform: uppercase;
+	display: inline-block;
+}
 
 .modal-title {
 	margin: 0;
@@ -407,6 +407,7 @@ td.showDragHandle {
 	display: flex;
 	flex-direction: column;
 }
+
 .modal-body .widthstd {
 	width: 100%
 }
@@ -425,10 +426,10 @@ td.showDragHandle {
 	transition: all 0.2s;
 }
 
-	.modal-dialog.md-show {
-		transform: scale(1);
-		opacity: 1;
-	}
+.modal-dialog.md-show {
+	transform: scale(1);
+	opacity: 1;
+}
 
 
 button.close {
@@ -451,6 +452,7 @@ button.close {
 	overflow-x: hidden;
 	overflow-y: auto;
 }
+
 .modal-dialog.modalbodypadding .modal-body {
 	padding: 15px;
 }
@@ -464,26 +466,26 @@ button.close {
 	user-select: none;
 }
 
-	.paging2 .int {
-		cursor: pointer;
-		border-bottom: 1px dashed;
-		color: #3b73af;
-	}
+.paging2 .int {
+	cursor: pointer;
+	border-bottom: 1px dashed;
+	color: #3b73af;
+}
 
-	.paging2 a.cnt {
-		/*line-height: 20px;*/
-		border: 1px solid transparent;
-		padding: 0px 3px;
-		color: #333;
-		/*margin: 0px 5px 0px 0px;*/
-	}
+.paging2 a.cnt {
+	/*line-height: 20px;*/
+	border: 1px solid transparent;
+	padding: 0px 3px;
+	color: #333;
+	/*margin: 0px 5px 0px 0px;*/
+}
 
-		.paging2 a.cnt:hover {
-			text-decoration: none;
-			background-image: -webkit-linear-gradient(#fcfcfc, #ddd);
-			background-image: linear-gradient(#fcfcfc, #ddd);
-			border: 1px solid #c6c6c6;
-		}
+.paging2 a.cnt:hover {
+	text-decoration: none;
+	background-image: -webkit-linear-gradient(#fcfcfc, #ddd);
+	background-image: linear-gradient(#fcfcfc, #ddd);
+	border: 1px solid #c6c6c6;
+}
 
 .linkicon {
 	margin-right: 4px;
@@ -502,64 +504,64 @@ button.close {
 	display: inline-block;
 }
 
-	.tabs2 > ul > li {
-		margin: 0;
-		padding: 0;
-		display: block;
-		float: left;
-		margin: 0 0 0 -1px;
-		user-select: none;
-	}
+.tabs2 > ul > li {
+	margin: 0;
+	padding: 0;
+	display: block;
+	float: left;
+	margin: 0 0 0 -1px;
+	user-select: none;
+}
 
-		.tabs2 > ul > li > div {
-			top: 33px;
-			bottom: 0;
-			left: 0;
-			padding: 8px;
-			-moz-box-sizing: border-box;
-			-webkit-box-sizing: border-box;
-			box-sizing: border-box;
-		}
+.tabs2 > ul > li > div {
+	top: 33px;
+	bottom: 0;
+	left: 0;
+	padding: 8px;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
 
-		.tabs2 > ul > li > input[type="radio"] + label {
-			display: block;
-			border: 1px solid #ccc;
-			margin-bottom: -1px;
-			padding: 4px 10px 3px 10px;
-			background: #f1f1f1;
-			border-radius: 5px 5px 0 0;
-			cursor: pointer;
-			user-select: none;
-		}
+.tabs2 > ul > li > input[type="radio"] + label {
+	display: block;
+	border: 1px solid #ccc;
+	margin-bottom: -1px;
+	padding: 4px 10px 3px 10px;
+	background: #f1f1f1;
+	border-radius: 5px 5px 0 0;
+	cursor: pointer;
+	user-select: none;
+}
 
-		.tabs2 > ul > li > input[type="radio"]:checked + label {
-			z-index: 1;
-			background: #fff;
-			border-bottom-color: #fff;
-			font-weight: bold;
-			cursor: default;
-		}
+.tabs2 > ul > li > input[type="radio"]:checked + label {
+	z-index: 1;
+	background: #fff;
+	border-bottom-color: #fff;
+	font-weight: bold;
+	cursor: default;
+}
 
-		.tabs2 > ul > li > input[type="radio"] {
-			opacity: 0;
-			display: none;
-			user-select: none;
-		}
+.tabs2 > ul > li > input[type="radio"] {
+	opacity: 0;
+	display: none;
+	user-select: none;
+}
 
-			.tabs2 > ul > li > input[type="radio"]:disabled + label {
-				opacity: .5;
-				cursor: no-drop;
-			}
+.tabs2 > ul > li > input[type="radio"]:disabled + label {
+	opacity: .5;
+	cursor: no-drop;
+}
 
 
 .tabs2_pages > div {
 	display: none;
 }
 
-	.tabs2_pages > div.selected {
-		display: block;
-		height: 100%;
-	}
+.tabs2_pages > div.selected {
+	display: block;
+	height: 100%;
+}
 
 div.tabs2 + div.tabs2_pages {
 	margin-top: 8px;
@@ -693,67 +695,67 @@ div.tabs2 + div.tabs2_pages {
 	overflow: auto;
 }
 
-	.dropdownmenu.iw-display {
-		transition: opacity 0ms;
-	}
+.dropdownmenu.iw-display {
+	transition: opacity 0ms;
+}
 
-	.dropdownmenu::-webkit-scrollbar {
-		width: 6px;
-	}
+.dropdownmenu::-webkit-scrollbar {
+	width: 6px;
+}
 
-	.dropdownmenu::-webkit-scrollbar-track {
-		background: #f1f1f1;
-	}
+.dropdownmenu::-webkit-scrollbar-track {
+	background: #f1f1f1;
+}
 
-	.dropdownmenu::-webkit-scrollbar-thumb {
-		background: #888;
-	}
+.dropdownmenu::-webkit-scrollbar-thumb {
+	background: #888;
+}
 
-		.dropdownmenu::-webkit-scrollbar-thumb:hover {
-			background: #555;
-		}
+.dropdownmenu::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
 
-	.dropdownmenu > div > div {
-		background-color: #eff0f1;
-		width: 100%;
-		padding: 0px 12px;
-		line-height: 28px;
-		color: #6a737c;
-		font-weight: bold;
-		text-transform: uppercase;
-	}
+.dropdownmenu > div > div {
+	background-color: #eff0f1;
+	width: 100%;
+	padding: 0px 12px;
+	line-height: 28px;
+	color: #6a737c;
+	font-weight: bold;
+	text-transform: uppercase;
+}
 
-	.dropdownmenu a {
-		display: block;
-		width: 100%;
-		text-decoration: none;
-		outline: none;
-		padding: 0px 12px;
-		line-height: 28px;
-		text-align: left;
-		color: #333;
-		white-space: nowrap;
-	}
+.dropdownmenu a {
+	display: block;
+	width: 100%;
+	text-decoration: none;
+	outline: none;
+	padding: 0px 12px;
+	line-height: 28px;
+	text-align: left;
+	color: #333;
+	white-space: nowrap;
+}
 
-	.dropdownmenu span {
-		padding: 0px 12px;
-	}
+.dropdownmenu span {
+	padding: 0px 12px;
+}
 
-	.dropdownmenu .icon {
-		margin-right: 3px;
-	}
+.dropdownmenu .icon {
+	margin-right: 3px;
+}
 
-	.dropdownmenu .separator {
-		border-top: 2px solid transparent;
-		border-bottom: 1px solid #ccc;
-		margin-bottom: 3px;
-	}
+.dropdownmenu .separator {
+	border-top: 2px solid transparent;
+	border-bottom: 1px solid #ccc;
+	margin-bottom: 3px;
+}
 
-	.dropdownmenu a:hover, .dropdownmenu a.selected {
-		background-color: #296ca3;
-		color: white;
-		text-decoration: none;
-	}
+.dropdownmenu a:hover, .dropdownmenu a.selected {
+	background-color: #296ca3;
+	color: white;
+	text-decoration: none;
+}
 
 .icon-dropdownarrow-angle {
 	margin-left: 10px;
@@ -765,19 +767,19 @@ div.tabs2 + div.tabs2_pages {
 	padding-right: 10px;
 }
 
-	.dropdownfield:hover, .dropdownfield.iw-opened {
-		background-color: #7fe0f8;
-		background-image: linear-gradient(#cef8ff, #7fe0f8);
-	}
+.dropdownfield:hover, .dropdownfield.iw-opened {
+	background-color: #7fe0f8;
+	background-image: linear-gradient(#cef8ff, #7fe0f8);
+}
 
 .dropdownimage {
 	padding: 2px 4px;
 }
 
-	.dropdownimage:hover, .dropdownimage.iw-opened {
-		background-color: #7fe0f8;
-		background-image: linear-gradient(#cef8ff, #7fe0f8);
-	}
+.dropdownimage:hover, .dropdownimage.iw-opened {
+	background-color: #7fe0f8;
+	background-image: linear-gradient(#cef8ff, #7fe0f8);
+}
 
 .dropdownimage-inline {
 	display: inline-block;
@@ -794,38 +796,38 @@ div.tabs2 + div.tabs2_pages {
 	min-width: 200px;
 }
 
-	.periodpicker div, .datetimepicker div {
-		display: inline;
-		margin-right: 3px;
-	}
+.periodpicker div, .datetimepicker div {
+	display: inline;
+	margin-right: 3px;
+}
 
-	.periodpicker input, .periodpicker select {
-		display: inline;
-		border: none;
-		line-height: inherit;
-		outline: none;
-		background-color: transparent;
-	}
+.periodpicker input, .periodpicker select {
+	display: inline;
+	border: none;
+	line-height: inherit;
+	outline: none;
+	background-color: transparent;
+}
 
-		.periodpicker input[type=text].cal-date, .datetimepicker input[type=text].cal-date {
-			width: 75px;
-			padding: 0 0 0 3px;
-		}
+.periodpicker input[type=text].cal-date, .datetimepicker input[type=text].cal-date {
+	width: 75px;
+	padding: 0 0 0 3px;
+}
 
-	.periodpicker .datelists .hours, .periodpicker .datelists .minutes,
-	.datetimepicker .datelists .hours, .datetimepicker .datelists .minutes {
-		width: 20px;
-	}
+.periodpicker .datelists .hours, .periodpicker .datelists .minutes,
+.datetimepicker .datelists .hours, .datetimepicker .datelists .minutes {
+	width: 20px;
+}
 
 @media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
 	.periodpicker {
 		border: 1px inset #999;
 	}
 
-		.periodpicker .datelists .hours, .periodpicker .datelists .minutes,
-		.datetimepicker .datelists .hours, .datetimepicker .datelists .minutes {
-			width: 25px;
-		}
+	.periodpicker .datelists .hours, .periodpicker .datelists .minutes,
+	.datetimepicker .datelists .hours, .datetimepicker .datelists .minutes {
+		width: 25px;
+	}
 }
 
 .periodpicker > div:first-of-type, .periodpicker > div:last-of-type {
@@ -852,15 +854,15 @@ div.tabs2 + div.tabs2_pages {
 	text-align: center;
 }
 
-	.periodpicker select::-ms-expand, .datetimepicker select::-ms-expand {
-		display: none
-	}
+.periodpicker select::-ms-expand, .datetimepicker select::-ms-expand {
+	display: none
+}
 
-	.periodpicker select:focus {
-		-webkit-box-shadow: inset 0px 0px 0px 1px #205081;
-		-moz-box-shadow: inset 0px 0px 0px 1px #205081;
-		box-shadow: inset 0px 0px 0px 1px #205081;
-	}
+.periodpicker select:focus {
+	-webkit-box-shadow: inset 0px 0px 0px 1px #205081;
+	-moz-box-shadow: inset 0px 0px 0px 1px #205081;
+	box-shadow: inset 0px 0px 0px 1px #205081;
+}
 
 /* selectsingleobject drop down*/
 .selectsingleobject {
@@ -911,9 +913,9 @@ div.tabs2 + div.tabs2_pages {
 	height: inherit;
 }
 
-	.selectsingleobject .btn:hover {
-		background-color: #ebecf0;
-	}
+.selectsingleobject .btn:hover {
+	background-color: #ebecf0;
+}
 
 .selectsingleobject .close {
 	margin-left: 3px;
@@ -924,33 +926,33 @@ div.tabs2 + div.tabs2_pages {
 	line-height: inherit;
 }
 
-	.selectsingleobject .close:hover {
-		background-color: #ebecf0;
-	}
+.selectsingleobject .close:hover {
+	background-color: #ebecf0;
+}
 
 .selectsingleobject-popup {
 	width: 600px;
 }
 
-	.selectsingleobject-popup label {
-		padding: 2px 4px;
-	}
+.selectsingleobject-popup label {
+	padding: 2px 4px;
+}
 
-	.selectsingleobject-popup .selected {
-		background-color: #ebecf0;
-	}
+.selectsingleobject-popup .selected {
+	background-color: #ebecf0;
+}
 
-		.selectsingleobject-popup .selected.checked {
-			background-color: #d7e4f8;
-		}
+.selectsingleobject-popup .selected.checked {
+	background-color: #d7e4f8;
+}
 
-	.selectsingleobject-popup label input[type=radio] {
-		display: none;
-	}
+.selectsingleobject-popup label input[type=radio] {
+	display: none;
+}
 
-	.selectsingleobject-popup .listviewtable td {
-		padding: 4px 4px;
-	}
+.selectsingleobject-popup .listviewtable td {
+	padding: 4px 4px;
+}
 
 .input-measure {
 	position: absolute;
@@ -990,15 +992,15 @@ div.tabs2 + div.tabs2_pages {
 	word-wrap: break-word;
 }
 
-	.treerow:not(.l0) {
-		padding-left: 3px;
-	}
+.treerow:not(.l0) {
+	padding-left: 3px;
+}
 
-	.treerow > div {
-		display: table-cell;
-		vertical-align: middle;
-		padding: 4px 0px;
-	}
+.treerow > div {
+	display: table-cell;
+	vertical-align: middle;
+	padding: 4px 0px;
+}
 
 .smaller .treerow > div {
 	padding: 3px 0px;
@@ -1032,13 +1034,13 @@ div.tabs2 + div.tabs2_pages {
 	min-height: 1px;
 }
 
-	.level-padding:empty:after {
-		content: "\00a0";
-	}
+.level-padding:empty:after {
+	content: "\00a0";
+}
 
-	.level-padding.last {
-		width: 13px;
-	}
+.level-padding.last {
+	width: 13px;
+}
 
 .listviewtable.tree td {
 	padding: 0px 8px 0px 8px;
@@ -1053,14 +1055,14 @@ div.tabs2 + div.tabs2_pages {
 	height: 1px;
 }
 
-	.tree .toggleicon.icon-right {
-		/*transition: .2s transform ease-in-out;*/
-		transform: rotate(90deg);
-	}
+.tree .toggleicon.icon-right {
+	/*transition: .2s transform ease-in-out;*/
+	transform: rotate(90deg);
+}
 
-	.tree .collapsed .toggleicon.icon-right {
-		transform: rotate(0deg);
-	}
+.tree .collapsed .toggleicon.icon-right {
+	transform: rotate(0deg);
+}
 
 .tree tr:focus {
 	outline: none;
@@ -1076,6 +1078,7 @@ div.tabs2 + div.tabs2_pages {
 	margin-left: -9px;
 	padding: 0 2px;
 }
+
 .treerow .togglelevel > span:hover {
 	background-color: #ebecf0;
 }
@@ -1109,13 +1112,23 @@ div.tabs2 + div.tabs2_pages {
 	visibility: hidden;
 }
 
-	.listviewtable tr:hover .dropdownimage, .listviewtable tr .dropdownimage.iw-opened {
-		visibility: visible;
-	}
+.listviewtable tr:hover .dropdownimage, .listviewtable tr .dropdownimage.iw-opened {
+	visibility: visible;
+}
 
 .treerow-content .selected {
 	background-color: #c2dbff;
 	border-radius: 7px;
+}
+
+.content.selectable .contentbody {
+	flex: 7;
+	overflow-y: auto;
+}
+
+.content.selectable .contentbody-selected {
+	flex: 3;
+	overflow-y: auto;
 }
 
 
@@ -1127,9 +1140,9 @@ div.tabs2 + div.tabs2_pages {
 	flex-direction: row;
 }
 
-	.sidebar .sidebar-panel {
-		flex: 1;
-	}
+.sidebar .sidebar-panel {
+	flex: 1;
+}
 
 
 .sidebar-header {
@@ -1183,38 +1196,38 @@ div.tabs2 + div.tabs2_pages {
 	height: 0;
 }
 
-	.sidebar-menu > ul > li {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		font-size: 12px;
-		font-weight: 600;
-		letter-spacing: 0;
-		color: #6b778c;
-		text-transform: uppercase;
-		line-height: 20px;
-		width: 20px;
-	}
+.sidebar-menu > ul > li {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0;
+	color: #6b778c;
+	text-transform: uppercase;
+	line-height: 20px;
+	width: 20px;
+}
 
-		.sidebar-menu > ul > li > span {
-			display: inline-block;
-			transform: translate(20px, 0) rotate(90deg);
-			transform-origin: 0 0;
-			white-space: nowrap;
-			margin: 10px 0;
-			width: 20px;
-		}
+.sidebar-menu > ul > li > span {
+	display: inline-block;
+	transform: translate(20px, 0) rotate(90deg);
+	transform-origin: 0 0;
+	white-space: nowrap;
+	margin: 10px 0;
+	width: 20px;
+}
 
 .sidebar-panel {
 	display: flex;
 	flex-direction: column;
-    width: 100%;
+	width: 100%;
 }
 
-	.sidebar-panel > div:last-child {
-		flex: 1;
-		overflow-y: auto;
-	}
+.sidebar-panel > div:last-child {
+	flex: 1;
+	overflow-y: auto;
+}
 
 .sidebar.collapsed {
 	width: 20px;
@@ -1232,27 +1245,27 @@ div.tabs2 + div.tabs2_pages {
 	line-height: 11px;
 }
 
-	.block-btn .icon {
-		min-width: 14px;
-		font-size: x-small;
-		font-weight: bold;
-	}
+.block-btn .icon {
+	min-width: 14px;
+	font-size: x-small;
+	font-weight: bold;
+}
 
-	.block-btn:hover {
-		background-color: #e5e5e5;
-	}
+.block-btn:hover {
+	background-color: #e5e5e5;
+}
 
-	.block-btn .icon {
-		transform: rotate(90deg);
-	}
+.block-btn .icon {
+	transform: rotate(90deg);
+}
 
 .collapsed .block-btn {
 	padding: 0 2px;
 }
 
-	.collapsed .block-btn .icon {
-		transform: inherit;
-	}
+.collapsed .block-btn .icon {
+	transform: inherit;
+}
 
 .block-header {
 	margin-bottom: 4px;
@@ -1285,8 +1298,8 @@ div.tabs2 + div.tabs2_pages {
 }
 
 .fixedheader th, fixedheader thead {
-    position: -webkit-sticky; /* Safari */
-    position: sticky;
-    top: 0;
-    z-index: 10;
+	position: -webkit-sticky; /* Safari */
+	position: sticky;
+	top: 0;
+	z-index: 10;
 }

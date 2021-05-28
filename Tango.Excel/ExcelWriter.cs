@@ -144,7 +144,7 @@ namespace Tango.Excel
 		/// Итоги в строках под данными 
 		/// </summary>
 		/// <param name="flag"></param>
-		public void SetOutLineSummaryBelowAllSheet(bool flag)
+		public void SetOutLineSummaryBelowAllSheets(bool flag)
 		{
 			for (int i = 0; i < p.Workbook.Worksheets.Count; i++)
 			{
@@ -159,6 +159,7 @@ namespace Tango.Excel
 			//s = p.Workbook.Worksheets[pos];
 			//s.Select();
 		}
+
 		public void GroupColumns(int startCol, int finishCol, int sheetIndex, bool isCollapsed)
 		{		
 			for (int i = startCol; i <= finishCol; i++)
@@ -224,12 +225,17 @@ namespace Tango.Excel
 				s.HeaderFooter.OddFooter.CenteredText = content(ExcelHeaderFooter.PageNumber, ExcelHeaderFooter.NumberOfPages);
 		}
 
-		[Obsolete]
-		public void SetOddFooterCenterNumPage()
-		{
-			foreach(var list in s.Workbook.Worksheets)
-				list.HeaderFooter.OddFooter.CenteredText = $"Страница {ExcelHeaderFooter.PageNumber} из {ExcelHeaderFooter.NumberOfPages}";
-		}
+		//public void SetPrintArea()
+		//{
+		//	s.PrinterSettings.PrintArea = s.Cells["A:A,G:G"];
+		//}
+
+		//[Obsolete]
+		//public void SetOddFooterCenterNumPage()
+		//{
+		//	foreach(var list in s.Workbook.Worksheets)
+		//		list.HeaderFooter.OddFooter.CenteredText = $"Страница {ExcelHeaderFooter.PageNumber} из {ExcelHeaderFooter.NumberOfPages}";
+		//}
 
 		public void Div(Action<IContentItemAttributes> attributes, Action inner)
 		{
