@@ -19,6 +19,7 @@ namespace Tango.Mail
         [Column]
         public virtual Guid FileGUID { get; set; }
         public string FileTitle { get; set; }
+        public int DocumentID { get; set; } // TODO: временно. для показа 31 05 2021
         public string FileType { get; set; }
         public string Title { get; }
     }

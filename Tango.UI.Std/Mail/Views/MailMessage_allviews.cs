@@ -152,6 +152,7 @@ namespace Tango.Mail
 
         protected override void FieldsInit(FieldCollection<MailMessageAttachment> fields)
         {
+            fields.AddCellWithSortAndFilter(o => o.DocumentID, o => o.DocumentID); // TODO: временно. для показа 31 05 2021
             fields.AddCellWithSortAndFilter(o => o.FileType, o => o.FileType);
             fields.AddCellWithSortAndFilter(o => o.FileTitle, o => o.FileTitle);
         }
