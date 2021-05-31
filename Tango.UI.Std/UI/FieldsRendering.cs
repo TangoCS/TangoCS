@@ -30,6 +30,11 @@ namespace Tango.UI
 			);
 		}
 
+		public static void FormFieldCaption<TValue>(this LayoutWriter w, IField<TValue> field)
+        {
+			w.FieldBlockRenderer.FormFieldCaption(w, field.ID, () => w.Write(field.Caption), field.IsRequired, field.Hint);
+        }
+
 		public static void TextBox<TValue>(this LayoutWriter w, IField<TValue> field, GridPosition grid = null, Action<InputTagAttributes> attributes = null)
 		{
 			w.FormField(field, () => w.TextBox(field.ID, field.StringValue, a => {
