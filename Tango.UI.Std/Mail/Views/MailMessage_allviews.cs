@@ -62,7 +62,7 @@ namespace Tango.Mail
                 o => al => al.To<MailMessageAttachment>("attachments", AccessControl)
                     .WithArg(Constants.Id, o.ID).WithArg("title", o.Subject).WithImage("hie")
                     .WithTitle("Состав письма"),
-                o => al => al.ToDelete<MailMessage>(AccessControl, o.MailMessageID, o));
+                o => al => al.ToDelete<MailMessage>(AccessControl, o.MailMessageID, new object[] {o, AccessControl})); // TODO: сделать нормально. сейчас через костыльный предикат
         }
     }
 
@@ -152,6 +152,7 @@ namespace Tango.Mail
 
         protected override void FieldsInit(FieldCollection<MailMessageAttachment> fields)
         {
+            fields.AddCellWithSortAndFilter(o => o.DocumentID, o => o.DocumentID); // TODO: временно. для показа 31 05 2021
             fields.AddCellWithSortAndFilter(o => o.FileType, o => o.FileType);
             fields.AddCellWithSortAndFilter(o => o.FileTitle, o => o.FileTitle);
         }

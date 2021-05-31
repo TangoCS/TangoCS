@@ -225,7 +225,7 @@ namespace Tango.UI.Controls
 			});
 		}
 
-		public void Render(LayoutWriter w, DateTime? value = null, Action<InputTagAttributes> attributes = null)
+		public void Render(LayoutWriter w, DateTime? value = null, CalendarOptions calendarOptions = null, DateLists.DateListsOptions options = null)
 		{
 			dFrom.MinYear = MinYear;
 			dFrom.MaxYear = DateTime.Today.Year;
@@ -233,14 +233,15 @@ namespace Tango.UI.Controls
 			if (value == null)
 				value = Context.GetDateTimeArg(ID + "_" + "dperiodfrom");
 
-			var options = new CalendarOptions { ShowButton = false, Attributes = attributes };
+			if (calendarOptions == null)
+				calendarOptions = new CalendarOptions { ShowButton = false};
 
 			w.Div(a => a.Class("datetimepicker").ID(ID), () =>
 			{
 				w.Div(() =>
 				{
-					w.Calendar(ID + "_dperiodfrom", value ?? DefaultValue, options);
-					dFrom.Render(w, value ?? DefaultValue);
+					w.Calendar(ID + "_dperiodfrom", value ?? DefaultValue, calendarOptions);
+					dFrom.Render(w, value ?? DefaultValue, options);
 				});
 				w.Span(a => a.ID(ID + "_btn").Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
 			});
@@ -251,10 +252,10 @@ namespace Tango.UI.Controls
 				button = f(ID + "_btn"),
 				showOthers = true,
 				weekNumbers = false,
-				showTime = options.ShowTime,
-				ifFormat = options.ShowTime ? "%d.%m.%Y %H:%M" : "%d.%m.%Y",
+				showTime = calendarOptions.ShowTime,
+				ifFormat = calendarOptions.ShowTime ? "%d.%m.%Y %H:%M" : "%d.%m.%Y",
 				timeFormat = "24",
-				dateStatusFunc = options.UseCalendarDays ? "jscal_calendarDate" : null
+				dateStatusFunc = calendarOptions.UseCalendarDays ? "jscal_calendarDate" : null
 			});
 		}
 

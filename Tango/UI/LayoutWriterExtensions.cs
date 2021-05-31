@@ -67,7 +67,7 @@ namespace Tango.UI
 
 		public static void GroupTitle(this LayoutWriter w, Action<TagAttributes> attributes, string content)
 		{
-			w.GroupTitle(() => w.Write(content));
+			w.GroupTitle(attributes, () => w.Write(content));
 		}
 
 		public static void GroupTitle(this LayoutWriter w, Action content)
