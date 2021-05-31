@@ -138,7 +138,7 @@ namespace Tango.UI
 			w.Div(a => a.ID(name + "_field").Class("field").Style(style), () => {
 				w.Div(a => a.ID(name + "_fieldlabel").Class("field-label").Style($"width:{labelWidth}%"), () => {
 
-
+					FormFieldCaption(w, name, caption, isRequired, hint);
 					FormFieldDescription(w, name, description);
 				});
 				w.Div(a => {
