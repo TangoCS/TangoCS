@@ -263,7 +263,7 @@ namespace Tango.UI.Controls
 			this LayoutWriter w,
 			EntityField<TEntity, TRefClass, TValue> field,
 			SelectSingleObjectField<TRefClass, TRefKey> dialog,
-			GridPosition grid = null)
+			GridPosition grid = null, bool isViewCaption = true)
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
@@ -272,7 +272,7 @@ namespace Tango.UI.Controls
 			
 			dialog.Disabled = field.Disabled;
 			dialog.ReadOnly = field.ReadOnly;
-			w.FormField(field, () => dialog.Strategy.Render(w, v), grid);
+			w.FormField(field, () => dialog.Strategy.Render(w, v), grid, isViewCaption);
 		}
 
 		public static void SelectSingleObject<TEntity, TRefClass, TRefKey>(
