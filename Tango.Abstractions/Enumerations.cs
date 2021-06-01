@@ -6,6 +6,15 @@ using System.Reflection;
 
 namespace Tango
 {
+    public class ShortDescriptionAttribute : Attribute
+    {
+        public ShortDescriptionAttribute(string description)
+        {
+            Description = description;
+        }
+        public string Description { get; set; }
+    }
+    
 	public static class Enumerations
 	{
         private static string GetDescriptionAttribute(Enum value)
@@ -15,10 +24,24 @@ namespace Tango
             var attributes = fi.GetCustomAttributes<DescriptionAttribute>(false);
             return (attributes != null && attributes.Count() > 0) ? attributes.First().Description : null;
         }
+        
+        private static string GetShortDescriptionAttribute(Enum value)
+        {
+            var fi = value.GetType().GetField(value.ToString());
+            if (fi == null) return "";
+            var attributes = fi.GetCustomAttributes<ShortDescriptionAttribute>(false);
+            return (attributes != null && attributes.Any()) ? attributes.First().Description : null;
+        }
 
         public static string GetEnumDescription(Enum value)
         {
             var p = GetDescriptionAttribute(value);
+            return p ?? value.ToString();
+        }
+        
+        public static string GetEnumShortDescription(Enum value)
+        {
+            var p = GetShortDescriptionAttribute(value);
             return p ?? value.ToString();
         }
 
