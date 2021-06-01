@@ -188,6 +188,12 @@ namespace Tango.UI.Controls
 	public class DateTimePicker : ViewComponent, IFieldValueProvider<DateTime?>
 	{
 		
+		public class DateTimePickerOptions : CalendarOptions
+		{
+			public Action<SelectTagAttributes> HourAttributes { get; set; }
+			public Action<SelectTagAttributes> MinuteAttributes { get; set; }
+		}
+		
 		DateTime Date => Context.GetDateTimeArg($"{ID}_dperiodfrom", DateTime.MinValue);
 		int Hour => Context.GetArg($"{ID}_dperiodfromtime_hour", DefaultValue.Hour) ;
 		int Minute => Context.GetArg($"{ID}_dperiodfromtime_minute", DefaultValue.Minute);
@@ -225,7 +231,7 @@ namespace Tango.UI.Controls
 			});
 		}
 
-		public void Render(LayoutWriter w, DateTime? value = null, CalendarOptions calendarOptions = null, DateLists.DateListsOptions options = null)
+		public void Render(LayoutWriter w, DateTime? value = null, DateTimePickerOptions dateTimePickerOptions = null)
 		{
 			dFrom.MinYear = MinYear;
 			dFrom.MaxYear = DateTime.Today.Year;
@@ -233,8 +239,25 @@ namespace Tango.UI.Controls
 			if (value == null)
 				value = Context.GetDateTimeArg(ID + "_" + "dperiodfrom");
 
-			if (calendarOptions == null)
-				calendarOptions = new CalendarOptions { ShowButton = false};
+			if (dateTimePickerOptions == null)
+				dateTimePickerOptions = new DateTimePickerOptions { ShowButton = false};
+
+			DateLists.DateListsOptions options = new DateLists.DateListsOptions
+			{
+				HourAttributes = dateTimePickerOptions.HourAttributes,
+				MinuteAttributes = dateTimePickerOptions.MinuteAttributes
+			};
+
+			CalendarOptions calendarOptions = new CalendarOptions
+			{
+				Enabled = dateTimePickerOptions.Enabled,
+				ShowButton = dateTimePickerOptions.ShowButton,
+				ShowTime = dateTimePickerOptions.ShowTime,
+				UseCalendarDays = dateTimePickerOptions.UseCalendarDays,
+				Attributes = dateTimePickerOptions.Attributes,
+				JsDisabledDaysFunc = dateTimePickerOptions.JsDisabledDaysFunc,
+				JsDisabledDaysArgs = dateTimePickerOptions.JsDisabledDaysArgs
+			};
 
 			w.Div(a => a.Class("datetimepicker").ID(ID), () =>
 			{
@@ -252,10 +275,10 @@ namespace Tango.UI.Controls
 				button = f(ID + "_btn"),
 				showOthers = true,
 				weekNumbers = false,
-				showTime = calendarOptions.ShowTime,
-				ifFormat = calendarOptions.ShowTime ? "%d.%m.%Y %H:%M" : "%d.%m.%Y",
+				showTime = dateTimePickerOptions.ShowTime,
+				ifFormat = dateTimePickerOptions.ShowTime ? "%d.%m.%Y %H:%M" : "%d.%m.%Y",
 				timeFormat = "24",
-				dateStatusFunc = calendarOptions.UseCalendarDays ? "jscal_calendarDate" : null
+				dateStatusFunc = dateTimePickerOptions.UseCalendarDays ? "jscal_calendarDate" : null
 			});
 		}
 
