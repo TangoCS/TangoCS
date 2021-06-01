@@ -194,6 +194,7 @@ namespace Tango.UI.Std
 	{
 		Paging _paging;
 		int _level;
+		IEnumerable<string> _selectedValues;
 
 		public TreeListRenderer(string id, Paging paging, int level) : base(id)
 		{
@@ -204,6 +205,11 @@ namespace Tango.UI.Std
 		public void SetLevel(int level)
 		{
 			_level = level;
+		}
+
+		public void SetSelectedValues(IEnumerable<string> selectedValues)
+		{
+			_selectedValues = selectedValues;
 		}
 
 		void PagingRow(LayoutWriter w, int colSpan)
@@ -279,7 +285,7 @@ namespace Tango.UI.Std
 				});
 
 				if (fields.EnableSelect)
-					w.Hidden("selectedvalues", null, a => a.DataHasClientState(ClientStateType.Array));
+					w.Hidden("selectedvalues", _selectedValues?.Join(","), a => a.DataHasClientState(ClientStateType.Array));
 			});
 		}
 

@@ -456,6 +456,9 @@ button.close {
 .modal-dialog.modalbodypadding .modal-body {
 	padding: 15px;
 }
+.modal-dialog.height100 .modal-container, .modal-dialog.height100 .modal-body {
+	height: 100%;
+}
 
 
 .paging {

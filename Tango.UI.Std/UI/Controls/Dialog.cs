@@ -70,6 +70,8 @@ namespace Tango.UI.Controls
 				options = new DialogOptions();
 			if (options.ModalBodyPadding)
 				a.Class("modalbodypadding");
+			if (options.Height == DialogHeight.Height100)
+				a.Class("height100");
 			a.Style("width:" + options.Width);
 			a.Data("c-changeloc", "false");
 			a.DataHref(ctx.BaseUrl().Url).DataContainer(type, prefix);
@@ -251,6 +253,7 @@ namespace Tango.UI.Controls
 	public class DialogOptions
 	{
 		public Unit Width { get; set; } = new Unit(600, UnitType.Pixel);
+		public DialogHeight Height { get; set; } = DialogHeight.Auto;
 		public bool ModalBodyPadding { get; set; } = true;
 		public bool ShowCloseIcon { get; set; } = true;
 
@@ -258,6 +261,7 @@ namespace Tango.UI.Controls
 		{
 			return new Dictionary<string, string> {
 				["Width"] = Width.ToString(),
+				["Height"] = ((int)Height).ToString(),
 				["ModalBodyPadding"] = ModalBodyPadding.ToString(),
 				["ShowCloseIcon"] = ShowCloseIcon.ToString()
 			};
@@ -269,9 +273,16 @@ namespace Tango.UI.Controls
 			{
 				ModalBodyPadding = context.GetBoolArg("c-modalbodypadding", true),
 				ShowCloseIcon = context.GetBoolArg("c-showcloseicon", true),
-				Width = new Unit(context.GetArg("c-width", "600px"))
+				Width = new Unit(context.GetArg("c-width", "600px")),
+				Height = (DialogHeight)context.GetIntArg("c-height", 0),
 			};
 		}
+	}
+
+	public enum DialogHeight
+	{
+		Auto = 0,
+		Height100 = 100
 	}
 
 	public enum ModalEffect

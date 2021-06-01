@@ -261,6 +261,8 @@ namespace Tango.UI.Std
 					lev--;
 				}
 			}
+
+			(Renderer as TreeListRenderer<TResult>).SetSelectedValues(_selectedValues);
 		}
 
 
@@ -533,6 +535,7 @@ namespace Tango.UI.Std
 					_result = null;
 					(Renderer as TreeListRenderer<TResult>).SetLevel(state.Level);
 				}
+				Context.Sender = sender;
 				Render(w);
 			});
 
@@ -638,7 +641,8 @@ namespace Tango.UI.Std
 					CurrentState = state;
 					_renderSelectedBlockMode = false;
 				});
-				response.SetElementValue("selectedvalues", _selectedValues.Join(","));
+				//if (_selectedValues.Count > 0)
+				//	response.SetElementValue("selectedvalues", _selectedValues.Join(","));
 			}
 		}
 

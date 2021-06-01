@@ -21,6 +21,7 @@ namespace Tango.UI.Controls
 			base.OnInit();
 			Control = CreateControl<TControl>("list");
 			DialogOptions.ModalBodyPadding = false;
+			DialogOptions.Height = DialogHeight.Height100;
 			Control.DataCollection = Field.DataCollection;
 			Control.Filter.DataCollection = Field.DataCollection;
 		}
