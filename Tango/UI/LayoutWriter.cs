@@ -86,12 +86,13 @@ namespace Tango.UI
 		public void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null, bool withCheck = false, bool isDisabled = false, bool isViewCaption = true)
 		{
 			w.Tr(a => a.ID(name + "_field").Style(isVisible ? "" : "display:none"), () => {
-				w.Td(a => a.ID(name + "_fieldlabel").Class("formlabel"), () => {
-
-					if(isViewCaption)
+				if (isViewCaption) {
+					w.Td(a => a.ID(name + "_fieldlabel").Class("formlabel"), () => {
 						FormFieldCaption(w, name, caption, isRequired, hint);
-					FormFieldDescription(w, name, description);
-				});
+						FormFieldDescription(w, name, description);
+
+					});
+				}
 				w.Td(a => a.ID(name + "_fieldbody").Class("formbody"), content);
 			});
 		}
@@ -129,7 +130,7 @@ namespace Tango.UI
 
 			string style = new string[] { width, br, vis }.Where(s => s != "").Join(";");
 
-			int labelWidth = (int)Math.Round(100 / (60 / (double)grid.Caption), 0, MidpointRounding.AwayFromZero);
+			int labelWidth = isViewCaption ? (int)Math.Round(100 / (60 / (double)grid.Caption), 0, MidpointRounding.AwayFromZero) : 0;
 			int bodyWidth = 100 - labelWidth;
 			int checkBoxWidth = 10;
 
@@ -137,11 +138,13 @@ namespace Tango.UI
 				bodyWidth = bodyWidth - checkBoxWidth;
 
 			w.Div(a => a.ID(name + "_field").Class("field").Style(style), () => {
-				w.Div(a => a.ID(name + "_fieldlabel").Class("field-label").Style($"width:{labelWidth}%"), () => {
-					if(isViewCaption)
+				if (isViewCaption)
+					w.Div(a => a.ID(name + "_fieldlabel").Class("field-label").Style($"width:{labelWidth}%"), () => {
+
 						FormFieldCaption(w, name, caption, isRequired, hint);
-					FormFieldDescription(w, name, description);
-				});
+						FormFieldDescription(w, name, description);
+					});
+			
 				w.Div(a => {
 					a.ID(name + "_fieldbody").Class("field-body").Style($"width:{bodyWidth}%");
 					if (isDisabled)
