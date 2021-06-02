@@ -27,6 +27,8 @@ namespace Tango.Mail
         [Column]
         public virtual string PostProcessingMethod { get; set; }
         [Column]
+        public virtual string AfterSentMethod { get; set; }
+        [Column]
         public virtual string DeleteMethod { get; set; }
         [Column]
         public virtual int TimeoutValue { get; set; }

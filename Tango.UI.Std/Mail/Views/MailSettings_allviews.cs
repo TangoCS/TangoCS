@@ -103,6 +103,11 @@ namespace Tango.Mail
                     item.DeleteMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.DeleteMailMethod,
                         item.DeleteMethod);
                 }
+                if (!string.IsNullOrEmpty(item.AfterSentMethod))
+                {
+                    item.AfterSentMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.AfterSentMethod,
+                        item.AfterSentMethod);
+                }
             }
 
             return items;
@@ -119,6 +124,7 @@ namespace Tango.Mail
             fields.AddCellWithSortAndFilter(o => o.PreProcessingMethod, o => o.PreProcessingMethod);
             fields.AddCellWithSortAndFilter(o => o.PostProcessingMethod, o => o.PostProcessingMethod);
             fields.AddCellWithSortAndFilter(o => o.DeleteMethod, o => o.DeleteMethod);
+            fields.AddCellWithSortAndFilter(o => o.AfterSentMethod, o => o.AfterSentMethod);
             fields.AddCellWithSortAndFilter(o => o.SystemName, o => o.SystemName);
             fields.AddCell(o => o.SendMailDayInterval, o => o.SendMailDayInterval);
             fields.AddCell(o => o.SendMailStartInterval, o => o.SendMailStartInterval);
@@ -153,6 +159,7 @@ namespace Tango.Mail
         private string _preProcessingMethods;
         private string _postProcessingMethods;
         private string _deleteMethods;
+        private string _faterSentMethods;
 
         public override void OnInit()
         {
@@ -179,6 +186,12 @@ namespace Tango.Mail
                 ViewData.DeleteMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.DeleteMailMethod,
                     ViewData.DeleteMethod);
             }
+            
+            if (!string.IsNullOrEmpty(ViewData.AfterSentMethod))
+            {
+                ViewData.AfterSentMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.AfterSentMethod,
+                    ViewData.AfterSentMethod);
+            }
         }
 
         protected MailSettingsFields.DefaultGroup Group { get; set; }
@@ -200,6 +213,10 @@ namespace Tango.Mail
                 w.PlainText("Методы удаления", () =>
                 {
                     w.Write(ViewData.DeleteMethod);
+                });
+                w.PlainText("Методы после отправки", () =>
+                {
+                    w.Write(ViewData.AfterSentMethod);
                 });
                 w.PlainText(Group.TimeoutValue);
                 w.PlainText(Group.SendMailDayInterval);
@@ -237,12 +254,14 @@ namespace Tango.Mail
         private const string PreProcessMethodID = "preprocessmethod";
         private const string PostProcessMethodID = "postprocessmethod";
         private const string DeleteMethodID = "deletemethod";
+        private const string AfterSentMethodID = "aftersent";
         
         private IEnumerable<SelectListItem> _selectMailTemplate;
         private IEnumerable<SelectListItem> _selectMailCategory;
         private List<(MethodSettingsField, MethodSettings)> _preProcessMethodFields;
         private List<(MethodSettingsField, MethodSettings)> _postProcessMethodFields;
         private List<(MethodSettingsField, MethodSettings)> _deleteMethodFields;
+        private List<(MethodSettingsField, MethodSettings)> _afterSentFields;
         
         public override void OnInit()
         {
@@ -251,6 +270,7 @@ namespace Tango.Mail
             _preProcessMethodFields = GenetateFields(MailTypeCacheKeys.PreProcessingMailMethod, PreProcessMethodID, ViewData.PreProcessingMethod);
             _postProcessMethodFields = GenetateFields(MailTypeCacheKeys.PostProcessingMailMethod, PostProcessMethodID, ViewData.PostProcessingMethod);
             _deleteMethodFields = GenetateFields(MailTypeCacheKeys.DeleteMailMethod, DeleteMethodID, ViewData.DeleteMethod);
+            _afterSentFields = GenetateFields(MailTypeCacheKeys.AfterSentMethod, AfterSentMethodID, ViewData.AfterSentMethod);
 
             _selectMailTemplate = Database.Connection.Query<MailTemplate>(Repository.GetMailTemplateSql()).ToList()
                 .OrderBy(x => x.MailTemplateID)
@@ -413,7 +433,29 @@ namespace Tango.Mail
                         cnt++;
                     }
                     
-                    w.A(a => a.OnClickPostEvent(OnPostMethodsAdd), "добавить");
+                    w.A(a => a.OnClickPostEvent(OnDeleteMethodsAdd), "добавить");
+                });
+                
+                w.FormField(Group.AfterSentMethod, () =>
+                {
+                    var cnt = 0;
+                    foreach (var (field, ms) in _afterSentFields)
+                    {
+                        field.Render(w, new MethodSettings
+                        {
+                            ClassName = ms.ClassName,
+                            MethodName = ms.MethodName,
+                            Params = ms.Params
+                        });
+                        // if (cnt > 0)
+                        // {
+                        //     w.Span(a => a.ID($"{field.ID}_deletebtn").Class("cal-openbtn").Title("Удалить")
+                        //         .OnClick("this.removeChild(this.parentNode);"), () => w.Icon("delete"));
+                        // }
+                        cnt++;
+                    }
+                    
+                    w.A(a => a.OnClickPostEvent(OnAfterSentMethodsAdd), "добавить");
                 });
                 
                 w.TextBox(Group.TimeoutValue);
@@ -435,6 +477,9 @@ namespace Tango.Mail
             
             var deleteJson = CreateMethodSettingsColletionJson(DeleteMethodID);
             ViewData.DeleteMethod = deleteJson;
+            
+            var afterSentJson = CreateMethodSettingsColletionJson(AfterSentMethodID);
+            ViewData.AfterSentMethod = afterSentJson;
         }
 
         private string CreateMethodSettingsColletionJson(string key)
@@ -493,6 +538,16 @@ namespace Tango.Mail
         public void OnPostMethodsAdd(ApiResponse response)
         {
             AddMethodField(response, PostProcessMethodID);
+        }
+        
+        public void OnDeleteMethodsAdd(ApiResponse response)
+        {
+            AddMethodField(response, DeleteMethodID);
+        }
+        
+        public void OnAfterSentMethodsAdd(ApiResponse response)
+        {
+            AddMethodField(response, AfterSentMethodID);
         }
 
         public void AddMethodField(ApiResponse response, string id)

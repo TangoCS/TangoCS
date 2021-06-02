@@ -161,7 +161,26 @@ namespace Tango
 
 namespace Tango.Mail
 {
-    public class MailMessageContext
+    public interface IMethodContext
+    {
+        IDatabase Database { get; }
+        MailMessage MailMessage { get; set; }
+    }
+
+    public class AfterSentContext : IMethodContext
+    {
+        public AfterSentContext(IDatabase database)
+        {
+            Database = database;
+        }
+        
+        public IDatabase Database { get; }
+        public MailMessage MailMessage { get; set; }
+        public string Server { get; set; }
+        public int Port { get; set; }
+    }
+    
+    public class MailMessageContext : IMethodContext
     {
         public MailMessageContext(IDatabase database)
         {
@@ -203,32 +222,6 @@ namespace Tango.Mail
             return param.Value;
         }
 
-        public void DeleteMailMessage(MailMessage mailMessage)
-        {
-            if (!string.IsNullOrEmpty(mailMessage.DeleteMethod))
-            {
-                var mailMessageContext = new MailMessageContext(_database) {MailMessage = mailMessage};
-
-                using (var transaction = _database.BeginTransaction())
-                {
-                    try
-                    {
-                        var mailMethods = JsonConvert.DeserializeObject<MethodSettingsCollection>(mailMessage.DeleteMethod);
-                        foreach (var methodSetting in mailMethods.MethodSettings)
-                        {
-                            _methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
-                        }
-                        
-                        transaction.Commit();
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-                    }
-                }
-            }
-        }
-
         public void CreateMailMessage<TEntity>(string systemName, TEntity viewData)
         {
             var mailSettings = _mailHelperRepository.GetMailSettingsBySystemName(systemName);
@@ -252,7 +245,8 @@ namespace Tango.Mail
                             MailCategoryID = mailSettings.MailCategoryID,
                             TimeoutValue = mailSettings.TimeoutValue,
                             LastModifiedUserID = _userIdAccessor.CurrentUserID ?? _userIdAccessor.SystemUserID,
-                            DeleteMethod = mailSettings.DeleteMethod
+                            DeleteMethod = mailSettings.DeleteMethod,
+                            AfterSentMethod = mailSettings.AfterSentMethod
                         }
                     };
 
@@ -294,22 +288,22 @@ namespace Tango.Mail
                     if (string.IsNullOrEmpty(mailMessageContext.MailMessage.FromEmail))
                         throw new MailHelperValidateException($"Не заполнен Email отправителя в настройке {mailSettings.Title}");
 
+                    _database.Repository<MailMessage>().Create(mailMessageContext.MailMessage);
+
+                    foreach (var existFileId in mailMessageContext.ExistingFileIds)
+                    {
+                        var mailMessageAttachment = new MailMessageAttachment
+                        {
+                            MailMessageID = mailMessageContext.MailMessage.MailMessageID,
+                            FileGUID = existFileId
+                        };
+                        _database.Repository<MailMessageAttachment>().Create(mailMessageAttachment);
+                    }
+                    
                     using (var transaction = _database.BeginTransaction())
                     {
                         try
                         {
-                            _database.Repository<MailMessage>().Create(mailMessageContext.MailMessage);
-
-                            foreach (var existFileId in mailMessageContext.ExistingFileIds)
-                            {
-                                var mailMessageAttachment = new MailMessageAttachment
-                                {
-                                    MailMessageID = mailMessageContext.MailMessage.MailMessageID,
-                                    FileGUID = existFileId
-                                };
-                                _database.Repository<MailMessageAttachment>().Create(mailMessageAttachment);
-                            }
-
                             if (!string.IsNullOrEmpty(mailSettings.PostProcessingMethod))
                             {
                                 var mailMethods = JsonConvert.DeserializeObject<MethodSettingsCollection>(mailSettings.PostProcessingMethod);
@@ -322,11 +316,11 @@ namespace Tango.Mail
                                             methodSetting.Params[param.Key] = GetValue(param, viewData);
                                         }
                                     }
-
+                            
                                     _methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
                                 }
                             }
-
+                    
                             transaction.Commit();
                         }
                         catch(Exception ex)
@@ -334,6 +328,44 @@ namespace Tango.Mail
                             transaction.Rollback();
                         }
                     }
+                }
+            }
+        }
+
+        public void ExecuteAfterSentMethods(IMethodContext context)
+        {
+            if (!string.IsNullOrEmpty(context.MailMessage.AfterSentMethod))
+            {
+                ExecuteMethod(context, context.MailMessage.AfterSentMethod);
+            }
+        }
+        
+        public void DeleteMailMessage(MailMessage mailMessage)
+        {
+            if (!string.IsNullOrEmpty(mailMessage.DeleteMethod))
+            {
+                var mailMessageContext = new MailMessageContext(_database) {MailMessage = mailMessage};
+                ExecuteMethod(mailMessageContext, mailMessage.DeleteMethod);
+            }
+        }
+
+        private void ExecuteMethod(IMethodContext context, string method)
+        {
+            using (var transaction = _database.BeginTransaction())
+            {
+                try
+                {
+                    var mailMethods = JsonConvert.DeserializeObject<MethodSettingsCollection>(method);
+                    foreach (var methodSetting in mailMethods.MethodSettings)
+                    {
+                        _methodHelper.ExecuteMethod(methodSetting, context);
+                    }
+                        
+                    transaction.Commit();
+                }
+                catch
+                {
+                    transaction.Rollback();
                 }
             }
         }

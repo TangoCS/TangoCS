@@ -15,6 +15,7 @@ namespace Tango.Mail
             public PreProcessingMethod PreProcessingMethod { get; set; }
             public PostProcessingMethod PostProcessingMethod { get; set; }
             public DeleteMethod DeleteMethod { get; set; }
+            public AfterSentMethod AfterSentMethod { get; set; }
             public TimeoutValue TimeoutValue { get; set; }
             public SendMailDayInterval SendMailDayInterval { get; set; }
             public SendMailStartInterval SendMailStartInterval { get; set; }
@@ -60,6 +61,15 @@ namespace Tango.Mail
         }
         
         public class DeleteMethod : EntityField<MailSettings, MethodSettings>
+        {
+            public override bool IsRequired { get; set; } = false;
+            public override void SubmitProperty(ValidationMessageCollection val)
+            {
+                //base.SubmitProperty(val);
+            }
+        }
+        
+        public class AfterSentMethod : EntityField<MailSettings, MethodSettings>
         {
             public override bool IsRequired { get; set; } = false;
             public override void SubmitProperty(ValidationMessageCollection val)

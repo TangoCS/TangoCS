@@ -64,6 +64,8 @@ namespace Tango.Mail
         public virtual object LastModifiedUserID { get; set; }
         [Column]
         public virtual string DeleteMethod { get; set; }
+        [Column]
+        public virtual string AfterSentMethod { get; set; }
         
         public string LastModifiedUserTitle { get; set; }
         
