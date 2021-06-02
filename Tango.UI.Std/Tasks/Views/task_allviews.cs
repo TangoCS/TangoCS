@@ -46,22 +46,15 @@ namespace Tango.Tasks
 			{
 				if (AccessControl.Check($"{typeof(TaskGroup).Name}.view_{group.ID}"))
 				{
-					var list = new tm_task_list {
-						ID = "tasks_" + group.ID,
-						GroupID = group.ID
-					};
-					tabs.Pages.Add(new TabPage(group.Title, list));
-					tabs.AddControl(list);
+                    tabs.CreateTabPage<tm_task_list>("tasks_" + group.ID, group.Title, c => {
+                        c.GroupID = group.ID;
+                    });
 				}
 			}
 			
 			if (Repository.Any(o => o.TaskGroupID == null))
 			{
-				var list_null = new tm_task_list {
-					ID = "tasks_null"
-				};
-				tabs.Pages.Add(new TabPage("Без категории", list_null));
-				tabs.AddControl(list_null);
+                tabs.CreateTabPage<tm_task_list>("tasks_null", "Без категории");
 			}
 		}
 
