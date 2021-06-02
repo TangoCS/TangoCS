@@ -78,10 +78,14 @@ namespace Tango.Mail
         public override void OnInit()
         {
             base.OnInit();
-            _attachmentViewlist = CreateControl<MailMessageAttachment_viewlist>("attachmentlist", c => {
-                c.MailMessageId = ViewData.MailMessageID;
-                c.Sections.RenderContentTitle = false;
-            });
+            if (ViewData != null)
+            {
+                _attachmentViewlist = CreateControl<MailMessageAttachment_viewlist>("attachmentlist", c =>
+                {
+                    c.MailMessageId = ViewData.MailMessageID;
+                    c.Sections.RenderContentTitle = false;
+                });
+            }
         }
 
         protected override void Form(LayoutWriter w)
@@ -118,13 +122,32 @@ namespace Tango.Mail
             return obj;
         }
         
+        public override void OnLoad(ApiResponse response)
+        {
+            if (ObjectNotExists)
+            {
+                response.AddWidget("form", w => {
+                    w.Div(() =>
+                    {
+                        w.Write($"Почтовая отправка с ID {Context.GetIntArg(Constants.Id)} не найдена");
+                        w.Write("<br />");
+                        w.ActionLink(al => al.ToList<MailMessage>(AccessControl).WithTitle("Перейти к списку сообщений для электронной почты"));
+                    });
+                });
+            }
+            else
+            {
+                base.OnLoad(response);
+            }
+        }
+        
         protected override void LinkedData(LayoutWriter w)
         {
-            w.GroupTitle(() =>
+            if (_attachmentViewlist != null)
             {
-                w.Write("Состав письма");
-            });
-            _attachmentViewlist.Render(w);
+                w.GroupTitle(() => { w.Write("Состав письма"); });
+                _attachmentViewlist.Render(w);
+            }
         }
     }
     
