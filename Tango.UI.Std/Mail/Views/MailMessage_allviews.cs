@@ -138,6 +138,8 @@ namespace Tango.Mail
             else
             {
                 base.OnLoad(response);
+                response.WithNamesAndWritersFor(_attachmentViewlist);
+                _attachmentViewlist.OnLoad(response);
             }
         }
         
@@ -146,7 +148,7 @@ namespace Tango.Mail
             if (_attachmentViewlist != null)
             {
                 w.GroupTitle(() => { w.Write("Состав письма"); });
-                _attachmentViewlist.Render(w);
+                _attachmentViewlist.RenderPlaceHolder(w);
             }
         }
     }

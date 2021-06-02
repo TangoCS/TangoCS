@@ -277,16 +277,24 @@ namespace Tango.Mail
                                 methodSetting.Params[param.Key] = GetValue(param, viewData);
                             }
 
-                            _methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
+                            try
+                            {
+                                _methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
+                            }
+                            catch
+                            {
+                                throw new MailHelperException("Ошибка выполнения метода предварительной обработки " +
+                                                              $"для настройки ${mailSettings.Title}. Метод {methodSetting.ClassName}.{methodSetting.MethodName}");
+                            }
                         }
                     }
                     
                     // Валидация на обязательные поля: Email отправителя, Email получателя
                     if (string.IsNullOrEmpty(mailMessageContext.MailMessage.Recipients))
-                        throw new MailHelperValidateException($"Не заполнены адреса получателей в настройке {mailSettings.Title}");
+                        throw new MailHelperException($"Не заполнены адреса получателей в настройке {mailSettings.Title}");
                     
                     if (string.IsNullOrEmpty(mailMessageContext.MailMessage.FromEmail))
-                        throw new MailHelperValidateException($"Не заполнен Email отправителя в настройке {mailSettings.Title}");
+                        throw new MailHelperException($"Не заполнен Email отправителя в настройке {mailSettings.Title}");
 
                     _database.Repository<MailMessage>().Create(mailMessageContext.MailMessage);
 
@@ -316,14 +324,22 @@ namespace Tango.Mail
                                             methodSetting.Params[param.Key] = GetValue(param, viewData);
                                         }
                                     }
-                            
-                                    _methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
+
+                                    try
+                                    {
+                                        _methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
+                                    }
+                                    catch
+                                    {
+                                        throw new MailHelperException("Ошибка выполнения метода постобработки " +
+                                                                      $"для настройки ${mailSettings.Title}. Метод {methodSetting.ClassName}.{methodSetting.MethodName}");
+                                    }
                                 }
                             }
                     
                             transaction.Commit();
                         }
-                        catch(Exception ex)
+                        catch
                         {
                             transaction.Rollback();
                         }
@@ -413,13 +429,13 @@ namespace Tango.Mail
         }
     }
 
-    public class MailHelperValidateException : Exception
+    public class MailHelperException : Exception
     {
-        public MailHelperValidateException(string message) : base(message)
+        public MailHelperException(string message) : base(message)
         {
         }
 
-        public MailHelperValidateException(string message, Exception ex) : base(message, ex)
+        public MailHelperException(string message, Exception ex) : base(message, ex)
         {
         }
     }
