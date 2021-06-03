@@ -554,7 +554,28 @@ namespace Tango.Mail
         {
             var cnt = Context.AllArgs.Count(x => x.Key.StartsWith(id) && x.Key.EndsWith("_ddl"));
 
-            var (lastPm, methodSettings) = _preProcessMethodFields.Last();
+            List<(MethodSettingsField, MethodSettings)> fields = null;
+            switch (id)
+            {
+                case PreProcessMethodID:
+                    fields = _preProcessMethodFields;
+                    break;
+                case PostProcessMethodID:
+                    fields = _postProcessMethodFields;
+                    break;
+                case DeleteMethodID:
+                    fields = _deleteMethodFields;
+                    break;
+                case AfterSentMethodID:
+                    fields = _afterSentFields;
+                    break;
+            }
+            
+            if(fields == null)
+                return;
+            
+            var (lastPm, methodSettings) = fields.LastOrDefault();
+            if(lastPm == null) return;
             lastPm.ID = $"{id}{cnt + 1}";
             
             response.WithNamesFor(this);
