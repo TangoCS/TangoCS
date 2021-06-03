@@ -721,5 +721,10 @@ namespace Tango
 				return ms.ToArray();
 			}
 		}
+
+		public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TValue> defaultValueProvider)
+		{
+			return dictionary.TryGetValue(key, out var value) ? value : defaultValueProvider();
+		}
 	}
 }
