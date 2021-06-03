@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using Tango.AccessControl;
 using Tango.Html;
+using Tango.Localization;
 using Tango.UI.Std;
 
 namespace Tango.UI.Controls
@@ -18,9 +21,25 @@ namespace Tango.UI.Controls
 			return Pages.Where(o => o.ID == curid).FirstOrDefault() ?? Pages.FirstOrDefault();
 		}
 
-		public T CreateTabPage<T>(string id, string title, Action<T> setProperties = null)
+		public T CreateTabPage<T>(string id, string title, Action<T> setProperties = null, IAccessControl accessControl = null)
 			where T : ViewPagePart, new()
+		
 		{
+			// if (accessControl != null)
+			// {
+			// 	var entityType = typeof(T).GetResourceType();
+			// 	var attrs = entityType.GetCustomAttributes<OnActionAttribute>();
+			// 	if (attrs != null && attrs.Count() == 1)
+			// 	{
+			// 		var a = attrs.First();
+			// 		var name = (a.Service + "." + a.Action).ToLower();
+			//
+			// 		if (!accessControl.Check(name))
+			// 			return null;
+			// 	}	
+			// }
+			
+
 			var c = CreateControl(id, setProperties);
 			c.IsLazyLoad = true;
 			Pages.Add(new TabPage(title, c));
