@@ -111,7 +111,9 @@ namespace Tango.UI.Std
 
 				foreach (var t in nodeTemplates)
 				{
-					var nodeQuery = Paging.Apply(q, true);
+					var nodeQuery = q;
+					if (Sections.RenderPaging)
+						nodeQuery = Paging.Apply(nodeQuery, true);
 					var nodeQueryCnt = q;
 
 					var nodeWhere = new List<string>(where);
