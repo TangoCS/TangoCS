@@ -62,7 +62,7 @@ namespace Tango.Mail
                 o => al => al.To<MailMessageAttachment>("attachments", AccessControl)
                     .WithArg(Constants.Id, o.ID).WithArg("title", o.Subject).WithImage("hie")
                     .WithTitle("Состав письма"),
-                o => al => al.ToDelete<MailMessage>(AccessControl, o.MailMessageID, new object[] {o, AccessControl})); // TODO: сделать нормально. сейчас через костыльный предикат
+                o => al => al.ToDelete<MailMessage>(AccessControl, o.MailMessageID, o));
         }
     }
 

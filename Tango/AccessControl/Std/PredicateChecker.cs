@@ -56,7 +56,7 @@ namespace Tango.AccessControl.Std
 				return null;
 
 			ParameterExpression obj = Expression.Parameter(typeof(object), "obj");
-			ParameterExpression services = Expression.Parameter(typeof(object), "services");
+			ParameterExpression services = Expression.Parameter(typeof(IServiceProvider), "services");
 
 			List<Expression> args = new List<Expression>();
 			for (int i = 0; i < parms.Length; i++)
