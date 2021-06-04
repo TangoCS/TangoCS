@@ -227,21 +227,31 @@ namespace Tango.Mail
             });
         }
 
+        public override void OnLoad(ApiResponse response)
+        {
+            base.OnLoad(response);
+            response.WithNamesAndWritersFor(_mailSettingsTemplateList);
+            _mailSettingsTemplateList.OnLoad(response);
+        }
+
         protected override void LinkedData(LayoutWriter w)
         {
-            w.GroupTitle(() =>
+            if (_mailSettingsTemplateList != null)
             {
-                w.Write("Шаблон письма");
-                if (!ViewData.HasTemplate)
+                w.GroupTitle(() =>
                 {
-                    w.Write("&nbsp;");
-                    w.ActionImage(al => al.ToCreateNew<MailSettingsTemplate>(AccessControl)
-                        .WithArg("s", ViewData.ID)
-                        .WithTitle("Добавить шаблон")
-                        .WithImage("new2"));
-                }
-            });
-            _mailSettingsTemplateList.Render(w);
+                    w.Write("Шаблон письма");
+                    if (!ViewData.HasTemplate)
+                    {
+                        w.Write("&nbsp;");
+                        w.ActionImage(al => al.ToCreateNew<MailSettingsTemplate>(AccessControl)
+                            .WithArg("s", ViewData.ID)
+                            .WithTitle("Добавить шаблон")
+                            .WithImage("new2"));
+                    }
+                });
+                _mailSettingsTemplateList.RenderPlaceHolder(w);
+            }
         }
     }
     

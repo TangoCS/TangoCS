@@ -212,7 +212,7 @@ namespace Tango.Mail
         {
             if (param.Value.ToString().StartsWith("@"))
             {
-                var propInfo = typeof(TEntity).GetProperty(param.Value.ToString().Replace("@", ""),
+                var propInfo = typeof(TEntity).GetProperty(param.Value.ToString().Replace("@", "").Trim(),
                     BindingFlags.Instance |
                     BindingFlags.Public |
                     BindingFlags.IgnoreCase);
