@@ -11,12 +11,8 @@ namespace Tango.Mail
         public class SystemID : EntityField<C_MailCategory, int>
         {
         }
-        public class MailType : EntityField<C_MailCategory, int>
+        public class MailCategoryTypeTitle : EntityField<C_MailCategory, string>
         {
-            public override int DefaultValue => 0;
-            public override void ValidateFormValue(ValidationMessageCollection val) { }
-
-            public override string StringValue => ViewData.GetMailTypes().FirstOrDefault(i => i.Value == Value.ToString())?.Text;
         }
         
         public class DefaultGroup : FieldGroup
@@ -24,7 +20,7 @@ namespace Tango.Mail
             public CommonFields.Title Title { get; set; }
             public SystemName SystemName { get; set; }
             public SystemID SystemID { get; set; }
-            public MailType MailType { get; set; }
+            public MailCategoryTypeTitle MailCategoryTypeTitle { get; set; }
         }
     }
 }

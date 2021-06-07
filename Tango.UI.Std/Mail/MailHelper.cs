@@ -12,6 +12,11 @@ using Tango.Identity;
 
 namespace Tango
 {
+    public interface IMethodContext
+    {
+        IDatabase Database { get; }
+    }
+
     public class MethodSettingsCollection
     {
         public MethodSettings[] MethodSettings { get; set; }
@@ -26,7 +31,7 @@ namespace Tango
 
     public class MethodHelper
     {
-        public void ExecuteMethodCollection<TContext>(MethodSettingsCollection methodSettingsCollection, TContext context)
+        public void ExecuteMethodCollection<TContext>(MethodSettingsCollection methodSettingsCollection, TContext context) where TContext: IMethodContext
         {
             foreach (var methodSetting in methodSettingsCollection.MethodSettings)
             {
@@ -34,7 +39,7 @@ namespace Tango
             }
         }
 
-        public void ExecuteMethod<TContext>(MethodSettings methodSettings, TContext context)
+        public void ExecuteMethod<TContext>(MethodSettings methodSettings, TContext context) where TContext: IMethodContext
         {
             var objectType = AppDomain.CurrentDomain
                 .GetAssemblies()
@@ -98,7 +103,7 @@ namespace Tango
             }
         }
 
-        public TRet ExecuteMethod<TRet, TContext>(MethodSettings methodSettings, TContext context)
+        public TRet ExecuteMethod<TRet, TContext>(MethodSettings methodSettings, TContext context) where TContext: IMethodContext
         {
             var objectType = AppDomain.CurrentDomain
                 .GetAssemblies()
@@ -161,26 +166,25 @@ namespace Tango
 
 namespace Tango.Mail
 {
-    public interface IMethodContext
+    public interface IMailMethodContext : IMethodContext
     {
-        IDatabase Database { get; }
         MailMessage MailMessage { get; set; }
     }
-
-    public class AfterSentContext : IMethodContext
+    
+    public class AfterSentContext : IMailMethodContext
     {
         public AfterSentContext(IDatabase database)
         {
             Database = database;
         }
-        
+
         public IDatabase Database { get; }
         public MailMessage MailMessage { get; set; }
         public string Server { get; set; }
         public int Port { get; set; }
     }
-    
-    public class MailMessageContext : IMethodContext
+
+    public class MailMessageContext : IMailMethodContext
     {
         public MailMessageContext(IDatabase database)
         {
@@ -200,7 +204,8 @@ namespace Tango.Mail
         private readonly MethodHelper _methodHelper;
         private readonly IMailHelperRepository _mailHelperRepository;
 
-        public MailHelper(IDatabase database, IUserIdAccessor<object> userIdAccessor, MethodHelper methodHelper, IMailHelperRepository mailHelperRepository)
+        public MailHelper(IDatabase database, IUserIdAccessor<object> userIdAccessor, MethodHelper methodHelper,
+            IMailHelperRepository mailHelperRepository)
         {
             _database = database;
             _userIdAccessor = userIdAccessor;
@@ -210,16 +215,17 @@ namespace Tango.Mail
 
         private object GetValue<TEntity>(KeyValuePair<string, object> param, TEntity viewData)
         {
-            if (param.Value.ToString().StartsWith("@"))
+            var value = param.Value;
+            if (value != null && value.ToString().StartsWith("@"))
             {
-                var propInfo = typeof(TEntity).GetProperty(param.Value.ToString().Replace("@", "").Trim(),
+                var propInfo = typeof(TEntity).GetProperty(value.ToString().Replace("@", "").Trim(),
                     BindingFlags.Instance |
                     BindingFlags.Public |
                     BindingFlags.IgnoreCase);
-                return propInfo != null ? propInfo.GetValue(viewData) : param.Value;
+                return propInfo != null ? propInfo.GetValue(viewData) : value;
             }
 
-            return param.Value;
+            return value;
         }
 
         public void CreateMailMessage<TEntity>(string systemName, TEntity viewData)
@@ -251,17 +257,18 @@ namespace Tango.Mail
                     };
 
                     var date = mailMessageContext.MailMessage.CreateDate.Date;
-                    if (mailSettings.SendMailStartInterval != TimeSpan.Zero || mailSettings.SendMailFinishInterval != TimeSpan.Zero)
+                    if (mailSettings.SendMailStartInterval != TimeSpan.Zero ||
+                        mailSettings.SendMailFinishInterval != TimeSpan.Zero)
                     {
                         mailMessageContext.MailMessage.StartSendDate = date
                             .AddDays(mailSettings.SendMailDayInterval)
                             .Add(mailSettings.SendMailStartInterval);
-                        
+
                         mailMessageContext.MailMessage.FinishSendDate = date
                             .AddDays(mailSettings.SendMailDayInterval)
                             .Add(mailSettings.SendMailFinishInterval);
                     }
-                    else if(mailSettings.SendMailDayInterval > 0)
+                    else if (mailSettings.SendMailDayInterval > 0)
                     {
                         mailMessageContext.MailMessage.StartSendDate = date.AddDays(mailSettings.SendMailDayInterval);
                         mailMessageContext.MailMessage.FinishSendDate = date.AddDays(mailSettings.SendMailDayInterval).EndDay();
@@ -284,15 +291,16 @@ namespace Tango.Mail
                             catch
                             {
                                 throw new MailHelperException("Ошибка выполнения метода предварительной обработки " +
-                                                              $"для настройки ${mailSettings.Title}. Метод {methodSetting.ClassName}.{methodSetting.MethodName}");
+                                                              $"для настройки {mailSettings.Title} ({mailSettings.SystemName}). " +
+                                                              $"Метод {methodSetting.ClassName}.{methodSetting.MethodName}");
                             }
                         }
                     }
-                    
+
                     // Валидация на обязательные поля: Email отправителя, Email получателя
                     if (string.IsNullOrEmpty(mailMessageContext.MailMessage.Recipients))
                         throw new MailHelperException($"Не заполнены адреса получателей в настройке {mailSettings.Title}");
-                    
+
                     if (string.IsNullOrEmpty(mailMessageContext.MailMessage.FromEmail))
                         throw new MailHelperException($"Не заполнен Email отправителя в настройке {mailSettings.Title}");
 
@@ -307,7 +315,7 @@ namespace Tango.Mail
                         };
                         _database.Repository<MailMessageAttachment>().Create(mailMessageAttachment);
                     }
-                    
+
                     using (var transaction = _database.BeginTransaction())
                     {
                         try
@@ -319,10 +327,7 @@ namespace Tango.Mail
                                 {
                                     foreach (var param in methodSetting.Params)
                                     {
-                                        if (param.Value.ToString().StartsWith("@"))
-                                        {
-                                            methodSetting.Params[param.Key] = GetValue(param, viewData);
-                                        }
+                                        methodSetting.Params[param.Key] = GetValue(param, viewData);
                                     }
 
                                     try
@@ -332,11 +337,12 @@ namespace Tango.Mail
                                     catch
                                     {
                                         throw new MailHelperException("Ошибка выполнения метода постобработки " +
-                                                                      $"для настройки ${mailSettings.Title}. Метод {methodSetting.ClassName}.{methodSetting.MethodName}");
+                                                                      $"для настройки {mailSettings.Title} ({mailSettings.SystemName}). " +
+                                                                      $"Метод {methodSetting.ClassName}.{methodSetting.MethodName}");
                                     }
                                 }
                             }
-                    
+
                             transaction.Commit();
                         }
                         catch
@@ -348,14 +354,14 @@ namespace Tango.Mail
             }
         }
 
-        public void ExecuteAfterSentMethods(IMethodContext context)
+        public void ExecuteAfterSentMethods(IMailMethodContext context)
         {
             if (!string.IsNullOrEmpty(context.MailMessage.AfterSentMethod))
             {
                 ExecuteMethod(context, context.MailMessage.AfterSentMethod);
             }
         }
-        
+
         public void DeleteMailMessage(MailMessage mailMessage)
         {
             if (!string.IsNullOrEmpty(mailMessage.DeleteMethod))
@@ -365,7 +371,7 @@ namespace Tango.Mail
             }
         }
 
-        private void ExecuteMethod(IMethodContext context, string method)
+        private void ExecuteMethod(IMailMethodContext context, string method)
         {
             using (var transaction = _database.BeginTransaction())
             {
@@ -376,7 +382,7 @@ namespace Tango.Mail
                     {
                         _methodHelper.ExecuteMethod(methodSetting, context);
                     }
-                        
+
                     transaction.Commit();
                 }
                 catch
@@ -389,7 +395,9 @@ namespace Tango.Mail
         private MailTemplate GetMailTemplate(MailSettings mailSettings)
         {
             var mailSettingsTemplate = _mailHelperRepository.GetMailSettingsTemplateByMailSettingsId(mailSettings.MailSettingsID);
-            return mailSettingsTemplate != null ? _database.Repository<MailTemplate>().GetById(mailSettingsTemplate.MailTemplateID) : null;
+            return mailSettingsTemplate != null
+                ? _database.Repository<MailTemplate>().GetById(mailSettingsTemplate.MailTemplateID)
+                : null;
         }
 
         private (string subject, string body) ParseTemplate<T>(string templateSubject, string templateBody, T viewData)
