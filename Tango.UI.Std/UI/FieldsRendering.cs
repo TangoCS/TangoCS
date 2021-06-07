@@ -125,7 +125,7 @@ namespace Tango.UI
 				grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, field.Hint, field.WithCheckBox,field.Disabled, isViewCaption);           
         }
 
-		public static void DropDownList<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, GridPosition grid = null, Action<SelectTagAttributes> attrs = null, string hint = null)
+		public static void DropDownList<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, GridPosition grid = null, Action<SelectTagAttributes> attrs = null, string hint = null, bool isViewCaption = true)
 		{
 			var value = typeof(TValue).IsEnum ?
 				field.Value == null ? "" : Convert.ChangeType(field.Value, Enum.GetUnderlyingType(typeof(TValue))).ToString() : 
@@ -140,7 +140,7 @@ namespace Tango.UI
 			if (field.ReadOnly)
 				w.AddClientAction("domActions", "setAttribute", f => new { id = f(field.ID), attrName = "readonly", attrValue = "readonly" });
 
-			w.FormField(field, () => w.DropDownList(field.ID, value, items, attrs), grid);
+			w.FormField(field, () => w.DropDownList(field.ID, value, items, attrs), grid, isViewCaption: isViewCaption);
 		}
 
 		//public static void Calendar(this LayoutWriter w, IField<DateTime> field, Action<InputTagAttributes> attributes = null, GridPosition grid = null)
