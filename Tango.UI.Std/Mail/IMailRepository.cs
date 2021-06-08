@@ -7,7 +7,8 @@ namespace Tango.Mail
 {
     public interface IMailCategoryRepository : IRepository<C_MailCategory>
     {
-        IEnumerable<(string, int)> GetSystemNames();
+        IEnumerable<(string title, int id)> GetSystemNames();
+        IEnumerable<(string title, int id)> GetMailCategoryTypes();
     }
 
     public interface IMailTemplateRepository : IRepository<MailTemplate>

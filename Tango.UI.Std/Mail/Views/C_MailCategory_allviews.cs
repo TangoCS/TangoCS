@@ -22,7 +22,7 @@ namespace Tango.Mail
             fields.AddCellWithSortAndFilter(o => o.Title, (w, o) => 
                 w.ActionLink(al => al.To("mailCategory", "view", AccessControl).WithArg(Constants.Id, o.ID).WithTitle(o.Title)));
             fields.AddCellWithSortAndFilter(o => o.SystemName, o=>o.SystemName);
-            fields.AddCellWithSortAndFilter(o => o.MailType, o => o.MailType.Icon());
+            fields.AddCellWithSortAndFilter(o => o.MailCategoryTypeTitle, o => o.MailCategoryTypeTitle);
             fields.AddActionsCell(
                 o => al => al.To("mailCategory", "edit", AccessControl).WithArg(Constants.Id, o.ID)
                     .WithImage("edit").WithTitle("Редактировать"),
@@ -45,8 +45,10 @@ namespace Tango.Mail
     {
         protected C_MailCategoryFields.DefaultGroup Group { get; set; }
 
-        private IEnumerable<SelectListItem> GetSystemNames() => Repository.GetSystemNames().OrderBy(x => x.Item1)
-            .Select(o => new SelectListItem(o.Item1, o.Item2));
+        private IEnumerable<SelectListItem> GetSystemNames() => Repository.GetSystemNames().OrderBy(x => x.title)
+            .Select(o => new SelectListItem(o.title, o.id));
+        private IEnumerable<SelectListItem> GetMailTypes() => Repository.GetMailCategoryTypes().OrderBy(x => x.title)
+            .Select(o => new SelectListItem(o.title, o.id));
         
         protected override void Form(LayoutWriter w)
         {
@@ -54,7 +56,7 @@ namespace Tango.Mail
             {
                 w.TextBox(Group.Title);
                 w.DropDownList(Group.SystemID, GetSystemNames());
-                w.DropDownList(Group.MailType, ViewData.GetMailTypes());
+                w.DropDownList(Group.MailCategoryTypeTitle, GetMailTypes());
             });
         }
     }
@@ -70,7 +72,7 @@ namespace Tango.Mail
             {
                 w.PlainText(Group.Title);
                 w.PlainText(Group.SystemName);
-                w.PlainText(Group.MailType);
+                w.PlainText(Group.MailCategoryTypeTitle);
             });
         }
         

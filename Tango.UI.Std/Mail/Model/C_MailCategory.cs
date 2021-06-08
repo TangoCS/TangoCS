@@ -23,15 +23,10 @@ namespace Tango.Mail
         [Column]
         public virtual int SystemID { get; set; }
         [Column]
-        public virtual int MailType { get; set; }
+        public virtual int MailCategoryTypeID { get; set; }
+        public string MailCategoryTypeTitle { get; set; }
         [Column]
         public virtual string Title { get; set; }
         public string SystemName { get; set; }
-        
-        public IEnumerable<SelectListItem> GetMailTypes() => new List<SelectListItem>
-        {
-            new SelectListItem("Административная", 0),
-            new SelectListItem("Пользовательская", 1)
-        };
     }
 }
