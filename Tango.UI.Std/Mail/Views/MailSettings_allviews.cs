@@ -75,6 +75,28 @@ namespace Tango.Mail
 
             return result;
         }
+
+        public static string GetRecipientsMethodParams(string methodJson)
+        {
+            var methodSettingsCollection = JsonConvert.DeserializeObject<MethodSettingsCollection>(methodJson);
+            foreach (var ms in methodSettingsCollection.MethodSettings)
+            {
+                if (ms.ClassName.EndsWith("RecipientsMail") && ms.MethodName.Equals("Run"))
+                {
+                    if (ms.Params.Values.Any())
+                    {
+                        var item = ms.Params.Values.FirstOrDefault();
+                        if (item == null) return string.Empty;
+                        return item.ToString().StartsWith("@")
+                            ? "Получатели определяются методом формирования"
+                            : item.ToString();
+                    }
+                    return ms.Params.Values?.ToString();
+                }
+            }
+
+            return string.Empty;
+        }
     }
     
     [OnAction(typeof(MailSettings), "viewlist")]
@@ -90,23 +112,20 @@ namespace Tango.Mail
             {
                 if (!string.IsNullOrEmpty(item.PreProcessingMethod))
                 {
-                    item.PreProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PreProcessingMailMethod,
-                        item.PreProcessingMethod);
+                    item.Recipients = MailSettingsHelper.GetRecipientsMethodParams(item.PreProcessingMethod);
+                    item.PreProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PreProcessingMailMethod, item.PreProcessingMethod);
                 }
                 if (!string.IsNullOrEmpty(item.PostProcessingMethod))
                 {
-                    item.PostProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PostProcessingMailMethod,
-                        item.PostProcessingMethod);
+                    item.PostProcessingMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.PostProcessingMailMethod, item.PostProcessingMethod);
                 }
                 if (!string.IsNullOrEmpty(item.DeleteMethod))
                 {
-                    item.DeleteMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.DeleteMailMethod,
-                        item.DeleteMethod);
+                    item.DeleteMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.DeleteMailMethod, item.DeleteMethod);
                 }
                 if (!string.IsNullOrEmpty(item.AfterSentMethod))
                 {
-                    item.AfterSentMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.AfterSentMethod,
-                        item.AfterSentMethod);
+                    item.AfterSentMethod = MailSettingsHelper.GetMethodName(MailTypeCacheKeys.AfterSentMethod, item.AfterSentMethod);
                 }
             }
 
@@ -121,9 +140,9 @@ namespace Tango.Mail
             fields.AddCellWithSortAndFilter(o => o.MailCategoryTitle, o=>o.MailCategoryTitle);
             fields.AddCellWithSortAndFilter(o => o.AttemptsToSendCount, o=>o.AttemptsToSendCount);
             fields.AddCellWithSortAndFilter(o => o.TimeoutValue, o=>o.TimeoutValue);
+            fields.AddCell(o => o.Recipients, o => o.Recipients);
             fields.AddCellWithSortAndFilter(o => o.PreProcessingMethod, o => o.PreProcessingMethod);
             fields.AddCellWithSortAndFilter(o => o.PostProcessingMethod, o => o.PostProcessingMethod);
-            fields.AddCellWithSortAndFilter(o => o.DeleteMethod, o => o.DeleteMethod);
             fields.AddCellWithSortAndFilter(o => o.AfterSentMethod, o => o.AfterSentMethod);
             fields.AddCellWithSortAndFilter(o => o.SystemName, o => o.SystemName);
             fields.AddCell(o => o.SendMailDayInterval, o => o.SendMailDayInterval);

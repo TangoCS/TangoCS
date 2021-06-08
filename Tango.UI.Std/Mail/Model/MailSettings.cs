@@ -54,5 +54,6 @@ namespace Tango.Mail
         public string MailTemplateTitle { get; set; }
         public string MailCategoryTitle { get; set; }
         public bool HasTemplate { get; set; }
+        public string Recipients { get; set; }
     }
 }
