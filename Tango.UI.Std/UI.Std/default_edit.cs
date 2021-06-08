@@ -152,13 +152,21 @@ namespace Tango.UI.Std
 
 		public virtual void OnSubmit(ApiResponse response)
 		{
+			if (ObjectNotExists)
+			{
+				response.AddWidget("form", w => {
+					w.Div(Resources.Get("Common.ObjectNotExists"));
+				});
+				return;
+			}
+			
 			if (!ProcessSubmit(response)) 
 				return;
 
 			Submit(response);
 			AfterSubmit(response);
 		}
-
+		
 		protected virtual void ValidateFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ValidateFormData(val));
         protected virtual void PreProcessFormData(ApiResponse response, ValidationMessageCollection val) { }
         protected virtual void ProcessFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ProcessFormData(val));
@@ -510,6 +518,5 @@ namespace Tango.UI.Std
 	public abstract class default_edit_rep<T, TKey> : default_edit_rep<T, TKey, IRepository<T>>
 		where T : class, IWithKey<T, TKey>, new()
 	{
-		
 	}
 }
