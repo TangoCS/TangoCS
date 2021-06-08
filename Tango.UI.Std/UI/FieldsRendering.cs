@@ -14,7 +14,7 @@ namespace Tango.UI
 			content(field);
 		}
 
-		public static void FormField(this LayoutWriter w, IField field, Action content, GridPosition grid = null, bool isViewCaption = true)
+		public static void FormField(this LayoutWriter w, IField field, Action content, GridPosition grid = null)
 		{
 			w.FormField(
 				field.ID,
@@ -26,8 +26,7 @@ namespace Tango.UI
 				field.IsVisible,
 				field.Hint,
 				field.WithCheckBox,
-				field.Disabled,
-				isViewCaption
+				field.Disabled
 			);
 		}
 
@@ -36,16 +35,24 @@ namespace Tango.UI
 			w.FieldBlockRenderer.FormFieldCaption(w, field.ID, () => w.Write(field.Caption), field.IsRequired, field.Hint);
         }
 
-		public static void TextBox<TValue>(this LayoutWriter w, IField<TValue> field, GridPosition grid = null, Action<InputTagAttributes> attributes = null, bool isViewCaption = true)
+		public static void TextBox<TValue>(this LayoutWriter w, IField<TValue> field, GridPosition grid = null, Action<InputTagAttributes> attributes = null)
 		{
 			w.FormField(field, () => w.TextBox(field.ID, field.StringValue, a => {
 				if (field.Disabled) a.Disabled(true);
 				else if (field.ReadOnly) a.Readonly(true);
 				a.Set(attributes);
-			}), grid, isViewCaption) ;
-		}      
+			}), grid) ;
+		}
+		public static void TextBox2<TValue>(this LayoutWriter w, IField<TValue> field, GridPosition grid = null, Action<InputTagAttributes> attributes = null)
+		{
+			w.TextBox(field.ID, field.StringValue, a => {
+				if (field.Disabled) a.Disabled(true);
+				else if (field.ReadOnly) a.Readonly(true);
+				a.Set(attributes);
+			});
+		}
 
-        public static void Hidden<TValue>(this LayoutWriter w, IField<TValue> field)
+		public static void Hidden<TValue>(this LayoutWriter w, IField<TValue> field)
 		{
 			w.TextBox(field.ID, field.Value.ToString(), a => a.Type(InputType.Hidden));
 		}
@@ -116,16 +123,41 @@ namespace Tango.UI
 			}), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
 		}
 
-		public static void ToggleSwitch(this LayoutWriter w, IField<bool> field, GridPosition grid = null, Action<InputTagAttributes> attributes = null, bool isViewCaption = true)
+		public static void ToggleSwitch(this LayoutWriter w, IField<bool> field, GridPosition grid = null, Action<InputTagAttributes> attributes = null)
 		{
             if (field.FireOnChangeEvent && !field.Disabled && field.IsVisible)                         
                 attributes += a => a.Data("e", $"On{field.ID}Changed").Data("r", field.EventReceiver);
             
             w.FormField(field.ID, field.Caption, () => w.ToggleSwitch(field.ID, field.Value, field.Disabled, field.ReadOnly, attributes), 
-				grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, field.Hint, field.WithCheckBox,field.Disabled, isViewCaption);           
+				grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, field.Hint, field.WithCheckBox,field.Disabled);           
         }
 
-		public static void DropDownList<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, GridPosition grid = null, Action<SelectTagAttributes> attrs = null, string hint = null, bool isViewCaption = true)
+		public static void ToggleSwitch2(this LayoutWriter w, IField<bool> field, GridPosition grid = null, Action<InputTagAttributes> attributes = null)
+		{
+			if (field.FireOnChangeEvent && !field.Disabled && field.IsVisible)
+				attributes += a => a.Data("e", $"On{field.ID}Changed").Data("r", field.EventReceiver);
+
+			w.ToggleSwitch(field.ID, field.Value, field.Disabled, field.ReadOnly, attributes);
+		}
+		public static void DropDownList2<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attrs = null)
+		{
+			var value = typeof(TValue).IsEnum ?
+				field.Value == null ? "" : Convert.ChangeType(field.Value, Enum.GetUnderlyingType(typeof(TValue))).ToString() :
+				field.Value?.ToString();
+
+			if (field.FireOnChangeEvent && !field.Disabled && field.IsVisible)
+				attrs += a => a.OnChangePostEvent($"On{field.ID}Changed", field.EventReceiver);
+
+			if (field.Disabled)
+				attrs += a => a.Disabled(true);
+
+			if (field.ReadOnly)
+				w.AddClientAction("domActions", "setAttribute", f => new { id = f(field.ID), attrName = "readonly", attrValue = "readonly" });
+
+			w.DropDownList(field.ID, value, items, attrs);
+		}
+
+		public static void DropDownList<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, GridPosition grid = null, Action<SelectTagAttributes> attrs = null, string hint = null)
 		{
 			var value = typeof(TValue).IsEnum ?
 				field.Value == null ? "" : Convert.ChangeType(field.Value, Enum.GetUnderlyingType(typeof(TValue))).ToString() : 
@@ -140,7 +172,7 @@ namespace Tango.UI
 			if (field.ReadOnly)
 				w.AddClientAction("domActions", "setAttribute", f => new { id = f(field.ID), attrName = "readonly", attrValue = "readonly" });
 
-			w.FormField(field, () => w.DropDownList(field.ID, value, items, attrs), grid, isViewCaption: isViewCaption);
+			w.FormField(field, () => w.DropDownList(field.ID, value, items, attrs), grid);
 		}
 
 		//public static void Calendar(this LayoutWriter w, IField<DateTime> field, Action<InputTagAttributes> attributes = null, GridPosition grid = null)

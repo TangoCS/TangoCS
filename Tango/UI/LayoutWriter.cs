@@ -61,9 +61,9 @@ namespace Tango.UI
 			FieldBlockRenderer.FieldsBlock(this, attributes, content);
 		}
 
-		public void FormField(string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null, bool withCheck = false, bool isDisabled = false, bool isViewCaption = true)
+		public void FormField(string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null, bool withCheck = false, bool isDisabled = false)
 		{
-			FieldBlockRenderer.FormField(this, name, caption, content, grid, isRequired, description, isVisible, hint, withCheck, isDisabled, isViewCaption);
+			FieldBlockRenderer.FormField(this, name, caption, content, grid, isRequired, description, isVisible, hint, withCheck, isDisabled);
 		}
 
 		public void FormFieldDescription(string name, Action description = null)
@@ -75,7 +75,7 @@ namespace Tango.UI
 	public interface IFieldBlockRenderer
 	{
 		void FieldsBlock(LayoutWriter w, Action<TagAttributes> attributes, Action content);
-		void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null, bool withCheck = false, bool isDisabled = false, bool isViewCaption = true);
+		void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null, bool withCheck = false, bool isDisabled = false);
 		void FormFieldDescription(LayoutWriter w, string name, Action description = null);
 		void FormFieldCaption(LayoutWriter w, string name, Action caption, bool isRequired = false, string hint = null);
 
@@ -83,16 +83,14 @@ namespace Tango.UI
 
 	public class TableFieldBlockRenderer : IFieldBlockRenderer
 	{
-		public void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null, bool withCheck = false, bool isDisabled = false, bool isViewCaption = true)
+		public void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null, bool withCheck = false, bool isDisabled = false)
 		{
 			w.Tr(a => a.ID(name + "_field").Style(isVisible ? "" : "display:none"), () => {
-				if (isViewCaption) {
-					w.Td(a => a.ID(name + "_fieldlabel").Class("formlabel"), () => {
-						FormFieldCaption(w, name, caption, isRequired, hint);
-						FormFieldDescription(w, name, description);
 
-					});
-				}
+				w.Td(a => a.ID(name + "_fieldlabel").Class("formlabel"), () => {
+					FormFieldCaption(w, name, caption, isRequired, hint);
+					FormFieldDescription(w, name, description);
+				});
 				w.Td(a => a.ID(name + "_fieldbody").Class("formbody"), content);
 			});
 		}
@@ -120,7 +118,7 @@ namespace Tango.UI
 
 	public class GridFieldBlockRenderer : IFieldBlockRenderer
 	{
-		public void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null, bool withCheck = false, bool isDisabled = false, bool isViewCaption = true)
+		public void FormField(LayoutWriter w, string name, Action caption, Action content, GridPosition grid, bool isRequired = false, Action description = null, bool isVisible = true, string hint = null, bool withCheck = false, bool isDisabled = false)
 		{
 			if (grid == null) grid = Grid.OneWhole;
 
@@ -130,7 +128,7 @@ namespace Tango.UI
 
 			string style = new string[] { width, br, vis }.Where(s => s != "").Join(";");
 
-			int labelWidth = isViewCaption ? (int)Math.Round(100 / (60 / (double)grid.Caption), 0, MidpointRounding.AwayFromZero) : 0;
+			int labelWidth = (int)Math.Round(100 / (60 / (double)grid.Caption), 0, MidpointRounding.AwayFromZero);
 			int bodyWidth = 100 - labelWidth;
 			int checkBoxWidth = 10;
 
@@ -138,13 +136,11 @@ namespace Tango.UI
 				bodyWidth = bodyWidth - checkBoxWidth;
 
 			w.Div(a => a.ID(name + "_field").Class("field").Style(style), () => {
-				if (isViewCaption)
-					w.Div(a => a.ID(name + "_fieldlabel").Class("field-label").Style($"width:{labelWidth}%"), () => {
+				w.Div(a => a.ID(name + "_fieldlabel").Class("field-label").Style($"width:{labelWidth}%"), () => {
+					FormFieldCaption(w, name, caption, isRequired, hint);
+					FormFieldDescription(w, name, description);
+				});
 
-						FormFieldCaption(w, name, caption, isRequired, hint);
-						FormFieldDescription(w, name, description);
-					});
-			
 				w.Div(a => {
 					a.ID(name + "_fieldbody").Class("field-body").Style($"width:{bodyWidth}%");
 					if (isDisabled)

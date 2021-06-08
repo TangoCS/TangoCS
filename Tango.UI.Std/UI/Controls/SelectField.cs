@@ -263,7 +263,7 @@ namespace Tango.UI.Controls
 			this LayoutWriter w,
 			EntityField<TEntity, TRefClass, TValue> field,
 			SelectSingleObjectField<TRefClass, TRefKey> dialog,
-			GridPosition grid = null, bool isViewCaption = true)
+			GridPosition grid = null)
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
@@ -272,7 +272,22 @@ namespace Tango.UI.Controls
 			
 			dialog.Disabled = field.Disabled;
 			dialog.ReadOnly = field.ReadOnly;
-			w.FormField(field, () => dialog.Strategy.Render(w, v), grid, isViewCaption);
+			w.FormField(field, () => dialog.Strategy.Render(w, v), grid);
+		}
+
+		public static void SelectSingleObject2<TEntity, TValue, TRefClass, TRefKey>(
+			this LayoutWriter w,
+			EntityField<TEntity, TRefClass, TValue> field,
+			SelectSingleObjectField<TRefClass, TRefKey> dialog)
+			where TEntity : class
+			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
+		{
+			var id = dialog.Context.GetArg<TRefKey>(dialog.ID);
+			var v = field.ValueSource == ValueSource.Model ? field.Value : dialog.GetObjectByID(id);
+
+			dialog.Disabled = field.Disabled;
+			dialog.ReadOnly = field.ReadOnly;
+			dialog.Strategy.Render(w, v);
 		}
 
 		public static void SelectSingleObject<TEntity, TRefClass, TRefKey>(

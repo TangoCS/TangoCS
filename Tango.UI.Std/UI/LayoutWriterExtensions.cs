@@ -68,9 +68,9 @@ namespace Tango.UI
 
 	public static class LayoutWriterHelpers
 	{
-		public static void FormField(this LayoutWriter w, string name, string caption, Action content, GridPosition grid = null, bool isRequired = false, string description = null, bool isVisible = true, string hint = null, bool withCheck = false, bool isDisabled = false, bool isViewCaption = true)
+		public static void FormField(this LayoutWriter w, string name, string caption, Action content, GridPosition grid = null, bool isRequired = false, string description = null, bool isVisible = true, string hint = null, bool withCheck = false, bool isDisabled = false)
 		{
-			w.FormField(name, () => w.Write(caption), content, grid, isRequired, description != null ? () => w.Write(description) : (Action)null, isVisible, hint, withCheck, isDisabled, isViewCaption);
+			w.FormField(name, () => w.Write(caption), content, grid, isRequired, description != null ? () => w.Write(description) : (Action)null, isVisible, hint, withCheck, isDisabled);
 		}
 
 		//public static void FormFieldCaption(this LayoutWriter w, string name, string caption, bool isRequired = false, string description = null)
