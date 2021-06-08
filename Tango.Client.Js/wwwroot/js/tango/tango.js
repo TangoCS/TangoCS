@@ -478,7 +478,7 @@ var ajaxUtils = function ($, cu) {
 			if (!target.data) target.data = {};
 			if (!target.query) target.query = {};
 			target.method = 'GET';
-			processElementDataOnEvent(el, target, function (key, value) { target.query[key] = value; });
+			processElementDataOnEvent(el, target, function (key, value) { target.data[key] = value; });
 			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)
 				target.query[el.name] = el.value;
 			runOnAjaxSend(el, target);
