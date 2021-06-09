@@ -252,7 +252,8 @@ namespace Tango.Mail
                             TimeoutValue = mailSettings.TimeoutValue,
                             LastModifiedUserID = _userIdAccessor.CurrentUserID ?? _userIdAccessor.SystemUserID,
                             DeleteMethod = mailSettings.DeleteMethod,
-                            AfterSentMethod = mailSettings.AfterSentMethod
+                            AfterSentMethod = mailSettings.AfterSentMethod,
+                            MailSettingsID = mailSettings.MailSettingsID
                         }
                     };
 

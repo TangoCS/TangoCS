@@ -85,5 +85,8 @@ namespace Tango.Mail
         public virtual DateTime? StartSendDate { get; set; }
         [Column]
         public virtual DateTime? FinishSendDate { get; set; }
+        [Column]
+        public virtual int? MailSettingsID { get; set; }
+        public string MailSettingsTitle { get; set; }
     }
 }

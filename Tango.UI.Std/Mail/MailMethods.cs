@@ -2,6 +2,14 @@
 using System.ComponentModel;
 using System.Linq;
 
+namespace Tango
+{
+    public class MethodValidationAttribute : Attribute
+    {
+        
+    }
+}
+
 namespace Tango.Mail.Methods
 {
     [TypeCache(MailTypeCacheKeys.PreProcessingMailMethod)]
@@ -13,6 +21,12 @@ namespace Tango.Mail.Methods
         {
             context.MailMessage.Recipients = recipients;
         }
+
+        // [MethodValidation]
+        // public string Validation(MailMessageContext context)
+        // {
+        //     
+        // }
     }
     
     [TypeCache(MailTypeCacheKeys.PreProcessingMailMethod)]
