@@ -63,7 +63,7 @@ namespace Tango.Mail
 
         public static string GetMethodName(string typesKey, string methodJson)
         {
-            var methods = MailSettingsHelper.GetFullNameDictionary(typesKey);
+            var methods = GetFullNameDictionary(typesKey);
             var result = string.Empty;
             var methodSettingsCollection = JsonConvert.DeserializeObject<MethodSettingsCollection>(methodJson);
             foreach (var ms in methodSettingsCollection.MethodSettings)
@@ -498,6 +498,15 @@ namespace Tango.Mail
 
         protected override void PostProcessFormData(ApiResponse response, ValidationMessageCollection val)
         {
+            base.PostProcessFormData(response, val);
+            
+            // TODO: Валидация методов на основе MethodValidationAttribute
+            var preProcessing = GetMethodSettingsCollection(PreProcessMethodID);
+            foreach (var setting in preProcessing.MethodSettings)
+            {
+                //setting.
+            }
+            
             var preProcessingJson = CreateMethodSettingsColletionJson(PreProcessMethodID);
             ViewData.PreProcessingMethod = preProcessingJson;
             
@@ -511,7 +520,7 @@ namespace Tango.Mail
             ViewData.AfterSentMethod = afterSentJson;
         }
 
-        private string CreateMethodSettingsColletionJson(string key)
+        private MethodSettingsCollection GetMethodSettingsCollection(string key)
         {
             var processings = Context.AllArgs
                 .Where(i => i.Key.StartsWith(key) && !string.IsNullOrEmpty(i.Value?.ToString()))
@@ -553,7 +562,18 @@ namespace Tango.Mail
 
                 processingsColl.MethodSettings = ms.ToArray();
 
-                return JsonConvert.SerializeObject(processingsColl);
+                return processingsColl;
+            }
+
+            return new MethodSettingsCollection();
+        }
+
+        private string CreateMethodSettingsColletionJson(string key)
+        {
+            var methodSettingsCollection = GetMethodSettingsCollection(key);
+            if (methodSettingsCollection.MethodSettings != null)
+            {
+                return JsonConvert.SerializeObject(methodSettingsCollection);
             }
 
             return null;
