@@ -178,6 +178,8 @@ namespace Tango.UI.Std
 
 		public virtual void Render(LayoutWriter w)
 		{
+			if (!Sections.RenderPaging)
+				Paging.PageSize = int.MaxValue - 1;
 			//w.PushPrefix(ClientID);
 			PrepareResult();
 			BeforeList(w);

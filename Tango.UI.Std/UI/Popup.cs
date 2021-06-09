@@ -7,13 +7,13 @@ namespace Tango.UI
 	{
 		public static void PopupForElement(this LayoutWriter w, string id, Action<TagAttributes> attrs = null, Action content = null, PopupOptions options = null)
 		{
-			w.Div(a => a.ID("popup-" + id).Set(attrs).Class("iw-contextMenu").DataRef(id), content);
+			w.Div(a => a.ID("popup_" + id).Set(attrs).Class("iw-contextMenu").DataRef(id), content);
 			w.BindPopup(id, options);
 		}
 
 		public static void BindPopup(this LayoutWriter w, string elementid, PopupOptions options = null)
 		{
-			w.BindPopup(elementid, "popup-" + elementid, options);
+			w.BindPopup(elementid, "popup_" + elementid, options);
 		}
 
 		public static void BindPopup(this LayoutWriter w, string elementid, string popupid, PopupOptions options = null)
