@@ -88,11 +88,10 @@ namespace Tango.Mail
         public override void OnInit()
         {
             base.OnInit();
-            if (ViewData != null)
+            if (!ObjectNotExists)
             {
                 _attachmentViewlist = CreateControl<MailMessageAttachment_viewlist>("attachmentlist", c =>
                 {
-                    c.MailMessageId = ViewData.MailMessageID;
                     c.Sections.RenderContentTitle = false;
                 });
             }
@@ -166,8 +165,6 @@ namespace Tango.Mail
     [OnAction(typeof(MailMessageAttachment), "attachments")]
     public class MailMessageAttachment_viewlist : default_list_rep<MailMessageAttachment>
     {
-        public int MailMessageId { get; set; }
-
         protected override string FormTitle => $"Состав письма \"{Context.GetArg("title")}\"";
 
         protected override IRepository<MailMessageAttachment> GetRepository()
@@ -187,8 +184,6 @@ namespace Tango.Mail
 
         protected override void FieldsInit(FieldCollection<MailMessageAttachment> fields)
         {
-            fields.AddCellWithSortAndFilter(o => o.DocumentID, o => o.DocumentID); // TODO: временно. для показа 31 05 2021
-            fields.AddCellWithSortAndFilter(o => o.FileType, o => o.FileType);
             fields.AddCellWithSortAndFilter(o => o.FileTitle, o => o.FileTitle);
         }
     }
