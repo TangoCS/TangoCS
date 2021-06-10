@@ -172,6 +172,20 @@ namespace Tango.UI.Std
 		}
 	}
 
+	public class DefaultPopupContainer : ViewContainer
+	{
+		public DefaultPopupContainer()
+		{
+			Mapping.Add("contentbody", "body");
+		}
+		public override void Render(ApiResponse response)
+		{
+			response.AddWidget(Context.Sender, w => {
+				w.Div(a => a.ID("body"));
+			});
+		}
+	}
+
 
 	public enum ContainerWidth
 	{

@@ -4,6 +4,7 @@ using System.Linq;
 using Tango.Logger;
 using Tango.Cache;
 using System.Collections.Concurrent;
+using Tango.Data;
 
 namespace Tango.AccessControl.Std
 {
@@ -60,14 +61,18 @@ namespace Tango.AccessControl.Std
 
         public CacheableAccessControl(
 			ICacheableRoleBasedAccessControlStore<int> dataContext,
+			IRequestEnvironment env,
 			IPredicateChecker predicateChecker,
 			ICache cache,
 			IRequestLoggerProvider loggerProvider,
 			AccessControlOptions options) : base(predicateChecker, loggerProvider, options)
 		{
 			_dataContext = dataContext;
-			_cacheName = GetType().Name;
-			_cache = cache;			
+			//_cacheName = GetType().Name;
+			_cache = cache;
+
+			var conn = env.Cookies.Get("conn") ?? ConnectionManager.DefaultConnection;
+			_cacheName = $"{conn}-accesscontrol";
 		}
 
 		public override bool CheckForRole(int roleID, string securableObjectKey)
@@ -101,14 +106,15 @@ namespace Tango.AccessControl.Std
 			if (AllowItems.Contains(key)) return true;
 			if (DisallowItems.Contains(key)) return false;
 
-			ConcurrentBag<string> _access = null;
-			ConcurrentBag<string> _items = null;
-
-			_access = _cache.GetOrAdd(_cacheName + "-access", () => new ConcurrentBag<string>(_dataContext.GetRolesAccess()));
-			_items = _cache.GetOrAdd(_cacheName + "-items", () => new ConcurrentBag<string>(_dataContext.GetKeys()));
+			var _access = _cache.GetOrAdd(_cacheName + "-access", () => new ConcurrentBag<string>(_dataContext.GetRolesAccess()));
+			var _items = _cache.GetOrAdd(_cacheName + "-items", () => new ConcurrentBag<string>(_dataContext.GetKeys()));
+			var _newitems = _cache.GetOrAdd(_cacheName + "-newitems", () => new ConcurrentHashSet<string>());
 
 			if (!_items.Contains(key))
+			{
+				_newitems.Add(key);
 				return CheckDefaultAccess(key, defaultAccess ?? _options.DefaultAccess(this));
+			}
 
 			HashSet<string> _checking = new HashSet<string>(Roles.Select(o => key + "-" + o.ToString()));
 			return CheckExplicitAccess(key, _checking.Any(o => _access.Contains(o)));
@@ -123,6 +129,7 @@ namespace Tango.AccessControl.Std
 		{
 			_cache.Reset(_cacheName + "-access");
 			_cache.Reset(_cacheName + "-items");
+			_cache.Reset(_cacheName + "-newitems");
 		}
 	}
 

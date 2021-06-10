@@ -46,7 +46,9 @@ namespace Tango.UI.Std
 
 		public virtual bool CheckAccess(MethodInfo method)
 		{
-			var anon = method.GetCustomAttribute<AllowAnonymousAttribute>();
+			var anon = GetType().GetCustomAttribute<AllowAnonymousAttribute>();
+			if (anon != null) return true;
+			anon = method.GetCustomAttribute<AllowAnonymousAttribute>();
 			if (anon != null) return true;
 
 			var ac = Context.RequestServices.GetService(typeof(IAccessControl)) as IAccessControl;

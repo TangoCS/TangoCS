@@ -14,6 +14,11 @@ namespace Tango.UI
 			public override bool IsRequired => true;
 		}
 
+		public class SystemName : EntityField<object, string>
+		{
+			public override bool IsRequired => true;
+		}
+
 		public class Description : EntityField<object, string>
 		{
 		}
