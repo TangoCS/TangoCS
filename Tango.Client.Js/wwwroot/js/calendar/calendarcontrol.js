@@ -6,9 +6,18 @@
             el.onkeypress = onkeypress;
             el.onkeyup = onkeyup;
             el.ondrop = ondrop;
-            el.onpaste = onpaste;
+			el.onpaste = onpaste;
+			el.addEventListener("focusin", function (e) {
+				currentVal = el.value;
+			});
+			el.addEventListener("focusout", function (e) {
+				if (currentVal != el.value)
+					$(el).trigger('change');
+			});
         }
-    };
+	};
+
+	var currentVal = null;
     
     function onkeyup(event) {
         $(this).trigger('input');
@@ -162,7 +171,7 @@
 
         if (pos0 < len) {
             target.value = target.value.substring(0, pos0) + char0 + target.value.substring(pos0 + 1);
-            target.setSelectionRange(pos0 + 1, pos0 + 1);
+			target.setSelectionRange(pos0 + 1, pos0 + 1);
             return false;
         }
 
