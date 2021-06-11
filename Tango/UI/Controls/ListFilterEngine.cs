@@ -83,7 +83,7 @@ namespace Tango.UI.Controls
 						{
 							var cond = Expression.Equal(colexpr, valexpr);
 							if (isEmptyValue && item.FieldType == FieldType.String)
-								cond = Expression.Or(cond, Expression.Equal(colexpr, Expression.Constant(null, typeof(object))));
+								cond = Expression.Or(cond, Expression.Equal(colexpr, Expression.Constant(null, typeof(string))));
 							expr = Expression.Lambda<Func<T, bool>>(cond, column.Parameters);
 						}
 						else if (item.Condition == "<>")
@@ -106,7 +106,11 @@ namespace Tango.UI.Controls
 						{
 							var cond = Expression.Equal(colexpr, valexpr);
 							if (isEmptyValue)
-								cond = Expression.Or(cond, Expression.Equal(colexpr, Expression.Constant(null, typeof(object))));
+							{
+								var nullValType = TypeHelper.GetNullableType(valType);
+								var nullCond = Expression.Equal(Expression.Convert(column.Body, nullValType), Expression.Constant(null, nullValType));
+								cond = Expression.Or(cond, nullCond);
+							}
 							expr = Expression.Lambda<Func<T, bool>>(cond, column.Parameters);
 						}
 

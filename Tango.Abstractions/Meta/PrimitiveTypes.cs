@@ -26,10 +26,12 @@ namespace Tango.Meta
 	{
 		public override string ToCSharpType(bool nullable) => nullable ? "DateTime?" : "DateTime";
 	}
-	public partial class MetaDecimalType : MetaPrimitiveType, IMetaNumericType
+	public partial class MetaDecimalType : MetaPrimitiveType, IMetaNumericType, IMetaIdentifierType
 	{
 		public int Precision { get; set; }
 		public int Scale { get; set; }
+		public string ColumnSuffix { get; set; } = "ID";
+
 		public override string ToCSharpType(bool nullable) => nullable ? "decimal?" : "decimal";
 	}
 	public partial class MetaMoneyType : MetaPrimitiveType, IMetaNumericType

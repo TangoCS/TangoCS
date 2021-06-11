@@ -69,7 +69,9 @@ namespace Tango.Meta.Fluent
 			_this = this as T;
 		}
 
-		public T IntKey(bool isIdentity = true) => Key<int>(TypeFactory.Int, a => a.IsIdentity = isIdentity);
+		public T DecimalKey(bool isIdentity = true) => Key<decimal>(TypeFactory.Decimal, a => a.IsIdentity = isIdentity);
+		public T DecimalKey(string name, bool isIdentity = true) => Key<decimal>(name, TypeFactory.Decimal, a => a.IsIdentity = isIdentity);
+        public T IntKey(bool isIdentity = true) => Key<int>(TypeFactory.Int, a => a.IsIdentity = isIdentity);
 		public T IntKey(string name, bool isIdentity = true) => Key<int>(name, TypeFactory.Int, a => a.IsIdentity = isIdentity);
 		public T IntKey(string name, Action<MetaAttribute<TClass, int>> attribute) => Key<int>(name, TypeFactory.Int, attribute);
 		public T LongKey(bool isIdentity = true) => Key<long>(TypeFactory.Long, a => a.IsIdentity = isIdentity);
