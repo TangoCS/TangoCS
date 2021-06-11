@@ -5,7 +5,7 @@
 		},
 		parms: function(args) {
 			return {
-				triggerOn: args.triggerson,
+				triggerOn: args.triggeron,
 				displayAround: args.displaysaround,
 				position: args.position,
 				closeOnClick: args.closeonclick,
