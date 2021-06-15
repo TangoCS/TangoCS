@@ -177,8 +177,6 @@ namespace Tango.Mail
 
         protected override void ToolbarLeft(MenuBuilder t)
         {
-            t.ItemBack();
-            t.ItemSeparator();
             t.ItemFilter(Filter);
         }
 

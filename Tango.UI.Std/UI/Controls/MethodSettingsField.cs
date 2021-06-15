@@ -67,6 +67,37 @@ namespace Tango.UI.Controls
 			});
 		}
 
+		public void Render<TMailUserData>(LayoutWriter w, MethodSettings value)
+		{
+			var mailModels = new MailUserDataCache();
+			var key = typeof(TMailUserData).GetCustomAttribute<MailUserDataAttribute>()?.Key;
+			var listMailModel = mailModels.Get(key).SelectMany(t => {
+				var clsName = t.GetCustomAttribute<DescriptionAttribute>()?.Description ?? t.Name;
+				return t.GetProperties().Where(m => m.GetCustomAttribute<DescriptionAttribute>() != null)
+					.Select(m => {
+						var mName = m.GetCustomAttribute<DescriptionAttribute>().Description;
+						return new SelectListItem { Value = t.FullName + "|" + m.Name, Text = clsName + "." + mName };
+					});
+			});
+			
+			var cache = new TypeCache();
+			var list = cache.Get(TypesKey).SelectMany(t => {
+				var clsName = t.GetCustomAttribute<DescriptionAttribute>()?.Description ?? t.Name;
+				return t.GetMethods()
+					.Where(m => m.GetCustomAttribute<DescriptionAttribute>() != null)
+					.Select(m => {
+						var mName = m.GetCustomAttribute<DescriptionAttribute>().Description;
+						return new SelectListItem { Value = t.FullName + "|" + m.Name, Text = clsName + "." + mName };
+					});
+			});
+			w.Div(a => a.ID(ID + "_fld"), () =>
+			{
+				w.DropDownList(ID + "_ddl", $"{value.ClassName}|{value.MethodName}", list.AddEmptyItem(), a => a.OnChangePostEvent(OnChangeMethod));
+				w.DropDownList(ID + "_ddl", $"{key}", listMailModel.AddEmptyItem());
+				w.Div(a => a.ID(ID + "_parms"), () => Parms(w, value));
+			});
+		}
+
 		public void OnChangeMethod(ApiResponse response)
 		{
 			var ddlVal = Context.GetArg(ID + "_ddl");

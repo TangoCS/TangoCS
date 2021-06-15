@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
@@ -12,6 +13,65 @@ using Tango.Identity;
 
 namespace Tango
 {
+    public class MethodValidationHelper
+    {
+        static ConcurrentDictionary<string, Type> _types = new ConcurrentDictionary<string, Type>();
+
+        public static Type GetType(string fullnameclass)
+        {
+            var cls = fullnameclass.Split(',')[0];
+
+            if (!_types.TryGetValue(cls, out var type))
+            {
+                type = AppDomain.CurrentDomain
+                    .GetAssemblies()
+                    .SelectMany(x => x.GetTypes())
+                    .FirstOrDefault(x => x.FullName.ToLower() == cls.ToLower());
+
+                _types.AddIfNotExists(cls, type);
+            }
+
+            return type;
+        }
+        
+        public IEnumerable<ValidationResult> ValidateMethodSettings(MethodSettings methodSettings)
+        {
+            var objectType = GetType(methodSettings.ClassName);
+            if (objectType == null) return new List<ValidationResult>();
+            
+            var obj = Activator.CreateInstance(objectType);
+            if (obj is IValidatableObject)
+            {
+                var props = objectType.GetMethod(methodSettings.MethodName)?.GetParameters()
+                    .Where(prop => Attribute.IsDefined(prop, typeof(ValidationAttribute)))
+                    .Select(i => i.Name?.ToLower());
+
+                if (props == null)
+                    return new List<ValidationResult>();
+
+                var context = new ValidationContext(obj);
+                foreach (var prop in props)
+                {
+                    if (methodSettings.Params.TryGetValue(prop, out var value))
+                    {
+                        context.Items.Add(prop, value);
+                    }
+                }
+
+                var results = new List<ValidationResult>();
+
+                if (!Validator.TryValidateObject(obj, context, results))
+                {
+                    
+                }
+
+                return results;
+            }
+            
+            return new List<ValidationResult>();
+        }
+    }
+    
     public interface IMethodContext
     {
         IDatabase Database { get; }
@@ -37,6 +97,18 @@ namespace Tango
             {
                 ExecuteMethod(methodSetting, context);
             }
+        }
+
+        public object ExecuteMethod(MethodInfo method, object[] vals)
+        {
+            var ps = method?.GetParameters();
+            if (ps == null) return null;
+
+            if (ps.Length != vals.Length)
+                throw new Exception($"Количество значений метода валидации ({method.Name}) не соответствует с переданными значениями");
+                    
+            var obj = Activator.CreateInstance(method.DeclaringType);
+            return method.Invoke(obj, vals);
         }
 
         public void ExecuteMethod<TContext>(MethodSettings methodSettings, TContext context) where TContext: IMethodContext
@@ -162,10 +234,49 @@ namespace Tango
             return default;
         }
     }
+    
+    public class MailUserDataAttribute : Attribute
+    {
+        public string Key { get; }
+
+        public MailUserDataAttribute(string key)
+        {
+            Key = key;
+        }
+    }
+    
+    /// <summary>
+    /// Необходимо помечать классы, которые используются в моделях для почтовых отправок, атрибутом MailUserData
+    /// </summary>
+    public class MailUserDataCache : ITypeObserver
+    {
+        static readonly Dictionary<string, List<Type>> _typeCache = new Dictionary<string, List<Type>>(StringComparer.OrdinalIgnoreCase);
+
+        public List<Type> Get(string key)
+        {
+            if (_typeCache.TryGetValue(key, out var list))
+                return list;
+            else
+                return null;
+        }
+
+        void ITypeObserver.LookOver(Type t)
+        {
+            var attr = t.GetCustomAttribute<MailUserDataAttribute>();
+            if (attr == null) return;
+
+            if (_typeCache.TryGetValue(attr.Key, out var list))
+                list.Add(t);
+            else
+                _typeCache.Add(attr.Key, new List<Type> { t });
+        }
+    }
 }
 
 namespace Tango.Mail
 {
+    
+    
     public interface IMailMethodContext : IMethodContext
     {
         MailMessage MailMessage { get; set; }
