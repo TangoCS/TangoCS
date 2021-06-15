@@ -44,6 +44,8 @@ namespace Tango.Mail.Methods
                 var addresses = item.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).Select(i => i.Trim());
                 foreach (var address in addresses)
                 {
+                    if(address.StartsWith("@"))
+                        continue;
                     if(!new EmailAddressAttribute().IsValid(item))
                         errors.Add(new ValidationResult($"Не удалось распознать электронный адрес {address}"));
                 }
@@ -88,6 +90,8 @@ namespace Tango.Mail.Methods
                     };
                 foreach (var address in addresses)
                 {
+                    if(address.StartsWith("@"))
+                        continue;
                     if(!new EmailAddressAttribute().IsValid(item))
                         errors.Add(new ValidationResult($"Не удалось распознать электронный адрес {address}"));
                 }
@@ -126,6 +130,8 @@ namespace Tango.Mail.Methods
                 var addresses = item.Split(delimiters, StringSplitOptions.RemoveEmptyEntries).Select(i => i.Trim());
                 foreach (var address in addresses)
                 {
+                    if(address.StartsWith("@"))
+                        continue;
                     if(!new EmailAddressAttribute().IsValid(item))
                         errors.Add(new ValidationResult($"Не удалось распознать электронный адрес {address}"));
                 }
