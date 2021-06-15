@@ -383,20 +383,26 @@ var listview = function (au, cu, cbcell) {
 		},
 		onRemoveIconClick: function (e) {
 			var seltr = cu.getRow(e.currentTarget);
-			var origtr = document.getElementById(seltr.id.replace('_selected', ''));
-			if (origtr) {
-				var origcb = origtr.querySelector('.sel');
-				if (origcb && seltr.hasAttribute('data-checked')) cbcell.setselected(origcb, onCheckChange);
-			}
-			else {
-				const rootsel = au.findControl(seltr);
-				const state = au.state.ctrl[rootsel.id.replace('_selected', '')];
-				const rowid = seltr.getAttribute('data-rowid');
-				const index = state.selectedvalues.indexOf(rowid);
-				if (index > -1) {
-					state.selectedvalues.splice(index, 1);
+			const rootsel = au.findControl(seltr);
+			const state = au.state.ctrl[rootsel.id.replace('_selected', '')];
+			
+			function unSelect(el) {
+				const origel = document.getElementById(el.id.replace('_selected', ''));
+				if (origel) {
+					var origcb = origel.querySelector('.sel');
+					if (origcb && el.hasAttribute('data-checked'))
+						cbcell.setselected(origcb, onCheckChange);
+				}
+				else {
+					const rowid = el.getAttribute('data-rowid');
+					const index = state.selectedvalues.indexOf(rowid);
+					if (index > -1) {
+						state.selectedvalues.splice(index, 1);
+					}
 				}
 			}
+
+			unSelect(seltr);
 
 			var tocopy = [];
 			var level = parseInt(seltr.getAttribute('data-level'));
@@ -406,11 +412,7 @@ var listview = function (au, cu, cbcell) {
 				var childLevel = parseInt(childEl.getAttribute('data-level'));
 				while (level < childLevel) {
 					var el = childEl;
-					var origChildEl = document.getElementById(childEl.id.replace('_selected', ''));
-					if (origChildEl) {
-						var origcb = origChildEl.querySelector('.sel');
-						if (origcb && el.hasAttribute('data-checked')) cbcell.setselected(origcb, onCheckChange);
-					}
+					unSelect(el);
 					childEl = childEl.nextElementSibling;
 					el.parentElement.removeChild(el);
 					if (!childEl) break;
@@ -428,6 +430,8 @@ var listview = function (au, cu, cbcell) {
 			removeSelected(tocopy);
 		}
 	}
+
+	 
 
 	function initCheckBoxes(cblist) {
 		for (var i = 0; i < cblist.length; i++) {
