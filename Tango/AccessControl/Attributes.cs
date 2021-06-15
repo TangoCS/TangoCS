@@ -2,19 +2,18 @@
 
 namespace Tango.AccessControl
 {
-	[AttributeUsage(AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
 	public sealed class SecurableObjectAttribute : Attribute
 	{
-		readonly string _name;
+		public string Name { get; }
 
-		public SecurableObjectAttribute(string name)
+		public SecurableObjectAttribute(Type service, string action)
 		{
-			_name = name;
+			Name = $"{service.Name}.{action}";
 		}
-
-		public string Name
+		public SecurableObjectAttribute(string service, string action)
 		{
-			get { return _name; }
+			Name = $"{service}.{action}";
 		}
 	}
 }

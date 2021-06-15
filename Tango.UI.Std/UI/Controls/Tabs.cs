@@ -21,24 +21,25 @@ namespace Tango.UI.Controls
 			return Pages.Where(o => o.ID == curid).FirstOrDefault() ?? Pages.FirstOrDefault();
 		}
 
-		public T CreateTabPage<T>(string id, string title, Action<T> setProperties = null, IAccessControl accessControl = null)
+		IAccessControl _ac;
+		bool acInitialized = false;
+		IAccessControl ac
+		{
+			get
+			{
+				if (!acInitialized)
+					_ac = Context.RequestServices.GetService(typeof(IAccessControl)) as IAccessControl;
+				return _ac;
+			}
+		}
+
+		public T CreateTabPage<T>(string id, string title, Action<T> setProperties = null)
 			where T : ViewPagePart, new()
 		
 		{
-			// if (accessControl != null)
-			// {
-			// 	var entityType = typeof(T).GetResourceType();
-			// 	var attrs = entityType.GetCustomAttributes<OnActionAttribute>();
-			// 	if (attrs != null && attrs.Count() == 1)
-			// 	{
-			// 		var a = attrs.First();
-			// 		var name = (a.Service + "." + a.Action).ToLower();
-			//
-			// 		if (!accessControl.Check(name))
-			// 			return null;
-			// 	}	
-			// }
-			
+			var attr = typeof(T).GetCustomAttribute<SecurableObjectAttribute>();
+			if (attr != null && ac != null && !ac.Check(attr.Name))
+				return null;
 
 			var c = CreateControl(id, setProperties);
 			c.IsLazyLoad = true;
