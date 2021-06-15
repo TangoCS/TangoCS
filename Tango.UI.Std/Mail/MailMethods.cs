@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Tango
 {
@@ -17,6 +18,16 @@ namespace Tango
 
 namespace Tango.Mail.Methods
 {
+    public static class EmailValidation
+    {
+        public static bool IsValid(string email)
+        {
+            var regex = new Regex(@"\A(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)\Z", RegexOptions.IgnoreCase);
+            var match = regex.Match(email);
+            return match.Success;
+        }
+    }
+    
     [TypeCache(MailTypeCacheKeys.PreProcessingMailMethod)]
     [Description("Заполнить список адресатов")]
     public class RecipientsMail : IValidatableObject
@@ -47,7 +58,7 @@ namespace Tango.Mail.Methods
                     
                 foreach (var address in addresses)
                 {
-                    if(!new EmailAddressAttribute().IsValid(item))
+                    if(!EmailValidation.IsValid(item))
                         errors.Add(new ValidationResult($"Не удалось распознать электронный адрес {address}"));
                 }
             }
@@ -93,7 +104,7 @@ namespace Tango.Mail.Methods
                 {
                     if(address.StartsWith("@"))
                         continue;
-                    if(!new EmailAddressAttribute().IsValid(item))
+                    if(!EmailValidation.IsValid(item))
                         errors.Add(new ValidationResult($"Не удалось распознать электронный адрес {address}"));
                 }
             }
@@ -133,7 +144,7 @@ namespace Tango.Mail.Methods
                     continue;
                 foreach (var address in addresses)
                 {
-                    if(!new EmailAddressAttribute().IsValid(item))
+                    if(!EmailValidation.IsValid(item))
                         errors.Add(new ValidationResult($"Не удалось распознать электронный адрес {address}"));
                 }
             }
