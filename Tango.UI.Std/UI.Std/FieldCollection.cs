@@ -352,7 +352,30 @@ namespace Tango.UI.Std
 		}
 		#endregion
 
-		
+		#region res title with attributes
+		public static void AddCell<TResult, T>(this IFieldCollection<TResult> f, Expression<Func<TResult, T>> res,
+			RowCellAttributesDelegate<TResult> attrs, RenderRowCellDelegate<TResult> render)
+		{
+			f.AddHeader(res);
+			f.Cells.Add(new ListColumn<TResult> { Content = render, Attributes = attrs });
+		}
+
+		public static void AddCell<TResult, T>(this IFieldCollection<TResult> f, Expression<Func<TResult, T>> res,
+			RowCellAttributesDelegate<TResult> attrs, Action<LayoutWriter, TResult> render)
+		{
+			f.AddHeader(res);
+			f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => render(w, o), Attributes = attrs });
+		}
+
+		public static void AddCell<TResult, T, T2>(this IFieldCollection<TResult> f, Expression<Func<TResult, T>> res,
+			RowCellAttributesDelegate<TResult> attrs, Func<TResult, T2> value)
+		{
+			f.AddHeader(res);
+			f.Cells.Add(new ListColumn<TResult> { Content = (w, o, i) => w.Write(value(o)?.ToString()), Attributes = attrs });
+		}
+		#endregion
+
+
 
 		public static void AddActionsCell<TResult>(this IFieldCollection<TResult> f, params Func<TResult, Action<ActionLink>>[] actions)
 		{
