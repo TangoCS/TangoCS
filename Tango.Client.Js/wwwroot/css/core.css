@@ -28,7 +28,7 @@ a:hover {
 }
 
 a, .actionbtn, .icon-collapsed, .icon-expanded,
-.icon-checkbox-unchecked, .icon-checkbox-checked,
+.icon-checkbox-unchecked:not(.bool), .icon-checkbox-checked:not(.bool),
 .icon-minus-box, .icon-delete {
 	cursor: pointer;
 }
@@ -120,6 +120,9 @@ input.text {
 	display: inline-block;
 	min-width: 16px;
 	text-align: center;
+}
+.icon.bool {
+	color: gray;
 }
 
 .actionbtn i.icon:first-child, .actionlink i.icon, .nav a .icon {
