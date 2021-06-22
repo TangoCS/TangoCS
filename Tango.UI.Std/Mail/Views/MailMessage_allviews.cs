@@ -76,6 +76,10 @@ namespace Tango.Mail
         }
     }
 
+    public interface IMailMessageAttachment
+    {
+    }
+
     [OnAction(typeof(MailMessage), "view")]
     public class MailMessage_view : default_view_rep<MailMessage, int>
     {
@@ -83,17 +87,22 @@ namespace Tango.Mail
         protected override string FormTitle => ViewData.Subject;
         protected MailMessageFields.DefaultGroup Group { get; set; }
         
-        private MailMessageAttachment_viewlist _attachmentViewlist;
+        [Inject] public IMailMessageAttachment MailMessageAttachment { get; set; }
+        
+        private default_list_rep<MailMessageAttachment> _attachmentViewlist;
 
         public override void OnInit()
         {
             base.OnInit();
             if (!ObjectNotExists)
             {
-                _attachmentViewlist = CreateControl<MailMessageAttachment_viewlist>("attachmentlist", c =>
+                if (MailMessageAttachment is default_list_rep<MailMessageAttachment> mailMessageAttachment)
                 {
-                    c.Sections.RenderContentTitle = false;
-                });
+                    _attachmentViewlist = AddControl(mailMessageAttachment);
+                    _attachmentViewlist.Sections.RenderContentTitle = false;
+                    _attachmentViewlist.Sections.RenderToolbar = false;
+                    _attachmentViewlist.ID = "attachmentlist";
+                }
             }
         }
 
@@ -163,7 +172,7 @@ namespace Tango.Mail
     }
     
     [OnAction(typeof(MailMessageAttachment), "attachments")]
-    public class MailMessageAttachment_viewlist : default_list_rep<MailMessageAttachment>
+    public class MailMessageAttachment_viewlist : default_list_rep<MailMessageAttachment>, IMailMessageAttachment
     {
         protected override string FormTitle => $"Состав письма \"{Context.GetArg("title")}\"";
 
