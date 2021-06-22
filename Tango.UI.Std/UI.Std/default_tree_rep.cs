@@ -171,10 +171,11 @@ namespace Tango.UI.Std
 		/// <param name="level">Уровень, где находится заданный элемент (корневой уровень = 1)</param>
 		/// <param name="parms">Параметры для построения уровня с заданным элементом</param>
 		/// <param name="highlight">Нужно ли подсвечивать элемент, до которого раскрываем</param>
-		public void SetExpandedItem(int templateID, int level, Dictionary<string, object> parms, bool highlight = true)
+		public void SetExpandedItem(int templateID, int level, Dictionary<string, object> parms, bool highlight = true, bool expandNext = false)
 		{
 			var initialTemplate = _templatesDict[templateID];
 			var template = initialTemplate.ParentTemplate;
+			var levelForExpandNext = level;
 
 			var sqlTemplate = PrepareQuery(template, new List<Dictionary<string, object>> { parms });
 
@@ -205,6 +206,19 @@ namespace Tango.UI.Std
 
 					template = template.ParentTemplate;
 					level--;
+				}
+
+				if (expandNext)
+				{
+					
+					states.Insert(0,new State
+					{
+						Level = levelForExpandNext,
+						Template = initialTemplate,
+						Parms = initialTemplate.GetKeyCollection(temp)
+					});
+					
+					senders.Insert(0,(initialTemplate.GetHtmlRowID(levelForExpandNext - 1, temp)));
 				}
 
 				senders.Reverse();

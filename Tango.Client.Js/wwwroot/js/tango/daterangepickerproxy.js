@@ -11,33 +11,47 @@
 
             const doPostback = ctrl.hasAttribute('data-e');
 
+            const _args = {
+                remove: [
+                    ctrl.id + '_dperiodfrom', ctrl.id + '_dperiodfromtime_hour', ctrl.id + '_dperiodfromtime_minute',
+                    ctrl.id + '_dperiodto', ctrl.id + '_dperiodtotime_hour', ctrl.id + '_dperiodtotime_minute'
+                ]
+            };
+
+            var postEvent = function (caller) {
+                au.changeUrl(_args);
+                ajaxUtils.postEventFromElementWithApiResponse(caller);
+            }
+
             if (doPostback) {
-            	startDate.addEventListener('keyup', function (e) {
-            		au.delay(ctrl, function (caller) { ajaxUtils.postEventFromElementWithApiResponse(caller); });
-            	});
-            	finishDate.addEventListener('keyup', function (e) {
-            		au.delay(ctrl, function (caller) { ajaxUtils.postEventFromElementWithApiResponse(caller); });
-            	});
-            	if (startDate_h) {
-            		startDate_h.addEventListener('change', function (e) {
-            			ajaxUtils.postEventFromElementWithApiResponse(ctrl);
-            		});
-            	}
-            	if (startDate_m) {
-            		startDate_m.addEventListener('change', function (e) {
-            			ajaxUtils.postEventFromElementWithApiResponse(ctrl);
-            		});
-            	}
-            	if (finishDate_h) {
-            		finishDate_h.addEventListener('change', function (e) {
-            			ajaxUtils.postEventFromElementWithApiResponse(ctrl);
-            		});
-            	}
-            	if (finishDate_m) {
-            		finishDate_m.addEventListener('change', function (e) {
-            			ajaxUtils.postEventFromElementWithApiResponse(ctrl);
-            		});
-            	}
+                startDate.addEventListener('keyup', function (e) {
+                    au.delay(ctrl, function (caller) { postEvent(caller); });
+                });
+                finishDate.addEventListener('keyup', function (e) {
+                    au.delay(ctrl, function (caller) {
+                        postEvent(caller);
+                    });
+                });
+                if (startDate_h) {
+                    startDate_h.addEventListener('change', function (e) {
+                        postEvent(ctrl);
+                    });
+                }
+                if (startDate_m) {
+                    startDate_m.addEventListener('change', function (e) {
+                        postEvent(ctrl);
+                    });
+                }
+                if (finishDate_h) {
+                    finishDate_h.addEventListener('change', function (e) {
+                        postEvent(ctrl);
+                    });
+                }
+                if (finishDate_m) {
+                    finishDate_m.addEventListener('change', function (e) {
+                        postEvent(ctrl);
+                    });
+                }
             };
 
             $('#' + args.triggerid).daterangepicker(args.pickerparms, function (start, end, label) {
@@ -67,7 +81,7 @@
                 }
 
                 if (doPostback)
-                	au.postEventFromElementWithApiResponse(ctrl);
+                    postEvent(ctrl);
             });
         },
         setStartDate: function(args) {
