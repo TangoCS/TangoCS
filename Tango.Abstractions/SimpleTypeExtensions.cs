@@ -307,15 +307,14 @@ namespace Tango
 		public static string Icon(this bool src)
 		{
 			if (src)
-				return "<i class='icon icon-true'></i>";
-			return String.Empty;
+				return "<i class='icon icon-checkbox-checked-tr bool'></i>";
+			else
+				return "<i class='icon icon-checkbox-unchecked bool'></i>";
 		}
 
 		public static string Icon(this bool? src)
 		{
-			if (src.HasValue)
-				return src.Value ? "<i class='icon icon-true'></i>" : "";
-			return String.Empty;
+			return Icon(src ?? false);
 		}
 
 		public static string Icon(this int src)
