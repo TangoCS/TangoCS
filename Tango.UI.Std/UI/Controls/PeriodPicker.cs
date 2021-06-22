@@ -26,8 +26,10 @@ namespace Tango.UI.Controls
 		DateLists dPeriodFrom;
 		DateLists dPeriodTo;
 
-		public (string From, string To) ParmName => (ID + "_" + "dperiodfrom", ID + "_" + "dperiodto");
-
+		public (string From, string To) ParmName => (ClientID + "_" + "dperiodfrom", ClientID + "_" + "dperiodto");
+		
+		private (string From, string To) ParmID => (ID + "_" + "dperiodfrom", ID + "_" + "dperiodto");
+		
 		public int MinYear { get; set; }
 		public bool ShowDays { get; set; } = true;
 		public bool ShowTime { get; set; } = false;
@@ -92,14 +94,14 @@ namespace Tango.UI.Controls
 			{
 				w.Div(() =>
 				{
-					if (UseCalendar && ShowDays) w.Calendar(ParmName.From, from, options.FromCalendarOptions);
+					if (UseCalendar && ShowDays) w.Calendar(new InputName(){ ID = ParmID.From, Name = ParmName.From}, from, options.FromCalendarOptions);
 					if (!UseCalendar || ShowTime)
 						dPeriodFrom.Render(w, from, options.FromTimeOptions);
 				});
 				w.Div("&ndash;");
 				w.Div(() =>
 				{
-					if (UseCalendar && ShowDays) w.Calendar(ParmName.To, to, options.ToCalendarOptions);
+					if (UseCalendar && ShowDays) w.Calendar(new InputName(){ ID = ParmID.To, Name = ParmName.To}, to, options.ToCalendarOptions);
 					if (!UseCalendar || ShowTime)
 						dPeriodTo.Render(w, to, options.ToTimeOptions);
 				});
