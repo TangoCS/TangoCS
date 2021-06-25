@@ -160,6 +160,11 @@ namespace Tango.Excel
 			//s.Select();
 		}
 
+		public void FreezePanes(int row, int col, int sheetIndex)
+        {
+			p.Workbook.Worksheets[sheetIndex].View.FreezePanes(row, col);
+        }
+
 		public void GroupColumns(int startCol, int finishCol, int sheetIndex, bool isCollapsed)
 		{		
 			for (int i = startCol; i <= finishCol; i++)
