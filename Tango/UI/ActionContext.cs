@@ -182,6 +182,11 @@ namespace Tango.UI
 					ctx.EventReceiver = p.Value.ToString().ToLower();
 				else if (p.Key == Constants.ContainerNew)
 					ctx.AddContainer = p.Value == "1";
+				else if (p.Key.StartsWith("~"))
+				{
+					ctx.AllArgs.Add(p.Key.Substring(1), p.Value);
+					ctx.FormData.Add(p.Key.Substring(1), p.Value);
+				}
 				else
 				{
 					ctx.AllArgs.Add(p.Key, p.Value);
