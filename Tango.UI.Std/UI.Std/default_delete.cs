@@ -16,6 +16,8 @@ namespace Tango.UI.Std
 		protected IEntityAudit EntityAudit { get; set; }
 		
 		protected IRepository<T> Repository { get; set; }
+		
+		protected virtual string Title { get; }
 
 		public override void OnInit()
 		{
@@ -47,7 +49,8 @@ namespace Tango.UI.Std
 				w.FormValidationBlock();
 			});
 
-			var title = Resources.Get(bulk ? "Common.Delete.Bulk.Title" : "Common.Delete.Title");
+			var title = Title ?? Resources.Get(bulk ? "Common.Delete.Bulk.Title" : "Common.Delete.Title");
+			
 			response.AddWidget("contenttitle", title);
 			response.AddWidget("#title", title);
 
