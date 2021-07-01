@@ -122,7 +122,7 @@ namespace Tango.Tasks
     [OnAction(typeof(TaskExecution), "clear")]
     public class tm_taskexecution_clear : default_edit_rep<TaskExecution, int, ITaskExecutionRepository>
     {
-        protected override string Title => "Очистить";
+        protected override string FormTitle => "Очистить";
 
         protected override void Form(LayoutWriter w)
         {

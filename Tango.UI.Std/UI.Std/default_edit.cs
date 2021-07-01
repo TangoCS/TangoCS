@@ -16,7 +16,7 @@ namespace Tango.UI.Std
 {
 	public abstract class default_edit : ViewPagePart
 	{
-		protected abstract string Title { get; }
+		protected abstract string FormTitle { get; }
 		protected abstract void Form(LayoutWriter w);
 		protected virtual ContainerWidth FormWidth => ContainerWidth.WidthStd;
 		protected virtual ContainerHeight FormHeight => ContainerHeight.HeightStd;
@@ -90,8 +90,8 @@ namespace Tango.UI.Std
 
 		public override void OnLoad(ApiResponse response)
 		{
-			response.AddWidget("contenttitle", Title);
-			response.AddWidget("#title", Title);
+			response.AddWidget("contenttitle", FormTitle);
+			response.AddWidget("#title", FormTitle);
 
             if (ObjectNotExists)
 			{
@@ -260,7 +260,7 @@ namespace Tango.UI.Std
 		protected virtual bool DeleteMode => Context.Action.ToLower() == "delete";
 		protected virtual bool CreateObjectMode => !BulkMode && !Context.AllArgs.ContainsKey(Constants.Id);
 		protected virtual bool BulkMode => Context.AllArgs.ContainsKey(Constants.SelectedValues);
-		protected override string Title => CreateObjectMode ? CreateNewFormTitle : EditFormTitle;
+		protected override string FormTitle => CreateObjectMode ? CreateNewFormTitle : EditFormTitle;
 
 		protected virtual string BulkModeFormTitle => Resources.Get("Common.BulkModeTitle");
 		protected virtual string CreateNewFormTitle => Resources.Get(ViewData.GetType().FullName);

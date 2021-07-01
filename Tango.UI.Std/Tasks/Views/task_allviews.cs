@@ -414,7 +414,7 @@ namespace Tango.Tasks
 	[OnAction(typeof(Task), "deactivation")]
 	public class tm_task_deactivation : default_edit_rep<Task, int, ITaskRepository>
 	{
-		protected override string Title => Resources.Get<Task>(BulkMode ? "Deactivation.Bulk.Title" : "Deactivation.Title");
+		protected override string FormTitle => Resources.Get<Task>(BulkMode ? "Deactivation.Bulk.Title" : "Deactivation.Title");
 		protected override bool BulkMode => Context.GetListArg<int>(Constants.SelectedValues)?.Count > 1;
 		protected override bool ObjectNotExists => false;
 		protected override Task GetNewEntity() { return null; }

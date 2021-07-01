@@ -20,7 +20,7 @@ namespace Tango.Tasks
 	[OnAction(typeof(Task), "parameters")]
 	public class tm_taskparameters : default_edit_rep<Task, int, ITaskRepository>
 	{
-		protected override string Title => "Параметры запуска";
+		protected override string FormTitle => "Параметры запуска";
 		protected Dictionary<string, ParameterData> parameters = new Dictionary<string, ParameterData>();
 
 		public override void OnInit()

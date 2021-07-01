@@ -17,7 +17,7 @@ namespace Tango.UI.Std
 		
 		protected IRepository<T> Repository { get; set; }
 		
-		protected virtual string Title { get; }
+		protected virtual string FormTitle { get; }
 
 		public override void OnInit()
 		{
@@ -49,7 +49,7 @@ namespace Tango.UI.Std
 				w.FormValidationBlock();
 			});
 
-			var title = Title ?? Resources.Get(bulk ? "Common.Delete.Bulk.Title" : "Common.Delete.Title");
+			var title = FormTitle ?? Resources.Get(bulk ? "Common.Delete.Bulk.Title" : "Common.Delete.Title");
 			
 			response.AddWidget("contenttitle", title);
 			response.AddWidget("#title", title);

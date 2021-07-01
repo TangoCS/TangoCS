@@ -227,6 +227,13 @@ namespace Tango.UI
 			return this;
 		}
 
+		public ActionLink WithData(DataCollection coll)
+		{
+			foreach (var kv in coll)
+				Data[kv.Key] = kv.Value;
+			return this;
+		}
+
 		public ActionLink KeepTheSameUrl()
 		{
 			ChangeUrl = false;

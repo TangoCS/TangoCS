@@ -74,6 +74,11 @@ namespace Tango.Data
 			return rep;
 		}
 
+		public static IRepository<T> WithAllObjectsQueryRes<T>(this IRepository<T> rep, string resourceName, object parameters = null)
+		{
+			return rep.WithAllObjectsQuery(EmbeddedResourceManager.GetString(typeof(T), resourceName), parameters);
+		}
+
 		public static TRep GetRepository<TRep, T>(IServiceProvider serviceProvider, IDatabase database)
 		{
 			var rep = serviceProvider.GetService(typeof(TRep));
