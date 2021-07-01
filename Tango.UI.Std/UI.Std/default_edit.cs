@@ -192,7 +192,7 @@ namespace Tango.UI.Std
 
 		protected virtual void ButtonsBar(LayoutWriter w)
 		{
-			w.ButtonsBar_edit();
+			w.ButtonsBar_edit(this);
 		}
 
 		protected virtual void RenderValidation(ApiResponse response, ValidationMessageCollection m)

@@ -65,11 +65,11 @@ namespace Tango.UI.Std
 			});
 		}
 
-		public static void ButtonsBar_edit(this LayoutWriter w)
+		public static void ButtonsBar_edit(this LayoutWriter w, IViewElement form)
 		{
 			w.ButtonsBar(() => {
 				w.ButtonsBarRight(() => {
-					w.SubmitButton();
+					w.SubmitButton(a => a.DataReceiver(form));
 					w.BackButton();
 				});
 			});

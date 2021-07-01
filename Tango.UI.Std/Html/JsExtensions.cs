@@ -256,6 +256,12 @@ namespace Tango.Html
 			return a.Data("e", func.Method.Name.ToLower());
 		}
 
+		public static T DataReceiver<T>(this TagAttributes<T> a, IViewElement element)
+			where T : TagAttributes<T>
+		{
+			return a.Data("r", element.ClientID);
+		}
+
 		public static T DataCtrl<T>(this TagAttributes<T> a, string ctrlType, string ctrlId = null)
 			where T : TagAttributes<T>
 		{
