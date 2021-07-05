@@ -5,7 +5,7 @@ using Tango.Meta.Database;
 
 namespace Tango.Meta
 {
-    public class SHistKey : MetaStereotype//, IOnTableGenerateLogic
+    public class SHistKey : MetaStereotype
     {
         public List<string> ColumnNames = new List<string>();
         public SHistKey(string keycolumn)
@@ -13,12 +13,12 @@ namespace Tango.Meta
             ColumnNames.Add(keycolumn);
             Name = "SHistKey";
         }
-        //public void Generate(Table table)
-        //{
-        //    if (!Name.IsEmpty())
-        //        table.AssignStereotype(this);
-        //}
-    }
+		public SHistKey(List<string> keycolumns)
+		{
+			ColumnNames.AddRange(keycolumns);
+			Name = "SHistKey";
+		}
+	}
 
     public class SRegistry : MetaStereotype
     {
