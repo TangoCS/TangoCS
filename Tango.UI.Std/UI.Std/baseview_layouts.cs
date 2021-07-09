@@ -8,6 +8,7 @@ using Tango.AccessControl;
 using Tango.Html;
 using Tango.Identity.Std;
 using Tango.Logger;
+using Tango.Meta.Database;
 
 namespace Tango.UI.Std
 {
@@ -21,6 +22,22 @@ namespace Tango.UI.Std
 		void OnChange(ApiResponse response);
 	}
 
+	public class ViewPagePart_sidebar_2col_collapsible<TLeft, TRight> : ViewPagePart_sidebar_2col<TLeft, TRight>
+		where TLeft : ViewPagePart, IWithChangeEvent, new()
+		where TRight : ViewPagePart, IWithChangeEventHandler, new()
+	{
+		protected virtual string LeftSideTitle => "";
+
+		protected virtual string RightSideTitle => "";
+
+		protected override Action<LayoutWriter> RenderPlaceHolderLeftSide => w => w.CollapsibleSidebar(LeftSideTitle, () => w.Div(a => a.ID("container")));
+		
+		protected override Action<LayoutWriter> RenderPlaceHolderRightSide => w => w.CollapsibleSidebar(RightSideTitle, () => w.Div(a => a.ID("container")));
+
+		protected override string ContentBodyClass => "layout1 withwrap";
+		
+	}
+	
 	public class ViewPagePart_sidebar_2col<TLeft, TRight> : ViewPagePart
 		where TLeft : ViewPagePart, IWithChangeEvent, new()
 		where TRight : ViewPagePart, IWithChangeEventHandler, new()
@@ -41,19 +58,27 @@ namespace Tango.UI.Std
 
 		public virtual bool EnableToolbar => false;
 		protected virtual void Toolbar(LayoutWriter w) { }
+		protected virtual string FormTitle => "";
+		
+		protected virtual string ContentBodyClass => "grid_sidebar_2col";
+
+		protected virtual Action<LayoutWriter> RenderPlaceHolderLeftSide => w => w.Div(a => a.ID("container"));
+		
+		protected virtual Action<LayoutWriter> RenderPlaceHolderRightSide => w => w.Div(a => a.ID("container"));
 
 		public override void OnLoad(ApiResponse response)
 		{
 			response.WithWritersFor(this);
 			if (EnableToolbar) response.AddWidget("contenttoolbar", Toolbar);
+			response.AddWidget("contenttitle", FormTitle);
 			response.AddWidget("contentbody", w => {
-				w.Div(a => a.Class("grid_sidebar_2col"), () => {
+				w.Div(a => a.Class(ContentBodyClass), () => {
 					w.PushPrefix(left.ID);
-					w.Div(a => a.ID("container"));
+					RenderPlaceHolderLeftSide(w);
 					w.PopPrefix();
 
 					w.PushPrefix(right.ID);
-					w.Div(a => a.ID("container"));
+					RenderPlaceHolderRightSide(w);
 					w.PopPrefix();
 				});
 			});
