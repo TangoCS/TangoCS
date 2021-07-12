@@ -482,7 +482,7 @@ namespace Tango.Excel
 			bool right;
 			ICssStyleDeclaration style;
 			string formula;
-			double width;
+			//double width;
 			string[] classes = new string[0];
 
 			public ITdAttributes Class(string value, bool replaceExisting = false)
@@ -569,8 +569,8 @@ namespace Tango.Excel
 					writer.s.Cells[writer.r, writer.c].Style.WrapText = false;
 				if ((style?.GetFontSize() ?? "") != "")
 					writer.s.Cells[writer.r, writer.c].Style.Font.Size = style.GetFontSize().Replace("pt", "").Trim().ToInt32(0);
-				if (width > 0)
-					writer.s.Column(writer.c).Width = width;
+				//if (width > 0)
+				//	writer.s.Column(writer.c).Width = width;
 				if ((style?.GetPaddingLeft() ?? "") != "")
 					writer.s.Cells[writer.r, writer.c].Style.Indent = style.GetPaddingLeft().Replace("px", "").Trim().ToInt32(0) / 10;
 				if (string.IsNullOrEmpty(style?.GetFontFamily()) == false)
@@ -622,7 +622,7 @@ namespace Tango.Excel
 			bool right;
 			ICssStyleDeclaration style;
 			string formula;
-			double width;
+			//double width;
 			string[] classes = new string[0];
 
 			public IThAttributes Class(string value, bool replaceExisting = false)
@@ -702,8 +702,8 @@ namespace Tango.Excel
 					writer.s.Cells[writer.r, writer.c].Style.Font.Bold = true;
 				if (style?.GetFontStyle() == "italic")
 					writer.s.Cells[writer.r, writer.c].Style.Font.Italic = true;
-				if (width > 0)
-					writer.s.Column(writer.c).Width = width;
+				//if (width > 0)
+				//	writer.s.Column(writer.c).Width = width;
 				if (formula != null)
 				{
 					writer.s.Cells[writer.r, writer.c].FormulaR1C1 = formula;
