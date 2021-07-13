@@ -528,7 +528,8 @@ namespace Tango.UI.Controls
 	public interface IPersistentFilter<TKey>
 		where TKey : struct
 	{
-		bool Load(TKey? id, string listName, string listParms);
+		bool Load(TKey? id);
+		bool LoadDefault(string listName, string listParms);
 		IEnumerable<(TKey ID, string Name, bool IsDefault)> GetViews(string listName, IReadOnlyDictionary<string, object> listParms);
 
 		void SaveCriteria();
