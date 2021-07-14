@@ -41,7 +41,7 @@ namespace Tango.Data
 			return new ObjectChange {
 				Action = action,
 				ID = () => entity.ID.ToString(),
-				Title = GetTitle(entity),
+				Title = () => GetTitle(entity),
 				Type = entity.GetType(),
 				PropertyChanges = propertyChanges
 			};
@@ -52,7 +52,7 @@ namespace Tango.Data
 			return new ObjectChange {
 				Action = EntityAuditAction.Insert,
 				ID = () => entity.ID.ToString(),
-				Title = GetTitle(entity),
+				Title = () => GetTitle(entity),
 				Type = entity.GetType(),
 				PropertyChanges = null
 			};
@@ -63,7 +63,7 @@ namespace Tango.Data
 			return new ObjectChange {
 				Action = EntityAuditAction.Update,
 				ID = () => entity.ID.ToString(),
-				Title = GetTitle(entity),
+				Title = () => GetTitle(entity),
 				Type = entity.GetType(),
 				PropertyChanges = propertyChanges
 			};
@@ -74,7 +74,7 @@ namespace Tango.Data
 			return new ObjectChange {
 				Action = EntityAuditAction.Delete,
 				ID = () => entity.ID.ToString(),
-				Title = GetTitle(entity),
+				Title = () => GetTitle(entity),
 				Type = entity.GetType(),
 				PropertyChanges = null
 			};
@@ -92,7 +92,7 @@ namespace Tango.Data
 		}
 
 		public Func<string> ID { get; set; }
-		public string Title { get; set; }
+		public Func<string> Title { get; set; }
 		public Type	Type { get; set; }
 
 		public EntityAuditAction Action { get; set; }
