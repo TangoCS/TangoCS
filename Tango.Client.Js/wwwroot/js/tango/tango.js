@@ -879,7 +879,7 @@ var ajaxUtils = function ($, cu) {
 
 		// TODO: доработать для определения модальных контейнеров + обработка открытия модального окна из модального окна.
 		if (el.hasAttribute('data-c-new') && el.hasAttribute('data-c-type')) {
-			if(el.getAttribute('data-c-type') === 'dialogform') {
+			if (el.getAttribute('data-c-type').toLowerCase() == 'dialogform') {
 				for (var key in target.data) {
 					if (!key.startsWith('c-'))
 						state.loc.onBackArgs[key] = target.data[key];
@@ -895,6 +895,7 @@ var ajaxUtils = function ($, cu) {
 		if (el.id) target.sender = el.id;
 
 		const startEl = el.hasAttribute('data-c-external') ? document.getElementById(el.getAttribute('data-c-external')) : el;
+		const isDataRes = el.hasAttribute('data-res') || el.hasAttribute('data-res-postponed'); 
 
 		var firstContainer, modalContainer, noChangeLoc;
 		cu.getThisOrParent(startEl, function (n) {
@@ -910,7 +911,7 @@ var ajaxUtils = function ($, cu) {
 			target.containerPrefix = firstContainer.getAttribute('data-c-prefix');
 			target.containerType = firstContainer.getAttribute('data-c-type');
 			if (modalContainer) {
-				if (el.hasAttribute('data-res')) {
+				if (isDataRes) {
 					for (var key in state.loc.onBackArgs) {
 						if (target.data[key] == null) {
 							target.data[key] = state.loc.onBackArgs[key];
@@ -922,7 +923,7 @@ var ajaxUtils = function ($, cu) {
 				target.changeloc = false;
 		}
 
-		if (el.hasAttribute('data-res')) {
+		if (isDataRes) {
 			state.loc.onBackArgs = {};
 		}
 	}

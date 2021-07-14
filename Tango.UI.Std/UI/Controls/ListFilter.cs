@@ -125,7 +125,7 @@ namespace Tango.UI.Controls
 			var id = Context.GetIntArg(ParameterName);
 			
 			var loaded = PersistentFilter.Load(id);
-			if (!loaded && (AllowDefaultFilters?.Invoke() ?? true)) 
+			if (!loaded && id == null && (AllowDefaultFilters?.Invoke() ?? true)) 
 				loaded = PersistentFilter.LoadDefault(ListName, "");
 
 			if (loaded)
@@ -469,12 +469,12 @@ namespace Tango.UI.Controls
 				LoadPersistent();
 
 				w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, 0).WithTitle(r => r.Get("Common.AllItems")), 
-					a => a.DataContainerExternal(ParentElement.ClientID).DataEvent("onsetview", ParentElement.ClientID));
+					a => a.Data(DataCollection).DataContainerExternal(ParentElement.ClientID).DataEvent("onsetview", ParentElement.ClientID));
 
 				foreach (var view in views)
 				{
 					void link() => w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, view.ID).WithTitle(view.Name), 
-						a => a.DataContainerExternal(ParentElement.ClientID).DataEvent("onsetview", ParentElement.ClientID));
+						a => a.Data(DataCollection).DataContainerExternal(ParentElement.ClientID).DataEvent("onsetview", ParentElement.ClientID));
 					if (view.IsDefault)
 						w.B(link);
 					else
