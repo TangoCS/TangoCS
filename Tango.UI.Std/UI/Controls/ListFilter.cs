@@ -43,6 +43,8 @@ namespace Tango.UI.Controls
 		public List<Field> FieldList { get; private set; } = new List<Field>();
 		public Action FieldsInit { get; set; }
 
+		public Func<bool> AllowDefaultFilters { get; set; }
+
 		string ListName
 		{
 			get
@@ -121,7 +123,12 @@ namespace Tango.UI.Controls
 			if (_isPersistentLoaded) return;
 
 			var id = Context.GetIntArg(ParameterName);
-			if (PersistentFilter.Load(id, ListName, ""))
+			
+			var loaded = PersistentFilter.Load(id);
+			if (!loaded && (AllowDefaultFilters?.Invoke() ?? true)) 
+				loaded = PersistentFilter.LoadDefault(ListName, "");
+
+			if (loaded)
 			{
 				_criteria = PersistentFilter.Criteria;
 				_isPersistentLoaded = true;
@@ -130,14 +137,14 @@ namespace Tango.UI.Controls
 
 		public IQueryable<T> ApplyFilter<T>(IQueryable<T> query)
 		{
-			if (!_isPersistentLoaded) LoadPersistent();
+			LoadPersistent();
 			if (Criteria.Count == 0) return query;
 			return _engine.ApplyFilter(query, FieldList, Criteria.Where(x => x.FieldType != FieldType.Sql).ToList());
 		}
 
 		public (List<string> filters, IDictionary<string, object> parms) GetSqlFilters()
 		{
-			if (!_isPersistentLoaded) LoadPersistent();
+			LoadPersistent();
 			return _engine.GetSqlFilters(FieldList, Criteria.Where(x => x.FieldType == FieldType.Sql).ToList());
 		}
 

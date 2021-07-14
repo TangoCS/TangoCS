@@ -147,6 +147,7 @@ namespace Tango.UI.Std
 					_fields = FieldsConstructor();
 				};
 				f.FilterSubmitted += OnFilter;
+				f.AllowDefaultFilters = () => EnableViews;
 			});
 
 			_qSearch = Context.GetArg(_qSearchParmName.Name);

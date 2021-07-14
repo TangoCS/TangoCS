@@ -479,8 +479,10 @@ var ajaxUtils = function ($, cu) {
 			if (!target.query) target.query = {};
 			target.method = 'GET';
 			processElementDataOnEvent(el, target, function (key, value) { target.data[key] = value; });
-			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)
-				target.query[el.name] = el.value;
+			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement) {
+				processElementValue(el, function (key, value) { target.query[key] = value; })
+				//target.query[el.name] = el.value;
+			}
 			runOnAjaxSend(el, target);
 			return instance.runEventWithApiResponse(target);
 		},
@@ -536,8 +538,10 @@ var ajaxUtils = function ($, cu) {
 
 			target.method = 'POST';
 			processElementDataOnEvent(el, target, function (key, value) { target.data[key] = value; });
-			if (!form && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement))
-				target.data[el.name] = el.value;
+			if (!form && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)) {
+				processElementValue(el, function (key, value) { target.data[key] = value; })
+				//target.data[el.name] = el.value;
+			}
 
 			runOnAjaxSend(el, target);
 			const r = instance.postEventWithApiResponse(target);

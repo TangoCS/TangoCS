@@ -316,14 +316,14 @@ namespace Tango.UI
 		{
 			if (name == null) return defaultValue;
 			if (ctx.AllArgs.TryGetValue(name, out object s))
-				return s.ToString().ToLower().In("true", "1");
+				return s.ToString().ToLower().In("true", "1", "on");
 			return defaultValue;
 		}
 		public static bool? GetBoolArg(this ActionContext ctx, string name)
 		{
 			if (name == null) return null;
 			if (ctx.AllArgs.TryGetValue(name, out object s))
-				return s.ToString().ToLower().In("true", "1");
+				return s.ToString().ToLower().In("true", "1", "on");
 			return null;
 		}
 

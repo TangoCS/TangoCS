@@ -35,6 +35,16 @@ namespace Tango.UI.Controls
 		public void ItemActionImage(Action<ActionLink> urlAttributes) => Item(w => w.ActionImageButton(urlAttributes));
 		public void ItemActionImageText(Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null) => Item(w => w.ActionImageTextButton(urlAttributes, attrs));
 
+		public void ItemField(string caption, Action<LayoutWriter> content)
+		{
+			Item(w => {
+				w.Div(a => a.Class("twocolumnsrow longfirst"), () => {
+					w.Div(a => a.Style("vertical-align: middle;"), () => w.Span(caption + ":"));
+					w.Div(a => a.Style("padding-left: 4px;"), () => content(w));
+				});
+			});
+		}
+
 		public void ItemDropDownButton(string id, string title,
 			Action<ApiResponse> serverEvent, string icon = null,
 			Action<TagAttributes> btnAttrs = null, Action<TagAttributes> popupAttrs = null, PopupOptions options = null)

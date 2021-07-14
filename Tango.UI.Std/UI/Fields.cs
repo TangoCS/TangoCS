@@ -112,9 +112,11 @@ namespace Tango.UI
 
 		public override bool IsRequired {
 			get {
+				if (!(IsVisible)) return false;
 				var type = typeof(TFormValue);
 				return type.IsValueType && type != typeof(bool) && (Nullable.GetUnderlyingType(type) == null);
 			}
+			set { base.IsRequired = value; }
 		}
 
 		public virtual TValue DefaultValue => default;

@@ -25,15 +25,18 @@ namespace Tango.UI.Controls
 			_storage = storage;
 		}
 
-		public bool Load(TKey? id, string listName, string listParms)
+		public bool Load(TKey? id)
 		{
 			if (_filter == null || !_filter.ID.Equals(id))
-			{
 				if (id.HasValue)
 					_filter = _storage.GetById(id.Value);
-				else
-					_filter = _storage.GetDefault(listName, listParms);
-			}
+
+			return _filter != null;
+		}
+
+		public bool LoadDefault(string listName, string listParms)
+		{
+			_filter = _storage.GetDefault(listName, listParms);
 			return _filter != null;
 		}
 
