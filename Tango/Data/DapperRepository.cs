@@ -94,6 +94,7 @@ namespace Tango.Data
 		public IDictionary<string, object> Parameters { get; } = new Dictionary<string, object>();
 
 		protected string noKeyMessage => $"Entity {Type.Name} doesn't contain any key property";
+		protected string incorrectKeyMessage => $"Incorrect key format";
 
 		protected IQueryTranslatorDialect Dialect => QueryHelper.CreateDialect(DBType);
 
@@ -179,7 +180,7 @@ namespace Tango.Data
 			else if (idtype.IsValueType)
 			{
 				if (keys.Count == 0) throw new Exception(noKeyMessage);
-				var props = id.GetType().GetProperties();
+				var props = idtype.GetProperties();
 				int i = 0;
 				var clause = keys.Select(k => {
 					var s = $"{k.Key.ToLower()} = @p{i}";
@@ -190,7 +191,19 @@ namespace Tango.Data
 				return (clause, parms);
 			}
 			else
-				throw new Exception(noKeyMessage);
+			{
+				if (keys.Count == 0) throw new Exception(noKeyMessage);
+				var props = idtype.GetProperties();
+				if (props.Count() == 0)	throw new Exception(incorrectKeyMessage);
+				int i = 0;
+				var clause = props.Where(p => keys.ContainsKey(p.Name)).Select(p => {
+					var s = $"{p.Name.ToLower()} = @p{i}";
+					parms.Add($"p{i}", p.GetValue(id));
+					i++;
+					return s;
+				}).Join(" and ");
+				return (clause, parms);
+			}
 		}
 
 
