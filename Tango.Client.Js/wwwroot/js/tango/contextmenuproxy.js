@@ -1,28 +1,43 @@
-﻿var contextmenuproxy = function () {
+﻿var contextmenuproxy = function (au) {
 	var instance = {
 		init: function (args) {
-			$('#' + args.triggerid).contextMenu('#' + args.popupid, instance.parms(args));
+			const parms = instance.parms(args);
+			instance.contextMenu(args.triggerid, args.popupid, parms, args.storeparms)
 		},
-		parms: function(args) {
+		contextMenu: function (triggerid, popupid, parms, storeparms) {
+			if (storeparms == 'true') {
+				if (!au.state.ctrl['$contextmenu'])
+					au.state.ctrl['$contextmenu'] = {};
+				au.state.ctrl['$contextmenu'][triggerid] = {
+					popupid: popupid,
+					parms: parms
+				};
+			}
+			$('#' + triggerid).contextMenu('#' + popupid, parms);
+		},
+		parms: function (args) {
 			return {
 				triggerOn: args.triggeron,
 				displayAround: args.displaysaround,
 				position: args.position,
 				closeOnClick: args.closeonclick,
 				closeOnScroll: args.closeonscroll === undefined ? true : args.closeonscroll,
-				onOpen: function (data, event) {
-					if (data.menu[0].getAttribute('data-href') || data.menu[0].getAttribute('data-e'))
-						return ajaxUtils.runEventFromElementWithApiResponse(data.menu[0]);
-
-					return $.when();
-				},
+				onOpen: onOpen,
 				type: args.type
 			};
 		}
 	};
 
+
+	function onOpen (data, event) {
+		if (data.menu[0].getAttribute('data-href') || data.menu[0].getAttribute('data-e'))
+			return au.runEventFromElementWithApiResponse(data.menu[0]);
+
+		return $.when();
+	}
+
 	return instance;
-}();
+}(ajaxUtils);
 
 var contextmenuproxy_closeonlink = function () {
 	var instance = {
@@ -31,8 +46,7 @@ var contextmenuproxy_closeonlink = function () {
 			parms.closeOnClickSelector = function (el) {
 				return el instanceof HTMLAnchorElement;
 			};
-
-			$('#' + args.triggerid).contextMenu('#' + args.popupid, parms);
+			contextmenuproxy.contextMenu(args.triggerid, args.popupid, parms, args.storeparms)
 		}
 	};
 

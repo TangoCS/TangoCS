@@ -103,7 +103,7 @@
 	return instance;
 }(ajaxUtils, commonUtils);
 
-var listview = function (au, cu, cbcell) {
+var listview = function (au, cu, cbcell, menu) {
 	var instance = {
 		togglerow: function (el) {
 			const tr = cu.getRow(el);
@@ -693,6 +693,7 @@ var listview = function (au, cu, cbcell) {
 
 		const remove = !tr.classList.contains('checked');
 		var tocopy = [];
+		var toinitmenu = [];
 
 		var i = 0;
 		while (tr) {
@@ -717,7 +718,24 @@ var listview = function (au, cu, cbcell) {
 				addDelIcon(content);
 
 				var ddm = copyTr.querySelector('.dropdownimage');
-				if (ddm) ddm.parentNode.removeChild(ddm);
+				if (ddm) {
+					var menuData = null;
+					if (au.state.ctrl['$contextmenu'])
+						menuData = au.state.ctrl['$contextmenu'][ddm.id];
+					if (menuData) {
+						ddm.id = ddm.id + '_sel';
+						ddm.nextElementSibling.id = ddm.nextElementSibling.id + '_sel';
+						toinitmenu.push({
+							triggerid: ddm.id,
+							popupid: ddm.nextElementSibling.id,
+							parms: menuData.parms
+						});
+					}
+					else {
+						ddm.parentNode.removeChild(ddm.nextElementSibling);
+						ddm.parentNode.removeChild(ddm);
+					}
+				}
 
 				if (copyTr.classList.contains('collapsed') || i == 0) {
 					var arr = copyTr.querySelector('.togglelevel > span');
@@ -769,10 +787,14 @@ var listview = function (au, cu, cbcell) {
 				parent = el ? el : tocopy[i];
 				pos = 'afterend';
 			}
+
+			for (var i = toinitmenu.length - 1; i >= 0; i--) {
+				menu.contextMenu(toinitmenu[i].triggerid, toinitmenu[i].popupid, toinitmenu[i].parms);
+			}
 		}
 	}
 	return instance;
-}(ajaxUtils, commonUtils, checkBoxCell);
+}(ajaxUtils, commonUtils, checkBoxCell, contextmenuproxy);
 
 var sidebar = function () {
 	var instance = {

@@ -18,7 +18,11 @@ namespace Tango.UI
 
 		public static void BindPopup(this LayoutWriter w, string elementid, string popupid, PopupOptions options = null)
 		{
-			if (options == null) options = PopupOptions.ShowOnClick;
+			if (options == null)
+			{
+				options = PopupOptions.ShowOnClick();
+				options.StoreParms = false;
+			}
 			w.AddClientAction(options.ProxyName, "init", f => new {
 				triggerid = f(elementid),
 				popupid = f(popupid),
@@ -26,15 +30,16 @@ namespace Tango.UI
 				displaysaround = options.DisplaysAround.ToString().ToLower(),
 				closeonclick = options.CloseOnClick,
 				closeonscroll = options.CloseOnScroll,
-				type = options.Type.ToString().ToLower()
+				type = options.Type.ToString().ToLower(),
+				storeparms = options.StoreParms.ToString().ToLower()
 			});
 		}
 	}
 
 	public class PopupOptions
 	{
-		public static PopupOptions ShowOnClick = new PopupOptions();
-		public static PopupOptions ShowOnHover = new PopupOptions { TriggerOn = PopupTriggersOn.Hover };
+		public static PopupOptions ShowOnClick() => new PopupOptions {  };
+		public static PopupOptions ShowOnHover() => new PopupOptions { TriggerOn = PopupTriggersOn.Hover };
 
 		public string ProxyName { get; set; } = "contextmenuproxy";
 		public PopupTriggersOn TriggerOn { get; set; } = PopupTriggersOn.Click;
@@ -42,6 +47,8 @@ namespace Tango.UI
 		public bool CloseOnClick { get; set; } = true;
 		public bool CloseOnScroll { get; set; } = true;
 		public PopupType Type { get; set; } = PopupType.Default;
+
+		public bool StoreParms { get; set; } = false;
 	}
 
 	public enum PopupTriggersOn
