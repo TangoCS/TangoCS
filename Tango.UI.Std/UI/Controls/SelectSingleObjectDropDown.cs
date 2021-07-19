@@ -99,7 +99,7 @@ namespace Tango.UI.Controls
 				});
 			});
 
-			cw.Div(a => a.ID("popup").Class("selectsingleobject-popup").DataRef(Field.FilterFieldName).Data(DataCollection).DataEvent(OpenDialog).DataContainer(typeof(SelectObjectPopupContainer), Field.ClientID));
+			cw.Div(a => a.ID("popup").Class("selectsingleobject-popup").DataRef(Field.FilterFieldName).Data(DataCollection).DataEvent(OpenDialog).DataNewContainer(typeof(SelectObjectPopupContainer), Field.ClientID));
 		}
 
 		public void OnClear(ApiResponse response)

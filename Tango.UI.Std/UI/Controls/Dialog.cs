@@ -74,7 +74,7 @@ namespace Tango.UI.Controls
 				a.Class("height100");
 			a.Style("width:" + options.Width);
 			a.Data("c-changeloc", "false");
-			a.DataHref(ctx.BaseUrl().Url).DataContainer(type, prefix);
+			a.DataHref(ctx.BaseUrl().Url).DataNewContainer(type, prefix);
 			var parent = ctx.GetArg("c-parent");
 			if (!parent.IsEmpty())
 				a.Data("c-parent", parent);
@@ -206,7 +206,7 @@ namespace Tango.UI.Controls
 			if (dialogPrefix == null)
 				dialogPrefix = el.ClientID;
 
-			var res = a.DataContainer(typeof(DialogFormContainer), dialogPrefix);
+			var res = a.DataNewContainer(typeof(DialogFormContainer), dialogPrefix);
 
 			return res.OnClickRunEvent(serverEvent.Method.Name, el.ClientID);
 		}
@@ -220,7 +220,7 @@ namespace Tango.UI.Controls
 			if (dialogPrefix == null)
 				dialogPrefix = el.ClientID;
 
-			var res = a.DataContainer(typeof(DialogFormContainer), dialogPrefix);
+			var res = a.DataNewContainer(typeof(DialogFormContainer), dialogPrefix);
 
 			return res.OnClickPostEvent(serverEvent.Method.Name, el.ClientID);
 		}

@@ -113,7 +113,7 @@ namespace Tango.UI.Controls
 				filter.LoadPersistent();
 				var text = filter.PersistentFilter.ID == 0 ? w.Resources.Get("Common.AllItems") :
 					(filter.PersistentFilter.Name.IsEmpty() ? w.Resources.Get("System.Filter.Custom") : filter.PersistentFilter.Name);
-				w.DropDownButton("tableviews", text, filter.GetViewsMenu, "view", popupAttrs: a => a.DataContainer("popup", w.IDPrefix));
+				w.DropDownButton("tableviews", text, filter.GetViewsMenu, "view", popupAttrs: a => a.DataNewContainer("popup", w.IDPrefix));
 			});
 		}
 

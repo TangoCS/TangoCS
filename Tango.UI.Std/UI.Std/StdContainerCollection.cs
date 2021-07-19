@@ -42,7 +42,7 @@ namespace Tango.UI.Std
 		public override void Render(ApiResponse response)
 		{
 			response.AddWidget("container", w => {
-				w.Div(a => a.ID("content").Class(ContainerClass).DataContainer(Type, w.IDPrefix), () => {
+				w.Div(a => a.ID("content").Class(ContainerClass).DataIsContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
 							ContentHeader(w);
@@ -59,7 +59,7 @@ namespace Tango.UI.Std
 		public override void Render(ApiResponse response)
 		{
 			response.AddWidget("container", w => {
-				w.Div(a => a.ID("content").Class(ContainerClass).DataContainer(Type, w.IDPrefix), () => {
+				w.Div(a => a.ID("content").Class(ContainerClass).DataIsContainer(Type, w.IDPrefix), () => {
 					w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding"));
 				});
@@ -78,7 +78,7 @@ namespace Tango.UI.Std
 		public override void Render(ApiResponse response)
 		{
 			response.AddWidget("container", w => {
-				w.Div(a => a.ID("content").Class(ContainerClass).DataContainer(Type, w.IDPrefix), () => {
+				w.Div(a => a.ID("content").Class(ContainerClass).DataIsContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
 							ContentHeader(w);
@@ -116,7 +116,7 @@ namespace Tango.UI.Std
 		public override void Render(ApiResponse response)
 		{
 			response.AddWidget("container", w => {
-				w.Div(a => a.ID("content").Class(ContainerClass).DataContainer(Type, w.IDPrefix), () => {
+				w.Div(a => a.ID("content").Class(ContainerClass).DataIsContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
 							ContentHeader(w);
@@ -140,7 +140,7 @@ namespace Tango.UI.Std
 		public override void Render(ApiResponse response)
 		{
 			response.AddWidget("container", w => {
-				w.Div(a => a.ID("content").Class(ContainerClass).DataContainer(Type, w.IDPrefix), () => {
+				w.Div(a => a.ID("content").Class(ContainerClass).DataIsContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
 							ContentHeader(w);

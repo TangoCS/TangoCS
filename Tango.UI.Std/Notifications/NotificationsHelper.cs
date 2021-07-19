@@ -32,7 +32,7 @@ namespace Tango.Notifications
 		public void NotificationsPopup(LayoutWriter w)
 		{
 			var url = new ActionLink(w.Context).ToList<Notification>().Url;
-			w.PopupForElement("notifications", a => a.Class("notifications").DataHref(url).DataContainer(typeof(NotificationPopupContainer), "notification_list"), options: new PopupOptions { CloseOnClick = true, ProxyName = "contextmenuproxy_closeonlink" });
+			w.PopupForElement("notifications", a => a.Class("notifications").DataHref(url).DataNewContainer(typeof(NotificationPopupContainer), "notification_list"), options: new PopupOptions { CloseOnClick = true, ProxyName = "contextmenuproxy_closeonlink" });
 		}
 	}
 }

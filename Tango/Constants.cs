@@ -27,6 +27,7 @@ namespace Tango
 		public static readonly string Sender = "sender";
 		public static readonly string ResponseType = "responsetype";
 
+		public static readonly string Container = "c";
 		public static readonly string ContainerPrefix = "c-prefix";
 		public static readonly string ContainerType = "c-type";
 		public static readonly string ContainerNew = "c-new";

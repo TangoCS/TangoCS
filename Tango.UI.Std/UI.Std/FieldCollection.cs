@@ -117,7 +117,7 @@ namespace Tango.UI.Std
 					var id = $"hfilter{options.FilterSeqNo}";
 					w.DropDownImage(id, "menu", _filter.RenderHeaderFilter,
 						popupAttrs: a => a.DataParm("conditionseqno", options.FilterSeqNo)
-							.DataContainer(typeof(ChildFormContainer), w.GetID(id)),
+							.DataNewContainer(typeof(ChildFormContainer), w.GetID(id)),
 						options: new PopupOptions { CloseOnClick = false });
 				}
 			});

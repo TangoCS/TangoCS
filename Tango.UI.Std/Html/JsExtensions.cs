@@ -207,7 +207,7 @@ namespace Tango.Html
 		//	return a.Data("s", service).Data("a", action);
 		//}
 
-		public static T DataContainer<T>(this TagAttributes<T> a, string type, string prefix = null)
+		public static T DataNewContainer<T>(this TagAttributes<T> a, string type, string prefix = null)
 			where T : TagAttributes<T>
 		{
 			return a.Data(Constants.ContainerType, type.ToLower())
@@ -215,12 +215,28 @@ namespace Tango.Html
 				.Data(Constants.ContainerNew, "1");
 		}
 
-		public static T DataContainer<T>(this TagAttributes<T> a, Type type, string prefix = null)
+		public static T DataNewContainer<T>(this TagAttributes<T> a, Type type, string prefix = null)
 			where T : TagAttributes<T>
 		{
 			return a.Data(Constants.ContainerType, type.Name.Replace("Container", "").ToLower())
 				.Data(Constants.ContainerPrefix, prefix?.ToLower())
 				.Data(Constants.ContainerNew, "1");
+		}
+
+		public static T DataIsContainer<T>(this TagAttributes<T> a, string type, string prefix = null)
+			where T : TagAttributes<T>
+		{
+			return a.Data(Constants.Container)
+				.Data(Constants.ContainerType, type.ToLower())
+				.Data(Constants.ContainerPrefix, prefix?.ToLower());
+		}
+
+		public static T DataIsContainer<T>(this TagAttributes<T> a, Type type, string prefix = null)
+			where T : TagAttributes<T>
+		{
+			return a.Data(Constants.Container)
+				.Data(Constants.ContainerType, type.Name.Replace("Container", "").ToLower())
+				.Data(Constants.ContainerPrefix, prefix?.ToLower());
 		}
 
 		public static T DataContainerExternal<T>(this TagAttributes<T> a, string externalElementId)
