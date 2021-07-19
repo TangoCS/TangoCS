@@ -961,7 +961,7 @@ var ajaxUtils = function ($, cu) {
 				val = el.innerText;
 			}
 
-			if (val !== undefined) {
+			if (val !== undefined && val != null) {
 				setvalfunc(parmname, val);
 			}
 		}
