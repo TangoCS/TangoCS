@@ -17,7 +17,7 @@ namespace Tango.UI.Navigation
 		[Inject]
 		protected IAccessControl AccessControl { get; set; }
 
-		public override bool UsePropertyInjection => true;
+		//public override bool UsePropertyInjection => true;
 
 		public void Render(HtmlWriter w)
 		{
@@ -39,7 +39,7 @@ namespace Tango.UI.Navigation
 				var target = children.Count() > 0 ? children.First().Target : null;
 				var isCurr = m == currentItem;
 				w.Div(a => a.Class("nav-button" + (isCurr ? " selected" : "")), () => {
-					w.A(a => a.Href(url).OnClickRunHref(), () => {
+					w.A(a => a.Href(url).OnClickRunHref().Data(Constants.ContainerNew, 1), () => {
 						if (!m.Image.IsEmpty()) w.Icon(m.Image);
 						w.Write(m.Title);
 					});
@@ -50,7 +50,7 @@ namespace Tango.UI.Navigation
 					w.Div(a => a.Class("nav-body"), () => {
 						foreach (var item in m.Children.Where(o => AccessControl.Check(o.SecurableObjectKey)))
 						{
-							w.A(a => a.Href(item.Url).OnClickRunHref(), () => {
+							w.A(a => a.Href(item.Url).OnClickRunHref().Data(Constants.ContainerNew, 1), () => {
 								if (!item.Image.IsEmpty()) w.Icon(item.Image);
 								w.Write(item.Title);
 							});

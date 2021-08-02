@@ -17,7 +17,7 @@ namespace Tango.UI.Navigation
 		[Inject]
 		protected IAccessControl AccessControl { get; set; }
 
-		public override bool UsePropertyInjection => true;
+		//public override bool UsePropertyInjection => true;
 
 		public void Render(LayoutWriter w)
 		{
@@ -43,7 +43,7 @@ namespace Tango.UI.Navigation
 					}
 					else
 					{
-						w.A(a => a.Href(m.Url).OnClickRunHref(), () => {
+						w.A(a => a.Href(m.Url).OnClickRunHref().Data(Constants.ContainerNew, 1), () => {
 							if (!m.Image.IsEmpty()) w.Icon(m.Image);
 							w.Write(m.Title);
 						});

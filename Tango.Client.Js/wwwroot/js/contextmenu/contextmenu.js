@@ -43,6 +43,20 @@
 		return offset;
 	}
 
+	var timer = null;
+
+	function delay(caller, func, timeout) {
+		if (!timeout) {
+			timeout = 400;
+		}
+		if (timer) {
+			window.clearTimeout(timer);
+			timer = null;
+		}
+		timer = window.setTimeout(function () { func(caller); }, timeout);
+	}
+
+
 	$.fn.contextMenu = function (selector, option) {
 		return callMethod(this, 'popup', selector, option);
 	};
@@ -57,6 +71,7 @@
 		closeOnClick: false, //close context menu on click/ trigger of any item in menu
 		closeOnClickSelector: null,
 		type: 'default',
+		delay: 0,
 
 		//callback
 		beforeOpen: function (data, event) { return 0; },
@@ -453,7 +468,12 @@
 			};
 
 			//call open callback
-			option.onOpen.call(this, clbckData, e).done(openMenu);
+			if (option.delay > 0)
+				delay(this, function (caller) {
+					option.onOpen.call(caller, clbckData, e).done(openMenu);
+				});
+			else
+				option.onOpen.call(this, clbckData, e).done(openMenu);
 		},
 
 		scrollEvent: function (e) {

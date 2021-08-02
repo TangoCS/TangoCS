@@ -44,7 +44,7 @@ namespace Tango.UI
 		public virtual string ID { get; set; }
 		public ActionContext Context { get; set; }
 
-		public virtual bool UsePropertyInjection => true;
+		//public virtual bool UsePropertyInjection => true;
 
 		public IResourceManager Resources => Context.Resources;
 		protected dynamic FormBag { get { return Context.FormData; } }
@@ -122,10 +122,11 @@ namespace Tango.UI
 		public bool IsLazyLoad { get; set; }
 
 		public T CreateControl<T>(string id, Action<T> setProperties = null)
-			where T : ViewElement, new()
+			where T : IViewElement, new()
 		{
 			T c = new T() { Context = Context };
-			if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
+			if (c is IWithPropertyInjection pic)
+				pic.InjectProperties(Context.RequestServices);
 			c.ID = id;
 			c.ParentElement = this;
 
@@ -139,12 +140,13 @@ namespace Tango.UI
 		}
 
 		public T AddControl<T>(T c)
-			where T : ViewElement
+			where T : IViewElement
 		{
 			if (Context.EventReceivers.Contains(c)) return c;
 
 			c.Context = Context;
-			if (c.UsePropertyInjection) c.InjectProperties(Context.RequestServices);
+			if (c is IWithPropertyInjection pic)
+				pic.InjectProperties(Context.RequestServices);
 			c.ParentElement = this;
 
 			Context.EventReceivers.Add(c);

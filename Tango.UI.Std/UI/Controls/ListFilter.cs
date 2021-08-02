@@ -33,11 +33,11 @@ namespace Tango.UI.Controls
 		[Inject]
 		public IPersistentFilter<int> PersistentFilter { get; set; }
 
-		public override bool UsePropertyInjection {
-			get {
-				return true;
-			}
-		}
+		//public override bool UsePropertyInjection {
+		//	get {
+		//		return true;
+		//	}
+		//}
 
 		public string ParameterName { get; set; }
 		public List<Field> FieldList { get; private set; } = new List<Field>();

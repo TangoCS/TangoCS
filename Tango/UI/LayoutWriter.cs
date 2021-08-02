@@ -391,6 +391,11 @@ namespace Tango.UI
 			w.Div(a => a.Class("left"), content);
 		}
 
+		public static void ButtonsBarLeft(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+		{
+			w.Div(a => a.Class("left").Set(attributes), content);
+		}
+
 		public static void Icon(this HtmlWriter w, string name, string tip = null, string color = null)
 		{
 			w.I(a => {

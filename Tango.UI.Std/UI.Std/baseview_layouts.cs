@@ -37,34 +37,46 @@ namespace Tango.UI.Std
 		protected override string ContentBodyClass => "layout1 withwrap";
 		
 	}
-	
-	public class ViewPagePart_sidebar_2col<TLeft, TRight> : ViewPagePart
-		where TLeft : ViewPagePart, IWithChangeEvent, new()
-		where TRight : ViewPagePart, IWithChangeEventHandler, new()
+
+	public abstract class ViewPagePart_sidebar_2col<TLeft, TRight> : ViewPagePart
+		where TLeft : IViewPagePart, IWithChangeEvent, new()
+		where TRight : IViewPagePart, IWithChangeEventHandler, new()
 	{
 		protected TLeft left;
 		protected TRight right;
 
+		public virtual bool EnableToolbar => false;
+		protected virtual void Toolbar(LayoutWriter w) { }
+		protected virtual string FormTitle => "";
+
+		protected virtual string ContentBodyClass => "grid_sidebar_2col";
+
+		protected virtual Action<LayoutWriter> RenderPlaceHolderLeftSide => w => w.Div(a => a.ID("container"));
+
+		protected virtual Action<LayoutWriter> RenderPlaceHolderRightSide => w => w.Div(a => a.ID("container"));
+
 		public override void OnInit()
 		{
-			left = CreateControl<TLeft>("left", SetPropertiesLeft);
-			right = CreateControl<TRight>("right", SetPropertiesRight);
+			left = CreateLeft();
+			right = CreateRight();
 
+			left.Changed += response => RenderContainer(response, right);
 			left.Changed += right.OnChange;
 		}
+
+		protected virtual TLeft CreateLeft() => CreateControl<TLeft>("left", SetPropertiesLeft);
+		protected virtual TRight CreateRight() => CreateControl<TRight>("right", SetPropertiesRight);
 
 		protected virtual void SetPropertiesLeft(TLeft c) { }
 		protected virtual void SetPropertiesRight(TRight c) { }
 
-		public virtual bool EnableToolbar => false;
-		protected virtual void Toolbar(LayoutWriter w) { }
-		protected virtual string FormTitle => "";
-		
-		protected virtual string ContentBodyClass => "grid_sidebar_2col";
-
-		protected virtual Action<LayoutWriter> RenderPlaceHolderLeftSide => w => w.Div(a => a.ID("container"));
-		
-		protected virtual Action<LayoutWriter> RenderPlaceHolderRightSide => w => w.Div(a => a.ID("container"));
+		void RenderContainer(ApiResponse response, IViewPagePart el)
+		{
+			response.WithNamesAndWritersFor(el);
+			var c2 = el.GetContainer();
+			c2.ToRemove.Add("contentheader");
+			c2.Render(response);
+		}
 
 		public override void OnLoad(ApiResponse response)
 		{
@@ -83,20 +95,13 @@ namespace Tango.UI.Std
 				});
 			});
 
-			response.WithNamesAndWritersFor(left);
-			var c1 = left.GetContainer();
-			c1.ToRemove.Add("contentheader");
-			c1.Render(response);
+			RenderContainer(response, left);
 			left.OnLoad(response);
 
-			response.WithNamesAndWritersFor(right);
-			var c2 = right.GetContainer();
-			c2.ToRemove.Add("contentheader");
-			c2.Render(response);
+			RenderContainer(response, right);
 			right.OnLoad(response);
 		}
 	}
-
 
 	public class ViewPagePart_3col<TLeft, TCenter, TRight> : ViewPagePart
 		where TLeft : ViewPagePart, IWithChangeEvent, new()

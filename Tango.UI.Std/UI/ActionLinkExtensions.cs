@@ -30,7 +30,7 @@ namespace Tango.UI
 
 			if (title.IsEmpty()) title = w.Resources.Get("Common.Back");
 			
-			w.A(a => a.Class("actionbtn").Href(url).OnClickRunHref().Set(attrs), () => {
+			w.A(a => a.Class("actionbtn").Href(url).OnClickRunHref().Data(Constants.ContainerNew, 1).Set(attrs), () => {
 				w.Icon("back");
 				w.Write(title);
 			});
@@ -45,7 +45,7 @@ namespace Tango.UI
 			if (url == null) return;
 
 			if (title.IsEmpty()) title = w.Resources.Get("Common.Back");
-			w.Button(a => a.Class("btn-primary").Data("href", url).DataResult(0).OnClickRunHref().Set(attrs), title);
+			w.Button(a => a.Class("btn-primary").Data("href", url).DataResult(0).OnClickRunHref().Data(Constants.ContainerNew, 1).Set(attrs), title);
 		}
 
 		static ATagAttributes SetTarget(this ATagAttributes a, ActionLink link)

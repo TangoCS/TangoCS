@@ -31,7 +31,8 @@ namespace Tango.UI
 				closeonclick = options.CloseOnClick,
 				closeonscroll = options.CloseOnScroll,
 				type = options.Type.ToString().ToLower(),
-				storeparms = options.StoreParms.ToString().ToLower()
+				storeparms = options.StoreParms.ToString().ToLower(),
+				delay = options.Delay.ToString()
 			});
 		}
 	}
@@ -47,6 +48,7 @@ namespace Tango.UI
 		public bool CloseOnClick { get; set; } = true;
 		public bool CloseOnScroll { get; set; } = true;
 		public PopupType Type { get; set; } = PopupType.Default;
+		public int Delay { get; set; } = 0;
 
 		public bool StoreParms { get; set; } = false;
 	}

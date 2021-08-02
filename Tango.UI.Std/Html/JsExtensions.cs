@@ -35,8 +35,6 @@ namespace Tango.Html
 		{
 			if (action != null)
 				a.DataEvent(action);
-			else
-				a.Data(Constants.ContainerNew, 1);
 			return a.OnClick("ajaxUtils.runHrefWithApiResponse(this); return false;");
 		}
 

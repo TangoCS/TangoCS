@@ -23,7 +23,8 @@
 				closeOnClick: args.closeonclick,
 				closeOnScroll: args.closeonscroll === undefined ? true : args.closeonscroll,
 				onOpen: onOpen,
-				type: args.type
+				type: args.type,
+				delay: args.delay
 			};
 		}
 	};

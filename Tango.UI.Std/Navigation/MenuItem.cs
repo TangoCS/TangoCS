@@ -137,7 +137,7 @@ namespace Tango.UI.Navigation
 		{
 			void link(MenuItem c)
 			{
-				w.A(a => a.Href(c.Url).OnClickRunHref(), () => {
+				w.A(a => a.Href(c.Url).OnClickRunHref().Data(Constants.ContainerNew, 1), () => {
 					if (!c.Image.IsEmpty()) w.Icon(c.Image);
 					w.Write(c.Title);
 				});

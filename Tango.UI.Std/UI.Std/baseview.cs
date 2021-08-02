@@ -11,12 +11,17 @@ using Tango.Logger;
 
 namespace Tango.UI.Std
 {
-	public abstract class ViewPagePart : ViewRootElement, IWithCheckAccess, IContainerItem
+	public interface IViewPagePart : IViewElement, IWithCheckAccess, IContainerItem
+	{
+		void OnLoad(ApiResponse response);
+	}
+
+	public abstract class ViewPagePart : ViewRootElement, IViewPagePart
 	{
 		[Inject]
 		public IRequestLoggerProvider LoggerProvider { get; set; }
 
-		public override bool UsePropertyInjection => true;
+		//public override bool UsePropertyInjection => true;
 		public virtual ViewContainer GetContainer() => new DefaultContainer();
 
 		public override ActionResult Execute()
