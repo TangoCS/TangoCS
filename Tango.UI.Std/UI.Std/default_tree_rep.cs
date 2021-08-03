@@ -305,7 +305,7 @@ namespace Tango.UI.Std
 			}
 
 			var origAllObjectsQuery = Repository.AllObjectsQuery;
-			if (!template.CustomQuery.IsEmpty())
+			if (template.CustomQuery != null && !template.CustomQuery.IsEmpty())
 				origAllObjectsQuery = template.CustomQuery;
 
 			var sqlTemplate = "select *";
