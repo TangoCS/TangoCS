@@ -85,7 +85,7 @@ namespace Tango.UI.Std
 			return (true, null);
 		}
 
-		public void OnSubmit(ApiResponse response)
+		public virtual void OnSubmit(ApiResponse response)
 		{
 			var sel = Context.GetListArg<TKey>(Constants.SelectedValues);
 
