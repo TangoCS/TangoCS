@@ -478,10 +478,10 @@ namespace Tango.UI.Std
 	public delegate void RenderHeaderDelegate(LayoutWriter w, IEnumerable<Action<LayoutWriter>> headers);
 	public delegate void RenderGroupCellDelegate<TResult>(LayoutWriter w, TResult obj);
 	public delegate void RenderGroupRowDelegate<TResult>(TResult obj, string groupTitle, RenderGroupCellDelegate<TResult> renderGroupCell);
-	public delegate void RenderRowDelegate<TResult>(TResult obj, RowInfo row);
-	public delegate void RenderRowCellDelegate<TResult>(LayoutWriter w, TResult obj, RowInfo row);
-	public delegate void RowCellAttributesDelegate<TResult>(TdTagAttributes w, TResult obj, RowInfo row);
-	public delegate bool RowCellFlagDelegate<TResult>(TResult obj, RowInfo row);
+	public delegate void RenderRowDelegate<TResult>(TResult obj, RowInfo<TResult> row);
+	public delegate void RenderRowCellDelegate<TResult>(LayoutWriter w, TResult obj, RowInfo<TResult> row);
+	public delegate void RowCellAttributesDelegate<TResult>(TdTagAttributes w, TResult obj, RowInfo<TResult> row);
+	public delegate bool RowCellFlagDelegate<TResult>(TResult obj, RowInfo<TResult> row);
 
 	public class ListGroupSorting
 	{
@@ -489,8 +489,9 @@ namespace Tango.UI.Std
 		public bool SortDesc;
 	}
 
-	public class RowInfo
+	public class RowInfo<TResult>
 	{
+		public TResult PrevRowData { get; set; }
 		public int RowNum { get; set; }
 		public int Level { get; set; }
 	}

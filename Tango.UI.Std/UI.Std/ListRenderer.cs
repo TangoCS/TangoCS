@@ -32,7 +32,7 @@ namespace Tango.UI.Std
 			var i = 0;
 			var curLevel = 1;
 
-			foreach (var o in result)
+			foreach (var (prev,o,isLast) in result.PairwiseWithPrev())
 			{
 				bool newGroupItem = false;
 				int j = 0;
@@ -45,7 +45,12 @@ namespace Tango.UI.Std
 					{
 						if (!val.IsEmpty())
 						{
-							w.Tr(a => fields.GroupRowAttributes?.Invoke(a, o, new RowInfo { RowNum = i, Level = lev }), () =>
+							var rowInfo = new RowInfo<TResult> {RowNum = i, Level = lev};
+
+							if (prev != null)
+								rowInfo.PrevRowData = prev;
+							
+							w.Tr(a => fields.GroupRowAttributes?.Invoke(a, o, rowInfo), () =>
 							{
 								RenderGroupRow(w, fields, g, o);
 							});
@@ -58,7 +63,11 @@ namespace Tango.UI.Std
 				}
 				if (newGroupItem) curLevel = lev;
 
-				var r = new RowInfo { RowNum = i, Level = curLevel };
+				var r = new RowInfo<TResult> { RowNum = i, Level = curLevel };
+				
+				if (prev != null)
+					r.PrevRowData = prev;
+				
 				fields.BeforeRowContent?.Invoke(w, o, r);
 
 				w.Tr(a => fields.RowAttributes?.Invoke(a, o, r), () => {
@@ -174,7 +183,7 @@ namespace Tango.UI.Std
 						j++;
 					}
 
-					var r = new RowInfo { RowNum = i, Level = j };
+					var r = new RowInfo<TResult> { RowNum = i, Level = j };
 					w.Div(a => fields.RowAttributes?.Invoke(a, o, r), () => {
 						foreach (var cols in fields.Cells)
 							foreach (var c in cols.AsEnumerable())

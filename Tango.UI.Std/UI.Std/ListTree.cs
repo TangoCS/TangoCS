@@ -13,7 +13,7 @@ namespace Tango.UI.Std
 			f.RowAttributes += (a, o, i) => a.Data("level", o.Level);
 		}
 
-		public static void TreeCellContent<T>(LayoutWriter w, T o, RowInfo r, int level, bool hasChildren, RenderRowCellDelegate<T> content, TreeCellOptions<T> options = null)
+		public static void TreeCellContent<T>(LayoutWriter w, T o, RowInfo<T> r, int level, bool hasChildren, RenderRowCellDelegate<T> content, TreeCellOptions<T> options = null)
 		{
 			w.Div(a => a.Class($"treerow l{level}"), () => {
 				for (int i = 0; i < level; i++)

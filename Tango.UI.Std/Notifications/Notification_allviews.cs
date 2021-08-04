@@ -94,7 +94,7 @@ namespace Tango.Notifications
 						int i = 1;
 						foreach (var o in result)
 						{
-							var r = new RowInfo { RowNum = i, Level = 0 };
+							var r = new RowInfo<TResult> { RowNum = i, Level = 0 };
 							w.Div(a => fields.RowAttributes?.Invoke(a, o, r), () => {
 								foreach (var col in fields.Cells)
 									foreach (var c in col.AsEnumerable())
