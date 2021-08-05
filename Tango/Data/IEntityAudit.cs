@@ -36,15 +36,14 @@ namespace Tango.Data
 	{
 		static string GetTitle<T>(T entity) => (entity as IWithTitle)?.Title ?? (entity as IWithName)?.Name;
 
-		public static ObjectChange RegisterAction<TKey>(IWithKey<TKey> entity, EntityAuditAction action, List<PropertyChange> propertyChanges = null, Func<string> actionTitle = null)
+		public static ObjectChange RegisterAction<TKey>(IWithKey<TKey> entity, EntityAuditAction action, List<PropertyChange> propertyChanges = null)
 		{
 			return new ObjectChange {
 				Action = action,
 				ID = () => entity.ID.ToString(),
 				Title = () => GetTitle(entity),
 				Type = entity.GetType(),
-				ActionTitle = actionTitle,
-				PropertyChanges = propertyChanges
+                PropertyChanges = propertyChanges
 			};
 		}
 
@@ -92,7 +91,7 @@ namespace Tango.Data
 			};
 		}
 
-		public static ObjectChange Custom<TKey>(IWithKey<TKey> entity)
+		public static ObjectChange Custom<TKey>(IWithKey<TKey> entity, Func<string> actionTitle = null)
         {
             return new ObjectChange
             {
@@ -100,7 +99,8 @@ namespace Tango.Data
                 ID = () => entity.ID.ToString(),
                 Title = () => GetTitle(entity),
                 Type = entity.GetType(),
-                PropertyChanges = null
+                ActionTitle = actionTitle,
+				PropertyChanges = null
             };
         }
         
