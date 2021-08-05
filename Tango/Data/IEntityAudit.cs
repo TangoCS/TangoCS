@@ -36,13 +36,14 @@ namespace Tango.Data
 	{
 		static string GetTitle<T>(T entity) => (entity as IWithTitle)?.Title ?? (entity as IWithName)?.Name;
 
-		public static ObjectChange RegisterAction<TKey>(IWithKey<TKey> entity, EntityAuditAction action, List<PropertyChange> propertyChanges = null)
+		public static ObjectChange RegisterAction<TKey>(IWithKey<TKey> entity, EntityAuditAction action, List<PropertyChange> propertyChanges = null, Func<string> actionTitle = null)
 		{
 			return new ObjectChange {
 				Action = action,
 				ID = () => entity.ID.ToString(),
 				Title = () => GetTitle(entity),
 				Type = entity.GetType(),
+				ActionTitle = actionTitle,
 				PropertyChanges = propertyChanges
 			};
 		}
@@ -91,11 +92,25 @@ namespace Tango.Data
 			};
 		}
 
+		public static ObjectChange Custom<TKey>(IWithKey<TKey> entity)
+        {
+            return new ObjectChange
+            {
+                Action = EntityAuditAction.Custom,
+                ID = () => entity.ID.ToString(),
+                Title = () => GetTitle(entity),
+                Type = entity.GetType(),
+                PropertyChanges = null
+            };
+        }
+        
+
 		public Func<string> ID { get; set; }
 		public Func<string> Title { get; set; }
 		public Type	Type { get; set; }
 
 		public EntityAuditAction Action { get; set; }
+        public Func<string> ActionTitle { get; set; }
 
 		public List<PropertyChange> PropertyChanges { get; set; }
 	}
@@ -111,7 +126,8 @@ namespace Tango.Data
 	{
 		Insert,
 		Update,
-		Delete
+		Delete,
+        Custom
 	}
 
 	public interface IObjectTracker
