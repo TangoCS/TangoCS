@@ -225,9 +225,11 @@ namespace Tango.UI.Std
 			f.Cells.Add(cell);
 		}
 
-		public static void AddCustomCell<TResult>(this IFieldCollection<TResult> f, IListColumn<TResult> cell)
+		public static IListColumn<TResult> AddCustomCell<TResult>(this IFieldCollection<TResult> f, IListColumn<TResult> cell)
 		{
 			f.Cells.Add(cell);
+
+			return cell;
 		}
 		#endregion
 
