@@ -230,10 +230,24 @@ namespace Tango.Excel
 				s.HeaderFooter.OddFooter.CenteredText = content(ExcelHeaderFooter.PageNumber, ExcelHeaderFooter.NumberOfPages);
 		}
 
-		//public void SetPrintArea()
-		//{
-		//	s.PrinterSettings.PrintArea = s.Cells["A:A,G:G"];
-		//}
+		/// <summary>
+		/// Установка границ печати
+		/// </summary>
+		/// <param name="range">Формат: "A:A,G:G"</param>
+		public void SetPrintArea(string range) => s.PrinterSettings.PrintArea = s.Cells[range];
+
+		/// <summary>
+		/// Установка разрыва страницы для печати. С указанного индекса строки будет начинаться следующая страница 
+		/// </summary>
+		/// <param name="index">Индекс строки</param>
+		public void SetRowPageBreak(int index) => s.Row(index).PageBreak = true;
+		
+		/// <summary>
+		/// Установка разрыва страницы для печати. С указанного индекса колонки будет начинаться следующая страница 
+		/// </summary>
+		/// <param name="index">Индекс колонки</param>
+		public void SetColumnPageBreak(int index) => s.Column(index).PageBreak = true;
+
 
 		//[Obsolete]
 		//public void SetOddFooterCenterNumPage()
