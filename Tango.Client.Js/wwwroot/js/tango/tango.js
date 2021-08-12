@@ -257,6 +257,7 @@ var domActions = function () {
 				var root = args.root ? args.root : document;
 				var els = root.querySelectorAll(args.itemsSelector);
 				var b = args.sender.classList.contains(args.senderClsName);
+				if (args.senderState == 1) b = !b;
 
 				if (args.groupSelector) {
 					var grels = root.querySelectorAll(args.groupSelector);
@@ -270,13 +271,21 @@ var domActions = function () {
 					for (var i = 0; i < els.length; i++) {
 						els[i].classList.add(args.clsName);
 					}
-					args.sender.classList.add(args.senderClsName);
+					if (args.senderState == 1) {
+						args.sender.classList.remove(args.senderClsName);
+					}
+					else
+						args.sender.classList.add(args.senderClsName);
 				}
 				else if (!args.groupSelector) {
 					for (var i = 0; i < els.length; i++) {
 						els[i].classList.remove(args.clsName);
 					}
-					args.sender.classList.remove(args.senderClsName);
+					if (args.senderState == 1) {
+						args.sender.classList.add(args.senderClsName);
+					}
+					else
+						args.sender.classList.remove(args.senderClsName);
 				}
 			}
 		},
@@ -1084,6 +1093,7 @@ var ajaxUtils = function ($, cu) {
 		}
 
 		if (apiResult.widgets) {
+			const newcntnrs = [];
 			for (var w in apiResult.widgets) {
 				var obj = apiResult.widgets[w];
 				if (obj && typeof (obj) == "object") {
@@ -1142,16 +1152,23 @@ var ajaxUtils = function ($, cu) {
 
 			const ctrls = shadow.querySelectorAll('[data-ctrl]');
 			const bindels = shadow.querySelectorAll('[data-hasclientstate]');
+			const cntnrels = shadow.querySelectorAll('[data-c]');
+
+			for (var j = 0; j < cntnrels.length; j++) {
+				newcntnrs.push(cntnrels[j].id);
+			}
 
 			for (var j = 0; j < bindels.length; j++) {
 				const node = bindels[j];
 				const st = getElementStateAttrs(node);
 				if (!st) continue;
+				const container = cu.getThisOrParent(node, function (n) { return n.hasAttribute && n.hasAttribute('data-c'); });
+				const isnewc = container && newcntnrs.indexOf(container.id) > 0;
 
 				if (!state.ctrl[st.owner]) state.ctrl[st.owner] = {};
 				const nodectrl = state.ctrl[st.owner];
 				if (st.type == 'array') {
-					const ctrlvar = nodectrl[st.name] ? new ObservableArray(nodectrl[st.name]) : new ObservableArray();
+					const ctrlvar = nodectrl[st.name] && !isnewc ? new ObservableArray(nodectrl[st.name]) : new ObservableArray();
 					const values = node.value.split(',').filter(String);
 					for (var i = 0; i < values.length; i++) {
 						if (ctrlvar.indexOf(values[i]) == -1)
