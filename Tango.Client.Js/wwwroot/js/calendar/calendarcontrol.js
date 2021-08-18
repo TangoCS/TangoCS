@@ -14,6 +14,16 @@
 				if (currentVal != el.value)
 					$(el).trigger('change');
 			});
+			if (el.hasAttribute('data-orig')) {
+				el.addEventListener("change", function (e) {
+					const val = Date.parseDate(el.value, '%d.%m.%Y');
+					const orig = Date.parseDate(el.getAttribute('data-orig'), '%Y-%m-%d');
+					if (!val.equalsTo(orig))
+						el.style.backgroundColor = 'rgba(51, 153, 51, 0.1)';
+					else
+						el.style.backgroundColor = '';
+				});
+			}
         }
 	};
 

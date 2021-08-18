@@ -12,6 +12,7 @@ namespace Tango.UI
 		public bool ShowButton { get; set; } = true;
 		public bool ShowTime { get; set; } = false;
 		public bool UseCalendarDays { get; set; } = false;
+		public bool HighlightChanges { get; set; } = false;
 		public Action<InputTagAttributes> Attributes { get; set; }	
 		public string JsDisabledDaysFunc { get; set; } = "disableArray"; // Функция по умолчанию. Блокирует которые перечислены в массиве
 		public object JsDisabledDaysArgs { get; set; }                  // Аргументы функции по блокировке дат.
@@ -27,14 +28,17 @@ namespace Tango.UI
 			//c.Page.RegisterScript("calendar-setup", basePath + "calendar-setup_stripped.js");
 			if (value == DateTime.MinValue) value = null;
 
-			w.TextBox(name, options.ShowTime ? value.DateTimeToString() : value.DateToString(), a =>
+			w.TextBox(name, options.ShowTime ? value.DateTimeToString() : value.DateToString(), a => {
 				a.Data("format", "dd.MM.yyyy").Placeholder("ДД.ММ.ГГГГ").Class("cal-" + (options.ShowTime ? "datetime" : "date"))
 				.Data("calendar", "")
 				.Data("showtime", options.ShowTime).Data("usecalendardays", options.UseCalendarDays)
 				.Disabled(options.Enabled == EnabledState.Disabled)
 				.Readonly(options.Enabled == EnabledState.ReadOnly)
-				.Set(options.Attributes)
-			);
+				.Set(options.Attributes);
+				if (options.HighlightChanges)
+					a.Data("orig", value?.ToString("yyyy-MM-dd"));
+
+			});
 
 			if (!(options.Enabled == EnabledState.Enabled)) options.ShowButton = false;
 
@@ -81,9 +85,16 @@ namespace Tango.UI
 			//				}
 		}
 
-        public static void Calendar(this LayoutWriter w, InputName name, DateTime? value = null, EnabledState enabled = EnabledState.Enabled, bool showTime = false, bool useCalendarDaysInJSCalendar = false, Action<InputTagAttributes> attributes = null)
+        public static void Calendar(this LayoutWriter w, InputName name, DateTime? value = null, 
+			EnabledState enabled = EnabledState.Enabled, bool showTime = false, 
+			bool useCalendarDaysInJSCalendar = false, Action<InputTagAttributes> attributes = null)
         {
-            w.Calendar(name, value,  new CalendarOptions { Enabled = enabled, ShowTime = showTime, UseCalendarDays = useCalendarDaysInJSCalendar, Attributes = attributes });
+            w.Calendar(name, value,  new CalendarOptions { 
+				Enabled = enabled, 
+				ShowTime = showTime, 
+				UseCalendarDays = useCalendarDaysInJSCalendar, 
+				Attributes = attributes 
+			});
         }
     }
 
