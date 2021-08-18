@@ -68,10 +68,15 @@ namespace Tango.Html
         public static T OnClickClipboardToElementId<T>(this TagAttributes<T> a, string id)
             where T : TagAttributes<T>
         {
-            return a.OnClick($"commonUtils.clipboardToElementId('#{id}');");
+            return a.OnClick($"commonUtils.clipboardToElementId('#{id}', this);");
+        }
+        public static T OnClickClipboardToElementIdAndSubmit<T>(this TagAttributes<T> a, string id)
+	        where T : TagAttributes<T>
+        {
+	        return a.OnClick($"commonUtils.clipboardToElementIdAndSubmit('#{id}', this);");
         }
 
-		public static T OnClickPostEvent<T>(this TagAttributes<T> a, Action<ApiResponse> action)
+        public static T OnClickPostEvent<T>(this TagAttributes<T> a, Action<ApiResponse> action)
 			where T : TagAttributes<T>
 		{
 			return a.DataEvent(action).OnClickPostEvent();
