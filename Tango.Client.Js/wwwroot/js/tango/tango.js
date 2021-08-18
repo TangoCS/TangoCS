@@ -149,6 +149,7 @@
 		},
 		clipboardToElementIdAndSubmit: function (id, submitter) {
 
+			
 			instance.clipboardToElementId(id).then(() => {
 				ajaxUtils.formSubmit(submitter, submitter.form);
 			});
@@ -158,21 +159,22 @@
 
 
 			return navigator.permissions.query({ name: "clipboard-read" }).then((result) => {
-				// If permission to read the clipboard is granted or if the user will
-				// be prompted to allow it, we proceed.			  
+
+				let control = document.querySelector(id);	
+
 				if (result.state == "granted" || result.state == "prompt") {
 					if (window.clipboardData && window.clipboardData.getData) { //IE
-						document.querySelector(id).innerText = window.clipboardData.getData("Text");
+						if (control.type === 'hidden') {
+							control.value = window.clipboardData.getData("Text");
+						}
+						else if (control.type === 'textarea') {
+							control.innerText = window.clipboardData.getData("Text");
+						}						
+						return;
 					}
-					else {
-
-						//1. Либо просто всталяем одну проверку на все браузере (если есть такая возможность)
-						//2. Либо опрелеляем браузер, и для опрелденного бразуере делаем проверку            
-
+					else {	
 						return navigator.clipboard.readText()
-							.then(function (clipText) {
-
-								let control = document.querySelector(id);
+							.then(function (clipText) {							
 
 								//Если тип контрола hidden, значение из буфера вставляем в value
 								if (control.type === 'hidden') {
