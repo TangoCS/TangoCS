@@ -94,6 +94,7 @@ namespace Tango.UI.Std
 					w.PopPrefix();
 				});
 			});
+			response.AddWidget("#title", FormTitle);
 
 			RenderContainer(response, left);
 			left.OnLoad(response);
