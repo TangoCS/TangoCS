@@ -155,74 +155,51 @@
 			});
 
 		},
-		clipboardToElementId: function (id) {
+		clipboardToElementId: function (id) {	
 
-			let control = document.querySelector(id);
 
-            return navigator.clipboard.readText()
-                .then(function (clipText) {
+			return navigator.permissions.query({ name: "clipboard-read" }).then((result) => {
 
-                    //Если тип контрола hidden, значение из буфера вставляем в value
-                    if (control.type === 'hidden') {
-                        control.value = clipText;
-                    }
-                    //Если тип контрола textarea, значение из буфера вставляем в innerText
-                    else if (control.type === 'textarea') {
-                        control.innerText = clipText;
-                    }
-                    //Другие типы контролов настраиваем по необходимости
-                    else {
-                        console.log('Control for insertion is not configured');
-                    }
+				let control = document.querySelector(id);	
 
-                })
-                .catch(function (err) {
-                    console.log('Failed to read clipboard contents: ', err);
-                });
-				
+				if (result.state == "granted" || result.state == "prompt") {
+					if (window.clipboardData && window.clipboardData.getData) { //IE
+						if (control.type === 'hidden') {
+							control.value = window.clipboardData.getData("Text");
+						}
+						else if (control.type === 'textarea') {
+							control.innerText = window.clipboardData.getData("Text");
+						}						
+						return;
+					}
+					else {	
+						return navigator.clipboard.readText()
+							.then(function (clipText) {							
 
-			// return navigator.permissions.query({ name: "clipboard-read" }).then((result) => {
+								//Если тип контрола hidden, значение из буфера вставляем в value
+								if (control.type === 'hidden') {
+									control.value = clipText;
+								}
+								//Если тип контрола textarea, значение из буфера вставляем в innerText
+								else if (control.type === 'textarea') {
+									control.innerText = clipText;
+								}
+								//Другие типы контролов настраиваем по необходимости
+								else {
+									console.log('Control for insertion is not configured');
+								}
 
-			// 	let control = document.querySelector(id);	
+							})
+							.catch(function (err) {
+								console.log('Failed to read clipboard contents: ', err);
+							});
+					}
+				}
+				else{
+					alert('В вашем браузере отключены полномочия по работе с буфером обмена. Если вы все же хотите воспользоваться данной функцией, обратитесь в службу технической поддержки.');
 
-			// 	if (result.state == "granted" || result.state == "prompt") {
-			// 		if (window.clipboardData && window.clipboardData.getData) { //IE
-			// 			if (control.type === 'hidden') {
-			// 				control.value = window.clipboardData.getData("Text");
-			// 			}
-			// 			else if (control.type === 'textarea') {
-			// 				control.innerText = window.clipboardData.getData("Text");
-			// 			}						
-			// 			return;
-			// 		}
-			// 		else {	
-			// 			return navigator.clipboard.readText()
-			// 				.then(function (clipText) {							
-
-			// 					//Если тип контрола hidden, значение из буфера вставляем в value
-			// 					if (control.type === 'hidden') {
-			// 						control.value = clipText;
-			// 					}
-			// 					//Если тип контрола textarea, значение из буфера вставляем в innerText
-			// 					else if (control.type === 'textarea') {
-			// 						control.innerText = clipText;
-			// 					}
-			// 					//Другие типы контролов настраиваем по необходимости
-			// 					else {
-			// 						console.log('Control for insertion is not configured');
-			// 					}
-
-			// 				})
-			// 				.catch(function (err) {
-			// 					console.log('Failed to read clipboard contents: ', err);
-			// 				});
-			// 		}
-			// 	}
-			// 	else{
-			// 		alert('В вашем браузере отключены полномочия по работе с буфером обмена. Если вы все же хотите воспользоваться данной функцией, обратитесь в службу технической поддержки.');
-
-			// 	}
-			// });
+				}
+			});
 
 
 		}
