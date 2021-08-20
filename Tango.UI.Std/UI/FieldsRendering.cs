@@ -100,10 +100,11 @@ namespace Tango.UI
 			w.FormField(field, () => w.Password(field.ID), grid);
 		}
 
-		public static void TextArea(this LayoutWriter w, IField<string> field, GridPosition grid = null)
+		public static void TextArea(this LayoutWriter w, IField<string> field, GridPosition grid = null, Action<TextAreaTagAttributes> attributes = null)
 		{
 			w.FormField(field, () => w.TextArea(field.ID, field.Value, a => {
 				if (field.Disabled) a.Disabled(true);
+				a.Set(attributes);
 			}), grid);
 		}
 
