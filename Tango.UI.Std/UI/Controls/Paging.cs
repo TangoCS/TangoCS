@@ -202,7 +202,7 @@ namespace Tango.UI.Controls
 					new SelectListItem("50", "50"),
 					new SelectListItem("100", "100"),
 					new SelectListItem("1000", "1000")
-				}, a => a.Set(options.SetPageSizeActionAttributes));
+				}, a => a.Set(options.SetPageSizeActionAttributes).Data(dc));
 			});
 		}
 	}
