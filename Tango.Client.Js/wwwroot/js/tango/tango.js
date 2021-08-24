@@ -130,7 +130,7 @@
 		},
 		copyToClipboard: function (sourceId) {
 			var source = document.querySelector('#' + sourceId);
-			if(source) {
+			if (source) {
 				var dummy = document.createElement("textarea");
 				document.body.appendChild(dummy);
 				dummy.value = source.value;
@@ -145,23 +145,65 @@
 			dummy.value = str;
 			dummy.select();
 			document.execCommand("copy");
-			document.body.removeChild(dummy);			
+			document.body.removeChild(dummy);
 		},
-        clipboardToElementId: function(id) {
-			if (window.clipboardData && window.clipboardData.getData) { //IE
-                document.querySelector(id).innerText = window.clipboardData.getData("Text");
-            }
-            else {
-                navigator.clipboard.readText()
-                    .then(function (clipText) {
-                        document.querySelector(id).innerText = clipText;
-                    })
-                    .catch(function (err) {
-                        console.log('Failed to read clipboard contents: ', err);
-                    });
-            }
-        }
-    }
+		clipboardToElementIdAndSubmit: function (id, submitter) {
+
+			
+			instance.clipboardToElementId(id).then(function() {
+				ajaxUtils.formSubmit(submitter, submitter.form);
+			});
+
+		},
+		clipboardToElementId: function (id) {	
+
+
+			return navigator.permissions.query({ name: "clipboard-read" }).then(function(result)  {
+
+            	let control = document.querySelector(id);	
+
+            	if (result.state == "granted" || result.state == "prompt") {
+            		if (window.clipboardData && window.clipboardData.getData) { //IE
+            			if (control.type === 'hidden') {
+            				control.value = window.clipboardData.getData("Text");
+            			}
+            			else if (control.type === 'textarea') {
+            				control.innerText = window.clipboardData.getData("Text");
+            			}						
+            			return;
+            		}
+            		else {	
+            			return navigator.clipboard.readText()
+            				.then(function (clipText) {							
+
+            					//Если тип контрола hidden, значение из буфера вставляем в value
+            					if (control.type === 'hidden') {
+            						control.value = clipText;
+            					}
+            					//Если тип контрола textarea, значение из буфера вставляем в innerText
+            					else if (control.type === 'textarea') {
+            						control.innerText = clipText;
+            					}
+            					//Другие типы контролов настраиваем по необходимости
+            					else {
+            						console.log('Control for insertion is not configured');
+            					}
+
+            				})
+            				.catch(function (err) {
+            					console.log('Failed to read clipboard contents: ', err);
+            				});
+            		}
+            	}
+            	else{
+            		alert('В вашем браузере отключены полномочия по работе с буфером обмена. Если вы все же хотите воспользоваться данной функцией, обратитесь в службу технической поддержки.');
+
+            	}
+            });
+
+
+		}
+	}
 
 	return instance;
 }($);
@@ -439,7 +481,7 @@ var ajaxUtils = function ($, cu) {
 			showError(title, text, severity, showinframe);
 		},
 		delay: function (caller, func, timeout) {
-			if(!timeout) {
+			if (!timeout) {
 				timeout = 400;
 			}
 			if (timer) {
@@ -904,7 +946,7 @@ var ajaxUtils = function ($, cu) {
 		if (el.id) target.sender = el.id;
 
 		const startEl = el.hasAttribute('data-c-external') ? document.getElementById(el.getAttribute('data-c-external')) : el;
-		const isDataRes = el.hasAttribute('data-res') || el.hasAttribute('data-res-postponed'); 
+		const isDataRes = el.hasAttribute('data-res') || el.hasAttribute('data-res-postponed');
 
 		var firstContainer, modalContainer, noChangeLoc;
 		cu.getThisOrParent(startEl, function (n) {
