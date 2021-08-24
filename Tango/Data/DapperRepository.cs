@@ -309,7 +309,7 @@ namespace Tango.Data
 			return (T)base.GetById(id);
 		}
 
-		public virtual string GetCreateQuery(T entity, string propertyName = "")
+		public virtual string GetCreateQuery(T entity, string propertyName = "", bool returnId = false)
 		{
 			propertyName = propertyName.Trim().ToLower();
 			var props = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public)
@@ -342,8 +342,15 @@ namespace Tango.Data
 
 			var colsClause = cols.Join(", ");
 			var valuesClause = vals.Join(", ");
-			var returning = identity == null ? "" : $"select @{identity.Name.ToLower()} = SCOPE_IDENTITY()";
-			var declare = identity == null ? "" : $"DECLARE @{identity.Name.ToLower()} {QueryHelper.GetTypeSql(identity.PropertyType.Name)}; ";
+
+			var returning = string.Empty;
+			if (identity != null && returnId)
+				returning = $"select @{identity.Name.ToLower()} = SCOPE_IDENTITY()";
+
+			var declare = string.Empty;
+			if (identity != null && returnId)
+				declare = $"DECLARE @{identity.Name.ToLower()} {QueryHelper.GetTypeSql(identity.PropertyType.Name)}; ";
+
 			var result = cols.Count > 1 ? $"insert into {Table}({colsClause}) values({valuesClause}) {returning}" : string.Format(Dialect.InsertDefault, Table) + " " + returning;
 
 			return declare + result;
