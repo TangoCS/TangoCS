@@ -264,9 +264,9 @@ namespace Tango
 			return src == DateTime.MinValue ? "" : src.ToString("dd.MM.yyyy HH:mm");
 		}
 
-		public static string ToStringSql(this DateTime src)
+		public static string DateTimeToStringISO8601(this DateTime src)
 		{
-			return $"{src:yyyy-MM-dd HH:mm:ss}";
+			return src.ToString("s", CultureInfo.InvariantCulture);
 		}
 
 		public static string DateTimeToString(this DateTime? src, string defaultValue)

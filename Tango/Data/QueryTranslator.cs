@@ -593,7 +593,7 @@ namespace Tango.Data
 				return $"'{str}'";
 
 			if (value is DateTime dateTime)
-				return $"'{dateTime.ToStringSql()}'";
+				return $"'{dateTime.DateTimeToStringISO8601()}'";
 
 			if (value is byte[] bytes)
 			{

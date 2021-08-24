@@ -13,7 +13,6 @@ namespace Tango.FileStorage
 		DateTime LastModifiedDate { get; set; }
 
 		byte[] ReadAllBytes();
-        string WriteAllBytesSql(byte[] bytes);
         void WriteAllBytes(byte[] bytes);
 		void Delete();
 	}

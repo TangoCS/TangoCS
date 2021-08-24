@@ -309,7 +309,7 @@ namespace Tango.Data
 			return (T)base.GetById(id);
 		}
 
-		public virtual string CreateSql(T entity, string propertyName = "")
+		public virtual string GetCreateQuery(T entity, string propertyName = "")
 		{
 			propertyName = propertyName.Trim().ToLower();
 			var props = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public)
@@ -412,7 +412,7 @@ namespace Tango.Data
 			Database.Connection.Execute(query, where.parms, Database.Transaction);
 		}
 
-		public string UpdateSql(T entity)
+		public string GetUpdateQuery(T entity)
 		{
 			throw new NotImplementedException();
 		}
