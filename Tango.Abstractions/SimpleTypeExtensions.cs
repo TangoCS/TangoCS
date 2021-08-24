@@ -264,6 +264,11 @@ namespace Tango
 			return src == DateTime.MinValue ? "" : src.ToString("dd.MM.yyyy HH:mm");
 		}
 
+		public static string ToStringSql(this DateTime src)
+		{
+			return $"{src:yyyy-MM-dd HH:mm:ss}";
+		}
+
 		public static string DateTimeToString(this DateTime? src, string defaultValue)
 		{
 			if (src.HasValue)
@@ -724,6 +729,11 @@ namespace Tango
 		public static TValue GetValueOrDefault<TKey, TValue>(this IDictionary<TKey, TValue> dictionary, TKey key, Func<TValue> defaultValueProvider)
 		{
 			return dictionary.TryGetValue(key, out var value) ? value : defaultValueProvider();
+		}
+
+		public static string ToBlobLiterals(this byte[] bytes)
+		{
+			return "0x" + BitConverter.ToString(bytes).Replace("-", string.Empty);
 		}
 	}
 }

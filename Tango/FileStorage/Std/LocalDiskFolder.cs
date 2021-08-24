@@ -86,7 +86,12 @@ namespace Tango.FileStorage.Std
 		{
 			File.WriteAllBytes(ID, bytes);			
 		}
-	}
+
+        public string WriteAllBytesSql(byte[] bytes)
+        {
+            throw new NotImplementedException();
+        }
+    }
 
 	static class LocalDiskUtils
 	{

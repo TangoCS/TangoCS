@@ -309,6 +309,46 @@ namespace Tango.Data
 			return (T)base.GetById(id);
 		}
 
+		public virtual string CreateSql(T entity, string propertyName = "")
+		{
+			propertyName = propertyName.Trim().ToLower();
+			var props = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public)
+				.Where(o => o.GetCustomAttribute<ColumnAttribute>() != null);
+
+			var cols = new List<string>();
+			var vals = new List<string>();
+			PropertyInfo identity = null;
+			
+			foreach (var prop in props)
+			{
+				if (identity == null)
+				{
+					var hasIdentity = prop.GetCustomAttributes<IdentityAttribute>().Any();
+					identity = hasIdentity ? prop : null;
+					if (hasIdentity) continue;
+				}
+
+				var val = prop.GetValue(entity);
+				if (val != null)
+				{
+					var propName = QueryHelper.GetPropertyName(prop).ToLower();
+					cols.Add(propName);
+					if(propertyName != string.Empty && propName == propertyName)
+						vals.Add($"@{propertyName}"); 
+					else
+						vals.Add(QueryHelper.GetStringValue(val));
+				}
+			}
+
+			var colsClause = cols.Join(", ");
+			var valuesClause = vals.Join(", ");
+			var returning = identity == null ? "" : $"select @{identity.Name.ToLower()} = SCOPE_IDENTITY()";
+			var declare = identity == null ? "" : $"DECLARE @{identity.Name.ToLower()} {QueryHelper.GetTypeSql(identity.PropertyType.Name)}; ";
+			var result = cols.Count > 1 ? $"insert into {Table}({colsClause}) values({valuesClause}) {returning}" : string.Format(Dialect.InsertDefault, Table) + " " + returning;
+
+			return declare + result;
+		}
+
 		public virtual void Create(T entity)
 		{
 			var props = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public)
@@ -370,6 +410,11 @@ namespace Tango.Data
 
 
 			Database.Connection.Execute(query, where.parms, Database.Transaction);
+		}
+
+		public string UpdateSql(T entity)
+		{
+			throw new NotImplementedException();
 		}
 
 		public void Update(Action<UpdateSetCollection<T>> sets, Expression<Func<T, bool>> predicate)
@@ -520,8 +565,7 @@ namespace Tango.Data
 		{
 			return Count(Enumerable.Empty<T>().AsQueryable().Where(predicate).Expression) > 0;
 		}
-
-	}
+    }
 
 	public class EntityInfo
 	{

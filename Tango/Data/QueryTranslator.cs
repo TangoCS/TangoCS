@@ -584,6 +584,32 @@ namespace Tango.Data
 			return name;
 		}
 
+		public static string GetStringValue(object value)
+		{
+			if (value is Guid guid)
+				return $"'{guid}'";
+
+			if (value is string str)
+				return $"'{str}'";
+
+			if (value is DateTime dateTime)
+				return $"'{dateTime.ToStringSql()}'";
+
+			if (value is byte[] bytes)
+			{
+				return $"{bytes.ToBlobLiterals()}";
+			}
+
+			return value.ToString();
+		}
+
+		public static string GetTypeSql(string str)
+        {
+			if ("Int32" == str)
+				return "INT";
+			return str;
+        }
+
 		public static IQueryTranslatorDialect CreateDialect(DBType dbType) => dbType == DBType.MSSQL ? (IQueryTranslatorDialect)new QueryTranslatorMSSQL() :
 			dbType == DBType.POSTGRESQL ? new QueryTranslatorPostgres() :
 			throw new NotSupportedException();
