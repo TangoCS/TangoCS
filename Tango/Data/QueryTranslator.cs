@@ -603,13 +603,6 @@ namespace Tango.Data
 			return value.ToString();
 		}
 
-		public static string GetTypeSql(string str)
-        {
-			if ("Int32" == str)
-				return "INT";
-			return str;
-        }
-
 		public static IQueryTranslatorDialect CreateDialect(DBType dbType) => dbType == DBType.MSSQL ? (IQueryTranslatorDialect)new QueryTranslatorMSSQL() :
 			dbType == DBType.POSTGRESQL ? new QueryTranslatorPostgres() :
 			throw new NotSupportedException();
@@ -621,10 +614,11 @@ namespace Tango.Data
 		string Concat { get; }
 		string In { get; }
 		bool BracketsForIn { get; }
-        string ReturningIdentity { get; }
+		string ReturningIdentity(string identityName, string declarePropertyName);
         string InsertDefault { get; }
-
-        string GetDBType(Type type);
+		string Declare { get; }
+		string PropertyPrefix { get; }
+		string GetDBType(Type type);
 
 	}
 
@@ -632,14 +626,16 @@ namespace Tango.Data
 	{
         public string InsertDefault => @"insert into {0} default values";
         
-        public string ReturningIdentity => "select SCOPE_IDENTITY()";
-
         public string LikeKeyword => "LIKE";
 		public string Concat => "+";
 		public string In => "IN";
 		public bool BracketsForIn => false;
-		
-		public string GetDBType(Type type)
+
+        public string Declare => "DECLARE {0}{1} {2};";
+
+		public string PropertyPrefix => "@";
+
+        public string GetDBType(Type type)
 		{
 			switch (Type.GetTypeCode(type))
 			{
@@ -654,19 +650,28 @@ namespace Tango.Data
 			}
 		}
 
-	}
+        public string ReturningIdentity(string identityName, string declarePropertyName)
+        {
+			if (string.IsNullOrEmpty(declarePropertyName))
+				return "select SCOPE_IDENTITY()";
+			else
+				return $"select {PropertyPrefix}{declarePropertyName} = SCOPE_IDENTITY()";
+		}
+    }
 
 	public class QueryTranslatorPostgres : IQueryTranslatorDialect
 	{
         public string InsertDefault => @"insert into {0} values(default)";
-        public string ReturningIdentity => @"returning {0}";
-
-        public string LikeKeyword => "ILIKE";
+		public string LikeKeyword => "ILIKE";
 		public string Concat => "||";
 		public string In => "= ANY";
 		public bool BracketsForIn => true;
-		
-		public string GetDBType(Type type)
+
+        public string Declare => "DECLARE {0}{1} {2};";
+
+        public string PropertyPrefix => "";
+
+        public string GetDBType(Type type)
 		{
 			switch (Type.GetTypeCode(type))
 			{
@@ -680,5 +685,13 @@ namespace Tango.Data
 					throw new NotSupportedException($"Unsupported type {type.Name}");
 			}
 		}
-	}
+
+        public string ReturningIdentity(string identityName, string declarePropertyName)
+        {
+			if (string.IsNullOrEmpty(declarePropertyName))
+				return $"RETURNING {identityName}";
+			else
+				return $"RETURNING {identityName} INTO {PropertyPrefix}{declarePropertyName}";
+		}
+    }
 }

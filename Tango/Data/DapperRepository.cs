@@ -309,9 +309,8 @@ namespace Tango.Data
 			return (T)base.GetById(id);
 		}
 
-		public virtual string GetCreateQuery(T entity, string propertyName = "", bool returnId = false)
+		public virtual ResultQuery GetCreateQuery(T entity, Dictionary<string, string> replaceProps = null)
 		{
-			propertyName = propertyName.Trim().ToLower();
 			var props = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public)
 				.Where(o => o.GetCustomAttribute<ColumnAttribute>() != null);
 
@@ -333,8 +332,9 @@ namespace Tango.Data
 				{
 					var propName = QueryHelper.GetPropertyName(prop).ToLower();
 					cols.Add(propName);
-					if(propertyName != string.Empty && propName == propertyName)
-						vals.Add($"@{propertyName}"); 
+					
+					if(replaceProps != null && replaceProps.TryGetValue(propName, out string value))
+						vals.Add($"{Dialect.PropertyPrefix}{value.ToLower()}"); 
 					else
 						vals.Add(QueryHelper.GetStringValue(val));
 				}
@@ -344,16 +344,17 @@ namespace Tango.Data
 			var valuesClause = vals.Join(", ");
 
 			var returning = string.Empty;
-			if (identity != null && returnId)
-				returning = $"select @{identity.Name.ToLower()} = SCOPE_IDENTITY()";
-
 			var declare = string.Empty;
-			if (identity != null && returnId)
-				declare = $"DECLARE @{identity.Name.ToLower()} {QueryHelper.GetTypeSql(identity.PropertyType.Name)}; ";
+			var identityName = string.Empty;
+			if (identity != null)
+			{
+				identityName = $"{identity.Name.ToLower()}_{Guid.NewGuid()}".Replace("-", "_");
+				returning = Dialect.ReturningIdentity(identityName, identityName);
+				declare = string.Format(Dialect.Declare, Dialect.PropertyPrefix, identityName, Dialect.GetDBType(identity.PropertyType));
+			}
 
-			var result = cols.Count > 1 ? $"insert into {Table}({colsClause}) values({valuesClause}) {returning}" : string.Format(Dialect.InsertDefault, Table) + " " + returning;
-
-			return declare + result;
+			var query = cols.Count > 1 ? $"{declare} insert into {Table}({colsClause}) values({valuesClause}) {returning}" : string.Format(Dialect.InsertDefault, Table) + " " + returning;
+			return new ResultQuery { DeclareProperty = identityName, Query = query };
 		}
 
 		public virtual void Create(T entity)
@@ -388,7 +389,7 @@ namespace Tango.Data
 
 			var colsClause = cols.Join(", ");
 			var valuesClause =  vals.Join(", ");
-			var returning = identity == null ? "" : string.Format(Dialect.ReturningIdentity, identity.Name.ToLower());
+			var returning = identity == null ? "" : Dialect.ReturningIdentity(identity.Name.ToLower(), string.Empty);
 
 			var query = props.Count() > 1 ? $"insert into {Table}({colsClause}) values({valuesClause}) {returning}" : string.Format(Dialect.InsertDefault, Table) + " " + returning;
 
@@ -419,7 +420,7 @@ namespace Tango.Data
 			Database.Connection.Execute(query, where.parms, Database.Transaction);
 		}
 
-		public string GetUpdateQuery(T entity)
+		public ResultQuery GetUpdateQuery(T entity)
 		{
 			throw new NotImplementedException();
 		}
@@ -573,6 +574,13 @@ namespace Tango.Data
 			return Count(Enumerable.Empty<T>().AsQueryable().Where(predicate).Expression) > 0;
 		}
     }
+
+	public class ResultQuery
+	{
+		public string Query { get; set; } = string.Empty;
+		public string DeclareProperty { get; set; } = string.Empty;
+
+	}
 
 	public class EntityInfo
 	{
