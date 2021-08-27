@@ -324,16 +324,12 @@ namespace Tango
 
 		public static string Icon(this int src)
 		{
-			if (src == 1)
-				return "<i class='icon icon-true'></i>";
-			return String.Empty;
+			return Icon(src == 1);
 		}
 
 		public static string Icon(this int? src)
 		{
-			if (src.HasValue)
-				return src.Value == 1 ? "<i class='icon icon-true'></i>" : "";
-			return String.Empty;
+			return Icon(src.HasValue && src.Value == 1);
 		}
 
 		public static string YesNo(this bool src)

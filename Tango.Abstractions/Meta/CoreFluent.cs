@@ -77,7 +77,7 @@ namespace Tango.Meta.Fluent
 		public T LongKey(bool isIdentity = true) => Key<long>(TypeFactory.Long, a => a.IsIdentity = isIdentity);
 		public T LongKey(string name, bool isIdentity = true) => Key<long>(name, TypeFactory.Long, a => a.IsIdentity = isIdentity);
 		public T GuidKey() => Key<Guid>(TypeFactory.Guid);
-		public T GuidKey(string name) => Key<Guid>(name, TypeFactory.Guid);
+		public T GuidKey(string name, bool isIdentity = false) => Key<Guid>(name, TypeFactory.Guid, a => a.IsIdentity = isIdentity);
 		public T StringKey() => Key<string>(TypeFactory.String);
 		public T StringKey(string name) => Key<string>(name, TypeFactory.String);
 		public T DateKey() => Key<DateTime>(TypeFactory.Date);
