@@ -309,7 +309,7 @@ namespace Tango.Data
 			return (T)base.GetById(id);
 		}
 
-		public virtual ResultQuery GetCreateQuery(T entity, Dictionary<string, string> replaceProps = null)
+		public virtual CreateQueryResult GetCreateQuery(T entity, Dictionary<string, string> replaceProps = null)
 		{
 			var props = typeof(T).GetProperties(BindingFlags.Instance | BindingFlags.Public)
 				.Where(o => o.GetCustomAttribute<ColumnAttribute>() != null);
@@ -334,7 +334,7 @@ namespace Tango.Data
 					cols.Add(propName);
 					
 					if(replaceProps != null && replaceProps.TryGetValue(propName, out string value))
-						vals.Add($"{Dialect.PropertyPrefix}{value.ToLower()}"); 
+						vals.Add($"{Dialect.VariablePrefix}{value.ToLower()}"); 
 					else
 						vals.Add(QueryHelper.GetStringValue(val));
 				}
@@ -344,17 +344,17 @@ namespace Tango.Data
 			var valuesClause = vals.Join(", ");
 
 			var returning = string.Empty;
-			var declare = string.Empty;
-			var identityName = string.Empty;
+			var declareVariable = string.Empty;
+			var returningIDVariable = string.Empty;
 			if (identity != null)
 			{
-				identityName = $"{identity.Name.ToLower()}_{Guid.NewGuid()}".Replace("-", "_");
-				returning = Dialect.ReturningIdentity(identityName, identityName);
-				declare = string.Format(Dialect.Declare, Dialect.PropertyPrefix, identityName, Dialect.GetDBType(identity.PropertyType));
+				returningIDVariable = $"{identity.Name.ToLower()}_{Guid.NewGuid()}".Replace("-", "_");
+				returning = Dialect.ReturningIdentity(returningIDVariable, returningIDVariable);
+				declareVariable = string.Format(Dialect.DeclareVariable, Dialect.VariablePrefix, returningIDVariable, Dialect.GetDBType(identity.PropertyType));
 			}
 
-			var query = cols.Count > 1 ? $"{declare} insert into {Table}({colsClause}) values({valuesClause}) {returning}" : string.Format(Dialect.InsertDefault, Table) + " " + returning;
-			return new ResultQuery { DeclareProperty = identityName, Query = query };
+			var query = cols.Count > 1 ? $"{declareVariable} insert into {Table}({colsClause}) values({valuesClause}) {returning}" : string.Format(Dialect.InsertDefault, Table) + " " + returning;
+			return new CreateQueryResult { ReturningIDVariable = returningIDVariable, Query = query };
 		}
 
 		public virtual void Create(T entity)
@@ -420,7 +420,7 @@ namespace Tango.Data
 			Database.Connection.Execute(query, where.parms, Database.Transaction);
 		}
 
-		public ResultQuery GetUpdateQuery(T entity)
+		public string GetUpdateQuery(T entity)
 		{
 			throw new NotImplementedException();
 		}
@@ -575,10 +575,12 @@ namespace Tango.Data
 		}
     }
 
-	public class ResultQuery
+	public class CreateQueryResult
 	{
 		public string Query { get; set; } = string.Empty;
-		public string DeclareProperty { get; set; } = string.Empty;
+		public string ReturningIDVariable { get; set; } = string.Empty;
+
+		public static implicit operator string(CreateQueryResult result) => result.Query;
 
 	}
 

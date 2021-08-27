@@ -34,11 +34,11 @@ namespace Tango.Data
 		new T GetById(object id);
 		IEnumerable<T> List(Expression predicate = null, Func<IDictionary<string, object>, T> selector = null);
 		void Create(T entity);
-		ResultQuery GetCreateQuery(T entity, Dictionary<string, string> replaceProps = null);
+		CreateQueryResult GetCreateQuery(T entity, Dictionary<string, string> replaceProps = null);
 		object CreateFrom(Action<UpdateSetCollection<T>> sets, Expression<Func<T, bool>> predicate);
 
 		void Update(T entity);
-		ResultQuery GetUpdateQuery(T entity);
+		string GetUpdateQuery(T entity);
 		void Update(Action<UpdateSetCollection<T>> sets, Expression<Func<T, bool>> predicate);
 		void Update<TKey>(Action<UpdateSetCollection<T>> sets, IEnumerable<TKey> ids);
 

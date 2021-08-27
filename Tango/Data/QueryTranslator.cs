@@ -614,10 +614,10 @@ namespace Tango.Data
 		string Concat { get; }
 		string In { get; }
 		bool BracketsForIn { get; }
-		string ReturningIdentity(string identityName, string declarePropertyName);
+		string ReturningIdentity(string identityName, string returningIDVariable);
         string InsertDefault { get; }
-		string Declare { get; }
-		string PropertyPrefix { get; }
+		string DeclareVariable { get; }
+		string VariablePrefix { get; }
 		string GetDBType(Type type);
 
 	}
@@ -631,9 +631,9 @@ namespace Tango.Data
 		public string In => "IN";
 		public bool BracketsForIn => false;
 
-        public string Declare => "DECLARE {0}{1} {2};";
+        public string DeclareVariable => "DECLARE {0}{1} {2};";
 
-		public string PropertyPrefix => "@";
+		public string VariablePrefix => "@";
 
         public string GetDBType(Type type)
 		{
@@ -650,12 +650,12 @@ namespace Tango.Data
 			}
 		}
 
-        public string ReturningIdentity(string identityName, string declarePropertyName)
+        public string ReturningIdentity(string identityName, string returningIDVariable)
         {
-			if (string.IsNullOrEmpty(declarePropertyName))
+			if (string.IsNullOrEmpty(returningIDVariable))
 				return "select SCOPE_IDENTITY()";
 			else
-				return $"select {PropertyPrefix}{declarePropertyName} = SCOPE_IDENTITY()";
+				return $"select {VariablePrefix}{returningIDVariable} = SCOPE_IDENTITY()";
 		}
     }
 
@@ -667,9 +667,9 @@ namespace Tango.Data
 		public string In => "= ANY";
 		public bool BracketsForIn => true;
 
-        public string Declare => "DECLARE {0}{1} {2};";
+        public string DeclareVariable => "DECLARE {0}{1} {2};";
 
-        public string PropertyPrefix => "";
+        public string VariablePrefix => "";
 
         public string GetDBType(Type type)
 		{
@@ -686,12 +686,12 @@ namespace Tango.Data
 			}
 		}
 
-        public string ReturningIdentity(string identityName, string declarePropertyName)
+        public string ReturningIdentity(string identityName, string returningIDVariable)
         {
-			if (string.IsNullOrEmpty(declarePropertyName))
+			if (string.IsNullOrEmpty(returningIDVariable))
 				return $"RETURNING {identityName}";
 			else
-				return $"RETURNING {identityName} INTO {PropertyPrefix}{declarePropertyName}";
+				return $"RETURNING {identityName} INTO {VariablePrefix}{returningIDVariable}";
 		}
     }
 }
