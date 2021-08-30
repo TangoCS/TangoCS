@@ -130,7 +130,7 @@ namespace Tango.UI.Controls
 
 			if (loaded)
 			{
-				_criteria = PersistentFilter.Criteria;
+				_criteria = PersistentFilter.Criteria.ToList();
 				_isPersistentLoaded = true;
 			}
 		}
