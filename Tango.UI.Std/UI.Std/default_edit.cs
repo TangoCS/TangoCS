@@ -261,6 +261,7 @@ namespace Tango.UI.Std
 		protected virtual bool CreateObjectMode => !BulkMode && !Context.AllArgs.ContainsKey(Constants.Id);
 		protected virtual bool BulkMode => Context.AllArgs.ContainsKey(Constants.SelectedValues);
 		protected override string FormTitle => CreateObjectMode ? CreateNewFormTitle : EditFormTitle;
+		protected virtual bool TrackPropertiesOnCreate => false;
 
 		protected virtual string BulkModeFormTitle => Resources.Get("Common.BulkModeTitle");
 		protected virtual string CreateNewFormTitle => Resources.Get(ViewData.GetType().FullName);
@@ -335,6 +336,8 @@ namespace Tango.UI.Std
 			var obj = new T();
 			SetDefaultValues(obj);
 			if (!BulkMode) DataContext.InsertOnSubmit(obj);
+			if (TrackPropertiesOnCreate)
+				Tracker?.StartTracking(obj);
 			return obj;
 		}
 
@@ -363,10 +366,14 @@ namespace Tango.UI.Std
 		{
             if (EntityAudit != null && ViewData != null)
             {
-                if (!CreateObjectMode)
+                if (!CreateObjectMode || TrackPropertiesOnCreate)
                 {
-                    if (EntityAudit != null && EntityAudit.PrimaryObject != null)
+					if (EntityAudit != null && EntityAudit.PrimaryObject != null)
+					{
 						EntityAudit.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
+						if (CreateObjectMode)
+							EntityAudit.PrimaryObject.PropertyChanges.ForEach(pc => { pc.OldValue = null; });
+					}
                 }
             }
 

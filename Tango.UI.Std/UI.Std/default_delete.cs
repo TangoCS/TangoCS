@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tango.Logic;
 using Tango.Data;
 using Tango.Html;
 
 namespace Tango.UI.Std
 {
 	public abstract class default_delete<T, TKey> : ViewPagePart
-		where T : class, IWithKey<TKey>
+		where T : class, IWithKey<T, TKey>, new()
 	{
 		[Inject]
 		protected IDatabase Database { get; set; }
+		[Inject]
+		protected IDataContext DataContext { get; set; }
 
 		[Inject]
 		protected IEntityAudit EntityAudit { get; set; }
@@ -92,7 +95,15 @@ namespace Tango.UI.Std
 			if (EntityAudit != null)
 			{
 				foreach (var id in sel)
-					EntityAudit.AddChanges(ObjectChange.Delete<T>(id));
+				{
+					var oc = ObjectChange.Delete<T>(id);
+					EntityAudit.AddChanges(oc);
+					if (typeof(T).IsAssignableTo(typeof(IWithTitle)))
+					{
+						T obj = CommonLogic.GetFiltered<T, TKey>(DataContext, id);
+						oc.Title = () => (obj as IWithTitle).Title;
+					}
+				}
 			}
 
 			var res = ProcessSubmit(sel);
