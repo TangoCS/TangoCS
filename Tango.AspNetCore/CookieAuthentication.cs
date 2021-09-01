@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Tango.UI;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace Tango.AspNetCore
 {

@@ -101,7 +101,8 @@ namespace Tango.UI.Std
 					if (typeof(T).IsAssignableTo(typeof(IWithTitle)))
 					{
 						T obj = CommonLogic.GetFiltered<T, TKey>(DataContext, id);
-						oc.Title = () => (obj as IWithTitle).Title;
+						var ot = obj as IWithTitle;
+						if (ot != null) oc.Title = () => ot.Title;
 					}
 				}
 			}
