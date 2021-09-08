@@ -502,6 +502,18 @@ a.actionbtn, a.actionimg {
 	font-size: x-small;
 }
 
+.disabled {
+	color: gray;
+	background-image: none;
+	background-color: #f2f2f2;
+	cursor: pointer;
+	pointer-events: none;
+}
+
+a.disabled > i.icon {
+	color: gray;
+}
+
 .backbutton {
 	margin-right: 8px;
 }

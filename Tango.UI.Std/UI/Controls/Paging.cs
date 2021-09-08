@@ -176,24 +176,18 @@ namespace Tango.UI.Controls
 
 				var dc = paging.ParentElement.DataCollection;
 
-				if (pageIdx > 2)
-					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, 1).WithImage("begin"), a => a.Data(dc));
+				w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, 1).WithImage("begin"), a => a.Data(dc).Class(pageIdx <= 2 ? "disabled" : ""));
 
-				if (pageIdx > 1)
-					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx - 1).WithImage("left"), a => a.Data(dc));
+				w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx - 1).WithImage("left"), a => a.Data(dc).Class(pageIdx <= 1 ? "disabled" : ""));
 
-				if (pageCount > 1)
-				{
-					w.Span("&nbsp;Страница&nbsp;");
-					w.TextBox("go", pageIdx.ToString(), a => a.Style("width:30px").Set(options.GoToPageActionAttributes));
-					w.Span($"&nbsp;из&nbsp;{pageCount}&nbsp;");
-				}
+				w.Span("&nbsp;Страница&nbsp;");
+				w.TextBox("go", pageIdx.ToString(), a => a.Style("width:50px; text-align:center").Set(options.GoToPageActionAttributes));
+				w.Span(a => a.Style("width: 60px; display: inline-block;"), $"&nbsp;из&nbsp;{pageCount}&nbsp;");
 
-				if (itemsCount == null || pageCount - pageIdx >= 1)
-					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx + 1).WithImage("right"), a => a.Data(dc));
 
-				if (pageCount > 1 && pageCount - pageIdx >= 2)
-					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageCount).WithImage("end"), a => a.Data(dc));
+				w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx + 1).WithImage("right"), a => a.Data(dc).Class(itemsCount != null && pageCount - pageIdx < 1 ? "disabled" : ""));
+
+				w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageCount).WithImage("end"), a => a.Data(dc).Class(pageCount <= 1 || pageCount - pageIdx < 2 ? "disabled" : ""));
 
 				w.Span("&nbsp;Элементов&nbsp;на&nbsp;странице:&nbsp;");
 				w.DropDownList(new InputName { ID = "psize", Name = paging.ParentElement.GetClientID("psize") }, 
