@@ -276,6 +276,11 @@ namespace Tango
 			return defaultValue;
 		}
 
+		public static string DateTimeToSQLString(this DateTime src)
+		{
+			return src.ToString("yyyy-MM-dd HH:mm:ss");
+		}
+
 		public static DateTime EndDay(this DateTime date)
 		{
 			return date.Date.AddMinutes(1439);
