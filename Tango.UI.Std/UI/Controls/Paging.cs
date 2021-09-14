@@ -165,9 +165,9 @@ namespace Tango.UI.Controls
 				var to = itemsCount != null && pageIdx * paging.PageSize > itemsCount ? itemsCount : pageIdx * paging.PageSize;
 
 				w.Span(a => a.ID(paging.ID + "_cnt"), () => {
-					w.Write($"Показаны&nbsp;позиции&nbsp;с&nbsp;");
+					//w.Write($"Показаны&nbsp;позиции&nbsp;с&nbsp;");
 					w.B(from.ToString());
-					w.Write($"&nbsp;по&nbsp;");
+					w.Write($"&nbsp;-&nbsp;");
 					w.B(to.ToString());
 					w.Write($"&nbsp;из&nbsp;");
 					w.B(itemsCount.ToString());
@@ -176,22 +176,8 @@ namespace Tango.UI.Controls
 
 				var dc = paging.ParentElement.DataCollection;
 
-				w.Span(a => a.Style(pageCount < 2 ? "visibility:hidden" : null), () =>
-				{
-					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, 1).WithImage("begin").WithTitle("В начало списка"), a => a.Data(dc).Class(pageIdx <= 2 ? "disabled" : ""));
-
-					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx - 1).WithImage("left").WithTitle("На предыдущий лист"), a => a.Data(dc).Class(pageIdx <= 1 ? "disabled" : ""));
-
-					w.Span("&nbsp;Страница&nbsp;");
-					w.TextBox("go", pageIdx.ToString(), a => a.Style("width:50px; text-align:center").Set(options.GoToPageActionAttributes));
-					w.Span(a => a.Style("width: 60px; display: inline-block;"), $"&nbsp;из&nbsp;{pageCount}&nbsp;");
-
-
-					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx + 1).WithImage("right").WithTitle("На следующий лист"), a => a.Data(dc).Class(itemsCount != null && pageCount - pageIdx < 1 ? "disabled" : ""));
-
-					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageCount).WithImage("end").WithTitle("На последний лист"), a => a.Data(dc).Class(pageCount <= 1 || pageCount - pageIdx < 2 ? "disabled" : ""));
-				});
-				w.Span("&nbsp;Элементов&nbsp;на&nbsp;странице:&nbsp;");
+				//w.Span("&nbsp;Элементов&nbsp;на&nbsp;странице:&nbsp;");
+				w.Write("&nbsp;");
 				w.DropDownList(new InputName { ID = "psize", Name = paging.ParentElement.GetClientID("psize") }, 
 					paging.PageSize.ToString(), new List<SelectListItem> {
 					new SelectListItem("10", "10"),
@@ -199,6 +185,21 @@ namespace Tango.UI.Controls
 					new SelectListItem("100", "100"),
 					new SelectListItem("1000", "1000")
 				}, a => a.Set(options.SetPageSizeActionAttributes).Data(dc));
+				w.Write("&nbsp;");
+				w.Span(a => a.Style(pageCount < 2 ? "visibility:hidden" : null), () =>
+				{
+					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, 1).WithImage("begin").WithTitle("В начало списка"), a => a.Data(dc).Class(pageIdx <= 2 ? "disabled" : ""));
+					w.Write(" ");
+					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx - 1).WithImage("left").WithTitle("На предыдущий лист"), a => a.Data(dc).Class(pageIdx <= 1 ? "disabled" : ""));
+
+					w.Span("&nbsp;");
+					w.TextBox("go", pageIdx.ToString(), a => a.Style("width:50px; text-align:center").Set(options.GoToPageActionAttributes));
+					w.Span(a => a.Style("width: 60px; display: inline-block;"), $"&nbsp;/&nbsp;{pageCount}&nbsp;");
+
+					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx + 1).WithImage("right").WithTitle("На следующий лист"), a => a.Data(dc).Class(itemsCount != null && pageCount - pageIdx < 1 ? "disabled" : ""));
+					w.Span("&nbsp;");
+					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageCount).WithImage("end").WithTitle("На последний лист"), a => a.Data(dc).Class(pageCount <= 1 || pageCount - pageIdx < 2 ? "disabled" : ""));
+				});
 			});
 		}
 	}
