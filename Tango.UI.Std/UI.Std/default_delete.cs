@@ -94,18 +94,23 @@ namespace Tango.UI.Std
 
 			if (EntityAudit != null)
 			{
-				foreach (var id in sel)
-				{
-					var oc = ObjectChange.Delete<T>(id);
-					EntityAudit.AddChanges(oc);
-					if (typeof(T).IsAssignableTo(typeof(IWithTitle)))
-					{
-						T obj = CommonLogic.GetFiltered<T, TKey>(DataContext, id);
-						var ot = obj as IWithTitle;
-						if (ot != null) oc.Title = () => ot.Title;
-					}
-				}
-			}
+                foreach (var id in sel)
+                {
+                    var oc = ObjectChange.Delete<T>(id);
+                    EntityAudit.AddChanges(oc);
+                    if (typeof(T).IsAssignableTo(typeof(IWithTitle)) || typeof(T).IsAssignableTo(typeof(IWithName)))
+                    {
+                        T obj = CommonLogic.GetFiltered<T, TKey>(DataContext, id);
+                        var ot = obj as IWithTitle;
+                        if (ot != null) oc.Title = () => ot.Title;
+                        else
+                        {
+                            var onm = obj as IWithName;
+                            if (onm != null) oc.Title = () => onm.Name;
+                        }
+                    }
+                }
+            }
 
 			var res = ProcessSubmit(sel);
 			if (!res.Result)
