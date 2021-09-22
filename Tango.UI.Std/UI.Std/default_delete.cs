@@ -92,12 +92,14 @@ namespace Tango.UI.Std
 		{
 			var sel = Context.GetListArg<TKey>(Constants.SelectedValues);
 
-			if (EntityAudit != null)
-			{
+            if (EntityAudit != null)
+            {
+                var list = new List<ObjectChange>();
                 foreach (var id in sel)
                 {
                     var oc = ObjectChange.Delete<T>(id);
-                    EntityAudit.AddChanges(oc);
+                    list.Add(oc);
+
                     if (typeof(T).IsAssignableTo(typeof(IWithTitle)) || typeof(T).IsAssignableTo(typeof(IWithName)))
                     {
                         T obj = CommonLogic.GetFiltered<T, TKey>(DataContext, id);
@@ -109,6 +111,13 @@ namespace Tango.UI.Std
                             if (onm != null) oc.Title = () => onm.Name;
                         }
                     }
+                }
+                if (sel.Count == 1)
+                    EntityAudit.AddChanges(list[0]);
+                else
+                {
+                    var ocp = ObjectChange.BulkDelete<T>();
+                    EntityAudit.AddChanges(ocp, secondaryObjects: list);
                 }
             }
 

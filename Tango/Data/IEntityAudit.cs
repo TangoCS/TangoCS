@@ -91,7 +91,19 @@ namespace Tango.Data
 			};
 		}
 
-		public static ObjectChange Custom<TKey>(IWithKey<TKey> entity, Func<string> actionTitle = null)
+        public static ObjectChange BulkDelete<T>(string title = null)
+        {
+            return new ObjectChange
+            {
+                Action = EntityAuditAction.Delete,
+                ID = () => "",
+                Title = () => title ?? "Удаление группы объектов",
+                Type = typeof(T),
+                PropertyChanges = null
+            };
+        }
+        
+        public static ObjectChange Custom<TKey>(IWithKey<TKey> entity, Func<string> actionTitle = null)
         {
             return new ObjectChange
             {
