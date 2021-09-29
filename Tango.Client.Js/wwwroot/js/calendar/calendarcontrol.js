@@ -182,6 +182,8 @@
         if (pos0 < len) {
             target.value = target.value.substring(0, pos0) + char0 + target.value.substring(pos0 + 1);
 			target.setSelectionRange(pos0 + 1, pos0 + 1);
+			var event = new Event('change');
+			target.dispatchEvent(event);
             return false;
         }
 

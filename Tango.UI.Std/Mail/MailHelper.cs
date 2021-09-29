@@ -396,16 +396,7 @@ namespace Tango.Mail
                                 methodSetting.Params[param.Key] = GetValue(param, viewData);
                             }
 
-                            try
-                            {
-                                _methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
-                            }
-                            catch
-                            {
-                                throw new MailHelperException("Ошибка выполнения метода предварительной обработки " +
-                                                              $"для настройки {mailSettings.Title} ({mailSettings.SystemName}). " +
-                                                              $"Метод {methodSetting.ClassName}.{methodSetting.MethodName}");
-                            }
+							_methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
                         }
                     }
 
@@ -442,17 +433,8 @@ namespace Tango.Mail
                                         methodSetting.Params[param.Key] = GetValue(param, viewData);
                                     }
 
-                                    try
-                                    {
-                                        _methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
-                                    }
-                                    catch
-                                    {
-                                        throw new MailHelperException("Ошибка выполнения метода постобработки " +
-                                                                      $"для настройки {mailSettings.Title} ({mailSettings.SystemName}). " +
-                                                                      $"Метод {methodSetting.ClassName}.{methodSetting.MethodName}");
-                                    }
-                                }
+									_methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
+								}
                             }
 
                             transaction.Commit();

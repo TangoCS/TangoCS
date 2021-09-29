@@ -361,17 +361,14 @@ namespace Tango.UI.Std
 
         protected override void Submit(ApiResponse response)
 		{
-			if (EntityAudit != null && ViewData != null)
+			if (EntityAudit != null && ViewData != null && EntityAudit.PrimaryObject != null)
 			{
-				if (EntityAudit != null && EntityAudit.PrimaryObject != null)
-				{
-					EntityAudit.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
-					if (CreateObjectMode)
-						EntityAudit.PrimaryObject.PropertyChanges.ForEach(pc => { pc.OldValue = null; });
-				}
+				EntityAudit.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
+				if (CreateObjectMode)
+					EntityAudit.PrimaryObject.PropertyChanges.ForEach(pc => { pc.OldValue = null; });
 			}
 
-            if (CreateObjectMode && BulkMode)
+			if (CreateObjectMode && BulkMode)
 			{
 				var sel = GetArg(Constants.SelectedValues);
 				var cnt = sel?.Split(',').Count() ?? 0;
@@ -463,12 +460,9 @@ namespace Tango.UI.Std
 		{
 			if (EntityAudit != null && ViewData != null)
 			{
-				if (EntityAudit != null)
-				{
-					EntityAudit.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
-					if (CreateObjectMode)
-						EntityAudit.PrimaryObject.PropertyChanges.ForEach(pc => { pc.OldValue = null; });
-				}
+				EntityAudit.PrimaryObject.PropertyChanges = Tracker?.GetChanges(ViewData);
+				if (CreateObjectMode)
+					EntityAudit.PrimaryObject.PropertyChanges.ForEach(pc => { pc.OldValue = null; });
 			}
 
             if (CreateObjectMode)

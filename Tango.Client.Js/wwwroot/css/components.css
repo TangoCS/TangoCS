@@ -555,7 +555,14 @@ button.close {
 	opacity: .5;
 	cursor: no-drop;
 }
-
+.tabs2 .aftertabs {
+	line-height: 27px;
+	padding-left: 8px;
+}
+.tabs2 .beforetabs {
+	line-height: 27px;
+	padding-right: 8px;
+}
 
 .tabs2_pages > div {
 	display: none;

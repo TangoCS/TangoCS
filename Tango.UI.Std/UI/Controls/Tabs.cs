@@ -15,6 +15,9 @@ namespace Tango.UI.Controls
 
 		public List<TabPage> Pages { get; set; } = new List<TabPage>();
 
+		public Action<LayoutWriter> BeforeTabs { get; set; }
+		public Action<LayoutWriter> AfterTabs { get; set; }
+
 		TabPage GetCurPage()
 		{
 			var curid = GetArg(ID);
@@ -70,6 +73,7 @@ namespace Tango.UI.Controls
 		{
 			w.Div(a => a.ID(ID).Data("parmname", ID).Class("tabs2"), () => {
 				w.Ul(() => {
+					if (BeforeTabs != null) w.Li(a => a.Class("beforetabs"), () => BeforeTabs(w));
 					foreach (var p in Pages)
 					{
 						var pid = $"{ID}_{p.ID}";
@@ -82,6 +86,7 @@ namespace Tango.UI.Controls
 								.OnClick("tabs.onselect(this)"), () => w.Write(p.Title));
 						});
 					}
+					if (AfterTabs != null) w.Li(a => a.Class("aftertabs"), () => AfterTabs(w));
 				});
 			});
 		}

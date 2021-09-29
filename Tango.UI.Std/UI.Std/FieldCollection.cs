@@ -673,6 +673,12 @@ namespace Tango.UI.Std
 			return columnHeader;
 		}
 
+		public static IColumnHeader AddHeaderWithSort<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
+			string title, Expression<Func<TEntity, T>> expr)
+		{
+			return f.AddHeader(title, new HeaderOptions { SortSeqNo = f.AddSort(expr) });
+		}
+
 		public static IColumnHeader AddHeaderWithSortAndFilter<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
 			Action<ThTagAttributes> attrs, Expression<Func<TEntity, T>> expr)
 		{
