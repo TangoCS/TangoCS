@@ -236,6 +236,9 @@ namespace Tango.Data
 			var (clause, parms) = GetByIdWhereClause(id);
 			var query = $"select * from ({AllObjectsQuery}) t where {clause}";
 
+			foreach (var pair in Parameters)
+				parms.Add(pair.Key, pair.Value);
+
 			return Database.Connection.QuerySingleOrDefault(Type, query, parms, Database.Transaction);
 		}
 	}
