@@ -31,8 +31,9 @@ namespace Tango.UI.Std
 			var gvalue = new string[fields.Groups.Count];
 			var i = 0;
 			var curLevel = 1;
+			TResult prev = default;
 
-			foreach (var (prev,o,isLast) in result.PairwiseWithPrev())
+			foreach (var o in result)
 			{
 				bool newGroupItem = false;
 				int j = 0;
@@ -79,6 +80,7 @@ namespace Tango.UI.Std
 				fields.AfterRowContent?.Invoke(w, o, r);
 
 				i++;
+				prev = o;
 			}
 		}
 
