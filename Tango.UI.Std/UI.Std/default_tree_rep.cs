@@ -497,6 +497,9 @@ namespace Tango.UI.Std
 
 				if (nodeTemplate.EnableSelect || nodeTemplate.SetDataRowId)
 					a.Data("rowid", dataRowID);
+
+				if (nodeTemplate.EnableSelect && _renderSelectedBlockMode)
+					a.Data("checked");
 			};
 
 			RenderRowCellDelegate<TResult> content = (w, o, i) => {
