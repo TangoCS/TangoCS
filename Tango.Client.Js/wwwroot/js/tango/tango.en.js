@@ -1,16 +1,17 @@
 ﻿var localization = function () {
     var resources = {
         title: {
-            systemError: 'System Error',
-            javascriptError: 'Error javascript',
-            noAccess: 'No Access',
+            systemError: 'System error',
+            javascriptError: 'Javascript error',
+            noAccess: 'No access',
             pageMissing: 'The page is missing',
-            ajaxError: 'Error ajax'
+            ajaxError: 'Ajax error'
         },
         text: {
             notLoggedSystem: 'You are not logged in to the system',
             insufficientPermissionsOperation: 'Insufficient permissions to perform the operation',
-            linkGoMainPage: '<a href="/">Go to the main page</a>'
+			linkGoToMainPage: '<a href="/">Go to the main page</a>',
+			serverUnavailable: 'Server is unavailable or missing<br><br>Address: '
         }
     };
 

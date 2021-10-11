@@ -69,8 +69,8 @@ namespace Tango.UI.Controls
 		{
 			w.Div(a => a.ID());
 
-			w.Includes.Add("jstree/jstree.min.js");
-			w.Includes.Add("Tango/treeview.js");
+			//w.Includes.Add("jstree/jstree.min.js");
+			//w.Includes.Add("Tango/treeview.js");
 			w.AddClientAction("treeView", "defaultInit", f => new { id = f(ID) });
 		}
 	}

@@ -23,6 +23,7 @@
 				closeOnClick: args.closeonclick,
 				closeOnScroll: args.closeonscroll === undefined ? true : args.closeonscroll,
 				onOpen: onOpen,
+				onMouseLeave: onMouseLeave,
 				type: args.type,
 				delay: args.delay
 			};
@@ -30,11 +31,26 @@
 	};
 
 
-	function onOpen (data, event) {
-		if (data.menu[0].getAttribute('data-href') || data.menu[0].getAttribute('data-e'))
-			return au.runEventFromElementWithApiResponse(data.menu[0]);
+	function onOpen(data, event) {
+		const menu = data.menu[0];
+		if (menu.getAttribute('data-href') || menu.getAttribute('data-e')) {
+			return au.runEventFromElementWithApiResponse(menu);
+		}
 
 		return $.when();
+	}
+
+	function onMouseLeave(data, event) {
+		if (data.options.type = 'hover') {
+			const menu = data.menu[0];
+
+			data.state.resetTimer();
+
+			if (menu.hasAttribute('data-requestgroup')) {
+				const reqGr = menu.getAttribute('data-requestgroup');
+				au.state.com.request[reqGr] = null;
+			}
+		}
 	}
 
 	return instance;

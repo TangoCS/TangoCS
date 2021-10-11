@@ -43,17 +43,22 @@
 		return offset;
 	}
 
-	var timer = null;
+	const state = {
+		timer: null,
+		resetTimer: function () {
+			if (state.timer) {
+				window.clearTimeout(state.timer);
+				state.timer = null;
+			}
+		}
+	};
 
 	function delay(caller, func, timeout) {
 		if (!timeout) {
 			timeout = 400;
 		}
-		if (timer) {
-			window.clearTimeout(timer);
-			timer = null;
-		}
-		timer = window.setTimeout(function () { func(caller); }, timeout);
+		state.resetTimer();
+		state.timer = window.setTimeout(function () { func(caller); }, timeout);
 	}
 
 
@@ -238,6 +243,12 @@
 						}
 					});
 				}
+
+				trigger.bind('mouseleave', function (e) {
+					const clbckData = { trigger: trigger, menu: menu, options: option, state: state };
+					option.onMouseLeave.call(this, clbckData, e);
+				});
+				
 			}
 
 			trigger.delegate('input,a,.needs-click', 'click', function (e) {
@@ -293,10 +304,7 @@
                 menu = trgrData.menu,
                 menuData = menu.data('iw-menuData'),
                 option = trgrData.option,
-                clbckData = {
-                	trigger: trigger,
-                	menu: menu
-                };
+				clbckData = { trigger: trigger, menu: menu, options: option, state: state };
 
 			var baseEl = option.baseTrigger ? option.baseTrigger : trigger;
 			var res = option.beforeOpen.call(this, clbckData, e);

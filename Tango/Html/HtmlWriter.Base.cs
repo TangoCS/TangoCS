@@ -24,13 +24,15 @@ namespace Tango.Html
 		public HtmlWriter(string idPrefix)
 		{
 			NewLine = NEWLINE;
-			idPrefix.Split('_').ForEach(s => _ids.Push(s));
+			if (idPrefix != null)
+				idPrefix.Split('_').ForEach(s => _ids.Push(s));
 			SetPrefix();
 		}
 		public HtmlWriter(string idPrefix, StringBuilder sb) : base(sb)
 		{
 			NewLine = NEWLINE;
-			idPrefix.Split('_').ForEach(s => _ids.Push(s));
+			if (idPrefix != null)
+				idPrefix.Split('_').ForEach(s => _ids.Push(s));
 			SetPrefix();
 		}
 

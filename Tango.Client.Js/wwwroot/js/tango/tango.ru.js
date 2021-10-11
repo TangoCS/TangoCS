@@ -10,7 +10,8 @@
         text: {
             notLoggedSystem: 'Вы не авторизованы в системе',
             insufficientPermissionsOperation: 'Недостаточно прав для выполнения операции',
-            linkGoMainPage: '<a href="/">Перейти на главную страницу</a>'
+			linkGoToMainPage: '<a href="/">Перейти на главную страницу</a>',
+			serverUnavailable: 'Сервер недоступен или не отвечает.<br><br>Адрес: '
         }
     };
 

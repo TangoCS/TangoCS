@@ -357,7 +357,7 @@ var ajaxUtils = function ($, cu) {
 
 	var state = {
 		com: {
-			requestId: null,
+			request: { default: null },
 			message: null,
 			apiResult: null,
 			requestedJs: []
@@ -438,17 +438,13 @@ var ajaxUtils = function ($, cu) {
 
 			return false;
 		},
-		error: function (xhr, status, e) {
+		error: function (xhr, settings) {
 			var text = '';
 			var title = localization.resources.title.systemError;
 			var showinframe = false;
 			var severity = 'err';
 
-			if (e && e.message) {
-				title = localization.resources.title.javascriptError;
-				text = e.message + '<br>' + e.stack;
-			}
-			else if (xhr.status == '401') {
+			if (xhr.status == '401') {
 				const location = xhr.getResponseHeader('location');
 				if (location)
 					window.location = location;
@@ -465,19 +461,19 @@ var ajaxUtils = function ($, cu) {
 			}
 			else if (xhr.status == '404') {
 				title = localization.resources.title.pageMissing;
-				text = localization.resources.text.linkGoMainPage;
+				text = localization.resources.text.linkGoToMainPage;
 				severity = 'warn';
 			}
-			else if (e && this.url && xhr.status != '500') {
+			else if (xhr.status == 0) {
 				title = localization.resources.title.ajaxError;
-				text = this.url + '<br>' + xhr.status + ' ' + e;
+				text = 'Сервер недоступен или не отвечает.<br><br>Адрес: ' + settings.url;
 			}
 			else {
 				text = xhr.responseText;
 				showinframe = true;
 			}
 
-			requestCompleted();
+			requestCompleted(xhr, settings);
 			showError(title, text, severity, showinframe);
 		},
 		delay: function (caller, func, timeout) {
@@ -514,14 +510,16 @@ var ajaxUtils = function ($, cu) {
 			intervals[args.id] = n;
 		},
 		runEvent: function (target) {
-			return $.ajax({
+			const settings = {
 				url: instance.prepareUrl(target),
 				type: 'GET',
-				responseType: target.responsetype ? target.responsetype : ""
-			}).fail(instance.error).then(onRequestResult);
+				responseType: target.responsetype ? target.responsetype : "",
+				requestGroup: target.requestgroup ? target.requestgroup : null
+			};
+			return ajax(settings).fail(instance.error).then(onRequestResult);
 		},
 		runEventWithApiResponse: function (target) {
-			return instance.runEvent(target).then(instance.loadScripts).then(processApiResponse);
+			return instance.runEvent(target)/*.then(instance.loadScripts)*/.then(processApiResponse);
 		},
 		runEventFromElementWithApiResponse: function (el, target) {
 			if (el.hasAttribute('data-res') && instance.processResult(el) == false) return;
@@ -539,39 +537,19 @@ var ajaxUtils = function ($, cu) {
 		},
 		postEvent: function (target) {
 			const isForm = target.data instanceof FormData;
-			if (!target.responsetype) {
-				return $.ajax({
-					url: instance.prepareUrl(target),
-					type: 'POST',
-					processData: !isForm,
-					contentType: isForm ? false : "application/json; charset=utf-8",
-					data: isForm ? target.data : JSON.stringify(target.data)
-				}).fail(instance.error).then(onRequestResult);
-			}
-			else {
-				const r = $.Deferred();
-				const xhr = new XMLHttpRequest();
-				xhr.open('POST', instance.prepareUrl(target));
-				xhr.responseType = 'arraybuffer';
-				xhr.onload = function () {
-					if (this.status >= 200 && this.status < 300) {
-						r.resolve(xhr.response, this.status, xhr);//.then(onRequestResult);
-					} else {
-						r.reject(xhr, status, null);//.then(instance.error);
-					}
-				};
-				xhr.onerror = function () {
-					r.reject(xhr, status, null);//.then(instance.error);
-				};
-				beforeRequest(this, xhr, null);
-				xhr.contentType = isForm ? false : "application/json; charset=utf-8";
-				xhr.processData = !isForm;
-				xhr.send(isForm ? target.data : JSON.stringify(target.data));
-				return r.fail(instance.error).then(onRequestResult)/*.promise()*/;
-			}
+			const settings = {
+				url: instance.prepareUrl(target),
+				type: 'POST',
+				processData: !isForm,
+				contentType: isForm ? false : "application/json; charset=utf-8",
+				data: isForm ? target.data : JSON.stringify(target.data),
+				requestGroup: target.requestgroup ? target.requestgroup : null,
+				responseType: target.responsetype
+			};
+			return ajax(settings).fail(instance.error).then(onRequestResult);
 		},
 		postEventWithApiResponse: function (target) {
-			return instance.postEvent(target).then(instance.loadScripts).then(processApiResponse);
+			return instance.postEvent(target)/*.then(instance.loadScripts)*/.then(processApiResponse);
 		},
 		postEventFromElementWithApiResponse: function (el, target) {
 			if (el.hasAttribute('data-res') && instance.processResult(el) == false) return;
@@ -609,22 +587,22 @@ var ajaxUtils = function ($, cu) {
 			target.changeloc = true;
 			instance.runEventFromElementWithApiResponse(a, target);
 		},
-		loadScripts: function (apiResult) {
-			if (!apiResult) return $.Deferred().resolve(apiResult);
-			var deferreds = [];
-			var toLoad = apiResult instanceof Array ? apiResult : apiResult.includes;
+		//loadScripts: function (apiResult) {
+		//	if (!apiResult) return $.Deferred().resolve(apiResult);
+		//	var deferreds = [];
+		//	var toLoad = apiResult instanceof Array ? apiResult : apiResult.includes;
 
-			var r = $.Deferred();
-			if (toLoad && toLoad.length > 0) {
-				loadScript(r, toLoad, 0);
-				return r.then(function () {
-					console.log('loadScripts done');
-					return $.Deferred().resolve(apiResult);
-				});
-			}
-			else
-				return r.resolve(apiResult);
-		},
+		//	var r = $.Deferred();
+		//	if (toLoad && toLoad.length > 0) {
+		//		loadScript(r, toLoad, 0);
+		//		return r.then(function () {
+		//			console.log('loadScripts done');
+		//			return $.Deferred().resolve(apiResult);
+		//		});
+		//	}
+		//	else
+		//		return r.resolve(apiResult);
+		//},
 		prepareTarget: function (target) {
 			var parms = {};
 			const isForm = target.data instanceof FormData;
@@ -718,9 +696,6 @@ var ajaxUtils = function ($, cu) {
 		prepareUrl: function (target) {
 			instance.prepareTarget(target);
 			return getApiUrl(target.url, target.parms, target.isfirstload);
-		},
-		stopRequest: function () {
-			requestCompleted();
 		},
 		processResult: function (el) {
 			const result = el.getAttribute('data-res') || el.getAttribute('data-res-postponed');
@@ -828,44 +803,71 @@ var ajaxUtils = function ($, cu) {
 		return isfirstload ? url += 'firstload=true' : url.slice(0, -1);
 	}
 
-	function loadScript(def, toLoad, cur) {
-		if ($.inArray(toLoad[cur], state.com.requestedJs) >= 0) {
-			if (toLoad.length - 1 > cur)
-				return loadScript(def, toLoad, cur + 1);
-			else
-				return def.resolve();
-		}
-		state.com.requestedJs.push(toLoad[cur]);
-		return $.ajax({
-			type: "GET",
-			url: toLoad[cur],
-			dataType: "script",
-			beforeSend: function () { console.log('requested ' + this.url); },
-			success: function () {
-				console.log('loaded ' + this.url);
-				if (toLoad.length - 1 > cur)
-					loadScript(def, toLoad, cur + 1);
-				else
-					def.resolve();
-			},
-			crossDomain: true
-		});
+	//function loadScript(def, toLoad, cur) {
+	//	if ($.inArray(toLoad[cur], state.com.requestedJs) >= 0) {
+	//		if (toLoad.length - 1 > cur)
+	//			return loadScript(def, toLoad, cur + 1);
+	//		else
+	//			return def.resolve();
+	//	}
+	//	state.com.requestedJs.push(toLoad[cur]);
+	//	return $.ajax({
+	//		type: "GET",
+	//		url: toLoad[cur],
+	//		dataType: "script",
+	//		beforeSend: function () { console.log('requested ' + this.url); },
+	//		success: function () {
+	//			console.log('loaded ' + this.url);
+	//			if (toLoad.length - 1 > cur)
+	//				loadScript(def, toLoad, cur + 1);
+	//			else
+	//				def.resolve();
+	//		},
+	//		crossDomain: true
+	//	});
+	//}
+
+	function ajax(settings) {
+		const isArrayBuffer = settings.responseType && settings.responseType.toLowerCase() == 'arraybuffer';
+		const r = $.Deferred();
+		const xhr = new XMLHttpRequest();
+		xhr.open(settings.type, settings.url);
+		if (isArrayBuffer) xhr.responseType = 'arraybuffer';
+		xhr.onload = function () {
+			if (this.status >= 200 && this.status < 300) {
+				r.resolve(isArrayBuffer ? xhr.response : JSON.parse(xhr.response), xhr, settings);
+			} else {
+				r.reject(xhr, settings);
+			}
+		};
+		xhr.onerror = function () {
+			r.reject(xhr, settings);
+		};
+		xhr.contentType = settings.contentType;
+		xhr.processData = settings.processData;
+		xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+		beforeRequest(xhr, settings);
+		xhr.send(settings.data);
+		return r;
 	}
 
-	function beforeRequest(event, xhr, settings) {
-		state.com.requestId = cu.createGuid();
-		xhr.setRequestHeader('x-request-guid', state.com.requestId);
+	function beforeRequest(xhr, settings) {
+		const reqId = cu.createGuid();
+		const reqGroup = settings.requestGroup ?? 'default';
+		state.com.request[reqGroup] = reqId;
+		xhr.setRequestHeader('x-request-guid', reqId);
 		xhr.setRequestHeader('x-csrf-token', document.head.getAttribute('data-x-csrf-token'));
 		setTimeout(function () {
-			if (state.com.requestId && state.com.message) document.body.style.cursor = 'wait';
+			if (state.com.request.default && state.com.message) document.body.style.cursor = 'wait';
 		}, 100);
 		setTimeout(function () {
-			if (state.com.requestId && state.com.message) state.com.message.css('display', 'block');
+			if (state.com.request.default && state.com.message) state.com.message.css('display', 'block');
 		}, 1000);
 	}
 
-	function requestCompleted() {
-		state.com.requestId = null;
+	function requestCompleted(xhr, settings) {
+		const reqGroup = settings.requestGroup ?? 'default';
+		state.com.request[reqGroup] = null;
 		if (document.body) document.body.style.cursor = '';
 		if (state.com.message) state.com.message.css('display', 'none');
 
@@ -876,9 +878,10 @@ var ajaxUtils = function ($, cu) {
 		}
 	}
 
-	function onRequestResult(data, status, xhr) {
-		if (xhr.getResponseHeader('X-Request-Guid') == state.com.requestId) {
-			requestCompleted();
+	function onRequestResult(data, xhr, settings) {
+		const reqGroup = settings.requestGroup ?? 'default';
+		if (xhr.getResponseHeader('X-Request-Guid') == state.com.request[reqGroup]) {
+			requestCompleted(xhr, settings);
 			const disposition = xhr.getResponseHeader('Content-Disposition');
 
 			// check file download response
@@ -927,6 +930,9 @@ var ajaxUtils = function ($, cu) {
 				target.responsetype = val;
 			}
 		}
+
+		if (el.hasAttribute('data-requestgroup'))
+			target.requestgroup = el.getAttribute('data-requestgroup');
 
 		// TODO: доработать для определения модальных контейнеров + обработка открытия модального окна из модального окна.
 		if (el.hasAttribute('data-c-new') && el.hasAttribute('data-c-type')) {
@@ -1437,7 +1443,7 @@ var ajaxUtils = function ($, cu) {
 	document.addEventListener('DOMContentLoaded', function () {
 		state.com.message = $("#topmessagecontainer");
 		setTimeout(function () {
-			if (state.com.requestId) state.com.message.css('display', 'block');
+			if (state.com.request.default) state.com.message.css('display', 'block');
 		}, 100);
 		document.body.className = '';
 
@@ -1469,10 +1475,12 @@ var ajaxUtils = function ($, cu) {
 
 			if (s.onBack && !s.parms['c-new'])
 				runClientAction(s.onBack.service, s.onBack.callChain, 0);
-			else
-				$.get(getApiUrl(s.url, s.parms))
+			else {
+				const settings = { url: getApiUrl(s.url, s.parms), type: 'GET' };
+				ajax(settings)
 					.fail(instance.error)
-					.then(onRequestResult).then(instance.loadScripts).then(processApiResponse);
+					.then(onRequestResult)/*.then(instance.loadScripts)*/.then(processApiResponse);
+			}
 		});
 
 
@@ -1480,8 +1488,8 @@ var ajaxUtils = function ($, cu) {
 			renderApiResult();
 	});
 
-	$(document).ajaxSend(beforeRequest);
-	$(document).ajaxStop(requestCompleted);
+	//$(document).ajaxSend(beforeRequest);
+	//$(document).ajaxStop(requestCompleted);
 
 	const current = document.getElementById(META_CURRENT);
 	state.loc.url = document.location.pathname + document.location.search;
