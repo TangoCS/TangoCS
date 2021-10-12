@@ -1313,3 +1313,8 @@ div.tabs2 + div.tabs2_pages {
 	top: 0;
 	z-index: 10;
 }
+.tree tr.fixedrow {
+	position: sticky;
+	z-index: 10;
+	background-color: #fff;
+}

@@ -476,6 +476,9 @@ namespace Tango.UI.Std
 				else
 					a.Data("loaded");
 
+				if (nodeTemplate.IsSticky)
+					a.Class("fixedrow");
+
 				a.Data("level", CurrentState.Level);
 				a.DataParm("level", CurrentState.Level);
 				a.TabIndex(0);
@@ -510,15 +513,9 @@ namespace Tango.UI.Std
 					foreach (var ic in nodeTemplate.IconFlag(o).Split(','))
 						w.I(a => a.Class("nodeicon").IconFlag(ic.Trim()));
 
-				// if (nodeTemplate.Icon != null)
-				// 	foreach (var ic in nodeTemplate.Icon(o).Split(','))
-				// 		w.I(a => a.Class("nodeicon").Icon(ic.Trim()));
-
 				if (nodeTemplate.Icon != null)
-				{
 					foreach (var ic in nodeTemplate.Icon(o))
 						w.I(a => a.Class("nodeicon").Icon(ic.iconName.Trim()).Set(ic.attributes));
-				}
 
 				nodeTemplate.Cell(w, o, i);
 
@@ -692,6 +689,7 @@ namespace Tango.UI.Std
 		public bool SetDataRowId { get; set; }
 		public TreeLevelDescription<TResult> ParentTemplate { get; set; }
 		public bool AllowNulls { get; set; } = false;
+		public bool IsSticky { get; set; } = false;
 		public string CustomQuery { get; set; }
 
 		public Action<ApiResponse> ToggleLevelAction { get; set; }
