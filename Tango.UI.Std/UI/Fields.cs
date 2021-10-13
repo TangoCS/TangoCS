@@ -13,6 +13,7 @@ namespace Tango.UI
 	{
 		ValueSource ValueSource { get; set; }
 		bool WithCheckBox { get; set; }
+		bool DisableCheckBox { get; set; }
 		string Caption { get; set; }
 		string Description { get; set; }
 		string Hint { get; set; }
@@ -86,6 +87,7 @@ namespace Tango.UI
 	{
 		public ValueSource ValueSource { get; set; }
 		public virtual bool WithCheckBox { get; set; } = false;
+		public virtual bool DisableCheckBox { get; set; } = false;
 		public virtual string Caption { get; set; } = "";
 		public virtual string Hint { get; set; }
 		public virtual string Description { get; set; } = "";
