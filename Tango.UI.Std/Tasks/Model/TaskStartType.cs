@@ -12,13 +12,13 @@ namespace Tango.Tasks
 	{
 		public virtual Expression<Func<TaskStartType, bool>> KeySelector(int id)
 		{
-			return o => o.TaskTypeID == id;
+			return o => o.TaskStartTypeID == id;
 		}
-		public virtual int ID => TaskTypeID;
+		public virtual int ID => TaskStartTypeID;
         [Key]
         [Identity]
         [Column]
-        public virtual int TaskTypeID { get; set; }
+        public virtual int TaskStartTypeID { get; set; }
         [Column]
         public virtual string Title { get; set; }
 	}

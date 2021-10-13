@@ -23,7 +23,7 @@ namespace Tango.Tasks
 
         protected override void FieldsInit(FieldCollection<TaskStartType> f)
         {
-            f.AddCellWithSortAndFilter(o => o.TaskTypeID, (w, o) => w.ActionLink(al => al.ToView(AccessControl, o).WithTitle(o.TaskTypeID)));
+            f.AddCellWithSortAndFilter(o => o.TaskStartTypeID, (w, o) => w.ActionLink(al => al.ToView(AccessControl, o).WithTitle(o.TaskStartTypeID)));
             f.AddCellWithSortAndFilter(o => o.Title, o => o.Title);
         }
     }
@@ -40,7 +40,7 @@ namespace Tango.Tasks
         protected override void Form(LayoutWriter w)
         {
             w.FieldsBlockStd(() => {
-                w.PlainText(Resources.Get<TaskStartType>("TaskTypeID"), ViewData.TaskTypeID);
+                w.PlainText(Resources.Get<TaskStartType>("TaskTypeID"), ViewData.TaskStartTypeID);
                 w.PlainText(Resources.Get<TaskStartType>("Title"), ViewData.Title);
             });
         }
