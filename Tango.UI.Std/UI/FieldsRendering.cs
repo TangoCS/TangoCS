@@ -26,7 +26,8 @@ namespace Tango.UI
 				field.IsVisible,
 				field.Hint,
 				field.WithCheckBox,
-				field.Disabled
+				field.Disabled,
+				field.DisableCheckBox
 			);
 		}
 
@@ -130,7 +131,7 @@ namespace Tango.UI
                 attributes += a => a.Data("e", $"On{field.ID}Changed").Data("r", field.EventReceiver);
 
 			w.FormField(field.ID, field.Caption, () => w.ToggleSwitch(field.ID, field.Value, field.Disabled, field.ReadOnly, attributes),
-				grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, field.Hint, field.WithCheckBox);           
+				grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, field.Hint, field.WithCheckBox, field.Disabled, field.DisableCheckBox);           
         }
 
 		public static void ToggleSwitch2(this LayoutWriter w, IField<bool> field, GridPosition grid = null, Action<InputTagAttributes> attributes = null)
