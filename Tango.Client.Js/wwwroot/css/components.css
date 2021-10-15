@@ -1318,3 +1318,11 @@ div.tabs2 + div.tabs2_pages {
 	z-index: 10;
 	background-color: #fff;
 }
+
+/* icons */
+.icon-checkbox-unchecked .svgicon-checkbox-checked {
+	display: none;
+}
+.icon-checkbox-checked .svgicon-checkbox-unchecked {
+	display: none;
+}

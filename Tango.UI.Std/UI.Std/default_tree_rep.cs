@@ -507,7 +507,7 @@ namespace Tango.UI.Std
 
 			RenderRowCellDelegate<TResult> content = (w, o, i) => {
 				if (nodeTemplate.EnableSelect && !_renderSelectedBlockMode)
-					w.Span(a => a.Class("sel"), () => w.Icon("checkbox-unchecked"));
+					w.Span(a => a.Class("sel"), () => w.IconCheckBox());
 
 				if (nodeTemplate.IconFlag != null)
 					foreach (var ic in nodeTemplate.IconFlag(o).Split(','))

@@ -22,10 +22,6 @@ header {
 	color: #707070;
 }
 
-.actionbtn .icon-dropdownarrow {
-	vertical-align: middle;
-}
-
 .icon {
 	background-size: contain;
 	background-position: 50%;
@@ -44,6 +40,16 @@ header {
 	fill: currentColor;
 }
 
+
+.actionbtn .icon, .block-btn .icon {
+	vertical-align: middle;
+}
+.cal-openbtn .icon {
+	vertical-align: baseline;
+}
+
 header .icon {
 	vertical-align: text-bottom;
 }
+
+
