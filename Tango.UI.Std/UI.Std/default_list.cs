@@ -159,7 +159,7 @@ namespace Tango.UI.Std
 
 			_result = GetPageData();
 
-			var i = _result.Count();
+			var i = _result?.Count() ?? 0;
 
 			_itemsCount = null;
 			if (i <= Paging.PageSize && Paging.PageIndex <= 1)

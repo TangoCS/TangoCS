@@ -181,7 +181,7 @@ namespace Tango.UI
             if (isRequired)
                 w.Span(a => a.ID(name + "_fieldrequired").Class("field-validation"), "&nbsp;*");
             if (!string.IsNullOrEmpty(hint))
-                w.I(a => a.Style("margin-left:2px").Icon("hint").Title(hint));
+                w.Icon("hint", a => a.Style("margin-left:2px").Title(hint));
         }
     }
 
@@ -405,18 +405,40 @@ namespace Tango.UI
 
         public static void Icon(this HtmlWriter w, string name, string tip = null, string color = null)
         {
-            w.I(a => {
-                a.Icon(name).Title(tip);
-                if (color != null)
-                    a.Style("color:" + color);
-            });
+			w.Icon(name, a => {
+				a.Title(tip);
+				if (color != null)
+					a.Style("color:" + color);
+			}, null);
         }
 
-        public static T Icon<T>(this TagAttributes<T> a, string name)
-            where T : TagAttributes<T>
-        {
-            return a.Class("icon icon-" + name?.ToLower());
-        }
+		public static void Icon(this HtmlWriter w, string name, Action<TagAttributes> attrs, Action content = null)
+		{
+			Action<TagAttributes> ta = a => {
+				if (name == null)
+					a.Class("icon");
+				else
+				{
+					name = name.ToLower();
+					a.Class("icon icon-" + name).Data("name", name);
+				}
+				a.Set(attrs);
+			};
+			w.I(ta, () => {
+				if (name != null)
+					w.Write($"<svg><use xlink:href=\"/data/icons/svg#icon-{name.ToLower()}\"></use></svg>");
+				content?.Invoke();
+			});
+		}
+
+		//public static T Icon<T>(this TagAttributes<T> a, string name)
+  //          where T : TagAttributes<T>
+  //      {
+		//	if (name == null) 
+		//		return a.Class("icon");
+		//	name = name.ToLower();
+  //          return a.Class("icon icon-" + name).Data("name", name);
+  //      }
 
         public static void IconFlag<T>(this TagAttributes<T> a, string name, bool issquare = false)
             where T : TagAttributes<T>

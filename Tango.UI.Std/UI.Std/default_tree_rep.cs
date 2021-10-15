@@ -515,12 +515,12 @@ namespace Tango.UI.Std
 
 				if (nodeTemplate.Icon != null)
 					foreach (var ic in nodeTemplate.Icon(o))
-						w.I(a => a.Class("nodeicon").Icon(ic.iconName.Trim()).Set(ic.attributes));
+						w.Icon(ic.iconName.Trim(), a => a.Class("nodeicon").Set(ic.attributes));
 
 				nodeTemplate.Cell(w, o, i);
 
 				if (_renderSelectedBlockMode)
-					w.I(a => a.Icon("delete").OnClick("listview.onRemoveIconClick(event)"));
+					w.Icon("delete", a => a.OnClick("listview.onRemoveIconClick(event)"));
 			};
 
 			f.AddCell("Наименование", (w, o, i) => {

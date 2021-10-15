@@ -930,7 +930,7 @@ div.tabs2 + div.tabs2_pages {
 .selectsingleobject .close {
 	margin-left: 3px;
 	font-weight: 700;
-	vertical-align: bottom;
+	/*vertical-align: bottom;*/
 	float: inherit;
 	font-size: x-small;
 	line-height: inherit;

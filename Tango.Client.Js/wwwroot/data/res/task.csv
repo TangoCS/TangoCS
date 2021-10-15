@@ -65,7 +65,7 @@ tango.tasks.taskparameter.ParentMethod;Метод;
 tango.tasks.taskstarttype;Тип старта задач;Start type of tasks
 tango.tasks.taskstarttype-pl;Тип старта задач;Start type of tasks
 tango.tasks.taskstarttype.viewlist;Тип старта задач;Start type of tasks
-tango.tasks.taskstarttype.tasktypeid;Код;ID
+tango.tasks.taskstarttype.taskstarttypeid;Код;ID
 
 tango.tasks.taskgroup;Категория задач;Task category
 tango.tasks.taskgroup-pl;Категория задач;Task category

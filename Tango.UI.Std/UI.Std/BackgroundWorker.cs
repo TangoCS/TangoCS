@@ -57,7 +57,7 @@ namespace Tango.UI.Std
 		{
 			w.Li(a => a.ID("backgroundworker"), () => {
 				w.Span(() => {
-					w.I(a => a.Icon("clipboard").Style("position:relative"), () => {
+					w.Icon("clipboard", a => a.Style("position:relative"), () => {
 						w.B(a => a.ID("backgroundworker_counter").Class("badge").Class("hide"), "0");
 					});				
 				});

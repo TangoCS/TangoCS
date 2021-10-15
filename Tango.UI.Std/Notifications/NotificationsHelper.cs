@@ -22,7 +22,7 @@ namespace Tango.Notifications
 
 			w.Li(a => a.ID("notifications").Title("Извещения"), () => {
 				w.Span(() => {
-					w.I(a => a.Icon("notifications").Style("position:relative"), () => {
+					w.Icon("notifications", a => a.Style("position:relative"), () => {
 						w.B(a => a.ID("notifications_counter").Class("badge").Class(cnt > 0 ? "" : "hide"), cnt.ToString());
 					});
 				});

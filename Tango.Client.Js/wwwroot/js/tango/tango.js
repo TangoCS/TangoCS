@@ -853,7 +853,7 @@ var ajaxUtils = function ($, cu) {
 
 	function beforeRequest(xhr, settings) {
 		const reqId = cu.createGuid();
-		const reqGroup = settings.requestGroup ?? 'default';
+		const reqGroup = settings.requestGroup ? settings.requestGroup : 'default';
 		state.com.request[reqGroup] = reqId;
 		xhr.setRequestHeader('x-request-guid', reqId);
 		xhr.setRequestHeader('x-csrf-token', document.head.getAttribute('data-x-csrf-token'));
@@ -866,7 +866,7 @@ var ajaxUtils = function ($, cu) {
 	}
 
 	function requestCompleted(xhr, settings) {
-		const reqGroup = settings.requestGroup ?? 'default';
+		const reqGroup = settings.requestGroup ? settings.requestGroup : 'default';
 		state.com.request[reqGroup] = null;
 		if (document.body) document.body.style.cursor = '';
 		if (state.com.message) state.com.message.css('display', 'none');
@@ -879,7 +879,7 @@ var ajaxUtils = function ($, cu) {
 	}
 
 	function onRequestResult(data, xhr, settings) {
-		const reqGroup = settings.requestGroup ?? 'default';
+		const reqGroup = settings.requestGroup ? settings.requestGroup : 'default';
 		if (xhr.getResponseHeader('X-Request-Guid') == state.com.request[reqGroup]) {
 			requestCompleted(xhr, settings);
 			const disposition = xhr.getResponseHeader('Content-Disposition');
@@ -1023,8 +1023,10 @@ var ajaxUtils = function ($, cu) {
 			}
 		}
 
-		for (var i = 0; i < el.children.length; i++) {
-			processElementValue(el.children[i], setvalfunc);
+		if (el.children) {
+			for (var i = 0; i < el.children.length; i++) {
+				processElementValue(el.children[i], setvalfunc);
+			}
 		}
 	}
 
@@ -1318,6 +1320,7 @@ var ajaxUtils = function ($, cu) {
 		}
 
 		if (window.homePage) homePage.countNavBodyHeight();
+
 		console.log("renderApiResult complete");
 	}
 

@@ -41,5 +41,13 @@ namespace Tango.AspNetCore
 			var ctx = new AspNetCoreActionContext(c);
 			await RunResource.RunXml(ctx);
 		}
+
+		public static async Task ActionHandler(this HttpContext c)
+		{
+			var ctx = new AspNetCoreActionContext(c);
+			await RunResource.Run(ctx, x => x.RunAction(), (x, e) => {
+				return new HtmlResult(e.Message, "");
+			});
+		}
 	}
 }

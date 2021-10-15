@@ -1,4 +1,5 @@
 body {
+	height: 100vh;
 	background-color: #FFFFFF;
 	font-size: 14px;
 	font-family: Segoe UI, 'Open Sans', Trebuchet MS;
@@ -21,18 +22,28 @@ header {
 	color: #707070;
 }
 
-.ms-formtable tr:not(:first-child) {
-	border-top: 1px solid #a9cbd3;
+.actionbtn .icon-dropdownarrow {
+	vertical-align: middle;
 }
 
-.ms-formlabel {
-	color: #314c84;
+.icon {
+	background-size: contain;
+	background-position: 50%;
+	background-repeat: no-repeat;
+	position: relative;
+	display: inline-block;
+	line-height: 1em;
+	vertical-align: text-bottom;
 }
 
-.ms-formbody {
-	background: #ebf2f9;
+.icon svg {
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	stroke-width: 0;
+	fill: currentColor;
 }
 
-.ms-formdescription {
-	color: #666666;
+header .icon {
+	vertical-align: text-bottom;
 }
