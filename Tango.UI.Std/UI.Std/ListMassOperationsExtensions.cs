@@ -10,7 +10,7 @@ namespace Tango.UI.Std.ListMassOperations
 			f.HeaderRows[0].Insert(0, new ColumnHeader(
 				a => a.ID("sel_header").Class("sel_header").RowSpan(f.HeaderRows.Count), 
 				w => {
-					w.Icon("checkbox-unchecked");
+					w.IconCheckBox();
 					w.Hidden("selectedvalues", null, a => a.DataHasClientState(ClientStateType.Array));
 				}
 			));
@@ -18,7 +18,7 @@ namespace Tango.UI.Std.ListMassOperations
 			f.Cells.Insert(0,
 				new ListColumn<TResult>(
 					(a, o, i) => a.Class("sel"),
-					(w, o, i) => w.Icon("checkbox-unchecked")
+					(w, o, i) => w.IconCheckBox()
 				)
 			);
 		}
