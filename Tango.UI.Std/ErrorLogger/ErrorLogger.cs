@@ -71,7 +71,7 @@ namespace Tango.Logger
 				UrlReferrer = _req.Referrer,
 				UserName = _userName,
 				UserAgent = _req.UserAgent,
-				UserHostAddress = _req.IP.ToString(),
+				UserHostAddress = _req.IP?.ToString(),
 				UserHostName = _req.Host,
 				Headers = headers.ToString(),
 				SqlLog = logs.ToString()

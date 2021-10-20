@@ -100,6 +100,8 @@
 		}
 	};
 
+
+
 	return instance;
 }(ajaxUtils, commonUtils);
 
@@ -660,6 +662,16 @@ var listview = function (au, cu, cbcell, menu) {
 	function addDelIcon(el) {
 		var del = document.createElement("I");
 		del.className = 'icon icon-delete';
+
+		var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
+			use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+
+		use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '/data/icons/svg#icon-delete');
+
+		svg.className = 'svgicon-delete';
+		svg.appendChild(use);
+
+		del.appendChild(svg);
 		el.appendChild(del);
 
 		del.addEventListener('click', instance.onRemoveIconClick);

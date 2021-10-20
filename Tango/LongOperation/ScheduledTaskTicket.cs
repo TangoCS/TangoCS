@@ -39,6 +39,11 @@ namespace Tango.LongOperation
 					p[i] = context;
 					continue;
 				}
+				else if (mp[i].ParameterType.IsInterface)
+				{
+					p[i] = provider.GetService(mp[i].ParameterType);
+					continue;
+				}
 
 				var val = Parameters.Single(o => o.Key == mp[i].Name.ToLower()).Value;
 				var defValueAttr = mp[i].GetCustomAttribute<DefaultValueAttribute>(false);
@@ -141,8 +146,12 @@ namespace Tango.LongOperation
 					cls += "," + DefaultTaskAssembly;
 
 				Type type = Type.GetType(cls, true);
-				var obj = CreateTask(type);
-				InjectDependences(obj);
+				object obj = null;
+				if (!(type.IsAbstract && type.IsSealed)) // is non static class
+				{
+					obj = CreateTask(type);
+					InjectDependences(obj);
+				}
 
 				MethodInfo mi = type.GetMethod(Task.Method);
 				ParameterInfo[] mp = mi.GetParameters();
