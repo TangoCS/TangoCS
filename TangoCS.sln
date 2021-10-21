@@ -1,25 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26730.12
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Utils", "Utils", "{F5355549-CCF2-4DBD-88D0-53E3E2CE6B2E}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{C704BCA4-0E47-4C0E-BC6A-EAAC11E43C0F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.MSOffice", "Tango.MSOffice\Tango.MSOffice.csproj", "{E2D47815-7733-487F-BF95-8E288691F57B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate", "NHibernate\NHibernate.csproj", "{5909BFE7-93CF-4E5F-BE22-6293368AF01D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBSchemaDiff", "DBSchemaDiff\DBSchemaDiff.csproj", "{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Meta.Database.DB2", "Tango.Meta.Database.DB2\Tango.Meta.Database.DB2.csproj", "{2B25A041-FF5E-4308-A25A-AA60D097F009}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportData", "ImportData\ImportData.csproj", "{911F430A-7ACE-43F7-9654-CE34D2BE0664}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Hibernate", "Tango.Hibernate\Tango.Hibernate.csproj", "{307C0353-867B-4942-B448-52635A6BC321}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Test", "Tango.Test\Tango.Test.csproj", "{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Meta.Database.PostgreSQL", "Tango.Meta.Database.PostgreSQL\Tango.Meta.Database.PostgreSQL.csproj", "{2B3754DC-5507-4046-A135-BCED1C161ACF}"
 EndProject
@@ -28,10 +20,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Razor", "Tango.Razor\Tango.Razor.csproj", "{8E63794B-0D88-4EBA-B74A-942DCF32DFA5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Meta.Database.MSSQL", "Tango.Meta.Database.MSSQL\Tango.Meta.Database.MSSQL.csproj", "{DE61160E-44DB-40CD-82C9-BA812DCE4812}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportData2", "ImportData2\ImportData2.csproj", "{6729E69A-BB79-46DC-A576-F6C4DFE43360}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.AzureBackup", "Tango.AzureBackup\Tango.AzureBackup.csproj", "{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Abstractions", "Tango.Abstractions\Tango.Abstractions.csproj", "{08917986-6340-4D26-BB53-B1B69FD3C810}"
 EndProject
@@ -68,7 +56,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Excel", "Tango.Excel\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.AspNetCore", "Tango.AspNetCore\Tango.AspNetCore.csproj", "{376DEF24-FA8E-48A1-BD49-D6BDD4781038}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.FileStorage.Std", "Tango.FileStorage.Std\Tango.FileStorage.Std.csproj", "{C733311F-7DD8-4A10-A79C-681EAB4CA152}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.FileStorage.Std", "Tango.FileStorage.Std\Tango.FileStorage.Std.csproj", "{C733311F-7DD8-4A10-A79C-681EAB4CA152}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.ServiceModel", "Tango.ServiceModel\Tango.ServiceModel.csproj", "{1B4767ED-08D5-4CEE-AEA3-4DFB948FED1E}"
 EndProject
@@ -104,15 +92,6 @@ Global
 		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{5909BFE7-93CF-4E5F-BE22-6293368AF01D}.Release|x86.ActiveCfg = Release|Any CPU
-		{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{EFCAD55B-46C4-4B90-8989-F09DE43A87AB}.Release|x86.ActiveCfg = Release|Any CPU
 		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -123,15 +102,6 @@ Global
 		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{2B25A041-FF5E-4308-A25A-AA60D097F009}.Release|x86.ActiveCfg = Release|Any CPU
-		{911F430A-7ACE-43F7-9654-CE34D2BE0664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{911F430A-7ACE-43F7-9654-CE34D2BE0664}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{911F430A-7ACE-43F7-9654-CE34D2BE0664}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{911F430A-7ACE-43F7-9654-CE34D2BE0664}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{911F430A-7ACE-43F7-9654-CE34D2BE0664}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{911F430A-7ACE-43F7-9654-CE34D2BE0664}.Release|Any CPU.Build.0 = Release|Any CPU
-		{911F430A-7ACE-43F7-9654-CE34D2BE0664}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{911F430A-7ACE-43F7-9654-CE34D2BE0664}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{911F430A-7ACE-43F7-9654-CE34D2BE0664}.Release|x86.ActiveCfg = Release|Any CPU
 		{307C0353-867B-4942-B448-52635A6BC321}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{307C0353-867B-4942-B448-52635A6BC321}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{307C0353-867B-4942-B448-52635A6BC321}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -142,16 +112,6 @@ Global
 		{307C0353-867B-4942-B448-52635A6BC321}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{307C0353-867B-4942-B448-52635A6BC321}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{307C0353-867B-4942-B448-52635A6BC321}.Release|x86.ActiveCfg = Release|Any CPU
-		{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{C2ACD6FA-5325-4E01-A4C5-06A0E81CE85A}.Release|x86.ActiveCfg = Release|Any CPU
 		{2B3754DC-5507-4046-A135-BCED1C161ACF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2B3754DC-5507-4046-A135-BCED1C161ACF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B3754DC-5507-4046-A135-BCED1C161ACF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -192,26 +152,6 @@ Global
 		{DE61160E-44DB-40CD-82C9-BA812DCE4812}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{DE61160E-44DB-40CD-82C9-BA812DCE4812}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{DE61160E-44DB-40CD-82C9-BA812DCE4812}.Release|x86.ActiveCfg = Release|Any CPU
-		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{6729E69A-BB79-46DC-A576-F6C4DFE43360}.Release|x86.ActiveCfg = Release|Any CPU
-		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F}.Release|x86.ActiveCfg = Release|Any CPU
 		{08917986-6340-4D26-BB53-B1B69FD3C810}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{08917986-6340-4D26-BB53-B1B69FD3C810}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{08917986-6340-4D26-BB53-B1B69FD3C810}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -362,10 +302,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5909BFE7-93CF-4E5F-BE22-6293368AF01D} = {C704BCA4-0E47-4C0E-BC6A-EAAC11E43C0F}
-		{EFCAD55B-46C4-4B90-8989-F09DE43A87AB} = {F5355549-CCF2-4DBD-88D0-53E3E2CE6B2E}
-		{911F430A-7ACE-43F7-9654-CE34D2BE0664} = {F5355549-CCF2-4DBD-88D0-53E3E2CE6B2E}
-		{6729E69A-BB79-46DC-A576-F6C4DFE43360} = {F5355549-CCF2-4DBD-88D0-53E3E2CE6B2E}
-		{C2D141F6-6213-4E2C-B5E8-6523AC5ABA6F} = {F5355549-CCF2-4DBD-88D0-53E3E2CE6B2E}
 		{D0205633-0549-4363-84CD-9E32BAF5386F} = {C704BCA4-0E47-4C0E-BC6A-EAAC11E43C0F}
 		{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C} = {C704BCA4-0E47-4C0E-BC6A-EAAC11E43C0F}
 		{1520A79F-03EB-4290-AA4A-027806890A9D} = {C704BCA4-0E47-4C0E-BC6A-EAAC11E43C0F}
