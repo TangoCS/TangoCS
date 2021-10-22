@@ -257,8 +257,8 @@ namespace Tango.UI.Controls
 				ShowTime = dateTimePickerOptions.ShowTime,
 				UseCalendarDays = dateTimePickerOptions.UseCalendarDays,
 				Attributes = dateTimePickerOptions.Attributes,
-				JsDisabledDaysFunc = dateTimePickerOptions.JsDisabledDaysFunc,
-				JsDisabledDaysArgs = dateTimePickerOptions.JsDisabledDaysArgs
+				JsDisabledDates = dateTimePickerOptions.JsDisabledDates,
+				JsDisabledPeriod = dateTimePickerOptions.JsDisabledPeriod
 			};
 
 			w.Div(a => a.Class("datetimepicker").ID(ID), () =>

@@ -13,9 +13,10 @@ namespace Tango.UI
 		public bool ShowTime { get; set; } = false;
 		public bool UseCalendarDays { get; set; } = false;
 		public bool HighlightChanges { get; set; } = false;
-		public Action<InputTagAttributes> Attributes { get; set; }	
-		public string JsDisabledDaysFunc { get; set; } = "disableArray"; // Функция по умолчанию. Блокирует которые перечислены в массиве
-		public object JsDisabledDaysArgs { get; set; }                  // Аргументы функции по блокировке дат.
+		public Action<InputTagAttributes> Attributes { get; set; }
+		public object JsDisabledPeriod { get; set; }
+
+		public object JsDisabledDates { get; set; }
 	}
 
 	public static class CalendarExtension
@@ -54,9 +55,8 @@ namespace Tango.UI
 					showTime = options.ShowTime,
 					ifFormat = options.ShowTime ? "%d.%m.%Y %H:%M" : "%d.%m.%Y",
 					timeFormat = "24",
-					dateStatusFunc = options.UseCalendarDays ? "jscal_calendarDate" : null,				
-					jsdisableddaysargs = options.JsDisabledDaysArgs,
-					jsdisableddaysfunc = options.JsDisabledDaysFunc
+					disabledPeriod = options.JsDisabledPeriod,
+					disabledDates = options.JsDisabledDates
 				});
 			}
 

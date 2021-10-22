@@ -1653,7 +1653,7 @@ Calendar.setup = function (params) {
 	param_default("daFormat", "%Y/%m/%d");
 	param_default("singleClick", true);
 	param_default("disableFunc", null);
-	param_default("dateStatusFunc", params["disableFunc"]);
+	param_default("dateStatusFunc", dateStatusHandler);
 	param_default("dateText", null);
 	param_default("firstDay", null);
 	param_default("align", "Br");
@@ -1673,6 +1673,8 @@ Calendar.setup = function (params) {
 	param_default("cache", true);
 	param_default("showOthers", false);
 	param_default("multiple", null);
+	param_default("disabledPeriod", []);
+	param_default("disabledDates", []);
 	var tmp = ["inputField", "displayArea", "button"];
 	for (var i in tmp) {
 		if (typeof params[tmp[i]] == "string") {
@@ -1682,6 +1684,44 @@ Calendar.setup = function (params) {
 	if (!(params.flat || params.multiple || params.inputField || params.displayArea || params.button)) {
 		alert("Calendar.setup:\n  Nothing to setup (no fields found).  Please check your code");
 		return false;
+	}
+	function dateStatusHandler(date, year, month, iday) {
+
+		var finalDateStatus = false;
+
+		if (params.disabledPeriod) {
+
+			var startDate = new Date(params.disabledPeriod[0].item1);
+			var finishDate = new Date(params.disabledPeriod[0].item2);
+
+			if (startDate < date && finishDate > date)
+				finalDateStatus = false;
+			else
+				finalDateStatus = "disabled disabledday";
+		}
+
+		if (params.disabledDates) {
+
+			for (var i = 0; i < params.disabledDates.length; i++) {
+
+				var disableDay = new Date(params.disabledDates[i]);
+
+				if (date.getFullYear() == disableDay.getFullYear() &&
+					date.getMonth() == disableDay.getMonth() &&
+					date.getDate() == disableDay.getDate())
+
+					finalDateStatus = "disabled disabledday";
+			}
+			finalDateStatus = false; // enable other dates	
+		}
+
+		if (!params.disabledPeriod && !params.disabledDates) {
+			finalDateStatus = false;
+		}
+
+
+		return finalDateStatus;
+
 	}
 
 	function onSelect(cal) {
