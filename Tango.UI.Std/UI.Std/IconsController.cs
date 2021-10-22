@@ -23,7 +23,7 @@ namespace Tango.UI.Std
 		public ActionResult List(string theme)
 		{
 			var sb = new StringBuilder();
-			
+
 			var path = $"{Env.WebRootPath}{Path.DirectorySeparatorChar}icons";
 
 			foreach (string file in Directory.EnumerateFiles(path, "*.svg", SearchOption.AllDirectories))
@@ -75,6 +75,7 @@ namespace Tango.UI.Std
 				var webPath = file.Value.Replace(Env.WebRootPath, "").Replace(Path.DirectorySeparatorChar, '/');
 
 				var iconXml = XDocument.Parse(File.ReadAllText(file.Value));
+
 				iconXml.Root.Name = xsvg + "symbol";
 				iconXml.Root.Descendants(xsvg + "title").Remove();
 				var viewBox = iconXml.Root.Attribute("viewBox");

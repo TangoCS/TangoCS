@@ -1100,8 +1100,6 @@ div.tabs2 + div.tabs2_pages {
 
 .treerow .nodeicon {
 	margin-right: 4px;
-	background-color: antiquewhite;
-	border-radius: 6px;
 }
 
 .treerow.l0 .togglelevel > span {

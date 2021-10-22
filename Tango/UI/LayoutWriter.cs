@@ -312,7 +312,7 @@ namespace Tango.UI
 			w.Div(a => a.Class("width100"), () => w.FieldsBlock(attributes, content));
 		}
 
-		static void BlockCollapsibleInt(this LayoutWriter w, string title, Action content, FieldsBlockCollapsibleOptions options = null)
+		static void BlockCollapsibleInt(this LayoutWriter w, Action title, Action content, FieldsBlockCollapsibleOptions options = null)
 		{
 			var id = Guid.NewGuid().ToString();
 			var js = "domActions.toggleClass({id: '" + w.GetID(id) + "', clsName: 'collapsed' })";
@@ -349,10 +349,19 @@ namespace Tango.UI
 
 		public static void BlockCollapsible(this LayoutWriter w, string title, Action content, FieldsBlockCollapsibleOptions options = null)
 		{
+			w.BlockCollapsible(() => w.Write(title), content, options);
+		}
+		public static void BlockCollapsible(this LayoutWriter w, Action title, Action content, FieldsBlockCollapsibleOptions options = null)
+		{
 			w.BlockCollapsibleInt(title, () => w.Div(a => a.Class("block-body").Set(options?.Attributes), content), options);
 		}
 
 		public static void FieldsBlockCollapsible(this LayoutWriter w, string title, Action content, FieldsBlockCollapsibleOptions options = null)
+		{
+			w.FieldsBlockCollapsible(() => w.Write(title), content, options);
+		}
+
+		public static void FieldsBlockCollapsible(this LayoutWriter w, Action title, Action content, FieldsBlockCollapsibleOptions options = null)
 		{
 			w.BlockCollapsibleInt(title, () =>
 					w.Div(a => a.Class("block-body"), () =>

@@ -58,7 +58,7 @@ namespace Tango.Mail.Methods
                     
                 foreach (var address in addresses)
                 {
-                    if(!EmailValidation.IsValid(item))
+                    if(!EmailValidation.IsValid(address))
                         errors.Add(new ValidationResult($"Не удалось распознать электронный адрес {address}"));
                 }
             }
@@ -104,7 +104,7 @@ namespace Tango.Mail.Methods
                 {
                     if(address.StartsWith("@"))
                         continue;
-                    if(!EmailValidation.IsValid(item))
+                    if(!EmailValidation.IsValid(address))
                         errors.Add(new ValidationResult($"Не удалось распознать электронный адрес {address}"));
                 }
             }
@@ -144,7 +144,7 @@ namespace Tango.Mail.Methods
                     continue;
                 foreach (var address in addresses)
                 {
-                    if(!EmailValidation.IsValid(item))
+                    if(!EmailValidation.IsValid(address))
                         errors.Add(new ValidationResult($"Не удалось распознать электронный адрес {address}"));
                 }
             }
