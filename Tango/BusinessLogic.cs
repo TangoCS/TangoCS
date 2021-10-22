@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 
 namespace Tango
 {
+	
 	public interface ILogic
 	{
 
