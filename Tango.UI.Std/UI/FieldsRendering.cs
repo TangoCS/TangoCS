@@ -114,7 +114,7 @@ namespace Tango.UI
 			w.FormField(field.ID, field.Caption, () => w.CheckBox(field.ID, field.Value, a => {
 				if (field.Disabled) a.Disabled(true);
 				if (field.ReadOnly) a.Readonly(true).OnChange("event.preventDefault(); this.checked = !this.checked; return false;");
-			}), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
+			}), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, withCheck: field.WithCheckBox, isDisabled: field.Disabled, disableCheck: field.DisableCheckBox);
 		}
 
 		public static void CheckBox(this LayoutWriter w, IField<bool?> field, GridPosition grid = null)
@@ -122,7 +122,7 @@ namespace Tango.UI
 			w.FormField(field.ID, field.Caption, () => w.CheckBox(field.ID, field.Value ?? false, a => {
 				if (field.Disabled) a.Disabled(true);
 				if (field.ReadOnly) a.Readonly(true).OnChange("event.preventDefault(); this.checked = !this.checked; return false;");
-			}), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
+			}), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, withCheck: field.WithCheckBox, isDisabled: field.Disabled, disableCheck: field.DisableCheckBox);
 		}
 
 		public static void ToggleSwitch(this LayoutWriter w, IField<bool> field, GridPosition grid = null, Action<InputTagAttributes> attributes = null)
