@@ -86,7 +86,7 @@ namespace Tango.UI.Std
 				w.Div(a => a.Class("sidebar-panel"), () => {
 					w.Div(a => a.Class("sidebar-header"), () => {
 						w.H3(a => a.ID("sidebarcontenttitle"), title);
-						w.Div(a => a.Class("sidebar-close"), () => w.Icon("begin"));
+						w.Div(a => a.Class("sidebar-close"), () => w.Icon("sidebar-close"));
 					});
 					content();
 				});
@@ -105,7 +105,7 @@ namespace Tango.UI.Std
 					w.Div(a => a.Class("sidebar-header"), () => {
 						tabs.RenderTabs(w);
 						//w.H3(title);
-						w.Div(a => a.Class("sidebar-close"), () => w.Icon("begin"));
+						w.Div(a => a.Class("sidebar-close"), () => w.Icon("sidebar-close"));
 					});
 					tabs.RenderPages(w);
 					//content();

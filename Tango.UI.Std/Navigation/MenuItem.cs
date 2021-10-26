@@ -65,8 +65,8 @@ namespace Tango.UI.Navigation
 			var (rootItems, removed) = GetMenu(cache, loader, ac, "adminmenu");
 			if (rootItems.Count() == 0) return;
 
-			w.Li(a => a.ID("header-adminmenu"), () => {
-				w.Span(() => w.Icon("settings2"));
+			w.Li(a => a.ID("header-adminmenu").Class("headerimgbtn"), () => {
+				w.Span(() => w.Icon("header-settings2"));
 				w.DropDownForElement("header-adminmenu", () => {
 					w.RenderTwoLevelMenu(rootItems, removed);
 				}, new PopupOptions { CloseOnScroll = false });
@@ -82,8 +82,8 @@ namespace Tango.UI.Navigation
 			var (rootItems, removed) = GetMenu(cache, loader, ac, "helpmenu");
 			if (rootItems.Count() == 0) return;
 
-			w.Li(a => a.ID("header-helpmenu"), () => {
-				w.Span(() => w.Icon("help"));
+			w.Li(a => a.ID("header-helpmenu").Class("headerimgbtn"), () => {
+				w.Span(() => w.Icon("header-help"));
 				w.DropDownForElement("header-helpmenu", () => {
 					w.RenderTwoLevelMenu(rootItems, removed);
 				}, new PopupOptions { CloseOnScroll = false });
@@ -98,7 +98,7 @@ namespace Tango.UI.Navigation
 
 			w.Li(a => a.ID("header-db"), () => {
 				w.Span(() => {
-					w.Icon("database");
+					w.Icon("header-database");
 					var conn = w.Context.PersistentArgs.Get("conn") ?? w.Context.GetArg("conn");
 					w.Write(conn ?? ConnectionManager.DefaultConnection);
 				});

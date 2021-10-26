@@ -501,6 +501,10 @@ a.actionbtn, a.actionimg {
 .actionbtn .icon-dropdownarrow {
 	font-size: x-small;
 }
+.actionbtn .icon-dropdownarrow svg {
+	width: 12px;
+	height: 12px;
+}
 
 .disabled {
 	color: gray;

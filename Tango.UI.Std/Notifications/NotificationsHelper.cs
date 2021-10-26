@@ -20,9 +20,9 @@ namespace Tango.Notifications
 		{
 			var cnt = repository.GetUnreadCount();
 
-			w.Li(a => a.ID("notifications").Title("Извещения"), () => {
+			w.Li(a => a.ID("notifications").Title("Извещения").Class("headerimgbtn"), () => {
 				w.Span(() => {
-					w.Icon("notifications", a => a.Style("position:relative"), () => {
+					w.Icon("header-notifications", a => a.Style("position:relative"), () => {
 						w.B(a => a.ID("notifications_counter").Class("badge").Class(cnt > 0 ? "" : "hide"), cnt.ToString());
 					});
 				});

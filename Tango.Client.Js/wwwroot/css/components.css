@@ -921,10 +921,14 @@ div.tabs2 + div.tabs2_pages {
 	font-size: inherit;
 	width: inherit;
 	height: inherit;
+	border: 0;
+	border-radius: inherit;
 }
 
 .selectsingleobject .btn:hover {
 	background-color: #ebecf0;
+	color: inherit;
+	border: 0;
 }
 
 .selectsingleobject .close {
@@ -1138,7 +1142,10 @@ div.tabs2 + div.tabs2_pages {
 	flex: 3;
 	overflow-y: auto;
 }
-
+.tree .childrencnt {
+	margin-left: 4px;
+	font-weight: bold;
+}
 
 /* collapsible sidebar */
 .sidebar {
@@ -1155,8 +1162,8 @@ div.tabs2 + div.tabs2_pages {
 
 .sidebar-header {
 	display: flex;
-	padding: 0px 8px 4px 8px;
-	/*margin-bottom: 4px;*/
+	color: #5e6c84;
+	line-height: 1.66666667;
 }
 
 .sidebar-menu:hover {
@@ -1182,20 +1189,17 @@ div.tabs2 + div.tabs2_pages {
 	flex: 1;
 	text-align: right;
 	cursor: pointer;
+	padding: 2px 8px 0px 8px;
 }
 
 .sidebar-header h3 {
 	flex: 9;
 	margin: 0;
-}
-
-.sidebar-header, .sidebar-header h3 {
-	color: #5e6c84;
 	font-size: 12px;
 	font-weight: 600;
-	line-height: 1.66666667;
 	letter-spacing: 0;
 	text-transform: uppercase;
+	padding: 4px 8px 0px 8px;
 }
 
 .sidebar-menu > ul {
