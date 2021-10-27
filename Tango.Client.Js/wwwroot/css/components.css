@@ -1069,12 +1069,12 @@ div.tabs2 + div.tabs2_pages {
 	height: 1px;
 }
 
-.listviewtable .toggleicon.icon-right {
+.listviewtable .toggleicon.icon-treenode {
 	/*transition: .2s transform ease-in-out;*/
 	transform: rotate(90deg);
 }
 
-.listviewtable .collapsed .toggleicon.icon-right {
+.listviewtable .collapsed .toggleicon.icon-treenode {
 	transform: rotate(0deg);
 }
 

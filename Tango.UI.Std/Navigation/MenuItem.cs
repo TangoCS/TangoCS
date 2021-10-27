@@ -114,6 +114,31 @@ namespace Tango.UI.Navigation
 			});
 		}
 
+		public static void ChangeThemeIcon(this LayoutWriter w)
+		{
+			var settings = w.Context.RequestServices.GetService(typeof(IPersistentSettings)) as IPersistentSettings;
+
+			if (!settings.GetBool("canchangetheme")) return;
+
+			w.Li(a => a.ID("header-theme"), () => {
+				w.Span(() => {
+					w.Icon("theme");
+					w.Write("&nbsp;");
+					var theme = w.Context.PersistentArgs.Get("theme") ?? w.Context.GetArg("theme") ?? settings.Get("theme");
+					w.Write(theme);
+				});
+
+				var themes = new List<string> { "SIMPLE", "SIMPLE2" };
+
+				w.DropDownForElement("header-theme", () => {
+					w.Div(() => {
+						foreach ( var t in themes)
+							w.ActionLink(al => al.To<ThemeController>("changetheme").WithTitle(t).WithArg("newtheme", t));
+					});
+				});
+			});
+		}
+
 		public static void VersionMenuIcon(this LayoutWriter w, IVersionProvider verProvider)
 		{
 			w.Li(() => w.Span(() => {
