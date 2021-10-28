@@ -412,52 +412,6 @@ namespace Tango.UI
 			w.Div(a => a.Class("left").Set(attributes), content);
 		}
 
-		public static void Icon(this HtmlWriter w, string name, string tip = null, string color = null)
-		{
-			w.Icon(name, a => {
-				a.Title(tip);
-				if (color != null)
-					a.Style("color:" + color);
-			}, null);
-		}
-
-		public static void Icon(this HtmlWriter w, string name, Action<TagAttributes> attrs, Action content = null)
-		{
-			Action<TagAttributes> ta = a => {
-				if (name == null)
-					a.Class("icon");
-				else
-				{
-					name = name.ToLower();
-					a.Class("icon icon-" + name);
-				}
-				a.Set(attrs);
-			};
-			w.I(ta, () => {
-				if (name != null)
-					w.SvgIcon(name);
-				content?.Invoke();
-			});
-		}
-
-		public static void IconCheckBox(this HtmlWriter w, Action<TagAttributes> attrs = null)
-		{
-			w.Icon("checkbox-unchecked", attrs, () => w.SvgIcon("checkbox-checked"));
-		}
-
-
-		static void SvgIcon(this HtmlWriter w, string name)
-		{
-			w.Write($"<svg class='svgicon-{name.ToLower()}'><use xlink:href=\"/data/icons/svg#icon-{name.ToLower()}\"></use></svg>");
-		}
-
-        public static void IconFlag<T>(this TagAttributes<T> a, string name, bool issquare = false)
-            where T : TagAttributes<T>
-        {
-            if (!issquare)
-                a.Class("flag-icon flag-icon-" + name?.ToLower());
-            else
-                a.Class("flag-icon flag-icon-" + name?.ToLower() + " flag-icon-squared");
-        }
+		
     }
 }

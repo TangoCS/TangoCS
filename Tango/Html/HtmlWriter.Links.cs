@@ -8,6 +8,7 @@ namespace Tango.Html
 {
 	public static class HtmlWriterLinksExtensions
 	{
+		[Obsolete]
 		public static void A(this HtmlWriter w, string linkTitle, string url, string image = null)
 		{
 			w.A(a => a.Href(url), () => {

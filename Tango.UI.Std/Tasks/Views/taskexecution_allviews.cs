@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using Dapper;
 using Tango.Data;
+using Tango.Html;
 using Tango.Localization;
 using Tango.UI;
 using Tango.UI.Controls;

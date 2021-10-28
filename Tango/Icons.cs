@@ -3,6 +3,7 @@ using System.Configuration;
 
 namespace Tango
 {
+	[Obsolete]
 	public class IconSet
 	{
 		// TODO: брать из настроек
