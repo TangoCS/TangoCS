@@ -605,7 +605,7 @@ namespace Tango.UI.Std
 				{
 					var obj = _result.First();
 					var t = _templatesDict[obj.Template];
-					if (t.IsTerminal) break;
+					if (t.IsTerminal || t.ToggleLevelAction != null) break;
 					var sender = t.GetHtmlRowID(CurrentState.Level, obj);
 
 					var nextState = new State
