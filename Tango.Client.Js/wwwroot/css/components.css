@@ -1328,3 +1328,11 @@ div.tabs2 + div.tabs2_pages {
 .icon-checkbox-checked .svgicon-checkbox-unchecked {
 	display: none;
 }
+
+.icon-expanded .svgicon-collapsed {
+	display: none;
+}
+
+.icon-collapsed .svgicon-expanded {
+	display: none;
+}

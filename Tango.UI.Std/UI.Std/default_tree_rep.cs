@@ -155,6 +155,8 @@ namespace Tango.UI.Std
 				}
 			}
 
+			if (pageData == null) pageData = new List<TResult>();
+
 			return pageData;
 		}
 
