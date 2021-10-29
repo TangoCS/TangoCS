@@ -1087,7 +1087,7 @@ var ajaxUtils = function ($, cu) {
 			if (!obj.content.firstChild) return;
 			if (obj.name == el.id)
 				obj.content.firstChild.id = el.id;
-			else if (obj.content.firstChild.id == '' && obj.content.querySelector('#' + el.id) == null)
+			else if (obj.content.firstChild.id == '' && obj.content.querySelector("[id='" + el.id + "']") == null)
 				obj.content.firstChild.id = el.id;
 		};
 
