@@ -1083,25 +1083,28 @@ var ajaxUtils = function ($, cu) {
 		const nodes = [];
 		const shadow = (new DOMParser()).parseFromString("<!DOCTYPE html>", "text/html");
 
-		const replaceFunc = function (el, obj) {
+		const replaceid = function (el, obj) {
+			if (!obj.content.firstChild) return;
 			if (obj.name == el.id)
 				obj.content.firstChild.id = el.id;
-
-			if (obj.content.firstChild.id == '' && obj.content.querySelector('#' + el.id) == null)
+			else if (obj.content.firstChild.id == '' && obj.content.querySelector('#' + el.id) == null)
 				obj.content.firstChild.id = el.id;
+		};
 
+		const replaceFunc = function (el, obj) {
+			replaceid(el, obj);
 			el.parentNode.replaceChild(obj.content.firstChild, el);
 		};
 		const addFunc = function (el, obj) {
-			if (obj.content.childNodes.length == 1 && el.id == obj.content.childNodes[0].id) {
-				replaceFunc(el, obj);
+			if (obj.content.childNodes.length == 1 && el.id == obj.content.firstChild.id) {
+				el.parentNode.replaceChild(obj.content.firstChild, el);
 				return;
 			}
 			while (el.firstChild) {
 				el.removeChild(el.firstChild);
 			}
 			while (obj.content.childNodes.length > 0)
-				el.appendChild(obj.content.childNodes[0]);
+				el.appendChild(obj.content.firstChild);
 		};
 		const adjacentFunc = function (el, obj) {
 			while (obj.content.childNodes.length > 0) {
@@ -1195,6 +1198,7 @@ var ajaxUtils = function ($, cu) {
 						obj.func(el || parentel, obj);
 					else {
 						const parent = obj.el.parentNode.nodeName == 'HEAD' ? shadow.head : shadow.body;
+						replaceid(obj.el, obj);
 						parent.appendChild(obj.content);
 					}
 				}
