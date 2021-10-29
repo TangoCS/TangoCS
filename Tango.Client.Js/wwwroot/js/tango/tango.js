@@ -1096,7 +1096,7 @@ var ajaxUtils = function ($, cu) {
 			el.parentNode.replaceChild(obj.content.firstChild, el);
 		};
 		const addFunc = function (el, obj) {
-			if (obj.content.childNodes.length == 1 && el.id == obj.content.firstChild.id) {
+			if (el.parentNode && obj.content.childNodes.length == 1 && el.id == obj.content.firstChild.id) {
 				el.parentNode.replaceChild(obj.content.firstChild, el);
 				return;
 			}
@@ -1198,7 +1198,8 @@ var ajaxUtils = function ($, cu) {
 						obj.func(el || parentel, obj);
 					else {
 						const parent = obj.el.parentNode.nodeName == 'HEAD' ? shadow.head : shadow.body;
-						replaceid(obj.el, obj);
+						if (obj.func == replaceFunc)
+							replaceid(obj.el, obj);
 						parent.appendChild(obj.content);
 					}
 				}
