@@ -244,10 +244,10 @@ var listview = function (au, cu, cbcell, menu) {
 		},
 		widgetDidMount: function (state) {
 			const root = document.getElementById(state.root);
-			const tree = document.querySelector('.listviewtable.tree');
+			const tree = root.querySelector('.listviewtable.tree');
 			if (tree) initHighlight(tree);
 
-            const fixedHeaders = document.querySelectorAll('.listviewtable.fixedheader');
+			const fixedHeaders = root.querySelectorAll('.listviewtable.fixedheader');
 			if (fixedHeaders.length > 0) initFixedHeader(fixedHeaders);
 
 			var el = $('#' + state.root);
