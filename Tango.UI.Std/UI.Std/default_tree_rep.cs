@@ -155,6 +155,8 @@ namespace Tango.UI.Std
 				}
 			}
 
+			if (pageData == null) pageData = new List<TResult>();
+
 			return pageData;
 		}
 
@@ -464,7 +466,7 @@ namespace Tango.UI.Std
 
 			var f = new FieldCollection<TResult>(Context, Sorter, Filter);
 			f.EnableSelect = enableSelect;
-			f.ListAttributes += a => a.Class("tree").Data("highlightedid", _highlightedRowID);
+			f.ListAttributes += a => a.Class("tree").Class("noborders").Data("highlightedid", _highlightedRowID);
 			f.RowAttributes += (a, o, i) => {
 
 				nodeTemplate = _templatesDict[o.Template];
@@ -603,7 +605,7 @@ namespace Tango.UI.Std
 				{
 					var obj = _result.First();
 					var t = _templatesDict[obj.Template];
-					if (t.IsTerminal) break;
+					if (t.IsTerminal || t.ToggleLevelAction != null) break;
 					var sender = t.GetHtmlRowID(CurrentState.Level, obj);
 
 					var nextState = new State

@@ -8,7 +8,9 @@ namespace Tango.Html
 {
 	public partial class HtmlWriter : StringWriter, IContentWriter
 	{
-		const string NEWLINE = "<br/>";
+		public const string NEWLINE = "<br/>";
+		public const string SVGPATH = "/data/icons/svg";
+
 		Stack<string> _ids = new Stack<string>(4);
 
 		public string IDPrefix { get; private set; }

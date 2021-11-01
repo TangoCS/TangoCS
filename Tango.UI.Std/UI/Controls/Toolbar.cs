@@ -38,9 +38,9 @@ namespace Tango.UI.Controls
 		public void ItemField(string caption, Action<LayoutWriter> content)
 		{
 			Item(w => {
-				w.Div(a => a.Class("twocolumnsrow longfirst"), () => {
-					w.Div(a => a.Style("vertical-align: middle;"), () => w.Span(caption + ":"));
-					w.Div(a => a.Style("padding-left: 4px;"), () => content(w));
+				w.Div(a => a.Class("menutoolbar-field"), () => {
+					w.Div(() => w.Span(caption + ":"));
+					w.Div(() => content(w));
 				});
 			});
 		}

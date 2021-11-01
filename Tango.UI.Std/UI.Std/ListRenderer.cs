@@ -207,6 +207,8 @@ namespace Tango.UI.Std
 		int _level;
 		IEnumerable<string> _selectedValues;
 
+		public bool RenderHeader { get; set; } = false;
+
 		public TreeListRenderer(string id, Paging paging, int level) : base(id)
 		{
 			_paging = paging;
@@ -253,16 +255,20 @@ namespace Tango.UI.Std
 
 			w.Div(a => a.ID("contentbody_selected").Class("contentbody-selected"), () => {
 				w.Table(selectedListAttrs, () => {
-					var i = 0;
 
-					foreach (var hr in fields.HeaderRows)
+					if (RenderHeader)
 					{
-						w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
-							foreach (var h in hr)
-								foreach (var hdr in h.AsEnumerable())
-									w.Th(hdr.Attributes, () => hdr.Content(w));
-						});
-						i++;
+						var i = 0;
+						foreach (var hr in fields.HeaderRows)
+						{
+							w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () =>
+							{
+								foreach (var h in hr)
+									foreach (var hdr in h.AsEnumerable())
+										w.Th(hdr.Attributes, () => hdr.Content(w));
+							});
+							i++;
+						}
 					}
 
 					RenderRows(w, selectedValues, fields);
@@ -280,16 +286,20 @@ namespace Tango.UI.Std
 			w.Div(a => a.ID().DataCtrl("listview"), () => {
 				w.Table(listAttrs, () => {
 					fields.BeforeHeader?.Invoke(w, result);
-					var i = 0;
 
-					foreach (var hr in fields.HeaderRows)
+					if (RenderHeader)
 					{
-						w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () => {
-							foreach (var h in hr)
-								foreach (var hdr in h.AsEnumerable())
-									w.Th(hdr.Attributes, () => hdr.Content(w));
-						});
-						i++;
+						var i = 0;
+						foreach (var hr in fields.HeaderRows)
+						{
+							w.Tr(a => fields.HeaderRowAttributes?.Invoke(a, i), () =>
+							{
+								foreach (var h in hr)
+									foreach (var hdr in h.AsEnumerable())
+										w.Th(hdr.Attributes, () => hdr.Content(w));
+							});
+							i++;
+						}
 					}
 
 					RenderRows(w, result, fields);

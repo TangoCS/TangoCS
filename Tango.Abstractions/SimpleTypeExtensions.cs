@@ -308,29 +308,6 @@ namespace Tango
 			return quarters[date.Month - 1];
 		}
 
-		public static string Icon(this bool src)
-		{
-			if (src)
-				return "<i class='icon icon-checkbox-checked-tr bool'></i>";
-			else
-				return "<i class='icon icon-checkbox-unchecked bool'></i>";
-		}
-
-		public static string Icon(this bool? src)
-		{
-			return Icon(src ?? false);
-		}
-
-		public static string Icon(this int src)
-		{
-			return Icon(src == 1);
-		}
-
-		public static string Icon(this int? src)
-		{
-			return Icon(src.HasValue && src.Value == 1);
-		}
-
 		public static string YesNo(this bool src)
 		{
 			return src ? "да" : "нет";

@@ -22,7 +22,7 @@ namespace Tango.UI.Std
 				if (hasChildren)
 				{
 					w.Div(a => a.Class("togglelevel").Class(options?.NodeClass(o)), () => {
-						w.Span(a => a.OnClick("listview.togglelevel(this)"), () => w.Icon("right", a => a.Class("toggleicon")));
+						w.Span(a => a.OnClick("listview.togglelevel(this)"), () => w.Icon("treenode", a => a.Class("toggleicon")));
 					});
 				}
 				else

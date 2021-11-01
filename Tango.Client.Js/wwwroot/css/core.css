@@ -468,6 +468,14 @@ hr {
 	margin: 0 8px 0 -8px;
 }
 
+.menutoolbar-field {
+	display: flex;
+	align-items: center;
+}
+.menutoolbar-field > div:nth-child(2) {
+	padding-left: 4px;
+}
+
 .topmargin {
 	margin-top: 12px;
 }
