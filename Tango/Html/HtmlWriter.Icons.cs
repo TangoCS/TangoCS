@@ -62,6 +62,16 @@ namespace Tango.Html
 		{
 			w.Icon("checkbox-unchecked", attrs, () => w.SvgIcon("checkbox-checked"));
 		}
+
+		public static void IconThreeStateCheckBox(this HtmlWriter w, Action<TagAttributes> attrs = null)
+		{
+			w.Icon("checkbox-unchecked", attrs, () => {
+				w.SvgIcon("checkbox-checked");
+				w.SvgIcon("minus-box");
+			});
+		}
+
+
 		public static void IconExpander(this HtmlWriter w, Action<TagAttributes> attrs = null)
 		{
 			w.Icon("collapsed", attrs, () => w.SvgIcon("expanded"));

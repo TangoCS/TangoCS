@@ -1322,17 +1322,16 @@ div.tabs2 + div.tabs2_pages {
 }
 
 /* icons */
-.icon-checkbox-unchecked .svgicon-checkbox-checked {
-	display: none;
-}
-.icon-checkbox-checked .svgicon-checkbox-unchecked {
+.icon-checkbox-unchecked .svgicon-checkbox-checked,
+.icon-checkbox-checked .svgicon-checkbox-unchecked,
+.icon-checkbox-checked .svgicon-minus-box,
+.icon-checkbox-unchecked .svgicon-minus-box,
+.icon-minus-box .svgicon-checkbox-unchecked,
+.icon-minus-box .svgicon-checkbox-checked {
 	display: none;
 }
 
-.icon-expanded .svgicon-collapsed {
-	display: none;
-}
-
+.icon-expanded .svgicon-collapsed,
 .icon-collapsed .svgicon-expanded {
 	display: none;
 }
