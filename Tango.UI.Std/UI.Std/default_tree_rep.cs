@@ -708,7 +708,15 @@ namespace Tango.UI.Std
 		}
 
 		public string GetDataRowID(int level, TResult o) => $"level={level}&template={ID}&" + (keyProperties ?? InitKeyProperties()).Select(p => p.Name + "=" + p.GetValue(o).ToString()).Join("&");
-		public string GetHtmlRowID(int level, TResult o) => $"r_{level}_{ID}_" + (keyProperties ?? InitKeyProperties()).Select(p => p.GetValue(o).ToString()).Join("_");
+		public string GetHtmlRowID(int level, TResult o) => $"r_{level}_{ID}_" + (keyProperties ?? InitKeyProperties()).Select(p => GetPropValue(p, o)).Join("_");
+
+		private string GetPropValue(PropertyInfo p, TResult o)
+        {
+			if(p.PropertyType == typeof(DateTime))
+				return ((DateTime)p.GetValue(o)).ToString("yyyyMMddHHmmss");
+
+			return p.GetValue(o).ToString();
+		}
 
 		public IEnumerable<string> KeyProperties => (keyProperties ?? InitKeyProperties()).Select(p => p.Name);
 
