@@ -10,7 +10,7 @@ namespace Tango.UI.Std.ListMassOperations
 			f.HeaderRows[0].Insert(0, new ColumnHeader(
 				a => a.ID("sel_header").Class("sel_header").RowSpan(f.HeaderRows.Count), 
 				w => {
-					w.IconCheckBox();
+					w.IconThreeStateCheckBox();
 					w.Hidden("selectedvalues", null, a => a.DataHasClientState(ClientStateType.Array));
 				}
 			));
