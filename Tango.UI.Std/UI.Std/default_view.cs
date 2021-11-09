@@ -266,4 +266,14 @@ namespace Tango.UI.Std
 				w.TimeStampExBlock(ViewData as IWithUserTimeStampEx<TUser>);
 		}
 	}
+
+	public class BlankView : default_view
+	{
+		protected override ContainerWidth FormWidth => ContainerWidth.Width100;
+
+		protected override void Form(LayoutWriter w)
+		{
+
+		}
+	}
 }

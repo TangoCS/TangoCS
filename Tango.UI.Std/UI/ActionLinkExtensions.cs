@@ -5,21 +5,6 @@ namespace Tango.UI
 {
 	public static class ActionLinkExtensions
 	{
-		//public static void SubmitButton(this LayoutWriter w)
-		//{
-		//	w.SubmitButton(a => a.DataResult(1).OnClick("return ajaxUtils.processResult(this)"), w.Resources.Get("Common.OK"));
-		//}
-
-		public static void SubmitDeleteButton(this LayoutWriter w, Action<ButtonTagAttributes> attrs = null)
-		{
-			w.SubmitButton(attrs, w.Resources.Get("Common.Delete"));
-		}
-
-		public static void SubmitContinueButton(this LayoutWriter w, Action<ButtonTagAttributes> attrs = null)
-		{
-			w.SubmitButton(attrs, w.Resources.Get("Common.Continue"));
-		}
-
 		public static void BackLink(this LayoutWriter w, Action<ATagAttributes> attrs = null, string title = null)
 		{
 			var url = w.Context.ReturnUrl.ContainsKey(0) ?
