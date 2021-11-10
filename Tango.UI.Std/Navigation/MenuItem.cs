@@ -65,7 +65,7 @@ namespace Tango.UI.Navigation
 			var (rootItems, removed) = GetMenu(cache, loader, ac, "adminmenu");
 			if (rootItems.Count() == 0) return;
 
-			w.Li(a => a.ID("header-adminmenu").Class("headerimgbtn"), () => {
+			w.Li(a => a.ID("header-adminmenu").Class("headerimgbtn").Title("Администрирование"), () => {
 				w.Span(() => w.Icon("header-settings2"));
 				w.DropDownForElement("header-adminmenu", () => {
 					w.RenderTwoLevelMenu(rootItems, removed);
@@ -82,7 +82,7 @@ namespace Tango.UI.Navigation
 			var (rootItems, removed) = GetMenu(cache, loader, ac, "helpmenu");
 			if (rootItems.Count() == 0) return;
 
-			w.Li(a => a.ID("header-helpmenu").Class("headerimgbtn"), () => {
+			w.Li(a => a.ID("header-helpmenu").Class("headerimgbtn").Title("Руководства"), () => {
 				w.Span(() => w.Icon("header-help"));
 				w.DropDownForElement("header-helpmenu", () => {
 					w.RenderTwoLevelMenu(rootItems, removed);
@@ -96,7 +96,7 @@ namespace Tango.UI.Navigation
 
 			if (!settings.GetBool("canchangedb")) return;
 
-			w.Li(a => a.ID("header-db"), () => {
+			w.Li(a => a.ID("header-db").Title("Выбрать базу данных"), () => {
 				w.Span(() => {
 					w.Icon("header-database");
 					var conn = w.Context.PersistentArgs.Get("conn") ?? w.Context.GetArg("conn");
@@ -141,7 +141,7 @@ namespace Tango.UI.Navigation
 
 		public static void VersionMenuIcon(this LayoutWriter w, IVersionProvider verProvider)
 		{
-			w.Li(() => w.Span(() => {
+			w.Li(a => a.Title("Версия приложения"), () => w.Span(() => {
 				var v = verProvider.Version;
 				w.Write($"v. {v.Major}.{v.Minor}.{v.Build}");
 			}));
