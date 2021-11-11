@@ -34,7 +34,7 @@ namespace Tango.Data
 
 	public class ObjectChange
 	{
-		static string GetTitle<T>(T entity) => (entity as IWithTitle)?.Title ?? (entity as IWithName)?.Name;
+		public static string GetTitle<T>(T entity) => (entity as IWithTitle)?.Title ?? (entity as IWithName)?.Name;
 
 		public static ObjectChange RegisterAction<TKey>(IWithKey<TKey> entity, EntityAuditAction action, List<PropertyChange> propertyChanges = null)
 		{
