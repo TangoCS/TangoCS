@@ -57,8 +57,7 @@
 				el.checked = !el.checked;
 				setClass(el, prefix);
 				if (el.hasAttribute('data-e'))
-					ajaxUtils.postEventFromElementWithApiResponse(el);
-
+					el.onchange();
 			});
 
 			setClass(el, prefix);
