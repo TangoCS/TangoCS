@@ -144,7 +144,7 @@ namespace Tango.UI.Std
 
 					Repository.AllObjectsQuery = sqlTemplate;
 					var res = Repository.List(expr);
-					var resCnt = Repository.Count(exprCnt);
+					var resCnt = Sections.RenderPaging ? Repository.Count(exprCnt) : res.Count();
 
 					foreach (var o in res)
 						o.Template = t.Template.ID;
