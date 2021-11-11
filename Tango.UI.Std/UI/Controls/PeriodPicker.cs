@@ -44,6 +44,8 @@ namespace Tango.UI.Controls
 		public event Action<ApiResponse> Change;
 		public void OnChange(ApiResponse response) => Change?.Invoke(response);
 
+		public string CalendarButtonHint { get; set; } = "Календарь";
+
 		public override void OnInit()
 		{
 			dPeriodFrom = CreateControl<DateLists>(ID + "_" + (UseCalendar ? $"dperiodfromtime" : $"dperiodfrom"), c =>
@@ -106,7 +108,7 @@ namespace Tango.UI.Controls
 						dPeriodTo.Render(w, to, options.ToTimeOptions);
 				});
 				if (UseCalendar && ShowDays)
-					w.Span(a => a.ID(ID + "_btn").Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
+					w.Span(a => a.ID(ID + "_btn").Class("cal-openbtn").Title(CalendarButtonHint), () => w.Icon("calendar"));
 			});
 
 			if (UseCalendar && ShowDays)

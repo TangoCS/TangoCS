@@ -1309,7 +1309,7 @@ div.tabs2 + div.tabs2_pages {
 	padding: 0
 }
 
-.fixedheader th, fixedheader thead {
+.fixedheader > tbody > tr > th {
 	position: -webkit-sticky; /* Safari */
 	position: sticky;
 	top: 0;

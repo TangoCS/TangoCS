@@ -9,7 +9,8 @@ namespace Tango.Html
 		public static void Icon(this HtmlWriter w, string name, string tip = null, string color = null)
 		{
 			w.Icon(name, a => {
-				a.Title(tip);
+				if (tip != null)
+					a.Title(tip);
 				if (color != null)
 					a.Style("color:" + color);
 			}, null);
