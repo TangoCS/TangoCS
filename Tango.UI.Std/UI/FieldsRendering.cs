@@ -128,7 +128,7 @@ namespace Tango.UI
 		public static void ToggleSwitch(this LayoutWriter w, IField<bool> field, GridPosition grid = null, Action<InputTagAttributes> attributes = null)
 		{
             if (field.FireOnChangeEvent && field.IsVisible)                         
-                attributes += a => a.Data("e", $"On{field.ID}Changed").Data("r", field.EventReceiver);
+                attributes += a => a.OnChangePostEvent($"On{field.ID}Changed", field.EventReceiver);
 
 			w.FormField(field.ID, field.Caption, () => w.ToggleSwitch(field.ID, field.Value, field.Disabled, field.ReadOnly, attributes),
 				grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, field.Hint, field.WithCheckBox, field.Disabled, field.DisableCheckBox);           
@@ -137,7 +137,7 @@ namespace Tango.UI
 		public static void ToggleSwitch2(this LayoutWriter w, IField<bool> field, GridPosition grid = null, Action<InputTagAttributes> attributes = null)
 		{
 			if (field.FireOnChangeEvent && !field.Disabled && field.IsVisible)
-				attributes += a => a.Data("e", $"On{field.ID}Changed").Data("r", field.EventReceiver);
+				attributes += a => a.OnChangePostEvent($"On{field.ID}Changed", field.EventReceiver);
 
 			w.ToggleSwitch(field.ID, field.Value, field.Disabled, field.ReadOnly, attributes);
 		}

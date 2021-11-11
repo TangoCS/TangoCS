@@ -612,6 +612,53 @@ namespace Tango.UI.Std
 		}
 		#endregion
 
+		#region res title = filter expr, no sort
+		public static AddCellResult<TResult> AddCellWithFilter<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
+			Expression<Func<TEntity, T>> expr, RenderRowCellDelegate<TResult> render)
+		{
+			var key = expr.GetResourceKey();
+			var titleShort = f.GetTitle(expr);
+			var title = f.Resources.Get(key);
+			var listColumn = new ListColumn<TResult> { Content = render };
+			var columnHeader = f.AddHeader(titleShort, new HeaderOptions {
+				FilterSeqNo = f.AddFilterCondition(title, expr)
+			});
+			f.Cells.Add(listColumn);
+			return new AddCellResult<TResult> { Column = listColumn, Header = columnHeader };
+
+		}
+
+		public static AddCellResult<TResult> AddCellWithFilter<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
+			Expression<Func<TEntity, T>> expr, Action<LayoutWriter, TResult> render)
+		{
+			var key = expr.GetResourceKey();
+			var titleShort = f.GetTitle(expr);
+			var title = f.Resources.Get(key);
+			var listColumn = new ListColumn<TResult> { Content = (w, o, i) => render(w, o) };
+			var columnHeader = f.AddHeader(titleShort, new HeaderOptions {
+				FilterSeqNo = f.AddFilterCondition(title, expr)
+			});
+			f.Cells.Add(listColumn);
+			return new AddCellResult<TResult> { Column = listColumn, Header = columnHeader };
+
+		}
+
+		public static AddCellResult<TResult> AddCellWithFilter<TEntity, TResult, T, T2>(this IFieldCollection<TEntity, TResult> f,
+			Expression<Func<TEntity, T>> expr, Func<TResult, T2> value)
+		{
+			var key = expr.GetResourceKey();
+			var titleShort = f.GetTitle(expr);
+			var title = f.Resources.Get(key);
+			var listColumn = new ListColumn<TResult> { Content = (w, o, i) => w.Write(value(o)?.ToString()) };
+			var columnHeader = f.AddHeader(titleShort, new HeaderOptions {
+				FilterSeqNo = f.AddFilterCondition(title, expr)
+			});
+			f.Cells.Add(listColumn);
+			return new AddCellResult<TResult> { Column = listColumn, Header = columnHeader };
+
+		}
+		#endregion
+
 		#region string title, sort expr = filter expr
 		public static AddCellResult<TResult> AddCellWithSortAndFilter<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
 			string title, Expression<Func<TEntity, T>> expr, RenderRowCellDelegate<TResult> render)
@@ -650,6 +697,41 @@ namespace Tango.UI.Std
 		}
 		#endregion
 
+		#region string title, filter expr, no sort
+		public static AddCellResult<TResult> AddCellWithFilter<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
+			string title, Expression<Func<TEntity, T>> expr, RenderRowCellDelegate<TResult> render)
+		{
+			var listColumn = new ListColumn<TResult> { Content = render };
+			var columnHeader = f.AddHeader(title, new HeaderOptions	{
+				FilterSeqNo = f.AddFilterCondition(title, expr)
+			});
+			f.Cells.Add(listColumn);
+			return new AddCellResult<TResult> { Column = listColumn, Header = columnHeader };
+		}
+
+		public static AddCellResult<TResult> AddCellWithFilter<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
+			string title, Expression<Func<TEntity, T>> expr, Action<LayoutWriter, TResult> render)
+		{
+			var listColumn = new ListColumn<TResult> { Content = (w, o, i) => render(w, o) };
+			var columnHeader = f.AddHeader(title, new HeaderOptions	{
+				FilterSeqNo = f.AddFilterCondition(title, expr)
+			});
+			f.Cells.Add(listColumn);
+			return new AddCellResult<TResult> { Column = listColumn, Header = columnHeader };
+		}
+
+		public static AddCellResult<TResult> AddCellWithFilter<TEntity, TResult, T, T2>(this IFieldCollection<TEntity, TResult> f,
+			string title, Expression<Func<TEntity, T>> expr, Func<TResult, T2> value)
+		{
+			var listColumn = new ListColumn<TResult> { Content = (w, o, i) => w.Write(value(o)?.ToString()) };
+			var columnHeader = f.AddHeader(title, new HeaderOptions	{
+				FilterSeqNo = f.AddFilterCondition(title, expr)
+			});
+			f.Cells.Add(listColumn);
+			return new AddCellResult<TResult> { Column = listColumn, Header = columnHeader };
+		}
+		#endregion
+
 		public static IColumnHeader AddHeaderWithSortAndFilter<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
 			Expression<Func<TEntity, T>> expr)
 		{
@@ -672,6 +754,18 @@ namespace Tango.UI.Std
 			});
 			return columnHeader;
 		}
+		public static IColumnHeader AddHeaderWithFilter<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
+			Expression<Func<TEntity, T>> expr)
+		{
+			var key = expr.GetResourceKey();
+			var titleShort = f.GetTitle(expr);
+			var title = f.Resources.Get(key);
+
+			var columnHeader = f.AddHeader(titleShort, new HeaderOptions {
+				FilterSeqNo = f.AddFilterCondition(title, expr)
+			});
+			return columnHeader;
+		}
 
 		public static IColumnHeader AddHeaderWithSort<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
 			string title, Expression<Func<TEntity, T>> expr)
@@ -688,6 +782,18 @@ namespace Tango.UI.Std
 
 			var columnHeader =f.AddHeader(attrs, titleShort, new HeaderOptions {
 				SortSeqNo = f.AddSort(expr),
+				FilterSeqNo = f.AddFilterCondition(title, expr)
+			});
+			return columnHeader;
+		}
+		public static IColumnHeader AddHeaderWithFilter<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f,
+			Action<ThTagAttributes> attrs, Expression<Func<TEntity, T>> expr)
+		{
+			var key = expr.GetResourceKey();
+			var titleShort = f.GetTitle(expr);
+			var title = f.Resources.Get(key);
+
+			var columnHeader = f.AddHeader(attrs, titleShort, new HeaderOptions	{
 				FilterSeqNo = f.AddFilterCondition(title, expr)
 			});
 			return columnHeader;
