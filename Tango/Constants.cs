@@ -15,6 +15,7 @@ namespace Tango
 		public static readonly string ReturnUrlDataPrefix = "~";
 
 		public static readonly string Id = "oid";
+		public static readonly string VersionId = "vid";
 		public static readonly string ParentId = "parentid";
 		public static readonly string FileId = "fileid";
 
