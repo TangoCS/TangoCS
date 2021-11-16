@@ -946,6 +946,8 @@ div.tabs2 + div.tabs2_pages {
 
 .selectsingleobject-popup {
 	width: 600px;
+	resize: horizontal;
+	overflow: auto;
 }
 
 .selectsingleobject-popup label {

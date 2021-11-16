@@ -103,14 +103,19 @@ namespace Tango.UI.Std
 				new List<TreeLevelDescriptionItem<TResult>> { new TreeLevelDescriptionItem<TResult> { Template = CurrentState.Template } } :
 				CurrentState.Template.Children;
 
-			var origAllObjectsQuery = Repository.AllObjectsQuery;
-
 			using (var tran = Database.BeginTransaction())
 			{
 				BeforeGetPageData(tran);
 
 				foreach (var t in nodeTemplates)
 				{
+					var templateAllObjectsQuery = Repository.AllObjectsQuery;
+					var templateRepository = GetRepository();
+
+					foreach (var p in Repository.Parameters)
+						if (!templateRepository.Parameters.ContainsKey(p.Key))
+							templateRepository.Parameters.Add(p);
+
 					var nodeQuery = q;
 					if (Sections.RenderPaging)
 						nodeQuery = Paging.Apply(nodeQuery, true);
@@ -130,10 +135,9 @@ namespace Tango.UI.Std
 					var exprCnt = t.Template.GroupBy != null ? nodeQueryCnt.GroupBy(t.Template.GroupBy).Select(x => x.Key).Expression : nodeQueryCnt.Expression;
 
 					if (!t.Template.CustomQuery.IsEmpty())
-						origAllObjectsQuery = t.Template.CustomQuery;
+						templateAllObjectsQuery = t.Template.CustomQuery;
 
-					var sqlTemplate = "select *";
-					sqlTemplate += $" from ({origAllObjectsQuery}) t";
+					var sqlTemplate = $"select * from ({templateAllObjectsQuery}) t";
 
 					if (!t.Template.AllowNulls)
 						foreach (var p in t.Template.KeyProperties)
@@ -142,9 +146,9 @@ namespace Tango.UI.Std
 					if (nodeWhere.Count > 0)
 						sqlTemplate += " where " + nodeWhere.Join(" and ");
 
-					Repository.AllObjectsQuery = sqlTemplate;
-					var res = Repository.List(expr);
-					var resCnt = Sections.RenderPaging ? Repository.Count(exprCnt) : res.Count();
+					templateRepository.AllObjectsQuery = sqlTemplate;
+					var res = templateRepository.List(expr);
+					var resCnt = Sections.RenderPaging ? templateRepository.Count(exprCnt) : res.Count();
 
 					foreach (var o in res)
 						o.Template = t.Template.ID;
