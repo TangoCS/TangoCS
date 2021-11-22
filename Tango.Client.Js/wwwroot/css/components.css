@@ -504,7 +504,8 @@ button.close {
 	list-style: none;
 	box-sizing: border-box;
 	border-bottom: 1px solid #ccc;
-	display: inline-block;
+	display: flex;
+	align-items: flex-end;
 }
 
 .tabs2 > ul > li {
@@ -556,11 +557,9 @@ button.close {
 	cursor: no-drop;
 }
 .tabs2 .aftertabs {
-	line-height: 27px;
 	padding-left: 8px;
 }
 .tabs2 .beforetabs {
-	line-height: 27px;
 	padding-right: 8px;
 }
 
