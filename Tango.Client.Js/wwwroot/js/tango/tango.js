@@ -1053,8 +1053,13 @@ var ajaxUtils = function ($, cu) {
 
 		state.com.apiResult = apiResult;
 
-		if (document.readyState == 'complete' || document.readyState == 'interactive')
-			renderApiResult();
+		if (document.readyState == 'complete' || document.readyState == 'interactive') {
+			try {
+				renderApiResult();
+			} catch(ex) {
+				showError(localization.resources.title.javascriptError, ex, 'err');
+			}
+		}
 
 		return $.Deferred().resolve(apiResult);
 	}
@@ -1093,6 +1098,8 @@ var ajaxUtils = function ($, cu) {
 
 		const replaceFunc = function (el, obj) {
 			replaceid(el, obj);
+			if (obj.content.childNodes.length > 1)
+				throw 'Replace widget: the replacement content must contain only one node.';
 			el.parentNode.replaceChild(obj.content.firstChild, el);
 		};
 		const addFunc = function (el, obj) {

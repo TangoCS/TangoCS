@@ -26,6 +26,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
@@ -33,8 +34,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\TangoCS\Dapper\Dapper.csproj" />
     <ProjectReference Include="..\..\TangoCS\Tango.Abstractions\Tango.Abstractions.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="AccessControl\Std\" />
+    <Folder Include="Identity\Std\" />
   </ItemGroup>
 
 </Project>
