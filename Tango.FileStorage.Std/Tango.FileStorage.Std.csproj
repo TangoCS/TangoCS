@@ -3,7 +3,6 @@
     <TargetFrameworks>net5.0</TargetFrameworks>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Dapper\Dapper.csproj" />
     <ProjectReference Include="..\Tango.Abstractions\Tango.Abstractions.csproj" />
     <ProjectReference Include="..\Tango.Hibernate\Tango.Hibernate.csproj" />
     <ProjectReference Include="..\Tango.UI.Std\Tango.UI.Std.csproj" />
