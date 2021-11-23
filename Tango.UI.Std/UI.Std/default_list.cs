@@ -408,7 +408,7 @@ namespace Tango.UI.Std
 
 	public interface IListColumn<TResult>
 	{
-		IEnumerable<ListColumn<TResult>> AsEnumerable();
+		IEnumerable<ListColumn<TResult>> AsEnumerable(TResult o, RowInfo<TResult> r);
 	}
 
 	public class ColumnHeader : IColumnHeader
@@ -457,7 +457,7 @@ namespace Tango.UI.Std
 			Content = content;
 		}
 
-		public IEnumerable<ListColumn<TResult>> AsEnumerable()
+		public IEnumerable<ListColumn<TResult>> AsEnumerable(TResult o, RowInfo<TResult> r)
 		{
 			yield return this;
 		}
@@ -465,14 +465,14 @@ namespace Tango.UI.Std
 
 	public class CustomListColumn<TResult> : IListColumn<TResult>
 	{
-		Func<IEnumerable<ListColumn<TResult>>> _columns;
+		Func<TResult, RowInfo<TResult>, IEnumerable<ListColumn<TResult>>> _columns;
 
-		public CustomListColumn(Func<IEnumerable<ListColumn<TResult>>> columns)
+		public CustomListColumn(Func<TResult, RowInfo<TResult>, IEnumerable<ListColumn<TResult>>> columns)
 		{
 			_columns = columns;
 		}
 
-		public IEnumerable<ListColumn<TResult>> AsEnumerable() => _columns?.Invoke();
+		public IEnumerable<ListColumn<TResult>> AsEnumerable(TResult o, RowInfo<TResult> r) => _columns?.Invoke(o, r);
 	}
 
 	public delegate void RenderHeaderDelegate(LayoutWriter w, IEnumerable<Action<LayoutWriter>> headers);

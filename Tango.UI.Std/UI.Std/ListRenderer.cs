@@ -73,7 +73,7 @@ namespace Tango.UI.Std
 
 				w.Tr(a => fields.RowAttributes?.Invoke(a, o, r), () => {
 					foreach (var cols in fields.Cells)
-						foreach (var c in cols.AsEnumerable())
+						foreach (var c in cols.AsEnumerable(o, r))
 							w.Td(a => c.Attributes?.Invoke(a, o, r), () => c.Content(w, o, r));
 				});
 
@@ -188,7 +188,7 @@ namespace Tango.UI.Std
 					var r = new RowInfo<TResult> { RowNum = i, Level = j };
 					w.Div(a => fields.RowAttributes?.Invoke(a, o, r), () => {
 						foreach (var cols in fields.Cells)
-							foreach (var c in cols.AsEnumerable())
+							foreach (var c in cols.AsEnumerable(o, r))
 								c.Content(w, o, r);
 					});
 
