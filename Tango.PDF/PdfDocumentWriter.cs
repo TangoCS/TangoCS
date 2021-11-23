@@ -135,6 +135,16 @@ namespace Tango.PDF
 
 		}
 
+		public void P(Action<PAttributes> a, Action<PhraseWriter> t)
+		{
+			var p = new Paragraph();
+			var attr = new PAttributes { Element = p };
+			a?.Invoke(attr);
+			if (attr.Element.Font.BaseFont == null) attr.Font();
+			t(new PhraseWriter(p));
+			doc.Add(p);
+		}
+
 		public void Image(byte[] image)
 		{
 			Image(null, image);
@@ -255,6 +265,24 @@ namespace Tango.PDF
 			else throw new Exception(exeption);
 		}
 
+		public void Cell(Action<CellAttributes> a, Action<PhraseWriter> pw)
+		{
+			var p = new Phrase();
+			var c = new PdfPCell(p);
+			var attr = new CellAttributes { Element = c };
+			if (a != null) a(attr);
+			if (attr.Element.Phrase.Font.BaseFont == null) attr.Font();
+			pw(new PhraseWriter(p));
+
+			var o = state.Peek();
+			if (o is PdfPTable)
+			{
+				var t = o as PdfPTable;
+				t.AddCell(c);
+			}
+			else throw new Exception(exeption);
+		}
+
 		public void Cell(Action<CellAttributes> a, PdfTemplate temp)
 		{
 			var c = new PdfPCell(iTextSharp.text.Image.GetInstance(temp));
@@ -297,6 +325,28 @@ namespace Tango.PDF
 				return t.DeleteLastRow();
 			}
 			else throw new Exception(exeption);
+		}
+
+		public class PhraseWriter
+		{
+			Phrase _phrase;
+			public PhraseWriter(Phrase p)
+			{
+				_phrase = p;
+			}
+			public PhraseWriter Chunk(Action<ChunkAttributes> a, string text)
+			{
+				var c = new Chunk(text);
+				var attr = new ChunkAttributes { Element = c };
+				if (a != null) a(attr);
+				if (attr.Element.Font.BaseFont == null) attr.Font();
+				_phrase.Add(c);
+				return this;
+			}
+			public PhraseWriter Chunk(string text)
+			{
+				return Chunk(null, text);
+			}
 		}
 
 		public void AddAttachment(string fileName, byte[] fileBytes)
@@ -469,6 +519,14 @@ namespace Tango.PDF
 		}
 	}
 
+	public class ChunkAttributes : PdfElementAttributes<Chunk>
+	{
+		public ChunkAttributes Font(string family = "times.ttf", float size = 12f, FontWeight weight = FontWeight.Normal, FontStyle style = FontStyle.Normal)
+		{
+			Element.Font = FontManager.Get(family, size, weight, style);
+			return this;
+		}
+	}
 	public class FontManager
 	{
 		static Dictionary<string, BaseFont> baseFonts = new Dictionary<string, BaseFont>();
@@ -486,13 +544,18 @@ namespace Tango.PDF
 				baseFonts.TryGetValue(family, out bf);
 				if (bf == null)
 				{
-					bf = BaseFont.CreateFont(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), family),
-						BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+					if (File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, family)))
+						bf = BaseFont.CreateFont(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, family),
+							BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+					else
+						bf = BaseFont.CreateFont(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Fonts), family),
+							BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
 					baseFonts.Add(family, bf);
 				}
 
 				f = new Font(bf, size, (int)weight + (int)style, color);
-			}
+                fonts.Add(fontKey, f);
+            }
 			return f;
 		}
 	}

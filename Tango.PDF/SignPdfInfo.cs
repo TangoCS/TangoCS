@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using iTextSharp.text.pdf;
-using GostCryptography.Cryptography;
 using GostCryptography.X509Certificates;
+using GostCryptography.Pkcs;
 
 namespace Tango.PDF
 {
-	public static class SignPdfInfo
+    public static class SignPdfInfo
 	{
 		public static byte[] GetSignature(byte[] pdf, out byte[] hash, int numbersignature = 0)
 		{
@@ -25,7 +25,10 @@ namespace Tango.PDF
 				if (signs.Count == 0) return bytes;
 
 				string signame = signs[numbersignature].ToString();
-				var dic = af.GetSignatureDictionary(signame);
+                var p = af.VerifySignature(signame);
+                var cert = p.SigningCertificate.GetEncoded();
+
+                var dic = af.GetSignatureDictionary(signame);
 				var cont = dic.GetAsString(PdfName.CONTENTS);
 				bytes = cont.GetOriginalBytes();
 
@@ -55,10 +58,7 @@ namespace Tango.PDF
 				str = str.Remove(start, end - start);
 				data = str.GetBytes();
 
-				using (var alg = new Gost3411HashAlgorithm())
-				{
-					hash = alg.ComputeHash(data);
-				}
+				hash = SignedPkcs7.ComputeDigest(data, cert);
 			}
 			catch (Exception e)
 			{

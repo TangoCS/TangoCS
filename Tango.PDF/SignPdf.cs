@@ -8,8 +8,17 @@ using GostCryptography.Pkcs;
 
 namespace Tango.PDF
 {
-	public static class SignPdf
+    public static class SignPdf
 	{
+        /// <summary>
+        /// Хэш pdf для клиентской части
+        /// </summary>
+        /// <param name="pdf"></param>
+        /// <param name="cert"></param>
+        /// <param name="date"></param>
+        /// <param name="reason"></param>
+        /// <param name="location"></param>
+        /// <returns></returns>
 		public static byte[] Digest(byte[] pdf, byte[] cert, DateTime date, string reason = "Signing document", string location = "Минпромторг")
 		{
 			byte[] digestpdf = null;
@@ -47,15 +56,23 @@ namespace Tango.PDF
 					hashtable[ITSPDF.PdfName.CONTENTS] = intCSize * 2 + 2;
 					sap.PreClose(hashtable);
 
-					using (Stream s = sap.RangeStream)
-					{
-						using (var hash = new Gost3411HashAlgorithm())
-						{
-							digestpdf = hash.ComputeHash(s);
-						}
-					}
-				}
-			}
+                    byte[] contentInfo;
+                    using (Stream s = sap.RangeStream)
+                    {
+                        using (var ss = new MemoryStream())
+                        {
+                            int read = 0;
+                            byte[] buff = new byte[8192];
+                            while ((read = s.Read(buff, 0, 8192)) > 0)
+                            {
+                                ss.Write(buff, 0, read);
+                            }
+                            contentInfo = ss.ToArray();
+                        }
+                    }
+                    digestpdf = SignedPkcs7.ComputeDigest(contentInfo, cert);
+                }
+            }
 			catch (Exception e)
 			{
 				throw;
@@ -63,6 +80,16 @@ namespace Tango.PDF
 			return digestpdf;
 		}
 
+        /// <summary>
+        /// Подпись pdf через клиентскую часть
+        /// </summary>
+        /// <param name="pdf"></param>
+        /// <param name="sign"></param>
+        /// <param name="cert"></param>
+        /// <param name="date"></param>
+        /// <param name="reason"></param>
+        /// <param name="location"></param>
+        /// <returns></returns>
 		public static byte[] Sign(byte[] pdf, byte[] sign, byte[] cert, DateTime date, string reason = "Signing document", string location = "Минпромторг")
 		{
 			byte[] newpdf = null;
@@ -176,7 +203,6 @@ namespace Tango.PDF
 								{
 									ss.Write(buff, 0, read);
 								}
-								//contentInfo = new ContentInfo(ss.ToArray());
 								contentInfo = ss.ToArray();
 							}
 						}
@@ -185,7 +211,7 @@ namespace Tango.PDF
 						CmsSigner cmsSigner = new CmsSigner(GostCryptoConfig.KeyContainerParameters);
 						signedCms.ComputeSignature(cmsSigner, true);
 						byte[] sign = signedCms.Encode();*/
-						byte[] sign = SignedPkcs7.ComputeSignature(contentInfo);
+						byte[] sign = SignedPkcs7.ComputeSignature(alg, contentInfo);
 
 						// Помещаем подпись в документ
 						byte[] outc = new byte[intCSize];
