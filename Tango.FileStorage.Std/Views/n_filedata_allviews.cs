@@ -138,7 +138,7 @@ namespace Tango.FileStorage.Std.Views
             DataContext.SubmitChanges();
         }
 
-        protected override string Title => File?.Name;
+        protected override string FormTitle => File?.Name;
 
         public N_FileData_edit()
         {
@@ -195,7 +195,7 @@ namespace Tango.FileStorage.Std.Views
             DataContext.SubmitChanges();
         }
 
-        protected override string Title => Resources.Get<N_FileData>("Upload");
+        protected override string FormTitle => Resources.Get<N_FileData>("Upload");
 
         protected override void Form(LayoutWriter w)
         {
