@@ -1097,10 +1097,13 @@ var ajaxUtils = function ($, cu) {
 		};
 
 		const replaceFunc = function (el, obj) {
-			replaceid(el, obj);
-			if (obj.content.childNodes.length > 1)
-				throw 'Replace widget: the replacement content must contain only one node.';
-			el.parentNode.replaceChild(obj.content.firstChild, el);
+			//if (obj.content.childNodes.length > 1)
+			//	throw 'Replace widget: the replacement content must contain only one node.';
+			//else
+			if (obj.content.childNodes.length > 0) {
+				replaceid(el, obj);
+				el.parentNode.replaceChild(obj.content.firstChild, el);
+			}
 		};
 		const addFunc = function (el, obj) {
 			if (el.parentNode && obj.content.childNodes.length == 1 && el.id == obj.content.firstChild.id) {
