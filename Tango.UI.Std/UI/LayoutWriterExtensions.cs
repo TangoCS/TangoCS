@@ -93,6 +93,11 @@ namespace Tango.UI
 			w.FormField(name, caption, () => w.Span(a => a.ID(name), value), grid, false, description, hint: hint);
 		}
 
+		public static void FormFieldReadOnly(this LayoutWriter w, string name, string caption, Action content, GridPosition grid = null, string description = null, string hint = null)
+		{
+			w.FormField(name, caption, () => w.Span(a => a.ID(name), content), grid, false, description, hint: hint);
+		}
+
 		public static void FormField(this LayoutWriter w, IMetaProperty prop, Action content, GridPosition grid = null)
 		{
 			w.FormField(prop.Name, w.Resources.Caption(prop), content, grid, prop.IsRequired, w.Resources.Description(prop));
