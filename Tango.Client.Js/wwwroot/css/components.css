@@ -821,7 +821,7 @@ div.tabs2 + div.tabs2_pages {
 
 .periodpicker input[type=text].cal-date, .datetimepicker input[type=text].cal-date {
 	width: 75px;
-	padding: 0 0 0 3px;
+	/*padding: 0 0 0 3px;*/
 }
 
 .periodpicker .datelists .hours, .periodpicker .datelists .minutes,
@@ -843,7 +843,7 @@ div.tabs2 + div.tabs2_pages {
 .periodpicker > div:first-of-type, .periodpicker > div:last-of-type {
 	background-color: #c2dbff;
 	border-radius: 7px;
-	padding: 0 3px;
+	/*padding: 0 3px;*/
 }
 
 .periodpicker .cal-openbtn {
