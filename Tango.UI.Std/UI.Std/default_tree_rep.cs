@@ -713,12 +713,12 @@ namespace Tango.UI.Std
 			return keyProperties;
 		}
 
-		public string GetDataRowID(int level, TResult o) => $"level={level}&template={ID}&" + (keyProperties ?? InitKeyProperties()).Select(p => p.Name + "=" + p.GetValue(o).ToString()).Join("&");
+		public string GetDataRowID(int level, TResult o) => $"level={level}&template={ID}&" + (keyProperties ?? InitKeyProperties()).Select(p => p.Name + "=" + GetPropValue(p, o)).Join("&");
 		public string GetHtmlRowID(int level, TResult o) => $"r_{level}_{ID}_" + (keyProperties ?? InitKeyProperties()).Select(p => GetPropValue(p, o)).Join("_");
 
 		private string GetPropValue(PropertyInfo p, TResult o)
         {
-			if(p.PropertyType == typeof(DateTime))
+			if (p.PropertyType == typeof(DateTime))
 				return ((DateTime)p.GetValue(o)).ToString("yyyyMMddHHmmss");
 
 			return p.GetValue(o).ToString();
@@ -739,6 +739,8 @@ namespace Tango.UI.Std
 					return (object)ctx.GetIntArg(p.Name);
 				else if (prop.PropertyType == typeof(Guid))
 					return (object)ctx.GetGuidArg(p.Name);
+				else if (prop.PropertyType == typeof(DateTime))
+					return (object)ctx.GetDateTimeArg(p.Name);
 				return (object)ctx.GetArg(p.Name);
 			});
 		}
