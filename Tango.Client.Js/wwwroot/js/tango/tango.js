@@ -741,15 +741,15 @@ var ajaxUtils = function ($, cu) {
 					e.value = args.value;
 				else
 					e.innerHTML = args.value;
-			}
-			const st = getElementStateAttrs(e);
-			if (st) {
-				if (st.type == 'array') {
-					const values = args.value.split(',').filter(String);
-					const arr = state.ctrl[st.owner][st.name];
-					arr.splice(0, arr.length);
-					for (var i = 0; i < values.length; i++) {
-						arr.push(values[i]);
+				const st = getElementStateAttrs(e);
+				if (st) {
+					if (st.type == 'array') {
+						const values = args.value.split(',').filter(String);
+						const arr = state.ctrl[st.owner][st.name];
+						arr.splice(0, arr.length);
+						for (var i = 0; i < values.length; i++) {
+							arr.push(values[i]);
+						}
 					}
 				}
 			}
