@@ -318,10 +318,10 @@ hr {
 	font-weight: bold;
 }
 
-.listviewtable th {
+/*.listviewtable th {
 	position: relative;
 }
-
+*/
 .listviewtable th .dropdownimage {
 	font-size: x-small;
 	visibility: hidden;

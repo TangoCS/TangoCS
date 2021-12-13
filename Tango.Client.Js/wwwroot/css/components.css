@@ -1311,6 +1311,7 @@ div.tabs2 + div.tabs2_pages {
 	padding: 0
 }
 
+/* sticky */
 .fixedheader > tbody > tr > th {
 	position: -webkit-sticky; /* Safari */
 	position: sticky;
@@ -1321,6 +1322,34 @@ div.tabs2 + div.tabs2_pages {
 	position: sticky;
 	z-index: 10;
 	background-color: #fff;
+}
+.stickyleft {
+	position: sticky;
+	left: 0;
+	z-index: 10;
+}
+.stickyright {
+	position: sticky;
+	right: 0;
+	z-index: 10;
+}
+.stickyfirstcol td:first-of-type, .stickyfirstcol th:first-of-type, .stickyfirstcolexheader td:first-of-type {
+	background-color: #fff;
+	position: sticky;
+	left: 0;
+	z-index: 10;
+}
+.stickylastcol td:last-of-type {
+	background-color: #fff;
+	position: sticky;
+	right: 0;
+	z-index: 10;
+}
+.stickyfirstcol td.gr > span, .stickyfirstcolexheader td.gr > span {
+	background-color: #fff;
+	position: sticky;
+	left: 8px;
+	z-index: 10;
 }
 
 /* icons */

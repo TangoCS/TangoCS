@@ -100,12 +100,12 @@ namespace Tango.UI.Std
 				g.Cells(o, r);
 				foreach (var (attr, lw) in r.Cells)
 				{
-					w.Td(a => { a.Class("gr").Set(attr); }, () => lw?.Invoke(w));
+					w.Td(a => { a.Class("gr").Set(attr); }, () => w.Span(() => lw?.Invoke(w)));
 				}
 			}
 			else
 			{
-				w.Td(a => a.Class("gr").ColSpan(colspan), () => g.Cell(w, o));
+				w.Td(a => a.Class("gr").ColSpan(colspan), () => w.Span(() => g.Cell(w, o)));
 			}
 		}
 
