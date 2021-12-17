@@ -122,7 +122,7 @@ namespace Tango.UI
 		}
 
 		public virtual TValue DefaultValue => default;
-		public virtual TValue Value => Context.RequestMethod == "POST" ? ProceedFormValue : DefaultValue;
+		public virtual TValue Value => ValueSource == ValueSource.Form ? ProceedFormValue(FormValue) : DefaultValue;
 		public override string StringValue => 
 			Value is IWithTitle ? (Value as IWithTitle)?.Title : 
 			typeof(TValue).IsEnum ? Enumerations.GetEnumDescription((Enum)(object)Value) :
@@ -157,23 +157,20 @@ namespace Tango.UI
 		{
 			if (IsRequired && ValidationFunc != null) ValidationFunc(val.Check(Resources, ID, Caption, FormValue));
 		}		
-		public virtual Func<ValidationBuilder<TFormValue>, ValidationBuilder<TFormValue>> ValidationFunc=> vb => vb.NotEmpty();
+		public virtual Func<ValidationBuilder<TFormValue>, ValidationBuilder<TFormValue>> ValidationFunc => vb => vb.NotEmpty();
 
-		protected TValue ProceedFormValue
+		internal protected TValue ProceedFormValue(TFormValue val)
 		{
-			get
-			{
-				if (FormValue is string s)
-					return (TValue)(object)s.Trim();
-				else if (FormValue is TValue v)
-                    return v;
-                else if (FormValue == null)
-                    return (TValue)(object)null;
-                else if (FormValue is ICastable<TFormValue, TValue> obj)
-                    return obj.Cast(FormValue);
-                else
-                    throw new NotImplementedException($"Cast from {typeof(TFormValue).Name} to {typeof(TValue).Name} is not implemented");
-			}
+			if (val is string s)
+				return (TValue)(object)s.Trim();
+			else if (val is TValue v)
+				return v;
+			else if (val == null)
+				return (TValue)(object)null;
+			else if (val is ICastable<TFormValue, TValue> obj)
+				return obj.Cast(val);
+			else
+				throw new NotImplementedException($"Cast from {typeof(TFormValue).Name} to {typeof(TValue).Name} is not implemented");
 		}
 
 		public Field()
@@ -288,7 +285,7 @@ namespace Tango.UI
         protected virtual string IDSuffix => DBConventions.IDSuffix;
 		protected virtual string GUIDSuffix => DBConventions.GUIDSuffix;
 
-		public override TValue Value => ValueSource == ValueSource.Form ? ProceedFormValue : PropertyValue;
+		public sealed override TValue Value => ValueSource == ValueSource.Form ? ProceedFormValue(FormValue) : PropertyValue;
 
 		bool SubmitToID(Type t)
 		{
