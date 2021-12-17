@@ -467,9 +467,14 @@ namespace Tango.UI
 		public override List<TRefKey> GetFormValue() => Context.GetListArg<TRefKey>(ID);
 	}
 
+	public abstract class EntityFileField<TEntity> : EntityField<TEntity, PostedFileInfo>
+		where TEntity : class
+	{
+		public override PostedFileInfo GetFormValue() => Context.FormData[ID] as PostedFileInfo;
+	}
 
 
-    public static class FieldExtensions
+	public static class FieldExtensions
     {
         //public static void ValidateDateValue(DateTime? entityDate, string entityName, ValidationMessageCollection val)
         //{

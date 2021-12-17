@@ -222,6 +222,14 @@ namespace Tango.UI
 				a.Set(attributes);
 			}), grid);
 		}
+
+		public static void FileUpload(this LayoutWriter w, IField<PostedFileInfo> field, GridPosition grid = null, Action<InputTagAttributes> attributes = null)
+		{
+			w.FormField(field, () => w.FileUpload(field.ID, a => {
+				if (field.Disabled) a.Disabled(true);
+				a.Set(attributes);
+			}), grid);
+		}
 	}
 
 	public static class FieldActionLinkExtensions
