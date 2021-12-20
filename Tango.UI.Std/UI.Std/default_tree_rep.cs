@@ -470,7 +470,7 @@ namespace Tango.UI.Std
 
 			var f = new FieldCollection<TResult>(Context, Sorter, Filter);
 			f.EnableSelect = enableSelect;
-			f.ListAttributes += a => a.Class("tree").Class("noborders").Data("highlightedid", _highlightedRowID);
+			f.ListAttributes += a => a.Class("tree highlight").Class("noborders").Data("highlightedid", _highlightedRowID);
 			f.RowAttributes += (a, o, i) => {
 
 				nodeTemplate = _templatesDict[o.Template];

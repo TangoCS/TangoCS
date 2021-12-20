@@ -178,10 +178,10 @@ namespace Tango.FileStorage.Std.Views
             }
         }
 
-        protected override void ValidateFormData(ValidationMessageCollection val)
-        {
-            val.Check(Resources, gr.Title.ID, gr.Title.ID, FormData).NotEmpty();
-        }
+        //protected override void ValidateFormData(ValidationMessageCollection val)
+        //{
+        //    val.Check(Resources, gr.Title.ID, gr.Title.ID, FormData).NotEmpty();
+        //}
     }
 
     [OnAction(typeof(N_FileData), "upload")]

@@ -1080,7 +1080,7 @@ div.tabs2 + div.tabs2_pages {
 	transform: rotate(0deg);
 }
 
-.tree tr:focus {
+.highlight tr:focus {
 	outline: none;
 	background-color: #ebecf0 !important;
 	/*outline-color: #3b73af;*/

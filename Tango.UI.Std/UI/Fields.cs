@@ -469,23 +469,4 @@ namespace Tango.UI
 	{
 		public override PostedFileInfo GetFormValue() => Context.FormData[ID] as PostedFileInfo;
 	}
-
-
-	public static class FieldExtensions
-    {
-        //public static void ValidateDateValue(DateTime? entityDate, string entityName, ValidationMessageCollection val)
-        //{
-        //    if (Data.ConnectionManager.DBType == Data.DBType.MSSQL && (entityDate < new DateTime(1753, 1, 1) || entityDate > new DateTime(9999, 12, 31)))
-        //        val.Add(new ValidationMessage("entitycheck", entityName, "Введена дата вне пределов разрешенного диапазона.", ValidationMessageSeverity.Error));
-        //}
-
-        //public static T GetField<T>(this IField field)
-        //    where T : class, IField
-        //{
-        //    if (!field.AllFields.TryGetValue(typeof(T).Name, out var f))
-        //        return null;
-        //    else
-        //        return f as T;
-        //}
-    }
 }

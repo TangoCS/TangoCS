@@ -244,11 +244,14 @@ var listview = function (au, cu, cbcell, menu) {
 		},
 		widgetDidMount: function (state) {
 			const root = document.getElementById(state.root);
-			const tree = root.querySelector('.listviewtable.tree');
-			if (tree) initHighlight(tree);
 
-			const fixedHeaders = root.querySelectorAll('.listviewtable.fixedheader');
-			if (fixedHeaders.length > 0) initFixedHeader(fixedHeaders);
+			const highlight = root instanceof HTMLTableElement && root.classList.contains('highlight') ?
+				root : root.querySelector('.listviewtable.highlight');
+			if (highlight) initHighlight(highlight);
+
+			const fixedHeaders = root instanceof HTMLTableElement && root.classList.contains('fixedheader') ?
+				root : root.querySelector('.listviewtable.fixedheader');
+			if (fixedHeaders) initFixedHeader(fixedHeaders);
 
 			var el = $('#' + state.root);
 			if (!el.tableDnD || !el.hasClass("draggablerows")) return;
@@ -589,19 +592,31 @@ var listview = function (au, cu, cbcell, menu) {
 					}
 				}
 				else if (e.keyCode == 37) { // left
-					if (!cur.classList.contains('collapsed'))
-						instance.togglelevel(cur);
+					var rowexpander = cur.querySelector('.rowexpandercell');
+					if (rowexpander)
+						instance.togglerow(rowexpander);
 					else {
-						var level = parseInt(cur.getAttribute('data-level'));
-						while (cur && parseInt(cur.getAttribute('data-level')) >= level) {
-							cur = cur.previousSibling;
+						// tree
+						if (!cur.classList.contains('collapsed'))
+							instance.togglelevel(cur);
+						else {
+							var level = parseInt(cur.getAttribute('data-level'));
+							while (cur && parseInt(cur.getAttribute('data-level')) >= level) {
+								cur = cur.previousSibling;
+							}
+							if (cur && cur.hasAttribute('tabindex'))
+								cur.focus();
 						}
-						if (cur && cur.hasAttribute('tabindex'))
-							cur.focus();
 					}
 				}
-				else if (e.keyCode == 39 && cur.classList.contains('collapsed')) { // right
-					instance.togglelevel(cur);
+				else if (e.keyCode == 39) { // right
+					if (cur.classList.contains('collapsed'))
+						// tree
+						instance.togglelevel(cur);
+					else {
+						var rowexpander = cur.querySelector('.rowexpandercell');
+						if (rowexpander) instance.togglerow(rowexpander);
+					}
 				}
 				else if (e.keyCode == 32) { //space
 					e.preventDefault();
