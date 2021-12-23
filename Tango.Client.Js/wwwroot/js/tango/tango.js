@@ -1302,8 +1302,8 @@ var ajaxUtils = function ($, cu) {
 
 				if (window[t] && window[t]['widgetDidMount']) {
 					if (apiResult.state) {
-						for (var key in apiResult.state[t]) {
-							ctrl.state[key] = apiResult.state[t][key];
+						for (var key in apiResult.state[root.id]) {
+							ctrl.state[key] = apiResult.state[root.id][key];
 						}
 					}
 

@@ -62,6 +62,7 @@ namespace Tango.UI.Std
 		protected virtual bool EnableQuickSearch => true;
 		protected virtual bool ShowFilterV2 => true;
 		protected virtual bool EnableSelect => false;
+		protected virtual bool GenerateClientViewData => false;
 
 		protected virtual void Toolbar(LayoutWriter w)
 		{
@@ -268,7 +269,8 @@ namespace Tango.UI.Std
 				response.AddWidget(Sections.ContentTitle, FormTitle);
 			if (Sections.SetPageTitle)
 				response.AddWidget("#title", FormTitle);
-
+			if (GenerateClientViewData)
+				response.State.Add(ClientID, new { data = _result });
 			AfterRender(response);
 		}
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Tango.UI;
 
 namespace Tango.Html
@@ -17,6 +18,8 @@ namespace Tango.Html
 		public HtmlWriter Writer;
 
 		public void SetWriter(IContentWriter writer) => Writer = writer as HtmlWriter;
+
+		public T Custom(string name, string value) { Writer.WriteAttr(name, value); return _this; }
 
 		public T ID() { Writer.WriteAttrID("id", null); return _this; }
 		public T ID<TValue>(TValue value) { Writer.WriteAttrID("id", value.ToString()); return _this; }
@@ -173,7 +176,7 @@ namespace Tango.Html
 		public InputTagAttributes Readonly(bool value) { if (value) Writer.WriteAttr("readonly", "readonly"); return this; }
 		public InputTagAttributes Size(int value) { Writer.WriteAttr("size", value.ToString()); return this; }
 		public InputTagAttributes Src(string value) { Writer.WriteAttr("src", value); return this; }
-		public InputTagAttributes Step(int value) { Writer.WriteAttr("step", value.ToString()); return this; }
+		public InputTagAttributes Step(decimal value) { Writer.WriteAttr("step", value.ToString(CultureInfo.InvariantCulture)); return this; }
 		public InputTagAttributes Type(InputType value) { Writer.WriteAttr("type", value.ToString().ToLower()); return this; }
 		public InputTagAttributes Value(string value) { Writer.WriteAttr("value", value); return this; }
 		public InputTagAttributes Width(int value) { Writer.WriteAttr("width", value.ToString()); return this; }
