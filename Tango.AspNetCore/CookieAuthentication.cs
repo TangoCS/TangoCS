@@ -19,6 +19,7 @@ namespace Tango.AspNetCore
 			Action<CookieAuthenticationOptions> allOptions = o => {
 				o.LoginPath = new PathString("/account/login");
 				o.AccessDeniedPath = new PathString("/forbidden/");
+				o.SlidingExpiration = true;
 			};
 			if (options != null)
 				allOptions += options;
