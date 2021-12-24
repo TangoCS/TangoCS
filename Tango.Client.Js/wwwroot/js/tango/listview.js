@@ -450,6 +450,8 @@ var listview = function (au, cu, cbcell, menu) {
 	}
 
 	function initFixedHeader(roots) {
+		if (roots.length === undefined)
+			roots = [roots];
         for (var j = 0; j < roots.length; j++) {
             const root = roots[j];
 			const tableHeaderTop = root.querySelector('th').getBoundingClientRect().top;
