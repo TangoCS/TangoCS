@@ -31,8 +31,9 @@ namespace Tango.UI.Std
 		
 
 		protected override bool EnableViews => false;
-
-		public bool AutoExpandSingles { get; set; } = true;
+		protected override bool EnableHover => false;
+		protected override bool EnableKeyboard => true;
+		protected virtual bool AutoExpandSingles => true;
 
 		public default_tree_rep()
 		{
@@ -471,6 +472,13 @@ namespace Tango.UI.Std
 			var f = new FieldCollection<TResult>(Context, Sorter, Filter);
 			f.EnableSelect = enableSelect;
 			f.ListAttributes += a => a.Class("tree highlight").Class("noborders").Data("highlightedid", _highlightedRowID);
+			if (EnableHover)
+				f.ListAttributes += a => a.Class("hover");
+			if (EnableKeyboard)
+			{
+				f.ListAttributes += a => a.Class("kb");
+				f.RowAttributes += (a, o, i) => a.TabIndex(0);
+			}
 			f.RowAttributes += (a, o, i) => {
 
 				nodeTemplate = _templatesDict[o.Template];
@@ -487,7 +495,6 @@ namespace Tango.UI.Std
 
 				a.Data("level", CurrentState.Level);
 				a.DataParm("level", CurrentState.Level);
-				a.TabIndex(0);
 				a.DataParm("template", o.Template);
 				var coll = nodeTemplate.GetKeyCollection(o);
 				foreach (var p in coll)

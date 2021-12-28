@@ -527,110 +527,113 @@ var listview = function (au, cu, cbcell, menu) {
 			if (selEl) selEl.classList.add('selected');
 		}
 
-		const trlist = root.querySelectorAll('tr');
-		for (var i = 0; i < trlist.length; i++) {
-			const el = trlist[i];
+		const kb = root.classList.contains('kb');
+		if (kb) {
+			const trlist = root.querySelectorAll('tr');
+			for (var i = 0; i < trlist.length; i++) {
+				const el = trlist[i];
 
-			if (el.classList.contains('initialized'))
-				continue;
+				if (el.classList.contains('initialized'))
+					continue;
 
-			el.addEventListener('keydown', function (e) {
-				var cur = e.currentTarget;
+				el.addEventListener('keydown', function (e) {
+					var cur = e.currentTarget;
 
-				if (e.keyCode == 38) {
-					e.preventDefault();
-					cur = cur.previousSibling;
-					while (cur && (cur.classList.contains('hide') || !cur.hasAttribute('tabindex')))
+					if (e.keyCode == 38) {
+						e.preventDefault();
 						cur = cur.previousSibling;
+						while (cur && (cur.classList.contains('hide') || !cur.hasAttribute('tabindex')))
+							cur = cur.previousSibling;
 
-					if (cur) {
-						cur.focus();
+						if (cur) {
+							cur.focus();
+						}
 					}
-				}
-				else if (e.keyCode == 40) {
-					e.preventDefault();
-					cur = cur.nextSibling;
-					while (cur && (cur.classList.contains('hide') || !cur.hasAttribute('tabindex')))
+					else if (e.keyCode == 40) {
+						e.preventDefault();
 						cur = cur.nextSibling;
+						while (cur && (cur.classList.contains('hide') || !cur.hasAttribute('tabindex')))
+							cur = cur.nextSibling;
 
-					if (cur) {
-						cur.focus();
-					}
-				}
-				else if (e.keyCode == 33) { //pgup
-					e.preventDefault();
-
-					var i = 0;
-					while (cur && cur.previousSibling && i < 20) {
-						var next = cur.previousSibling;
-						while (next && (next.classList.contains('hide') || !next.hasAttribute('tabindex'))) {
-							next = next.previousSibling;
+						if (cur) {
+							cur.focus();
 						}
-						i++;
-						if (next)
-							cur = next;
 					}
+					else if (e.keyCode == 33) { //pgup
+						e.preventDefault();
 
-					if (cur) {
-						cur.focus();
-					}
-				}
-				else if (e.keyCode == 34) { //pgdn
-					e.preventDefault();
-
-					var i = 0;
-					while (cur && cur.nextSibling && i < 20) {
-						var next = cur.nextSibling;
-						while (next && (next.classList.contains('hide') || !next.hasAttribute('tabindex'))) {
-							next = next.nextSibling;
+						var i = 0;
+						while (cur && cur.previousSibling && i < 20) {
+							var next = cur.previousSibling;
+							while (next && (next.classList.contains('hide') || !next.hasAttribute('tabindex'))) {
+								next = next.previousSibling;
+							}
+							i++;
+							if (next)
+								cur = next;
 						}
-						i++;
-						if (next)
-							cur = next;
-					}
 
-					if (cur) {
-						cur.focus();
+						if (cur) {
+							cur.focus();
+						}
 					}
-				}
-				else if (e.keyCode == 37) { // left
-					var rowexpander = cur.querySelector('.rowexpandercell');
-					if (rowexpander)
-						instance.togglerow(rowexpander);
-					else {
-						// tree
-						if (!cur.classList.contains('collapsed'))
+					else if (e.keyCode == 34) { //pgdn
+						e.preventDefault();
+
+						var i = 0;
+						while (cur && cur.nextSibling && i < 20) {
+							var next = cur.nextSibling;
+							while (next && (next.classList.contains('hide') || !next.hasAttribute('tabindex'))) {
+								next = next.nextSibling;
+							}
+							i++;
+							if (next)
+								cur = next;
+						}
+
+						if (cur) {
+							cur.focus();
+						}
+					}
+					else if (e.keyCode == 37) { // left
+						var rowexpander = cur.querySelector('.rowexpandercell');
+						if (rowexpander)
+							instance.togglerow(rowexpander);
+						else {
+							// tree
+							if (!cur.classList.contains('collapsed'))
+								instance.togglelevel(cur);
+							else {
+								var level = parseInt(cur.getAttribute('data-level'));
+								while (cur && parseInt(cur.getAttribute('data-level')) >= level) {
+									cur = cur.previousSibling;
+								}
+								if (cur && cur.hasAttribute('tabindex'))
+									cur.focus();
+							}
+						}
+					}
+					else if (e.keyCode == 39) { // right
+						if (cur.classList.contains('collapsed'))
+							// tree
 							instance.togglelevel(cur);
 						else {
-							var level = parseInt(cur.getAttribute('data-level'));
-							while (cur && parseInt(cur.getAttribute('data-level')) >= level) {
-								cur = cur.previousSibling;
-							}
-							if (cur && cur.hasAttribute('tabindex'))
-								cur.focus();
+							var rowexpander = cur.querySelector('.rowexpandercell');
+							if (rowexpander) instance.togglerow(rowexpander);
 						}
 					}
-				}
-				else if (e.keyCode == 39) { // right
-					if (cur.classList.contains('collapsed'))
-						// tree
-						instance.togglelevel(cur);
-					else {
-						var rowexpander = cur.querySelector('.rowexpandercell');
-						if (rowexpander) instance.togglerow(rowexpander);
+					else if (e.keyCode == 32) { //space
+						e.preventDefault();
+						var cb = cur.querySelector('.sel');
+						if (cb) {
+							cbcell.setselected(cb, onCheckChange);
+							updateSelected(cb);
+						}
 					}
-				}
-				else if (e.keyCode == 32) { //space
-					e.preventDefault();
-					var cb = cur.querySelector('.sel');
-					if (cb) {
-						cbcell.setselected(cb, onCheckChange);
-						updateSelected(cb);
-					}
-				}
-			});
+				});
 
-			el.classList.add('initialized');
+				el.classList.add('initialized');
+			}
 		}
 	}
 

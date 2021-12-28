@@ -64,6 +64,9 @@ namespace Tango.UI.Std
 		protected virtual bool EnableSelect => false;
 		protected virtual bool GenerateClientViewData => false;
 
+		protected virtual bool EnableHover => false;
+		protected virtual bool EnableKeyboard => false;
+
 		protected virtual void Toolbar(LayoutWriter w)
 		{
 			PrepareResult();
@@ -332,6 +335,10 @@ namespace Tango.UI.Std
 		protected override IFieldCollection<T, T> FieldsConstructor()
 		{
 			var f = new FieldCollection<T>(Context, Sorter, Filter);
+			if (EnableHover)
+				f.ListAttributes += a => a.Class("hover");
+			if (EnableKeyboard)
+				f.ListAttributes += a => a.Class("kb");
 			f.RowAttributes += (a, o, i) => a.ZebraStripping(i.RowNum);
 			FieldsInit(f);
 			return f;
