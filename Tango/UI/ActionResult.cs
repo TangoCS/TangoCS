@@ -143,7 +143,7 @@ namespace Tango.UI
 		public override Task ExecuteResultAsync(ActionContext context)
 		{
 			var hard = true;
-			var url = "/";
+			var url = "";
 			var useReturnUrl = context.ReturnTarget.TryGetValue(_code, out var ret);
 			if (useReturnUrl)
 			{

@@ -46,12 +46,20 @@ namespace Tango.UI
 
 		public UrlResolverResult Resolve(ActionContext context, IUrlResolver resolver = null)
 		{
-			if (resolver == null) resolver = context.CreateDefaultUrlResolver();
+			var urlArgs = new Dictionary<string, string>(Args);
 
-			var urlArgs = new Dictionary<string, string>(Args) {
-				{ Constants.ServiceName, Service },
-				{ Constants.ActionName, Action }
-			};
+			if (resolver == null)
+			{
+				if (Service == null)
+					resolver = new RouteUrlResolver("/");
+				else
+				{
+					resolver = context.CreateDefaultUrlResolver();
+					urlArgs.Add(Constants.ServiceName, Service);
+					urlArgs.Add(Constants.ActionName, Action);
+				}
+			}
+
 			return resolver.Resolve(urlArgs, context.AllArgs);
 		}
 	}
