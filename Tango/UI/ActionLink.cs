@@ -53,11 +53,13 @@ namespace Tango.UI
 				if (Service == null)
 					resolver = new RouteUrlResolver("/");
 				else
-				{
 					resolver = context.CreateDefaultUrlResolver();
-					urlArgs.Add(Constants.ServiceName, Service);
-					urlArgs.Add(Constants.ActionName, Action);
-				}
+			}
+
+			if (Service != null)
+			{
+				urlArgs.Add(Constants.ServiceName, Service);
+				urlArgs.Add(Constants.ActionName, Action);
 			}
 
 			return resolver.Resolve(urlArgs, context.AllArgs);
