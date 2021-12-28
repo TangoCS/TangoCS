@@ -1057,7 +1057,7 @@ var ajaxUtils = function ($, cu) {
 			try {
 				renderApiResult();
 			} catch(ex) {
-				showError(localization.resources.title.javascriptError, ex, 'err');
+				showError(localization.resources.title.javascriptError, ex + '\n\n' + ex.stack, 'err');
 			}
 		}
 
