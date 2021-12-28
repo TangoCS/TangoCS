@@ -41,6 +41,10 @@ namespace Tango
 
 		public static readonly string SelectedValues = "selectedvalues";
 
+		public static readonly string[] InternalParms = new string[] { EventName, EventReceiverName,
+			RootReceiverName, FirstLoad, Sender, ResponseType, Container, ContainerPrefix, ContainerType, ContainerNew,
+			ContainerExternal, IEFormFix, MetaHome, MetaCurrent};
+
 		public static readonly string OpList = "viewlist";
 		public static readonly string OpView = "view";
 		public static readonly string OpEdit = "edit";

@@ -686,11 +686,39 @@ namespace Tango.UI.Controls
 			return f.SeqNo;
 		}
 
+		public int AddConditionSelectMultipleObjects<TRefClass, TRefKey>(string title, Expression<Func<T, object>> column, SelectMultipleObjectsField<TRefClass, TRefKey> dialog)
+			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
+		{
+			var f = CreateOrGetCondition(title);
+
+			var data = new FieldCriterion
+			{
+				Column = column,
+				FieldType = FieldType.Int,
+				Renderer = w => dialog.Strategy.Render(w, null),
+				StringValue = item => {
+					if (item.Value.IsEmpty()) return "";
+					var ids = item.Value.Split(new char[] { ',' }).Select(x => x.ConvertTo<TRefKey>());
+					return dialog.GetObjectsByIDs(ids).Select(x => x.Title).Join(", ");
+				}
+			};
+			f.Operators["="] = data;
+			f.Operators["<>"] = data;
+			return f.SeqNo;
+		}
+
 		public int AddConditionSelectSingleObject<TRefClass, TRefKey>(Expression<Func<T, object>> column, SelectSingleObjectField<TRefClass, TRefKey> dialog)
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
 			var title = Resources.Get(column.GetResourceKey());
 			return AddConditionSelectSingleObject(title, column, dialog);
+		}
+
+		public int AddConditionSelectMultipleObjects<TRefClass, TRefKey>(Expression<Func<T, object>> column, SelectMultipleObjectsField<TRefClass, TRefKey> dialog)
+			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
+		{
+			var title = Resources.Get(column.GetResourceKey());
+			return AddConditionSelectMultipleObjects(title, column, dialog);
 		}
 
 		public int AddCondition<TVal>(string title, Expression<Func<T, TVal>> column)

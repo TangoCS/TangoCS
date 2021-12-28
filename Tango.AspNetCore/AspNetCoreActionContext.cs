@@ -143,7 +143,8 @@ namespace Tango.AspNetCore
 
 			var parsedParms = Url.ParseQuery(parms);
 			foreach (var parm in parsedParms)
-				target.Args.Add(parm.Key, parm.Value.Join(","));
+				if (!parm.Key.In(Constants.InternalParms))
+					target.Args.Add(parm.Key, parm.Value.Join(","));
 
 			return target;
 		}
