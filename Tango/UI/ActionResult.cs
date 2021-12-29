@@ -1,10 +1,10 @@
-﻿using System;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Security.Principal;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Tango.UI
 {
@@ -24,7 +24,7 @@ namespace Tango.UI
 		[JsonIgnore]
 		public Dictionary<string, string> Cookies { get; private set; } = new Dictionary<string, string>();
 		[JsonIgnore]
-		public Func<ActionContext, byte[]> ContentFunc { get; protected set; }
+		public Func<ActionContext, byte[]> ContentFunc { get; set; }
 		[JsonIgnore]
 		public string Location { get; set; }
 
