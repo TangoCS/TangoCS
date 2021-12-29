@@ -8,7 +8,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-
+using System.Runtime.CompilerServices;
 
 namespace Tango.Data
 {
@@ -177,6 +177,19 @@ namespace Tango.Data
 				parms.Add("p0", id);
 				return (keys.Keys.First().ToLower() + " = @p0", parms);
 			}
+			else if (id is ITuple)
+			{
+				if (keys.Count == 0) throw new Exception(noKeyMessage);
+				var fields = idtype.GetFields();
+				int i = 0;
+				var clause = keys.Select(k => {
+					var s = $"{k.Key.ToLower()} = @p{i}";
+					parms.Add($"p{i}", fields[i].GetValue(id));
+					i++;
+					return s;
+				}).Join(" and ");
+				return (clause, parms);
+			}
 			else if (idtype.IsValueType)
 			{
 				if (keys.Count == 0) throw new Exception(noKeyMessage);
@@ -194,7 +207,7 @@ namespace Tango.Data
 			{
 				if (keys.Count == 0) throw new Exception(noKeyMessage);
 				var props = idtype.GetProperties();
-				if (props.Count() == 0)	throw new Exception(incorrectKeyMessage);
+				if (props.Count() == 0) throw new Exception(incorrectKeyMessage);
 				int i = 0;
 				var clause = props.Where(p => keys.ContainsKey(p.Name)).Select(p => {
 					var s = $"{p.Name.ToLower()} = @p{i}";

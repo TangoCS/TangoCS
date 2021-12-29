@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Dynamic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json;
 
 namespace Tango
@@ -187,21 +188,22 @@ namespace Tango
 
 		static T Parse<T>(object d, string format, T defaultValue = default)
 		{
-			if (typeof(T) == d.GetType())
+			var t = typeof(T);
+			if (t == d.GetType())
 				return (T)d;
-			else if (typeof(T) == typeof(DateTime?) || typeof(T) == typeof(DateTime))
+			else if (t == typeof(DateTime?) || t == typeof(DateTime))
 			{
 				var ds = d.ToString();
 				if (ds.IsEmpty()) return defaultValue;
-                return (T)(object)ds.ToDate(format ?? "yyyy-MM-dd", (DateTime)(object)defaultValue);
+				return (T)(object)ds.ToDate(format ?? "yyyy-MM-dd", (DateTime)(object)defaultValue);
 			}
-			else if (typeof(T) == typeof(decimal?))
+			else if (t == typeof(decimal?))
 			{
 				var ds = d.ToString();
 				if (ds.IsEmpty()) return defaultValue;
 				return (T)(object)ds.ToDecimal();
 			}
-			else if (typeof(T) == typeof(decimal))
+			else if (t == typeof(decimal))
 			{
 				var ds = d.ToString();
 				if (ds.IsEmpty()) return defaultValue;
@@ -212,11 +214,29 @@ namespace Tango
 					return (T)(object)dec;
 
 			}
-			else if (typeof(T).IsEnum)
+			else if (t.IsEnum)
 			{
-				var d2 = Convert.ChangeType(d, Enum.GetUnderlyingType(typeof(T)));
-				if (Enum.IsDefined(typeof(T), d2))
+				var d2 = Convert.ChangeType(d, Enum.GetUnderlyingType(t));
+				if (Enum.IsDefined(t, d2))
 					return (T)d2;
+			}
+			else if (typeof(ITuple).IsAssignableFrom(t))
+			{
+				var ds = d.ToString();
+				if (ds.StartsWith('(')) ds = ds.TrimStart('(');
+				if (ds.EndsWith(')')) ds = ds.TrimEnd(')');
+
+				var values = ds.Split(',').Select(x => x.Trim()).ToArray();
+				var fields = t.GetFields();
+
+				if (fields.Length == values.Length)
+				{
+					var parms = values.Select((x, i) => Convert.ChangeType(x, fields[i].FieldType)).ToArray();
+					var obj = (T)Activator.CreateInstance(t, parms);
+					return obj;
+				}
+				else
+					return defaultValue;
 			}
 
 			var typeConverter = TypeDescriptor.GetConverter(typeof(T));
