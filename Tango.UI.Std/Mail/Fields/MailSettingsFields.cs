@@ -44,7 +44,7 @@ namespace Tango.Mail
         
         public class PreProcessingMethod : EntityField<MailSettings, MethodSettings>
         {
-            public override bool IsRequired { get; set; } = false;
+            public override bool IsRequired => false;
             public override void SubmitProperty(ValidationMessageCollection val)
             {
                 //base.SubmitProperty(val);
@@ -53,7 +53,7 @@ namespace Tango.Mail
         
         public class PostProcessingMethod : EntityField<MailSettings, MethodSettings>
         {
-            public override bool IsRequired { get; set; } = false;
+            public override bool IsRequired => false;
             public override void SubmitProperty(ValidationMessageCollection val)
             {
                 //base.SubmitProperty(val);
@@ -62,7 +62,7 @@ namespace Tango.Mail
         
         public class DeleteMethod : EntityField<MailSettings, MethodSettings>
         {
-            public override bool IsRequired { get; set; } = false;
+            public override bool IsRequired => false;
             public override void SubmitProperty(ValidationMessageCollection val)
             {
                 //base.SubmitProperty(val);
@@ -71,7 +71,7 @@ namespace Tango.Mail
         
         public class AfterSentMethod : EntityField<MailSettings, MethodSettings>
         {
-            public override bool IsRequired { get; set; } = false;
+            public override bool IsRequired => false;
             public override void SubmitProperty(ValidationMessageCollection val)
             {
                 //base.SubmitProperty(val);
@@ -80,27 +80,27 @@ namespace Tango.Mail
         
         public class TimeoutValue : EntityField<MailSettings, int>
         {
-            public override bool IsRequired { get; set; } = false;
+            public override bool IsRequired => false;
         }
         
         public class SendMailDayInterval : EntityField<MailSettings, int>
         {
-            public override bool IsRequired { get; set; } = false;
+            public override bool IsRequired => false;
         }
         
         public class SendMailStartInterval : /*EntityTimeField<MailSettings> //*/EntityField<MailSettings, TimeSpan>
         {
-            public override bool IsRequired { get; set; } = false;
+            public override bool IsRequired => false;
         }
         
         public class SendMailFinishInterval : EntityField<MailSettings, TimeSpan>
         {
-            public override bool IsRequired { get; set; } = false;
+            public override bool IsRequired => false;
         }
         
         public class AttemptsToSendCount : EntityField<MailSettings, int>
         {
-            public override bool IsRequired { get; set; } = false;
+            public override bool IsRequired => false;
         }
         
         public class MailCategoryTitle : EntityField<MailSettings, string>
@@ -109,12 +109,12 @@ namespace Tango.Mail
         
         public class LastModifiedDate : EntityDateTimeField<MailSettings>
         {
-            public override bool IsRequired { get; set; } = false;
+            public override bool IsRequired => false;
         }
         
         public class SystemName : EntityField<MailSettings, string>
         {
-            public override bool IsRequired { get; set; } = true;
+            public override bool IsRequired => true;
         }
     }
 }
