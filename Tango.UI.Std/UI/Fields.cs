@@ -115,8 +115,7 @@ namespace Tango.UI
 		public override bool IsRequired {
 			get {
 				if (!(IsVisible)) return false;
-				var type = typeof(TFormValue);
-				return type.IsValueType && type != typeof(bool) && (Nullable.GetUnderlyingType(type) == null);
+				return base.IsRequired;
 			}
 			set { base.IsRequired = value; }
 		}
@@ -177,6 +176,9 @@ namespace Tango.UI
 		{
 			ID = GetType().Name.Replace("`1", "");
 			ValueProvider = this;
+
+			var type = typeof(TFormValue);
+			IsRequired = type.IsValueType && type != typeof(bool) && (Nullable.GetUnderlyingType(type) == null);
 		}
 	}
 
