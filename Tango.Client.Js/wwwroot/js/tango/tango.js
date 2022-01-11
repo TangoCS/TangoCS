@@ -583,6 +583,10 @@ var ajaxUtils = function ($, cu) {
 				return r;
 		},
 		runHrefWithApiResponse: function (a, target) {
+			if (event.ctrlKey && a && a.href) {
+				open(a.href, '_blank').focus();
+				return;
+			}
 			if (!target) target = {};
 			target.changeloc = true;
 			instance.runEventFromElementWithApiResponse(a, target);
