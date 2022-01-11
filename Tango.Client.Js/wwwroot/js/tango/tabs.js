@@ -19,7 +19,7 @@
 				target.query[ctrlid] = el.getAttribute('data-id');
 				target.url = au.findServiceAction(el);
 				target.onBack = { service: "tabs", callChain: [{ method: "onselect", args: el.id }] };
-				if (!isBack) target.changeloc = true;
+				//if (!isBack) target.changeloc = true;
 
 				if (el.getAttribute('data-ajax') == "True" && el.getAttribute('data-loaded') != "True") {
 					el.setAttribute('data-loaded', 'True');

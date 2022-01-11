@@ -247,6 +247,10 @@ var domActions = function () {
 	var instance = {
 		setValue: function (args) {
 			var e = document.getElementById(args.id);
+			if (!e) {
+				console.warn('setValue: element id=' + args.id + ' not found');
+				return;
+			}
 			if (e) {
 				if (e instanceof HTMLInputElement || e instanceof HTMLSelectElement)
 					e.value = args.value;
@@ -256,6 +260,10 @@ var domActions = function () {
 		},
 		setAttribute: function (args) {
 			var e = document.getElementById(args.id);
+			if (!e) {
+				console.warn('setAttribute: element id=' + args.id + ' not found');
+				return;
+			}
 			if (e instanceof HTMLSelectElement && args.attrName == 'readonly') {
 				for (i = 0; i < e.options.length; i++) {
 					if (e.value != e.options[i].value)
@@ -268,6 +276,10 @@ var domActions = function () {
 		},
 		removeAttribute: function (args) {
 			var e = document.getElementById(args.id);
+			if (!e) {
+				console.warn('removeAttribute: element id=' + args.id + ' not found');
+				return;
+			}
 			if (e instanceof HTMLSelectElement && args.attrName == 'readonly') {
 				for (i = 0; i < e.options.length; i++) {
 					e.options[i].removeAttribute('disabled');
@@ -279,14 +291,26 @@ var domActions = function () {
 		},
 		setVisible: function (args) {
 			var e = document.getElementById(args.id);
+			if (!e) {
+				console.warn('setVisible: element id=' + args.id + ' not found');
+				return;
+			}
 			if (args.visible) e.classList.remove('hide'); else e.classList.add('hide');
 		},
 		setClass: function (args) {
 			var e = document.getElementById(args.id);
+			if (!e) {
+				console.warn('setClass: element id=' + args.id + ' not found');
+				return;
+			}
 			e.classList.add(args.clsName);
 		},
 		removeClass: function (args) {
 			var e = document.getElementById(args.id);
+			if (!e) {
+				console.warn('removeClass: element id=' + args.id + ' not found');
+				return;
+			}
 			e.classList.remove(args.clsName);
 		},
 		toggleClass: function (args) {
