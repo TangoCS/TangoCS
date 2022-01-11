@@ -583,7 +583,7 @@ var ajaxUtils = function ($, cu) {
 				return r;
 		},
 		runHrefWithApiResponse: function (a, target) {
-			if (event.ctrlKey && a && a.href) {
+			if (event && event.ctrlKey && a && a.href) {
 				open(a.href, '_blank').focus();
 				return;
 			}
