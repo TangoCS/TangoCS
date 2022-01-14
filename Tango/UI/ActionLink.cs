@@ -127,7 +127,7 @@ namespace Tango.UI
 		{
 			if (_resolver == null)
 			{
-				_enabled = true;
+				_enabled = _condition;
 				return;
 			}
 			if (_url == null)
