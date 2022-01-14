@@ -91,7 +91,7 @@ namespace Tango.UI
 			foreach (var arg in d)
 			{
 				var key = arg.Key.ToLower();
-				var value = arg.Value.ToString();
+				var value = arg.Value?.ToString();
 
 				if (key == Constants.ServiceName)
 				{
