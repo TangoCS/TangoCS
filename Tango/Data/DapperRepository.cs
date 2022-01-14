@@ -148,12 +148,12 @@ namespace Tango.Data
 		public bool Exists(object id)
 		{
 			var where = GetByIdWhereClause(id);
-			var query = $"select 1 from ({AllObjectsQuery}) t where {where.clause}";
+			var query = $"select 1 from ({AllObjectsQuery}) t where {where.Clause}";
 
-			return Database.Connection.QuerySingleOrDefault<int>(query, where.parms, Database.Transaction) == 1;
+			return Database.Connection.QuerySingleOrDefault<int>(query, where.Parms, Database.Transaction) == 1;
 		}
 
-		protected (string clause, Dictionary<string, object> parms) GetByIdWhereClause(object id)
+		public WhereClauseResult GetByIdWhereClause(object id)
 		{
 			var parms = new Dictionary<string, object>();
 			var idtype = id.GetType();
@@ -168,14 +168,14 @@ namespace Tango.Data
 					i++;
 					return s;
 				}).Join(" and ");
-				return (clause, parms);
+				return new WhereClauseResult(clause, parms);
 			}
 			else if (idtype == typeof(string) || idtype == typeof(Guid) || idtype == typeof(DateTime) ||
 				(idtype.IsValueType && idtype.IsPrimitive))
 			{
 				if (keys.Count == 0) throw new Exception(noKeyMessage);
 				parms.Add("p0", id);
-				return (keys.Keys.First().ToLower() + " = @p0", parms);
+				return new WhereClauseResult(keys.Keys.First().ToLower() + " = @p0", parms);
 			}
 			else if (id is ITuple)
 			{
@@ -188,7 +188,7 @@ namespace Tango.Data
 					i++;
 					return s;
 				}).Join(" and ");
-				return (clause, parms);
+				return new WhereClauseResult(clause, parms);
 			}
 			else if (idtype.IsValueType)
 			{
@@ -201,7 +201,7 @@ namespace Tango.Data
 					i++;
 					return s;
 				}).Join(" and ");
-				return (clause, parms);
+				return new WhereClauseResult(clause, parms);
 			}
 			else
 			{
@@ -215,7 +215,7 @@ namespace Tango.Data
 					i++;
 					return s;
 				}).Join(" and ");
-				return (clause, parms);
+				return new WhereClauseResult(clause, parms);
 			}
 		}
 
@@ -246,13 +246,13 @@ namespace Tango.Data
 		public virtual object GetById(object id)
 		{
 			if (id == null) return null;
-			var (clause, parms) = GetByIdWhereClause(id);
-			var query = $"select * from ({AllObjectsQuery}) t where {clause}";
+			var where = GetByIdWhereClause(id);
+			var query = $"select * from ({AllObjectsQuery}) t where {where.Clause}";
 
 			foreach (var pair in Parameters)
-				parms.Add(pair.Key, pair.Value);
+				where.Parms.Add(pair.Key, pair.Value);
 
-			return Database.Connection.QuerySingleOrDefault(Type, query, parms, Database.Transaction);
+			return Database.Connection.QuerySingleOrDefault(Type, query, where.Parms, Database.Transaction);
 		}
 	}
 
@@ -300,7 +300,7 @@ namespace Tango.Data
 				return Database.Connection.Query<T>(query, args, Database.Transaction);
 		}
 
-		protected (string clause, Dictionary<string, object> parms) GetByIdsWhereClause<TKey>(IEnumerable<TKey> ids)
+		protected WhereClauseResult GetByIdsWhereClause<TKey>(IEnumerable<TKey> ids)
 		{
 			var cnt = keys.Count();
 			if (cnt == 1)
@@ -309,12 +309,12 @@ namespace Tango.Data
 					{ "p0", ids }
 				};
 				if (DBType == DBType.POSTGRESQL)
-					return (keys.Keys.First().ToLower() + " = any(@p0)", parms);
+					return new WhereClauseResult(keys.Keys.First().ToLower() + " = any(@p0)", parms);
 				else
-					return (keys.Keys.First().ToLower() + " in @p0", parms);
+					return new WhereClauseResult(keys.Keys.First().ToLower() + " in @p0", parms);
 			}
 			else if (cnt > 1)
-				throw new Exception($"Composite keys not supported (entity: {typeof(T).Name}).");
+				throw new Exception($"Composite keys are not supported (entity: {typeof(T).Name}).");
 			else
 				throw new Exception(noKeyMessage);
 		}
@@ -427,13 +427,13 @@ namespace Tango.Data
 				keyCollection.Add(key.Key, key.Value.GetValue(entity));
 
 			var where = GetByIdWhereClause(keyCollection);
-			var query = $"update {Table} set {setCollection.GetClause()} where {where.clause}";
+			var query = $"update {Table} set {setCollection.GetClause()} where {where.Clause}";
 
 			foreach (var i in setCollection.GetParms())
-				where.parms.Add(i.Key, i.Value);
+				where.Parms.Add(i.Key, i.Value);
 
 
-			Database.Connection.Execute(query, where.parms, Database.Transaction);
+			Database.Connection.Execute(query, where.Parms, Database.Transaction);
 		}
 
 		public string GetUpdateQuery(T entity)
@@ -464,12 +464,12 @@ namespace Tango.Data
 			sets(collection);
 
 			var where = ids.Count() == 1 ? GetByIdWhereClause(ids.First()) : GetByIdsWhereClause(ids);
-			var query = $"update {Table} set {collection.GetClause()} where {where.clause}";
+			var query = $"update {Table} set {collection.GetClause()} where {where.Clause}";
 
 			foreach (var i in collection.GetParms())
-				where.parms.Add(i.Key, i.Value);
+				where.Parms.Add(i.Key, i.Value);
 
-			Database.Connection.Execute(query, where.parms, Database.Transaction);
+			Database.Connection.Execute(query, where.Parms, Database.Transaction);
 		}
 
 		public virtual object CreateFrom(Action<UpdateSetCollection<T>> sets, Expression<Func<T, bool>> predicate)
@@ -579,9 +579,9 @@ namespace Tango.Data
 			{
 				var where = ids.Count() == 1 ? GetByIdWhereClause(ids.First()) : GetByIdsWhereClause(ids); 
 			
-				query = $"delete from {Table} where {where.clause}";
+				query = $"delete from {Table} where {where.Clause}";
 
-				Database.Connection.ExecuteScalar(query, where.parms, Database.Transaction);
+				Database.Connection.ExecuteScalar(query, where.Parms, Database.Transaction);
 			}
 		}
 
@@ -597,8 +597,20 @@ namespace Tango.Data
 		public string ReturningIDVariable { get; set; } = string.Empty;
 
 		public static implicit operator string(CreateQueryResult result) => result.Query;
-
 	}
+
+	public class WhereClauseResult
+	{
+		public string Clause { get; private set; }
+		public Dictionary<string, object> Parms { get; private set; }
+
+		public WhereClauseResult(string clause, Dictionary<string, object> parms)
+		{
+			Clause = clause;
+			Parms = parms;
+		}
+	}
+
 
 	public class EntityInfo
 	{
