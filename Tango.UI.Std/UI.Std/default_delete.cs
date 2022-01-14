@@ -12,8 +12,6 @@ namespace Tango.UI.Std
 	{
 		[Inject]
 		protected IDatabase Database { get; set; }
-		[Inject]
-		protected IDataContext DataContext { get; set; }
 
 		[Inject]
 		protected IEntityAudit EntityAudit { get; set; }

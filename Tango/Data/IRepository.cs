@@ -12,7 +12,7 @@ namespace Tango.Data
 		IDbTransaction BeginTransaction(IsolationLevel il = IsolationLevel.Unspecified);
 	}
 
-	public interface IDatabase: IAbstractDatabase
+	public interface IDatabase : IAbstractDatabase
 	{
 		IRepository<T> Repository<T>();
 		IRepository Repository(Type type);
@@ -20,12 +20,15 @@ namespace Tango.Data
 
 	public interface IRepository
 	{
+		IDatabase Database { get; }
+
 		string AllObjectsQuery { get; set; }
 		string Table { get; }
 		IDictionary<string, object> Parameters { get; }
 
 		bool Exists(object id);
 		object GetById(object id);
+		WhereClauseResult GetByIdWhereClause(object id);
 		int Count(Expression predicate = null);
 	}
 
