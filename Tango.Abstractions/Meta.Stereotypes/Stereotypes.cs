@@ -28,4 +28,16 @@ namespace Tango.Meta
             RegistryTypeName = registryTypeName;
         }
     }
+
+	public class SSpecialCompare : MetaStereotype
+	{
+		/// <summary>
+		/// key - column, value - function
+		/// </summary>
+		public Dictionary<string, string> CompareDict = new Dictionary<string, string>();
+		public SSpecialCompare(Dictionary<string, string> compareDict)
+		{
+			CompareDict = compareDict;
+		}
+	}
 }
