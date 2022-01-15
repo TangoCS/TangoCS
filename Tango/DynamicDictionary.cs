@@ -214,6 +214,16 @@ namespace Tango
 					return (T)(object)dec;
 
 			}
+			else if (t == typeof(int?)) {
+				var ds = d.ToString();
+				if (ds.IsEmpty()) return defaultValue;
+				var dec = ds.ToInt32();
+				if (dec == null)
+					return defaultValue;
+				else
+					return (T)(object)dec;
+
+			}
 			else if (t.IsEnum)
 			{
 				var d2 = Convert.ChangeType(d, Enum.GetUnderlyingType(t));
