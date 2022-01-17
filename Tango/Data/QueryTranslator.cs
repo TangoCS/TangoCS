@@ -364,7 +364,9 @@ namespace Tango.Data
 				object obj = m2.Member is FieldInfo f ? f.GetValue(captureConst.Value) :
 					m2.Member is PropertyInfo p ? p.GetValue(captureConst.Value) :
 					throw new Exception("Unknown member type " + m2.Member.GetType().Name);
-				object val = ((PropertyInfo)m.Member).GetValue(obj, null);
+				object val = m.Member is FieldInfo f2 ? f2.GetValue(obj) :
+					m.Member is PropertyInfo p2 ? p2.GetValue(obj, null) :
+					throw new Exception("Unknown member type " + m.Member.GetType().Name);
 				sb.Append(ConvertConstantToParm(val));
 				return m;
 			}
