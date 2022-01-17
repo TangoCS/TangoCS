@@ -45,6 +45,15 @@ namespace Tango.UI.Controls
 			});
 		}
 
+		public void ItemLabelFor(string labelFor, string labelTitle)
+		{
+			Item(w => {
+				w.Div(a => a.Class("menutoolbar-field"), () => {
+					w.Div(() => w.Label(labelFor, labelTitle + ":"));
+				});
+			});
+		}
+
 		public void ItemDropDownButton(string id, string title,
 			Action<ApiResponse> serverEvent, string icon = null,
 			Action<TagAttributes> btnAttrs = null, Action<TagAttributes> popupAttrs = null, PopupOptions options = null)

@@ -15,30 +15,30 @@ namespace Tango.UI.Controls
 		Func<string> Title { get; } 
 
 		IQueryable<TRef> AllObjects { get; set; }
-		Func<string, Expression<Func<TRef, bool>>> SearchExpression { get; }
+		Func<string, Expression<Func<TRef, bool>>> SearchExpression { get; set; }
 		Func<string, int, int, IQueryable<TRef>> SearchQuery { get; }
 		Func<string, IQueryable<TRef>> SearchCountQuery { get; }
 
-		Func<TRef, string> DataTextField { get; }
-		Func<TRef, string> DataValueField { get;  }
-		Action<LayoutWriter, TRef> DataRow { get; }
-		Func<TRef, string> SelectedObjectTextField { get; }
+		Func<TRef, string> DataTextField { get; set; }
+		Func<TRef, string> DataValueField { get; set; }
+		Action<LayoutWriter, TRef> DataRow { get; set; }
+		Func<TRef, string> SelectedObjectTextField { get; set; }
 
 		string FilterValue { get; }
 		bool HighlightSearchResults { get; }
 		string FilterFieldName { get; }
 
-		bool Disabled { get; }
-		bool ReadOnly { get; }
-		Action<LayoutWriter> TextWhenDisabled { get; }
-		Action<LayoutWriter> TextWhenNothingSelected { get; }
+		bool Disabled { get; set; }
+		bool ReadOnly { get; set; }
+		Action<LayoutWriter> TextWhenDisabled { get; set; }
+		Action<LayoutWriter> TextWhenNothingSelected { get; set; }
 
 		Action<LayoutWriter> FieldExtensions { get; }
 
 		bool PostOnClearEvent { get; }
 		bool PostOnChangeEvent { get; }
 
-		ISelectObjectFieldDataProvider<TRef> DataProvider { get; }
+		ISelectObjectFieldDataProvider<TRef> DataProvider { get; set; }
 
 		void OnClear(ApiResponse response);
 	}
