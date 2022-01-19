@@ -267,8 +267,9 @@ namespace Tango.UI.Controls
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
-			var id = dialog.Context.GetArg<TRefKey>(dialog.ID);
-			var v = field.ValueSource == ValueSource.Model ? field.Value : dialog.GetObjectByID(id);		
+			var v = field.ValueSource == ValueSource.Model ? 
+				field.Value : 
+				dialog.GetObjectByID(dialog.Context.GetArg<TRefKey>(dialog.ID));		
 			
 			dialog.Disabled = field.Disabled;
 			dialog.ReadOnly = field.ReadOnly;
@@ -282,8 +283,9 @@ namespace Tango.UI.Controls
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
-			var id = dialog.Context.GetArg<TRefKey>(dialog.ID);
-			var v = field.ValueSource == ValueSource.Model ? field.Value : dialog.GetObjectByID(id);
+			var v = field.ValueSource == ValueSource.Model ?
+				field.Value :
+				dialog.GetObjectByID(dialog.Context.GetArg<TRefKey>(dialog.ID));
 
 			dialog.Disabled = field.Disabled;
 			dialog.ReadOnly = field.ReadOnly;
@@ -298,10 +300,10 @@ namespace Tango.UI.Controls
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
-			var id = dialog.Context.RequestMethod == "POST" ?
-				dialog.Context.GetArg<TRefKey>(dialog.ID) :
-				field.Value;
-			var v =  dialog.GetObjectByID(id);
+			var v = field.ValueSource == ValueSource.Model ?
+				dialog.GetObjectByID(field.Value) :
+				dialog.GetObjectByID(dialog.Context.GetArg<TRefKey>(dialog.ID));
+
 			dialog.Disabled = field.Disabled;
 			dialog.ReadOnly = field.ReadOnly;
 			w.FormField(field, () => dialog.Strategy.Render(w, v), grid);
@@ -315,8 +317,10 @@ namespace Tango.UI.Controls
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefKey>
 		{
-			var ids = dialog.Context.GetListArg<TRefKey>(dialog.ID);
-			var v = dialog.Context.RequestMethod == "POST" ? dialog.GetObjectsByIDs(ids) : field.Value;
+			var v = field.ValueSource == ValueSource.Model ?
+				field.Value :
+				dialog.GetObjectsByIDs(dialog.Context.GetListArg<TRefKey>(dialog.ID));
+
 			dialog.Disabled = field.Disabled;
 			dialog.ReadOnly = field.ReadOnly;
 			w.FormField(field, () => dialog.Strategy.Render(w, v), grid);
@@ -330,10 +334,10 @@ namespace Tango.UI.Controls
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefKey>
 		{
-			var ids = dialog.Context.RequestMethod == "POST" ?
-				dialog.Context.GetListArg<TRefKey>(dialog.ID) :
-				field.Value;
-			var v = dialog.GetObjectsByIDs(ids);
+			var v = field.ValueSource == ValueSource.Model ?
+				dialog.GetObjectsByIDs(field.Value) :
+				dialog.GetObjectsByIDs(dialog.Context.GetListArg<TRefKey>(dialog.ID));
+
 			dialog.Disabled = field.Disabled;
 			dialog.ReadOnly = field.ReadOnly;
 			w.FormField(field, () => dialog.Strategy.Render(w, v), grid);
@@ -347,10 +351,10 @@ namespace Tango.UI.Controls
 			where TEntity : class
 			where TRefClass : class, IWithTitle, IWithKey<TRefKey>
 		{
-			var ids = dialog.Context.RequestMethod == "POST" ?
-				dialog.Context.GetListArg<TRefKey>(dialog.ID) :
-				field.Value;
-			var v = dialog.GetObjectsByIDs(ids);
+			var v = field.ValueSource == ValueSource.Model ?
+				dialog.GetObjectsByIDs(field.Value) :
+				dialog.GetObjectsByIDs(dialog.Context.GetListArg<TRefKey>(dialog.ID));
+
 			dialog.Disabled = field.Disabled;
 			dialog.ReadOnly = field.ReadOnly;
 			w.FormField(field, () => dialog.Strategy.Render(w, v), grid);

@@ -28,6 +28,9 @@ namespace Tango.UI.Controls
 
 		public DateTime? Value => HasValue ? new DateTime(Year, Month, Day, Hour, Minute, 0) : (DateTime?)null;
 
+		public event Action<ApiResponse> Change;
+		public void OnChange(ApiResponse response) => Change?.Invoke(response);
+
 		DateTime IFieldValueProvider<DateTime>.Value => Value ?? DateTime.MinValue;
 		public class DateListsOptions
 		{			
@@ -47,6 +50,15 @@ namespace Tango.UI.Controls
 			var yearItems = new List<SelectListItem>();
 			var hourItems = new List<SelectListItem>();
 			var minuteItems = new List<SelectListItem>();
+
+			if (Change != null)
+			{
+				options.DayAttributes += a => a.OnChangePostEvent(OnChange);
+				options.MonthAttributes += a => a.OnChangePostEvent(OnChange);
+				options.YearAttributes += a => a.OnChangePostEvent(OnChange);
+				options.HourAttributes += a => a.OnChangePostEvent(OnChange);
+				options.MinuteAttributes += a => a.OnChangePostEvent(OnChange);
+			}
 
 			if (!TimeOnly)
 			{
