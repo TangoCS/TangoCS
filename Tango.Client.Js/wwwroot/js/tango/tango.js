@@ -783,25 +783,36 @@ var ajaxUtils = function ($, cu) {
 			}
 		},
 		changeUrl: function (args) {
-			const deleteRegex = new RegExp(args.remove.join('=|') + '=');
 			const params = location.search.slice(1).split('&');
 			var search = [];
+			var hash = location.hash == '' ? [] : location.hash.split('&');
 
-			for (var i = 0; i < params.length; i++)
-				if (deleteRegex.test(params[i]) === false)
+			if (args.remove && args.remove.length > 0) {
+				const deleteRegex = new RegExp(args.remove.join('=|') + '=');
+				for (var i = 0; i < params.length; i++)
+					if (deleteRegex.test(params[i]) === false)
+						search.push(params[i]);
+			}
+			else
+				for (var i = 0; i < params.length; i++)
 					search.push(params[i]);
 
-			for (var key in args.add) {
-				search.push(key + '=' + args.add[key]);
-			}
-
-			var url = location.pathname + (search.length ? '?' + search.join('&') : '') + location.hash;
+			if (args.add)
+				for (var key in args.add) {
+					if (key.startsWith('#'))
+						hash.push(key.substring(1) + (args.add[key] != '' ? '=' + args.add[key] : ''));
+					else
+						search.push(key + '=' + args.add[key]);
+				}
+			var url = location.pathname + (search.length ? '?' + search.join('&') : '') + (hash.length > 0 ? '#' + hash.join('&') : '');
 
 			window.history.replaceState({}, document.title, url);
 			state.loc.url = url;
 
 			const current = document.getElementById(META_CURRENT);
 			current.setAttribute('data-href', url);
+			if (hash.length > 0)
+				window.location.hash = hash.join('&');
 		},
 		state: state
 	};
