@@ -51,6 +51,8 @@ namespace Tango
 		public static readonly string OpCreateNew = "createnew";
 		public static readonly string OpDelete = "delete";
 		public static readonly string OpUndelete = "undelete";
+
+		public static readonly int LongTimeout = 3600;
 	}
 
 	public static class DBConventions
