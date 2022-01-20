@@ -806,13 +806,13 @@ var ajaxUtils = function ($, cu) {
 				}
 			var url = location.pathname + (search.length ? '?' + search.join('&') : '') + (hash.length > 0 ? '#' + hash.join('&') : '');
 
+			if (hash.length > 0)
+				window.location.hash = hash.join('&');
 			window.history.replaceState({}, document.title, url);
 			state.loc.url = url;
 
 			const current = document.getElementById(META_CURRENT);
 			current.setAttribute('data-href', url);
-			if (hash.length > 0)
-				window.location.hash = hash.join('&');
 		},
 		state: state
 	};
