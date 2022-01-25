@@ -808,7 +808,7 @@ var ajaxUtils = function ($, cu) {
 
 			if (hash.length > 0)
 				window.location.hash = hash.join('&');
-			window.history.replaceState({}, document.title, url);
+			window.history.replaceState(window.history.state, document.title, url);
 			state.loc.url = url;
 
 			const current = document.getElementById(META_CURRENT);
@@ -1514,8 +1514,7 @@ var ajaxUtils = function ($, cu) {
 				s.url = window.location.pathname + window.location.search;
 			}
 
-			if (state.loc.parms['c-new'] == 1) {
-				s.parms['c-new'] = 1;
+			if (s.parms['c-new'] == 1) {
 				s.parms['e'] = DEF_EVENT_NAME;
 				if (s.parms['r']) delete s.parms['r'];
 				if (s.parms['c-prefix']) delete s.parms['c-prefix'];
@@ -1552,7 +1551,7 @@ var ajaxUtils = function ($, cu) {
 	state.loc.url = document.location.pathname + document.location.search;
 	current.setAttribute('data-href', state.loc.url);
 	instance.runEventFromElementWithApiResponse(current, { url: state.loc.url, isfirstload: true });
-
+	state.loc.parms['c-new'] = 1;
 	history.replaceState(state.loc, document.title, state.loc.url);
 
 	return instance;
