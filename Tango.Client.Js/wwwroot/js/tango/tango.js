@@ -786,29 +786,37 @@ var ajaxUtils = function ($, cu) {
 			const params = location.search.slice(1).split('&');
 			var search = [];
 			var hash = location.hash == '' ? [] : location.hash.split('&');
+			var hstate = window.history.state;
 
 			if (args.remove && args.remove.length > 0) {
 				const deleteRegex = new RegExp(args.remove.join('=|') + '=');
 				for (var i = 0; i < params.length; i++)
 					if (deleteRegex.test(params[i]) === false)
 						search.push(params[i]);
+				for (var key in args.remove) {
+					if (hstate.parms[key]) delete hstate.parms[key];
+				}
 			}
 			else
 				for (var i = 0; i < params.length; i++)
 					search.push(params[i]);
 
-			if (args.add)
+			if (args.add) {
 				for (var key in args.add) {
 					if (key.startsWith('#'))
 						hash.push(key.substring(1) + (args.add[key] != '' ? '=' + args.add[key] : ''));
-					else
+					else {
 						search.push(key + '=' + args.add[key]);
+						hstate.parms[key] = args.add[key];
+					}
 				}
+			}
 			var url = location.pathname + (search.length ? '?' + search.join('&') : '') + (hash.length > 0 ? '#' + hash.join('&') : '');
 
 			if (hash.length > 0)
 				window.location.hash = hash.join('&');
-			window.history.replaceState(window.history.state, document.title, url);
+
+			window.history.replaceState(hstate, document.title, url);
 			state.loc.url = url;
 
 			const current = document.getElementById(META_CURRENT);
@@ -1514,12 +1522,11 @@ var ajaxUtils = function ($, cu) {
 				s.url = window.location.pathname + window.location.search;
 			}
 
-			if (s.parms['c-new'] == 1) {
-				s.parms['e'] = DEF_EVENT_NAME;
-				if (s.parms['r']) delete s.parms['r'];
-				if (s.parms['c-prefix']) delete s.parms['c-prefix'];
-				if (s.parms['c-type']) delete s.parms['c-type'];
-			}
+			s.parms['c-new'] = 1;
+			s.parms['e'] = DEF_EVENT_NAME;
+			if (s.parms['r']) delete s.parms['r'];
+			if (s.parms['c-prefix']) delete s.parms['c-prefix'];
+			if (s.parms['c-type']) delete s.parms['c-type'];
 
 			var parser = document.createElement('a');
 			parser.href = state.loc.url;
