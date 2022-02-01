@@ -27,8 +27,8 @@ namespace Tango.UI.Std
 		List<ListGroup<TResult>> Groups { get; }
 
 		Action<LayoutWriter, IEnumerable<TResult>> BeforeHeader { get; set; }
-		Action<LayoutWriter, TResult, RowInfo<TResult>> BeforeRowContent { get; set; }
-		Action<LayoutWriter, TResult, RowInfo<TResult>> AfterRowContent { get; set; }
+		Action<TResult, RowInfo<TResult>> BeforeRowContent { get; set; }
+		Func<TResult, RowInfo<TResult>, IEnumerable<ListColumn<TResult>>> AfterRowContent { get; set; }
 
 		IColumnHeader AddHeader(Action<ThTagAttributes> attrs, Action<LayoutWriter> content);
 	}
@@ -72,8 +72,8 @@ namespace Tango.UI.Std
 		public bool EnableSelect { get; set; }
 		public bool AllowSelectAllPages { get; set; } = false;
 
-		public Action<LayoutWriter, TResult, RowInfo<TResult>> BeforeRowContent { get; set; }
-		public Action<LayoutWriter, TResult, RowInfo<TResult>> AfterRowContent { get; set; }
+		public Action<TResult, RowInfo<TResult>> BeforeRowContent { get; set; }
+		public Func<TResult, RowInfo<TResult>, IEnumerable<ListColumn<TResult>>> AfterRowContent { get; set; }
 		public Action<LayoutWriter, IEnumerable<TResult>> BeforeHeader { get; set; }
 
 		public IColumnHeader AddHeader(Action<ThTagAttributes> attrs, Action<LayoutWriter> content)

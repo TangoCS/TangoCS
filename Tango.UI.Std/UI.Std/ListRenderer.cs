@@ -69,7 +69,7 @@ namespace Tango.UI.Std
 				if (prev != null)
 					r.PrevRowData = prev;
 				
-				fields.BeforeRowContent?.Invoke(w, o, r);
+				fields.BeforeRowContent?.Invoke(o, r);
 
 				w.Tr(a => fields.RowAttributes?.Invoke(a, o, r), () => {
 					foreach (var cols in fields.Cells)
@@ -77,7 +77,14 @@ namespace Tango.UI.Std
 							w.Td(a => c.Attributes?.Invoke(a, o, r), () => c.Content(w, o, r));
 				});
 
-				fields.AfterRowContent?.Invoke(w, o, r);
+				var afterCols = fields.AfterRowContent?.Invoke(o, r);
+				if (afterCols != null)
+				{
+					w.Tr(() => {
+						foreach (var c in afterCols)
+							w.Td(a => c.Attributes?.Invoke(a, o, r), () => c.Content(w, o, r));
+					});
+				}
 
 				i++;
 				prev = o;

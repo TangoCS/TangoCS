@@ -65,6 +65,8 @@ namespace Tango
 
 		public static double ToDouble(this string src, double defaultValue)
 		{
+			if (src == null)
+				return defaultValue;
 			if (double.TryParse(src.Replace(",", ".").Replace(" ", "").Replace(" ", ""), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double x))
 				return x;
 			return defaultValue;
@@ -72,6 +74,8 @@ namespace Tango
 
 		public static double? ToDouble(this string src)
 		{
+			if (src == null)
+				return null;
 			if (double.TryParse(src.Replace(",", ".").Replace(" ", "").Replace(" ", ""), System.Globalization.NumberStyles.Any, CultureInfo.InvariantCulture, out double x))
 				return x;
 			return null;

@@ -64,7 +64,7 @@ namespace Tango.UI.Controls
 
 	public static class DialogExtensions
 	{
-		internal static TagAttributes DialogContainerAttrs(this TagAttributes a, ActionContext ctx, string type, string prefix, DialogOptions options)
+		public static TagAttributes DialogContainerAttrs(this TagAttributes a, ActionContext ctx, string type, string prefix, DialogOptions options)
 		{
 			if (options == null)
 				options = new DialogOptions();
@@ -81,12 +81,12 @@ namespace Tango.UI.Controls
 			return a;
 		}
 
-		internal static void DialogControl(this LayoutWriter w, Action<TagAttributes> attrs, Action content)
+		public static void DialogControl(this LayoutWriter w, Action<TagAttributes> attrs, Action content)
 		{
 			w.Div(a => a.ID("dialog").Class("modal-dialog").Role("dialog").Aria("modal", "true").DataCtrl("dialog").DataResultHandler().Set(attrs), () => content());
 		}
 
-		internal static void DialogControlBody(this LayoutWriter w, Action title, Action toolbar, Action body, Action bottomToolbar, Action footer, bool showCloseIcon = true)
+		public static void DialogControlBody(this LayoutWriter w, Action title, Action toolbar, Action body, Action bottomToolbar, Action footer, bool showCloseIcon = true)
 		{
 			w.Div(a => a.Class("modal-container"), () => {
 				w.Div(a => a.Class("modal-header"), () => {
