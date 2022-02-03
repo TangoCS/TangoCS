@@ -230,7 +230,7 @@ namespace Tango.UI.Controls
 
 		public static void ErrorPlaceholder(this HtmlWriter w, bool reloadPageOnError = false)
 		{
-			w.Div(a => a.ID("container_err").Class("modal-dialog").Role("dialog").DataCtrl("dialog").DataResultHandler().Data("reuse", 1), () => {
+			w.Div(a => a.ID("container_err").Class("modal-dialog").Role("dialog").DataCtrl("dialog").DataResultHandler().Data("showonrender").Data("reuse", 1), () => {
 				w.Div(a => a.Class("modal-container"), () => {
 					w.H3(a => a.ID("container_err_title"));
 					w.Div(a => a.ID("container_err_body"));
