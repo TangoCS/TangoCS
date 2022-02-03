@@ -128,6 +128,50 @@
 				setTimeout(function () { URL.revokeObjectURL(downloadUrl); }, 100); // cleanup
 			}
 		},
+		processElementValue: function (el, setvalfunc) {
+			if (!el) return;
+
+			var parmname = null;
+			if (el.name)
+				parmname = el.name;
+			else if (el.hasAttribute('data-name'))
+				parmname = el.getAttribute('data-name');
+
+			if (parmname) {
+				var val = null;
+
+				if (el.name !== undefined && el.type == 'checkbox' && !el.hasAttribute('disabled')) {
+					val = el.checked;
+				}
+				else if (el.name !== undefined && el.type == 'select-multiple' && !el.hasAttribute('disabled')) {
+					parmname = parmname.replace('[]', '');
+					var result = [];
+					for (var i = 0, iLen = el.options.length; i < iLen; i++) {
+						const opt = el.options[i];
+						if (opt.selected) {
+							result.push(opt.value || opt.text);
+						}
+					}
+					val = result.join(',');
+				}
+				else if (el.name !== undefined && el.value !== undefined && !el.hasAttribute('disabled')) {
+					val = el.value;
+				}
+				else if (el.isContentEditable) {
+					val = el.innerText;
+				}
+
+				if (val !== undefined && val != null) {
+					setvalfunc(parmname, val);
+				}
+			}
+
+			if (el.children) {
+				for (var i = 0; i < el.children.length; i++) {
+					instance.processElementValue(el.children[i], setvalfunc);
+				}
+			}
+		},
 		copyToClipboard: function (sourceId) {
 			var source = document.querySelector('#' + sourceId);
 			if (source) {
@@ -553,7 +597,7 @@ var ajaxUtils = function ($, cu) {
 			target.method = 'GET';
 			processElementDataOnEvent(el, target, function (key, value) { target.data[key] = value; });
 			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement) {
-				processElementValue(el, function (key, value) { target.query[key] = value; })
+				cu.processElementValue(el, function (key, value) { target.query[key] = value; })
 				//target.query[el.name] = el.value;
 			}
 			runOnAjaxSend(el, target);
@@ -592,7 +636,7 @@ var ajaxUtils = function ($, cu) {
 			target.method = 'POST';
 			processElementDataOnEvent(el, target, function (key, value) { target.data[key] = value; });
 			if (!form && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)) {
-				processElementValue(el, function (key, value) { target.data[key] = value; })
+				cu.processElementValue(el, function (key, value) { target.data[key] = value; })
 				//target.data[el.name] = el.value;
 			}
 
@@ -972,7 +1016,7 @@ var ajaxUtils = function ($, cu) {
 			} else if (attr.name.startsWith('data-c-')) {
 				target.data[attr.name.replace('data-c-', 'c-')] = val || '';
 			} else if (attr.name.startsWith('data-ref')) {
-				processElementValue(document.getElementById(val), setvalfunc);
+				cu.processElementValue(document.getElementById(val), setvalfunc);
 			} else if (attr.name == 'data-responsetype') {
 				target.responsetype = val;
 			}
@@ -1032,50 +1076,7 @@ var ajaxUtils = function ($, cu) {
 		}
 	}
 
-	function processElementValue(el, setvalfunc) {
-		if (!el) return;
-
-		var parmname = null;
-		if (el.name)
-			parmname = el.name;
-		else if (el.hasAttribute('data-name'))
-			parmname = el.getAttribute('data-name');
-
-		if (parmname) {
-			var val = null;
-
-			if (el.name !== undefined && el.type == 'checkbox' && !el.hasAttribute('disabled')) {
-				val = el.checked;
-			}
-			else if (el.name !== undefined && el.type == 'select-multiple' && !el.hasAttribute('disabled')) {
-				parmname = parmname.replace('[]', '');
-				var result = [];
-				for (var i = 0, iLen = el.options.length; i < iLen; i++) {
-					const opt = el.options[i];
-					if (opt.selected) {
-						result.push(opt.value || opt.text);
-					}
-				}
-				val = result.join(',');
-			}
-			else if (el.name !== undefined && el.value !== undefined && !el.hasAttribute('disabled')) {
-				val = el.value;
-			}
-			else if (el.isContentEditable) {
-				val = el.innerText;
-			}
-
-			if (val !== undefined && val != null) {
-				setvalfunc(parmname, val);
-			}
-		}
-
-		if (el.children) {
-			for (var i = 0; i < el.children.length; i++) {
-				processElementValue(el.children[i], setvalfunc);
-			}
-		}
-	}
+	
 
 	function processElementDataOnFormSubmit(el, setvalfunc) {
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {

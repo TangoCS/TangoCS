@@ -20,7 +20,8 @@
 		widgetWillMount: function (shadow, state) {
 			const el = shadow.getElementById(state.root);
 			const parentid = el.getAttribute('data-c-parent');
-			instance.open(el);
+			if (el.hasAttribute('data-showonrender'))
+				instance.open(el);
 			if (parentid) {
 				const parent = document.getElementById(parentid);
 				parent.style.zIndex = 99;
