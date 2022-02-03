@@ -11,7 +11,7 @@
 		close: function (el) {
 			if (!el.nodeType) el = document.getElementById(el);
 			el.classList.remove('md-show');
-			if (!el.getAttribute('data-reuse')) {
+			if (!el.hasAttribute('data-reuse')) {
 				au.delay(el, function (d) {
 					d.parentNode.removeChild(d);
 				});

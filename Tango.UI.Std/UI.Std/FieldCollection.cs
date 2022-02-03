@@ -272,6 +272,12 @@ namespace Tango.UI.Std
 			f.Cells.Add(listColumn);
 			return listColumn;
 		}
+		public static IListColumn<TResult> AddCellAlignRight<TResult>(this IFieldCollection<TResult> f, RenderRowCellDelegate<TResult> render)
+		{
+			var listColumn = new ListColumn<TResult> { Content = render, Attributes = (a, o, i) => a.Class("r") };
+			f.Cells.Add(listColumn);
+			return listColumn;
+		}
 		public static IListColumn<TResult> AddCellAlignRight<TResult>(this IFieldCollection<TResult> f, RowCellAttributesDelegate<TResult> attrs, Action<LayoutWriter, TResult> render)
 		{
 			RowCellAttributesDelegate<TResult> a1 = (a, o, i) => a.Class("r");
@@ -294,7 +300,14 @@ namespace Tango.UI.Std
 	        f.Cells.Add(listColumn);
 	        return new AddCellResult<TResult> {Column = listColumn, Header = columnHeader};
         }
-        public static IListColumn<TResult> AddCellAlignCenter<TResult, T>(this IFieldCollection<TResult> f, Func<TResult, T> value)
+		public static AddCellResult<TResult> AddCellAlignRight<TResult>(this IFieldCollection<TResult> f, string title, RenderRowCellDelegate<TResult> render)
+		{
+			var listColumn = new ListColumn<TResult> { Content = render, Attributes = (a, o, i) => a.Class("r") };
+			var columnHeader = f.AddHeader(title);
+			f.Cells.Add(listColumn);
+			return new AddCellResult<TResult> { Column = listColumn, Header = columnHeader };
+		}
+		public static IListColumn<TResult> AddCellAlignCenter<TResult, T>(this IFieldCollection<TResult> f, Func<TResult, T> value)
         {
 	        var listColumn = new ListColumn<TResult> { Content = (w, o, i) => w.Write(value(o)?.ToString()), Attributes = (a, o, i) => a.Class("c") };
             f.Cells.Add(listColumn);

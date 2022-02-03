@@ -74,7 +74,10 @@ namespace Tango.UI.Controls
 				a.Class("height100");
 			a.Style("width:" + options.Width);
 			a.Data("c-changeloc", "false");
-			a.DataHref(ctx.BaseUrl().Url).DataNewContainer(type, prefix);
+			if (options.ShowOnRender)
+				a.Data("showonrender");
+			a.DataHref(ctx.BaseUrl().Url);
+			a.DataNewContainer(type, prefix);
 			var parent = ctx.GetArg("c-parent");
 			if (!parent.IsEmpty())
 				a.Data("c-parent", parent);
@@ -256,6 +259,7 @@ namespace Tango.UI.Controls
 		public DialogHeight Height { get; set; } = DialogHeight.Auto;
 		public bool ModalBodyPadding { get; set; } = true;
 		public bool ShowCloseIcon { get; set; } = true;
+		public bool ShowOnRender { get; set; } = true;
 
 		public Dictionary<string, string> ToParms()
 		{
