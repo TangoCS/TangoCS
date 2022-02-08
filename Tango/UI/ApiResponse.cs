@@ -47,6 +47,7 @@ namespace Tango.UI
 			public Action<LayoutWriter> content;
 		}
 		public Dictionary<string, object> State = new Dictionary<string, object>();
+		public Dictionary<string, object> Props = new Dictionary<string, object>();
 		public List<IWidget> Widgets { get; set; } = new List<IWidget>();
 		public List<ClientAction> ClientActions { get; set; } = new List<ClientAction>();
 		public HashSet<string> Includes { get; set; } = new HashSet<string>();
@@ -340,6 +341,9 @@ namespace Tango.UI
 
 				if (State.Count > 0)
 					Data.Add("state", State);
+
+				if (Props.Count > 0)
+					Data.Add("props", Props);
 			}
 			catch (Exception ex)
 			{

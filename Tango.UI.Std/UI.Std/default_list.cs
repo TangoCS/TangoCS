@@ -273,7 +273,7 @@ namespace Tango.UI.Std
 			if (Sections.SetPageTitle)
 				response.AddWidget("#title", FormTitle);
 			if (GenerateClientViewData)
-				response.State.Add(ClientID, new { data = _result });
+				response.State.Add(ClientID, new { rows = _result });
 			AfterRender(response);
 		}
 
