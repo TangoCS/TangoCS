@@ -28,7 +28,7 @@ namespace Tango.UI.Controls
 
 		public (string From, string To) ParmName => (ClientID + "_" + "dperiodfrom", ClientID + "_" + "dperiodto");
 		
-		private (string From, string To) ParmID => (ID + "_" + "dperiodfrom", ID + "_" + "dperiodto");
+		(string From, string To) parmID => (ID + "_" + "dperiodfrom", ID + "_" + "dperiodto");
 		
 		public int MinYear { get; set; }
 		public bool ShowDays { get; set; } = true;
@@ -96,14 +96,14 @@ namespace Tango.UI.Controls
 			{
 				w.Div(() =>
 				{
-					if (UseCalendar && ShowDays) w.Calendar(new InputName(){ ID = ParmID.From, Name = ParmName.From}, from, options.FromCalendarOptions);
+					if (UseCalendar && ShowDays) w.Calendar(parmID.From, from, options.FromCalendarOptions);
 					if (!UseCalendar || ShowTime)
 						dPeriodFrom.Render(w, from, options.FromTimeOptions);
 				});
 				w.Div("&ndash;");
 				w.Div(() =>
 				{
-					if (UseCalendar && ShowDays) w.Calendar(new InputName(){ ID = ParmID.To, Name = ParmName.To}, to, options.ToCalendarOptions);
+					if (UseCalendar && ShowDays) w.Calendar(parmID.To, to, options.ToCalendarOptions);
 					if (!UseCalendar || ShowTime)
 						dPeriodTo.Render(w, to, options.ToTimeOptions);
 				});
@@ -157,8 +157,8 @@ namespace Tango.UI.Controls
 			{
 				if (UseCalendar && ShowDays)
 				{
-					var from = Context.GetDateTimeArg(ParmName.From);
-					var to = Context.GetDateTimeArg(ParmName.To);
+					var from = Context.GetDateTimeArg(parmID.From);
+					var to = Context.GetDateTimeArg(parmID.To);
 					var fromtime = dPeriodFrom.Value?.TimeOfDay;
 					var totime = dPeriodTo.Value?.TimeOfDay;
 
