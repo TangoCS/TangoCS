@@ -418,6 +418,7 @@ namespace Tango.UI.Std
 	public interface IListColumn<TResult>
 	{
 		IEnumerable<ListColumn<TResult>> AsEnumerable(TResult o, RowInfo<TResult> r);
+		Func<TResult, bool> IsVisible { get; set; }
 	}
 
 	public class ColumnHeader : IColumnHeader
@@ -458,7 +459,7 @@ namespace Tango.UI.Std
 	{
 		public RenderRowCellDelegate<TResult> Content { get; set; }
 		public RowCellAttributesDelegate<TResult> Attributes { get; set; }
-
+		public Func<TResult, bool> IsVisible { get; set; } = o => true;
 		public ListColumn() { }
 		public ListColumn(RowCellAttributesDelegate<TResult> attrs, RenderRowCellDelegate<TResult> content)
 		{
@@ -480,7 +481,7 @@ namespace Tango.UI.Std
 		{
 			_columns = columns;
 		}
-
+		public Func<TResult, bool> IsVisible { get; set; } = o => true;
 		public IEnumerable<ListColumn<TResult>> AsEnumerable(TResult o, RowInfo<TResult> r) => _columns?.Invoke(o, r);
 	}
 

@@ -74,7 +74,8 @@ namespace Tango.UI.Std
 				w.Tr(a => fields.RowAttributes?.Invoke(a, o, r), () => {
 					foreach (var cols in fields.Cells)
 						foreach (var c in cols.AsEnumerable(o, r))
-							w.Td(a => c.Attributes?.Invoke(a, o, r), () => c.Content(w, o, r));
+							if (c.IsVisible(o))
+								w.Td(a => c.Attributes?.Invoke(a, o, r), () => c.Content(w, o, r));
 				});
 
 				var afterCols = fields.AfterRowContent?.Invoke(o, r);
