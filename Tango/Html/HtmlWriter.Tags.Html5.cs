@@ -115,6 +115,11 @@ namespace Tango.Html
 		{
 			w.WriteTag("video", attributes, inner);
 		}
+
+		public static void Template(this HtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
+		{
+			w.WriteTag("template", attributes, inner);
+		}
 	}
 
 	public class TimeTagAttributes : TagAttributes<TimeTagAttributes>
