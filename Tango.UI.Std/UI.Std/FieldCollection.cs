@@ -234,25 +234,26 @@ namespace Tango.UI.Std
 		#endregion
 
 		#region cell only
-		public static IListColumn<TResult> AddCell<TResult>(this IFieldCollection<TResult> f, RenderRowCellDelegate<TResult> render)
+		public static IListColumn<TResult> AddCell<TResult>(this IFieldCollection<TResult> f, RowCellAttributesDelegate<TResult> attrs, RenderRowCellDelegate<TResult> render)
 		{
-			var listColumn = new ListColumn<TResult> {Content = render};
+			var listColumn = new ListColumn<TResult> { Attributes = attrs, Content = render };
 			f.Cells.Add(listColumn);
 			return listColumn;
+		}
+
+		public static IListColumn<TResult> AddCell<TResult>(this IFieldCollection<TResult> f, RenderRowCellDelegate<TResult> render)
+		{
+			return f.AddCell((a, o, i) => { }, render);
 		}
 
 		public static IListColumn<TResult> AddCell<TResult>(this IFieldCollection<TResult> f, Action<LayoutWriter, TResult> render)
 		{
-			var listColumn = new ListColumn<TResult> {Content = (w, o, i) => render(w, o)};
-			f.Cells.Add(listColumn);
-			return listColumn;
+			return f.AddCell((a, o, i) => { }, (w, o, i) => render(w, o));
 		}
 
 		public static IListColumn<TResult> AddCell<TResult, T>(this IFieldCollection<TResult> f, Func<TResult, T> value)
 		{
-			var listColumn = new ListColumn<TResult> {Content = (w, o, i) => w.Write(value(o)?.ToString())};
-			f.Cells.Add(listColumn);
-			return listColumn;
+			return f.AddCell((a, o, i) => { }, (w, o, i) => w.Write(value(o)?.ToString()));
 		}
 
 		//public static void AddCell<TResult>(this IFieldCollection<TResult> f, ListColumn<TResult> listColumn)
