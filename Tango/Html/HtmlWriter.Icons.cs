@@ -73,9 +73,9 @@ namespace Tango.Html
 		}
 
 
-		public static void IconExpander(this HtmlWriter w, Action<TagAttributes> attrs = null)
+		public static void IconExpander(this HtmlWriter w, Action<TagAttributes> attrs = null, bool collapsed = true)
 		{
-			w.Icon("collapsed", attrs, () => w.SvgIcon("expanded"));
+			w.Icon(collapsed ? "collapsed" : "expanded", attrs, () => w.SvgIcon(collapsed ? "expanded" : "collapsed"));
 		}
 
 

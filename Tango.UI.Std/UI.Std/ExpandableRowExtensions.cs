@@ -33,7 +33,8 @@ namespace Tango.UI.Std
 					Content = (w, o, i) => {
 						if (options.ContentVisible(o, i))
 						{
-							w.IconExpander(a => a.Class(options.Collapsed(o, i) ? "collapsed" : "expanded").Title(options.Tip));
+							bool collapsed = options.Collapsed(o, i);
+							w.IconExpander(a => a.Class(collapsed ? "collapsed" : "expanded").Title(options.Tip), collapsed);
 						}
 					}
 				}
