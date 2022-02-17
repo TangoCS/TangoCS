@@ -26,9 +26,7 @@ namespace Tango.UI.Controls
 		DateLists dPeriodFrom;
 		DateLists dPeriodTo;
 
-		public (string From, string To) ParmName => (ClientID + "_" + "dperiodfrom", ClientID + "_" + "dperiodto");
-		
-		(string From, string To) parmID => (ID + "_" + "dperiodfrom", ID + "_" + "dperiodto");
+		public (string From, string To) ParmID => (ID + "_" + "dperiodfrom", ID + "_" + "dperiodto");
 		
 		public int MinYear { get; set; }
 		public bool ShowDays { get; set; } = true;
@@ -75,12 +73,12 @@ namespace Tango.UI.Controls
 			dPeriodTo.MaxYear = DateTime.Today.Year;
 
 			if (from == null)
-				from = Context.GetDateTimeArg(ParmName.From);
+				from = Context.GetDateTimeArg(ParmID.From);
 			if (from == null)
 				from = DefaultValue?.From;
 
 			if (to == null)
-				to = Context.GetDateTimeArg(ParmName.To);
+				to = Context.GetDateTimeArg(ParmID.To);
 			if (to == null)
 				to = DefaultValue?.To;
 			if (options == null)
@@ -96,14 +94,14 @@ namespace Tango.UI.Controls
 			{
 				w.Div(() =>
 				{
-					if (UseCalendar && ShowDays) w.Calendar(parmID.From, from, options.FromCalendarOptions);
+					if (UseCalendar && ShowDays) w.Calendar(ParmID.From, from, options.FromCalendarOptions);
 					if (!UseCalendar || ShowTime)
 						dPeriodFrom.Render(w, from, options.FromTimeOptions);
 				});
 				w.Div("&ndash;");
 				w.Div(() =>
 				{
-					if (UseCalendar && ShowDays) w.Calendar(parmID.To, to, options.ToCalendarOptions);
+					if (UseCalendar && ShowDays) w.Calendar(ParmID.To, to, options.ToCalendarOptions);
 					if (!UseCalendar || ShowTime)
 						dPeriodTo.Render(w, to, options.ToTimeOptions);
 				});
@@ -157,8 +155,8 @@ namespace Tango.UI.Controls
 			{
 				if (UseCalendar && ShowDays)
 				{
-					var from = Context.GetDateTimeArg(parmID.From);
-					var to = Context.GetDateTimeArg(parmID.To);
+					var from = Context.GetDateTimeArg(ParmID.From);
+					var to = Context.GetDateTimeArg(ParmID.To);
 					var fromtime = dPeriodFrom.Value?.TimeOfDay;
 					var totime = dPeriodTo.Value?.TimeOfDay;
 
