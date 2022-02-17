@@ -56,8 +56,8 @@
                 if (el.disabled || el.hasAttribute('readonly')) return;
 				el.checked = !el.checked;
 				setClass(el, prefix);
-				if (el.hasAttribute('data-e'))
-					el.onchange();
+				if (el.onchange)
+					el.dispatchEvent(new Event("change"));
 			});
 
 			setClass(el, prefix);
