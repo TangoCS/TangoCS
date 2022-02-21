@@ -1316,9 +1316,8 @@ var ajaxUtils = function ($, cu) {
 				if (!ctrl.state.type) {
 					ctrl.state.type = t
 					ctrl.state.root = ctrl.id;
-					if (Tango.components[t]) {
-						ctrl.state.instance = Tango.components[t](Tango);
-						ctrl.state.instance.id = ctrl.state.root;
+					if (Tango.serviceProvider.components[t]) {
+						ctrl.state.instance = Tango.serviceProvider.components[t](ctrl.id, Tango.serviceProvider);
 						if (apiResult.props && apiResult.props[ctrl.state.root]) {
 							ctrl.state.instance.props = Object.assign(ctrl.state.instance.props, apiResult.props[ctrl.state.root]);
 						}
@@ -1678,20 +1677,24 @@ const Tango = {
 		widgetDidMount() { }
 		widgetContentChanged() { }
 
-		constructor(props) {
+		constructor(id, props) {
+			this.id = id;
 			this.props = props;
 		}
 	},
 
 	registerComponent: function (cls, fabric) {
-		this.components[cls.name.toLowerCase()] = fabric;
+		this.serviceProvider.components[cls.name.toLowerCase()] = (id, sp) => {
+			const props = fabric ? fabric(sp) : { };
+			return new cls(id, props);
+		}
 	},
 
-	components: {
+	serviceProvider: {
+		components: {},
 
-	},
-
-	commonUtils,
-	ajaxUtils,
-	domActions
+		commonUtils,
+		ajaxUtils,
+		domActions
+	}
 };

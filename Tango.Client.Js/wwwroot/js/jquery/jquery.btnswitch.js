@@ -5,18 +5,11 @@
  * Minimal Usage: $('#switch').btnSwitch();
  * Settings:
  * Theme: Select a theme (Button, Light, Swipe, iOS, Android)
- * OnText: What to display for the "On" Button
- * OffText: What to display for the "Off" Button
  */
 
 (function ($) {
 	$.fn.btnSwitch = function (options) {
-		var settings = $.extend({
-			theme: "Swipe",
-			OnText: "On",
-			OffText: "Off"
-		}, options);
-
+		var settings = $.extend({}, options);
 
 		var setClass = function (el, prefix) {
 			if (el.checked) {
@@ -41,13 +34,7 @@
 			const label = document.createElement('label');
 			label.classList.add('btn-switch');
 			label.htmlFor = id;
-			label.setAttribute('data-tg-on', settings.OnText);
-			label.setAttribute('data-tg-off', settings.OffText);
 			div.appendChild(label);
-
-			const divcl = document.createElement('div');
-			divcl.style.clear = 'both';
-			div.appendChild(divcl);
 
 			el.className = 'tgl-sw tgl-sw-' + prefix;
 
@@ -65,9 +52,32 @@
 
 		return this.each(function () {
 			if (['Light', 'Swipe', 'iOS', 'Android'].indexOf(settings.theme) == -1)
-				settings.theme = 'Swipe';
+				settings.theme = 'Light';
 
 			setHtml(this.id, settings.theme.toLowerCase());
 		});
 	};
 }(jQuery));
+
+class BtnSwitch extends Tango.Component {
+	setValue(checked) {
+		const el = document.getElementById(this.id);
+
+		if (el.disabled || el.hasAttribute('readonly'))
+			return;
+
+		el.checked = checked;
+
+		const isActive = el.classList.contains('tgl-sw-active');
+		if (checked && !isActive) {
+			el.classList.add('tgl-sw-' + this.props.prefix.toLowerCase() + '-checked');
+			el.classList.add('tgl-sw-active');
+		} else if (!checked && isActive) {
+			el.classList.remove('tgl-sw-' + this.props.prefix.toLowerCase() + '-checked');
+			el.classList.remove('tgl-sw-active');
+		}
+	}
+}
+
+Tango.registerComponent(BtnSwitch, sp => ({ cu: sp.commonUtils, prefix: 'Light' }));
+
