@@ -287,19 +287,17 @@ namespace Tango.UI.Std
 			f.Cells.Add(listColumn);
 			return listColumn;
 		}
+		public static AddCellResult<TResult> AddCellAlignRight<TResult, T>(this IFieldCollection<TResult> f, string title, RowCellAttributesDelegate<TResult> attrs, Func<TResult, T> value)
+		{
+			return f.AddCellAlignRight(title, attrs, (w, o, i) => w.Write(value(o)?.ToString()));
+		}
 		public static AddCellResult<TResult> AddCellAlignRight<TResult, T>(this IFieldCollection<TResult> f, string title, Func<TResult, T> value)
         {
-	        var listColumn = new ListColumn<TResult> { Content = (w, o, i) => w.Write(value(o)?.ToString()), Attributes = (a, o, i) => a.Class("r") };
-            var columnHeader = f.AddHeader(title);
-            f.Cells.Add(listColumn);
-            return new AddCellResult<TResult> {Column = listColumn, Header = columnHeader};
+			return f.AddCellAlignRight(title, null, (w, o, i) => w.Write(value(o)?.ToString()));
         }
         public static AddCellResult<TResult> AddCellAlignRight<TResult>(this IFieldCollection<TResult> f, string title, Action<LayoutWriter, TResult> render)
         {
-	        var listColumn = new ListColumn<TResult> { Content = (w, o, i) => render(w, o), Attributes = (a, o, i) => a.Class("r") };
-	        var columnHeader = f.AddHeader(title);
-	        f.Cells.Add(listColumn);
-	        return new AddCellResult<TResult> {Column = listColumn, Header = columnHeader};
+			return f.AddCellAlignRight(title, null, (w, o, i) => render(w, o));
         }
 		public static AddCellResult<TResult> AddCellAlignRight<TResult>(this IFieldCollection<TResult> f, string title, RenderRowCellDelegate<TResult> render)
 		{
@@ -330,24 +328,39 @@ namespace Tango.UI.Std
         }
         public static AddCellResult<TResult> AddCellAlignCenter<TResult, T>(this IFieldCollection<TResult> f, string title, Func<TResult, T> value)
         {
-	        var listColumn = new ListColumn<TResult> {Content = (w, o, i) => w.Write(value(o)?.ToString()), Attributes = (a, o, i) => a.Class("c")};
-	        var columnHeader = f.AddHeader(title);
-	        f.Cells.Add(listColumn);
-
-	        return new AddCellResult<TResult> {Column = listColumn, Header = columnHeader};
+			return f.AddCellAlignCenter(title, null, (w, o, i) => w.Write(value(o)?.ToString()));
         }
         public static AddCellResult<TResult> AddCellAlignCenter<TResult>(this IFieldCollection<TResult> f, string title, Action<LayoutWriter, TResult> render)
         {
-	        var listColumn = new ListColumn<TResult> {Content = (w, o, i) => render(w, o), Attributes = (a, o, i) => a.Class("c")};
-	        var columnHeader = f.AddHeader(title);
-	        f.Cells.Add(listColumn);
-	        return new AddCellResult<TResult> {Column = listColumn, Header = columnHeader};
+			return f.AddCellAlignCenter(title, null, (w, o, i) => render(w, o));
         }
 
-        #endregion
+		public static AddCellResult<TResult> AddCellAlignCenter<TResult>(this IFieldCollection<TResult> f, string title, RowCellAttributesDelegate<TResult> attrs, RenderRowCellDelegate<TResult> render)
+		{
+			RowCellAttributesDelegate<TResult> a1 = (a, o, i) => a.Class("c");
+			if (attrs != null)
+				a1 += attrs;
+			var columnHeader = f.AddHeader(title);
+			var listColumn = new ListColumn<TResult> { Content = render, Attributes = a1 };
+			f.Cells.Add(listColumn);
+			return new AddCellResult<TResult> { Column = listColumn, Header = columnHeader };
+		}
 
-        #region string title
-        public static AddCellResult<TResult> AddCell<TResult>(this IFieldCollection<TResult> f, string title, RenderRowCellDelegate<TResult> render)
+		public static AddCellResult<TResult> AddCellAlignRight<TResult>(this IFieldCollection<TResult> f, string title, RowCellAttributesDelegate<TResult> attrs, RenderRowCellDelegate<TResult> render)
+		{
+			RowCellAttributesDelegate<TResult> a1 = (a, o, i) => a.Class("r");
+			if (attrs != null)
+				a1 += attrs;
+			var columnHeader = f.AddHeader(title);
+			var listColumn = new ListColumn<TResult> { Content = render, Attributes = a1 };
+			f.Cells.Add(listColumn);
+			return new AddCellResult<TResult> { Column = listColumn, Header = columnHeader };
+		}
+
+		#endregion
+
+		#region string title
+		public static AddCellResult<TResult> AddCell<TResult>(this IFieldCollection<TResult> f, string title, RenderRowCellDelegate<TResult> render)
 		{
 			var listColumn = new ListColumn<TResult> { Content = render };
 			var columnHeader = f.AddHeader(title);

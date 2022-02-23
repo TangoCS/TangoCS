@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Threading;
 using Cronos;
 using Tango.Cache;
+using Tango.Html;
 using Tango.Identity;
 using Tango.Identity.Std;
 using Tango.Logger;
@@ -38,7 +39,7 @@ namespace Tango.Tasks
         [Inject]
         protected ITaskControllerRepository Repository { get; set; }
         [Inject]
-        protected IErrorLogger errorLogger { get; set; }
+        protected IErrorLogger ErrorLogger { get; set; }
         [Inject]
         protected ICache Cache { get; set; }
 
@@ -124,29 +125,7 @@ namespace Tango.Tasks
             try
             {
                 var type = TaskTypeCollection.GetType(task.Class);
-                object obj = null;
-                ConstructorInfo ci = type.GetConstructors().FirstOrDefault();
-                if (ci != null)
-                {
-                    ParameterInfo[] pi = ci.GetParameters();
-                    object[] pr = new object[pi.Length];
-                    for (int i = 0; i < pi.Length; i++)
-                    {
-                        if (pi[i].ParameterType.IsInterface)
-                            pr[i] = base.Context.RequestServices.GetService(pi[i].ParameterType);
-                    }
-                    obj = ci.Invoke(pr);
-                }
-                foreach (var prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
-                                            .Where(prop => Attribute.IsDefined(prop, typeof(InjectAttribute))))
-                    prop.SetValue(obj, base.Context.RequestServices.GetService(prop.PropertyType));
-
-                MethodInfo mi = type.GetMethod(task.Method);
-                ParameterInfo[] mp = mi.GetParameters();
-                object[] p = new object[mp.Length];
-
-                TaskExecutionContext context = null;
-                TaskParameter[] taskparam = param != null ? null : Repository.GetTaskParameters(task.ID).ToArray();
+                var obj = CreateTaskInstance(type);
 
                 if (withLogger)
                 {
@@ -162,75 +141,22 @@ namespace Tango.Tasks
                     }
                 }
 
-                for (int i = 0; i < mp.Length; i++)
-                {
-                    if (mp[i].ParameterType.Name == typeof(TaskExecutionContext).Name)
-                    {
-                        context = new TaskExecutionContext()
-                        {
-                            ExecutionDetails = new Tango.Html.HtmlWriter(),
-                            IsManual = isManual,
-                            ExecutionID = taskexecid,
-                            ProgressLogger = progressLogger,
-                            TaskID = task.ID
-                        };
-                        p[i] = context;
-                        continue;
-                    }
-                    else if (mp[i].ParameterType.IsInterface)
-                    {
-                        p[i] = Context.RequestServices.GetService(mp[i].ParameterType);
-                        continue;
-                    }
-                    string val;
-                    if (param == null)
-                    {
-                        val = taskparam.Single(o => o.ParentID == task.ID && o.SysName.ToLower() == mp[i].Name.ToLower()).Value;
-                        var defValueAttr = mp[i].GetCustomAttribute<DefaultValueAttribute>(false);
-                        if (val.IsEmpty() && defValueAttr != null)
-                        {
-                            var providerType = defValueAttr.Value as Type;
-                            var provider = Activator.CreateInstance(providerType, Context.RequestServices) as ITaskParameterDefaultValueProvider;
-                            val = provider.GetValue(task, mp[i]);
-                        }
-                    }
-                    else
-                        val = param.Single(o => o.Key.ToLower() == mp[i].Name.ToLower()).Value;
+                TaskExecutionContext context = new TaskExecutionContext() {
+                    ExecutionDetails = new Tango.Html.HtmlWriter(),
+                    IsManual = isManual,
+                    ExecutionID = taskexecid,
+                    ProgressLogger = progressLogger,
+                    TaskID = task.ID
+                };
 
-                    var typeConverter = TypeDescriptor.GetConverter(mp[i].ParameterType);
+                MethodInfo mi = type.GetMethod(task.Method);
+                ParameterInfo[] mp = mi.GetParameters();
+                if (param == null) param = new Dictionary<string, string>();
 
-                    if (mp[i].ParameterType == typeof(DateTime) || mp[i].ParameterType == typeof(DateTime?))
-                    {
-                        if (!DateTime.TryParseExact(val, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
-                        {
-                            if (!DateTime.TryParseExact(val, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
-                                p[i] = null;
-                            else
-                                p[i] = dt;
-                        }
-                        else
-                            p[i] = dt;
+                InitTaskParms(task, mp, param);
 
-                    }
-                    else if (typeConverter != null && typeConverter.CanConvertFrom(typeof(string)) && typeConverter.IsValid(val))
-                    {
-                        p[i] = typeConverter.ConvertFromString(val);
-                    }
-                    else
-                    {
-                        switch (mp[i].ParameterType.Name)
-                        {
-                            case "DateTime":
-                                p[i] = DateTime.Today; break;
-                            case "Int32":
-                                p[i] = 0; break;
-                            case "Boolean":
-                                p[i] = false; break;
-                            default:
-                                p[i] = null; break;
-                        }
-                    }
-                }
+                var p = GetTaskParmValues(context, mp, param);
+
                 mi.Invoke(obj, p);
 
                 taskexec = new TaskExecution
@@ -254,7 +180,7 @@ namespace Tango.Tasks
                 if (progressLogger != null)
                     progressLogger.WriteExeptionMessage(ex);
 
-                int errorid = errorLogger.Log(ex);
+                int errorid = ErrorLogger.Log(ex);
                 taskexec = new TaskExecution
                 {
                     TaskExecutionID = taskexecid,
@@ -265,6 +191,130 @@ namespace Tango.Tasks
                 };
                 Repository.UpdateTaskExecutionError(taskexec, errorid);
             }
+        }
+
+        public HtmlWriter CustomRun(IScheduledTask task, Dictionary<string, string> param = null)
+        {
+            var type = TaskTypeCollection.GetType(task.Class);
+            var obj = CreateTaskInstance(type);
+
+            TaskExecutionContext context = new TaskExecutionContext() {
+                ExecutionDetails = new Tango.Html.HtmlWriter(),
+                IsManual = true,
+                TaskID = task.ID
+            };
+
+            MethodInfo mi = type.GetMethod(task.Method);
+            ParameterInfo[] mp = mi.GetParameters();
+            if (param == null) param = new Dictionary<string, string>();
+
+            InitTaskParms(task, mp, param);
+
+            var p = GetTaskParmValues(context, mp, param);
+
+            mi.Invoke(obj, p);
+
+            return context.ExecutionDetails;
+        }
+
+        public object[] GetTaskParmValues(TaskExecutionContext context, ParameterInfo[] mp, Dictionary<string, string> param)
+        {
+            object[] p = new object[mp.Length];
+
+            for (int i = 0; i < mp.Length; i++)
+            {
+                if (mp[i].ParameterType.Name == typeof(TaskExecutionContext).Name)
+                {
+                    p[i] = context;
+                    continue;
+                }
+                else if (mp[i].ParameterType.IsInterface)
+                {
+                    p[i] = Context.RequestServices.GetService(mp[i].ParameterType);
+                    continue;
+                }
+                string val = param[mp[i].Name];
+
+                var typeConverter = TypeDescriptor.GetConverter(mp[i].ParameterType);
+
+                if (mp[i].ParameterType == typeof(DateTime) || mp[i].ParameterType == typeof(DateTime?))
+                {
+                    if (!DateTime.TryParseExact(val, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime dt))
+                    {
+                        if (!DateTime.TryParseExact(val, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                            p[i] = null;
+                        else
+                            p[i] = dt;
+                    }
+                    else
+                        p[i] = dt;
+
+                }
+                else if (typeConverter != null && typeConverter.CanConvertFrom(typeof(string)) && typeConverter.IsValid(val))
+                {
+                    p[i] = typeConverter.ConvertFromString(val);
+                }
+                else
+                {
+                    switch (mp[i].ParameterType.Name)
+                    {
+                        case "DateTime":
+                            p[i] = DateTime.Today; break;
+                        case "Int32":
+                            p[i] = 0; break;
+                        case "Boolean":
+                            p[i] = false; break;
+                        default:
+                            p[i] = null; break;
+                    }
+                }
+            }
+
+            return p;
+        }
+
+        public void InitTaskParms(IScheduledTask task, ParameterInfo[] mp, Dictionary<string, string> param)
+        {
+            var taskparam = Repository.GetTaskParameters(task.ID).ToDictionary(x => x.SysName.ToLower(), x => x.Value);
+
+            for (int i = 0; i < mp.Length; i++)
+            {
+                if (!param.ContainsKey(mp[i].Name) && taskparam.ContainsKey(mp[i].Name.ToLower()))
+                {
+                    string val = taskparam[mp[i].Name.ToLower()];
+                    var defValueAttr = mp[i].GetCustomAttribute<DefaultValueAttribute>(false);
+                    if (val.IsEmpty() && defValueAttr != null)
+                    {
+                        var providerType = defValueAttr.Value as Type;
+                        var provider = Activator.CreateInstance(providerType, Context.RequestServices) as ITaskParameterDefaultValueProvider;
+                        val = provider.GetValue(task, mp[i]);
+                    }
+                    param.Add(mp[i].Name, val);
+                }
+            }
+        }
+
+        public object CreateTaskInstance(Type type)
+        {
+            object obj = null;
+            ConstructorInfo ci = type.GetConstructors().FirstOrDefault();
+            if (ci != null)
+            {
+                ParameterInfo[] pi = ci.GetParameters();
+                object[] pr = new object[pi.Length];
+                for (int i = 0; i < pi.Length; i++)
+                {
+                    if (pi[i].ParameterType.IsInterface)
+                        pr[i] = base.Context.RequestServices.GetService(pi[i].ParameterType);
+                }
+                obj = ci.Invoke(pr);
+            }
+
+            foreach (var prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static)
+                                        .Where(prop => Attribute.IsDefined(prop, typeof(InjectAttribute))))
+                prop.SetValue(obj, base.Context.RequestServices.GetService(prop.PropertyType));
+
+            return obj;
         }
     }
 }
