@@ -68,7 +68,7 @@ namespace Tango.Tasks
 
 		public sealed override void OnSubmit(ApiResponse response)
         {
-            var param = new Dictionary<string, string>();
+            var param = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             foreach (var p in parameters)
             {
                 param[p.Key] = FormData.Parse<string>(p.Key);
