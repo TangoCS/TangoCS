@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -598,9 +599,11 @@ namespace Tango.Data
 				return $"'{dateTime.DateTimeToStringISO8601()}'";
 
 			if (value is byte[] bytes)
-			{
 				return $"{bytes.ToBlobLiterals()}";
-			}
+
+			if (value is decimal number)
+				return number.ToString(CultureInfo.InvariantCulture);
+
 
 			return value.ToString();
 		}
