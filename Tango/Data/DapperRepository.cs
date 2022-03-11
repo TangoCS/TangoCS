@@ -177,6 +177,7 @@ namespace Tango.Data
 				parms.Add("p0", id);
 				return new WhereClauseResult(keys.Keys.First().ToLower() + " = @p0", parms);
 			}
+			#if NET
 			else if (id is ITuple)
 			{
 				if (keys.Count == 0) throw new Exception(noKeyMessage);
@@ -190,6 +191,7 @@ namespace Tango.Data
 				}).Join(" and ");
 				return new WhereClauseResult(clause, parms);
 			}
+			#endif
 			else if (idtype.IsValueType)
 			{
 				if (keys.Count == 0) throw new Exception(noKeyMessage);

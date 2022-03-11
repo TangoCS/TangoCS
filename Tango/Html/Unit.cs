@@ -7,6 +7,7 @@ using System.Text;
 
 namespace Tango.Html
 {
+#if NET
 	public struct Unit
 	{
 		public const string UnitParseNoDigits = "'{0}' cannot be parsed as a unit as there are no numeric values in it. Examples of valid unit strings are '1px' and '.5in'.";
@@ -505,4 +506,5 @@ namespace Tango.Html
 			Justification = "This is the correct name for a unit of measurement.")]
 		Ex = 9
 	}
+#endif
 }

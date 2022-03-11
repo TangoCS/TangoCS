@@ -230,6 +230,7 @@ namespace Tango
 				if (Enum.IsDefined(t, d2))
 					return (T)d2;
 			}
+			#if NET
 			else if (typeof(ITuple).IsAssignableFrom(t))
 			{
 				var ds = d.ToString();
@@ -248,7 +249,7 @@ namespace Tango
 				else
 					return defaultValue;
 			}
-
+			#endif
 			var typeConverter = TypeDescriptor.GetConverter(typeof(T));
 			if (typeConverter != null && typeConverter.CanConvertFrom(d.GetType()) && typeConverter.IsValid(d))
 			{
