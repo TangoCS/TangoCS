@@ -157,10 +157,6 @@ namespace Tango.UI.Controls
 				{
 					var from = Context.GetDateTimeArg(ParmID.From);
 					var to = Context.GetDateTimeArg(ParmID.To);
-					if (from == null && DefaultValue != null)
-						from = DefaultValue.From;
-					if (to == null && DefaultValue != null)
-						to = DefaultValue.To;
 
 					var fromtime = dPeriodFrom.Value?.TimeOfDay;
 					var totime = dPeriodTo.Value?.TimeOfDay;
