@@ -469,6 +469,6 @@ namespace Tango.UI
 	public abstract class EntityFileField<TEntity> : EntityField<TEntity, PostedFileInfo>
 		where TEntity : class
 	{
-		public override PostedFileInfo GetFormValue() => Context.FormData[ID] as PostedFileInfo;
+		public override PostedFileInfo GetFormValue() => Context.GetArg<PostedFileInfo>(ID);
 	}
 }

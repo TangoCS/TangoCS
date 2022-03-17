@@ -109,10 +109,10 @@
             const finishDate_h = document.getElementById(id + to + timehour);
             const finishDate_m = document.getElementById(id + to + timemin);
 
-            startDate.value = sd.getDate() + '.' + (sd.getMonth() + 1).toString().padStart(2, '0') + '.' + sd.getFullYear();
+            startDate.value = sd.getDate().toString().padStart(2, '0') + '.' + (sd.getMonth() + 1).toString().padStart(2, '0') + '.' + sd.getFullYear();
             startDate_h.value = sd.getHours();
             startDate_m.value = sd.getMinutes();
-            finishDate.value = fd.getDate() + '.' + (fd.getMonth() + 1).toString().padStart(2, '0') + '.' + fd.getFullYear();
+            finishDate.value = fd.getDate().toString().padStart(2, '0') + '.' + (fd.getMonth() + 1).toString().padStart(2, '0') + '.' + fd.getFullYear();
             finishDate_h.value = fd.getHours();
             finishDate_m.value = fd.getMinutes();
         }
