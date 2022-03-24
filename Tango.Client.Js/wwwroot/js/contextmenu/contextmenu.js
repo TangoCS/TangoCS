@@ -368,11 +368,16 @@
 				menu.addClass('iw-type-' + option.type);
 
 				if (!menuData.menuHeight) {
-					var cloneMenu = menu.clone();
-					cloneMenu.appendTo('body');
-					menuData.menuWidth = cloneMenu.outerWidth(true);
-					menuData.menuHeight = cloneMenu.outerHeight(true);
-					cloneMenu.remove();
+					var inner = menu[0].cloneNode(true);
+					document.body.appendChild(inner);
+
+					const h = inner.offsetHeight;
+					inner.style.height = '1px';
+
+					menuData.menuWidth = inner.offsetWidth;
+					menuData.menuHeight = h;
+
+					inner.parentNode.removeChild(inner);
 				}
 				var menuHeight = menuData.menuHeight;
 				var menuWidth = menuData.menuWidth;
@@ -410,15 +415,15 @@
 
 				//max height and width of context menu
 				if (top) {
-					if (top + menuHeight > cHeight && top - menuHeight > 0) {
+					if (top + menuHeight > cHeight && top - menuHeight >= 0) {
 						top = top - menuHeight;
 					}
 					cssObj.top = top + 'px';
 				}
 
 				if (left) {
-					if (left + menuWidth > cWidth && cWidth - menuWidth > 0) {
-						left = cWidth - menuWidth;
+					if (left + menuWidth > cWidth && cWidth - menuWidth >= 0) {
+						left = cWidth - menuWidth - 1;
 					}
 					cssObj.left = left + 'px';
 				}

@@ -453,8 +453,11 @@ var listview = function (au, cu, cbcell, menu) {
 		if (roots.length === undefined)
 			roots = [roots];
         for (var j = 0; j < roots.length; j++) {
-            const root = roots[j];
-			const tableHeaderTop = root.querySelector('th').getBoundingClientRect().top;
+			const root = roots[j];
+			const th = root.querySelector('th');
+			if (!th)
+				continue;
+			const tableHeaderTop = th.getBoundingClientRect().top;
             if (tableHeaderTop === 0)
                 continue;
             const ths = root.querySelectorAll('th');
