@@ -1316,8 +1316,8 @@ var ajaxUtils = function ($, cu) {
 				if (!ctrl.state.type) {
 					ctrl.state.type = t
 					ctrl.state.root = ctrl.id;
-					if (Tango.serviceProvider.components[t]) {
-						ctrl.state.instance = Tango.serviceProvider.components[t](ctrl.id, Tango.serviceProvider);
+					if (Tango.serviceProvider.components[t.toLowerCase()]) {
+						ctrl.state.instance = Tango.serviceProvider.components[t.toLowerCase()](ctrl.id, Tango.serviceProvider);
 						if (apiResult.props && apiResult.props[ctrl.state.root]) {
 							ctrl.state.instance.props = Object.assign(ctrl.state.instance.props, apiResult.props[ctrl.state.root]);
 						}
