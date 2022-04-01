@@ -134,16 +134,13 @@ namespace Tango.UI.Controls
 
 		public Func<IEnumerable<TRefKey>, Expression<Func<TRef, bool>>> FilterSelected { get; set; }
 
-		public IEnumerable<string> GetSelectedObjectsTitle()
-		{
-			List<TRefKey> selectedIds = Context.FormData.ParseList<TRefKey>(ClientID);
-			return selectedIds == null || selectedIds.Count == 0 ? null : GetObjectsByIDs(selectedIds).Select(SelectedObjectTextField);
-		}
+        public IEnumerable<string> GetSelectedObjectsTitle() => 
+			GetObjectsByIDs(Context.FormData.ParseList<TRefKey>(ClientID)).Select(SelectedObjectTextField);
 
-		public IEnumerable<TRef> GetObjectsByIDs(IEnumerable<TRefKey> ids)
+        public IEnumerable<TRef> GetObjectsByIDs(IEnumerable<TRefKey> ids)
 		{
-			if (ids == null || ids.Count() == 0)
-				return null;
+			if (ids == null || ids.Any() == false)
+				return Array.Empty<TRef>();
 
 			return DataProvider.MaterializeList(AllObjects.Where(FilterSelected(ids)));
 		}
