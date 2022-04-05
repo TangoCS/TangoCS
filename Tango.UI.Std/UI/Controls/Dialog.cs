@@ -111,6 +111,17 @@ namespace Tango.UI.Controls
 			});
 		}
 
+		public static void DialogButtonsBar(this LayoutWriter w, DialogButtonsOptions dialogButtonsOptions)
+		{
+			dialogButtonsOptions.SubmitButtonTitle = dialogButtonsOptions.SubmitButtonTitle ?? w.Resources.Get("Common.OK");
+			dialogButtonsOptions.CloseButtonTitle = dialogButtonsOptions.CloseButtonTitle ?? w.Resources.Get("Common.Cancel");
+
+			w.ButtonsBarRight(() => {
+				w.SubmitButton(dialogButtonsOptions.SubmitButtonAttrs, dialogButtonsOptions.SubmitButtonTitle);
+				w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), dialogButtonsOptions.CloseButtonTitle);
+			});
+		}
+
 		///TODO. Сделать автоматическое прокидываение всех полей из контекста.
 		public static void AddYesNoDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content,
 			string IDPrefix = null, DialogOptions options = null, 
@@ -261,6 +272,8 @@ namespace Tango.UI.Controls
 		public bool ShowCloseIcon { get; set; } = true;
 		public bool ShowOnRender { get; set; } = true;
 
+		public DialogButtonsOptions DialogButtonsOptions { get; set; } = new DialogButtonsOptions();
+
 		public Dictionary<string, string> ToParms()
 		{
 			return new Dictionary<string, string> {
@@ -282,6 +295,14 @@ namespace Tango.UI.Controls
 			};
 		}
 	}
+
+	public class DialogButtonsOptions
+	{
+		public string SubmitButtonTitle { get; set; }
+		public string CloseButtonTitle { get; set; }
+		public Action<ButtonTagAttributes> SubmitButtonAttrs { get; set; }
+	}
+
 
 	public enum DialogHeight
 	{

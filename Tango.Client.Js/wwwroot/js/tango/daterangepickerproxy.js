@@ -115,6 +115,15 @@
             finishDate.value = fd.getDate().toString().padStart(2, '0') + '.' + (fd.getMonth() + 1).toString().padStart(2, '0') + '.' + fd.getFullYear();
             finishDate_h.value = fd.getHours();
             finishDate_m.value = fd.getMinutes();
+
+            instance.setStartDate({
+                triggerid: id + '_btn',
+                date: sd
+            });
+            instance.setFinishDate({
+                triggerid: id + '_btn',
+                date: fd
+            });
         }
     };
 
