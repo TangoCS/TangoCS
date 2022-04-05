@@ -101,7 +101,7 @@
 
 			this.each(function () {
 				var trgr = $(this),
-                    menuData = trgr.data('iw-menuData');
+					menuData = trgr.data('iw-menuData');
 				//refresh if any new element is added
 				if (!menuData) {
 					self.contextMenu('refresh');
@@ -132,9 +132,9 @@
 			var menuData = this.filter(function () {
 				return !!$(this).data('iw-menuData');
 			}).data('iw-menuData'),
-                newElm = this.filter(function () {
-                	return !$(this).data('iw-menuData');
-                });
+				newElm = this.filter(function () {
+					return !$(this).data('iw-menuData');
+				});
 			//to change basetrigger on refresh  
 			menuData.option.baseTrigger = this;
 			iMethods.contextMenuBind.call(newElm, menuData.menuSelector, menuData.option);
@@ -157,9 +157,9 @@
 		destroy: function () {
 			this.each(function () {
 				var trgr = $(this),
-                    menuId = trgr.data('iw-menuData').menuId,
-                    menu = $('.iw-contextMenu[menuId=' + menuId + ']'),
-                    menuData = menu.data('iw-menuData');
+					menuId = trgr.data('iw-menuData').menuId,
+					menu = $('.iw-contextMenu[menuId=' + menuId + ']'),
+					menuData = menu.data('iw-menuData');
 
 				//Handle the situation of dynamically added element.
 				if (!menuData) return;
@@ -182,8 +182,8 @@
 	var iMethods = {
 		contextMenuBind: function (selector, option, method) {
 			var trigger = this,
-                menu = $(selector),
-                menuData = menu.data('iw-menuData');
+				menu = $(selector),
+				menuData = menu.data('iw-menuData');
 
 			//fallback
 			if (menu.length == 0) {
@@ -248,7 +248,7 @@
 					const clbckData = { trigger: trigger, menu: menu, options: option, state: state };
 					option.onMouseLeave.call(this, clbckData, e);
 				});
-				
+
 			}
 
 			trigger.delegate('input,a,.needs-click', 'click', function (e) {
@@ -300,10 +300,10 @@
 		eventHandler: function (e) {
 			e.preventDefault();
 			var trigger = $(this),
-                trgrData = trigger.data('iw-menuData'),
-                menu = trgrData.menu,
-                menuData = menu.data('iw-menuData'),
-                option = trgrData.option,
+				trgrData = trigger.data('iw-menuData'),
+				menu = trgrData.menu,
+				menuData = menu.data('iw-menuData'),
+				option = trgrData.option,
 				clbckData = { trigger: trigger, menu: menu, options: option, state: state };
 
 			var baseEl = option.baseTrigger ? option.baseTrigger : trigger;
@@ -440,14 +440,14 @@
 				}
 
 				//if (parentMenu) {
-					//cssObj.left = parentMenu.style.left;
-					//cssObj.top = parentMenu.style.top;
-					//var positionInfo = parentMenu.getBoundingClientRect();
-					//if (positionInfo.width > menu.width())
-					//	cssObj.width = positionInfo.width;
-					//if (positionInfo.height > menu.height())
-					//	cssObj.height = positionInfo.height;
-					//parentMenu.classList.remove('iw-display');
+				//cssObj.left = parentMenu.style.left;
+				//cssObj.top = parentMenu.style.top;
+				//var positionInfo = parentMenu.getBoundingClientRect();
+				//if (positionInfo.width > menu.width())
+				//	cssObj.width = positionInfo.width;
+				//if (positionInfo.height > menu.height())
+				//	cssObj.height = positionInfo.height;
+				//parentMenu.classList.remove('iw-display');
 				//}
 
 				menu.removeClass('iw-opening');
