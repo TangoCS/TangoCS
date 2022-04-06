@@ -241,6 +241,14 @@ namespace Tango.UI.Controls
 
 	}
 
+	public class SelectMultipleObjectsTableField<TRef, TRefKey, TControl> :
+		AbstractSelectMultipleObjectsField<TRef, TRefKey, SelectMultipleObjectsTableDialog<TRef, TRefKey, TControl>>
+		where TRef : class, IWithTitle, IWithKey<TRefKey>
+		where TControl : default_list_rep<TRef>, new()
+	{
+
+	}
+
 
 	public static class LayoutWriterSelectDialogExtensions
 	{
