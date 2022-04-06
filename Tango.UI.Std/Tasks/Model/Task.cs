@@ -43,8 +43,10 @@ namespace Tango.Tasks
         public virtual int? TaskGroupID { get; set; }
         [Column]
         public virtual int StartTypeID { get; set; }
-	
-		public virtual string StartTypeTitle { get; set; }
+        [Column]
+        public virtual int Priority { get; set; }
+
+        public virtual string StartTypeTitle { get; set; }
 		public virtual string GroupTitle { get; set; }
 	}
 }

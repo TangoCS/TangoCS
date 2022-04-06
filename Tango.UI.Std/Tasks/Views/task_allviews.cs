@@ -114,6 +114,7 @@ namespace Tango.Tasks
 			});
 			f.AddCellWithSortAndFilter(o => o.Status, o => Enumerations.GetEnumDescription((TaskStatusType)o.Status));
 			f.AddCellWithSortAndFilter(o => o.IsActive, o => o.IsActive.Icon());
+			f.AddCellWithSortAndFilter(o => o.Priority, o => o.Priority);
 		}
 	}
 
@@ -155,6 +156,7 @@ namespace Tango.Tasks
 				w.TextBox(gr.Method);
 				w.TextBox(gr.ExecutionTimeout);
 				w.ToggleSwitch(gr.IsActive);
+				w.TextBox(gr.Priority);
 			});
 		}
 
@@ -353,6 +355,7 @@ namespace Tango.Tasks
 				w.PlainText(Resources.Get<Task>(o => o.Method), ViewData.Class + "." + ViewData.Method);
 				w.PlainText(gr.ExecutionTimeout);
 				w.PlainText(gr.IsActive);
+				w.PlainText(gr.Priority);
 				w.PlainText(Resources.Get<Task>(o => o.LastStartDate), ViewData.LastStartDate?.ToString("dd.MM.yyyy HH:mm:ss"));
 				w.PlainText(gr.Status, () => w.Write(Enumerations.GetEnumDescription((TaskStatusType)gr.Status.Value)));
 			});

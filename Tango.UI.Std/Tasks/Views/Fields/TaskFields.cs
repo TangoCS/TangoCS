@@ -142,7 +142,10 @@ namespace Tango.Tasks
 		}
 
         public class SystemName : EntityField<Task, string> { }
-
+        public class Priority : EntityField<Task, int>
+        {
+            public override bool IsRequired => false;
+        }
         public class DefaultGroup : FieldGroup
 		{
 			public CommonFields.Title Title { get; set; }
@@ -156,6 +159,7 @@ namespace Tango.Tasks
 			public Status Status { get; set; }
 			public TaskGroup TaskGroup { get; set; }
             public SystemName SystemName { get; set; }
+            public Priority Priority { get; set; }
 
             public DefaultGroup(int startType)
             {
@@ -170,6 +174,7 @@ namespace Tango.Tasks
                 Status = AddField(new Status());
 				TaskGroup = AddField(new TaskGroup());
                 SystemName = AddField(new SystemName());
+                Priority = AddField(new Priority());
             }
         }
     }
