@@ -56,5 +56,23 @@ namespace Tango
                     Convert.ChangeType(v, ut).ToString()
                 )).Where(x => x.Text != null);
         }
-    }
+
+		//для конструкций вида
+		//[TAttr(TAEnum.Val1, TAEnum.Val2)]
+		//enum member of T
+		public static IEnumerable<SelectListItem> AsSelectList<T, TAttr, TAEnum>(Func<TAttr, TAEnum, bool> filter, TAEnum fVal)
+			where T : Enum
+			where TAttr : Attribute
+			where TAEnum : Enum
+		{
+			var ut = Enum.GetUnderlyingType(typeof(T));
+			return Enum.GetValues(typeof(T))
+				.Cast<T>()
+				.Where(ll => { var cattr = ll.GetType().GetField(ll.ToString()).GetCustomAttribute<TAttr>(false); return cattr != null ? filter(cattr, fVal) : true; })
+				.Select(v => new SelectListItem(
+					GetDescriptionAttribute(v),
+					Convert.ChangeType(v, ut).ToString()
+				)).Where(x => x.Text != null);
+		}
+	}
 }
