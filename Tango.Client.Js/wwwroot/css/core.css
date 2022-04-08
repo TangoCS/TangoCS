@@ -260,6 +260,9 @@ hr {
 	display: flex;
 	min-height: 30px;
 }
+form .buttonsbar {
+	margin-top: 8px;
+}
 
 .modal-footer .right, .buttonsbar .right {
 	margin-left: auto;
