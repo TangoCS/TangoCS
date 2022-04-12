@@ -79,5 +79,7 @@ namespace Tango.UI.Controls
 			if (ClearSelectionOnSubmit)
 				response.AddClientAction("listview", "clearselection", f => Control.ClientID);
 		}
+
+		protected override string ClearButtonScript => base.ClearButtonScript + $";listview.clearselection('{Control.ClientID}')";
 	}
 }

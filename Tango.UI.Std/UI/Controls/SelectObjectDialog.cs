@@ -207,8 +207,7 @@ namespace Tango.UI.Controls
 					{
 						cw.Write("&nbsp;");
 						if (!Field.PostOnClearEvent)
-							cw.A(a => a.OnClick($"selectMultipleObjectsDialog.clear('{Field.ClientID}', true)"),
-								Resources.Get("Common.Clear"));
+							cw.A(a => a.OnClick(ClearButtonScript), Resources.Get("Common.Clear"));
 						else
 							cw.A(a => a.OnClickPostEvent(OnClear), Resources.Get("Common.Clear"));
 					}
@@ -255,6 +254,8 @@ namespace Tango.UI.Controls
 			});
 			Field.OnChange(response, selectedValues);
 		}
+
+		protected virtual string ClearButtonScript => $"selectMultipleObjectsDialog.clear('{Field.ClientID}', true)";
 	}
 
 	public class SelectMultipleObjectsDialog<TRef, TRefKey> :

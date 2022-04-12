@@ -305,13 +305,15 @@ var listview = function (au, cu, cbcell, menu) {
 		},
 		clearselection: function (rootid) {
 			const state = au.state.ctrl[rootid];
-			state.selectedvalues = [];
+			if (state) {
+				state.selectedvalues = [];
 
-			const root = document.getElementById(rootid);
-			if (root) {
-				const cbhead = document.getElementById(root.id + "_sel_header");
-				cbcell.setPageUnchecked(root, state, cbhead);
-				onCheckChange(document, root, state);
+				const root = document.getElementById(rootid);
+				if (root) {
+					const cbhead = document.getElementById(root.id + "_sel_header");
+					cbcell.setPageUnchecked(root, state, cbhead);
+					onCheckChange(document, root, state);
+				}
 			}
 		},
 		onlevelsetpage: function (el) {
