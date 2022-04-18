@@ -17,8 +17,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Meta.Database.Postgre
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango", "Tango\Tango.csproj", "{2D823E9B-401E-4A8E-A7ED-8658A711BE06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tango.Razor", "Tango.Razor\Tango.Razor.csproj", "{8E63794B-0D88-4EBA-B74A-942DCF32DFA5}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Meta.Database.MSSQL", "Tango.Meta.Database.MSSQL\Tango.Meta.Database.MSSQL.csproj", "{DE61160E-44DB-40CD-82C9-BA812DCE4812}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Abstractions", "Tango.Abstractions\Tango.Abstractions.csproj", "{08917986-6340-4D26-BB53-B1B69FD3C810}"
@@ -43,8 +41,6 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Tango.Client.Js", "Tango.Cl
 		VWDPort = "63396"
 		SlnRelativePath = "Tango.Client.Js\"
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dapper", "Dapper\Dapper.csproj", "{D0205633-0549-4363-84CD-9E32BAF5386F}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.PDF", "Tango.PDF\Tango.PDF.csproj", "{AD666B4F-7E4B-41C4-9EAF-51E28930BFD0}"
 EndProject
@@ -132,16 +128,6 @@ Global
 		{2D823E9B-401E-4A8E-A7ED-8658A711BE06}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{2D823E9B-401E-4A8E-A7ED-8658A711BE06}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{2D823E9B-401E-4A8E-A7ED-8658A711BE06}.Release|x86.ActiveCfg = Release|Any CPU
-		{8E63794B-0D88-4EBA-B74A-942DCF32DFA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8E63794B-0D88-4EBA-B74A-942DCF32DFA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8E63794B-0D88-4EBA-B74A-942DCF32DFA5}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{8E63794B-0D88-4EBA-B74A-942DCF32DFA5}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{8E63794B-0D88-4EBA-B74A-942DCF32DFA5}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{8E63794B-0D88-4EBA-B74A-942DCF32DFA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8E63794B-0D88-4EBA-B74A-942DCF32DFA5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8E63794B-0D88-4EBA-B74A-942DCF32DFA5}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{8E63794B-0D88-4EBA-B74A-942DCF32DFA5}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{8E63794B-0D88-4EBA-B74A-942DCF32DFA5}.Release|x86.ActiveCfg = Release|Any CPU
 		{DE61160E-44DB-40CD-82C9-BA812DCE4812}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DE61160E-44DB-40CD-82C9-BA812DCE4812}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE61160E-44DB-40CD-82C9-BA812DCE4812}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -176,18 +162,6 @@ Global
 		{6918E281-C526-4E3E-8915-1BE29504F964}.Release|Mixed Platforms.Build.0 = Debug|Any CPU
 		{6918E281-C526-4E3E-8915-1BE29504F964}.Release|x86.ActiveCfg = Debug|Any CPU
 		{6918E281-C526-4E3E-8915-1BE29504F964}.Release|x86.Build.0 = Debug|Any CPU
-		{D0205633-0549-4363-84CD-9E32BAF5386F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0205633-0549-4363-84CD-9E32BAF5386F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0205633-0549-4363-84CD-9E32BAF5386F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{D0205633-0549-4363-84CD-9E32BAF5386F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{D0205633-0549-4363-84CD-9E32BAF5386F}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D0205633-0549-4363-84CD-9E32BAF5386F}.Debug|x86.Build.0 = Debug|Any CPU
-		{D0205633-0549-4363-84CD-9E32BAF5386F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0205633-0549-4363-84CD-9E32BAF5386F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D0205633-0549-4363-84CD-9E32BAF5386F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{D0205633-0549-4363-84CD-9E32BAF5386F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{D0205633-0549-4363-84CD-9E32BAF5386F}.Release|x86.ActiveCfg = Release|Any CPU
-		{D0205633-0549-4363-84CD-9E32BAF5386F}.Release|x86.Build.0 = Release|Any CPU
 		{AD666B4F-7E4B-41C4-9EAF-51E28930BFD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{AD666B4F-7E4B-41C4-9EAF-51E28930BFD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AD666B4F-7E4B-41C4-9EAF-51E28930BFD0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -302,7 +276,6 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{5909BFE7-93CF-4E5F-BE22-6293368AF01D} = {C704BCA4-0E47-4C0E-BC6A-EAAC11E43C0F}
-		{D0205633-0549-4363-84CD-9E32BAF5386F} = {C704BCA4-0E47-4C0E-BC6A-EAAC11E43C0F}
 		{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C} = {C704BCA4-0E47-4C0E-BC6A-EAAC11E43C0F}
 		{1520A79F-03EB-4290-AA4A-027806890A9D} = {C704BCA4-0E47-4C0E-BC6A-EAAC11E43C0F}
 	EndGlobalSection
