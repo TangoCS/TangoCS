@@ -95,5 +95,6 @@ namespace Tango
 		string Class { get; }
 		string Method { get; }
 		int ExecutionTimeout { get; }
+		int Priority { get; }
 	}
 }
