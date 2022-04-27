@@ -12,19 +12,19 @@ using Tango.Meta.Database;
 
 namespace Tango.UI.Std
 {
-	public interface IWithChangeEvent
+	public interface IWithChangeEvent : IViewPagePart
 	{
 		event Action<ApiResponse> Changed;
 	}
 
-	public interface IWithChangeEventHandler
+	public interface IWithChangeEventHandler : IViewPagePart
 	{
 		void OnChange(ApiResponse response);
 	}
 
 	public class ViewPagePart_sidebar_2col_collapsible<TLeft, TRight> : ViewPagePart_sidebar_2col<TLeft, TRight>
-		where TLeft : ViewPagePart, IWithChangeEvent, new()
-		where TRight : ViewPagePart, IWithChangeEventHandler, new()
+		where TLeft : IWithChangeEvent, new()
+		where TRight : IWithChangeEventHandler, new()
 	{
 		protected virtual string LeftSideTitle => "";
 
@@ -38,12 +38,10 @@ namespace Tango.UI.Std
 		
 	}
 
-	public abstract class ViewPagePart_sidebar_2col<TLeft, TRight> : ViewPagePart
-		where TLeft : IViewPagePart, IWithChangeEvent, new()
-		where TRight : IViewPagePart, IWithChangeEventHandler, new()
+	public abstract class ViewPagePart_sidebar_2col_base : ViewPagePart
 	{
-		protected TLeft left;
-		protected TRight right;
+		protected IWithChangeEvent left { get; set; }
+		protected IWithChangeEventHandler right { get; set; }
 
 		public virtual bool EnableToolbar => false;
 		protected virtual void Toolbar(LayoutWriter w) { }
@@ -55,22 +53,7 @@ namespace Tango.UI.Std
 
 		protected virtual Action<LayoutWriter> RenderPlaceHolderRightSide => w => w.Div(a => a.ID("container"));
 
-		public override void OnInit()
-		{
-			left = CreateLeft();
-			right = CreateRight();
-
-			left.Changed += response => RenderContainer(response, right);
-			left.Changed += right.OnChange;
-		}
-
-		protected virtual TLeft CreateLeft() => CreateControl<TLeft>("left", SetPropertiesLeft);
-		protected virtual TRight CreateRight() => CreateControl<TRight>("right", SetPropertiesRight);
-
-		protected virtual void SetPropertiesLeft(TLeft c) { }
-		protected virtual void SetPropertiesRight(TRight c) { }
-
-		void RenderContainer(ApiResponse response, IViewPagePart el)
+		public void RenderContainer(ApiResponse response, IViewPagePart el)
 		{
 			response.WithNamesAndWritersFor(el);
 			var c2 = el.GetContainer();
@@ -104,10 +87,66 @@ namespace Tango.UI.Std
 		}
 	}
 
+	public abstract class ViewPagePart_sidebar_2col<TLeft, TRight> : ViewPagePart_sidebar_2col_base
+		where TLeft : IWithChangeEvent, new()
+		where TRight : IWithChangeEventHandler, new()
+	{
+		protected new TLeft left
+		{
+			get { return (TLeft)base.left; }
+			set { base.left = value; }
+		}
+
+		protected new TRight right
+		{
+			get { return (TRight)base.right; }
+			set { base.right = value; }
+		}
+
+		public override void OnInit()
+		{
+			left = CreateLeft();
+			right = CreateRight();
+
+			left.Changed += response => RenderContainer(response, right);
+			left.Changed += right.OnChange;
+		}
+
+		protected virtual TLeft CreateLeft() => CreateControl<TLeft>("left", SetPropertiesLeft);
+		protected virtual TRight CreateRight() => CreateControl<TRight>("right", SetPropertiesRight);
+
+		protected virtual void SetPropertiesLeft(TLeft c) { }
+		protected virtual void SetPropertiesRight(TRight c) { }
+	}
+
+	public abstract class ViewPagePart_sidebar_2col<TLeft> : ViewPagePart_sidebar_2col_base
+		where TLeft : IWithChangeEvent, new()
+	{
+		protected new TLeft left
+		{
+			get { return (TLeft)base.left; }
+			set { base.left = value; }
+		}
+
+		public override void OnInit()
+		{
+			left = CreateLeft();
+			right = CreateRight("right");
+
+			left.Changed += response => RenderContainer(response, right);
+			left.Changed += right.OnChange;
+		}
+
+		protected abstract IWithChangeEventHandler CreateRight(string id);
+
+		protected virtual TLeft CreateLeft() => CreateControl<TLeft>("left", SetPropertiesLeft);
+		protected virtual void SetPropertiesLeft(TLeft c) { }
+	}
+
 	public class ViewPagePart_3col<TLeft, TCenter, TRight> : ViewPagePart
-		where TLeft : ViewPagePart, IWithChangeEvent, new()
-		where TCenter : ViewPagePart, IWithChangeEvent, IWithChangeEventHandler, new()
-		where TRight : ViewPagePart, IWithChangeEventHandler, new()
+		where TLeft : IWithChangeEvent, new()
+		where TCenter : IWithChangeEvent, IWithChangeEventHandler, new()
+		where TRight : IWithChangeEventHandler, new()
 	{
 		protected TLeft left;
 		protected TCenter center;

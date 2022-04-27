@@ -20,7 +20,7 @@ namespace Tango.Drawing.Test
 				}
 
 
-				ctx.Drawing.BeginDraw(Rgba32.Black);
+				//ctx.Drawing.BeginDraw(Rgba32.Black);
 
 				//GL.glColor4f(0, 0, 1, 0);
 

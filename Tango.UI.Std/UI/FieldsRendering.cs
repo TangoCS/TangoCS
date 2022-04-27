@@ -66,6 +66,14 @@ namespace Tango.UI
 			w.FormField(field.ID, field.Caption, () => w.Div(a => a.ID(field.ID).Class("field-plaintext"), val), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
 		}
 
+		public static void EditablePlainText<TValue>(this LayoutWriter w, IField<TValue> field, GridPosition grid = null)
+		{
+			var val = field.StringValue;
+			if (typeof(TValue) == typeof(bool) && (val == "True" || val == "False"))
+				val = (field as IField<bool>).Value.Icon();
+			w.FormField(field.ID, field.Caption, () => w.Div(a => a.ID(field.ID).Class("field-plaintext"), val), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
+		}
+
 		public static void PlainText(this LayoutWriter w, IField field, Action content, GridPosition grid = null)
 		{
 			w.FormField(field.ID, field.Caption, () => w.Div(a => a.ID(field.ID).Class("field-plaintext"), content), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net5.0</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0;net5.0;net6.0</TargetFrameworks>
     <AssemblyName>Tango.Meta.Database.PostgreSQL</AssemblyName>
     <PackageId>Tango.Meta.Database.PostgreSQL</PackageId>
     <RuntimeIdentifiers>win-x64;linux-x64</RuntimeIdentifiers>
