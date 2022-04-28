@@ -1,40 +1,49 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
+using System.Threading;
 
 namespace Tango.TaskManager
 {
 	public static class WebClient
 	{
-		public static void Post(string url, string userName, string password, string data, int timeOut = 20)
+		public static void Post(string url, string userName, string password, int timeOut = 3, Dictionary<string, string> data = null)
 		{
-			var wr = HttpWebRequest.Create(url);
-			wr.Timeout = timeOut == -1 ? -1 : (timeOut * 60000);
+			var request = HttpWebRequest.Create(url);
             if (!string.IsNullOrWhiteSpace(userName))
-                wr.Credentials = new NetworkCredential(userName, password);
-			wr.Method = "POST";
-			wr.ContentType = "application/x-www-form-urlencoded";
+				request.Credentials = new NetworkCredential(userName, password);
+			request.Timeout = timeOut == -1 ? Timeout.Infinite : timeOut == 0 ? 60000 : (timeOut * 60000);
+			request.Method = "POST";
+			request.ContentType = "application/json; charset=utf-8";
+			request.ContentLength = 0;
+			request.Headers.Add("x-request-guid", Guid.NewGuid().ToString());
 
-			var byteArray = Encoding.UTF8.GetBytes(data);
-			wr.ContentLength = byteArray.Length;
-            wr.Headers.Add("x-request-guid", Guid.NewGuid().ToString());
-
-            using (var req = wr.GetRequestStream())
+			if (data != null && data.Count > 0)
 			{
-				req.Write(byteArray, 0, byteArray.Length);
-				req.Close();
+				string json = "{";
+				foreach (var item in data)
+				{
+					json += $"'{item.Key}':'{item.Value}'";
+				}
+				json +="}";
+				var byteArray = Encoding.UTF8.GetBytes(json);
+				request.ContentLength = byteArray.Length;
+
+				using (var writer = request.GetRequestStream())
+				{
+					writer.Write(byteArray, 0, byteArray.Length);
+				}
 			}
 
-			using (var response = wr.GetResponse() as HttpWebResponse)
+			using (var response = request.GetResponse() as HttpWebResponse)
 			using (var dataStream = response.GetResponseStream())
 			using (var reader = new StreamReader(dataStream))
 			{
 				string responseFromServer = reader.ReadToEnd();
-				dataStream.Close();
 				if (response.StatusCode != HttpStatusCode.OK)
 					throw new Exception("Ошибка вызова " + url + ":" + Environment.NewLine + Environment.NewLine + responseFromServer);
-                response.Close();
             }
         }
 	}

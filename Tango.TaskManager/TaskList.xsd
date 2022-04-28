@@ -16,6 +16,23 @@
                   </xs:simpleContent>
                 </xs:complexType>
               </xs:element>
+              <xs:element name="Dictionary" maxOccurs="unbounded" minOccurs="0">
+                <xs:complexType>
+					<xs:sequence>
+						<xs:element name="Argument" maxOccurs="unbounded" minOccurs="0">
+							<xs:complexType>
+								<xs:simpleContent>
+									<xs:extension base="xs:string">
+										<xs:attribute type="xs:string" name="Name" />
+										<xs:attribute type="xs:string" name="Value" />
+									</xs:extension>
+								</xs:simpleContent>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute type="xs:string" name="Name"/>
+				</xs:complexType>
+              </xs:element>
             </xs:sequence>
             <xs:attribute type="xs:string" name="Name"/>
             <xs:attribute type="xs:string" name="StartType"/>
