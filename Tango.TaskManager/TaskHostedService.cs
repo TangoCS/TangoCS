@@ -65,10 +65,22 @@ namespace Tango.TaskManager
                 var TypeName = xe.Attribute("Type").Value;
                 var Interval = new TimeSpan(int.Parse(xe.Attribute("Hours").Value), int.Parse(xe.Attribute("Minutes").Value), 0);
                 var StartType = xe.Attribute("StartType").Value == "Interval" ? TaskStartType.Interval : TaskStartType.Schedule;
-                var MethodArgs = new NameValueCollection();
+                var MethodArgs = new Dictionary<string, object>();
                 foreach (var arg in xe.Elements())
                 {
-                    MethodArgs.Add(arg.Attribute("Name").Value, arg.Attribute("Value").Value);
+                    if (arg.Name == "Argument")
+                        MethodArgs.Add(arg.Attribute("Name").Value, arg.Attribute("Value").Value);
+                    else
+					{
+                        string dictionaryName = arg.Attribute("Name").Value;
+                        var dictionaryArgs = new Dictionary<string, string>();
+                        foreach (var a in arg.Elements())
+                        {
+                            dictionaryArgs.Add(a.Attribute("Name").Value, a.Attribute("Value").Value);
+                        }
+                        if (dictionaryArgs.Count > 0)
+                            MethodArgs.Add(dictionaryName, dictionaryArgs);
+                    }
                 }
                 for (int i = 0; i < threadCount; i++)
                 {
@@ -79,7 +91,7 @@ namespace Tango.TaskManager
                         TypeName = TypeName,
                         Interval = Interval,
                         StartType = StartType,
-                        MethodArgs = new NameValueCollection(MethodArgs)
+                        MethodArgs = new Dictionary<string, object>(MethodArgs)
                     };
                     tasks.Add(t);
                 }
@@ -124,7 +136,7 @@ namespace Tango.TaskManager
                 object[] p = new object[mp.Length];
                 for (int i = 0; i < mp.Length; i++)
                 {
-                    string val = task.MethodArgs[mp[i].Name];
+                    object val = task.MethodArgs.GetValueOrDefault(mp[i].Name);
                     try
                     {
                         p[i] = Convert.ChangeType(val, mp[i].ParameterType);
@@ -152,6 +164,9 @@ namespace Tango.TaskManager
             catch (ThreadAbortException)
             {
             }
+            catch (ThreadInterruptedException)
+            {
+            }
             catch (Exception e)
             {
                 LogError(e, task.TaskName);
@@ -168,7 +183,9 @@ namespace Tango.TaskManager
             {
                 foreach (Task t in tasks)
                     if (t.Thread != null && t.Thread.IsAlive)
+                    {
                         t.Thread.Abort();
+                    }
             }
             catch (Exception e)
             {
@@ -186,7 +203,7 @@ namespace Tango.TaskManager
                 e = e.InnerException;
             }
 
-            File.AppendAllText(string.Format(errorLogFile, taskname ?? "main"), str, Encoding.UTF8);
+            File.AppendAllText(string.Format(errorLogFile, taskname?.ToLower() ?? "main"), str, Encoding.UTF8);
         }
     }
 }

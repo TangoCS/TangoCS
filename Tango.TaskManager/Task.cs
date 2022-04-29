@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Threading;
 
@@ -10,7 +11,7 @@ namespace Tango.TaskManager
 		public TaskStartType StartType;
 		public string TypeName;
 		public string MethodName;
-		public NameValueCollection MethodArgs;
+		public Dictionary<string, object> MethodArgs;
 		public string TaskName;
 
 		public DateTime LastStartTime = DateTime.MinValue;

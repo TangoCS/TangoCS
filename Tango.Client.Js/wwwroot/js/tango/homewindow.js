@@ -1,4 +1,4 @@
-﻿/// <reference path="/js/jquery-1.11.0.min.js"/>
+﻿/// <reference path="../jquery/jquery-1.11.0.min.js"/>
 var homePage = function () {
     var instance = {
         splitterClick: function () {
