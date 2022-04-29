@@ -249,9 +249,7 @@ var listview = function (au, cu, cbcell, menu) {
 				root : root.querySelector('.listviewtable.highlight');
 			if (highlight) initHighlight(highlight);
 
-			const fixedHeaders = root instanceof HTMLTableElement && root.classList.contains('fixedheader') ?
-				root : root.querySelector('.listviewtable.fixedheader');
-			if (fixedHeaders) initFixedHeader(fixedHeaders);
+			listview.fixedHeader(root);
 
 			var el = $('#' + state.root);
 			if (!el.tableDnD || !el.hasClass("draggablerows")) return;
@@ -385,8 +383,10 @@ var listview = function (au, cu, cbcell, menu) {
                 });
             }
 		},
-        fixedHeader: function (roots) {
-            initFixedHeader(roots);
+		fixedHeader: function (root) {
+			const fixedHeaders = root instanceof HTMLTableElement && root.classList.contains('fixedheader') ?
+				root : root.querySelector('.listviewtable.fixedheader');
+			if (fixedHeaders) initFixedHeader(fixedHeaders);
 		},
 		onRemoveIconClick: function (e) {
 			var seltr = cu.getRow(e.currentTarget);
@@ -471,8 +471,7 @@ var listview = function (au, cu, cbcell, menu) {
                     padding = padding.replace("px", "");
                     paddingParent = paddingParent.replace("px", "");
                     const currentTop = th.getBoundingClientRect().top - tableHeaderTop;
-                    // Не хватает 2 px
-                    const offsetTop = (((parseInt(padding) / 2) + parseInt(paddingParent)) * -1);
+                    const offsetTop = (((parseInt(padding) / 2) + parseInt(paddingParent)) * -1) + 2;
                     th.style.top = offsetTop + currentTop + "px";
                 } else {
                     th.style.top = th.getBoundingClientRect().top - tableHeaderTop + "px";

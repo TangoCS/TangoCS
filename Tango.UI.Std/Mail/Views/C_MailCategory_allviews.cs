@@ -18,6 +18,7 @@ namespace Tango.Mail
 
         protected override void FieldsInit(FieldCollection<C_MailCategory> fields)
         {
+            fields.EnableFixedHeader = true;
             fields.AddCellWithSortAndFilter(o => o.MailCategoryID, o => o.MailCategoryID);
             fields.AddCellWithSortAndFilter(o => o.Title, (w, o) => 
                 w.ActionLink(al => al.To("mailCategory", "view", AccessControl).WithArg(Constants.Id, o.ID).WithTitle(o.Title)));
