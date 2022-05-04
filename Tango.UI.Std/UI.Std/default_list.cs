@@ -42,9 +42,9 @@ namespace Tango.UI.Std
 		protected IEnumerable<TResult> _result;
 		protected int? _itemsCount;
 
-		protected abstract int GetCount();
-		protected abstract IEnumerable<TResult> GetPageData();
+		public abstract int GetCount();
 		public abstract IEnumerable<TResult> GetAllData();
+		protected abstract IEnumerable<TResult> GetPageData();
 		protected abstract IFieldCollection<TEntity, TResult> FieldsConstructor();
 
 		public ListFilter<TEntity> Filter { get; private set; }
@@ -212,7 +212,7 @@ namespace Tango.UI.Std
 					var opt = new PagingRenderOptions {
 						ItemsCount = _itemsCount,
 						PageActionAttributes = a => a.RunEvent(OnSetPage),
-						ObjCountActionAttributes = a => a.PostEvent(GetObjCount),
+						ObjCountActionAttributes = a => a.PostEvent(OnGetObjCount),
 						GoToPageActionAttributes = a => a.OnEnterPostEvent(OnSetPage),
 						SetPageSizeActionAttributes = a => a.DataEvent(OnSetPage).OnChangeRunHref()
 					};
@@ -300,7 +300,7 @@ namespace Tango.UI.Std
 			AfterRender(response);
 		}
 
-		public void GetObjCount(ApiResponse response)
+		public void OnGetObjCount(ApiResponse response)
 		{
 			_itemsCount = GetCount();
 			AfterRender(response);
@@ -355,7 +355,7 @@ namespace Tango.UI.Std
 		protected virtual IQueryable<TEntity> Data => DataContext.GetTable<TEntity>().Filtered();
 		protected abstract IQueryable<TResult> Selector(IQueryable<TEntity> data);
 
-		protected override int GetCount()
+		public override int GetCount()
 		{
 			return ApplyFilter(Data).Count();
 		}

@@ -116,7 +116,7 @@ var listview = function (au, cu, cbcell, menu) {
 			const level = parseInt(tr.getAttribute('data-level')) || 0;
 			const elcellid = el.id || '';
 			const state = el.getAttribute('data-state') || 'collapsed';
-			const isButton = (el.className == 'rowexpandercell');
+			const isButton = el.classList.contains('rowexpandercell');
 			const expandedrows = document.getElementById(el.getAttribute('data-r') + "_expandedrows");
             const expandedValue = tr.getAttribute('data-rowid') + ";";
 

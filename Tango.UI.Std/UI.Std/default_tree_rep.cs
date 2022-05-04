@@ -53,7 +53,7 @@ namespace Tango.UI.Std
 		}
 
 
-		protected override int GetCount()
+		public override int GetCount()
 		{
 			return _count;
 		}
@@ -570,7 +570,7 @@ namespace Tango.UI.Std
 
 			response.ReplaceWidget(sender + "_" + Paging.ID, w => {
 				Paging.Render2(w, _itemsCount, a => a.PostEvent(OnLevelSetPage).KeepTheSameUrl()
-					.WithRequestMethod("listview.onlevelsetpage"), a => a.PostEvent(GetObjCount));
+					.WithRequestMethod("listview.onlevelsetpage"), a => a.PostEvent(OnGetObjCount));
 			});
 		}
 
@@ -579,7 +579,7 @@ namespace Tango.UI.Std
 			response.AddAdjacentWidget(Context.Sender, "childlevel", AdjacentHTMLPosition.AfterEnd, Render);
 
 			response.ReplaceWidget(Context.Sender + "_" + Paging.ID, w => {
-				Paging.Render2(w, _itemsCount, a => a.PostEvent(OnLevelSetPage).KeepTheSameUrl().WithRequestMethod("listview.onlevelsetpage"), a => a.PostEvent(GetObjCount));
+				Paging.Render2(w, _itemsCount, a => a.PostEvent(OnLevelSetPage).KeepTheSameUrl().WithRequestMethod("listview.onlevelsetpage"), a => a.PostEvent(OnGetObjCount));
 			});
 		}
 
