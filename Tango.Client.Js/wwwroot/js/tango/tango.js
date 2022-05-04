@@ -804,7 +804,7 @@ var ajaxUtils = function ($, cu) {
 			const ctrl = cu.getThisOrParent(el, function (n) { return n.hasAttribute && n.hasAttribute('data-ctrl'); });
 			if (!ctrl) return null;
 			const id = ctrl.hasAttribute('data-ctrl-id') ? ctrl.getAttribute('data-ctrl-id') : ctrl.id;
-			return { root: ctrl, id: id, state: state.ctrl[id] };
+			return { root: ctrl, id: id, instance: state.ctrl[id] };
 		},
 		setValue: function (args) {
 			var e = document.getElementById(args.id);
@@ -1308,32 +1308,33 @@ var ajaxUtils = function ($, cu) {
 				const ctrl = instance.findControl(root);
 				if (root.id != ctrl.id) root = shadow.getElementById(ctrl.id);
 
-				if (!ctrl.state) {
-					ctrl.state = {};
-					state.ctrl[ctrl.id] = ctrl.state;
+				if (!ctrl.instance) {
+					ctrl.instance = {};
+					state.ctrl[ctrl.id] = ctrl.instance;
 				}
 
-				if (!ctrl.state.type) {
-					ctrl.state.type = t
-					ctrl.state.root = ctrl.id;
+				if (!ctrl.instance.type) {
+					ctrl.instance.type = t
+					ctrl.instance.root = ctrl.id;
 					if (Tango.serviceProvider.components[t.toLowerCase()]) {
-						ctrl.state.instance = Tango.serviceProvider.components[t.toLowerCase()](ctrl.id, Tango.serviceProvider);
-						if (apiResult.props && apiResult.props[ctrl.state.root]) {
-							ctrl.state.instance.props = Object.assign(ctrl.state.instance.props, apiResult.props[ctrl.state.root]);
+						ctrl.instance = Tango.serviceProvider.components[t.toLowerCase()](ctrl.id, Tango.serviceProvider);
+						state.ctrl[ctrl.id] = ctrl.instance;
+						if (apiResult.props && apiResult.props[ctrl.instance.root]) {
+							ctrl.instance.props = Object.assign(ctrl.instance.props, apiResult.props[ctrl.instance.root]);
 						}
 					}
-					if (ctrl.state.instance)
-						ctrl.state.instance.init();
+					if (ctrl.instance.init)
+						ctrl.instance.init();
 					else if (window[t] && window[t]['init']) {
-						window[t]['init'](root, ctrl.state);
+						window[t]['init'](root, ctrl.instance);
 						console.log('widget: ' + ctrl.id + ' init ' + t);
 					}
 				}
 
-				if (ctrl.state.instance)
-					ctrl.state.instance.widgetWillMount();
+				if (ctrl.instance.widgetWillMount)
+					ctrl.instance.widgetWillMount();
 				else if (window[t] && window[t]['widgetWillMount']) {
-					window[t]['widgetWillMount'](shadow, ctrl.state);
+					window[t]['widgetWillMount'](shadow, ctrl.instance);
 					console.log('widget: ' + ctrl.id + ' widgetWillMount ' + t);
 				}
 			}
@@ -1345,10 +1346,10 @@ var ajaxUtils = function ($, cu) {
 				const ctrl = instance.findControl(n.el);
 				if (ctrl) {
 					const t = ctrl.root.getAttribute('data-ctrl');
-					if (ctrl.state.instance)
-						ctrl.state.instance.widgetContentChanged();
+					if (ctrl.instance.widgetContentChanged)
+						ctrl.instance.widgetContentChanged();
 					else if (window[t] && window[t]['widgetContentChanged']) {
-						window[t]['widgetContentChanged'](ctrl.state);
+						window[t]['widgetContentChanged'](ctrl.instance);
 						console.log('widget: ' + ctrl.id + ' widgetContentChanged ' + t);
 					}
 				}
@@ -1359,15 +1360,15 @@ var ajaxUtils = function ($, cu) {
 				const ctrl = instance.findControl(root);
 
 				if (ctrl) {
-					if (apiResult.state && ctrl.state.instance) {
-						ctrl.state.instance.state = apiResult.state[root.id];
+					if (apiResult.state && apiResult.state[root.id] && ctrl.instance) {
+						ctrl.instance.state = apiResult.state[root.id];
 					}
 
 					const t = root.getAttribute('data-ctrl');
-					if (ctrl.state.instance)
-						ctrl.state.instance.widgetDidMount();
+					if (ctrl.instance.widgetDidMount)
+						ctrl.instance.widgetDidMount();
 					else if (window[t] && window[t]['widgetDidMount']) {
-						window[t]['widgetDidMount'](ctrl.state);
+						window[t]['widgetDidMount'](ctrl.instance);
 						console.log('widget: ' + ctrl.id + ' widgetDidMount ' + t);
 					}
 				}
@@ -1668,7 +1669,8 @@ var ObservableArray = (function () {
 
 const Tango = {
 	Component: class {
-		id;
+		root;
+		type;
 		props;
 		state;
 
@@ -1677,16 +1679,38 @@ const Tango = {
 		widgetDidMount() { }
 		widgetContentChanged() { }
 
-		constructor(id, props) {
-			this.id = id;
+		constructor(id, ctrltype, props) {
+			this.root = id;
+			this.type = ctrltype;
 			this.props = props;
 		}
 	},
 
+	Event: class {
+		callbacks;
+
+		add(callback) {
+			if (!this.callbacks)
+				this.callbacks = [callback];
+			else
+				this.callbacks.push(callback);
+		}
+
+		invoke(...parms) {
+			if (this.callbacks)
+				this.callbacks.forEach(callback => callback(...parms));
+		}
+
+		constructor(callback) {
+			this.add(callback);
+		}
+	},
+
 	registerComponent: function (cls, fabric) {
-		this.serviceProvider.components[cls.name.toLowerCase()] = (id, sp) => {
+		const ctrltype = cls.name.toLowerCase();
+		this.serviceProvider.components[ctrltype] = (id, sp) => {
 			const props = fabric ? fabric(sp) : { };
-			return new cls(id, props);
+			return new cls(id, ctrltype, props);
 		}
 	},
 

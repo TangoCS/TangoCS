@@ -61,7 +61,7 @@
 
 class BtnSwitch extends Tango.Component {
 	setValue(checked) {
-		const el = document.getElementById(this.id);
+		const el = document.getElementById(this.root);
 
 		if (el.disabled || el.hasAttribute('readonly'))
 			return;

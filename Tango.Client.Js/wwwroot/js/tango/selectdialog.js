@@ -257,7 +257,8 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 
 			const rowid = field.getAttribute('data-rowid');
 			const c = au.findControl(field);
-			const isSingleMode = c.state && c.state.hasOwnProperty('selectedvalue');
+			const cins = c.instance;
+			const isSingleMode = cins && cins.hasOwnProperty('selectedvalue');
 
 			document.getElementById(c.id).value = '';
 
@@ -267,13 +268,13 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 				field.firstChild.innerText = '';
 				if (!field.classList.contains('hide'))
 					field.classList.add('hide');
-				c.state.selectedvalue = '';
+				cins.selectedvalue = '';
 			}
 			else {
 				field.parentElement.removeChild(field);
-				const index = c.state.selectedvalues.indexOf(rowid);
+				const index = cins.selectedvalues.indexOf(rowid);
 				if (index > -1) {
-					c.state.selectedvalues.splice(index, 1);
+					cins.selectedvalues.splice(index, 1);
 				}
 			}
 

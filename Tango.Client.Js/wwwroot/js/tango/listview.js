@@ -3,25 +3,26 @@
 		setselected: function (el, onCheckChangeDelegate) {
 			const tr = cu.getRow(el);
 			const c = au.findControl(el);
+			const cins = c.instance;
 			const cbhead = document.getElementById(c.id + "_sel_header");
 			const selected = tr.classList.contains('checked') || tr.hasAttribute('data-checked');
 			const rowid = tr.getAttribute('data-rowid');
 
 			if (selected) {
-				if (c.state.selectedvalues[0] == -1) {
-					c.state.selectedvalues = [];
-					if (cbhead) instance.setPageChecked(c.root, c.state, cbhead);
+				if (cins.selectedvalues[0] == -1) {
+					cins.selectedvalues = [];
+					if (cbhead) instance.setPageChecked(c.root, cins, cbhead);
 				}
-				instance.setRowUnchecked(tr, el);
-				const index = c.state.selectedvalues.indexOf(rowid);
+				instance.setRowUnchecked(tr, el, cins);
+				const index = cins.selectedvalues.indexOf(rowid);
 				if (index > -1) {
-					c.state.selectedvalues.splice(index, 1);
+					cins.selectedvalues.splice(index, 1);
 				}
 			}
 			else {
-				instance.setRowChecked(tr, el);
-				if (c.state.selectedvalues.indexOf(rowid) == -1)
-					c.state.selectedvalues.push(rowid);
+				instance.setRowChecked(tr, el, cins);
+				if (cins.selectedvalues.indexOf(rowid) == -1)
+					cins.selectedvalues.push(rowid);
 			}
 
 			const cblist = c.root.querySelectorAll('.sel');
@@ -30,21 +31,22 @@
 				if (cblist[i].getAttribute('data-state') == 1) j++;
 			}
 			if (cbhead) instance.setHeaderSelectorState(cbhead, j, cblist.length);
-			if (onCheckChangeDelegate) onCheckChangeDelegate(document, c.root, c.state, j != 0);
+			if (onCheckChangeDelegate) onCheckChangeDelegate(document, c.root, cins, j != 0);
 		},
 
 		cbheadclicked: function (cbhead, onCheckChangeDelegate) {
 			const c = au.findControl(cbhead);
+			const cins = c.instance;
 			const cblist = c.root.querySelectorAll('.sel');
 			const headstate = cbhead.getAttribute('data-state') || '0';
 
 			if (headstate == '2' || headstate == '1') {
-				instance.setPageUnchecked(c.root, c.state, cbhead);
+				instance.setPageUnchecked(c.root, cins, cbhead);
 			}
 			else if (headstate == '0') {
-				instance.setPageChecked(c.root, c.state, cbhead);
+				instance.setPageChecked(c.root, cins, cbhead);
 			}
-			if (onCheckChangeDelegate) onCheckChangeDelegate(document, c.root, c.state);
+			if (onCheckChangeDelegate) onCheckChangeDelegate(document, c.root, cins);
 		},
 
 		setHeaderSelectorState: function (cbhead, j, cnt) {
@@ -60,23 +62,25 @@
 			}
 		},
 
-		setRowChecked: function (tr, el) {
+		setRowChecked: function (tr, el, state) {
 			tr.classList.add('checked');
 			el.querySelector('i').className = 'icon icon-checkbox-checked';
 			el.setAttribute('data-state', 1);
+			if (state.onRowChecked) state.onRowChecked.invoke(tr);
 		},
 
-		setRowUnchecked: function (tr, el) {
+		setRowUnchecked: function (tr, el, state) {
 			tr.classList.remove('checked');
 			el.querySelector('i').className = 'icon icon-checkbox-unchecked';
 			el.setAttribute('data-state', 0);
+			if (state.onRowUnchecked) state.onRowUnchecked.invoke(tr);
 		},
 
 		setPageChecked: function (root, state, cbhead) {
 			const cblist = root.querySelectorAll('.sel');
 			for (var i = 0; i < cblist.length; i++) {
 				const tr = cu.getRow(cblist[i]);
-				instance.setRowChecked(tr, cblist[i]);
+				instance.setRowChecked(tr, cblist[i], state);
 				state.selectedvalues.push(tr.getAttribute('data-rowid'));
 			}
 			cbhead.setAttribute('data-state', '1');
@@ -87,7 +91,7 @@
 			const cblist = root.querySelectorAll('.sel');
 			for (var i = 0; i < cblist.length; i++) {
 				const tr = cu.getRow(cblist[i]);
-				instance.setRowUnchecked(tr, cblist[i]);
+				instance.setRowUnchecked(tr, cblist[i], state);
 				const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
 				if (index > -1) {
 					state.selectedvalues.splice(index, 1);
@@ -228,7 +232,7 @@ var listview = function (au, cu, cbcell, menu) {
 					const tr = cu.getRow(cblist[i]);
 					const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
 					if (index > -1) {
-						cbcell.setRowChecked(tr, cblist[i]);
+						cbcell.setRowChecked(tr, cblist[i], state);
 						j++;
 					}
 				}
@@ -249,9 +253,7 @@ var listview = function (au, cu, cbcell, menu) {
 				root : root.querySelector('.listviewtable.highlight');
 			if (highlight) initHighlight(highlight);
 
-			const fixedHeaders = root instanceof HTMLTableElement && root.classList.contains('fixedheader') ?
-				root : root.querySelector('.listviewtable.fixedheader');
-			if (fixedHeaders) initFixedHeader(fixedHeaders);
+			instance.initFixedHeader(root);
 
 			var el = $('#' + state.root);
 			if (!el.tableDnD || !el.hasClass("draggablerows")) return;
@@ -287,7 +289,7 @@ var listview = function (au, cu, cbcell, menu) {
 				const tr = cu.getRow(cblist[i]);
 				const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
 				if (index > -1) {
-					cbcell.setRowChecked(tr, cblist[i]);
+					cbcell.setRowChecked(tr, cblist[i], state);
 				}
 			}
 			initHighlight(root);
@@ -385,8 +387,12 @@ var listview = function (au, cu, cbcell, menu) {
                 });
             }
 		},
-        fixedHeader: function (roots) {
-            initFixedHeader(roots);
+		initFixedHeader: function (root) {
+			if (typeof root === 'string' || root instanceof String)
+				root = document.getElementById(root);
+			const fixedHeaders = root instanceof HTMLTableElement && root.classList.contains('fixedheader') ?
+				root : root.querySelector('.listviewtable.fixedheader');
+			if (fixedHeaders) initFixedHeader(fixedHeaders);
 		},
 		onRemoveIconClick: function (e) {
 			var seltr = cu.getRow(e.currentTarget);
@@ -471,8 +477,7 @@ var listview = function (au, cu, cbcell, menu) {
                     padding = padding.replace("px", "");
                     paddingParent = paddingParent.replace("px", "");
                     const currentTop = th.getBoundingClientRect().top - tableHeaderTop;
-                    // Не хватает 2 px
-                    const offsetTop = (((parseInt(padding) / 2) + parseInt(paddingParent)) * -1);
+                    const offsetTop = (((parseInt(padding) / 2) + parseInt(paddingParent)) * -1) + 2;
                     th.style.top = offsetTop + currentTop + "px";
                 } else {
                     th.style.top = th.getBoundingClientRect().top - tableHeaderTop + "px";

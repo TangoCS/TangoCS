@@ -23,7 +23,7 @@ namespace Tango.UI.Std
         {
 			var color = val.Any(o => o.Severity == ValidationMessageSeverity.Error) ? "red" : "yellow";
 			Action title = () => {
-				w.Icon("warning", a => a.Style("color:" + color));
+				w.Icon("warning", a => a.Style("margin-right: 4px; color:" + color));
 				w.Write("Предупреждение");
 			};
 
