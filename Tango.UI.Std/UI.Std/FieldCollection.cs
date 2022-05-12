@@ -50,6 +50,10 @@ namespace Tango.UI.Std
 		public int? FilterSeqNo { get; set; }
 	}
 
+	public static class FieldCollectionOptions
+	{
+		public static bool DefaultFixedHeader { get; set; } = false;
+	}
 	public class FieldCollectionBase<TResult> : IFieldCollection<TResult>
 	{
         public List<List<IColumnHeader>> HeaderRows { get; } = new List<List<IColumnHeader>> { new List<IColumnHeader>() };
@@ -68,7 +72,8 @@ namespace Tango.UI.Std
 		public ActionContext Context { get; protected set; }
 
 		public bool EnableHeadersMenu { get; set; } = false;
-        public bool EnableFixedHeader { get; set; } = false;
+
+		public bool EnableFixedHeader { get; set; } = FieldCollectionOptions.DefaultFixedHeader;
 		public bool EnableSelect { get; set; }
 		public bool AllowSelectAllPages { get; set; } = false;
 
