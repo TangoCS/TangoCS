@@ -1319,8 +1319,8 @@ var ajaxUtils = function ($, cu) {
 					if (Tango.serviceProvider.components[t.toLowerCase()]) {
 						ctrl.instance = Tango.serviceProvider.components[t.toLowerCase()](ctrl.id, Tango.serviceProvider);
 						state.ctrl[ctrl.id] = ctrl.instance;
-						if (apiResult.props && apiResult.props[ctrl.instance.root]) {
-							ctrl.instance.props = Object.assign(ctrl.instance.props, apiResult.props[ctrl.instance.root]);
+						if (apiResult.ctrl && apiResult.ctrl[ctrl.instance.root] && apiResult.ctrl[ctrl.instance.root].props) {
+							ctrl.instance.props = Object.assign(ctrl.instance.props, apiResult.ctrl[ctrl.instance.root].props);
 						}
 					}
 					if (ctrl.instance.init)
@@ -1330,7 +1330,7 @@ var ajaxUtils = function ($, cu) {
 						console.log('widget: ' + ctrl.id + ' init ' + t);
 					}
 				}
-
+				
 				if (ctrl.instance.widgetWillMount)
 					ctrl.instance.widgetWillMount();
 				else if (window[t] && window[t]['widgetWillMount']) {
@@ -1360,8 +1360,19 @@ var ajaxUtils = function ($, cu) {
 				const ctrl = instance.findControl(root);
 
 				if (ctrl) {
-					if (apiResult.state && apiResult.state[root.id] && ctrl.instance) {
-						ctrl.instance.state = apiResult.state[root.id];
+					if (apiResult.ctrl) {
+						const srvCtrl = apiResult.ctrl[root.id];
+						if (srvCtrl) {
+							if (srvCtrl.state)
+								if (ctrl.instance.state)
+									ctrl.instance.state = Object.assign(ctrl.instance.state, srvCtrl.state);
+								else
+									ctrl.instance.state = srvCtrl.state;
+							if (srvCtrl.instance) {
+
+								ctrl.instance = Object.assign(ctrl.instance, srvCtrl.instance);
+							}
+						}
 					}
 
 					const t = root.getAttribute('data-ctrl');

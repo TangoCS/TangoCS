@@ -46,8 +46,15 @@ namespace Tango.UI
 			public string prefix;
 			public Action<LayoutWriter> content;
 		}
-		public Dictionary<string, object> State = new Dictionary<string, object>();
-		public Dictionary<string, object> Props = new Dictionary<string, object>();
+		class CtrlInfo
+		{
+			public object Instance { get; set; }
+			public object State { get; set; }
+			public object Props { get; set; }
+		}
+
+		Dictionary<string, CtrlInfo> Ctrl = new Dictionary<string, CtrlInfo>(); 
+
 		public List<IWidget> Widgets { get; set; } = new List<IWidget>();
 		public List<ClientAction> ClientActions { get; set; } = new List<ClientAction>();
 		public HashSet<string> Includes { get; set; } = new HashSet<string>();
@@ -209,6 +216,29 @@ namespace Tango.UI
 			Data.Add("hardredirect", new { url });
 		}
 
+		public void SetCtrlState(string clientid, object state)
+		{
+			if (Ctrl.TryGetValue(clientid, out var ctrl))
+				ctrl.State = state;
+			else
+				Ctrl.Add(clientid, new CtrlInfo { State = state });
+		}
+		public void SetCtrlProps(string clientid, object props)
+		{
+			if (Ctrl.TryGetValue(clientid, out var ctrl))
+				ctrl.Props = props;
+			else
+				Ctrl.Add(clientid, new CtrlInfo { Props = props });
+		}
+		public void SetCtrlInstance(string clientid, object instance)
+		{
+			if (Ctrl.TryGetValue(clientid, out var ctrl))
+				ctrl.Instance = instance;
+			else
+				Ctrl.Add(clientid, new CtrlInfo { Instance = instance });
+		}
+
+
 		#region dom actions
 		public virtual void SetElementValue(string id, string value)
 		{
@@ -339,11 +369,8 @@ namespace Tango.UI
 				if (Includes.Count > 0)
 					Data.Add("includes", Includes.Select(o => GlobalSettings.JSPath + o));
 
-				if (State.Count > 0)
-					Data.Add("state", State);
-
-				if (Props.Count > 0)
-					Data.Add("props", Props);
+				if (Ctrl.Count > 0)
+					Data.Add("ctrl", Ctrl);
 			}
 			catch (Exception ex)
 			{
