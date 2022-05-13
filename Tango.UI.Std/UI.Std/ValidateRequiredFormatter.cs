@@ -21,17 +21,22 @@ namespace Tango.UI.Std
 
         public static LayoutWriter ValidationBlock(this LayoutWriter w, ValidationMessageCollection val)
         {
-			var color = val.Any(o => o.Severity == ValidationMessageSeverity.Error) ? "red" : "yellow";
-			Action title = () => {
-				w.Icon("warning", a => a.Style("margin-right: 4px; color:" + color));
-				w.Write("Предупреждение");
-			};
+            var color = val.Count == 0 ? "red" :
+                val.Any(o => o.Severity == ValidationMessageSeverity.Error) ? "red" :
+                val.Any(o => o.Severity == ValidationMessageSeverity.Warning) ? "yellow" :
+                "skyblue";
 
-            w.FieldsBlockCollapsible(title, () => w.Div(a => a.Class("widthstd").Style("white-space: nowrap;"), () =>
-            {
-                foreach (var item in val)
-                    w.P(() => w.Write(item.Message));
-            }));
+            Action title = () => {
+                w.Icon("warning", a => a.Style("margin-right: 4px; color:" + color));
+                w.Write("Предупреждение");
+            };
+
+            w.FieldsBlockCollapsible(title, () => {
+                w.Div(a => a.Class("validation-body").Class("widthstd").Style("white-space: nowrap;"), () => {
+                    foreach (var item in val)
+                        w.P(() => w.Write(item.Message));
+                });
+            });
             return w;
         }
     }
