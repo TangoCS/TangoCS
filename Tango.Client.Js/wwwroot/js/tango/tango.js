@@ -1302,6 +1302,20 @@ var ajaxUtils = function ($, cu) {
 				}
 			}
 
+			const assignProps = (ctrlInst, srvInst) => {
+				for (var prop in srvInst) {
+					if (Object.prototype.hasOwnProperty.call(ctrlInst, prop) && Array.isArray(srvInst[prop]) && ctrlInst[prop] instanceof ObservableArray) {
+						const arr = ctrlInst[prop];
+						arr.splice(0, arr.length);
+						for (var i = 0; i < srvInst[prop].length; i++) {
+							arr.push(srvInst[prop][i]);
+						}
+					} else {
+						ctrlInst[prop] = srvInst[prop];
+					}
+				}
+			};
+
 			for (var i = 0; i < ctrls.length; i++) {
 				var root = ctrls[i];
 				const t = root.getAttribute('data-ctrl');
@@ -1328,6 +1342,18 @@ var ajaxUtils = function ($, cu) {
 					else if (window[t] && window[t]['init']) {
 						window[t]['init'](root, ctrl.instance);
 						console.log('widget: ' + ctrl.id + ' init ' + t);
+					}
+				}
+
+				if (apiResult.ctrl) {
+					const srvCtrl = apiResult.ctrl[root.id];
+					if (srvCtrl) {
+						if (srvCtrl.state) {
+							if (!ctrl.instance.state) ctrl.instance.state = {};
+							assignProps(ctrl.instance.state, srvCtrl.state);
+						}
+						if (srvCtrl.instance)
+							assignProps(ctrl.instance, srvCtrl.instance);
 					}
 				}
 				
@@ -1360,21 +1386,6 @@ var ajaxUtils = function ($, cu) {
 				const ctrl = instance.findControl(root);
 
 				if (ctrl) {
-					if (apiResult.ctrl) {
-						const srvCtrl = apiResult.ctrl[root.id];
-						if (srvCtrl) {
-							if (srvCtrl.state)
-								if (ctrl.instance.state)
-									ctrl.instance.state = Object.assign(ctrl.instance.state, srvCtrl.state);
-								else
-									ctrl.instance.state = srvCtrl.state;
-							if (srvCtrl.instance) {
-
-								ctrl.instance = Object.assign(ctrl.instance, srvCtrl.instance);
-							}
-						}
-					}
-
 					const t = root.getAttribute('data-ctrl');
 					if (ctrl.instance.widgetDidMount)
 						ctrl.instance.widgetDidMount();

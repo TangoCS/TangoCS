@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using Tango.Data;
+using Tango.Html;
 using Tango.Localization;
 using Tango.Logic;
 
@@ -34,22 +35,22 @@ namespace Tango.UI
 	}
 
 	public interface IField<TValue> : IField
-	{	
-		TValue Value { get; }		
+	{
+		TValue Value { get; }
 	}
 
 	public interface IEntityField : IField
 	{
-        Type EntityType { get; }
-        void SetViewData<TViewData>(TViewData viewData);
-    }
+		Type EntityType { get; }
+		void SetViewData<TViewData>(TViewData viewData);
+	}
 
 	public interface IEntityField<TEntity> : IEntityField
 		where TEntity : class
 	{
 		TEntity ViewData { get; set; }
 		string[] Properties { get; }
-    }
+	}
 
 	public interface IFormField<TFormValue> : IField
 	{
@@ -122,9 +123,11 @@ namespace Tango.UI
 
 		public virtual TValue DefaultValue => default;
 		public virtual TValue Value => ValueSource == ValueSource.Form ? ProceedFormValue(FormValue) : DefaultValue;
-		public override string StringValue => 
-			Value is IWithTitle ? (Value as IWithTitle)?.Title : 
+		public override string StringValue =>
+			Value is IWithTitle ? (Value as IWithTitle)?.Title :
 			typeof(TValue).IsEnum ? Enumerations.GetEnumDescription((Enum)(object)Value) :
+			typeof(TValue) == typeof(bool) ? ((bool)(object)Value).Icon() :
+			typeof(TValue) == typeof(bool?) ? ((bool?)(object)Value)?.Icon() :
 			Value?.ToString();
 
 

@@ -280,6 +280,8 @@ var listview = function (au, cu, cbcell, menu) {
 					au.postEventFromElementWithApiResponse(el[0], target);
 				}
 			});
+
+
 		},
 		widgetContentChanged: function (state) {
 			const root = document.getElementById(state.root);

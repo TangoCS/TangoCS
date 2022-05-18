@@ -8,6 +8,11 @@ namespace Tango.UI
 		{
 			public override bool IsRequired => true;
 		}
+		public class Title<T> : EntityField<T, string>
+			where T: class
+		{
+			public override bool IsRequired => true;
+		}
 
 		public class Code : EntityField<object, string>
 		{
