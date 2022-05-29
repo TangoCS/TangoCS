@@ -90,34 +90,34 @@ namespace Tango.UI.Std
 		{
 			var sel = Context.GetListArg<TKey>(Constants.SelectedValues);
 
-            if (EntityAudit != null)
-            {
-                var list = new List<ObjectChange>();
-                foreach (var id in sel)
-                {
-                    var oc = ObjectChange.Delete<T>(id);
-                    list.Add(oc);
+			if (EntityAudit != null)
+			{
+				var list = new List<ObjectChange>();
+				foreach (var id in sel)
+				{
+					var oc = ObjectChange.Delete<T>(id);
+					list.Add(oc);
 
-                    if (typeof(T).IsAssignableTo(typeof(IWithTitle)) || typeof(T).IsAssignableTo(typeof(IWithName)))
-                    {
-                        T obj = Repository.GetById(id);  //CommonLogic.GetFiltered<T, TKey>(DataContext, id);
-                        var ot = obj as IWithTitle;
-                        if (ot != null) oc.Title = () => ot.Title;
-                        else
-                        {
-                            var onm = obj as IWithName;
-                            if (onm != null) oc.Title = () => onm.Name;
-                        }
-                    }
-                }
-                if (sel.Count == 1)
-                    EntityAudit.AddChanges(list[0]);
-                else
-                {
-                    var ocp = ObjectChange.BulkDelete<T>();
-                    EntityAudit.AddChanges(ocp, secondaryObjects: list);
-                }
-            }
+					if (typeof(T).IsAssignableTo(typeof(IWithTitle)) || typeof(T).IsAssignableTo(typeof(IWithName)))
+					{
+						T obj = Repository.GetById(id);  //CommonLogic.GetFiltered<T, TKey>(DataContext, id);
+						var ot = obj as IWithTitle;
+						if (ot != null) oc.Title = () => ot.Title;
+						else
+						{
+							var onm = obj as IWithName;
+							if (onm != null) oc.Title = () => onm.Name;
+						}
+					}
+				}
+				if (sel.Count == 1)
+					EntityAudit.AddChanges(list[0]);
+				else
+				{
+					var ocp = ObjectChange.BulkDelete<T>();
+					EntityAudit.AddChanges(ocp, secondaryObjects: list);
+				}
+			}
 
 			var res = ProcessSubmit(sel);
 			if (!res.Result)
@@ -135,6 +135,11 @@ namespace Tango.UI.Std
 			}
 			AfterDelete(sel);
 
+			AfterSubmit(response);
+		}
+
+		protected virtual void AfterSubmit(ApiResponse response)
+		{
 			response.RedirectBack(Context, 1);
 		}
 
