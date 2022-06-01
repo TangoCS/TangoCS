@@ -94,3 +94,17 @@
 
 	return instance;
 }(ajaxUtils);
+
+
+class FieldEdit extends Tango.Component {
+	prepareParms() {
+		return {
+			top: this.root.offsetTop,
+			left: this.root.offsetLeft,
+			width: this.root.offsetWidth,
+			height: this.root.offsetHeight
+		}
+	}
+}
+
+Tango.registerContainer(FieldEdit);

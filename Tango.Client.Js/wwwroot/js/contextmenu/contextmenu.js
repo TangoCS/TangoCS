@@ -5,18 +5,8 @@
  *Copyright (c) 2013-2015 Sudhanshu Yadav.
  *Dual licensed under the MIT and GPL licenses
  */
-
-
-; (function ($, window, document) {
+; (function ($, window, document, cu) {
 	"use strict";
-
-	//$.single = (function () {
-	//	var single = $({});
-	//	return function (elm) {
-	//		single[0] = elm;
-	//		return single;
-	//	}
-	//}());
 
 	function callMethod(el, method, selector, option) {
 		var myoptions = option;
@@ -29,18 +19,6 @@
 		}
 		methods[method].call(el, selector, myoptions);
 		return this;
-	}
-
-	function getParentOffset(element) {
-		var offset = { top: 0, left: 0 };
-		while (element && getComputedStyle(element).getPropertyValue('position') != 'fixed') {
-			element = element.offsetParent;
-		}
-		if (element) {
-			offset.top = element.offsetTop;
-			offset.left = element.offsetLeft;
-		}
-		return offset;
 	}
 
 	const state = {
@@ -60,7 +38,6 @@
 		state.resetTimer();
 		state.timer = window.setTimeout(function () { func(caller); }, timeout);
 	}
-
 
 	$.fn.contextMenu = function (selector, option) {
 		return callMethod(this, 'popup', selector, option);
@@ -387,7 +364,7 @@
 					top = e.clientY;
 				} else if (option.displayAround.startsWith('trigger')) {
 					var rect = baseEl[0].getBoundingClientRect();
-					var parentOffset = getParentOffset(baseEl[0]);
+					var parentOffset = cu.getParentOffset(baseEl[0]);
 
 					var triggerHeight = baseEl.outerHeight(true),
 						triggerWidth = baseEl.outerWidth(true),
@@ -541,4 +518,4 @@
 				.css('left', '').css('top', '').css('bottom', '').css('width', '').css('height', '');
 		}
 	};
-})(jQuery, window, document);
+})(jQuery, window, document, commonUtils);

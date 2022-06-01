@@ -29,6 +29,38 @@ namespace Tango.UI.Controls
 		}
 	}
 
+	public class FieldEditContainer : ViewContainer
+	{
+		public FieldEditContainer()
+		{
+			Mapping.Add("contentbody", "body");
+			Mapping.Add("buttonsbar", "footer");
+		}
+		public override void Render(ApiResponse response)
+		{
+			response.AddAdjacentWidget(null, "fieldeditdialog", AdjacentHTMLPosition.AfterBegin, w => {
+				Action<TagAttributes> attrs = a => {
+					a.ID("fieldeditdialog");
+					a.Class("field-edit-dialog");
+					a.DataResultHandler();
+					a.Data("c-changeloc", "false");
+					a.DataHref(Context.BaseUrl().Url);
+					a.DataNewContainer(Type, w.IDPrefix);
+				};
+
+				w.Div(attrs, () => {
+					w.Div(a => a.Class("field-edit-dialog-container"), () => {
+						w.AjaxForm("form", a => a.DataResultPostponed(1), () => {
+							w.Div(a => a.ID("body").Class("field-edit-dialog-body"), null);
+							w.Div(a => a.ID("footer").Class("field-edit-dialog-footer"), null);
+							w.Hidden(Constants.ReturnUrl, Context.ReturnUrl.Get(1));
+						});
+					});
+				});
+			});
+		}
+	}
+
 	public class DialogContainer : ViewContainer
 	{
 		public string Class { get; set; }

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using Tango.AccessControl;
 using Tango.Html;
 using Tango.Localization;
+using Tango.UI.Controls;
+using Tango.UI.Std;
 
 namespace Tango.UI
 {
@@ -66,14 +69,17 @@ namespace Tango.UI
 			w.FormField(field.ID, field.Caption, () => w.Div(a => a.ID(field.ID).Class("field-plaintext"), val), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible);
 		}
 
-		public static void EditablePlainText<TValue>(this LayoutWriter w, IField<TValue> field, GridPosition grid = null)
+		public static void EditablePlainText<TEntity, TKey>(this LayoutWriter w, IAccessControl ac, TKey id, IEntityField<TEntity> field, GridPosition grid = null)
+			where TEntity : class
 		{
 			var description = field.ShowDescription ? field.Description : null;
 
 			w.FormField(field.ID, field.Caption, () => {
 				w.Div(a => a.ID(field.ID).Class("field-editableplaintext"), () => {
-					w.Div(a => a.Class("field-editableplaintext-text"), field.StringValue);
-					w.Div(a => a.Class("field-editableplaintext-btn"), () => w.Icon("edit2"));
+					w.ActionLink(a => a.ToEdit<TEntity>(ac, id).InContainer(typeof(FieldEditContainer), null, null).KeepTheSameUrl(), null, () => {
+						w.Div(a => a.Class("field-editableplaintext-text"), field.StringValue);
+						w.Div(a => a.Class("field-editableplaintext-btn"), () => w.Icon("edit2"));
+					}); ; ;
 				});
 			}, grid, false, description, field.IsVisible);
 		}

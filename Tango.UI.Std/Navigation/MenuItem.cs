@@ -143,7 +143,7 @@ namespace Tango.UI.Navigation
 		{
 			w.Li(a => a.Title("Версия приложения"), () => w.Span(() => {
 				var v = verProvider.Version;
-				w.Write($"v. {v.Major}.{v.Minor}.{v.Build}");
+				w.Write($"v. {v}");
 			}));
 		}
 

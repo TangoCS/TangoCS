@@ -461,6 +461,13 @@ button.close {
 	height: 100%;
 }
 
+/* field-edit-dialog */
+.field-edit-dialog {
+	position: fixed;
+	top: 40px;
+	left: 0;
+}
+
 
 .paging {
 	padding: 0px 8px;

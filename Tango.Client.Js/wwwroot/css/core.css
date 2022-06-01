@@ -712,3 +712,38 @@ a.disabled > i.icon {
 	width: 85px;
 	background-color: transparent;
 }
+
+.field-editableplaintext {
+	padding: 0;
+	background-color: #ebf3ff;
+	border: solid 1px transparent;
+	cursor: text;
+}
+.field-editableplaintext > a {
+	display: flex;
+	flex-direction: row;
+	color: inherit;
+}
+.field-editableplaintext > a:hover {
+	text-decoration: none;
+}
+.field-editableplaintext .field-editableplaintext-text {
+	flex: 1;
+}
+.field-editableplaintext .field-editableplaintext-btn {
+	visibility: hidden;
+	padding-left: 2px;
+	cursor: pointer;
+}
+.field-editableplaintext .field-editableplaintext-btn .svgicon-edit2 {
+	width: 12px;
+	height: 12px;
+}
+.field-editableplaintext:hover {
+	border: solid 1px #c2dbff;
+}
+.field-editableplaintext:hover .field-editableplaintext-btn {
+	visibility: initial;
+	background-color: #c2dbff;
+}
+

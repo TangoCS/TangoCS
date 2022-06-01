@@ -172,6 +172,17 @@
 				}
 			}
 		},
+		getParentOffset: function (element) {
+			var offset = { top: 0, left: 0 };
+			while (element && getComputedStyle(element).getPropertyValue('position') != 'fixed') {
+				element = element.offsetParent;
+			}
+			if (element) {
+				offset.top = element.offsetTop;
+				offset.left = element.offsetLeft;
+			}
+			return offset;
+		},
 		copyToClipboard: function (sourceId) {
 			var source = document.querySelector('#' + sourceId);
 			if (source) {
@@ -1027,7 +1038,14 @@ var ajaxUtils = function ($, cu) {
 
 		// TODO: доработать для определения модальных контейнеров + обработка открытия модального окна из модального окна.
 		if (el.hasAttribute('data-c-new') && el.hasAttribute('data-c-type')) {
-			if (el.getAttribute('data-c-type').toLowerCase() == 'dialogform') {
+			const t = el.getAttribute('data-c-type').toLowerCase();
+
+			if (Tango.serviceProvider.containers[t]) {
+				const containerObj = Tango.serviceProvider.containers[t](el);
+				const parms = containerObj.prepareParms();
+			}
+
+			if (t == 'dialogform') {
 				for (var key in target.data) {
 					if (!key.startsWith('c-'))
 						state.loc.onBackArgs[key] = target.data[key];
@@ -1708,6 +1726,16 @@ const Tango = {
 		}
 	},
 
+	Container: class {
+		root;
+
+		prepareParms() { }
+
+		constructor(el) {
+			this.root = el;
+		}
+	},
+
 	Event: class {
 		callbacks;
 
@@ -1735,9 +1763,16 @@ const Tango = {
 			return new cls(id, ctrltype, props);
 		}
 	},
+	registerContainer: function (cls) {
+		const ctrltype = cls.name.toLowerCase();
+		this.serviceProvider.containers[ctrltype] = el => {
+			return new cls(el);
+		}
+	},
 
 	serviceProvider: {
 		components: {},
+		containers: {},
 
 		commonUtils,
 		ajaxUtils,
