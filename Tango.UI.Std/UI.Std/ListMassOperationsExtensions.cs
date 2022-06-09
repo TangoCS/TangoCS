@@ -5,9 +5,9 @@ namespace Tango.UI.Std.ListMassOperations
 {
 	public static class ListMassOperationsExtensions
 	{
-		public static void AddCheckBoxCell<TResult>(this IFieldCollection<TResult> f)
+		public static void AddCheckBoxCell<TResult>(this IFieldCollection<TResult> f, int colSeqNo)
 		{
-			f.HeaderRows[0].Insert(0, new ColumnHeader(
+			f.HeaderRows[0].Insert(colSeqNo, new ColumnHeader(
 				a => a.ID("sel_header").Class("sel_header").RowSpan(f.HeaderRows.Count), 
 				w => {
 					w.IconThreeStateCheckBox();
@@ -15,7 +15,7 @@ namespace Tango.UI.Std.ListMassOperations
 				}
 			));
 
-			f.Cells.Insert(0,
+			f.Cells.Insert(colSeqNo,
 				new ListColumn<TResult>(
 					(a, o, i) => a.Class("sel"),
 					(w, o, i) => w.IconCheckBox()

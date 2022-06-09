@@ -261,7 +261,7 @@ hr {
 	min-height: 30px;
 }
 form .buttonsbar {
-	margin-top: 8px;
+	padding-top: 8px;
 }
 
 .modal-footer .right, .buttonsbar .right {
@@ -336,6 +336,13 @@ form .buttonsbar {
 .listviewtable th:hover .dropdownimage {
 	visibility: visible;
 }
+
+.listviewtable td.sel {
+	user-select: none;
+}
+/*.listviewtable tr:focus {
+	background-color: orange !important;
+}*/
 
 .cellborders .border-l {
 	border-left: solid 1px #bbb;

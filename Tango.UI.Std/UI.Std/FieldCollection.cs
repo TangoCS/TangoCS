@@ -12,7 +12,7 @@ namespace Tango.UI.Std
 	{
 		IResourceManager Resources { get; }
 
-		bool EnableSelect { get; }
+		RowSelectionOptions EnableSelect { get; }
 		bool AllowSelectAllPages { get; }
 		bool EnableHeadersMenu { get; }
 		bool EnableFixedHeader { get; }
@@ -50,6 +50,15 @@ namespace Tango.UI.Std
 		public int? FilterSeqNo { get; set; }
 	}
 
+	public class RowSelectionOptions
+	{
+		public bool Enabled { get; set; }
+		public int SeqNo { get; set; } = 0;
+
+		public static implicit operator RowSelectionOptions(bool b) => new RowSelectionOptions { Enabled = b };
+		public static implicit operator bool(RowSelectionOptions opt) => opt?.Enabled ?? false;
+	}
+
 	public static class FieldCollectionOptions
 	{
 		public static bool DefaultFixedHeader { get; set; } = false;
@@ -74,7 +83,7 @@ namespace Tango.UI.Std
 		public bool EnableHeadersMenu { get; set; } = false;
 
 		public bool EnableFixedHeader { get; set; } = FieldCollectionOptions.DefaultFixedHeader;
-		public bool EnableSelect { get; set; }
+		public RowSelectionOptions EnableSelect { get; set; }
 		public bool AllowSelectAllPages { get; set; } = false;
 
 		public Action<TResult, RowInfo<TResult>> BeforeRowContent { get; set; }

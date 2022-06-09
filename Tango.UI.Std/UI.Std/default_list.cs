@@ -61,7 +61,7 @@ namespace Tango.UI.Std
 		protected virtual bool EnableViews => true;
 		protected virtual bool EnableQuickSearch => true;
 		protected virtual bool ShowFilterV2 => true;
-		protected virtual bool EnableSelect => false;
+		//protected virtual bool EnableSelect => false;
 		protected virtual bool GenerateClientViewData => false;
 
 		protected virtual bool EnableHover => false;
@@ -335,12 +335,14 @@ namespace Tango.UI.Std
 		protected override IFieldCollection<T, T> FieldsConstructor()
 		{
 			var f = new FieldCollection<T>(Context, Sorter, Filter);
+			f.RowAttributes += (a, o, i) => a.ZebraStripping(i.RowNum);
+			FieldsInit(f);
 			if (EnableHover)
 				f.ListAttributes += a => a.Class("hover");
 			if (EnableKeyboard)
 				f.ListAttributes += a => a.Class("kb");
-			f.RowAttributes += (a, o, i) => a.ZebraStripping(i.RowNum);
-			FieldsInit(f);
+			if (f.EnableSelect)
+				f.RowAttributes += (a, o, i) => a.TabIndex(0);
 			return f;
 		}
 
