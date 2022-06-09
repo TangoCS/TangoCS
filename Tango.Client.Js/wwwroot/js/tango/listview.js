@@ -1,28 +1,45 @@
 ﻿var checkBoxCell = function (au, cu) {
 	var instance = {
 		setselected: function (el, onCheckChangeDelegate) {
-			const tr = cu.getRow(el);
-			const c = au.findControl(el);
+			const row = { el: el, tr: cu.getRow(el) };
+			instance.selSelectedRange([row], onCheckChangeDelegate);
+			return row;
+		},
+		selSelectedRange: function (rows, onCheckChangeDelegate) {
+			if (!rows || rows.length == 0)
+				return;
+
+			const c = au.findControl(rows[0].el);
 			const cins = c.instance;
 			const cbhead = document.getElementById(c.id + "_sel_header");
-			const selected = tr.classList.contains('checked') || tr.hasAttribute('data-checked');
-			const rowid = tr.getAttribute('data-rowid');
 
-			if (selected) {
-				if (cins.selectedvalues[0] == -1) {
-					cins.selectedvalues = [];
-					if (cbhead) instance.setPageChecked(c.root, cins, cbhead);
+			for (var i = 0; i < rows.length; i++) {
+				const el = rows[i].el;
+				const tr = rows[i].tr;
+				if (!tr) tr = cu.getRow(el);
+				const setUnchecked = 'newState' in rows[i] ?
+					rows[i].newState == 0 :
+					tr.classList.contains('checked') || tr.hasAttribute('data-checked');
+				const rowid = tr.getAttribute('data-rowid');
+
+				if (setUnchecked) {
+					if (cins.selectedvalues[0] == -1) {
+						cins.selectedvalues = [];
+						if (cbhead) instance.setPageChecked(c.root, cins, cbhead);
+					}
+					instance.setRowUnchecked(tr, el, cins);
+					rows[i].newState = 0;
+					const index = cins.selectedvalues.indexOf(rowid);
+					if (index > -1) {
+						cins.selectedvalues.splice(index, 1);
+					}
 				}
-				instance.setRowUnchecked(tr, el, cins);
-				const index = cins.selectedvalues.indexOf(rowid);
-				if (index > -1) {
-					cins.selectedvalues.splice(index, 1);
+				else {
+					instance.setRowChecked(tr, el, cins);
+					rows[i].newState = 1;
+					if (cins.selectedvalues.indexOf(rowid) == -1)
+						cins.selectedvalues.push(rowid);
 				}
-			}
-			else {
-				instance.setRowChecked(tr, el, cins);
-				if (cins.selectedvalues.indexOf(rowid) == -1)
-					cins.selectedvalues.push(rowid);
 			}
 
 			const cblist = c.root.querySelectorAll('.sel');
@@ -451,9 +468,34 @@ var listview = function (au, cu, cbcell, menu) {
 	function initCheckBoxes(cblist) {
 		for (var i = 0; i < cblist.length; i++) {
 			const el = cblist[i];
+			el.addEventListener('mousedown', function (e) {
+				e.preventDefault();
+			});
 			el.addEventListener('click', function (e) {
-				cbcell.setselected(e.currentTarget, onCheckChange);
-				updateSelected(e.currentTarget);
+				const curRow = { tr: cu.getRow(e.currentTarget), el: e.currentTarget };
+				if (e.shiftKey) {
+					const actRow = document.activeElement;
+					if (actRow.parentElement == curRow.tr.parentElement) {
+						cbcell.selSelectedRange([curRow], onCheckChange);
+
+						if (curRow.tr != actRow) {
+							const rows = [];
+							var tr = curRow.tr.rowIndex >= actRow.rowIndex ? actRow : curRow.tr.nextElementSibling;
+							const cnt = Math.abs(curRow.tr.rowIndex - actRow.rowIndex);
+							for (var j = 0; j < cnt; j++) {
+								const el = tr.querySelector('td.sel');
+								rows.push({ tr: tr, el: el, newState: curRow.newState });
+								tr = tr.nextElementSibling;
+							}
+							cbcell.selSelectedRange(rows, onCheckChange);
+						}
+					}
+				}
+				else {
+					cbcell.setselected(e.currentTarget, onCheckChange);
+					updateSelected(e.currentTarget);
+				}
+				curRow.tr.focus();
 			});
 			el.classList.add('initialized');
 		}
