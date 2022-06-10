@@ -752,7 +752,7 @@ div.tabs2 + div.tabs2_pages {
 }
 
 
-.dropdownmenu a {
+.dropdownmenu a, .dropdownmenu .item {
 	display: block;
 	width: 100%;
 	text-decoration: none;
