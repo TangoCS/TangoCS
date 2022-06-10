@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -123,6 +124,29 @@ namespace Tango.UI.Controls
 				var text = filter.PersistentFilter.ID == 0 ? w.Resources.Get("Common.AllItems") :
 					(filter.PersistentFilter.Name.IsEmpty() ? w.Resources.Get("System.Filter.Custom") : filter.PersistentFilter.Name);
 				w.DropDownButton("tableviews", text, filter.GetViewsMenu, "view", popupAttrs: a => a.DataNewContainer("popup", w.IDPrefix));
+			});
+		}
+
+		public void ItemListSettings(List<List<IColumnHeader>> headerRows)
+		{
+			Item(w => {
+				w.DropDownImage("listsettings", "listsettings", () => {
+					var i = 0;
+					foreach (var row in headerRows)
+						foreach (var header in row)
+							foreach (var h in header.AsEnumerable())
+							{
+								if (!h.Title.IsEmpty())
+								{
+									var id = $"listsettings_hidecol_{i}";
+									w.Label(a => a.For(id).Class("item"), () => {
+										w.CheckBox(id, true, a => a.Style("vertical-align:middle").Data("colidx", i));
+										w.Span(a => a.Style("vertical-align:middle"), h.Title);
+									});
+								}
+								i++;
+							}
+				}, options: new PopupOptions { CloseOnClick = false } );
 			});
 		}
 

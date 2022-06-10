@@ -61,6 +61,7 @@ namespace Tango.UI.Std
 		protected virtual bool EnableViews => true;
 		protected virtual bool EnableQuickSearch => true;
 		protected virtual bool ShowFilterV2 => true;
+		protected virtual bool EnableListSettings => false;
 		//protected virtual bool EnableSelect => false;
 		protected virtual bool GenerateClientViewData => false;
 
@@ -120,6 +121,11 @@ namespace Tango.UI.Std
 		{
 			if (EnableQuickSearch)
 				t.QuickSearch(this, Paging, _qSearchParmName, SearchExpressionTooltip);
+			if (EnableListSettings)
+			{
+				t.ItemSeparator();
+				t.ItemListSettings(Fields.HeaderRows);
+			}
 			if (EnableViews && Filter.FieldList.Count > 0)
 			{
 				t.ItemSeparator();
@@ -274,6 +280,11 @@ namespace Tango.UI.Std
 				response.AddWidget("#title", FormTitle);
 			if (GenerateClientViewData)
 				response.SetCtrlState(ClientID, new { rows = _result });
+			if (EnableListSettings)
+			{
+				response.SetCtrlProps(ClientID, new { listSettingsPopupID = GetClientID("popup_listsettings") });
+				response.AddClientAction("listview", "initListSettings", ClientID);
+			}
 			AfterRender(response);
 		}
 
@@ -425,17 +436,26 @@ namespace Tango.UI.Std
 
 	public class ColumnHeader : IColumnHeader
 	{
+		public string Title { get; set; }
 		public Action<LayoutWriter> Content { get; set; }
 		public Action<ThTagAttributes> Attributes { get; set; }
 
-		public ColumnHeader() { }
-		public ColumnHeader(Action<ThTagAttributes> attrs, Action<LayoutWriter> content)
+		//public ColumnHeader() { }
+		public ColumnHeader(Action<ThTagAttributes> attrs, string title, Action<LayoutWriter> content)
 		{
+			Title = title;
 			Attributes = attrs;
 			Content = content;
 		}
+		public ColumnHeader(Action<ThTagAttributes> attrs, string title)
+		{
+			Attributes = attrs;
+			Title = title;
+			Content = w => w.Write(title);
+		}
 		public ColumnHeader(string title)
 		{
+			Title = title;
 			Content = w => w.Write(title);
 		}
 

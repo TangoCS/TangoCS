@@ -30,7 +30,7 @@ namespace Tango.UI.Std
 		Action<TResult, RowInfo<TResult>> BeforeRowContent { get; set; }
 		Func<TResult, RowInfo<TResult>, IEnumerable<ListColumn<TResult>>> AfterRowContent { get; set; }
 
-		IColumnHeader AddHeader(Action<ThTagAttributes> attrs, Action<LayoutWriter> content);
+		IColumnHeader AddHeader(Action<ThTagAttributes> attrs, string title, Action<LayoutWriter> content);
 	}
 
 	public interface IFieldCollection<TEntity, TResult> : IFieldCollection<TResult>
@@ -90,12 +90,10 @@ namespace Tango.UI.Std
 		public Func<TResult, RowInfo<TResult>, IEnumerable<ListColumn<TResult>>> AfterRowContent { get; set; }
 		public Action<LayoutWriter, IEnumerable<TResult>> BeforeHeader { get; set; }
 
-		public IColumnHeader AddHeader(Action<ThTagAttributes> attrs, Action<LayoutWriter> content)
+		public IColumnHeader AddHeader(Action<ThTagAttributes> attrs, string title, Action<LayoutWriter> content)
 		{
-			var columnHeader = new ColumnHeader {Attributes = attrs, Content = content};
-			
-			Headers.Add(new ColumnHeader { Attributes = attrs, Content = content });
-
+			var columnHeader = new ColumnHeader(attrs, title, content);
+			Headers.Add(columnHeader);
 			return columnHeader;
 		}
 
@@ -124,7 +122,7 @@ namespace Tango.UI.Std
 
 		public IColumnHeader AddHeader(Action<ThTagAttributes> attrs, string title, HeaderOptions options)
 		{
-			var columnHeader = AddHeader(attrs, w => {
+			var columnHeader = AddHeader(attrs, title, w => {
 				if (options.SortSeqNo.HasValue)
 					w.SorterLink(_sorter, title, options.SortSeqNo.Value);
 				else
@@ -201,28 +199,23 @@ namespace Tango.UI.Std
 		#region header only
 		public static IColumnHeader AddHeader<TResult>(this IFieldCollection<TResult> f, Action<ThTagAttributes> attrs, string title)
 		{
-			var columnHeader = f.AddHeader(attrs, w => w.Write(title));
-			return columnHeader;
+			return f.AddHeader(attrs, title, w => w.Write(title));
 		}
 		public static IColumnHeader AddHeader<TResult>(this IFieldCollection<TResult> f, string title)
 		{
-			var columnHeader = f.AddHeader(null, title);
-			return columnHeader;
+			return f.AddHeader(null, title);
 		}
 		public static IColumnHeader AddHeader<TResult, T>(this IFieldCollection<TResult> f, Action<ThTagAttributes> attrs, Expression<Func<TResult, T>> res)
 		{
-			var columnHeader = f.AddHeader(attrs, f.Resources.CaptionShort(res));
-			return columnHeader;
+			return f.AddHeader(attrs, f.Resources.CaptionShort(res));
 		}
 		public static IColumnHeader AddHeader<TResult, T>(this IFieldCollection<TResult> f, Expression<Func<TResult, T>> res)
 		{
-			var columnHeader = f.AddHeader(null, res);
-			return columnHeader;
+			return f.AddHeader(null, res);
 		}
-		public static IColumnHeader AddHeader<TResult>(this IFieldCollection<TResult> f, Action<LayoutWriter> content)
+		public static IColumnHeader AddHeader<TResult>(this IFieldCollection<TResult> f, string title, Action<LayoutWriter> content)
 		{
-			var columnHeader = f.AddHeader(null, content);
-			return columnHeader;
+			return f.AddHeader(null, title, content);
 		}
 		#endregion
 

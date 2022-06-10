@@ -230,26 +230,26 @@ var listview = function (au, cu, cbcell, menu) {
 				expand();
 			}
 		},
-		widgetWillMount: function (shadow, state) {
-			const root = shadow.getElementById(state.root);
+		widgetWillMount: function (shadow, ctrl) {
+			const root = shadow.getElementById(ctrl.root);
 			//initHighlight(root);
 
-			if (!state.selectedvalues) return;
+			if (!ctrl.selectedvalues) return;
 
 			const cblist = root.querySelectorAll('.sel:not(.initialized)');
 			const cbhead = root.querySelector('.sel_header');
 
 			var j = 0;
 
-			if (state.selectedvalues[0] == -1) {
-				cbcell.setPageChecked(root, state, cbhead);
+			if (ctrl.selectedvalues[0] == -1) {
+				cbcell.setPageChecked(root, ctrl, cbhead);
 				j = cblist.length
 			} else {
 				for (var i = 0; i < cblist.length; i++) {
 					const tr = cu.getRow(cblist[i]);
-					const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
+					const index = ctrl.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
 					if (index > -1) {
-						cbcell.setRowChecked(tr, cblist[i], state);
+						cbcell.setRowChecked(tr, cblist[i], ctrl);
 						j++;
 					}
 				}
@@ -261,10 +261,12 @@ var listview = function (au, cu, cbcell, menu) {
 				cbhead.addEventListener('click', function (e) { cbcell.cbheadclicked(e.currentTarget, onCheckChange); });
 				cbcell.setHeaderSelectorState(cbhead, j, cblist.length);
 			}
-			onCheckChange(shadow, root, state);
+			onCheckChange(shadow, root, ctrl);
+
+
 		},
-		widgetDidMount: function (state) {
-			const root = document.getElementById(state.root);
+		widgetDidMount: function (ctrl) {
+			const root = document.getElementById(ctrl.root);
 
 			const highlight = root instanceof HTMLTableElement && root.classList.contains('highlight') ?
 				root : root.querySelector('.listviewtable.highlight');
@@ -272,7 +274,7 @@ var listview = function (au, cu, cbcell, menu) {
 
 			instance.initFixedHeader(root);
 
-			var el = $('#' + state.root);
+			var el = $('#' + ctrl.root);
 			if (!el.tableDnD || !el.hasClass("draggablerows")) return;
 			el.tableDnD({
 				_oldpos: null,
@@ -460,6 +462,27 @@ var listview = function (au, cu, cbcell, menu) {
 				seltr = seltr.previousElementSibling;
 			}
 			removeSelected(tocopy);
+		},
+		initListSettings: function (rootid) {
+			const ctrl = au.state.ctrl[rootid];
+			if (ctrl.props.listSettingsPopupID) {
+				const root = document.getElementById(rootid);
+				const popup = document.getElementById(ctrl.props.listSettingsPopupID);
+				const cbHideColumns = popup.querySelectorAll('input[type="checkbox"]');
+				for (var i = 0; i < cbHideColumns.length; i++) {
+					cbHideColumns[i].addEventListener('click', function (e) {
+						const cb = e.currentTarget;
+						const colIdx = parseInt(cb.getAttribute('data-colidx')) + 1;
+						const cells = root.querySelectorAll('tr > *:nth-child(' + colIdx + ')');
+						for (var j = 0; j < cells.length; j++) {
+							if (cb.checked)
+								cells[j].classList.remove('hide');
+							else
+								cells[j].classList.add('hide');
+						}
+					});
+				}
+			}
 		}
 	}
 

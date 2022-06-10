@@ -85,6 +85,8 @@ namespace Tango.Tasks
             }
 		}
 
+		protected override bool EnableListSettings => true;
+
 		protected override void FieldsInit(FieldCollection<Task> f)
 		{
 			f.EnableSelect = true;

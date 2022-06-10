@@ -49,7 +49,7 @@ namespace Tango.UI.Std
 		public static void AddTreeCell<T>(this FieldCollectionBase<T> f, string title, RenderRowCellDelegate<T> content, TreeCellOptions<T> options = null)
 			where T : IListTree
 		{
-			var header = new ColumnHeader(a => a.Style("min-width:300px"), w => w.Write(title));
+			var header = new ColumnHeader(a => a.Style("min-width:300px"), title);
 			f.AddCustomCell(header,	ListColumn(content, options));
 		}
 		public static void AddTreeCell<T>(this FieldCollectionBase<T> f, RenderRowCellDelegate<T> content, TreeCellOptions<T> options = null)

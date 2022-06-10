@@ -20,10 +20,7 @@ namespace Tango.UI.Std
 				options = new ExpandableRowOptions<TResult>();
 
 			f.AddCustomCell(
-				new ColumnHeader {
-					Attributes = options.HeaderAttributes,
-					Content = w => w.Write("")
-				},
+				new ColumnHeader(options.HeaderAttributes, ""),
 				new ListColumn<TResult> {
 					Attributes = (a, o, i) => {
 						a.Class("rowexpandercell").OnClickExpandRow(null, e);

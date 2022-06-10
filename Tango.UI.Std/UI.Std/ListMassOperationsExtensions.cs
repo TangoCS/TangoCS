@@ -8,7 +8,7 @@ namespace Tango.UI.Std.ListMassOperations
 		public static void AddCheckBoxCell<TResult>(this IFieldCollection<TResult> f, int colSeqNo)
 		{
 			f.HeaderRows[0].Insert(colSeqNo, new ColumnHeader(
-				a => a.ID("sel_header").Class("sel_header").RowSpan(f.HeaderRows.Count), 
+				a => a.ID("sel_header").Class("sel_header").RowSpan(f.HeaderRows.Count), null, 
 				w => {
 					w.IconThreeStateCheckBox();
 					w.Hidden("selectedvalues", null, a => a.DataHasClientState(ClientStateType.Array));

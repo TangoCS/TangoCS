@@ -1345,16 +1345,21 @@ var ajaxUtils = function ($, cu) {
 					state.ctrl[ctrl.id] = ctrl.instance;
 				}
 
+				const srvCtrl = apiResult.ctrl ? apiResult.ctrl[ctrl.id] : null;
+
 				if (!ctrl.instance.type) {
 					ctrl.instance.type = t
 					ctrl.instance.root = ctrl.id;
 					if (Tango.serviceProvider.components[t.toLowerCase()]) {
 						ctrl.instance = Tango.serviceProvider.components[t.toLowerCase()](ctrl.id, Tango.serviceProvider);
 						state.ctrl[ctrl.id] = ctrl.instance;
-						if (apiResult.ctrl && apiResult.ctrl[ctrl.instance.root] && apiResult.ctrl[ctrl.instance.root].props) {
-							ctrl.instance.props = Object.assign(ctrl.instance.props, apiResult.ctrl[ctrl.instance.root].props);
-						}
 					}
+
+					if (srvCtrl && srvCtrl.props) {
+						if (!ctrl.instance.props) ctrl.instance.props = {};
+						ctrl.instance.props = Object.assign(ctrl.instance.props, srvCtrl.props);
+					}
+
 					if (ctrl.instance.init)
 						ctrl.instance.init();
 					else if (window[t] && window[t]['init']) {
@@ -1363,16 +1368,13 @@ var ajaxUtils = function ($, cu) {
 					}
 				}
 
-				if (apiResult.ctrl) {
-					const srvCtrl = apiResult.ctrl[root.id];
-					if (srvCtrl) {
-						if (srvCtrl.state) {
-							if (!ctrl.instance.state) ctrl.instance.state = {};
-							assignProps(ctrl.instance.state, srvCtrl.state);
-						}
-						if (srvCtrl.instance)
-							assignProps(ctrl.instance, srvCtrl.instance);
-					}
+				if (srvCtrl && srvCtrl.instance) {
+					assignProps(ctrl.instance, srvCtrl.instance);
+				}
+
+				if (srvCtrl && srvCtrl.state) {
+					if (!ctrl.instance.state) ctrl.instance.state = {};
+					assignProps(ctrl.instance.state, srvCtrl.state);
 				}
 				
 				if (ctrl.instance.widgetWillMount)
