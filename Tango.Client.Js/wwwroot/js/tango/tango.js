@@ -1749,8 +1749,12 @@ const Tango = {
 		}
 
 		invoke(...parms) {
-			if (this.callbacks)
-				this.callbacks.forEach(callback => callback(...parms));
+			if (this.callbacks) {
+				for (let i = 0; i < this.callbacks.length; i++) {
+					if (this.callbacks[i](...parms) == false)
+						return false;
+				}
+			}
 		}
 
 		constructor(callback) {

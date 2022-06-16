@@ -80,17 +80,27 @@
 		},
 
 		setRowChecked: function (tr, el, state) {
+			const ctx = { tr: tr };
+			if (state.onRowChecking)
+				if (state.onRowChecking.invoke(ctx) == false)
+					return;
 			tr.classList.add('checked');
 			el.querySelector('i').className = 'icon icon-checkbox-checked';
 			el.setAttribute('data-state', 1);
-			if (state.onRowChecked) state.onRowChecked.invoke(tr);
+			if (state.onRowChecked)
+				state.onRowChecked.invoke(ctx);
 		},
 
 		setRowUnchecked: function (tr, el, state) {
+			const ctx = { tr: tr };
+			if (state.onRowUnchecking)
+				if (!state.onRowUnchecking.invoke(ctx))
+					return;
 			tr.classList.remove('checked');
 			el.querySelector('i').className = 'icon icon-checkbox-unchecked';
 			el.setAttribute('data-state', 0);
-			if (state.onRowUnchecked) state.onRowUnchecked.invoke(tr);
+			if (state.onRowUnchecked)
+				state.onRowUnchecked.invoke(ctx);
 		},
 
 		setPageChecked: function (root, state, cbhead) {
