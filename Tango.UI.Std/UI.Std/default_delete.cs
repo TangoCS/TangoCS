@@ -58,7 +58,7 @@ namespace Tango.UI.Std
 			response.AddAdjacentWidget("form", "buttonsbar", AdjacentHTMLPosition.BeforeEnd, w => {
 				w.ButtonsBar(() => {
 					w.ButtonsBarRight(() => {
-						w.SubmitDeleteButton(a => a.ID("deletebtn"));
+						w.SubmitDeleteButton(a => a.ID("deletebtn").DataReceiver(this));
 						w.BackButton();
 					});
 				});
