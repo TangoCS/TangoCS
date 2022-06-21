@@ -86,12 +86,10 @@ namespace Tango.UI.Controls
 			options.FromCalendarOptions.ShowButton = false;
 			options.ToCalendarOptions.ShowButton = false;
 			//w.PushID(ID);
-			w.Div(a =>
-			{
+			w.Div(a => {
 				a.Class("periodpicker").ID(ID);
 				if (Change != null) a.DataEvent(OnChange).DataRef(ParentElement, ID);
-			}, () =>
-			{
+			}, () => {
 				w.Div(() =>
 				{
 					if (UseCalendar && ShowDays) w.Calendar(ParmID.From, from, options.FromCalendarOptions);
@@ -310,6 +308,25 @@ namespace Tango.UI.Controls
 		{
 			From = from;
 			To = to;
+		}
+	}
+
+	public static class PeriodPickerExtensions
+	{
+		public static void Period(this LayoutWriter w, DateTime startDate, DateTime finishDate)
+		{
+			w.Div(a => {
+				a.Class("periodpicker-readonly");
+			}, () => {
+				w.Div(() => {
+					w.Span(startDate.ToString("dd.MM.yyyy"));
+				});
+				w.Div("&ndash;");
+				w.Div(() => {
+					w.Span(finishDate.ToString("dd.MM.yyyy"));
+				});
+				w.Span(a => a.Class("cal-openbtn"), () => w.Icon("calendar"));
+			});
 		}
 	}
 }

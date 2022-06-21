@@ -763,6 +763,13 @@ div.tabs2 + div.tabs2_pages {
 	color: #333;
 	white-space: nowrap;
 }
+.dropdownmenu a.disabled, .dropdownmenu .item.disabled {
+	color: #aaa;
+	cursor: default;
+	pointer-events: auto;
+	background-image: inherit;
+	background-color: inherit;
+}
 
 .dropdownmenu span {
 	padding: 0px 12px;
@@ -814,7 +821,7 @@ div.tabs2 + div.tabs2_pages {
 }
 
 /* period picker*/
-.periodpicker {
+.periodpicker, .periodpicker-readonly {
 	position: relative;
 	display: block;
 	padding: 0 2px;
@@ -823,7 +830,7 @@ div.tabs2 + div.tabs2_pages {
 	min-width: 200px;
 }
 
-.periodpicker div, .datetimepicker div {
+.periodpicker div, .datetimepicker div, .periodpicker-readonly div {
 	display: inline;
 	margin-right: 3px;
 }
@@ -863,7 +870,7 @@ div.tabs2 + div.tabs2_pages {
 	/*padding: 0 3px;*/
 }
 
-.periodpicker .cal-openbtn {
+.periodpicker .cal-openbtn, .periodpicker-readonly .cal-openbtn {
 	position: absolute;
 	/*top: 6px;
 	bottom: 4px;*/
