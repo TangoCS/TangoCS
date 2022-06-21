@@ -50,14 +50,18 @@ namespace Tango.UI.Std
 			var cellid = context.Sender.IsEmpty() ? "" : context.Sender.Substring(1);
 			level++;
 
-			response.AddAdjacentWidget($"#{id.ToLower()}", $"#{id}_content".ToLower(), AdjacentHTMLPosition.AfterEnd, w => {			
+			response.AddExpandableRowContent(id, level, colspan, cellid, content);
+		}
+
+		public static void AddExpandableRowContent(this ApiResponse response, string id, int level, int colspan, string cellid, Action<LayoutWriter, string, string> content)
+		{
+			response.AddAdjacentWidget($"#{id.ToLower()}", $"#{id}_content".ToLower(), AdjacentHTMLPosition.AfterEnd, w => {
 				w.Tr(a => a.Data("level", level).Data("cellid", cellid), () => {
 					w.Td(a => a.Class("expandablerowcontent").ColSpan(colspan), () => {
 						var contentPrefix = (cellid.IsEmpty() ? id : cellid) + "_content";
 						content(w.Clone(contentPrefix), id, cellid);
 					});
 				});
-				
 			});
 		}
 

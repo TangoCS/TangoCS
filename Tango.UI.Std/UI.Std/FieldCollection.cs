@@ -183,11 +183,16 @@ namespace Tango.UI.Std
 
 	public static class IFieldCollectionBaseExtensions
 	{
+		public static string GenerateRowID<TResult>(this IFieldCollection<TResult> f, string id)
+		{
+			return "r" + id;
+		}
+
 		public static void SetRowID<TResult, T>(this IFieldCollection<TResult> f, Func<TResult, T> rowid)
 		{
 			f.RowAttributes += (a, o, i) => {
 				var id = rowid(o).ToString();
-				a.ID("r" + id).Data("rowid", id);
+				a.ID(f.GenerateRowID(id)).Data("rowid", id);
 			};
 		}
 

@@ -418,6 +418,17 @@ var domActions = function () {
 		},
 		setClientArg: function (args) {
 			ajaxUtils.state.loc.clientArgs[args.id] = args.value;
+		},
+		include: function (id) {
+			const i = document.getElementById(id);
+			let path = i.getAttribute('data-include');
+			if (path) {
+				fetch(path).then(file => {
+					file.text().then(content => {
+						i.innerHTML = content;
+					});
+				});
+			}
 		}
 	}
 
@@ -1182,6 +1193,16 @@ var ajaxUtils = function ($, cu) {
 			while (obj.content.childNodes.length > 0)
 				el.appendChild(obj.content.firstChild);
 		};
+		const addShadowFunc = function (el, obj) {
+			const shadowRoot = el.attachShadow({ mode: 'open' });
+			shadowRoot.innerHTML = obj.content;
+
+			while (shadowRoot.firstChild) {
+				shadowRoot.removeChild(shadowRoot.firstChild);
+			}
+			while (obj.content.childNodes.length > 0)
+				shadowRoot.appendChild(obj.content.firstChild);
+		};
 		const adjacentFunc = function (el, obj) {
 			while (obj.content.childNodes.length > 0) {
 				const i = obj.position == 'beforeEnd' || obj.position == 'beforeBegin' ? 0 : obj.content.childNodes.length - 1;
@@ -1267,6 +1288,13 @@ var ajaxUtils = function ($, cu) {
 						obj.content = parseHTML(obj.content);
 						obj.el = parentel;
 						obj.func = adjacentFunc;
+						nodes.push(obj);
+					}
+					else if (obj.action == 'addShadow') {
+						if (!el) continue;
+						obj.content = parseHTML(obj.content);
+						obj.el = el;
+						obj.func = addShadowFunc;
 						nodes.push(obj);
 					}
 

@@ -313,6 +313,15 @@ namespace Tango.UI
 			return this;
 		}
 
+		public ApiResponse AddShadowWidget(string name, Action<LayoutWriter> content)
+		{
+			var n = name?.StartsWith("#") ?? false ? name.Substring(1) : _namefunc(name);
+			var w = new ContentWidget { Name = n, Action = WidgetAction.AddShadow };
+			Widgets.Add(w);
+			_widgetsToRender.Add(new WidgetToRender { widget = w, prefix = _idprefix, content = content });
+			return this;
+		}
+
 		public ApiResponse ReplaceWidget(string name, Action<LayoutWriter> content)
 		{
 			var n = name?.StartsWith("#") ?? false ? name.Substring(1) : _namefunc(name);
@@ -419,7 +428,8 @@ namespace Tango.UI
 		Add,
 		Remove,
 		Replace,
-		Adjacent
+		Adjacent,
+		AddShadow
 	}
 
 	public interface IWidget

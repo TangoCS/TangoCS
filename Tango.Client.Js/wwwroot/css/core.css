@@ -606,6 +606,7 @@ a.disabled > i.icon {
 .grid_sidebar_2col {
 	display: grid;
 	grid-template-columns: max-content 1fr;
+	height: 100%;
 }
 
 @media (min-width: 600px) {

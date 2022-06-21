@@ -142,6 +142,11 @@ namespace Tango.Html
 		public HtmlTagAttributes Xmlns(string prefix, string value) { Writer.WriteAttr("xmlns:" + prefix, value); return this; }
 	}
 
+	public class IFrameTagAttributes : TagAttributes<IFrameTagAttributes>
+	{
+		public IFrameTagAttributes Src(string value) { Writer.WriteAttr("src", value, true); return this; }
+	}
+
 	public class ImgTagAttributes : TagAttributes<ImgTagAttributes>
 	{
 		public ImgTagAttributes Alt(string value) { Writer.WriteAttr("alt", value, true); return this; }

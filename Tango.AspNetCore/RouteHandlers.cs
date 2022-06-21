@@ -49,5 +49,14 @@ namespace Tango.AspNetCore
 				return new HtmlResult(e.Message, "");
 			});
 		}
+
+		public static async Task ActionHandler(this HttpContext c, string service, string action)
+		{
+			var d = c.GetRouteData();
+			d.Values.Add("service", service);
+			d.Values.Add("action", action);
+
+			await c.ActionHandler();
+		}
 	}
 }

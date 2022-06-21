@@ -198,6 +198,10 @@ namespace Tango.Html
 		{
 			w.WriteTag("i", attributes, inner);
 		}
+		public static void IFrame(this HtmlWriter w, Action<IFrameTagAttributes> attributes = null)
+		{
+			w.WriteSelfClosingTag("iframe", attributes);
+		}
 		public static void Img(this HtmlWriter w, Action<ImgTagAttributes> attributes = null)
 		{
 			w.WriteSelfClosingTag("img", attributes);
