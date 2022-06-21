@@ -217,6 +217,9 @@ div.calendar {
 	cursor: pointer;
 	color: #7a869a;
 }
+.periodpicker-readonly .cal-openbtn {
+	cursor: default;
+}
 
 .formbody input[type=text].cal-date {
 	width: 85px;
