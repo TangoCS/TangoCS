@@ -494,6 +494,7 @@ namespace Tango.UI.Controls
 	public class FieldCriterion
 	{
 		public FieldType FieldType { get; set; }
+		public string FieldName { get; set; }
 		public object Column { get; set; }
 		public Action<LayoutWriter> Renderer { get; set; }
 		public Func<FilterItem, string> StringValue { get; set; }

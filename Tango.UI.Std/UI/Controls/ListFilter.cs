@@ -344,8 +344,8 @@ namespace Tango.UI.Controls
 					Condition = cond,
 					FieldType = op.FieldType,
 					Value = op.FieldType == FieldType.Boolean ?
-						Context.GetBoolArg(eFieldValue + field.SeqNo).ToString() :
-						Context.GetArg(eFieldValue + field.SeqNo),
+						Context.GetBoolArg(op.FieldName).ToString() :
+						Context.GetArg(op.FieldName),
 				};
 
 				item.ValueTitle = op.StringValue(item);
@@ -569,6 +569,7 @@ namespace Tango.UI.Controls
 		FieldCriterion FieldCriterionDDL(int seqNo, object column, IEnumerable<SelectListItem> values) =>
 			new FieldCriterion {
 				Column = column,
+				FieldName = eFieldValue + seqNo,
 				Renderer = w => w.DropDownList(eFieldValue + seqNo, null, values),
 				StringValue = item => values.Where(o => o.Value == item.Value).Select(o => o.Text).FirstOrDefault()
 			};
@@ -577,6 +578,7 @@ namespace Tango.UI.Controls
 			new FieldCriterion {
 				Column = column,
 				FieldType = FieldType.String,
+				FieldName = eFieldValue + seqNo,
 				Renderer = Renderers.TextBox(seqNo),
 				StringValue = StringValues.String
 			};
@@ -585,6 +587,7 @@ namespace Tango.UI.Controls
 			new FieldCriterion {
 				Column = column,
 				FieldType = FieldType.Date,
+				FieldName = eFieldValue + seqNo,
 				Renderer = Renderers.Calendar(seqNo),
 				StringValue = StringValues.Date
 			};
@@ -593,6 +596,7 @@ namespace Tango.UI.Controls
 			new FieldCriterion {
 				Column = column,
 				FieldType = FieldType.DateTime,
+				FieldName = eFieldValue + seqNo,
 				Renderer = Renderers.CalendarWithTime(seqNo),
 				StringValue = StringValues.Date
 			};
@@ -601,6 +605,7 @@ namespace Tango.UI.Controls
 			new FieldCriterion {
 				Column = column,
 				FieldType = FieldType.Int,
+				FieldName = eFieldValue + seqNo,
 				Renderer = Renderers.TextBox(seqNo),
 				StringValue = StringValues.Numeric
 			};
@@ -609,6 +614,7 @@ namespace Tango.UI.Controls
 			new FieldCriterion {
 				Column = column,
 				FieldType = FieldType.Decimal,
+				FieldName = eFieldValue + seqNo,
 				Renderer = Renderers.TextBox(seqNo),
 				StringValue = StringValues.Numeric
 			};
@@ -617,6 +623,7 @@ namespace Tango.UI.Controls
 			new FieldCriterion {
 				Column = column,
 				FieldType = FieldType.Boolean,
+				FieldName = eFieldValue + seqNo,
 				Renderer = Renderers.CheckBox(seqNo),
 				StringValue = StringValueBoolean
 			};
@@ -626,7 +633,8 @@ namespace Tango.UI.Controls
             {
                 Column = column,
                 FieldType = FieldType.Guid,
-                Renderer = Renderers.TextBox(seqNo),
+				FieldName = eFieldValue + seqNo,
+				Renderer = Renderers.TextBox(seqNo),
                 StringValue = StringValues.Guid
             };
 
@@ -678,6 +686,7 @@ namespace Tango.UI.Controls
 			var data = new FieldCriterion {
 				Column = column,
 				FieldType = FieldType.Int,
+				FieldName = dialog.ID,
 				Renderer = w => dialog.Strategy.Render(w, null),
 				StringValue = item => item.Value.IsEmpty() ? "" : dialog.GetObjectByID(item.Value.ConvertTo<TRefKey>())?.Title
 			};
@@ -695,6 +704,7 @@ namespace Tango.UI.Controls
 			{
 				Column = column,
 				FieldType = FieldType.Int,
+				FieldName = dialog.ID,
 				Renderer = w => dialog.Strategy.Render(w, null),
 				StringValue = item => {
 					if (item.Value.IsEmpty()) return "";
@@ -726,9 +736,7 @@ namespace Tango.UI.Controls
 			var f = CreateOrGetCondition(title);
 
 			LambdaExpression expr = column;
-			//Если ничего не сломается, то эти две строки удалить
-			//if (expr.Body is UnaryExpression)
-			//	expr = Expression.Lambda((expr.Body as UnaryExpression).Operand, expr.Parameters);
+
 			var t = expr.Body.Type;
 
 			if (t == typeof(string))
@@ -836,7 +844,6 @@ namespace Tango.UI.Controls
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
 			var f = CreateOrGetCondition(title);
-			dialog.ID = eFieldValue + f.SeqNo;
 
 			var col = (column, typeof(TRefKey));
 			var ftype = typeof(TRefKey) == typeof(string) ? FieldType.String :
@@ -846,6 +853,7 @@ namespace Tango.UI.Controls
 			var data = new FieldCriterion {
 				Column = col,
 				FieldType = ftype,
+				FieldName = dialog.ID,
 				Renderer = w => dialog.Strategy.Render(w, null),
 				StringValue = item => dialog.GetObjectByID(item.Value.ConvertTo<TRefKey>()).Title
 			};
