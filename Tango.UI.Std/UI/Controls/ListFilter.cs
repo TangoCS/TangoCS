@@ -703,7 +703,7 @@ namespace Tango.UI.Controls
 			var data = new FieldCriterion
 			{
 				Column = column,
-				FieldType = FieldType.Int,
+				FieldType = FieldType.IntArray,
 				FieldName = dialog.ID,
 				Renderer = w => dialog.Strategy.Render(w, null),
 				StringValue = item => {
@@ -713,7 +713,6 @@ namespace Tango.UI.Controls
 				}
 			};
 			f.Operators["="] = data;
-			f.Operators["<>"] = data;
 			return f.SeqNo;
 		}
 

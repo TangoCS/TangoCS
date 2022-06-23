@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Xml.Linq;
 using Tango.Localization;
 
@@ -88,6 +89,18 @@ namespace Tango.UI.Controls
 						}
 						else if (item.Condition == "<>")
 							expr = Expression.Lambda<Func<T, bool>>(Expression.NotEqual(colexpr, valexpr), column.Parameters);
+					}
+					else if (item.FieldType == FieldType.IntArray)
+					{
+						var colexpr = Expression.Convert(column.Body, valType);
+						var valexpr = Expression.Constant(val, typeof(int[]));
+						var method = typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
+							.Where(x => x.Name == "Contains" && x.GetParameters().Count() == 2).First();
+						var specificMethod = method.MakeGenericMethod(typeof(int));
+
+						MethodCallExpression mc = Expression.Call(specificMethod, valexpr, colexpr);
+
+						expr = Expression.Lambda<Func<T, bool>>(mc, column.Parameters);
 					}
 					else
 					{
@@ -248,6 +261,10 @@ namespace Tango.UI.Controls
 				if ((valType == typeof(int?) || valType == typeof(int)) && val is string)
 					val = int.Parse((string)val);
 
+			}
+			else if (item.FieldType == FieldType.IntArray)
+			{
+				val = val?.ToString().Split(',').Select(x => int.Parse(x)).ToArray();
 			}
 			//else if (item.FieldType == FieldType.CustomInt)
 			//{
@@ -511,7 +528,8 @@ namespace Tango.UI.Controls
 		DateTime,
 		Boolean,
         Guid,
-		Sql
+		Sql,
+		IntArray
 	}
 
 	public enum FilterItemOperation

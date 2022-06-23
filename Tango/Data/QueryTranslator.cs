@@ -306,7 +306,7 @@ namespace Tango.Data
 					break;
 
 				case TypeCode.Object:
-					if (t != typeof(Guid))
+					if (t != typeof(Guid) && t != typeof(int[]))
 						throw new NotSupportedException(string.Format("The constant for '{0}' is not supported", c.Value));
 					sb.Append(ConvertConstantToParm(c.Value));
 					break;
