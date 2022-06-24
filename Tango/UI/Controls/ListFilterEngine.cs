@@ -63,6 +63,27 @@ namespace Tango.UI.Controls
 						return Expression.Lambda<Func<T, bool>>(mc, column.Parameters);
 					}
 
+					Expression<Func<T, bool>> intersectExpr<TKey>()
+					{
+						var methods = typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public);
+						var intersectMethod = methods.Where(x => x.Name == "Intersect" && x.GetParameters().Count() == 2)
+													 .First()
+													 .MakeGenericMethod(typeof(TKey));
+
+						var countMethod = methods.Where(x => x.Name == "Count" && x.GetParameters().Count() == 1)
+										         .First()
+				                                 .MakeGenericMethod(typeof(TKey));
+
+						var colExpr = Expression.Convert(column.Body, valType);
+						var valExpr = Expression.Constant(val, typeof(TKey[]));
+						var intersectExp = Expression.Call(intersectMethod, colExpr, valExpr);
+						var countExp = Expression.Call(countMethod, intersectExp);
+						var resultExp = Expression.GreaterThan(countExp, Expression.Constant(0));
+
+						return Expression.Lambda<Func<T, bool>>(resultExp, column.Parameters);
+					}
+					
+
 					if (item.FieldType == FieldType.String && item.Condition == Resources.Get("System.Filter.Contains"))
 					{
 						if (StringContainsMapStrategy == StringContainsMapStrategy.Contains)
@@ -105,11 +126,17 @@ namespace Tango.UI.Controls
 					}
 					else if (item.FieldType == FieldType.IntArray)
 					{
-						expr = containsExpr<int>();
+						if (valType == typeof(int))
+							expr = containsExpr<int>();
+						else if (valType == typeof(int[]))
+							expr = intersectExpr<int>();
 					}
 					else if (item.FieldType == FieldType.GuidArray)
 					{
-						expr = containsExpr<Guid>();
+						if (valType == typeof(int))
+							expr = containsExpr<Guid>();
+						else if (valType == typeof(int[]))
+							expr = intersectExpr<Guid>();
 					}
 					else
 					{
