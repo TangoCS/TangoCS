@@ -50,6 +50,19 @@ namespace Tango.UI.Controls
 					object val = ConvertValue(valType, item);
 					var isEmptyValue = item.Value == "";
 
+					Expression<Func<T, bool>> containsExpr<TKey>()
+					{
+						var colexpr = Expression.Convert(column.Body, valType);
+						var valexpr = Expression.Constant(val, typeof(TKey[]));
+						var method = typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
+							.Where(x => x.Name == "Contains" && x.GetParameters().Count() == 2).First();
+						var specificMethod = method.MakeGenericMethod(typeof(TKey));
+
+						MethodCallExpression mc = Expression.Call(specificMethod, valexpr, colexpr);
+
+						return Expression.Lambda<Func<T, bool>>(mc, column.Parameters);
+					}
+
 					if (item.FieldType == FieldType.String && item.Condition == Resources.Get("System.Filter.Contains"))
 					{
 						if (StringContainsMapStrategy == StringContainsMapStrategy.Contains)
@@ -92,15 +105,11 @@ namespace Tango.UI.Controls
 					}
 					else if (item.FieldType == FieldType.IntArray)
 					{
-						var colexpr = Expression.Convert(column.Body, valType);
-						var valexpr = Expression.Constant(val, typeof(int[]));
-						var method = typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
-							.Where(x => x.Name == "Contains" && x.GetParameters().Count() == 2).First();
-						var specificMethod = method.MakeGenericMethod(typeof(int));
-
-						MethodCallExpression mc = Expression.Call(specificMethod, valexpr, colexpr);
-
-						expr = Expression.Lambda<Func<T, bool>>(mc, column.Parameters);
+						expr = containsExpr<int>();
+					}
+					else if (item.FieldType == FieldType.GuidArray)
+					{
+						expr = containsExpr<Guid>();
 					}
 					else
 					{
@@ -265,6 +274,10 @@ namespace Tango.UI.Controls
 			else if (item.FieldType == FieldType.IntArray)
 			{
 				val = val?.ToString().Split(',').Select(x => int.Parse(x)).ToArray();
+			}
+			else if (item.FieldType == FieldType.GuidArray)
+			{
+				val = val?.ToString().Split(',').Select(x => Guid.Parse(x)).ToArray();
 			}
 			//else if (item.FieldType == FieldType.CustomInt)
 			//{
@@ -529,7 +542,8 @@ namespace Tango.UI.Controls
 		Boolean,
         Guid,
 		Sql,
-		IntArray
+		IntArray,
+		GuidArray
 	}
 
 	public enum FilterItemOperation

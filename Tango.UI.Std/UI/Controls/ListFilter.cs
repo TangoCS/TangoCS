@@ -682,7 +682,6 @@ namespace Tango.UI.Controls
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
 			var f = CreateOrGetCondition(title);
-			//dialog.ID = eFieldValue + f.SeqNo;
 			var data = new FieldCriterion {
 				Column = column,
 				FieldType = FieldType.Int,
@@ -699,11 +698,19 @@ namespace Tango.UI.Controls
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
 			var f = CreateOrGetCondition(title);
+			var t = typeof(TRefKey);
+			FieldType fieldType = default;
+			if (t == typeof(int) || t == typeof(int?))
+				fieldType = FieldType.IntArray;
+			else if (t == typeof(Guid) || t == typeof(Guid?))
+				fieldType = FieldType.GuidArray;
+			else
+				throw new Exception($"SelectMultipleObjects condition: {t.Name} key is not supported");
 
 			var data = new FieldCriterion
 			{
 				Column = column,
-				FieldType = FieldType.IntArray,
+				FieldType = fieldType,
 				FieldName = dialog.ID,
 				Renderer = w => dialog.Strategy.Render(w, null),
 				StringValue = item => {
