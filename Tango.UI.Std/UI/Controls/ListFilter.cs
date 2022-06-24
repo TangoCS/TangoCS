@@ -694,7 +694,7 @@ namespace Tango.UI.Controls
 			return f.SeqNo;
 		}
 
-		public int AddConditionSelectMultipleObjects<TRefClass, TRefKey>(string title, Expression<Func<T, object>> column, SelectMultipleObjectsField<TRefClass, TRefKey> dialog)
+		int AddConditionSelectMultipleObjectsInt<TRefClass, TRefKey>(string title, object column, SelectMultipleObjectsField<TRefClass, TRefKey> dialog)
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
 			var f = CreateOrGetCondition(title);
@@ -723,11 +723,16 @@ namespace Tango.UI.Controls
 			return f.SeqNo;
 		}
 
-		public int AddConditionSelectSingleObject<TRefClass, TRefKey>(Expression<Func<T, object>> column, SelectSingleObjectField<TRefClass, TRefKey> dialog)
+		public int AddConditionSelectMultipleObjects<TRefClass, TRefKey>(string title, Expression<Func<T, int[], bool>> column, SelectMultipleObjectsField<TRefClass, TRefKey> dialog)
 			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
 		{
-			var title = Resources.Get(column.GetResourceKey());
-			return AddConditionSelectSingleObject(title, column, dialog);
+			return AddConditionSelectMultipleObjectsInt(title, column, dialog);
+		}
+
+		public int AddConditionSelectMultipleObjects<TRefClass, TRefKey>(string title, Expression<Func<T, object>> column, SelectMultipleObjectsField<TRefClass, TRefKey> dialog)
+			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
+		{
+			return AddConditionSelectMultipleObjectsInt(title, column, dialog);
 		}
 
 		public int AddConditionSelectMultipleObjects<TRefClass, TRefKey>(Expression<Func<T, object>> column, SelectMultipleObjectsField<TRefClass, TRefKey> dialog)
@@ -735,6 +740,13 @@ namespace Tango.UI.Controls
 		{
 			var title = Resources.Get(column.GetResourceKey());
 			return AddConditionSelectMultipleObjects(title, column, dialog);
+		}
+
+		public int AddConditionSelectSingleObject<TRefClass, TRefKey>(Expression<Func<T, object>> column, SelectSingleObjectField<TRefClass, TRefKey> dialog)
+			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
+		{
+			var title = Resources.Get(column.GetResourceKey());
+			return AddConditionSelectSingleObject(title, column, dialog);
 		}
 
 		public int AddCondition<TVal>(string title, Expression<Func<T, TVal>> column)

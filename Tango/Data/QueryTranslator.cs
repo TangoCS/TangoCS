@@ -25,6 +25,7 @@ namespace Tango.Data
 		string _afterConstant = "";
 		readonly Func<bool, string> _boolConstant = o => o.ToString().ToLower();
 		Dictionary<string, object> _parms = new Dictionary<string, object>();
+		Dictionary<string, string> _lamdbaParms = new Dictionary<string, string>();
 
 		public string OrderBy { get; private set; } = string.Empty;
 		public string WhereClause { get; private set; } = string.Empty;
@@ -154,6 +155,38 @@ namespace Tango.Data
 			}
 
 			throw new NotSupportedException(string.Format("The method '{0}' is not supported", m.Method.Name));
+		}
+
+		protected override Expression VisitInvocation(InvocationExpression node)
+		{
+			if (node.Expression is LambdaExpression lambda)
+			{
+				_lamdbaParms.Clear();
+
+				for (int i = 0; i < lambda.Parameters.Count; i++)
+				{
+					if (node.Arguments[i] is ConstantExpression constArg)
+					{
+						var cursb = sb;
+						sb = new StringBuilder();
+						Visit(constArg);
+						_lamdbaParms.Add(lambda.Parameters[i].Name, sb.ToString());
+						sb = cursb;
+					}
+				}
+
+				return Visit(lambda.Body);
+			}
+
+			return base.VisitInvocation(node);
+		}
+
+		protected override Expression VisitParameter(ParameterExpression node)
+		{
+			if (_lamdbaParms.ContainsKey(node.Name))
+				sb.Append(_lamdbaParms[node.Name]);
+
+			return node;
 		}
 
 		protected override Expression VisitNew(NewExpression node)

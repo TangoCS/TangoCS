@@ -130,12 +130,18 @@ namespace Tango.UI.Controls
 							expr = containsExpr<int>();
 						else if (valType == typeof(int[]))
 							expr = intersectExpr<int>();
+						else if (valType == typeof(bool))
+						{
+							var valexpr = Expression.Constant(val, typeof(int[]));
+							var inner = Expression.Invoke(column, column.Parameters[0], valexpr);
+							expr = Expression.Lambda<Func<T, bool>>(inner, column.Parameters.First());
+						}
 					}
 					else if (item.FieldType == FieldType.GuidArray)
 					{
-						if (valType == typeof(int))
+						if (valType == typeof(Guid))
 							expr = containsExpr<Guid>();
-						else if (valType == typeof(int[]))
+						else if (valType == typeof(Guid[]))
 							expr = intersectExpr<Guid>();
 					}
 					else
@@ -300,11 +306,11 @@ namespace Tango.UI.Controls
 			}
 			else if (item.FieldType == FieldType.IntArray)
 			{
-				val = val?.ToString().Split(',').Select(x => int.Parse(x)).ToArray();
+				val = val?.ToString().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => int.Parse(x)).ToArray();
 			}
 			else if (item.FieldType == FieldType.GuidArray)
 			{
-				val = val?.ToString().Split(',').Select(x => Guid.Parse(x)).ToArray();
+				val = val?.ToString().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => Guid.Parse(x)).ToArray();
 			}
 			//else if (item.FieldType == FieldType.CustomInt)
 			//{
