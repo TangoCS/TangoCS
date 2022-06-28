@@ -366,44 +366,29 @@ namespace Tango.UI.Controls
 			if (x == null)
 				return null;
 
-			if (x is ConstantExpression)
-				return x;
-
-			if (x is ParameterExpression)
-				return ((ParameterExpression)x).Name == "o" ? o : x;
-
-			if (x is MemberExpression)
+			switch (x)
 			{
-				var x1 = x as MemberExpression;
-				return Expression.MakeMemberAccess(ReplaceParameterExpression(x1.Expression, o), x1.Member);
+				case ConstantExpression x1:
+					return x;
+				case ParameterExpression x1:
+					return ((ParameterExpression)x).Name == "o" ? o : x;
+				case MemberExpression x1:
+					return Expression.MakeMemberAccess(ReplaceParameterExpression(x1.Expression, o), x1.Member);
+				case UnaryExpression x1:
+					return Expression.MakeUnary(x1.NodeType, ReplaceParameterExpression(x1.Operand, o), x1.Type, x1.Method);
+				case BinaryExpression x1:
+					return Expression.MakeBinary(x1.NodeType, ReplaceParameterExpression(x1.Left, o), ReplaceParameterExpression(x1.Right, o), x1.IsLiftedToNull, x1.Method, x1.Conversion);
+				case ConditionalExpression x1:
+					return Expression.Condition(ReplaceParameterExpression(x1.Test, o), ReplaceParameterExpression(x1.IfTrue, o), ReplaceParameterExpression(x1.IfFalse, o));
+				case MethodCallExpression x1:
+					return Expression.Call(ReplaceParameterExpression(x1.Object, o), x1.Method, x1.Arguments.Select(o1 => ReplaceParameterExpression(o1, o)));
+				case LambdaExpression x1:
+					return Expression.Lambda(x1.Type, ReplaceParameterExpression(x1.Body, o), x1.Parameters);
+				case InvocationExpression x1:
+					return Expression.Invoke(x1.Expression, x1.Arguments.Select(a => ReplaceParameterExpression(a, o)));
+				default:
+					throw new Exception(Resources.Get("System.Filter.Error.UnsupportedTypeExpression") + x.GetType().ToString() + " : " + x.GetType().BaseType.Name);
 			}
-			if (x is UnaryExpression)
-			{
-				var x1 = x as UnaryExpression;
-				return Expression.MakeUnary(x1.NodeType, ReplaceParameterExpression(x1.Operand, o), x1.Type, x1.Method);
-			}
-			if (x is BinaryExpression)
-			{
-				var x1 = x as BinaryExpression;
-				return Expression.MakeBinary(x1.NodeType, ReplaceParameterExpression(x1.Left, o), ReplaceParameterExpression(x1.Right, o), x1.IsLiftedToNull, x1.Method, x1.Conversion);
-			}
-			if (x is ConditionalExpression)
-			{
-				var x1 = x as ConditionalExpression;
-				return Expression.Condition(ReplaceParameterExpression(x1.Test, o), ReplaceParameterExpression(x1.IfTrue, o), ReplaceParameterExpression(x1.IfFalse, o));
-			}
-			if (x is MethodCallExpression)
-			{
-				var x1 = x as MethodCallExpression;
-				return Expression.Call(ReplaceParameterExpression(x1.Object, o), x1.Method, x1.Arguments.Select(o1 => ReplaceParameterExpression(o1, o)));
-			}
-			if (x is LambdaExpression)
-			{
-				var x1 = x as LambdaExpression;
-				return Expression.Lambda(x1.Type, ReplaceParameterExpression(x1.Body, o), x1.Parameters);
-			}
-
-			throw new Exception(Resources.Get("System.Filter.Error.UnsupportedTypeExpression") + x.GetType().ToString() + " : " + x.GetType().BaseType.Name);
 		}
 
 		Expression ReplaceParameterExpression(Expression x, string name, object value)
@@ -411,44 +396,29 @@ namespace Tango.UI.Controls
 			if (x == null)
 				return null;
 
-			if (x is ConstantExpression)
-				return x;
-
-			if (x is ParameterExpression)
-				return ((ParameterExpression)x).Name == name ? Expression.Constant(value) : x;
-
-			if (x is MemberExpression)
+			switch (x)
 			{
-				var x1 = x as MemberExpression;
-				return Expression.MakeMemberAccess(ReplaceParameterExpression(x1.Expression, name, value), x1.Member);
+				case ConstantExpression x1:
+					return x;
+				case ParameterExpression x1:
+					return ((ParameterExpression)x).Name == name ? Expression.Constant(value) : x;
+				case MemberExpression x1:
+					return Expression.MakeMemberAccess(ReplaceParameterExpression(x1.Expression, name, value), x1.Member);
+				case UnaryExpression x1:
+					return Expression.MakeUnary(x1.NodeType, ReplaceParameterExpression(x1.Operand, name, value), x1.Type, x1.Method);
+				case BinaryExpression x1:
+					return Expression.MakeBinary(x1.NodeType, ReplaceParameterExpression(x1.Left, name, value), ReplaceParameterExpression(x1.Right, name, value), x1.IsLiftedToNull, x1.Method, x1.Conversion);
+				case ConditionalExpression x1:
+					return Expression.Condition(ReplaceParameterExpression(x1.Test, name, value), ReplaceParameterExpression(x1.IfTrue, name, value), ReplaceParameterExpression(x1.IfFalse, name, value));
+				case MethodCallExpression x1:
+					return Expression.Call(ReplaceParameterExpression(x1.Object, name, value), x1.Method, x1.Arguments.Select(o1 => ReplaceParameterExpression(o1, name, value)));
+				case LambdaExpression x1:
+					return Expression.Lambda(x1.Type, ReplaceParameterExpression(x1.Body, name, value), x1.Parameters);
+				case InvocationExpression x1:
+					return Expression.Invoke(x1.Expression, x1.Arguments.Select(a => ReplaceParameterExpression(a, name, value)));
+				default:
+					throw new Exception(Resources.Get("System.Filter.Error.UnsupportedTypeExpression") + x.GetType().ToString() + " : " + x.GetType().BaseType.Name);
 			}
-			if (x is UnaryExpression)
-			{
-				var x1 = x as UnaryExpression;
-				return Expression.MakeUnary(x1.NodeType, ReplaceParameterExpression(x1.Operand, name, value), x1.Type, x1.Method);
-			}
-			if (x is BinaryExpression)
-			{
-				var x1 = x as BinaryExpression;
-				return Expression.MakeBinary(x1.NodeType, ReplaceParameterExpression(x1.Left, name, value), ReplaceParameterExpression(x1.Right, name, value), x1.IsLiftedToNull, x1.Method, x1.Conversion);
-			}
-			if (x is ConditionalExpression)
-			{
-				var x1 = x as ConditionalExpression;
-				return Expression.Condition(ReplaceParameterExpression(x1.Test, name, value), ReplaceParameterExpression(x1.IfTrue, name, value), ReplaceParameterExpression(x1.IfFalse, name, value));
-			}
-			if (x is MethodCallExpression)
-			{
-				var x1 = x as MethodCallExpression;
-				return Expression.Call(ReplaceParameterExpression(x1.Object, name, value), x1.Method, x1.Arguments.Select(o1 => ReplaceParameterExpression(o1, name, value)));
-			}
-			if (x is LambdaExpression)
-			{
-				var x1 = x as LambdaExpression;
-				return Expression.Lambda(x1.Type, ReplaceParameterExpression(x1.Body, name, value), x1.Parameters);
-			}
-
-			throw new Exception(Resources.Get("System.Filter.Error.UnsupportedTypeExpression") + x.GetType().ToString() + " : " + x.GetType().BaseType.Name);
 		}
 	}
 
