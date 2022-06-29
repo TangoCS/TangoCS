@@ -1801,6 +1801,29 @@ const Tango = {
 		}
 	},
 
+	HtmlWriter: class {
+		static Icon(name, tip = null, color = null) {
+			const el = document.createElement('i')
+			el.classList.add('icon', 'icon-' + name);
+
+			if (tip)
+				el.setAttribute('title', tip);
+			if (color)
+				el.style.color = color;
+
+			const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+			svg.classList.add('svgicon-' + name);
+
+			const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+			use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '/data/icons/svg#icon-' + name);
+			
+			svg.appendChild(use);
+			el.appendChild(svg);
+
+			return el;
+		}
+	},
+
 	registerComponent: function (cls, fabric) {
 		const ctrltype = cls.name.toLowerCase();
 		this.serviceProvider.components[ctrltype] = (id, sp) => {
