@@ -802,8 +802,12 @@ var ajaxUtils = function ($, cu) {
 			const callOnResult = function (ctrl) {
 				const t = ctrl.getAttribute('data-ctrl');
 				const ctrlid = ctrl.hasAttribute('data-ctrl-id') ? ctrl.getAttribute('data-ctrl-id') : ctrl.id;
-				if (window[t] && window[t]['onResult']) {
-					return window[t]['onResult'](result, state.ctrl[ctrlid]);
+				const inst = state.ctrl[ctrlid];
+
+				if (inst.onResult)
+					inst.onResult(result);
+				else if (window[t] && window[t]['onResult']) {
+					return window[t]['onResult'](result, inst);
 				}
 			};
 
