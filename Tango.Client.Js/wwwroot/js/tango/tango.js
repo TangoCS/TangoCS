@@ -604,7 +604,8 @@ var ajaxUtils = function ($, cu) {
 				url: instance.prepareUrl(target),
 				type: 'GET',
 				responseType: target.responsetype ? target.responsetype : "",
-				requestGroup: target.requestgroup ? target.requestgroup : null
+				requestGroup: target.requestgroup ? target.requestgroup : null,
+				sender: target.sender
 			};
 			return ajax(settings).fail(instance.error).then(onRequestResult);
 		},
@@ -634,7 +635,8 @@ var ajaxUtils = function ($, cu) {
 				contentType: isForm ? false : "application/json; charset=utf-8",
 				data: isForm ? target.data : JSON.stringify(target.data),
 				requestGroup: target.requestgroup ? target.requestgroup : null,
-				responseType: target.responsetype
+				responseType: target.responsetype,
+				sender: target.sender
 			};
 			return ajax(settings).fail(instance.error).then(onRequestResult);
 		},
@@ -737,7 +739,7 @@ var ajaxUtils = function ($, cu) {
 			var page = document.head.getAttribute('data-page');
 			if (page) parms.p = page;
 			if (target.r) parms.r = target.r;
-			if (target.sender) parms.sender = target.sender;
+			if (target.sender && target.sender.id) parms.sender = target.sender.id;
 			parms.e = target.e ? target.e : DEF_EVENT_NAME;
 
 			state.loc.parms = parms;
@@ -800,8 +802,12 @@ var ajaxUtils = function ($, cu) {
 			const callOnResult = function (ctrl) {
 				const t = ctrl.getAttribute('data-ctrl');
 				const ctrlid = ctrl.hasAttribute('data-ctrl-id') ? ctrl.getAttribute('data-ctrl-id') : ctrl.id;
-				if (window[t] && window[t]['onResult']) {
-					return window[t]['onResult'](result, state.ctrl[ctrlid]);
+				const inst = state.ctrl[ctrlid];
+
+				if (inst.onResult)
+					inst.onResult(result);
+				else if (window[t] && window[t]['onResult']) {
+					return window[t]['onResult'](result, inst);
 				}
 			};
 
@@ -1001,6 +1007,15 @@ var ajaxUtils = function ($, cu) {
 			if (disposition && disposition.indexOf('attachment') !== -1) {
 				const contenttype = xhr.getResponseHeader('Content-Type');
 				cu.processFile(contenttype, disposition, data);
+				if (settings.sender) {
+					settings.sender.dispatchEvent(new CustomEvent('downloadComplete'));
+					if (settings.sender.hasAttribute('data-callbackelement')) {
+						const callbackel = document.getElementById(settings.sender.getAttribute('data-callbackelement'));
+						if (callbackel)
+							instance.postEventFromElementWithApiResponse(callbackel);
+					}
+				}
+				//alert('file downloaded');
 				return $.Deferred().reject();
 			}
 			else
@@ -1069,7 +1084,7 @@ var ajaxUtils = function ($, cu) {
 			target.url = target.currenturl;
 		}
 
-		if (el.id) target.sender = el.id;
+		target.sender = el;
 
 		const startEl = el.hasAttribute('data-c-external') ? document.getElementById(el.getAttribute('data-c-external')) : el;
 		const isDataRes = el.hasAttribute('data-res') || el.hasAttribute('data-res-postponed');
@@ -1787,6 +1802,29 @@ const Tango = {
 
 		constructor(callback) {
 			this.add(callback);
+		}
+	},
+
+	HtmlWriter: class {
+		Icon(name, tip = null, color = null) {
+			const el = document.createElement('i')
+			el.classList.add('icon', 'icon-' + name);
+
+			if (tip)
+				el.setAttribute('title', tip);
+			if (color)
+				el.style.color = color;
+
+			const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+			svg.classList.add('svgicon-' + name);
+
+			const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+			use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '/data/icons/svg#icon-' + name);
+			
+			svg.appendChild(use);
+			el.appendChild(svg);
+
+			return el;
 		}
 	},
 
