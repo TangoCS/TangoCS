@@ -1802,7 +1802,7 @@ const Tango = {
 	},
 
 	HtmlWriter: class {
-		static Icon(name, tip = null, color = null) {
+		Icon(name, tip = null, color = null) {
 			const el = document.createElement('i')
 			el.classList.add('icon', 'icon-' + name);
 
