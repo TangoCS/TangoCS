@@ -479,16 +479,26 @@ var listview = function (au, cu, cbcell, menu) {
 				const root = document.getElementById(rootid);
 				const popup = document.getElementById(ctrl.props.listSettingsPopupID);
 				const cbHideColumns = popup.querySelectorAll('input[type="checkbox"]');
+				const map = initMapHead(root);
 				for (var i = 0; i < cbHideColumns.length; i++) {
 					cbHideColumns[i].addEventListener('click', function (e) {
 						const cb = e.currentTarget;
 						const colIdx = parseInt(cb.getAttribute('data-colidx')) + 1;
-						const cells = root.querySelectorAll('tr > *:nth-child(' + colIdx + ')');
-						for (var j = 0; j < cells.length; j++) {
-							if (cb.checked)
-								cells[j].classList.remove('hide');
-							else
-								cells[j].classList.add('hide');
+						const data = map.get(colIdx);
+						hideColumns(data.ths);
+						for (var i = 0; i < data.columns.length; i++) {
+							var column = data.columns[i];
+							const cells = root.querySelectorAll('tr > td:nth-child(' + column + ')');
+							hideColumns(cells);
+						}
+
+						function hideColumns(cells) {
+							for (var j = 0; j < cells.length; j++) {
+								if (cb.checked)
+									cells[j].classList.remove('hide');
+								else
+									cells[j].classList.add('hide');
+							}
 						}
 					});
 				}
@@ -496,7 +506,38 @@ var listview = function (au, cu, cbcell, menu) {
 		}
 	}
 
-	 
+	function initMapHead(root) {
+		const map = new Map();
+		const ths = Object.values(root.querySelectorAll('tr > th'));
+		if (ths) {
+			const firstThs = ths.filter(x => x.parentElement.rowIndex == 0);
+			const secondThs = ths.filter(x => x.parentElement.rowIndex > 0);
+			let skip = 0;
+			for (let i = 0; i < firstThs.length; i++) {
+				const th = firstThs[i];
+				const colSpan = th.colSpan;
+				if (colSpan > 1) {
+					const columns = [];
+					let k = 1;
+					let t = skip;
+					const currentThs = [th];
+					for (var j = 0; j < colSpan; j++) {
+						columns[j] = i + j + 1;
+						currentThs[k] = secondThs[j + t];
+						skip += 1;
+						k += 1;
+					}
+					map.set(i + 1, { columns: columns, ths: currentThs });
+				}
+				else {
+					const columns = [i + 1];
+					const resultThs = [th];
+					map.set(i + 1, { columns: columns, ths: resultThs });
+				}
+			}
+			return map;
+		}
+	}
 
 	function initCheckBoxes(cblist) {
 		for (var i = 0; i < cblist.length; i++) {

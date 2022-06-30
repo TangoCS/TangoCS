@@ -132,8 +132,8 @@ namespace Tango.UI.Controls
 			Item(w => {
 				w.DropDownImage("listsettings", "listsettings", () => {
 					var i = 0;
-					foreach (var row in headerRows)
-						foreach (var header in row)
+                    for (int j = 0; j < headerRows.Count - (headerRows.Count - 1); j++)
+						foreach (var header in headerRows[j])
 							foreach (var h in header.AsEnumerable())
 							{
 								if (!h.Title.IsEmpty())
