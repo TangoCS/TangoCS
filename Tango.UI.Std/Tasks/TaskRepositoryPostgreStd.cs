@@ -97,7 +97,7 @@ left outer join tm_taskstarttype tt on t.starttypeid = tt.taskstarttypeid";
 
         public void Deactivation(IEnumerable<int> ids)
         {
-            Database.Connection.Execute("update tm_task set isactive=false where taskid = any(@ids)", new { ids }, Database.Transaction);
+            Database.Connection.Execute("update tm_task set isactive=false, lastmodifieddate = now() where taskid = any(@ids)", new { ids }, Database.Transaction);
         }
 
         public IEnumerable<TaskGroup> GetGroups()
