@@ -253,6 +253,15 @@ namespace Tango.UI.Controls
 			response.RemoveWidget(eFieldDescriptionContainer);
 			response.AddChildWidget("content", hValue, w => w.Hidden(hValue, SerializedCriteria));
 			response.SetElementValue(ddlField, "");
+
+			var f = Context.GetIntArg(ddlField, -1);
+			if (f >= 0)
+			{
+				var cond = Context.GetArg(ddlCondition);
+				var field = FieldList[f];
+				var op = field.Operators[cond];
+				op.OnSelected?.Invoke(response);
+			}
 		}
 
 		public void OnCriterionRemoved(ApiResponse response)
@@ -687,7 +696,8 @@ namespace Tango.UI.Controls
 				FieldType = FieldType.Int,
 				FieldName = dialog.ID,
 				Renderer = w => dialog.Strategy.Render(w, null),
-				StringValue = item => item.Value.IsEmpty() ? "" : dialog.GetObjectByID(item.Value.ConvertTo<TRefKey>())?.Title
+				StringValue = item => item.Value.IsEmpty() ? "" : dialog.GetObjectByID(item.Value.ConvertTo<TRefKey>())?.Title,
+				OnSelected = response => response.SetCtrlInstance(dialog.Strategy.ClientID, new { selectedvalues = "" })
 			};
 			f.Operators["="] = data;
 			f.Operators["<>"] = data;
@@ -717,7 +727,8 @@ namespace Tango.UI.Controls
 					if (item.Value.IsEmpty()) return "";
 					var ids = item.Value.Split(new char[] { ',' }).Select(x => x.ConvertTo<TRefKey>());
 					return dialog.GetObjectsByIDs(ids).Select(x => x.Title).Join(", ");
-				}
+				},
+				OnSelected = response => response.SetCtrlInstance(dialog.Strategy.ClientID, new { selectedvalues = "" })
 			};
 			f.Operators["="] = data;
 			return f.SeqNo;
