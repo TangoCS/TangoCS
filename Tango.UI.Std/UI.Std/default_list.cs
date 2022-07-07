@@ -21,7 +21,7 @@ namespace Tango.UI.Std
 		[Inject]
 		protected IPersistentFilterStore<int> filterStore { get; set; }
 
-		protected string _qSearch = "";
+		//protected string _qSearch => Context.GetArg(_qSearchParmName.Name);
 		protected InputName _qSearchParmName => new InputName { Name = GetClientID("qsearch"), ID = "qsearch" };
 		protected IFieldCollection<TEntity, TResult> _fields;
 		protected IFieldCollection<TEntity, TResult> Fields
@@ -160,7 +160,6 @@ namespace Tango.UI.Std
 				f.AllowDefaultFilters = () => EnableViews;
 			});
 
-			_qSearch = Context.GetArg(_qSearchParmName.Name);
 		}
 
 		public virtual void PrepareResult()
@@ -271,7 +270,8 @@ namespace Tango.UI.Std
 
 		public override void OnLoad(ApiResponse response)
 		{
-			if (Sections.RenderListOnLoad || !_qSearch.IsEmpty())
+			var qSearch = Context.GetArg(_qSearchParmName.Name);
+			if (Sections.RenderListOnLoad || !qSearch.IsEmpty())
 				Render(response);
 			RenderToolbar(response);
 			if (Sections.RenderContentTitle)
@@ -321,7 +321,9 @@ namespace Tango.UI.Std
 		{
 			if (SearchExpression != null)
 			{
-				if (!_qSearch.IsEmpty()) q = q.Where(SearchExpression(_qSearch));
+				var qSearch = Context.GetArg(_qSearchParmName.Name);
+				if (!qSearch.IsEmpty()) 
+					q = q.Where(SearchExpression(qSearch));
 			}
 
 			return Filter.ApplyFilter(q);

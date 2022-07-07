@@ -531,6 +531,7 @@ namespace Tango.UI.Controls
 		public object Column { get; set; }
 		public Action<LayoutWriter> Renderer { get; set; }
 		public Func<FilterItem, string> StringValue { get; set; }
+		public Action<ApiResponse> OnSelected { get; set; }
 	}
 
 

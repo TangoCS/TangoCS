@@ -1426,6 +1426,31 @@ var ajaxUtils = function ($, cu) {
 					window[t]['widgetWillMount'](shadow, ctrl.instance);
 					console.log('widget: ' + ctrl.id + ' widgetWillMount ' + t);
 				}
+
+				if (srvCtrl)
+					delete apiResult.ctrl[ctrl.id];
+			}
+
+			if (apiResult.ctrl) {
+				for (var id in apiResult.ctrl) {
+					const srvCtrl = apiResult.ctrl[id];
+					const inst = state.ctrl[id];
+					if (inst) {
+						if (srvCtrl && srvCtrl.props) {
+							if (!inst.props) inst.props = {};
+							inst.props = Object.assign(inst.props, srvCtrl.props);
+						}
+
+						if (srvCtrl && srvCtrl.instance) {
+							assignProps(inst, srvCtrl.instance);
+						}
+
+						if (srvCtrl && srvCtrl.state) {
+							if (!inst.state) inst.state = {};
+							assignProps(inst.state, srvCtrl.state);
+						}
+					}
+				}
 			}
 
 			nodes.forEach(function (n) {
