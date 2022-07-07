@@ -97,16 +97,18 @@ namespace Tango.Tasks
 			f.AddCellWithSortAndFilter(o => o.LastStartDate, o => o.LastStartDate.DateTimeToString());
 			f.AddCell(Resources.Get<Task>("NextTime"), (w, o) => {
 				DateTime? nextTime = null;
+				DateTime lastStartDate = o.LastStartDate == null ? DateTime.Now : 
+										(o.LastStartDate < o.LastModifiedDate ? o.LastModifiedDate : o.LastStartDate.Value);
 				if (o.StartTypeID == 1)
 				{
-					var oldTimeUtc = new DateTimeOffset((o.LastStartDate ?? DateTime.Now));
+					var oldTimeUtc = new DateTimeOffset(lastStartDate);
 					var expression = Cronos.CronExpression.Parse(o.Interval);
 					var next = expression.GetNextOccurrence(oldTimeUtc, TimeZoneInfo.Local);
 					nextTime = next?.DateTime;
 				}
 				else
 				{
-					nextTime = (o.LastStartDate ?? DateTime.Now).AddMinutes(o.Interval.ToInt32(3000000));
+					nextTime = lastStartDate.AddMinutes(o.Interval.ToInt32(3000000));
 				}
 
 				if (nextTime < DateTime.Now)
@@ -338,16 +340,17 @@ namespace Tango.Tasks
 				w.PlainText(gr.Interval, content);
 
 				DateTime? nextTime = null;
-
+				DateTime lastStartDate = ViewData.LastStartDate == null ? DateTime.Now :
+										(ViewData.LastStartDate < ViewData.LastModifiedDate ? ViewData.LastModifiedDate : ViewData.LastStartDate.Value);
 				if (gr.StartType.Value == 1)
 				{
-					var oldTimeUtc = new DateTimeOffset((ViewData.LastStartDate ?? DateTime.Now));
+					var oldTimeUtc = new DateTimeOffset(lastStartDate);
 					var expression = Cronos.CronExpression.Parse(gr.Interval.Value);
 					var next = expression.GetNextOccurrence(oldTimeUtc, TimeZoneInfo.Local);
 					nextTime = next?.DateTime;
 				}
 				else
-					nextTime = (ViewData.LastStartDate ?? DateTime.Now).AddMinutes(gr.Interval.Value.ToInt32(3000000));
+					nextTime = (lastStartDate).AddMinutes(gr.Interval.Value.ToInt32(3000000));
 
 				if (nextTime < DateTime.Now)
 					nextTime = DateTime.Now.AddMinutes(1);
