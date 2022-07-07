@@ -312,6 +312,15 @@ namespace Tango.UI.Controls
 
 			PersistentFilter.SaveCriteria();
 
+			var f = Context.GetIntArg(ddlField, -1);
+			if (f >= 0)
+			{
+				var cond = Context.GetArg(ddlCondition);
+				var field = FieldList[f];
+				var op = field.Operators[cond];
+				op.OnSelected?.Invoke(response);
+			}
+
 			FilterSubmitted?.Invoke(response);
 		}
 
