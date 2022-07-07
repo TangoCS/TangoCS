@@ -131,7 +131,7 @@ namespace Tango.UI.Std
             fields.ListAttributes = (a => a.Class("listviewtable")) + fields.ListAttributes;
 
 			if (fields.EnableSelect && fields.HeaderRows.Count > 0)
-				fields.AddCheckBoxCell(fields.EnableSelect.SeqNo);
+				fields.AddCheckBoxCell(fields.EnableSelect.SeqNo, fields.EnableSelect.Settings);
 
 			if (fields.EnableSelect && !fields.RowAttributes.GetInvocationList().Any(o => o.Method.Name.Contains("SetRowID")))
 				fields.SetRowID(o => (o as dynamic).ID);
