@@ -639,12 +639,15 @@ var ajaxUtils = function ($, cu) {
 				data: isForm ? target.data : JSON.stringify(target.data),
 				requestGroup: target.requestgroup ? target.requestgroup : null,
 				responseType: target.responsetype,
-				sender: target.sender
+				sender: target.sender,
+				headers: {}
 			};
+			if (target.method == 'FAKEGET')
+				settings.headers['X-HTTP-Method'] = 'GET';
 			return ajax(settings).fail(instance.error).then(onRequestResult);
 		},
 		postEventWithApiResponse: function (target) {
-			return instance.postEvent(target)/*.then(instance.loadScripts)*/.then(processApiResponse);
+			return instance.postEvent(target).then(processApiResponse);
 		},
 		postEventFromElementWithApiResponse: function (el, target) {
 			if (el.hasAttribute('data-res') && instance.processResult(el) == false) return;
@@ -968,6 +971,9 @@ var ajaxUtils = function ($, cu) {
 		xhr.contentType = settings.contentType;
 		xhr.processData = settings.processData;
 		xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+		if (settings.headers)
+			for (var h in settings.headers)
+				xhr.setRequestHeader(h, settings.headers[h]);
 		beforeRequest(xhr, settings);
 		xhr.send(settings.data);
 		return r;
