@@ -5,20 +5,28 @@ namespace Tango.UI.Std.ListMassOperations
 {
 	public static class ListMassOperationsExtensions
 	{
-		public static void AddCheckBoxCell<TResult>(this IFieldCollection<TResult> f, int colSeqNo)
+		public static void AddCheckBoxCell<TResult>(this IFieldCollection<TResult> f, int colSeqNo, CheckBoxCellSettings settings = null)
 		{
-			f.HeaderRows[0].Insert(colSeqNo, new ColumnHeader(
-				a => a.ID("sel_header").Class("sel_header").RowSpan(f.HeaderRows.Count), null, 
+			if(settings == null)
+				settings = new CheckBoxCellSettings() { HeadColSeqNo = colSeqNo, BodyColSeqNo = colSeqNo };
+
+			f.AddCheckBoxCell(settings);
+		}
+
+		public static void AddCheckBoxCell<TResult>(this IFieldCollection<TResult> f, CheckBoxCellSettings settings)
+		{
+			f.HeaderRows[settings.HeaderRowNo].Insert(settings.HeadColSeqNo, new ColumnHeader(
+				a => a.ID("sel_header").Class("sel_header").RowSpan(settings.RowSpan == 0 ? f.HeaderRows.Count : settings.RowSpan), null,
 				w => {
 					w.IconThreeStateCheckBox();
 					w.Hidden("selectedvalues", null, a => a.DataHasClientState(ClientStateType.Array));
 				}
 			));
 
-			f.Cells.Insert(colSeqNo,
+			f.Cells.Insert(settings.BodyColSeqNo,
 				new ListColumn<TResult>(
 					(a, o, i) => a.Class("sel"),
-					(w, o, i) => w.IconCheckBox()
+					(w, o, i) => w.IconCheckBox(settings.Attributes)
 				)
 			);
 		}
