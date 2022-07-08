@@ -610,7 +610,7 @@ var ajaxUtils = function ($, cu) {
 			return ajax(settings).fail(instance.error).then(onRequestResult);
 		},
 		runEventWithApiResponse: function (target) {
-			return instance.runEvent(target)/*.then(instance.loadScripts)*/.then(processApiResponse);
+			return instance.postEvent(target)/*.then(instance.loadScripts)*/.then(processApiResponse);
 		},
 		runEventFromElementWithApiResponse: function (el, target) {
 			if (el.hasAttribute('data-res') && instance.processResult(el) == false) return;
@@ -730,11 +730,11 @@ var ajaxUtils = function ($, cu) {
 				state.loc.url = target.url;
 			}
 
-			if (target.method == 'GET') {
-				for (var key in target.data) {
-					parms[key] = target.data[key];
-				}
-			}
+			//if (target.method == 'GET') {
+			//	for (var key in target.data) {
+			//		parms[key] = target.data[key];
+			//	}
+			//}
 
 			var page = document.head.getAttribute('data-page');
 			if (page) parms.p = page;
