@@ -610,14 +610,17 @@ var ajaxUtils = function ($, cu) {
 			return ajax(settings).fail(instance.error).then(onRequestResult);
 		},
 		runEventWithApiResponse: function (target) {
-			return instance.postEvent(target)/*.then(instance.loadScripts)*/.then(processApiResponse);
+			if (target.method == 'FAKEGET')
+				return instance.postEvent(target).then(processApiResponse);
+			else
+				return instance.runEvent(target).then(processApiResponse);
 		},
 		runEventFromElementWithApiResponse: function (el, target) {
 			if (el.hasAttribute('data-res') && instance.processResult(el) == false) return;
 			if (!target) target = {};
 			if (!target.data) target.data = {};
 			if (!target.query) target.query = {};
-			target.method = 'GET';
+			if (!target.method) target.method = 'FAKEGET';
 			processElementDataOnEvent(el, target, function (key, value) { target.data[key] = value; });
 			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement) {
 				cu.processElementValue(el, function (key, value) { target.query[key] = value; })
@@ -730,11 +733,11 @@ var ajaxUtils = function ($, cu) {
 				state.loc.url = target.url;
 			}
 
-			//if (target.method == 'GET') {
-			//	for (var key in target.data) {
-			//		parms[key] = target.data[key];
-			//	}
-			//}
+			if (target.method == 'GET') {
+				for (var key in target.data) {
+					parms[key] = target.data[key];
+				}
+			}
 
 			var page = document.head.getAttribute('data-page');
 			if (page) parms.p = page;
@@ -1033,7 +1036,6 @@ var ajaxUtils = function ($, cu) {
 				if (target.method == 'POST') {
 					if (target.data instanceof FormData) {
 						target.data.append(attr.name.replace('data-p-', ''), val || '');
-
 					}
 					else
 						target.data[attr.name.replace('data-p-', '')] = val || '';
@@ -1682,7 +1684,7 @@ var ajaxUtils = function ($, cu) {
 	const current = document.getElementById(META_CURRENT);
 	state.loc.url = document.location.pathname + document.location.search;
 	current.setAttribute('data-href', state.loc.url);
-	instance.runEventFromElementWithApiResponse(current, { url: state.loc.url, isfirstload: true });
+	instance.runEventFromElementWithApiResponse(current, { method: 'GET', url: state.loc.url, isfirstload: true });
 	state.loc.parms['c-new'] = 1;
 	history.replaceState(state.loc, document.title, state.loc.url);
 
