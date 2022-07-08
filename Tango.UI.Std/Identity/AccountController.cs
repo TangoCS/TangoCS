@@ -49,7 +49,7 @@ namespace Tango.Identity.Std
 			var res = new ApiResult();
 			res.ApiResponse.AddWidget("content", w => {
 				w.H2(Resources.Get("Account.SignInTitle"));
-				w.AjaxForm("form", true, a => a.Action("/account/login"), () => {
+				w.AjaxForm("form", true, a => a.Action("/account/dologin"), () => {
 					w.TextBox("userName", null, a => a.Placeholder(Resources.Get("Account.UserName")));
 					w.Password("password", null, a => a.Placeholder(Resources.Get("Account.Password")));
 					//w.Hidden("returnurl", Context.GetArg("returnurl"));
