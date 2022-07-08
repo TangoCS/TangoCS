@@ -28,7 +28,8 @@ namespace Tango.AspNetCore
 			if (Guid.TryParse(ctx.Request.Headers["X-Request-Guid"], out Guid rid))
 				RequestID = rid;
 
-			RequestMethod = ctx.Request.Method;
+			string xRequestMethod = ctx.Request.Headers["X-HTTP-Method"];
+			RequestMethod = xRequestMethod?.ToString() ?? ctx.Request.Method;
 			IsLocalRequest = ctx.IsLocal();
 
 			if (ctx.Request.ContentType != null)
