@@ -395,6 +395,12 @@ namespace Tango.UI.Std
 			var f = new FieldCollection<TEntity, TResult>(Context, Sorter, Filter);
 			f.RowAttributes += (a, o, i) => a.ZebraStripping(i.RowNum);
 			FieldsInit(f);
+			if (EnableHover)
+				f.ListAttributes += a => a.Class("hover");
+			if (EnableKeyboard)
+				f.ListAttributes += a => a.Class("kb");
+			if (f.EnableSelect)
+				f.RowAttributes += (a, o, i) => a.TabIndex(0);
 			return f;
 		}
 
