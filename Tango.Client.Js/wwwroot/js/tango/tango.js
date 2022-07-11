@@ -872,7 +872,7 @@ var ajaxUtils = function ($, cu) {
 					if (deleteRegex.test(params[i]) === false)
 						search.push(params[i]);
 				for (var key in args.remove) {
-					if (hstate.parms[key]) delete hstate.parms[key];
+					if (hstate && hstate.parms[key]) delete hstate.parms[key];
 				}
 			}
 			else
@@ -885,7 +885,7 @@ var ajaxUtils = function ($, cu) {
 						hash.push(key.substring(1) + (args.add[key] != '' ? '=' + args.add[key] : ''));
 					else {
 						search.push(key + '=' + args.add[key]);
-						hstate.parms[key] = args.add[key];
+						if (hstate) hstate.parms[key] = args.add[key];
 					}
 				}
 			}
