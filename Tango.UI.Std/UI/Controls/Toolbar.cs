@@ -146,7 +146,7 @@ namespace Tango.UI.Controls
 								}
 								i++;
 							}
-				}, options: new PopupOptions { CloseOnClick = false } );
+				}, btnAttrs: a => a.Title("Скрытие столбцов"), options: new PopupOptions { CloseOnClick = false } );
 			});
 		}
 

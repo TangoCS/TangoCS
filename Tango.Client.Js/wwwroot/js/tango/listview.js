@@ -284,6 +284,9 @@ var listview = function (au, cu, cbcell, menu) {
 
 			instance.initFixedHeader(root);
 
+			if (ctrl.props && ctrl.props.listSettingsPopupID)
+				instance.initListSettings(root);
+
 			var el = $('#' + ctrl.root);
 			if (!el.tableDnD || !el.hasClass("draggablerows")) return;
 			el.tableDnD({
@@ -473,10 +476,9 @@ var listview = function (au, cu, cbcell, menu) {
 			}
 			removeSelected(tocopy);
 		},
-		initListSettings: function (rootid) {
-			const ctrl = au.state.ctrl[rootid];
+		initListSettings: function (root) {
+			const ctrl = au.state.ctrl[root.id];
 			if (ctrl.props.listSettingsPopupID) {
-				const root = document.getElementById(rootid);
 				const popup = document.getElementById(ctrl.props.listSettingsPopupID);
 				const cbHideColumns = popup.querySelectorAll('input[type="checkbox"]');
 				const map = initMapHead(root);
