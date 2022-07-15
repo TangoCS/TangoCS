@@ -82,6 +82,7 @@ namespace Tango.UI.Controls
 							w.RadioButton(ClientID, pid + "_title", null, curpage.ID == p.ID);
 							w.Label(a => a.ID(pid + "_label").For(pid + "_title")
 								.Data("id", p.ID).Data("ajax", p.IsAjax).Data("useurlparm", true).Data("loaded", !p.IsAjax || curpage.ID == p.ID)
+								.Data(p.DataCollection)
 								.Set(p.Attributes)
 								.OnClick("tabs.onselect(this)"), () => w.Write(p.Title));
 						});
@@ -116,6 +117,8 @@ namespace Tango.UI.Controls
 		//!TODO: подумать над преобразованием.
 		public Action<LabelTagAttributes> Attributes { get; set; }
 
+		public DataCollection DataCollection { get; set; }
+
 		public TabPage(string id, string title, Action<ApiResponse> content, bool isAjax = false)
 		{
 			ID = id;
@@ -134,6 +137,7 @@ namespace Tango.UI.Controls
 				element.RunOnEvent();
 				element.OnLoad(response);
 			};
+			DataCollection = element.DataCollection;
 			IsAjax = true;
 			Container = new TabPageContainer2(element.GetContainer());
 		}
