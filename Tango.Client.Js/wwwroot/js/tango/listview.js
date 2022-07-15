@@ -483,6 +483,7 @@ var listview = function (au, cu, cbcell, menu) {
 				const cbHideColumns = popup.querySelectorAll('input[type="checkbox"]');
 				const map = initMapHead(root);
 				for (var i = 0; i < cbHideColumns.length; i++) {
+					cbHideColumns[i].checked = true;
 					cbHideColumns[i].addEventListener('click', function (e) {
 						const cb = e.currentTarget;
 						const colIdx = parseInt(cb.getAttribute('data-colidx')) + 1;
