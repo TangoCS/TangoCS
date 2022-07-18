@@ -215,4 +215,81 @@ namespace Tango.UI.Std
 		}
 	}
 
+	/// <summary>
+	/// Базовый класс для формы с верхней формой для параметром и нижней частью, разделенной на 2 части
+	/// </summary>
+	/// <typeparam name="TTop"></typeparam>
+	/// <typeparam name="TBottomLeft"></typeparam>
+	/// <typeparam name="TBottomRigth"></typeparam>
+	public abstract class ViewPagePart_top_2col_bottom<TTop, TBottomLeft, TBottomRigth> : ViewPagePart
+		where TTop : IWithChangeEvent, new()
+		where TBottomLeft : IWithChangeEvent, new()
+		where TBottomRigth : IWithChangeEvent, IWithChangeEventHandler, new()
+	{
+		protected TTop top;
+		protected TBottomLeft bottomLeft;
+		protected TBottomRigth bottomRigth;
+
+		protected virtual Grid BottomLeftGrid => Grid.OneHalf;
+		protected virtual Grid BottomRightGrid => Grid.OneHalf;
+
+		public override void OnInit()
+		{
+			top = CreateControl<TTop>("top", SetPropertiesTop);
+			bottomLeft = CreateControl<TBottomLeft>("bottomLeft", SetPropertiesBottomLeft);
+			bottomRigth = CreateControl<TBottomRigth>("bottomRigth", SetPropertiesBottomRigth);
+
+			//top.Changed += bottomLeft.OnChange;
+			//bottomLeft.OnChange += bottomRigth.OnChange;
+		}
+
+		protected virtual void SetPropertiesTop(TTop c) { }
+		protected virtual void SetPropertiesBottomLeft(TBottomLeft c) { }
+		protected virtual void SetPropertiesBottomRigth(TBottomRigth c) { }
+
+        public override void OnLoad(ApiResponse response)
+        {
+			response.WithWritersFor(this);
+			response.AddWidget("contentbody", w => {
+				w.Block(() => {
+					w.PushPrefix(top.ID);
+					w.Div(a => a.ID("container"));
+					w.PopPrefix();
+				});
+				w.Block(() => {
+					w.PushPrefix(bottomLeft.ID);
+					w.Div(a => a.ID("container").GridColumn(BottomLeftGrid));
+					w.PopPrefix();
+
+					w.PushPrefix(bottomRigth.ID);
+					w.Div(a => a.ID("container").GridColumn(BottomRightGrid));
+					w.PopPrefix();
+				});
+			});
+
+			if (FormTitle != null)
+				response.AddWidget("contenttitle", FormTitle);
+
+			response.WithNamesAndWritersFor(top);
+			var c1 = top.GetContainer();
+			c1.ToRemove.Add("contentheader");
+			c1.Render(response);
+			top.OnLoad(response);
+
+			response.WithNamesAndWritersFor(bottomLeft);
+			var c2 = bottomLeft.GetContainer();
+			c2.ToRemove.Add("contentheader");
+			c2.Render(response);
+			bottomLeft.OnLoad(response);
+
+			response.WithNamesAndWritersFor(bottomRigth);
+			var c3 = bottomRigth.GetContainer();
+			c3.ToRemove.Add("contentheader");
+			c3.Render(response);
+			bottomRigth.OnLoad(response);
+		}
+
+        protected virtual string FormTitle => null;
+	}
+
 }
