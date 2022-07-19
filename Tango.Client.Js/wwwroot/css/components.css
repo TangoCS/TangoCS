@@ -337,7 +337,9 @@ td.showDragHandle {
 .label-default {
 	background-color: #777;
 }
-
+.label a {
+	color: inherit;
+}
 
 
 
@@ -364,9 +366,11 @@ td.showDragHandle {
 	margin-left: auto;
 	margin-right: auto;
 	width: 600px;
-	height: 100%;
+	/*height: 100%;*/
 	max-height: 85%;
+	min-width: 250px;
 	visibility: hidden;
+	padding:10px;
 }
 
 .modal-dialog form {
@@ -376,7 +380,8 @@ td.showDragHandle {
 }
 
 .modal-container {
-	max-height: 99%; /*ie 11 hack*/
+	height: 100%;
+	/*max-height: 99%;*/ /*ie 11 hack*/
 	display: flex;
 	flex-direction: column;
 	box-shadow: 0 3px 9px rgba(0,0,0,.5);
@@ -406,6 +411,7 @@ td.showDragHandle {
 }
 
 .modal-body {
+	height: 100%;
 	overflow-y: auto;
 	display: flex;
 	flex-direction: column;
@@ -427,12 +433,14 @@ td.showDragHandle {
 	transform: scale(0.8);
 	transform-origin: top;
 	opacity: 0;
-	transition: all 0.2s;
+	transition: transform 0.2s;
 }
 
 .modal-dialog.md-show {
 	transform: scale(1);
 	opacity: 1;
+	resize: both;
+	overflow: auto;
 }
 
 
@@ -1392,4 +1400,10 @@ div.tabs2 + div.tabs2_pages {
 .icon-expanded .svgicon-collapsed,
 .icon-collapsed .svgicon-expanded {
 	display: none;
+}
+.listviewtable .cal-date {
+	width: 90px
+}
+.listviewtable .cal-datetime {
+	width: 120px
 }

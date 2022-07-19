@@ -137,6 +137,9 @@ namespace Tango.UI.Std
 	{
 		public Action<LayoutWriter> ContentHeader { get; set; } = ContentHeaders.Default;
 
+		public Unit LeftWidth { get; set; } = new Unit(75, UnitType.Percentage);
+		public Unit RightWidth { get; set; } = new Unit(25, UnitType.Percentage);
+
 		public override void Render(ApiResponse response)
 		{
 			response.AddWidget("container", w => {
@@ -146,9 +149,9 @@ namespace Tango.UI.Std
 							ContentHeader(w);
 						});
 					w.Div(a => a.ID("contenttoolbar"));
-					w.Div(a => a.Class("twocolumnsrow masterdetailcols"), () => {
-						w.Div(a => a.ID("contentbody").Class(BodyClass));
-						w.Div(a => a.ID("detail"));
+					w.Div(a => a.Class("masterdetailcols"), () => {
+						w.Div(a => a.ID("contentbody").Class(BodyClass).Style($"width:{LeftWidth}"));
+						w.Div(a => a.ID("detail").Style($"width:{RightWidth}"));
 					});
 				});
 			});

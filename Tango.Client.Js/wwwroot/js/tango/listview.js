@@ -488,19 +488,33 @@ var listview = function (au, cu, cbcell, menu) {
 						const cb = e.currentTarget;
 						const colIdx = parseInt(cb.getAttribute('data-colidx')) + 1;
 						const data = map.get(colIdx);
+
+						const fh = root.classList.contains('fixedheader');
+						if (fh)
+							root.classList.remove('fixedheader');
+
 						hideColumns(data.ths);
+
 						for (var i = 0; i < data.columns.length; i++) {
 							var column = data.columns[i];
 							const cells = root.querySelectorAll('tr > td:nth-child(' + column + ')');
 							hideColumns(cells);
 						}
 
+						if (fh) {
+							setTimeout(function () {
+								root.classList.add('fixedheader');
+							}, 500);
+						}
+
 						function hideColumns(cells) {
 							for (var j = 0; j < cells.length; j++) {
-								if (cb.checked)
+								if (cb.checked) {
 									cells[j].classList.remove('hide');
-								else
+								}
+								else {
 									cells[j].classList.add('hide');
+								}
 							}
 						}
 					});
