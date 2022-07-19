@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Tango.Data;
+using Tango.Model;
 
 namespace Tango.Tasks
 {
-    public interface ITaskControllerRepository
+	public interface ITaskControllerRepository
     {
         IDatabase database { get; }
 
@@ -23,6 +24,7 @@ namespace Tango.Tasks
         void Deactivation(IEnumerable<int> ids);
         IEnumerable<TaskGroup> GetGroups();
         IEnumerable<TaskStartType> GetStartTypes();
+        IEnumerable<C_System> GetSystemName();
         bool IsExecuteTask(int id);
         IEnumerable<TaskParameter> GetParameters(int id);
         int CreateParameter(TaskParameter taskparameter);

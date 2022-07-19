@@ -52,5 +52,6 @@ namespace Tango.Tasks
 
         public virtual string StartTypeTitle { get; set; }
 		public virtual string GroupTitle { get; set; }
-	}
+        public virtual string SystemTitle { get; set; }
+    }
 }
