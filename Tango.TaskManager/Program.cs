@@ -23,7 +23,11 @@ namespace Tango.TaskManager
 
             using (var host = builder.UseContentRoot(curPath).Build())
             {
-                host.Run();
+                try
+                {
+                    host.Run();
+                }
+                catch (OperationCanceledException) { }
             }
         }
 

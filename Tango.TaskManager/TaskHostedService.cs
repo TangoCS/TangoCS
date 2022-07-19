@@ -8,8 +8,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Xml.Linq;
+using Sys = System.Threading.Tasks;
 
 namespace Tango.TaskManager
 {
@@ -19,31 +19,56 @@ namespace Tango.TaskManager
         static string taskListFile = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}tasklist.xml";
         static string errorLogFile = $"{Directory.GetCurrentDirectory()}{Path.DirectorySeparatorChar}errorlog_{{0}}.txt";
         static List<Task> tasks = new List<Task>();
+        private readonly CancellationTokenSource _cancelling = new CancellationTokenSource();
 
         public TaskHostedService()
         {
             Load();
         }
 
-        public System.Threading.Tasks.Task StartAsync(CancellationToken cancellationToken)
+        public Sys.Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(TimerCallback, null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
+            _timer = new Timer(TimerCallback, _cancelling.Token, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
 
-            return System.Threading.Tasks.Task.CompletedTask;
+            return Sys.Task.CompletedTask;
         }
 
-        public System.Threading.Tasks.Task StopAsync(CancellationToken cancellationToken)
+        public Sys.Task StopAsync(CancellationToken cancellationToken)
         {
             _timer?.Change(Timeout.Infinite, 0);
 
-            OnStop();
+            try
+            {
+                _cancelling.Cancel();
+                OnStop();
+            }
+            catch (Exception e)
+            {
+                LogError(e, null);
+            }
+        
+            return Sys.Task.CompletedTask;
+        }
 
-            return System.Threading.Tasks.Task.CompletedTask;
+        static void OnStop()
+        {
+            bool isinterrupt = false;
+            foreach (Task t in tasks)
+            {
+                if (t.Thread != null && t.Thread.IsAlive)
+                {
+                    t.Thread.Interrupt();
+                    isinterrupt = true;
+                }
+            }
+            if (isinterrupt)
+                Thread.CurrentThread.Join(TimeSpan.FromSeconds(5));
         }
 
         public void Dispose()
         {
             _timer?.Dispose();
+            _cancelling.Dispose();
         }
 
         static void Load()
@@ -100,10 +125,15 @@ namespace Tango.TaskManager
 
         static void TimerCallback(object o)
         {
+            var _cancelling = (CancellationToken)o;
+
             try
             {
                 foreach (var t in tasks)
                 {
+                    if (_cancelling.IsCancellationRequested)
+                        break;
+
                     if ((t.StartType == TaskStartType.Interval && t.LastStartTime.Add(t.Interval) < DateTime.Now) ||
                         (t.StartType == TaskStartType.Schedule && t.LastStartTime < DateTime.Today.Add(t.Interval) && DateTime.Today.Add(t.Interval) < DateTime.Now))
                     {
@@ -177,23 +207,7 @@ namespace Tango.TaskManager
             }
         }
 
-        static void OnStop()
-        {
-            try
-            {
-                foreach (Task t in tasks)
-                    if (t.Thread != null && t.Thread.IsAlive)
-                    {
-                        t.Thread.Abort();
-                    }
-            }
-            catch (Exception e)
-            {
-                LogError(e, null);
-            }
-        }
-
-        static void LogError(Exception e, string taskname)
+        public static void LogError(Exception e, string taskname)
         {
             string str = DateTime.Now.ToString("dd.MM.yyyy HH:mm:ss " + (taskname != null ? "Ошибка при выполнении задачи " + taskname : ""));
             while (e != null)
