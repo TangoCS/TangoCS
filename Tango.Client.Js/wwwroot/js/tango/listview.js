@@ -482,6 +482,8 @@ var listview = function (au, cu, cbcell, menu) {
 				const popup = document.getElementById(ctrl.props.listSettingsPopupID);
 				const cbHideColumns = popup.querySelectorAll('input[type="checkbox"]');
 				const map = initMapHead(root);
+				const fh = root.classList.contains('fixedheader');
+
 				for (var i = 0; i < cbHideColumns.length; i++) {
 					cbHideColumns[i].checked = true;
 					cbHideColumns[i].addEventListener('click', function (e) {
@@ -489,7 +491,6 @@ var listview = function (au, cu, cbcell, menu) {
 						const colIdx = parseInt(cb.getAttribute('data-colidx')) + 1;
 						const data = map.get(colIdx);
 
-						const fh = root.classList.contains('fixedheader');
 						if (fh)
 							root.classList.remove('fixedheader');
 
@@ -503,7 +504,8 @@ var listview = function (au, cu, cbcell, menu) {
 
 						if (fh) {
 							setTimeout(function () {
-								root.classList.add('fixedheader');
+								if (!root.classList.contains('fixedheader'))
+									root.classList.add('fixedheader');
 							}, 500);
 						}
 
