@@ -4,9 +4,15 @@
     <Argument Name="url" Value="http://localhost:53885/longoperation/updatequeue?conn=231" />
     <Argument Name="userName" Value="" />
     <Argument Name="password" Value="" />
-    <Argument Name="timeOut" Value="120" />
-	<Dictionary Name="data">
-		<Argument Name="system_id" Value="1" />
-    </Dictionary>
+    <Argument Name="timeOut" Value="600" />
+	  <Dictionary Name="data">
+		  <Argument Name="system_id" Value="1,2" />
+	  </Dictionary>
+  </Task>
+  <Task Name="Run" StartType="Interval" Hours="0" Minutes="5" Type="Tango.TaskManager.WebClient" Method="Post">
+    <Argument Name="url" Value="http://localhost:53885/longoperation/runtask?conn=231" />
+    <Argument Name="userName" Value="" />
+    <Argument Name="password" Value="" />
+    <Argument Name="timeOut" Value="600" />
   </Task>
 </TaskList>

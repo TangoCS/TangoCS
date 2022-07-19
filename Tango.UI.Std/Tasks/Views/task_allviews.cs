@@ -119,6 +119,7 @@ namespace Tango.Tasks
 			f.AddCellWithSortAndFilter(o => o.Status, o => Enumerations.GetEnumDescription((TaskStatusType)o.Status));
 			f.AddCellWithSortAndFilter(o => o.IsActive, o => o.IsActive.Icon());
 			f.AddCellWithSortAndFilter(o => o.Priority, o => o.Priority);
+			f.AddCellWithSortAndFilter(o => o.SystemTitle, o => o.SystemTitle);
 		}
 	}
 
@@ -135,6 +136,7 @@ namespace Tango.Tasks
 		IEnumerable<SelectListItem> Groups() => Repository.GetGroups().OrderBy(o => o.Title).ToList()
 			.Where(o => AccessControl.Check($"{typeof(TaskGroup).Name}.view_{o.TaskGroupID}"))
 			.Select(o => new SelectListItem(o.Title, o.TaskGroupID)).AddEmptyItem();
+		IEnumerable<SelectListItem> Systems() => Repository.GetSystemName().Select(o => new SelectListItem(o.Title, o.SystemID));
 
 		protected override void SetDefaultValues(Task obj)
 		{
@@ -161,6 +163,7 @@ namespace Tango.Tasks
 				w.TextBox(gr.ExecutionTimeout);
 				w.ToggleSwitch(gr.IsActive);
 				w.TextBox(gr.Priority);
+				w.DropDownList(gr.System, Systems());
 			});
 		}
 
@@ -361,6 +364,7 @@ namespace Tango.Tasks
 				w.PlainText(gr.ExecutionTimeout);
 				w.PlainText(gr.IsActive);
 				w.PlainText(gr.Priority);
+				w.PlainText(gr.System);
 				w.PlainText(Resources.Get<Task>(o => o.LastStartDate), ViewData.LastStartDate?.ToString("dd.MM.yyyy HH:mm:ss"));
 				w.PlainText(gr.Status, () => w.Write(Enumerations.GetEnumDescription((TaskStatusType)gr.Status.Value)));
 			});

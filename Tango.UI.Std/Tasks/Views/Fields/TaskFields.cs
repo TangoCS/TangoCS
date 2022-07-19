@@ -142,10 +142,18 @@ namespace Tango.Tasks
 		}
 
         public class SystemName : EntityField<Task, string> { }
+
         public class Priority : EntityField<Task, int>
         {
             public override bool IsRequired => false;
         }
+
+        public class System : EntityField<Task, int> 
+        {
+            protected override string IDSuffix => "ID";
+            public override string StringValue => ViewData.SystemTitle;
+        }
+
         public class DefaultGroup : FieldGroup
 		{
 			public CommonFields.Title Title { get; set; }
@@ -160,6 +168,7 @@ namespace Tango.Tasks
 			public TaskGroup TaskGroup { get; set; }
             public SystemName SystemName { get; set; }
             public Priority Priority { get; set; }
+            public System System { get; set; }
 
             public DefaultGroup(int startType)
             {
@@ -175,6 +184,7 @@ namespace Tango.Tasks
 				TaskGroup = AddField(new TaskGroup());
                 SystemName = AddField(new SystemName());
                 Priority = AddField(new Priority());
+                System = AddField(new System());
             }
         }
     }

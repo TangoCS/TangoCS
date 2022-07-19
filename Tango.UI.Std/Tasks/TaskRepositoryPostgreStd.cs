@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using Dapper;
 using Tango.Data;
+using Tango.Model;
 
 namespace Tango.Tasks
 {
-    public class TaskControllerRepositoryPostgreStd : ITaskControllerRepository
+	public class TaskControllerRepositoryPostgreStd : ITaskControllerRepository
     {
         public IDatabase database { get; }
 
@@ -16,10 +17,11 @@ namespace Tango.Tasks
 
         public Task GetTask(int id)
         {
-            return database.Connection.QuerySingle<Task>(@"select t.*, tt.title as starttypetitle, tg.title as grouptitle
+            return database.Connection.QuerySingle<Task>(@"select t.*, tt.title as starttypetitle, tg.title as grouptitle, s.title as systemtitle
 from tm_task t 
 left outer join tm_taskgroup tg on t.taskgroupid = tg.taskgroupid
 left outer join tm_taskstarttype tt on t.starttypeid = tt.taskstarttypeid
+left outer join c_system s on t.systemid = s.systemid
 where t.taskid = @id", new { id });
         }
 
@@ -89,10 +91,11 @@ where taskexecutionid = @TaskExecutionID;", task);
     {
         public TaskRepositoryPostgreStd(IDatabase database, IServiceProvider provider) : base(database, provider)
         {
-            AllObjectsQuery = @"select t.*, tt.title as starttypetitle, tg.title as grouptitle
+            AllObjectsQuery = @"select t.*, tt.title as starttypetitle, tg.title as grouptitle, s.title as systemtitle
 from tm_task t 
 left outer join tm_taskgroup tg on t.taskgroupid = tg.taskgroupid
-left outer join tm_taskstarttype tt on t.starttypeid = tt.taskstarttypeid";
+left outer join tm_taskstarttype tt on t.starttypeid = tt.taskstarttypeid
+left outer join c_system s on t.systemid = s.systemid";
         }
 
         public void Deactivation(IEnumerable<int> ids)
@@ -134,7 +137,12 @@ values (@title, @sysname, @value, @parentid, @seqno) returning taskparameterid",
         {
             Database.Connection.Execute(@"delete from tm_taskparameter where taskparameterid = @id", new { id }, Database.Transaction);
         }
-    }
+
+		public IEnumerable<C_System> GetSystemName()
+		{
+            return Database.Connection.Query<C_System>(@"select * from c_system");
+        }
+	}
 
     /// <summary>
     /// Postgre SQL стандартный репозиторий для параметров задания
