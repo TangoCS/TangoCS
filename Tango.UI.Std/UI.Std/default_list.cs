@@ -282,7 +282,10 @@ namespace Tango.UI.Std
 				response.SetCtrlState(ClientID, new { rows = _result });
 			if (EnableListSettings)
 			{
-				response.SetCtrlProps(ClientID, new { listSettingsPopupID = GetClientID("popup_listsettings") });
+				response.SetCtrlProps(ClientID, new { 
+					listSettingsPopupID = GetClientID("popup_listsettings"),
+					listSettingsBtnID = GetClientID("listsettings")
+				});
 				//response.AddClientAction("listview", "initListSettings", ClientID);
 			}
 			AfterRender(response);
