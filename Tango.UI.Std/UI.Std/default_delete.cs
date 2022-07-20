@@ -112,7 +112,7 @@ namespace Tango.UI.Std
 				}
 				if (sel.Count == 1)
 					EntityAudit.AddChanges(list[0]);
-				else
+				else if (sel.Count > 1)
 				{
 					var ocp = ObjectChange.BulkDelete<T>();
 					EntityAudit.AddChanges(ocp, secondaryObjects: list);
