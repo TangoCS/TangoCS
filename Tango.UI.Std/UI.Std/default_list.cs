@@ -226,6 +226,12 @@ namespace Tango.UI.Std
 			}
 		}
 
+	 	protected void Refresh(ApiResponse response)
+		{
+			Render(response);
+			AfterRender(response);
+		}
+
 		public void RenderToolbar(ApiResponse response)
 		{
 			if (Sections.RenderToolbar)
