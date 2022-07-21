@@ -381,7 +381,7 @@ form .buttonsbar {
 	font-size: smaller;
 }
 
-.filterbtn.hascriteria {
+.filterbtn.hascriteria, .listsettings-enabled {
 	font-weight: bold;
 	color: #F36F38;
 }

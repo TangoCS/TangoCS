@@ -137,7 +137,8 @@
 }(ajaxUtils, commonUtils);
 
 var listview = function (au, cu, cbcell, menu) {
-	var instance = {
+	const w = new Tango.HtmlWriter();
+	const instance = {
 		togglerow: function (el) {
 			const tr = cu.getRow(el);
 			const level = parseInt(tr.getAttribute('data-level')) || 0;
@@ -480,9 +481,11 @@ var listview = function (au, cu, cbcell, menu) {
 			const ctrl = au.state.ctrl[root.id];
 			if (ctrl.props.listSettingsPopupID) {
 				const popup = document.getElementById(ctrl.props.listSettingsPopupID);
+				const btn = document.getElementById(ctrl.props.listSettingsBtnID);
 				const cbHideColumns = popup.querySelectorAll('input[type="checkbox"]');
 				const map = initMapHead(root);
 				const fh = root.classList.contains('fixedheader');
+				btn.setAttribute('data-colcnt', cbHideColumns.length);
 
 				for (var i = 0; i < cbHideColumns.length; i++) {
 					cbHideColumns[i].checked = true;
@@ -490,6 +493,23 @@ var listview = function (au, cu, cbcell, menu) {
 						const cb = e.currentTarget;
 						const colIdx = parseInt(cb.getAttribute('data-colidx')) + 1;
 						const data = map.get(colIdx);
+						var colcnt = parseInt(btn.getAttribute('data-colcnt'));
+
+						if (cb.checked)
+							colcnt++;
+						else
+							colcnt--;
+
+						btn.setAttribute('data-colcnt', colcnt);
+
+						if (colcnt < cbHideColumns.length) {
+							btn.classList.add('listsettings-enabled');
+							w.ChangeIcon(btn.firstChild, 'listsettings-mono');
+						}
+						else {
+							btn.classList.remove('listsettings-enabled');
+							w.ChangeIcon(btn.firstChild, 'listsettings');
+						}
 
 						if (fh)
 							root.classList.remove('fixedheader');
@@ -827,7 +847,7 @@ var listview = function (au, cu, cbcell, menu) {
 	}
 
 	function addDelIcon(el) {
-		var del = new Tango.HtmlWriter().Icon('delete');
+		var del = w.Icon('delete');
 		el.appendChild(del);
 		del.addEventListener('click', instance.onRemoveIconClick);
 	}

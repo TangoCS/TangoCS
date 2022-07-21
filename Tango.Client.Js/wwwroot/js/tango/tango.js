@@ -1839,6 +1839,10 @@ const Tango = {
 
 			return el;
 		}
+
+		ChangeIcon(el, name) {
+			el.firstChild.firstChild.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '/data/icons/svg#icon-' + name);
+		}
 	},
 
 	registerComponent: function (cls, fabric) {
