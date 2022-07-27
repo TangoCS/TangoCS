@@ -425,9 +425,9 @@ var listview = function (au, cu, cbcell, menu) {
 		initFixedHeader: function (root) {
 			if (typeof root === 'string' || root instanceof String)
 				root = document.getElementById(root);
-			const fixedHeaders = root instanceof HTMLTableElement && root.classList.contains('fixedheader') ?
+			const table = root instanceof HTMLTableElement && root.classList.contains('fixedheader') ?
 				root : root.querySelector('.listviewtable.fixedheader');
-			if (fixedHeaders) initFixedHeader(fixedHeaders);
+			if (table) initFixedHeader(table);
 		},
 		onRemoveIconClick: function (e) {
 			var seltr = cu.getRow(e.currentTarget);
@@ -526,7 +526,7 @@ var listview = function (au, cu, cbcell, menu) {
 							setTimeout(function () {
 								if (!root.classList.contains('fixedheader'))
 									root.classList.add('fixedheader');
-							}, 500);
+							}, 400);
 						}
 
 						function hideColumns(cells) {
@@ -614,33 +614,28 @@ var listview = function (au, cu, cbcell, menu) {
 		}
 	}
 
-	function initFixedHeader(roots) {
-		if (roots.length === undefined)
-			roots = [roots];
-        for (var j = 0; j < roots.length; j++) {
-			const root = roots[j];
-			const th = root.querySelector('th');
-			if (!th)
-				continue;
-			const tableHeaderTop = th.getBoundingClientRect().top;
-            if (tableHeaderTop === 0)
-                continue;
-            const ths = root.querySelectorAll('th');
-            for (let i = 0; i < ths.length; i++) {
-                const th = ths[i];
-                let padding = window.getComputedStyle(th, null).getPropertyValue('padding-top');
-                let paddingParent = calculatePadding(th);
-                if (paddingParent != null) {
-                    padding = padding.replace("px", "");
-                    paddingParent = paddingParent.replace("px", "");
-                    const currentTop = th.getBoundingClientRect().top - tableHeaderTop;
-                    const offsetTop = (((parseInt(padding) / 2) + parseInt(paddingParent)) * -1) + 2;
-                    th.style.top = offsetTop + currentTop + "px";
-                } else {
-                    th.style.top = th.getBoundingClientRect().top - tableHeaderTop + "px";
-                }
-            }
-        }
+	function initFixedHeader(el) {
+		const th = el.querySelector('th:not(.hide)');
+		if (!th)
+			return;
+		const tableHeaderTop = th.getBoundingClientRect().top;
+		if (tableHeaderTop === 0)
+			return;
+		const ths = el.querySelectorAll('th');
+		for (let i = 0; i < ths.length; i++) {
+			const th = ths[i];
+			let padding = window.getComputedStyle(th, null).getPropertyValue('padding-top');
+			let paddingParent = calculatePadding(th);
+			if (paddingParent != null) {
+				padding = padding.replace("px", "");
+				paddingParent = paddingParent.replace("px", "");
+				const currentTop = th.getBoundingClientRect().top - tableHeaderTop;
+				const offsetTop = (((parseInt(padding) / 2) + parseInt(paddingParent)) * -1) + 2;
+				th.style.top = offsetTop + currentTop + "px";
+			} else {
+				th.style.top = th.getBoundingClientRect().top - tableHeaderTop + "px";
+			}
+		}
     }
 
 	function calculatePadding(node) {
