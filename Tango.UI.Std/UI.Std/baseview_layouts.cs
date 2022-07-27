@@ -226,18 +226,33 @@ namespace Tango.UI.Std
 		where TBottomLeft : IWithChangeEvent, new()
 		where TBottomRigth : IWithChangeEvent, IWithChangeEventHandler, new()
 	{
-		protected TTop top;
-		protected TBottomLeft bottomLeft;
-		protected TBottomRigth bottomRigth;
+		private TTop _top;
+		private TBottomLeft _bottomLeft;
+		private TBottomRigth _bottomRigth;
+
+		protected TTop top {
+			get { return (TTop)this._top; }
+			set { this._top = value; }
+		}
+
+		protected TBottomLeft bottomLeft {
+			get { return (TBottomLeft)this._bottomLeft; }
+			set { this._bottomLeft = value; }
+		}
+
+		protected TBottomRigth bottomRigth {
+			get { return (TBottomRigth)this._bottomRigth; }
+			set { this._bottomRigth = value; }
+		}
 
 		protected virtual Grid BottomLeftGrid => Grid.OneHalf;
 		protected virtual Grid BottomRightGrid => Grid.OneHalf;
 
 		public override void OnInit()
 		{
-			top = CreateControl<TTop>("top", SetPropertiesTop);
-			bottomLeft = CreateControl<TBottomLeft>("bottomLeft", SetPropertiesBottomLeft);
-			bottomRigth = CreateControl<TBottomRigth>("bottomRigth", SetPropertiesBottomRigth);
+			_top = CreateControl<TTop>("top", SetPropertiesTop);
+			_bottomLeft = CreateControl<TBottomLeft>("bottomLeft", SetPropertiesBottomLeft);
+			_bottomRigth = CreateControl<TBottomRigth>("bottomRigth", SetPropertiesBottomRigth);
 
 			//top.Changed += bottomLeft.OnChange;
 			//bottomLeft.OnChange += bottomRigth.OnChange;
@@ -256,37 +271,32 @@ namespace Tango.UI.Std
 					w.Div(a => a.ID("container"));
 					w.PopPrefix();
 				});
-				w.Block(() => {
-					w.PushPrefix(bottomLeft.ID);
-					w.Div(a => a.ID("container").GridColumn(BottomLeftGrid));
-					w.PopPrefix();
+                w.Block(() => {
+                    w.PushPrefix(bottomLeft.ID);
+                    w.Div(a => a.ID("container").GridColumn(BottomLeftGrid));
+                    w.PopPrefix();
 
-					w.PushPrefix(bottomRigth.ID);
-					w.Div(a => a.ID("container").GridColumn(BottomRightGrid));
-					w.PopPrefix();
-				});
-			});
+                    w.PushPrefix(bottomRigth.ID);
+                    w.Div(a => a.ID("container").GridColumn(BottomRightGrid));
+                    w.PopPrefix();
+                });
+            });
 
 			if (FormTitle != null)
 				response.AddWidget("contenttitle", FormTitle);
 
-			response.WithNamesAndWritersFor(top);
-			var c1 = top.GetContainer();
-			c1.ToRemove.Add("contentheader");
-			c1.Render(response);
-			top.OnLoad(response);
+			void prepare<T>(T c) where T: IWithChangeEvent
+			{
+				response.WithNamesAndWritersFor(c);
+				var c1 = c.GetContainer();
+				c1.ToRemove.Add("contentheader");
+				c1.Render(response);
+				c.OnLoad(response);
+			}
 
-			response.WithNamesAndWritersFor(bottomLeft);
-			var c2 = bottomLeft.GetContainer();
-			c2.ToRemove.Add("contentheader");
-			c2.Render(response);
-			bottomLeft.OnLoad(response);
-
-			response.WithNamesAndWritersFor(bottomRigth);
-			var c3 = bottomRigth.GetContainer();
-			c3.ToRemove.Add("contentheader");
-			c3.Render(response);
-			bottomRigth.OnLoad(response);
+			prepare(top);
+			prepare(bottomLeft);
+			prepare(bottomRigth);
 		}
 
         protected virtual string FormTitle => null;
