@@ -349,6 +349,11 @@
 		_dialog.addEventListener('mousedown', _onMouseDown, false);
 		document.addEventListener('mousemove', _onMouseMove, false);
 		document.addEventListener('mouseup', _onMouseUp, false);
+		window.setTimeout(function () {
+			if (_dialog.getBoundingClientRect().height < _dialog.getElementsByTagName("form")[0].getBoundingClientRect().height)
+				_dialog.style.height = document.documentElement["clientHeight"] + 'px';
+		}, 0);		
+
 	}
 
 	return instance;
