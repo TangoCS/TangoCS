@@ -1,6 +1,6 @@
 ﻿var dialog = function (au) {
 	var instance = {
-		open: function (el) {
+		open: function (el, onSubmit) {
 			if (!el.nodeType) el = document.getElementById(el);
 			el.classList.add('md-show');
 			el.style.zIndex = 101;
@@ -8,6 +8,16 @@
 			const header = el.getElementsByClassName("modal-header")[0];
 			dragElement(el, header);
 			_initResize(el);
+
+			if (onSubmit) {
+				const btn = el.querySelector('.modal-footer button[type="submit"]');
+				if (btn) {
+					btn.onclick = e => {
+						onSubmit(e);
+						instance.close(el);
+					};
+				}
+			}
 		},
 		close: function (el) {
 			if (!el.nodeType) el = document.getElementById(el);
