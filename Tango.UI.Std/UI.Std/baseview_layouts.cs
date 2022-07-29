@@ -248,6 +248,8 @@ namespace Tango.UI.Std
 		protected virtual Grid BottomLeftGrid => Grid.OneHalf;
 		protected virtual Grid BottomRightGrid => Grid.OneHalf;
 
+		protected virtual Action<TagAttributes> BottomBlockAttributes => null;
+
 		public override void OnInit()
 		{
 			_top = CreateControl<TTop>("top", SetPropertiesTop);
@@ -271,16 +273,17 @@ namespace Tango.UI.Std
 					w.Div(a => a.ID("container"));
 					w.PopPrefix();
 				});
-                w.Block(() => {
-                    w.PushPrefix(bottomLeft.ID);
-                    w.Div(a => a.ID("container").GridColumn(BottomLeftGrid));
-                    w.PopPrefix();
 
-                    w.PushPrefix(bottomRigth.ID);
-                    w.Div(a => a.ID("container").GridColumn(BottomRightGrid));
-                    w.PopPrefix();
-                });
-            });
+				w.Block(attrs => attrs.Set(BottomBlockAttributes), () => {
+					w.PushPrefix(bottomLeft.ID);
+					w.Div(a => a.ID("container").GridColumn(BottomLeftGrid));
+					w.PopPrefix();
+
+					w.PushPrefix(bottomRigth.ID);
+					w.Div(a => a.ID("container").GridColumn(BottomRightGrid));
+					w.PopPrefix();
+				});
+			});
 
 			if (FormTitle != null)
 				response.AddWidget("contenttitle", FormTitle);

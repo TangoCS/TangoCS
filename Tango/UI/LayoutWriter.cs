@@ -346,8 +346,12 @@ namespace Tango.UI
 		{
 			w.Div(a => a.Class("grid60").GridColumn(grid), content);
 		}
+        public static void Block(this LayoutWriter w, Action<TagAttributes> attrs, Action content)
+        {
+            w.Div(a => a.Class("grid60").Set(attrs), content);
+        }
 
-		public static void BlockCollapsible(this LayoutWriter w, string title, Action content, FieldsBlockCollapsibleOptions options = null)
+        public static void BlockCollapsible(this LayoutWriter w, string title, Action content, FieldsBlockCollapsibleOptions options = null)
 		{
 			w.BlockCollapsible(() => w.Write(title), content, options);
 		}
