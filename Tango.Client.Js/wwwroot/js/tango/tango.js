@@ -436,7 +436,7 @@ var ajaxUtils = function ($, cu) {
 			parms: {},
 			onBack: null,
 			clientArgs: {},
-			onBackArgs: {}
+			onBackArgs: []
 		},
 		ctrl: {}
 	};
@@ -1060,10 +1060,12 @@ var ajaxUtils = function ($, cu) {
 			}
 
 			if (t == 'dialogform') {
+				var backArgs = {};
 				for (var key in target.data) {
 					if (!key.startsWith('c-'))
-						state.loc.onBackArgs[key] = target.data[key];
+						backArgs[key] = target.data[key];
 				}
+				state.loc.onBackArgs.push(backArgs);
 			}
 		}
 
@@ -1091,10 +1093,11 @@ var ajaxUtils = function ($, cu) {
 			target.containerPrefix = firstContainer.getAttribute('data-c-prefix');
 			target.containerType = firstContainer.getAttribute('data-c-type');
 			if (modalContainer) {
-				if (isDataRes) {
-					for (var key in state.loc.onBackArgs) {
+				if (isDataRes && state.loc.onBackArgs.length > 0) {
+					const backArgs = state.loc.onBackArgs[state.loc.onBackArgs.length - 1];
+					for (var key in backArgs) {
 						if (target.data[key] == null) {
-							target.data[key] = state.loc.onBackArgs[key];
+							target.data[key] = backArgs[key];
 						}
 					}
 				}
@@ -1104,7 +1107,7 @@ var ajaxUtils = function ($, cu) {
 		}
 
 		if (isDataRes) {
-			state.loc.onBackArgs = {};
+			state.loc.onBackArgs.pop();
 		}
 	}
 
