@@ -360,7 +360,7 @@
 		document.addEventListener('mousemove', _onMouseMove, false);
 		document.addEventListener('mouseup', _onMouseUp, false);
 		window.setTimeout(function () {
-			if (_dialog.getBoundingClientRect().height < _dialog.getElementsByTagName("form")[0].getBoundingClientRect().height)
+			if (_dialog.getBoundingClientRect().height < _dialog.children[0].getBoundingClientRect().height)
 				_dialog.style.height = document.documentElement["clientHeight"] + 'px';
 		}, 0);		
 
