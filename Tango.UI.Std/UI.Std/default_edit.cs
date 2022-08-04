@@ -294,6 +294,8 @@ namespace Tango.UI.Std
 						.GetProperty(arg.Value.Substring(1), BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
 						.GetValue(ViewData)
 						.ToString();
+					string retUrl = Context.GetArg("returnurl");
+					Url.ParseQuery(retUrl.Substring(retUrl.IndexOf("?") + 1)).ForEach(kv => Context.ReturnTarget[1].Args.AddIfNotExists(kv.Key, kv.Value[0]));
 				}
 			}
 			base.AfterSubmit(response);
