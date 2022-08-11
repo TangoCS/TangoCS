@@ -373,8 +373,11 @@ td.showDragHandle {
 	padding:10px;
 }
 
-.modal-dialog form {
+.modal-dialog > *:first-child {
 	height: 100%;
+}
+
+.modal-dialog form {
 	display: flex;
 	flex-direction: column;
 }
