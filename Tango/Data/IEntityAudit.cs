@@ -145,6 +145,6 @@ namespace Tango.Data
 	public interface IObjectTracker
 	{
 		void StartTracking(object entity);
-		List<PropertyChange> GetChanges(object entity);
+		List<PropertyChange> GetChanges(object entity, bool includeEquals = false);
 	}
 }

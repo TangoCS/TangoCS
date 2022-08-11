@@ -23,7 +23,7 @@ namespace Tango.UI.Std.EntityAudit
 			return t.GetProperties().Where(o => o.GetCustomAttribute<ColumnAttribute>() != null && !o.GetCustomAttributes(typeof(ComputedAttribute), false).Any());
 		}
 
-		public List<PropertyChange> GetChanges(object entity)// where T : IEntity, IWithKey<T, TKey>, IWithTitle
+		public List<PropertyChange> GetChanges(object entity, bool includeEquals = false)// where T : IEntity, IWithKey<T, TKey>, IWithTitle
 		{
 			var pc = new List<PropertyChange>();
 			if (objects.ContainsKey(entity))
@@ -42,7 +42,7 @@ namespace Tango.UI.Std.EntityAudit
 						oldValue = objects[entity][prop] != null ? ((decimal)objects[entity][prop]).ToString("0.############") : null;
 						newValue = prop.GetValue(entity) != null ? ((decimal)prop.GetValue(entity)).ToString("0.############") : null;
 					}
-					if (oldValue != null && !oldValue.Equals(newValue))
+					if (includeEquals || (oldValue != null && !oldValue.Equals(newValue)))
 						pc.Add(new PropertyChange { PropertyName = prop.Name, OldValue = oldValue, NewValue = newValue });
 				}
 			}
