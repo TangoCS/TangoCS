@@ -550,7 +550,7 @@ namespace Tango.UI.Std
 
 		protected override void FieldsInit(FieldCollection<TResult> fields) { }
 
-		public void OnExpandRow(ApiResponse response)
+		public virtual void OnExpandRow(ApiResponse response)
 		{
 			OnExpandRow(response, Context.Sender);
 		}
