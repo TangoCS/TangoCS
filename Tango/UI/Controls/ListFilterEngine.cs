@@ -271,7 +271,7 @@ namespace Tango.UI.Controls
 			}
 			else if (item.FieldType == FieldType.Decimal)
 			{
-				if (!decimal.TryParse(item.Value, NumberStyles.None, CultureInfo.GetCultureInfo("ru-ru"), out decimal d))
+				if (!decimal.TryParse(item.Value, NumberStyles.None | NumberStyles.Any, CultureInfo.GetCultureInfo("ru-ru"), out decimal d))
 					d = 0;
 				val = d;
 			}

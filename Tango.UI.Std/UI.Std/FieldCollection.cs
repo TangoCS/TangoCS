@@ -70,6 +70,30 @@ namespace Tango.UI.Std
 		public Action<TagAttributes> Attributes { get; set; }
 	}
 
+	public class RowSelectionOptionsDefaultFactory<TResult>
+    {
+		private IFieldCollection<TResult> _fields;
+		public RowSelectionOptionsDefaultFactory(IFieldCollection<TResult> fields)
+        {
+			_fields = fields;
+		}
+
+		public RowSelectionOptions GetInstance()
+		{
+			return new RowSelectionOptions
+            {
+				Enabled = true,
+				Settings = new CheckBoxCellSettings
+				{
+					HeaderRowNo = 1,
+					HeadColSeqNo = _fields.HeaderRows[1].Count,
+					BodyColSeqNo = _fields.Cells.Count,
+					RowSpan = 1
+				}
+			};
+		}
+	}
+
 	public static class FieldCollectionOptions
 	{
 		public static bool DefaultFixedHeader { get; set; } = false;
