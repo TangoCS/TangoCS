@@ -20,6 +20,7 @@ namespace Tango.UI.Std.ListMassOperations
 				w => {
 					w.IconThreeStateCheckBox();
 					w.Hidden("selectedvalues", null, a => a.DataHasClientState(ClientStateType.Array));
+					if (!String.IsNullOrEmpty(settings.Title)) w.Write($" {settings.Title}");
 				}
 			));
 

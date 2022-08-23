@@ -61,12 +61,13 @@ namespace Tango.UI.Std
 		public static implicit operator bool(RowSelectionOptions opt) => opt?.Enabled ?? false;
 	}
 
-	public class CheckBoxCellSettings
+	public class CheckBoxCellSettings: IWithTitle
 	{
 		public int HeaderRowNo { get; set; } = 0;
 		public int HeadColSeqNo { get; set; }
 		public int BodyColSeqNo { get; set; }
 		public int RowSpan { get; set; } = 0;
+		public string Title { get; set; } = String.Empty;
 		public Action<TagAttributes> Attributes { get; set; }
 	}
 
