@@ -41,6 +41,8 @@ namespace Tango.UI.Controls
 		ISelectObjectFieldDataProvider<TRef> DataProvider { get; set; }
 
 		void OnClear(ApiResponse response);
+
+		List<KeyValuePair<string, object>> SubmitDataParms { get; set; }
 	}
 
 	public interface ISelectSingleObjectField<TRef, TRefKey, TValue> : ISelectObjectField<TRef>
@@ -125,6 +127,7 @@ namespace Tango.UI.Controls
 		}
 
 		public bool DoCallbackToCurrent { get; set; } = false;
+		public List<KeyValuePair<string, object>> SubmitDataParms { get; set; } = new List<KeyValuePair<string, object>>();
 	}
 
 	public abstract class AbstractSelectMultipleObjectsField<TRef, TRefKey> : AbstractSelectObjectField<TRef, TRefKey, IEnumerable<TRef>>

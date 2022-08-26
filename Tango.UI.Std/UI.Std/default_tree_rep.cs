@@ -19,6 +19,7 @@ namespace Tango.UI.Std
 	{
 		readonly List<TreeLevelDescription<TResult>> _templateCollection = new List<TreeLevelDescription<TResult>>();
 		Dictionary<int, TreeLevelDescription<TResult>> _templatesDict = new Dictionary<int, TreeLevelDescription<TResult>>();
+		protected TreeLevelDescription<TResult> GetTemplateByID(int id) => _templatesDict[id];
 
 		int _count = 0;
 
@@ -553,6 +554,11 @@ namespace Tango.UI.Std
 		public virtual void OnExpandRow(ApiResponse response)
 		{
 			OnExpandRow(response, Context.Sender);
+		}
+
+		protected void ExpandRow(ApiResponse response, string rowID)
+		{
+			OnExpandRow(response, $"#{rowID}");
 		}
 
 		void OnExpandRow(ApiResponse response, string sender, State state = null)
