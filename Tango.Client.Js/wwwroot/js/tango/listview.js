@@ -150,7 +150,12 @@ var listview = function (au, cu, cbcell, menu) {
 
 			if (state == 'collapsed') {
 				el.setAttribute('data-state', 'expanded');
-				if (isButton) el.firstChild.className = 'icon icon-expanded';
+				if (isButton) {
+					var icon = el.querySelector('.icon.icon-collapsed')
+					if (icon) {
+						icon.className = 'icon icon-expanded';
+					}
+				}
 
 				var load = true;
 
@@ -184,7 +189,12 @@ var listview = function (au, cu, cbcell, menu) {
 				    expandedrows.value += expandedValue;
 			} else {
 				el.setAttribute('data-state', 'collapsed');
-				if (isButton) el.firstChild.className = 'icon icon-collapsed';
+				if (isButton) {
+					var icon = el.querySelector('.icon.icon-expanded')
+					if (icon) {
+						icon.className = 'icon icon-collapsed';
+					}
+				}
 
 				var row = tr.nextElementSibling;
 				while (row && parseInt(row.getAttribute('data-level')) > level) {
