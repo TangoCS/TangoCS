@@ -5,5 +5,6 @@ common.validation.MinLength;Количество символов в поле {0
 common.validation.MaxLength;Количество символов в поле {0} не должно быть больше {1}
 common.validation.MSSQLDateInterval;Введена дата вне пределов разрешенного диапазона
 common.validation.GreaterOrEqualThan;Значение поля {0} должно быть больше, либо равно {1}
-
+common.validation.GreaterThan;Значение поля {0} должно быть больше {1}
+common.validation.LessOrEqualThan;Значение поля {0} должно быть меньше, либо равно {1}
 
