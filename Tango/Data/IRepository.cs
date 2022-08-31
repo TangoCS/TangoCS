@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace Tango.Data
@@ -95,6 +96,11 @@ namespace Tango.Data
 				return repository;
 
 			return default;
+		}
+
+		public static IEnumerable<T> List<T>(this IRepository<T> rep, Expression<Func<T,bool>> predicate)
+		{
+			return rep.List(Enumerable.Empty<T>().AsQueryable().Where(predicate).Expression);
 		}
 	}
 }
