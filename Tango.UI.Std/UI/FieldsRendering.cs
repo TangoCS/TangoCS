@@ -177,7 +177,7 @@ namespace Tango.UI
 			w.DropDownList(field.ID, value, items, attrs);
 		}
 
-		public static void DropDownList<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, GridPosition grid = null, Action<SelectTagAttributes> attrs = null, string hint = null)
+		public static void DropDownList<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, GridPosition grid = null, Action<SelectTagAttributes> attrs = null, string hint = null, bool selectedOptionHints = false)
 		{
 			var value = typeof(TValue).IsEnum ?
 				field.Value == null ? "" : Convert.ChangeType(field.Value, Enum.GetUnderlyingType(typeof(TValue))).ToString() : 
@@ -191,7 +191,8 @@ namespace Tango.UI
 
 			if (field.ReadOnly)
 				w.AddClientAction("domActions", "setAttribute", f => new { id = f(field.ID), attrName = "readonly", attrValue = "readonly" });
-
+			if (selectedOptionHints)
+				w.AddClientAction("commonUtils", "selectedOptionHints", f => new { id = f(field.ID) });
 			w.FormField(field, () => w.DropDownList(field.ID, value, items, attrs), grid);
 		}
 
