@@ -130,7 +130,7 @@ namespace Tango.UI.Controls
 		public void ItemListSettings(List<List<IColumnHeader>> headerRows)
 		{
 			Item(w => {
-				w.DropDownImage("listsettings", "listsettings", () => {
+				w.DropDownImageButton("listsettings", "listsettings", () => {
 					var i = 0;
                     for (int j = 0; j < headerRows.Count - (headerRows.Count - 1); j++)
 						foreach (var header in headerRows[j])
