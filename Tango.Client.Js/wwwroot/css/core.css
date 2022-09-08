@@ -29,7 +29,8 @@ a:hover {
 
 a, .actionbtn, .icon-collapsed, .icon-expanded,
 .icon-checkbox-unchecked:not(.bool), .icon-checkbox-checked:not(.bool),
-.icon-minus-box, .icon-delete {
+.icon-minus-box, .icon-delete,
+input[type=checkbox]:enabled {
 	cursor: pointer;
 }
 
