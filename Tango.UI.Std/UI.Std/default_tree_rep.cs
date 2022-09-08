@@ -233,6 +233,7 @@ namespace Tango.UI.Std
 				states.Reverse();
 
 				var s = CurrentState;
+				s.Children.Clear();
 				for (int i = 0; i < states.Count; i++)
 				{
 					if (!s.Children.ContainsKey(senders[i]))
