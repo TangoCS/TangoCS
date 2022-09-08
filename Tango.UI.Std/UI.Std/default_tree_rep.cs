@@ -538,7 +538,7 @@ namespace Tango.UI.Std
 			};
 
 			f.AddCell("Наименование", (w, o, i) => {
-				ListTreeExtensions.TreeCellContent(w, o, i, CurrentState.Level, !nodeTemplate.IsTerminal, content);
+				ListTreeExtensions.TreeCellContent(w, o, i, CurrentState.Level, !nodeTemplate.IsTerminal && nodeTemplate.HasChildren(o), content);
 			});
 
 			FieldsInit(f);
@@ -699,6 +699,7 @@ namespace Tango.UI.Std
 		public Func<IQueryable<TResult>, IQueryable<TResult>> OrderBy { get; set; } = data => data;
 		public RenderRowCellDelegate<TResult> Cell { get; set; }
 		public bool IsTerminal { get; set; } = false;
+		public Func<TResult, bool> HasChildren { get; set; } = o => true;
 		//public string Icon { get; set; }
 		public Func<TResult, IconInfoCollection> Icon { get; set; }
 		public Func<TResult, string> IconFlag { get; set; }
