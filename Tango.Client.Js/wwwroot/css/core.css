@@ -38,6 +38,12 @@ input[type=checkbox]:enabled {
 	font-weight: inherit;
 }
 
+.icon-checkbox-unchecked:hover svg,
+.icon-checkbox-checked:hover svg,
+.icon-minus-box:hover svg {
+	filter: drop-shadow( 0px 0px 2px #3C90F2);
+}
+
 
 table {
 	border: none;
