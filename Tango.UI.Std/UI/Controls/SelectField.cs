@@ -317,6 +317,22 @@ namespace Tango.UI.Controls
 			w.FormField(field, () => dialog.Strategy.Render(w, v), grid);
 		}
 
+		public static void SelectSingleObject2<TEntity, TRefClass, TRefKey>(
+			this LayoutWriter w,
+			EntityField<TEntity, TRefKey> field,
+			SelectSingleObjectField<TRefClass, TRefKey> dialog)
+			where TEntity : class
+			where TRefClass : class, IWithTitle, IWithKey<TRefClass, TRefKey>, new()
+		{
+			var v = field.ValueSource == ValueSource.Model ?
+				dialog.GetObjectByID(field.Value) :
+				dialog.GetObjectByID(dialog.Context.GetArg<TRefKey>(dialog.ID));
+
+			dialog.Disabled = field.Disabled;
+			dialog.ReadOnly = field.ReadOnly;
+			dialog.Strategy.Render(w, v);
+		}
+
 		public static void SelectMultipleObjects<TEntity, TRefClass, TRefKey>(
 			this LayoutWriter w,
 			EntityReferenceManyField<TEntity, TRefClass, TRefKey> field,
