@@ -403,7 +403,7 @@ var domActions = function () {
 			instance.toggleClass({ id: id, clsName: 'hide' });
 		},
 		setCookie: function (args) {
-			$.cookie(args.id, args.value, { path: '/' });
+			Cookies.set(args.id, args.value, { path: '/' });
 		},
 		setClientArg: function (args) {
 			ajaxUtils.state.loc.clientArgs[args.id] = args.value;

@@ -5,9 +5,15 @@
 * @license: Licensed under the MIT license. See http://www.opensource.org/licenses/mit-license.php
 * @website: http://www.daterangepicker.com/
 */
-(function (root, factory) {
-    root.daterangepicker = factory(root.moment, root.jQuery);
-}(this, function (moment, $) {
+(function (factory) {
+    if (typeof define === "function" && define.amd) {
+        define(["moment", "jquery"], factory);
+    } else if (typeof exports === "object") {
+        module.exports = factory(require("moment"), require("jquery"));
+    } else {
+        factory(moment, jQuery);
+    }
+}(function (moment, $) {
     var DateRangePicker = function (element, options, cb) {
 
         //default settings for options
