@@ -1,4 +1,4 @@
-﻿var dialog = function (au) {
+﻿window.dialog = function (au) {
 	var instance = {
 		open: function (el, onSubmit) {
 			if (!el.nodeType) el = document.getElementById(el);
@@ -363,7 +363,6 @@
 			if (_dialog.getBoundingClientRect().height < _dialog.children[0].getBoundingClientRect().height)
 				_dialog.style.height = document.documentElement["clientHeight"] + 'px';
 		}, 0);		
-
 	}
 
 	return instance;

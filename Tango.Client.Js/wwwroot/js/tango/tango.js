@@ -1,4 +1,4 @@
-﻿var commonUtils = function ($) {
+﻿window.commonUtils = function () {
 	var instance = {
 		getParams: function (query, raw) {
 			var p = {};
@@ -250,7 +250,7 @@
 	}
 
 	return instance;
-}($);
+}();
 
 if (!String.prototype.endsWith) {
 	String.prototype.endsWith = function (searchString, position) {
@@ -287,7 +287,7 @@ if (!Element.prototype.closest) {
 	};
 }
 
-var domActions = function () {
+window.domActions = function () {
 	var instance = {
 		setValue: function (args) {
 			var e = document.getElementById(args.id);
@@ -424,7 +424,7 @@ var domActions = function () {
 	return instance;
 }();
 
-var ajaxUtils = function ($, cu) {
+window.ajaxUtils = function ($, cu) {
 	const DEF_EVENT_NAME = 'onload';
 	const META_HOME = '_home';
 	const META_CURRENT = '_current';
@@ -1690,7 +1690,7 @@ var ajaxUtils = function ($, cu) {
 	return instance;
 }($, commonUtils);
 
-var ObservableArray = (function () {
+const ObservableArray = (function () {
 	function ObservableArray(collection) {
 		// calling with `new` is optional
 		if (!(this instanceof ObservableArray)) {
@@ -1778,7 +1778,7 @@ var ObservableArray = (function () {
 	return ObservableArray;
 })();
 
-const Tango = {
+window.Tango = {
 	Component: class {
 		root;
 		type;

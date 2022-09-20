@@ -66,7 +66,7 @@ namespace Tango.UI.Std
 
 			w.Script(GlobalSettings.JSPath + "jquery/jquery-1.11.0.min.js");
 			w.Script(GlobalSettings.JSPath + "jquery/jquery.serialize-object.min.js");
-			w.Script(GlobalSettings.JSPath + "jquery/jquery.cookie.js");
+			w.Script(GlobalSettings.JSPath + "js.cookie.min.js");
 			w.Script(GlobalSettings.JSPath + "contextmenu/contextmenu.js");
 			w.Script(GlobalSettings.JSPath + "tango/contextmenuproxy.js");
 			w.Script(GlobalSettings.JSPath + "tango/tango.js");

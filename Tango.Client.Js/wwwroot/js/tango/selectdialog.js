@@ -1,4 +1,4 @@
-﻿var selectSingleObjectDialog = function (au, cu) {
+﻿window.selectSingleObjectDialog = function (au, cu) {
 	var instance = {
 		clear: function (id, clear) {
 			document.getElementById(id).value = '';
@@ -45,7 +45,7 @@
 	return instance;
 }(ajaxUtils, commonUtils);
 
-var selectMultipleObjectsDialog = function (au, cu) {
+window.selectMultipleObjectsDialog = function (au, cu) {
 	var instance = {
 		clear: function (id, clear) {
 			document.getElementById(id).value = '';
@@ -130,7 +130,7 @@ var selectMultipleObjectsDialog = function (au, cu) {
 	return instance;
 }(ajaxUtils, commonUtils);
 
-var selectObjectDropDownField = function (au, cu, cbcell) {
+window.selectObjectDropDownField = function (au, cu, cbcell) {
 	var instance = {
 		widgetDidMount: function (state) {
 			const id = state.root;
@@ -343,7 +343,7 @@ var selectObjectDropDownField = function (au, cu, cbcell) {
 	return instance;
 }(ajaxUtils, commonUtils, checkBoxCell);
 
-var selectObjectDropDown = function (au, cu, cbcell, field) {
+window.selectObjectDropDown = function (au, cu, cbcell, field) {
 	var instance = {	
 		widgetWillMount: function (shadow, state) {
 			const root = shadow.getElementById(state.root + '_str');
@@ -406,3 +406,4 @@ var selectObjectDropDown = function (au, cu, cbcell, field) {
 
 	return instance;
 }(ajaxUtils, commonUtils, checkBoxCell, selectObjectDropDownField);
+

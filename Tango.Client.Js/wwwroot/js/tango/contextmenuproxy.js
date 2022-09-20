@@ -1,4 +1,4 @@
-﻿var contextmenuproxy = function (au) {
+﻿window.contextmenuproxy = function (au) {
 	var instance = {
 		init: function (args) {
 			const parms = instance.parms(args);
@@ -69,7 +69,7 @@
 	return instance;
 }(ajaxUtils);
 
-var contextmenuproxy_closeonlink = function () {
+window.contextmenuproxy_closeonlink = function () {
 	var instance = {
 		init: function (args) {
 			var parms = contextmenuproxy.parms(args);

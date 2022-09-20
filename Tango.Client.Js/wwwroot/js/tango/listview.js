@@ -1,4 +1,4 @@
-﻿var checkBoxCell = function (au, cu) {
+﻿window.checkBoxCell = function (au, cu) {
 	var instance = {
 		setselected: function (el, onCheckChangeDelegate) {
 			const row = { el: el, tr: cu.getRow(el) };
@@ -131,12 +131,10 @@
 		}
 	};
 
-
-
 	return instance;
 }(ajaxUtils, commonUtils);
 
-var listview = function (au, cu, cbcell, menu) {
+window.listview = function (au, cu, cbcell, menu) {
 	const w = new Tango.HtmlWriter();
 	const instance = {
 		togglerow: function (el) {
@@ -988,7 +986,7 @@ var listview = function (au, cu, cbcell, menu) {
 	return instance;
 }(ajaxUtils, commonUtils, checkBoxCell, contextmenuproxy);
 
-var sidebar = function () {
+window.sidebar = function () {
 	var instance = {
 		widgetWillMount: function (shadow, state) {
 			var key = function (id) {
@@ -1021,3 +1019,5 @@ var sidebar = function () {
 
 	return instance;
 }();
+
+

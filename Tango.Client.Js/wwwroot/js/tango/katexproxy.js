@@ -1,4 +1,4 @@
-﻿var katexproxy = function () {
+﻿window.katexproxy = function () {
 	var instance = {
 		init: function (elid) {
 			const el = document.getElementById(elid);

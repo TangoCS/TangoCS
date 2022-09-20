@@ -1,4 +1,4 @@
-﻿var localization = function () {
+﻿window.localization = function () {
     var resources = {
         title: {
             systemError: 'System error',

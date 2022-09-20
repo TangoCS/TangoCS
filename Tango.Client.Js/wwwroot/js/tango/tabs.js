@@ -1,4 +1,4 @@
-﻿var tabs = function (au) {
+﻿window.tabs = function (au) {
 	var instance = {
 		onselect: function (el) {
             const isBack = !el.nodeType;

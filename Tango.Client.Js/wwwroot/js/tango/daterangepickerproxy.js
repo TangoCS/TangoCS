@@ -1,4 +1,4 @@
-﻿var daterangepickerproxy = function (au) {
+﻿window.daterangepickerproxy = function (au) {
     const from = '_dperiodfrom';
     const to = '_dperiodto';
     const timehour = 'time_hour';
@@ -25,7 +25,7 @@
 
             var postEvent = function (caller) {
                 au.changeUrl(_args);
-                ajaxUtils.postEventFromElementWithApiResponse(caller);
+                au.postEventFromElementWithApiResponse(caller);
             }
 
             if (doPostback) {

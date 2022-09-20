@@ -1,4 +1,4 @@
-﻿var calendarcontrol = function () {
+﻿window.calendarcontrol = function () {
     var instance = {
         init: function (elid) {
             const el = document.getElementById(elid);

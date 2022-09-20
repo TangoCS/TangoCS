@@ -59,6 +59,7 @@
 	};
 }(jQuery));
 
+
 class BtnSwitch extends Tango.Component {
 	setValue(checked) {
 		const el = document.getElementById(this.root);
