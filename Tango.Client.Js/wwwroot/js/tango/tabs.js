@@ -3,6 +3,10 @@
 		onselect: function (el) {
             const isBack = !el.nodeType;
 			if (isBack) el = document.getElementById(el);
+			var input = document.getElementById(el.htmlFor);
+			if (input && input.disabled) {
+				return;
+			}
 			const tabs = el.parentNode.parentNode.parentNode;
 			const index = [].indexOf.call(el.parentNode.parentNode.children, el.parentNode);
 			const pages = document.getElementById(tabs.id + '_pages').children;

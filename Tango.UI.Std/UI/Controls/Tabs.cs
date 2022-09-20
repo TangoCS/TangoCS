@@ -21,7 +21,7 @@ namespace Tango.UI.Controls
 		TabPage GetCurPage()
 		{
 			var curid = GetArg(ID);
-			return Pages.Where(o => o.ID == curid).FirstOrDefault() ?? Pages.FirstOrDefault();
+			return Pages.Where(page => page.ID == curid && !page.Disabled).FirstOrDefault() ?? Pages.FirstOrDefault();
 		}
 
 		IAccessControl _ac;
@@ -66,6 +66,10 @@ namespace Tango.UI.Controls
 
 				response.WithWritersFor(curpage.Container);
 				curpage.Content(response);
+				if(curpage.ID != GetArg(ID))
+				{
+                    response.ChangeUrl(new List<string> { ID }, new Dictionary<string, object> { { ID, curpage.ID } } );
+                }
 			}
 		}
 
@@ -79,17 +83,28 @@ namespace Tango.UI.Controls
 						var pid = $"{ID}_{p.ID}";
 						w.Li(() => {
 							var curpage = GetCurPage();
-							w.RadioButton(ClientID, pid + "_title", null, curpage.ID == p.ID);
-							w.Label(a => a.ID(pid + "_label").For(pid + "_title")
+							w.RadioButton(ClientID, pid + "_title", null, curpage.ID == p.ID, attr =>
+							{
+                                if (p.Disabled)
+                                {
+                                    attr.Custom("disabled", "disabled");
+                                }
+                            });
+							w.Label(a =>
+							{
+								a.ID(pid + "_label")
+								.For(pid + "_title")
 								.Data("id", p.ID).Data("ajax", p.IsAjax).Data("useurlparm", true).Data("loaded", !p.IsAjax || curpage.ID == p.ID)
 								.Data(p.DataCollection)
 								.Set(p.Attributes)
-								.OnClick("tabs.onselect(this)"), () => w.Write(p.Title));
+								.OnClick("tabs.onselect(this)");								
+							}, 
+							() => w.Write(p.Title));
 						});
 					}
 					if (AfterTabs != null) w.Li(a => a.Class("aftertabs"), () => AfterTabs(w));
 				});
-			});
+			});			
 		}
 
 		public void RenderPages(LayoutWriter w, Action<TagAttributes> pagesContainerAttrs = null)
@@ -110,6 +125,7 @@ namespace Tango.UI.Controls
 	{
 		public string ID { get; set; }
 		public string Title { get; set; }
+		public bool Disabled { get; set; } = false;
 		public Action<ApiResponse> Content { get; set; }
 		public bool IsAjax { get; set; }
 		public ViewContainer Container { get; set; }
