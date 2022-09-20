@@ -193,6 +193,7 @@ namespace Tango
 			return new DateTime(dt.Ticks + offset - delta, dt.Kind);
 		}
 
+
 		// From http://www.daimi.au.dk/~ivan/FastExpproject.pdf
 		// Left to Right Binary Exponentiation
 		public static decimal Pow(this decimal x, uint y)
@@ -296,9 +297,9 @@ namespace Tango
 			return lastDayOfMonth.AddDays(
 				lastDay >= wantedDay ? wantedDay - lastDay : wantedDay - lastDay - 7);
 		}
-		public static bool IsInRange(this DateTime dateToCheck, DateTime startDate, DateTime endDate)
+		public static bool IsInRange(this DateTime dateToCheck, DateTime startDate, DateTime endDate, bool inclusiveEnd = false)
 		{
-			return dateToCheck >= startDate && dateToCheck < endDate;
+			return dateToCheck >= startDate && dateToCheck.CompareTo(endDate) <= (inclusiveEnd ? 0 : -1);
 		}
 		public static bool IsInside(this (DateTime start, DateTime finish) dateToCheck, DateTime startDate, DateTime endDate)
 		{
