@@ -525,8 +525,8 @@ namespace Tango.UI.Std
 					w.Span(a => a.Class("sel"), () => w.IconCheckBox());
 
 				if (nodeTemplate.IconFlag != null)
-					foreach (var ic in nodeTemplate.IconFlag(o).Split(','))
-						w.I(a => a.Class("nodeicon").IconFlag(ic.Trim()));
+					foreach (var ic in nodeTemplate.IconFlag(o))
+						w.I(a => a.Class("nodeicon").Set(ic.attributes).IconFlag(ic.iconName));
 
 				if (nodeTemplate.Icon != null)
 					foreach (var ic in nodeTemplate.Icon(o))
@@ -692,6 +692,26 @@ namespace Tango.UI.Std
 		}
 	}
 
+	public class FlagIconInfo
+	{
+		public int FlagId { get; }
+		public string Title { get; }
+
+		public FlagIconInfo(int flagId, string title)
+		{
+			FlagId = flagId;
+			Title = title;
+		}
+
+		public void Deconstruct(out int flagId, out string title)
+		{
+			flagId = FlagId;
+			title = Title;
+		}
+
+		public static implicit operator FlagIconInfo(int flagId) => new FlagIconInfo(flagId, String.Empty);
+	}
+
 	public class TreeLevelDescription<TResult>
 	{
 		public int ID { get; set; }
@@ -703,7 +723,7 @@ namespace Tango.UI.Std
 		public Func<TResult, bool> HasChildren { get; set; } = o => true;
 		//public string Icon { get; set; }
 		public Func<TResult, IconInfoCollection> Icon { get; set; }
-		public Func<TResult, string> IconFlag { get; set; }
+		public Func<TResult, FlagIconInfoCollection> IconFlag { get; set; }
 		public Func<TResult, List<string>> DataRef { get; set; }
 		public Expression<Func<TResult, object>> Key { get; set; }
 		public bool EnableSelect { get; set; }
@@ -778,6 +798,20 @@ namespace Tango.UI.Std
 			this.iconName = iconName;
 			this.attributes = attributes;
 		}
+	}
+	
+	public class FlagIconInfoCollection : List<IconInfo>
+	{
+		public FlagIconInfoCollection()
+		{
+		}
+
+		public FlagIconInfoCollection(IEnumerable<IconInfo> collection) : base(collection)
+		{
+		}
+
+		public static implicit operator FlagIconInfoCollection(string iconName) => 
+			new FlagIconInfoCollection(iconName.Split(",").Select(i => new IconInfo(i.Trim())));
 	}
 
 	public class IconInfoCollection : List<IconInfo>
