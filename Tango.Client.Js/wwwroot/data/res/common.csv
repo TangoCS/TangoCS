@@ -17,7 +17,7 @@ Common.Buttons.AddDocument;Добавить документ;Add document
 Common.Buttons.CheckAll;выбрать все;check all
 Common.Buttons.Print;Печать...;Print...
 Common.Buttons.UnCheckAll;очистить все;clear all
-Common.OK;ОК;OK
+Common.OK;Да;OK
 Common.Cancel;Отмена;Cancel
 Common.ChangeHistory;История изменений;Change history
 Common.Clear;Очистить;Clear

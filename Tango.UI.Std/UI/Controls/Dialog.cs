@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Tango.Html;
+using Tango.Localization;
 
 namespace Tango.UI.Controls
 {
@@ -271,14 +272,14 @@ namespace Tango.UI.Controls
 			return res.OnClickPostEvent(serverEvent.Method.Name, el.ClientID);
 		}
 
-		public static void ErrorPlaceholder(this HtmlWriter w, bool reloadPageOnError = false)
+		public static void ErrorPlaceholder(this HtmlWriter w, IResourceManager resources, bool reloadPageOnError = false)
 		{
 			w.Div(a => a.ID("container_err").Class("modal-dialog").Role("dialog").DataCtrl("dialog").DataResultHandler().Data("showonrender").Data("reuse", 1), () => {
 				w.Div(a => a.Class("modal-container"), () => {
 					w.H3(a => a.ID("container_err_title"));
 					w.Div(a => a.ID("container_err_body"));
 					w.Div(() => {
-						w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick(reloadPageOnError ? "location.reload()" : "ajaxUtils.processResult(this)"));
+						w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick(reloadPageOnError ? "location.reload()" : "ajaxUtils.processResult(this)"), () => w.Write(resources.Get("Common.OK")));
 					});
 				});
 			});

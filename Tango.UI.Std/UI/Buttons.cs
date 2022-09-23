@@ -5,29 +5,29 @@ namespace Tango.UI
 {
 	public static class ButtonsExtensions
 	{
-		public static void SubmitButton(this HtmlWriter w, Action<ButtonTagAttributes> attributes = null, string text = "OK")
+		public static void SubmitButton(this LayoutWriter w, Action<ButtonTagAttributes> attributes = null, string text = null)
 		{
-			w.SubmitButton(a => a.Class("btn btn-primary").Set(attributes), () => w.Write(text));
+			w.SubmitButton(a => a.Class("btn btn-primary").Set(attributes), () => w.Write(text ?? w.Resources.Get("Common.OK")));
 		}
 
-		public static void SubmitButtonConfirm(this HtmlWriter w, Action<ButtonTagAttributes> attributes, string text, string message)
+		public static void SubmitButtonConfirm(this LayoutWriter w, Action<ButtonTagAttributes> attributes, string text, string message)
 		{
 			w.SubmitButton(a => a.Class("btn btn-primary").Data("confirm", message).Set(attributes), () => w.Write(text));
 		}
 
-		public static void SubmitButtonConfirm(this HtmlWriter w, string text, string message)
+		public static void SubmitButtonConfirm(this LayoutWriter w, string text, string message)
 		{
 			w.SubmitButtonConfirm(null, text, message);
 		}
 
-		public static void Button(this HtmlWriter w, Action<ButtonTagAttributes> attributes = null, string text = "OK")
+		public static void Button(this LayoutWriter w, Action<ButtonTagAttributes> attributes = null, string text = null)
 		{
-			w.Button(a => a.Class("btn").Set(attributes), () => w.Write(text));
+			w.Button(a => a.Class("btn").Set(attributes), () => w.Write(text ?? w.Resources.Get("Common.OK")));
 		}
 
-		public static void ResetButton(this HtmlWriter w, Action<ButtonTagAttributes> attributes = null, string text = "Reset")
+		public static void ResetButton(this LayoutWriter w, Action<ButtonTagAttributes> attributes = null, string text = null)
 		{
-			w.ResetButton(a => a.Class("btn").Set(attributes), () => w.Write(text));
+			w.ResetButton(a => a.Class("btn").Set(attributes), () => w.Write(text ?? w.Resources.Get("Common.Reset")));
 		}
 
 		//public static void SubmitButton(this LayoutWriter w)

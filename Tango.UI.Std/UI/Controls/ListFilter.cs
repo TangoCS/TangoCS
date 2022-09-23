@@ -156,7 +156,7 @@ namespace Tango.UI.Controls
 			response.AddWidget("contentbody", FilterTab);
 			response.AddWidget("buttonsbar", w => {
 				w.ButtonsBarRight(() => {
-					w.Button(a => a.DataResultPostponed(1).OnClickPostEvent(OnSubmit), "OK");
+					w.Button(a => a.DataResultPostponed(1).OnClickPostEvent(OnSubmit), Resources.Get("Common.OK"));
 					w.BackButton();
 				});
 			});
