@@ -2,6 +2,18 @@
 	var instance = {
 		open: function (el, onSubmit) {
 			if (!el.nodeType) el = document.getElementById(el);
+
+			const parms = localStorage.getObject(location.pathname + '/' + el.id);
+			if (parms) {
+				if (parms.width) el.style.width = parms.width;
+				if (parms.height) el.style.height = parms.height;
+				if (parms.top) el.style.top = parms.top;
+				if (parms.left) {
+					el.style.left = parms.left;
+					el.style.right = 'inherit';
+				}
+			}
+
 			el.classList.add('md-show');
 			el.style.zIndex = 101;
 
@@ -98,6 +110,13 @@
 		}
 
 		function closeDragElement() {
+			localStorage.setObject(location.pathname + '/' + el.id, {
+				left: el.style.left,
+				top: el.style.top,
+				width: el.style.width,
+				height: el.style.height
+			});
+
 			// stop moving when mouse button is released:
 			document.onmouseup = null;
 			document.onmousemove = null;
@@ -350,6 +369,12 @@
 			_setCursor('');
 			_isResize = false;
 			_resizeMode = '';
+			localStorage.setObject(location.pathname + '/' + _dialog.id, {
+				left: _dialog.style.left,
+				top: _dialog.style.top,
+				width: _dialog.style.width,
+				height: _dialog.style.height
+			});
 		}
 		return _returnEvent(evt);
 	}

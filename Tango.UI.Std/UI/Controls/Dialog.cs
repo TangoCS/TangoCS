@@ -278,8 +278,8 @@ namespace Tango.UI.Controls
 				w.Div(a => a.Class("modal-container"), () => {
 					w.H3(a => a.ID("container_err_title"));
 					w.Div(a => a.ID("container_err_body"));
-					w.Div(() => {
-						w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick(reloadPageOnError ? "location.reload()" : "ajaxUtils.processResult(this)"), () => w.Write(resources.Get("Common.OK")));
+					w.Div(a => a.Style("text-align:center"), () => {
+						w.Button(a => a.Class("btn").Aria("label", "Close").DataResult(0).OnClick(reloadPageOnError ? "location.reload()" : "ajaxUtils.processResult(this)"), () => w.Write(resources.Get("Common.OK")));
 					});
 				});
 			});

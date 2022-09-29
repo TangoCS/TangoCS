@@ -270,6 +270,7 @@ if (!String.prototype.startsWith) {
 	}
 }
 
+HTMLCollection.prototype.forEach = Array.prototype.forEach;
 NodeList.prototype.forEach = Array.prototype.forEach;
 
 if (!Element.prototype.matches) {
@@ -285,6 +286,15 @@ if (!Element.prototype.closest) {
 		} while (el !== null && el.nodeType === 1);
 		return null;
 	};
+}
+
+Storage.prototype.setObject = function (key, value) {
+	this.setItem(key, JSON.stringify(value));
+}
+
+Storage.prototype.getObject = function (key) {
+	var value = this.getItem(key);
+	return value && JSON.parse(value);
 }
 
 window.domActions = function () {
