@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+using System.Linq;
 
 namespace Tango.Html
 {
@@ -61,7 +60,17 @@ namespace Tango.Html
 
 		public static void IconCheckBox(this HtmlWriter w, Action<TagAttributes> attrs = null)
 		{
-			w.Icon("checkbox-unchecked", attrs, () => w.SvgIcon("checkbox-checked"));
+			w.IconCheckBox(false, attrs);
+		}
+		
+		public static void IconCheckBox(this HtmlWriter w, bool value, Action<TagAttributes> attrs = null)
+		{
+			var state = new [] {"checkbox-unchecked", "checkbox-checked"};
+			if (value)
+			{
+				state = state.Reverse().ToArray();
+			}
+			w.Icon(state[0], attrs, () => w.SvgIcon(state[1]));
 		}
 
 		public static void IconThreeStateCheckBox(this HtmlWriter w, Action<TagAttributes> attrs = null)
