@@ -10,6 +10,7 @@ using Tango.Logic;
 
 namespace Tango.UI
 {
+	//для тестового коммита
 	public interface IField : IInteractionFlowElement, IWithPropertyInjection
 	{
 		ValueSource ValueSource { get; set; }
