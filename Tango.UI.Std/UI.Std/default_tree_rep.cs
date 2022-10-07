@@ -17,9 +17,9 @@ namespace Tango.UI.Std
 	public abstract class default_tree_rep<TResult> : default_list_rep<TResult>
 		where TResult : ILazyListTree
 	{
-		readonly List<TreeLevelDescription<TResult>> _templateCollection = new List<TreeLevelDescription<TResult>>();
-		Dictionary<int, TreeLevelDescription<TResult>> _templatesDict = new Dictionary<int, TreeLevelDescription<TResult>>();
-		protected TreeLevelDescription<TResult> GetTemplateByID(int id) => _templatesDict[id];
+		readonly List<TreeLevelDescriptionItem<TResult>> _templateCollection = new List<TreeLevelDescriptionItem<TResult>>();
+		Dictionary<int, TreeLevelDescriptionItem<TResult>> _templatesDict = new Dictionary<int, TreeLevelDescriptionItem<TResult>>();
+		protected TreeLevelDescriptionItem<TResult> GetTemplateByID(int id) => _templatesDict[id];
 
 		int _count = 0;
 
@@ -102,8 +102,8 @@ namespace Tango.UI.Std
 			var q = Sorter.Count > 0 ? Sorter.Apply(filtered) : DefaultOrderBy(filtered);
 
 			var nodeTemplates = CurrentState.Level == 0 ?
-				new List<TreeLevelDescriptionItem<TResult>> { new TreeLevelDescriptionItem<TResult> { Template = CurrentState.Template } } :
-				CurrentState.Template.Children;
+				new List<TreeLevelDescriptionItem<TResult>> { CurrentState.TemplateItem } :
+				CurrentState.TemplateItem.Children;
 
 			using (var tran = Database.BeginTransaction())
 			{
@@ -182,10 +182,10 @@ namespace Tango.UI.Std
 		public void SetExpandedItem(int templateID, int level, Dictionary<string, object> parms, bool highlight = true, bool expandNext = false)
 		{
 			var initialTemplate = _templatesDict[templateID];
-			var template = initialTemplate.ParentTemplate;
+			var template = initialTemplate.ParentTemplateItem;
 			var levelForExpandNext = level;
 
-			var sqlTemplate = PrepareQuery(template, new List<Dictionary<string, object>> { parms });
+			var sqlTemplate = PrepareQuery(template.Template, new List<Dictionary<string, object>> { parms });
 
 			using (var tran = Database.BeginTransaction())
 			{
@@ -200,19 +200,19 @@ namespace Tango.UI.Std
 				level--;
 
 				if (highlight)
-					_highlightedRowID = GetClientID(initialTemplate.GetHtmlRowID(level, temp));
+					_highlightedRowID = GetClientID(initialTemplate.Template.GetHtmlRowID(level, temp));
 
 				while (template != null)
 				{
 					states.Add(new State
 					{
 						Level = level,
-						Template = template,
-						Parms = template.GetKeyCollection(temp)
+						TemplateItem = template,
+						Parms = template.Template.GetKeyCollection(temp)
 					});
-					senders.Add(template.GetHtmlRowID(level - 1, temp));
+					senders.Add(template.Template.GetHtmlRowID(level - 1, temp));
 
-					template = template.ParentTemplate;
+					template = template.ParentTemplateItem;
 					level--;
 				}
 
@@ -222,11 +222,11 @@ namespace Tango.UI.Std
 					states.Insert(0,new State
 					{
 						Level = levelForExpandNext,
-						Template = initialTemplate,
-						Parms = initialTemplate.GetKeyCollection(temp)
+						TemplateItem = initialTemplate,
+						Parms = initialTemplate.Template.GetKeyCollection(temp)
 					});
 					
-					senders.Insert(0,(initialTemplate.GetHtmlRowID(levelForExpandNext - 1, temp)));
+					senders.Insert(0,(initialTemplate.Template.GetHtmlRowID(levelForExpandNext - 1, temp)));
 				}
 
 				senders.Reverse();
@@ -260,14 +260,14 @@ namespace Tango.UI.Std
 				var t = template;
 				var lev = level;
 
-				var key = t.GetDataRowID(lev, row);
+				var key = t.Template.GetDataRowID(lev, row);
 				_selectedValues.Add(key);
 
-				while (t.ParentTemplate != null)
+				while (t.ParentTemplateItem != null)
 				{
-					var parentKey = t.ParentTemplate.GetHtmlRowID(lev - 1, row);
-					var rowState = new State { Level = lev, Template = t };
-					var parentState = new State { Level = lev - 1, Template = t.ParentTemplate };
+					var parentKey = t.ParentTemplateItem.Template.GetHtmlRowID(lev - 1, row);
+					var rowState = new State { Level = lev, TemplateItem = t };
+					var parentState = new State { Level = lev - 1, TemplateItem = t.ParentTemplateItem };
 
 					if (_selectedDataRows.TryGetValue(parentKey, out var parent))
 					{
@@ -282,7 +282,7 @@ namespace Tango.UI.Std
 						if (lev - 1 == 0)
 							_selectedDataRoot.Add(parent);
 					}
-					t = t.ParentTemplate;
+					t = t.ParentTemplateItem;
 					lev--;
 				}
 			}
@@ -359,7 +359,7 @@ namespace Tango.UI.Std
 			foreach (var d in dict)
 			{
 				var t = _templatesDict[d.Key];
-				var sql = PrepareQuery(t, d.Value);
+				var sql = PrepareQuery(t.Template, d.Value);
 				var objs = Database.Connection.Query<TResult>(sql, Repository.Parameters);
 				res.AddRange(objs);
 			}
@@ -434,12 +434,12 @@ namespace Tango.UI.Std
 
 					while (template != null)
 					{
-						var row = template.GetDataRowID(id, temp);
-						if (!template.IsTerminal)
+						var row = template.Template.GetDataRowID(id, temp);
+						if (!template.Template.IsTerminal)
 							rowsId.Add(row);
 
 						id--;
-						template = template.ParentTemplate;
+						template = template.ParentTemplateItem;
 					}
 				}
 				rowsId.Reverse();
@@ -452,20 +452,20 @@ namespace Tango.UI.Std
 			var enableSelect = false;
 			TemplateInit(_templateCollection);
 
-			void buildTemplateDictionary(IEnumerable<TreeLevelDescription<TResult>> templateCollection)
+			void buildTemplateDictionary(IEnumerable<TreeLevelDescriptionItem<TResult>> templateCollection)
 			{
 				foreach (var t in templateCollection)
 				{
-					enableSelect = enableSelect || t.EnableSelect;
-					if (!_templatesDict.ContainsKey(t.ID))
-						_templatesDict.Add(t.ID, t);
-					buildTemplateDictionary(t.Children.Select(x => x.Template));
+					enableSelect = enableSelect || t.Template.EnableSelect;
+					if (!_templatesDict.ContainsKey(t.Template.ID))
+						_templatesDict.Add(t.Template.ID, t);
+					buildTemplateDictionary(t.Children);
 				}
 			}
 			buildTemplateDictionary(_templateCollection);
 
-			CurrentState.Template = _templatesDict.Get(Context.GetIntArg("template", 0)) ?? _templateCollection[0];
-			CurrentState.Parms = CurrentState.Template.GetKeyCollection(Context);
+			CurrentState.TemplateItem = _templatesDict.Get(Context.GetIntArg("template", 0)) ?? _templateCollection[0];
+			CurrentState.Parms = CurrentState.TemplateItem.Template.GetKeyCollection(Context);
 
 			AfterTemplateInit();
 
@@ -483,7 +483,7 @@ namespace Tango.UI.Std
 			}
 			f.RowAttributes += (a, o, i) => {
 
-				nodeTemplate = _templatesDict[o.Template];
+				nodeTemplate = _templatesDict[o.Template].Template;
 				var htmlRowID = nodeTemplate.GetHtmlRowID(CurrentState.Level, o);
 				var dataRowID = nodeTemplate.GetDataRowID(CurrentState.Level, o);
 
@@ -547,7 +547,7 @@ namespace Tango.UI.Std
 			return f;
 		}
 
-		protected abstract void TemplateInit(List<TreeLevelDescription<TResult>> templateCollection);
+		protected abstract void TemplateInit(List<TreeLevelDescriptionItem<TResult>> templateCollection);
 		protected virtual void AfterTemplateInit() { }
 
 		protected override void FieldsInit(FieldCollection<TResult> fields) { }
@@ -623,14 +623,14 @@ namespace Tango.UI.Std
 				{
 					var obj = _result.First();
 					var t = _templatesDict[obj.Template];
-					if (t.IsTerminal || t.ToggleLevelAction != null) break;
-					var sender = t.GetHtmlRowID(CurrentState.Level, obj);
+					if (t.Template.IsTerminal || t.Template.ToggleLevelAction != null) break;
+					var sender = t.Template.GetHtmlRowID(CurrentState.Level, obj);
 
 					var nextState = new State
 					{
 						Level = CurrentState.Level + 1,
-						Template = t,
-						Parms = t.GetKeyCollection(obj)
+						TemplateItem = t,
+						Parms = t.Template.GetKeyCollection(obj)
 					};
 					CurrentState.Children.Add(sender, nextState);
 					CurrentState = nextState;
@@ -657,7 +657,7 @@ namespace Tango.UI.Std
 					{
 						var current = stack.Pop();
 						var row = current.Data.row;
-						row.Template = current.Data.state.Template.ID;
+						row.Template = current.Data.state.TemplateItem.Template.ID;
 						CurrentState = current.Data.state;
 						yield return row;
 						foreach (var child in current.Children)
@@ -684,7 +684,7 @@ namespace Tango.UI.Std
 
 		public class State
 		{
-			public TreeLevelDescription<TResult> Template { get; set; }
+			public TreeLevelDescriptionItem<TResult> TemplateItem { get; set; }
 			public int Level { get; set; }
 			public Dictionary<string, object> Parms { get; set; }
 
@@ -712,6 +712,10 @@ namespace Tango.UI.Std
 		public static implicit operator FlagIconInfo(int flagId) => new FlagIconInfo(flagId, String.Empty);
 	}
 
+	/// <summary>
+	/// шаблон для уровня дерева
+	/// </summary>
+	/// <typeparam name="TResult"></typeparam>
 	public class TreeLevelDescription<TResult>
 	{
 		public int ID { get; set; }
@@ -728,16 +732,11 @@ namespace Tango.UI.Std
 		public Expression<Func<TResult, object>> Key { get; set; }
 		public bool EnableSelect { get; set; }
 		public bool SetDataRowId { get; set; }
-		public TreeLevelDescription<TResult> ParentTemplate { get; set; }
 		public bool AllowNulls { get; set; } = false;
 		public bool IsSticky { get; set; } = false;
 		public string CustomQuery { get; set; }
 
 		public Action<ApiResponse> ToggleLevelAction { get; set; }
-
-		List<TreeLevelDescriptionItem<TResult>> _children = new List<TreeLevelDescriptionItem<TResult>>();
-
-		public IReadOnlyList<TreeLevelDescriptionItem<TResult>> Children => _children;
 
 		List<PropertyInfo> keyProperties = null;
 
@@ -779,13 +778,6 @@ namespace Tango.UI.Std
 				return (object)ctx.GetArg(p.Name);
 			});
 		}
-
-		public void AddChild(TreeLevelDescription<TResult> template, Expression<Func<TResult, bool>> where = null)
-		{
-			template.ParentTemplate = this;
-
-			_children.Add(new TreeLevelDescriptionItem<TResult> { Template = template, Where = where });
-		}
 	}
 
 	public class IconInfo
@@ -824,9 +816,30 @@ namespace Tango.UI.Std
 			};
 		}
 	}
+
+	/// <summary>
+	/// экземпляр шаблона TreeLevelDescription
+	/// </summary>
+	/// <typeparam name="TResult"></typeparam>
 	public class TreeLevelDescriptionItem<TResult>
 	{
 		public TreeLevelDescription<TResult> Template { get; set; }
 		public Expression<Func<TResult, bool>> Where { get; set; }
+
+		public TreeLevelDescriptionItem<TResult> ParentTemplateItem { get; set; }
+		List<TreeLevelDescriptionItem<TResult>> _children = new List<TreeLevelDescriptionItem<TResult>>();
+		public IReadOnlyList<TreeLevelDescriptionItem<TResult>> Children => _children;
+
+		public TreeLevelDescriptionItem<TResult> AddChild(TreeLevelDescription<TResult> template, Expression<Func<TResult, bool>> where = null)
+		{
+			var newItem = new TreeLevelDescriptionItem<TResult> { Template = template, Where = where, ParentTemplateItem = this };
+			_children.Add(newItem);
+			return newItem;
+		}
+
+		public static implicit operator TreeLevelDescriptionItem<TResult>(TreeLevelDescription<TResult> template)
+		{
+			return new TreeLevelDescriptionItem<TResult> { Template = template };
+		}
 	}
 }
