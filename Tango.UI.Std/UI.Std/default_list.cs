@@ -505,6 +505,10 @@ namespace Tango.UI.Std
 			Attributes = attrs;
 			Content = content;
 		}
+		public ListColumn(Func<TResult, object> content) 
+		{
+			Content = (w, o, i) => w.Write(content(o));
+		}
 
 		public IEnumerable<ListColumn<TResult>> AsEnumerable(TResult o, RowInfo<TResult> r)
 		{

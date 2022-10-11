@@ -40,7 +40,7 @@ namespace Tango.UI.Std
 			return ListColumn((a, o, row) => { }, content, options);
 		}
 
-		static ListColumn<T> ListColumn<T>(RowCellAttributesDelegate<T> attrs, RenderRowCellDelegate<T> content, TreeCellOptions<T> options = null)
+		public static ListColumn<T> ListColumn<T>(RowCellAttributesDelegate<T> attrs, RenderRowCellDelegate<T> content, TreeCellOptions<T> options = null)
 			where T : IListTree
 		{
 			return new ListColumn<T>(attrs, (w, o, row) => TreeCellContent(w, o, row, o.Level, o.HasChildren, content, options));
