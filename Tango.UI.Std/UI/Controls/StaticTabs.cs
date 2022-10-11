@@ -13,7 +13,7 @@ namespace Tango.UI.Controls
                     for (int i = 0; i < tabPages.Length; i++)
                     {
                         var p = tabPages[i];
-                        w.Li(() =>
+                        w.Li(a => a.Class("tablink"), () =>
                         {                           
                             w.RadioButton(id, p.ID + "_title", null, isChecked: tabPages[i].Selected.HasValue ? tabPages[i].Selected.Value : (i == 0 ? true : false));
                             w.Label(a => a.For(p.ID + "_title").Data("id", p.ID).OnClick("tabs.onselect(this)"), () => w.Write(p.Title));
