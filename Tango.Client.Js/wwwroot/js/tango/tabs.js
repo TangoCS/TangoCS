@@ -8,7 +8,8 @@
 				return;
 			}
 			const tabs = el.parentNode.parentNode.parentNode;
-			const index = [].indexOf.call(el.parentNode.parentNode.children, el.parentNode);
+			const headers = Array.from(el.parentNode.parentNode.children).filter(x => x.classList.contains('tablink'));
+			const index = [].indexOf.call(headers, el.parentNode);
 			const pages = document.getElementById(tabs.id + '_pages').children;
 			for (i = 0; i < pages.length; i++) {
 				pages[i].className = i == index ? 'selected' : '';

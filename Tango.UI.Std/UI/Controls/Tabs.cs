@@ -81,7 +81,7 @@ namespace Tango.UI.Controls
 					foreach (var p in Pages)
 					{
 						var pid = $"{ID}_{p.ID}";
-						w.Li(() => {
+						w.Li(a => a.Class("tablink"), () => {
 							var curpage = GetCurPage();
 							w.RadioButton(ClientID, pid + "_title", null, curpage.ID == p.ID, attr =>
 							{
