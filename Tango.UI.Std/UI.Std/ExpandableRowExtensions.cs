@@ -10,6 +10,7 @@ namespace Tango.UI.Std
 		public RowCellFlagDelegate<TResult> ContentVisible { get; set; } = (o, i) => true;
 		public Action<ThTagAttributes> HeaderAttributes { get; set; }
 		public string Tip { get; set; }
+		public RowCellFlagDelegate<TResult> Disabled { get; set; } = (result, row) => false;
 	}
 
 	public static class ExpandableRowExtensions
@@ -25,6 +26,7 @@ namespace Tango.UI.Std
 					Attributes = (a, o, i) => {
 						a.Class("rowexpandercell").OnClickExpandRow(null, e);
 						if (!options.Collapsed(o, i)) a.Data("state", "expanded");
+						if (options.Disabled(o, i)) a.Class("disabled");
 						options.Attributes?.Invoke(a, o, i);
 					},
 					Content = (w, o, i) => {

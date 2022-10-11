@@ -1028,6 +1028,16 @@ div.tabs2 + div.tabs2_pages {
 	cursor: pointer;
 }
 
+.rowexpandercell.disabled {
+	pointer-events: none;
+	cursor: default;
+	background-color: unset;
+}
+
+.rowexpandercell.disabled .icon {
+	color: lightgray;
+}
+
 .expandablerowcontent {
 	border: 3px solid lavender;
 	border-radius: 5px;
