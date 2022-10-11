@@ -10,7 +10,8 @@ namespace Tango
 	{
 		string WebRootPath { get; }
         string ContentRootPath { get; }
-    }
+		string EnvironmentName { get; }
+	}
 
 	public interface IRequestEnvironment
 	{

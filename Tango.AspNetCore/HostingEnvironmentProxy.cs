@@ -4,7 +4,7 @@ namespace Tango.AspNetCore
 {
     public class HostingEnvironmentProxy : IHostingEnvironment
 	{
-		Microsoft.AspNetCore.Hosting.IHostingEnvironment _env;
+		readonly Microsoft.AspNetCore.Hosting.IHostingEnvironment _env;
 
 		public HostingEnvironmentProxy(Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
 		{
@@ -16,5 +16,6 @@ namespace Tango.AspNetCore
 
 		public string WebRootPath => _env.WebRootPath;
         public string ContentRootPath => _env.ContentRootPath;
-    }
+		public string EnvironmentName => _env.EnvironmentName;
+	}
 }
