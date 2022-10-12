@@ -499,8 +499,8 @@ window.listview = function (au, cu, cbcell, menu) {
 					cbHideColumns[i].checked = true;
 					cbHideColumns[i].addEventListener('click', function (e) {
 						const cb = e.currentTarget;
-						const colIdx = parseInt(cb.getAttribute('data-colidx')) + 1;
-						const data = map.get(colIdx);
+						const colIdx = parseInt(cb.getAttribute('data-colidx'));
+						const data = map[colIdx];
 						var colcnt = parseInt(btn.getAttribute('data-colcnt'));
 
 						if (cb.checked)
@@ -525,7 +525,7 @@ window.listview = function (au, cu, cbcell, menu) {
 						hideColumns(data.ths);
 
 						for (var i = 0; i < data.columns.length; i++) {
-							var column = data.columns[i];
+							var column = data.columns[i] + 1;
 							const cells = root.querySelectorAll('tr > td:nth-child(' + column + ')');
 							hideColumns(cells);
 						}
@@ -554,32 +554,45 @@ window.listview = function (au, cu, cbcell, menu) {
 	}
 
 	function initMapHead(root) {
-		const map = new Map();
+		const map = [];
 		const ths = Object.values(root.querySelectorAll('tr > th'));
 		if (ths) {
-			const firstThs = ths.filter(x => x.parentElement.rowIndex == 0);
-			const secondThs = ths.filter(x => x.parentElement.rowIndex > 0);
-			let skip = 0;
-			for (let i = 0; i < firstThs.length; i++) {
-				const th = firstThs[i];
-				const colSpan = th.colSpan;
-				if (colSpan > 1) {
-					const columns = [];
-					let k = 1;
-					let t = skip;
-					const currentThs = [th];
-					for (var j = 0; j < colSpan; j++) {
-						columns[j] = i + j + 1;
-						currentThs[k] = secondThs[j + t];
-						skip += 1;
-						k += 1;
+			var idx = 0;
+			var curRow = 0;
+			var masterRowIdx = 0;
+
+			for (let i = 0; i < ths.length; i++) {
+				const th = ths[i];
+
+				if (th.parentElement.rowIndex > curRow) {
+					curRow = th.parentElement.rowIndex;
+					idx = 0;
+					masterRowIdx = 0;
+				}
+
+				if (th.parentElement.rowIndex == 0) {
+					const mapObj = { columns: [], ths: [] };
+					for (var j = idx; j < idx + th.colSpan; j++) {
+						mapObj.columns.push(j);
 					}
-					map.set(i + 1, { columns: columns, ths: currentThs });
+					mapObj.ths.push(th);
+					map.push(mapObj);
+
+					idx += th.colSpan;
 				}
 				else {
-					const columns = [i + 1];
-					const resultThs = [th];
-					map.set(i + 1, { columns: columns, ths: resultThs });
+					while (map[masterRowIdx].ths[0].rowSpan > curRow) {
+						masterRowIdx++;
+						idx = map[masterRowIdx].columns[0];
+					}
+
+					map[masterRowIdx].ths.push(th);
+
+					idx += th.colSpan;
+
+					while (map.length > masterRowIdx && map[masterRowIdx].columns[map[masterRowIdx].columns.length - 1] < idx) {
+						masterRowIdx++;
+					}
 				}
 			}
 			return map;

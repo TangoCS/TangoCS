@@ -129,23 +129,26 @@ namespace Tango.UI.Controls
 
 		public void ItemListSettings(List<List<IColumnHeader>> headerRows)
 		{
+			if (headerRows.Count == 0)
+				return;
+
 			Item(w => {
 				w.DropDownImageButton("listsettings", "listsettings", () => {
 					var i = 0;
-                    for (int j = 0; j < headerRows.Count - (headerRows.Count - 1); j++)
-						foreach (var header in headerRows[j])
-							foreach (var h in header.AsEnumerable())
+					foreach (var header in headerRows[0]) // пока обрабатывается только первая строка заголовков
+						foreach (var h in header.AsEnumerable())
+						{
+							if (!h.Title.IsEmpty())
 							{
-								if (!h.Title.IsEmpty())
-								{
-									var id = $"listsettings_hidecol_{i}";
-									w.Label(a => a.For(id).Class("item"), () => {
-										w.CheckBox(id, true, a => a.Style("vertical-align:middle").Data("colidx", i));
-										w.Span(a => a.Style("vertical-align:middle"), h.Title);
-									});
-								}
-								i++;
+								var id = $"listsettings_hidecol_{i}";
+								w.Label(a => a.For(id).Class("item"), () => {
+									w.CheckBox(id, true, a => a.Style("vertical-align:middle").Data("colidx", i));
+									w.Span(a => a.Style("vertical-align:middle"), h.Title);
+								});
 							}
+							i++;
+						}
+
 				}, btnAttrs: a => a.Title("Скрытие столбцов"), options: new PopupOptions { CloseOnClick = false } );
 			});
 		}
