@@ -7,8 +7,10 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Xml;
 using System.Xml.Linq;
-using IBM.Data.DB2;
-using Nephrite.Web;
+using IBM.Data.DB2.Core;
+using Tango;
+using Tango.Data;
+using Tango.Meta.Database;
 
 namespace Nephrite.Meta.Database
 {
