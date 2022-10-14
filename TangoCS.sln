@@ -23,7 +23,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tango.Abstractions", "Tango
 EndProject
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "Tango.Client.Js", "Tango.Client.Js\", "{6918E281-C526-4E3E-8915-1BE29504F964}"
 	ProjectSection(WebsiteProperties) = preProject
-		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.8"
 		Debug.AspNetCompiler.VirtualPath = "/localhost_63396"
 		Debug.AspNetCompiler.PhysicalPath = "Tango.Client.Js\"
 		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_63396\"
