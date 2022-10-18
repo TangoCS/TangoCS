@@ -35,7 +35,6 @@
 			if (!el.nodeType) el = document.getElementById(el);
 			el.classList.remove('md-show');
 			el.style.zIndex = null;
-			console.log(el.style.zIndex);
 			if (!el.hasAttribute('data-reuse')) {
 				au.delay(el, function (d) {
 					d.parentNode.removeChild(d);
