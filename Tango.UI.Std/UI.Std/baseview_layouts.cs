@@ -220,15 +220,15 @@ namespace Tango.UI.Std
 	/// </summary>
 	/// <typeparam name="TTop"></typeparam>
 	/// <typeparam name="TBottomLeft"></typeparam>
-	/// <typeparam name="TBottomRigth"></typeparam>
-	public abstract class ViewPagePart_top_2col_bottom<TTop, TBottomLeft, TBottomRigth> : ViewPagePart
+	/// <typeparam name="TBottomRight"></typeparam>
+	public abstract class ViewPagePart_top_2col_bottom<TTop, TBottomLeft, TBottomRight> : ViewPagePart
 		where TTop : IWithChangeEvent, new()
 		where TBottomLeft : IWithChangeEvent, new()
-		where TBottomRigth : IWithChangeEvent, IWithChangeEventHandler, new()
+		where TBottomRight : IWithChangeEvent, IWithChangeEventHandler, new()
 	{
 		private TTop _top;
 		private TBottomLeft _bottomLeft;
-		private TBottomRigth _bottomRigth;
+		private TBottomRight _bottomRight;
 
 		protected TTop top {
 			get { return (TTop)this._top; }
@@ -240,9 +240,9 @@ namespace Tango.UI.Std
 			set { this._bottomLeft = value; }
 		}
 
-		protected TBottomRigth bottomRigth {
-			get { return (TBottomRigth)this._bottomRigth; }
-			set { this._bottomRigth = value; }
+		protected TBottomRight bottomRigth {
+			get { return (TBottomRight)this._bottomRight; }
+			set { this._bottomRight = value; }
 		}
 
 		protected virtual Grid BottomLeftGrid => Grid.OneHalf;
@@ -254,7 +254,7 @@ namespace Tango.UI.Std
 		{
 			_top = CreateControl<TTop>("top", SetPropertiesTop);
 			_bottomLeft = CreateControl<TBottomLeft>("bottomLeft", SetPropertiesBottomLeft);
-			_bottomRigth = CreateControl<TBottomRigth>("bottomRigth", SetPropertiesBottomRigth);
+			_bottomRight = CreateControl<TBottomRight>("bottomRight", SetPropertiesBottomRight);
 
 			//top.Changed += bottomLeft.OnChange;
 			//bottomLeft.OnChange += bottomRigth.OnChange;
@@ -262,7 +262,7 @@ namespace Tango.UI.Std
 
 		protected virtual void SetPropertiesTop(TTop c) { }
 		protected virtual void SetPropertiesBottomLeft(TBottomLeft c) { }
-		protected virtual void SetPropertiesBottomRigth(TBottomRigth c) { }
+		protected virtual void SetPropertiesBottomRight(TBottomRight c) { }
 
         public override void OnLoad(ApiResponse response)
         {
