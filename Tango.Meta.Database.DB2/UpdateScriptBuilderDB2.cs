@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
-//using System.Data.SqlClient;
-using System.Globalization;
-using System.Configuration;
-using IBM.Data.DB2;
-//using System.Web;
-using System.IO;
+using IBM.Data.DB2.Core;
 
 
 namespace Tango.Meta.Database
