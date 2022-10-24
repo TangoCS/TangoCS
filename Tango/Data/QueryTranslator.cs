@@ -199,26 +199,36 @@ namespace Tango.Data
 
 				if (arg is MemberExpression me)
 					s.Add(me.Member.Name == "Key" ? "@@KEY" : me.Member.Name);
-				else if (arg is MethodCallExpression mce && mce.Method.Name == "Count")
+				else if (arg is MethodCallExpression mce)
 				{
-					if (mce.Arguments[0] is ParameterExpression)
+					if(mce.Method.Name == "Count")
 					{
-						s.Add("count(1) as " + m.Name);
-					}
-					else if (mce.Arguments[0] is MethodCallExpression mce2)
+                        if (mce.Arguments[0] is ParameterExpression)
+                        {
+                            s.Add("count(1) as " + m.Name);
+                        }
+                        else if (mce.Arguments[0] is MethodCallExpression mce2)
+                        {
+                            if (mce2.Method.Name == "Distinct" &&
+                                mce2.Arguments[0] is MethodCallExpression mce3 && mce3.Method.Name == "Select")
+                            {
+                                var cursb = sb;
+                                sb = new StringBuilder();
+                                Visit(mce3.Arguments[1]);
+                                s.Add($"count(distinct {sb.ToString()}) as {m.Name}");
+                                sb = cursb;
+                            }
+                        }
+                    }
+					else if(mce.Method.Name == "Max")
 					{
-						if (mce2.Method.Name == "Distinct" &&
-							mce2.Arguments[0] is MethodCallExpression mce3 && mce3.Method.Name == "Select")
-						{
-							var cursb = sb;
-							sb = new StringBuilder();
-							Visit(mce3.Arguments[1]);
-							s.Add($"count(distinct {sb.ToString()}) as {m.Name}");
-							sb = cursb;
-						}
-					}
+                        if (mce.Arguments[0] is ParameterExpression)
+                        {
+                            s.Add($"Max({m.Name}) as {m.Name}");
+                        }
+                    }
 				}
-				else
+                else
 					throw new NotSupportedException($"Unsupported expression {arg.NodeType}");
 			}
 
