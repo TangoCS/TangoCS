@@ -224,7 +224,10 @@ namespace Tango.Data
 					{
                         if (mce.Arguments[0] is ParameterExpression)
                         {
-                            s.Add($"Max({m.Name}) as {m.Name}");
+                            if (arg.Type == typeof(Nullable<bool>) || arg.Type == typeof(bool))
+                                s.Add($"MAX(CASE WHEN {m.Name} = 1 THEN 1 ELSE 0 END) as {m.Name}");
+							else
+								s.Add($"MAX({m.Name}) as {m.Name}");
                         }
                     }
 				}
