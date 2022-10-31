@@ -13,7 +13,7 @@ namespace Tango.Html
 				foreach (var item in items)
 				{
 					w.WriteTag<OptionTagAttributes>("option", 
-						oa => oa.Value(item.Value).Selected(item.Selected || item.Value == value), 
+						oa => oa.Value(item.Value).Selected(item.Selected || item.Value == value).Disabled(item.Disabled), 
 						() => w.Write(item.Text));
 				}
 			});
