@@ -27,14 +27,15 @@
 		selectedOptionHints: function (args) {
 			const el = document.getElementById(args.id)
 			if (el) {
-				el.addEventListener('change', this.onSelectChange);
-				this.onSelectChange(el);
+				const onChange = function (e) {
+					var select = e.target ?? e;
+					var o = select.options[select.selectedIndex];
+					select.setAttribute('title', o?.textContent);
+				};
+
+				el.addEventListener('change', onChange);
+				onChange(el);
 			}
-		},
-		onSelectChange: function (e) {
-			var select = e.target ?? e;
-			var o = select.options[select.selectedIndex];
-			select.setAttribute('title', o?.textContent);
 		},
 		createGuid: function () {
 			return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
