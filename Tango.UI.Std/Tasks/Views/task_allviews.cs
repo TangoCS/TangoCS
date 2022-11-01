@@ -120,6 +120,7 @@ namespace Tango.Tasks
 			f.AddCellWithSortAndFilter(o => o.IsActive, o => o.IsActive.Icon());
 			f.AddCellWithSortAndFilter(o => o.Priority, o => o.Priority);
 			f.AddCellWithSortAndFilter(o => o.SystemTitle, o => o.SystemTitle);
+			f.AddCellWithSortAndFilter(o => o.Description, o => o.Description);
 		}
 	}
 
@@ -164,6 +165,7 @@ namespace Tango.Tasks
 				w.ToggleSwitch(gr.IsActive);
 				w.TextBox(gr.Priority);
 				w.DropDownList(gr.System, Systems());
+				w.TextBox(gr.Description);
 			});
 		}
 
@@ -367,6 +369,7 @@ namespace Tango.Tasks
 				w.PlainText(gr.System);
 				w.PlainText(Resources.Get<Task>(o => o.LastStartDate), ViewData.LastStartDate?.ToString("dd.MM.yyyy HH:mm:ss"));
 				w.PlainText(gr.Status, () => w.Write(Enumerations.GetEnumDescription((TaskStatusType)gr.Status.Value)));
+				w.PlainText(gr.Description);
 			});
 		}
 
