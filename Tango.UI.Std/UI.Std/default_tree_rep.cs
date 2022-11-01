@@ -539,7 +539,9 @@ namespace Tango.UI.Std
 			};
 
 			f.AddCell("Наименование", (w, o, i) => {
-				ListTreeExtensions.TreeCellContent(w, o, i, CurrentState.Level, !nodeTemplate.IsTerminal && nodeTemplate.HasChildren(o), content);
+				ListTreeExtensions.TreeCellContent(w, o, i, CurrentState.Level, !nodeTemplate.IsTerminal && nodeTemplate.HasChildren(o), content, new TreeCellOptions<TResult> {
+					ContentAttributes = nodeTemplate.ContentAttributes
+				});
 			});
 
 			FieldsInit(f);
@@ -721,11 +723,11 @@ namespace Tango.UI.Std
 		public int ID { get; set; }
 		public Expression<Func<TResult, object>> GroupBy { get; set; }
 		public Expression<Func<IGrouping<object, TResult>, object>> GroupBySelector { get; set; } = x => x.Key;
-		public Func<IQueryable<TResult>, IQueryable<TResult>> OrderBy { get; set; } = data => data;
+        public Func<IQueryable<TResult>, IQueryable<TResult>> OrderBy { get; set; } = data => data;
 		public RenderRowCellDelegate<TResult> Cell { get; set; }
-		public bool IsTerminal { get; set; } = false;
+        public Func<TResult, Action<TagAttributes>> ContentAttributes { get; set; }
+        public bool IsTerminal { get; set; } = false;
 		public Func<TResult, bool> HasChildren { get; set; } = o => true;
-		//public string Icon { get; set; }
 		public Func<TResult, IconInfoCollection> Icon { get; set; }
 		public Func<TResult, FlagIconInfoCollection> IconFlag { get; set; }
 		public Func<TResult, List<string>> DataRef { get; set; }
