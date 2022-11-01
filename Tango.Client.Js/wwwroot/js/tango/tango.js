@@ -26,8 +26,10 @@
 		},
 		selectedOptionHints: function (args) {
 			const el = document.getElementById(args.id)
-			el.addEventListener('change', this.onSelectChange);
-			this.onSelectChange(el);
+			if (el) {
+				el.addEventListener('change', this.onSelectChange);
+				this.onSelectChange(el);
+			}
 		},
 		onSelectChange: function (e) {
 			var select = e.target ?? e;
