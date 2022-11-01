@@ -21,16 +21,16 @@ namespace Tango.UI.Std
 
 				if (hasChildren)
 				{
-					w.Div(a => a.Class("togglelevel").Class(options?.NodeClass(o)), () => {
+					w.Div(a => a.Class("togglelevel").Class(options?.NodeClass?.Invoke(o)), () => {
 						w.Span(a => a.OnClick("listview.togglelevel(this)"), () => w.Icon("treenode", a => a.Class("toggleicon")));
 					});
 				}
 				else
-					w.Div(a => a.Class("leaf").Class(options?.NodeClass(o)), () => w.Span("&nbsp;"));
+					w.Div(a => a.Class("leaf").Class(options?.NodeClass?.Invoke(o)), () => w.Span("&nbsp;"));
 
-				w.Div(a => a.Class("treerow-content"), () => {
-					content(w, o, r);
-				});
+				var contentAttr = options?.ContentAttributes?.Invoke(o);
+				contentAttr += a => a.Class("treerow-content");
+                w.Div(contentAttr, ()=> { content(w, o, r); });
 			});
 		}
 
@@ -68,6 +68,7 @@ namespace Tango.UI.Std
 	public class TreeCellOptions<T>
 	{
 		public Func<T, string> NodeClass { get; set; }
+		public Func<T, Action<TagAttributes>> ContentAttributes { get; set; }
 	}
 
 	public interface IListTree
