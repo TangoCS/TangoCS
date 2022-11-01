@@ -223,7 +223,7 @@ namespace Tango.UI.Std
 	/// <typeparam name="TBottomRight"></typeparam>
 	public abstract class ViewPagePart_top_2col_bottom<TTop, TBottomLeft, TBottomRight> : ViewPagePart
 		where TTop : IWithChangeEvent, new()
-		where TBottomLeft : IWithChangeEvent, new()
+		where TBottomLeft : IWithChangeEvent, IWithChangeEventHandler, new()
 		where TBottomRight : IWithChangeEvent, IWithChangeEventHandler, new()
 	{
 		private TTop _top;
