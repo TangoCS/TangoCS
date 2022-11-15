@@ -9,6 +9,7 @@ using Tango.Html;
 using Tango.Identity.Std;
 using Tango.Logger;
 using Tango.Meta.Database;
+using Tango.UI.Controls;
 
 namespace Tango.UI.Std
 {
@@ -230,6 +231,8 @@ namespace Tango.UI.Std
 		private TBottomLeft _bottomLeft;
 		private TBottomRight _bottomRight;
 
+		protected virtual bool ObjectNotExists => false;
+
 		protected TTop top {
 			get { return (TTop)this._top; }
 			set { this._top = value; }
@@ -300,9 +303,217 @@ namespace Tango.UI.Std
 			prepare(top);
 			prepare(bottomLeft);
 			prepare(bottomRigth);
+
+			response.AddAdjacentWidget("contentbody", "buttonsbar", AdjacentHTMLPosition.BeforeEnd, ButtonsBar);
+			response.AddWidget("contenttoolbar", w => Toolbar(w));
 		}
 
-        protected virtual string FormTitle => null;
+		protected virtual void ButtonsBar(LayoutWriter w)
+		{
+			//w.ButtonsBar_edit(this);
+		}
+
+		protected virtual void Toolbar(LayoutWriter w)
+		{
+			w.Toolbar(t => ToolbarLeft(t), t => ToolbarRight(t));
+		}
+
+		protected virtual void ToolbarLeft(MenuBuilder t) { }
+
+		protected virtual void ToolbarRight(MenuBuilder t) { }
+
+		protected virtual void RenderValidation(ApiResponse response, ValidationMessageCollection m)
+		{
+			response.WithNamesFor(this).AddWidget("validation", w => w.ValidationBlock(m));
+		}
+
+		protected virtual void PreProcessFormData(ApiResponse response, ValidationMessageCollection val) { }
+		protected virtual void PostProcessFormData(ApiResponse response, ValidationMessageCollection val) { }
+
+		protected abstract void Submit(ApiResponse response);
+		protected virtual void AfterSubmit(ApiResponse response)
+		{
+			response.RedirectBack(Context, 1);
+		}
+
+		protected virtual void ValidateFormData(ValidationMessageCollection val) { }
+
+		public bool ProcessSubmit(ApiResponse response)
+		{
+			if (Context.FormData == null) return false;
+
+			var m = new ValidationMessageCollection();
+
+			ValidateFormData(m);
+			if (m.HasItems(ValidationMessageSeverity.Error)) goto err;
+			if (!response.Success) goto ret;
+			PreProcessFormData(response, m);
+			if (m.HasItems(ValidationMessageSeverity.Error)) goto err;
+			if (!response.Success) goto ret;
+			if (m.HasItems(ValidationMessageSeverity.Error)) goto err;
+			if (!response.Success) goto ret;
+			PostProcessFormData(response, m);
+			if (m.HasItems(ValidationMessageSeverity.Error)) goto err;
+			if (!response.Success) goto ret;
+
+			if (m.HasItems(ValidationMessageSeverity.Information, ValidationMessageSeverity.Warning))
+				RenderValidation(response, m);
+			else
+				response.AddWidget("validation", w => w.Write(""));
+
+			return true;
+
+		err:
+			RenderValidation(response, m);
+			response.Success = false;
+			return false;
+
+		ret:
+			if (m.Count == 0)
+				response.AddWidget("validation", w => w.Write(""));
+			return false;
+		}
+
+		public virtual void OnSubmit(ApiResponse response)
+		{
+			if (ObjectNotExists)
+			{
+				response.AddWidget("form", w => {
+					w.Div(Resources.Get("Common.ObjectNotExists"));
+				});
+				return;
+			}
+
+			if (!ProcessSubmit(response))
+				return;
+
+			Submit(response);
+			AfterSubmit(response);
+		}
+
+		protected virtual string FormTitle => null;
+	}
+
+	/// <summary>
+	/// Базовый класс для формы с верхней формой для параметром и нижней частью, разделенной на 2 части
+	/// </summary>
+	/// <typeparam name="TTop"></typeparam>
+	/// <typeparam name="TBottomLeft"></typeparam>
+	/// <typeparam name="TBottomRight"></typeparam>
+	public abstract class default_edit_top_2col_bottom<TTop, TBottomLeft, TBottomRight> : default_edit
+		where TTop : IWithChangeEvent, new()
+		where TBottomLeft : IWithChangeEvent, IWithChangeEventHandler, new()
+		where TBottomRight : IWithChangeEvent, IWithChangeEventHandler, new()
+	{
+		private TTop _top;
+		private TBottomLeft _bottomLeft;
+		private TBottomRight _bottomRight;
+
+		protected TTop top
+		{
+			get { return (TTop)this._top; }
+			set { this._top = value; }
+		}
+
+		protected TBottomLeft bottomLeft
+		{
+			get { return (TBottomLeft)this._bottomLeft; }
+			set { this._bottomLeft = value; }
+		}
+
+		protected TBottomRight bottomRigth
+		{
+			get { return (TBottomRight)this._bottomRight; }
+			set { this._bottomRight = value; }
+		}
+
+		protected virtual Grid BottomLeftGrid => Grid.OneHalf;
+		protected virtual Grid BottomRightGrid => Grid.OneHalf;
+
+		protected virtual Action<TagAttributes> BottomBlockAttributes => null;
+
+		public override void OnInit()
+		{
+			//base.OnInit();
+			_top = CreateControl<TTop>("top", SetPropertiesTop);
+			_bottomLeft = CreateControl<TBottomLeft>("bottomLeft", SetPropertiesBottomLeft);
+			_bottomRight = CreateControl<TBottomRight>("bottomRight", SetPropertiesBottomRight);
+
+			//top.Changed += bottomLeft.OnChange;
+			//bottomLeft.OnChange += bottomRigth.OnChange;
+		}
+
+		protected virtual void SetPropertiesTop(TTop c) { }
+		protected virtual void SetPropertiesBottomLeft(TBottomLeft c) { }
+		protected virtual void SetPropertiesBottomRight(TBottomRight c) { }
+
+		public override void OnLoad(ApiResponse response)
+		{
+			//base.OnLoad(response);
+
+
+			response.AddWidget("contenttitle", FormTitle);
+			response.AddWidget("#title", FormTitle);
+
+			//if (ObjectNotExists)
+			//{
+			//	response.AddWidget("form", w => {
+			//		w.Div(Resources.Get("Common.ObjectNotExists"));
+			//	});
+			//}
+			//else
+			//{
+			//	response.AddWidget("form", w => {
+			//		Form(w);
+			//		w.FormValidationBlock();
+			//	});
+
+			//	if (EnableButtonsBar)
+			//		response.AddAdjacentWidget("form", "buttonsbar", AdjacentHTMLPosition.BeforeEnd, ButtonsBar);
+			//	if (EnableToolbar)
+			//		response.AddWidget("contenttoolbar", w => Toolbar(w));
+			//}
+
+
+			response.WithWritersFor(this);
+			response.AddWidget("contentbody", w => {
+				w.Block(() => {
+					w.PushPrefix(top.ID);
+					w.Div(a => a.ID("containerTop"));
+					w.PopPrefix();
+				});
+
+				w.Block(attrs => attrs.Set(BottomBlockAttributes), () => {
+					w.PushPrefix(bottomLeft.ID);
+					w.Div(a => a.ID("containerLeft").GridColumn(BottomLeftGrid));
+					w.PopPrefix();
+
+					w.PushPrefix(bottomRigth.ID);
+					w.Div(a => a.ID("containerRight").GridColumn(BottomRightGrid));
+					w.PopPrefix();
+				});
+			});
+
+			if (FormTitle != null)
+				response.AddWidget("contenttitle", FormTitle);
+
+			void prepare<T>(T c) where T : IWithChangeEvent
+			{
+				response.WithNamesAndWritersFor(c);
+				var c1 = c.GetContainer();
+				c1.ToRemove.Add("contentheader");
+				c1.Render(response);
+				c.OnLoad(response);
+			}
+
+			prepare(top);
+			prepare(bottomLeft);
+			prepare(bottomRigth);
+
+
+		}
+
+		//protected virtual string FormTitle => null;
 	}
 
 }
