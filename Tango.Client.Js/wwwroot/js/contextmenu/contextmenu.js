@@ -69,7 +69,7 @@
 			iMethods.contextMenuBind.call(this, selector, option, 'menu');
 		},
 		popup: function (selector, option) {
-			window.setTimeout(function () { $(selector).addClass('iw-contextMenuInit'); }, 1);
+			window.setTimeout(function () { $(selector).addClass('iw-contextMenu-fixed'); }, 1);
 			$(selector).addClass('iw-contextMenu');
 			iMethods.contextMenuBind.call(this, selector, option, 'popup');
 		},
