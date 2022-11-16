@@ -153,7 +153,11 @@ namespace Tango.UI.Controls
 			var icon = sortState.HasValue ? (sortState.Value ? "SortDesc" : "SortAsc") : "";
 			var pname = sorter.ParameterName.IsEmpty() ? sorter.ClientID : sorter.ParameterName;
 
-			w.ActionLink(a => a.ToCurrent().WithArg(pname, parm).RunEvent(sorter.OnSort).WithTitle(title));
+			w.ActionLink(a => a.ToCurrent()
+			                   .WithArg(pname, parm)
+			                   .RunEvent(sorter.OnSort)
+							   .WithData(sorter.DataCollection)
+							   .WithTitle(title));
 
 			if (!icon.IsEmpty()) w.Icon(icon);
 			if (n.HasValue) w.Write(n);

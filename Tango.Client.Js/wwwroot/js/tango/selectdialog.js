@@ -145,6 +145,9 @@ window.selectObjectDropDownField = function (au, cu, cbcell) {
 				onOpen: function (data, event) {
 					return au.postEventFromElementWithApiResponse(data.menu[0]);
 				},
+				onClose: function (trigger, menu) {
+					elFilter.value = '';
+				},
 				closeOnClick: true,
 				closeOnClickSelector: function (el) {
 					return el.hasAttribute('data-res-postponed') && el.getAttribute('data-res-postponed') == '1';

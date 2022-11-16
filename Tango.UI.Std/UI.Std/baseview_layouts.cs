@@ -9,6 +9,7 @@ using Tango.Html;
 using Tango.Identity.Std;
 using Tango.Logger;
 using Tango.Meta.Database;
+using Tango.UI.Controls;
 
 namespace Tango.UI.Std
 {
@@ -223,12 +224,14 @@ namespace Tango.UI.Std
 	/// <typeparam name="TBottomRight"></typeparam>
 	public abstract class ViewPagePart_top_2col_bottom<TTop, TBottomLeft, TBottomRight> : ViewPagePart
 		where TTop : IWithChangeEvent, new()
-		where TBottomLeft : IWithChangeEvent, new()
+		where TBottomLeft : IWithChangeEvent, IWithChangeEventHandler, new()
 		where TBottomRight : IWithChangeEvent, IWithChangeEventHandler, new()
 	{
 		private TTop _top;
 		private TBottomLeft _bottomLeft;
 		private TBottomRight _bottomRight;
+
+		protected virtual bool ObjectNotExists => false;
 
 		protected TTop top {
 			get { return (TTop)this._top; }
@@ -302,7 +305,9 @@ namespace Tango.UI.Std
 			prepare(bottomRigth);
 		}
 
-        protected virtual string FormTitle => null;
+		
+
+		protected virtual string FormTitle => null;
 	}
 
 }

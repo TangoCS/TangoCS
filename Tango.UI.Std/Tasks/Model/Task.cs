@@ -49,8 +49,10 @@ namespace Tango.Tasks
         public virtual int SystemID { get; set; }
         [Column]
         public virtual DateTime LastModifiedDate { get; set; }
+		[Column]
+		public virtual string Description { get; set; }
 
-        public virtual string StartTypeTitle { get; set; }
+		public virtual string StartTypeTitle { get; set; }
 		public virtual string GroupTitle { get; set; }
         public virtual string SystemTitle { get; set; }
     }

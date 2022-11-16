@@ -7,7 +7,7 @@ namespace Tango.UI
 	{
 		public static void PopupForElement(this LayoutWriter w, string id, Action<TagAttributes> attrs = null, Action content = null, PopupOptions options = null)
 		{
-			w.Div(a => a.ID("popup_" + id).Set(attrs).Class("iw-contextMenu").DataRef(id), content);
+			w.Div(a => a.ID("popup_" + id).Set(attrs)/*.Class("iw-contextMenu")*/.DataRef(id), content);
 			w.BindPopup(id, options);
 		}
 
