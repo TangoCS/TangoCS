@@ -26,7 +26,7 @@
 				}
 				tbl.getElementsByClassName("tbodymenu")[0].firstElementChild.firstElementChild.appendChild(popup);
 			}
-			window.setTimeout(function () { $('#' + triggerid).contextMenu('#' + popupid, parms); }, 1);
+			$('#' + triggerid).contextMenu('#' + popupid, parms);
 		},
 		parms: function (args) {
 			return {

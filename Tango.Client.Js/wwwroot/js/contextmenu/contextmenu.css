@@ -8,9 +8,11 @@
 /*Context menu css */
 .iw-contextMenu {
 	visibility: hidden;
-	position: fixed;
 	z-index: 1000;
 	background-color: white;
+}
+.iw-contextMenuInit {
+	position: fixed;
 }
 
 .iw-display {
