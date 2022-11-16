@@ -75,6 +75,16 @@ namespace Tango.UI.Std
 			});
 		}
 
+		public static void ButtonsBar_delete(this LayoutWriter w, IViewElement form)
+		{
+			w.ButtonsBar(() => {
+				w.ButtonsBarRight(() => {
+					w.SubmitDeleteButton(a => a.ID("deletebtn").DataReceiver(form));
+					w.BackButton();
+				});
+			});
+		}
+
 		public static void CollapsibleSidebar(this LayoutWriter w, string title, Action content)
 		{
 			w.Div(a => a.ID("sidebar").Class("sidebar").DataCtrl("sidebar"), () => {

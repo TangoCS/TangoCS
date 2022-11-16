@@ -55,14 +55,12 @@ namespace Tango.UI.Std
 			response.AddWidget("contenttitle", title);
 			response.AddWidget("#title", title);
 
-			response.AddAdjacentWidget("form", "buttonsbar", AdjacentHTMLPosition.BeforeEnd, w => {
-				w.ButtonsBar(() => {
-					w.ButtonsBarRight(() => {
-						w.SubmitDeleteButton(a => a.ID("deletebtn").DataReceiver(this));
-						w.BackButton();
-					});
-				});
-			});
+			response.AddAdjacentWidget("form", "buttonsbar", AdjacentHTMLPosition.BeforeEnd, ButtonsBar);
+		}
+
+		protected virtual void ButtonsBar(LayoutWriter w)
+		{
+			w.ButtonsBar_delete(this);
 		}
 
 		protected virtual void Delete(IEnumerable<TKey> ids)
