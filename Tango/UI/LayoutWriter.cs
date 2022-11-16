@@ -13,7 +13,9 @@ namespace Tango.UI
         public ActionContext Context { get; }
         public IResourceManager Resources => Context.Resources;
 
-        public List<ClientAction> ClientActions { get; private set; } = new List<ClientAction>();
+		internal Dictionary<string, CtrlInfo> Ctrl { get; } = new Dictionary<string, CtrlInfo>();
+
+		public List<ClientAction> ClientActions { get; private set; } = new List<ClientAction>();
         public HashSet<string> Includes { get; private set; } = new HashSet<string>();
         public IFieldBlockRenderer FieldBlockRenderer { get; private set; }
 

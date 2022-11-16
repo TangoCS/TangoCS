@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 using Tango.Html;
 
 namespace Tango.UI
@@ -72,9 +73,38 @@ namespace Tango.UI
 			});
 		}
 
+		public static void SetCtrlState(this LayoutWriter w, string clientid, object state)
+		{
+			if (w.Ctrl.TryGetValue(clientid, out var ctrl))
+				ctrl.State = state;
+			else
+				w.Ctrl.Add(clientid, new CtrlInfo { State = state });
+		}
+		public static void SetCtrlProps(this LayoutWriter w, string clientid, object props)
+		{
+			if (w.Ctrl.TryGetValue(clientid, out var ctrl))
+				ctrl.Props = props;
+			else
+				w.Ctrl.Add(clientid, new CtrlInfo { Props = props });
+		}
+		public static void SetCtrlInstance(this LayoutWriter w, string clientid, object instance)
+		{
+			if (w.Ctrl.TryGetValue(clientid, out var ctrl))
+				ctrl.Instance = instance;
+			else
+				w.Ctrl.Add(clientid, new CtrlInfo { Instance = instance });
+		}
+
 		//static string GetClientId(LayoutWriter w, string name)
 		//{
 		//	return (!w.IDPrefix.IsEmpty() ? w.IDPrefix + "_" + name : name).ToLower();
 		//}
+	}
+
+	internal class CtrlInfo
+	{
+		public object Instance { get; set; }
+		public object State { get; set; }
+		public object Props { get; set; }
 	}
 }

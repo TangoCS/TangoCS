@@ -46,12 +46,6 @@ namespace Tango.UI
 			public string prefix;
 			public Action<LayoutWriter> content;
 		}
-		class CtrlInfo
-		{
-			public object Instance { get; set; }
-			public object State { get; set; }
-			public object Props { get; set; }
-		}
 
 		Dictionary<string, CtrlInfo> Ctrl = new Dictionary<string, CtrlInfo>(); 
 
@@ -368,6 +362,8 @@ namespace Tango.UI
 							ClientActions.Add(i);
 						foreach (var i in w.Includes)
 							Includes.Add(i);
+						foreach (var i in w.Ctrl)
+							Ctrl.Add(i.Key, i.Value);
 					}
 
 					Data.Add("widgets", Widgets);
