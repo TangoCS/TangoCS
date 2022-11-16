@@ -67,7 +67,7 @@ namespace Tango.UI.Navigation
 
 			w.Li(a => a.ID("header-adminmenu").Class("headerimgbtn").Title("Администрирование"), () => {
 				w.Span(() => w.Icon("header-settings2"));
-				w.DropDownForElement("header-adminmenu", () => {
+				w.DropDownForElement("header-adminmenu", a => a.Class("iw-contextMenu-fixed"), () => {
 					w.RenderTwoLevelMenu(rootItems, removed);
 				}, new PopupOptions { CloseOnScroll = false });
 			});
@@ -84,7 +84,7 @@ namespace Tango.UI.Navigation
 
 			w.Li(a => a.ID("header-helpmenu").Class("headerimgbtn").Title("Руководства"), () => {
 				w.Span(() => w.Icon("header-help"));
-				w.DropDownForElement("header-helpmenu", () => {
+				w.DropDownForElement("header-helpmenu", a => a.Class("iw-contextMenu-fixed"), () => {
 					w.RenderTwoLevelMenu(rootItems, removed);
 				}, new PopupOptions { CloseOnScroll = false });
 			});
@@ -103,7 +103,7 @@ namespace Tango.UI.Navigation
 					w.Write(conn ?? ConnectionManager.DefaultConnection);
 				});
 
-				w.DropDownForElement("header-db", () => {
+				w.DropDownForElement("header-db", a => a.Class("iw-contextMenu-fixed"), () => {
 					w.Div(() => {
 						foreach (var cs in ConnectionManager.ConnectionStrings)
 						{
@@ -130,9 +130,9 @@ namespace Tango.UI.Navigation
 
 				var themes = new List<string> { "SIMPLE", "SIMPLE2" };
 
-				w.DropDownForElement("header-theme", () => {
+				w.DropDownForElement("header-theme", a => a.Class("iw-contextMenu-fixed"), () => {
 					w.Div(() => {
-						foreach ( var t in themes)
+						foreach (var t in themes)
 							w.ActionLink(al => al.To<ThemeController>("changetheme").WithTitle(t).WithArg("newtheme", t));
 					});
 				});
