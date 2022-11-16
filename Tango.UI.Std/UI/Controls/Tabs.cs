@@ -119,6 +119,14 @@ namespace Tango.UI.Controls
 				}
 			});
 		}
+
+		public void ForcePageReload(ApiResponse response, string id)
+		{
+			var clientID = GetClientID($"{ID}_{id}_label");
+			var page = Pages.Where(p => p.ID == id).Single();
+			var value = !page.IsAjax;
+			response.SetElementAttribute(clientID, "data-loaded", value.ToString());
+		}
 	}
 
 	public class TabPage
