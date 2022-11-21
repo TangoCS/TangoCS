@@ -186,10 +186,10 @@ namespace Tango.Mail
     public class MailSettings_view : default_view_rep<MailSettings, int, IRepository<MailSettings>>
     {
         private MailSettingsTemplate_list _mailSettingsTemplateList;
-        private string _preProcessingMethods;
-        private string _postProcessingMethods;
-        private string _deleteMethods;
-        private string _faterSentMethods;
+        //private string _preProcessingMethods;
+        //private string _postProcessingMethods;
+        //private string _deleteMethods;
+        //private string _faterSentMethods;
 
         public override void OnInit()
         {

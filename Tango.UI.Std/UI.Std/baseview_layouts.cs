@@ -223,9 +223,9 @@ namespace Tango.UI.Std
 	/// <typeparam name="TBottomLeft"></typeparam>
 	/// <typeparam name="TBottomRight"></typeparam>
 	public abstract class ViewPagePart_top_2col_bottom<TTop, TBottomLeft, TBottomRight> : ViewPagePart
-		where TTop : IWithChangeEvent, new()
-		where TBottomLeft : IWithChangeEvent, IWithChangeEventHandler, new()
-		where TBottomRight : IWithChangeEvent, IWithChangeEventHandler, new()
+		where TTop : IViewPagePart, new()
+		where TBottomLeft : IViewPagePart, new()
+		where TBottomRight : IViewPagePart, new()
 	{
 		private TTop _top;
 		private TBottomLeft _bottomLeft;
@@ -243,7 +243,7 @@ namespace Tango.UI.Std
 			set { this._bottomLeft = value; }
 		}
 
-		protected TBottomRight bottomRigth {
+		protected TBottomRight bottomRight {
 			get { return (TBottomRight)this._bottomRight; }
 			set { this._bottomRight = value; }
 		}
@@ -258,9 +258,6 @@ namespace Tango.UI.Std
 			_top = CreateControl<TTop>("top", SetPropertiesTop);
 			_bottomLeft = CreateControl<TBottomLeft>("bottomLeft", SetPropertiesBottomLeft);
 			_bottomRight = CreateControl<TBottomRight>("bottomRight", SetPropertiesBottomRight);
-
-			//top.Changed += bottomLeft.OnChange;
-			//bottomLeft.OnChange += bottomRigth.OnChange;
 		}
 
 		protected virtual void SetPropertiesTop(TTop c) { }
@@ -282,7 +279,7 @@ namespace Tango.UI.Std
 					w.Div(a => a.ID("container").GridColumn(BottomLeftGrid));
 					w.PopPrefix();
 
-					w.PushPrefix(bottomRigth.ID);
+					w.PushPrefix(bottomRight.ID);
 					w.Div(a => a.ID("container").GridColumn(BottomRightGrid));
 					w.PopPrefix();
 				});
@@ -291,7 +288,7 @@ namespace Tango.UI.Std
 			if (FormTitle != null)
 				response.AddWidget("contenttitle", FormTitle);
 
-			void prepare<T>(T c) where T: IWithChangeEvent
+			void prepare<T>(T c) where T: IViewPagePart
 			{
 				response.WithNamesAndWritersFor(c);
 				var c1 = c.GetContainer();
@@ -302,7 +299,7 @@ namespace Tango.UI.Std
 
 			prepare(top);
 			prepare(bottomLeft);
-			prepare(bottomRigth);
+			prepare(bottomRight);
 		}
 
 		

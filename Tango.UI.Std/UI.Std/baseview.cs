@@ -115,21 +115,19 @@ namespace Tango.UI.Std
 		{
 			var w = new HtmlWriter();
 
-			byte[] token = new byte[32];
-			using (var csprng = new RNGCryptoServiceProvider())
-			{
-				csprng.GetBytes(token);
-			}
-			var tokenString = token.ByteArrayToHex();
+			//byte[] token = new byte[32];
+			//RandomNumberGenerator.Fill(token);
 
-			void headAttr(TagAttributes a)
-			{
-				a.ID("head").Data("x-csrf-token", tokenString).Data("page", GetType().Name.ToLower());
-			}
+			//var tokenString = token.ByteArrayToHex();
+
+			//void headAttr(TagAttributes a)
+			//{
+			//	a.ID("head").Data("x-csrf-token", tokenString).Data("page", GetType().Name.ToLower());
+			//}
 
 			w.DocType();
 			w.Html(() => {
-				w.Head(headAttr, () => {
+				w.Head(() => {
 					w.HeadTitle(a => a.ID("title"));
 					w.HeadMeta(a => a.HttpEquiv("content-type").Content("text/html; charset=utf-8"));
 					var r = DefaultView?.Resolve(Context);
@@ -142,7 +140,7 @@ namespace Tango.UI.Std
 				});
 			});
 
-			return new HtmlResult(w.ToString(), tokenString);
+			return new HtmlResult(w.ToString());
 		}
 		
 		protected abstract void Body(HtmlWriter w);
