@@ -177,7 +177,7 @@ namespace Tango.UI
 			w.DropDownList(field.ID, value, items, attrs);
 		}
 
-		public static void DropDownList<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, GridPosition grid = null, Action<SelectTagAttributes> attrs = null, string hint = null, bool selectedOptionHints = false)
+		public static void DropDownList<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, GridPosition grid = null, Action<SelectTagAttributes> attrs = null, string hint = null, bool selectedOptionHints = false, Action caption=null)
 		{
 			var value = typeof(TValue).IsEnum ?
 				field.Value == null ? "" : Convert.ChangeType(field.Value, Enum.GetUnderlyingType(typeof(TValue))).ToString() : 
@@ -193,7 +193,10 @@ namespace Tango.UI
 				w.AddClientAction("domActions", "setAttribute", f => new { id = f(field.ID), attrName = "readonly", attrValue = "readonly" });
 			if (selectedOptionHints)
 				w.AddClientAction("commonUtils", "selectedOptionHints", f => new { id = f(field.ID) });
-			w.FormField(field, () => w.DropDownList(field.ID, value, items, attrs), grid);
+			if(caption == null)
+				w.FormField(field, () => w.DropDownList(field.ID, value, items, attrs), grid);
+			else
+				w.FormField(field.Caption, caption, () => w.DropDownList(field.ID, value, items, attrs), grid);
 		}
 
 		//public static void Calendar(this LayoutWriter w, IField<DateTime> field, Action<InputTagAttributes> attributes = null, GridPosition grid = null)
