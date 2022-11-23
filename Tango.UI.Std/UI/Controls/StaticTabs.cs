@@ -16,7 +16,7 @@ namespace Tango.UI.Controls
                         w.Li(a => a.Class("tablink"), () =>
                         {                           
                             w.RadioButton(id, p.ID + "_title", null, isChecked: tabPages[i].Selected.HasValue ? tabPages[i].Selected.Value : (i == 0 ? true : false));
-                            w.Label(a => a.For(p.ID + "_title").Data("id", p.ID).OnClick("tabs.onselect(this)"), () => w.Write(p.Title));
+                            w.Label(a => a.For(p.ID + "_title").Data("id", p.ID).OnClick("tabs.onselect(this)"), () => p.Title(w));
                         });
                     }
                 });
@@ -34,20 +34,28 @@ namespace Tango.UI.Controls
 	public class StaticTabPage
 	{
 		public string ID { get; set; }
-		public string Title { get; set; }
+		public Action<LayoutWriter> Title { get; set; }
 		public Action<LayoutWriter> Content { get; set; }
         public bool? Selected { get; set; }
 		public string Style { get; set; }
 		public StaticTabPage(string id, string title, Action<LayoutWriter> content, bool? selected = null, string style = null)
 		{
 			ID = id;
-			Title = title;
+			Title = w => w.Write(title);
 			Content = content;
             Selected = selected;
 			Style = style;
 
 		}
+		public StaticTabPage(string id, Action<LayoutWriter> title, Action<LayoutWriter> content, bool? selected = null, string style = null)
+		{
+			ID = id;
+			Title = title;
+			Content = content;
+			Selected = selected;
+			Style = style;
 
+		}
 		public void Render(LayoutWriter w)
 		{
 			w.PushPrefix(ID);
