@@ -9,8 +9,7 @@ namespace Tango.Localization
 	public class DefaultResourceManagerOptions
 	{
 		public SortedSet<string> NotFoundResources { get; } = new SortedSet<string>();
-
-		public IReadOnlyDictionary<string, string> Resources { get; set; }
+		public IDictionary<string, string> Resources { get; set; }
 		public IReadOnlyDictionary<string, string> Images { get; set; }
 	}
 
