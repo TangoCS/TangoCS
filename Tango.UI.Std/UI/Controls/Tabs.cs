@@ -36,19 +36,22 @@ namespace Tango.UI.Controls
 			}
 		}
 
-		public T CreateTabPage<T>(string id, string title, Action<T> setProperties = null)
-			where T : ViewPagePart, new()
-		
-		{
-			var attr = typeof(T).GetCustomAttribute<SecurableObjectAttribute>();
-			if (attr != null && ac != null && !ac.Check(attr.Name))
-				return null;
+        public T CreateTabPage<T>(string id, Action<LayoutWriter> title, Action<T> setProperties = null)
+            where T : ViewPagePart, new()
 
-			var c = CreateControl(id, setProperties);
-			c.IsLazyLoad = true;
-			Pages.Add(new TabPage(title, c));
-			return c;
-		}
+        {
+            var attr = typeof(T).GetCustomAttribute<SecurableObjectAttribute>();
+            if (attr != null && ac != null && !ac.Check(attr.Name))
+                return null;
+
+            var c = CreateControl(id, setProperties);
+            c.IsLazyLoad = true;
+            Pages.Add(new TabPage(title, c));
+            return c;
+        }
+
+        public T CreateTabPage<T>(string id, string title, Action<T> setProperties = null)
+			where T : ViewPagePart, new() => CreateTabPage(id, w => w.Write(title), setProperties);
 
 		public void OnPageSelect(ApiResponse response)
 		{
@@ -97,9 +100,9 @@ namespace Tango.UI.Controls
 								.Data("id", p.ID).Data("ajax", p.IsAjax).Data("useurlparm", true).Data("loaded", !p.IsAjax || curpage.ID == p.ID)
 								.Data(p.DataCollection)
 								.Set(p.Attributes)
-								.OnClick("tabs.onselect(this)");								
-							}, 
-							() => w.Write(p.Title));
+								.OnClick("tabs.onselect(this)");
+							},
+							() => p.Title(w));
 						});
 					}
 					if (AfterTabs != null) w.Li(a => a.Class("aftertabs"), () => AfterTabs(w));
@@ -132,7 +135,7 @@ namespace Tango.UI.Controls
 	public class TabPage
 	{
 		public string ID { get; set; }
-		public string Title { get; set; }
+		public Action<LayoutWriter> Title { get; set; }
 		public bool Disabled { get; set; } = false;
 		public Action<ApiResponse> Content { get; set; }
 		public bool IsAjax { get; set; }
@@ -143,28 +146,33 @@ namespace Tango.UI.Controls
 
 		public DataCollection DataCollection { get; set; }
 
-		public TabPage(string id, string title, Action<ApiResponse> content, bool isAjax = false)
-		{
-			ID = id;
+        public TabPage(string id, Action<LayoutWriter> title, Action<ApiResponse> content, bool isAjax = false)
+        {
+            ID = id;
 			Title = title;
-			Content = content;
-			IsAjax = isAjax;
-			Container = new TabPageContainer();
-		}
+            Content = content;
+            IsAjax = isAjax;
+            Container = new TabPageContainer();
+        }
+        public TabPage(string id, string title, Action<ApiResponse> content, bool isAjax = false) : 
+			this(id, w => w.Write(title), content, isAjax) { }
 
-		public TabPage(string title, ViewPagePart element)
+        public TabPage(Action<LayoutWriter> title, ViewPagePart element)
 		{
-			ID = element.ID;
-			Title = title;
-			Content = response => {
-				element.IsLazyLoad = false;
-				element.RunOnEvent();
-				element.OnLoad(response);
-			};
-			DataCollection = element.DataCollection;
-			IsAjax = true;
-			Container = new TabPageContainer2(element.GetContainer());
-		}
+            ID = element.ID;
+            Title = title;
+            Content = response => {
+                element.IsLazyLoad = false;
+                element.RunOnEvent();
+                element.OnLoad(response);
+            };
+            DataCollection = element.DataCollection;
+            IsAjax = true;
+            Container = new TabPageContainer2(element.GetContainer());
+        }
+
+        public TabPage(string title, ViewPagePart element) : 
+			this(w => w.Write(title), element) { }
 	}
 
 	public class TabPageContainer : ViewContainer

@@ -108,8 +108,8 @@ namespace Tango.UI.Std
 			w.Div(a => a.ID("sidebar").Class("sidebar").DataCtrl("sidebar"), () => {
 				w.Div(a => a.Class("sidebar-menu"), () => {
 					w.Ul(() => {
-						w.Li(() => w.Span(tabs.Pages[0].Title));
-					});
+                        w.Li(() => tabs.Pages[0].Title(w));
+                    });
 				});
 				w.Div(a => a.Class("sidebar-panel"), () => {
 					w.Div(a => a.Class("sidebar-header"), () => {
