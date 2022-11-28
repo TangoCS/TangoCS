@@ -554,7 +554,21 @@ namespace Tango.Excel
 			public ITdAttributes Style(string value, bool replaceExisting = false)
 			{
 				var ss = writer.cssParser.ParseStyleSheet(".someClass{" + value + "}");
-				style = (ss.Rules.First() as ICssStyleRule).Style;
+				var sts = (ss.Rules.First() as ICssStyleRule).Style;
+				if (style != null)
+					foreach (var st in sts)
+					{
+						if (style.Any(o => o.Name == st.Name))
+						{
+							if (replaceExisting)
+								style.SetProperty(st.Name, st.Value);
+						}
+						else
+							style.SetProperty(st.Name, st.Value);
+					}
+				else
+					style = sts;
+
 				return this;
 			}
 
@@ -684,7 +698,21 @@ namespace Tango.Excel
 			public IThAttributes Style(string value, bool replaceExisting = false)
 			{
 				var ss = writer.cssParser.ParseStyleSheet(".someClass{" + value + "}");
-				style = (ss.Rules.First() as ICssStyleRule).Style;
+				var sts = (ss.Rules.First() as ICssStyleRule).Style;
+				if (style != null)
+					foreach (var st in sts)
+					{
+						if (style.Any(o => o.Name == st.Name))
+						{
+							if (replaceExisting)
+								style.SetProperty(st.Name, st.Value);
+						}
+						else
+							style.SetProperty(st.Name, st.Value);
+					}
+				else
+					style = sts;
+
 				return this;
 			}
 
@@ -775,7 +803,21 @@ namespace Tango.Excel
 			public IContentItemAttributes Style(string value, bool replaceExisting = false)
 			{
 				var ss = writer.cssParser.ParseStyleSheet(".someClass{" + value + "}");
-				style = (ss.Rules.First() as ICssStyleRule).Style;
+				var sts = (ss.Rules.First() as ICssStyleRule).Style;
+				if (style != null)
+					foreach (var st in sts)
+					{
+						if (style.Any(o => o.Name == st.Name))
+						{
+							if (replaceExisting)
+								style.SetProperty(st.Name, st.Value);
+						}
+						else
+							style.SetProperty(st.Name, st.Value);
+					}
+				else
+					style = sts;
+
 				return this;
 			}
 
