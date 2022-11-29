@@ -25,7 +25,8 @@ namespace Tango.Tasks
         {
             f.AddCellWithSortAndFilter(o => o.TaskGroupID, (w, o) => w.ActionLink(al => al.ToView(AccessControl, o).WithTitle(o.TaskGroupID)));
             f.AddCellWithSortAndFilter(o => o.Title, o => o.Title);
-        }
+			f.AddCellWithSortAndFilter(o => o.SeqNo, o => o.SeqNo);
+		}
     }
 
     [OnAction(typeof(TaskGroup), "view")]
@@ -42,7 +43,8 @@ namespace Tango.Tasks
             w.FieldsBlockStd(() => {
                 w.PlainText(Resources.Get<TaskGroup>("TaskGroupID"), ViewData.TaskGroupID);
                 w.PlainText(Resources.Get<TaskGroup>("Title"), ViewData.Title);
-            });
+				w.PlainText(Resources.Get<TaskGroup>("SeqNo"), ViewData.SeqNo);
+			});
         }
     }
 
@@ -57,7 +59,8 @@ namespace Tango.Tasks
             w.FieldsBlockStd(() =>
             {
                 w.TextBox(gr.Title);
-            });
+				w.TextBox(gr.SeqNo);
+			});
         }
     }
 

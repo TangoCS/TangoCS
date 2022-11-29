@@ -74,3 +74,4 @@ tango.tasks.taskgroup;Категория задач;Task category
 tango.tasks.taskgroup-pl;Категория задач;Task category
 tango.tasks.taskgroup.viewlist;Категория задач;Task category
 tango.tasks.taskgroup.taskgroupid;Код;ID
+tango.tasks.taskgroup.seqno;Порядковый номер;Seq no

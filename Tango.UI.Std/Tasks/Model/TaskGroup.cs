@@ -23,5 +23,7 @@ namespace Tango.Tasks
         public virtual string Title { get; set; }
         [Column]
         public virtual bool IsDeleted { get; set; }
-    }
+		[Column]
+		public virtual int SeqNo { get; set; }
+	}
 }

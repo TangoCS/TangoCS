@@ -38,7 +38,7 @@ namespace Tango.Tasks
 		{
 			base.OnInit();
 
-			var groups = Repository.GetGroups().OrderBy(o => o.Title);
+			var groups = Repository.GetGroups().OrderBy(o => o.SeqNo);
 
 			tabs = CreateControl<Tabs>("tasktabs");
 
