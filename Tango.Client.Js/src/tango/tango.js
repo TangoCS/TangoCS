@@ -1042,7 +1042,7 @@ window.ajaxUtils = function ($, cu) {
 			attr = attrs[i];
 			var val = attr.value == '' ? null : attr.value;
 			if (attr.name.startsWith('data-p-')) {
-				if (target.method == 'POST' || target.method == 'FAKEGET') {
+				if (target.method == 'POST') {
 					if (target.data instanceof FormData) {
 						target.data.append(attr.name.replace('data-p-', ''), val || '');
 					}
