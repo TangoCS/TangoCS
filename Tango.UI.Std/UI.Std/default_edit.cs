@@ -91,7 +91,8 @@ namespace Tango.UI.Std
 		public override void OnLoad(ApiResponse response)
 		{
 			response.AddWidget("contenttitle", FormTitle);
-			response.AddWidget("#title", FormTitle);
+			if (ParentElement == null)
+				response.AddWidget("#title", FormTitle);
 
             if (ObjectNotExists)
 			{
