@@ -32,7 +32,7 @@ namespace Tango.UI.Std
             };
 
             w.FieldsBlockCollapsible(title, () => {
-                w.Div(a => a.Class("validation-body").Class("widthstd").Style("white-space: nowrap;"), () => {
+                w.Div(a => a.Class("validation-body").Class("widthstd").GridColumn(Grid.OneWhole)/*.Style("white-space: nowrap;")*/, () => {
                     foreach (var item in val)
                         w.P(() => w.Write(item.Message));
                 });
