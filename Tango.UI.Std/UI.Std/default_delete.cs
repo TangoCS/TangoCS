@@ -71,8 +71,8 @@ namespace Tango.UI.Std
 				Repository.Delete(ids);
 		}
 
-		protected virtual void BeforeDelete(IEnumerable<TKey> ids) { }
-		protected virtual void AfterDelete(IEnumerable<TKey> ids) { }
+		protected virtual void BeforeDeleteEntity(IEnumerable<TKey> ids) { }
+		protected virtual void AfterDeleteEntity(IEnumerable<TKey> ids) { }
 
 		protected virtual void ProcessFormData(IEnumerable<TKey> ids, ValidationMessageCollection val) { }
 
@@ -124,14 +124,14 @@ namespace Tango.UI.Std
 				return;
 			}
 
-			BeforeDelete(sel);
 			using (var tran = Database.BeginTransaction())
 			{
+				BeforeDeleteEntity(sel);
 				Delete(sel);
+				AfterDeleteEntity(sel);
 				EntityAudit?.WriteObjectChange();
 				tran.Commit();
 			}
-			AfterDelete(sel);
 
 			AfterSubmit(response);
 		}

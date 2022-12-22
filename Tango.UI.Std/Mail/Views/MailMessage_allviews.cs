@@ -200,7 +200,7 @@ namespace Tango.Mail
     public class MailMessage_delete : default_delete<MailMessage, int>
     {
         [Inject] protected MailHelper MailHelper { get; set; }
-        protected override void BeforeDelete(IEnumerable<int> ids)
+        protected override void BeforeDeleteEntity(IEnumerable<int> ids)
         {
             //Database.Connection.InitDbConventions<MailMessage>();
             foreach (var id in ids)
