@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using Tango.Html;
 
@@ -19,24 +20,38 @@ namespace Tango.UI.Std
         //     return w;
         // }
 
-        public static LayoutWriter ValidationBlock(this LayoutWriter w, ValidationMessageCollection val)
+        public static void ValidationBlockContainer(this LayoutWriter w, ValidationMessageSeverity severity, Action content)
         {
-            var color = val.Count == 0 ? "red" :
-                val.Any(o => o.Severity == ValidationMessageSeverity.Error) ? "red" :
-                val.Any(o => o.Severity == ValidationMessageSeverity.Warning) ? "yellow" :
-                "skyblue";
+			var color = 
+				severity == ValidationMessageSeverity.Error ? "red" :
+				severity == ValidationMessageSeverity.Warning ? "yellow" :
+				"skyblue";
 
-            Action title = () => {
-                w.Icon("warning", a => a.Style("margin-right: 4px; color:" + color));
-                w.Write("Предупреждение");
-            };
+			Action title = () => {
+				w.Icon("warning", a => a.Style("margin-right: 4px; color:" + color));
+				w.Write("Предупреждение");
+			};
 
-            w.FieldsBlockCollapsible(title, () => {
-                w.Div(a => a.Class("validation-body").Class("widthstd").GridColumn(Grid.OneWhole)/*.Style("white-space: nowrap;")*/, () => {
-                    foreach (var item in val)
-                        w.P(() => w.Write(item.Message));
-                });
-            });
+			w.FieldsBlockCollapsible(title, () => {
+				w.Div(a => a.Class("validation-body").Class("widthstd").GridColumn(Grid.OneWhole), () => {
+                    content();
+				});
+			});
+		}
+
+
+		public static LayoutWriter ValidationBlock(this LayoutWriter w, ValidationMessageCollection val)
+        {
+            var severity = val.Count == 0 ? ValidationMessageSeverity.Error :
+                val.Any(o => o.Severity == ValidationMessageSeverity.Error) ? ValidationMessageSeverity.Error :
+                val.Any(o => o.Severity == ValidationMessageSeverity.Warning) ? ValidationMessageSeverity.Warning :
+				ValidationMessageSeverity.Information;
+
+            w.ValidationBlockContainer(severity, () => {
+				foreach (var item in val)
+					w.P(() => w.Write(item.Message));
+			});
+
             return w;
         }
     }
