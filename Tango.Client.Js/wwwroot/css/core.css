@@ -145,6 +145,19 @@ input.text {
 	width: 700px;
 }
 
+.height100column {
+	height: 100%;
+	overflow-y: auto;
+	display: flex;
+	flex-direction: column;
+}
+
+.height100column form {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
 .widthstd2x {
 	width: 100%;
 	max-width: 1400px;
