@@ -84,7 +84,7 @@ namespace Tango.UI.Std
 							ContentHeader(w);
 						});
 					w.Div(a => a.ID("contenttoolbar"));
-					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding" + (Height == ContainerHeight.Height100 ? " height100column" : "")), () => {
+					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding").Style(Height == ContainerHeight.Height100 ? "display:flex;flex-direction:column;" : null), () => {
 						var cls = "editform";
 						if (Width != ContainerWidth.Undefined) cls += " " + Width.ToString().ToLower();
 						if (GridMode) cls += " grid60";
