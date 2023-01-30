@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Transactions;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Tango.Data;
@@ -452,7 +453,19 @@ namespace Tango.Mail
         {
             if (!string.IsNullOrEmpty(context.MailMessage.AfterSentMethod))
             {
-                ExecuteMethod(context, context.MailMessage.AfterSentMethod);
+                using (var transaction = _database.BeginTransaction())
+                {
+                    try
+                    {
+                        ExecuteMethod(context, context.MailMessage.AfterSentMethod);
+
+                        transaction.Commit();
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                    }
+                }
             }
         }
 
@@ -467,22 +480,10 @@ namespace Tango.Mail
 
         private void ExecuteMethod(IMailMethodContext context, string method)
         {
-            using (var transaction = _database.BeginTransaction())
+            var mailMethods = JsonConvert.DeserializeObject<MethodSettingsCollection>(method);
+            foreach (var methodSetting in mailMethods.MethodSettings)
             {
-                try
-                {
-                    var mailMethods = JsonConvert.DeserializeObject<MethodSettingsCollection>(method);
-                    foreach (var methodSetting in mailMethods.MethodSettings)
-                    {
-                        _methodHelper.ExecuteMethod(methodSetting, context);
-                    }
-
-                    transaction.Commit();
-                }
-                catch
-                {
-                    transaction.Rollback();
-                }
+                _methodHelper.ExecuteMethod(methodSetting, context);
             }
         }
 
