@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using Tango.AccessControl;
 using Tango.Data;
@@ -71,6 +72,7 @@ namespace Tango.Mail
             w.FieldsBlockStd(() =>
             {
                 w.TextBox(Group.Title);
+                //w.TextBox(Group.TemplateSubject);
                 w.TextBox(Group.TemplateSubject);
                 w.TextArea(Group.TemplateBody);
                 w.TextArea(Group.Comment);
@@ -108,5 +110,15 @@ namespace Tango.Mail
     [OnAction(typeof(MailTemplate), "delete")]
     public class MailTemplate_delete : default_delete<MailTemplate, int>
     {
+        protected override void ProcessFormData(IEnumerable<int> ids, ValidationMessageCollection val)
+        {
+            var mst = Database.Repository<MailSettingsTemplate>().List()
+                .FirstOrDefault(i => i.MailTemplateID == ids.FirstOrDefault());
+
+            if(mst != null)
+            {
+                val.Add("", "Шаблон применяется для исходящих сообщений. Для удаления шаблона, необходимо, сначала удалить его из Настроек исходящих сообщений.");
+            }
+        }
     }
 }
