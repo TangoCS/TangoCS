@@ -4,13 +4,13 @@ namespace Tango.Html
 {
 	public partial class HtmlWriter
 	{
-		void IContentWriter.Table(Action<IContentItemAttributes> attributes, Action inner) => WriteTag("table", attributes, inner);
-		void IContentWriter.Tr(Action<IContentItemAttributes> attributes, Action inner) => WriteTag("tr", attributes, inner);
-		void IContentWriter.Td(Action<ITdAttributes> attributes, Action inner) => WriteTag("td", attributes, inner);
-		void IContentWriter.Th(Action<IThAttributes> attributes, Action inner) => WriteTag("th", attributes, inner);
-		void IContentWriter.Div(Action<IContentItemAttributes> attributes, Action inner) => WriteTag("div", attributes, inner);
-		void IContentWriter.Td(Action<ITdAttributes> attributes, decimal? n, string format) => WriteTag("td", (Action<ITdAttributes>)(a => { a.Class("r"); attributes?.Invoke(a); }), () => Write(n == null ? "" : n.Value.ToString(format, ru)));
-		void IContentWriter.Th(Action<IThAttributes> attributes, decimal? n, string format) => WriteTag("th", (Action<IThAttributes>)(a => { a.Class("r"); attributes?.Invoke(a); }), () => Write(n == null ? "" : n.Value.ToString(format, ru)));
+		void IContentWriter.Table(Action<IContentItemAttributes> attributes, Action inner) => WriteContentTag("table", attributes, inner);
+		void IContentWriter.Tr(Action<IContentItemAttributes> attributes, Action inner) => WriteContentTag("tr", attributes, inner);
+		void IContentWriter.Td(Action<ITdAttributes> attributes, Action inner) => WriteContentTag("td", attributes, inner);
+		void IContentWriter.Th(Action<IThAttributes> attributes, Action inner) => WriteContentTag("th", attributes, inner);
+		void IContentWriter.Div(Action<IContentItemAttributes> attributes, Action inner) => WriteContentTag("div", attributes, inner);
+		void IContentWriter.Td(Action<ITdAttributes> attributes, decimal? n, string format) => WriteContentTag("td", (Action<ITdAttributes>)(a => { a.Class("r"); attributes?.Invoke(a); }), () => Write(n == null ? "" : n.Value.ToString(format, ru)));
+		void IContentWriter.Th(Action<IThAttributes> attributes, decimal? n, string format) => WriteContentTag("th", (Action<IThAttributes>)(a => { a.Class("r"); attributes?.Invoke(a); }), () => Write(n == null ? "" : n.Value.ToString(format, ru)));
 
 		T Fabric<T>()
 			where T : class, IContentItemAttributes<T>

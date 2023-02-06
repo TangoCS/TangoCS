@@ -42,25 +42,23 @@ namespace Tango.UI.Controls
 
 		public override void RenderSelected(LayoutWriter w, TRef selectedValue)
 		{
-			var cw = w.Clone(Field);
-
 			var val = selectedValue == null ? "" : Field.SelectedObjectTextField(selectedValue);
 
-			cw.Div(a => a.ID("selected").Class("selectedcontainer"), () => {
+			w.Div(a => a.ID("selected").Class("selectedcontainer"), () => {
 				if (Field.TextWhenDisabled != null)
-					cw.Div(a => a.Class("selected disabledtext").Class(Field.Disabled || Field.ReadOnly ? "" : "hide"), () => Field.TextWhenDisabled.Invoke(cw));
+					w.Div(a => a.Class("selected disabledtext").Class(Field.Disabled || Field.ReadOnly ? "" : "hide"), () => Field.TextWhenDisabled.Invoke(w));
 
 				if (Field.TextWhenNothingSelected != null)
-					cw.Div(a => a.Class("selected nothingselectedtext").Class(selectedValue == null ? "" : "hide"), () => Field.TextWhenNothingSelected.Invoke(cw));
+					w.Div(a => a.Class("selected nothingselectedtext").Class(selectedValue == null ? "" : "hide"), () => Field.TextWhenNothingSelected.Invoke(w));
 
-				cw.Div(a => a.Class("selected object").Class(val.IsEmpty() ? "hide" : ""), () => {
-					cw.Span(val);
+				w.Div(a => a.Class("selected object").Class(val.IsEmpty() ? "hide" : ""), () => {
+					w.Span(val);
 					if (!Field.Disabled && !Field.ReadOnly)
 					{
-						cw.A(a => {
+						w.A(a => {
 							a.Class("close").OnClick($"{ctrlName}Field.clear(this)");
 							if (Field.PostOnClearEvent) a.DataEvent(OnClear);
-						}, () => cw.Icon("close"));
+						}, () => w.Icon("close"));
 					}
 				});
 			});
@@ -78,28 +76,30 @@ namespace Tango.UI.Controls
 
 		public override void Render(LayoutWriter w, TRef selectedValue)
 		{
-			var cw = w.Clone(Field);
-			var pw = w.Clone(Field.ParentElement);
-			
-			cw.Div(a => {
-				a.ID("placeholder").Class("selectsingleobject").DataCtrl("selectObjectDropDownField", Field.ClientID);
-				if (Field.Disabled || Field.ReadOnly) a.Data("disabled", true);
-			}, () => {
-				RenderSelected(w, selectedValue);
-				RenderFilter(cw);
+			w.WithPrefix(Field, () => {
+				w.Div(a => {
+					a.ID("placeholder").Class("selectsingleobject").DataCtrl("selectObjectDropDownField", Field.ClientID);
+					if (Field.Disabled || Field.ReadOnly) a.Data("disabled", true);
+				}, () => {
+					RenderSelected(w, selectedValue);
+					RenderFilter(w);
 
-				if (!Field.Disabled && !Field.ReadOnly)//делать класс Hide
-					cw.Icon("dropdownarrow-angle-classic", a => a.ID("btn").Class("btn"));
+					if (!Field.Disabled && !Field.ReadOnly)//делать класс Hide
+						w.Icon("dropdownarrow-angle-classic", a => a.ID("btn").Class("btn"));
 
-				var value = selectedValue != null ? Field.DataValueField(selectedValue) : "";
-				pw.Hidden(Field.ID, value, a => { 
-					a.DataHasClientState(ClientStateType.Value, Field.ClientID, "selectedvalue");
-					if (Field.ReadOnly) a.Readonly(true);
-					if (Field.Disabled) a.Disabled(true);
+					var value = selectedValue != null ? Field.DataValueField(selectedValue) : "";
+
+					w.WithPrefix(Field.ParentElement, () => {
+						w.Hidden(Field.ID, value, a => {
+							a.DataHasClientState(ClientStateType.Value, Field.ClientID, "selectedvalue");
+							if (Field.ReadOnly) a.Readonly(true);
+							if (Field.Disabled) a.Disabled(true);
+						});
+					});
 				});
-			});
 
-			cw.Div(a => a.ID("popup").Class("selectsingleobject-popup").DataRef(Field.FilterFieldName).Data(DataCollection).DataEvent(OpenDialog).DataNewContainer(typeof(SelectObjectPopupContainer), Field.ClientID));
+				w.Div(a => a.ID("popup").Class("selectsingleobject-popup").DataRef(Field.FilterFieldName).Data(DataCollection).DataEvent(OpenDialog).DataNewContainer(typeof(SelectObjectPopupContainer), Field.ClientID));
+			});
 		}
 
 		public void OnClear(ApiResponse response)

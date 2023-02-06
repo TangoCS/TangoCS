@@ -124,6 +124,6 @@ namespace Tango.Html
 
 	public class TimeTagAttributes : TagAttributes<TimeTagAttributes>
 	{
-		public TimeTagAttributes DateTime(DateTime value) { Writer.WriteAttrID("datetime", value.ToString("yyyy-MM-dd HH:mm:ss")); return this; }
+		public TimeTagAttributes DateTime(DateTime value) { Writer.WriteAttr("datetime", value.ToString("yyyy-MM-dd HH:mm:ss")); return this; }
 	}
 }

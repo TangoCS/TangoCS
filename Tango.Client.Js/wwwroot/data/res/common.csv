@@ -3,7 +3,7 @@ Account.Password;Пароль;Password
 Account.PasswordReset;Сброс пароля;Password reset
 Account.Register;Зарегистрироваться;Register
 Account.RememberMe;Запомнить меня;Remember me
-Account.SignIn;Войти;Sign in
+Account.SignIn;Войти;Continue
 Account.SignInTitle;Вход в систему;Sign in
 Account.SignOut;Выйти;Sign out
 Account.UserName;Имя пользователя;User name

@@ -30,6 +30,12 @@ namespace Tango.UI.Navigation
 		public List<MenuItem> Children { get; } = new List<MenuItem>();
 	}
 
+	//public class MenuNode
+	//{
+	//	public MenuItem Item { get; set; }
+	//	public List<MenuNode> Children { get; } = new List<MenuNode>();
+	//}
+
 	public static class MenuHelper
 	{
 		public static HashSet<Guid> CheckMenuItems(IAccessControl ac, IEnumerable<MenuItem> rootItems)
@@ -158,16 +164,16 @@ namespace Tango.UI.Navigation
 			return (rootItems.Where(o => !removed.Contains(o.ID)), removed);
 		}
 
+		public static void MenuItem(this LayoutWriter w, MenuItem c)
+		{
+			w.A(a => a.Href(c.Url).OnClickRunHref().Data(Constants.ContainerNew, 1), () => {
+				if (!c.Image.IsEmpty()) w.Icon(c.Image);
+				w.Write(c.Title);
+			});
+		}
+
 		public static void RenderTwoLevelMenu(this LayoutWriter w, IEnumerable<MenuItem> rootItems, HashSet<Guid> removed)
 		{
-			void link(MenuItem c)
-			{
-				w.A(a => a.Href(c.Url).OnClickRunHref().Data(Constants.ContainerNew, 1), () => {
-					if (!c.Image.IsEmpty()) w.Icon(c.Image);
-					w.Write(c.Title);
-				});
-			}
-
 			foreach (var m in rootItems)
 			{
 				var children = m.Children.Where(o => !removed.Contains(o.ID));
@@ -177,11 +183,11 @@ namespace Tango.UI.Navigation
 					w.Div(() => {
 						w.Div(m.Title);
 						foreach (var c in children)
-							link(c);
+							w.MenuItem(c);
 					});
 				}
 				else
-					link(m);
+					w.MenuItem(m);
 			}
 		}
 	}

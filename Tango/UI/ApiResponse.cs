@@ -45,13 +45,13 @@ namespace Tango.UI
 			public ActionContext context;
 			public string prefix;
 			public Action<LayoutWriter> content;
+			public bool nested = false;
 		}
 
-		Dictionary<string, CtrlInfo> Ctrl = new Dictionary<string, CtrlInfo>(); 
+		Dictionary<string, CtrlInfo> _ctrl = new Dictionary<string, CtrlInfo>();
 
-		public List<IWidget> Widgets { get; set; } = new List<IWidget>();
+		//public List<Widget> Widgets { get; set; } = new List<Widget>();
 		public List<ClientAction> ClientActions { get; set; } = new List<ClientAction>();
-		public HashSet<string> Includes { get; set; } = new HashSet<string>();
 
 		List<WidgetToRender> _widgetsToRender = new List<WidgetToRender>();
 		string _idprefix = "";
@@ -108,29 +108,34 @@ namespace Tango.UI
 
 		public void Insert(ApiResponse resp)
 		{
-			for (int i = resp.Widgets.Count - 1; i >= 0; i--)
-				Widgets.Insert(0, resp.Widgets[i]);
+			//for (int i = resp.Widgets.Count - 1; i >= 0; i--)
+			//	Widgets.Insert(0, resp.Widgets[i]);
 
 			for (int i = resp._widgetsToRender.Count - 1; i >= 0; i--)
 				_widgetsToRender.Insert(0, resp._widgetsToRender[i]);
 
 			for (int i = resp.ClientActions.Count - 1; i >= 0; i--)
 				ClientActions.Insert(0, resp.ClientActions[i]);
+
+			foreach (var kv in resp._ctrl)
+				_ctrl.Add(kv.Key, kv.Value);
 		}
 
 		public void Add(ApiResponse resp)
 		{
-			Widgets.AddRange(resp.Widgets);
-			_widgetsToRender.AddRange(resp._widgetsToRender);
+			//Widgets.AddRange(resp.Widgets);
 			ClientActions.AddRange(resp.ClientActions);
+			_widgetsToRender.AddRange(resp._widgetsToRender);
+			foreach (var kv in resp._ctrl)
+				_ctrl.Add(kv.Key, kv.Value);
 		}
 
 		public void ReplaceWith(ApiResponse resp)
 		{
-			Widgets = resp.Widgets;
+			//Widgets = resp.Widgets;
 			ClientActions = resp.ClientActions;
-			Includes = resp.Includes;
 			_widgetsToRender = resp._widgetsToRender;
+			_ctrl = resp._ctrl;
 		}
 
 		public void AddClientAction(string service, string method, Func<Func<string, string>, object> args)
@@ -212,26 +217,25 @@ namespace Tango.UI
 
 		public void SetCtrlState(string clientid, object state)
 		{
-			if (Ctrl.TryGetValue(clientid, out var ctrl))
+			if (_ctrl.TryGetValue(clientid, out var ctrl))
 				ctrl.State = state;
 			else
-				Ctrl.Add(clientid, new CtrlInfo { State = state });
+				_ctrl.Add(clientid, new CtrlInfo { State = state });
 		}
 		public void SetCtrlProps(string clientid, object props)
 		{
-			if (Ctrl.TryGetValue(clientid, out var ctrl))
+			if (_ctrl.TryGetValue(clientid, out var ctrl))
 				ctrl.Props = props;
 			else
-				Ctrl.Add(clientid, new CtrlInfo { Props = props });
+				_ctrl.Add(clientid, new CtrlInfo { Props = props });
 		}
 		public void SetCtrlInstance(string clientid, object instance)
 		{
-			if (Ctrl.TryGetValue(clientid, out var ctrl))
+			if (_ctrl.TryGetValue(clientid, out var ctrl))
 				ctrl.Instance = instance;
 			else
-				Ctrl.Add(clientid, new CtrlInfo { Instance = instance });
+				_ctrl.Add(clientid, new CtrlInfo { Instance = instance });
 		}
-
 
 		#region dom actions
 		public virtual void SetElementValue(string id, string value)
@@ -268,19 +272,28 @@ namespace Tango.UI
 		#region main widget methods, string content
 		public virtual ApiResponse AddWidget(string name, string content)
 		{
-			Widgets.Add(new ContentWidget{ Name = _namefunc(name), Content = content, Action = WidgetAction.Add });
+			var n = _namefunc(name);
+			var w = new ContentWidget { Name = n, Content = content, Action = WidgetAction.Add };
+			//Widgets.Add(w);
+			_widgetsToRender.Add(new WidgetToRender { widget = w });
 			return this;
 		}
 
 		public virtual ApiResponse ReplaceWidget(string name, string content)
 		{
-			Widgets.Add(new ContentWidget { Name = _namefunc(name), Content = content, Action = WidgetAction.Replace });
+			var n = _namefunc(name);
+			var w = new ContentWidget { Name = n, Content = content, Action = WidgetAction.Replace };
+			//Widgets.Add(w);
+			_widgetsToRender.Add(new WidgetToRender { widget = w });
 			return this;
 		}
 
 		public virtual ApiResponse RemoveWidget(string name)
 		{
-			Widgets.Add(new Widget { Name = _namefunc(name), Action = WidgetAction.Remove });
+			var n = _namefunc(name);
+			var w = new ContentWidget { Name = n, Action = WidgetAction.Remove };
+			//Widgets.Add(w);
+			_widgetsToRender.Add(new WidgetToRender { widget = w });
 			return this;
 		}
 
@@ -292,7 +305,10 @@ namespace Tango.UI
 
 		public virtual ApiResponse AddAdjacentWidget(string parent, string name, string content, AdjacentHTMLPosition position = AdjacentHTMLPosition.BeforeEnd)
 		{
-			Widgets.Add(new AdjacentWidget { Name = _namefunc(name), Parent = parent, Content = content, Action = WidgetAction.Adjacent, Position = position });
+			var n = _namefunc(name);
+			var w = new AdjacentWidget { Name = n, Parent = parent, Content = content, Action = WidgetAction.Adjacent, Position = position };
+			//Widgets.Add(w);
+			_widgetsToRender.Add(new WidgetToRender { widget = w });
 			return this;
 		}
 		#endregion
@@ -302,7 +318,7 @@ namespace Tango.UI
 		{
 			var n = name?.StartsWith("#") ?? false ? name.Substring(1) : _namefunc(name);
 			var w = new ContentWidget { Name = n, Action = WidgetAction.Add };
-			Widgets.Add(w);
+			//Widgets.Add(w);
 			_widgetsToRender.Add(new WidgetToRender { widget = w, prefix = _idprefix, content = content });
 			return this;
 		}
@@ -311,7 +327,7 @@ namespace Tango.UI
 		{
 			var n = name?.StartsWith("#") ?? false ? name.Substring(1) : _namefunc(name);
 			var w = new ContentWidget { Name = n, Action = WidgetAction.AddShadow };
-			Widgets.Add(w);
+			//Widgets.Add(w);
 			_widgetsToRender.Add(new WidgetToRender { widget = w, prefix = _idprefix, content = content });
 			return this;
 		}
@@ -320,7 +336,7 @@ namespace Tango.UI
 		{
 			var n = name?.StartsWith("#") ?? false ? name.Substring(1) : _namefunc(name);
 			var w = new ContentWidget { Name = n, Action = WidgetAction.Replace };
-			Widgets.Add(w);
+			//Widgets.Add(w);
 			_widgetsToRender.Add(new WidgetToRender { widget = w, prefix = _idprefix, content = content });
 			return this;
 		}
@@ -340,53 +356,95 @@ namespace Tango.UI
 			var n = name?.StartsWith("#") ?? false ? name.Substring(1) : _namefunc(name);
 			var p = parent == null ? null : (parent.StartsWith("#") ? parent.Substring(1) : _namefunc(parent));
 			var w = new AdjacentWidget { Name = n, Parent = p, Action = WidgetAction.Adjacent, Position = position };
-			Widgets.Add(w);
+			//Widgets.Add(w);
 			_widgetsToRender.Add(new WidgetToRender { widget = w, prefix = _idprefix, content = content });
 			return this;
 		}
 		#endregion
 
-		public override string Serialize(ActionContext context)
+		public void ApplyTo(ActionContext context, HtmlWriter pageWriter)
+		{
+			var json = Serialize(context, pageWriter);
+		}
+
+		string Serialize(ActionContext context, HtmlWriter pageWriter)
 		{
 			try
 			{
-				if (Widgets.Count > 0)
+				List<Widget> widgets = new List<Widget>();
+
+				if (_widgetsToRender.Count > 0)
 				{
 					foreach (var r in _widgetsToRender)
 					{
-						var w = new LayoutWriter(r.context ?? context, r.prefix);
-						r.content?.Invoke(w);
-						r.widget.Content = w.ToString();
+						HtmlWriter w = null;
+						if (r.content != null)
+						{
+							var lw = new LayoutWriter(r.context ?? context, r.prefix);
+							r.content.Invoke(lw);
+							if (pageWriter == null)
+								r.widget.Content = lw.ToString();
 
-						foreach (var i in w.ClientActions)
-							ClientActions.Add(i);
-						foreach (var i in w.Includes)
-							Includes.Add(i);
-						foreach (var i in w.Ctrl)
-							Ctrl.Add(i.Key, i.Value);
+							foreach (var i in lw.ClientActions)
+								ClientActions.Add(i);
+							foreach (var i in lw.Ctrl)
+								_ctrl.Add(i.Key, i.Value);
+							w = lw;
+						}
+
+						if (pageWriter != null)
+						{
+							if (r.content == null)
+							{
+								w = new HtmlWriter();
+								w.Write(r.widget.Content);
+							}
+
+							switch (r.widget.Action)
+							{
+								case WidgetAction.Add:
+									r.nested = pageWriter.AddWidget(r.widget.Name, w);
+									break;
+								case WidgetAction.Remove:
+									break;
+								case WidgetAction.Replace:
+									r.nested = pageWriter.ReplaceWidget(r.widget.Name, w);
+									break;
+								case WidgetAction.Adjacent:
+									var adjw = r.widget as AdjacentWidget;
+									r.nested = pageWriter.AddAdjacentWidget(adjw.Parent, adjw.Position, w);
+									break;
+								case WidgetAction.AddShadow:
+									break;
+								default:
+									break;
+							}
+						}
+
+						if (!r.nested)
+							widgets.Add(r.widget);
 					}
 
-					Data.Add("widgets", Widgets);
+					Data.Add("widgets", widgets);
 				}
-				if (ClientActions.Count > 0)
+				if (pageWriter == null && ClientActions.Count > 0)
 					Data.Add("clientactions", ClientActions);
 
-				if (Includes.Count > 0)
-					Data.Add("includes", Includes.Select(o => GlobalSettings.JSPath + o));
-
-				if (Ctrl.Count > 0)
-					Data.Add("ctrl", Ctrl);
+				if (_ctrl.Count > 0)
+					Data.Add("ctrl", _ctrl);
 			}
 			catch (Exception ex)
 			{
-                var res = context.RequestServices.GetService(typeof(IErrorResult)) as IErrorResult;
-                var message = res?.OnError(ex) ?? ex.ToString();
+				var res = context.RequestServices.GetService(typeof(IErrorResult)) as IErrorResult;
+				var message = res?.OnError(ex) ?? ex.ToString();
 				Data.Clear();
 				Data.Add("error", message);
 			}
 
 			return JsonConvert.SerializeObject(Data, Json.StdSettings);
 		}
+
+		public override string Serialize(ActionContext context) => Serialize(context, null);
 
 		public bool Success
 		{
@@ -428,12 +486,7 @@ namespace Tango.UI
 		AddShadow
 	}
 
-	public interface IWidget
-	{
-		string Name { get; set; }
-	}
-
-	public class Widget : IWidget
+	public class Widget
 	{
 		public string Name { get; set; }
 		public WidgetAction Action { get; set; }

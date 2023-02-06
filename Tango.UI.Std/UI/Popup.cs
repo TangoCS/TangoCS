@@ -32,7 +32,8 @@ namespace Tango.UI
 				closeonscroll = options.CloseOnScroll,
 				type = options.Type.ToString().ToLower(),
 				storeparms = options.StoreParms.ToString().ToLower(),
-				delay = options.Delay.ToString()
+				delay = options.Delay.ToString(),
+				showoverlay = options.ShowOverlay.ToString().ToLower()
 			});
 		}
 	}
@@ -49,7 +50,7 @@ namespace Tango.UI
 		public bool CloseOnScroll { get; set; } = true;
 		public PopupType Type { get; set; } = PopupType.Default;
 		public int Delay { get; set; } = 0;
-
+		public bool ShowOverlay { get; set; } = false;
 		public bool StoreParms { get; set; } = false;
 	}
 

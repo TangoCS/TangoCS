@@ -14,96 +14,8 @@ namespace Tango.Html
 		}
 	}
 
-	public partial class HtmlWriter
-	{
-		CultureInfo ru = new CultureInfo("ru-RU");
-
-		void WriteTag(string name, Action inner)
-		{
-			Write('<');
-			Write(name);
-			Write('>');
-			inner?.Invoke();
-			Write("</");
-			Write(name);
-			Write('>');
-		}
-
-		void WriteTag<T>(string name, Action<T> attrs, Action inner)
-			where T : class, IContentItemAttributes<T>
-		{
-			Write('<');
-			Write(name);
-			var o = Fabric<T>();
-			o.SetWriter(this);
-			attrs?.Invoke(o);
-			RenderAttrs();
-			Write('>');
-			inner?.Invoke();
-			Write("</");
-			Write(name);
-			Write('>');
-		}
-	}
-
 	public static class HtmlWriterTagsExtensions
 	{
-		public static void WriteTag<T>(this HtmlWriter w, string name, Action<T> attrs, Action inner)
-			where T : TagAttributes<T>, new()
-		{
-			w.Write('<');
-			w.Write(name);
-			if (attrs != null)
-			{
-				var o = new T();
-				o.SetWriter(w);
-				attrs?.Invoke(o);
-				w.RenderAttrs();
-			}
-			w.Write('>');
-			inner?.Invoke();
-			w.Write("</");
-			w.Write(name);
-			w.Write('>');
-		}
-
-		public static void WriteBeginTag<T>(this HtmlWriter w, string name, Action<T> attrs)
-			where T : TagAttributes<T>, new()
-		{
-			w.Write('<');
-			w.Write(name);
-			if (attrs != null)
-			{
-				var o = new T();
-				o.SetWriter(w);
-				attrs?.Invoke(o);
-				w.RenderAttrs();
-			}
-			w.Write('>');
-		}
-
-		public static void WriteEndTag(this HtmlWriter w, string name)
-		{
-			w.Write("</");
-			w.Write(name);
-			w.Write('>');
-		}
-
-		public static void WriteSelfClosingTag<T>(this HtmlWriter w, string name, Action<T> attrs)
-			where T : TagAttributes<T>, new()
-		{
-			w.Write('<');
-			w.Write(name);
-			if (attrs != null)
-			{
-				var o = new T();
-				o.SetWriter(w);
-				attrs?.Invoke(o);
-				w.RenderAttrs();
-			}
-			w.Write("/>");
-		}
-
 		public static string GetID(this HtmlWriter w, string id) => HtmlWriterHelpers.GetID(w.IDPrefix, id);
 
 		public static void A(this HtmlWriter w, Action<ATagAttributes> attributes = null, Action inner = null)
@@ -242,9 +154,9 @@ namespace Tango.Html
 		{
 			w.WriteTag("s", attributes, inner);
 		}
-		public static void Script(this HtmlWriter w, Action<ScriptTagAttributes> attributes = null)
+		public static void Script(this HtmlWriter w, Action<ScriptTagAttributes> attributes = null, Action inner = null)
 		{
-			w.WriteTag("script", attributes, () => w.Write(""));
+			w.WriteTag("script", attributes, inner);
 		}
 		public static void Small(this HtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
@@ -286,14 +198,14 @@ namespace Tango.Html
 		{
 			w.WriteTag("tr", attributes, inner);
 		}
-		public static void TrBegin(this HtmlWriter w, Action<TagAttributes> attributes = null)
-		{
-			w.WriteBeginTag("tr", attributes);
-		}
-		public static void TrEnd(this HtmlWriter w)
-		{
-			w.WriteEndTag("tr");
-		}
+		//public static void TrBegin(this HtmlWriter w, Action<TagAttributes> attributes = null)
+		//{
+		//	w.WriteBeginTag("tr", attributes);
+		//}
+		//public static void TrEnd(this HtmlWriter w)
+		//{
+		//	w.WriteEndTag("tr");
+		//}
 		public static void U(this HtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			w.WriteTag("u", attributes, inner);

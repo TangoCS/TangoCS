@@ -102,22 +102,24 @@ namespace Tango.UI.Controls
 
 		public override void Render(LayoutWriter w, TRef selectedValue)
 		{
-			var cw = w.Clone(Field);
-			var pw = w.Clone(Field.ParentElement);
-			cw.Div(a => a.ID("placeholder"), () => {
-				var value = selectedValue != null ? Field.DataValueField(selectedValue) : "";
-				pw.Hidden(Field.ID, value, a => a.DataHasClientState(ClientStateType.Value, ClientID, "selectedvalue"));
-				if (!Field.Disabled)
-				{
-					cw.A(a => a.Data(Field.DataCollection).CallbackToCurrent(Context).AsDialog(OpenDialog, Field.ClientID), Resources.Get("Common.SelectObject_Field"));
-					cw.Write("&nbsp;");
-					if (!Field.PostOnClearEvent)
-						cw.A(a => a.OnClick($"selectSingleObjectDialog.clear('{Field.ClientID}', true)"), Resources.Get("Common.Clear"));
-					else
-						cw.A(a => a.OnClickPostEvent(OnClear), Resources.Get("Common.Clear"));
-					if (Field.FieldExtensions != null) { cw.Write("&nbsp;"); Field.FieldExtensions(cw); }
-				}
-				RenderSelected(cw, selectedValue);
+			w.WithPrefix(Field, () => {
+				w.Div(a => a.ID("placeholder"), () => {
+					w.WithPrefix(Field.ParentElement, () => {
+						var value = selectedValue != null ? Field.DataValueField(selectedValue) : "";
+						w.Hidden(Field.ID, value, a => a.DataHasClientState(ClientStateType.Value, ClientID, "selectedvalue"));
+					});
+					if (!Field.Disabled)
+					{
+						w.A(a => a.Data(Field.DataCollection).CallbackToCurrent(Context).AsDialog(OpenDialog, Field.ClientID), Resources.Get("Common.SelectObject_Field"));
+						w.Write("&nbsp;");
+						if (!Field.PostOnClearEvent)
+							w.A(a => a.OnClick($"selectSingleObjectDialog.clear('{Field.ClientID}', true)"), Resources.Get("Common.Clear"));
+						else
+							w.A(a => a.OnClickPostEvent(OnClear), Resources.Get("Common.Clear"));
+						if (Field.FieldExtensions != null) { w.Write("&nbsp;"); Field.FieldExtensions(w); }
+					}
+					RenderSelected(w, selectedValue);
+				});
 			});
 		}
 
@@ -184,41 +186,43 @@ namespace Tango.UI.Controls
 
 		public override void Render(LayoutWriter w, IEnumerable<TRef> selectedValues)
 		{
-			var cw = w.Clone(Field);
-			var pw = w.Clone(Field.ParentElement);
-			cw.Div(a => a.ID("placeholder"), () => {
-				pw.Hidden(Field.ID, selectedValues?.Select(o => Field.DataValueField(o)).Join(","), 
-					a => a.DataHasClientState(ClientStateType.Array, ClientID, "selectedvalues"));
-				if (!Field.Disabled)
-				{
-					cw.A(a => {
-						if (OpenDialogLinkStyle == OpenDialogLinkStyle.Button)
-							a.Class("actionbtn");
-						a.Data(Field.DataCollection);
-						if (Field.DoCallbackToCurrent)
-							a.CallbackToCurrent(Context);
-						a.AsDialogPost(OpenDialog, Field.ClientID);
-						if (DialogOptions != null)
-							foreach (var parm in DialogOptions.ToParms())
-								a.DataParm("c-" + parm.Key, parm.Value);
-					}, OpenDialogLinkTitle ?? Resources.Get("Common.SelectObjects_Field"));
-
-					if (ShowClearAction)
+			w.WithPrefix(Field, () => {
+				w.Div(a => a.ID("placeholder"), () => {
+					w.WithPrefix(Field.ParentElement, () => {
+						w.Hidden(Field.ID, selectedValues?.Select(o => Field.DataValueField(o)).Join(","),
+							a => a.DataHasClientState(ClientStateType.Array, ClientID, "selectedvalues"));
+					});
+					if (!Field.Disabled)
 					{
-						cw.Write("&nbsp;");
-						if (!Field.PostOnClearEvent)
-							cw.A(a => a.OnClick(ClearButtonScript), Resources.Get("Common.Clear"));
-						else
-							cw.A(a => a.OnClickPostEvent(OnClear), Resources.Get("Common.Clear"));
-					}
+						w.A(a => {
+							if (OpenDialogLinkStyle == OpenDialogLinkStyle.Button)
+								a.Class("actionbtn");
+							a.Data(Field.DataCollection);
+							if (Field.DoCallbackToCurrent)
+								a.CallbackToCurrent(Context);
+							a.AsDialogPost(OpenDialog, Field.ClientID);
+							if (DialogOptions != null)
+								foreach (var parm in DialogOptions.ToParms())
+									a.DataParm("c-" + parm.Key, parm.Value);
+						}, OpenDialogLinkTitle ?? Resources.Get("Common.SelectObjects_Field"));
 
-					if (Field.FieldExtensions != null) 
-					{ 
-						cw.Write("&nbsp;"); 
-						Field.FieldExtensions(cw); 
+						if (ShowClearAction)
+						{
+							w.Write("&nbsp;");
+							if (!Field.PostOnClearEvent)
+								w.A(a => a.OnClick(ClearButtonScript), Resources.Get("Common.Clear"));
+							else
+								w.A(a => a.OnClickPostEvent(OnClear), Resources.Get("Common.Clear"));
+						}
+
+						if (Field.FieldExtensions != null)
+						{
+							w.Write("&nbsp;");
+							Field.FieldExtensions(w);
+						}
 					}
-				}
-				RenderSelected(cw, selectedValues);
+					RenderSelected(w, selectedValues);
+				});
 			});
 		}
 

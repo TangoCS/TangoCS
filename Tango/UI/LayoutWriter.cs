@@ -33,31 +33,33 @@ namespace Tango.UI
                                  (reqEnv.IsIE() ? (IFieldBlockRenderer) new TableFieldBlockRenderer() : new GridFieldBlockRenderer());
         }
 
-        LayoutWriter(ActionContext context, string idPrefix, StringBuilder sb) : base(idPrefix, sb)
-        {
-            Context = context;
+        //LayoutWriter(ActionContext context, string idPrefix, StringBuilder sb) : base(idPrefix, sb)
+        //{
+        //    Context = context;
 
-            var reqEnv = context.RequestServices.GetService(typeof(IRequestEnvironment)) as IRequestEnvironment;
-            FieldBlockRenderer = context.RequestServices.GetService(typeof(IFieldBlockRenderer)) as IFieldBlockRenderer ??
-                                 (reqEnv.IsIE() ? (IFieldBlockRenderer) new TableFieldBlockRenderer() : new GridFieldBlockRenderer());
-        }
+        //    var reqEnv = context.RequestServices.GetService(typeof(IRequestEnvironment)) as IRequestEnvironment;
+        //    FieldBlockRenderer = context.RequestServices.GetService(typeof(IFieldBlockRenderer)) as IFieldBlockRenderer ??
+        //                         (reqEnv.IsIE() ? (IFieldBlockRenderer) new TableFieldBlockRenderer() : new GridFieldBlockRenderer());
+        //}
 
         //public LayoutWriter(ActionContext context)
         //{
         //	Context = context;
         //}
 
-        public LayoutWriter Clone(string newIdPrefix)
-        {
-            if (newIdPrefix != null && newIdPrefix.StartsWith("#"))
-                newIdPrefix = newIdPrefix.Substring(1);
+        //public LayoutWriter Clone(string newIdPrefix)
+        //{
+        //    if (newIdPrefix != null && newIdPrefix.StartsWith("#"))
+        //        newIdPrefix = newIdPrefix.Substring(1);
 
-            return new LayoutWriter(Context, newIdPrefix, GetStringBuilder())
-            {
-                ClientActions = ClientActions,
-                Includes = Includes
-            };
-        }
+        //    var w = new LayoutWriter(Context, newIdPrefix)
+        //    {
+        //        ClientActions = ClientActions,
+        //        Includes = Includes                
+        //    };
+        //    w.CloneFrom(this);
+        //    return w;
+        //}
 
         public void FieldsBlock(Action<TagAttributes> attributes, Action content)
         {
@@ -249,9 +251,9 @@ namespace Tango.UI
 
 	public static class LayoutWriterMainExtensions
 	{
-		public static LayoutWriter Clone(this LayoutWriter w, IViewElement el)
+		public static void WithPrefix(this LayoutWriter w, IViewElement el, Action content)
 		{
-			return w.Clone(el.ClientID);
+            w.WithPrefix(el.ClientID, content);
 		}
 
 		public static void AjaxForm(this LayoutWriter w, string name, Action content)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -77,16 +78,18 @@ namespace Tango.UI.Std
 		[Inject]
 		public IIdentity User { get; set; }
 
-		protected abstract HtmlResult RenderContent();
+		protected abstract void RenderContent(HtmlWriter w);
 
 		public override ActionResult Execute()
 		{
 			if (!CheckAccess()) return new ChallengeResult();
 
 			OnInit();
-			//AfterInit();
 
-			return RenderContent();
+			HtmlWriter w = new HtmlWriter();
+			RenderContent(w);
+
+			return new HtmlResult(w.ToString());
 		}
 
 		public virtual void OnLoadContent(ApiResponse response)
@@ -111,10 +114,11 @@ namespace Tango.UI.Std
 
 	public abstract class ViewPage : AbstractViewPage
 	{
-		protected override HtmlResult RenderContent()
-		{
-			var w = new HtmlWriter();
+		[Inject]
+		public ITypeActivatorCache Cache { get; set; }
 
+		protected override void RenderContent(HtmlWriter w)
+		{
 			//byte[] token = new byte[32];
 			//RandomNumberGenerator.Fill(token);
 
@@ -127,20 +131,99 @@ namespace Tango.UI.Std
 
 			w.DocType();
 			w.Html(() => {
-				w.Head(() => {
+				w.Head(a => a.ID("head").Data("page", GetType().Name.ToLower()), () => {
 					w.HeadTitle(a => a.ID("title"));
 					w.HeadMeta(a => a.HttpEquiv("content-type").Content("text/html; charset=utf-8"));
 					var r = DefaultView?.Resolve(Context);
 					w.HeadMeta(a => a.ID(Constants.MetaHome).Data("href", "/").Data("alias", r?.Result.ToString()));
 					w.HeadMeta(a => a.ID(Constants.MetaCurrent));
+					w.HeadMeta(a => a.Name("viewport").Content("width=device-width"));
 					HeadContent(w);
 				});
-				w.Body(() => {
+				w.Body(a => a.ID("body"), () => {
 					Body(w);
 				});
 			});
 
-			return new HtmlResult(w.ToString());
+			if (w.AllowModify)
+				RenderView(w);
+		}
+
+		void RenderView(HtmlWriter w)
+		{
+			Context.IsFirstLoad = true;
+			Context.AddContainer = true;
+
+			if (Context.Service.IsEmpty() && DefaultView != null)
+			{
+				Context.Service = DefaultView.Service;
+				Context.Action = DefaultView.Action;
+			}
+
+			(Type type, IActionInvoker invoker) view = (null, null);
+
+			if (!Context.Service.IsEmpty())
+				view = Cache.Get(Context.Service + "." + Context.Action) ?? (null, null);
+
+			ActionResult result;
+
+			if (!Context.Service.IsEmpty())
+				result = view.invoker?.Invoke(Context, view.type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
+			else
+			{
+				var res = new ApiResult();
+				result = res;
+				res.ApiResponse.ReplaceWidget("container", w1 => w1.Article(a => a.ID("container")));
+			}
+
+			if (result is ApiResult ajax)
+			{
+				var pageParts = new ApiResponse();
+				OnLoadContent(pageParts);
+				ajax.ApiResponse.Insert(pageParts);
+				ajax.ApiResponse.ApplyTo(Context, w);
+
+				var sw = new HtmlWriter();
+				sw.Script(null, () => {
+					sw.Write("document.addEventListener('DOMContentLoaded', onLoad);\n");
+					sw.Write("function onLoad() {\n");
+					sw.Write("const data = " + JsonConvert.SerializeObject(ajax.ApiResponse.Data, Json.StdSettings) + ";\n");
+					sw.Write("const ctrls = ajaxUtils.processControls(document, data.ctrl);\n");
+					sw.Write("ajaxUtils.postProcessControls(ctrls);\n");
+
+					if (ajax.ApiResponse.ClientActions.Count > 0)
+					{
+						foreach (var ca in ajax.ApiResponse.ClientActions)
+						{
+							var call = ca.Service;
+
+							foreach (var ch in ca.CallChain)
+							{
+								var method = ch.Method == "apply" ? "" : $".{ch.Method}";
+								if (ch.Args != null)
+								{
+									var args = JsonConvert.SerializeObject(ch.Args, Json.StdSettings);
+									call += $"{method}({args})";
+								}
+								else
+									call += $"{method}()";
+							};
+
+							call += ";";
+
+							sw.Write(call);
+							sw.Write("\n");
+						}
+					}
+					sw.Write("if (data.error) {\n");
+					sw.Write("ajaxUtils.showError(localization.resources.title.systemError, data.error, 'err');\n");
+					sw.Write("}\n");
+					sw.Write("}\n");
+				});
+				w.AddAdjacentWidget("body", AdjacentHTMLPosition.BeforeEnd, sw);
+
+
+			}
 		}
 		
 		protected abstract void Body(HtmlWriter w);

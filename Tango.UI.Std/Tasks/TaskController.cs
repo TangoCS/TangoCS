@@ -168,7 +168,7 @@ namespace Tango.Tasks
                     IsSuccessfull = true
                 };
                 if (context != null)
-                    taskexec.ResultXml = context.ExecutionDetails.GetStringBuilder().ToString();
+                    taskexec.ResultXml = context.ExecutionDetails.ToString();
 
                 Repository.UpdateTaskExecution(taskexec);
             }

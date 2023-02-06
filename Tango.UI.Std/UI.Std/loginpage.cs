@@ -2,6 +2,8 @@
 using Tango.Data;
 using Tango.Html;
 using Tango.Identity;
+using Tango.Localization;
+using Tango.UI.Controls;
 
 namespace Tango.UI.Std
 {
@@ -17,13 +19,17 @@ namespace Tango.UI.Std
 		[Inject]
 		protected IVersionProvider VersionProvider { get; set; }
 
+		[Inject]
+		protected ILanguage Language { get; set; }
 
 		protected override void HeadContent(HtmlWriter w)
 		{
 			w.Script(GlobalSettings.JSPath + "browsercheck.js");
+			w.Script(GlobalSettings.JSPath + "bundle/vendors.bundle.js");
+			w.Script(GlobalSettings.JSPath + "bundle/tango.bundle.js");
+			w.Script(GlobalSettings.JSPath + $"tango/tango.{Language.Current.Code}.js?");
 
 			w.HeadLinkCss("/css/login.css");
-			w.HeadLinkCss("/flaticon/style.css");
 			w.HeadLinkCss("/css/core.css");
 			w.HeadLinkCss("/css/home2.css");
 			w.HeadLinkCss("/css/app.css");
@@ -39,37 +45,38 @@ namespace Tango.UI.Std
 			var title = "";
 			if (!Resources.TryGet("loginpagetitle", out title))
 				title = Resources.Get("systemname");
+			
 			w.Div(a => a.ID("topmessagecontainer"), () => w.Span(a => a.ID("topmessage"), Resources.Get("Common.Wait")));
-			w.Header(a => a.ID("header").Class("login-header"), () => {
-				w.Div(a => a.Class("header-logo"), () => w.A(a => a.Class("logo").Href("/")));
-				w.Div(a => a.Class("header-title"), () => w.H1(title));
+			w.Main(a => a.ID("main"), () => {
+				w.Header(a => a.ID("header").Class("login-header"), () => {
+					w.Div(a => a.Class("header-logo"), () => w.A(a => a.Class("logo").Href("/")));
+					w.Div(a => a.Class("header-title"), () => w.H1(title));
 
-				w.Ul(a => a.Class("header-buttons right"), () => {
-					if (Settings.GetBool("canchangedb"))
-					{
-						w.Li(a => a.ID("header-db"), () => {
+					w.Ul(a => a.Class("header-buttons right"), () => {
+						if (Settings.GetBool("canchangedb"))
+						{
+							w.Li(a => a.ID("header-db"), () => {
+							});
+						}
+						if (VersionProvider != null)
+						{
+							w.Li(() => w.Span(() => {
+								var v = VersionProvider.Version;
+								w.Write($"v. {v.Major}.{v.Minor}.{v.Build}");
+							}));
+						}
+					});
+				});
+				w.Article(a => a.ID("container"), () => {
+					w.Div(a => a.Class("login-main"), () => {
+						w.Div(a => a.ID("content").Class("login-card"), () => {
 						});
-					}
-					if (VersionProvider != null)
-					{
-						w.Li(() => w.Span(() => {
-							var v = VersionProvider.Version;
-							w.Write($"v. {v.Major}.{v.Minor}.{v.Build}");
-						}));
-					}
-				});
-			});
-			w.Div(a => a.Class("login-main"), () => {
-				w.Div(a => a.ID("content").Class("login-card"), () => {
+					});
 				});
 			});
 
-			w.Script(GlobalSettings.JSPath + "jquery/jquery-1.11.0.min.js");
-			w.Script(GlobalSettings.JSPath + "jquery/jquery.serialize-object.min.js");
-			w.Script(GlobalSettings.JSPath + "js.cookie.min.js");
-			w.Script(GlobalSettings.JSPath + "contextmenu/contextmenu.js");
-			w.Script(GlobalSettings.JSPath + "tango/contextmenuproxy.js");
-			w.Script(GlobalSettings.JSPath + "tango/tango.js");
+			w.ErrorPlaceholder(Resources);
+			w.ModalOverlay();
 		}
 
 		public override void OnLoadContent(ApiResponse response)

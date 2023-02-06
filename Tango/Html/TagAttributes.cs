@@ -30,7 +30,7 @@ namespace Tango.Html
 		public T ContentEditable() { Writer.WriteAttr("contenteditable"); return _this; }
 		public T Data<TValue>(string key, TValue value) { Writer.WriteAttr("data-" + key.ToLower(), value?.ToString()); return _this; }
 		public T Data(string key) { Writer.WriteAttr("data-" + key.ToLower(), null); return _this; }
-		public T DataIDValue<TValue>(string key, TValue value) { Writer.WriteAttrID("data-" + key.ToLower(), value?.ToString()); return _this; }
+		public T DataIDValue<TValue>(string key, TValue value) { Writer.WriteAttrWithPrefix("data-" + key.ToLower(), value?.ToString()); return _this; }
 		public T Dir(Dir value) { Writer.WriteAttr("dir", value.ToString().ToLower()); return _this; }
 		public T Draggable(bool value) { if (value) Writer.WriteAttr("draggable", "Draggable"); return _this; }
 		public T Lang(string value) { Writer.WriteAttr("lang", value); return _this; }
@@ -202,7 +202,7 @@ namespace Tango.Html
 
 	public class LabelTagAttributes : TagAttributes<LabelTagAttributes>
 	{
-		public LabelTagAttributes For(string value) { Writer.WriteAttrID("for", value); return this; }
+		public LabelTagAttributes For(string value) { Writer.WriteAttrWithPrefix("for", value); return this; }
 		public LabelTagAttributes Form(string value) { Writer.WriteAttr("form", value); return this; }
 	}
 

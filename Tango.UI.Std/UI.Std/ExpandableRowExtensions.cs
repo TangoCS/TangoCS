@@ -61,7 +61,9 @@ namespace Tango.UI.Std
 				w.Tr(a => a.Data("level", level).Data("cellid", cellid), () => {
 					w.Td(a => a.Class("expandablerowcontent").ColSpan(colspan), () => {
 						var contentPrefix = (cellid.IsEmpty() ? id : cellid) + "_content";
-						content(w.Clone(contentPrefix), id, cellid);
+						w.WithPrefix(contentPrefix, () => {
+							content(w, id, cellid);
+						});
 					});
 				});
 			});
@@ -76,7 +78,9 @@ namespace Tango.UI.Std
 			response.AddAdjacentWidget(context.Sender, contentId, AdjacentHTMLPosition.AfterEnd, w => {
 				w.Tr(a => a.Data("level", level), () => {
 					w.Td(a => a.Class("expandablerowcontent").ColSpan(colspan), () => {
-						content(w.Clone(contentId));
+						w.WithPrefix(contentId, () => {
+							content(w);
+						});
 					});
 				});
 			});
