@@ -108,24 +108,39 @@ namespace Tango
 
         public static DateTime ToDate(this string src, string format, DateTime defaultValue)
         {
-			var formats = new List<string>() { format, "dd.MM.yyyy", "yyyy-MM-dd", "yyyyMMdd" }
-					.Where(x => x != null).ToArray();
+            if (src.ToDate(format, out DateTime? dt))
+                return dt.Value;
 
-			if (DateTime.TryParseExact(src, formats, null, DateTimeStyles.None, out DateTime dt))
+            return defaultValue;
+        }
+
+        public static DateTime? ToDate(this string src, string format, DateTime? defaultValue)
+        {
+			if (src.ToDate(format, out DateTime? dt))
 				return dt;
 
             return defaultValue;
         }
 
+        public static bool ToDate(this string src, string format, out DateTime? dt)
+        {
+            var formats = new List<string>() { format, "dd.MM.yyyy", "yyyy-MM-dd", "yyyyMMdd" }
+                    .Where(x => x != null).ToArray();
+
+			if (DateTime.TryParseExact(src, formats, null, DateTimeStyles.None, out DateTime result))
+			{
+				dt = result;
+                return true;
+			}
+
+			dt = default(DateTime?);
+			return false;
+        }
+
         public static DateTime? ToDate(this string src)
 		{
-			var formats = new List<string>() { "dd.MM.yyyy", "yyyy-MM-dd", "yyyyMMdd" }
-					.Where(x => x != null).ToArray();
-
-			if (DateTime.TryParseExact(src, formats, null, DateTimeStyles.None, out DateTime dt))
-				return dt;
-
-			return null;
+			src.ToDate(null, out DateTime? dt);
+		    return dt;
 		}
 
 		public static DateTime? ToDateTime(this string src)

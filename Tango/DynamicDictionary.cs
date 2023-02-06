@@ -191,12 +191,18 @@ namespace Tango
 			var t = typeof(T);
 			if (t == d.GetType())
 				return (T)d;
-			else if (t == typeof(DateTime?) || t == typeof(DateTime))
+			else if (t == typeof(DateTime?))
 			{
-				var ds = d.ToString();
-				if (ds.IsEmpty()) return defaultValue;
-				return (T)(object)ds.ToDate(format ?? "yyyy-MM-dd", (DateTime)(object)defaultValue);
-			}
+                var ds = d.ToString();
+                if (ds.IsEmpty()) return defaultValue;
+                return (T)(object)ds.ToDate(format, (DateTime?)(object)defaultValue);
+            }
+			else if(t == typeof(DateTime))
+			{
+                var ds = d.ToString();
+                if (ds.IsEmpty()) return defaultValue;
+                return (T)(object)ds.ToDate(format, (DateTime)(object)defaultValue);
+            }
 			else if (t == typeof(decimal?))
 			{
 				var ds = d.ToString();
