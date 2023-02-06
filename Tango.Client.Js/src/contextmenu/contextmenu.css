@@ -7,7 +7,7 @@
  */
 /*Context menu css */
 .iw-contextMenu {
-	visibility: hidden;
+	display: none;
 	z-index: 1000;
 	background-color: white;
 }
@@ -16,7 +16,7 @@
 }
 
 .iw-display {
-	visibility: visible;
+	display: initial;
 	border: 1px solid #ccc;
 	border-bottom-left-radius: 3px;
 	border-bottom-right-radius: 3px;
