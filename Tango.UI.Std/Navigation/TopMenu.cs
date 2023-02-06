@@ -39,7 +39,7 @@ namespace Tango.UI.Navigation
 							w.Write(m.Title);
 						});
 
-						w.DropDownForElement(menuid, null/*a => a.Class("iw-contextMenu-fixed")*/, () => {
+						w.DropDownForElement(menuid, null, () => {
 							w.RenderTwoLevelMenu(children, removed);
 						}, new PopupOptions { CloseOnScroll = false } );
 					}
