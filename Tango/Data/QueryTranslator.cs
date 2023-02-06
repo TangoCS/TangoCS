@@ -649,9 +649,11 @@ namespace Tango.Data
 
 			if (value is decimal number)
 				return number.ToString(CultureInfo.InvariantCulture);
+			
+			if(value is bool boolean)
+				return Convert.ToInt32(boolean).ToString();
 
-
-			return value.ToString();
+            return value.ToString();
 		}
 
 		public static IQueryTranslatorDialect CreateDialect(DBType dbType) => dbType == DBType.MSSQL ? (IQueryTranslatorDialect)new QueryTranslatorMSSQL() :

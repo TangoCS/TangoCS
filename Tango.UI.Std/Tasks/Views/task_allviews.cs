@@ -165,7 +165,7 @@ namespace Tango.Tasks
 				w.ToggleSwitch(gr.IsActive);
 				w.TextBox(gr.Priority);
 				w.DropDownList(gr.System, Systems());
-				w.TextArea(gr.Description);
+				w.TextArea(gr.Description, attributes: a => a.Rows(3));
 			});
 		}
 
