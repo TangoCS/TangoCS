@@ -215,16 +215,16 @@
 			document.execCommand("copy");
 			document.body.removeChild(dummy);
 		},
-		clipboardToElementIdAndSubmit: function (id, submitter) {			
-			instance.clipboardToElementId(id).then(function() {
+		clipboardToElementIdAndSubmit: function (id, submitter) {
+			instance.clipboardToElementId(id).then(function () {
 				ajaxUtils.formSubmit(submitter, submitter.form);
 			});
 		},
-		clipboardToElementId: function (id) {	
-			return navigator.permissions.query({ name: "clipboard-read" }).then(function(result)  {
-            	let control = document.querySelector(id);	
+		clipboardToElementId: function (id) {
+			return navigator.permissions.query({ name: "clipboard-read" }).then(function (result) {
+				let control = document.querySelector(id);
 
-            	if (result.state == "granted" || result.state == "prompt") {
+				if (result.state == "granted" || result.state == "prompt") {
 					return navigator.clipboard.readText()
 						.then(function (clipText) {
 							//Если тип контрола hidden, значение из буфера вставляем в value
@@ -244,11 +244,11 @@
 						.catch(function (err) {
 							console.log('Failed to read clipboard contents: ', err);
 						});
-            	}
-            	else {
-            		alert('В вашем браузере отключены полномочия по работе с буфером обмена. Если вы все же хотите воспользоваться данной функцией, обратитесь в службу технической поддержки.');
-            	}
-            });
+				}
+				else {
+					alert('В вашем браузере отключены полномочия по работе с буфером обмена. Если вы все же хотите воспользоваться данной функцией, обратитесь в службу технической поддержки.');
+				}
+			});
 		}
 	}
 
@@ -903,7 +903,10 @@ window.ajaxUtils = function ($, cu) {
 			const current = document.getElementById(META_CURRENT);
 			current.setAttribute('data-href', url);
 		},
-		state: state
+		state: state,
+		processControls: processControls,
+		postProcessControls: postProcessControls,
+		showError: showError
 	};
 
 	function getApiUrl(path, parms, isfirstload) {
@@ -1134,7 +1137,7 @@ window.ajaxUtils = function ($, cu) {
 		}
 	}
 
-	
+
 
 	function processElementDataOnFormSubmit(el, setvalfunc) {
 		for (var attr, i = 0, attrs = el.attributes, n = attrs ? attrs.length : 0; i < n; i++) {
@@ -1162,7 +1165,7 @@ window.ajaxUtils = function ($, cu) {
 		if (document.readyState == 'complete' || document.readyState == 'interactive') {
 			try {
 				renderApiResult();
-			} catch(ex) {
+			} catch (ex) {
 				showError(localization.resources.title.javascriptError, ex + '\n\n' + ex.stack, 'err');
 			}
 		}
@@ -1272,7 +1275,6 @@ window.ajaxUtils = function ($, cu) {
 		}
 
 		if (apiResult.widgets) {
-			const newcntnrs = [];
 			for (var w in apiResult.widgets) {
 				var obj = apiResult.widgets[w];
 				if (obj && typeof (obj) == "object") {
@@ -1338,134 +1340,7 @@ window.ajaxUtils = function ($, cu) {
 				}
 			}
 
-			const ctrls = shadow.querySelectorAll('[data-ctrl]');
-			const bindels = shadow.querySelectorAll('[data-hasclientstate]');
-			const cntnrels = shadow.querySelectorAll('[data-c]');
-
-			for (var j = 0; j < cntnrels.length; j++) {
-				newcntnrs.push(cntnrels[j].id);
-			}
-
-			for (var j = 0; j < bindels.length; j++) {
-				const node = bindels[j];
-				const st = getElementStateAttrs(node);
-				if (!st) continue;
-				const container = cu.getThisOrParent(node, function (n) { return n.hasAttribute && n.hasAttribute('data-c'); });
-				const isnewc = container && newcntnrs.indexOf(container.id) > 0;
-
-				if (!state.ctrl[st.owner]) state.ctrl[st.owner] = {};
-				const nodectrl = state.ctrl[st.owner];
-				if (st.type == 'array') {
-					const ctrlvar = nodectrl[st.name] && !isnewc ? new ObservableArray(nodectrl[st.name]) : new ObservableArray();
-					const values = node.value.split(',').filter(String);
-					for (var i = 0; i < values.length; i++) {
-						if (ctrlvar.indexOf(values[i]) == -1)
-							ctrlvar.push(values[i]);
-					}
-					ctrlvar.on('pop push shift unshift splice reverse sort', function () {
-						node.value = this.join(',');
-					});
-					nodectrl[st.name] = ctrlvar;
-					node.value = ctrlvar.join(',');
-				} else if (st.type == 'value') {
-					Object.defineProperty(nodectrl, st.name, {
-						enumerable: true,
-						configurable: true,
-						get: function () { return node.value; },
-						set: function (val) { node.value = val; }
-					});
-				}
-			}
-
-			const assignProps = (ctrlInst, srvInst) => {
-				for (var prop in srvInst) {
-					if (Object.prototype.hasOwnProperty.call(ctrlInst, prop) && Array.isArray(srvInst[prop]) && ctrlInst[prop] instanceof ObservableArray) {
-						const arr = ctrlInst[prop];
-						arr.splice(0, arr.length);
-						for (var i = 0; i < srvInst[prop].length; i++) {
-							arr.push(srvInst[prop][i]);
-						}
-					} else {
-						ctrlInst[prop] = srvInst[prop];
-					}
-				}
-			};
-
-			for (var i = 0; i < ctrls.length; i++) {
-				var root = ctrls[i];
-				const t = root.getAttribute('data-ctrl');
-				const ctrl = instance.findControl(root);
-				if (root.id != ctrl.id) root = shadow.getElementById(ctrl.id);
-
-				if (!ctrl.instance) {
-					ctrl.instance = {};
-					state.ctrl[ctrl.id] = ctrl.instance;
-				}
-
-				const srvCtrl = apiResult.ctrl ? apiResult.ctrl[ctrl.id] : null;
-
-				if (!ctrl.instance.type) {
-					ctrl.instance.type = t
-					ctrl.instance.root = ctrl.id;
-					if (Tango.serviceProvider.components[t.toLowerCase()]) {
-						ctrl.instance = Tango.serviceProvider.components[t.toLowerCase()](ctrl.id, Tango.serviceProvider);
-						state.ctrl[ctrl.id] = ctrl.instance;
-					}
-
-					if (srvCtrl && srvCtrl.props) {
-						if (!ctrl.instance.props) ctrl.instance.props = {};
-						ctrl.instance.props = Object.assign(ctrl.instance.props, srvCtrl.props);
-					}
-
-					if (ctrl.instance.init)
-						ctrl.instance.init();
-					else if (window[t] && window[t]['init']) {
-						window[t]['init'](root, ctrl.instance);
-						console.log('widget: ' + ctrl.id + ' init ' + t);
-					}
-				}
-
-				if (srvCtrl && srvCtrl.instance) {
-					assignProps(ctrl.instance, srvCtrl.instance);
-				}
-
-				if (srvCtrl && srvCtrl.state) {
-					if (!ctrl.instance.state) ctrl.instance.state = {};
-					assignProps(ctrl.instance.state, srvCtrl.state);
-				}
-				
-				if (ctrl.instance.widgetWillMount)
-					ctrl.instance.widgetWillMount();
-				else if (window[t] && window[t]['widgetWillMount']) {
-					window[t]['widgetWillMount'](shadow, ctrl.instance);
-					console.log('widget: ' + ctrl.id + ' widgetWillMount ' + t);
-				}
-
-				if (srvCtrl)
-					delete apiResult.ctrl[ctrl.id];
-			}
-
-			if (apiResult.ctrl) {
-				for (var id in apiResult.ctrl) {
-					const srvCtrl = apiResult.ctrl[id];
-					const inst = state.ctrl[id];
-					if (inst) {
-						if (srvCtrl && srvCtrl.props) {
-							if (!inst.props) inst.props = {};
-							inst.props = Object.assign(inst.props, srvCtrl.props);
-						}
-
-						if (srvCtrl && srvCtrl.instance) {
-							assignProps(inst, srvCtrl.instance);
-						}
-
-						if (srvCtrl && srvCtrl.state) {
-							if (!inst.state) inst.state = {};
-							assignProps(inst.state, srvCtrl.state);
-						}
-					}
-				}
-			}
+			const ctrls = processControls(shadow, apiResult.ctrl);
 
 			nodes.forEach(function (n) {
 				if (n.nested) return;
@@ -1483,20 +1358,7 @@ window.ajaxUtils = function ($, cu) {
 				}
 			});
 
-			for (var i = 0; i < ctrls.length; i++) {
-				const root = ctrls[i];
-				const ctrl = instance.findControl(root);
-
-				if (ctrl) {
-					const t = root.getAttribute('data-ctrl');
-					if (ctrl.instance.widgetDidMount)
-						ctrl.instance.widgetDidMount();
-					else if (window[t] && window[t]['widgetDidMount']) {
-						window[t]['widgetDidMount'](ctrl.instance);
-						console.log('widget: ' + ctrl.id + ' widgetDidMount ' + t);
-					}
-				}
-			}
+			postProcessControls(ctrls);
 		}
 
 		if (apiResult.redirect) {
@@ -1523,6 +1385,157 @@ window.ajaxUtils = function ($, cu) {
 		if (window.homePage) homePage.countNavBodyHeight();
 
 		console.log("renderApiResult complete");
+	}
+
+	function processControls(doc, ctrlCollection) {
+		const ctrls = doc.querySelectorAll('[data-ctrl]');
+		const bindels = doc.querySelectorAll('[data-hasclientstate]');
+		const cntnrels = doc.querySelectorAll('[data-c]');
+		const newcntnrs = [];
+
+		for (var j = 0; j < cntnrels.length; j++) {
+			newcntnrs.push(cntnrels[j].id);
+		}
+
+		for (var j = 0; j < bindels.length; j++) {
+			const node = bindels[j];
+			const st = getElementStateAttrs(node);
+			if (!st) continue;
+			const container = cu.getThisOrParent(node, function (n) { return n.hasAttribute && n.hasAttribute('data-c'); });
+			const isnewc = container && newcntnrs.indexOf(container.id) > 0;
+
+			if (!state.ctrl[st.owner]) state.ctrl[st.owner] = {};
+			const nodectrl = state.ctrl[st.owner];
+			if (st.type == 'array') {
+				const ctrlvar = nodectrl[st.name] && !isnewc ? new ObservableArray(nodectrl[st.name]) : new ObservableArray();
+				const values = node.value.split(',').filter(String);
+				for (var i = 0; i < values.length; i++) {
+					if (ctrlvar.indexOf(values[i]) == -1)
+						ctrlvar.push(values[i]);
+				}
+				ctrlvar.on('pop push shift unshift splice reverse sort', function () {
+					node.value = this.join(',');
+				});
+				nodectrl[st.name] = ctrlvar;
+				node.value = ctrlvar.join(',');
+			} else if (st.type == 'value') {
+				Object.defineProperty(nodectrl, st.name, {
+					enumerable: true,
+					configurable: true,
+					get: function () { return node.value; },
+					set: function (val) { node.value = val; }
+				});
+			}
+		}
+
+		const assignProps = (ctrlInst, srvInst) => {
+			for (var prop in srvInst) {
+				if (Object.prototype.hasOwnProperty.call(ctrlInst, prop) && Array.isArray(srvInst[prop]) && ctrlInst[prop] instanceof ObservableArray) {
+					const arr = ctrlInst[prop];
+					arr.splice(0, arr.length);
+					for (var i = 0; i < srvInst[prop].length; i++) {
+						arr.push(srvInst[prop][i]);
+					}
+				} else {
+					ctrlInst[prop] = srvInst[prop];
+				}
+			}
+		};
+
+		for (var i = 0; i < ctrls.length; i++) {
+			var root = ctrls[i];
+			const t = root.getAttribute('data-ctrl');
+			const ctrl = instance.findControl(root);
+			if (root.id != ctrl.id) root = doc.getElementById(ctrl.id);
+
+			if (!ctrl.instance) {
+				ctrl.instance = {};
+				state.ctrl[ctrl.id] = ctrl.instance;
+			}
+
+			const srvCtrl = ctrlCollection ? ctrlCollection[ctrl.id] : null;
+
+			if (!ctrl.instance.type) {
+				ctrl.instance.type = t
+				ctrl.instance.root = ctrl.id;
+				if (Tango.serviceProvider.components[t.toLowerCase()]) {
+					ctrl.instance = Tango.serviceProvider.components[t.toLowerCase()](ctrl.id, Tango.serviceProvider);
+					state.ctrl[ctrl.id] = ctrl.instance;
+				}
+
+				if (srvCtrl && srvCtrl.props) {
+					if (!ctrl.instance.props) ctrl.instance.props = {};
+					ctrl.instance.props = Object.assign(ctrl.instance.props, srvCtrl.props);
+				}
+
+				if (ctrl.instance.init)
+					ctrl.instance.init();
+				else if (window[t] && window[t]['init']) {
+					window[t]['init'](root, ctrl.instance);
+					console.log('widget: ' + ctrl.id + ' init ' + t);
+				}
+			}
+
+			if (srvCtrl && srvCtrl.instance) {
+				assignProps(ctrl.instance, srvCtrl.instance);
+			}
+
+			if (srvCtrl && srvCtrl.state) {
+				if (!ctrl.instance.state) ctrl.instance.state = {};
+				assignProps(ctrl.instance.state, srvCtrl.state);
+			}
+
+			if (ctrl.instance.widgetWillMount)
+				ctrl.instance.widgetWillMount();
+			else if (window[t] && window[t]['widgetWillMount']) {
+				window[t]['widgetWillMount'](doc, ctrl.instance);
+				console.log('widget: ' + ctrl.id + ' widgetWillMount ' + t);
+			}
+
+			if (srvCtrl)
+				delete ctrlCollection[ctrl.id];
+		}
+
+		if (ctrlCollection) {
+			for (var id in ctrlCollection) {
+				const srvCtrl = ctrlCollection[id];
+				const inst = state.ctrl[id];
+				if (inst) {
+					if (srvCtrl && srvCtrl.props) {
+						if (!inst.props) inst.props = {};
+						inst.props = Object.assign(inst.props, srvCtrl.props);
+					}
+
+					if (srvCtrl && srvCtrl.instance) {
+						assignProps(inst, srvCtrl.instance);
+					}
+
+					if (srvCtrl && srvCtrl.state) {
+						if (!inst.state) inst.state = {};
+						assignProps(inst.state, srvCtrl.state);
+					}
+				}
+			}
+		}
+
+		return ctrls;
+	}
+
+	function postProcessControls(ctrls) {
+		for (var i = 0; i < ctrls.length; i++) {
+			const root = ctrls[i];
+			const ctrl = instance.findControl(root);
+
+			if (ctrl) {
+				const t = root.getAttribute('data-ctrl');
+				if (ctrl.instance.widgetDidMount)
+					ctrl.instance.widgetDidMount();
+				else if (window[t] && window[t]['widgetDidMount']) {
+					window[t]['widgetDidMount'](ctrl.instance);
+					console.log('widget: ' + ctrl.id + ' widgetDidMount ' + t);
+				}
+			}
+		}
 	}
 
 	function runOnAjaxSend(el, target) {
@@ -1592,7 +1605,8 @@ window.ajaxUtils = function ($, cu) {
 				errb.classList.remove('hide');
 				errb.innerHTML = '<pre>' + text + '</pre>';
 			}
-			dialog.widgetWillMount(document, state.ctrl[placeholder]);
+			dialog.open(placeholder);
+			//dialog.widgetWillMount(document, state.ctrl[placeholder]);
 		}
 		else
 			document.body.innerHTML = title + '<br/><pre>' + text + '</pre>';
@@ -1696,9 +1710,9 @@ window.ajaxUtils = function ($, cu) {
 	const current = document.getElementById(META_CURRENT);
 	state.loc.url = document.location.pathname + document.location.search;
 	current.setAttribute('data-href', state.loc.url);
-	instance.runEventFromElementWithApiResponse(current, { method: 'GET', url: state.loc.url, isfirstload: true });
+	//instance.runEventFromElementWithApiResponse(current, { method: 'GET', url: state.loc.url, isfirstload: true });
 	state.loc.parms['c-new'] = 1;
-	history.replaceState(state.loc, document.title, state.loc.url);
+	//history.replaceState(state.loc, document.title, state.loc.url);
 
 	return instance;
 }($, commonUtils);
@@ -1859,7 +1873,7 @@ window.Tango = {
 
 			const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
 			use.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', '/data/icons/svg#icon-' + name);
-			
+
 			svg.appendChild(use);
 			el.appendChild(svg);
 
@@ -1874,7 +1888,7 @@ window.Tango = {
 	registerComponent: function (cls, fabric) {
 		const ctrltype = cls.name.toLowerCase();
 		this.serviceProvider.components[ctrltype] = (id, sp) => {
-			const props = fabric ? fabric(sp) : { };
+			const props = fabric ? fabric(sp) : {};
 			return new cls(id, ctrltype, props);
 		}
 	},

@@ -291,22 +291,22 @@
 				return;
 
 			var menus = $('.iw-contextMenu').not(menu.selector);
-			var a = trigger[0];
-			var parentMenu = null;
-			var parentMenuData = null;
-			while (a && !(a instanceof HTMLBodyElement) && !(a instanceof HTMLDocument)) {
-				if (a.classList.contains('iw-contextMenu')) {
-					menus = menus.not('#' + a.id);
-					if (!parentMenu) parentMenu = a;
-				}
-				a = a.parentNode;
-			}
+			//var a = trigger[0];
+			//var parentMenu = null;
+			//var parentMenuData = null;
+			//while (a && !(a instanceof HTMLBodyElement) && !(a instanceof HTMLDocument)) {
+			//	if (a.classList.contains('iw-contextMenu')) {
+			//		menus = menus.not('#' + a.id);
+			//		if (!parentMenu) parentMenu = a;
+			//	}
+			//	a = a.parentNode;
+			//}
 
-			if (parentMenu) {
-				parentMenuData = $(parentMenu).data('iw-menuData');
-				option.type = parentMenuData.option.type;
-				option.displayAround = parentMenuData.option.displayAround;
-			}
+			//if (parentMenu) {
+			//	parentMenuData = $(parentMenu).data('iw-menuData');
+			//	option.type = parentMenuData.option.type;
+			//	option.displayAround = parentMenuData.option.displayAround;
+			//}
 
 			if (res == 0) {
 				//to close previous open menu.
@@ -491,7 +491,8 @@
 			//call close function
 			option.onClose.call(this, {
 				trigger: trigger,
-				menu: menu
+				menu: menu,
+				options: option
 			}, e);
 		},
 		optionOptimizer: function (method, option) {

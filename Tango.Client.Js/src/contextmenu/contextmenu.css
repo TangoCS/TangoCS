@@ -1,0 +1,42 @@
+/*
+ *contextMenu.js v 1.4.0
+ *Author: Sudhanshu Yadav
+ *s-yadav.github.com
+ *Copyright (c) 2013 Sudhanshu Yadav.
+ *Dual licensed under the MIT and GPL licenses
+ */
+/*Context menu css */
+.iw-contextMenu {
+	visibility: hidden;
+	z-index: 1000;
+	background-color: white;
+}
+.iw-contextMenu-fixed {
+	position: fixed;
+}
+
+.iw-display {
+	visibility: visible;
+	border: 1px solid #ccc;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+	box-shadow: 0 3px 6px #ccc;
+}
+	.iw-display .iw-display {
+		box-shadow: initial;
+	}
+
+	.iw-mSelected {
+		background-color: #003366;
+		color: #F2F2F2;
+	}
+
+.iw-mTrigger:hover, .rowexpandercell:hover {
+    cursor: pointer;
+}
+
+input.iw-mTrigger:hover {
+    cursor: text;
+}
+
+/*context menu css end */

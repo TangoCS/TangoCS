@@ -18,14 +18,15 @@
 				const tr = popup.closest("tr");
 				if (tr && window.getComputedStyle(tr)["position"] == "sticky") {
 					const tbl = tr.closest('table');
-					if (tbl.getElementsByClassName("tbodymenu").length == 0) {
-						const tbodymenu = document.createElement("tbody");
+					const tbodymenu = tbl.querySelector('tbodymenu');
+					if (!tbodymenu) {
+						tbodymenu = document.createElement("tbody");
 						tbodymenu.classList.add("tbodymenu");
 						tbl.insertBefore(tbodymenu, tbl.firstElementChild);
 						tbodymenu.appendChild(document.createElement("tr"));
 						tbodymenu.firstElementChild.appendChild(document.createElement("td"));
 					}
-					tbl.getElementsByClassName("tbodymenu")[0].firstElementChild.firstElementChild.appendChild(popup);
+					tbodymenu.firstElementChild.firstElementChild.appendChild(popup);
 				}
 			}
 			$('#' + triggerid).contextMenu('#' + popupid, parms);
@@ -38,9 +39,11 @@
 				closeOnClick: args.closeonclick,
 				closeOnScroll: args.closeonscroll === undefined ? true : args.closeonscroll,
 				onOpen: onOpen,
+				onClose: onClose,
 				onMouseLeave: onMouseLeave,
 				type: args.type,
-				delay: args.delay
+				delay: args.delay,
+				showOverlay: args.showoverlay && args.showoverlay == "true"
 			};
 		}
 	};
@@ -51,8 +54,19 @@
 		if (menu.getAttribute('data-href') || menu.getAttribute('data-e')) {
 			return au.runEventFromElementWithApiResponse(menu);
 		}
+		if (data.options.showOverlay) {
+			document.documentElement.classList.add('lock-position-html');
+			body.classList.add('lock-position-body');
+		}
 
 		return $.when();
+	}
+
+	function onClose(data, event) {
+		if (data.options.showOverlay) {
+			document.documentElement.classList.remove('lock-position-html');
+			body.classList.remove('lock-position-body');
+		}
 	}
 
 	function onMouseLeave(data, event) {
@@ -77,6 +91,20 @@ window.contextmenuproxy_closeonlink = function () {
 			var parms = contextmenuproxy.parms(args);
 			parms.closeOnClickSelector = function (el) {
 				return el instanceof HTMLAnchorElement;
+			};
+			contextmenuproxy.contextMenu(args.triggerid, args.popupid, parms, args.storeparms)
+		}
+	};
+
+	return instance;
+}();
+
+window.sidebarmenuproxy = function () {
+	var instance = {
+		init: function (args) {
+			var parms = contextmenuproxy.parms(args);
+			parms.closeOnClickSelector = function (el) {
+				return el instanceof HTMLAnchorElement || el.classList.contains('sidebarmenu-background');
 			};
 			contextmenuproxy.contextMenu(args.triggerid, args.popupid, parms, args.storeparms)
 		}
