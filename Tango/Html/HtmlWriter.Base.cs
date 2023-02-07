@@ -441,8 +441,7 @@ namespace Tango.Html
 			switch (position)
 			{
 				case AdjacentHTMLPosition.BeforeEnd:
-					var children1 = w._root.Children.ToList();
-					foreach (var child in children1)
+					foreach (var child in w._root.Children.ToList())
 					{
 						if (child is Element childEl && !childEl.ID.IsEmpty())
 						{
@@ -456,10 +455,11 @@ namespace Tango.Html
 					}
 					break;
 				case AdjacentHTMLPosition.BeforeBegin:
+					foreach (var child in w._root.Children.ToList())
+						el.InsertAdjacent(AdjacentHTMLPosition.BeforeBegin, child);
 					break;
 				case AdjacentHTMLPosition.AfterBegin:
-					var children2 = w._root.ChildrenReversed.ToList();
-					foreach (var child in children2)
+					foreach (var child in w._root.ChildrenReversed.ToList())
 					{
 						if (child is Element childEl && !childEl.ID.IsEmpty())
 						{
@@ -473,7 +473,12 @@ namespace Tango.Html
 					}
 					break;
 				case AdjacentHTMLPosition.AfterEnd:
-
+					Node cur = el;
+					foreach (var child in w._root.Children.ToList())
+					{
+						cur.InsertAdjacent(AdjacentHTMLPosition.AfterEnd, child);
+						cur = child;
+					}
 					break;
 				default:
 					break;
