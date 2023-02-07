@@ -334,15 +334,15 @@ namespace Tango.Html
 			if (_curElement.Attributes == null)
 				_curElement.Attributes = new List<ElementAttribute>();
 
-			if (!replaceExisting)
+			for (int i = 0; i < _curElement.Attributes.Count; i++)
 			{
-				for (int i = 0; i < _curElement.Attributes.Count; i++)
+				if (_curElement.Attributes[i].Name == key)
 				{
-					if (_curElement.Attributes[i].Name == key)
-					{
+					if (!replaceExisting)
 						_curElement.Attributes[i].Value.Add(value);
-						return;
-					}
+					else
+						_curElement.Attributes[i] = new ElementAttribute { Name = key, Value = new List<string> { value } };
+					return;
 				}
 			}
 
