@@ -498,7 +498,7 @@ namespace Tango.Html
 	{
 		string Value;
 
-		public string AsRelative() => Value?.Substring(1);
+		public string AsRelative() => (Value?.StartsWith("#") ?? false) ? Value.Substring(1) : Value;
 
 		public static implicit operator AbsoluteID(string value)
 		{

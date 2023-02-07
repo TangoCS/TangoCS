@@ -49,7 +49,7 @@ namespace Tango.UI.Std
 		{
 			var id = context.FormData.Parse<string>("rowid");
 			var level = context.FormData.Parse<int>("level");
-			var cellid = context.Sender.AsRelative();
+			var cellid = context.Sender?.AsRelative();
 			level++;
 
 			response.AddExpandableRowContent(id, level, colspan, cellid, content);
