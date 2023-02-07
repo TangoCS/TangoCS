@@ -137,6 +137,7 @@ namespace Tango.Html
 						this.ParentNode.FirstChild = newElement;
 					
 					this.PreviousSibling = newElement;
+					newElement.NextSibling = this;
 
 					break;
 				case AdjacentHTMLPosition.AfterBegin:
@@ -163,6 +164,7 @@ namespace Tango.Html
 						this.ParentNode.LastChild = newElement;
 
 					this.NextSibling = newElement;
+					newElement.PreviousSibling = this;
 
 					break;
 				default:
