@@ -49,7 +49,7 @@ namespace Tango.UI.Std
 		{
 			var id = context.FormData.Parse<string>("rowid");
 			var level = context.FormData.Parse<int>("level");
-			var cellid = context.Sender.IsEmpty() ? "" : context.Sender.Substring(1);
+			var cellid = context.Sender.AsRelative();
 			level++;
 
 			response.AddExpandableRowContent(id, level, colspan, cellid, content);
@@ -73,7 +73,7 @@ namespace Tango.UI.Std
 		{
 			var level = context.FormData.Parse<int>("level");
 			level++;
-			var contentId = $"{context.Sender}_content";
+			var contentId = $"{context.Sender.AsRelative()}_content";
 
 			response.AddAdjacentWidget(context.Sender, contentId, AdjacentHTMLPosition.AfterEnd, w => {
 				w.Tr(a => a.Data("level", level), () => {

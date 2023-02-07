@@ -5,6 +5,7 @@ using System.Net;
 using System.Globalization;
 using System.Security.Principal;
 using Newtonsoft.Json;
+using Tango.Html;
 
 namespace Tango.UI
 {
@@ -46,7 +47,7 @@ namespace Tango.UI
 		public string Action { get; set; }
 		public string Event { get; set; }
 		public string EventReceiver { get; set; }
-		public string Sender { get; set; }
+		public AbsoluteID Sender { get; set; }
 		public Dictionary<int, string> ReturnUrl { get; set; }
 		public Dictionary<int, ActionTarget> ReturnTarget { get; set; }
 		//public string SourceUrl { get; set; }
@@ -113,7 +114,7 @@ namespace Tango.UI
 					AddContainer = AddContainer || IsFirstLoad;
 				}
 				else if (key == Constants.Sender)
-					Sender = $"#{value.ToLower()}";
+					Sender = value.ToLower();
 				else if (key == Constants.EventName)
 				{
 					Event = value.ToLower();
@@ -397,4 +398,5 @@ namespace Tango.UI
 			return context.RequestServices.GetService(typeof(IIdentity)) is IIdentity identity && identity.IsAuthenticated;
 		}
 	}
+
 }

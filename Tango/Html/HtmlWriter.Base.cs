@@ -492,4 +492,25 @@ namespace Tango.Html
 
 
 	}
+
+
+	public class AbsoluteID
+	{
+		string Value;
+
+		public string AsRelative() => Value?.Substring(1);
+
+		public static implicit operator AbsoluteID(string value)
+		{
+			return new AbsoluteID {	Value = "#" + value };
+		}
+		public static implicit operator string(AbsoluteID id)
+		{
+			return id.Value;
+		}
+		public override string ToString()
+		{
+			return Value;
+		}
+	}
 }

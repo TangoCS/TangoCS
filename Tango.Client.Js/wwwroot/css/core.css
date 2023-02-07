@@ -70,7 +70,7 @@ header h1 {
 	font-weight: normal;
 }
 
-header .iw-contextMenu {
+header .iw-contextMenu, .tree .iw-contextMenu {
 	position: fixed;
 }
 
