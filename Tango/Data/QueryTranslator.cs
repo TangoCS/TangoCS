@@ -653,7 +653,10 @@ namespace Tango.Data
 			if(value is bool boolean)
 				return Convert.ToInt32(boolean).ToString();
 
-            return value.ToString();
+			if (value is float fnumber)
+				return fnumber.ToString(CultureInfo.InvariantCulture);
+			
+			return value.ToString();
 		}
 
 		public static IQueryTranslatorDialect CreateDialect(DBType dbType) => dbType == DBType.MSSQL ? (IQueryTranslatorDialect)new QueryTranslatorMSSQL() :
