@@ -36,15 +36,14 @@ where t.taskid = @id", new { id });
         public IEnumerable<TaskRunning> TasksRunning()
         {
             return database.Connection.Query<TaskRunning>(@"select te.taskexecutionid, te.startdate, t.executiontimeout, t.taskid
-from tm_task t join tm_taskexecution te on t.taskid = te.taskid 
-where te.finishdate is null and t.startfromservice");
+from tm_task t join tm_taskexecution te on t.taskid = te.taskid where te.finishdate is null");
         }
 
         public IEnumerable<Task> TasksForExecute()
         {
             return database.Connection.Query<Task>(@"select t.* from tm_task t
-where t.startfromservice and 
-not exists (select 1 from tm_taskexecution te where te.taskid = t.taskid and te.finishdate is null)");
+where not exists (select 1 from tm_taskexecution te where te.taskid = t.taskid and te.finishdate is null)
+order by t.priority desc");
         }
 
         public int CreateTaskExecution(TaskExecution execution)
@@ -116,7 +115,7 @@ left outer join c_system s on t.systemid = s.systemid";
         public bool IsExecuteTask(int id)
         {
             return Database.Connection.QuerySingleOrDefault<bool>(@"
-select 1 from tm_task t where t.startfromservice and t.taskid = @id and
+select 1 from tm_task t where t.taskid = @id and
 not exists (select 1 from tm_taskexecution te where te.taskid = t.taskid and te.finishdate is null)", new { id });
         }
 
