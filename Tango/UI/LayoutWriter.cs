@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using Tango.Html;
 using Tango.Localization;
+using Tango.UI.Controls;
 
 namespace Tango.UI
 {
@@ -13,9 +14,9 @@ namespace Tango.UI
         public ActionContext Context { get; }
         public IResourceManager Resources => Context.Resources;
 
-		internal Dictionary<string, CtrlInfo> Ctrl { get; } = new Dictionary<string, CtrlInfo>();
+        internal Dictionary<string, CtrlInfo> Ctrl { get; } = new Dictionary<string, CtrlInfo>();
 
-		public List<ClientAction> ClientActions { get; private set; } = new List<ClientAction>();
+        public List<ClientAction> ClientActions { get; private set; } = new List<ClientAction>();
         public HashSet<string> Includes { get; private set; } = new HashSet<string>();
         public IFieldBlockRenderer FieldBlockRenderer { get; private set; }
 
@@ -30,7 +31,7 @@ namespace Tango.UI
 
             var reqEnv = context.RequestServices.GetService(typeof(IRequestEnvironment)) as IRequestEnvironment;
             FieldBlockRenderer = context.RequestServices.GetService(typeof(IFieldBlockRenderer)) as IFieldBlockRenderer ??
-                                 (reqEnv.IsIE() ? (IFieldBlockRenderer) new TableFieldBlockRenderer() : new GridFieldBlockRenderer());
+                                 (reqEnv.IsIE() ? (IFieldBlockRenderer)new TableFieldBlockRenderer() : new GridFieldBlockRenderer());
         }
 
         //LayoutWriter(ActionContext context, string idPrefix, StringBuilder sb) : base(idPrefix, sb)
@@ -131,13 +132,13 @@ namespace Tango.UI
         {
             if (grid == null) grid = Grid.OneWhole;
 
-            string width = "grid-column-end: span " + (int) grid.Field;
+            string width = "grid-column-end: span " + (int)grid.Field;
             string br = grid.BreakRow ? "grid-column-start: 1" : "";
             string vis = isVisible ? "" : "display:none";
 
-            string style = new string[] {width, br, vis}.Where(s => s != "").Join(";");
+            string style = new string[] { width, br, vis }.Where(s => s != "").Join(";");
 
-            int labelWidth = (int) Math.Round(100 / (60 / (double) grid.Caption), 0, MidpointRounding.AwayFromZero);
+            int labelWidth = (int)Math.Round(100 / (60 / (double)grid.Caption), 0, MidpointRounding.AwayFromZero);
             int bodyWidth = 100 - labelWidth;
             int checkBoxWidth = 10;
 
@@ -197,17 +198,17 @@ namespace Tango.UI
 
         public static implicit operator GridPosition((Grid field, Grid caption, bool br) rec)
         {
-            return new GridPosition {Field = rec.field, Caption = rec.caption, BreakRow = rec.br};
+            return new GridPosition { Field = rec.field, Caption = rec.caption, BreakRow = rec.br };
         }
 
         public static implicit operator GridPosition((Grid field, Grid caption) rec)
         {
-            return new GridPosition {Field = rec.field, Caption = rec.caption};
+            return new GridPosition { Field = rec.field, Caption = rec.caption };
         }
 
         public static implicit operator GridPosition(Grid field)
         {
-            return new GridPosition {Field = field, Caption = Grid.ThreeTenth};
+            return new GridPosition { Field = field, Caption = Grid.ThreeTenth };
         }
     }
 
@@ -237,208 +238,123 @@ namespace Tango.UI
         NineTenth = 54
     }
 
-    public class FieldsBlockCollapsibleOptions
+    public static class LayoutWriterMainExtensions
     {
-        public Action<TagAttributes> Attributes { get; set; }
-
-        /// <summary>
-        /// Признак свернутого состояния
-        /// </summary>
-        public bool IsCollapsed { get; set; }
-
-        public Grid? Grid { get; set; }
-    }
-
-	public static class LayoutWriterMainExtensions
-	{
-		public static void WithPrefix(this LayoutWriter w, IViewElement el, Action content)
-		{
-            w.WithPrefix(el.ClientID, content);
-		}
-
-		public static void AjaxForm(this LayoutWriter w, string name, Action content)
-		{
-			w.AjaxForm(name, false, null, content);
-		}
-
-		public static void AjaxForm(this LayoutWriter w, string name, bool submitOnEnter, Action content)
-		{
-			w.AjaxForm(name, submitOnEnter, null, content);
-		}
-
-		public static void AjaxForm(this LayoutWriter w, string name, Action<FormTagAttributes> attributes, Action content)
-		{
-			w.AjaxForm(name, false, attributes, content);
-		}
-
-		public static void AjaxForm(this LayoutWriter w, string name, bool submitOnEnter, Action<FormTagAttributes> attributes, Action content)
-		{
-			w.Form(a => a.ID(name).Set(attributes), () => {
-				content?.Invoke();
-				// Workaround to avoid corrupted XHR2 request body in IE10 / IE11
-				w.Hidden(Constants.IEFormFix, null);
-			});
-			w.AddClientAction("ajaxUtils", "initForm", f => new { ID = f(name), SubmitOnEnter = submitOnEnter });
-		}
-
-		//public static void FormTable100Percent(this LayoutWriter w, Action content)
-		//{
-		//	w.FieldsBlock(a => a.Class("width100"), content);
-		//}
-
-		public static void FieldsBlockStd(this LayoutWriter w, Action content)
-		{
-			FieldsBlockStd(w, null, content);
-		}
-
-		public static void FieldsBlock100Percent(this LayoutWriter w, Action content)
-		{
-			FieldsBlock100Percent(w, null, content);
-		}
-
-		public static void FieldsBlock(this LayoutWriter w, Action content)
-		{
-			w.FieldsBlock(null, content);
-		}
-
-		//public static void FieldsBlock(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
-		//{
-		//	w.FormTable(a => a.ID().Set(attributes), content);
-		//}
-
-		public static void FieldsBlockStd(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
-		{
-			w.Div(a => a.Class("widthstd"), () => w.FieldsBlock(attributes, content));
-		}
-
-		public static void FieldsBlock100Percent(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
-		{
-			w.Div(a => a.Class("width100"), () => w.FieldsBlock(attributes, content));
-		}
-
-		static void BlockCollapsibleInt(this LayoutWriter w, Action leftTitle, Action content, Action rightTitle = null, FieldsBlockCollapsibleOptions options = null)
-		{
-			var grid = options?.Grid;
-			if (grid == null) grid = Grid.OneWhole;
-			var width = $"grid-column-end: span {(int)grid}";
-
-            var id = Guid.NewGuid().ToString();
-            w.Div(a => {
-				a.ID(id).Class("block block-collapsible").Style(width);
-				if (options?.IsCollapsed ?? false)
-					a.Class("collapsed");
-			}, () => {
-				w.Div(a => a.Class("block-header"), () => {
-                    w.BlockHeaderLeft(id, leftTitle);
-                    w.BlockHeaderRight(rightTitle);
-                });
-				content();
-			});
-		}
-
-        private static void BlockHeaderLeft(this LayoutWriter w, string id, Action title)
+        public static void WithPrefix(this LayoutWriter w, IViewElement el, Action content)
         {
-            var js = "domActions.toggleClass({id: '" + w.GetID(id) + "', clsName: 'collapsed' })";
-            w.Div(a => a.Class("block-header-left").OnClick(js), () =>
-            {
-                w.Div(a => a.Class("block-btn"), () => w.Icon("right"));
-                w.Div(a => a.Class("block-title"), title);
-            });
+            w.WithPrefix(el.ClientID, content);
         }
 
-        private static void BlockHeaderRight(this LayoutWriter w, Action title)
+        public static void AjaxForm(this LayoutWriter w, string name, Action content)
         {
-            if(title != null)
-            {
-                w.Div(a => a.Class("block-header-right"), () =>
-                {
-                    w.Div(a => a.Class("block-title"), title);
-                });
-            }
+            w.AjaxForm(name, false, null, content);
+        }
+
+        public static void AjaxForm(this LayoutWriter w, string name, bool submitOnEnter, Action content)
+        {
+            w.AjaxForm(name, submitOnEnter, null, content);
+        }
+
+        public static void AjaxForm(this LayoutWriter w, string name, Action<FormTagAttributes> attributes, Action content)
+        {
+            w.AjaxForm(name, false, attributes, content);
+        }
+
+        public static void AjaxForm(this LayoutWriter w, string name, bool submitOnEnter, Action<FormTagAttributes> attributes, Action content)
+        {
+            w.Form(a => a.ID(name).Set(attributes), () => {
+                content?.Invoke();
+                // Workaround to avoid corrupted XHR2 request body in IE10 / IE11
+                w.Hidden(Constants.IEFormFix, null);
+            });
+            w.AddClientAction("ajaxUtils", "initForm", f => new { ID = f(name), SubmitOnEnter = submitOnEnter });
+        }
+
+        public static void FieldsBlockStd(this LayoutWriter w, Action content)
+        {
+            FieldsBlockStd(w, null, content);
+        }
+
+        public static void FieldsBlock100Percent(this LayoutWriter w, Action content)
+        {
+            FieldsBlock100Percent(w, null, content);
+        }
+
+        public static void FieldsBlock(this LayoutWriter w, Action content)
+        {
+            w.FieldsBlock(null, content);
+        }
+
+        public static void FieldsBlockStd(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+        {
+            w.Div(a => a.Class("widthstd"), () => w.FieldsBlock(attributes, content));
+        }
+
+        public static void FieldsBlock100Percent(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+        {
+            w.Div(a => a.Class("width100"), () => w.FieldsBlock(attributes, content));
+        }
+
+        public static void BlockCollapsible(this LayoutWriter w, Action<FieldsBlockCollapsibleOptions> options)
+        {
+            FieldsBlockCollapsibleOptions.Make(w, options).Render();
         }
 
         public static T GridColumn<T>(this TagAttributes<T> a, Grid? value)
-			where T : TagAttributes<T>
-		{
-			if (value == null) value = Grid.OneWhole;
-			var width = $"grid-column-end: span {(int)value};";
-			return a.Style(width);
-		}
+            where T : TagAttributes<T>
+        {
+            if (value == null) value = Grid.OneWhole;
+            var width = $"grid-column-end: span {(int)value};";
+            return a.Style(width);
+        }
 
-		public static void Block(this LayoutWriter w, Action content, Grid? grid = null)
-		{
-			w.Div(a => a.Class("grid60").GridColumn(grid), content);
-		}
+        public static void Block(this LayoutWriter w, Action content, Grid? grid = null)
+        {
+            w.Div(a => a.Class("grid60").GridColumn(grid), content);
+        }
         public static void Block(this LayoutWriter w, Action<TagAttributes> attrs, Action content)
         {
             w.Div(a => a.Class("grid60").Set(attrs), content);
         }
 
-        public static void BlockCollapsible(this LayoutWriter w, string title, Action content, FieldsBlockCollapsibleOptions options = null)
-		{
-			w.BlockCollapsible(() => w.Write(title), content, options);
-		}
-		public static void BlockCollapsible(this LayoutWriter w, Action title, Action content, FieldsBlockCollapsibleOptions options = null)
-		{
-			w.BlockCollapsibleInt(title, () => w.Div(a => a.Class("block-body").Set(options?.Attributes), content), options: options);
-		}
+        public static void GroupTitle(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+        {
+            w.Div(a => a.Class("tabletitle").Set(attributes), content);
+        }
 
-		public static void FieldsBlockCollapsible(this LayoutWriter w, string title, Action content, FieldsBlockCollapsibleOptions options = null)
-		{
-			w.FieldsBlockCollapsible(() => w.Write(title), content, options: options);
-		}
+        public static void FormMargin(this LayoutWriter w, Action inner)
+        {
+            w.Div(a => a.Style("padding:8px"), inner);
+        }
 
-		public static void FieldsBlockCollapsible(this LayoutWriter w, Action title, Action content, Action rightTitle = null, FieldsBlockCollapsibleOptions options = null)
-		{
-			w.BlockCollapsibleInt(title, () =>
-					w.Div(a => a.Class("block-body"), () =>
-						w.FieldsBlock(a => a.Set(options?.Attributes),
-							content)
-					), rightTitle: rightTitle, options: options
-            );
-		}
+        public static void ButtonsBar(this LayoutWriter w, Action content)
+        {
+            w.ButtonsBar(null, content);
+        }
 
+        public static void ButtonsBar(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+        {
+            w.Div(a => a.ID("buttonsbar").Class("buttonsbar").Set(attributes), content);
+        }
 
-		public static void GroupTitle(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
-		{
-			w.Div(a => a.Class("tabletitle").Set(attributes), content);
-		}
+        public static void ButtonsBarRight(this LayoutWriter w, Action content)
+        {
+            w.Div(a => a.Class("right"), content);
+        }
 
-		public static void FormMargin(this LayoutWriter w, Action inner)
-		{
-			w.Div(a => a.Style("padding:8px"), inner);
-		}
+        public static void ButtonsBarRight(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+        {
+            w.Div(a => a.Class("right").Set(attributes), content);
+        }
 
-		public static void ButtonsBar(this LayoutWriter w, Action content)
-		{
-			w.ButtonsBar(null, content);
-		}
+        public static void ButtonsBarLeft(this LayoutWriter w, Action content)
+        {
+            w.Div(a => a.Class("left"), content);
+        }
 
-		public static void ButtonsBar(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
-		{
-			w.Div(a => a.ID("buttonsbar").Class("buttonsbar").Set(attributes), content);
-		}
-
-		public static void ButtonsBarRight(this LayoutWriter w, Action content)
-		{
-			w.Div(a => a.Class("right"), content);
-		}
-
-		public static void ButtonsBarRight(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
-		{
-			w.Div(a => a.Class("right").Set(attributes), content);
-		}
-
-		public static void ButtonsBarLeft(this LayoutWriter w, Action content)
-		{
-			w.Div(a => a.Class("left"), content);
-		}
-
-		public static void ButtonsBarLeft(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
-		{
-			w.Div(a => a.Class("left").Set(attributes), content);
-		}
-
-		
+        public static void ButtonsBarLeft(this LayoutWriter w, Action<TagAttributes> attributes, Action content)
+        {
+            w.Div(a => a.Class("left").Set(attributes), content);
+        }
     }
 }

@@ -27,9 +27,14 @@ namespace Tango.UI.Std
 
             attributes += a => a.Class("validation-body").GridColumn(Grid.OneWhole);
 
-            w.FieldsBlockCollapsible(title, () => {
-                w.Div(attributes, () => {
-                    content();
+            w.BlockCollapsible(opt =>
+            {
+                opt.SetLeftTitle(title)
+                .SetContentFieldsBlock(() =>
+                {
+                    w.Div(attributes, () => {
+                        content();
+                    });
                 });
             });
         }
