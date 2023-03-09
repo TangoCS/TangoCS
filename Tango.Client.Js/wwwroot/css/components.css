@@ -1337,11 +1337,11 @@ div.tabs2 + div.tabs2_pages {
 	justify-content: space-between;
 }
 
-.block-left {
+.block-header-left {
 	cursor: pointer;
 }
 
-.block-right {
+.block-header-right {
 	margin-left: auto
 }
 
