@@ -316,29 +316,48 @@ namespace Tango.UI
 			w.Div(a => a.Class("width100"), () => w.FieldsBlock(attributes, content));
 		}
 
-		static void BlockCollapsibleInt(this LayoutWriter w, Action title, Action content, FieldsBlockCollapsibleOptions options = null)
+		static void BlockCollapsibleInt(this LayoutWriter w, Action leftTitle, Action content, Action rightTitle = null, FieldsBlockCollapsibleOptions options = null)
 		{
-			var id = Guid.NewGuid().ToString();
-			var js = "domActions.toggleClass({id: '" + w.GetID(id) + "', clsName: 'collapsed' })";
-
 			var grid = options?.Grid;
 			if (grid == null) grid = Grid.OneWhole;
 			var width = $"grid-column-end: span {(int)grid}";
 
-			w.Div(a => {
+            var id = Guid.NewGuid().ToString();
+            w.Div(a => {
 				a.ID(id).Class("block block-collapsible").Style(width);
 				if (options?.IsCollapsed ?? false)
 					a.Class("collapsed");
 			}, () => {
-				w.Div(a => a.Class("block-header").OnClick(js), () => {
-					w.Div(a => a.Class("block-btn"), () => w.Icon("right"));
-					w.Div(a => a.Class("block-title"), title);
-				});
+				w.Div(a => a.Class("block-header"), () => {
+                    w.BlockHeaderLeft(id, leftTitle);
+                    w.BlockHeaderRight(rightTitle);
+                });
 				content();
 			});
 		}
 
-		public static T GridColumn<T>(this TagAttributes<T> a, Grid? value)
+        private static void BlockHeaderLeft(this LayoutWriter w, string id, Action title)
+        {
+            var js = "domActions.toggleClass({id: '" + w.GetID(id) + "', clsName: 'collapsed' })";
+            w.Div(a => a.Class("block-header-left").OnClick(js), () =>
+            {
+                w.Div(a => a.Class("block-btn"), () => w.Icon("right"));
+                w.Div(a => a.Class("block-title"), title);
+            });
+        }
+
+        private static void BlockHeaderRight(this LayoutWriter w, Action title)
+        {
+            if(title != null)
+            {
+                w.Div(a => a.Class("block-header-right"), () =>
+                {
+                    w.Div(a => a.Class("block-title"), title);
+                });
+            }
+        }
+
+        public static T GridColumn<T>(this TagAttributes<T> a, Grid? value)
 			where T : TagAttributes<T>
 		{
 			if (value == null) value = Grid.OneWhole;
@@ -361,22 +380,22 @@ namespace Tango.UI
 		}
 		public static void BlockCollapsible(this LayoutWriter w, Action title, Action content, FieldsBlockCollapsibleOptions options = null)
 		{
-			w.BlockCollapsibleInt(title, () => w.Div(a => a.Class("block-body").Set(options?.Attributes), content), options);
+			w.BlockCollapsibleInt(title, () => w.Div(a => a.Class("block-body").Set(options?.Attributes), content), options: options);
 		}
 
 		public static void FieldsBlockCollapsible(this LayoutWriter w, string title, Action content, FieldsBlockCollapsibleOptions options = null)
 		{
-			w.FieldsBlockCollapsible(() => w.Write(title), content, options);
+			w.FieldsBlockCollapsible(() => w.Write(title), content, options: options);
 		}
 
-		public static void FieldsBlockCollapsible(this LayoutWriter w, Action title, Action content, FieldsBlockCollapsibleOptions options = null)
+		public static void FieldsBlockCollapsible(this LayoutWriter w, Action title, Action content, Action rightTitle = null, FieldsBlockCollapsibleOptions options = null)
 		{
 			w.BlockCollapsibleInt(title, () =>
 					w.Div(a => a.Class("block-body"), () =>
 						w.FieldsBlock(a => a.Set(options?.Attributes),
 							content)
-					), options
-			);
+					), rightTitle: rightTitle, options: options
+            );
 		}
 
 

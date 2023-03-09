@@ -1333,7 +1333,16 @@ div.tabs2 + div.tabs2_pages {
 
 .block-header {
 	margin-bottom: 4px;
+	display: flex;
+	justify-content: space-between;
+}
+
+.block-left {
 	cursor: pointer;
+}
+
+.block-right {
+	margin-left: auto
 }
 
 .block-title {
