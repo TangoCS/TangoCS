@@ -48,6 +48,8 @@ namespace Tango.UI.Std
 					containerObj.InjectProperties(ctx.RequestServices);
 					containerObj.OnInit();
 					containerObj.ProcessResponse(response, ctx.AddContainer, ctx.ContainerPrefix);
+					if (containerObj.IsModal)
+						view.IsModal = true;
 				}
 				//else if (context.Method.Name != "OnLoad")
 				response.WithWritersFor(view);

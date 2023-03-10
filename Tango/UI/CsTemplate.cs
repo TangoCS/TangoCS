@@ -21,6 +21,7 @@ namespace Tango.UI
 		List<IViewElement> ChildElements { get; }
 		DataCollection DataCollection { get; set; }
 		bool IsLazyLoad { get; set; }
+		bool IsModal { get; set; }
 		string GetClientID(string id);
 
 		void OnInit();
@@ -120,6 +121,7 @@ namespace Tango.UI
 		//public virtual void AfterInit() { }
 		public virtual void OnEvent() { }
 		public bool IsLazyLoad { get; set; }
+		public bool IsModal { get; set; }
 
 		public T CreateControl<T>(string id, Action<T> setProperties = null)
 			where T : IViewElement, new()

@@ -53,7 +53,8 @@ namespace Tango.UI.Std
 			var title = FormTitle ?? Resources.Get(bulk ? "Common.Delete.Bulk.Title" : "Common.Delete.Title");
 			
 			response.AddWidget("contenttitle", title);
-			response.AddWidget("#title", title);
+			if (!IsModal && ParentElement == null)
+				response.AddWidget("#title", title);
 
 			response.AddAdjacentWidget("form", "buttonsbar", AdjacentHTMLPosition.BeforeEnd, ButtonsBar);
 		}

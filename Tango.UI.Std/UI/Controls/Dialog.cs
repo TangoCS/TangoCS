@@ -15,6 +15,7 @@ namespace Tango.UI.Controls
 			Mapping.Add("form", "body");
 			Mapping.Add("title", "title");
 			Mapping.Add("contenttoolbar", "toolbar");
+			IsModal = true;
 		}
 		public override void Render(ApiResponse response)
 		{
@@ -71,6 +72,7 @@ namespace Tango.UI.Controls
 			Mapping.Add("contentbody", $"body");
 			Mapping.Add("contenttitle", $"title");
 			Mapping.Add("title", $"title");
+			IsModal = true;
 		}
 		public override void Render(ApiResponse response)
 		{
@@ -85,6 +87,7 @@ namespace Tango.UI.Controls
 		public ConsoleContainer()
 		{
 			Class = "console";
+			IsModal = true;
 		}
 
 		public override void Render(ApiResponse response)
