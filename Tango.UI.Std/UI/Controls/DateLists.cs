@@ -18,6 +18,9 @@ namespace Tango.UI.Controls
 		public bool IsMonthRequired { get; set; } = false;
 		public bool IsYearRequired { get; set; } = false;
 
+		public bool IsHourRequired { get; set; } = true;
+		public bool IsMinuteRequired { get; set; } = true;
+
 		int Day => ShowDays ? Context.GetArg($"{ID}_day", DefaultValue.Day) : 1;
 		int Month => Context.GetArg($"{ID}_month", DefaultValue.Month);
 		int Year => Context.GetArg($"{ID}_year", DefaultValue.Year);
@@ -100,11 +103,13 @@ namespace Tango.UI.Controls
 
 			if (ShowTime || TimeOnly)
 			{
-				hourItems.Add(new SelectListItem("Час", "-1"));
+				if (!IsHourRequired)
+					hourItems.Add(new SelectListItem("Час", "-1"));
 				for (int i = 0; i < 24; i++)
 					hourItems.Add(new SelectListItem(i.ToString("00"), i.ToString()));
 
-				minuteItems.Add(new SelectListItem("Мин", "-1"));
+				if (!IsMinuteRequired)
+					minuteItems.Add(new SelectListItem("Мин", "-1"));
 				for (int i = 0; i < 60; i += MinutesStep)
 					minuteItems.Add(new SelectListItem(i.ToString("00"), i.ToString()));
 			}
