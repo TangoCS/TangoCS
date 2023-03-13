@@ -171,11 +171,6 @@ namespace Tango.UI
 			w.FormField(name, caption, () => w.ToggleSwitch(name, value), grid, isRequired, description);
 		}
 
-		public static void ToggleSwitch(this LayoutWriter w, string name, bool value, bool disabled = false, bool read_only = false, Action<InputTagAttributes> attributes = null)
-		{
-			w.ToggleSwitch(name, value, a => a.Set(attributes).Disabled(disabled).Readonly(read_only).OnChange("event.preventDefault(); this.checked = !this.checked; return false;"));
-        }
-
         public static void ToggleSwitch(this LayoutWriter w, InputName name, bool value, Action<InputTagAttributes> attributes = null)
 		{
             w.CheckBox(name, value, attributes);
