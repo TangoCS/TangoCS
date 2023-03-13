@@ -173,11 +173,16 @@ namespace Tango.UI
 
 		public static void ToggleSwitch(this LayoutWriter w, string name, bool value, bool disabled = false, bool read_only = false, Action<InputTagAttributes> attributes = null)
 		{
-			w.CheckBox(name, value, a => { a.Set(attributes); if (disabled) a.Disabled(true); if (read_only) a.Readonly(true).OnChange("event.preventDefault(); this.checked = !this.checked; return false;"); });
-			w.AddClientAction("$", f => "#" + f(name), ("btnSwitch", f => new { Theme = "Light" }));
-		}
+			w.ToggleSwitch(name, value, a => a.Set(attributes).Disabled(disabled).Readonly(read_only).OnChange("event.preventDefault(); this.checked = !this.checked; return false;"));
+        }
 
-		public static void FormFieldCheckBox<T>(this LayoutWriter w, MetaAttribute<T, bool> prop, T model, GridPosition grid)
+        public static void ToggleSwitch(this LayoutWriter w, InputName name, bool value, Action<InputTagAttributes> attributes = null)
+		{
+            w.CheckBox(name, value, attributes);
+            w.AddClientAction("$", f => "#" + f(name.ID), ("btnSwitch", f => new { Theme = "Light" }));
+        }
+
+        public static void FormFieldCheckBox<T>(this LayoutWriter w, MetaAttribute<T, bool> prop, T model, GridPosition grid)
 		{
 			w.FormField(prop.Name, w.Resources.Caption(prop), 
 				() => w.CheckBox(prop.Name, model != null ? prop.GetValue(model) : false), 

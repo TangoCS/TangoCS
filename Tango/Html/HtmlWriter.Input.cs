@@ -99,5 +99,10 @@ namespace Tango.Html
 		{
 			return new InputName { ID = name, Name = name };
 		}
-	}
+
+        public static implicit operator InputName((string name, string id) input)
+        {
+            return new InputName { ID = input.id, Name = input.name };
+        }
+    }
 }
