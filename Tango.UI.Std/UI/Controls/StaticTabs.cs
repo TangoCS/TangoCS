@@ -15,8 +15,8 @@ namespace Tango.UI.Controls
                         var p = tabPages[i];
                         w.Li(a => a.Class("tablink"), () =>
                         {                           
-                            w.RadioButton(id, p.ID + "_title", null, isChecked: tabPages[i].Selected.HasValue ? tabPages[i].Selected.Value : (i == 0 ? true : false));
-                            w.Label(a => a.For(p.ID + "_title").Data("id", p.ID).OnClick("tabs.onselect(this)"), () => p.Title(w));
+                            w.RadioButton(id, StaticTabPage.TabTitleID(p.ID), null, isChecked: tabPages[i].Selected.HasValue ? tabPages[i].Selected.Value : (i == 0 ? true : false));
+                            w.Label(a => a.For(StaticTabPage.TabTitleID(p.ID)).Data("id", p.ID).OnClick("tabs.onselect(this)"), () => p.Title(w));
                         });
                     }
                 });
@@ -25,7 +25,7 @@ namespace Tango.UI.Controls
 				for (int i = 0; i < tabPages.Length; i++)
 				{                   
                     var p = tabPages[i];
-                    w.Div(a => a.ID(p.ID + "_tabpage").Style(tabPages[i].Style).Class(tabPages[i].Selected.HasValue ? (tabPages[i].Selected.Value ? "selected" : "") : (i == 0 ? "selected": "")), () => p.Content(w));                    
+                    w.Div(a => a.ID(StaticTabPage.TabPageID(p.ID)).Style(tabPages[i].Style).Class(tabPages[i].Selected.HasValue ? (tabPages[i].Selected.Value ? "selected" : "") : (i == 0 ? "selected": "")), () => p.Content(w));                    
                 }
 			});
 		}
@@ -38,6 +38,9 @@ namespace Tango.UI.Controls
 		public Action<LayoutWriter> Content { get; set; }
         public bool? Selected { get; set; }
 		public string Style { get; set; }
+		public static string TabPageID(string ID) { return ID + "_tabpage"; }
+		public static string TabTitleID(string ID){ return ID + "_title"; }
+
 		public StaticTabPage(string id, string title, Action<LayoutWriter> content, bool? selected = null, string style = null)
 		{
 			ID = id;
