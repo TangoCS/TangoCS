@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Tango.UI;
 
 namespace Tango.RealTime
 {
@@ -41,5 +43,11 @@ namespace Tango.RealTime
 
 	public interface IBackgroundWorkerHubContext : IHubContext
 	{
+	}
+
+	public interface ITangoHubContext
+	{
+		Task SetElementValue(string service, string action, string key, string id, string value);
+		Task SendApiResponse(string service, string action, string key, ActionContext actionContext, Action<ApiResponse> response);
 	}
 }

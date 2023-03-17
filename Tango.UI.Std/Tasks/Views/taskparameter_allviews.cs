@@ -4,11 +4,14 @@ using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security.Principal;
+using System.Threading;
 using CronExpressionDescriptor;
 using Tango;
 using Tango.AccessControl;
 using Tango.Data;
 using Tango.Html;
+using Tango.Identity.Std;
 using Tango.Localization;
 using Tango.LongOperation;
 using Tango.UI;
@@ -18,7 +21,9 @@ using Tango.UI.Std;
 namespace Tango.Tasks
 {
 	[OnAction(typeof(Task), "parameters")]
-	public class tm_taskparameters : default_edit_rep<Task, int, ITaskRepository>
+	public class tm_taskparameters : tm_taskparameters<IdentityUser> { }
+
+	public class tm_taskparameters<TUser> : default_edit_rep<Task, int, ITaskRepository> where TUser : class
 	{
 		protected override string FormTitle => "Параметры запуска";
 		protected Dictionary<string, ParameterData> parameters = new Dictionary<string, ParameterData>();
@@ -74,25 +79,35 @@ namespace Tango.Tasks
                 param[p.Key] = FormData.Parse<string>(p.Key);
             }
 
-            RunTaskController(param);
+			RunTaskController(param);
 
-            response.RedirectBack(Context, 1);
+			response.RedirectBack(Context, 1);
         }
 
         protected virtual void RunTaskController(Dictionary<string, string> param)
         {
-            var c = new TaskController { Context = Context };
+			var c = new TaskController<TUser> { Context = Context };
 
-            c.InjectProperties(Context.RequestServices);
+			c.InjectProperties(Context.RequestServices);
 
-            c.Run(ViewData, true, param);
-        }
+			c.Run(ViewData, true, param);
+		}
 
         protected class ParameterData
 		{
 			public ParameterInfo ParameterInfo { get; set; }
 			public string Caption { get; set; }
 			public string Value { get; set; }
+		}
+
+		protected override void ButtonsBar(LayoutWriter w)
+		{
+			w.ButtonsBar(() => {
+				w.ButtonsBarRight(() => {
+					w.SubmitButton(a => a.DataReceiver(this).OnClick($"dialog.close(document.getElementById('task_parameters_dialog'))"));
+					w.BackButton();
+				});
+			});
 		}
 	}
 

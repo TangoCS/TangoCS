@@ -18,10 +18,13 @@ using Tango.UI.Std;
 
 namespace Tango.Tasks
 {
-	public class TaskController : BaseTaskController
+	public class TaskController<TUser> : BaseTaskController where TUser : class
 	{
         [Inject]
-        protected IIdentityManager Identity { get; set; }
+        protected IIdentityManager<TUser> Identity { get; set; }
+
+		[Inject]
+        protected IUserIdAccessor<object> UserIdAccessor { get; set; }
 
         protected override void ExecutingTaskUser(IScheduledTask task)
         {
@@ -30,7 +33,7 @@ namespace Tango.Tasks
 
         protected override void SetLastModifiedUser(TaskExecution execution, bool isManual)
         {
-            execution.LastModifiedUserID = isManual ? Identity.CurrentUser.Id : Identity.SystemUser.Id;
+            execution.LastModifiedUserID = isManual ? UserIdAccessor.CurrentUserID : UserIdAccessor.SystemUserID;
         }
     }
 

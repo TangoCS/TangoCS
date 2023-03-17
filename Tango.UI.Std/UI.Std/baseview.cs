@@ -48,6 +48,12 @@ namespace Tango.UI.Std
 		}
 
 		public virtual void OnFirstLoad(ApiResponse response) { }
+
+		protected void RegisterRealtimeConnection(ApiResponse response, string key)
+		{
+			response.AddClientAction("tangohub", "init", new { service = Context.Service, action = Context.Action, key, prefix = ClientID });
+		}
+
 		public abstract void OnLoad(ApiResponse response);
 
 		public virtual bool CheckAccess(MethodInfo method)

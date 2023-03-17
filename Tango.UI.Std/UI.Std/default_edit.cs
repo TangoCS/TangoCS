@@ -210,9 +210,6 @@ namespace Tango.UI.Std
 	public abstract class default_edit<T> : default_edit
 		where T : class
 	{
-		[Inject]
-		protected IIdentityManager IdentityManager { get; set; }
-
 		T _viewData = null;
 		protected T ViewData
 		{
@@ -276,11 +273,6 @@ namespace Tango.UI.Std
 			if (ViewData is IWithTimeStamp withTimeStamp)
 			{
 				withTimeStamp.LastModifiedDate = DateTime.Now;
-			}
-
-			if (ViewData is IWithUserTimeStamp withUserTimeStamp)
-			{
-				withUserTimeStamp.LastModifiedUserID = IdentityManager.CurrentUser.Id;
 			}
 		}
 

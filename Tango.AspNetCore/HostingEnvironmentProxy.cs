@@ -4,9 +4,9 @@ namespace Tango.AspNetCore
 {
     public class HostingEnvironmentProxy : IHostingEnvironment
 	{
-		readonly Microsoft.AspNetCore.Hosting.IHostingEnvironment _env;
+		readonly Microsoft.AspNetCore.Hosting.IWebHostEnvironment _env;
 
-		public HostingEnvironmentProxy(Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
+		public HostingEnvironmentProxy(Microsoft.AspNetCore.Hosting.IWebHostEnvironment env)
 		{
 			_env = env;
 

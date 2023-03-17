@@ -14,7 +14,7 @@ namespace Tango
 			{
 				return new JsonSerializerSettings {
 					ContractResolver = new CamelCaseExceptDictionaryResolver(),
-					Converters = new List<JsonConverter> { new KeyValueListConverter(), new StringEnumConverter(true) }
+					Converters = new List<JsonConverter> { new KeyValueListConverter(), new StringEnumConverter(new CamelCaseNamingStrategy(), true) }
 				};
 			}
 		}

@@ -58,7 +58,13 @@ namespace Tango.Tasks
 			}
 		}
 
-        protected override void Form(LayoutWriter w)
+		public override void OnLoad(ApiResponse response)
+		{
+			base.OnLoad(response);
+			RegisterRealtimeConnection(response, "");
+		}
+
+		protected override void Form(LayoutWriter w)
         {
 			tabs.RenderTabs(w);
 			tabs.RenderPages(w);
@@ -116,7 +122,7 @@ namespace Tango.Tasks
 
 				w.Write(o.IsActive ? nextTime.DateTimeToString() : "");
 			});
-			f.AddCellWithSortAndFilter(o => o.Status, o => Enumerations.GetEnumDescription((TaskStatusType)o.Status));
+			f.AddCellWithSortAndFilter(o => o.Status, (w, o) => w.WithPrefix(ParentElement.ParentElement, () => w.Span(a => a.ID($"status_{o.TaskID}"), Enumerations.GetEnumDescription((TaskStatusType)o.Status))));
 			f.AddCellWithSortAndFilter(o => o.IsActive, o => o.IsActive.Icon());
 			f.AddCellWithSortAndFilter(o => o.Priority, o => o.Priority);
 			f.AddCellWithSortAndFilter(o => o.SystemTitle, o => o.SystemTitle);
@@ -193,14 +199,16 @@ namespace Tango.Tasks
 	}
 
 	[OnAction(typeof(Task), "view")]
-	public class tm_task_view : default_view_rep<Task, int, ITaskRepository>
+	public class tm_task_view : tm_task_view<Tango.Identity.Std.IdentityUser> { }
+
+	public class tm_task_view<TUser> : default_view_rep<Task, int, ITaskRepository> where TUser : class
 	{
 		tm_taskexecution_list2 taskexecution;
 		protected virtual bool ShowBaseTaskExecutionList => true;
 
 		TaskFields.DefaultGroup gr { get; set; }
 		bool isParam = false;
-
+		
 		protected override Task GetExistingEntity()
 		{
 			var id = Context.GetArg<int>(Constants.Id);
@@ -317,6 +325,8 @@ namespace Tango.Tasks
 				response.WithNamesAndWritersFor(taskexecution);
 				taskexecution.OnLoad(response);
 			}
+
+			RegisterRealtimeConnection(response, ViewData.TaskID.ToString());
 		}
 
 		protected override void Form(LayoutWriter w)
@@ -387,7 +397,7 @@ namespace Tango.Tasks
 
 		protected virtual void RunTaskController()
 		{
-			var c = new TaskController { Context = Context };
+			var c = new TaskController<TUser> { Context = Context };
 
 			c.InjectProperties(Context.RequestServices);
 

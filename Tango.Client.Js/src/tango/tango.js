@@ -906,7 +906,10 @@ window.ajaxUtils = function ($, cu) {
 		state: state,
 		processControls: processControls,
 		postProcessControls: postProcessControls,
-		showError: showError
+		showError: showError,
+		processApiResponse: function (apiResult) {
+			processApiResponse(apiResult);
+		}
 	};
 
 	function getApiUrl(path, parms, isfirstload) {

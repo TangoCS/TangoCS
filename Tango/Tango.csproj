@@ -33,10 +33,5 @@
     <PackageReference Include="System.DirectoryServices" Version="4.5.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="AccessControl\Std\" />
-    <Folder Include="Identity\Std\" />
-  </ItemGroup>
-
 </Project>
 

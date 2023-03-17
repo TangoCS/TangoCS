@@ -1,7 +1,13 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Tango.Html;
+using Tango.UI;
 
 namespace Tango.AspNetCore.SignalR
 {
@@ -86,5 +92,49 @@ namespace Tango.AspNetCore.SignalR
 
 		public Task RemoveFromGroupAsync(string connectionId, string groupName, CancellationToken cancellationToken = default)
 			=> groupManager.RemoveFromGroupAsync(connectionId, groupName, cancellationToken);
+	}
+
+	public class TangoHub : Hub
+	{
+		private static readonly ConcurrentDictionary<string, string> groupsMap = new ConcurrentDictionary<string, string>();
+
+		public async Task SetServiceAction(string service, string action, string key = null)
+		{
+			var groupName = (service + "." + action + "." + key).ToLower();
+
+			if (groupsMap.TryGetValue(Context.ConnectionId, out string currentGroupName))
+				await Groups.RemoveFromGroupAsync(Context.ConnectionId, currentGroupName);
+
+			await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+			groupsMap[Context.ConnectionId] = groupName;
+		}
+
+		public override Task OnDisconnectedAsync(Exception exception)
+		{
+			groupsMap.Remove(Context.ConnectionId, out string currentGroupName);
+			return base.OnDisconnectedAsync(exception);
+		}
+	}
+
+	public class TangoHubContext : RealTime.ITangoHubContext
+	{
+		IHubContext<TangoHub> hubContext;
+		public TangoHubContext(IHubContext<TangoHub> hubContext)
+		{
+			this.hubContext = hubContext;
+		}
+
+		public async Task SetElementValue(string service, string action, string key, string id, string value)
+		{
+			await hubContext.Clients.Group((service + "." + action + "." + key).ToLower()).SendAsync("SetElementValue", id, value);
+		}
+
+		public async Task SendApiResponse(string service, string action, string key, ActionContext actionContext, Action<ApiResponse> response)
+		{
+			ApiResponse data = new ApiResponse();
+			response(data);
+			var content = data.Serialize(actionContext);
+			await hubContext.Clients.Group((service + "." + action + "." + key).ToLower()).SendAsync("ProcessApiResponse", content);
+		}
 	}
 }
