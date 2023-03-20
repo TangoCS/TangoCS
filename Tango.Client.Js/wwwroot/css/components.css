@@ -1345,12 +1345,22 @@ div.tabs2 + div.tabs2_pages {
 	margin-left: auto
 }
 
-.block-title {
-	display: inline-block;
-	margin-left: 6px;
-	/*color: #5e6c84;*/
+.block-title-left {
 	font-weight: 600;
 	vertical-align: middle;
+	display: inline-block;
+	margin-left: 6px;
+}
+
+.block-title-right {
+	font-weight: 600;
+	vertical-align: middle;
+	display: flex;
+	margin-right: 6px;	
+}
+
+.block-title-right div + div{
+	margin-left: 6px;
 }
 
 

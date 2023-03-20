@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Linq;
 using Tango.Html;
+using Tango.UI.Controls;
 
 namespace Tango.UI.Std
 {

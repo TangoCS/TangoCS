@@ -294,12 +294,6 @@ namespace Tango.UI
         {
             w.Div(a => a.Class("width100"), () => w.FieldsBlock(attributes, content));
         }
-
-        public static void BlockCollapsible(this LayoutWriter w, Action<FieldsBlockCollapsibleOptions> options)
-        {
-            FieldsBlockCollapsibleOptions.Make(w, options).Render();
-        }
-
         public static T GridColumn<T>(this TagAttributes<T> a, Grid? value)
             where T : TagAttributes<T>
         {
