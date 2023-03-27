@@ -437,7 +437,7 @@ namespace Tango.UI
 		public override Func<ValidationBuilder<DateTime>, ValidationBuilder<DateTime>> ValidationFunc => 
 			v => {
 				var vf = base.ValidationFunc(v);
-				if (!vf.Collection.IsError)
+				if (!vf.Collection.HasItems())
 					vf = vf.ValidateDateInterval();
 				return vf;
 			};
