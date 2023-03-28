@@ -182,7 +182,7 @@ namespace Tango.UI.Controls
 									}, "Да");
 								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), warningMode ? "Назад" : "Нет");
 							});
-						});
+						}, options != null ? options.ShowCloseIcon : true);
 					});
 				});
 				if (IDPrefix != null)
@@ -203,7 +203,23 @@ namespace Tango.UI.Controls
 							w.Div(a => a.Style("width:100%; text-align:center"), () => {
 								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), "ОК");
 							});
-						});
+						}, options != null ? options.ShowCloseIcon : true);
+					});
+				});
+				if (IDPrefix != null)
+					w.PopPrefix();
+			});
+		}
+
+		public static void AddDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content,
+			string IDPrefix = null, DialogOptions options = null)
+		{
+			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
+				if (IDPrefix != null)
+					w.PushPrefix(IDPrefix);
+				w.DialogControl(a => a.DialogContainerAttrs(w.Context, "", IDPrefix, options), () => {
+					w.AjaxForm("form", a => a.DataResult(1), () => {
+						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, null);
 					});
 				});
 				if (IDPrefix != null)
