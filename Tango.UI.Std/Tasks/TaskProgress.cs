@@ -15,9 +15,17 @@ namespace Tango.UI.Std.Tasks
 		}
 		public async Task SetProgress(int taskID, decimal percent, string description)
 		{
-			string status = percent < 100 ? $"В работе: завершено {percent:0.00}%, {description}" : $"Исполнено: {description}";
-			await tangoHubContext.SetElementValue("task", "view", taskID.ToString(), "status", status);
-			await tangoHubContext.SetElementValue("task", "viewlist", null, $"status_{taskID}", status);
+			if (percent == 0)
+			{
+				await tangoHubContext.SendApiResponse("task", "view", taskID.ToString(), null, response => response.HardRedirectTo(null));
+			}
+			else
+				await tangoHubContext.SetElementValue("task", "view", taskID.ToString(), "statusinfo", $"<i class='icon icon-ic_info'><svg class='svgicon-ic_info'><use xlink:href='/data/icons/svg#icon-ic_info'></use></svg></i> В работе: завершено {percent:0.#}%, {description}");
+			if (percent == 100)
+			{
+				await tangoHubContext.SetElementValue("task", "view", taskID.ToString(), "statusinfo", $"<i class='icon icon-ic_info'><svg class='svgicon-ic_info'><use xlink:href='/data/icons/svg#icon-ic_info'></use></svg></i> Завершено 100%, {description}");
+				await tangoHubContext.SendApiResponse("task", "view", taskID.ToString(), null, response => response.HardRedirectTo(null));
+			}
 		}
 	}
 }

@@ -1382,7 +1382,10 @@ window.ajaxUtils = function ($, cu) {
 		}
 
 		if (apiResult.hardredirect) {
-			window.location = apiResult.hardredirect.url;
+			if (apiResult.hardredirect.url)
+				window.location = apiResult.hardredirect.url;
+			else
+				window.location = window.location;
 		}
 
 		if (window.homePage) homePage.countNavBodyHeight();

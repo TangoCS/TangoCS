@@ -287,7 +287,7 @@ namespace Tango.Tasks
             t.ItemActionImageText(x => x.ToDelete(AccessControl, ViewData, Context.ReturnUrl.Get(1))
 				.WithArg(Constants.ReturnUrl + "_0", Context.CreateReturnUrl(1)).AsDialog());
 
-            if (AccessControl.Check("task.start"))
+            if (AccessControl.Check("task.start") && ViewData.Status != (int)TaskStatusType.Progress)
 			{
 				t.ItemSeparator();
 				if (isParam)
@@ -331,64 +331,71 @@ namespace Tango.Tasks
 
 		protected override void Form(LayoutWriter w)
 		{
-			w.FieldsBlockStd(() => {
-				w.PlainText(gr.Title);
-				w.PlainText(gr.SystemName);
-				w.PlainText(gr.TaskGroup);
-				w.PlainText(gr.StartType);
-				void content()
-				{
+			w.BlockCollapsible(opt => {
+				opt.SetLeftTitle("Параметры")
+				.SetContentFieldsBlock(a => a.Style("gap:20px"), () => {
+					w.Block(() =>
+				w.FieldsBlockStd(() => {
+					w.PlainText(gr.Title);
+					w.PlainText(gr.SystemName);
+					w.PlainText(gr.TaskGroup);
+					w.PlainText(gr.StartType);
+					void content()
+					{
+						if (gr.StartType.Value == 1)
+						{
+							w.Write(gr.Interval.Value);
+							var text = ExpressionDescriptor.GetDescription(gr.Interval.Value, new Options() {
+								DayOfWeekStartIndexZero = false,
+								Use24HourTimeFormat = true,
+								Locale = "ru",
+								ThrowExceptionOnParseError = false
+							});
+							w.Div(a => a.Class("descriptiontext"), text);
+						}
+						else
+							w.Write(gr.Interval.StringValue);
+					}
+					w.PlainText(gr.Interval, content);
+
+					DateTime? nextTime = null;
+					DateTime lastStartDate = ViewData.LastStartDate == null ? DateTime.Now :
+											(ViewData.LastStartDate < ViewData.LastModifiedDate ? ViewData.LastModifiedDate : ViewData.LastStartDate.Value);
 					if (gr.StartType.Value == 1)
 					{
-						w.Write(gr.Interval.Value);
-						var text = ExpressionDescriptor.GetDescription(gr.Interval.Value, new Options() {
-							DayOfWeekStartIndexZero = false,
-							Use24HourTimeFormat = true,
-							Locale = "ru",
-							ThrowExceptionOnParseError = false
-						});
-						w.Div(a => a.Class("descriptiontext"), text);
+						var oldTimeUtc = new DateTimeOffset(lastStartDate);
+						var expression = Cronos.CronExpression.Parse(gr.Interval.Value);
+						var next = expression.GetNextOccurrence(oldTimeUtc, TimeZoneInfo.Local);
+						nextTime = next?.DateTime;
 					}
 					else
-						w.Write(gr.Interval.StringValue);
-				}
-				w.PlainText(gr.Interval, content);
+						nextTime = (lastStartDate).AddMinutes(gr.Interval.Value.ToInt32(3000000));
 
-				DateTime? nextTime = null;
-				DateTime lastStartDate = ViewData.LastStartDate == null ? DateTime.Now :
-										(ViewData.LastStartDate < ViewData.LastModifiedDate ? ViewData.LastModifiedDate : ViewData.LastStartDate.Value);
-				if (gr.StartType.Value == 1)
-				{
-					var oldTimeUtc = new DateTimeOffset(lastStartDate);
-					var expression = Cronos.CronExpression.Parse(gr.Interval.Value);
-					var next = expression.GetNextOccurrence(oldTimeUtc, TimeZoneInfo.Local);
-					nextTime = next?.DateTime;
-				}
-				else
-					nextTime = (lastStartDate).AddMinutes(gr.Interval.Value.ToInt32(3000000));
+					if (nextTime < DateTime.Now)
+						nextTime = DateTime.Now.AddMinutes(1);
 
-				if (nextTime < DateTime.Now)
-					nextTime = DateTime.Now.AddMinutes(1);
+					w.PlainText(Resources.Get<Task>("NextTime"), ViewData.IsActive ? nextTime?.ToString("dd.MM.yyyy HH:mm:ss") : "");
 
-				w.PlainText(Resources.Get<Task>("NextTime"), ViewData.IsActive ? nextTime?.ToString("dd.MM.yyyy HH:mm:ss") : "");
-
-				w.PlainText(Resources.Get<Task>(o => o.Method), ViewData.Class + "." + ViewData.Method);
-				w.PlainText(gr.ExecutionTimeout);
-				w.PlainText(gr.IsActive);
-				w.PlainText(gr.Priority);
-				w.PlainText(gr.System);
-				w.PlainText(Resources.Get<Task>(o => o.LastStartDate), ViewData.LastStartDate?.ToString("dd.MM.yyyy HH:mm:ss"));
-				w.PlainText(gr.Status, () => w.Write(Enumerations.GetEnumDescription((TaskStatusType)gr.Status.Value)));
-				w.PlainText(gr.Description);
+					w.PlainText(Resources.Get<Task>(o => o.Method), ViewData.Class + "." + ViewData.Method);
+					w.PlainText(gr.ExecutionTimeout);
+					w.PlainText(gr.IsActive);
+					w.PlainText(gr.Priority);
+					w.PlainText(gr.System);
+					w.PlainText(Resources.Get<Task>(o => o.LastStartDate), ViewData.LastStartDate?.ToString("dd.MM.yyyy HH:mm:ss"));
+					w.PlainText(gr.Status, () => w.Write(Enumerations.GetEnumDescription((TaskStatusType)gr.Status.Value)));
+					w.PlainText(gr.Description);
+				}), Grid.ThreeFiths);
+					w.Block(() => w.Div(a => a.ID("statusinfo"), ""), Grid.TwoFifths);
+				});
 			});
 		}
 
 		public void OnRunTask(ApiResponse response)
 		{
-            var exec = Repository.IsExecuteTask(ViewData.ID);
+			var exec = Repository.IsExecuteTask(ViewData.ID);
 
-            if (exec)
-            {
+			if (exec)
+			{
 				RunTaskController();
 
 			}
