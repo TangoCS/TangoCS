@@ -385,7 +385,13 @@ namespace Tango.Tasks
 					w.PlainText(gr.Status, () => w.Write(Enumerations.GetEnumDescription((TaskStatusType)gr.Status.Value)));
 					w.PlainText(gr.Description);
 				}), Grid.ThreeFiths);
-					w.Block(() => w.Div(a => a.ID("statusinfo"), ""), Grid.TwoFifths);
+					w.Block(() => w.Div(a => a.ID("statusinfo"), () => {
+						if (ViewData.Status == (int)TaskStatusType.Progress)
+						{
+							w.Icon("ic_info");
+							w.Write(" В работе");
+						}
+					}), Grid.TwoFifths);
 				});
 			});
 		}
