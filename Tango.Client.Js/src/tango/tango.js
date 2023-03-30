@@ -156,6 +156,10 @@
 				if (el.name !== undefined && el.type == 'checkbox' && !el.hasAttribute('disabled')) {
 					val = el.checked;
 				}
+				else if (el.name != undefined && el.type == 'radio') {
+					if (el.checked)
+						val = el.value;
+				}
 				else if (el.name !== undefined && el.type == 'select-multiple' && !el.hasAttribute('disabled')) {
 					parmname = parmname.replace('[]', '');
 					var result = [];
