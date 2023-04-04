@@ -287,7 +287,7 @@ namespace Tango.Tasks
             t.ItemActionImageText(x => x.ToDelete(AccessControl, ViewData, Context.ReturnUrl.Get(1))
 				.WithArg(Constants.ReturnUrl + "_0", Context.CreateReturnUrl(1)).AsDialog());
 
-            if (AccessControl.Check("task.start") && ViewData.Status != (int)TaskStatusType.Progress)
+            if (AccessControl.Check("task.start") && (ViewData.Status != (int)TaskStatusType.Progress || !Tango.Tasks.BaseTaskController.Progress.ContainsKey(ViewData.TaskID)))
 			{
 				t.ItemSeparator();
 				if (isParam)
@@ -389,7 +389,12 @@ namespace Tango.Tasks
 						if (ViewData.Status == (int)TaskStatusType.Progress)
 						{
 							w.Icon("ic_info");
-							w.Write(" В работе");
+							if (Tango.Tasks.BaseTaskController.Progress.TryGetValue(ViewData.TaskID, out (decimal percent, string description) p))
+							{
+								w.Write($" В работе: завершено {p.percent:0.#}%, {p.description}");
+							}
+							else
+								w.Write($" Выполнение задачи было прервано");
 						}
 					}), Grid.TwoFifths);
 				});
