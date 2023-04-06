@@ -29,7 +29,6 @@ namespace Tango.UI.Controls
 	{
         List<Column> _columns = new List<Column>();
 		List<(int, bool, bool)> _currentSort = new List<(int, bool, bool)>();
-
 		public Action<ApiResponse> OnSort { get; set; }
 
 		public override void OnInit()
@@ -143,6 +142,8 @@ namespace Tango.UI.Controls
 			.Single();
 
 		public string ParameterName { get; set; }
+
+		public List<(int, bool, bool)> CurrentSort => _currentSort;
 	}
 
 	public static class SorterExtensions
