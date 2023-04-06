@@ -175,7 +175,7 @@ namespace Tango.Tasks
                     LastModifiedDate = DateTime.Now,
                     FinishDate = DateTime.Now,
                     TaskID = task.ID,
-                    IsSuccessfull = true
+                    IsSuccessfull = true,
                 };
                 if (context != null)
                 {
@@ -201,7 +201,7 @@ namespace Tango.Tasks
                     FinishDate = DateTime.Now,
                     TaskID = task.ID,
                     IsSuccessfull = false,
-                    //ResultCode = 3
+                    ResultCode = 3
                 };
                 Repository.UpdateTaskExecutionError(taskexec, errorid);
             }

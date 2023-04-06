@@ -68,7 +68,7 @@ where taskexecutionid = @TaskExecutionID;", execution);
             if (errorid > 0)
                 execution.ResultXml = $"<a href='/ic/ErrorLog/View?oid={errorid}' target='_blank'>Ошибка</a>";
 
-            database.Connection.ExecuteScalar(@"
+			database.Connection.ExecuteScalar(@"
 update tm_task set status = 3, laststartdate = now() where taskid = @TaskID;
 update tm_taskexecution set issuccessfull = @IsSuccessfull, finishdate = @FinishDate, lastmodifieddate = @LastModifiedDate, resultxml = @ResultXml, resultcode = @ResultCode 
 where taskexecutionid = @TaskExecutionID;", execution);
