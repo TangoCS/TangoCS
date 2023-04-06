@@ -59,7 +59,7 @@ returning taskexecutionid;", execution);
         {
             database.Connection.ExecuteScalar(@"
 update tm_task set status = 2, laststartdate = now() where taskid = @TaskID;
-update tm_taskexecution set issuccessfull = @IsSuccessfull, finishdate = @FinishDate, lastmodifieddate = @LastModifiedDate, resultxml = @ResultXml 
+update tm_taskexecution set issuccessfull = @IsSuccessfull, finishdate = @FinishDate, lastmodifieddate = @LastModifiedDate, resultxml = @ResultXml, resultcode = @ResultCode 
 where taskexecutionid = @TaskExecutionID;", execution);
         }
 
@@ -70,7 +70,7 @@ where taskexecutionid = @TaskExecutionID;", execution);
 
             database.Connection.ExecuteScalar(@"
 update tm_task set status = 3, laststartdate = now() where taskid = @TaskID;
-update tm_taskexecution set issuccessfull = @IsSuccessfull, finishdate = @FinishDate, lastmodifieddate = @LastModifiedDate, resultxml = @ResultXml 
+update tm_taskexecution set issuccessfull = @IsSuccessfull, finishdate = @FinishDate, lastmodifieddate = @LastModifiedDate, resultxml = @ResultXml, resultcode = @ResultCode 
 where taskexecutionid = @TaskExecutionID;", execution);
         }
 

@@ -178,8 +178,10 @@ namespace Tango.Tasks
                     IsSuccessfull = true
                 };
                 if (context != null)
+                {
                     taskexec.ResultXml = context.ExecutionDetails.ToString();
-
+					taskexec.ResultCode = context.ResultCode;
+				}
                 Repository.UpdateTaskExecution(taskexec);
                 TaskProgress.SetProgress(task.ID, 100, "Завершена");
             }
@@ -198,7 +200,8 @@ namespace Tango.Tasks
                     LastModifiedDate = DateTime.Now,
                     FinishDate = DateTime.Now,
                     TaskID = task.ID,
-                    IsSuccessfull = false
+                    IsSuccessfull = false,
+                    //ResultCode = 3
                 };
                 Repository.UpdateTaskExecutionError(taskexec, errorid);
             }
