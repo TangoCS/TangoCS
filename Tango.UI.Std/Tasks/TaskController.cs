@@ -45,6 +45,8 @@ namespace Tango.Tasks
         protected IErrorLogger ErrorLogger { get; set; }
         [Inject]
         protected ICache Cache { get; set; }
+		[Inject]
+        protected Tango.UI.Std.Tasks.ITaskProgress TaskProgress { get; set; }
 
         /// <summary>
         /// Запуск задачи от имени пользователя
@@ -108,9 +110,14 @@ namespace Tango.Tasks
 
             return new HttpResult();
         }
+                
+        static Dictionary<int, (decimal percent, string description)> progress = new Dictionary<int, (decimal percent, string description)>();
+        public static IDictionary<int, (decimal percent, string description)> Progress => progress;
 
         public void Run(IScheduledTask task, bool isManual = false, Dictionary<string, string> param = null, bool withLogger = false)
         {
+            progress[task.ID] = (0, "");
+
             var taskexec = new TaskExecution
             {
                 LastModifiedDate = DateTime.Now,
@@ -174,6 +181,7 @@ namespace Tango.Tasks
                     taskexec.ResultXml = context.ExecutionDetails.ToString();
 
                 Repository.UpdateTaskExecution(taskexec);
+                TaskProgress.SetProgress(task.ID, 100, "Завершена");
             }
             catch (ThreadAbortException)
             {

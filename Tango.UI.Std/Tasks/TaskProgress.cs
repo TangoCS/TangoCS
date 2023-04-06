@@ -15,6 +15,7 @@ namespace Tango.UI.Std.Tasks
 		}
 		public async Task SetProgress(int taskID, decimal percent, string description)
 		{
+			Tango.Tasks.BaseTaskController.Progress[taskID] = (percent, description);
 			if (percent == 0)
 			{
 				await tangoHubContext.SendApiResponse("task", "view", taskID.ToString(), null, response => response.HardRedirectTo(null));
