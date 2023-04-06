@@ -31,7 +31,9 @@ namespace Tango.Tasks
         public virtual string MachineName { get; set; }
         [Column]
         public virtual string ResultXml { get; set; }
-        [Column]
+		[Column]
+		public virtual int? ResultCode { get; set; }
+		[Column]
         public virtual string ExecutionLog { get; set; }
         [Column]
         public virtual int TaskID { get; set; }

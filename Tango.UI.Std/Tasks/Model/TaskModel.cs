@@ -17,6 +17,16 @@ namespace Tango.Tasks
 		Error = 3,
 	}
 
+	public enum TaskExecutionResultCode
+	{
+		[Description("Завершено без ошибок")]
+		Success = 1,
+		[Description("Завершено с замечаниями")]
+		Warning = 2,
+		[Description("Завершено с ошибками")]
+		Error = 3,
+	}
+
 	public class TaskRunning
 	{
 		public int TaskID { get; set; }

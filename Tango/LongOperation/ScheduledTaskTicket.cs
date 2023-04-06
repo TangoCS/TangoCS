@@ -186,5 +186,6 @@ namespace Tango.LongOperation
 		public int ExecutionID { get; set; } = 0;
 		public IProgressLogger ProgressLogger { get; set; }
 		public int TaskID { get; set; }
+		public int? ResultCode { get; set; } // по умолчанию NULL, 1 - успех, 2 - предепреждение, 3 - ошибка
 	}
 }

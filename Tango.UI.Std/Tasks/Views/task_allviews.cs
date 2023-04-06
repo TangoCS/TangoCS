@@ -171,7 +171,7 @@ namespace Tango.Tasks
 				w.ToggleSwitch(gr.IsActive);
 				w.TextBox(gr.Priority);
 				w.DropDownList(gr.System, Systems());
-				w.TextArea(gr.Description, attributes: a => a.Rows(3));
+				w.TextArea(gr.Description, attributes: a => a.Rows(4));
 			});
 		}
 
@@ -383,7 +383,7 @@ namespace Tango.Tasks
 					w.PlainText(gr.System);
 					w.PlainText(Resources.Get<Task>(o => o.LastStartDate), ViewData.LastStartDate?.ToString("dd.MM.yyyy HH:mm:ss"));
 					w.PlainText(gr.Status, () => w.Write(Enumerations.GetEnumDescription((TaskStatusType)gr.Status.Value)));
-					w.PlainText(gr.Description);
+					w.PlainText(gr.Description, () => w.Write(gr.Description.Value?.Replace("\r\n", "<br/>").Replace("\n", "<br/>")));
 				}), Grid.ThreeFiths);
 					w.Block(() => w.Div(a => a.ID("statusinfo"), () => {
 						if (ViewData.Status == (int)TaskStatusType.Progress)
