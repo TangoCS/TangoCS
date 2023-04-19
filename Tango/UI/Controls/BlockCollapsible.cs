@@ -47,9 +47,10 @@ namespace Tango.UI.Controls
         /// </summary>
         public bool IsCollapsed { get; set; }
 
-        public Grid Grid { get; set; } = Grid.OneWhole;
+        public Grid Grid { get; private set; } = Grid.OneWhole;
 
-        public FieldsBlockCollapsibleOptions SetLeftTitle(Action inner) { LeftTitle += inner; return this; }
+		public FieldsBlockCollapsibleOptions WithGrid(Grid grid) { Grid = grid; return this; }
+		public FieldsBlockCollapsibleOptions SetLeftTitle(Action inner) { LeftTitle += inner; return this; }
         public FieldsBlockCollapsibleOptions SetRightTitle(Action inner) { RightTitle += inner; return this; }
         public FieldsBlockCollapsibleOptions SetContent(Action inner) { Content += inner; return this; }
         protected internal FieldsBlockCollapsibleOptions SetLeftTitle(Action<LayoutWriter> w) { LeftTitle += w; return this; }
