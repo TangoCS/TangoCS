@@ -525,7 +525,7 @@ namespace Tango.UI.Std
             AddActionsCell(f, f.Resources.Get("Common.Actions"), actions);
         }
 
-        public static IListColumn<TResult> AddActionsCell<TResult>(this IFieldCollection<TResult> f, string title, params Func<TResult, Action<ActionLink>>[] actions)
+		public static IListColumn<TResult> AddActionsCell<TResult>(this IFieldCollection<TResult> f, string title, params Func<TResult, Action<ActionLink>>[] actions)
         {
 	        var listColumn = new ListColumn<TResult>(
 		        (a, o, i) => a.Style("text-align:center; white-space:nowrap"),
@@ -545,6 +545,15 @@ namespace Tango.UI.Std
 		        (a, o, i) => a.Style("text-align:center"),
 		        (w, o, i) => render(w, o)
 	        );
+			f.AddCustomCell(f.Resources.Get("Common.Actions"), listColumn);
+			return listColumn;
+		}
+
+		public static IListColumn<TResult> AddActionsCell<TResult>(this IFieldCollection<TResult> f, RowCellAttributesDelegate<TResult> attrs, Action<LayoutWriter, TResult> render)
+		{
+			RowCellAttributesDelegate<TResult> a1 = (a, o, i) => a.Style("text-align:center;");
+			a1 += attrs;
+			var listColumn = new ListColumn<TResult> { Content = (w, o, i) => render(w, o), Attributes = a1 }; 
 			f.AddCustomCell(f.Resources.Get("Common.Actions"), listColumn);
 			return listColumn;
 		}
