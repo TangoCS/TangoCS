@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Dapper;
 using Tango.Data;
 using Tango.Model;
@@ -99,7 +100,8 @@ left outer join c_system s on t.systemid = s.systemid";
 
         public void Deactivation(IEnumerable<int> ids)
         {
-            Database.Connection.Execute("update tm_task set isactive=false, lastmodifieddate = now() where taskid = any(@ids)", new { ids }, Database.Transaction);
+            var list = ids.ToArray();
+            Database.Connection.Execute("update tm_task set isactive=false, lastmodifieddate = now() where taskid = any(@list)", new { list }, Database.Transaction);
         }
 
         public IEnumerable<TaskGroup> GetGroups()
