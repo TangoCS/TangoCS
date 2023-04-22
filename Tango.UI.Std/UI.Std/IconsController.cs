@@ -64,6 +64,7 @@ namespace Tango.UI.Std
 
 				var theme = Context.PersistentArgs.Get("theme");
 				if (theme.IsEmpty()) theme = Settings.Get("theme");
+				theme = theme.ToLower();
 
 				var path = $"{Env.WebRootPath}{Path.DirectorySeparatorChar}icons";
 				var themePath = $"{Env.WebRootPath}{Path.DirectorySeparatorChar}themes{Path.DirectorySeparatorChar}{theme}{Path.DirectorySeparatorChar}icons";
