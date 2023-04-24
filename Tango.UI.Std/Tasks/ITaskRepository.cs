@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Tango.Data;
+using Tango.Localization;
 using Tango.Model;
 
 namespace Tango.Tasks
@@ -8,6 +9,7 @@ namespace Tango.Tasks
 	public interface ITaskControllerRepository
     {
         IDatabase database { get; }
+        IResourceManager resourceManager { get; }
 
         Task GetTask(int id);
         IEnumerable<TaskRunning> TasksRunning();

@@ -14,9 +14,6 @@ namespace Tango.Tasks
     [OnAction(typeof(TaskExecution), "viewlist")]
 	public class tm_taskexecution_list : default_list_rep<TaskExecution>
     {
-		//[Inject]
-		//protected ITaskRepository TaskRepository { get; set; }
-
 		protected override Func<string, Expression<Func<TaskExecution, bool>>> SearchExpression =>
 			s => o => o.UserName.Contains(s) || o.MachineName.Contains(s) || o.TaskName.Contains(s);
 
@@ -27,7 +24,7 @@ namespace Tango.Tasks
 
 		protected override void ToolbarLeft(MenuBuilder left)
 		{
-            left.ItemActionImageText(x => x.ToList<Task>(AccessControl).WithImage("back").WithTitle("Назад"));
+            left.ItemActionImageText(x => x.ToList<Task>(AccessControl).WithImage("back").WithTitle(Resources.Get("Common.Back")));
             left.ItemSeparator();
 			left.ItemFilter(Filter);
             left.ItemSeparator();
@@ -123,7 +120,7 @@ namespace Tango.Tasks
     [OnAction(typeof(TaskExecution), "clear")]
     public class tm_taskexecution_clear : default_edit_rep<TaskExecution, int, ITaskExecutionRepository>
     {
-        protected override string FormTitle => "Очистить";
+        protected override string FormTitle => Resources.Get<TaskExecution>("Clear");
 
         protected override void Form(LayoutWriter w)
         {

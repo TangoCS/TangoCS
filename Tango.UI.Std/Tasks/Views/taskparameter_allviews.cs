@@ -25,7 +25,7 @@ namespace Tango.Tasks
 
 	public class tm_taskparameters<TUser> : default_edit_rep<Task, int, ITaskRepository> where TUser : class
 	{
-		protected override string FormTitle => "Параметры запуска";
+		protected override string FormTitle => Resources.GetExt<Task>("parameters");
 		protected Dictionary<string, ParameterData> parameters = new Dictionary<string, ParameterData>();
 
 		public override void OnInit()
@@ -151,7 +151,7 @@ namespace Tango.Tasks
             {
                 w.FieldsBlockStd(() =>
                 {
-                    w.PlainText("Информация", () => w.Write("Параметры в ручную не создаются."));
+                    w.PlainText(Resources.GetExt<TaskParameter>("info"), () => w.Write(Resources.GetExt<TaskParameter>("infotext")));
                 });
             }
         }

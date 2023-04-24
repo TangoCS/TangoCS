@@ -15,7 +15,10 @@ tango.tasks.task.Status;Состояние;Status
 tango.tasks.task.LastStartDate;Последний запуск;Last start date
 tango.tasks.task.Method;Метод;Method
 tango.tasks.task.Parameters;Параметры;Parameters
-tango.tasks.task.Start;Запуск;Run
+tango.tasks.task.Start;Старт;Run
+tango.tasks.task.nocategory;Без категории;No category
+tango.tasks.task.deactivation-op;Деактивировать;Deactivate
+tango.tasks.task.parameters-op;Параметры запуска;Parameters
 tango.tasks.task.Start-op;Запуск;Run
 tango.tasks.task.StartFromService;Старт службой;Start from service
 tango.tasks.task.StartType;Тип старта;Start type
@@ -27,13 +30,17 @@ tango.tasks.task.GroupTitle;Категория;Category
 tango.tasks.task.NextTime;Следующий запуск;Next Time
 tango.tasks.task.System;Сиcтема;System
 tango.tasks.task.SystemTitle;Сиcтема;System
+tango.tasks.task.taskexecution;Лог запуска задачи;Task execution log
 tango.tasks.task.deactivation;Деактивировать;Deactivation
 tango.tasks.task.deactivation.Title;Деактивация объекта;Deactivation object
 tango.tasks.task.deactivation.Bulk.Title;Деактивация объектов;Deactivation multiple objects
 tango.tasks.task.deactivation.Confirm;Вы действительно хотите деактивировать выбранный объект?;Are you sure you want to deactivation this object?
 tango.tasks.task.deactivation.Bulk.Confirm;Вы действительно хотите деактивировать выбранные объекты ({0})?;Are you sure you want to deactivation these {0} objects?
-tango.tasks.task.deactivation-op;Деактивировать;Deactivate
-tango.tasks.task.parameters-op;Параметры запуска;Parameters
+tango.tasks.task-parameters;Параметры запуска;Parameters
+tango.tasks.task-progress;В работе: завершено;Work in progress: completed
+tango.tasks.task-interrupted;Выполнение задачи было прервано;The task was interrupted
+tango.tasks.task-completed;Завершена;Completed
+tango.tasks.task-error;Ошибка;Error
 
 tango.tasks.taskexecution;Запуск задачи;Task execution log
 tango.tasks.taskexecution-pl;Лог запуска задач;Task execution log
@@ -51,6 +58,7 @@ tango.tasks.taskexecution.Task;Задача;Task
 tango.tasks.taskexecution.TaskName;Задача;Task
 tango.tasks.taskexecution.UserName;Пользователь;User
 tango.tasks.taskexecution.deleteallrecordsbefore;Удалить все записи до;Delete all records before
+tango.tasks.taskexecution.clear;Очистить;Clear
 
 tango.tasks.taskparameter;Параметр задачи;Task parameter
 tango.tasks.taskparameter-pl;Параметры задачи;Task parameters
@@ -60,10 +68,12 @@ tango.tasks.taskparameter.SeqNo;Порядковый номер;Seq no
 tango.tasks.taskparameter.SysName;Системное имя;System name
 tango.tasks.taskparameter.Title;Название;Title
 tango.tasks.taskparameter.Value;Значение;Value
-tango.tasks.taskparameter.Parent;Задача;
-tango.tasks.taskparameter.ParentTitle;Задача;
-tango.tasks.taskparameter.ParentClass;Класс;
-tango.tasks.taskparameter.ParentMethod;Метод;
+tango.tasks.taskparameter.Parent;Задача;Task
+tango.tasks.taskparameter.ParentTitle;Задача;Task
+tango.tasks.taskparameter.ParentClass;Класс;Class
+tango.tasks.taskparameter.ParentMethod;Метод;Method
+tango.tasks.taskparameter-info;Информация;Information
+tango.tasks.taskparameter-infotext;Параметры в ручную не создаются;Parameters are not created manually
 
 tango.tasks.taskstarttype;Тип старта задач;Start type of tasks
 tango.tasks.taskstarttype-pl;Тип старта задач;Start type of tasks

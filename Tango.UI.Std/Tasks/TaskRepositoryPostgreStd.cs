@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Dapper;
 using Tango.Data;
+using Tango.Localization;
 using Tango.Model;
 
 namespace Tango.Tasks
@@ -10,10 +11,12 @@ namespace Tango.Tasks
 	public class TaskControllerRepositoryPostgreStd : ITaskControllerRepository
     {
         public IDatabase database { get; }
+        public IResourceManager resourceManager { get; }
 
-        public TaskControllerRepositoryPostgreStd(IDatabase database)
+        public TaskControllerRepositoryPostgreStd(IDatabase database, IResourceManager resourceManager)
         {
             this.database = database;
+            this.resourceManager = resourceManager;
         }
 
         public Task GetTask(int id)
@@ -67,7 +70,7 @@ where taskexecutionid = @TaskExecutionID;", execution);
         public void UpdateTaskExecutionError(TaskExecution execution, int errorid)
         {
             if (errorid > 0)
-                execution.ResultXml = $"<a href='/ic/ErrorLog/View?oid={errorid}' target='_blank'>Ошибка</a>";
+                execution.ResultXml = $"<a href='/ErrorLog/View?oid={errorid}' target='_blank'>{resourceManager.GetExt<Task>("error")}</a>";
 
 			database.Connection.ExecuteScalar(@"
 update tm_task set status = 3, laststartdate = now() where taskid = @TaskID;

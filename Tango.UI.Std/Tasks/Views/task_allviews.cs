@@ -54,7 +54,7 @@ namespace Tango.Tasks
 			
 			if (Repository.Any(o => o.TaskGroupID == null))
 			{
-                tabs.CreateTabPage<tm_task_list>("tasks_null", "Без категории");
+                tabs.CreateTabPage<tm_task_list>("tasks_null", Resources.Get<Task>("nocategory"));
 			}
 		}
 
@@ -292,11 +292,11 @@ namespace Tango.Tasks
 				t.ItemSeparator();
 				if (isParam)
 					t.Item(w => w.ActionImageTextButton(al => al.To<Task>("parameters", AccessControl)
-						.WithArg(Constants.Id, ViewData.ID).WithTitle("Старт").WithImage("settings2")
+						.WithArg(Constants.Id, ViewData.ID).WithImage("settings2").WithTitle(Resources.Get<Task>("start"))
 						.AsDialog(options: new DialogOptions { ShowCloseIcon = false })));
 				else
 					t.Item(w => w.ActionImageTextButton(al => al.ToCurrent().KeepTheSameUrl()
-						.PostEvent(OnRunTask).WithTitle("Старт").WithImage("settings2")));
+						.PostEvent(OnRunTask).WithImage("settings2").WithTitle(Resources.Get<Task>("start"))));
 			}
 		}
 
@@ -332,7 +332,7 @@ namespace Tango.Tasks
 		protected override void Form(LayoutWriter w)
 		{
 			w.BlockCollapsible(opt => {
-				opt.SetLeftTitle("Параметры")
+				opt.SetLeftTitle(Resources.Get<Task>("parameters"))
 				.SetContentFieldsBlock(a => a.Style("gap:20px"), () => {
 					w.Block(() =>
 				w.FieldsBlockStd(() => {
@@ -391,10 +391,10 @@ namespace Tango.Tasks
 							w.Icon("ic_info");
 							if (Tango.Tasks.BaseTaskController.Progress.TryGetValue(ViewData.TaskID, out (decimal percent, string description) p))
 							{
-								w.Write($" В работе: завершено {p.percent:0.#}%, {p.description}");
+								w.Write($" {Resources.GetExt<Task>("progress")} {p.percent:0.#}%, {p.description}");
 							}
 							else
-								w.Write($" Выполнение задачи было прервано");
+								w.Write($" {Resources.GetExt<Task>("interrupted")}");
 						}
 					}), Grid.TwoFifths);
 				});
@@ -425,13 +425,13 @@ namespace Tango.Tasks
 		protected override void LinkedData(LayoutWriter w)
 		{
 			w.Br();
-			w.GroupTitle("Параметры");
+			w.GroupTitle(Resources.Get<Task>("parameters"));
 			ParamList(w);
 
 			if (ShowBaseTaskExecutionList)
 			{
 				w.Br();
-				w.GroupTitle("Лог запуска задачи");
+				w.GroupTitle(Resources.Get<Task>("taskexecution"));
 				taskexecution.RenderPlaceHolder(w);
 			}
 		}

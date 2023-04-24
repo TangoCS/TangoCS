@@ -11,6 +11,7 @@ using Tango.Cache;
 using Tango.Html;
 using Tango.Identity;
 using Tango.Identity.Std;
+using Tango.Localization;
 using Tango.Logger;
 using Tango.LongOperation;
 using Tango.UI;
@@ -183,7 +184,7 @@ namespace Tango.Tasks
 					taskexec.ResultCode = context.ResultCode;
 				}
                 Repository.UpdateTaskExecution(taskexec);
-                TaskProgress.SetProgress(task.ID, 100, "Завершена");
+                TaskProgress.SetProgress(task.ID, 100, Repository.resourceManager.GetExt<Task>("completed"));
             }
             catch (ThreadAbortException)
             {
