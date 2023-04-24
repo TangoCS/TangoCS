@@ -47,7 +47,7 @@ namespace Tango.Tasks
         [Inject]
         protected ICache Cache { get; set; }
 		[Inject]
-        protected Tango.UI.Std.Tasks.ITaskProgress TaskProgress { get; set; }
+        protected ITaskProgress TaskProgress { get; set; }
 
         /// <summary>
         /// Запуск задачи от имени пользователя

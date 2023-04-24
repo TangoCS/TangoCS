@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tango.UI.Std.Tasks
+namespace Tango.Tasks
 {
 	public class TaskProgress : ITaskProgress
 	{
@@ -13,9 +13,9 @@ namespace Tango.UI.Std.Tasks
 		{
 			this.tangoHubContext = tangoHubContext;
 		}
-		public async Task SetProgress(int taskID, decimal percent, string description)
+		public async System.Threading.Tasks.Task SetProgress(int taskID, decimal percent, string description)
 		{
-			Tango.Tasks.BaseTaskController.Progress[taskID] = (percent, description);
+			BaseTaskController.Progress[taskID] = (percent, description);
 			if (percent == 0)
 			{
 				await tangoHubContext.SendApiResponse("task", "view", taskID.ToString(), null, response => response.HardRedirectTo(null));

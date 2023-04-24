@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tango.UI.Std.Tasks
+namespace Tango.Tasks
 {
 	public interface ITaskProgress
 	{
-		Task SetProgress(int taskID, decimal percent, string description);
+		System.Threading.Tasks.Task SetProgress(int taskID, decimal percent, string description);
 	}
 }
