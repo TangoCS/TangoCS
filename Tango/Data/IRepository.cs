@@ -58,6 +58,8 @@ namespace Tango.Data
 		string GetDeleteQuery<TKey>(EntityInfo entityInfo, IEnumerable<TKey> ids);
 		
 		string GetDeleteQuery(EntityInfo entityInfo, Expression<Func<T, bool>> predicate);
+
+		int? CommandTimeout { get; }
 	}
 
 	public class IdentityAttribute : Attribute

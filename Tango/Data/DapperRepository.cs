@@ -574,8 +574,8 @@ namespace Tango.Data
 					Keys = keys
 					
 				},ids);
-				
-				Database.Connection.ExecuteScalar(query, transaction: Database.Transaction);
+
+				Database.Connection.ExecuteScalar(query, transaction: Database.Transaction, commandTimeout: strategy.CommandTimeout);
 			}
 			else
 			{
