@@ -405,7 +405,7 @@ namespace Tango.Tasks
 		{
 			var exec = Repository.IsExecuteTask(ViewData.ID);
 
-			if (exec)
+			if (exec || !Tango.Tasks.BaseTaskController.Progress.ContainsKey(ViewData.TaskID))
 			{
 				RunTaskController();
 

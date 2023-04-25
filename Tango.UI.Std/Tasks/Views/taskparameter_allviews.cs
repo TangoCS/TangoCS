@@ -79,7 +79,9 @@ namespace Tango.Tasks
                 param[p.Key] = FormData.Parse<string>(p.Key);
             }
 
-			RunTaskController(param);
+			var exec = Repository.IsExecuteTask(ViewData.TaskID);
+			if (exec || !Tango.Tasks.BaseTaskController.Progress.ContainsKey(ViewData.TaskID))
+				RunTaskController(param);
 
 			response.RedirectBack(Context, 1);
         }
