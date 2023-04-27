@@ -20,8 +20,8 @@ namespace Tango.UI.Controls
 
 		TabPage GetCurPage()
 		{
-			var curid = GetArg(ID);
-			return Pages.Where(page => page.ID == curid && !page.Disabled).FirstOrDefault() ?? Pages.FirstOrDefault();
+			var curid = GetArg(ID)?.ToLower();
+			return Pages.Where(page => page.ID.ToLower() == curid && !page.Disabled).FirstOrDefault() ?? Pages.FirstOrDefault();
 		}
 
 		IAccessControl _ac;
@@ -36,7 +36,7 @@ namespace Tango.UI.Controls
 			}
 		}
 
-        public T CreateTabPage<T>(string id, Action<LayoutWriter> title, Action<T> setProperties = null)
+        public T CreateTabPage<T>(string id, TabPageOptions options, Action<T> setProperties = null)
             where T : ViewPagePart, new()
 
         {
@@ -46,34 +46,43 @@ namespace Tango.UI.Controls
 
             var c = CreateControl(id, setProperties);
             c.IsLazyLoad = true;
-            Pages.Add(new TabPage(title, c));
+            Pages.Add(new TabPage(options, c));
             return c;
         }
 
-        public T CreateTabPage<T>(string id, string title, Action<T> setProperties = null)
-			where T : ViewPagePart, new() => CreateTabPage(id, w => w.Write(title), setProperties);
+		//public T CreateTabPage<T>(string id, string title, Action<T> setProperties = null)
+		//	where T : ViewPagePart, new() => CreateTabPage(id, title, setProperties);
+		public T CreateTabPage<T>(string id, Action<LayoutWriter> title, Action<T> setProperties = null)
+			where T : ViewPagePart, new() => CreateTabPage(id, title, setProperties);
 
 		public void OnPageSelect(ApiResponse response)
 		{
 			var curpage = GetCurPage();
 
-			if (curpage != null)
+			foreach (var p in Pages)
 			{
-				var el = curpage.Content.Target as IViewElement;
-				//Context.AddContainer = true;
-				//Context.ContainerPrefix = ParentElement.ClientID;
-
-				curpage.Container.ParentElement = ParentElement;
-				curpage.Container.ID = $"{ID}_{curpage.ID}";
-				curpage.Container.ProcessResponse(response, true, ParentElement.ClientID);
-
-				response.WithWritersFor(curpage.Container);
-				curpage.Content(response);
-				if(curpage.ID != GetArg(ID))
-				{
-                    response.ChangeUrl(new List<string> { ID }, new Dictionary<string, object> { { ID, curpage.ID } } );
-                }
+				if (!p.IsAjax || p == curpage)
+					RenderTabContent(response, p);
 			}
+
+			if (curpage != null && curpage.ID != GetArg(ID))
+			{
+				response.ChangeUrl(new List<string> { ID }, new Dictionary<string, object> { { ID, curpage.ID } });
+			}
+		}
+
+		void RenderTabContent(ApiResponse response, TabPage page)
+		{
+			var el = page.Content.Target as IViewElement;
+			//Context.AddContainer = true;
+			//Context.ContainerPrefix = ParentElement.ClientID;
+
+			page.Container.ParentElement = ParentElement;
+			page.Container.ID = $"{ID}_{page.ID}";
+			page.Container.ProcessResponse(response, true, ParentElement.ClientID);
+
+			response.WithWritersFor(page.Container);
+			page.Content(response);
 		}
 
 		public void RenderTabs(LayoutWriter w)
@@ -132,6 +141,23 @@ namespace Tango.UI.Controls
 		}
 	}
 
+	public class TabPageOptions
+	{
+		public Action<LayoutWriter> Title { get; set; }
+		public bool Disabled { get; set; } = false;
+		public bool IsAjax { get; set; } = true;
+
+		public static implicit operator TabPageOptions(string title)
+		{
+			return new TabPageOptions { Title = w => w.Write(title) };
+		}
+
+		public static implicit operator TabPageOptions(Action<LayoutWriter> title)
+		{
+			return new TabPageOptions { Title = title };
+		}
+	}
+
 	public class TabPage
 	{
 		public string ID { get; set; }
@@ -146,33 +172,36 @@ namespace Tango.UI.Controls
 
 		public DataCollection DataCollection { get; set; }
 
-        public TabPage(string id, Action<LayoutWriter> title, Action<ApiResponse> content, bool isAjax = false)
+        public TabPage(string id, TabPageOptions opt, Action<ApiResponse> content, bool isAjax = false)
         {
             ID = id;
-			Title = title;
+			Title = opt.Title;
             Content = content;
-            IsAjax = isAjax;
+            IsAjax = opt.IsAjax;
+			Disabled = opt.Disabled;
             Container = new TabPageContainer();
         }
-        public TabPage(string id, string title, Action<ApiResponse> content, bool isAjax = false) : 
-			this(id, w => w.Write(title), content, isAjax) { }
+   //     public TabPage(string id, string title, Action<ApiResponse> content, bool isAjax = false) : 
+			//this(id, w => w.Write(title), content, isAjax) { }
 
-        public TabPage(Action<LayoutWriter> title, ViewPagePart element)
+        public TabPage(TabPageOptions opt, ViewPagePart element)
 		{
             ID = element.ID;
-            Title = title;
+            Title = opt.Title;
             Content = response => {
                 element.IsLazyLoad = false;
                 element.RunOnEvent();
                 element.OnLoad(response);
             };
             DataCollection = element.DataCollection;
-            IsAjax = true;
+            IsAjax = opt.IsAjax;
+			Disabled = opt.Disabled;
             Container = new TabPageContainer2(element.GetContainer());
         }
 
-        public TabPage(string title, ViewPagePart element) : 
-			this(w => w.Write(title), element) { }
+  //      public TabPage(string title, ViewPagePart element) : this((TabPageOptions)title, element) 
+		//{ 
+		//}
 	}
 
 	public class TabPageContainer : ViewContainer
