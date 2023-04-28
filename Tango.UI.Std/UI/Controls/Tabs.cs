@@ -53,7 +53,7 @@ namespace Tango.UI.Controls
 		//public T CreateTabPage<T>(string id, string title, Action<T> setProperties = null)
 		//	where T : ViewPagePart, new() => CreateTabPage(id, title, setProperties);
 		public T CreateTabPage<T>(string id, Action<LayoutWriter> title, Action<T> setProperties = null)
-			where T : ViewPagePart, new() => CreateTabPage(id, title, setProperties);
+			where T : ViewPagePart, new() => CreateTabPage(id, (TabPageOptions)title, setProperties);
 
 		public void OnPageSelect(ApiResponse response)
 		{
