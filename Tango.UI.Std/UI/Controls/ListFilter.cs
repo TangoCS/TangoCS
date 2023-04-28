@@ -306,8 +306,8 @@ namespace Tango.UI.Controls
 			var (item, success) = ProcessSubmit(response);
 			if (!success) return;
 
-			LoadPersistent();
-			Criteria = Context.GetJsonArg(hValue, () => new List<FilterItem>());
+			PersistentFilter.Load(Context.GetIntArg(ParameterName));
+
 			PersistentFilter.Criteria = Criteria;
 			_isPersistentLoaded = true;
 
