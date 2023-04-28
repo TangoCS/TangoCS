@@ -89,10 +89,9 @@ namespace Tango.Tasks
         protected virtual void RunTaskController(Dictionary<string, string> param)
         {
 			var c = new TaskController<TUser> { Context = Context };
-
 			c.InjectProperties(Context.RequestServices);
 
-			c.Run(ViewData, true, param);
+			c.RunWithTimeOut(ViewData, true, param);
 		}
 
         protected class ParameterData

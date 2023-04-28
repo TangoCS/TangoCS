@@ -416,10 +416,9 @@ namespace Tango.Tasks
 		protected virtual void RunTaskController()
 		{
 			var c = new TaskController<TUser> { Context = Context };
-
 			c.InjectProperties(Context.RequestServices);
 
-			c.Run(ViewData, true);
+			c.RunWithTimeOut(ViewData, true);
 		}
 
 		protected override void LinkedData(LayoutWriter w)

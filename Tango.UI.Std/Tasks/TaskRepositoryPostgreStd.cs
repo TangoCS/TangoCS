@@ -70,7 +70,7 @@ where taskexecutionid = @TaskExecutionID;", execution);
         public void UpdateTaskExecutionError(TaskExecution execution, int errorid)
         {
             if (errorid > 0)
-                execution.ResultXml = $"<a href='/ErrorLog/View?oid={errorid}' target='_blank'>{resourceManager.GetExt<Task>("error")}</a>";
+                execution.ResultXml += $"<a href='/ErrorLog/View?oid={errorid}' target='_blank'>{resourceManager.GetExt<Task>("error")}</a>";
 
 			database.Connection.ExecuteScalar(@"
 update tm_task set status = 3, laststartdate = now() where taskid = @TaskID;

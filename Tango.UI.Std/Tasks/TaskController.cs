@@ -133,8 +133,17 @@ namespace Tango.Tasks
             int taskexecid = Repository.CreateTaskExecution(taskexec);
             IRealTimeProgressLogger progressLogger = null;
 
-            try
-            {
+			TaskExecutionContext context = new TaskExecutionContext()
+			{
+				ExecutionDetails = new Tango.Html.HtmlWriter(),
+				IsManual = isManual,
+				ExecutionID = taskexecid,
+				ProgressLogger = null,
+				TaskID = task.ID
+			};
+
+			try
+			{
                 var type = TaskTypeCollection.GetType(task.Class);
                 var obj = CreateTaskInstance(type);
 
@@ -143,22 +152,14 @@ namespace Tango.Tasks
                     var connid = Context.GetArg("connid");
                     var loggercollection = Cache.GetOrAdd("RealTimeLoggers", () => new ConcurrentDictionary<string, IRealTimeProgressLogger>());
 
-                    if (loggercollection.TryGetValue(connid, out IRealTimeProgressLogger logger))
-                        progressLogger = logger;
-                    else
+                    if (!loggercollection.TryGetValue(connid, out IRealTimeProgressLogger logger))
                     {
-                        progressLogger = base.Context.RequestServices.GetService(typeof(IRealTimeProgressLogger)) as IRealTimeProgressLogger;
-                        loggercollection.AddIfNotExists(connid, progressLogger);
+						logger = base.Context.RequestServices.GetService(typeof(IRealTimeProgressLogger)) as IRealTimeProgressLogger;
+                        loggercollection.AddIfNotExists(connid, logger);
                     }
-                }
-
-                TaskExecutionContext context = new TaskExecutionContext() {
-                    ExecutionDetails = new Tango.Html.HtmlWriter(),
-                    IsManual = isManual,
-                    ExecutionID = taskexecid,
-                    ProgressLogger = progressLogger,
-                    TaskID = task.ID
-                };
+					progressLogger = logger;
+					context.ProgressLogger = logger;
+				}
 
                 MethodInfo mi = type.GetMethod(task.Method);
                 ParameterInfo[] mp = mi.GetParameters();
@@ -177,6 +178,7 @@ namespace Tango.Tasks
                     FinishDate = DateTime.Now,
                     TaskID = task.ID,
                     IsSuccessfull = true,
+                    ResultXml = ""
                 };
                 if (context != null)
                 {
@@ -186,9 +188,9 @@ namespace Tango.Tasks
                 Repository.UpdateTaskExecution(taskexec);
                 TaskProgress.SetProgress(task.ID, 100, Repository.resourceManager.GetExt<Task>("completed"));
             }
-            catch (ThreadAbortException)
-            {
-            }
+            //catch (ThreadAbortException)
+            //{
+            //}
             catch (Exception ex)
             {
                 if (progressLogger != null)
@@ -202,9 +204,16 @@ namespace Tango.Tasks
                     FinishDate = DateTime.Now,
                     TaskID = task.ID,
                     IsSuccessfull = false,
-                    ResultCode = 3
+					ResultXml = "",
+					ResultCode = 3
                 };
-                Repository.UpdateTaskExecutionError(taskexec, errorid);
+                if (context != null)
+                {
+					if (!context.ExecutionDetails.IsEmpty())
+						context.ExecutionDetails.Br();
+                    taskexec.ResultXml = context.ExecutionDetails.ToString();
+                }
+				Repository.UpdateTaskExecutionError(taskexec, errorid);
             }
         }
 
@@ -331,5 +340,24 @@ namespace Tango.Tasks
 
             return obj;
         }
-    }
+
+		public void RunWithTimeOut(IScheduledTask task, bool isManual = false, Dictionary<string, string> param = null, bool withLogger = false)
+		{
+			CancellationTokenSource source = new CancellationTokenSource();
+			source.CancelAfter(TimeSpan.FromMinutes(task.ExecutionTimeout));
+			//source.Token.Register(OnTaskCancel);
+			
+            try
+			{
+				var thread = System.Threading.Tasks.Task.Run(() => Run(task, isManual, param, withLogger), source.Token);
+				thread.Wait();
+			}
+			finally
+			{
+				source?.Dispose();
+			}
+
+			//void OnTaskCancel() {}
+		}
+	}
 }
