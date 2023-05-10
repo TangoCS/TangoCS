@@ -8,10 +8,10 @@ using Tango.Data;
 namespace Tango.Mail
 {
     [BaseNamingConventions(Category = BaseNamingEntityCategory.Dictionary)]
-    public class C_MailCategory: IEntity, IWithKey<C_MailCategory, int>, IWithTitle
+    public class MailCategory: IEntity, IWithKey<MailCategory, int>, IWithTitle
     {
         public int ID => MailCategoryID;
-        public Expression<Func<C_MailCategory, bool>> KeySelector(int id)
+        public Expression<Func<MailCategory, bool>> KeySelector(int id)
         {
             return o => o.MailCategoryID == id;
         }

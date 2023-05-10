@@ -5,7 +5,7 @@ using Tango.UI.Controls;
 
 namespace Tango.Mail
 {
-    public interface IMailCategoryRepository : IRepository<C_MailCategory>
+    public interface IMailCategoryRepository : IRepository<MailCategory>
     {
         IEnumerable<(string title, int id)> GetSystemNames();
         IEnumerable<(string title, int id)> GetMailCategoryTypes();

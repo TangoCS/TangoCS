@@ -1,13 +1,13 @@
 name;ru;en
 tango.mail.mailcategory.viewlist;Группы писем;Mail groups
-tango.mail.c_mailcategory;Группы писем;Mail groups
-tango.mail.c_mailcategory-pl;Группы писем;Mail groups
-tango.mail.c_mailcategory.ID;ID;ID
-tango.mail.c_mailcategory.MailCategoryTypeTitle;Категория;Category
-tango.mail.c_mailcategory.MailCategoryTypeID;Категория;Category
-tango.mail.c_mailcategory.MailCategoryID;ID;ID
-tango.mail.c_mailcategory.SystemID;Проект;Project
-tango.mail.c_mailcategory.SystemName;Проект;Project
+tango.mail.mailcategory;Группы писем;Mail groups
+tango.mail.mailcategory-pl;Группы писем;Mail groups
+tango.mail.mailcategory.ID;ID;ID
+tango.mail.mailcategory.MailCategoryID;ID;ID
+tango.mail.mailcategory.MailCategoryTypeTitle;Категория;Category
+tango.mail.mailcategory.MailCategoryTypeID;Категория;Category
+tango.mail.mailcategory.SystemID;Проект;Project
+tango.mail.mailcategory.SystemName;Проект;Project
 
 tango.mail.mailmessage.viewlist;Журнал электронных сообщений;Mail Log
 tango.mail.mailmessage;Журнал электронных сообщений;Mail Log
@@ -45,7 +45,7 @@ tango.mail.mailsettings;Настройки исходящих сообщений
 tango.mail.mailsettings-pl;Настройки исходящих сообщений;Message settings
 tango.mail.mailsettings.mailsettingsid;ID;ID
 tango.mail.mailsettings.attemptstosendcount;Максимальное количество отправок;Maximum attempts
-tango.mail.mailsettings.mailcategorytitle;Группа писем;Mail category
+tango.mail.mailsettings.mailcategorytitle;Группа писем;Mail group
 tango.mail.mailsettings.mailtemplatetitle;Шаблон письма;Mail template
 tango.mail.mailsettings.postprocessingmethod;Методы постобработки;Post processing methods
 tango.mail.mailsettings.PreProcessingMethod;Методы предварительной обработки;Pre processing methods
@@ -55,7 +55,7 @@ tango.mail.mailsettings.sendmailstartinterval;Начало интервала;St
 tango.mail.mailsettings.sendmailfinishinterval;Окончание интервала;Finish interval
 tango.mail.mailsettings.timeoutvalue;Задержка отправки (мин.);Send delay (min.)
 tango.mail.mailsettings.mailtemplateid;Шаблон письма;Mail template
-tango.mail.mailsettings.mailcategoryid;Категория отправки;Mail category
+tango.mail.mailsettings.mailcategoryid;Группа писем;Mail group
 tango.mail.mailsettings.SendMailDayInterval;Интервал день;Day interval
 tango.mail.mailsettings.Recipients;Получатели;Recipients
 

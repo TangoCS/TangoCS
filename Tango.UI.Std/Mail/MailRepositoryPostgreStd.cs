@@ -133,7 +133,7 @@ left join C_System s on s.SystemID = c.SystemID
 left join C_MailCategoryType mt on mt.MailCategoryTypeID = c.MailCategoryTypeID";
     }
 
-    public class MailCategoryRepositoryPostgreStd : DapperRepository<C_MailCategory>, IMailCategoryRepository
+    public class MailCategoryRepositoryPostgreStd : DapperRepository<MailCategory>, IMailCategoryRepository
     {
         private const string Sql = @"select m.*, s.SystemID, s.Title as SystemName, mt.Title as MailCategoryTypeTitle
 from C_MailCategory m

@@ -160,12 +160,9 @@ namespace Tango.Mail
             fields.AddCell(o => o.SendMailStartInterval, o => o.SendMailStartInterval);
             fields.AddCell(o => o.SendMailFinishInterval, o => o.SendMailFinishInterval);
             fields.AddActionsCell(
-                o => al => al.ToView<MailSettings>(AccessControl, o.ID)
-                    .WithImage("mail").WithTitle("Тема и Текст письма"),
-                o => al => al.ToEdit<MailSettings>(AccessControl, o.ID)
-                    .WithImage("edit").WithTitle("Редактировать"),
-                o => al => al.ToDelete<MailSettings>(AccessControl, o.ID)
-                    .WithImage("delete").WithTitle("Удалить"),
+                o => al => al.ToView<MailSettings>(AccessControl, o.ID).WithImage("mail").WithTitle("Тема и Текст письма"),
+                o => al => al.ToEdit<MailSettings>(AccessControl, o.ID), //.WithImage("edit").WithTitle("Редактировать"),
+                o => al => al.ToDelete<MailSettings>(AccessControl, o.ID), //.WithImage("delete").WithTitle("Удалить"),
                 o =>
                 {
                     if (!o.HasTemplate)
@@ -307,7 +304,7 @@ namespace Tango.Mail
             _selectMailTemplate = Database.Connection.Query<MailTemplate>(Repository.GetMailTemplateSql()).ToList()
                 .OrderBy(x => x.MailTemplateID)
                 .Select(o => new SelectListItem(o.Title, o.MailTemplateID));
-            _selectMailCategory = Database.Connection.Query<C_MailCategory>(Repository.GetMailCategorySql()).ToList()
+            _selectMailCategory = Database.Connection.Query<MailCategory>(Repository.GetMailCategorySql()).ToList()
                 .OrderBy(x => x.MailCategoryID)
                 .Select(o => new SelectListItem(o.Title, o.MailCategoryID));
         }

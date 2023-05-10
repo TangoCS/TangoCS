@@ -5,17 +5,17 @@ namespace Tango.Mail
 {
     public static class C_MailCategoryFields
     {
-        public class SystemName : EntityField<C_MailCategory, string>
+        public class SystemName : EntityField<MailCategory, string>
         {
         }
-        public class SystemID : EntityField<C_MailCategory, int>
+        public class SystemID : EntityField<MailCategory, int>
         {
         }
-        public class MailCategoryTypeTitle : EntityField<C_MailCategory, string>
+        public class MailCategoryTypeTitle : EntityField<MailCategory, string>
         {
         }
 
-        public class MailCategoryTypeID : EntityField<C_MailCategory, int>
+        public class MailCategoryTypeID : EntityField<MailCategory, int>
         {
         }
 
