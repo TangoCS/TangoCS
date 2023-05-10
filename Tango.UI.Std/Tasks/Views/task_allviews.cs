@@ -122,7 +122,7 @@ namespace Tango.Tasks
 
 				w.Write(o.IsActive ? nextTime.DateTimeToString() : "");
 			});
-			f.AddCellWithSortAndFilter(o => o.Status, (w, o) => w.WithPrefix(ParentElement.ParentElement, () => w.Span(a => a.ID($"status_{o.TaskID}"), Enumerations.GetEnumDescription((TaskStatusType)o.Status))));
+			f.AddCellWithSortAndFilter(o => o.Status, (w, o) => w.WithPrefix(ParentElement.ParentElement, () => w.Span(a => a.ID($"status_{o.TaskID}"), Resources.Get((TaskStatusType)o.Status))));
 			f.AddCellWithSortAndFilter(o => o.IsActive, o => o.IsActive.Icon());
 			f.AddCellWithSortAndFilter(o => o.Priority, o => o.Priority);
 			f.AddCellWithSortAndFilter(o => o.SystemTitle, o => o.SystemTitle);
@@ -203,6 +203,9 @@ namespace Tango.Tasks
 
 	public class tm_task_view<TUser> : default_view_rep<Task, int, ITaskRepository> where TUser : class
 	{
+        [Inject]
+        protected ILanguage language { get; set; }
+        
 		tm_taskexecution_list2 taskexecution;
 		protected virtual bool ShowBaseTaskExecutionList => true;
 
@@ -348,7 +351,7 @@ namespace Tango.Tasks
 							var text = ExpressionDescriptor.GetDescription(gr.Interval.Value, new Options() {
 								DayOfWeekStartIndexZero = false,
 								Use24HourTimeFormat = true,
-								Locale = "ru",
+								Locale = language.Current.Code,
 								ThrowExceptionOnParseError = false
 							});
 							w.Div(a => a.Class("descriptiontext"), text);
@@ -382,7 +385,7 @@ namespace Tango.Tasks
 					w.PlainText(gr.Priority);
 					w.PlainText(gr.System);
 					w.PlainText(Resources.Get<Task>(o => o.LastStartDate), ViewData.LastStartDate?.ToString("dd.MM.yyyy HH:mm:ss"));
-					w.PlainText(gr.Status, () => w.Write(Enumerations.GetEnumDescription((TaskStatusType)gr.Status.Value)));
+					w.PlainText(gr.Status, () => w.Write(Resources.Get((TaskStatusType)gr.Status.Value)));
 					w.PlainText(gr.Description, () => w.Write(gr.Description.Value?.Replace("\r\n", "<br/>").Replace("\n", "<br/>")));
 				}), Grid.ThreeFiths);
 					w.Block(() => w.Div(a => a.ID("statusinfo"), () => {

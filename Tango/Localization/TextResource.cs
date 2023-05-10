@@ -140,7 +140,12 @@ namespace Tango.Localization
 			return textResource.Get(t.GetResourceName() + "." + key, suffix);
 		}
 
-		public static string Get(this IResourceManager textResource, ResourceKeyInfo k)
+        public static string Get(this IResourceManager textResource, Enum value)
+        {
+            return textResource.Get(value.GetType().GetResourceName() + "." + value.ToString());
+        }
+
+        public static string Get(this IResourceManager textResource, ResourceKeyInfo k)
 		{
 			var p = k.Parts.Join(".");
 			var t = k.Name;

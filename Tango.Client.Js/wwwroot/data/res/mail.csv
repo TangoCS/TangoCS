@@ -1,0 +1,67 @@
+name;ru;en
+tango.mail.mailcategory.viewlist;Группы писем;Mail groups
+tango.mail.c_mailcategory;Группы писем;Mail groups
+tango.mail.c_mailcategory-pl;Группы писем;Mail groups
+tango.mail.c_mailcategory.ID;ID;ID
+tango.mail.c_mailcategory.MailCategoryTypeTitle;Категория;Category
+tango.mail.c_mailcategory.MailCategoryTypeID;Категория;Category
+tango.mail.c_mailcategory.MailCategoryID;ID;ID
+tango.mail.c_mailcategory.SystemID;Проект;Project
+tango.mail.c_mailcategory.SystemName;Проект;Project
+
+tango.mail.mailmessage.viewlist;Журнал электронных сообщений;Mail Log
+tango.mail.mailmessage;Журнал электронных сообщений;Mail Log
+tango.mail.mailmessage-pl;Журнал электронных сообщений;Mail Log
+tango.mail.mailmessage.MailMessageID;ID;ID
+tango.mail.mailmessage.attachmentname;Вложение;Attachment
+tango.mail.mailmessage.attemptstosendcount;Попыток отправки;Attempts Send
+tango.mail.mailmessage.body;Сообщение;Body
+tango.mail.mailmessage.copyrecipients;Копия получатели;Copy recipients
+tango.mail.mailmessage.error;Ошибка;Error
+tango.mail.mailmessage.MailMessageStatus;Статус;Status
+tango.mail.mailmessage.timeoutvalue;Задержка отправки (мин.);Send delay (min.)
+tango.mail.mailmessage.lastsendattemptdate;Последняя попытка отправки;Last send attempt
+tango.mail.mailmessage.recipients;Получатели;Recipients
+tango.mail.mailmessage.subject;Тема;Subject
+tango.mail.mailmessage.createdate;Регистрация;Registration
+tango.mail.mailmessage.LastModifiedUserTitle;Пользователь;User
+tango.mail.mailmessage.MailCategoryTitle;Группа;Group
+tango.mail.mailmessage.MaxAttemptsToSendCount;Максимальное количество отправок;Maximum attempts
+tango.mail.mailmessage.StartSendDate;Начало отправки;Start send date
+tango.mail.mailmessage.FinishSendDate;Окончание отправки;Finish send date
+
+tango.mail.mailtemplate.viewlist;Реестр шаблонов писем;Mail templates
+tango.mail.mailtemplate;Реестр шаблонов писем;Registry of mail templates
+tango.mail.mailtemplate-pl;Реестр шаблонов писем;Registry of mail templates
+tango.mail.mailtemplate.ID;ID;ID
+tango.mail.mailtemplate.TemplateSubject;Шаблон темы;Template subject
+tango.mail.mailtemplate.TemplateBody;Шаблон текста;Template body
+tango.mail.mailtemplate.Comment;Комментарий;Comment
+tango.mail.mailtemplate.IsSystem;Системное;System
+tango.mail.mailtemplate.LastModifiedDate;Дата изменения;Change date
+
+tango.mail.mailsettings.viewlist;Настройки исходящих сообщений;Message settings
+tango.mail.mailsettings;Настройки исходящих сообщений;Message settings
+tango.mail.mailsettings-pl;Настройки исходящих сообщений;Message settings
+tango.mail.mailsettings.mailsettingsid;ID;ID
+tango.mail.mailsettings.attemptstosendcount;Максимальное количество отправок;Maximum attempts
+tango.mail.mailsettings.mailcategorytitle;Группа писем;Mail category
+tango.mail.mailsettings.mailtemplatetitle;Шаблон письма;Mail template
+tango.mail.mailsettings.postprocessingmethod;Методы постобработки;Post processing methods
+tango.mail.mailsettings.PreProcessingMethod;Методы предварительной обработки;Pre processing methods
+tango.mail.mailsettings.DeleteMethod;Методы удаления;Delete methods
+tango.mail.mailsettings.AfterSentMethod;Методы после отправки письма;After sent methods
+tango.mail.mailsettings.sendmailstartinterval;Начало интервала;Start interval
+tango.mail.mailsettings.sendmailfinishinterval;Окончание интервала;Finish interval
+tango.mail.mailsettings.timeoutvalue;Задержка отправки (мин.);Send delay (min.)
+tango.mail.mailsettings.mailtemplateid;Шаблон письма;Mail template
+tango.mail.mailsettings.mailcategoryid;Категория отправки;Mail category
+tango.mail.mailsettings.SendMailDayInterval;Интервал день;Day interval
+tango.mail.mailsettings.Recipients;Получатели;Recipients
+
+tango.mail.mailsettingstemplate;Настройка шаблона письма;Template mail settings
+tango.mail.mailsettingstemplate.MailTemplateID;Шаблон письма;Template mail
+
+tango.mail.mailmessageattachment.DocumentID;ID документа;ID
+tango.mail.mailmessageattachment.FileType;Документ;Document
+tango.mail.mailmessageattachment.FileTitle;Файл вложения;File attachment

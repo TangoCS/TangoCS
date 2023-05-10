@@ -85,3 +85,8 @@ tango.tasks.taskgroup-pl;Категория задач;Task category
 tango.tasks.taskgroup.viewlist;Категория задач;Task category
 tango.tasks.taskgroup.taskgroupid;Код;ID
 tango.tasks.taskgroup.seqno;Порядковый номер;Seq no
+
+tango.tasks.taskstatustype.none;Не исполнено;Not executed
+tango.tasks.taskstatustype.progress;В работе;At work
+tango.tasks.taskstatustype.complete;Исполнено успешно;Completed
+tango.tasks.taskstatustype.error;Ошибка исполнения;Execution error
