@@ -8,4 +8,4 @@ common.validation.GreaterOrEqualThan;Значение поля {0} должно 
 common.validation.GreaterThan;Значение поля {0} должно быть больше {1}
 common.validation.LessOrEqualThan;Значение поля {0} должно быть меньше, либо равно {1}
 common.validation.LessThan;Значение поля {0} должно быть меньше {1}
-
+common.validation.CheckChars;Значения в поле {0} не соответствуют разрешенным символам
