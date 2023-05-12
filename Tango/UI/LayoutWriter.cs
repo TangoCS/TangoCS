@@ -226,7 +226,7 @@ namespace Tango.UI
 
         OneFifth = 12,
         TwoFifths = 24,
-        ThreeFiths = 36,
+        ThreeFifths = 36,
         FourFifths = 48,
 
         OneSixth = 10,

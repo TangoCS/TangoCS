@@ -387,7 +387,7 @@ namespace Tango.Tasks
 					w.PlainText(Resources.Get<Task>(o => o.LastStartDate), ViewData.LastStartDate?.ToString("dd.MM.yyyy HH:mm:ss"));
 					w.PlainText(gr.Status, () => w.Write(Resources.Get((TaskStatusType)gr.Status.Value)));
 					w.PlainText(gr.Description, () => w.Write(gr.Description.Value?.Replace("\r\n", "<br/>").Replace("\n", "<br/>")));
-				}), Grid.ThreeFiths);
+				}), Grid.ThreeFifths);
 					w.Block(() => w.Div(a => a.ID("statusinfo"), () => {
 						if (ViewData.Status == (int)TaskStatusType.Progress)
 						{
