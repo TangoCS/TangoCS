@@ -288,6 +288,11 @@ namespace Tango
 		{
 			return src.ToString("s", CultureInfo.InvariantCulture);
 		}
+		public static string DateTimeToStringODBCCanonicalWithMilliseconds(this DateTime src)
+		{
+			return src.ToString("yyyy-MM-dd HH:mm:ss.fff");
+		}
+		
 
 		public static string DateTimeToString(this DateTime? src, string defaultValue)
 		{
