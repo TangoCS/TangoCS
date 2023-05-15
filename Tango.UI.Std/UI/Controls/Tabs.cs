@@ -59,15 +59,21 @@ namespace Tango.UI.Controls
 		{
 			var curpage = GetCurPage();
 
+			if (curpage != null)
+				RenderTabContent(response, curpage);
+
+			if (curpage != null && curpage.ID != GetArg(ID))
+				response.ChangeUrl(new List<string> { ID }, new Dictionary<string, object> { { ID, curpage.ID } });
+		}
+
+		public void OnLoadPageSelect(ApiResponse response)
+		{
+			var curpage = GetCurPage();
+
 			foreach (var p in Pages)
 			{
 				if (!p.IsAjax || p == curpage)
 					RenderTabContent(response, p);
-			}
-
-			if (curpage != null && curpage.ID != GetArg(ID))
-			{
-				response.ChangeUrl(new List<string> { ID }, new Dictionary<string, object> { { ID, curpage.ID } });
 			}
 		}
 

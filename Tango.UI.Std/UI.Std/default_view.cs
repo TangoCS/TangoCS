@@ -74,7 +74,7 @@ namespace Tango.UI.Std
 
 			foreach (var r in Context.EventReceivers)
 				if (r.ParentElement.ClientID == this.ClientID && r is Tabs tabs)
-					tabs.OnPageSelect(response);
+					tabs.OnLoadPageSelect(response);
 		}
 
 		public ViewSections Sections { get; set; } = new ViewSections();
