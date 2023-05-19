@@ -90,7 +90,9 @@ namespace Tango.UI
 			}
 		}
 		public string Image { get; private set; }
-		public string Description { get; private set; }
+        public string Tip { get; private set; }
+        public string Color { get; private set; }
+        public string Description { get; private set; }
 
 		public bool ChangeUrl { get; private set; } = true;
 		public bool IsTargetBlank { get; private set; } = false;
@@ -176,13 +178,24 @@ namespace Tango.UI
 			return this;
 		}
 
-		public ActionLink WithImage(string imageSrc)
-		{
-			Image = imageSrc;
-			return this;
-		}
+		public ActionLink WithImage(string imageSrc) 
+			=> WithImage(imageSrc, null);
 
-		public ActionLink WithDescription(string description)
+        public ActionLink WithImage(string imageSrc, string tip) 
+			=> WithColorImage(imageSrc, null, tip);
+
+        public ActionLink WithColorImage(string imageSrc, string color) 
+			=> WithColorImage(imageSrc, color, null);
+
+        public ActionLink WithColorImage(string imageSrc, string color, string tip)
+        {
+            Image = imageSrc;
+			Color = color;
+			Tip = tip;
+            return this;
+        }
+
+        public ActionLink WithDescription(string description)
 		{
 			Description = description;
 			return this;

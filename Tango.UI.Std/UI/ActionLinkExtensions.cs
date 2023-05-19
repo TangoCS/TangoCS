@@ -161,7 +161,7 @@ namespace Tango.UI
 			var link = new ActionLink(w.Context);
 			urlAttributes(link);
 			if (link.Enabled)
-				w.A(a => a.Class("actionimg").Set(attrs).SetTarget(link).Title(link.Title), () => w.Icon(link.Image, link.Title));
+				w.A(a => a.Class("actionimg").Set(attrs).SetTarget(link).Title(link.Title), () => w.Icon(link.Image, tip: link.Tip ?? link.Title, color: link.Color));
 		}
 
 		public static void ActionImageTextButton(this LayoutWriter w, Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null)
@@ -171,7 +171,7 @@ namespace Tango.UI
 			urlAttributes(link);
 			if (link.Enabled)
 				w.A(a => a.Class("actionbtn").Set(attrs).SetTarget(link), () => {
-					w.Icon(link.Image);
+					w.Icon(link.Image, tip: link.Tip, color: link.Color);
 					w.Write(link.Title);
 				});
 		}
