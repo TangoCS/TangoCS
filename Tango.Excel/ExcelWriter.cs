@@ -161,18 +161,18 @@ namespace Tango.Excel
 		}
 
 		public void FreezePanes(int row, int col, int sheetIndex)
-        {
+		{
 			p.Workbook.Worksheets[sheetIndex].View.FreezePanes(row, col);
-        }
+		}
 
 		public void GroupColumns(int startCol, int finishCol, int sheetIndex, bool isCollapsed)
-		{		
+		{
 			for (int i = startCol; i <= finishCol; i++)
 			{
 				p.Workbook.Worksheets[sheetIndex].Column(i).OutlineLevel = 1;
 				p.Workbook.Worksheets[sheetIndex].Column(i).Collapsed = isCollapsed;
 			}
-						
+
 		}
 
 		public void Sheet(string name, Action inner, Action<ExcelWorksheet> style = null)
@@ -226,7 +226,7 @@ namespace Tango.Excel
 
 		public void SetOddFooterCenteredNumPage(Func<string, string, string> content)
 		{
-			foreach(var list in s.Workbook.Worksheets)
+			foreach (var list in s.Workbook.Worksheets)
 				s.HeaderFooter.OddFooter.CenteredText = content(ExcelHeaderFooter.PageNumber, ExcelHeaderFooter.NumberOfPages);
 		}
 
@@ -241,7 +241,7 @@ namespace Tango.Excel
 		/// </summary>
 		/// <param name="index">Индекс строки</param>
 		public void SetRowPageBreak(int index) => s.Row(index).PageBreak = true;
-		
+
 		/// <summary>
 		/// Установка разрыва страницы для печати. С указанного индекса колонки будет начинаться следующая страница 
 		/// </summary>
@@ -744,6 +744,15 @@ namespace Tango.Excel
 					writer.s.Cells[writer.r, writer.c].Style.Font.Bold = true;
 				if (style?.GetFontStyle() == "italic")
 					writer.s.Cells[writer.r, writer.c].Style.Font.Italic = true;
+				if ((style?.GetColor() ?? "") != "")
+				{
+					const string pattern = @"rgba?[(](\d{1,3})\s?,\s?(\d{1,3})\s?,\s?(\d{1,3})\s?,\s?(\d{1,3})\s?[)]";
+					var match = Regex.Match(style?.GetColor(), pattern);
+					var r = byte.Parse(match.Groups[1].Value);
+					var g = byte.Parse(match.Groups[2].Value);
+					var b = byte.Parse(match.Groups[3].Value);
+					writer.s.Cells[writer.r, writer.c].Style.Font.Color.SetColor(0, r, g, b);
+				}
 				//if (width > 0)
 				//	writer.s.Column(writer.c).Width = width;
 				if (formula != null)
