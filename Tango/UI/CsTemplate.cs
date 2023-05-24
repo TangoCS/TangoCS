@@ -141,7 +141,11 @@ namespace Tango.UI
 			return c;
 		}
 
-		public T AddControl<T>(T c)
+        public T CreateControl<T>(Action<T> setProperties = null)
+            where T : IViewElement, new()
+			=> CreateControl<T>(typeof(T).Name, setProperties);
+
+        public T AddControl<T>(T c)
 			where T : IViewElement
 		{
 			if (Context.EventReceivers.Contains(c)) return c;
