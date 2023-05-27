@@ -1,12 +1,26 @@
 ﻿name;ru;en
 Account.Password;Пароль;Password
-Account.PasswordReset;Сброс пароля;Password reset
-Account.Register;Зарегистрироваться;Register
+Account.Password.Placeholder;напр. ••••••••••;e.g. ••••••••••
+Account.PasswordReset;Забыли пароль?;Forgot password?
+Account.Register;Зарегистрироваться;Sign up
+Account.RegisterTitle;Создание нового профиля;Create your account
+Account.Email;Email;Email
+Account.Email.Placeholder;напр. you@example.com;e.g. you@example.com
 Account.RememberMe;Запомнить меня;Remember me
 Account.SignIn;Войти;Continue
 Account.SignInTitle;Вход в систему;Sign in
 Account.SignOut;Выйти;Sign out
 Account.UserName;Имя пользователя;User name
+Account.DontHaveAccountQ;;Don't have an account?
+Account.AlreadyHaveAccountQ;;Already have an account?
+Account.OrSignUpWith;или;or
+Account.OrSignInWith;или;or
+Account.PasswordResetTitle;Восстановление пароля;Forgot Password
+Account.PasswordResetHint;Введите, пожалуйста, свой адрес электронной почты и мы отправим вам ссылку для восстановления пароля;Please enter your email address and we'll send you a link to reset your password.
+Account.SignIn.Google;Войти через Google;Sign in with Google
+Account.SignIn.Facebook;Войти через Facebook;Sign in with Facebook
+Account.SignUp.Google;Регистрация через Google;Sign up with Google
+Account.SignUp.Facebook;Регистрация через Facebook;Sign up with Facebook
 
 Common.Actions;Действия;Actions
 Common.All;Все;All

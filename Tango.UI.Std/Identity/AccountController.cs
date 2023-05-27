@@ -33,7 +33,7 @@ namespace Tango.Identity.Std
 			IdentityStore.Deactivate(oid);
 			return RedirectBack();
 		}
-
+		
 		//[Predicate]
 		//[BindPredicate("spm_subject.activate")]
 		//public static bool CanActivate(SPM_Subject s) => !s.IsActive;
@@ -50,24 +50,55 @@ namespace Tango.Identity.Std
 			res.ApiResponse.AddWidget("content", w => {
 				w.H2(Resources.Get("Account.SignInTitle"));
 				w.AjaxForm("form", true, a => a.Action("/account/dologin"), () => {
-					w.TextBox("userName", null, a => a.Placeholder(Resources.Get("Account.UserName")));
-					w.Password("password", null, a => a.Placeholder(Resources.Get("Account.Password")));
+					w.TextBox("userName", null, a => a.Placeholder(Resources.Get("Account.UserName.Placeholder")));
+					w.Password("password", null, a => a.Placeholder(Resources.Get("Account.Password.Placeholder")));
 					//w.Hidden("returnurl", Context.GetArg("returnurl"));
 					if (Options.AllowRememberMe)
 					{
 						w.CheckBox("cbRememberMe");
 						w.Label("cbRememberMe", Resources.Get("Account.RememberMe"));
 					}
-					w.P(() => w.SubmitButton(a => a.Class("btn"), Resources.Get("Account.SignIn")));
+					w.P(() => {
+						w.SubmitButton(a => a.Class("btn"), Resources.Get("Account.SignIn"));
+					});
 					w.Span(a => a.Class("err").ID("err"), "");
 				});
 
 				if (Options.AllowRegister)
-					w.P(() => w.A(a => a.Href("/account/register"), Resources.Get("Account.Register")));
+					w.P(() => {
+						w.Write(Resources.Get("Account.DontHaveAccountQ") + " ");
+						w.A(a => a.Href("/account/register"), Resources.Get("Account.Register"));
+					});
 				if (Options.AllowPasswordReset)
-					w.P(() => w.A(a => a.Href("/account/passwordreset"), Resources.Get("Account.PasswordReset")));
+					w.P(a => a.Class("login-register-link"), () => w.A(a => a.Href("/account/passwordreset"), Resources.Get("Account.PasswordReset")));
 			});
 			return res;
+		}
+
+		[AllowAnonymous]
+		[HttpGet]
+		public virtual ActionResult PasswordReset()
+		{
+			var res = new ApiResult();
+			res.ApiResponse.AddWidget("content", w => {
+				w.H2(Resources.Get("Account.PasswordResetTitle"));
+				w.P(Resources.Get("Account.PasswordResetHint"));
+				w.AjaxForm("form", true, a => a.Action("/account/passwordreset"), () => {
+					w.Label("emailAddress", Resources.Get("Account.Email"));
+					w.TextBox("emailAddress", null, a => a.Autocomplete(false).Placeholder(Resources.Get("Account.Email.Placeholder")));
+					w.SubmitButton(text: Resources.Get("Account.SignIn"));
+					w.A(a => a.Href("/account/login?ReturnUrl=%2F"), Resources.Get("Common.Back"));
+					w.Span(a => a.Class("err").ID("err"), "");
+				});
+			});
+			return res;
+		}
+
+		[AllowAnonymous]
+		[HttpPost]
+		public virtual ActionResult PasswordReset(string emailAddress)
+		{
+			return RedirectBack();
 		}
 
 		[AllowAnonymous]
@@ -89,33 +120,6 @@ namespace Tango.Identity.Std
 				return Message("Пользователь заблокирован");
 
 			return SignIn(s.Id.ToString(), s.UserName);
-			//var userName = Context.FormData.Parse<string>("username");
-			//var password = Context.FormData.Parse<string>("password");
-
-			//if (userName.IsEmpty())
-			//	return Message("Incorrect user name or password");
-
-			//var s = DataContext.Connection.Query(@"select subjectid, systemname, passwordhash, isactive, isdeleted 
-			//	from spm_subject where lower(systemname) = @p1", new { p1 = userName.ToLower() }).FirstOrDefault();
-
-			//if (s == null || s.passwordhash == null)
-			//	return Message("Incorrect user name or password");
-
-			//string hash = s.passwordhash is string ? s.passwordhash : BitConverter.ToString(s.passwordhash).Replace("-", "");
-			//if (!PasswordHasher.ValidatePassword(password, hash))
-			//	return Message("Incorrect user name or password");
-
-			//int subjid = s.subjectid;
-			//if (DataContext.SPM_SubjectRole().Where(o => o.SubjectID == subjid).Count() == 0)
-			//	return Message("User does not have any roles");
-
-			//if (!s.isactive)
-			//	return Message("User account has been blocked or you have not yet activated");
-
-			//if (s.isdeleted)
-			//	return Message("User is deleted");
-
-			//return SignIn(subjid.ToString(), s.systemname);
 		}
 
 		protected ActionResult Message(string text)

@@ -103,6 +103,28 @@ header {
 	opacity: 1;
 }
 
+.login-divider {
+	margin: 16px 0;
+	align-items: center;
+	display: flex;
+}
+.login-divider span {
+	margin: 0 16px;
+	position: relative;
+	top: -2px;
+}
+.login-divider::before, .login-divider::after {
+	background-color: #dbdbdb;
+	content: "";
+	flex: 1 1 auto;
+	height: 1px;
+	width: 100%;
+}
+
+.btn-login-ext {
+	width: 100%
+}
+
 input[type="checkbox"] {
 	margin: 3px 3px 3px 0px;
 }
