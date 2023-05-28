@@ -40,9 +40,9 @@ tango.mail.mailtemplate.Comment;Комментарий;Comment
 tango.mail.mailtemplate.IsSystem;Системное;System
 tango.mail.mailtemplate.LastModifiedDate;Дата изменения;Change date
 
-tango.mail.mailsettings.viewlist;Настройки исходящих сообщений;Message settings
-tango.mail.mailsettings;Настройки исходящих сообщений;Message settings
-tango.mail.mailsettings-pl;Настройки исходящих сообщений;Message settings
+tango.mail.mailsettings.viewlist;Настройки исходящих сообщений;Mail settings
+tango.mail.mailsettings;Настройки исходящих сообщений;Mail settings
+tango.mail.mailsettings-pl;Настройки исходящих сообщений;Mail settings
 tango.mail.mailsettings.mailsettingsid;ID;ID
 tango.mail.mailsettings.attemptstosendcount;Максимальное количество отправок;Maximum attempts
 tango.mail.mailsettings.mailcategorytitle;Группа писем;Mail group
