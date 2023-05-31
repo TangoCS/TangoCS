@@ -187,4 +187,5 @@ tango.longoperation.longoperationticket.createdate;Дата добавления
 tango.longoperation.longoperationticket.rundate;Дата запуска;Start date
 tango.longoperation.longoperationticket.status;Статус;Status
 tango.longoperation.longoperationticket.type;Тип;Type
+tango.longoperation.longoperationticket.ismanualstart;Ручной;Manual
 tango.longoperation.longoperationticket-pl;Очередь длительных операций;Queue long operations
