@@ -216,95 +216,181 @@ namespace Tango.UI.Std
 		}
 	}
 
-	/// <summary>
-	/// Базовый класс для формы с верхней формой для параметром и нижней частью, разделенной на 2 части
-	/// </summary>
-	/// <typeparam name="TTop"></typeparam>
-	/// <typeparam name="TBottomLeft"></typeparam>
-	/// <typeparam name="TBottomRight"></typeparam>
-	//public abstract class ViewPagePart_top_2col_bottom<TTop, TBottomLeft, TBottomRight> : ViewPagePart
-	//	where TTop : IViewPagePart, new()
-	//	where TBottomLeft : IViewPagePart, new()
-	//	where TBottomRight : IViewPagePart, new()
-	//{
-	//	private TTop _top;
-	//	private TBottomLeft _bottomLeft;
-	//	private TBottomRight _bottomRight;
+    public abstract class ViewPagePart_2lines_base : ViewPagePart
+    {
+        protected IWithChangeEvent top { get; set; }
+        protected IWithChangeEventHandler bottom { get; set; }
 
-	//	protected virtual bool ObjectNotExists => false;
+        public virtual bool EnableToolbar => false;
+        protected virtual void Toolbar(LayoutWriter w) { }
+        protected virtual string FormTitle => "";
 
-	//	protected TTop top {
-	//		get { return (TTop)this._top; }
-	//		set { this._top = value; }
-	//	}
+        protected virtual string ContentBodyClass => "grid_sidebar_2line";
 
-	//	protected TBottomLeft bottomLeft {
-	//		get { return (TBottomLeft)this._bottomLeft; }
-	//		set { this._bottomLeft = value; }
-	//	}
+        protected virtual Action<LayoutWriter> RenderPlaceHolderTopSide => w => w.Div(a => a.ID("container"));
 
-	//	protected TBottomRight bottomRight {
-	//		get { return (TBottomRight)this._bottomRight; }
-	//		set { this._bottomRight = value; }
-	//	}
+        protected virtual Action<LayoutWriter> RenderPlaceHolderBottomSide => w => w.Div(a => a.ID("container"));
 
-	//	protected virtual Grid BottomLeftGrid => Grid.OneHalf;
-	//	protected virtual Grid BottomRightGrid => Grid.OneHalf;
+        public void RenderContainer(ApiResponse response, IViewPagePart el)
+        {
+            response.WithNamesAndWritersFor(el);
+            var c2 = el.GetContainer();
+            c2.ToRemove.Add("contentheader");
+            c2.Render(response);
+        }
 
-	//	protected virtual Action<TagAttributes> BottomBlockAttributes => null;
+        public override void OnLoad(ApiResponse response)
+        {
+            response.WithWritersFor(this);
+            if (EnableToolbar) response.AddWidget("contenttoolbar", Toolbar);
+            response.AddWidget("contenttitle", FormTitle);
+            response.AddWidget("contentbody", w =>
+            {
+                w.Div(a => a.Class(ContentBodyClass), () =>
+                {
+                    w.PushPrefix(top.ID);
+                    RenderPlaceHolderTopSide(w);
+                    w.PopPrefix();
 
-	//	public override void OnInit()
-	//	{
-	//		_top = CreateControl<TTop>("top", SetPropertiesTop);
-	//		_bottomLeft = CreateControl<TBottomLeft>("bottomLeft", SetPropertiesBottomLeft);
-	//		_bottomRight = CreateControl<TBottomRight>("bottomRight", SetPropertiesBottomRight);
-	//	}
+                    w.PushPrefix(bottom.ID);
+                    RenderPlaceHolderBottomSide(w);
+                    w.PopPrefix();
+                });
+            });
+            response.AddWidget("#title", FormTitle);
 
-	//	protected virtual void SetPropertiesTop(TTop c) { }
-	//	protected virtual void SetPropertiesBottomLeft(TBottomLeft c) { }
-	//	protected virtual void SetPropertiesBottomRight(TBottomRight c) { }
+            RenderContainer(response, top);
+            top.OnLoad(response);
 
- //       public override void OnLoad(ApiResponse response)
- //       {
-	//		response.WithWritersFor(this);
-	//		response.AddWidget("contentbody", w => {
-	//			w.Block(() => {
-	//				w.PushPrefix(top.ID);
-	//				w.Div(a => a.ID("container"));
-	//				w.PopPrefix();
-	//			});
+            RenderContainer(response, bottom);
+            bottom.OnLoad(response);
+        }
+    }
 
-	//			w.Block(attrs => attrs.Set(BottomBlockAttributes), () => {
-	//				w.PushPrefix(bottomLeft.ID);
-	//				w.Div(a => a.ID("container").GridColumn(BottomLeftGrid));
-	//				w.PopPrefix();
+    public abstract class ViewPagePart_2lines<TTop, TBottom> : ViewPagePart_2lines_base
+        where TTop : IWithChangeEvent, new()
+        where TBottom : IWithChangeEventHandler, new()
+    {
+        protected virtual string TopSideTitle => "";
 
-	//				w.PushPrefix(bottomRight.ID);
-	//				w.Div(a => a.ID("container").GridColumn(BottomRightGrid));
-	//				w.PopPrefix();
-	//			});
-	//		});
+        protected virtual string BottomSideTitle => "";
+        protected new TTop top
+        {
+            get { return (TTop)base.top; }
+            set { base.top = value; }
+        }
 
-	//		if (FormTitle != null)
-	//			response.AddWidget("contenttitle", FormTitle);
+        protected new TBottom bottom
+        {
+            get { return (TBottom)base.bottom; }
+            set { base.bottom = value; }
+        }
 
-	//		void prepare<T>(T c) where T: IViewPagePart
-	//		{
-	//			response.WithNamesAndWritersFor(c);
-	//			var c1 = c.GetContainer();
-	//			c1.ToRemove.Add("contentheader");
-	//			c1.Render(response);
-	//			c.OnLoad(response);
-	//		}
+        public override void OnInit()
+        {
+            top = CreateTop();
+            bottom = CreateBottom();
 
-	//		prepare(top);
-	//		prepare(bottomLeft);
-	//		prepare(bottomRight);
-	//	}
+            top.Changed += response => RenderContainer(response, bottom);
+            top.Changed += bottom.OnChange;
+        }
 
-		
+        protected virtual TTop CreateTop() => CreateControl<TTop>("top", SetPropertiesTop);
+        protected virtual TBottom CreateBottom() => CreateControl<TBottom>("bottom", SetPropertiesBottom);
 
-	//	protected virtual string FormTitle => null;
-	//}
+        protected virtual void SetPropertiesTop(TTop c) { }
+        protected virtual void SetPropertiesBottom(TBottom c) { }
+    }
+
+    /// <summary>
+    /// Базовый класс для формы с верхней формой для параметром и нижней частью, разделенной на 2 части
+    /// </summary>
+    /// <typeparam name="TTop"></typeparam>
+    /// <typeparam name="TBottomLeft"></typeparam>
+    /// <typeparam name="TBottomRight"></typeparam>
+    //public abstract class ViewPagePart_top_2col_bottom<TTop, TBottomLeft, TBottomRight> : ViewPagePart
+    //	where TTop : IViewPagePart, new()
+    //	where TBottomLeft : IViewPagePart, new()
+    //	where TBottomRight : IViewPagePart, new()
+    //{
+    //	private TTop _top;
+    //	private TBottomLeft _bottomLeft;
+    //	private TBottomRight _bottomRight;
+
+    //	protected virtual bool ObjectNotExists => false;
+
+    //	protected TTop top {
+    //		get { return (TTop)this._top; }
+    //		set { this._top = value; }
+    //	}
+
+    //	protected TBottomLeft bottomLeft {
+    //		get { return (TBottomLeft)this._bottomLeft; }
+    //		set { this._bottomLeft = value; }
+    //	}
+
+    //	protected TBottomRight bottomRight {
+    //		get { return (TBottomRight)this._bottomRight; }
+    //		set { this._bottomRight = value; }
+    //	}
+
+    //	protected virtual Grid BottomLeftGrid => Grid.OneHalf;
+    //	protected virtual Grid BottomRightGrid => Grid.OneHalf;
+
+    //	protected virtual Action<TagAttributes> BottomBlockAttributes => null;
+
+    //	public override void OnInit()
+    //	{
+    //		_top = CreateControl<TTop>("top", SetPropertiesTop);
+    //		_bottomLeft = CreateControl<TBottomLeft>("bottomLeft", SetPropertiesBottomLeft);
+    //		_bottomRight = CreateControl<TBottomRight>("bottomRight", SetPropertiesBottomRight);
+    //	}
+
+    //	protected virtual void SetPropertiesTop(TTop c) { }
+    //	protected virtual void SetPropertiesBottomLeft(TBottomLeft c) { }
+    //	protected virtual void SetPropertiesBottomRight(TBottomRight c) { }
+
+    //       public override void OnLoad(ApiResponse response)
+    //       {
+    //		response.WithWritersFor(this);
+    //		response.AddWidget("contentbody", w => {
+    //			w.Block(() => {
+    //				w.PushPrefix(top.ID);
+    //				w.Div(a => a.ID("container"));
+    //				w.PopPrefix();
+    //			});
+
+    //			w.Block(attrs => attrs.Set(BottomBlockAttributes), () => {
+    //				w.PushPrefix(bottomLeft.ID);
+    //				w.Div(a => a.ID("container").GridColumn(BottomLeftGrid));
+    //				w.PopPrefix();
+
+    //				w.PushPrefix(bottomRight.ID);
+    //				w.Div(a => a.ID("container").GridColumn(BottomRightGrid));
+    //				w.PopPrefix();
+    //			});
+    //		});
+
+    //		if (FormTitle != null)
+    //			response.AddWidget("contenttitle", FormTitle);
+
+    //		void prepare<T>(T c) where T: IViewPagePart
+    //		{
+    //			response.WithNamesAndWritersFor(c);
+    //			var c1 = c.GetContainer();
+    //			c1.ToRemove.Add("contentheader");
+    //			c1.Render(response);
+    //			c.OnLoad(response);
+    //		}
+
+    //		prepare(top);
+    //		prepare(bottomLeft);
+    //		prepare(bottomRight);
+    //	}
+
+
+
+    //	protected virtual string FormTitle => null;
+    //}
 
 }
