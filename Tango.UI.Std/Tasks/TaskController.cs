@@ -344,8 +344,8 @@ namespace Tango.Tasks
 		public void RunWithTimeOut(IScheduledTask task, bool isManual = false, Dictionary<string, string> param = null, bool withLogger = false)
 		{
 			CancellationTokenSource source = new CancellationTokenSource();
+			source.Token.Register(OnTaskCancel);
 			source.CancelAfter(TimeSpan.FromMinutes(task.ExecutionTimeout));
-			//source.Token.Register(OnTaskCancel);
 			
             try
 			{
@@ -357,7 +357,10 @@ namespace Tango.Tasks
 				source?.Dispose();
 			}
 
-			//void OnTaskCancel() {}
+			void OnTaskCancel()
+			{
+				source?.Dispose();
+			}
 		}
 	}
 }

@@ -81,8 +81,9 @@ namespace Tango.Tasks
 
 			var exec = Repository.IsExecuteTask(ViewData.TaskID);
 			if (exec || !Tango.Tasks.BaseTaskController.Progress.ContainsKey(ViewData.TaskID))
+			{
 				RunTaskController(param);
-
+			}
 			response.RedirectBack(Context, 1);
         }
 

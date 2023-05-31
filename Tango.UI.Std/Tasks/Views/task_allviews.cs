@@ -290,7 +290,9 @@ namespace Tango.Tasks
             t.ItemActionImageText(x => x.ToDelete(AccessControl, ViewData, Context.ReturnUrl.Get(1))
 				.WithArg(Constants.ReturnUrl + "_0", Context.CreateReturnUrl(1)).AsDialog());
 
-            if (AccessControl.Check("task.start") && (ViewData.Status != (int)TaskStatusType.Progress || !Tango.Tasks.BaseTaskController.Progress.ContainsKey(ViewData.TaskID)))
+			var isLongRunning = LongOperationServer.Queue.Any(o => o.ActionID == ViewData.TaskID && o.Status == LongOperationStatus.Running);
+			var isProgress = ViewData.Status != (int)TaskStatusType.Progress || !Tango.Tasks.BaseTaskController.Progress.ContainsKey(ViewData.TaskID);
+			if (AccessControl.Check("task.start") && isProgress && !isLongRunning)
 			{
 				t.ItemSeparator();
 				if (isParam)
@@ -299,7 +301,7 @@ namespace Tango.Tasks
 						.AsDialog(options: new DialogOptions { ShowCloseIcon = false })));
 				else
 					t.Item(w => w.ActionImageTextButton(al => al.ToCurrent().KeepTheSameUrl()
-						.PostEvent(OnRunTask).WithImage("settings2").WithTitle(Resources.Get<Task>("start"))));
+						.PostEvent(OnRunTask).WithImage("settings2").WithTitle(Resources.Get<Task>("start")), a => a.ID("buttonstart").OnClickHideShow("buttonstart")));
 			}
 		}
 
@@ -393,9 +395,7 @@ namespace Tango.Tasks
 						{
 							w.Icon("ic_info");
 							if (Tango.Tasks.BaseTaskController.Progress.TryGetValue(ViewData.TaskID, out (decimal percent, string description) p))
-							{
 								w.Write($" {Resources.GetExt<Task>("progress")} {p.percent:0.#}%, {p.description}");
-							}
 							else
 								w.Write($" {Resources.GetExt<Task>("interrupted")}");
 						}
@@ -407,11 +407,9 @@ namespace Tango.Tasks
 		public void OnRunTask(ApiResponse response)
 		{
 			var exec = Repository.IsExecuteTask(ViewData.ID);
-
 			if (exec || !Tango.Tasks.BaseTaskController.Progress.ContainsKey(ViewData.TaskID))
 			{
 				RunTaskController();
-
 			}
 			response.RedirectTo(Context, a => a.ToCurrent());
 		}
