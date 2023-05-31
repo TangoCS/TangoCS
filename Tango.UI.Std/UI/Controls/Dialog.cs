@@ -189,9 +189,36 @@ namespace Tango.UI.Controls
 					w.PopPrefix();
 			});
 		}
-		
+        public static void AddYesBackDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content,
+            string IDPrefix = null, DialogOptions options = null,
+            Action<ButtonTagAttributes> btnAttrs = null,
+            Func<ActionResult> action = null)
+        {
+            response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
+                if (IDPrefix != null)
+                    w.PushPrefix(IDPrefix);
 
-		public static void AddOKDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, 
+                w.DialogControl(a => a.DialogContainerAttrs(w.Context, "", IDPrefix, options), () => {
+                    w.AjaxForm("form", a => a.DataResult(1), () => {
+                        w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
+                            w.ButtonsBarRight(() => {
+                                w.SubmitButton(a => {
+                                    if (!w.Context.ResponseType.IsEmpty())
+                                        a.Data("responsetype", w.Context.ResponseType);
+                                    a.Set(btnAttrs);
+                                    if (action != null) a.DataEvent(action);
+                                }, "Да");
+                                w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), "Назад");
+                            });
+                        }, options != null ? options.ShowCloseIcon : true);
+                    });
+                });
+                if (IDPrefix != null)
+                    w.PopPrefix();
+            });
+        }
+
+        public static void AddOKDialogWidget(this ApiResponse response, string title, Action<LayoutWriter> content, 
 			string IDPrefix = null, DialogOptions options = null)
 		{
 			response.AddAdjacentWidget(null, "dialog", AdjacentHTMLPosition.AfterBegin, w => {
