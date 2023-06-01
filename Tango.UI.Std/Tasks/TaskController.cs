@@ -103,14 +103,13 @@ namespace Tango.Tasks
             return new HttpResult();
         }
 
-        [HttpGet]
-        public ActionResult RunTask(int id)
-        {
-            var task = Repository.GetTask(id);
-            ExecutingTaskUser(task);
-
-            return new HttpResult();
-        }
+        //[HttpGet]
+        //public ActionResult RunTask(int id)
+        //{
+        //    var task = Repository.GetTask(id);
+        //    ExecutingTaskUser(task);
+        //    return new HttpResult();
+        //}
                 
         static Dictionary<int, (decimal percent, string description)> progress = new Dictionary<int, (decimal percent, string description)>();
         public static IDictionary<int, (decimal percent, string description)> Progress => progress;
@@ -241,7 +240,7 @@ namespace Tango.Tasks
             return context.ExecutionDetails;
         }
 
-        public object[] GetTaskParmValues(TaskExecutionContext context, ParameterInfo[] mp, Dictionary<string, string> param)
+        protected object[] GetTaskParmValues(TaskExecutionContext context, ParameterInfo[] mp, Dictionary<string, string> param)
         {
             object[] p = new object[mp.Length];
 
@@ -297,7 +296,7 @@ namespace Tango.Tasks
             return p;
         }
 
-        public void InitTaskParms(IScheduledTask task, ParameterInfo[] mp, Dictionary<string, string> param)
+        protected void InitTaskParms(IScheduledTask task, ParameterInfo[] mp, Dictionary<string, string> param)
         {
             var taskparam = Repository.GetTaskParameters(task.ID).ToDictionary(x => x.SysName.ToLower(), x => x.Value);
 
@@ -318,7 +317,7 @@ namespace Tango.Tasks
             }
         }
 
-        public object CreateTaskInstance(Type type)
+        protected object CreateTaskInstance(Type type)
         {
             object obj = null;
             ConstructorInfo ci = type.GetConstructors().FirstOrDefault();
