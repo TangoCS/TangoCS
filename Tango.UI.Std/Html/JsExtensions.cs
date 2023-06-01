@@ -8,7 +8,7 @@ namespace Tango.Html
 	{
 		public static ATagAttributes OnClickHideShow(this ATagAttributes a, string id)
 		{
-			return a.OnClick($"domActions.hideShow('{a.Writer.GetID(id)}')");
+			return a.OnClick($"domActions.hideShow('{a.Writer.GetID(id)}');");
 		}
 
 		public static T OnKeyUpRunHrefDelayed<T>(this TagAttributes<T> a)

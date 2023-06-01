@@ -1,6 +1,7 @@
 ﻿name;ru;en
 Account.Password;Пароль;Password
 Account.Password.Placeholder;напр. ••••••••••;e.g. ••••••••••
+Account.UserName.Placeholder;User;Jonson
 Account.PasswordReset;Забыли пароль?;Forgot password?
 Account.Register;Зарегистрироваться;Sign up
 Account.RegisterTitle;Создание нового профиля;Create your account
@@ -187,4 +188,5 @@ tango.longoperation.longoperationticket.createdate;Дата добавления
 tango.longoperation.longoperationticket.rundate;Дата запуска;Start date
 tango.longoperation.longoperationticket.status;Статус;Status
 tango.longoperation.longoperationticket.type;Тип;Type
+tango.longoperation.longoperationticket.ismanualstart;Ручной;Manual
 tango.longoperation.longoperationticket-pl;Очередь длительных операций;Queue long operations

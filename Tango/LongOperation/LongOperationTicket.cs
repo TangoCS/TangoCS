@@ -12,19 +12,20 @@ namespace Tango.LongOperation
 		public abstract int ActionID { get; }
 		public DateTime CreateDate { get; }
 		public DateTime? RunDate { get; private set; }
-		// timeout (min)
-		public int Timeout { get; }
+		public int Timeout { get; } // timeout (min)
+		public bool IsManualStart { get; }
 
 		public LongOperationStatus Status { get; set; }
 		public string DefaultTaskAssembly { get; set; }
 
 		protected IServiceProvider provider;
 
-		public LongOperationTicket(int timeout = 60)
+		public LongOperationTicket(int timeout = 60, bool isManualStart = false)
 		{
 			ID = Guid.NewGuid();
 			CreateDate = DateTime.Now;
 			Timeout = timeout;
+			IsManualStart = isManualStart;
 		}
 
 		public virtual void Run(IServiceProvider provider, IProgressLogger progressLogger)
