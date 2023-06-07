@@ -45,13 +45,14 @@ namespace Tango
             return p ?? value.ToString();
         }
 
-        public static IEnumerable<SelectListItem> AsSelectList<T>()
+        public static IEnumerable<SelectListItem> AsSelectList<T>(Func<T, bool> predicate = null)
             where T : Enum
         {
             var ut = Enum.GetUnderlyingType(typeof(T));
             return Enum.GetValues(typeof(T))
                 .Cast<T>()
-                .Select(v => new SelectListItem(
+                .Where(predicate ?? (x => true))
+				.Select(v => new SelectListItem(
                     GetDescriptionAttribute(v),
                     Convert.ChangeType(v, ut).ToString()
                 )).Where(x => x.Text != null);
