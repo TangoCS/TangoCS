@@ -7,7 +7,7 @@ namespace Tango.UI.Std
 	{
 		public override void OnLoad(ApiResponse response)
 		{
-			var title = "Отсутствующие ресурсы";
+			var title = Resources.Get("abc.model.utils.notfoundresources");
 
 			response.AddWidget("contentbody", w => {
 				var res = Tango.Localization.DefaultResourceManager.Options.NotFoundResources;

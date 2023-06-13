@@ -1,6 +1,7 @@
 ﻿name;ru;en
 Account.Password;Пароль;Password
 Account.Password.Placeholder;напр. ••••••••••;e.g. ••••••••••
+Account.UserName.Placeholder;User;Jonson
 Account.PasswordReset;Забыли пароль?;Forgot password?
 Account.Register;Зарегистрироваться;Sign up
 Account.RegisterTitle;Создание нового профиля;Create your account
@@ -98,7 +99,7 @@ Common.Undelete.Undeletion;Отмена удаления;Undeletion
 Common.Utils;Утилиты;Utils
 Common.Wait;Подождите...;Loading...
 Common.Warnings.SpecifyValues;Необходимо задать значения следующих полей;You must specify values for the following fields
-Common.View;Просмотр;
+Common.View;Просмотр;View
 Common.Xml;Xml;Xml
 
 Common.Title;Наименование;Name
@@ -187,4 +188,5 @@ tango.longoperation.longoperationticket.createdate;Дата добавления
 tango.longoperation.longoperationticket.rundate;Дата запуска;Start date
 tango.longoperation.longoperationticket.status;Статус;Status
 tango.longoperation.longoperationticket.type;Тип;Type
+tango.longoperation.longoperationticket.ismanualstart;Ручной;Manual
 tango.longoperation.longoperationticket-pl;Очередь длительных операций;Queue long operations

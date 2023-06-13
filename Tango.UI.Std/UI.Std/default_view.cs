@@ -191,7 +191,7 @@ namespace Tango.UI.Std
 		}
 	}
 
-	public abstract class default_view_rep<T, TKey> : default_view<T>
+	/*public abstract class default_view_rep<T, TKey> : default_view<T>
 		where T : class, IWithKey<T, TKey>, new()
 	{
 		[Inject]
@@ -215,7 +215,7 @@ namespace Tango.UI.Std
 			var obj = Database.Repository<T>().GetById(id);
 			return obj;
 		}
-	}
+	}*/
 	
 	public abstract class default_view_rep<T, TKey, TRep> : default_view<T>
 		where T : class, IWithKey<T, TKey>, new()
@@ -224,17 +224,21 @@ namespace Tango.UI.Std
 		[Inject]
 		protected IDatabase Database { get; set; }
 		
-		protected TRep Repository { get; set; }
+        TRep _repository = default;
+        protected TRep Repository
+        {
+            get
+            {
+                if (_repository == null)
+                    _repository = GetRepository();
 
-		public override void OnInit()
-		{
-			base.OnInit();
-			Repository = RepositoryExtensions.GetRepository<TRep, T>(Context.RequestServices, Database);
-			if (Repository == null)
-				throw new Exception("Репозиторий не настроен.");
-		}
+                return _repository;
+            }
+        }
 
-		protected override void ToolbarLeft(MenuBuilder t)
+        protected virtual TRep GetRepository() => RepositoryExtensions.GetRepository<TRep, T>(Context.RequestServices, Database);
+
+        protected override void ToolbarLeft(MenuBuilder t)
 		{
 			base.ToolbarLeft(t);
 			t.ItemSeparator();
@@ -254,7 +258,12 @@ namespace Tango.UI.Std
 		}
 	}
 
-	public abstract class default_view<T, TKey, TUser> : default_view<T, TKey>
+    public abstract class default_view_rep<T, TKey> : default_view_rep<T, TKey, IRepository<T>>
+        where T : class, IWithKey<T, TKey>, new()
+    {
+    }
+
+    public abstract class default_view<T, TKey, TUser> : default_view<T, TKey>
 		where T : class, IWithKey<T, TKey>, new()
 		where TUser : IWithTitle
 	{

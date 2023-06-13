@@ -19,14 +19,13 @@ namespace Tango.LongOperation
 		public override string Title => Task.Title;
 		public IScheduledTask Task { get; }
 		public Dictionary<string, string> Parameters { get; protected set; }
-		public bool IsManualStart { get; }
 
 		public ScheduledTaskTicket(
 			IScheduledTask task,
-			Dictionary<string, string> parameters = null, bool isManualStart = false) : base(task.ExecutionTimeout)
+			Dictionary<string, string> parameters = null, 
+			bool isManualStart = false) : base(task.ExecutionTimeout, isManualStart)
 		{
 			Task = task;
-			IsManualStart = isManualStart;
 			Parameters = parameters;
 		}
 
