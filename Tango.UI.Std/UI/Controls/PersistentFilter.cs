@@ -219,9 +219,9 @@ namespace Tango.UI.Controls
 	public class PersistentFilterStore : IPersistentFilterStore<int>
 	{
 		IDatabase _database;
-		IUserIdAccessor<int> _users;
+		IUserIdAccessor<long> _users;
 
-		public PersistentFilterStore(IDatabase database, IUserIdAccessor<int> users)
+		public PersistentFilterStore(IDatabase database, IUserIdAccessor<long> users)
 		{
 			_database = database;
 			_users = users;
@@ -336,6 +336,6 @@ and lower(listname) = @listname
 		[Column]
 		public virtual int ItemsOnPage { get; set; }
 		[Column]
-		public virtual int? SubjectID { get; set; }
+		public virtual long? SubjectID { get; set; }
 	}
 }

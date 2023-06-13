@@ -8,7 +8,7 @@ namespace Tango.Identity.Std
 {
 	public interface IIdentityManager : IIdentityManager<IdentityUser> { }
 
-	public interface IUserValidator : IUserValidator<int> { }
+	public interface IUserValidator : IUserValidator<long> { }
 
-	public interface IIdentityStore : IIdentityStore<IdentityUser, int> { }
+	public interface IIdentityStore : IIdentityStore<IdentityUser, long> { }
 }

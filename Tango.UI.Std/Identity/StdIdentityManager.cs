@@ -2,16 +2,16 @@
 
 namespace Tango.Identity.Std
 {
-	public class IdentityManager : IdentityManager<IdentityUser, int>, IIdentityManager, IUserIdAccessor<int>, IUserIdAccessor<object>
+	public class IdentityManager : IdentityManager<IdentityUser, long>, IIdentityManager, IUserIdAccessor<long>, IUserIdAccessor<object>
 	{
 		public IdentityManager(IIdentity user, IIdentityStore dataContext, IIdentityOptions options) : base(user, dataContext, options)
 		{
 			
 		}
 
-		public int CurrentUserID => CurrentUser.Id;
+		public long CurrentUserID => CurrentUser.Id;
 
-		public int SystemUserID => SystemUser.Id;
+		public long SystemUserID => SystemUser.Id;
 		
 		object IUserIdAccessor<object>.SystemUserID => SystemUserID;
 

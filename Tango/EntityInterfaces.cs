@@ -43,7 +43,7 @@ namespace Tango
 
 	public interface IWithUserTimeStamp : IWithTimeStamp
 	{
-		int LastModifiedUserID { get; set; }
+		long LastModifiedUserID { get; set; }
 	}
 
 	public interface IWithUserTimeStamp<TUser> : IWithTimeStamp

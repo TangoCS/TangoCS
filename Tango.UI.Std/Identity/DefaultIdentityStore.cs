@@ -27,7 +27,7 @@ namespace Tango.Identity.Std
 			return _dc.Query<IdentityUser>(string.Format(provSelect, providerName), new { p1 = providerKey.ToLower() }).FirstOrDefault();
 		}
 
-		public IdentityUser UserFromID(int id)
+		public IdentityUser UserFromID(long id)
 		{
 			return _dc.Query<IdentityUser>(subjSelect + " where ID = @p1", new { p1 = id }).FirstOrDefault();
 		}
@@ -37,12 +37,12 @@ namespace Tango.Identity.Std
 			return _dc.Query<IdentityUser>(subjSelect + " where lower(Email) = @p1", new { p1 = email.ToLower() }).FirstOrDefault();
 		}
 
-		public void Activate(int id)
+		public void Activate(long id)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void Deactivate(int id)
+		public void Deactivate(long id)
 		{
 			throw new NotImplementedException();
 		}

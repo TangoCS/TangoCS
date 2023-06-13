@@ -45,7 +45,7 @@ namespace Tango.Identity.Std
 			return res;
 		}
 
-		public virtual List<ValidationMessage> CheckName(int userId, string name)
+		public virtual List<ValidationMessage> CheckName(long userId, string name)
 		{
 			List<ValidationMessage> res = new List<ValidationMessage>();
 			char[] loginChars = _options.AllowedLoginChars.ToCharArray();
@@ -78,7 +78,7 @@ namespace Tango.Identity.Std
 			return res;
 		}
 
-		public virtual List<ValidationMessage> CheckEmail(int userId, string email)
+		public virtual List<ValidationMessage> CheckEmail(long userId, string email)
 		{
 			List<ValidationMessage> res = new List<ValidationMessage>();
 
