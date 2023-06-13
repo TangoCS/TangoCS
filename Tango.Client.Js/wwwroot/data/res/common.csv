@@ -99,7 +99,7 @@ Common.Undelete.Undeletion;Отмена удаления;Undeletion
 Common.Utils;Утилиты;Utils
 Common.Wait;Подождите...;Loading...
 Common.Warnings.SpecifyValues;Необходимо задать значения следующих полей;You must specify values for the following fields
-Common.View;Просмотр;
+Common.View;Просмотр;View
 Common.Xml;Xml;Xml
 
 Common.Title;Наименование;Name

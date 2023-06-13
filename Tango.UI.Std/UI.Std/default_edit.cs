@@ -403,18 +403,20 @@ namespace Tango.UI.Std
 		where T : class, IWithKey<T, TKey>, new()
 		where TRep : IRepository<T>
 	{
-		TRep _repository = default;
+        [Inject] protected IDatabase Database { get; set; }
+
+        TRep _repository = default;
 		protected TRep Repository { 
 			get 
 			{ 
 				if (_repository == null)
-					_repository = RepositoryExtensions.GetRepository<TRep, T>(Context.RequestServices, Database);
+					_repository = GetRepository();
 
 				return _repository;
 			} 
 		}
-		
-		[Inject] protected IDatabase Database { get; set; }
+
+        protected virtual TRep GetRepository() => RepositoryExtensions.GetRepository<TRep, T>(Context.RequestServices, Database);
 
 		protected virtual void SetDefaultValues(T obj) { }
 

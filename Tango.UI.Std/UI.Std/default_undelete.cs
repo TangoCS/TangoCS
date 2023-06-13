@@ -59,7 +59,12 @@ namespace Tango.UI.Std
 				tran.Commit();
 			}
 
-			response.RedirectBack(Context, 1);
-		}
-	}
+            AfterSubmit(response);
+        }
+
+        protected virtual void AfterSubmit(ApiResponse response)
+        {
+            response.RedirectBack(Context, 1);
+        }
+    }
 }
