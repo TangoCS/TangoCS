@@ -24,8 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tango\Tango.csproj" />
     <ProjectReference Include="..\Tango.ServiceModel\Tango.ServiceModel.csproj" />
+    <ProjectReference Include="..\Tango\Tango.csproj" />
     <ProjectReference Include="..\Tango.UI.Std\Tango.UI.Std.csproj" />
   </ItemGroup>
 </Project>

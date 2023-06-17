@@ -5,7 +5,7 @@ namespace Tango.Identity.Std
 	/// <summary>
 	/// Represents a user in the identity system
 	/// </summary>
-	public class IdentityUser : IdentityUser<int, IdentityUserClaim, IdentityUserLogin>
+	public class IdentityUser : IdentityUser<long, IdentityUserClaim, IdentityUserLogin>
 	{
 	}
 

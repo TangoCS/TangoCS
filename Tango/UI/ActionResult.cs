@@ -136,26 +136,31 @@ namespace Tango.UI
 
 	public class RedirectBackResult : ActionResult
 	{
-		int _code = 0;
+		int _code = 1;
+		string _url = null;
 
-		public RedirectBackResult(int code)	{ _code = code; }
+		public RedirectBackResult(string returnurl) { _url = returnurl; }
+		public RedirectBackResult(int contextReturnTargetCode)	{ _code = contextReturnTargetCode; }
 
 		public override Task ExecuteResultAsync(ActionContext context)
 		{
 			var hard = true;
-			var url = "";
-			var useReturnUrl = context.ReturnTarget.TryGetValue(_code, out var ret);
-			if (useReturnUrl)
+
+			if (_url == null)
 			{
-				var resolveRes = ret.Resolve(context);
-				if (resolveRes.Resolved)
+				var returnTargetExists = context.ReturnTarget.TryGetValue(_code, out var ret);
+				if (returnTargetExists)
 				{
-					hard = false;
-					url = resolveRes.Result.ToString();
+					var resolveRes = ret.Resolve(context);
+					if (resolveRes.Resolved)
+					{
+						hard = false;
+						_url = resolveRes.Result.ToString();
+					}
 				}
 			}
 
-			var result = new RedirectResult(url, hard);
+			var result = new RedirectResult(_url, hard);
 			return result.ExecuteResultAsync(context);
 		}
 	}
@@ -166,7 +171,12 @@ namespace Tango.UI
 	{
 		IIdentity _user;
 
-		public SignInResult(IIdentity user, string redirecturi = null) : base(1)
+		public SignInResult(IIdentity user) : base(1)
+		{
+			_user = user;
+		}
+
+		public SignInResult(IIdentity user, string redirectUrl) : base(redirectUrl)
 		{
 			_user = user;
 		}

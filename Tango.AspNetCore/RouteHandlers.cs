@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using System;
 using System.Threading.Tasks;
 using Tango.FileStorage;
 using Tango.UI;
@@ -20,12 +21,20 @@ namespace Tango.AspNetCore
 				await RunResource.Page<T>(ctx);
 		}
 
-		public static async Task PageHandler<T>(this HttpContext c, string service, string action)
+		public static async Task PageHandler<T>(this HttpContext c, string service = null, string action = null)
 			where T : ViewRootElement, new()
 		{
 			var d = c.GetRouteData();
-			d.Values.Add("service", service);
-			d.Values.Add("action", action);
+
+			if (service != null)
+				d.Values.Add("service", service);
+			else if (!d.Values.ContainsKey("service"))
+				throw new Exception("Service not found");
+				
+			if (action != null)
+				d.Values.Add("action", action);
+			else if (!d.Values.ContainsKey("service"))
+				throw new Exception("Action not found");
 
 			await c.PageHandler<T>();
 		}

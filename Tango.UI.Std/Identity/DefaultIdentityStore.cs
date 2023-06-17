@@ -14,7 +14,7 @@ namespace Tango.Identity.Std
 			_dc = dc;
 		}
 
-		readonly string subjSelect = @"select ID, UserName, Title, PasswordHash, LockoutEnabled, MustChangePassword, Email, SecurityStamp from V_IdentityUser";
+		readonly string subjSelect = @"select u.ID, UserName, Title, PasswordHash, LockoutEnabled, MustChangePassword, Email, SecurityStamp from V_IdentityUser u";
 
 		public IdentityUser UserFromName(string name)
 		{
@@ -23,7 +23,7 @@ namespace Tango.Identity.Std
 
 		public IdentityUser UserFromProviderKey(string providerName, string providerKey)
 		{
-			string provSelect = subjSelect + "u join V_IdentityUser_{0} l on u.ID = l.ID where lower(ProviderKey) = @p1";
+			string provSelect = subjSelect + " join V_IdentityUser_{0} l on u.ID = l.ID where lower(ProviderKey) = @p1";
 			return _dc.Query<IdentityUser>(string.Format(provSelect, providerName), new { p1 = providerKey.ToLower() }).FirstOrDefault();
 		}
 
