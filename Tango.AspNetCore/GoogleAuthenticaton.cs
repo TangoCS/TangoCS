@@ -89,7 +89,7 @@ namespace Tango.AspNetCore
 	{
 		public string GoogleClientID { get; set; }
 		public string GoogleClientSecret { get; set; }
-		public string CallbackUrl { get; set; } = "/signin-oidc";
+		public string CallbackUrl { get; set; } = "/googlelogin-oidc";
 	}
 
 	internal class GoogleToken
