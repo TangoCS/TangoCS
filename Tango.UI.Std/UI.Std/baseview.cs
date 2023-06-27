@@ -108,12 +108,9 @@ namespace Tango.UI.Std
 			{
 				foreach (var child in parentEl.ChildElements)
 				{
-					if (child is IViewPagePart vpp)
-					{
-						if (vpp.ElementArgNames != null)
-							names.AddRange(vpp.ElementArgNames);
-						addChidrenNames(vpp);
-					}
+					if (child is IViewPagePart vpp && vpp.ElementArgNames != null)
+						names.AddRange(vpp.ElementArgNames);
+					addChidrenNames(child);
 				}
 			}
 
