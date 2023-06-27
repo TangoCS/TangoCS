@@ -717,6 +717,21 @@ window.ajaxUtils = function ($, cu) {
 			if (!target.currenturl)
 				target.currenturl = target.url;
 
+			var argGroups = [], parms2remove = [];
+			if (target.sender) {
+				const grAttr = target.sender.getAttribute('data-cleararggroup');
+				if (grAttr)
+					argGroups = grAttr.split(',');
+			}
+
+			if (argGroups.length > 0 && state.loc.arggroups) {
+				for (var i = 0; i < argGroups.length; i++) {
+					if (state.loc.arggroups.hasOwnProperty(argGroups[i])) {
+						parms2remove = parms2remove.concat(state.loc.arggroups[argGroups[i]]);
+					}
+				}
+			}
+			
 			var sep = target.url.indexOf('?');
 			var targetpath = sep >= 0 ? target.url.substring(0, sep) : target.url;
 			const targetquery = sep >= 0 ? target.url.substring(sep + 1) : '';
@@ -732,7 +747,7 @@ window.ajaxUtils = function ($, cu) {
 			}
 			target.url = targetpath + '?';
 			for (var key in targetqueryparms) {
-				if (targetqueryparms[key] && targetqueryparms[key] != '')
+				if (targetqueryparms[key] && targetqueryparms[key] != '' && !parms2remove.includes(key))
 					target.url += key + '=' + targetqueryparms[key] + '&';
 			}
 			target.url = target.url.slice(0, -1);
@@ -774,6 +789,7 @@ window.ajaxUtils = function ($, cu) {
 
 			if (targetpath != curpath) {
 				parms['c-new'] = 1;
+				state.loc.arggroups = undefined;
 				if (target.changeloc)
 					state.ctrl = {};
 			}
@@ -1372,6 +1388,10 @@ window.ajaxUtils = function ($, cu) {
 			state.loc.url = apiResult.redirect.url;
 			state.loc.parms = apiResult.redirect.parms;
 			window.history.pushState(state.loc, "", apiResult.redirect.url);
+		}
+
+		if (apiResult.arggroups) {
+			state.loc.arggroups = apiResult.arggroups;
 		}
 
 		const current = document.getElementById(META_CURRENT);

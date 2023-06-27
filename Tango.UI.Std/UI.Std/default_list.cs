@@ -160,6 +160,12 @@ namespace Tango.UI.Std
 				f.AllowDefaultFilters = () => EnableViews;
 			});
 
+			ElementArgNames = new List<string> {
+				Paging.ParameterName,
+				Sorter.ParameterName,
+				Filter.ParameterName,
+				_qSearchParmName.Name
+			};
 		}
 
 		public virtual void PrepareResult()

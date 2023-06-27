@@ -27,6 +27,8 @@ namespace Tango.UI
 		void OnInit();
 		//void AfterInit();
 		void OnEvent();
+
+		List<string> ElementArgNames { get; set; }
 	}
 
 	public interface IContainerItem
@@ -122,6 +124,7 @@ namespace Tango.UI
 		public virtual void OnEvent() { }
 		public bool IsLazyLoad { get; set; }
 		public bool IsModal { get; set; }
+		public List<string> ElementArgNames { get; set; }
 
 		public T CreateControl<T>(string id, Action<T> setProperties = null)
 			where T : IViewElement, new()

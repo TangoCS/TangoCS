@@ -314,7 +314,11 @@ namespace Tango.Html
 			return a.Data("hasclientstate", type.ToString().ToLower());
 		}
 
-
+		public static T ClearArgGroup<T>(this TagAttributes<T> a, string groupName)
+			where T : TagAttributes<T>
+		{
+			return a.Data("cleararggroup", groupName);
+		}
 	}
 
 	public enum ClientStateType

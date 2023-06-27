@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -15,6 +16,7 @@ namespace Tango.UI.Std
 	public interface IViewPagePart : IViewElement, IWithCheckAccess, IContainerItem
 	{
 		void OnLoad(ApiResponse response);
+		void SetArgGroup(string groupName, ApiResponse response);
 	}
 
 	public abstract class ViewPagePart : ViewRootElement, IViewPagePart
@@ -93,6 +95,31 @@ namespace Tango.UI.Std
 				}
 			}
 			return formID.Value;
+		}
+
+		public void SetArgGroup(string groupName, ApiResponse response)
+		{
+			var names = new List<string>();
+
+			if (ElementArgNames != null)
+				names.AddRange(ElementArgNames);
+
+			void addChidrenNames(IViewElement parentEl)
+			{
+				foreach (var child in parentEl.ChildElements)
+				{
+					if (child is IViewPagePart vpp)
+					{
+						if (vpp.ElementArgNames != null)
+							names.AddRange(vpp.ElementArgNames);
+						addChidrenNames(vpp);
+					}
+				}
+			}
+
+			addChidrenNames(this);
+
+			response.SetArgGroup(groupName, names);
 		}
 	}
 
@@ -213,6 +240,7 @@ namespace Tango.UI.Std
 					sw.Write("const data = " + JsonConvert.SerializeObject(ajax.ApiResponse.Data, Json.StdSettings) + ";\n");
 					sw.Write("const ctrls = ajaxUtils.processControls(document, data.ctrl);\n");
 					sw.Write("ajaxUtils.postProcessControls(ctrls);\n");
+					sw.Write("ajaxUtils.state.loc.arggroups = data.arggroups;\n");
 
 					if (ajax.ApiResponse.ClientActions.Count > 0)
 					{

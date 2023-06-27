@@ -49,6 +49,7 @@ namespace Tango.UI
 		}
 
 		Dictionary<string, CtrlInfo> _ctrl = new Dictionary<string, CtrlInfo>();
+		Dictionary<string, List<string>> _argGroups = new Dictionary<string, List<string>>();
 
 		//public List<Widget> Widgets { get; set; } = new List<Widget>();
 		public List<ClientAction> ClientActions { get; set; } = new List<ClientAction>();
@@ -236,6 +237,15 @@ namespace Tango.UI
 			else
 				_ctrl.Add(clientid, new CtrlInfo { Instance = instance });
 		}
+
+		public void SetArgGroup(string groupName, List<string> elementArgNames)
+		{
+			if (_argGroups.TryGetValue(groupName, out var names))
+				names.AddRange(elementArgNames);
+			else
+				_argGroups.Add(groupName, new List<string>(elementArgNames));
+		}
+
 
 		#region dom actions
 		public virtual void SetElementValue(string id, string value)
@@ -432,6 +442,9 @@ namespace Tango.UI
 
 				if (_ctrl.Count > 0)
 					Data.Add("ctrl", _ctrl);
+
+				if (_argGroups.Count > 0)
+					Data.Add("arggroups", _argGroups);
 			}
 			catch (Exception ex)
 			{

@@ -55,6 +55,12 @@ namespace Tango.UI.Controls
 		public T CreateTabPage<T>(string id, Action<LayoutWriter> title, Action<T> setProperties = null)
 			where T : ViewPagePart, new() => CreateTabPage(id, (TabPageOptions)title, setProperties);
 
+		public override void OnInit()
+		{
+			base.OnInit();
+			ElementArgNames = new List<string> { ID };
+		}
+
 		public void OnPageSelect(ApiResponse response)
 		{
 			var curpage = GetCurPage();

@@ -85,6 +85,7 @@ namespace Tango.UI.Std
 
 			RenderContainer(response, right);
 			right.OnLoad(response);
+			right.SetArgGroup("right", response);
 		}
 	}
 
