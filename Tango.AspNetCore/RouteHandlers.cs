@@ -33,7 +33,7 @@ namespace Tango.AspNetCore
 				
 			if (action != null)
 				d.Values.Add("action", action);
-			else if (!d.Values.ContainsKey("service"))
+			else if (!d.Values.ContainsKey("action"))
 				throw new Exception("Action not found");
 
 			await c.PageHandler<T>();
