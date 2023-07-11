@@ -614,7 +614,10 @@ namespace Tango.UI.Std
 
 			ForceFieldsInit();
 			if (CurrentState.Children.Count > 0)
+			{
 				expandChildren(CurrentState.Children);
+				response.AddClientAction("listview", "scrollToCurrentNode", ClientID);
+			}
 			else if (AutoExpandSingles)
 			{
 				var curResult = _result;
@@ -628,8 +631,7 @@ namespace Tango.UI.Std
 					if (t.Template.IsTerminal || t.Template.ToggleLevelAction != null) break;
 					var sender = t.Template.GetHtmlRowID(CurrentState.Level, obj);
 
-					var nextState = new State
-					{
+					var nextState = new State {
 						Level = CurrentState.Level + 1,
 						TemplateItem = t,
 						Parms = t.Template.GetKeyCollection(obj)
