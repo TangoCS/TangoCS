@@ -231,6 +231,13 @@ namespace Tango.UI.Std
 				a.ID(f.GenerateRowID(id)).Data("rowid", id);
 			};
 		}
+		public static void SetRowID<TResult, T>(this IFieldCollection<TResult> f, Func<TResult, RowInfo<TResult>, T> rowid)
+		{
+			f.RowAttributes += (a, o, i) => {
+				var id = rowid(o, i).ToString();
+				a.ID(f.GenerateRowID(id)).Data("rowid", id);
+			};
+		}
 
 		public static void AddHeaderRow<TResult>(this IFieldCollection<TResult> f)
 		{
