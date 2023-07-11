@@ -236,7 +236,6 @@ namespace Tango.UI.Std
         {
             response.WithNamesAndWritersFor(el);
             var c2 = el.GetContainer();
-            c2.ToRemove.Add("contentheader");
             c2.Render(response);
         }
 
