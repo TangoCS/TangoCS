@@ -288,7 +288,7 @@ namespace Tango.UI.Std
 			RenderToolbar(response);
 			if (Sections.RenderContentTitle)
 				response.AddWidget(Sections.ContentTitle, FormTitle);
-			if (!IsModal && Sections.SetPageTitle)
+			if (!IsSubView && Sections.SetPageTitle)
 				response.AddWidget("#title", FormTitle);
 			if (GenerateClientViewData)
 				response.SetCtrlState(ClientID, new { rows = _result });

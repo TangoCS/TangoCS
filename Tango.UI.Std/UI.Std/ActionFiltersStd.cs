@@ -49,7 +49,10 @@ namespace Tango.UI.Std
 					containerObj.OnInit();
 					containerObj.ProcessResponse(response, ctx.AddContainer, ctx.ContainerPrefix);
 					if (containerObj.IsModal)
+					{
 						view.IsModal = true;
+						view.IsSubView = true;
+					}
 				}
 				//else if (context.Method.Name != "OnLoad")
 				response.WithWritersFor(view);

@@ -47,6 +47,7 @@ namespace Tango.UI.Controls
             var c = CreateControl(id, setProperties);
             c.IsLazyLoad = true;
             Pages.Add(new TabPage(options, c));
+			c.IsSubView = true;
             return c;
         }
 

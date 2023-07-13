@@ -22,6 +22,7 @@ namespace Tango.UI
 		DataCollection DataCollection { get; set; }
 		bool IsLazyLoad { get; set; }
 		bool IsModal { get; set; }
+		bool IsSubView { get; set; }
 		string GetClientID(string id);
 
 		void OnInit();
@@ -124,6 +125,7 @@ namespace Tango.UI
 		public virtual void OnEvent() { }
 		public bool IsLazyLoad { get; set; }
 		public bool IsModal { get; set; }
+		public bool IsSubView { get; set; }
 		public List<string> ElementArgNames { get; set; }
 
 		public T CreateControl<T>(string id, Action<T> setProperties = null)
