@@ -205,6 +205,10 @@ namespace Tango.UI.Controls
 		{
 			b.Item(w => w.ActionTextButton(a => a.Set(urlAttributes), a => a.BulkOp(owner ?? w.IDPrefix).DataRef(parmName)));
 		}
+		public static void ItemDownloadActionTextBulk(this MenuBuilder b, Action<ActionLink> urlAttributes, string owner = null, string parmName = "selectedvalues")
+		{
+			b.Item(w => w.ActionTextButton(a => a.Set(urlAttributes), a => a.BulkOp(owner ?? w.IDPrefix).DataRef(parmName).Data("responsetype", "arraybuffer")));
+		}
 
 		public static void ItemDropDownButtonBulk(this MenuBuilder b, string id, string title,
 			Action<ApiResponse> serverEvent, string icon = null,

@@ -64,7 +64,7 @@ namespace Tango.UI.Std
 
 			if (Sections.RenderContentTitle)
 				response.AddWidget(Sections.ContentTitle, FormTitle);
-			if (!IsModal && Sections.SetPageTitle)
+			if (!IsSubView && Sections.SetPageTitle)
 				response.AddWidget("#title", FormTitle);
 
 			response.AddWidget(Sections.ContentToolbar, w => {

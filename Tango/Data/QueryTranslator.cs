@@ -617,8 +617,9 @@ namespace Tango.Data
 		public static string GetPropertyName(PropertyInfo p)
 		{
 			var name = p.Name;
+            bool boolatr = Attribute.IsDefined(p.DeclaringType, typeof(IgnoreNamingConventionsAttribute));
 
-			if (p.PropertyType == typeof(Guid) || p.PropertyType == typeof(Guid?))
+            if (p.PropertyType == typeof(Guid) || p.PropertyType == typeof(Guid?))
 			{
 				if (name != BaseNamingConventions.GUIDSuffix && name.EndsWith(BaseNamingConventions.GUIDSuffix) && !name.EndsWith(DBConventions.GUIDSuffix))
 					return name.Substring(0, name.Length - BaseNamingConventions.GUIDSuffix.Length) + DBConventions.GUIDSuffix;
@@ -626,7 +627,9 @@ namespace Tango.Data
 			else if (p.PropertyType == typeof(int) || p.PropertyType == typeof(int?) ||
 				p.PropertyType == typeof(long) || p.PropertyType == typeof(long?) || p.PropertyType == typeof(object)) // TODO: Надо проверить для lastmodifieduserid
 			{
-				if (name != BaseNamingConventions.IDSuffix && name.EndsWith(BaseNamingConventions.IDSuffix) && !name.EndsWith(DBConventions.IDSuffix))
+                if (name != BaseNamingConventions.IDSuffix && name.EndsWith(BaseNamingConventions.IDSuffix) && !name.EndsWith(DBConventions.IDSuffix) && boolatr)
+                    return name;
+				else if (name != BaseNamingConventions.IDSuffix && name.EndsWith(BaseNamingConventions.IDSuffix) && !name.EndsWith(DBConventions.IDSuffix))
 					return name.Substring(0, name.Length - BaseNamingConventions.IDSuffix.Length) + DBConventions.IDSuffix;
 			}
 
