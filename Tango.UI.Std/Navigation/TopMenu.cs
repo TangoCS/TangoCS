@@ -34,7 +34,7 @@ namespace Tango.UI.Navigation
 				w.Li(a => a.ID(menuid), () => {
 					if (hasChildren)
 					{
-						w.Span(() => {
+						w.Span(a => a.Class("topmenu-item"), () => {
 							if (!m.Image.IsEmpty()) w.Icon(m.Image);
 							w.Write(m.Title);
 						});
@@ -45,7 +45,7 @@ namespace Tango.UI.Navigation
 					}
 					else
 					{
-						w.A(a => a.Href(m.Url).OnClickRunHref().Data(Constants.ContainerNew, 1), () => {
+						w.A(a => a.Class("topmenu-item").Href(m.Url).OnClickRunHref().Data(Constants.ContainerNew, 1), () => {
 							if (!m.Image.IsEmpty()) w.Icon(m.Image);
 							w.Write(m.Title);
 						});

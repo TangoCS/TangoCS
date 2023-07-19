@@ -25,9 +25,9 @@ namespace Tango.UI.Std
 
 		public override ViewContainer GetContainer()
 		{
-			Action<LayoutWriter> header = ContentHeaders.Default;
+			Action<LayoutWriter> header = ContentHeadersConfig.Default;
 			if (ParentElement != null)
-				header = ContentHeaders.Nested;
+				header = ContentHeadersConfig.Nested;
 
 			return new EditEntityContainer
 			{

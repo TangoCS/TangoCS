@@ -3,9 +3,15 @@ using Tango.Html;
 
 namespace Tango.UI.Std
 {
+	public static class ContentHeadersConfig
+	{
+		public static Action<LayoutWriter> Default { get; set; } = ContentHeaders.DefaultWithCrambAndHelp;
+		public static Action<LayoutWriter> Nested { get; set; } = ContentHeaders.Nested;
+	}
+
 	public static class ContentHeaders
 	{
-		public static void Default(LayoutWriter w)
+		public static void DefaultWithCrambAndHelp(LayoutWriter w)
 		{
 			IHelpManager manager = w.Context.RequestServices.GetService(typeof(IHelpManager)) as IHelpManager;
 
@@ -16,6 +22,11 @@ namespace Tango.UI.Std
 					w.Td(a => a.Style("vertical-align:top"), () => w.Div(() => manager?.Render(w)));
 				});
 			});
+		}
+
+		public static void DefaultSimple(LayoutWriter w)
+		{
+			w.H2(a => a.ID("contenttitle"), "");
 		}
 
 		public static void Nested(LayoutWriter w)
@@ -37,7 +48,7 @@ namespace Tango.UI.Std
 
 	public class DefaultContainer : AbstractDefaultContainer
 	{
-		public Action<LayoutWriter> ContentHeader { get; set; } = ContentHeaders.Default;
+		public Action<LayoutWriter> ContentHeader { get; set; } = ContentHeadersConfig.Default;
 
 		public override void Render(ApiResponse response)
 		{
@@ -69,7 +80,7 @@ namespace Tango.UI.Std
 
 	public class EditEntityContainer : AbstractDefaultContainer
 	{
-		public Action<LayoutWriter> ContentHeader { get; set; } = ContentHeaders.Default;
+		public Action<LayoutWriter> ContentHeader { get; set; } = ContentHeadersConfig.Default;
 
 		public bool AddDataCtrl { get; set; }
 
@@ -111,7 +122,7 @@ namespace Tango.UI.Std
 
 	public class ViewEntityContainer : AbstractDefaultContainer
 	{
-		public Action<LayoutWriter> ContentHeader { get; set; } = ContentHeaders.Default;
+		public Action<LayoutWriter> ContentHeader { get; set; } = ContentHeadersConfig.Default;
 
 		public override void Render(ApiResponse response)
 		{
@@ -121,7 +132,8 @@ namespace Tango.UI.Std
 						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
 							ContentHeader(w);
 						});
-					w.Div(a => a.ID("contenttoolbar"));
+					if (!ToRemove.Contains("contenttoolbar"))
+						w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding"), () => {
 						var cls = "viewform";
 						if (Width != ContainerWidth.Undefined) cls += " " + Width.ToString().ToLower();
@@ -135,7 +147,7 @@ namespace Tango.UI.Std
 
 	public class ListMasterDetailContainer : AbstractDefaultContainer
 	{
-		public Action<LayoutWriter> ContentHeader { get; set; } = ContentHeaders.Default;
+		public Action<LayoutWriter> ContentHeader { get; set; } = ContentHeadersConfig.Default;
 
 		public Unit LeftWidth { get; set; } = new Unit(75, UnitType.Percentage);
 		public Unit RightWidth { get; set; } = new Unit(25, UnitType.Percentage);
