@@ -187,24 +187,9 @@ namespace Tango.Html
 		public static T DataRefSessionStorage<T>(this TagAttributes<T> a, string id)
 			where T : TagAttributes<T>
 		{
-			if (id.StartsWith("#"))
-				return a.Data("ref-sessionstorage", id.Substring(1), false);
-			else
-				return a.DataIDValue("ref-sessionstorage", id, false);
+			return a.Data("ref-sessionstorage", id, false);
 		}
 
-		public static T DataRefSessionStorage<T>(this TagAttributes<T> a, IViewElement owner, string id)
-			where T : TagAttributes<T>
-		{
-			var clientid = owner.GetClientID(id);
-			return a.Data("ref-sessionstorage", clientid, false);
-		}
-
-		public static T DataRefSessionStorage<T>(this TagAttributes<T> a, IViewElement element)
-			where T : TagAttributes<T>
-		{
-			return a.Data("ref-sessionstorage", element.ClientID, false);
-		}
 
 		public static T DataFormat<T>(this TagAttributes<T> a, string format)
 			where T : TagAttributes<T>

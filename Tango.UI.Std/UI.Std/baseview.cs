@@ -80,23 +80,6 @@ namespace Tango.UI.Std
 				return new ChallengeResult();
 		}
 
-		Guid? formID;
-		public virtual Guid GetFormID()
-		{
-			if (!formID.HasValue)
-			{
-				var formidAttr = GetType().GetCustomAttribute(typeof(FormIDAttribute)) as FormIDAttribute;
-				if (formidAttr != null)
-					formID = formidAttr.Guid;
-				else
-				{
-					using (MD5 hasher = MD5.Create())
-						formID = new Guid(hasher.ComputeHash(System.Text.Encoding.UTF8.GetBytes(Context.Service + "." + Context.Action)));
-				}
-			}
-			return formID.Value;
-		}
-
 		public void SetArgGroup(string groupName, ApiResponse response)
 		{
 			var names = new List<string>();

@@ -109,7 +109,7 @@ namespace Tango.UI.Controls
 					.WithImage("filter").WithTitle(r => r.Get("Common.Filter"));
 
 				void tagAttrs(ATagAttributes a) => a.Data(filter.DataCollection).Class("filterbtn").Class(cls)
-					.DataRefSessionStorage(filter, filter.ValueName.Name);
+					.DataRefSessionStorage(filter.ValueName);
 
 				if (imageOnly)
 					w.ActionImageButton(attrs, tagAttrs);
@@ -126,7 +126,7 @@ namespace Tango.UI.Controls
 				filter.LoadPersistent();
 				var text = filter.PersistentFilter.ID == 0 && filter.Criteria.Count == 0 ? w.Resources.Get("Common.AllItems") :
 					(filter.PersistentFilter.Name.IsEmpty() ? w.Resources.Get("System.Filter.Custom") : filter.PersistentFilter.Name);
-				w.DropDownButton("tableviews", text, filter.GetViewsMenu, "view", popupAttrs: a => a.DataNewContainer("popup", w.IDPrefix).DataRefSessionStorage(filter, filter.ValueName.Name));
+				w.DropDownButton("tableviews", text, filter.GetViewsMenu, "view", popupAttrs: a => a.DataNewContainer("popup", w.IDPrefix).DataRefSessionStorage(filter.ValueName));
 			});
 		}
 

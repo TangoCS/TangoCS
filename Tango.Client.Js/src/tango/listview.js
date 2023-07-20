@@ -1050,10 +1050,10 @@ window.sidebar = function () {
 window.filterHelper = function () {
 	var instance = {
 		setValue: function (args) {
-			const last = sessionStorage.getItem(args.id + '_value');
+			const last = sessionStorage.getItem(args.id);
 			if (last != '[]')
-				sessionStorage.setItem(args.id + '_value_last', last);
-			sessionStorage.setItem(args.id + '_value', args.val);
+				sessionStorage.setItem(args.id + '_last', last);
+			sessionStorage.setItem(args.id, args.val);
 		}
 	}
 

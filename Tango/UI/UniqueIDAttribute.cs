@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 namespace Tango.UI
 {
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-	public class FormIDAttribute : Attribute
+	public class UniqueIDAttribute : Attribute
 	{
 		public Guid Guid { get; }
 
-		public FormIDAttribute(Guid guid)
+		public UniqueIDAttribute(Guid guid)
 		{
 			this.Guid = guid;
 		}

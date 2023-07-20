@@ -168,8 +168,8 @@ namespace Tango.UI.Std
 				_qSearchParmName.Name
 			};
 
-			DataCollection.RefSessionStorage(Filter.ValueName.ID);
-			Sorter.DataCollection.RefSessionStorage(Filter.ValueName.ID);
+			DataCollection.RefSessionStorage(Filter.ValueName);
+			Sorter.DataCollection.RefSessionStorage(Filter.ValueName);
 		}
 
 		public virtual void PrepareResult()
@@ -228,8 +228,8 @@ namespace Tango.UI.Std
 						ItemsCount = _itemsCount,
 						PageActionAttributes = a => a.RunEvent(OnSetPage),
 						ObjCountActionAttributes = a => a.PostEvent(OnGetObjCount),
-						GoToPageActionAttributes = a => a.OnEnterPostEvent(OnSetPage).DataRefSessionStorage(Filter, Filter.ValueName.Name),
-						SetPageSizeActionAttributes = a => a.DataEvent(OnSetPage).OnChangeRunHref().DataRefSessionStorage(Filter, Filter.ValueName.Name)
+						GoToPageActionAttributes = a => a.OnEnterPostEvent(OnSetPage).DataRefSessionStorage(Filter.ValueName),
+						SetPageSizeActionAttributes = a => a.DataEvent(OnSetPage).OnChangeRunHref().DataRefSessionStorage(Filter.ValueName)
 					};
 					PagingRenderer.Render(Paging, w, opt);
 				});
@@ -240,7 +240,7 @@ namespace Tango.UI.Std
 				listSettingsPopupID = EnableListSettings ? GetClientID("popup_listsettings") : null,
 				listSettingsBtnID = EnableListSettings ? GetClientID("listsettings") : null,
 				filterID = ShowFilterV2 ? GetClientID("filter") : null,
-				formID = ShowFilterV2 ? GetFormID().ToString() : null
+				formID = ShowFilterV2 ? UniqueID.ToString() : null
 			};
 			response.SetCtrlProps(ClientID, props);
 		}
@@ -276,10 +276,6 @@ namespace Tango.UI.Std
 						//	new Dictionary<string, object> { [Filter.ParameterName] = Filter.PersistentFilter.ID }
 							null
 					);
-					response.AddClientAction("filterHelper", "setValue", new { 
-						id = Filter.ClientID, 
-						val = JsonConvert.SerializeObject(Filter.Criteria)
-					});
 				}
 			}
 			else
@@ -296,6 +292,11 @@ namespace Tango.UI.Std
 					);
 			}
 
+			response.AddClientAction("filterHelper", "setValue", new {
+				id = Filter.ValueName,
+				val = JsonConvert.SerializeObject(Filter.Criteria)
+			});
+
 			Paging.PageIndex = 1;
 			Render(response);
 			RenderToolbar(response);
@@ -309,7 +310,7 @@ namespace Tango.UI.Std
 				criteria = Filter.DefaultCriteria;
 			Filter.Criteria = criteria;
 			response.AddClientAction("filterHelper", "setValue", new {
-				id = Filter.ClientID,
+				id = Filter.ValueName,
 				val = JsonConvert.SerializeObject(Filter.Criteria)
 			});
 
@@ -332,6 +333,10 @@ namespace Tango.UI.Std
 
 		public void OnSetView(ApiResponse response)
 		{
+			response.AddClientAction("filterHelper", "setValue", new {
+				id = Filter.ValueName,
+				val = JsonConvert.SerializeObject(Filter.Criteria)
+			});
 			Render(response);
 			RenderToolbar(response);
 			AfterRender(response);

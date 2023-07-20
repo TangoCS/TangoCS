@@ -5,6 +5,8 @@ using Tango.Html;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Tango.UI
 {
@@ -16,6 +18,7 @@ namespace Tango.UI
 
 	public interface IViewElement : IInteractionFlowElement
 	{
+		Guid UniqueID { get; }
 		string ClientID { get; }
 		IViewElement ParentElement { get; set; }
 		List<IViewElement> ChildElements { get; }
@@ -51,7 +54,7 @@ namespace Tango.UI
 		//public virtual bool UsePropertyInjection => true;
 
 		public IResourceManager Resources => Context.Resources;
-		protected dynamic FormBag { get { return Context.FormData; } }
+		//protected dynamic FormBag { get { return Context.FormData; } }
 		protected DynamicDictionary FormData { get { return Context.FormData; } }
 
 		[Obsolete]
@@ -164,6 +167,27 @@ namespace Tango.UI
 			c.OnInit();
 			//c.AfterInit();
 			return c;
+		}
+
+		Guid? uniqueID;
+		public virtual Guid UniqueID
+		{
+			get
+			{
+				if (!uniqueID.HasValue)
+				{
+					var formidAttr = GetType().GetCustomAttribute(typeof(UniqueIDAttribute)) as UniqueIDAttribute;
+					if (formidAttr != null)
+						uniqueID = formidAttr.Guid;
+					else
+					{
+						var key = Context.Service + "/" + Context.Action + "/" + ClientID;
+						using (MD5 hasher = MD5.Create())
+							uniqueID = new Guid(hasher.ComputeHash(Encoding.UTF8.GetBytes(key)));
+					}
+				}
+				return uniqueID.Value;
+			}
 		}
 	}
 

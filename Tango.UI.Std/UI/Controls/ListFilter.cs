@@ -40,7 +40,7 @@ namespace Tango.UI.Controls
 		//}
 
 		public string ParameterName { get; set; }
-		public InputName ValueName { get; set; }
+		public string ValueName { get; set; }
 
 		public List<Field> FieldList { get; private set; } = new List<Field>();
 		public Action FieldsInit { get; set; }
@@ -63,15 +63,7 @@ namespace Tango.UI.Controls
 			}
 		}
 
-		Guid? ListName_ID
-		{
-			get
-			{
-				if (ParentElement is ViewPagePart pagePart)
-					return pagePart.GetFormID();
-				return null;
-			}
-		}
+		Guid? ListName_ID => ParentElement.UniqueID;
 
 		List<FilterItem> _criteria = null;
 		public List<FilterItem> Criteria {
@@ -131,7 +123,7 @@ namespace Tango.UI.Controls
 		public override void OnInit()
 		{
 			ParameterName = ClientID + "id";
-			ValueName = new InputName { Name = "value", ID = GetClientID("value") };
+			ValueName = $"{ParentElement.UniqueID}_filtercriteria";
 			_engine = new ListFilterEngine(Resources);
 		}
 
@@ -144,7 +136,7 @@ namespace Tango.UI.Controls
 
 		public bool AllArgsAreEmpty => (PersistentFilter.ID == 0 && Context.GetArg(ParameterName) == null && 
 			Context.GetArg("ddlfield") == null && 
-			Context.GetArg(ValueName.ID) == null);
+			Context.GetArg(ValueName) == null);
 
 		public void LoadPersistent()
 		{
@@ -153,9 +145,9 @@ namespace Tango.UI.Controls
 			var id = Context.GetIntArg(ParameterName);
 
 			var loaded = false;
-			if (id == null)
+			if (id == null || id == 0)
 			{
-				var criteria = Context.GetJsonArg<List<FilterItem>>(ValueName.ID);
+				var criteria = Context.GetJsonArg<List<FilterItem>>(ValueName);
 				if (criteria != null && criteria.Count > 0)
 				{
 					PersistentFilter.Criteria = criteria;
@@ -599,7 +591,7 @@ namespace Tango.UI.Controls
 				if (Criteria.Count(c => !c.IsProgram) > 0)
 				{
 					w.ActionImageLink(a => a.CallbackToCurrent().AsDialog(OpenSaveAsDialog).WithImage("newview")
-						.WithTitle(r => r.Get("System.Filter.SaveAs")), a => a.DataRefSessionStorage(this, ValueName.Name));
+						.WithTitle(r => r.Get("System.Filter.SaveAs")), a => a.DataRefSessionStorage(ValueName));
 				}
 			});
 		}
