@@ -158,8 +158,7 @@ namespace Tango.UI.Controls
 			                   .WithArg(pname, parm)
 			                   .RunEvent(sorter.OnSort)
 							   .WithData(sorter.DataCollection)
-							   .WithTitle(title),
-						attr => attr.DataRefSessionStorage("filter_value"));
+							   .WithTitle(title));
 
 			if (!icon.IsEmpty()) w.Icon(icon);
 			if (n.HasValue) w.Write(n);

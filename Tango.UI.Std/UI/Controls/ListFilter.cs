@@ -40,7 +40,7 @@ namespace Tango.UI.Controls
 		//}
 
 		public string ParameterName { get; set; }
-		public string ValueName { get; set; }
+		public InputName ValueName { get; set; }
 
 		public List<Field> FieldList { get; private set; } = new List<Field>();
 		public Action FieldsInit { get; set; }
@@ -88,8 +88,7 @@ namespace Tango.UI.Controls
 		public void SaveCriteria(List<FilterItem> criteria)
 		{
 			PersistentFilter.Criteria = criteria;
-			PersistentFilter.SaveCriteria(SaveToDb);
-
+			//PersistentFilter.SaveCriteria(SaveToDb);
 			Criteria = criteria;
 		}
 
@@ -132,7 +131,7 @@ namespace Tango.UI.Controls
 		public override void OnInit()
 		{
 			ParameterName = ClientID + "id";
-			ValueName = ParentElement.ClientID + "_filter_value";
+			ValueName = new InputName { Name = "value", ID = GetClientID("value") };
 			_engine = new ListFilterEngine(Resources);
 		}
 
@@ -141,9 +140,11 @@ namespace Tango.UI.Controls
 			FieldsInit();
 		}
 
-		bool SaveToDb => false;
+		//bool SaveToDb => false;
 
-		public bool AllArgsAreEmpty => (PersistentFilter.ID == 0 && Context.GetArg(ParameterName) == null && Context.GetArg("ddlfield") == null && Context.GetArg(ValueName) == null);
+		public bool AllArgsAreEmpty => (PersistentFilter.ID == 0 && Context.GetArg(ParameterName) == null && 
+			Context.GetArg("ddlfield") == null && 
+			Context.GetArg(ValueName.ID) == null);
 
 		public void LoadPersistent()
 		{
@@ -154,13 +155,13 @@ namespace Tango.UI.Controls
 			var loaded = false;
 			if (id == null)
 			{
-				var criteria = Context.GetJsonArg<List<FilterItem>>(ValueName);
+				var criteria = Context.GetJsonArg<List<FilterItem>>(ValueName.ID);
 				if (criteria != null && criteria.Count > 0)
 				{
 					PersistentFilter.Criteria = criteria;
-					PersistentFilter.SaveCriteria(SaveToDb);
-					if (SaveToDb)
-						id = PersistentFilter.ID;
+					//PersistentFilter.SaveCriteria(SaveToDb);
+					//if (SaveToDb)
+					//	id = PersistentFilter.ID;
 					loaded = true;
 				}
 			}
@@ -199,8 +200,8 @@ namespace Tango.UI.Controls
 			response.AddWidget("contentbody", FilterTab);
 			response.AddWidget("buttonsbar", w => {
 				w.ButtonsBarRight(() => {
-					//w.Button(a => a.DataResultPostponed(1).OnClickPostEvent(OnSubmit), Resources.Get("Common.OK"));
-					w.Button(a => a.DataResultPostponed(1).DataEvent(OnSubmit).OnClick($"listview.saveCriteria(this, '{ParentElement.ClientID}')"), Resources.Get("Common.OK"));
+					w.Button(a => a.DataResultPostponed(1).OnClickPostEvent(OnSubmit), Resources.Get("Common.OK"));
+					//w.Button(a => a.DataResultPostponed(1).DataEvent(OnSubmit).OnClick($"listview.saveCriteria(this, '{ParentElement.ClientID}')"), Resources.Get("Common.OK"));
 					w.BackButton();
 				});
 			});
@@ -342,7 +343,7 @@ namespace Tango.UI.Controls
 			_isPersistentLoaded = true;
 
 			PersistentFilter.InsertOnSubmit();
-			PersistentFilter.SaveCriteria(SaveToDb);
+			//PersistentFilter.SaveCriteria(SaveToDb);
 
 			FilterSubmitted?.Invoke(response);
 		}
@@ -366,7 +367,7 @@ namespace Tango.UI.Controls
 			PersistentFilter.Criteria = Criteria;
 			_isPersistentLoaded = true;
 
-			PersistentFilter.SaveCriteria(SaveToDb);
+			//PersistentFilter.SaveCriteria(SaveToDb);
 
 			var f = Context.GetIntArg(ddlField, -1);
 			if (f >= 0)
@@ -590,7 +591,6 @@ namespace Tango.UI.Controls
 
 				if (!PersistentFilter.Name.IsEmpty())
 				{
-					//w.ActionImageLink(a => a.CallbackToCurrent().AsDialog(OpenViewSettingsDialog).WithImage("viewsettings").WithTitle(r => r.Get("System.Filter.EditView")));
 					w.ActionImageLink(a => a.CallbackToCurrent().AsDialog(UpdateViewDialog).WithImage("viewsettings").WithTitle(r => r.Get("System.Filter.UpdateView")));
 
 					w.ActionImageLink(a => a.ToCurrent().WithArg(ParameterName, PersistentFilter.ID).WithImage("deleteview").WithTitle(r => r.Get("System.Filter.DeleteView")),
@@ -598,8 +598,8 @@ namespace Tango.UI.Controls
 				}
 				if (Criteria.Count(c => !c.IsProgram) > 0)
 				{
-					//w.ActionImageLink(a => a.CallbackToCurrent().AsDialog(OpenNewViewDialog).WithImage("newview").WithTitle(r => r.Get("System.Filter.CreateView")));
-					w.ActionImageLink(a => a.CallbackToCurrent().AsDialog(OpenSaveAsDialog).WithImage("newview").WithTitle(r => r.Get("System.Filter.SaveAs")));
+					w.ActionImageLink(a => a.CallbackToCurrent().AsDialog(OpenSaveAsDialog).WithImage("newview")
+						.WithTitle(r => r.Get("System.Filter.SaveAs")), a => a.DataRefSessionStorage(this, ValueName.Name));
 				}
 			});
 		}

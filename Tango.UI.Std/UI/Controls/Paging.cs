@@ -174,7 +174,6 @@ namespace Tango.UI.Controls
 				});
 
 				var dc = paging.ParentElement.DataCollection;
-				const string filterId = "filter_value";
 
 				w.Write("&nbsp;");
 				w.DropDownList(new InputName { ID = "psize", Name = paging.ParentElement.GetClientID("psize") }, 
@@ -187,15 +186,15 @@ namespace Tango.UI.Controls
 				w.Write("&nbsp;");
 				w.Span(a => a.Style(pageCount < 2 ? "visibility:hidden" : null), () =>
 				{
-					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, 1).WithImage("begin").WithTitle("В начало списка"), a => a.Data(dc).DataRefSessionStorage(filterId).Class(pageIdx <= 2 ? "disabled" : ""));
-					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx - 1).WithImage("left").WithTitle("На предыдущий лист"), a => a.Data(dc).DataRefSessionStorage(filterId).Class(pageIdx <= 1 ? "disabled" : ""));
+					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, 1).WithImage("begin").WithTitle("В начало списка"), a => a.Data(dc).Class(pageIdx <= 2 ? "disabled" : ""));
+					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx - 1).WithImage("left").WithTitle("На предыдущий лист"), a => a.Data(dc).Class(pageIdx <= 1 ? "disabled" : ""));
 
 					w.Span("&nbsp;");
 					w.TextBox("go", pageIdx.ToString(), a => a.Style("width:50px; text-align:center").Set(options.GoToPageActionAttributes));
 					w.Span(a => a.Style("width: 60px; display: inline-block;"), $"&nbsp;/&nbsp;{pageCount}&nbsp;");
 
-					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx + 1).WithImage("right").WithTitle("На следующий лист"), a => a.Data(dc).DataRefSessionStorage(filterId).Class(itemsCount != null && pageCount - pageIdx < 1 ? "disabled" : ""));
-					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageCount).WithImage("end").WithTitle("На последний лист"), a => a.Data(dc).DataRefSessionStorage(filterId).Class(pageCount <= 1 || pageCount - pageIdx < 2 ? "disabled" : ""));
+					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx + 1).WithImage("right").WithTitle("На следующий лист"), a => a.Data(dc).Class(itemsCount != null && pageCount - pageIdx < 1 ? "disabled" : ""));
+					w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageCount).WithImage("end").WithTitle("На последний лист"), a => a.Data(dc).Class(pageCount <= 1 || pageCount - pageIdx < 2 ? "disabled" : ""));
 				});
 			});
 		}

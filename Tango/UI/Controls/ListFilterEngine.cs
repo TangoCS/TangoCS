@@ -574,7 +574,7 @@ namespace Tango.UI.Controls
 		bool LoadDefault(string listName, string listParms, Guid? ListName_ID);
 		IEnumerable<(TKey ID, string Name, bool IsDefault)> GetViews(string listName, IReadOnlyDictionary<string, object> listParms);
 
-		void SaveCriteria(bool saveToDb);
+		//void SaveCriteria(bool saveToDb);
 		void SaveView(string name, bool isShared, bool isDefault, string listName, Guid? listName_ID, 
 			IReadOnlyDictionary<string, object> listParms, string columns);
 
@@ -587,7 +587,8 @@ namespace Tango.UI.Controls
 		bool IsShared { get; }
 		bool IsDefault { get; }
 
-		List<FilterItem> Criteria { get; set; }
+		IEnumerable<FilterItem> Criteria { get; set; }
+		string StringValue { get; }
 	}
 
 	public interface IPersistentFilterEntity<TKey>

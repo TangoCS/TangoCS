@@ -102,19 +102,19 @@ namespace Tango.UI.Controls
 			void render(LayoutWriter w)
 			{
 				filter.LoadPersistent();
-				w.Hidden("filter_value", filter.SerializedCriteria);
-
-				//void attrs(ActionLink a) => a.CallbackToCurrent().AsDialog(filter.OpenFilterDialog)
-				//	.WithImage("filter").WithTitle(r => r.Get("Common.Filter"));
-				void attrs(ActionLink a) => a.CallbackToCurrent().AsDialogPost(filter.OpenFilterDialog)
-					.WithImage("filter").WithTitle(r => r.Get("Common.Filter"));
 
 				var cls = filter.Criteria.Count > 0 ? "hascriteria" : "";
 
+				void attrs(ActionLink a) => a.CallbackToCurrent().AsDialogPost(filter.OpenFilterDialog)
+					.WithImage("filter").WithTitle(r => r.Get("Common.Filter"));
+
+				void tagAttrs(ATagAttributes a) => a.Data(filter.DataCollection).Class("filterbtn").Class(cls)
+					.DataRefSessionStorage(filter, filter.ValueName.Name);
+
 				if (imageOnly)
-					w.ActionImageButton(attrs, a => a.Data(filter.DataCollection).Class("filterbtn").Class(cls));
+					w.ActionImageButton(attrs, tagAttrs);
 				else
-					w.ActionImageTextButton(attrs, a => a.Data(filter.DataCollection).Class("filterbtn").Class(cls));
+					w.ActionImageTextButton(attrs, tagAttrs);
 
 			}
 			Item(render);
@@ -126,7 +126,7 @@ namespace Tango.UI.Controls
 				filter.LoadPersistent();
 				var text = filter.PersistentFilter.ID == 0 && filter.Criteria.Count == 0 ? w.Resources.Get("Common.AllItems") :
 					(filter.PersistentFilter.Name.IsEmpty() ? w.Resources.Get("System.Filter.Custom") : filter.PersistentFilter.Name);
-				w.DropDownButton("tableviews", text, filter.GetViewsMenu, "view", popupAttrs: a => a.DataNewContainer("popup", w.IDPrefix));
+				w.DropDownButton("tableviews", text, filter.GetViewsMenu, "view", popupAttrs: a => a.DataNewContainer("popup", w.IDPrefix).DataRefSessionStorage(filter, filter.ValueName.Name));
 			});
 		}
 

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -166,6 +167,9 @@ namespace Tango.UI.Std
 				Filter.ParameterName,
 				_qSearchParmName.Name
 			};
+
+			DataCollection.RefSessionStorage(Filter.ValueName.ID);
+			Sorter.DataCollection.RefSessionStorage(Filter.ValueName.ID);
 		}
 
 		public virtual void PrepareResult()
@@ -219,14 +223,13 @@ namespace Tango.UI.Std
 		{
 			if (Sections.RenderPaging)
 			{
-				const string filterId = "filter_value";
 				response.ReplaceWidget(Paging.ID, w => {
 					var opt = new PagingRenderOptions {
 						ItemsCount = _itemsCount,
 						PageActionAttributes = a => a.RunEvent(OnSetPage),
 						ObjCountActionAttributes = a => a.PostEvent(OnGetObjCount),
-						GoToPageActionAttributes = a => a.OnEnterPostEvent(OnSetPage).DataRefSessionStorage(filterId),
-						SetPageSizeActionAttributes = a => a.DataEvent(OnSetPage).OnChangeRunHref().DataRefSessionStorage(filterId)
+						GoToPageActionAttributes = a => a.OnEnterPostEvent(OnSetPage).DataRefSessionStorage(Filter, Filter.ValueName.Name),
+						SetPageSizeActionAttributes = a => a.DataEvent(OnSetPage).OnChangeRunHref().DataRefSessionStorage(Filter, Filter.ValueName.Name)
 					};
 					PagingRenderer.Render(Paging, w, opt);
 				});
@@ -257,7 +260,7 @@ namespace Tango.UI.Std
 		private void OnFilter(ApiResponse response)
 		{
 			response.WithNamesAndWritersFor(this);
-			response.ReplaceWidget("filter_value", w => w.Hidden("filter_value", Filter.SerializedCriteria));
+			//response.ReplaceWidget("filter_value", w => w.Hidden("filter_value", Filter.SerializedCriteria));
 
 			if (Filter.Criteria.Count > 0)
 			{
@@ -273,6 +276,10 @@ namespace Tango.UI.Std
 						//	new Dictionary<string, object> { [Filter.ParameterName] = Filter.PersistentFilter.ID }
 							null
 					);
+					response.AddClientAction("filterHelper", "setValue", new { 
+						id = Filter.ClientID, 
+						val = JsonConvert.SerializeObject(Filter.Criteria)
+					});
 				}
 			}
 			else
@@ -297,15 +304,14 @@ namespace Tango.UI.Std
 
 		public override void OnLoad(ApiResponse response)
 		{
-			var criteria = Context.GetJsonArg<List<FilterItem>>("filter_value");
+			var criteria = Context.GetJsonArg<List<FilterItem>>("defaultcriteria");
 			if (criteria == null)
 				criteria = Filter.DefaultCriteria;
-			if (criteria != null && criteria.Count > 0)
-			{
-				Filter.SaveCriteria(criteria);
-				OnFilter(response);
-				return;
-			}
+			Filter.Criteria = criteria;
+			response.AddClientAction("filterHelper", "setValue", new {
+				id = Filter.ClientID,
+				val = JsonConvert.SerializeObject(Filter.Criteria)
+			});
 
 			var qSearch = Context.GetArg(_qSearchParmName.Name);
 			if (Sections.RenderListOnLoad || !qSearch.IsEmpty())

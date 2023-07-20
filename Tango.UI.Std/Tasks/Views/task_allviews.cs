@@ -91,8 +91,8 @@ namespace Tango.Tasks
 			//	Operation = FilterItemOperation.And,
 			//	IsProgram = true
 			//});
-			var filter = JsonConvert.SerializeObject(criteria);
-			w.Hidden(null, filter, a => a.ID("taskExecutionFilter").Data("name", "filter_value"));
+			//var filter = JsonConvert.SerializeObject(criteria);
+			//w.Hidden(null, filter, a => a.ID("taskExecutionFilter").Data("name", "filter_value"));
 
 			tabs.RenderTabs(w);
 			tabs.RenderPages(w);

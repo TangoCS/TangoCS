@@ -296,9 +296,6 @@ window.listview = function (au, cu, cbcell, menu) {
 			if (ctrl.props && ctrl.props.listSettingsPopupID)
 				instance.initListSettings(root);
 
-			if (ctrl.props && ctrl.props.filterID && ctrl.props.formID)
-				instance.saveCriteria(null, root.id);
-
 			var el = $('#' + ctrl.root);
 			if (!el.tableDnD || !el.hasClass("draggablerows")) return;
 			el.tableDnD({
@@ -567,18 +564,6 @@ window.listview = function (au, cu, cbcell, menu) {
 			root = document.getElementById(root);
 			const node = root.querySelector('.selected');
 			if (node) node.scrollIntoView();
-		},
-		saveCriteria: function (el, rootid) {
-			const ctrl = au.state.ctrl[rootid];
-			if (ctrl.props.filterID) {
-				const id = ctrl.props.filterID + '_value';
-				const filter = document.getElementById(id);
-				if (filter)
-					sessionStorage.setItem(id, filter.value);
-			}
-			if (el)
-				ajaxUtils.postEventFromElementWithApiResponse(el);
-			return false;
 		}
 	}
 
@@ -1062,4 +1047,16 @@ window.sidebar = function () {
 	return instance;
 }();
 
+window.filterHelper = function () {
+	var instance = {
+		setValue: function (args) {
+			const last = sessionStorage.getItem(args.id + '_value');
+			if (last != '[]')
+				sessionStorage.setItem(args.id + '_value_last', last);
+			sessionStorage.setItem(args.id + '_value', args.val);
+		}
+	}
+
+	return instance;
+}();
 

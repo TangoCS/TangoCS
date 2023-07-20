@@ -77,13 +77,13 @@ namespace Tango.UI.Controls
 			}
 		}
 
-		protected abstract string Serialize(List<FilterItem> criteria);
+		protected abstract string Serialize(IEnumerable<FilterItem> criteria);
 
 		protected abstract List<FilterItem> Deserialize(string value);
 
 
-		List<FilterItem> _items;
-		public List<FilterItem> Criteria
+		IEnumerable<FilterItem> _items;
+		public IEnumerable<FilterItem> Criteria
 		{
 			get 
 			{
@@ -97,6 +97,7 @@ namespace Tango.UI.Controls
 			}
 			set
 			{
+				Filter.FilterValue = Serialize(value);
 				_items = value;
 			}
 		}
@@ -125,6 +126,11 @@ namespace Tango.UI.Controls
 		{
 			get { return Filter.ListParms; }
 			set { Filter.ListParms = value; }
+		}
+
+		public string StringValue
+		{
+			get { return Filter.FilterValue; }
 		}
 
 		//public string Columns
@@ -189,15 +195,15 @@ namespace Tango.UI.Controls
 		//}
 		//#endregion
 
-		public void SaveCriteria(bool saveToDb)
-		{
-			Filter.FilterValue = Serialize(Criteria);
-			if (saveToDb)
-			{
-				var isShared = ID.Equals(default(TKey)) ? false : IsShared;
-				_storage.SubmitChanges(Filter, isShared);
-			}
-		}
+		//public void SaveCriteria(bool saveToDb)
+		//{
+		//	Filter.FilterValue = Serialize(Criteria);
+		//	if (saveToDb)
+		//	{
+		//		var isShared = ID.Equals(default(TKey)) ? false : IsShared;
+		//		_storage.SubmitChanges(Filter, isShared);
+		//	}
+		//}
 
 		public void SaveView(string name, bool isShared, bool isDefault, string listName, Guid? listName_ID, 
 			IReadOnlyDictionary<string, object> listParms, string columns)
@@ -316,7 +322,7 @@ and lower(listname) = @listname
 			return XmlHelper.Deserialize<List<FilterItem>>(value);
 		}
 
-		protected override string Serialize(List<FilterItem> criteria)
+		protected override string Serialize(IEnumerable<FilterItem> criteria)
 		{
 			return XmlHelper.Serialize(criteria).ToString();
 		}
@@ -340,7 +346,7 @@ and lower(listname) = @listname
 			}
 		}
 
-		protected override string Serialize(List<FilterItem> criteria)
+		protected override string Serialize(IEnumerable<FilterItem> criteria)
 		{
 			return JsonConvert.SerializeObject(criteria);
 		}
