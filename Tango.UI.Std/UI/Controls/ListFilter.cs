@@ -77,12 +77,11 @@ namespace Tango.UI.Controls
 			}
 		}
 
-		public void SaveCriteria(List<FilterItem> criteria)
-		{
-			PersistentFilter.Criteria = criteria;
-			//PersistentFilter.SaveCriteria(SaveToDb);
-			Criteria = criteria;
-		}
+		//public void SaveCriteria(List<FilterItem> criteria)
+		//{
+		//	PersistentFilter.Criteria = criteria;
+		//	Criteria = criteria;
+		//}
 
 		public List<FilterItem> DefaultCriteria { get; set; } = new List<FilterItem>();
 
