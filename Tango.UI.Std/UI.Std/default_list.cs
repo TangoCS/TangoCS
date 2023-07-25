@@ -308,7 +308,8 @@ namespace Tango.UI.Std
 			var criteria = Context.GetJsonArg<List<FilterItem>>("defaultcriteria");
 			if (criteria == null)
 				criteria = Filter.DefaultCriteria;
-			Filter.Criteria = criteria;
+			if (criteria != null)
+				Filter.Criteria = criteria;
 			response.AddClientAction("filterHelper", "setValue", new {
 				id = Filter.ValueName,
 				val = JsonConvert.SerializeObject(Filter.Criteria)
