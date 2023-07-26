@@ -187,11 +187,14 @@ namespace Tango.UI
 			var retctx = context.ReturnTargetContext(code);
 			if (retctx == null) return;
 
-			var returnState = JsonConvert.DeserializeObject<Dictionary<string, string>>(context.ReturnState);
-			foreach (var kv in returnState)
+			if (context.ReturnState != null)
 			{
-				retctx.AllArgs[kv.Key] = kv.Value;
-				retctx.FormData[kv.Key] = kv.Value;
+				var returnState = JsonConvert.DeserializeObject<Dictionary<string, string>>(context.ReturnState);
+				foreach (var kv in returnState)
+				{
+					retctx.AllArgs[kv.Key] = kv.Value;
+					retctx.FormData[kv.Key] = kv.Value;
+				}
 			}
 
 			RunRedirect(retctx);
