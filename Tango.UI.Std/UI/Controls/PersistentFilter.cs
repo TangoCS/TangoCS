@@ -211,7 +211,7 @@ namespace Tango.UI.Controls
 			Filter.FilterValue = Serialize(Criteria);
 			Filter.FilterName = name;
 			Filter.ListName = listName;
-			Filter.ListName_ID = listName_ID;
+			Filter.ListNameID = listName_ID;
 			Filter.ListParms = listParms?.Select(kv => kv.Key + "=" + kv.Value).Join("&");
 			Filter.IsDefault = isDefault;
 			Filter.Columns = columns;
@@ -263,22 +263,22 @@ namespace Tango.UI.Controls
 			_database.Repository<N_Filter>().Delete(o => o.FilterID.Equals(id));
 		}
 
-		public IPersistentFilterEntity<int> GetDefault(string listName, string listParms, Guid? listName_ID)
+		public IPersistentFilterEntity<int> GetDefault(string listName, string listParms, Guid? listNameID)
 		{
 			if (!listParms.IsEmpty())
 				return _database.Connection.QuerySingleOrDefault<N_Filter>(@"
 select * 
 from n_filter 
 where (subjectid is null or subjectid = @subjectid) and isdefault = @isdefault 
-and ((listname_id is null and lower(listname) = @listname and listparms = @listparms) or (listname_id = @listname_id))
-", new { subjectid = _users.CurrentUserID, listName = listName.ToLower(), listParms, isdefault = true, listName_ID });
+and ((listnameid is null and lower(listname) = @listname and listparms = @listparms) or (listnameid = @listnameid))
+", new { subjectid = _users.CurrentUserID, listName = listName.ToLower(), listParms, isdefault = true, listNameID });
 			else
 				return _database.Connection.QuerySingleOrDefault<N_Filter>(@"
 select * 
 from n_filter 
 where (subjectid is null or subjectid = @subjectid) and isdefault = @isdefault 
-and ((listname_id is null and lower(listname) = @listname) or (listname_id = @listname_id))
-", new { subjectid = _users.CurrentUserID, listName = listName.ToLower(), isdefault = true, listName_ID });
+and ((listnameid is null and lower(listname) = @listname) or (listnameid = @listnameid))
+", new { subjectid = _users.CurrentUserID, listName = listName.ToLower(), isdefault = true, listNameID });
 		}
 
 		public List<IPersistentFilterEntity<int>> GetViews(string listName)
@@ -403,6 +403,6 @@ and lower(listname) = @listname
 		[Column]
 		public virtual long? SubjectID { get; set; }
 		[Column]
-		public virtual Guid? ListName_ID { get; set; }
+		public virtual Guid? ListNameID { get; set; }
 	}
 }

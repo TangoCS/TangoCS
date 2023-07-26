@@ -8,6 +8,7 @@ namespace Tango
 		public static readonly string ServiceName = "service";
 		public static readonly string ActionName = "action";
 		public static readonly string ReturnUrl = "returnurl";
+		public static readonly string ReturnState = "returnstate";
 		/// <summary>
 		/// Данный префикс указывается у параметров, которые необходимо передавать при ReturnUrl,
 		/// и исключать из адресной строки.
@@ -43,7 +44,8 @@ namespace Tango
 
 		public static readonly string[] InternalParms = new string[] { EventName, EventReceiverName,
 			RootReceiverName, FirstLoad, Sender, ResponseType, Container, ContainerPrefix, ContainerType, ContainerNew,
-			ContainerExternal, IEFormFix, MetaHome, MetaCurrent};
+			ContainerExternal, IEFormFix, MetaHome, MetaCurrent, ReturnState
+		};
 
 		public static readonly string OpList = "viewlist";
 		public static readonly string OpView = "view";

@@ -422,8 +422,9 @@ window.domActions = function () {
 		setCookie: function (args) {
 			Cookies.set(args.id, args.value, { path: '/' });
 		},
-		setClientArg: function (args) {
-			ajaxUtils.state.loc.clientArgs[args.id] = args.value;
+		setStorageArg: function (key, val) {
+			sessionStorage.setItem(key, val);
+			ajaxUtils.state.loc.storage[0][key] = val;
 		},
 		include: function (id) {
 			const i = document.getElementById(id);
@@ -462,7 +463,7 @@ window.ajaxUtils = function ($, cu) {
 			url: null,
 			parms: {},
 			onBack: null,
-			clientArgs: {},
+			storage: [{}],
 			onBackArgs: []
 		},
 		ctrl: {}
@@ -787,11 +788,38 @@ window.ajaxUtils = function ($, cu) {
 			if (base && !curpath.startsWith(base))
 				curpath = base + curpath;
 
+			const result = target.sender ?
+				target.sender.getAttribute('data-res') || target.sender.getAttribute('data-res-postponed') : undefined;
+
+			if (result == 1 && state.loc.storage.length > 1) {
+				const returnstate = JSON.stringify(state.loc.storage[state.loc.storage.length - 2]);
+				if (target.data instanceof FormData)
+					target.data.append('returnstate', returnstate);
+				else
+					target.data['returnstate'] = returnstate;
+			}
+
 			if (targetpath != curpath) {
 				parms['c-new'] = 1;
 				state.loc.arggroups = undefined;
-				if (target.changeloc)
+				if (target.changeloc) {
 					state.ctrl = {};
+					if (result == 0) {
+						state.loc.storage.pop();
+						if (state.loc.storage.length == 0)
+							state.loc.storage.push({});
+						const curStorage = state.loc.storage[0];
+						for (var key in curStorage) {
+							target.data[key] = curStorage[key];
+						}
+					}
+					else if (result == 1) {
+						
+					}
+					else {
+						state.loc.storage.push({});
+					}
+				}
 			}
 			else if (!parms['c-prefix'] && target.containerPrefix) {
 				parms['c-prefix'] = target.containerPrefix;
@@ -804,10 +832,6 @@ window.ajaxUtils = function ($, cu) {
 			if (target.changeloc) {
 				if (target.onBack) state.loc.onBack = target.onBack;
 				window.history.pushState(state.loc, "", target.url);
-			}
-
-			for (var key in state.loc.clientArgs) {
-				parms[key] = state.loc.clientArgs[key];
 			}
 
 			for (var key in parms) {
@@ -1391,6 +1415,8 @@ window.ajaxUtils = function ($, cu) {
 		if (apiResult.redirect) {
 			state.loc.url = apiResult.redirect.url;
 			state.loc.parms = apiResult.redirect.parms;
+			if (apiResult.redirect.isBack)
+				state.loc.storage.pop();
 			window.history.pushState(state.loc, "", apiResult.redirect.url);
 		}
 
@@ -1718,15 +1744,22 @@ window.ajaxUtils = function ($, cu) {
 			var parser = document.createElement('a');
 			parser.href = state.loc.url;
 
-			if (window.location.pathname != parser.pathname)
+			if (window.location.pathname != parser.pathname) {
 				state.ctrl = {};
+				state.loc.storage.pop();
+				s.storage = state.loc.storage;
+				const curStorage = s.storage.length > 0 ? s.storage[0] : {};
+				for (var key in curStorage) {
+					s.parms[key] = curStorage[key];
+				}
+			}
 
 			state.loc = s;
 
 			if (s.onBack && !s.parms['c-new'])
 				runClientAction(s.onBack.service, s.onBack.callChain, 0);
 			else {
-				const settings = { url: getApiUrl(s.url, s.parms), type: 'GET' };
+				const settings = { url: getApiUrl(s.url), type: 'POST', data: JSON.stringify(s.parms) };
 				ajax(settings)
 					.fail(instance.error)
 					.then(onRequestResult)/*.then(instance.loadScripts)*/.then(processApiResponse);

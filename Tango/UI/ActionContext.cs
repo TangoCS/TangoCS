@@ -50,6 +50,7 @@ namespace Tango.UI
 		public AbsoluteID Sender { get; set; }
 		public Dictionary<int, string> ReturnUrl { get; set; }
 		public Dictionary<int, ActionTarget> ReturnTarget { get; set; }
+		public string ReturnState { get; set; }
 		//public string SourceUrl { get; set; }
 
 		// parameters
@@ -123,6 +124,8 @@ namespace Tango.UI
 					EventReceiver = value.ToLower();
 				else if (key == Constants.ReturnUrl)
 					ReturnUrl[1] = value.ToLower();
+				else if (key == Constants.ReturnState)
+					ReturnState = value;
 				else if (key == Constants.ResponseType)
 					ResponseType = value;
 				else if (key.StartsWith(Constants.ReturnUrl))
