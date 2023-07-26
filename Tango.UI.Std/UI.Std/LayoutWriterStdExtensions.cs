@@ -69,7 +69,7 @@ namespace Tango.UI.Std
 		{
 			w.ButtonsBar(() => {
 				w.ButtonsBarRight(() => {
-					w.SubmitButton(a => a.DataReceiver(form));
+					w.SubmitButton(a => a.DataReceiver(form).DataResult(1));
 					w.BackButton();
 				});
 			});
@@ -79,7 +79,7 @@ namespace Tango.UI.Std
 		{
 			w.ButtonsBar(() => {
 				w.ButtonsBarRight(() => {
-					w.SubmitDeleteButton(a => a.ID("deletebtn").DataReceiver(form));
+					w.SubmitDeleteButton(a => a.ID("deletebtn").DataReceiver(form).DataResult(1));
 					w.BackButton();
 				});
 			});

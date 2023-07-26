@@ -1047,16 +1047,16 @@ window.sidebar = function () {
 	return instance;
 }();
 
-window.filterHelper = function () {
+window.filterHelper = function (da) {
 	var instance = {
 		setValue: function (args) {
 			const last = sessionStorage.getItem(args.id);
 			if (last != '[]')
 				sessionStorage.setItem(args.id + '_last', last);
-			sessionStorage.setItem(args.id, args.val);
+			da.setStorageArg(args.id, args.val);
 		}
 	}
 
 	return instance;
-}();
+}(domActions);
 

@@ -600,7 +600,7 @@ namespace Tango.UI.Controls
 		string ListName { get; set; }
 		string ListParms { get; set; }
 		bool IsShared { get; }
-		Guid? ListName_ID { get; set; }
+		Guid? ListNameID { get; set; }
 
 		string Columns { get; set; }
 	}

@@ -305,11 +305,7 @@ namespace Tango.UI.Std
 
 		public override void OnLoad(ApiResponse response)
 		{
-			var criteria = Context.GetJsonArg<List<FilterItem>>("defaultcriteria");
-			if (criteria == null)
-				criteria = Filter.DefaultCriteria;
-			if (criteria != null)
-				Filter.Criteria = criteria;
+			Filter.LoadPersistent();
 			response.AddClientAction("filterHelper", "setValue", new {
 				id = Filter.ValueName,
 				val = JsonConvert.SerializeObject(Filter.Criteria)

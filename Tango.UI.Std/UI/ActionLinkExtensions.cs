@@ -15,7 +15,7 @@ namespace Tango.UI
 
 			if (title.IsEmpty()) title = w.Resources.Get("Common.Back");
 			
-			w.A(a => a.Class("actionbtn").Href(url).OnClickRunHref().Data(Constants.ContainerNew, 1).Set(attrs), () => {
+			w.A(a => a.Class("actionbtn").Href(url).DataResult(0).OnClickRunHref().Data(Constants.ContainerNew, 1).Set(attrs), () => {
 				w.Icon("back");
 				w.Write(title);
 			});

@@ -186,9 +186,17 @@ namespace Tango.UI
 		{
 			var retctx = context.ReturnTargetContext(code);
 			if (retctx == null) return;
+
+			var returnState = JsonConvert.DeserializeObject<Dictionary<string, string>>(context.ReturnState);
+			foreach (var kv in returnState)
+			{
+				retctx.AllArgs[kv.Key] = kv.Value;
+				retctx.FormData[kv.Key] = kv.Value;
+			}
+
 			RunRedirect(retctx);
 			if (retctx.AddContainer)
-				RedirectTo(retctx.BaseUrl().Url, retctx.AllArgs);
+				RedirectTo(retctx.BaseUrl().Url, retctx.AllArgs, true);
 		}
 
 		public void RedirectTo(ActionContext context, Action<ActionLink> action)
@@ -206,9 +214,9 @@ namespace Tango.UI
 			RedirectTo(context, a => a.ToCurrent());
 		}
 
-		public void RedirectTo(string url, DynamicDictionary parms = null)
+		public void RedirectTo(string url, DynamicDictionary parms = null, bool isBack = false)
 		{
-			Data.Add("redirect", new { url, parms });
+			Data.Add("redirect", new { url, parms, isBack });
 		}
 
 		public void HardRedirectTo(string url)

@@ -147,12 +147,14 @@ namespace Tango.UI.Controls
 			if (id == null || id == 0)
 			{
 				var criteria = Context.GetJsonArg<List<FilterItem>>(ValueName);
+				if (criteria == null)
+					criteria = Context.GetJsonArg<List<FilterItem>>("defaultcriteria");
+				if (criteria == null)
+					criteria = DefaultCriteria;
+
 				if (criteria != null && criteria.Count > 0)
 				{
 					PersistentFilter.Criteria = criteria;
-					//PersistentFilter.SaveCriteria(SaveToDb);
-					//if (SaveToDb)
-					//	id = PersistentFilter.ID;
 					loaded = true;
 				}
 			}
