@@ -182,7 +182,13 @@ namespace Tango.UI
 			}
 		}
 
-		public void RedirectBack(ActionContext context, int code)
+		/// <summary>
+		/// Возврат на предыдущую форму
+		/// </summary>
+		/// <param name="context"></param>
+		/// <param name="code"></param>
+		/// <param name="changeLoc">Меняется ли адрес, или мы возвращаемся внутри этой же страницы (из модального окна/панели)</param>
+		public void RedirectBack(ActionContext context, int code, bool changeLoc = true)
 		{
 			var retctx = context.ReturnTargetContext(code);
 			if (retctx == null) return;
@@ -199,7 +205,7 @@ namespace Tango.UI
 
 			RunRedirect(retctx);
 			if (retctx.AddContainer)
-				RedirectTo(retctx.BaseUrl().Url, retctx.AllArgs, true);
+				RedirectTo(retctx.BaseUrl().Url, retctx.AllArgs, changeLoc);
 		}
 
 		public void RedirectTo(ActionContext context, Action<ActionLink> action)

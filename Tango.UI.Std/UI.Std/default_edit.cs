@@ -176,7 +176,7 @@ namespace Tango.UI.Std
 		protected abstract void Submit(ApiResponse response);
 		protected virtual void AfterSubmit(ApiResponse response)
 		{
-			response.RedirectBack(Context, 1);
+			response.RedirectBack(Context, 1, !IsSubView);
 		}
 
 		protected virtual bool EnableButtonsBar => true;
