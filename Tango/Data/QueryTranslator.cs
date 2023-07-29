@@ -623,6 +623,9 @@ namespace Tango.Data
 			{
 				if (name != BaseNamingConventions.GUIDSuffix && name.EndsWith(BaseNamingConventions.GUIDSuffix) && !name.EndsWith(DBConventions.GUIDSuffix))
 					return name.Substring(0, name.Length - BaseNamingConventions.GUIDSuffix.Length) + DBConventions.GUIDSuffix;
+
+				if (name != BaseNamingConventions.IDSuffix && name.EndsWith(BaseNamingConventions.IDSuffix) && !name.EndsWith(DBConventions.GUIDSuffix))
+					return name.Substring(0, name.Length - BaseNamingConventions.IDSuffix.Length) + DBConventions.GUIDSuffix;
 			}
 			else if (p.PropertyType == typeof(int) || p.PropertyType == typeof(int?) ||
 				p.PropertyType == typeof(long) || p.PropertyType == typeof(long?) || p.PropertyType == typeof(object)) // TODO: Надо проверить для lastmodifieduserid

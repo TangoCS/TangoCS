@@ -292,6 +292,9 @@ namespace Tango.UI.Std
 					);
 			}
 
+			Context.ReturnUrl.Clear();
+			Context.ReturnTarget.Clear();
+
 			response.AddClientAction("filterHelper", "setValue", new {
 				id = Filter.ValueName,
 				val = JsonConvert.SerializeObject(Filter.Criteria)
@@ -306,10 +309,13 @@ namespace Tango.UI.Std
 		public override void OnLoad(ApiResponse response)
 		{
 			Filter.LoadPersistent();
-			response.AddClientAction("filterHelper", "setValue", new {
-				id = Filter.ValueName,
-				val = JsonConvert.SerializeObject(Filter.Criteria)
-			});
+			if (!Filter.PersistentFilter.Name.IsEmpty())
+			{
+				response.AddClientAction("filterHelper", "setValue", new {
+					id = Filter.ValueName,
+					val = "[]"
+				});
+			}
 
 			var qSearch = Context.GetArg(_qSearchParmName.Name);
 			if (Sections.RenderListOnLoad || !qSearch.IsEmpty())
@@ -332,7 +338,7 @@ namespace Tango.UI.Std
 		{
 			response.AddClientAction("filterHelper", "setValue", new {
 				id = Filter.ValueName,
-				val = JsonConvert.SerializeObject(Filter.Criteria)
+				val = "[]"
 			});
 			Render(response);
 			RenderToolbar(response);
