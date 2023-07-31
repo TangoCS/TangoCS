@@ -313,7 +313,7 @@ namespace Tango.UI.Std
 			{
 				response.AddClientAction("filterHelper", "setValue", new {
 					id = Filter.ValueName,
-					val = "[]"
+					val = "null"
 				});
 			}
 
@@ -338,7 +338,7 @@ namespace Tango.UI.Std
 		{
 			response.AddClientAction("filterHelper", "setValue", new {
 				id = Filter.ValueName,
-				val = "[]"
+				val = "null"
 			});
 			Render(response);
 			RenderToolbar(response);
