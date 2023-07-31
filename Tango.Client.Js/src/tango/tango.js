@@ -813,12 +813,10 @@ window.ajaxUtils = function ($, cu) {
 							target.data[key] = curStorage[key];
 						}
 					}
-					else if (result == 1) {
-						
-					}
-					else {
-						state.loc.storage.push({});
-					}
+				}
+
+				if (!result && (target.changeloc || target.changeloc_modal)) {
+					state.loc.storage.push({});
 				}
 			}
 			else if (!parms['c-prefix'] && target.containerPrefix) {
@@ -1127,7 +1125,10 @@ window.ajaxUtils = function ($, cu) {
 		if (el.hasAttribute('data-requestgroup'))
 			target.requestgroup = el.getAttribute('data-requestgroup');
 
-		// TODO: доработать для определения модальных контейнеров + обработка открытия модального окна из модального окна.
+		// TODO: доработать
+		// - сделать универсальное определение модальных контейнеров
+		// - обработка открытия модального окна из модального окна.
+		// - перенести обработку backArgs в prepareTarget
 		if (el.hasAttribute('data-c-new') && el.hasAttribute('data-c-type')) {
 			const t = el.getAttribute('data-c-type').toLowerCase();
 
@@ -1143,6 +1144,7 @@ window.ajaxUtils = function ($, cu) {
 						backArgs[key] = target.data[key];
 				}
 				state.loc.onBackArgs.push(backArgs);
+				target.changeloc_modal = true;
 			}
 		}
 
