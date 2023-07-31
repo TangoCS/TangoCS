@@ -424,6 +424,8 @@ window.domActions = function () {
 		},
 		setStorageArg: function (key, val) {
 			sessionStorage.setItem(key, val);
+			if (ajaxUtils.state.loc.storage.length == 0)
+				ajaxUtils.state.loc.storage.push({});
 			ajaxUtils.state.loc.storage[0][key] = val;
 		},
 		include: function (id) {
