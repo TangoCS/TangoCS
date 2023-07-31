@@ -84,7 +84,7 @@ namespace Tango.Tasks
 			{
 				RunTaskController(param);
 			}
-			response.RedirectBack(Context, 1);
+			response.RedirectBack(Context, 1, !IsSubView);
         }
 
         protected virtual void RunTaskController(Dictionary<string, string> param)

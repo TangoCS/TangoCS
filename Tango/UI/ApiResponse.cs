@@ -188,7 +188,7 @@ namespace Tango.UI
 		/// <param name="context"></param>
 		/// <param name="code"></param>
 		/// <param name="changeLoc">Меняется ли адрес, или мы возвращаемся внутри этой же страницы (из модального окна/панели)</param>
-		public void RedirectBack(ActionContext context, int code, bool changeLoc = true)
+		public void RedirectBack(ActionContext context, int code, bool changeLoc)
 		{
 			var retctx = context.ReturnTargetContext(code);
 			if (retctx == null) return;

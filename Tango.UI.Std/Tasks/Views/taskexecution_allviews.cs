@@ -134,7 +134,7 @@ namespace Tango.Tasks
             var date = FormData.Parse<DateTime>("date");
             Repository.Clear(date);
 
-            response.RedirectBack(Context, 1);
+            response.RedirectBack(Context, 1, !IsSubView);
         }
     }
 }

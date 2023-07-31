@@ -139,7 +139,7 @@ namespace Tango.UI.Std
 
 		protected virtual void AfterSubmit(ApiResponse response)
 		{
-			response.RedirectBack(Context, 1);
+			response.RedirectBack(Context, 1, !IsSubView);
 		}
 
 		protected virtual void RenderValidation(ApiResponse response, ValidationMessageCollection m)

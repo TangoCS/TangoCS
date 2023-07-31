@@ -507,7 +507,7 @@ namespace Tango.Tasks
 			var sel = Context.GetListArg<int>(Constants.SelectedValues);
 			Repository.Deactivation(sel);
 
-			response.RedirectBack(Context, 1);
+			response.RedirectBack(Context, 1, !IsSubView);
 		}
 	}
 }

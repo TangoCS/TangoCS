@@ -309,7 +309,7 @@ namespace Tango.UI.Std
 		public override void OnLoad(ApiResponse response)
 		{
 			Filter.LoadPersistent();
-			if (!Filter.PersistentFilter.Name.IsEmpty())
+			if (!Filter.PersistentFilter.Name.IsEmpty() || !Context.AllArgs.ContainsKey(Filter.ValueName))
 			{
 				response.AddClientAction("filterHelper", "setValue", new {
 					id = Filter.ValueName,
