@@ -37,7 +37,7 @@ namespace Tango.UI
 
 		public static void SubmitDeleteButton(this LayoutWriter w, Action<ButtonTagAttributes> attrs = null)
 		{
-			w.SubmitButton(a => a.Class("btn btn-primary").Set(attrs), () => {
+			w.SubmitButton(a => a.Class("btn btn-primary").Set(attrs).DataResult(1), () => {
 				w.Icon("delete");
 				w.Write("&nbsp;");
 				w.Write(w.Resources.Get("Common.Delete"));
