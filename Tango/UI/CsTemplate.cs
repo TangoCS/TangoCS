@@ -181,7 +181,7 @@ namespace Tango.UI
 						uniqueID = formidAttr.Guid;
 					else
 					{
-						var key = Context.Service + "/" + Context.Action + "/" + ClientID;
+						var key = (Context.Service + "/" + Context.Action + "/" + ClientID).ToLower();
 						using (MD5 hasher = MD5.Create())
 							uniqueID = new Guid(hasher.ComputeHash(Encoding.UTF8.GetBytes(key)));
 					}
