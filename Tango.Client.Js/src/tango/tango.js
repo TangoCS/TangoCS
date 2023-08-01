@@ -785,7 +785,7 @@ window.ajaxUtils = function ($, cu) {
 					target.data['returnstate'] = returnstate;
 			}
 
-			if (targetpath != curpath) {
+			if (targetpath.toLowerCase() != curpath.toLowerCase()) {
 				parms['c-new'] = 1;
 				state.loc.arggroups = undefined;
 				if (target.changeloc) {
