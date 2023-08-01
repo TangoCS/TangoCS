@@ -426,7 +426,7 @@ window.domActions = function () {
 			sessionStorage.setItem(key, val);
 			if (ajaxUtils.state.loc.storage.length == 0)
 				ajaxUtils.state.loc.storage.push({});
-			ajaxUtils.state.loc.storage[0][key] = val;
+			ajaxUtils.state.loc.storage[ajaxUtils.state.loc.storage.length - 1][key] = val;
 		},
 		include: function (id) {
 			const i = document.getElementById(id);
@@ -810,7 +810,7 @@ window.ajaxUtils = function ($, cu) {
 						state.loc.storage.pop();
 						if (state.loc.storage.length == 0)
 							state.loc.storage.push({});
-						const curStorage = state.loc.storage[0];
+						const curStorage = state.loc.storage[state.loc.storage.length - 1];
 						for (var key in curStorage) {
 							target.data[key] = curStorage[key];
 						}
