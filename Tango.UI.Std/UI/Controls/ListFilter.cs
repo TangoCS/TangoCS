@@ -324,22 +324,22 @@ namespace Tango.UI.Controls
 			response.AddChildWidget("content", hValue, w => w.Hidden(hValue, SerializedCriteria));
 		}
 
-		public void OnInlineCriterionRemoved(ApiResponse response)
-		{
-			LoadPersistent();
-			var del = Criteria.Where(o => o.GetHashCode().ToString() == Context.GetArg("removedcriterion")).ToList();
-			foreach (var d in del)
-				Criteria.Remove(d);
+		//public void OnInlineCriterionRemoved(ApiResponse response)
+		//{
+		//	LoadPersistent();
+		//	var del = Criteria.Where(o => o.GetHashCode().ToString() == Context.GetArg("removedcriterion")).ToList();
+		//	foreach (var d in del)
+		//		Criteria.Remove(d);
 
 
-			PersistentFilter.Criteria = Criteria;
-			_isPersistentLoaded = true;
+		//	PersistentFilter.Criteria = Criteria;
+		//	_isPersistentLoaded = true;
 
-			PersistentFilter.InsertOnSubmit();
-			//PersistentFilter.SaveCriteria(SaveToDb);
+		//	PersistentFilter.InsertOnSubmit();
+		//	//PersistentFilter.SaveCriteria(SaveToDb);
 
-			FilterSubmitted?.Invoke(response);
-		}
+		//	FilterSubmitted?.Invoke(response);
+		//}
 
 		public void OnClearCriterions(ApiResponse response)
 		{

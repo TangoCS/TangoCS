@@ -260,45 +260,23 @@ namespace Tango.UI.Std
 		private void OnFilter(ApiResponse response)
 		{
 			response.WithNamesAndWritersFor(this);
-			//response.ReplaceWidget("filter_value", w => w.Hidden("filter_value", Filter.SerializedCriteria));
 
-			if (Filter.Criteria.Count > 0)
-			{
-				//if (Context.GetIntArg(Filter.ParameterName) != Filter.PersistentFilter.ID)
-				{
-					//TODO: изменение Context.AllArgs надо бы сделать внутри ChangeUrl
-					Context.AllArgs.Remove(Paging.ParameterName);
-					Context.AllArgs.Remove(_qSearchParmName.Name);
-					//Context.AllArgs[Filter.ParameterName] = Filter.PersistentFilter.ID;
-					Context.AllArgs.Remove(Filter.ParameterName);
-					response.ChangeUrl(
-						new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName.Name },
-						//	new Dictionary<string, object> { [Filter.ParameterName] = Filter.PersistentFilter.ID }
-							null
-					);
-				}
-			}
-			else
-			{
-				//TODO: изменение Context.AllArgs надо бы сделать внутри ChangeUrl
-				Context.AllArgs.Remove(Paging.ParameterName);
-				Context.AllArgs.Remove(_qSearchParmName.Name);
-				//Context.AllArgs[Filter.ParameterName] = 0;
-				Context.AllArgs.Remove(Filter.ParameterName);
-				response.ChangeUrl(
-							new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName.Name },
-							//		new Dictionary<string, object> { [Filter.ParameterName] = 0 }
-									null
-					);
-			}
-
-			Context.ReturnUrl.Clear();
-			Context.ReturnTarget.Clear();
+			//TODO: изменение Context.AllArgs надо бы сделать внутри ChangeUrl
+			Context.AllArgs.Remove(Paging.ParameterName);
+			Context.AllArgs.Remove(_qSearchParmName.Name);
+			Context.AllArgs.Remove(Filter.ParameterName);
+			response.ChangeUrl(
+				new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName.Name },
+				null
+			);
 
 			response.AddClientAction("filterHelper", "setValue", new {
 				id = Filter.ValueName,
 				val = JsonConvert.SerializeObject(Filter.Criteria)
 			});
+
+			if (Context.ReturnTarget.ContainsKey(1))
+				Context.SwitchToReturnTarget(Context.ReturnTarget[1]);
 
 			Paging.PageIndex = 1;
 			Render(response);

@@ -40,7 +40,7 @@ namespace Tango.UI
 		public string RequestMethod { get; set; }
 		public bool IsFirstLoad { get; set; }
 		public bool IsLocalRequest { get; set; }
-		
+
 		// target
 		public string RootReceiver { get; set; }
 		public string Service { get; set; }
@@ -56,7 +56,7 @@ namespace Tango.UI
 		// parameters
 		public DynamicDictionary AllArgs { get; set; }
 		public DynamicDictionary RouteArgs { get; set; }
-		public DynamicDictionary FormData { get; set; }		
+		public DynamicDictionary FormData { get; set; }
 
 		// container
 		public string ContainerType { get; set; }
@@ -149,57 +149,106 @@ namespace Tango.UI
 			}
 		}
 
-		public ActionContext ReturnTargetContext(int code) => 
+		public ActionContext ReturnTargetContext(int code) =>
 			ReturnTarget.ContainsKey(code) ? TargetContext(ReturnTarget[code]) : null;
 
-		public ActionContext TargetContext(ActionTarget target)
+		public void SwitchToReturnTarget(ActionTarget target)
 		{
-			var ctx = MemberwiseClone() as ActionContext;
+			IsFirstLoad = false;
+			Service = target.Service;
+			Action = target.Action;
+			Event = target.Event;
+			EventReceiver = target.EventReceiver;
 
-			ctx.IsFirstLoad = false;
-			ctx.Service = target.Service;
-			ctx.Action = target.Action;
-			ctx.Event = target.Event;
-			ctx.EventReceiver = target.EventReceiver;
-			ctx.RequestMethod = "GET";
+			AddContainer = true;
 
-			ctx.AddContainer = true;
+			ReturnTarget = new Dictionary<int, ActionTarget>();
+			ReturnUrl = new Dictionary<int, string>();
 
-			ctx.ReturnTarget = new Dictionary<int, ActionTarget>();
-			ctx.ReturnUrl = new Dictionary<int, string>();
-
-			ctx.AllArgs.Clear();
-			ctx.FormData.Clear();
+			AllArgs.Clear();
+			FormData.Clear();
 
 			foreach (var p in target.Args)
 			{
 				if (p.Key == Constants.ReturnUrl)
 				{
-					ctx.ReturnUrl[1] = p.Value;
-					ctx.ReturnTarget[1] = ParseReturnUrl(p.Value);
-					if (ctx.ReturnTarget[1].Args.TryGetValue(Constants.ReturnUrl, out string value))
-						ctx.AllArgs.Add(p.Key, value);
+					ReturnUrl[1] = p.Value;
+					ReturnTarget[1] = ParseReturnUrl(p.Value);
+					if (ReturnTarget[1].Args.TryGetValue(Constants.ReturnUrl, out string value))
+						AllArgs.Add(p.Key, value);
 				}
 				else if (p.Key == Constants.EventName)
-					ctx.Event = p.Value.ToString().ToLower();
+					Event = p.Value.ToString().ToLower();
 				else if (p.Key == Constants.EventReceiverName)
-					ctx.EventReceiver = p.Value.ToString().ToLower();
+					EventReceiver = p.Value.ToString().ToLower();
 				else if (p.Key == Constants.ContainerNew)
-					ctx.AddContainer = p.Value == "1";
+					AddContainer = p.Value == "1";
 				else if (p.Key.StartsWith("~"))
 				{
-					ctx.AllArgs.Add(p.Key.Substring(1), p.Value);
-					ctx.FormData.Add(p.Key.Substring(1), p.Value);
+					AllArgs.Add(p.Key.Substring(1), p.Value);
+					FormData.Add(p.Key.Substring(1), p.Value);
 				}
 				else
 				{
-					ctx.AllArgs.Add(p.Key, p.Value);
+					AllArgs.Add(p.Key, p.Value);
 				}
 			}
 
-			ctx.Sender = null;
-			ctx.ContainerType = null;
-			ctx.ContainerPrefix = null;
+			Sender = null;
+			ContainerType = null;
+			ContainerPrefix = null;
+		}
+
+		public ActionContext TargetContext(ActionTarget target)
+		{
+			var ctx = MemberwiseClone() as ActionContext;
+
+			ctx.SwitchToReturnTarget(target);
+
+			//ctx.IsFirstLoad = false;
+			//ctx.Service = target.Service;
+			//ctx.Action = target.Action;
+			//ctx.Event = target.Event;
+			//ctx.EventReceiver = target.EventReceiver;
+			//ctx.RequestMethod = "GET";
+
+			//ctx.AddContainer = true;
+
+			//ctx.ReturnTarget = new Dictionary<int, ActionTarget>();
+			//ctx.ReturnUrl = new Dictionary<int, string>();
+
+			//ctx.AllArgs.Clear();
+			//ctx.FormData.Clear();
+
+			//foreach (var p in target.Args)
+			//{
+			//	if (p.Key == Constants.ReturnUrl)
+			//	{
+			//		ctx.ReturnUrl[1] = p.Value;
+			//		ctx.ReturnTarget[1] = ParseReturnUrl(p.Value);
+			//		if (ctx.ReturnTarget[1].Args.TryGetValue(Constants.ReturnUrl, out string value))
+			//			ctx.AllArgs.Add(p.Key, value);
+			//	}
+			//	else if (p.Key == Constants.EventName)
+			//		ctx.Event = p.Value.ToString().ToLower();
+			//	else if (p.Key == Constants.EventReceiverName)
+			//		ctx.EventReceiver = p.Value.ToString().ToLower();
+			//	else if (p.Key == Constants.ContainerNew)
+			//		ctx.AddContainer = p.Value == "1";
+			//	else if (p.Key.StartsWith("~"))
+			//	{
+			//		ctx.AllArgs.Add(p.Key.Substring(1), p.Value);
+			//		ctx.FormData.Add(p.Key.Substring(1), p.Value);
+			//	}
+			//	else
+			//	{
+			//		ctx.AllArgs.Add(p.Key, p.Value);
+			//	}
+			//}
+
+			//ctx.Sender = null;
+			//ctx.ContainerType = null;
+			//ctx.ContainerPrefix = null;
 			
 
 			return ctx;
