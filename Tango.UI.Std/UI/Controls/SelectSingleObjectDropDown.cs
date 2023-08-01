@@ -58,6 +58,7 @@ namespace Tango.UI.Controls
 						w.A(a => {
 							a.Class("close").OnClick($"{ctrlName}Field.clear(this)");
 							if (Field.PostOnClearEvent) a.DataEvent(OnClear);
+							a.Data(Field.DataCollection);
 						}, () => w.Icon("close"));
 					}
 				});
