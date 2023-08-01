@@ -698,22 +698,6 @@ window.ajaxUtils = function ($, cu) {
 			target.changeloc = true;
 			instance.runEventFromElementWithApiResponse(a, target);
 		},
-		//loadScripts: function (apiResult) {
-		//	if (!apiResult) return $.Deferred().resolve(apiResult);
-		//	var deferreds = [];
-		//	var toLoad = apiResult instanceof Array ? apiResult : apiResult.includes;
-
-		//	var r = $.Deferred();
-		//	if (toLoad && toLoad.length > 0) {
-		//		loadScript(r, toLoad, 0);
-		//		return r.then(function () {
-		//			console.log('loadScripts done');
-		//			return $.Deferred().resolve(apiResult);
-		//		});
-		//	}
-		//	else
-		//		return r.resolve(apiResult);
-		//},
 		prepareTarget: function (target) {
 			var parms = {};
 
@@ -856,19 +840,34 @@ window.ajaxUtils = function ($, cu) {
 				const inst = state.ctrl[ctrlid];
 
 				if (inst.onResult)
-					inst.onResult(result);
+					return inst.onResult(result);
 				else if (window[t] && window[t]['onResult']) {
 					return window[t]['onResult'](result, inst);
 				}
 			};
 
+			const processChangeLoc = function (ctrl) {
+				// обработка закрытия модальных окон по кнопке "Назад"
+				// TODO: переделать в будущем с использованием идентификатора узла навигации
+				const href = ctrl.getAttribute('data-href');
+				if (href && (new URL(location.origin + href)).pathname != location.pathname) {
+					state.loc.storage.pop();
+				}
+			}
+
 			const children = handler.querySelectorAll('[data-ctrl]');
 
 			for (var i = 0; i < children.length; i++) {
-				if (callOnResult(children[i]) == false) return false;
+				if (callOnResult(children[i]) == false) {
+					processChangeLoc(children[i]);
+					return false;
+				}
 			}
 
-			if (callOnResult(handler) == false) return false;
+			if (callOnResult(handler) == false) {
+				processChangeLoc(handler);
+				return false;
+			}
 		},
 		findServiceAction: function (el) {
 			var root = el;
