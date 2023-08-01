@@ -178,11 +178,11 @@ namespace Tango.Html
 			return a.Data("ref", clientid, false);
 		}
 
-		public static T DataRef<T>(this TagAttributes<T> a, IViewElement element)
-			where T : TagAttributes<T>
-		{
-			return a.Data("ref", element.ClientID, false);
-		}
+		//public static T DataRef<T>(this TagAttributes<T> a, IViewElement element)
+		//	where T : TagAttributes<T>
+		//{
+		//	return a.Data("ref", element.ClientID, false);
+		//}
 
 		public static T DataRefSessionStorage<T>(this TagAttributes<T> a, string id)
 			where T : TagAttributes<T>

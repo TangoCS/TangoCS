@@ -133,8 +133,8 @@ namespace Tango.UI.Controls
 
 		//bool SaveToDb => false;
 
-		public bool AllArgsAreEmpty => (PersistentFilter.ID == 0 && Context.GetArg(ParameterName) == null && 
-			Context.GetArg("ddlfield") == null && 
+		public bool AllArgsAreEmpty => (PersistentFilter.ID == 0 && Context.GetArg(ParameterName) == null &&
+			Context.GetArg("ddlfield") == null &&
 			Context.GetArg(ValueName) == null);
 
 		public void LoadPersistent()
@@ -162,7 +162,7 @@ namespace Tango.UI.Controls
 			if (!loaded)
 				loaded = PersistentFilter.Load(id);
 
-			if (!loaded && id == null && (AllowDefaultFilters?.Invoke() ?? true)) 
+			if (!loaded && id == null && (AllowDefaultFilters?.Invoke() ?? true))
 				loaded = PersistentFilter.LoadDefault(ListName, "", ListName_ID);
 
 			if (loaded)
@@ -378,8 +378,8 @@ namespace Tango.UI.Controls
 		{
 			List<SelectListItem> cond = new List<SelectListItem>();
 			foreach (string op in field.Operators.Keys)
-                cond.Add(new SelectListItem {Selected = op.Contains("содержит") ? true : false, Text = op, Value = op,});
-            return cond;
+				cond.Add(new SelectListItem { Selected = op.Contains("содержит") ? true : false, Text = op, Value = op, });
+			return cond;
 		}
 
 		void RenderSelectedFields(LayoutWriter w, bool readOnly = false)
@@ -410,8 +410,7 @@ namespace Tango.UI.Controls
 				var field = FieldList[f];
 				var op = field.Operators[cond];
 
-				item = new FilterItem
-				{
+				item = new FilterItem {
 					Title = field.Title,
 					Condition = cond,
 					FieldType = op.FieldType,
@@ -443,7 +442,7 @@ namespace Tango.UI.Controls
 			}
 			else
 			{
-				response.AddWidget(eValidation, w => w.Write("")); 
+				response.AddWidget(eValidation, w => w.Write(""));
 			}
 
 			return (item, v.Count == 0);
@@ -510,7 +509,7 @@ namespace Tango.UI.Controls
 					w.FormField("", "", () => {
 						w.CheckBox("isdefault", formData.IsDefault);
 						w.Label("isdefault", Resources.Get("System.Filter.Tabs.Properties.DefaultView"));
-					});					
+					});
 				});
 				filterTab(w);
 			});
@@ -566,12 +565,12 @@ namespace Tango.UI.Controls
 				var views = PersistentFilter.GetViews(ListName, Context.AllArgs);
 				LoadPersistent();
 
-				w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, 0).WithTitle(r => r.Get("Common.AllItems")), 
+				w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, 0).WithTitle(r => r.Get("Common.AllItems")),
 					a => a.Data(DataCollection).DataContainerExternal(ParentElement.ClientID).DataEvent("onsetview", ParentElement.ClientID));
 
 				foreach (var view in views)
 				{
-					void link() => w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, view.ID).WithTitle(view.Name), 
+					void link() => w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, view.ID).WithTitle(view.Name),
 						a => a.Data(DataCollection).DataContainerExternal(ParentElement.ClientID).DataEvent("onsetview", ParentElement.ClientID));
 					if (view.IsDefault)
 						w.B(link);
@@ -592,7 +591,7 @@ namespace Tango.UI.Controls
 				if (Criteria.Count(c => !c.IsProgram) > 0)
 				{
 					w.ActionImageLink(a => a.CallbackToCurrent().AsDialog(OpenSaveAsDialog).WithImage("newview")
-						.WithTitle(r => r.Get("System.Filter.SaveAs")), a => a.DataRefSessionStorage(ValueName));
+						.WithTitle(r => r.Get("System.Filter.SaveAs")), a => a.DataRef(this));
 				}
 			});
 		}
@@ -639,10 +638,10 @@ namespace Tango.UI.Controls
 			public static string String(FilterItem item) => item.Value.IsEmpty() ? "\"\"" : item.Value;
 			public static string Numeric(FilterItem item) => item.Value;
 			public static string Date(FilterItem item) => item.Condition == "d" ? item.Value : !item.Value.IsEmpty() ? item.Value : "нет";
-            public static string Guid(FilterItem item) => item.Value;
-        }
+			public static string Guid(FilterItem item) => item.Value;
+		}
 
-        string StringValueBoolean(FilterItem item) => item.Value == "True" ?
+		string StringValueBoolean(FilterItem item) => item.Value == "True" ?
 				Resources.Get("System.Filter.Yes") :
 				Resources.Get("System.Filter.No");
 
@@ -730,17 +729,16 @@ namespace Tango.UI.Controls
 				StringValue = StringValueBoolean
 			};
 
-        FieldCriterion FieldCriterionGuid(int seqNo, object column) =>
-            new FieldCriterion
-            {
-                Column = column,
-                FieldType = FieldType.Guid,
+		FieldCriterion FieldCriterionGuid(int seqNo, object column) =>
+			new FieldCriterion {
+				Column = column,
+				FieldType = FieldType.Guid,
 				FieldName = eFieldValue + seqNo,
 				Renderer = Renderers.TextBox(seqNo),
-                StringValue = StringValues.Guid
-            };
+				StringValue = StringValues.Guid
+			};
 
-        public int AddConditionString(string title, string opname, Expression<Func<T, string, bool>> column)
+		public int AddConditionString(string title, string opname, Expression<Func<T, string, bool>> column)
 		{
 			var f = CreateOrGetCondition(title);
 			var data = FieldCriterionString(f.SeqNo, column);
@@ -761,7 +759,7 @@ namespace Tango.UI.Controls
 			return f.SeqNo;
 		}
 
-		public int AddConditionDDL<TVal>(string title, string opname, Expression<Func<T, TVal, bool>> column, 
+		public int AddConditionDDL<TVal>(string title, string opname, Expression<Func<T, TVal, bool>> column,
 			IEnumerable<SelectListItem> values)
 		{
 			var f = CreateOrGetCondition(title);
@@ -810,8 +808,7 @@ namespace Tango.UI.Controls
 			else
 				throw new Exception($"SelectMultipleObjects condition: {t.Name} key is not supported");
 
-			var data = new FieldCriterion
-			{
+			var data = new FieldCriterion {
 				Column = column,
 				FieldType = fieldType,
 				FieldName = dialog.ID,
@@ -892,7 +889,7 @@ namespace Tango.UI.Controls
 			}
 			else
 				throw new Exception($"Field type {t.Name} not supported");
-			
+
 			return f.SeqNo;
 		}
 
@@ -986,5 +983,12 @@ namespace Tango.UI.Controls
 		#endregion
 	}
 
-	
+	public static class ListFilterExtensions
+	{
+		public static T DataRef<T>(this TagAttributes<T> a, ListFilter filter)
+			where T: TagAttributes<T>
+		{
+			return a.DataRefSessionStorage(filter.ValueName);
+		}
+	}
 }

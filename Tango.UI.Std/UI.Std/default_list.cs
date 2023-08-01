@@ -228,8 +228,8 @@ namespace Tango.UI.Std
 						ItemsCount = _itemsCount,
 						PageActionAttributes = a => a.RunEvent(OnSetPage),
 						ObjCountActionAttributes = a => a.PostEvent(OnGetObjCount),
-						GoToPageActionAttributes = a => a.OnEnterPostEvent(OnSetPage).DataRefSessionStorage(Filter.ValueName),
-						SetPageSizeActionAttributes = a => a.DataEvent(OnSetPage).OnChangeRunHref().DataRefSessionStorage(Filter.ValueName)
+						GoToPageActionAttributes = a => a.OnEnterPostEvent(OnSetPage).DataRef(Filter),
+						SetPageSizeActionAttributes = a => a.DataEvent(OnSetPage).OnChangeRunHref().DataRef(Filter)
 					};
 					PagingRenderer.Render(Paging, w, opt);
 				});
