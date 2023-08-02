@@ -846,26 +846,22 @@ window.ajaxUtils = function ($, cu) {
 				}
 			};
 
-			const processChangeLoc = function (ctrl) {
-				// обработка закрытия модальных окон по кнопке "Назад"
-				// TODO: переделать в будущем с использованием идентификатора узла навигации
-				const href = ctrl.getAttribute('data-href');
-				if (href && (new URL(location.origin + href)).pathname != location.pathname) {
-					state.loc.storage.pop();
-				}
+			// обработка закрытия модальных окон по кнопке "Назад"
+			// TODO: переделать в будущем с использованием идентификатора узла навигации
+			const href = handler.getAttribute('data-href');
+			if (href && (new URL(location.origin + href)).pathname != location.pathname) {
+				state.loc.storage.pop();
 			}
 
 			const children = handler.querySelectorAll('[data-ctrl]');
 
 			for (var i = 0; i < children.length; i++) {
 				if (callOnResult(children[i]) == false) {
-					processChangeLoc(children[i]);
 					return false;
 				}
 			}
 
 			if (callOnResult(handler) == false) {
-				processChangeLoc(handler);
 				return false;
 			}
 		},
