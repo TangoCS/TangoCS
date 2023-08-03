@@ -738,7 +738,7 @@ namespace Tango.UI.Controls
 				StringValue = StringValues.Guid
 			};
 
-		public int AddConditionString(string title, string opname, Expression<Func<T, string, bool>> column)
+		public int AddConditionString(string title, string opname, Expression<Func<T, string>> column)
 		{
 			var f = CreateOrGetCondition(title);
 			var data = FieldCriterionString(f.SeqNo, column);
