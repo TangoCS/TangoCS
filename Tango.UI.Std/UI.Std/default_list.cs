@@ -170,6 +170,7 @@ namespace Tango.UI.Std
 
 			DataCollection.RefSessionStorage(Filter.ValueName);
 			Sorter.DataCollection.RefSessionStorage(Filter.ValueName);
+			Paging.DataCollection.RefSessionStorage(Filter.ValueName);
 		}
 
 		public virtual void PrepareResult()
@@ -291,7 +292,9 @@ namespace Tango.UI.Std
 			{
 				response.AddClientAction("filterHelper", "setValue", new {
 					id = Filter.ValueName,
-					val = "null"
+					val = Context.AllArgs.ContainsKey("defaultcriteria") ? 
+						JsonConvert.SerializeObject(Filter.Criteria) : 
+						"null"
 				});
 			}
 
