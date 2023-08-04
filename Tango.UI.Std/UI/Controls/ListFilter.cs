@@ -539,7 +539,7 @@ namespace Tango.UI.Controls
 		{
 			LoadPersistent();
 			PersistentFilter.DeleteView();
-			OnViewSubmit(response);
+			Criteria = null;
 		}
 
 		public void OnViewSubmit(ApiResponse response)
@@ -593,7 +593,7 @@ namespace Tango.UI.Controls
 					w.ActionImageLink(a => a.CallbackToCurrent().AsDialog(UpdateViewDialog).WithImage("viewsettings")
 						.WithTitle(r => r.Get("System.Filter.UpdateView")), a => a.DataRef(this));
 
-					w.ActionImageLink(a => a.ToCurrent().WithArg(ParameterName, PersistentFilter.ID).WithImage("deleteview")
+					w.ActionImageLink(a => a.WithArg(ParameterName, PersistentFilter.ID).WithImage("deleteview")
 						.WithTitle(r => r.Get("System.Filter.DeleteView")),
 						a => a.Data(DataCollection).DataContainerExternal(ParentElement.ClientID)
 						.DataRef(this)

@@ -326,6 +326,17 @@ namespace Tango.UI.Std
 		public void OnDeleteView(ApiResponse response)
 		{
 			Filter.OnDeleteView(response);
+			response.AddClientAction("filterHelper", "setValue", new {
+				id = Filter.ValueName,
+				val = "null"
+			});
+			response.ChangeUrl(
+				new List<string> { Filter.ParameterName },
+				null
+			);
+			Render(response);
+			RenderToolbar(response);
+			AfterRender(response);
 		}
 
 		public void OnQuickSearch(ApiResponse response)
