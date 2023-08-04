@@ -264,9 +264,9 @@ namespace Tango.UI.Std
 			//TODO: изменение Context.AllArgs надо бы сделать внутри ChangeUrl
 			Context.AllArgs.Remove(Paging.ParameterName);
 			Context.AllArgs.Remove(_qSearchParmName.Name);
-			Context.AllArgs.Remove(Filter.ParameterName);
+			//Context.AllArgs.Remove(Filter.ParameterName);
 			response.ChangeUrl(
-				new List<string> { Filter.ParameterName, Paging.ParameterName, _qSearchParmName.Name },
+				new List<string> { /*Filter.ParameterName,*/ Paging.ParameterName, _qSearchParmName.Name },
 				null
 			);
 

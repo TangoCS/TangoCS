@@ -141,29 +141,36 @@ namespace Tango.UI.Controls
 		{
 			if (_isPersistentLoaded) return;
 
-			var id = Context.GetIntArg(ParameterName);
+			var criteria = Context.GetJsonArg<List<FilterItem>>(ValueName);
+			LoadPersistentImpl(criteria);
+		}
+
+		void LoadPersistentImpl(List<FilterItem> localCriteria)
+		{
+			var criteria = localCriteria;
 
 			var loaded = false;
+			var id = Context.GetIntArg(ParameterName);
 			if (id == null || id == 0)
 			{
-				var criteria = Context.GetJsonArg<List<FilterItem>>(ValueName);
 				if (criteria == null)
 					criteria = Context.GetJsonArg<List<FilterItem>>("defaultcriteria");
 				if (criteria == null && DefaultCriteria.Count > 0)
 					criteria = DefaultCriteria;
-
-				if (criteria != null)
-				{
-					PersistentFilter.Criteria = criteria;
-					loaded = true;
-				}
 			}
-
-			if (!loaded)
+			else
+			{
 				loaded = PersistentFilter.Load(id);
+			}
 
 			if (!loaded && id == null && (AllowDefaultFilters?.Invoke() ?? true))
 				loaded = PersistentFilter.LoadDefault(ListName, "", ListName_ID);
+
+			if (criteria != null)
+			{
+				PersistentFilter.Criteria = criteria;
+				loaded = true;
+			}
 
 			if (loaded)
 			{
@@ -355,12 +362,12 @@ namespace Tango.UI.Controls
 			var (item, success) = ProcessSubmit(response);
 			if (!success) return;
 
-			PersistentFilter.Load(Context.GetIntArg(ParameterName));
+			LoadPersistentImpl(Criteria);
 
-			PersistentFilter.Criteria = Criteria;
-			_isPersistentLoaded = true;
+			//PersistentFilter.Load(Context.GetIntArg(ParameterName));
+			//PersistentFilter.Criteria = Criteria;
+			//_isPersistentLoaded = true;
 
-			//PersistentFilter.SaveCriteria(SaveToDb);
 
 			var f = Context.GetIntArg(ddlField, -1);
 			if (f >= 0)
@@ -583,10 +590,14 @@ namespace Tango.UI.Controls
 
 				if (!PersistentFilter.Name.IsEmpty())
 				{
-					w.ActionImageLink(a => a.CallbackToCurrent().AsDialog(UpdateViewDialog).WithImage("viewsettings").WithTitle(r => r.Get("System.Filter.UpdateView")));
+					w.ActionImageLink(a => a.CallbackToCurrent().AsDialog(UpdateViewDialog).WithImage("viewsettings")
+						.WithTitle(r => r.Get("System.Filter.UpdateView")), a => a.DataRef(this));
 
-					w.ActionImageLink(a => a.ToCurrent().WithArg(ParameterName, PersistentFilter.ID).WithImage("deleteview").WithTitle(r => r.Get("System.Filter.DeleteView")),
-						a => a.Data(DataCollection).DataContainerExternal(ParentElement.ClientID).DataEvent("ondeleteview", ParentElement.ClientID));
+					w.ActionImageLink(a => a.ToCurrent().WithArg(ParameterName, PersistentFilter.ID).WithImage("deleteview")
+						.WithTitle(r => r.Get("System.Filter.DeleteView")),
+						a => a.Data(DataCollection).DataContainerExternal(ParentElement.ClientID)
+						.DataRef(this)
+						.DataEvent("ondeleteview", ParentElement.ClientID));
 				}
 				if (Criteria.Count(c => !c.IsProgram) > 0)
 				{
