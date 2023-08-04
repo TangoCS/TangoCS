@@ -47,5 +47,20 @@ namespace Tango.Identity.Std
 		{
 			throw new NotImplementedException();
 		}
+
+		public void SetSecurityStamp(long id, string securityStamp)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetNewPassword(long id, string newHash)
+		{
+			throw new NotImplementedException();
+		}
+
+		public IdentityUser UserFromSecurityStamp(string securityStamp)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

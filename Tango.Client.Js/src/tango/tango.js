@@ -1722,7 +1722,7 @@ window.ajaxUtils = function ($, cu) {
 		setTimeout(function () {
 			if (state.com.request.default) state.com.message.css('display', 'block');
 		}, 100);
-		document.body.className = '';
+		//document.body.className = '';
 
 		window.addEventListener('popstate', function (event) {
 			const s = window.history.state;

@@ -122,6 +122,8 @@ namespace Tango.Identity
 		/// </summary>
 		public virtual ICollection<TLogin> Logins { get; } = new List<TLogin>();
 
+		public virtual int LoginTypeID { get; set; }
+
 		/// <summary>
 		/// Returns the username for this user.
 		/// </summary>

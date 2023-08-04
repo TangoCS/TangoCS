@@ -76,32 +76,6 @@ namespace Tango.Identity.Std
 		}
 
 		[AllowAnonymous]
-		[HttpGet]
-		public virtual ActionResult PasswordReset()
-		{
-			var res = new ApiResult();
-			res.ApiResponse.AddWidget("content", w => {
-				w.H2(Resources.Get("Account.PasswordResetTitle"));
-				w.P(Resources.Get("Account.PasswordResetHint"));
-				w.AjaxForm("form", true, a => a.Action("/account/passwordreset"), () => {
-					w.Label("emailAddress", Resources.Get("Account.Email"));
-					w.TextBox("emailAddress", null, a => a.Autocomplete(false).Placeholder(Resources.Get("Account.Email.Placeholder")));
-					w.SubmitButton(text: Resources.Get("Account.SignIn"));
-					w.A(a => a.Href("/account/login?ReturnUrl=%2F"), Resources.Get("Common.Back"));
-					w.Span(a => a.Class("err").ID("err"), "");
-				});
-			});
-			return res;
-		}
-
-		[AllowAnonymous]
-		[HttpPost]
-		public virtual ActionResult PasswordReset(string emailAddress)
-		{
-			return RedirectBack();
-		}
-
-		[AllowAnonymous]
 		[HttpPost]
 		public virtual ActionResult Login(string returnUrl)
 		{

@@ -159,21 +159,7 @@ namespace Tango.UI.Std
 			//	a.ID("head").Data("x-csrf-token", tokenString).Data("page", GetType().Name.ToLower());
 			//}
 
-			w.DocType();
-			w.Html(() => {
-				w.Head(a => a.ID("head").Data("page", GetType().Name.ToLower()), () => {
-					w.HeadTitle(a => a.ID("title"));
-					w.HeadMeta(a => a.HttpEquiv("content-type").Content("text/html; charset=utf-8"));
-					var r = DefaultView?.Resolve(Context);
-					w.HeadMeta(a => a.ID(Constants.MetaHome).Data("href", "/").Data("alias", r?.Result.ToString()));
-					w.HeadMeta(a => a.ID(Constants.MetaCurrent));
-					w.HeadMeta(a => a.Name("viewport").Content("width=device-width"));
-					HeadContent(w);
-				});
-				w.Body(a => a.ID("body"), () => {
-					Body(w);
-				});
-			});
+			Html(w);
 
 			if (w.AllowModify)
 				RenderView(w);
@@ -256,7 +242,25 @@ namespace Tango.UI.Std
 
 			}
 		}
-		
+
+		protected virtual void Html(HtmlWriter w)
+		{
+			w.DocType();
+			w.Html(() => {
+				w.Head(a => a.ID("head").Data("page", GetType().Name.ToLower()), () => {
+					w.HeadTitle(a => a.ID("title"));
+					w.HeadMeta(a => a.HttpEquiv("content-type").Content("text/html; charset=utf-8"));
+					var r = DefaultView?.Resolve(Context);
+					w.HeadMeta(a => a.ID(Constants.MetaHome).Data("href", "/").Data("alias", r?.Result.ToString()));
+					w.HeadMeta(a => a.ID(Constants.MetaCurrent));
+					w.HeadMeta(a => a.Name("viewport").Content("width=device-width"));
+					HeadContent(w);
+				});
+				w.Body(a => a.ID("body"), () => {
+					Body(w);
+				});
+			});
+		}
 		protected abstract void Body(HtmlWriter w);
 		protected abstract void HeadContent(HtmlWriter w);
 	}
