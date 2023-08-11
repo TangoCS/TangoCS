@@ -9,6 +9,7 @@ using Tango.Localization;
 using System.Net;
 using Tango.UI.Std;
 using System.ComponentModel;
+using System.Xml.Linq;
 
 namespace Tango.UI.Controls
 {
@@ -1000,6 +1001,24 @@ namespace Tango.UI.Controls
 			where T: TagAttributes<T>
 		{
 			return a.DataRefSessionStorage(filter.ValueName);
+		}
+
+		public static void ActionTargetBlankWithFilter(this LayoutWriter w, Action<ActionLink> urlAttributes, string filterElementID, 
+			List<FilterItem> criteria, Action content, Action<FormTagAttributes> formAttrs = null)
+		{
+			var name = new InputName {
+				ID = $"filter_{filterElementID}",
+				Name = "defaultcriteria"
+			};
+
+			var al = new ActionLink(w.Context);
+			urlAttributes(al);
+
+			w.Form(a => a.Method(Method.Post).Target(Target._blank).Action(al.Url)
+				.EncType("multipart/form-data").Set(formAttrs), () => {
+				w.Hidden(name, JsonConvert.SerializeObject(criteria));
+				w.A(a => a.OnClick($"this.closest('form').submit();"), content);
+			});
 		}
 	}
 }
