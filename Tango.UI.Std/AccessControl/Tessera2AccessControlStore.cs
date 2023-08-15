@@ -4,14 +4,15 @@ using System.Data;
 using System.Linq;
 using System.Security.Principal;
 using Dapper;
+using Tango.Identity;
 using Tango.Identity.Std;
 
 namespace Tango.AccessControl.Std
 {
 	public class Tessera2AccessControlStoreBase<T> : RoleBasedAccessControlStoreBase<T>, ICacheableRoleBasedAccessControlStore<T>
 	{
-		public Tessera2AccessControlStoreBase(IDbConnection dc, IIdentity identity, IIdentityManager identityManager) :
-			base(dc, identity, identityManager)
+		public Tessera2AccessControlStoreBase(IDbConnection dc, IIdentity identity, IUserIdAccessor<long> userIdAccessor) :
+			base(dc, identity, userIdAccessor)
 		{
 			
 		}
@@ -19,7 +20,7 @@ namespace Tango.AccessControl.Std
 		protected override IEnumerable<IdentityRole<T>> CurrentUserRoles()
 		{
 			List<T> r = null;
-			var id = _identityManager.CurrentUser.Id;
+			var id = _userIdAccessor.CurrentUserID;
 			if (_identity is WindowsIdentity wi && !wi.IsAnonymous)
 			{
 				var groupNames = wi.Groups.Select(x => "'" + x.Value + "'");

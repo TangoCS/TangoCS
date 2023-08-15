@@ -8,7 +8,7 @@ namespace Tango.Identity
 	where TKey : IEquatable<TKey>
 	{
 		IIdentityStore<TUser, TKey> _dataContext;
-		IIdentity _user;
+		protected IIdentity _user;
 		TUser _currentUser = null;
 
 		public IIdentityOptions Options { get; private set; }

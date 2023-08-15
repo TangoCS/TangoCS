@@ -417,6 +417,9 @@
 					return;
 				}
 
+				if (option.width == 'trigger') {
+					cssObj.width = triggerWidth;
+				}
 				//if (parentMenu) {
 				//cssObj.left = parentMenu.style.left;
 				//cssObj.top = parentMenu.style.top;

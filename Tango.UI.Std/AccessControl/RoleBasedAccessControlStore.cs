@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Principal;
 using Dapper;
+using Tango.Identity;
 using Tango.Identity.Std;
 
 namespace Tango.AccessControl.Std
@@ -12,13 +14,13 @@ namespace Tango.AccessControl.Std
 	{
 		protected IDbConnection _dc;
 		protected IIdentity _identity;
-		protected IIdentityManager _identityManager;
+		protected IUserIdAccessor<long> _userIdAccessor;
 
-		public RoleBasedAccessControlStoreBase(IDbConnection dc, IIdentity identity, IIdentityManager identityManager)
+		public RoleBasedAccessControlStoreBase(IDbConnection dc, IIdentity identity, IUserIdAccessor<long> userIdAccessor)
 		{
 			_dc = dc;
 			_identity = identity;
-			_identityManager = identityManager;
+			_userIdAccessor = userIdAccessor;
 		}
 
 		static List<IdentityRole<T>> _allRoles = null;
@@ -29,22 +31,36 @@ namespace Tango.AccessControl.Std
 			return _allRoles;
 		}
 
-		//public IdentityRole<T> RoleFromID(T id)
-		//{
-		//	return GetAllRoles().FirstOrDefault(o => o.Id.Equals(id));
-		//}
-
 		protected virtual IEnumerable<IdentityRole<T>> CurrentUserRoles()
 		{
 			List<T> r = null;
-			var id = _identityManager.CurrentUser.Id;
 			if (_identity is WindowsIdentity wi && !wi.IsAnonymous)
 			{
 				var groupNames = wi.Groups.Select(x => "'" + x.Value + "'");
-				r = _dc.Query<T>("select RoleID from V_AccessControl_SubjectRole where SubjectID = @p1 union select RoleID from SPM_Role where SID in (" + groupNames.Join(",") + ")", new { p1 = id }).ToList();
+				r = _dc.Query<T>("select RoleID from V_AccessControl_SubjectRole where SubjectID = @p1 union select RoleID from SPM_Role where SID in (" + groupNames.Join(",") + ")", 
+					new { p1 = _userIdAccessor.CurrentUserID }).ToList();
 			}
-			else
-				r = _dc.Query<T>("select RoleID from V_AccessControl_SubjectRole where SubjectID = @p1", new { p1 = id }).ToList();
+			else if (_identity is ClaimsIdentity ci)
+			{
+				var roleClaim = ci.Claims.Where(x => x.Type == ClaimTypes.Role).FirstOrDefault();
+				if (roleClaim != null)
+				{
+					if (typeof(T) == typeof(int))
+						r = roleClaim.Value.Split(',').Select(x => x.ToInt32(0)).Cast<T>().ToList();
+					else if(typeof(T) == typeof(string))
+						r = roleClaim.Value.Split(',').Cast<T>().ToList();
+					else if (typeof(T) == typeof(Guid))
+						r = roleClaim.Value.Split(',').Select(x => Guid.Parse(x)).Cast<T>().ToList();
+					else if (typeof(T) == typeof(long))
+						r = roleClaim.Value.Split(',').Select(x => x.ToInt64(0)).Cast<T>().ToList();
+				}
+			}
+
+			if (r == null)
+			{
+				r = _dc.Query<T>("select RoleID from V_AccessControl_SubjectRole where SubjectID = @p1", 
+					new { p1 = _userIdAccessor.CurrentUserID }).ToList();
+			}
 
 			return GetAllRoles().Where(o => r.Contains(o.Id));
 		}
@@ -72,8 +88,8 @@ namespace Tango.AccessControl.Std
 
 	public class CacheableRoleBasedAccessControlStore<T> : RoleBasedAccessControlStoreBase<T>, ICacheableRoleBasedAccessControlStore<T>
 	{
-		public CacheableRoleBasedAccessControlStore(IDbConnection dc, IIdentity identity, IIdentityManager identityManager) : 
-			base(dc, identity, identityManager)
+		public CacheableRoleBasedAccessControlStore(IDbConnection dc, IIdentity identity, IUserIdAccessor<long> userIdAccessor) : 
+			base(dc, identity, userIdAccessor)
 		{
 
 		}
