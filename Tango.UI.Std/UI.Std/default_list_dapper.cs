@@ -53,7 +53,10 @@ namespace Tango.UI.Std
 
 			var defSort = Sorter.Count == 0;
 			foreach (var gs in Fields.GroupSorting)
-				Sorter.AddOrderBy(gs.SeqNo, gs.SortDesc, true);
+				if (gs.GroupFirst)
+					Sorter.InsertOrderBy(gs.SeqNo, gs.SortDesc, true);
+				else
+					Sorter.AddOrderBy(gs.SeqNo, gs.SortDesc, true);
 
 			var q = Sorter.Apply(ApplyFilter(Data));
 			if (defSort)

@@ -38,7 +38,7 @@ namespace Tango.UI.Std
 		List<ListGroupSorting> GroupSorting { get; }
 
 		IColumnHeader AddHeader(Action<ThTagAttributes> attrs, string title, HeaderOptions options);
-		void AddGroupSorting(LambdaExpression expr, bool sortDesc = false);
+		void AddGroupSorting(LambdaExpression expr, bool sortDesc = false, bool groupFirst = false);
 
 		int AddSort(LambdaExpression expr);
 		int AddFilterCondition<T>(string title, Expression<Func<TEntity, T>> expr);
@@ -177,9 +177,9 @@ namespace Tango.UI.Std
 			return columnHeader;
 		}
 
-		public void AddGroupSorting(LambdaExpression expr, bool sortDesc = false)
+		public void AddGroupSorting(LambdaExpression expr, bool sortDesc = false, bool groupFirst = false)
 		{
-			GroupSorting.Add(new ListGroupSorting { SeqNo = AddSort(expr), SortDesc = sortDesc });
+			GroupSorting.Add(new ListGroupSorting { SeqNo = AddSort(expr), SortDesc = sortDesc, GroupFirst = groupFirst });
 		}
 
 		public int AddFilterCondition<T>(string title, Expression<Func<TEntity, T>> expr)
@@ -902,10 +902,10 @@ namespace Tango.UI.Std
 
 		#region groups
 		public static ListGroup<TResult> AddGroup<TEntity, TResult, T>(this IFieldCollection<TEntity, TResult> f, Func<TResult, string> value,
-			Expression<Func<TEntity, T>> sortExpression, RenderGroupCellDelegate<TResult> cell, bool sortDesc = false)
+			Expression<Func<TEntity, T>> sortExpression, RenderGroupCellDelegate<TResult> cell, bool sortDesc = false, bool groupFirst = false)
 		{
 			var g = f.AddGroup(value, cell);
-			f.AddGroupSorting(sortExpression, sortDesc);
+			f.AddGroupSorting(sortExpression, sortDesc, groupFirst);
 			return g;
 		}
 		

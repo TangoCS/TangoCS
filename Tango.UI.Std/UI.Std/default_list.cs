@@ -578,6 +578,7 @@ namespace Tango.UI.Std
 	{
 		public int SeqNo;
 		public bool SortDesc;
+		public bool GroupFirst;
 	}
 
 	public class RowInfo<TResult>
