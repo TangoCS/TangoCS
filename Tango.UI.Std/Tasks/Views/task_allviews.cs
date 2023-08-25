@@ -280,8 +280,8 @@ namespace Tango.Tasks
 								var attr = newpar.GetCustomAttribute<DescriptionAttribute>(false);
 								if (attr != null)
 									title = attr.Description;
-
-								var par = new TaskParameter { ParentID = task.ID, SysName = newpar.Name, Title = title, SeqNo = seqno };
+								
+								var par = new TaskParameter { ParentID = task.ID, SysName = newpar.Name, Title = title, SeqNo = seqno, Value = newpar.HasDefaultValue ? newpar.DefaultValue.ToString() : null };
 								Repository.CreateParameter(par);
 								ischange = true;
 							}
