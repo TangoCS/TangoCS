@@ -135,13 +135,13 @@ namespace Tango.UI
 			if (link.Enabled)
 			{
 				w.A(a => a.Set(attrs).Href(link).SetTarget(link), () => {
-					w.Icon(link.Image);
+					w.Icon(link.Image, link.Tip, link.Color);
 					w.Write(link.Title);
 				});
 			}
 			else if (!link.HideDisabled)
 			{
-				w.Icon(link.Image);
+				w.Icon(link.Image, link.Tip, link.Color);
 				w.Write(link.Title);
 			}
 		}
