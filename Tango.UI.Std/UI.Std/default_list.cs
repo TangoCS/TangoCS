@@ -277,7 +277,15 @@ namespace Tango.UI.Std
 			});
 
 			if (Context.ReturnTarget.ContainsKey(1))
+			{
+				var formData = new Dictionary<string, object>(Context.FormData);
 				Context.SwitchToReturnTarget(Context.ReturnTarget[1]);
+				foreach (var kv in formData)
+				{
+					Context.AllArgs.Add(kv);
+					Context.FormData.Add(kv);
+				}
+			}
 
 			Paging.PageIndex = 1;
 			Render(response);
