@@ -282,8 +282,11 @@ namespace Tango.UI.Std
 				Context.SwitchToReturnTarget(Context.ReturnTarget[1]);
 				foreach (var kv in formData)
 				{
-					Context.AllArgs.Add(kv);
-					Context.FormData.Add(kv);
+					if (!Context.AllArgs.ContainsKey(kv.Key))
+					{
+						Context.AllArgs.Add(kv);
+						Context.FormData.Add(kv);
+					}
 				}
 			}
 
