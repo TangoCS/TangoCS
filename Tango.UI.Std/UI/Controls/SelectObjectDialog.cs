@@ -68,7 +68,7 @@ namespace Tango.UI.Controls
 			w.Button(a => a.DataResult(1).DataParm(Field.SubmitDataParms).OnClickPostEvent(SubmitDialog).DataRef("#" + Field.ClientID), Resources.Get("Common.OK"));
 			//w.SubmitButton();
 			w.Write("&nbsp;");
-			w.BackButton();
+			w.BackButton(title: w.Resources.Get(this.IsModal ? "Common.Close" : "Common.Back"));
 		}
 		public abstract void Render(LayoutWriter w, TValue selectedValue);
 		public abstract void RenderSelected(LayoutWriter w, TValue selectedValue);

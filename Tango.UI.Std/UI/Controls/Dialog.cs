@@ -208,7 +208,7 @@ namespace Tango.UI.Controls
                                     a.Set(btnAttrs);
                                     if (action != null) a.DataEvent(action);
                                 }, "Да");
-                                w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), "Назад");
+                                w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"), w.Resources.Get("Common.Close"));
                             });
                         }, options != null ? options.ShowCloseIcon : true);
                     });

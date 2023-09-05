@@ -203,7 +203,7 @@ namespace Tango.UI.Controls
 				w.ButtonsBarRight(() => {
 					w.Button(a => a.DataResultPostponed(1).OnClickPostEvent(OnSubmit), Resources.Get("Common.OK"));
 					//w.Button(a => a.DataResultPostponed(1).DataEvent(OnSubmit).OnClick($"listview.saveCriteria(this, '{ParentElement.ClientID}')"), Resources.Get("Common.OK"));
-					w.BackButton();
+					w.BackButton(title: w.Resources.Get("Common.Close"));
 				});
 			});
 		}
@@ -524,7 +524,7 @@ namespace Tango.UI.Controls
 			response.AddWidget("buttonsbar", w => {
 				w.ButtonsBarRight(() => {
 					w.Button(a => a.DataResult(1).OnClickPostEvent(submitEvent), w.Resources.Get("Common.Save"));
-					w.BackButton();
+					w.BackButton(title: w.Resources.Get("Common.Close"));
 				});
 			});
 		}

@@ -39,7 +39,7 @@ namespace Tango.UI.Std
 			response.AddAdjacentWidget("form", "buttonsbar", AdjacentHTMLPosition.BeforeEnd, w => w.ButtonsBar(() => {
 				w.ButtonsBarRight(() => {
 					w.SubmitContinueButton();
-					w.BackButton();
+					w.BackButton(title: w.Resources.Get(this.IsModal ? "Common.Close" : "Common.Back"));
 				});
 			}));
 		}

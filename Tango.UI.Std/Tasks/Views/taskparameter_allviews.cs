@@ -107,7 +107,7 @@ namespace Tango.Tasks
 			w.ButtonsBar(() => {
 				w.ButtonsBarRight(() => {
 					w.SubmitButton(a => a.DataReceiver(this).OnClick($"dialog.close(document.getElementById('task_parameters_dialog'))"));
-					w.BackButton();
+					w.BackButton(title: w.Resources.Get(this.IsModal ? "Common.Close" : "Common.Back"));
 				});
 			});
 		}
