@@ -154,7 +154,7 @@ namespace Tango.UI.Controls
 						{
 							if (!Guid.TryParse(val.ToString().Trim(), out var g))
 								g = Guid.Empty;
-							valexpr = Expression.Constant(g);
+							valexpr = Expression.Convert(Expression.Constant(g), valType);
 						}
 						else
 							valexpr = Expression.Convert(Expression.Constant(val), valType);
