@@ -222,7 +222,10 @@ namespace Tango.UI.Controls
 					LoadViews(listName, listParms);
 
 				foreach (var view in _views.Where(o => !o.ID.Equals(_filter.ID)))
+				{
 					view.IsDefault = false;
+					_storage.SubmitChanges(view, view.IsShared);
+				}
 			}
 
 			_storage.SubmitChanges(Filter, isShared);
