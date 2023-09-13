@@ -200,7 +200,7 @@ namespace Tango.UI.Controls
 						w.DialogControlBody(() => w.Write(title), null, () => content(w), null, () => {
 							w.ButtonsBarRight(() => {
 								w.Button(a => a.Aria("label", "Close").DataResult(0).OnClick("ajaxUtils.processResult(this)"),
-									w.Resources.Get("Common.Cancel")
+									w.Resources.Get("Common.Close")
 								);
 							});
 						}, options != null ? options.ShowCloseIcon : true);
