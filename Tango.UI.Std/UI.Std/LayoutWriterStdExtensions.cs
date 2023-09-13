@@ -61,7 +61,7 @@ namespace Tango.UI.Std
         public static void ButtonsBar_view(this LayoutWriter w, IViewElement form)
 		{
 			w.ButtonsBar(() => {
-				w.ButtonsBarRight(() => w.BackButton(title: w.Resources.Get(form.IsModal ? "Common.Close" : "Common.Back")));
+				w.ButtonsBarRight(() => w.BackButton(form));
 			});
 		}
 
@@ -70,7 +70,7 @@ namespace Tango.UI.Std
 			w.ButtonsBar(() => {
 				w.ButtonsBarRight(() => {
 					w.SubmitAndBackButton(a => a.DataReceiver(form));
-					w.BackButton(title: w.Resources.Get(form.IsModal ? "Common.Close" : "Common.Back"));
+					w.BackButton(form);
 				});
 			});
 		}
@@ -80,7 +80,7 @@ namespace Tango.UI.Std
 			w.ButtonsBar(() => {
 				w.ButtonsBarRight(() => {
 					w.SubmitDeleteAndBackButton(a => a.ID("deletebtn").DataReceiver(form).DataResult(1));
-					w.BackButton(title: w.Resources.Get(form.IsModal ? "Common.Close" : "Common.Back"));
+					w.BackButton(form);
 				});
 			});
 		}

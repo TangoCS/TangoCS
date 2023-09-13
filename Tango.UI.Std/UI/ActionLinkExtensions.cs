@@ -33,6 +33,11 @@ namespace Tango.UI
 			w.Button(a => a.Class("btn-primary").Data("href", url).DataResult(0).OnClickRunHref().Data(Constants.ContainerNew, 1).Set(attrs), title);
 		}
 
+		public static void BackButton(this LayoutWriter w, IViewElement form)
+		{
+			w.BackButton(title: w.Resources.Get(form.IsModal ? "Common.Close" : "Common.Back"));
+		}
+
 		static ATagAttributes SetTarget(this ATagAttributes a, ActionLink link)
 		{
 			if (link.ChangeUrl || link.IsTargetBlank)
