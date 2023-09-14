@@ -230,7 +230,7 @@ namespace Tango.UI.Std
 						PageActionAttributes = a => a.RunEvent(OnSetPage),
 						ObjCountActionAttributes = a => a.PostEvent(OnGetObjCount),
 						GoToPageActionAttributes = a => a.OnEnterPostEvent(OnSetPage).DataRef(Filter),
-						SetPageSizeActionAttributes = a => a.DataEvent(OnSetPage).OnChangeRunHref().DataRef(Filter)
+						SetPageSizeActionAttributes = a => a.DataEvent(OnSetPageSize).OnChangeRunHref().DataRef(Filter)
 					};
 					PagingRenderer.Render(Paging, w, opt);
 				});
@@ -367,6 +367,11 @@ namespace Tango.UI.Std
 
 			Render(response);
 			AfterRender(response);
+		}
+
+		public void OnSetPageSize(ApiResponse response)
+		{
+			OnSetPage(response);
 		}
 
 		public void OnGetObjCount(ApiResponse response)
