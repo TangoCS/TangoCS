@@ -24,17 +24,23 @@
 		var setHtml = function (id, prefix) {
 			const el = document.getElementById(id);
 			const parent = el.parentElement;
+			var div = null;
 
-			const div = document.createElement('div');
-			div.id = id + '_bsh';
+			if (parent.id != id + '_bsh') {
+				div = document.createElement('div');
+				div.id = id + '_bsh';
+				div.appendChild(el);
+				parent.appendChild(div);
+			}
+			else
+				div = parent;
 
-			div.appendChild(el);
-			parent.appendChild(div);
-
-			const label = document.createElement('label');
-			label.classList.add('btn-switch');
-			label.htmlFor = id;
-			div.appendChild(label);
+			if (div.getElementsByTagName('label').length == 0) {
+				const label = document.createElement('label');
+				label.classList.add('btn-switch');
+				label.htmlFor = id;
+				div.appendChild(label);
+			}
 
 			el.className = 'tgl-sw tgl-sw-' + prefix;
 
