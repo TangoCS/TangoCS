@@ -134,9 +134,9 @@ namespace Tango.UI
 
             string width = "grid-column-end: span " + (int)grid.Field;
             string br = grid.BreakRow ? "grid-column-start: 1" : "";
-            string vis = isVisible ? "" : "display:none";
+            string vis = isVisible ? "" : "hide";
 
-            string style = new string[] { width, br, vis }.Where(s => s != "").Join(";");
+            string style = new string[] { width, br }.Where(s => s != "").Join(";");
 
             int labelWidth = (int)Math.Round(100 / (60 / (double)grid.Caption), 0, MidpointRounding.AwayFromZero);
             int bodyWidth = 100 - labelWidth;
@@ -145,7 +145,7 @@ namespace Tango.UI
             if (withCheck)
                 bodyWidth = bodyWidth - checkBoxWidth;
 
-            w.Div(a => a.ID(name + "_field").Class("field").Style(style), () => {
+            w.Div(a => a.ID(name + "_field").Class("field").Class(vis).Style(style), () => {
                 w.Div(a => a.ID(name + "_fieldlabel").Class("field-label").Style($"width:{labelWidth}%"), () => {
                     FormFieldCaption(w, name, caption, isRequired, hint);
                     FormFieldDescription(w, name, description);
