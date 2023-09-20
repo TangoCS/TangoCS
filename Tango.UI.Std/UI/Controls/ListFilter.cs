@@ -247,6 +247,7 @@ namespace Tango.UI.Controls
 				w.Legend(title);
 				w.Div(a => a.ID(eExpression), () => RenderSelectedFields(w, true));
 			});
+			w.Div(a => a.ID(eValidation), "");
 			w.Hidden(hValue, SerializedCriteria);
 		}
 
@@ -300,8 +301,9 @@ namespace Tango.UI.Controls
 
 		public void OnCriterionAdded(ApiResponse response)
 		{
-			var (item, success) = ProcessSubmit(response);
-			if (!success) return;
+			var v = ProcessSubmit(response);
+			RenderValidation(response, v);
+			if (!response.Success) return;
 
 			response.WithNamesAndWritersFor(this);
 			response.AddWidget(eExpression, w => RenderSelectedFields(w));
@@ -360,8 +362,9 @@ namespace Tango.UI.Controls
 		{
 			Criteria = Context.GetJsonArg(hValue, () => new List<FilterItem>());
 
-			var (item, success) = ProcessSubmit(response);
-			if (!success) return;
+			var v = ProcessSubmit(response);
+			RenderValidation(response, v);
+			if (!response.Success) return;
 
 			LoadPersistentImpl(Criteria);
 
@@ -405,7 +408,7 @@ namespace Tango.UI.Controls
 			}
 		}
 
-		(FilterItem item, bool validationSuccess) ProcessSubmit(ApiResponse response)
+		ValidationMessageCollection ProcessSubmit(ApiResponse response)
 		{
 			var v = new ValidationMessageCollection();
 			FilterItem item = null;
@@ -443,6 +446,11 @@ namespace Tango.UI.Controls
 			foreach (var d in duplicates)
 				v.Add("entitycheck", eFieldValue, $"Множественные критерии \"{d}\" не поддерживаются");
 
+			return v;
+		}
+
+		void RenderValidation(ApiResponse response, ValidationMessageCollection v)
+		{
 			if (v.Count > 0)
 			{
 				response.AddWidget(eValidation, w => w.ValidationBlock(v));
@@ -452,8 +460,6 @@ namespace Tango.UI.Controls
 			{
 				response.AddWidget(eValidation, w => w.Write(""));
 			}
-
-			return (item, v.Count == 0);
 		}
 
 		void ValidateItem(Field f, FilterItem item, ValidationMessageCollection v)
@@ -523,7 +529,7 @@ namespace Tango.UI.Controls
 			});
 			response.AddWidget("buttonsbar", w => {
 				w.ButtonsBarRight(() => {
-					w.Button(a => a.DataResult(1).OnClickPostEvent(submitEvent), w.Resources.Get("Common.Save"));
+					w.Button(a => a.DataResultPostponed(1).OnClickPostEvent(submitEvent), w.Resources.Get("Common.Save"));
 					w.BackButton(title: w.Resources.Get("Common.Close"));
 				});
 			});
@@ -550,13 +556,17 @@ namespace Tango.UI.Controls
 			Criteria = Context.GetJsonArg(hValue, () => new List<FilterItem>());
 			var columns = Context.GetArg(ParentElement.ClientID + "_columns");
 
-			var (item, success) = ProcessSubmit(response);
-			if (!success) return;
+			var v = ProcessSubmit(response);
+			var title = Context.GetArg("title");
+			if (title.IsEmpty())
+				v.Add("entitycheck", eFieldValue, $"Необходимо задать наименование представления");
+			RenderValidation(response, v);
+			if (!response.Success) return;
 
 			PersistentFilter.Criteria = Criteria;
 
 			PersistentFilter.SaveView(
-				Context.GetArg("title"),
+				title,
 				Context.GetIntArg("isshared") == 2,
 				Context.GetBoolArg("isdefault", false),
 				ListName,
