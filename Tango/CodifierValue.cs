@@ -40,6 +40,13 @@ namespace Tango
 			Text = text?.ToString();
 			Value = text?.ToString();
 		}
+
+		public override bool Equals(object obj)
+		{
+			return Value?.ToLower() == ((SelectListItem)obj).Value?.ToLower();
+		}
+
+		public override int GetHashCode() => Value?.GetHashCode() ?? 0;
 	}
 
 	public static class SelectListItemExtensions
