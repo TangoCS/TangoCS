@@ -588,8 +588,14 @@ namespace Tango.UI.Controls
 
 				foreach (var view in views)
 				{
-					void link() => w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, view.ID).WithTitle(view.Name),
+					void link() {
+						var name = view.Name;
+						if (view.IsShared)
+							name += " (общ.)";
+						
+						w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, view.ID).WithTitle(name),
 						a => a.Data(DataCollection).DataContainerExternal(ParentElement.ClientID).DataEvent("onsetview", ParentElement.ClientID));
+					};
 					if (view.IsDefault)
 						w.B(link);
 					else

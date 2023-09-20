@@ -572,7 +572,7 @@ namespace Tango.UI.Controls
 	{
 		bool Load(TKey? id);
 		bool LoadDefault(string listName, string listParms, Guid? ListName_ID);
-		IEnumerable<(TKey ID, string Name, bool IsDefault)> GetViews(string listName, IReadOnlyDictionary<string, object> listParms);
+		IEnumerable<(TKey ID, string Name, bool IsDefault, bool IsShared)> GetViews(string listName, IReadOnlyDictionary<string, object> listParms);
 
 		//void SaveCriteria(bool saveToDb);
 		void SaveView(string name, bool isShared, bool isDefault, string listName, Guid? listName_ID, 

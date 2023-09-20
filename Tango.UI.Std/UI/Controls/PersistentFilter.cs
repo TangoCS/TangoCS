@@ -42,10 +42,10 @@ namespace Tango.UI.Controls
 			return _filter != null;
 		}
 
-		public IEnumerable<(TKey ID, string Name, bool IsDefault)> GetViews(string listName, IReadOnlyDictionary<string, object> listParms)
+		public IEnumerable<(TKey ID, string Name, bool IsDefault, bool IsShared)> GetViews(string listName, IReadOnlyDictionary<string, object> listParms)
 		{
 			if (_views == null) LoadViews(listName, listParms);
-			return _views.OrderBy(o => o.FilterName).Select(o => (o.ID, o.FilterName, o.IsDefault));
+			return _views.OrderBy(o => o.FilterName).Select(o => (o.ID, o.FilterName, o.IsDefault, o.IsShared));
 		}
 
 		void LoadViews(string listName, IReadOnlyDictionary<string, object> listParms)
