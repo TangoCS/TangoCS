@@ -239,9 +239,9 @@ namespace Tango.UI.Controls
 
 		public void InsertOnSubmit()
 		{
-			var f = _storage.CreateNew();
-			f.FilterValue = _filter.FilterValue;
-			_filter = f;
+			//var f = _storage.CreateNew();
+			//f.FilterValue = _filter.FilterValue;
+			//_filter = f;
 		}
 	}
 

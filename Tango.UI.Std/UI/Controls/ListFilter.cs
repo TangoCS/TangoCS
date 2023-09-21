@@ -537,8 +537,9 @@ namespace Tango.UI.Controls
 
 		public void OnNewViewSubmit(ApiResponse response)
 		{
-			LoadPersistent();
-			PersistentFilter.InsertOnSubmit();
+			//LoadPersistent();
+			//Criteria = Context.GetJsonArg(hValue, () => new List<FilterItem>());
+			//PersistentFilter.InsertOnSubmit();
 			OnViewSubmit(response);
 		}
 
