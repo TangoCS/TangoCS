@@ -85,7 +85,26 @@ namespace Tango.UI.Std
 		public bool AddDataCtrl { get; set; }
 
 		public bool ShowResultBlock { get; set; } = false;
-		
+
+		protected void FormContainer(LayoutWriter w)
+		{
+			var cls = "editform";
+			if (Width != ContainerWidth.Undefined) cls += " " + Width.ToString().ToLower();
+			if (GridMode) cls += " grid60";
+			w.AjaxForm("form", a => {
+				a.Class(cls).DataResultPostponed(1);
+				if (AddDataCtrl)
+					a.DataCtrl(w.IDPrefix);
+			}, null);
+		}
+
+		protected void ResultBlock(LayoutWriter w)
+		{
+			if (ShowResultBlock)
+				w.Div(a => a.ID("result").Style(Height == ContainerHeight.Height100 ? "overflow-y: auto;" : null));
+		}
+
+
 		public override void Render(ApiResponse response)
 		{
 			response.AddWidget("container", w => {
@@ -96,17 +115,8 @@ namespace Tango.UI.Std
 						});
 					w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding").Style(Height == ContainerHeight.Height100 ? "display:flex;flex-direction:column;" : null), () => {
-						var cls = "editform";
-						if (Width != ContainerWidth.Undefined) cls += " " + Width.ToString().ToLower();
-						if (GridMode) cls += " grid60";
-						w.AjaxForm("form", a => {
-							a.Class(cls).DataResultPostponed(1);
-							if (AddDataCtrl)
-								a.DataCtrl(w.IDPrefix);
-						}, null);
-
-						if (ShowResultBlock)
-							w.Div(a => a.ID("result").Style(Height == ContainerHeight.Height100 ? "overflow-y: auto;" : null));
+						FormContainer(w);
+						ResultBlock(w);
 					});
 				});
 			});
