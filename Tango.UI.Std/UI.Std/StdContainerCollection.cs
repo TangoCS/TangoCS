@@ -144,7 +144,7 @@ namespace Tango.UI.Std
 						});
 					if (!ToRemove.Contains("contenttoolbar"))
 						w.Div(a => a.ID("contenttoolbar"));
-					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding"), () => {
+					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding").Style(Height == ContainerHeight.Height100 ? "display:flex;flex-direction:column;" : null), () => {
 						var cls = "viewform";
 						if (Width != ContainerWidth.Undefined) cls += " " + Width.ToString().ToLower();
 						if (GridMode) cls += " grid60";
