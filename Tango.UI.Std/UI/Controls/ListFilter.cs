@@ -1030,12 +1030,16 @@ namespace Tango.UI.Controls
 
 			var al = new ActionLink(w.Context);
 			urlAttributes(al);
+			var url = al.Url;
 
-			w.Form(a => a.Method(Method.Post).Target(Target._blank).Action(al.Url)
-				.EncType("multipart/form-data").Set(formAttrs), () => {
-				w.Hidden(name, JsonConvert.SerializeObject(criteria));
-				w.A(a => a.OnClick($"this.closest('form').submit();"), content);
-			});
+			if (url != null)
+			{
+				w.Form(a => a.Method(Method.Post).Target(Target._blank).Action(url)
+					.EncType("multipart/form-data").Set(formAttrs), () => {
+						w.Hidden(name, JsonConvert.SerializeObject(criteria));
+						w.A(a => a.OnClick($"this.closest('form').submit();"), content);
+					});
+			}
 		}
 	}
 }
