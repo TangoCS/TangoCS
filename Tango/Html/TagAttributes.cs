@@ -332,45 +332,44 @@ namespace Tango.Html
 
 	public class DataCollection : Dictionary<string, string>
 	{
+		public const string RefKey = "ref";
+		public const string RefSessionStorageKey = "ref-sessionstorage";
+
 		public DataCollection Ref(string id)
 		{
-			var key = "ref";
-			if (!ContainsKey(key))
-				Add(key, id);
+			if (!ContainsKey(RefKey))
+				Add(RefKey, id);
 			else
-				this[key] += " " + id;
+				this[RefKey] += " " + id;
 			return this;
 		}
 
 		public DataCollection Ref(IViewElement owner, string id)
 		{
 			var clientid = owner.GetClientID(id);
-			var key = "ref";
-			if (!ContainsKey(key))
-				Add(key, clientid);
+			if (!ContainsKey(RefKey))
+				Add(RefKey, clientid);
 			else
-				this[key] += " " + clientid;
+				this[RefKey] += " " + clientid;
 			return this;
 		}
 
 		public DataCollection RefSessionStorage(string id)
 		{
-			var key = "ref-sessionstorage";
-			if (!ContainsKey(key))
-				Add(key, id);
+			if (!ContainsKey(RefSessionStorageKey))
+				Add(RefSessionStorageKey, id);
 			else
-				this[key] += " " + id;
+				this[RefSessionStorageKey] += " " + id;
 			return this;
 		}
 
 		public DataCollection RefSessionStorage(IViewElement owner, string id)
 		{
 			var clientid = owner.GetClientID(id);
-			var key = "ref-sessionstorage";
-			if (!ContainsKey(key))
-				Add(key, clientid);
+			if (!ContainsKey(RefSessionStorageKey))
+				Add(RefSessionStorageKey, clientid);
 			else
-				this[key] += " " + clientid;
+				this[RefSessionStorageKey] += " " + clientid;
 			return this;
 		}
 
@@ -380,6 +379,20 @@ namespace Tango.Html
 			if (!ContainsKey(pkey))
 				Add(pkey, value?.ToString());
 			return this;
+		}
+
+		public void CopyRefFrom(DataCollection src)
+		{
+			if (src.ContainsKey(DataCollection.RefKey))
+				Ref(src[DataCollection.RefKey]);
+		}
+
+		public void CopyParmsFrom(DataCollection src)
+		{
+			foreach (var key in src.Keys)
+				if (key.StartsWith("p-"))
+					if (!ContainsKey(key))
+						Add(key, src[key]);
 		}
 
 		//public DataCollection Add(IReadOnlyDictionary<string, string> source)

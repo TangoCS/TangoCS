@@ -17,6 +17,7 @@ namespace Tango.UI.Controls
 
 		public class PeriodPickerOptions
 		{
+			public Action<TagAttributes> Attributes { get; set; }
 			public CalendarOptions FromCalendarOptions { get; set; } = new CalendarOptions { ShowButton = false };
 			public DateLists.DateListsOptions FromTimeOptions { get; set; }
 			public CalendarOptions ToCalendarOptions { get; set; } = new CalendarOptions { ShowButton = false };
@@ -87,7 +88,7 @@ namespace Tango.UI.Controls
 			options.ToCalendarOptions.ShowButton = false;
 			//w.PushID(ID);
 			w.Div(a => {
-				a.Class("periodpicker").ID(ID);
+				a.Class("periodpicker").ID(ID).Set(options.Attributes);
 				if (Change != null) a.DataEvent(OnChange).DataRef(ParentElement, ID);
 			}, () => {
 				w.Div(() =>

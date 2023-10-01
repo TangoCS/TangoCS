@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Xml.Linq;
 using Tango.AccessControl;
 using Tango.Html;
 using Tango.Localization;
@@ -132,7 +133,9 @@ namespace Tango.UI
 			w.FormField(field.ID, field.Caption, () => w.CheckBox(field.ID, field.Value, a => {
 				if (field.Disabled) a.Disabled(true);
 				if (field.ReadOnly) a.Readonly(true).OnChange("event.preventDefault(); this.checked = !this.checked; return false;");
-			}), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, withCheck: field.WithCheckBox, isDisabled: field.Disabled, disableCheck: field.DisableCheckBox);
+                if (field.FireOnChangeEvent && field.IsVisible)
+                    a.OnChangePostEvent($"On{field.ID}Changed", field.EventReceiver);
+            }), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, withCheck: field.WithCheckBox, isDisabled: field.Disabled, disableCheck: field.DisableCheckBox);
 		}
 
 		public static void CheckBox(this LayoutWriter w, IField<bool?> field, GridPosition grid = null)
@@ -140,7 +143,7 @@ namespace Tango.UI
 			w.FormField(field.ID, field.Caption, () => w.CheckBox(field.ID, field.Value ?? false, a => {
 				if (field.Disabled) a.Disabled(true);
 				if (field.ReadOnly) a.Readonly(true).OnChange("event.preventDefault(); this.checked = !this.checked; return false;");
-			}), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, withCheck: field.WithCheckBox, isDisabled: field.Disabled, disableCheck: field.DisableCheckBox);
+            }), grid, false, field.ShowDescription ? field.Description : null, field.IsVisible, withCheck: field.WithCheckBox, isDisabled: field.Disabled, disableCheck: field.DisableCheckBox);
 		}
 
 		public static void ToggleSwitch(this LayoutWriter w, IField<bool> field, GridPosition grid = null, Action<InputTagAttributes> attributes = null)

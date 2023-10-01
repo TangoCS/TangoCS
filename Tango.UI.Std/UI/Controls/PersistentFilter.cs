@@ -42,10 +42,10 @@ namespace Tango.UI.Controls
 			return _filter != null;
 		}
 
-		public IEnumerable<(TKey ID, string Name, bool IsDefault)> GetViews(string listName, IReadOnlyDictionary<string, object> listParms)
+		public IEnumerable<(TKey ID, string Name, bool IsDefault, bool IsShared)> GetViews(string listName, IReadOnlyDictionary<string, object> listParms)
 		{
 			if (_views == null) LoadViews(listName, listParms);
-			return _views.OrderBy(o => o.FilterName).Select(o => (o.ID, o.FilterName, o.IsDefault));
+			return _views.OrderBy(o => o.FilterName).Select(o => (o.ID, o.FilterName, o.IsDefault, o.IsShared));
 		}
 
 		void LoadViews(string listName, IReadOnlyDictionary<string, object> listParms)
@@ -222,7 +222,10 @@ namespace Tango.UI.Controls
 					LoadViews(listName, listParms);
 
 				foreach (var view in _views.Where(o => !o.ID.Equals(_filter.ID)))
+				{
 					view.IsDefault = false;
+					_storage.SubmitChanges(view, view.IsShared);
+				}
 			}
 
 			_storage.SubmitChanges(Filter, isShared);
@@ -236,9 +239,9 @@ namespace Tango.UI.Controls
 
 		public void InsertOnSubmit()
 		{
-			var f = _storage.CreateNew();
-			f.FilterValue = _filter.FilterValue;
-			_filter = f;
+			//var f = _storage.CreateNew();
+			//f.FilterValue = _filter.FilterValue;
+			//_filter = f;
 		}
 	}
 

@@ -58,10 +58,10 @@ namespace Tango.UI.Std
             });
         }
 
-        public static void ButtonsBar_view(this LayoutWriter w)
+        public static void ButtonsBar_view(this LayoutWriter w, IViewElement form)
 		{
 			w.ButtonsBar(() => {
-				w.ButtonsBarRight(() => w.BackButton());
+				w.ButtonsBarRight(() => w.BackButton(form));
 			});
 		}
 
@@ -70,7 +70,7 @@ namespace Tango.UI.Std
 			w.ButtonsBar(() => {
 				w.ButtonsBarRight(() => {
 					w.SubmitAndBackButton(a => a.DataReceiver(form));
-					w.BackButton();
+					w.BackButton(form);
 				});
 			});
 		}
@@ -80,7 +80,7 @@ namespace Tango.UI.Std
 			w.ButtonsBar(() => {
 				w.ButtonsBarRight(() => {
 					w.SubmitDeleteAndBackButton(a => a.ID("deletebtn").DataReceiver(form).DataResult(1));
-					w.BackButton();
+					w.BackButton(form);
 				});
 			});
 		}

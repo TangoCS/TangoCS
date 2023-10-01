@@ -102,16 +102,24 @@ namespace Tango.UI.Std
 			}
 			else
 			{
-				response.AddWidget("form", w => {
-					Form(w);
-					w.FormValidationBlock();
-				});
+				response.AddWidget("form", RenderFormLayout);
+				RenderButtonsBarLayout(response);
 
-				if (EnableButtonsBar)
-					response.AddAdjacentWidget("form", "buttonsbar", AdjacentHTMLPosition.BeforeEnd, ButtonsBar);
 				if (EnableToolbar)
 					response.AddWidget("contenttoolbar", w => Toolbar(w));
 			}
+		}
+
+		protected virtual void RenderFormLayout(LayoutWriter w)
+		{
+			Form(w);
+			w.FormValidationBlock();
+		}
+
+		protected virtual void RenderButtonsBarLayout(ApiResponse response)
+		{
+			if (EnableButtonsBar)
+				response.AddAdjacentWidget("form", "buttonsbar", AdjacentHTMLPosition.BeforeEnd, ButtonsBar);
 		}
 
 		public bool ProcessSubmit(ApiResponse response)

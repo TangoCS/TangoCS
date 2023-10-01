@@ -210,10 +210,11 @@ namespace Tango.UI
 
 	public class FileResult : HttpResult
 	{
-		public FileResult(string fileName, byte[] bytes)
+		public FileResult(string fileName, byte[] bytes, bool replaceSpacesWithUnderscores = true)
 		{
 			ContentType = "application/octet-stream";
-			fileName = fileName.Replace(" ", "_");
+			if (replaceSpacesWithUnderscores)
+				fileName = fileName.Replace(" ", "_");
 			Headers.Add("content-disposition", "attachment; filename=\"" + Uri.EscapeDataString(fileName) + "\"");
 			ContentFunc = ctx => { return bytes; };
 		}
