@@ -135,7 +135,8 @@ namespace Tango.Html
 						this.PreviousSibling.NextSibling = newElement;
 					else if (this.ParentNode != null)
 						this.ParentNode.FirstChild = newElement;
-					
+
+					newElement.PreviousSibling = this.PreviousSibling;
 					this.PreviousSibling = newElement;
 					newElement.NextSibling = this;
 
@@ -163,6 +164,7 @@ namespace Tango.Html
 					else if (this.ParentNode != null)
 						this.ParentNode.LastChild = newElement;
 
+					newElement.NextSibling = this.NextSibling;
 					this.NextSibling = newElement;
 					newElement.PreviousSibling = this;
 
