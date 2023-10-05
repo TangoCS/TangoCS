@@ -718,7 +718,7 @@ window.ajaxUtils = function ($, cu) {
 					}
 				}
 			}
-			
+
 			var sep = target.url.indexOf('?');
 			var targetpath = sep >= 0 ? target.url.substring(0, sep) : target.url;
 			const targetquery = sep >= 0 ? target.url.substring(sep + 1) : '';
@@ -904,7 +904,7 @@ window.ajaxUtils = function ($, cu) {
 			const params = location.search.slice(1).split('&');
 			var search = [];
 			var hash = location.hash == '' ? [] : location.hash.split('&');
-			var hstate = window.history.state;
+			var hstate = getHistoryState();
 
 			if (args.remove && args.remove.length > 0) {
 				const deleteRegex = new RegExp(args.remove.join('=|') + '=');
@@ -953,6 +953,7 @@ window.ajaxUtils = function ($, cu) {
 
 	function getApiUrl(path, parms, isfirstload) {
 		const k = path.indexOf('?');
+		if (!parms) parms = {};
 
 		var url;
 		if (k > 0) {
@@ -1717,6 +1718,21 @@ window.ajaxUtils = function ($, cu) {
 		return String.fromCharCode.apply(null, out);
 	}
 
+	function getHistoryState() {
+		var s = window.history.state;
+		if (!s) s = {
+			storage: [{}]
+		};
+
+		if (!s.parms || Object.keys(s.parms).length == 0) {
+			s.parms = {};
+			s.parms['p'] = state.loc.parms['p'];
+			s.url = window.location.pathname + window.location.search;
+		}
+
+		return s;
+	}
+
 	document.addEventListener('DOMContentLoaded', function () {
 		state.com.message = $("#topmessagecontainer");
 		setTimeout(function () {
@@ -1725,14 +1741,7 @@ window.ajaxUtils = function ($, cu) {
 		//document.body.className = '';
 
 		window.addEventListener('popstate', function (event) {
-			const s = window.history.state;
-			if (!s) return;
-
-			if (!s.parms || Object.keys(s.parms).length == 0) {
-				s.parms = [];
-				s.parms['p'] = state.loc.parms['p'];
-				s.url = window.location.pathname + window.location.search;
-			}
+			const s = getHistoryState();
 
 			s.parms['c-new'] = 1;
 			s.parms['e'] = DEF_EVENT_NAME;
