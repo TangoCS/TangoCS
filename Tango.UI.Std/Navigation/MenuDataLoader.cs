@@ -46,9 +46,9 @@ namespace Tango.UI.Navigation
 				foreach (var m in mitems)
 				{
 					m.SeqNo = seq++;
-					m.Image = _resource.GetImageName(m.ResourceKey);
-					if (m.Image.IsEmpty()) m.Image = i.image;
+					m.Image = i.image;
 					m.Title = _resource.Get(m.ResourceKey);
+					m.CssClass = i.cssclass;
 					
 					if (i.children != null)
 						ProcessLevel(level + 1, parms, m.Children, defaults, i.children);

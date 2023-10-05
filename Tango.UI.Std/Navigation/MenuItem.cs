@@ -27,6 +27,8 @@ namespace Tango.UI.Navigation
 		public bool Enabled { get; set; } = true;
 		public string Description { get; set; }
 
+		public string CssClass { get; set; }
+
 		public List<MenuItem> Children { get; } = new List<MenuItem>();
 	}
 

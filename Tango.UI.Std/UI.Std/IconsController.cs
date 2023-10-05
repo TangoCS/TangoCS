@@ -73,7 +73,8 @@ namespace Tango.UI.Std
 					.ToDictionary(x => Path.GetFileNameWithoutExtension(x), x => x);
 
 				if (Directory.Exists(themePath))
-					Directory.EnumerateFiles(themePath, "*.svg", SearchOption.AllDirectories).ForEach(x => files[Path.GetFileNameWithoutExtension(x)] = x);
+					Directory.EnumerateFiles(themePath, "*.svg", SearchOption.AllDirectories)
+						.ForEach(x => files[Path.GetFileNameWithoutExtension(x)] = x);
 
 				foreach (var file in files)
 				{
@@ -85,9 +86,17 @@ namespace Tango.UI.Std
 					iconXml.Root.Descendants(xsvg + "title").Remove();
 					var viewBox = iconXml.Root.Attribute("viewBox");
 					iconXml.Root.RemoveAttributes();
-					iconXml.Root.Add(new XAttribute("id", "icon-" + file.Key));
-					//iconXml.Root.Add(new XAttribute("viewBox", "0 0 32 32"));
+					iconXml.Root.Add(new XAttribute("id", "icon-" + file.Key.ToLower()));
 					iconXml.Root.Add(viewBox);
+					var iconDefs = iconXml.Root.Descendants(xsvg + "defs");
+					if (iconDefs.Any())
+					{
+						foreach (var iconDef in iconDefs)
+							foreach (var el in iconDef.Elements())
+								defs.Add(el);
+
+						iconDefs.Remove();
+					}
 					defs.Add(iconXml.Root);
 				}
 				return doc.ToString();

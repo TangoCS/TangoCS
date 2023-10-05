@@ -39,7 +39,7 @@ namespace Tango.UI.Navigation
 							w.Write(m.Title);
 						});
 
-						w.DropDownForElement(menuid, null, () => {
+						w.DropDownForElement(menuid, a => a.Class(m.CssClass), () => {
 							w.RenderTwoLevelMenu(children, removed);
 						}, new PopupOptions { CloseOnScroll = false } );
 					}

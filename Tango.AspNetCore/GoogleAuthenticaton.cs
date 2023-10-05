@@ -29,7 +29,7 @@ namespace Tango.AspNetCore
 
 					ret = WebUtility.UrlEncode(ret);
 
-					context.Response.Redirect($"https://accounts.google.com/o/oauth2/v2/auth?client_id={clientID}&response_type=code&scope=openid%20email%20profile&redirect_uri={context.Request.Scheme}:%2F%2F{context.Request.Host.Value}{callback}&state={ret}");
+					context.Response.Redirect($"https://accounts.google.com/o/oauth2/v2/auth?client_id={clientID}&response_type=code&scope=openid%20email%20profile&redirect_uri=https:%2F%2F{context.Request.Host.Value}{callback}&state={ret}");
 					await Task.CompletedTask;
 				});
 			});
@@ -43,7 +43,7 @@ namespace Tango.AspNetCore
 
 					using (var httpClient = new HttpClient { BaseAddress = new Uri("https://www.googleapis.com") })
 					{
-						var requestUrl = $"oauth2/v4/token?code={code}&client_id={clientID}&client_secret={secretKey}&redirect_uri={context.Request.Scheme}:%2F%2F{context.Request.Host.Value}{callback}&grant_type=authorization_code";
+						var requestUrl = $"oauth2/v4/token?code={code}&client_id={clientID}&client_secret={secretKey}&redirect_uri=https:%2F%2F{context.Request.Host.Value}{callback}&grant_type=authorization_code";
 
 						var dict = new Dictionary<string, string> {
 							{ "Content-Type", "application/x-www-form-urlencoded" }

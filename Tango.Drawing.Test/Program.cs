@@ -2,6 +2,7 @@
 using SixLabors.ImageSharp.Formats.Bmp;
 using SixLabors.ImageSharp.Formats.Gif;
 using SixLabors.ImageSharp.Formats.Png;
+using SixLabors.ImageSharp.Formats.Webp;
 using SixLabors.ImageSharp.PixelFormats;
 using System;
 
@@ -9,15 +10,15 @@ namespace Tango.Drawing.Test
 {
 	public partial class Program
 	{
-		public static void Main(string[] args)
+		public static void Main1(string[] args)
 		{
 			using (var ctx = new OsMesaContext(800, 600))
 			{
-				unsafe
-				{
-					var s = new string((sbyte*)GL.glGetString(GL.GL_RENDERER));
-					Console.WriteLine(s);
-				}
+				//unsafe
+				//{
+				//	var s = new string((sbyte*)GL.glGetString(GL.GL_RENDERER));
+				//	Console.WriteLine(s);
+				//}
 
 
 				//ctx.Drawing.BeginDraw(Rgba32.Black);
@@ -62,6 +63,7 @@ namespace Tango.Drawing.Test
 					image.Save("test.png", new PngEncoder());
 					image.Save("test.gif", new GifEncoder());
 					image.Save("test.bmp", new BmpEncoder());
+					image.Save("test.webp", new WebpEncoder());
 				}
 			}
 		}

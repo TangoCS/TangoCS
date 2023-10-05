@@ -11,8 +11,6 @@ namespace Tango.Localization
 
 		void SetNotFound(string key);
 		IEnumerable<string> GetNotFound();
-
-		string GetImageName(string key);
 	}
 
 	public interface ILanguage

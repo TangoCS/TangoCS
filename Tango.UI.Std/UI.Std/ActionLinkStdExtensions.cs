@@ -55,8 +55,7 @@ namespace Tango.UI.Std
 		{
 			var (serviceName, fullServiceName) = ProcessType(entityType);
 			return link.To(serviceName, fullServiceName, actionName, returnurl)
-				.UseSecurableUrlResolver(ac, x => x.WithKey(serviceName + "." + actionName)
-				.WithPredicate(predicateContext)); ;
+				.UseSecurableUrlResolver(ac, x => x.WithKey(serviceName + "." + actionName).WithPredicate(predicateContext));
 		}
 
 		public static ActionLink To(this ActionLink link, Type entityType, string actionName, string returnurl = "this")
@@ -69,8 +68,7 @@ namespace Tango.UI.Std
 		public static ActionLink To(this ActionLink link, string serviceName, string actionName, IAccessControl ac, object predicateContext = null, string returnurl = "this")
 		{
 			return link.To(serviceName, serviceName, actionName, returnurl)
-				.UseSecurableUrlResolver(ac, x => x.WithKey(serviceName + "." + actionName)
-				.WithPredicate(predicateContext));
+				.UseSecurableUrlResolver(ac, x => x.WithKey(serviceName + "." + actionName).WithPredicate(predicateContext));
 		}
 
 		public static ActionLink To<T>(this ActionLink link, string actionName, IAccessControl ac, object predicateContext = null, string returnurl = "this")

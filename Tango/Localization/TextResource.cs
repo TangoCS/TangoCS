@@ -10,7 +10,6 @@ namespace Tango.Localization
 	{
 		public SortedSet<string> NotFoundResources { get; } = new SortedSet<string>();
 		public IDictionary<string, string> Resources { get; set; }
-		public IReadOnlyDictionary<string, string> Images { get; set; }
 	}
 
 	public class DefaultResourceManager : IResourceManager
@@ -41,16 +40,6 @@ namespace Tango.Localization
 		public bool TryGet(string key, out string result)
 		{
 			return Options.Resources.TryGetValue(key + "-" + _language.Current.Code, out result);
-		}
-
-
-		public string GetImageName(string key)
-		{
-			var text = "";
-			if (Options.Images.TryGetValue(key, out text))
-				return text;
-			else
-				return "";
 		}
 
 		public void SetNotFound(string key)

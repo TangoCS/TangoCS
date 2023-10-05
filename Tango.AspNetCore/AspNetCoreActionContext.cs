@@ -23,7 +23,7 @@ namespace Tango.AspNetCore
 		{
 			HttpContext = ctx;
 			RouteData = ctx.GetRouteData();
-
+			var ep = ctx.GetEndpoint();
 			if (Guid.TryParse(ctx.Request.Headers["X-Request-Guid"], out Guid rid))
 				RequestID = rid;
 
