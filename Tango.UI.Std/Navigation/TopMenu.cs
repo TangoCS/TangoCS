@@ -7,6 +7,7 @@ using System.Security.Principal;
 using Tango.AccessControl;
 using Tango.Cache;
 using Tango.Html;
+using Tango.Localization;
 
 namespace Tango.UI.Navigation
 {
@@ -20,6 +21,9 @@ namespace Tango.UI.Navigation
 
 		[Inject]
 		protected IAccessControl AccessControl { get; set; }
+
+		[Inject]
+		protected ILanguage Language { get; set; }
 
 		public void Render(LayoutWriter w)
 		{
@@ -45,7 +49,7 @@ namespace Tango.UI.Navigation
 					}
 					else
 					{
-						w.A(a => a.Class("topmenu-item").Href(m.Url).OnClickRunHref().Data(Constants.ContainerNew, 1), () => {
+						w.A(a => a.Class("topmenu-item").Href(m.Url.Replace("{lang}", Language.Current.Code)).OnClickRunHref().Data(Constants.ContainerNew, 1), () => {
 							if (!m.Image.IsEmpty()) w.Icon(m.Image);
 							w.Write(m.Title);
 						});

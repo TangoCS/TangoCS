@@ -23,7 +23,9 @@ namespace Tango.UI.Std
 		void OnChange(ApiResponse response);
 	}
 
-	public class ViewPagePart_sidebar_2col_collapsible<TLeft, TRight> : ViewPagePart_sidebar_2col<TLeft, TRight>
+    public interface IRigthViewPagePart : IWithChangeEventHandler { }
+
+    public class ViewPagePart_sidebar_2col_collapsible<TLeft, TRight> : ViewPagePart_sidebar_2col<TLeft, TRight>
 		where TLeft : IWithChangeEvent, new()
 		where TRight : IWithChangeEventHandler, new()
 	{
@@ -39,7 +41,36 @@ namespace Tango.UI.Std
 		
 	}
 
-	public abstract class ViewPagePart_sidebar_2col_base : ViewPagePart
+    public abstract class ViewPagePart_sidebar_2col_collapsible<TLeft> : ViewPagePart_sidebar_2col_base
+        where TLeft : IWithChangeEvent, new()
+    {
+        protected new TLeft left
+        {
+            get { return (TLeft)base.left; }
+            set { base.left = value; }
+        }
+
+        protected virtual string LeftSideTitle => "";
+        protected virtual string RightSideTitle => "";
+        protected override Action<LayoutWriter> RenderPlaceHolderLeftSide => w => w.CollapsibleSidebar(LeftSideTitle, () => w.Div(a => a.ID("container")));
+        protected override Action<LayoutWriter> RenderPlaceHolderRightSide => w => w.CollapsibleSidebar(RightSideTitle, () => w.Div(a => a.ID("container")));
+        protected override string ContentBodyClass => "layout1 withwrap";
+
+        public override void OnInit()
+        {
+            left = CreateLeft();
+            right = CreateRight("right");
+
+            left.Changed += response => RenderContainer(response, right);
+            left.Changed += right.OnChange;
+        }
+
+        protected virtual TLeft CreateLeft() => CreateControl<TLeft>("left", SetPropertiesLeft);
+        protected abstract IRigthViewPagePart CreateRight(string idControl);
+        protected virtual void SetPropertiesLeft(TLeft c) { }
+    }
+
+    public abstract class ViewPagePart_sidebar_2col_base : ViewPagePart
 	{
 		protected IWithChangeEvent left { get; set; }
 		protected IWithChangeEventHandler right { get; set; }
