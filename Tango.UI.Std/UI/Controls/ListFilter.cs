@@ -781,6 +781,8 @@ namespace Tango.UI.Controls
 			var data = FieldCriterionDDL(f.SeqNo, column, values);
 			if (column.Body.Type == typeof(Guid))
 				data.FieldType = FieldType.Guid;
+			else if (column.Body.Type == typeof(bool))
+				data.FieldType = FieldType.Boolean;
 			else
 				data.FieldType = FieldType.String;
 			f.Operators["="] = data;
