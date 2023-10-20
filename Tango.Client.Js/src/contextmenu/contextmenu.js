@@ -457,7 +457,7 @@
 					$(window).bind('resize', dataParm, iMethods.scrollEvent);
 				}
 				if (option.closeOnScroll) {
-					$(window).bind('scroll', dataParm, iMethods.scrollEvent);
+					$('*').bind('scroll', dataParm, iMethods.scrollEvent);
 				}
 			};
 
@@ -485,7 +485,7 @@
 
 			//unbind all events from top DOM
 			$('html').unbind('click', iMethods.clickEvent);
-			$(window).unbind('scroll resize', iMethods.scrollEvent);
+			$('*').unbind('scroll resize', iMethods.scrollEvent);
 			iMethods.clearMenuStyle($('.iw-contextMenu'));
 			$(document).focus();
 
