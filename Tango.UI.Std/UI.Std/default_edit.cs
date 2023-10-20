@@ -360,7 +360,10 @@ namespace Tango.UI.Std
                 if (CreateObjectMode)
                     EntityAudit.AddChanges(ViewData, EntityAuditAction.Insert);
                 else
-                    EntityAudit.AddChanges(ViewData, EntityAuditAction.Update);
+				if (DeleteMode)
+					EntityAudit.AddChanges(ViewData, EntityAuditAction.Delete);
+				else
+					EntityAudit.AddChanges(ViewData, EntityAuditAction.Update);
             }
         }
 
@@ -451,17 +454,20 @@ namespace Tango.UI.Std
 		}
 
 		protected override void PreProcessFormData(ApiResponse response, ValidationMessageCollection val)
-        {
-            base.PreProcessFormData(response, val);
+		{
+			base.PreProcessFormData(response, val);
 
-            if (EntityAudit != null && ViewData != null)
-            {
-                if (CreateObjectMode)
-                    EntityAudit.AddChanges(ViewData, EntityAuditAction.Insert);
-                else
-                    EntityAudit.AddChanges(ViewData, EntityAuditAction.Update);
-            }
-        }
+			if (EntityAudit != null && ViewData != null)
+			{
+				if (CreateObjectMode)
+					EntityAudit.AddChanges(ViewData, EntityAuditAction.Insert);
+				else
+				if (DeleteMode)
+					EntityAudit.AddChanges(ViewData, EntityAuditAction.Delete);
+				else
+					EntityAudit.AddChanges(ViewData, EntityAuditAction.Update);
+			}
+		}
 
         protected override void Submit(ApiResponse response)
 		{
