@@ -571,12 +571,11 @@ namespace Tango.UI.Controls
 		where TKey : struct
 	{
 		bool Load(TKey? id);
-		bool LoadDefault(string listName, string listParms, Guid? ListName_ID);
-		IEnumerable<(TKey ID, string Name, bool IsDefault, bool IsShared)> GetViews(string listName, IReadOnlyDictionary<string, object> listParms);
+		bool LoadDefault(string listName, Guid? ListName_ID);
+		IEnumerable<(TKey ID, string Name, bool IsDefault, bool IsShared)> GetViews(string listName);
 
 		//void SaveCriteria(bool saveToDb);
-		void SaveView(string name, bool isShared, bool isDefault, string listName, Guid? listName_ID, 
-			IReadOnlyDictionary<string, object> listParms, string columns);
+		void SaveView(string name, bool isShared, bool isDefault, string listName, Guid? listName_ID, string columns);
 
 		void DeleteView();
 

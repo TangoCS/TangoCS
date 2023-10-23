@@ -165,7 +165,7 @@ namespace Tango.UI.Controls
 			}
 
 			if (!loaded && id == null && (AllowDefaultFilters?.Invoke() ?? true))
-				loaded = PersistentFilter.LoadDefault(ListName, "", ListName_ID);
+				loaded = PersistentFilter.LoadDefault(ListName, ListName_ID);
 
 			if (criteria != null)
 			{
@@ -572,7 +572,6 @@ namespace Tango.UI.Controls
 				Context.GetBoolArg("isdefault", false),
 				ListName,
 				ListName_ID,
-				null,
 				columns
 			);
 			FilterSubmitted?.Invoke(response);
@@ -581,7 +580,7 @@ namespace Tango.UI.Controls
 		public void GetViewsMenu(ApiResponse response)
 		{
 			response.AddWidget(Context.Sender, w => {
-				var views = PersistentFilter.GetViews(ListName, Context.AllArgs);
+				var views = PersistentFilter.GetViews(ListName);
 				LoadPersistent();
 
 				w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, 0).WithTitle(r => r.Get("Common.AllItems")),
