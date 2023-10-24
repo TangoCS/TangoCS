@@ -165,7 +165,7 @@ namespace Tango.UI.Controls
 			}
 
 			if (!loaded && id == null && (AllowDefaultFilters?.Invoke() ?? true))
-				loaded = PersistentFilter.LoadDefault(ListName, "", ListName_ID);
+				loaded = PersistentFilter.LoadDefault(ListName, ListName_ID);
 
 			if (criteria != null)
 			{
@@ -572,7 +572,6 @@ namespace Tango.UI.Controls
 				Context.GetBoolArg("isdefault", false),
 				ListName,
 				ListName_ID,
-				null,
 				columns
 			);
 			FilterSubmitted?.Invoke(response);
@@ -581,7 +580,7 @@ namespace Tango.UI.Controls
 		public void GetViewsMenu(ApiResponse response)
 		{
 			response.AddWidget(Context.Sender, w => {
-				var views = PersistentFilter.GetViews(ListName, Context.AllArgs);
+				var views = PersistentFilter.GetViews(ListName);
 				LoadPersistent();
 
 				w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, 0).WithTitle(r => r.Get("Common.AllItems")),
@@ -590,11 +589,18 @@ namespace Tango.UI.Controls
 				foreach (var view in views)
 				{
 					void link() {
-						var name = view.Name;
-						if (view.IsShared)
-							name += " (общ.)";
-						
-						w.ActionLink(a => a.ToCurrent().WithArg(ParameterName, view.ID).WithTitle(name),
+						var icon = view.IsDefault ?
+							view.IsShared ? "filter-shared-default" : "filter-personal-default" :
+							view.IsShared ? "filter-shared" : "filter-personal";
+
+						var tip = view.IsShared ? 
+							Resources.Get("System.Filter.Tabs.Properties.ToolTip.Shared") :
+							Resources.Get("System.Filter.Tabs.Properties.ToolTip.Personal");
+
+						if (view.IsDefault)
+							tip += "\n" + Resources.Get("System.Filter.Tabs.Properties.ToolTip.DefaultView");
+
+						w.ActionImageLink(a => a.ToCurrent().WithArg(ParameterName, view.ID).WithTitle(view.Name).WithImage(icon, tip),
 						a => a.Data(DataCollection).DataContainerExternal(ParentElement.ClientID).DataEvent("onsetview", ParentElement.ClientID));
 					};
 					if (view.IsDefault)
@@ -781,6 +787,8 @@ namespace Tango.UI.Controls
 			var data = FieldCriterionDDL(f.SeqNo, column, values);
 			if (column.Body.Type == typeof(Guid))
 				data.FieldType = FieldType.Guid;
+			else if (column.Body.Type == typeof(bool))
+				data.FieldType = FieldType.Boolean;
 			else
 				data.FieldType = FieldType.String;
 			f.Operators["="] = data;

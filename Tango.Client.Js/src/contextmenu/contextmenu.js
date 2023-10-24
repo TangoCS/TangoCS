@@ -457,7 +457,11 @@
 					$(window).bind('resize', dataParm, iMethods.scrollEvent);
 				}
 				if (option.closeOnScroll) {
-					$(window).bind('scroll', dataParm, iMethods.scrollEvent);
+					var pn = dataParm.menu[0].parentNode;
+					while (pn) {
+						$(pn).bind('scroll', dataParm, iMethods.scrollEvent);
+						pn = pn.parentNode;
+					}
 				}
 			};
 
@@ -485,7 +489,12 @@
 
 			//unbind all events from top DOM
 			$('html').unbind('click', iMethods.clickEvent);
-			$(window).unbind('scroll resize', iMethods.scrollEvent);
+			var pn = menu[0].parentNode;
+			while (pn) {
+				$(pn).unbind('scroll', iMethods.scrollEvent);
+				pn = pn.parentNode;
+			}
+			$(window).unbind('resize', iMethods.scrollEvent);
 			iMethods.clearMenuStyle($('.iw-contextMenu'));
 			$(document).focus();
 

@@ -36,46 +36,19 @@ namespace Tango.UI.Controls
 			return _filter != null;
 		}
 
-		public bool LoadDefault(string listName, string listParms, Guid? listName_ID)
+		public bool LoadDefault(string listName, Guid? listName_ID)
 		{
-			_filter = _storage.GetDefault(listName, listParms, listName_ID);
+			_filter = _storage.GetDefault(listName, listName_ID);
 			return _filter != null;
 		}
 
-		public IEnumerable<(TKey ID, string Name, bool IsDefault, bool IsShared)> GetViews(string listName, IReadOnlyDictionary<string, object> listParms)
+		public IEnumerable<(TKey ID, string Name, bool IsDefault, bool IsShared)> GetViews(string listName)
 		{
-			if (_views == null) LoadViews(listName, listParms);
+			if (_views == null) _views = _storage.GetViews(listName);
 			return _views.OrderBy(o => o.FilterName).Select(o => (o.ID, o.FilterName, o.IsDefault, o.IsShared));
 		}
 
-		void LoadViews(string listName, IReadOnlyDictionary<string, object> listParms)
-		{
-			_views = _storage.GetViews(listName);
-
-			int i = 0;
-			while (i < _views.Count())
-			{
-				bool del = false;
-				var v = _views.ElementAt(i);
-				if (!v.ListParms.IsEmpty())
-				{
-					string[] pa = v.ListParms.Split(new char[] { ',' });
-					foreach (string p in pa)
-					{
-						string[] cv = p.Split(new char[] { '=' });
-						if (cv.Length == 2)
-						{
-							if (listParms.Parse<string>(cv[0]).ToLower() != cv[1].ToLower())
-							{
-								_views.RemoveAt(i);
-								del = true;
-							}
-						}
-					}
-				}
-				if (!del) i++;
-			}
-		}
+		
 
 		protected abstract string Serialize(IEnumerable<FilterItem> criteria);
 
@@ -122,11 +95,11 @@ namespace Tango.UI.Controls
 			set { Filter.FilterName = value; }
 		}
 
-		public string ListParms
-		{
-			get { return Filter.ListParms; }
-			set { Filter.ListParms = value; }
-		}
+		//public string ListParms
+		//{
+		//	get { return Filter.ListParms; }
+		//	set { Filter.ListParms = value; }
+		//}
 
 		public string StringValue
 		{
@@ -205,28 +178,14 @@ namespace Tango.UI.Controls
 		//	}
 		//}
 
-		public void SaveView(string name, bool isShared, bool isDefault, string listName, Guid? listName_ID, 
-			IReadOnlyDictionary<string, object> listParms, string columns)
+		public void SaveView(string name, bool isShared, bool isDefault, string listName, Guid? listName_ID, string columns)
 		{
 			Filter.FilterValue = Serialize(Criteria);
 			Filter.FilterName = name;
 			Filter.ListName = listName;
 			Filter.ListNameID = listName_ID;
-			Filter.ListParms = listParms?.Select(kv => kv.Key + "=" + kv.Value).Join("&");
 			Filter.IsDefault = isDefault;
 			Filter.Columns = columns;
-
-			if (isDefault)
-			{
-				if (_views == null)
-					LoadViews(listName, listParms);
-
-				foreach (var view in _views.Where(o => !o.ID.Equals(_filter.ID)))
-				{
-					view.IsDefault = false;
-					_storage.SubmitChanges(view, view.IsShared);
-				}
-			}
 
 			_storage.SubmitChanges(Filter, isShared);
 		}
@@ -244,6 +203,7 @@ namespace Tango.UI.Controls
 			//_filter = f;
 		}
 	}
+
 
 	public class PersistentFilterStore : IPersistentFilterStore<int>
 	{
@@ -266,21 +226,15 @@ namespace Tango.UI.Controls
 			_database.Repository<N_Filter>().Delete(o => o.FilterID.Equals(id));
 		}
 
-		public IPersistentFilterEntity<int> GetDefault(string listName, string listParms, Guid? listNameID)
+		public IPersistentFilterEntity<int> GetDefault(string listName, Guid? listNameID)
 		{
-			if (!listParms.IsEmpty())
-				return _database.Connection.QuerySingleOrDefault<N_Filter>(@"
-select * 
-from n_filter 
-where (subjectid is null or subjectid = @subjectid) and isdefault = @isdefault 
-and ((listnameid is null and lower(listname) = @listname and listparms = @listparms) or (listnameid = @listnameid))
-", new { subjectid = _users.CurrentUserID, listName = listName.ToLower(), listParms, isdefault = true, listNameID });
-			else
-				return _database.Connection.QuerySingleOrDefault<N_Filter>(@"
+			return _database.Connection.QuerySingleOrDefault<N_Filter>(@"
 select * 
 from n_filter 
 where (subjectid is null or subjectid = @subjectid) and isdefault = @isdefault 
 and ((listnameid is null and lower(listname) = @listname) or (listnameid = @listnameid))
+order by subjectid asc nulls last
+limit 1
 ", new { subjectid = _users.CurrentUserID, listName = listName.ToLower(), isdefault = true, listNameID });
 		}
 
@@ -296,6 +250,22 @@ and lower(listname) = @listname
 
 		public void SubmitChanges(IPersistentFilterEntity<int> entity, bool? isShared = null)
 		{
+			if (entity.IsDefault)
+			{
+				var views = _database.Connection.Query<N_Filter>(@"
+select * 
+from n_filter 
+where subjectid = @subjectid and filtername is not null and lower(listname) = @listname
+", new { subjectid = _users.CurrentUserID, listName = entity.ListName.ToLower() })
+					.Select(o => o as IPersistentFilterEntity<int>).ToList();
+
+				foreach (var view in views.Where(o => !o.ID.Equals(entity.ID)))
+				{
+					view.IsDefault = false;
+					SubmitChanges(view, view.IsShared);
+				}
+			}
+
 			if (!(entity is N_Filter)) return;
 			var filter = entity as N_Filter;
 
@@ -358,7 +328,7 @@ and lower(listname) = @listname
 	public interface IPersistentFilterStore<TKey>
 	{
 		IPersistentFilterEntity<TKey> GetById(TKey id);
-		IPersistentFilterEntity<TKey> GetDefault(string listName, string listParms, Guid? listName_ID);
+		IPersistentFilterEntity<TKey> GetDefault(string listName, Guid? listName_ID);
 		List<IPersistentFilterEntity<TKey>> GetViews(string listName);
 		void SubmitChanges(IPersistentFilterEntity<TKey> entity, bool? isShared = null);
 		IPersistentFilterEntity<TKey> CreateNew();
