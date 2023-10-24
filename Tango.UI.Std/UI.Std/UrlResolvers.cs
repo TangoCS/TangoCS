@@ -11,7 +11,7 @@ namespace Tango.UI.Std
 		object _predicateContext;
 		bool _checkPredicateIfContextIsEmpty = false;
 
-		public SecurableUrlResolver(IAccessControl accessControl, string routeTemplate) : base(routeTemplate)
+		public SecurableUrlResolver(IAccessControl accessControl)
 		{
 			_accessControl = accessControl;
 		}
@@ -29,7 +29,7 @@ namespace Tango.UI.Std
 			return this;
 		}
 
-		public override UrlResolverResult Resolve(IReadOnlyDictionary<string, string> parameters, DynamicDictionary globalParameters)
+		public override UrlResolverResult Resolve(string template, IReadOnlyDictionary<string, string> parameters, DynamicDictionary globalParameters)
 		{
 			bool access = true;
 			if (!_securableObjectKey.IsEmpty())
@@ -39,7 +39,7 @@ namespace Tango.UI.Std
 					access = _accessControl.Check(_securableObjectKey);
 
 			if (access)
-				return base.Resolve(parameters, globalParameters);
+				return base.Resolve(template, parameters, globalParameters);
 			else
 				return new UrlResolverResult { Resolved = false };
 		}

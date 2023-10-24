@@ -15,15 +15,13 @@ namespace Tango.AspNetCore
 {
     public class AspNetCoreActionContext : ActionContext
     {
-        HttpContext HttpContext { get; set; }
         RouteData RouteData { get; set; }
-        string[] skipcookies => new[] { ".AspNetCore.Cookies", "x-csrf-token" };
+		static string[] SkipCookies => new[] { ".AspNetCore.Cookies", "x-csrf-token" };
 
         public AspNetCoreActionContext(HttpContext ctx) : base(ctx.RequestServices)
 		{
-			HttpContext = ctx;
 			RouteData = ctx.GetRouteData();
-			var ep = ctx.GetEndpoint();
+
 			if (Guid.TryParse(ctx.Request.Headers["X-Request-Guid"], out Guid rid))
 				RequestID = rid;
 
@@ -92,7 +90,7 @@ namespace Tango.AspNetCore
 
             foreach (var q in ctx.Request.Cookies)
             {
-                if (!skipcookies.Contains(q.Key))
+                if (!SkipCookies.Contains(q.Key))
 					PersistentArgs[q.Key] = q.Value.ToString();
             }
 

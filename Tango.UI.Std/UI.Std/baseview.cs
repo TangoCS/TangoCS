@@ -67,7 +67,9 @@ namespace Tango.UI.Std
 			if (ac == null) return false;
 
 			var so = method.DeclaringType.GetCustomAttribute<SecurableObjectAttribute>();
-			var soname = so != null ? so.Name : (Context.Service + "." + Context.Action);
+			var soname = so != null ? 
+				so.Name : 
+				(Context.Service + (!Context.Action.IsEmpty() ? "." + Context.Action : ""));
 
 			return ac.Check(soname);
 		}

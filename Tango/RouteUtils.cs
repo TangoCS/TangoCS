@@ -23,20 +23,23 @@ namespace Tango
 				Group g = m.Groups[2]; //it's second in the match between { and }
 				int length = g.Index - startIndex - 1;
 				sb.Append(template.Substring(startIndex, length));
+				string val = g.Value;
+				bool isOptional = val.EndsWith("?");
+				if (isOptional) val = val.Substring(0, val.Length - 1);
 
-				if (parameters.TryGetValue(g.Value, out string result)) //Cool, we found something
+				if (parameters.TryGetValue(val, out string result)) //Cool, we found something
 				{
 					sb.Append(result);
-					processedKeys.Add(g.Value);
+					processedKeys.Add(val);
 				}
-				else if (globalParameters != null && globalParameters.TryGetValue(g.Value, out object result2)) //Cool, we found something
+				else if (globalParameters != null && globalParameters.TryGetValue(val, out object result2)) //Cool, we found something
 				{
 					sb.Append(result2);
 				}
-				else //didn't find a property with that name, so be gracious and put it back
+				else if (!isOptional) //didn't find a property with that name, so be gracious and put it back
 				{
 					sb.Append("{");
-					sb.Append(g.Value);
+					sb.Append(val);
 					sb.Append("}");
 				}
 				startIndex = g.Index + g.Length + 1;

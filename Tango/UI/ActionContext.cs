@@ -24,14 +24,14 @@ namespace Tango.UI
 
 			RequestServices = requestServices;
 			Resources = RequestServices.GetService(typeof(IResourceManager)) as IResourceManager;
-			Routes = RequestServices.GetService(typeof(RoutesCollection)) as RoutesCollection;
+			Routes = RequestServices.GetService(typeof(NamedRouteCollection)) as NamedRouteCollection;
 		}
 
 		public IServiceProvider RequestServices { get; protected set; }
 		public abstract IServiceScope CreateServiceScope();
 
 		public IResourceManager Resources { get; protected set; }
-		public RoutesCollection Routes { get; protected set; }
+		public NamedRouteCollection Routes { get; protected set; }
 		public IDictionary<string, string> PersistentArgs { get; }
 		public ICollection<IViewElement> EventReceivers { get; private set; }
 
@@ -261,7 +261,7 @@ namespace Tango.UI
 		public byte[] FileBytes { get; set; }
 	}
 
-	public class RoutesCollection : Dictionary<string, string> { }
+	public class NamedRouteCollection : Dictionary<string, string> { }
 
 	public static class ActionContextExtensions
 	{

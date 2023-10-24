@@ -834,6 +834,8 @@ namespace Tango.UI.Controls
 				fieldType = FieldType.IntArray;
 			else if (t == typeof(Guid) || t == typeof(Guid?))
 				fieldType = FieldType.GuidArray;
+			else if (t == typeof(string))
+				fieldType = FieldType.StringArray;
 			else
 				throw new Exception($"SelectMultipleObjects condition: {t.Name} key is not supported");
 
