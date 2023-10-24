@@ -145,7 +145,6 @@ namespace Tango.UI
 
 			setProperties?.Invoke(c);
 			c.OnInit();
-			//c.AfterInit();
 			return c;
 		}
 
@@ -165,7 +164,6 @@ namespace Tango.UI
 
 			Context.EventReceivers.Add(c);
 			c.OnInit();
-			//c.AfterInit();
 			return c;
 		}
 

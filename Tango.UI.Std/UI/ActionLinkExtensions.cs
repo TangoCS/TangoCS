@@ -40,10 +40,12 @@ namespace Tango.UI
 
 		static ATagAttributes SetTarget(this ATagAttributes a, ActionLink link)
 		{
+			var url = link.Url;
+
 			if (link.ChangeUrl || link.IsTargetBlank)
-				a.Href(link);
+				a.Href(url);
 			else
-				a.Data("href", link);
+				a.Data("href", url);
 
 			if (link.IsTargetBlank)
 			{
@@ -51,7 +53,7 @@ namespace Tango.UI
 				return a;
 			}
 
-			if (link.Service.IsEmpty())
+			if (url.IsEmpty())
 				a.DataParm(link.Args);
 
 			foreach (var data in link.Data)

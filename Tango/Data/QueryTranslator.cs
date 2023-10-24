@@ -352,7 +352,7 @@ namespace Tango.Data
 					break;
 
 				case TypeCode.Object:
-					if (t != typeof(Guid) && t != typeof(int[]) && t != typeof(Guid[]))
+					if (t != typeof(Guid) && t != typeof(int[]) && t != typeof(Guid[]) && t != typeof(string[]))
 						throw new NotSupportedException(string.Format("The constant for '{0}' is not supported", c.Value));
 					sb.Append(ConvertConstantToParm(c.Value));
 					break;
@@ -367,6 +367,12 @@ namespace Tango.Data
 		string ConvertConstantToParm(object constant)
 		{
 			var name = "p" + _parms.Count;
+			if (constant is IEnumerable<string> c1)
+				constant = c1.ToArray();
+			else if (constant is IEnumerable<int> c2)
+				constant = c2.ToArray();
+			else if (constant is IEnumerable<Guid> c3)
+				constant = c3.ToArray();
 			_parms.Add(name, constant);
 			return "@" + name;
 		}
@@ -445,21 +451,22 @@ namespace Tango.Data
 			{
 				Visit(m.Arguments[1]);
 				sb.Append($" {_dialect.In} ");
-				_beforeConstant = _dialect.BracketsForIn ? "(" : "";
-				_afterConstant = _dialect.BracketsForIn ? ")" : "";
+				if (_dialect.BracketsForIn)
+					sb.Append("(");
 				Visit(m.Arguments[0]);
-				_beforeConstant = "";
-				_afterConstant = "";
+				if (_dialect.BracketsForIn)
+					sb.Append(")");
+
 			}
 			else
 			{
 				Visit(m.Arguments[0]);
 				sb.Append($" {_dialect.In} ");
-				_beforeConstant = _dialect.BracketsForIn ? "(" : "";
-				_afterConstant = _dialect.BracketsForIn ? ")" : "";
+				if (_dialect.BracketsForIn)
+					sb.Append("(");
 				Visit(m.Object);
-				_beforeConstant = "";
-				_afterConstant = "";
+				if (_dialect.BracketsForIn)
+					sb.Append(")");
 			}
 		}
 

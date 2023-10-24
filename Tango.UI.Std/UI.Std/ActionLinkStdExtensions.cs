@@ -15,7 +15,7 @@ namespace Tango.UI.Std
 
 		public static ActionLink UseSecurableUrlResolver(this ActionLink actionUrl, IAccessControl ac, Action<SecurableUrlResolver> resolverSetup)
 		{
-			var resolver = new SecurableUrlResolver(ac, actionUrl.Context.Routes["default"]);
+			var resolver = new SecurableUrlResolver(ac);
 			resolverSetup(resolver);
 			return actionUrl.UseResolver(resolver);
 		}

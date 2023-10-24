@@ -37,6 +37,7 @@ namespace Tango.UI
 		public string Event { get; set; }
 		public string EventReceiver { get; set; }
 
+		public string RouteTemplateName { get; set; }
 		public Dictionary<string, string> Args { get; } = new Dictionary<string, string>();
 		
 		public Dictionary<string, string> Data { get; } = new Dictionary<string, string>();
@@ -48,13 +49,9 @@ namespace Tango.UI
 		{
 			var urlArgs = new Dictionary<string, string>(Args);
 
-			if (resolver == null)
-			{
-				if (Service == null)
-					resolver = new RouteUrlResolver("/");
-				else
-					resolver = context.CreateDefaultUrlResolver();
-			}
+			var templateValue = RouteTemplateName == null && Service == null ? 
+				"/" : 
+				context.Routes[RouteTemplateName ?? "default"];
 
 			if (Service != null)
 			{
@@ -62,7 +59,7 @@ namespace Tango.UI
 				urlArgs.Add(Constants.ActionName, Action);
 			}
 
-			return resolver.Resolve(urlArgs, context.AllArgs);
+			return (resolver ?? new RouteUrlResolver()).Resolve(templateValue, urlArgs, context.AllArgs);
 		}
 	}
 
@@ -266,6 +263,12 @@ namespace Tango.UI
 		public ActionLink TargetBlank()
 		{
 			IsTargetBlank = true;
+			return this;
+		}
+
+		public ActionLink WithTemplate(string name)
+		{
+			RouteTemplateName = name;
 			return this;
 		}
 

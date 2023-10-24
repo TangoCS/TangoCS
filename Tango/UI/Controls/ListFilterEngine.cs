@@ -146,6 +146,13 @@ namespace Tango.UI.Controls
 						else if (valType == typeof(Guid[]))
 							expr = intersectExpr<Guid>();
 					}
+					else if (item.FieldType == FieldType.StringArray)
+					{
+						if (valType == typeof(string))
+							expr = containsExpr<string>();
+						else if (valType == typeof(string[]))
+							expr = intersectExpr<string>();
+					}
 					else
 					{
 						var colexpr = Expression.Convert(column.Body, valType);
@@ -313,6 +320,10 @@ namespace Tango.UI.Controls
 			else if (item.FieldType == FieldType.GuidArray)
 			{
 				val = val?.ToString().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => Guid.Parse(x)).ToArray();
+			}
+			else if (item.FieldType == FieldType.StringArray)
+			{
+				val = val?.ToString().Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).ToArray();
 			}
 			//else if (item.FieldType == FieldType.CustomInt)
 			//{
@@ -552,7 +563,8 @@ namespace Tango.UI.Controls
         Guid,
 		Sql,
 		IntArray,
-		GuidArray
+		GuidArray,
+		StringArray
 	}
 
 	public enum FilterItemOperation

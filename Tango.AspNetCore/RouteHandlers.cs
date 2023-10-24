@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
 using Tango.FileStorage;
@@ -66,6 +67,35 @@ namespace Tango.AspNetCore
 			d.Values.Add("action", action);
 
 			await c.ActionHandler();
+		}
+	}
+
+	/// <summary>
+	/// Provides extension methods for adding new handlers to a <see cref="IRouteBuilder"/>.
+	/// </summary>
+	public static class RequestDelegateRouteBuilderExtensions
+	{
+		/// <summary>
+		/// Adds a route to the <see cref="IRouteBuilder"/> for the given <paramref name="template"/>, and
+		/// <paramref name="handler"/>.
+		/// </summary>
+		/// <param name="builder">The <see cref="IRouteBuilder"/>.</param>
+		/// <param name="template">The route template.</param>
+		/// <param name="handler">The <see cref="RequestDelegate"/> route handler.</param>
+		/// <returns>A reference to the <paramref name="builder"/> after this operation has completed.</returns>
+		public static IRouteBuilder MapRoute(this IRouteBuilder builder, string name, string template, RequestDelegate handler)
+		{
+			var route = new Route(
+				new RouteHandler(handler),
+				name,
+				template,
+				defaults: null,
+				constraints: null,
+				dataTokens: null,
+				inlineConstraintResolver: builder.ServiceProvider.GetRequiredService<IInlineConstraintResolver>());
+
+			builder.Routes.Add(route);
+			return builder;
 		}
 	}
 }
