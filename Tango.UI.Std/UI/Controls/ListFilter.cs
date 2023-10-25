@@ -514,7 +514,7 @@ namespace Tango.UI.Controls
 			response.AddWidget("contenttitle", Resources.Get("System.Filter.ViewSettings"));
 			response.AddWidget("contentbody", w => {
 				w.FieldsBlock100Percent(() => {
-					w.FormFieldTextBox("title", Resources.Get("Common.Title"), formData.Title);
+					w.FormFieldTextBox("title", Resources.Get("Common.Title"), formData.Title, isRequired: true);
 					if (IsFilterAdministrator.Invoke())
 					{
 						w.FormField("visibility", Resources.Get("System.Filter.PropertiesOfVisibility"), () => {
