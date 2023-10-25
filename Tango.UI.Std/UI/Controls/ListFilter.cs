@@ -543,7 +543,7 @@ namespace Tango.UI.Controls
 		{
 			//LoadPersistent();
 			//Criteria = Context.GetJsonArg(hValue, () => new List<FilterItem>());
-			//PersistentFilter.InsertOnSubmit();
+			PersistentFilter.InsertOnSubmit();
 			OnViewSubmit(response);
 		}
 

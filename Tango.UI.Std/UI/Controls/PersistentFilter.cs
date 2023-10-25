@@ -89,17 +89,13 @@ namespace Tango.UI.Controls
 		public TKey ID => Filter.ID;
 		public bool IsShared => Filter.IsShared;
 
+		bool _isNew = false;
+
 		public string Name
 		{
 			get { return Filter.FilterName; }
 			set { Filter.FilterName = value; }
 		}
-
-		//public string ListParms
-		//{
-		//	get { return Filter.ListParms; }
-		//	set { Filter.ListParms = value; }
-		//}
 
 		public string StringValue
 		{
@@ -168,18 +164,10 @@ namespace Tango.UI.Controls
 		//}
 		//#endregion
 
-		//public void SaveCriteria(bool saveToDb)
-		//{
-		//	Filter.FilterValue = Serialize(Criteria);
-		//	if (saveToDb)
-		//	{
-		//		var isShared = ID.Equals(default(TKey)) ? false : IsShared;
-		//		_storage.SubmitChanges(Filter, isShared);
-		//	}
-		//}
-
 		public void SaveView(string name, bool isShared, bool isDefault, string listName, Guid? listName_ID, string columns)
 		{
+			if (_isNew) _filter = null;
+
 			Filter.FilterValue = Serialize(Criteria);
 			Filter.FilterName = name;
 			Filter.ListName = listName;
@@ -198,9 +186,7 @@ namespace Tango.UI.Controls
 
 		public void InsertOnSubmit()
 		{
-			//var f = _storage.CreateNew();
-			//f.FilterValue = _filter.FilterValue;
-			//_filter = f;
+			_isNew = true;
 		}
 	}
 
