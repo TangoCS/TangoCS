@@ -116,8 +116,7 @@ namespace Tango.Data
             };
         }
         
-
-		public Func<string> ID { get; set; }
+        public Func<string> ID { get; set; }
 		public Func<string> Title { get; set; }
 		public Type	Type { get; set; }
 
