@@ -252,11 +252,15 @@ and lower(listname) = @listname
 		{
 			if (entity.IsDefault)
 			{
-				var views = _database.Connection.Query<N_Filter>(@"
-select * 
-from n_filter 
+				var views = ((isShared ?? false) ?
+					_database.Connection.Query<N_Filter>(@"
+select * from n_filter 
+where subjectid is null and filtername is not null and lower(listname) = @listname
+", new { listName = entity.ListName.ToLower() }) :
+					_database.Connection.Query<N_Filter>(@"
+select * from n_filter 
 where subjectid = @subjectid and filtername is not null and lower(listname) = @listname
-", new { subjectid = _users.CurrentUserID, listName = entity.ListName.ToLower() })
+", new { subjectid = _users.CurrentUserID, listName = entity.ListName.ToLower() }))
 					.Select(o => o as IPersistentFilterEntity<int>).ToList();
 
 				foreach (var view in views.Where(o => !o.ID.Equals(entity.ID)))
