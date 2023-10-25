@@ -47,6 +47,7 @@ namespace Tango.UI.Controls
 		public Action FieldsInit { get; set; }
 
 		public Func<bool> AllowDefaultFilters { get; set; }
+		public Func<bool> IsFilterAdministrator { get; set; } = () => false;
 
 		string ListName
 		{
@@ -514,12 +515,15 @@ namespace Tango.UI.Controls
 			response.AddWidget("contentbody", w => {
 				w.FieldsBlock100Percent(() => {
 					w.FormFieldTextBox("title", Resources.Get("Common.Title"), formData.Title);
-					w.FormField("visibility", Resources.Get("System.Filter.PropertiesOfVisibility"), () => {
-						w.RadioButtonList("isshared", formData.IsShared, new List<SelectListItem> {
-							new SelectListItem(Resources.Get("System.Filter.Tabs.Properties.Personal"), 1),
-							new SelectListItem(Resources.Get("System.Filter.Tabs.Properties.Shared"), 2)
+					if (IsFilterAdministrator.Invoke())
+					{
+						w.FormField("visibility", Resources.Get("System.Filter.PropertiesOfVisibility"), () => {
+							w.RadioButtonList("isshared", formData.IsShared, new List<SelectListItem> {
+								new SelectListItem(Resources.Get("System.Filter.Tabs.Properties.Personal"), 1),
+								new SelectListItem(Resources.Get("System.Filter.Tabs.Properties.Shared"), 2)
+							});
 						});
-					});
+					}
 					w.FormField("", "", () => {
 						w.CheckBox("isdefault", formData.IsDefault);
 						w.Label("isdefault", Resources.Get("System.Filter.Tabs.Properties.DefaultView"));
@@ -568,7 +572,7 @@ namespace Tango.UI.Controls
 
 			PersistentFilter.SaveView(
 				title,
-				Context.GetIntArg("isshared") == 2,
+				Context.GetIntArg("isshared") == 2 && IsFilterAdministrator.Invoke(),
 				Context.GetBoolArg("isdefault", false),
 				ListName,
 				ListName_ID,
@@ -612,7 +616,7 @@ namespace Tango.UI.Controls
 				if (!PersistentFilter.Name.IsEmpty() || Criteria.Count(c => !c.IsProgram) > 0)
 					w.PopupMenuSeparator();
 
-				if (!PersistentFilter.Name.IsEmpty())
+				if (!PersistentFilter.Name.IsEmpty() && (!PersistentFilter.IsShared || IsFilterAdministrator.Invoke()))
 				{
 					w.ActionImageLink(a => a.CallbackToCurrent().AsDialog(UpdateViewDialog).WithImage("viewsettings")
 						.WithTitle(r => r.Get("System.Filter.UpdateView")), a => a.DataRef(this));

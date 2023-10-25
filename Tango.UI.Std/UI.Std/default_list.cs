@@ -159,6 +159,7 @@ namespace Tango.UI.Std
 				};
 				f.FilterSubmitted += OnFilter;
 				f.AllowDefaultFilters = () => EnableViews;
+				f.IsFilterAdministrator = () => AccessControl.Check("filter.administrator");
 			});
 
 			ElementArgNames = new List<string> {
