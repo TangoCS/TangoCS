@@ -48,12 +48,11 @@ namespace Tango.UI
 			return l.Url;
 		}
 
-		public static string CreateReturnUrl(this ActionContext context, int code, IDictionary<string, object> args = null)
+		public static string CreateReturnUrl(this ActionContext context, ActionLink al, int code, IDictionary<string, object> args = null)
 		{
-			var	baseUrl = context.BaseUrl();
-			if (args != null) baseUrl.WithArgs(args);
+			if (args != null) al.WithArgs(args);
 
-			var returnurl = baseUrl.Url;
+			var returnurl = al.Url;
 			if (returnurl.Length > 1800)
 			{
 				Stack<string> urlStack = new Stack<string>();
@@ -70,6 +69,11 @@ namespace Tango.UI
 				returnurl = url;
 			}
 			return returnurl;
+		}
+
+		public static string CreateReturnUrl(this ActionContext context, int code, IDictionary<string, object> args = null)
+		{
+			return CreateReturnUrl(context, context.BaseUrl(), code, args);
 		}
 	}
 }
