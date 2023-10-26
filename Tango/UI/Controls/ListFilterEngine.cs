@@ -54,7 +54,7 @@ namespace Tango.UI.Controls
 
 					Expression<Func<T, bool>> containsExpr<TKey>()
 					{
-						var colexpr = Expression.Convert(column.Body, valType);
+						var colexpr = Expression.Convert(column.Body, Nullable.GetUnderlyingType(valType) ?? valType);
 						var valexpr = Expression.Constant(val, typeof(TKey[]));
 						var method = typeof(Enumerable).GetMethods(BindingFlags.Static | BindingFlags.Public)
 							.Where(x => x.Name == "Contains" && x.GetParameters().Count() == 2).First();
@@ -128,7 +128,7 @@ namespace Tango.UI.Controls
 					}
 					else if (item.FieldType == FieldType.IntArray)
 					{
-						if (valType == typeof(int))
+						if (valType == typeof(int) || valType == typeof(int?))
 							expr = containsExpr<int>();
 						else if (valType == typeof(int[]))
 							expr = intersectExpr<int>();
@@ -141,7 +141,7 @@ namespace Tango.UI.Controls
 					}
 					else if (item.FieldType == FieldType.GuidArray)
 					{
-						if (valType == typeof(Guid))
+						if (valType == typeof(Guid) || valType == typeof(Guid?))
 							expr = containsExpr<Guid>();
 						else if (valType == typeof(Guid[]))
 							expr = intersectExpr<Guid>();
