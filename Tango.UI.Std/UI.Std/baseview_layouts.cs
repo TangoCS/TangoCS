@@ -37,7 +37,7 @@ namespace Tango.UI.Std
 		
 		protected override Action<LayoutWriter> RenderPlaceHolderRightSide => w => w.CollapsibleSidebar(RightSideTitle, () => w.Div(a => a.ID("container")));
 
-		protected override string ContentBodyClass => "layout1 withwrap";
+        protected override string ContentBodyClass => "layout1 withwrap" + (String.IsNullOrEmpty(ContentBodyPartsSizeClass) ? " size_3_7" : $" {ContentBodyPartsSizeClass}");
 		
 	}
 
@@ -49,8 +49,7 @@ namespace Tango.UI.Std
             get { return (TLeft)base.left; }
             set { base.left = value; }
         }
-
-        protected virtual string LeftSideTitle => "";
+		protected virtual string LeftSideTitle => "";
         protected virtual string RightSideTitle => "";
         protected override Action<LayoutWriter> RenderPlaceHolderLeftSide => w => w.CollapsibleSidebar(LeftSideTitle, () => w.Div(a => a.ID("container")));
         protected override Action<LayoutWriter> RenderPlaceHolderRightSide => w => w.CollapsibleSidebar(RightSideTitle, () => w.Div(a => a.ID("container")));
@@ -74,12 +73,11 @@ namespace Tango.UI.Std
 	{
 		protected IWithChangeEvent left { get; set; }
 		protected IWithChangeEventHandler right { get; set; }
-
-		public virtual bool EnableToolbar => false;
+        public virtual bool EnableToolbar => false;
 		protected virtual void Toolbar(LayoutWriter w) { }
 		protected virtual string FormTitle => "";
-
-		protected virtual string ContentBodyClass => "grid_sidebar_2col";
+        protected string ContentBodyPartsSizeClass { get; set; } = String.Empty;
+        protected virtual string ContentBodyClass => "grid_sidebar_2col";
 
 		protected virtual Action<LayoutWriter> RenderPlaceHolderLeftSide => w => w.Div(a => a.ID("container"));
 
