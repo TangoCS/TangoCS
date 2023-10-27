@@ -178,6 +178,8 @@ System.Filter.ToolTip.MoveDown;Переместить вниз;Move Down
 System.Filter.ToolTip.MoveUp;Переместить вверх;Move Up
 System.Filter.ToolTip.Negation;Отрицание;Negation
 System.Filter.ToolTip.OpeningBrackets;Открывающие скобки;Opening brackets
+System.Filter.ToolTip.SaveAs;Сохранить копию представления с новым именем;Save as
+System.Filter.ToolTip.UpdateView;Изменить параметры представления;Update view
 System.Filter.Up;Вверх;Up
 System.Filter.Value;Значение;Value
 System.Filter.Yes;Да;Yes
