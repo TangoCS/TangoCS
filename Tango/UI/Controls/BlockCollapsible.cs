@@ -25,8 +25,11 @@ namespace Tango.UI.Controls
         }
     }
 
-    public class FieldsBlockCollapsibleOptions
+    public class BlockCollapsibleBuilder
     {
+        private readonly Lazy<string> _id = new Lazy<string>(() => Guid.NewGuid().ToString());
+        public string Id => _id.Value;
+
         /// <summary>
         /// Контент левого заголовока
         /// </summary>
@@ -46,19 +49,20 @@ namespace Tango.UI.Controls
         /// Признак свернутого состояния
         /// </summary>
         public bool IsCollapsed { get; set; }
-
         public Grid Grid { get; private set; } = Grid.OneWhole;
-
-		public FieldsBlockCollapsibleOptions WithGrid(Grid grid) { Grid = grid; return this; }
-		public FieldsBlockCollapsibleOptions SetLeftTitle(Action inner) { LeftTitle += inner; return this; }
-        public FieldsBlockCollapsibleOptions SetRightTitle(Action inner) { RightTitle += inner; return this; }
-        public FieldsBlockCollapsibleOptions SetContent(Action inner) { Content += inner; return this; }
-        protected internal FieldsBlockCollapsibleOptions SetLeftTitle(Action<LayoutWriter> w) { LeftTitle += w; return this; }
-        protected internal FieldsBlockCollapsibleOptions SetRightTitle(Action<LayoutWriter> w) { RightTitle += w; return this; }
-        protected internal FieldsBlockCollapsibleOptions SetContent(Action<LayoutWriter> w) { Content += w; return this; }
-        public static FieldsBlockCollapsibleOptions Make(Action<FieldsBlockCollapsibleOptions> inner = null)
+        public Action<TagAttributes> BlockHeaderLeftAttributes { get; private set; }
+        
+        public BlockCollapsibleBuilder WithBlockHeaderLeftAttributes(Action<TagAttributes> attr) { BlockHeaderLeftAttributes = attr; return this; }
+        public BlockCollapsibleBuilder WithGrid(Grid grid) { Grid = grid; return this; }
+		public BlockCollapsibleBuilder SetLeftTitle(Action inner) { LeftTitle += inner; return this; }
+        public BlockCollapsibleBuilder SetRightTitle(Action inner) { RightTitle += inner; return this; }
+        public BlockCollapsibleBuilder SetContent(Action inner) { Content += inner; return this; }
+        protected internal BlockCollapsibleBuilder SetLeftTitle(Action<LayoutWriter> w) { LeftTitle += w; return this; }
+        protected internal BlockCollapsibleBuilder SetRightTitle(Action<LayoutWriter> w) { RightTitle += w; return this; }
+        protected internal BlockCollapsibleBuilder SetContent(Action<LayoutWriter> w) { Content += w; return this; }
+        public static BlockCollapsibleBuilder Make(Action<BlockCollapsibleBuilder> inner = null)
         {
-            var obj = new FieldsBlockCollapsibleOptions();
+            var obj = new BlockCollapsibleBuilder();
             inner?.Invoke(obj);
             return obj;
         }
@@ -66,30 +70,30 @@ namespace Tango.UI.Controls
 
     public static class FieldsBlockCollapsibleOptionsExtension
     {
-        public static FieldsBlockCollapsibleOptions SetLeftTitle(this FieldsBlockCollapsibleOptions obj, string title)
+        public static BlockCollapsibleBuilder SetLeftTitle(this BlockCollapsibleBuilder obj, string title)
             => obj.SetLeftTitle(w => w.Write(title));
 
-        public static FieldsBlockCollapsibleOptions SetRightTitle(this FieldsBlockCollapsibleOptions obj, Action<TitleBuilder> builder)
+        public static BlockCollapsibleBuilder SetRightTitle(this BlockCollapsibleBuilder obj, Action<TitleBuilder> builder)
            => obj.SetRightTitle((Action<LayoutWriter>)TitleBuilder.Make(builder));
 
-        public static FieldsBlockCollapsibleOptions SetContentBodyBlock(this FieldsBlockCollapsibleOptions obj, Action inner)
+        public static BlockCollapsibleBuilder SetContentBodyBlock(this BlockCollapsibleBuilder obj, Action inner)
             => obj.SetContentBodyBlock(null, inner);
-        public static FieldsBlockCollapsibleOptions SetContentBodyBlock(this FieldsBlockCollapsibleOptions obj, Action<TagAttributes> bodyBlockAttr, Action inner)
+        public static BlockCollapsibleBuilder SetContentBodyBlock(this BlockCollapsibleBuilder obj, Action<TagAttributes> bodyBlockAttr, Action inner)
             => obj.SetContent(w => ContentBodyBlock(w, bodyBlockAttr, inner));
 
-        public static FieldsBlockCollapsibleOptions SetContentFieldsBlock(this FieldsBlockCollapsibleOptions obj, Action inner)
+        public static BlockCollapsibleBuilder SetContentFieldsBlock(this BlockCollapsibleBuilder obj, Action inner)
             => obj.SetContentFieldsBlock(null, inner);
-        public static FieldsBlockCollapsibleOptions SetContentFieldsBlock(this FieldsBlockCollapsibleOptions obj, Action<TagAttributes> fieldsBlockAttr, Action inner)
+        public static BlockCollapsibleBuilder SetContentFieldsBlock(this BlockCollapsibleBuilder obj, Action<TagAttributes> fieldsBlockAttr, Action inner)
             => obj.SetContent(w => ContentFieldsBlock(w, null, fieldsBlockAttr, inner));
 
-        public static FieldsBlockCollapsibleOptions SetContentFieldsBlockStd(this FieldsBlockCollapsibleOptions obj, Action inner)
+        public static BlockCollapsibleBuilder SetContentFieldsBlockStd(this BlockCollapsibleBuilder obj, Action inner)
             => obj.SetContentFieldsBlockStd(null, inner);
-        public static FieldsBlockCollapsibleOptions SetContentFieldsBlockStd(this FieldsBlockCollapsibleOptions obj, Action<TagAttributes> fieldsBlockAttr, Action inner)
+        public static BlockCollapsibleBuilder SetContentFieldsBlockStd(this BlockCollapsibleBuilder obj, Action<TagAttributes> fieldsBlockAttr, Action inner)
             => obj.SetContent(w => ContentFieldsBlock(w, a => a.Class("widthstd"), fieldsBlockAttr, inner));
 
-        public static FieldsBlockCollapsibleOptions SetContentFieldsBlock100Percent(this FieldsBlockCollapsibleOptions obj, Action action)
+        public static BlockCollapsibleBuilder SetContentFieldsBlock100Percent(this BlockCollapsibleBuilder obj, Action action)
             => obj.SetContentFieldsBlock100Percent(null, action);
-        public static FieldsBlockCollapsibleOptions SetContentFieldsBlock100Percent(this FieldsBlockCollapsibleOptions obj, Action<TagAttributes> fieldsBlockAttr, Action inner)
+        public static BlockCollapsibleBuilder SetContentFieldsBlock100Percent(this BlockCollapsibleBuilder obj, Action<TagAttributes> fieldsBlockAttr, Action inner)
             => obj.SetContent(w => ContentFieldsBlock(w, a => a.Class("width100"), fieldsBlockAttr, inner));
 
         private static void ContentBodyBlock(LayoutWriter w, Action<TagAttributes> bodyBlockAttr, Action inner)
