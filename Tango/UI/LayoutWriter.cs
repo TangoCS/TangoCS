@@ -231,8 +231,8 @@ namespace Tango.UI
 
         OneSixth = 10,
         FiveSixth = 50,
-
-        OneTenth = 6,
+		OneSixtieth = 1,
+		OneTenth = 6,
         ThreeTenth = 18,
         SevenTenth = 42,
         NineTenth = 54
