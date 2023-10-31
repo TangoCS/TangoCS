@@ -144,7 +144,7 @@ namespace Tango.UI.Std
 			if (m.HasItems(ValidationMessageSeverity.Information, ValidationMessageSeverity.Warning))
 				RenderValidation(response, m);
 			else
-				response.AddWidget("validation", w => w.Write(""));
+				response.WithNamesFor(this).AddWidget("validation", w => w.Write(""));
 
 			return true;
 
