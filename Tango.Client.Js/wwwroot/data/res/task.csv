@@ -11,6 +11,7 @@ tango.tasks.task.Interval-1;Время запуска;Run time
 tango.tasks.task.Interval-2;Интервал запуска;Invoke interval
 tango.tasks.task.IsActive;Активна;Is active
 tango.tasks.task.Priority;Приоритет;Priority
+tango.tasks.task.OneThread;Последовательный запуск
 tango.tasks.task.Status;Состояние;Status
 tango.tasks.task.LastStartDate;Последний запуск;Last start date
 tango.tasks.task.Method;Метод;Method

@@ -51,8 +51,11 @@ namespace Tango.Tasks
         public virtual DateTime LastModifiedDate { get; set; }
 		[Column]
 		public virtual string Description { get; set; }
+		[Column]
+		public virtual bool OneThread { get; set; }
 
 		public virtual DateTime? LastCheckDate { get; set; }
+
 		public virtual string StartTypeTitle { get; set; }
 		public virtual string GroupTitle { get; set; }
         public virtual string SystemTitle { get; set; }
