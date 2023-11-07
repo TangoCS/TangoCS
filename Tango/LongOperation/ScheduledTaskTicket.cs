@@ -17,6 +17,7 @@ namespace Tango.LongOperation
 	{
 		public override int ActionID => Task.ID;
 		public override string Title => Task.Title;
+		public override bool OneThread => Task.OneThread;
 		public IScheduledTask Task { get; }
 		public Dictionary<string, string> Parameters { get; protected set; }
 

@@ -148,9 +148,11 @@ namespace Tango.Tasks
 		public class Priority : EntityField<Task, int>
         {
             public override bool IsRequired => false;
-        }
+		}
 
-        public class System : EntityField<Task, int> 
+		public class OneThread : EntityField<Task, bool> { }
+
+		public class System : EntityField<Task, int> 
         {
             protected override string IDSuffix => "ID";
             public override string StringValue => ViewData.SystemTitle;
@@ -170,7 +172,8 @@ namespace Tango.Tasks
 			public TaskGroup TaskGroup { get; set; }
             public SystemName SystemName { get; set; }
             public Priority Priority { get; set; }
-            public System System { get; set; }
+            public OneThread OneThread { get; set; }
+			public System System { get; set; }
 
             public Description Description { get; set; }
 
@@ -188,7 +191,8 @@ namespace Tango.Tasks
 				TaskGroup = AddField(new TaskGroup());
                 SystemName = AddField(new SystemName());
                 Priority = AddField(new Priority());
-                System = AddField(new System());
+				OneThread = AddField(new OneThread());
+				System = AddField(new System());
                 Description = AddField(new Description());
 			}
         }

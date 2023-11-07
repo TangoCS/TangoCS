@@ -14,6 +14,7 @@ namespace Tango.LongOperation
 		public DateTime? RunDate { get; private set; }
 		public int Timeout { get; } // timeout (min)
 		public bool IsManualStart { get; }
+		public abstract bool OneThread { get; }
 
 		public LongOperationStatus Status { get; set; }
 		public string DefaultTaskAssembly { get; set; }
