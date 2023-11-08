@@ -16,7 +16,7 @@ namespace Tango.Tasks
 	{
 		protected override Func<string, Expression<Func<LongOperationTicket, bool>>> SearchExpression => s => o => o.ActionID == s.ToInt32();
 
-		protected override IQueryable<LongOperationTicket> Data => LongOperationServer.Queue.OrderByDescending(o => o.CreateDate).AsQueryable();
+		protected override IQueryable<LongOperationTicket> Data => LongOperationServer.Queue.AsQueryable();
 
 		protected override void ToolbarLeft(MenuBuilder t)
 		{
@@ -35,6 +35,7 @@ namespace Tango.Tasks
 			f.AddHeader(o => o.RunDate);
 			f.AddHeader(o => o.IsManualStart);
 			f.AddHeader(o => o.OneThread);
+			f.AddHeader(o => o.Priority);
 			f.AddHeader(o => o.Status);
 
 			f.AddCell(o => o.GetType().Name);
@@ -44,6 +45,7 @@ namespace Tango.Tasks
 			f.AddCell(o => o.RunDate?.ToString("dd.MM.yyyy HH:mm:ss"));
 			f.AddCell(o => o.IsManualStart.Icon());
 			f.AddCell(o => o.OneThread.Icon());
+			f.AddCell(o => o.Priority);
 			f.AddCell(o => o.Status.ToString());
 		}
 	}
