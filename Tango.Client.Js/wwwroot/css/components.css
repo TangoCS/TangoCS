@@ -428,11 +428,23 @@ td.showDragHandle {
 	width: 100%
 }
 
-.modal-footer, .modal-container .buttonsbar {
+.modal-footer {
 	padding: 8px 15px;
-	text-align: right;
 	border-top: 1px solid #e5e5e5;
 	background-color: #f3f3f3;
+	display:flex;
+	flex-direction: row;
+	gap: 8px;
+}
+.modal-container .buttonsbar {
+	background-color: #f3f3f3;
+	text-align: right;
+	width: 100%;
+	padding: 0;
+}
+.modal-footer-help {
+	display: flex;
+	align-items: center;
 }
 
 .modal-dialog {

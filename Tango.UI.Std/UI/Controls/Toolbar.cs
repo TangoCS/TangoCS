@@ -105,7 +105,7 @@ namespace Tango.UI.Controls
 
 				var cls = filter.Criteria.Count > 0 ? "hascriteria" : "";
 
-				void attrs(ActionLink a) => a.CallbackToCurrent().AsDialogPost(filter.OpenFilterDialog)
+				void attrs(ActionLink a) => a.CallbackToCurrent().AsDialogPost<DialogNestedFormContainer>(filter.OpenFilterDialog)
 					.WithImage("filter").WithTitle(r => r.Get("Common.Filter"));
 
 				void tagAttrs(ATagAttributes a) => a.Data(filter.DataCollection).Class("filterbtn").Class(cls)

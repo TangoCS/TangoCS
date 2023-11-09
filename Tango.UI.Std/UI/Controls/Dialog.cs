@@ -5,13 +5,13 @@ using Tango.Localization;
 
 namespace Tango.UI.Controls
 {
-	public class DialogFormContainer : ViewContainer
+	public class DialogNestedFormContainer : ViewContainer
 	{
-		public DialogFormContainer()
+		public DialogNestedFormContainer()
 		{
 			Mapping.Add("contentbody", "body");
 			Mapping.Add("contenttitle", "title");
-			Mapping.Add("buttonsbar", "footer");
+			//Mapping.Add("buttonsbar", "footer");
 			Mapping.Add("form", "body");
 			Mapping.Add("title", "title");
 			Mapping.Add("contenttoolbar", "toolbar");
@@ -23,11 +23,29 @@ namespace Tango.UI.Controls
 				var options = DialogOptions.FromParms(w.Context);
 				w.DialogControl(a => a.DialogContainerAttrs(w.Context, Type, w.IDPrefix, options), () => {
 					w.AjaxForm("form", a => a.DataResultPostponed(1), () => {
-						w.DialogControlBody(null, () => { }, null, null, () => { }, options.ShowCloseIcon);
+						w.DialogControlBody(null, () => { }, null, null, () => {
+							ModalFooterHelp(w);
+							w.Div(a => a.ID("buttonsbar").Class("buttonsbar"));
+						}, options.ShowCloseIcon);
 						w.Hidden(Constants.ReturnUrl, Context.ReturnUrl.Get(1));
 					});
 				});
 			});
+		}
+
+		protected virtual void ModalFooterHelp(LayoutWriter w)
+		{
+			
+		}
+	}
+
+	public class DialogFormContainer : DialogNestedFormContainer
+	{
+		protected override void ModalFooterHelp(LayoutWriter w)
+		{
+			var help = w.Context.RequestServices.GetService(typeof(IHelpManager)) as IHelpManager;
+			if (help != null)
+				w.Div(a => a.ID("help").Class("modal-footer-help"), () => help.Render(w));
 		}
 	}
 
@@ -281,36 +299,47 @@ namespace Tango.UI.Controls
 		{
 			return link.InContainer(typeof(T), dialogPrefix, options?.ToParms()).KeepTheSameUrl();
 		}
+
+		public static ActionLink AsDialog<T>(this ActionLink link, Action<ApiResponse> serverEvent, string dialogPrefix = null, DialogOptions options = null)
+		{
+			var el = serverEvent.Target as ViewElement;
+			if (el == null) throw new InvalidCastException("Invalid class type for serverEvent.Target; must be of type ViewElement");
+
+			if (dialogPrefix == null)
+				dialogPrefix = el.ClientID;
+
+			return link.AsDialog<T>(dialogPrefix, options).RunEvent(serverEvent.Method.Name, el.ClientID);
+		}
+
+		public static ActionLink AsDialogPost<T>(this ActionLink link, Action<ApiResponse> serverEvent, string dialogPrefix = null, DialogOptions options = null)
+		{
+			var el = serverEvent.Target as ViewElement;
+			if (el == null) throw new InvalidCastException("Invalid class type for serverEvent.Target; must be of type ViewElement");
+
+			if (dialogPrefix == null)
+				dialogPrefix = el.ClientID;
+
+			return link.AsDialog<T>(dialogPrefix, options).PostEvent(serverEvent.Method.Name, el.ClientID);
+		}
+
 		public static ActionLink AsDialog(this ActionLink link, string dialogPrefix = null, DialogOptions options = null)
 		{
-			return link.InContainer(typeof(DialogFormContainer), dialogPrefix, options?.ToParms()).KeepTheSameUrl();
+			return link.AsDialog<DialogFormContainer>(dialogPrefix, options);
 		}
 
 		public static ActionLink AsConsoleDialog(this ActionLink link, string dialogPrefix = null, DialogOptions options = null)
 		{
-			return link.InContainer(typeof(ConsoleContainer), dialogPrefix, options?.ToParms()).KeepTheSameUrl();
+			return link.AsDialog<ConsoleContainer>(dialogPrefix, options);
 		}
 
 		public static ActionLink AsDialog(this ActionLink link, Action<ApiResponse> serverEvent, string dialogPrefix = null, DialogOptions options = null)
 		{
-			var el = serverEvent.Target as ViewElement;
-			if (el == null) throw new InvalidCastException("Invalid class type for serverEvent.Target; must be of type ViewElement");
-
-			if (dialogPrefix == null)
-				dialogPrefix = el.ClientID;
-
-			return link.InContainer(typeof(DialogFormContainer), dialogPrefix, options?.ToParms()).KeepTheSameUrl().RunEvent(serverEvent.Method.Name, el.ClientID);
+			return link.AsDialog<DialogFormContainer>(serverEvent, dialogPrefix, options);
 		}
 
 		public static ActionLink AsDialogPost(this ActionLink link, Action<ApiResponse> serverEvent, string dialogPrefix = null, DialogOptions options = null)
 		{
-			var el = serverEvent.Target as ViewElement;
-			if (el == null) throw new InvalidCastException("Invalid class type for serverEvent.Target; must be of type ViewElement");
-
-			if (dialogPrefix == null)
-				dialogPrefix = el.ClientID;
-
-			return link.InContainer(typeof(DialogFormContainer), dialogPrefix, options?.ToParms()).KeepTheSameUrl().PostEvent(serverEvent.Method.Name, el.ClientID);
+			return link.AsDialogPost<DialogFormContainer>(serverEvent, dialogPrefix, options);
 		}
 
 		public static TagAttributes<T> AsDialog<T>(this TagAttributes<T> a, Action<ApiResponse> serverEvent, string dialogPrefix = null)
@@ -322,7 +351,7 @@ namespace Tango.UI.Controls
 			if (dialogPrefix == null)
 				dialogPrefix = el.ClientID;
 
-			var res = a.DataNewContainer(typeof(DialogFormContainer), dialogPrefix);
+			var res = a.DataNewContainer(typeof(DialogNestedFormContainer), dialogPrefix);
 
 			return res.OnClickRunEvent(serverEvent.Method.Name, el.ClientID);
 		}
@@ -336,7 +365,7 @@ namespace Tango.UI.Controls
 			if (dialogPrefix == null)
 				dialogPrefix = el.ClientID;
 
-			var res = a.DataNewContainer(typeof(DialogFormContainer), dialogPrefix);
+			var res = a.DataNewContainer(typeof(DialogNestedFormContainer), dialogPrefix);
 
 			return res.OnClickPostEvent(serverEvent.Method.Name, el.ClientID);
 		}
