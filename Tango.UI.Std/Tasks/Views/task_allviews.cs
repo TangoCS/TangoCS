@@ -431,7 +431,12 @@ namespace Tango.Tasks
 							if (Tango.Tasks.BaseTaskController.Progress.TryGetValue(ViewData.TaskID, out (decimal percent, string description) p))
 								w.Write($" {Resources.GetExt<Task>("progress")} {p.percent:0.#}%, {p.description}");
 							else
-								w.Write($" {Resources.GetExt<Task>("interrupted")}");
+							{
+								if (LongOperationServer.Queue.Any(o => o.ActionID == ViewData.TaskID /*&& o.Status == LongOperationStatus.Running*/))
+									w.Write($" {Resources.GetExt<Task>("inwork")}");
+								else
+									w.Write($" {Resources.GetExt<Task>("interrupted")}");
+							}
 						}
 					}), Grid.TwoFifths);
 				});
