@@ -383,6 +383,29 @@ namespace Tango.UI.Controls
 				op.OnSelected?.Invoke(response);
 			}
 
+			OnFilterSubmitted(response);
+		}
+
+		public FilterItem AddCriteria(Field field, string cond, string value)
+		{
+			var op = field.Operators[cond];
+
+			var item = new FilterItem {
+				Title = field.Title,
+				Condition = cond,
+				FieldType = op.FieldType,
+				Value = op.FieldType == FieldType.Boolean ?	value.ToBoolean().ToString() : value,
+			};
+
+			item.ValueTitle = op.StringValue(item);
+
+			Criteria.Add(item);
+
+			return item;
+		}
+
+		public void OnFilterSubmitted(ApiResponse response)
+		{
 			FilterSubmitted?.Invoke(response);
 		}
 
@@ -418,23 +441,11 @@ namespace Tango.UI.Controls
 
 			if (f >= 0)
 			{
-				var cond = Context.GetArg(ddlCondition);
 				var field = FieldList[f];
+				var cond = Context.GetArg(ddlCondition);
 				var op = field.Operators[cond];
-
-				item = new FilterItem {
-					Title = field.Title,
-					Condition = cond,
-					FieldType = op.FieldType,
-					Value = op.FieldType == FieldType.Boolean ?
-						Context.GetBoolArg(op.FieldName).ToString() :
-						Context.GetArg(op.FieldName),
-				};
-
-				item.ValueTitle = op.StringValue(item);
-
-				Criteria.Add(item);
-
+				item = AddCriteria(field, cond, Context.GetArg(op.FieldName));
+				
 				ValidateItem(field, item, v);
 			}
 
@@ -1054,6 +1065,42 @@ namespace Tango.UI.Controls
 						w.A(a => a.OnClick($"this.closest('form').submit();"), content);
 					});
 			}
+		}
+
+		public static Action<ApiResponse, IEnumerable<TRef>> OnChangeSetCondition<TRef, TRefKey>(this ListFilter filter, 
+			AbstractSelectMultipleObjectsField<TRef, TRefKey> f, string conditionTitle, string conditionOp = "=")
+			where TRef : class, IWithKey<TRefKey>
+		{
+			return (r, o) => {
+				filter.LoadPersistent();
+
+				var val = filter.Context.GetArg(f.ID);
+				
+				var field = filter.FieldList.Single(x => x.Title == conditionTitle);
+				if (val.IsEmpty())
+					filter.Criteria.RemoveAll(x => x.Title == conditionTitle && x.Condition == conditionOp);
+				else
+					filter.AddCriteria(field, conditionOp, val);
+				filter.OnFilterSubmitted(r);
+			};
+		}
+
+		public static Action<ApiResponse> OnChangeSetCondition(this ListFilter filter, PeriodPicker pp, string conditionTitle)
+		{
+			return r => {
+				filter.LoadPersistent();
+
+				var field = filter.FieldList.Single(x => x.Title == conditionTitle);
+				var val = pp.Value;
+
+				filter.Criteria.RemoveAll(x => x.Title == conditionTitle);
+				if (val != null)
+				{
+					filter.AddCriteria(field, ">", pp.Value.From.ToString("dd.MM.yyyy"));
+					filter.AddCriteria(field, "<", pp.Value.To.ToString("dd.MM.yyyy"));
+				}
+				filter.OnFilterSubmitted(r);
+			};
 		}
 	}
 }

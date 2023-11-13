@@ -89,7 +89,7 @@ namespace Tango.UI.Controls
 			//w.PushID(ID);
 			w.Div(a => {
 				a.Class("periodpicker").ID(ID).Set(options.Attributes);
-				if (Change != null) a.DataEvent(OnChange).DataRef(ParentElement, ID);
+				if (Change != null) a.DataEvent(OnChange).DataRef(ParentElement, ID).Data(DataCollection);
 			}, () => {
 				w.Div(() =>
 				{

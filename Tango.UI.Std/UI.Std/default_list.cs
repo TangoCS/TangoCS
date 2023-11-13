@@ -259,7 +259,7 @@ namespace Tango.UI.Std
 				response.AddWidget(Sections.ContentToolbar, Toolbar);
 		}
 
-		private void OnFilter(ApiResponse response)
+		protected void OnFilter(ApiResponse response)
 		{
 			response.WithNamesAndWritersFor(this);
 
