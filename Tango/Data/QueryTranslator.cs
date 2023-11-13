@@ -591,7 +591,7 @@ namespace Tango.Data
 			{
 				var part1 = query.Substring(0, i);
 				var part2 = query.Substring(i + 9);
-				return $"{part1} select {fieldExpression} from ({part2}) t";
+				return $"{part1} --#select\r\n select {fieldExpression} from ({part2}) t";
 			}
 		}
 

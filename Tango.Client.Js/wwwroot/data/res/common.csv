@@ -178,6 +178,8 @@ System.Filter.ToolTip.MoveDown;Переместить вниз;Move Down
 System.Filter.ToolTip.MoveUp;Переместить вверх;Move Up
 System.Filter.ToolTip.Negation;Отрицание;Negation
 System.Filter.ToolTip.OpeningBrackets;Открывающие скобки;Opening brackets
+System.Filter.ToolTip.SaveAs;Сохранить копию представления с новым именем;Save as
+System.Filter.ToolTip.UpdateView;Изменить параметры представления;Update view
 System.Filter.Up;Вверх;Up
 System.Filter.Value;Значение;Value
 System.Filter.Yes;Да;Yes
@@ -187,10 +189,13 @@ System.Filter.DeleteView;Удалить;Delete
 
 longoperation.updatequeue;Обновить очередь;Update
 longoperation.runtask;Запустить операцию;Start
+longoperation.monitor;Очередь;Queue
 tango.longoperation.longoperationticket.actionid;ID;ID
 tango.longoperation.longoperationticket.createdate;Дата добавления;Post date
 tango.longoperation.longoperationticket.rundate;Дата запуска;Start date
 tango.longoperation.longoperationticket.status;Статус;Status
 tango.longoperation.longoperationticket.type;Тип;Type
 tango.longoperation.longoperationticket.ismanualstart;Ручной;Manual
+tango.longoperation.longoperationticket.onethread;Последовательный запуск;One thread
+tango.longoperation.longoperationticket.priority;Приоритет;Priority
 tango.longoperation.longoperationticket-pl;Очередь длительных операций;Queue long operations

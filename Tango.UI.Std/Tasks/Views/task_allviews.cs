@@ -33,6 +33,8 @@ namespace Tango.Tasks
 			t.ToCreateNew<Task>();
 			t.ItemSeparator();
 			t.ItemActionImageText(x => x.ToList<TaskExecution>(AccessControl).WithImage("log").WithRef("taskExecutionFilter"));
+			t.ItemSeparator();
+			t.ItemActionImageText(x => x.To("longoperation", "monitor", AccessControl, returnurl: null).WithImage("tasks").TargetBlank());
 		}
 
 		public override void OnInit()
@@ -153,6 +155,7 @@ namespace Tango.Tasks
 			f.AddCellWithSortAndFilter(o => o.Status, (w, o) => w.WithPrefix(ParentElement.ParentElement, () => w.Span(a => a.ID($"status_{o.TaskID}"), Resources.Get((TaskStatusType)o.Status))));
 			f.AddCellWithSortAndFilter(o => o.IsActive, o => o.IsActive.Icon());
 			f.AddCellWithSortAndFilter(o => o.Priority, o => o.Priority);
+			f.AddCellWithSortAndFilter(o => o.OneThread, o => o.OneThread.Icon());
 			f.AddCellWithSortAndFilter(o => o.SystemTitle, o => o.SystemTitle);
 			f.AddCellWithSortAndFilter(o => o.Description, o => o.Description);
 		}
@@ -198,6 +201,7 @@ namespace Tango.Tasks
 				w.TextBox(gr.ExecutionTimeout);
 				w.ToggleSwitch(gr.IsActive);
 				w.TextBox(gr.Priority);
+				w.ToggleSwitch(gr.OneThread);
 				w.DropDownList(gr.System, Systems());
 				w.TextArea(gr.Description, attributes: a => a.Rows(4));
 			});
@@ -315,8 +319,7 @@ namespace Tango.Tasks
             t.ItemSeparator();
             t.ItemActionImageText(x => x.ToEdit(AccessControl, ViewData));
             t.ItemSeparator();
-            t.ItemActionImageText(x => x.ToDelete(AccessControl, ViewData, Context.ReturnUrl.Get(1))
-				.WithArg(Constants.ReturnUrl + "_0", Context.CreateReturnUrl(1)).AsDialog());
+            t.ItemActionImageText(x => x.ToDelete(AccessControl, ViewData, Context.ReturnUrl.Get(1)).WithArg(Constants.ReturnUrl + "_0", Context.CreateReturnUrl(1)).AsDialog());
 
 			var isLongRunning = LongOperationServer.Queue.Any(o => o.ActionID == ViewData.TaskID && o.Status == LongOperationStatus.Running);
 			var isProgress = ViewData.Status != (int)TaskStatusType.Progress || !Tango.Tasks.BaseTaskController.Progress.ContainsKey(ViewData.TaskID);
@@ -413,8 +416,11 @@ namespace Tango.Tasks
 					w.PlainText(gr.ExecutionTimeout);
 					w.PlainText(gr.IsActive);
 					w.PlainText(gr.Priority);
+					w.PlainText(gr.OneThread);
 					w.PlainText(gr.System);
 					w.PlainText(Resources.Get<Task>(o => o.LastStartDate), ViewData.LastStartDate?.ToString("dd.MM.yyyy HH:mm:ss"));
+					if (ViewData.LastCheckDate.HasValue)
+						w.PlainText(Resources.Get<Task>(o => o.LastCheckDate), ViewData.LastCheckDate?.ToString("dd.MM.yyyy HH:mm:ss"));
 					w.PlainText(gr.Status, () => w.Write(Resources.Get((TaskStatusType)gr.Status.Value)));
 					w.PlainText(gr.Description, () => w.Write(gr.Description.Value?.Replace("\r\n", "<br/>").Replace("\n", "<br/>")));
 				}), Grid.ThreeFifths);
@@ -425,7 +431,12 @@ namespace Tango.Tasks
 							if (Tango.Tasks.BaseTaskController.Progress.TryGetValue(ViewData.TaskID, out (decimal percent, string description) p))
 								w.Write($" {Resources.GetExt<Task>("progress")} {p.percent:0.#}%, {p.description}");
 							else
-								w.Write($" {Resources.GetExt<Task>("interrupted")}");
+							{
+								if (LongOperationServer.Queue.Any(o => o.ActionID == ViewData.TaskID /*&& o.Status == LongOperationStatus.Running*/))
+									w.Write($" {Resources.GetExt<Task>("inwork")}");
+								else
+									w.Write($" {Resources.GetExt<Task>("interrupted")}");
+							}
 						}
 					}), Grid.TwoFifths);
 				});

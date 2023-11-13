@@ -88,32 +88,35 @@ namespace Tango.UI
             w.Span(a => a.Class("label label-danger"), text);
         }
 
-        public static void BlockCollapsible(this LayoutWriter w, Action<FieldsBlockCollapsibleOptions> inner)
+        public static void BlockCollapsible(this LayoutWriter w, Action<BlockCollapsibleBuilder> inner)
         {
-            var options = FieldsBlockCollapsibleOptions.Make(inner);
-            var width = $"grid-column-end: span {(int)options.Grid};";
-            var id = Guid.NewGuid().ToString();
+            var builder = BlockCollapsibleBuilder.Make(inner);
+            var width = $"grid-column-end: span {(int)builder.Grid};";
+
             w.Div(a => {
-                a.ID(id).Class("block block-collapsible").Style(width);
-                if (options.IsCollapsed) a.Class("collapsed");
+                a.ID(builder.Id).Class("block block-collapsible").Style(width);
+                if (builder.IsCollapsed) a.Class("collapsed");
             }, () => {
                 w.Div(a => a.Class("block-header"), () => {
-                    var js = "domActions.toggleClass({id: '" + w.GetID(id) + "', clsName: 'collapsed' })";
-                    w.Div(a => a.Class("block-header-left").OnClick(js), () =>
+
+					var js = "domActions.toggleClass({id: '" + w.GetID(builder.Id) + "', clsName: 'collapsed' });";
+                    Action<TagAttributes> blockHeaderLeft = a => a.Class("block-header-left").OnClick(js);
+
+					w.Div(blockHeaderLeft += builder.BlockHeaderLeftAttributes, () =>
                     {
                         w.Div(a => a.Class("block-btn"), () => w.Icon("right"));
-                        w.Div(a => a.Class("block-title-left"), options.LeftTitle?.GetAction(w));
+                        w.Div(a => a.Class("block-title-left"), builder.LeftTitle?.GetAction(w));
                     });
 
-                    if (options.RightTitle != null)
+                    if (builder.RightTitle != null)
                     {
                         w.Div(a => a.Class("block-header-right"), () =>
                         {
-                            w.Div(a => a.Class("block-title-right"), options.RightTitle?.GetAction(w));
+                            w.Div(a => a.Class("block-title-right"), builder.RightTitle?.GetAction(w));
                         });
                     }
                 });
-                options.Content?.Invoke(w);
+                builder.Content?.Invoke(w);
             });
         }
     }

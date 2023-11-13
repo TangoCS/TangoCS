@@ -629,19 +629,21 @@ namespace Tango.UI.Controls
 
 				if (!PersistentFilter.Name.IsEmpty() && (!PersistentFilter.IsShared || IsFilterAdministrator.Invoke()))
 				{
-					w.ActionImageLink(a => a.CallbackToCurrent().AsDialog(UpdateViewDialog).WithImage("viewsettings")
-						.WithTitle(r => r.Get("System.Filter.UpdateView")), a => a.DataRef(this));
+					w.ActionImageLink(a => a.CallbackToCurrent().AsDialog<DialogNestedFormContainer>(UpdateViewDialog)
+						.WithImage("viewsettings", Resources.Get("System.Filter.Tooltip.UpdateView"))
+						.WithTitle(Resources.Get("System.Filter.UpdateView")), a => a.DataRef(this));
 
 					w.ActionImageLink(a => a.WithArg(ParameterName, PersistentFilter.ID).WithImage("deleteview")
-						.WithTitle(r => r.Get("System.Filter.DeleteView")),
+						.WithTitle(Resources.Get("System.Filter.DeleteView")),
 						a => a.Data(DataCollection).DataContainerExternal(ParentElement.ClientID)
 						.DataRef(this)
 						.DataEvent("ondeleteview", ParentElement.ClientID));
 				}
 				if (Criteria.Count(c => !c.IsProgram) > 0)
 				{
-					w.ActionImageLink(a => a.CallbackToCurrent().AsDialog(OpenSaveAsDialog).WithImage("newview")
-						.WithTitle(r => r.Get("System.Filter.SaveAs")), a => a.DataRef(this));
+					w.ActionImageLink(a => a.CallbackToCurrent().AsDialog<DialogNestedFormContainer>(OpenSaveAsDialog)
+						.WithImage("newview", Resources.Get("System.Filter.Tooltip.SaveAs"))
+						.WithTitle(Resources.Get("System.Filter.SaveAs")), a => a.DataRef(this));
 				}
 			});
 		}
