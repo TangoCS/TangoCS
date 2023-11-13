@@ -15,12 +15,12 @@ namespace Tango
 	{
 		public static bool ToBoolean(this string src, bool defaultValue)
 		{
-			return src?.ToLower().In("true", "1") ?? defaultValue;
+			return src?.ToLower().In("true", "1", "on") ?? defaultValue;
 		}
 
 		public static bool? ToBoolean(this string src)
 		{
-			return src?.ToLower().In("true", "1");
+			return src?.ToLower().In("true", "1", "on");
 		}
 
 		public static int ToInt32(this string src, int defaultValue)
