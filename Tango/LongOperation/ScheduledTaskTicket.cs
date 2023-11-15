@@ -17,7 +17,7 @@ namespace Tango.LongOperation
 	{
 		public override int ActionID => Task.ID;
 		public override string Title => Task.Title;
-		public override int Priority => Task.Priority;
+		public override int Priority { get; set; }
 		public override bool OneThread => Task.OneThread;
 		public IScheduledTask Task { get; }
 		public Dictionary<string, string> Parameters { get; protected set; }
@@ -28,6 +28,7 @@ namespace Tango.LongOperation
 			bool isManualStart = false) : base(task.ExecutionTimeout, isManualStart)
 		{
 			Task = task;
+			Priority = task.Priority;
 			Parameters = parameters;
 		}
 

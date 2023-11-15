@@ -147,7 +147,17 @@ namespace Tango.Tasks
 
 		public class Priority : EntityField<Task, int>
         {
-            public override bool IsRequired => false;
+            //public override bool IsRequired => false;
+			public override int DefaultValue => 0;
+			public override Func<ValidationBuilder<int>, ValidationBuilder<int>> ValidationFunc => vb => vb.LessOrEqualThan(20).GreaterOrEqualThan(0);
+			public override bool ShowDescription => true;
+			public override string Description
+			{
+				get
+				{
+					return "Возможные значения 0 - 20<br/>больше значение - выше приоритет";
+				}
+			}
 		}
 
 		public class OneThread : EntityField<Task, bool> { }

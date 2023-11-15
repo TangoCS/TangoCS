@@ -8,7 +8,8 @@ namespace Tango
 		public static readonly string ServiceName = "service";
 		public static readonly string ActionName = "action";
 		public static readonly string ReturnUrl = "returnurl";
-		public static readonly string ReturnState = "returnstate";
+        public static readonly string ReturnUrl_CancelButton = "returnurl_0";
+        public static readonly string ReturnState = "returnstate";
 		/// <summary>
 		/// Данный префикс указывается у параметров, которые необходимо передавать при ReturnUrl,
 		/// и исключать из адресной строки.

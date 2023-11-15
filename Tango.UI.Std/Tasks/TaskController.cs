@@ -62,6 +62,7 @@ namespace Tango.Tasks
         /// <param name="isManual"></param>
         protected abstract void SetLastModifiedUser(TaskExecution execution, bool isManual);
 
+        [Obsolete]
         [AllowAnonymous]
         [HttpPost]
         public ActionResult RunTasks()
@@ -114,7 +115,8 @@ namespace Tango.Tasks
         static Dictionary<int, (decimal percent, string description)> progress = new Dictionary<int, (decimal percent, string description)>();
         public static IDictionary<int, (decimal percent, string description)> Progress => progress;
 
-        public void Run(IScheduledTask task, bool isManual = false, Dictionary<string, string> param = null, bool withLogger = false)
+		[Obsolete]
+		public void Run(IScheduledTask task, bool isManual = false, Dictionary<string, string> param = null, bool withLogger = false)
         {
             progress[task.ID] = (0, "");
 
@@ -216,7 +218,8 @@ namespace Tango.Tasks
             }
         }
 
-        public HtmlWriter CustomRun(IScheduledTask task, Dictionary<string, string> param = null)
+		[Obsolete]
+		public HtmlWriter CustomRun(IScheduledTask task, Dictionary<string, string> param = null)
         {
             var type = TaskTypeCollection.GetType(task.Class);
             var obj = CreateTaskInstance(type);
@@ -340,6 +343,7 @@ namespace Tango.Tasks
             return obj;
         }
 
+		[Obsolete]
 		public void RunWithTimeOut(IScheduledTask task, bool isManual = false, Dictionary<string, string> param = null, bool withLogger = false)
 		{
 			CancellationTokenSource source = new CancellationTokenSource();
