@@ -74,14 +74,21 @@ namespace Tango.UI.Controls
 			dPeriodTo.MaxYear = DateTime.Today.Year;
 
 			if (from == null)
+			{
 				from = Context.GetDateTimeArg(ParmID.From);
+				from = from?.AddHours(Context.GetIntArg(ParmID.From + "time_hour", 0)).AddMinutes(Context.GetIntArg(ParmID.From + "time_minute", 0));
+			}
 			if (from == null)
 				from = DefaultValue?.From;
 
 			if (to == null)
+			{
 				to = Context.GetDateTimeArg(ParmID.To);
+				to = to?.AddHours(Context.GetIntArg(ParmID.To + "time_hour", 0)).AddMinutes(Context.GetIntArg(ParmID.To + "time_minute", 0));
+			}
 			if (to == null)
 				to = DefaultValue?.To;
+				
 			if (options == null)
 				options = new PeriodPickerOptions();
 			options.FromCalendarOptions.ShowButton = false;
