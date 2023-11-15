@@ -149,7 +149,7 @@ namespace Tango.Tasks
         {
             //public override bool IsRequired => false;
 			public override int DefaultValue => 0;
-			public override Func<ValidationBuilder<int>, ValidationBuilder<int>> ValidationFunc => vb => vb.NotEmpty().LessOrEqualThan(20).GreaterOrEqualThan(0);
+			public override Func<ValidationBuilder<int>, ValidationBuilder<int>> ValidationFunc => vb => vb.LessOrEqualThan(20).GreaterOrEqualThan(0);
 			public override bool ShowDescription => true;
 			public override string Description
 			{
