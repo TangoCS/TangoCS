@@ -329,7 +329,7 @@ namespace Tango.Tasks
 				if (isParam)
 					t.Item(w => w.ActionImageTextButton(al => al.To<Task>("parameters", AccessControl)
 						.WithArg(Constants.Id, ViewData.ID).WithImage("settings2").WithTitle(Resources.Get<Task>("start"))
-						.AsDialog(options: new DialogOptions { ShowCloseIcon = false })));
+						.AsDialog(options: new DialogOptions { ShowCloseIcon = false }), a => a.ID("buttonstart").OnClickHideShow("buttonstart")));
 				else
 					t.Item(w => w.ActionImageTextButton(al => al.ToCurrent().KeepTheSameUrl()
 						.PostEvent(OnRunTask).WithImage("settings2").WithTitle(Resources.Get<Task>("start")), a => a.ID("buttonstart").OnClickHideShow("buttonstart")));
@@ -445,20 +445,20 @@ namespace Tango.Tasks
 
 		public void OnRunTask(ApiResponse response)
 		{
-			var exec = Repository.IsExecuteTask(ViewData.ID);
-			if (exec || !Tango.Tasks.BaseTaskController.Progress.ContainsKey(ViewData.TaskID))
-			{
-				RunTaskController();
-			}
-			response.RedirectTo(Context, a => a.ToCurrent());
+			//var exec = Repository.IsExecuteTask(ViewData.ID);
+			//if (exec || !Tango.Tasks.BaseTaskController.Progress.ContainsKey(ViewData.TaskID))
+			//{
+				RunTaskController(response);
+			//}
 		}
 
-		protected virtual void RunTaskController()
+		protected virtual void RunTaskController(ApiResponse response)
 		{
 			var c = new TaskController<TUser> { Context = Context };
 			c.InjectProperties(Context.RequestServices);
-
 			c.RunWithTimeOut(ViewData, true);
+
+			OnLoad(response);
 		}
 
 		protected override void LinkedData(LayoutWriter w)

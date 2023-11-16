@@ -79,20 +79,20 @@ namespace Tango.Tasks
                 param[p.Key] = FormData.Parse<string>(p.Key);
             }
 
-			var exec = Repository.IsExecuteTask(ViewData.TaskID);
-			if (exec || !Tango.Tasks.BaseTaskController.Progress.ContainsKey(ViewData.TaskID))
-			{
-				RunTaskController(param);
-			}
-			response.RedirectBack(Context, 1, !IsSubView);
+			//var exec = Repository.IsExecuteTask(ViewData.TaskID);
+			//if (exec || !Tango.Tasks.BaseTaskController.Progress.ContainsKey(ViewData.TaskID))
+			//{
+				RunTaskController(response, param);
+			//}
         }
 
-        protected virtual void RunTaskController(Dictionary<string, string> param)
+        protected virtual void RunTaskController(ApiResponse response, Dictionary<string, string> param)
         {
 			var c = new TaskController<TUser> { Context = Context };
 			c.InjectProperties(Context.RequestServices);
-
 			c.RunWithTimeOut(ViewData, true, param);
+
+			response.RedirectBack(Context, 1, !IsSubView);
 		}
 
         protected class ParameterData
