@@ -65,7 +65,8 @@ namespace Tango.UI.Controls
 
 		public virtual void Footer(LayoutWriter w)
 		{
-			w.Button(a => a.DataResult(1).DataParm(Field.SubmitDataParms).OnClickPostEvent(SubmitDialog).DataRef("#" + Field.ClientID), Resources.Get("Common.OK"));
+			w.Button(a => a.DataResult(1).DataParm(Field.SubmitDataParms).OnClickPostEvent(SubmitDialog)
+				.DataRef("#" + Field.ClientID).Data(DataCollection), Resources.Get("Common.OK"));
 			//w.SubmitButton();
 			w.Write("&nbsp;");
 			w.BackButton(title: w.Resources.Get(this.IsModal ? "Common.Close" : "Common.Back"));
