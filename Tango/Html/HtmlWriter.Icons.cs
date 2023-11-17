@@ -104,16 +104,16 @@ namespace Tango.Html
 				a.Class("flag-icon flag-icon-" + name?.ToLower() + " flag-icon-squared");
 		}
 
-		public static void BoolMark(this HtmlWriter w, bool mark, bool renderFalse = true, string tip = null, string color = null)
+		public static void BoolMark(this HtmlWriter w, bool? mark, string tip = null, string color = null)
 		{
-			if (mark)
+			if (mark == true)
 				w.Icon("boolmark-true", a => {
 					if (tip != null)
 						a.Title(tip);
 					if (color != null)
 						a.Style("color:" + color);
 				}, null);
-			else if (renderFalse)
+			else if (mark == false)
 				w.Icon("boolmark-false", a => {
 					if (tip != null)
 						a.Title(tip);
