@@ -1135,7 +1135,7 @@ window.ajaxUtils = function ($, cu) {
 				const parms = containerObj.prepareParms();
 			}
 
-			if (t == 'dialogform') {
+			if (t == 'dialogform' || t == 'dialognestedform') {
 				var backArgs = {};
 				for (var key in target.data) {
 					if (!key.startsWith('c-'))

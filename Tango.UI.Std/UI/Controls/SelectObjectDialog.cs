@@ -201,7 +201,7 @@ namespace Tango.UI.Controls
 							a.Data(Field.DataCollection);
 							if (Field.DoCallbackToCurrent)
 								a.CallbackToCurrent(Context);
-							a.AsDialogPost(typeof(DialogFormContainer), OpenDialog, Field.ClientID);
+							a.AsDialogPost(OpenDialog, Field.ClientID);
 							if (DialogOptions != null)
 								foreach (var parm in DialogOptions.ToParms())
 									a.DataParm("c-" + parm.Key, parm.Value);
