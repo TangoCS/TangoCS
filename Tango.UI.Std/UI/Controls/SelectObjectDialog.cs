@@ -66,7 +66,7 @@ namespace Tango.UI.Controls
 		public virtual void Footer(LayoutWriter w)
 		{
 			w.Button(a => a.DataResult(1).DataParm(Field.SubmitDataParms).OnClickPostEvent(SubmitDialog)
-				.DataRef("#" + Field.ClientID).Data(DataCollection), Resources.Get("Common.OK"));
+				.DataRef("#" + Field.ClientID), Resources.Get("Common.OK"));
 			//w.SubmitButton();
 			w.Write("&nbsp;");
 			w.BackButton(title: w.Resources.Get(this.IsModal ? "Common.Close" : "Common.Back"));
@@ -201,7 +201,7 @@ namespace Tango.UI.Controls
 							a.Data(Field.DataCollection);
 							if (Field.DoCallbackToCurrent)
 								a.CallbackToCurrent(Context);
-							a.AsDialogPost(OpenDialog, Field.ClientID);
+							a.AsDialogPost(typeof(DialogFormContainer), OpenDialog, Field.ClientID);
 							if (DialogOptions != null)
 								foreach (var parm in DialogOptions.ToParms())
 									a.DataParm("c-" + parm.Key, parm.Value);

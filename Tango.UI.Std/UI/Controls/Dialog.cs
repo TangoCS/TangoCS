@@ -359,13 +359,19 @@ namespace Tango.UI.Controls
 		public static TagAttributes<T> AsDialogPost<T>(this TagAttributes<T> a, Action<ApiResponse> serverEvent, string dialogPrefix = null)
 			where T : TagAttributes<T>
 		{
+			return a.AsDialogPost(typeof(DialogNestedFormContainer), serverEvent, dialogPrefix);
+		}
+
+		public static TagAttributes<T> AsDialogPost<T>(this TagAttributes<T> a, Type containerType, Action<ApiResponse> serverEvent, string dialogPrefix = null)
+			where T : TagAttributes<T>
+		{
 			var el = serverEvent.Target as ViewElement;
 			if (el == null) throw new InvalidCastException("Invalid class type for serverEvent.Target; must be of type ViewElement");
 
 			if (dialogPrefix == null)
 				dialogPrefix = el.ClientID;
 
-			var res = a.DataNewContainer(typeof(DialogNestedFormContainer), dialogPrefix);
+			var res = a.DataNewContainer(containerType, dialogPrefix);
 
 			return res.OnClickPostEvent(serverEvent.Method.Name, el.ClientID);
 		}
