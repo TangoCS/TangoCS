@@ -18,9 +18,11 @@ namespace Tango.SettingsManager
 			return s ?? defaultValue;
 		}
 
-		public bool GetBool(string name)
+		public bool GetBool(string name, bool defaultValue = false)
 		{
 			var val = Get(name);
+			if (val.IsEmpty())
+				return defaultValue;
 			return val == "1" || val.ToLower() == "true";
 		}
 

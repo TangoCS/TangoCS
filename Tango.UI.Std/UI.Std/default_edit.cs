@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using Tango.AccessControl;
 using Tango.Data;
 using Tango.Html;
 using Tango.Identity.Std;
@@ -11,6 +13,7 @@ using Tango.Logic;
 using Tango.Meta;
 using Tango.UI.Controls;
 using Tango.UI.Std.EntityAudit;
+using static Dapper.SqlMapper;
 
 namespace Tango.UI.Std
 {
@@ -41,9 +44,6 @@ namespace Tango.UI.Std
 
 		[Inject]
 		protected IEntityAudit EntityAudit { get; set; }
-
-		[Inject]
-		protected IObjectTracker Tracker { get; set; }
 
 		[Inject]
 		protected IRequestEnvironment RequestEnvironment { get; set; }
@@ -173,7 +173,9 @@ namespace Tango.UI.Std
 			if (!ProcessSubmit(response)) 
 				return;
 
-			Submit(response);
+			var doSubmit = ProcessObjectChangeRequest();
+			if (doSubmit)
+				Submit(response);
 			AfterSubmit(response);
 		}
 		
@@ -181,6 +183,7 @@ namespace Tango.UI.Std
         protected virtual void PreProcessFormData(ApiResponse response, ValidationMessageCollection val) { }
         protected virtual void ProcessFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ProcessFormData(val));
 		protected virtual void PostProcessFormData(ApiResponse response, ValidationMessageCollection val) { }
+		protected virtual bool ProcessObjectChangeRequest() { return true; }
 
 		protected abstract void Submit(ApiResponse response);
 		protected virtual void AfterSubmit(ApiResponse response)
@@ -219,7 +222,20 @@ namespace Tango.UI.Std
 	public abstract class default_edit<T> : default_edit
 		where T : class
 	{
+		[Inject]
+		protected IObjectTracker Tracker { get; set; }
+
+		[Inject]
+		public IObjectChangeRequestManager<T> ChReqManager { get; set; }
+
+		[Inject]
+		public IObjectChangeRequestView ChReqView { get; set; }
+
 		T _viewData = null;
+		List<string> _changedFields = null;
+		List<FieldSnapshot> _srcFieldSnapshot = null;
+		List<FieldSnapshot> _destFieldSnapshot = null;
+
 		protected T ViewData
 		{
 			get
@@ -236,7 +252,21 @@ namespace Tango.UI.Std
 
 		protected virtual T GetViewData()
 		{
-			return CreateObjectMode || BulkMode ? GetNewEntity() : GetExistingEntity();
+			if (ChangeRequestMode)
+				return GetChangeRequestData();
+			else if (CreateObjectMode || BulkMode)
+				return GetNewEntity();
+			else 
+				return GetExistingEntity();
+		}
+
+		protected T GetChangeRequestData()
+		{
+			var ochid = Context.GetArg(Constants.ObjectChangeRequestId);
+			var data = ChReqManager.Load(ochid);
+			Tracker?.StartTracking(data.Object);
+			_changedFields = data.ChangedFields;
+			return data.Object;
 		}
 
 		public override void OnEvent()
@@ -249,7 +279,23 @@ namespace Tango.UI.Std
 			});
 		}
 
+		public override void OnInit()
+		{
+			base.OnInit();
+			if (ChReqView != null)
+				ChReqView.Context = Context;
+		}
+
 		protected override bool ObjectNotExists => ViewData == null;
+
+		public override ViewContainer GetContainer()
+		{
+			var c = base.GetContainer();
+			if (ChangeRequestMode && c is AbstractDefaultContainer ac)
+				ac.Width = ContainerWidth.Width100;
+
+			return c;
+		}
 
 		public override void OnLoad(ApiResponse response)
 		{
@@ -264,6 +310,73 @@ namespace Tango.UI.Std
 			}
 		}
 
+		protected override void RenderFormLayout(LayoutWriter w)
+		{
+			if (ChReqView != null && ChangeRequestMode)
+			{
+				ChReqView.RenderHeader(w);
+				if (ChReqView.Status != ObjectChangeRequestStatus.New)
+				{
+					groups.ForEach(g => {
+						g.Fields.ForEach(f => {
+							f.Disabled = true;
+						});
+					});
+				}
+
+				if (CreateObjectMode)
+				{
+					w.Block(a => a.Class(FormWidth.ToString().ToLower()), () => {
+						Form(w);
+						ChReqView.RenderFooter(w);
+					});
+				}
+				else
+				{
+					var fDisabled = new Dictionary<string, bool>();
+					var fWithCB = new Dictionary<string, bool>();
+
+					w.Div(a => a.Class("layout1 withwrap size_5"), () => {
+						w.CollapsibleSidebar("Исходные значения", () => {
+							groups.ForEach(g => {
+								g.SetViewData(GetExistingEntity());
+								g.Fields.ForEach(f => {
+									fDisabled.Add(f.ID, f.Disabled);
+									fWithCB.Add(f.ID, f.WithCheckBox);
+									f.Disabled = true;
+									f.WithCheckBox = false;
+								});
+							});
+							var id = ID;
+							ID += "_oldstate";
+							w.WithPrefix(this, () => {
+								w.Div(a => a.Class("contentbodypadding"), () => Form(w));
+							});
+							ID = id;
+						});
+						w.CollapsibleSidebar("Целевые значения", () => {
+							groups.ForEach(g => {
+								g.SetViewData(ViewData);
+								g.Fields.ForEach(f => {
+									if (_changedFields?.Contains(f.ID.ToLower()) ?? false)
+										f.Disabled = false;
+									else
+										f.Disabled = fDisabled[f.ID];
+									f.WithCheckBox = fWithCB[f.ID];
+								});
+							});
+							w.Div(a => a.Class("contentbodypadding"), () => Form(w));
+						});
+					});
+				}
+			}
+			else
+			{
+				Form(w);
+			}
+			w.FormValidationBlock();
+		}
+
 		protected virtual bool DeleteMode => Context.Action.ToLower() == "delete";
 		protected virtual bool CreateObjectMode => !BulkMode && !Context.AllArgs.ContainsKey(Constants.Id);
 		protected virtual bool BulkMode => Context.AllArgs.ContainsKey(Constants.SelectedValues);
@@ -271,9 +384,28 @@ namespace Tango.UI.Std
 		protected virtual string BulkModeFormTitle => Resources.Get("Common.BulkModeTitle");
 		protected virtual string CreateNewFormTitle => Resources.Get(ViewData.GetType().FullName);
 		protected virtual string EditFormTitle => ViewData is IWithTitle ? (ViewData as IWithTitle).Title : "";
+		protected bool ChangeRequestMode => Context.AllArgs.ContainsKey(Constants.ObjectChangeRequestId);
 
 		protected abstract T GetNewEntity();
 		protected abstract T GetExistingEntity();
+
+		protected override void ButtonsBar(LayoutWriter w)
+		{
+			w.ButtonsBar(a => a.Class(FormWidth.ToString().ToLower()), () => {
+				w.ButtonsBarRight(() => {
+					if (!(ChangeRequestMode && ChReqView.Status.In(ObjectChangeRequestStatus.Approved, ObjectChangeRequestStatus.Rejected)))
+					{
+						var res = "Common.OK";
+						if ((ChReqManager?.IsEnabled(typeof(T)) ?? false) && !DeleteMode && !BulkMode && !ChangeRequestMode)
+							res = "Common.CreateObjectChangeRequest";
+						w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
+					}
+					if (ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New)
+						w.SubmitAndBackButton(a => a.DataEvent(RejectObjectChangeRequest), Resources.Get("Common.RejectObjectChangeRequest"));
+					w.BackButton(this);
+				});
+			});
+		}
 
 		protected override void ProcessFormData(ValidationMessageCollection val)
 		{
@@ -282,6 +414,74 @@ namespace Tango.UI.Std
 			if (ViewData is IWithTimeStamp withTimeStamp)
 			{
 				withTimeStamp.LastModifiedDate = DateTime.Now;
+			}
+		}
+
+		protected override bool ProcessObjectChangeRequest()
+		{
+			if (!ChangeRequestMode)
+			{
+				var chReqEnabled = ChReqManager?.IsEnabled(typeof(T)) ?? false;
+				var moderatorMode = ChReqManager?.IsCurrentUserModerator() ?? false;
+
+				if (chReqEnabled)
+				{
+					var changes = Context.AllArgs
+						.Where(x => x.Key.EndsWith("_check"))
+						.Select(x => x.Key.Replace("_check", ""))
+						.ToList();
+					var data = new ObjectChangeRequestData<T> {
+						Object = ViewData,
+						ChangedFields = changes
+					};
+					ChReqManager.Save(Context.Action, data);
+				}
+
+				return !chReqEnabled || moderatorMode;
+			}
+			else
+			{
+				_srcFieldSnapshot = new List<FieldSnapshot>();
+				_destFieldSnapshot = new List<FieldSnapshot>();
+
+				if (!CreateObjectMode)
+				{
+					groups.ForEach(g => {
+						g.SetViewData(GetExistingEntity());
+						g.Fields.ForEach(f => {
+							if (f is IEditableField)
+							{
+								f.ValueSource = ValueSource.Model;
+								_srcFieldSnapshot.Add(new FieldSnapshot {
+									Caption = f.Caption,
+									StringValue = f.StringValue,
+									Value = f.ToString()
+								});
+							}
+						});
+					});
+				}
+
+				groups.ForEach(g => {
+					g.SetViewData(ViewData);
+					g.Fields.ForEach(f => {
+						if (f is IEditableField)
+						{
+							if (f.Disabled)
+								f.ValueSource = ValueSource.Model;
+							else
+								f.ValueSource = ValueSource.Form;
+
+							_destFieldSnapshot.Add(new FieldSnapshot {
+								Caption = f.Caption,
+								StringValue = f.StringValue,
+								Value = f.ToString()
+							});
+						}
+					});
+				});
+
+				return true;
 			}
 		}
 
@@ -305,15 +505,6 @@ namespace Tango.UI.Std
 			base.AfterSubmit(response);
 		}
 
-		protected void Set<TValue>(MetaAttribute<T, TValue> attr, TValue defaultValue = default(TValue))
-		{
-			attr.SetValue(ViewData, FormData.Parse(attr.Name, defaultValue));
-		}
-		protected void Set<TValue, TRefKey>(MetaReference<T, TValue, TRefKey> attr, TRefKey defaultValue = default(TRefKey))
-		{
-			attr.SetValueID(ViewData, FormData.Parse(attr.Name, defaultValue));
-		}
-
 		protected virtual IEnumerable<string> GetBulkEditProperties()
 		{
 			var updFields = new List<string>();
@@ -323,6 +514,20 @@ namespace Tango.UI.Std
 					.SelectMany(f => (f as IEntityField<T>).Properties));
 			});
 			return updFields;
+		}
+
+		protected void RejectObjectChangeRequest(ApiResponse response)
+		{
+			ChReqView.Reject(_srcFieldSnapshot, _destFieldSnapshot);
+			response.RedirectBack(Context, 1, !IsSubView);
+		}
+
+		protected void ApproveObjectChangeRequest()
+		{
+			if (ChangeRequestMode)
+			{
+				ChReqView.Approve(_srcFieldSnapshot, _destFieldSnapshot);
+			}
 		}
 	}
 
@@ -443,7 +648,7 @@ namespace Tango.UI.Std
 		protected override T GetExistingEntity()
 		{
 			var id = Context.GetArg<TKey>(Constants.Id);
-			var obj = Repository.GetById(id);
+			var	obj = Repository.GetById(id);
 			Tracker?.StartTracking(obj);
 			return obj;
 		}
@@ -451,7 +656,7 @@ namespace Tango.UI.Std
 		protected virtual void BeforeSaveEntity() { }
 		protected virtual void AfterSaveEntity()
 		{
-			
+			ApproveObjectChangeRequest();
 		}
 
 		protected override void PreProcessFormData(ApiResponse response, ValidationMessageCollection val)
@@ -470,7 +675,7 @@ namespace Tango.UI.Std
 			}
 		}
 
-        protected override void Submit(ApiResponse response)
+		protected override void Submit(ApiResponse response)
 		{
 			if (EntityAudit != null && ViewData != null)
 			{
@@ -479,16 +684,16 @@ namespace Tango.UI.Std
 					EntityAudit.PrimaryObject.PropertyChanges.ForEach(pc => { pc.OldValue = null; });
 			}
 
-            if (CreateObjectMode)
-				InTransaction(() =>
-				{
+			if (CreateObjectMode)
+			{
+				InTransaction(() => {
 					Repository.Create(ViewData);
 				});
+			}
 			else if (DeleteMode)
 			{
-				InTransaction(() =>
-				{
-					Repository.Delete(new List<TKey>(){ViewData.ID});
+				InTransaction(() => {
+					Repository.Delete(new List<TKey>() { ViewData.ID });
 				});
 			}
 			else if (BulkMode)
@@ -505,11 +710,9 @@ namespace Tango.UI.Std
 			}
 			else
 			{
-				InTransaction(() =>
-				{
+				InTransaction(() => {
 					Repository.Update(ViewData);
 				});
-				
 			}
 		}
 
@@ -529,5 +732,15 @@ namespace Tango.UI.Std
 	public abstract class default_edit_rep<T, TKey> : default_edit_rep<T, TKey, IRepository<T>>
 		where T : class, IWithKey<T, TKey>, new()
 	{
+	}
+
+	public interface IObjectChangeRequestView
+	{
+		ActionContext Context { get; set; }
+		ObjectChangeRequestStatus Status { get; }
+		void RenderHeader(LayoutWriter w);
+		void RenderFooter(LayoutWriter w);
+		void Reject(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
+		void Approve(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
 	}
 }

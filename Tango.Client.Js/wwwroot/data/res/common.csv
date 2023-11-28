@@ -48,6 +48,8 @@ Common.Controls.SelectObjectHierarchic.MustSelectAlert;Выберите объе
 Common.Controls.SelectObjectHierarchic.NotFoundMessage;В системе отсутствует информация по вашему запросу;The system is not relevant to your search
 Common.Controls.SelectObjectHierarchic.Search;Поиск;Search
 Common.CreateNew;Создать;New
+Common.CreateObjectChangeRequest;Создать запрос;Create change request
+Common.RejectObjectChangeRequest;Отклонить запрос;Reject change request
 Common.Delete;Удалить;Delete
 Common.Delete.Title;Удаление объекта;Delete object
 Common.Delete.Bulk.Title;Удаление объектов;Delete multiple objects

@@ -83,6 +83,7 @@ namespace Tango.UI
 				//f.AllFields = allFields;
 				f.Args = Args;
 				f.ValueSource = ValueSource.Model;
+				f.Init();
 			}
 		}
 
