@@ -7,6 +7,7 @@ using Tango.Data;
 using Tango.Html;
 using Tango.Localization;
 using Tango.Logic;
+using static Dapper.SqlMapper;
 
 namespace Tango.UI
 {
@@ -400,7 +401,18 @@ namespace Tango.UI
 
 		public override string ToString()
 		{
-			return ValueSource == ValueSource.Form ? FormValue.ToString() : PropertyValue.ToString();
+			if (ValueSource == ValueSource.Form)
+				return FormValue.ToString();
+
+			var v = PropertyValue;
+			if (v is IWithKey<int> intv)
+				return intv.ID.ToString();
+			else if (v is IWithKey<Guid> guidv)
+				return guidv.ID.ToString();
+			else if (v is IWithKey<string> strv)
+				return strv.ID;
+			else
+				return v.ToString();
 		}
 	}
 

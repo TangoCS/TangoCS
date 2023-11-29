@@ -14,6 +14,7 @@ using Tango.Meta;
 using Tango.UI.Controls;
 using Tango.UI.Std.EntityAudit;
 using static Dapper.SqlMapper;
+using static Tango.UI.CommonFields;
 
 namespace Tango.UI.Std
 {
@@ -324,50 +325,82 @@ namespace Tango.UI.Std
 					});
 				}
 
-				if (CreateObjectMode)
+				if (ChReqView.Status == ObjectChangeRequestStatus.New)
 				{
-					w.Block(a => a.Class(FormWidth.ToString().ToLower()), () => {
-						Form(w);
-						ChReqView.RenderFooter(w);
-					});
+					if (CreateObjectMode)
+					{
+						w.Block(a => a.Class(FormWidth.ToString().ToLower()), () => {
+							Form(w);
+							ChReqView.RenderFooter(w);
+						});
+					}
+					else
+					{
+						var fDisabled = new Dictionary<string, bool>();
+						var fWithCB = new Dictionary<string, bool>();
+
+						w.Div(a => a.Class("layout1 withwrap size_5"), () => {
+							w.CollapsibleSidebar("Исходные значения", () => {
+								groups.ForEach(g => {
+									g.SetViewData(GetExistingEntity());
+									g.Fields.ForEach(f => {
+										fDisabled.Add(f.ID, f.Disabled);
+										fWithCB.Add(f.ID, f.WithCheckBox);
+										f.Disabled = true;
+										f.WithCheckBox = false;
+									});
+								});
+								var id = ID;
+								ID += "_oldstate";
+								w.WithPrefix(this, () => {
+									w.Div(a => a.Class("contentbodypadding"), () => Form(w));
+								});
+								ID = id;
+							});
+							w.CollapsibleSidebar("Целевые значения", () => {
+								groups.ForEach(g => {
+									g.SetViewData(ViewData);
+									g.Fields.ForEach(f => {
+										if (_changedFields?.Contains(f.ID.ToLower()) ?? false)
+											f.Disabled = false;
+										else
+											f.Disabled = fDisabled[f.ID];
+										f.WithCheckBox = fWithCB[f.ID];
+									});
+								});
+								w.Div(a => a.Class("contentbodypadding"), () => Form(w));
+							});
+						});
+					}
 				}
 				else
 				{
-					var fDisabled = new Dictionary<string, bool>();
-					var fWithCB = new Dictionary<string, bool>();
-
-					w.Div(a => a.Class("layout1 withwrap size_5"), () => {
-						w.CollapsibleSidebar("Исходные значения", () => {
-							groups.ForEach(g => {
-								g.SetViewData(GetExistingEntity());
-								g.Fields.ForEach(f => {
-									fDisabled.Add(f.ID, f.Disabled);
-									fWithCB.Add(f.ID, f.WithCheckBox);
-									f.Disabled = true;
-									f.WithCheckBox = false;
+					if (CreateObjectMode)
+					{
+						w.Div(a => a.Class("layout1 withwrap width100"), () => {
+							w.Div(a => a.Class("sidebar"), () => {
+								w.Div(a => a.Class("sidebar-panel"), () => {
+									w.Div(a => a.Class("sidebar-header"), () => {
+										w.H3(a => a.ID("sidebarcontenttitle"), "Значения");
+									});
+									w.Div(a => a.Class(FormWidth.ToString().ToLower()), () => {
+										ChReqView.RenderDestFields(w);
+									});
 								});
 							});
-							var id = ID;
-							ID += "_oldstate";
-							w.WithPrefix(this, () => {
-								w.Div(a => a.Class("contentbodypadding"), () => Form(w));
-							});
-							ID = id;
 						});
-						w.CollapsibleSidebar("Целевые значения", () => {
-							groups.ForEach(g => {
-								g.SetViewData(ViewData);
-								g.Fields.ForEach(f => {
-									if (_changedFields?.Contains(f.ID.ToLower()) ?? false)
-										f.Disabled = false;
-									else
-										f.Disabled = fDisabled[f.ID];
-									f.WithCheckBox = fWithCB[f.ID];
-								});
+					}
+					else
+					{
+						w.Div(a => a.Class("layout1 withwrap size_5"), () => {
+							w.CollapsibleSidebar("Исходные значения", () => {
+								w.Div(a => a.Class("contentbodypadding"), () => ChReqView.RenderSrcFields(w));
 							});
-							w.Div(a => a.Class("contentbodypadding"), () => Form(w));
+							w.CollapsibleSidebar("Целевые значения", () => {
+								w.Div(a => a.Class("contentbodypadding"), () => ChReqView.RenderDestFields(w));
+							});
 						});
-					});
+					}
 				}
 			}
 			else
@@ -740,6 +773,8 @@ namespace Tango.UI.Std
 		ObjectChangeRequestStatus Status { get; }
 		void RenderHeader(LayoutWriter w);
 		void RenderFooter(LayoutWriter w);
+		void RenderSrcFields(LayoutWriter w);
+		void RenderDestFields(LayoutWriter w);
 		void Reject(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
 		void Approve(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
 	}
