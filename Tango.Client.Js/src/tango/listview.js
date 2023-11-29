@@ -342,7 +342,7 @@ window.listview = function (au, cu, cbcell, menu) {
 			const state = au.state.ctrl[rootid];
 			const cbhead = document.getElementById(root.id + "_sel_header");
 
-			state.selectedvalues = [];
+			state.selectedvalues.splice(0);
 			state.selectedvalues.push(-1);
 
 			cbcell.setPageChecked(root, state, cbhead);
@@ -351,7 +351,7 @@ window.listview = function (au, cu, cbcell, menu) {
 		clearselection: function (rootid) {
 			const state = au.state.ctrl[rootid];
 			if (state) {
-				state.selectedvalues = [];
+				state.selectedvalues.splice(0);
 
 				const root = document.getElementById(rootid);
 				if (root) {
