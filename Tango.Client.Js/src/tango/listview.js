@@ -563,7 +563,7 @@ window.listview = function (au, cu, cbcell, menu) {
 		scrollToCurrentNode: function (root) {
 			root = document.getElementById(root);
 			const node = root.querySelector('.selected');
-			if (node) node.scrollIntoView();
+			if (node) node.scrollIntoView({ block: 'center' });
 		}
 	}
 
