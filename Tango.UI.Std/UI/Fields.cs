@@ -7,6 +7,7 @@ using Tango.Data;
 using Tango.Html;
 using Tango.Localization;
 using Tango.Logic;
+using static Dapper.SqlMapper;
 
 namespace Tango.UI
 {
@@ -25,13 +26,12 @@ namespace Tango.UI
 		bool ShowDescription { get; set; }
 		string StringValue { get; set; }
 
-		//IInteractionFlowElement Form { get; set; }
-
 		bool FireOnChangeEvent { get; set; }
 		string EventReceiver { get; set; }
 
-		//IReadOnlyDictionary<string, IField> AllFields { get; set; }
 		IReadOnlyDictionary<string, object> Args { get; set; }
+
+		void Init();
 	}
 
 	public interface IField<TValue> : IField
@@ -99,14 +99,24 @@ namespace Tango.UI
 		public virtual bool ShowDescription { get; set; } = false;
 		public virtual string StringValue { get; set; } = "";
 
-		//public IReadOnlyDictionary<string, IField> AllFields { get; set; }
 		public IReadOnlyDictionary<string, object> Args { get; set; }
 
-		//public IInteractionFlowElement Form { get; set; }
-
 		public virtual bool FireOnChangeEvent { get; set; } = false;
-
 		public string EventReceiver { get; set; }
+
+		public virtual void Init() { }
+	}
+
+	public class FieldSnapshot
+	{
+		public string Caption { get; set; }
+		public string StringValue { get; set; }
+		public string Value { get; set; }
+
+		public override string ToString()
+		{
+			return $"{Caption}: StringValue={StringValue} Value={Value}";
+		}
 	}
 
 	public abstract class Field<TValue, TFormValue> : Field, IField<TValue>, IFormField<TFormValue>, IFieldValueProvider<TFormValue>
@@ -182,6 +192,11 @@ namespace Tango.UI
 
 			var type = typeof(TFormValue);
 			IsRequired = type.IsValueType && type != typeof(bool) && (Nullable.GetUnderlyingType(type) == null);
+		}
+
+		public override string ToString()
+		{
+			return Value.ToString();
 		}
 	}
 
@@ -382,6 +397,22 @@ namespace Tango.UI
 				prop.SetValue(ViewData, Enum.ToObject(Nullable.GetUnderlyingType(prop.PropertyType), Value));
 			else
 				prop.SetValue(ViewData, Value);
+		}
+
+		public override string ToString()
+		{
+			if (ValueSource == ValueSource.Form)
+				return FormValue.ToString();
+
+			var v = PropertyValue;
+			if (v is IWithKey<int> intv)
+				return intv.ID.ToString();
+			else if (v is IWithKey<Guid> guidv)
+				return guidv.ID.ToString();
+			else if (v is IWithKey<string> strv)
+				return strv.ID;
+			else
+				return v.ToString();
 		}
 	}
 

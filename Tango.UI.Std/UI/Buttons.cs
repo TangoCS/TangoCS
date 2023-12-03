@@ -7,12 +7,12 @@ namespace Tango.UI
 	{
 		public static void SubmitButton(this LayoutWriter w, Action<ButtonTagAttributes> attributes = null, string text = null)
 		{
-			w.SubmitButton(a => a.Class("btn btn-primary").Set(attributes), () => w.Write(text ?? w.Resources.Get("Common.OK")));
+			w.SubmitButton(a => a.Class("btn-primary").Set(attributes), () => w.Write(text ?? w.Resources.Get("Common.OK")));
 		}
 
 		public static void SubmitButtonConfirm(this LayoutWriter w, Action<ButtonTagAttributes> attributes, string text, string message)
 		{
-			w.SubmitButton(a => a.Class("btn btn-primary").Data("confirm", message).Set(attributes), () => w.Write(text));
+			w.SubmitButton(a => a.Class("btn-primary").Data("confirm", message).Set(attributes), () => w.Write(text));
 		}
 
 		public static void SubmitButtonConfirm(this LayoutWriter w, string text, string message)

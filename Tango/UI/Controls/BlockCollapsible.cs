@@ -109,6 +109,7 @@ namespace Tango.UI.Controls
     public class TitleBuilder
     {
         private Action<LayoutWriter> _items;
+        public TitleBuilder AddItem(int width, Action inner) => AddItem(attr: a => a.Style($"width:{width}px;"), inner);
         public TitleBuilder AddItem(Action inner) => AddItem(attr: null, inner);
         public TitleBuilder AddItem(Action<TagAttributes> attr, Action inner) { _items += w => w.Div(attr, inner); return this; }
         public TitleBuilder AddItems(params Action[] inners) => AddItems(attr: null, inners);

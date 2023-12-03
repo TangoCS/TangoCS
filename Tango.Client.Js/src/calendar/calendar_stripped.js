@@ -1376,6 +1376,8 @@ Calendar.prototype.showAtElement = function (el, opts) {
 		case "l": p.x += el.offsetWidth - w; break;
 		case "r": break; // already there
 	}
+	if (p.y + h > window.innerHeight)
+		p.y -= h + el.offsetHeight;
 	p.width = w;
 	p.height = h + 40;
 	self.monthsCombo.style.display = "none";
