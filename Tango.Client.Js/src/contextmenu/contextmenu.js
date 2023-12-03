@@ -315,8 +315,8 @@
 				}
 
 				//to reset already selected menu item
-				menu.find('.iw-mSelected').not(menu.selector).removeClass('iw-mSelected');
-				$('.iw-opened').not(menu.selector).removeClass('iw-opened');
+				//menu.find('.iw-mSelected').not(menu.selector).removeClass('iw-mSelected');
+				$('.iw-opened').not(trigger[0]).removeClass('iw-opened');
 			}
 			else if (res == 1) {
 				//to close previous open menu.
@@ -324,7 +324,7 @@
 					iMethods.clearMenuStyle($('.iw-contextMenu'));
 				}
 				//to reset already selected menu item
-				menu.find('.iw-mSelected').removeClass('iw-mSelected');
+				//menu.find('.iw-mSelected').removeClass('iw-mSelected');
 				$('.iw-opened').removeClass('iw-opened');
 				return;
 			}

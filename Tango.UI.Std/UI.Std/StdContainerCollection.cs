@@ -44,6 +44,7 @@ namespace Tango.UI.Std
 
 		public string ContainerClass { get; set; } = "content";
 		public string BodyClass { get; set; } = "contentbody";
+		public string ContainerID { get; set; } = "container";
 	}
 
 	public class DefaultContainer : AbstractDefaultContainer
@@ -52,13 +53,14 @@ namespace Tango.UI.Std
 
 		public override void Render(ApiResponse response)
 		{
-			response.AddWidget("container", w => {
+			response.AddWidget(ContainerID, w => {
 				w.Div(a => a.ID("content").Class(ContainerClass).DataIsContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
 							ContentHeader(w);
 						});
-					w.Div(a => a.ID("contenttoolbar"));
+					if (!ToRemove.Contains("contenttoolbar"))
+						w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody").Class(BodyClass));
 				});
 			});
@@ -69,9 +71,10 @@ namespace Tango.UI.Std
 	{
 		public override void Render(ApiResponse response)
 		{
-			response.AddWidget("container", w => {
+			response.AddWidget(ContainerID, w => {
 				w.Div(a => a.ID("content").Class(ContainerClass).DataIsContainer(Type, w.IDPrefix), () => {
-					w.Div(a => a.ID("contenttoolbar"));
+					if (!ToRemove.Contains("contenttoolbar"))
+						w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding"));
 				});
 			});
@@ -107,13 +110,14 @@ namespace Tango.UI.Std
 
 		public override void Render(ApiResponse response)
 		{
-			response.AddWidget("container", w => {
+			response.AddWidget(ContainerID, w => {
 				w.Div(a => a.ID("content").Class(ContainerClass).DataIsContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
 							ContentHeader(w);
 						});
-					w.Div(a => a.ID("contenttoolbar"));
+					if (!ToRemove.Contains("contenttoolbar"))
+						w.Div(a => a.ID("contenttoolbar"));
 					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding").Style(Height == ContainerHeight.Height100 ? "display:flex;flex-direction:column;" : null), () => {
 						FormContainer(w);
 						ResultBlock(w);
@@ -136,7 +140,7 @@ namespace Tango.UI.Std
 
 		public override void Render(ApiResponse response)
 		{
-			response.AddWidget("container", w => {
+			response.AddWidget(ContainerID, w => {
 				w.Div(a => a.ID("content").Class(ContainerClass).DataIsContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
@@ -164,7 +168,7 @@ namespace Tango.UI.Std
 
 		public override void Render(ApiResponse response)
 		{
-			response.AddWidget("container", w => {
+			response.AddWidget(ContainerID, w => {
 				w.Div(a => a.ID("content").Class(ContainerClass).DataIsContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contentheader"))
 						w.Div(a => a.ID("contentheader").Class("contentheader"), () => {
