@@ -317,6 +317,11 @@ namespace Tango.UI.Controls
 			From = from;
 			To = to;
 		}
+
+		public override string ToString()
+		{
+			return From.Hour == 0 && To.Hour == 0 && From.Minute == 0 && To.Minute == 0 ? $"{From.DateToString()}-{To.DateToString()}" : $"{From.DateTimeToString()}-{To.DateTimeToString()}";
+		}
 	}
 
 	public static class PeriodPickerExtensions
