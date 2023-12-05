@@ -12,6 +12,7 @@ namespace Tango.LongOperation
 		public abstract int ActionID { get; }
 		public abstract bool OneThread { get; }
 		public abstract int Priority { get; set; }
+		public abstract string UserName { get; }
 		public DateTime CreateDate { get; }
 		public DateTime? RunDate { get; private set; }
 		public int Timeout { get; } // timeout (min)

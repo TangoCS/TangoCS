@@ -200,4 +200,5 @@ tango.longoperation.longoperationticket.type;Тип;Type
 tango.longoperation.longoperationticket.ismanualstart;Ручной;Manual
 tango.longoperation.longoperationticket.onethread;Последовательный запуск;One thread
 tango.longoperation.longoperationticket.priority;Приоритет;Priority
+tango.longoperation.longoperationticket.username;Пользователь;User
 tango.longoperation.longoperationticket-pl;Очередь длительных операций;Queue long operations
