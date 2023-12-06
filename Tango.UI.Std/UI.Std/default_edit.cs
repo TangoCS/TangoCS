@@ -329,9 +329,18 @@ namespace Tango.UI.Std
 				{
 					if (CreateObjectMode)
 					{
-						w.Block(a => a.Class(FormWidth.ToString().ToLower()), () => {
-							Form(w);
-							ChReqView.RenderFooter(w);
+						w.Div(a => a.Class("layout1 withwrap width100"), () => {
+							w.Div(a => a.Class("sidebar"), () => {
+								w.Div(a => a.Class("sidebar-panel"), () => {
+									w.Div(a => a.Class("sidebar-header"), () => {
+										w.H3(a => a.ID("sidebarcontenttitle"), "Целевые значения");
+									});
+									w.Div(a => a.Class(FormWidth.ToString().ToLower()), () => {
+										Form(w);
+										ChReqView.RenderFooter(w);
+									});
+								});
+							});
 						});
 					}
 					else
@@ -376,31 +385,9 @@ namespace Tango.UI.Std
 				else
 				{
 					if (CreateObjectMode)
-					{
-						w.Div(a => a.Class("layout1 withwrap width100"), () => {
-							w.Div(a => a.Class("sidebar"), () => {
-								w.Div(a => a.Class("sidebar-panel"), () => {
-									w.Div(a => a.Class("sidebar-header"), () => {
-										w.H3(a => a.ID("sidebarcontenttitle"), "Значения");
-									});
-									w.Div(a => a.Class(FormWidth.ToString().ToLower()), () => {
-										ChReqView.RenderDestFields(w);
-									});
-								});
-							});
-						});
-					}
+						ChReqView.RenderDestFields(w);
 					else
-					{
-						w.Div(a => a.Class("layout1 withwrap size_5"), () => {
-							w.CollapsibleSidebar("Исходные значения", () => {
-								w.Div(a => a.Class("contentbodypadding"), () => ChReqView.RenderSrcFields(w));
-							});
-							w.CollapsibleSidebar("Целевые значения", () => {
-								w.Div(a => a.Class("contentbodypadding"), () => ChReqView.RenderDestFields(w));
-							});
-						});
-					}
+						ChReqView.RenderFields(w);
 				}
 			}
 			else
@@ -424,7 +411,11 @@ namespace Tango.UI.Std
 
 		protected override void ButtonsBar(LayoutWriter w)
 		{
-			w.ButtonsBar(a => a.Class(FormWidth.ToString().ToLower()), () => {
+			var width = FormWidth;
+			if (ChangeRequestMode && !CreateObjectMode && GetContainer() is AbstractDefaultContainer ac)
+				width = ac.Width;
+
+			w.ButtonsBar(a => a.Class(width.ToString().ToLower()), () => {
 				w.ButtonsBarRight(() => {
 					if (!(ChangeRequestMode && ChReqView.Status.In(ObjectChangeRequestStatus.Approved, ObjectChangeRequestStatus.Rejected)))
 					{
@@ -773,7 +764,7 @@ namespace Tango.UI.Std
 		ObjectChangeRequestStatus Status { get; }
 		void RenderHeader(LayoutWriter w);
 		void RenderFooter(LayoutWriter w);
-		void RenderSrcFields(LayoutWriter w);
+		void RenderFields(LayoutWriter w);
 		void RenderDestFields(LayoutWriter w);
 		void Reject(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
 		void Approve(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
