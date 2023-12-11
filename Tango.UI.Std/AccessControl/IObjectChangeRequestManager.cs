@@ -10,7 +10,7 @@ namespace Tango.AccessControl
 	{
 		bool IsEnabled(Type entity);
 		bool IsCurrentUserModerator();
-		void Save(string action, ObjectChangeRequestData<T> data);
+		void Save(string action, ObjectChangeRequestData<T> data, string comments);
 		ObjectChangeRequestData<T> Load(string ochid);
 	}
 

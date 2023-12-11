@@ -283,8 +283,13 @@ namespace Tango.UI.Std
 		public override void OnInit()
 		{
 			base.OnInit();
+
 			if (ChReqView != null)
-				ChReqView.Context = Context;
+			{
+				ChReqView.ID = "chreqview";
+				AddControl(ChReqView);
+			}
+			
 		}
 
 		protected override bool ObjectNotExists => ViewData == null;
@@ -313,81 +318,89 @@ namespace Tango.UI.Std
 
 		protected override void RenderFormLayout(LayoutWriter w)
 		{
-			if (ChReqView != null && ChangeRequestMode)
+			if (ChReqView != null)
 			{
-				ChReqView.RenderHeader(w);
-				if (ChReqView.Status != ObjectChangeRequestStatus.New)
+				if (ChangeRequestMode)
 				{
-					groups.ForEach(g => {
-						g.Fields.ForEach(f => {
-							f.Disabled = true;
-						});
-					});
-				}
-
-				if (ChReqView.Status == ObjectChangeRequestStatus.New)
-				{
-					if (CreateObjectMode)
+					ChReqView.RenderHeader(w);
+					if (ChReqView.Status != ObjectChangeRequestStatus.New)
 					{
-						w.Div(a => a.Class("layout1 withwrap width100"), () => {
-							w.Div(a => a.Class("sidebar"), () => {
-								w.Div(a => a.Class("sidebar-panel"), () => {
-									w.Div(a => a.Class("sidebar-header"), () => {
-										w.H3(a => a.ID("sidebarcontenttitle"), "Целевые значения");
-									});
-									w.Div(a => a.Class(FormWidth.ToString().ToLower()), () => {
-										Form(w);
-										ChReqView.RenderFooter(w);
-									});
-								});
+						groups.ForEach(g => {
+							g.Fields.ForEach(f => {
+								f.Disabled = true;
 							});
 						});
 					}
-					else
-					{
-						var fDisabled = new Dictionary<string, bool>();
-						var fWithCB = new Dictionary<string, bool>();
 
-						w.Div(a => a.Class("layout1 withwrap size_5"), () => {
-							w.CollapsibleSidebar("Исходные значения", () => {
-								groups.ForEach(g => {
-									g.SetViewData(GetExistingEntity());
-									g.Fields.ForEach(f => {
-										fDisabled.Add(f.ID, f.Disabled);
-										fWithCB.Add(f.ID, f.WithCheckBox);
-										f.Disabled = true;
-										f.WithCheckBox = false;
+					if (ChReqView.Status == ObjectChangeRequestStatus.New)
+					{
+						if (CreateObjectMode)
+						{
+							w.Div(a => a.Class("layout1 withwrap width100"), () => {
+								w.Div(a => a.Class("sidebar"), () => {
+									w.Div(a => a.Class("sidebar-panel"), () => {
+										w.Div(a => a.Class("sidebar-header"), () => {
+											w.H3(a => a.ID("sidebarcontenttitle"), "Целевые значения");
+										});
+										w.Div(a => a.Class(FormWidth.ToString().ToLower()), () => {
+											Form(w);
+											ChReqView.RenderFooter(w);
+										});
 									});
 								});
-								var id = ID;
-								ID += "_oldstate";
-								w.WithPrefix(this, () => {
+							});
+						}
+						else
+						{
+							var fDisabled = new Dictionary<string, bool>();
+							var fWithCB = new Dictionary<string, bool>();
+
+							w.Div(a => a.Class("layout1 withwrap size_5"), () => {
+								w.CollapsibleSidebar("Исходные значения", () => {
+									groups.ForEach(g => {
+										g.SetViewData(GetExistingEntity());
+										g.Fields.ForEach(f => {
+											fDisabled.Add(f.ID, f.Disabled);
+											fWithCB.Add(f.ID, f.WithCheckBox);
+											f.Disabled = true;
+											f.WithCheckBox = false;
+										});
+									});
+									var id = ID;
+									ID += "_oldstate";
+									w.WithPrefix(this, () => {
+										w.Div(a => a.Class("contentbodypadding"), () => Form(w));
+									});
+									ID = id;
+								});
+								w.CollapsibleSidebar("Целевые значения", () => {
+									groups.ForEach(g => {
+										g.SetViewData(ViewData);
+										g.Fields.ForEach(f => {
+											if (_changedFields?.Contains(f.ID.ToLower()) ?? false)
+												f.Disabled = false;
+											else
+												f.Disabled = fDisabled[f.ID];
+											f.WithCheckBox = fWithCB[f.ID];
+										});
+									});
 									w.Div(a => a.Class("contentbodypadding"), () => Form(w));
 								});
-								ID = id;
 							});
-							w.CollapsibleSidebar("Целевые значения", () => {
-								groups.ForEach(g => {
-									g.SetViewData(ViewData);
-									g.Fields.ForEach(f => {
-										if (_changedFields?.Contains(f.ID.ToLower()) ?? false)
-											f.Disabled = false;
-										else
-											f.Disabled = fDisabled[f.ID];
-										f.WithCheckBox = fWithCB[f.ID];
-									});
-								});
-								w.Div(a => a.Class("contentbodypadding"), () => Form(w));
-							});
-						});
+						}
+					}
+					else
+					{
+						if (CreateObjectMode || ChReqView.Status == ObjectChangeRequestStatus.Rejected)
+							ChReqView.RenderDestFields(w);
+						else
+							ChReqView.RenderFields(w);
 					}
 				}
 				else
 				{
-					if (CreateObjectMode)
-						ChReqView.RenderDestFields(w);
-					else
-						ChReqView.RenderFields(w);
+					Form(w);
+					ChReqView.RenderFooter(w);
 				}
 			}
 			else
@@ -458,7 +471,8 @@ namespace Tango.UI.Std
 						Object = ViewData,
 						ChangedFields = changes
 					};
-					ChReqManager.Save(Context.Action, data);
+					var comments = Context.GetArg("ocr_comments");
+					ChReqManager.Save(Context.Action, data, comments);
 				}
 
 				return !chReqEnabled || moderatorMode;
@@ -542,7 +556,9 @@ namespace Tango.UI.Std
 
 		protected void RejectObjectChangeRequest(ApiResponse response)
 		{
-			ChReqView.Reject(_srcFieldSnapshot, _destFieldSnapshot);
+			var doSubmit = ProcessObjectChangeRequest();
+			if (doSubmit)
+				ChReqView.Reject(_srcFieldSnapshot, _destFieldSnapshot);
 			response.RedirectBack(Context, 1, !IsSubView);
 		}
 
@@ -758,9 +774,8 @@ namespace Tango.UI.Std
 	{
 	}
 
-	public interface IObjectChangeRequestView
+	public interface IObjectChangeRequestView : IViewElement
 	{
-		ActionContext Context { get; set; }
 		ObjectChangeRequestStatus Status { get; }
 		void RenderHeader(LayoutWriter w);
 		void RenderFooter(LayoutWriter w);
