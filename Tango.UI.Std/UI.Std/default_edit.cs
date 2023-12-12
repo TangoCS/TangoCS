@@ -460,24 +460,27 @@ namespace Tango.UI.Std
 		{
 			if (!ChangeRequestMode)
 			{
-				var chReqEnabled = ChReqManager?.IsEnabled(typeof(T)) ?? false;
-				var moderatorMode = ChReqManager?.IsCurrentUserModerator() ?? false;
-
-				if (chReqEnabled)
+				if (!DeleteMode)
 				{
-					var changes = Context.AllArgs
-						.Where(x => x.Key.EndsWith("_check"))
-						.Select(x => x.Key.Replace("_check", ""))
-						.ToList();
-					var data = new ObjectChangeRequestData<T> {
-						Object = ViewData,
-						ChangedFields = changes
-					};
-					var comments = Context.GetArg("ocr_comments");
-					ChReqManager.Save(Context.Action, data, comments);
-				}
+					var moderatorMode = ChReqManager?.IsCurrentUserModerator() ?? false;
 
-				return !chReqEnabled || moderatorMode;
+					if (ChReqEnabled)
+					{
+						var changes = Context.AllArgs
+							.Where(x => x.Key.EndsWith("_check"))
+							.Select(x => x.Key.Replace("_check", ""))
+							.ToList();
+						var data = new ObjectChangeRequestData<T> {
+							Object = ViewData,
+							ChangedFields = changes
+						};
+						var comments = Context.GetArg("ocr_comments");
+						ChReqManager.Save(Context.Action, data, comments);
+					}
+
+					return !ChReqEnabled || moderatorMode;
+				}
+				return true;
 			}
 			else
 			{
