@@ -199,6 +199,7 @@ namespace Tango.UI.Controls
 		
 		public class DateTimePickerOptions : CalendarOptions
 		{
+			public Action<TagAttributes> CalendarAttributes { get; set; }
 			public Action<SelectTagAttributes> HourAttributes { get; set; }
 			public Action<SelectTagAttributes> MinuteAttributes { get; set; }
 		}
@@ -275,7 +276,7 @@ namespace Tango.UI.Controls
 					w.Calendar(ID + "_dperiodfrom", value ?? DefaultValue, calendarOptions);
 					dFrom.Render(w, value ?? DefaultValue, options);
 				});
-				w.Span(a => a.ID(ID + "_btn").Class("cal-openbtn").Title("Календарь"), () => w.Icon("calendar"));
+				w.Span(a => a.ID(ID + "_btn").Class("cal-openbtn").Title("Календарь").Set(dateTimePickerOptions.CalendarAttributes), () => w.Icon("calendar"));
 			});
 
 			w.AddClientAction("Calendar", "setup", f => new
