@@ -232,6 +232,8 @@ namespace Tango.UI.Std
 		[Inject]
 		public IObjectChangeRequestView ChReqView { get; set; }
 
+		bool ChReqEnabled => (ChReqManager?.IsEnabled(typeof(T)) ?? false) && ChReqView != null;
+
 		T _viewData = null;
 		List<string> _changedFields = null;
 		List<FieldSnapshot> _srcFieldSnapshot = null;
@@ -284,7 +286,7 @@ namespace Tango.UI.Std
 		{
 			base.OnInit();
 
-			if (ChReqView != null)
+			if (ChReqEnabled)
 			{
 				ChReqView.ID = "chreqview";
 				AddControl(ChReqView);
@@ -318,7 +320,7 @@ namespace Tango.UI.Std
 
 		protected override void RenderFormLayout(LayoutWriter w)
 		{
-			if (ChReqView != null)
+			if (ChReqEnabled)
 			{
 				if (ChangeRequestMode)
 				{
