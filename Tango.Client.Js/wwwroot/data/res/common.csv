@@ -49,6 +49,7 @@ Common.Controls.SelectObjectHierarchic.NotFoundMessage;В системе отс�
 Common.Controls.SelectObjectHierarchic.Search;Поиск;Search
 Common.CreateNew;Создать;New
 Common.CreateObjectChangeRequest;Создать запрос;Create change request
+Common.CreateAndApproveObjectChangeRequest;Создать и утвердить запрос;Create and approve change request
 Common.RejectObjectChangeRequest;Отклонить запрос;Reject change request
 Common.Delete;Удалить;Delete
 Common.Delete.Title;Удаление объекта;Delete object

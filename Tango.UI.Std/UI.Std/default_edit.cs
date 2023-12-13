@@ -436,7 +436,12 @@ namespace Tango.UI.Std
 					{
 						var res = "Common.OK";
 						if ((ChReqManager?.IsEnabled(typeof(T)) ?? false) && !DeleteMode && !BulkMode && !ChangeRequestMode)
-							res = "Common.CreateObjectChangeRequest";
+						{
+							if (ChReqManager.IsCurrentUserModerator())
+								res = "Common.CreateAndApproveObjectChangeRequest";
+							else
+								res = "Common.CreateObjectChangeRequest";
+						}
 						w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
 					}
 					if (ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New)
@@ -571,6 +576,7 @@ namespace Tango.UI.Std
 		{
 			if (ChangeRequestMode)
 			{
+				ChReqView.SetObjectID(ViewData);
 				ChReqView.Approve(_srcFieldSnapshot, _destFieldSnapshot);
 			}
 		}
@@ -788,5 +794,6 @@ namespace Tango.UI.Std
 		void RenderDestFields(LayoutWriter w);
 		void Reject(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
 		void Approve(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
+		void SetObjectID(object entity);
 	}
 }
