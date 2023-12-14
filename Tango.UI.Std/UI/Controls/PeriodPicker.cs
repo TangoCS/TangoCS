@@ -254,6 +254,7 @@ namespace Tango.UI.Controls
 
 			DateLists.DateListsOptions options = new DateLists.DateListsOptions
 			{
+				Enabled = dateTimePickerOptions.Enabled,
 				HourAttributes = dateTimePickerOptions.HourAttributes,
 				MinuteAttributes = dateTimePickerOptions.MinuteAttributes
 			};
