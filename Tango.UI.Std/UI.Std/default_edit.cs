@@ -266,7 +266,7 @@ namespace Tango.UI.Std
 		protected T GetChangeRequestData()
 		{
 			var ochid = Context.GetArg(Constants.ObjectChangeRequestId);
-			var data = ChReqManager.Load(ochid);
+			var data = ChReqView.Load<T>(ochid);
 			Tracker?.StartTracking(data.Object);
 			_changedFields = data.ChangedFields;
 			return data.Object;
@@ -453,12 +453,68 @@ namespace Tango.UI.Std
 
 		protected override void ProcessFormData(ValidationMessageCollection val)
 		{
+			if (ChReqEnabled && !ChangeRequestMode && !CreateObjectMode)
+			{
+				var moderatorMode = ChReqManager?.IsCurrentUserModerator() ?? false;
+				if (moderatorMode)
+				{
+					_srcFieldSnapshot = new List<FieldSnapshot>();
+					FillSrcFieldSnapshot(ViewData);
+				}
+			}
+
 			base.ProcessFormData(val);
 
 			if (ViewData is IWithTimeStamp withTimeStamp)
 			{
 				withTimeStamp.LastModifiedDate = DateTime.Now;
 			}
+		}
+
+		void FillDestFieldSnapshot(T viewData)
+		{
+			_destFieldSnapshot = new List<FieldSnapshot>();
+			groups.ForEach(g => {
+				g.SetViewData(viewData);
+				g.Fields.ForEach(f => {
+					if (f is IEditableField)
+					{
+						var vs = f.ValueSource;
+						if (f.Disabled)
+							f.ValueSource = ValueSource.Model;
+						else
+							f.ValueSource = ValueSource.Form;
+
+						_destFieldSnapshot.Add(new FieldSnapshot {
+							Caption = f.Caption,
+							StringValue = f.StringValue,
+							Value = f.ToString()
+						});
+						f.ValueSource = vs;
+					}
+				});
+			});
+		}
+
+		void FillSrcFieldSnapshot(T viewData)
+		{
+			_srcFieldSnapshot = new List<FieldSnapshot>();
+			groups.ForEach(g => {
+				g.SetViewData(viewData);
+				g.Fields.ForEach(f => {
+					if (f is IEditableField)
+					{
+						var vs = f.ValueSource;
+						f.ValueSource = ValueSource.Model;
+						_srcFieldSnapshot.Add(new FieldSnapshot {
+							Caption = f.Caption,
+							StringValue = f.StringValue,
+							Value = f.ToString()
+						});
+						f.ValueSource = vs;
+					}
+				});
+			});
 		}
 
 		protected override bool ProcessObjectChangeRequest()
@@ -475,12 +531,15 @@ namespace Tango.UI.Std
 							.Where(x => x.Key.EndsWith("_check"))
 							.Select(x => x.Key.Replace("_check", ""))
 							.ToList();
-						var data = new ObjectChangeRequestData<T> {
+						var data = new ObjectChangeRequestData {
 							Object = ViewData,
 							ChangedFields = changes
 						};
 						var comments = Context.GetArg("ocr_comments");
-						ChReqManager.Save(Context.Action, data, comments);
+						ChReqView.Save(data, comments);
+
+						if (moderatorMode)
+							FillDestFieldSnapshot(ViewData);
 					}
 
 					return !ChReqEnabled || moderatorMode;
@@ -489,45 +548,10 @@ namespace Tango.UI.Std
 			}
 			else
 			{
-				_srcFieldSnapshot = new List<FieldSnapshot>();
-				_destFieldSnapshot = new List<FieldSnapshot>();
-
 				if (!CreateObjectMode)
-				{
-					groups.ForEach(g => {
-						g.SetViewData(GetExistingEntity());
-						g.Fields.ForEach(f => {
-							if (f is IEditableField)
-							{
-								f.ValueSource = ValueSource.Model;
-								_srcFieldSnapshot.Add(new FieldSnapshot {
-									Caption = f.Caption,
-									StringValue = f.StringValue,
-									Value = f.ToString()
-								});
-							}
-						});
-					});
-				}
+					FillSrcFieldSnapshot(GetExistingEntity());
 
-				groups.ForEach(g => {
-					g.SetViewData(ViewData);
-					g.Fields.ForEach(f => {
-						if (f is IEditableField)
-						{
-							if (f.Disabled)
-								f.ValueSource = ValueSource.Model;
-							else
-								f.ValueSource = ValueSource.Form;
-
-							_destFieldSnapshot.Add(new FieldSnapshot {
-								Caption = f.Caption,
-								StringValue = f.StringValue,
-								Value = f.ToString()
-							});
-						}
-					});
-				});
+				FillDestFieldSnapshot(ViewData);
 
 				return true;
 			}
@@ -575,10 +599,9 @@ namespace Tango.UI.Std
 		protected void ApproveObjectChangeRequest()
 		{
 			if (ChangeRequestMode)
-			{
-				ChReqView.SetObjectID(ViewData);
-				ChReqView.Approve(_srcFieldSnapshot, _destFieldSnapshot);
-			}
+				ChReqView.Approve(ViewData, _srcFieldSnapshot, _destFieldSnapshot);
+			else if (ChReqManager?.IsCurrentUserModerator() ?? false)
+				ChReqView.CreateAndApprove(ViewData, _srcFieldSnapshot, _destFieldSnapshot);
 		}
 	}
 
@@ -788,12 +811,26 @@ namespace Tango.UI.Std
 	public interface IObjectChangeRequestView : IViewElement
 	{
 		ObjectChangeRequestStatus Status { get; }
+		
+		void Save(ObjectChangeRequestData data, string comments);
+		ObjectChangeRequestData<T> Load<T>(string ochid);
+
 		void RenderHeader(LayoutWriter w);
 		void RenderFooter(LayoutWriter w);
 		void RenderFields(LayoutWriter w);
 		void RenderDestFields(LayoutWriter w);
 		void Reject(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
-		void Approve(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
-		void SetObjectID(object entity);
+		void Approve(object entity, List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
+		void CreateAndApprove(object entity, List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
+	}
+
+	public class ObjectChangeRequestData<T>
+	{
+		public List<string> ChangedFields { get; set; }
+		public T Object { get; set; }
+	}
+
+	public class ObjectChangeRequestData : ObjectChangeRequestData<object>
+	{
 	}
 }
