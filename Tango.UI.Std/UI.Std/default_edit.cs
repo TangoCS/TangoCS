@@ -232,7 +232,7 @@ namespace Tango.UI.Std
 		[Inject]
 		public IObjectChangeRequestView ChReqView { get; set; }
 
-		bool ChReqEnabled => (ChReqManager?.IsEnabled(typeof(T)) ?? false) && ChReqView != null;
+		bool ChReqEnabled => (ChReqManager?.IsEnabled() ?? false) && ChReqView != null;
 
 		T _viewData = null;
 		List<string> _changedFields = null;
@@ -435,8 +435,13 @@ namespace Tango.UI.Std
 					if (!(ChangeRequestMode && ChReqView.Status.In(ObjectChangeRequestStatus.Approved, ObjectChangeRequestStatus.Rejected)))
 					{
 						var res = "Common.OK";
-						if ((ChReqManager?.IsEnabled(typeof(T)) ?? false) && !DeleteMode && !BulkMode && !ChangeRequestMode)
-							res = "Common.CreateObjectChangeRequest";
+						if ((ChReqManager?.IsEnabled() ?? false) && !DeleteMode && !BulkMode && !ChangeRequestMode)
+						{
+							if (ChReqManager.IsCurrentUserModerator())
+								res = "Common.CreateAndApproveObjectChangeRequest";
+							else
+								res = "Common.CreateObjectChangeRequest";
+						}
 						w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
 					}
 					if (ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New)
@@ -571,6 +576,7 @@ namespace Tango.UI.Std
 		{
 			if (ChangeRequestMode)
 			{
+				ChReqView.SetObjectID(ViewData);
 				ChReqView.Approve(_srcFieldSnapshot, _destFieldSnapshot);
 			}
 		}
@@ -788,5 +794,6 @@ namespace Tango.UI.Std
 		void RenderDestFields(LayoutWriter w);
 		void Reject(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
 		void Approve(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
+		void SetObjectID(object entity);
 	}
 }
