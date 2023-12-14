@@ -232,7 +232,7 @@ namespace Tango.UI.Std
 		[Inject]
 		public IObjectChangeRequestView ChReqView { get; set; }
 
-		bool ChReqEnabled => (ChReqManager?.IsEnabled(typeof(T)) ?? false) && ChReqView != null;
+		bool ChReqEnabled => (ChReqManager?.IsEnabled() ?? false) && ChReqView != null;
 
 		T _viewData = null;
 		List<string> _changedFields = null;
@@ -435,7 +435,7 @@ namespace Tango.UI.Std
 					if (!(ChangeRequestMode && ChReqView.Status.In(ObjectChangeRequestStatus.Approved, ObjectChangeRequestStatus.Rejected)))
 					{
 						var res = "Common.OK";
-						if ((ChReqManager?.IsEnabled(typeof(T)) ?? false) && !DeleteMode && !BulkMode && !ChangeRequestMode)
+						if ((ChReqManager?.IsEnabled() ?? false) && !DeleteMode && !BulkMode && !ChangeRequestMode)
 						{
 							if (ChReqManager.IsCurrentUserModerator())
 								res = "Common.CreateAndApproveObjectChangeRequest";
