@@ -600,7 +600,7 @@ namespace Tango.UI.Std
 		{
 			if (ChangeRequestMode)
 				ChReqView.Approve(ViewData, _srcFieldSnapshot, _destFieldSnapshot);
-			else if (ChReqManager?.IsCurrentUserModerator() ?? false)
+			else if (ChReqManager.IsEnabled() && (ChReqManager?.IsCurrentUserModerator() ?? false))
 				ChReqView.CreateAndApprove(ViewData, _srcFieldSnapshot, _destFieldSnapshot);
 		}
 	}
