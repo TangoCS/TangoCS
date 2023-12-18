@@ -36,7 +36,8 @@ namespace Tango.UI.Controls
 
 		DateTime IFieldValueProvider<DateTime>.Value => Value ?? DateTime.MinValue;
 		public class DateListsOptions
-		{			
+		{
+			public EnabledState Enabled { get; set; } = EnabledState.Enabled;
 			public Action<SelectTagAttributes> YearAttributes { get; set; }
 			public Action<SelectTagAttributes> MonthAttributes { get; set; }
 			public Action<SelectTagAttributes> DayAttributes { get; set; }
@@ -44,7 +45,7 @@ namespace Tango.UI.Controls
 			public Action<SelectTagAttributes> MinuteAttributes { get; set; }
 		}
 
-		public void Render(HtmlWriter w, DateTime? value = null, DateListsOptions options = null)
+		public void Render(LayoutWriter w, DateTime? value = null, DateListsOptions options = null)
 		{
 			if (options == null) options = new DateListsOptions();
 
@@ -115,25 +116,39 @@ namespace Tango.UI.Controls
 			}
 
 			w.Div(a => a.Class("datelists").ID(ID), () => {
+				bool disabled = options.Enabled == EnabledState.Disabled;
+				bool readOnly = options.Enabled == EnabledState.ReadOnly;
 				if (!TimeOnly)
 				{
 					if (ShowDays)
 					{
-						w.DropDownList($"{ID}_day", value?.Day.ToString(), dayItems, a => a.Class("days").Set(options.DayAttributes));
+						w.DropDownList($"{ID}_day", value?.Day.ToString(), dayItems, a => a.Class("days").Disabled(disabled).Set(options.DayAttributes));
 						w.Write("&nbsp;");
+						if (readOnly)
+							w.AddClientAction("domActions", "setAttribute", f => new { id = f($"{ID}_day"), attrName = "readonly", attrValue = "readonly" });
 					}
 
-					w.DropDownList($"{ID}_month", value?.Month.ToString(), monthItems, a => a.Class("months").Set(options.MonthAttributes));
+					w.DropDownList($"{ID}_month", value?.Month.ToString(), monthItems, a => a.Class("months").Disabled(disabled).Set(options.MonthAttributes));
 					w.Write("&nbsp;");
-					w.DropDownList($"{ID}_year", value?.Year.ToString(), yearItems, a => a.Class("years").Set(options.YearAttributes));
+					w.DropDownList($"{ID}_year", value?.Year.ToString(), yearItems, a => a.Class("years").Disabled(disabled).Set(options.YearAttributes));
+					if (readOnly)
+					{
+						w.AddClientAction("domActions", "setAttribute", f => new { id = f($"{ID}_month"), attrName = "readonly", attrValue = "readonly" });
+						w.AddClientAction("domActions", "setAttribute", f => new { id = f($"{ID}_year"), attrName = "readonly", attrValue = "readonly" });
+					}
 				}
 
 				if (ShowTime || TimeOnly)
 				{
 					w.Write("&nbsp;");
-					w.DropDownList($"{ID}_hour", value?.Hour.ToString(), hourItems, a => a.Class("hours").Set(options.HourAttributes));
+					w.DropDownList($"{ID}_hour", value?.Hour.ToString(), hourItems, a => a.Class("hours").Disabled(disabled).Set(options.HourAttributes));
 					w.Write(":");
-					w.DropDownList($"{ID}_minute", value?.Minute.ToString(), minuteItems, a => a.Class("minutes").Set(options.MinuteAttributes));
+					w.DropDownList($"{ID}_minute", value?.Minute.ToString(), minuteItems, a => a.Class("minutes").Disabled(disabled).Set(options.MinuteAttributes));
+					if (readOnly)
+					{
+						w.AddClientAction("domActions", "setAttribute", f => new { id = f($"{ID}_hour"), attrName = "readonly", attrValue = "readonly" });
+						w.AddClientAction("domActions", "setAttribute", f => new { id = f($"{ID}_minute"), attrName = "readonly", attrValue = "readonly" });
+					}
 				}
 			});
 		}

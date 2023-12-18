@@ -232,6 +232,8 @@ namespace Tango.UI.Std
 		[Inject]
 		public IObjectChangeRequestView ChReqView { get; set; }
 
+		bool ChReqEnabled => (ChReqManager?.IsEnabled() ?? false) && ChReqView != null;
+
 		T _viewData = null;
 		List<string> _changedFields = null;
 		List<FieldSnapshot> _srcFieldSnapshot = null;
@@ -264,7 +266,7 @@ namespace Tango.UI.Std
 		protected T GetChangeRequestData()
 		{
 			var ochid = Context.GetArg(Constants.ObjectChangeRequestId);
-			var data = ChReqManager.Load(ochid);
+			var data = ChReqView.Load<T>(ochid);
 			Tracker?.StartTracking(data.Object);
 			_changedFields = data.ChangedFields;
 			return data.Object;
@@ -283,8 +285,13 @@ namespace Tango.UI.Std
 		public override void OnInit()
 		{
 			base.OnInit();
-			if (ChReqView != null)
-				ChReqView.Context = Context;
+
+			if (ChReqEnabled)
+			{
+				ChReqView.ID = "chreqview";
+				AddControl(ChReqView);
+			}
+			
 		}
 
 		protected override bool ObjectNotExists => ViewData == null;
@@ -313,94 +320,89 @@ namespace Tango.UI.Std
 
 		protected override void RenderFormLayout(LayoutWriter w)
 		{
-			if (ChReqView != null && ChangeRequestMode)
+			if (ChReqEnabled)
 			{
-				ChReqView.RenderHeader(w);
-				if (ChReqView.Status != ObjectChangeRequestStatus.New)
+				if (ChangeRequestMode)
 				{
-					groups.ForEach(g => {
-						g.Fields.ForEach(f => {
-							f.Disabled = true;
-						});
-					});
-				}
-
-				if (ChReqView.Status == ObjectChangeRequestStatus.New)
-				{
-					if (CreateObjectMode)
+					ChReqView.RenderHeader(w);
+					if (ChReqView.Status != ObjectChangeRequestStatus.New)
 					{
-						w.Block(a => a.Class(FormWidth.ToString().ToLower()), () => {
-							Form(w);
-							ChReqView.RenderFooter(w);
+						groups.ForEach(g => {
+							g.Fields.ForEach(f => {
+								f.Disabled = true;
+							});
 						});
+					}
+
+					if (ChReqView.Status == ObjectChangeRequestStatus.New)
+					{
+						if (CreateObjectMode)
+						{
+							w.Div(a => a.Class("layout1 withwrap width100"), () => {
+								w.Div(a => a.Class("sidebar"), () => {
+									w.Div(a => a.Class("sidebar-panel"), () => {
+										w.Div(a => a.Class("sidebar-header"), () => {
+											w.H3(a => a.ID("sidebarcontenttitle"), "Целевые значения");
+										});
+										w.Div(a => a.Class(FormWidth.ToString().ToLower()), () => {
+											Form(w);
+											ChReqView.RenderFooter(w);
+										});
+									});
+								});
+							});
+						}
+						else
+						{
+							var fDisabled = new Dictionary<string, bool>();
+							var fWithCB = new Dictionary<string, bool>();
+
+							w.Div(a => a.Class("layout1 withwrap size_5"), () => {
+								w.CollapsibleSidebar("Исходные значения", () => {
+									groups.ForEach(g => {
+										g.SetViewData(GetExistingEntity());
+										g.Fields.ForEach(f => {
+											fDisabled.Add(f.ID, f.Disabled);
+											fWithCB.Add(f.ID, f.WithCheckBox);
+											f.Disabled = true;
+											f.WithCheckBox = false;
+										});
+									});
+									var id = ID;
+									ID += "_oldstate";
+									w.WithPrefix(this, () => {
+										w.Div(a => a.Class("contentbodypadding"), () => Form(w));
+									});
+									ID = id;
+								});
+								w.CollapsibleSidebar("Целевые значения", () => {
+									groups.ForEach(g => {
+										g.SetViewData(ViewData);
+										g.Fields.ForEach(f => {
+											if (_changedFields?.Contains(f.ID.ToLower()) ?? false)
+												f.Disabled = false;
+											else
+												f.Disabled = fDisabled[f.ID];
+											f.WithCheckBox = fWithCB[f.ID];
+										});
+									});
+									w.Div(a => a.Class("contentbodypadding"), () => Form(w));
+								});
+							});
+						}
 					}
 					else
 					{
-						var fDisabled = new Dictionary<string, bool>();
-						var fWithCB = new Dictionary<string, bool>();
-
-						w.Div(a => a.Class("layout1 withwrap size_5"), () => {
-							w.CollapsibleSidebar("Исходные значения", () => {
-								groups.ForEach(g => {
-									g.SetViewData(GetExistingEntity());
-									g.Fields.ForEach(f => {
-										fDisabled.Add(f.ID, f.Disabled);
-										fWithCB.Add(f.ID, f.WithCheckBox);
-										f.Disabled = true;
-										f.WithCheckBox = false;
-									});
-								});
-								var id = ID;
-								ID += "_oldstate";
-								w.WithPrefix(this, () => {
-									w.Div(a => a.Class("contentbodypadding"), () => Form(w));
-								});
-								ID = id;
-							});
-							w.CollapsibleSidebar("Целевые значения", () => {
-								groups.ForEach(g => {
-									g.SetViewData(ViewData);
-									g.Fields.ForEach(f => {
-										if (_changedFields?.Contains(f.ID.ToLower()) ?? false)
-											f.Disabled = false;
-										else
-											f.Disabled = fDisabled[f.ID];
-										f.WithCheckBox = fWithCB[f.ID];
-									});
-								});
-								w.Div(a => a.Class("contentbodypadding"), () => Form(w));
-							});
-						});
+						if (CreateObjectMode || ChReqView.Status == ObjectChangeRequestStatus.Rejected)
+							ChReqView.RenderDestFields(w);
+						else
+							ChReqView.RenderFields(w);
 					}
 				}
 				else
 				{
-					if (CreateObjectMode)
-					{
-						w.Div(a => a.Class("layout1 withwrap width100"), () => {
-							w.Div(a => a.Class("sidebar"), () => {
-								w.Div(a => a.Class("sidebar-panel"), () => {
-									w.Div(a => a.Class("sidebar-header"), () => {
-										w.H3(a => a.ID("sidebarcontenttitle"), "Значения");
-									});
-									w.Div(a => a.Class(FormWidth.ToString().ToLower()), () => {
-										ChReqView.RenderDestFields(w);
-									});
-								});
-							});
-						});
-					}
-					else
-					{
-						w.Div(a => a.Class("layout1 withwrap size_5"), () => {
-							w.CollapsibleSidebar("Исходные значения", () => {
-								w.Div(a => a.Class("contentbodypadding"), () => ChReqView.RenderSrcFields(w));
-							});
-							w.CollapsibleSidebar("Целевые значения", () => {
-								w.Div(a => a.Class("contentbodypadding"), () => ChReqView.RenderDestFields(w));
-							});
-						});
-					}
+					Form(w);
+					ChReqView.RenderFooter(w);
 				}
 			}
 			else
@@ -424,13 +426,22 @@ namespace Tango.UI.Std
 
 		protected override void ButtonsBar(LayoutWriter w)
 		{
-			w.ButtonsBar(a => a.Class(FormWidth.ToString().ToLower()), () => {
+			var width = FormWidth;
+			if (ChangeRequestMode && !CreateObjectMode && GetContainer() is AbstractDefaultContainer ac)
+				width = ac.Width;
+
+			w.ButtonsBar(a => a.Class(width.ToString().ToLower()), () => {
 				w.ButtonsBarRight(() => {
 					if (!(ChangeRequestMode && ChReqView.Status.In(ObjectChangeRequestStatus.Approved, ObjectChangeRequestStatus.Rejected)))
 					{
 						var res = "Common.OK";
-						if ((ChReqManager?.IsEnabled(typeof(T)) ?? false) && !DeleteMode && !BulkMode && !ChangeRequestMode)
-							res = "Common.CreateObjectChangeRequest";
+						if ((ChReqManager?.IsEnabled() ?? false) && !DeleteMode && !BulkMode && !ChangeRequestMode)
+						{
+							if (ChReqManager.IsCurrentUserModerator())
+								res = "Common.CreateAndApproveObjectChangeRequest";
+							else
+								res = "Common.CreateObjectChangeRequest";
+						}
 						w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
 					}
 					if (ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New)
@@ -442,6 +453,16 @@ namespace Tango.UI.Std
 
 		protected override void ProcessFormData(ValidationMessageCollection val)
 		{
+			if (ChReqEnabled && !ChangeRequestMode && !CreateObjectMode)
+			{
+				var moderatorMode = ChReqManager?.IsCurrentUserModerator() ?? false;
+				if (moderatorMode)
+				{
+					_srcFieldSnapshot = new List<FieldSnapshot>();
+					FillSrcFieldSnapshot(ViewData);
+				}
+			}
+
 			base.ProcessFormData(val);
 
 			if (ViewData is IWithTimeStamp withTimeStamp)
@@ -450,69 +471,87 @@ namespace Tango.UI.Std
 			}
 		}
 
+		void FillDestFieldSnapshot(T viewData)
+		{
+			_destFieldSnapshot = new List<FieldSnapshot>();
+			groups.ForEach(g => {
+				g.SetViewData(viewData);
+				g.Fields.ForEach(f => {
+					if (f is IEditableField)
+					{
+						var vs = f.ValueSource;
+						if (f.Disabled)
+							f.ValueSource = ValueSource.Model;
+						else
+							f.ValueSource = ValueSource.Form;
+
+						_destFieldSnapshot.Add(new FieldSnapshot {
+							Caption = f.Caption,
+							StringValue = f.StringValue,
+							Value = f.ToString()
+						});
+						f.ValueSource = vs;
+					}
+				});
+			});
+		}
+
+		void FillSrcFieldSnapshot(T viewData)
+		{
+			_srcFieldSnapshot = new List<FieldSnapshot>();
+			groups.ForEach(g => {
+				g.SetViewData(viewData);
+				g.Fields.ForEach(f => {
+					if (f is IEditableField)
+					{
+						var vs = f.ValueSource;
+						f.ValueSource = ValueSource.Model;
+						_srcFieldSnapshot.Add(new FieldSnapshot {
+							Caption = f.Caption,
+							StringValue = f.StringValue,
+							Value = f.ToString()
+						});
+						f.ValueSource = vs;
+					}
+				});
+			});
+		}
+
 		protected override bool ProcessObjectChangeRequest()
 		{
 			if (!ChangeRequestMode)
 			{
-				var chReqEnabled = ChReqManager?.IsEnabled(typeof(T)) ?? false;
-				var moderatorMode = ChReqManager?.IsCurrentUserModerator() ?? false;
-
-				if (chReqEnabled)
+				if (!DeleteMode)
 				{
-					var changes = Context.AllArgs
-						.Where(x => x.Key.EndsWith("_check"))
-						.Select(x => x.Key.Replace("_check", ""))
-						.ToList();
-					var data = new ObjectChangeRequestData<T> {
-						Object = ViewData,
-						ChangedFields = changes
-					};
-					ChReqManager.Save(Context.Action, data);
-				}
+					var moderatorMode = ChReqManager?.IsCurrentUserModerator() ?? false;
 
-				return !chReqEnabled || moderatorMode;
+					if (ChReqEnabled)
+					{
+						var changes = Context.AllArgs
+							.Where(x => x.Key.EndsWith("_check"))
+							.Select(x => x.Key.Replace("_check", ""))
+							.ToList();
+						var data = new ObjectChangeRequestData {
+							Object = ViewData,
+							ChangedFields = changes
+						};
+						var comments = Context.GetArg("ocr_comments");
+						ChReqView.Save(data, comments);
+
+						if (moderatorMode)
+							FillDestFieldSnapshot(ViewData);
+					}
+
+					return !ChReqEnabled || moderatorMode;
+				}
+				return true;
 			}
 			else
 			{
-				_srcFieldSnapshot = new List<FieldSnapshot>();
-				_destFieldSnapshot = new List<FieldSnapshot>();
-
 				if (!CreateObjectMode)
-				{
-					groups.ForEach(g => {
-						g.SetViewData(GetExistingEntity());
-						g.Fields.ForEach(f => {
-							if (f is IEditableField)
-							{
-								f.ValueSource = ValueSource.Model;
-								_srcFieldSnapshot.Add(new FieldSnapshot {
-									Caption = f.Caption,
-									StringValue = f.StringValue,
-									Value = f.ToString()
-								});
-							}
-						});
-					});
-				}
+					FillSrcFieldSnapshot(GetExistingEntity());
 
-				groups.ForEach(g => {
-					g.SetViewData(ViewData);
-					g.Fields.ForEach(f => {
-						if (f is IEditableField)
-						{
-							if (f.Disabled)
-								f.ValueSource = ValueSource.Model;
-							else
-								f.ValueSource = ValueSource.Form;
-
-							_destFieldSnapshot.Add(new FieldSnapshot {
-								Caption = f.Caption,
-								StringValue = f.StringValue,
-								Value = f.ToString()
-							});
-						}
-					});
-				});
+				FillDestFieldSnapshot(ViewData);
 
 				return true;
 			}
@@ -551,16 +590,18 @@ namespace Tango.UI.Std
 
 		protected void RejectObjectChangeRequest(ApiResponse response)
 		{
-			ChReqView.Reject(_srcFieldSnapshot, _destFieldSnapshot);
+			var doSubmit = ProcessObjectChangeRequest();
+			if (doSubmit)
+				ChReqView.Reject(_srcFieldSnapshot, _destFieldSnapshot);
 			response.RedirectBack(Context, 1, !IsSubView);
 		}
 
 		protected void ApproveObjectChangeRequest()
 		{
 			if (ChangeRequestMode)
-			{
-				ChReqView.Approve(_srcFieldSnapshot, _destFieldSnapshot);
-			}
+				ChReqView.Approve(ViewData, _srcFieldSnapshot, _destFieldSnapshot);
+			else if (ChReqManager.IsEnabled() && (ChReqManager?.IsCurrentUserModerator() ?? false))
+				ChReqView.CreateAndApprove(ViewData, _srcFieldSnapshot, _destFieldSnapshot);
 		}
 	}
 
@@ -767,15 +808,29 @@ namespace Tango.UI.Std
 	{
 	}
 
-	public interface IObjectChangeRequestView
+	public interface IObjectChangeRequestView : IViewElement
 	{
-		ActionContext Context { get; set; }
 		ObjectChangeRequestStatus Status { get; }
+		
+		void Save(ObjectChangeRequestData data, string comments);
+		ObjectChangeRequestData<T> Load<T>(string ochid);
+
 		void RenderHeader(LayoutWriter w);
 		void RenderFooter(LayoutWriter w);
-		void RenderSrcFields(LayoutWriter w);
+		void RenderFields(LayoutWriter w);
 		void RenderDestFields(LayoutWriter w);
 		void Reject(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
-		void Approve(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
+		void Approve(object entity, List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
+		void CreateAndApprove(object entity, List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
+	}
+
+	public class ObjectChangeRequestData<T>
+	{
+		public List<string> ChangedFields { get; set; }
+		public T Object { get; set; }
+	}
+
+	public class ObjectChangeRequestData : ObjectChangeRequestData<object>
+	{
 	}
 }

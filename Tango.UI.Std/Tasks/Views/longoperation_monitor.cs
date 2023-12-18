@@ -33,6 +33,7 @@ namespace Tango.Tasks
 			f.AddHeader(o => o.Title);
 			f.AddHeader(o => o.CreateDate);
 			f.AddHeader(o => o.RunDate);
+			f.AddHeader(o => o.UserName);
 			f.AddHeader(o => o.IsManualStart);
 			f.AddHeader(o => o.OneThread);
 			f.AddHeader(o => o.Priority);
@@ -43,6 +44,7 @@ namespace Tango.Tasks
 			f.AddCell(o => o.Title);
 			f.AddCell(o => o.CreateDate.ToString("dd.MM.yyyy HH:mm:ss"));
 			f.AddCell(o => o.RunDate?.ToString("dd.MM.yyyy HH:mm:ss"));
+			f.AddCell(o => o.UserName);
 			f.AddCell(o => o.IsManualStart.Icon());
 			f.AddCell(o => o.OneThread.Icon());
 			f.AddCell(o => o.Priority);

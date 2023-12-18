@@ -1077,12 +1077,12 @@ namespace Tango.UI.Controls
 				filter.LoadPersistent();
 
 				var val = filter.Context.GetArg(f.ID);
-				
 				var field = filter.FieldList.Single(x => x.Title == conditionTitle);
-				if (val.IsEmpty())
-					filter.Criteria.RemoveAll(x => x.Title == conditionTitle && x.Condition == conditionOp);
-				else
+
+				filter.Criteria.RemoveAll(x => x.Title == conditionTitle && x.Condition == conditionOp);
+				if (!val.IsEmpty())
 					filter.AddCriteria(field, conditionOp, val);
+
 				filter.OnFilterSubmitted(r);
 			};
 		}
@@ -1098,8 +1098,8 @@ namespace Tango.UI.Controls
 				filter.Criteria.RemoveAll(x => x.Title == conditionTitle);
 				if (val != null)
 				{
-					filter.AddCriteria(field, ">", pp.Value.From.ToString("dd.MM.yyyy"));
-					filter.AddCriteria(field, "<", pp.Value.To.ToString("dd.MM.yyyy"));
+					filter.AddCriteria(field, ">=", pp.Value.From.ToString("d.MM.yyyy"));
+					filter.AddCriteria(field, "<", pp.Value.To.AddDays(1).ToString("d.MM.yyyy"));
 				}
 				filter.OnFilterSubmitted(r);
 			};

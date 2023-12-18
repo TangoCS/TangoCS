@@ -8,16 +8,8 @@ namespace Tango.AccessControl
 {
 	public interface IObjectChangeRequestManager<T>
 	{
-		bool IsEnabled(Type entity);
+		bool IsEnabled();
 		bool IsCurrentUserModerator();
-		void Save(string action, ObjectChangeRequestData<T> data);
-		ObjectChangeRequestData<T> Load(string ochid);
-	}
-
-	public class ObjectChangeRequestData<T>
-	{
-		public List<string> ChangedFields { get; set; }
-		public T Object { get; set; }
 	}
 
 	public enum ObjectChangeRequestStatus

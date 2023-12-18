@@ -49,6 +49,7 @@ Common.Controls.SelectObjectHierarchic.NotFoundMessage;В системе отс�
 Common.Controls.SelectObjectHierarchic.Search;Поиск;Search
 Common.CreateNew;Создать;New
 Common.CreateObjectChangeRequest;Создать запрос;Create change request
+Common.CreateAndApproveObjectChangeRequest;Создать и утвердить запрос;Create and approve change request
 Common.RejectObjectChangeRequest;Отклонить запрос;Reject change request
 Common.Delete;Удалить;Delete
 Common.Delete.Title;Удаление объекта;Delete object
@@ -200,4 +201,5 @@ tango.longoperation.longoperationticket.type;Тип;Type
 tango.longoperation.longoperationticket.ismanualstart;Ручной;Manual
 tango.longoperation.longoperationticket.onethread;Последовательный запуск;One thread
 tango.longoperation.longoperationticket.priority;Приоритет;Priority
+tango.longoperation.longoperationticket.username;Пользователь;User
 tango.longoperation.longoperationticket-pl;Очередь длительных операций;Queue long operations
