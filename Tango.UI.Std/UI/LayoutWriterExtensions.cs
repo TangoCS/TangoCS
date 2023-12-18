@@ -217,7 +217,7 @@ namespace Tango.UI
 			w.FormField(name, caption, () => w.CheckBoxList(name, value, items, a => a.Set(attributes), itemAttributes), grid, hint: hint);
 		}
 
-		public static void FormFieldPassword(this LayoutWriter w, string name, string caption, GridPosition grid, bool isRequired = false, string description = null, Action<InputTagAttributes> attributes = null)
+		public static void FormFieldPassword(this LayoutWriter w, string name, string caption, GridPosition grid = null, bool isRequired = false, string description = null, Action<InputTagAttributes> attributes = null)
 		{
 			w.FormField(name, caption, () => w.Password(name, null, a => a.Set(attributes)), grid, isRequired, description);
 		}
