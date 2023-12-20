@@ -53,7 +53,7 @@ namespace Tango.UI.Std
 		public override void OnLoad(ApiResponse response)
 		{
 			response.AddWidget("form", w => Form(w));
-			response.SetContentBodyMargin();
+			//response.SetContentBodyMargin();
 			response.AddAdjacentWidget(Sections.ContentBody, "buttonsbar", AdjacentHTMLPosition.BeforeEnd, w => {
 				ButtonsBar(w);
 			});
