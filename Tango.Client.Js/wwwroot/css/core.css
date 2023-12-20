@@ -771,11 +771,52 @@ a.disabled > i.icon {
 	width: 12px;
 	height: 12px;
 }
-.field-editableplaintext:hover {
+.field-editableplaintext:not(.field-editableplaintext-editmode):hover {
 	border: solid 1px #c2dbff;
 }
-.field-editableplaintext:hover .field-editableplaintext-btn {
+.field-editableplaintext:not(.field-editableplaintext-editmode):hover .field-editableplaintext-btn {
 	visibility: initial;
 	background-color: #c2dbff;
 }
 
+.field-editableplaintext-editmode {
+	position:relative;
+}
+.field-editableplaintext-editmode .field-editableplaintext-btn {
+	position: absolute;
+	right: 0;
+	visibility: visible;
+	background-color: white;
+	border: 1px solid #ddd;
+	display: flex;
+	padding: 2px;
+	gap: 2px;
+	box-shadow: 0 3px 6px rgba(111,111,111,0.2);
+}
+.field-editableplaintext-editmode .field-editableplaintext-btn .svgicon-true {
+	color: mediumseagreen;
+}
+.field-editableplaintext-editmode .field-editableplaintext-btn .svgicon-close {
+	color: inherit;
+}
+.field-editableplaintext-editmode .field-editableplaintext-btn > a {
+	border-radius: 3.01px;
+	cursor: pointer;
+	background-color: rgba(9,30,66,0.13);
+	display: inline-block;
+	height: 24px;
+	padding: 0 4px;
+	margin: 0;
+	display: flex;
+	align-items: center
+}
+
+/*.field-editableplaintext:hover {
+	border: none;
+}
+
+.field-editableplaintext-editmode .field-editableplaintext:hover .field-editableplaintext-btn {
+	visibility: initial;
+	background-color: none;
+}
+*/
