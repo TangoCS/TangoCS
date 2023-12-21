@@ -177,14 +177,18 @@ namespace Tango.UI.Std
 			var doSubmit = ProcessObjectChangeRequest();
 			if (doSubmit)
 				Submit(response);
-			AfterSubmit(response);
+			var doAfterSubmit = PostProcessObjectChangeRequest(response);
+			if (doAfterSubmit)
+				AfterSubmit(response);
 		}
 		
 		protected virtual void ValidateFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ValidateFormData(val));
         protected virtual void PreProcessFormData(ApiResponse response, ValidationMessageCollection val) { }
         protected virtual void ProcessFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ProcessFormData(val));
 		protected virtual void PostProcessFormData(ApiResponse response, ValidationMessageCollection val) { }
+
 		protected virtual bool ProcessObjectChangeRequest() { return true; }
+		protected virtual bool PostProcessObjectChangeRequest(ApiResponse response) { return true; }
 
 		protected abstract void Submit(ApiResponse response);
 		protected virtual void AfterSubmit(ApiResponse response)
@@ -231,8 +235,6 @@ namespace Tango.UI.Std
 
 		[Inject]
 		public IObjectChangeRequestView ChReqView { get; set; }
-
-		bool ChReqEnabled => (ChReqManager?.IsEnabled() ?? false) && ChReqView != null;
 
 		T _viewData = null;
 		List<string> _changedFields = null;
@@ -419,7 +421,11 @@ namespace Tango.UI.Std
 		protected virtual string BulkModeFormTitle => Resources.Get("Common.BulkModeTitle");
 		protected virtual string CreateNewFormTitle => Resources.Get(ViewData.GetType().FullName);
 		protected virtual string EditFormTitle => ViewData is IWithTitle ? (ViewData as IWithTitle).Title : "";
+		bool ReadonlyMode = false;
+
+		bool ChReqEnabled => (ChReqManager?.IsEnabled() ?? false) && ChReqView != null;
 		protected bool ChangeRequestMode => Context.AllArgs.ContainsKey(Constants.ObjectChangeRequestId);
+		protected bool CreateChangeRequestMode => ChReqEnabled && !DeleteMode && !BulkMode && !ChangeRequestMode;
 
 		protected abstract T GetNewEntity();
 		protected abstract T GetExistingEntity();
@@ -432,10 +438,10 @@ namespace Tango.UI.Std
 
 			w.ButtonsBar(a => a.Class(width.ToString().ToLower()), () => {
 				w.ButtonsBarRight(() => {
-					if (!(ChangeRequestMode && ChReqView.Status.In(ObjectChangeRequestStatus.Approved, ObjectChangeRequestStatus.Rejected)))
+					if (!ReadonlyMode && !(ChangeRequestMode && ChReqView.Status.In(ObjectChangeRequestStatus.Approved, ObjectChangeRequestStatus.Rejected)))
 					{
 						var res = "Common.OK";
-						if ((ChReqManager?.IsEnabled() ?? false) && !DeleteMode && !BulkMode && !ChangeRequestMode)
+						if (CreateChangeRequestMode)
 						{
 							if (ChReqManager.IsCurrentUserModerator())
 								res = "Common.CreateAndApproveObjectChangeRequest";
@@ -444,7 +450,7 @@ namespace Tango.UI.Std
 						}
 						w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
 					}
-					if (ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New)
+					if (!ReadonlyMode && ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New)
 						w.SubmitAndBackButton(a => a.DataEvent(RejectObjectChangeRequest), Resources.Get("Common.RejectObjectChangeRequest"));
 					w.BackButton(this);
 				});
@@ -453,7 +459,7 @@ namespace Tango.UI.Std
 
 		protected override void ProcessFormData(ValidationMessageCollection val)
 		{
-			if (ChReqEnabled && !ChangeRequestMode && !CreateObjectMode)
+			if (CreateChangeRequestMode && !CreateObjectMode)
 			{
 				var moderatorMode = ChReqManager?.IsCurrentUserModerator() ?? false;
 				if (moderatorMode)
@@ -521,7 +527,7 @@ namespace Tango.UI.Std
 		{
 			if (!ChangeRequestMode)
 			{
-				if (!DeleteMode)
+				if (!DeleteMode && !BulkMode)
 				{
 					var moderatorMode = ChReqManager?.IsCurrentUserModerator() ?? false;
 
@@ -557,13 +563,38 @@ namespace Tango.UI.Std
 			}
 		}
 
+		protected override bool PostProcessObjectChangeRequest(ApiResponse response)
+		{
+			if (CreateChangeRequestMode && !(ChReqManager?.IsCurrentUserModerator() ?? false))
+			{
+				groups.ForEach(g => {
+					g.SetViewData(ViewData);
+					g.Fields.ForEach(f => {
+						f.Disabled = true;
+					});
+				});
+				ReadonlyMode = true;
+
+				response.RemoveWidget("buttonsbar");
+				response.AddWidget("form", RenderFormLayout);
+				RenderButtonsBarLayout(response);
+
+				var m = new ValidationMessageCollection();
+				m.Add("ochr", ChReqView.RequestCreatedMessage(), ValidationMessageSeverity.Information);
+				RenderValidation(response, m);
+				return false;
+			}
+			else
+				return base.PostProcessObjectChangeRequest(response);
+		}
+
 		protected override void AfterSubmit(ApiResponse response)
 		{
 			foreach (var arg in Context.ReturnTarget[1].Args.ToList())
 			{
 				if (arg.Value.StartsWith("@"))
 				{
-					Context.ReturnTarget[1].Args[arg.Key] = 
+					Context.ReturnTarget[1].Args[arg.Key] =
 						typeof(T)
 						.GetProperty(arg.Value.Substring(1), BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
 						.GetValue(ViewData)
@@ -822,6 +853,7 @@ namespace Tango.UI.Std
 		void Reject(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
 		void Approve(object entity, List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
 		void CreateAndApprove(object entity, List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
+		string RequestCreatedMessage();
 	}
 
 	public class ObjectChangeRequestData<T>
