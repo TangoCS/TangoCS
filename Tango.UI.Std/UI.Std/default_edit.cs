@@ -571,6 +571,7 @@ namespace Tango.UI.Std
 					g.SetViewData(ViewData);
 					g.Fields.ForEach(f => {
 						f.Disabled = true;
+						f.WithCheckBox = false;
 					});
 				});
 				ReadonlyMode = true;
