@@ -448,9 +448,10 @@ namespace Tango.UI.Std
 							else
 								res = "Common.CreateObjectChangeRequest";
 						}
-						w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
+						if (!ChangeRequestMode || ChReqManager.IsCurrentUserModerator())
+							w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
 					}
-					if (!ReadonlyMode && ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New)
+					if (!ReadonlyMode && ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New && ChReqManager.IsCurrentUserModerator())
 						w.SubmitAndBackButton(a => a.DataEvent(RejectObjectChangeRequest), Resources.Get("Common.RejectObjectChangeRequest"));
 					w.BackButton(this);
 				});
