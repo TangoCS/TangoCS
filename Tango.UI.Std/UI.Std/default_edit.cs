@@ -459,7 +459,7 @@ namespace Tango.UI.Std
 						if (!ChangeRequestMode || ChReqManager.IsCurrentUserModerator())
 							w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
 					}
-					if (!ReadonlyMode && ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New && ChReqManager.IsCurrentUserModerator())
+					if (!ReadonlyMode && ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New && ChReqView.CanReject())
 						w.SubmitAndBackButton(a => a.DataEvent(RejectObjectChangeRequest), Resources.Get("Common.RejectObjectChangeRequest"));
 					w.BackButton(this);
 				});
@@ -868,6 +868,7 @@ namespace Tango.UI.Std
 		void RenderFooter(LayoutWriter w);
 		void RenderFields(LayoutWriter w);
 		void RenderDestFields(LayoutWriter w);
+		bool CanReject();
 		void Reject(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
 		void Approve(object entity, List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
 		void CreateAndApprove(object entity, List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
