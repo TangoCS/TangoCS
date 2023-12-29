@@ -322,7 +322,7 @@ namespace Tango.Tasks
             t.ItemActionImageText(x => x.ToDelete(AccessControl, ViewData, Context.ReturnUrl.Get(1)).WithArg(Constants.ReturnUrl + "_0", Context.CreateReturnUrl(1)).AsDialog());
 
 			var isLongRunning = LongOperationServer.Queue.Any(o => o.ActionID == ViewData.TaskID && o.Status == LongOperationStatus.Running);
-			var isProgress = ViewData.Status != (int)TaskStatusType.Progress || !Tango.Tasks.BaseTaskController.Progress.ContainsKey(ViewData.TaskID);
+			var isProgress = ViewData.Status != (int)TaskStatusType.Progress || !BaseTaskController.Progress.ContainsKey(ViewData.TaskID);
 			if (AccessControl.Check("task.start") && isProgress && !isLongRunning)
 			{
 				t.ItemSeparator();
@@ -428,11 +428,11 @@ namespace Tango.Tasks
 						if (ViewData.Status == (int)TaskStatusType.Progress)
 						{
 							w.Icon("ic_info");
-							if (Tango.Tasks.BaseTaskController.Progress.TryGetValue(ViewData.TaskID, out (decimal percent, string description) p))
+							if (BaseTaskController.Progress.TryGetValue(ViewData.TaskID, out (decimal percent, string description) p))
 								w.Write($" {Resources.GetExt<Task>("progress")} {p.percent:0.#}%, {p.description}");
 							else
 							{
-								if (LongOperationServer.Queue.Any(o => o.ActionID == ViewData.TaskID /*&& o.Status == LongOperationStatus.Running*/))
+								if (LongOperationServer.Queue.Any(o => o.ActionID == ViewData.TaskID))
 									w.Write($" {Resources.GetExt<Task>("inwork")}");
 								else
 									w.Write($" {Resources.GetExt<Task>("interrupted")}");
@@ -445,18 +445,18 @@ namespace Tango.Tasks
 
 		public void OnRunTask(ApiResponse response)
 		{
-			//var exec = Repository.IsExecuteTask(ViewData.ID);
-			//if (exec || !Tango.Tasks.BaseTaskController.Progress.ContainsKey(ViewData.TaskID))
-			//{
-				RunTaskController(response);
-			//}
+			RunTaskController(response);
 		}
 
 		protected virtual void RunTaskController(ApiResponse response)
 		{
-			var c = new TaskController<TUser> { Context = Context };
-			c.InjectProperties(Context.RequestServices);
-			c.RunWithTimeOut(ViewData, true);
+			var exec = Repository.IsExecuteTask(ViewData.ID);
+			if (exec || !BaseTaskController.Progress.ContainsKey(ViewData.TaskID))
+			{
+				var c = new TaskController<TUser> { Context = Context };
+				c.InjectProperties(Context.RequestServices);
+				c.RunWithTimeOut(ViewData, true);
+			}
 
 			OnLoad(response);
 		}
