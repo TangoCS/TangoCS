@@ -174,7 +174,15 @@ namespace Tango.UI.Std
 			if (!ProcessSubmit(response)) 
 				return;
 
-			var doSubmit = ProcessObjectChangeRequest();
+			var m = new ValidationMessageCollection();
+			var doSubmit = ProcessObjectChangeRequest(m);
+			if (!doSubmit && m.Count > 0)
+			{
+				RenderValidation(response, m);
+				response.Success = false;
+				return;
+			}
+
 			if (doSubmit)
 				Submit(response);
 			var doAfterSubmit = PostProcessObjectChangeRequest(response);
@@ -187,7 +195,7 @@ namespace Tango.UI.Std
         protected virtual void ProcessFormData(ValidationMessageCollection val) => groups.ForEach(g => g.ProcessFormData(val));
 		protected virtual void PostProcessFormData(ApiResponse response, ValidationMessageCollection val) { }
 
-		protected virtual bool ProcessObjectChangeRequest() { return true; }
+		protected virtual bool ProcessObjectChangeRequest(ValidationMessageCollection m) { return true; }
 		protected virtual bool PostProcessObjectChangeRequest(ApiResponse response) { return true; }
 
 		protected abstract void Submit(ApiResponse response);
@@ -448,9 +456,10 @@ namespace Tango.UI.Std
 							else
 								res = "Common.CreateObjectChangeRequest";
 						}
-						w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
+						if (!ChangeRequestMode || ChReqManager.IsCurrentUserModerator())
+							w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
 					}
-					if (!ReadonlyMode && ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New)
+					if (!ReadonlyMode && ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New && ChReqView.CanReject())
 						w.SubmitAndBackButton(a => a.DataEvent(RejectObjectChangeRequest), Resources.Get("Common.RejectObjectChangeRequest"));
 					w.BackButton(this);
 				});
@@ -474,6 +483,11 @@ namespace Tango.UI.Std
 			if (ViewData is IWithTimeStamp withTimeStamp)
 			{
 				withTimeStamp.LastModifiedDate = DateTime.Now;
+			}
+
+			if (CreateChangeRequestMode && !CreateObjectMode)
+			{
+				
 			}
 		}
 
@@ -523,7 +537,7 @@ namespace Tango.UI.Std
 			});
 		}
 
-		protected override bool ProcessObjectChangeRequest()
+		protected override bool ProcessObjectChangeRequest(ValidationMessageCollection m)
 		{
 			if (!ChangeRequestMode)
 			{
@@ -542,7 +556,9 @@ namespace Tango.UI.Std
 							ChangedFields = changes
 						};
 						var comments = Context.GetArg("ocr_comments");
-						ChReqView.Save(data, comments);
+						ChReqView.Save(data, comments, m);
+						if (m.Count > 0)
+							return false;
 
 						if (moderatorMode)
 							FillDestFieldSnapshot(ViewData);
@@ -571,6 +587,7 @@ namespace Tango.UI.Std
 					g.SetViewData(ViewData);
 					g.Fields.ForEach(f => {
 						f.Disabled = true;
+						f.WithCheckBox = false;
 					});
 				});
 				ReadonlyMode = true;
@@ -621,7 +638,8 @@ namespace Tango.UI.Std
 
 		protected void RejectObjectChangeRequest(ApiResponse response)
 		{
-			var doSubmit = ProcessObjectChangeRequest();
+			var m = new ValidationMessageCollection();
+			var doSubmit = ProcessObjectChangeRequest(m);
 			if (doSubmit)
 				ChReqView.Reject(_srcFieldSnapshot, _destFieldSnapshot);
 			response.RedirectBack(Context, 1, !IsSubView);
@@ -843,13 +861,14 @@ namespace Tango.UI.Std
 	{
 		ObjectChangeRequestStatus Status { get; }
 		
-		void Save(ObjectChangeRequestData data, string comments);
+		void Save(ObjectChangeRequestData data, string comments, ValidationMessageCollection m);
 		ObjectChangeRequestData<T> Load<T>(string ochid);
 
 		void RenderHeader(LayoutWriter w);
 		void RenderFooter(LayoutWriter w);
 		void RenderFields(LayoutWriter w);
 		void RenderDestFields(LayoutWriter w);
+		bool CanReject();
 		void Reject(List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
 		void Approve(object entity, List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
 		void CreateAndApprove(object entity, List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
