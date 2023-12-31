@@ -112,8 +112,7 @@ namespace Tango.Mail
     {
         protected override void ProcessFormData(IEnumerable<int> ids, ValidationMessageCollection val)
         {
-            var mst = Database.Repository<MailSettingsTemplate>().List()
-                .FirstOrDefault(i => i.MailTemplateID == ids.FirstOrDefault());
+            var mst = Database.Repository<MailSettingsTemplate>().GetById(ids.FirstOrDefault());
 
             if(mst != null)
             {

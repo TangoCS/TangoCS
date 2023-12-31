@@ -420,31 +420,25 @@ namespace Tango.Mail
                         _database.Repository<MailMessageAttachment>().Create(mailMessageAttachment);
                     }
 
-                    using (var transaction = _database.BeginTransaction())
-                    {
-                        try
+					if (!string.IsNullOrEmpty(mailSettings.PostProcessingMethod))
+					{
+						using (var transaction = _database.BeginTransaction())
                         {
-                            if (!string.IsNullOrEmpty(mailSettings.PostProcessingMethod))
-                            {
-                                var mailMethods = JsonConvert.DeserializeObject<MethodSettingsCollection>(mailSettings.PostProcessingMethod);
-                                foreach (var methodSetting in mailMethods.MethodSettings)
-                                {
-                                    foreach (var param in methodSetting.Params)
-                                    {
-                                        methodSetting.Params[param.Key] = GetValue(param, viewData);
-                                    }
-
-									_methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
+						
+							var mailMethods = JsonConvert.DeserializeObject<MethodSettingsCollection>(mailSettings.PostProcessingMethod);
+							foreach (var methodSetting in mailMethods.MethodSettings)
+							{
+								foreach (var param in methodSetting.Params)
+								{
+									methodSetting.Params[param.Key] = GetValue(param, viewData);
 								}
-                            }
 
-                            transaction.Commit();
-                        }
-                        catch
-                        {
-                            transaction.Rollback();
-                        }
-                    }
+								_methodHelper.ExecuteMethod(methodSetting, mailMessageContext);
+							}
+
+							transaction.Commit();
+						}
+					}
                 }
             }
         }
@@ -455,17 +449,9 @@ namespace Tango.Mail
             {
                 using (var transaction = _database.BeginTransaction())
                 {
-                    try
-                    {
-                        ExecuteMethod(context, context.MailMessage.AfterSentMethod);
-
-                        transaction.Commit();
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-                    }
-                }
+					ExecuteMethod(context, context.MailMessage.AfterSentMethod);
+					transaction.Commit();
+				}
             }
         }
 
