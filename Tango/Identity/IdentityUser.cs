@@ -7,9 +7,7 @@ namespace Tango.Identity
 	/// Represents a user in the identity system
 	/// </summary>
 	/// <typeparam name="TKey">The type used for the primary key for the user.</typeparam>
-	/// <typeparam name="TClaim">The type representing a claim.</typeparam>
-	/// <typeparam name="TLogin">The type representing a user external login.</typeparam>
-	public class IdentityUser<TKey, TClaim, TLogin> where TKey : IEquatable<TKey>
+	public class IdentityUser<TKey> where TKey : IEquatable<TKey>
 	{
 		/// <summary>
 		/// Initializes a new instance of <see cref="IdentityUser{TKey}"/>.
@@ -107,11 +105,22 @@ namespace Tango.Identity
 		/// </summary>
 		public virtual bool MustChangePassword { get; set; }
 
-		/// <summary>
-		/// Navigation property for the roles this user belongs to.
-		/// </summary>
-		//public virtual ICollection<TRole> Roles { get; } = new List<TRole>();
+		public virtual int LoginTypeID { get; set; }
 
+		/// <summary>
+		/// Returns the username for this user.
+		/// </summary>
+		public override string ToString()
+		{
+			return UserName;
+		}
+	}
+
+	/// <typeparam name="TClaim">The type representing a claim.</typeparam>
+	/// <typeparam name="TLogin">The type representing a user external login.</typeparam>
+	public class IdentityUser<TKey, TClaim, TLogin> : IdentityUser<TKey>
+		where TKey : IEquatable<TKey>
+	{
 		/// <summary>
 		/// Navigation property for the claims this user possesses.
 		/// </summary>
@@ -122,14 +131,5 @@ namespace Tango.Identity
 		/// </summary>
 		public virtual ICollection<TLogin> Logins { get; } = new List<TLogin>();
 
-		public virtual int LoginTypeID { get; set; }
-
-		/// <summary>
-		/// Returns the username for this user.
-		/// </summary>
-		public override string ToString()
-		{
-			return UserName;
-		}
 	}
 }

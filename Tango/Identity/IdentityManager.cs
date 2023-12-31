@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Globalization;
 using System.Security.Principal;
+using System.Text;
 
 namespace Tango.Identity
 {
 	public abstract class IdentityManager<TUser, TKey> : IIdentityManager<TUser>
-	where TUser : class
-	where TKey : IEquatable<TKey>
+		where TUser : IdentityUser<TKey>
+		where TKey : IEquatable<TKey>
 	{
 		IIdentityStore<TUser, TKey> _dataContext;
 		protected IIdentity _user;
@@ -58,7 +60,6 @@ namespace Tango.Identity
 
 		public TUser SystemUser =>
 			_dataContext.UserFromName(Options.SystemUserName) ?? throw new Exception(String.Format("User {0} does not exist in the database", Options.SystemUserName));
-
 
 		public void RunAs(TUser subject, Action action)
 		{
