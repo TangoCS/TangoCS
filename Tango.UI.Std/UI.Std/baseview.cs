@@ -9,6 +9,7 @@ using System.Security.Principal;
 using Tango.AccessControl;
 using Tango.Html;
 using Tango.Identity.Std;
+using Tango.Localization;
 using Tango.Logger;
 
 namespace Tango.UI.Std
@@ -148,6 +149,8 @@ namespace Tango.UI.Std
 	{
 		[Inject]
 		public ITypeActivatorCache Cache { get; set; }
+		[Inject]
+		public ILanguage Lang { get; set; }
 
 		protected override void RenderContent(HtmlWriter w)
 		{
@@ -248,14 +251,14 @@ namespace Tango.UI.Std
 		protected virtual void Html(HtmlWriter w)
 		{
 			w.DocType();
-			w.Html(() => {
+			w.Html(a => a.Lang(Lang.Current.Code), () => {
 				w.Head(a => a.ID("head").Data("page", GetType().Name.ToLower()), () => {
 					w.HeadTitle(a => a.ID("title"));
 					w.HeadMeta(a => a.HttpEquiv("content-type").Content("text/html; charset=utf-8"));
 					var r = DefaultView?.Resolve(Context);
 					w.HeadMeta(a => a.ID(Constants.MetaHome).Data("href", "/").Data("alias", r?.Result.ToString()));
 					w.HeadMeta(a => a.ID(Constants.MetaCurrent));
-					w.HeadMeta(a => a.Name("viewport").Content("width=device-width"));
+					w.HeadMeta(a => a.Name("viewport").Content("width=device-width, initial-scale=1"));
 					HeadContent(w);
 				});
 				w.Body(a => a.ID("body"), () => {

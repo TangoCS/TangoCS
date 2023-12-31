@@ -46,6 +46,16 @@ namespace Tango.UI.Controls
 			});
 		}
 
+		public void ItemField(string labelFor, string labelTitle, Action<LayoutWriter> content)
+		{
+			Item(w => {
+				w.Div(a => a.Class("menutoolbar-field"), () => {
+					w.Div(() => w.Label(labelFor, labelTitle + ":"));
+					w.Div(() => content(w));
+				});
+			});
+		}
+
 		public void ItemLabelFor(string labelFor, string labelTitle)
 		{
 			Item(w => {

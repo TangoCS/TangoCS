@@ -16,7 +16,7 @@ namespace Tango.Html
 			w.WriteTag("aside", attributes, inner);
 		}
 
-		public static void Details(this HtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
+		public static void Details(this HtmlWriter w, Action<DetailsTagAttributes> attributes = null, Action inner = null)
 		{
 			w.WriteTag("details", attributes, inner);
 		}
@@ -125,5 +125,10 @@ namespace Tango.Html
 	public class TimeTagAttributes : TagAttributes<TimeTagAttributes>
 	{
 		public TimeTagAttributes DateTime(DateTime value) { Writer.WriteAttr("datetime", value.ToString("yyyy-MM-dd HH:mm:ss")); return this; }
+	}
+
+	public class DetailsTagAttributes : TagAttributes<DetailsTagAttributes>
+	{
+		public DetailsTagAttributes Open(bool value) { if (value) Writer.WriteAttr("open"); return this; }
 	}
 }

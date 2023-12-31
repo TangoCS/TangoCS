@@ -10,7 +10,7 @@ namespace Tango.Drawing.Test
 {
 	public partial class Program
 	{
-		public static void Main(string[] args)
+		public static void Main1(string[] args)
 		{
 
 			using (var ctx = new WglContext(800, 600))

@@ -45,12 +45,16 @@ namespace Tango.Identity.Std
 
 		public void Activate(long id)
 		{
-			throw new NotImplementedException();
+			_db.Connection.Execute("update spm_subject set isactive = true where subjectid = @subjectid", new {
+				subjectid = id
+			}, _db.Transaction);
 		}
 
 		public void Deactivate(long id)
 		{
-			throw new NotImplementedException();
+			_db.Connection.Execute("update spm_subject set isactive = false where subjectid = @subjectid", new {
+				subjectid = id
+			}, _db.Transaction);
 		}
 
 		public void SetSecurityStamp(long id, string securityStamp)

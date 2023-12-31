@@ -10,7 +10,7 @@ namespace Tango.Drawing.Test
 {
 	public partial class Program
 	{
-		public static void Main1(string[] args)
+		public static void Main(string[] args)
 		{
 			using (var ctx = new OsMesaContext(800, 600))
 			{

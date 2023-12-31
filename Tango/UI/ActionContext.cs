@@ -271,11 +271,11 @@ namespace Tango.UI
 			return ctx.RequestServices.GetService(typeof(T)) as T;
 		}
 
-		public static string GetArg(this ActionContext ctx, string name)
+		public static string GetArg(this ActionContext ctx, string name, bool decode = true)
 		{
 			if (name == null) return null;
 			bool b = ctx.AllArgs.TryGetValue(name, out object s);
-			if (b) return WebUtility.UrlDecode(s?.ToString());
+			if (b) return decode ? WebUtility.UrlDecode(s?.ToString()) : s?.ToString();
 			return null;
 		}
 		public static int GetIntArg(this ActionContext ctx, string name, int defaultValue)

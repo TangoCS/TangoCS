@@ -188,9 +188,19 @@ namespace Tango.UI
 			w.AjaxActionLink(attrs, () => w.Write(title));
 		}
 
+		public static void AjaxActionSpan(this LayoutWriter w, Action<TagAttributes> attrs, string title)
+		{
+			w.AjaxActionSpan(attrs, () => w.Write(title));
+		}
+
 		public static void PostBackLink(this LayoutWriter w, Action<ATagAttributes> attrs, string title)
 		{
 			w.PostBackLink(attrs, () => w.Write(title));
+		}
+
+		public static void PostBackSpan(this LayoutWriter w, Action<TagAttributes> attrs, string title)
+		{
+			w.PostBackSpan(attrs, () => w.Write(title));
 		}
 
 		public static void AjaxActionLink(this LayoutWriter w, Action<ATagAttributes> attrs, Action content)
@@ -198,9 +208,19 @@ namespace Tango.UI
 			w.A(a => a.Set(attrs).OnClick("ajaxUtils.runHrefWithApiResponse(this); return false;"), content);
 		}
 
+		public static void AjaxActionSpan(this LayoutWriter w, Action<TagAttributes> attrs, Action content)
+		{
+			w.Span(a => a.Set(attrs).OnClick("ajaxUtils.runHrefWithApiResponse(this); return false;"), content);
+		}
+
 		public static void PostBackLink(this LayoutWriter w, Action<ATagAttributes> attrs, Action content)
 		{
 			w.A(a => a.Set(attrs).OnClick($"ajaxUtils.postEventFromElementWithApiResponse(this)"), content);
+		}
+
+		public static void PostBackSpan(this LayoutWriter w, Action<TagAttributes> attrs, Action content)
+		{
+			w.Span(a => a.Set(attrs).OnClick($"ajaxUtils.postEventFromElementWithApiResponse(this)"), content);
 		}
 
 		public static void PostBackButton(this LayoutWriter w, Action<ATagAttributes> attrs, Action content)

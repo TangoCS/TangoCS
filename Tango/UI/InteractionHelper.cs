@@ -110,7 +110,7 @@ namespace Tango.UI
                     p[i] = context.GetBytesArg(name);
                 else
                 {
-					string val = WebUtility.UrlDecode(context.GetArg(name));
+					string val = context.GetArg(name, false);
 					if (!val.IsEmpty())
 						p[i] = Convert.ChangeType(val, ps[i].ParameterType);
 				}
