@@ -8,6 +8,8 @@ Account.RegisterTitle;Создание нового профиля;Create your a
 Account.Email;Email;Email
 Account.Email.Placeholder;напр. you@example.com;e.g. you@example.com
 Account.RememberMe;Запомнить меня;Remember me
+Account.SetPasswordTitle;Восстановление пароля;Password reset
+Account.NewPassword;Новый пароль;New password
 Account.SignIn;Войти;Continue
 Account.SignInTitle;Вход в систему;Sign in
 Account.SignOut;Выйти;Sign out
@@ -102,6 +104,9 @@ Common.Undelete.Confirm;Вы уверены, что хотите отменит�
 Common.Undelete.Undeletion;Отмена удаления;Undeletion
 Common.Utils;Утилиты;Utils
 Common.Wait;Подождите...;Loading...
+Common.ValidationError;Предупреждение;There were some problems with your input
+Common.ValidationWarning;Предупреждение;Warning
+Common.ValidationInfo;Предупреждение;Information
 Common.Warnings.SpecifyValues;Необходимо задать значения следующих полей;You must specify values for the following fields
 Common.View;Просмотр;View
 Common.Xml;Xml;Xml

@@ -21,18 +21,19 @@ namespace Tango.UI.Std
                 severity == ValidationMessageSeverity.Warning ? "yellow" :
                 "skyblue";
 
-            Action title = () => {
+            var resName = severity == ValidationMessageSeverity.Error ? "Common.ValidationError" :
+				severity == ValidationMessageSeverity.Warning ? "Common.ValidationWarning" :
+				"Common.ValidationInfo";
+
+			Action title = () => {
                 w.Icon("warning", a => a.Style("margin-right: 4px; color:" + color));
-                w.Write("Предупреждение");
+                w.Write(w.Resources.Get(resName));
             };
 
             attributes += a => a.Class("validation-body").GridColumn(Grid.OneWhole);
 
-            w.BlockCollapsible(opt =>
-            {
-                opt.SetLeftTitle(title)
-                .SetContentFieldsBlock(() =>
-                {
+            w.BlockCollapsible(opt => {
+                opt.SetLeftTitle(title).SetContentFieldsBlock(() => {
                     w.Div(attributes, () => {
                         content();
                     });
