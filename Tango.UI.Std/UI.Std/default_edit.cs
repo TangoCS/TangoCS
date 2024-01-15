@@ -403,7 +403,7 @@ namespace Tango.UI.Std
 					}
 					else
 					{
-						if (CreateObjectMode || ChReqView.Status == ObjectChangeRequestStatus.Rejected)
+						if (CreateObjectMode)
 							ChReqView.RenderDestFields(w);
 						else
 							ChReqView.RenderFields(w);
