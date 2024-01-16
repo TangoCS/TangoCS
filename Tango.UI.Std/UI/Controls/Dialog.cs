@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Tango.Html;
 using Tango.Localization;
 
@@ -45,7 +46,11 @@ namespace Tango.UI.Controls
 		{
 			var help = w.Context.RequestServices.GetService(typeof(IHelpManager)) as IHelpManager;
 			if (help != null)
-				w.Div(a => a.ID("help").Class("modal-footer-help"), () => help.Render(w));
+			{
+				var service = Context.GetArg("c-service", Context.Service);
+				var action = Context.GetArg("c-action", Context.Action);
+				w.Div(a => a.ID("help").Class("modal-footer-help"), () => help.Render(w, service, action));
+			}
 		}
 	}
 
@@ -297,7 +302,12 @@ namespace Tango.UI.Controls
 
 		public static ActionLink AsDialog<T>(this ActionLink link, string dialogPrefix = null, DialogOptions options = null)
 		{
-			return link.InContainer(typeof(T), dialogPrefix, options?.ToParms()).KeepTheSameUrl();
+			return link.AsDialog<T>(dialogPrefix, options?.ToParms());
+		}
+
+		static ActionLink AsDialog<T>(this ActionLink link, string dialogPrefix = null, Dictionary<string, string> parms = null)
+		{
+			return link.InContainer(typeof(T), dialogPrefix, parms).KeepTheSameUrl();
 		}
 
 		public static ActionLink AsDialog<T>(this ActionLink link, Action<ApiResponse> serverEvent, string dialogPrefix = null, DialogOptions options = null)
@@ -308,7 +318,15 @@ namespace Tango.UI.Controls
 			if (dialogPrefix == null)
 				dialogPrefix = el.ClientID;
 
-			return link.AsDialog<T>(dialogPrefix, options).RunEvent(serverEvent.Method.Name, el.ClientID);
+			var parms = options?.ToParms() ?? new Dictionary<string, string>();
+			var a = el.GetType().GetCustomAttribute<OnActionAttribute>();
+			if (a != null)
+			{
+				parms.Add("service", a.Service);
+				parms.Add("action", a.Action);
+			}
+
+			return link.AsDialog<T>(dialogPrefix, parms).RunEvent(serverEvent.Method.Name, el.ClientID);
 		}
 
 		public static ActionLink AsDialogPost<T>(this ActionLink link, Action<ApiResponse> serverEvent, string dialogPrefix = null, DialogOptions options = null)
@@ -319,7 +337,15 @@ namespace Tango.UI.Controls
 			if (dialogPrefix == null)
 				dialogPrefix = el.ClientID;
 
-			return link.AsDialog<T>(dialogPrefix, options).PostEvent(serverEvent.Method.Name, el.ClientID);
+			var parms = options?.ToParms() ?? new Dictionary<string, string>();
+			var a = el.GetType().GetCustomAttribute<OnActionAttribute>();
+			if (a != null)
+			{
+				parms.Add("service", a.Service);
+				parms.Add("action", a.Action);
+			}
+
+			return link.AsDialog<T>(dialogPrefix, parms).PostEvent(serverEvent.Method.Name, el.ClientID);
 		}
 
 		public static ActionLink AsDialog(this ActionLink link, string dialogPrefix = null, DialogOptions options = null)
