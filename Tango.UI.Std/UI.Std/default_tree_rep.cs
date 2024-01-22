@@ -255,6 +255,8 @@ namespace Tango.UI.Std
 			var data = Repository.List(expr.Expression);
 
 			var template = _templatesDict[templateID];
+			level--;
+
 			foreach (var row in data)
 			{
 				var t = template;

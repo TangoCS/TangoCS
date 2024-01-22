@@ -38,7 +38,7 @@ namespace Tango.UI.Controls
 			rc.Render(response);
 
 			var ids = Context.GetListArg<TRefKey>(Field.ID);
-			Control.SetSelectedItems(2, 1, Field.FilterSelected(ids));
+			Control.SetSelectedItems(2, 2, Field.FilterSelected(ids));
 			Control.OnLoad(response);
 		}
 
