@@ -1211,6 +1211,10 @@ div.tabs2 + div.tabs2_pages {
 	flex: 3;
 	overflow-y: auto;
 }
+.content.selectable .contentbody-selected tr .dropdownimage {
+	display: none !important;
+}
+
 .tree .childrencnt {
 	margin-left: 4px;
 	font-weight: bold;
