@@ -229,9 +229,9 @@
 
 			}
 
-			trigger.delegate('input,a,.needs-click', 'click', function (e) {
+			/*trigger.delegate('input,a,.needs-click', 'click', function (e) {
 				e.stopImmediatePropagation()
-			});
+			});*/
 
 			//add contextMenu identifier on all events
 			triggerOn = triggerOn.split(' ');
@@ -264,7 +264,9 @@
 					}
 					if (submenu) return;
 					if (option.closeOnClickSelector) b = option.closeOnClickSelector(e.target);
-					if (b) iMethods.closeContextMenu(option, trigger, menu, e);
+					if (b) {
+						iMethods.closeContextMenu(option, trigger, menu, e);
+					}
 				});
 			}
 
@@ -313,19 +315,12 @@
 				if (option.closeOther) {
 					iMethods.clearMenuStyle(menus);
 				}
-
-				//to reset already selected menu item
-				//menu.find('.iw-mSelected').not(menu.selector).removeClass('iw-mSelected');
-				$('.iw-opened').not(trigger[0]).removeClass('iw-opened');
 			}
 			else if (res == 1) {
 				//to close previous open menu.
 				if (option.closeOther) {
 					iMethods.clearMenuStyle($('.iw-contextMenu'));
 				}
-				//to reset already selected menu item
-				//menu.find('.iw-mSelected').removeClass('iw-mSelected');
-				$('.iw-opened').removeClass('iw-opened');
 				return;
 			}
 
@@ -435,8 +430,8 @@
 				menu.css(cssObj).addClass('iw-display');
 
 				//to call after open call back
-				option.afterOpen.call(this, clbckData, e);
 				option.baseTrigger.addClass('iw-opened');
+				option.afterOpen.call(this, clbckData, e);
 
 				//to add current menu class
 				//if (trigger.closest('.iw-contextMenu').length == 0) {
@@ -472,6 +467,10 @@
 				});
 			else
 				option.onOpen.call(this, clbckData, e).done(openMenu);
+
+			/*if (!trigger.hasClass('iw_opened')) {
+				
+			}*/
 		},
 
 		scrollEvent: function (e) {
@@ -520,14 +519,10 @@
 				option.triggerOn = 'contextmenu';
 			}
 
-			//if ($.inArray(option.triggerOn, ['hover', 'mouseenter', 'mouseover', 'mouseleave', 'mouseout', 'focusin', 'focusout']) != -1) {
-			//	option.displayAround = 'trigger';
-			//}
 			return option;
 		},
 		clearMenuStyle: function (menu) {
 			menu.removeClass('iw-display').removeClass('iw-opening').css('opacity', '0')
-				//.removeClass('iw-curMenu')
 				.removeClass('iw-type-default').removeClass('iw-type-slidermenu')
 				.css('left', '').css('top', '').css('bottom', '').css('width', '').css('height', '');
 		}

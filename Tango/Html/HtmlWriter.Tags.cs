@@ -193,7 +193,11 @@ namespace Tango.Html
 		public static void Thead(this HtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			w.WriteTag("thead", attributes, inner);
-		}		
+		}
+		public static void Tfoot(this HtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
+		{
+			w.WriteTag("tfoot", attributes, inner);
+		}
 		public static void Tr(this HtmlWriter w, Action<TagAttributes> attributes = null, Action inner = null)
 		{
 			w.WriteTag("tr", attributes, inner);

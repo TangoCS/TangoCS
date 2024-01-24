@@ -545,8 +545,11 @@ window.ajaxUtils = function ($, cu) {
 
 			if (xhr.status == '401') {
 				const location = xhr.getResponseHeader('location');
-				if (location)
+				if (location) {
 					window.location = location;
+					requestCompleted(xhr, settings);
+					return;
+				}
 				else {
 					title = localization.resources.title.noAccess;
 					text = localization.resources.text.notLoggedSystem;
@@ -631,7 +634,7 @@ window.ajaxUtils = function ($, cu) {
 			if (!target.query) target.query = {};
 			if (!target.method) target.method = 'FAKEGET';
 			processElementDataOnEvent(el, target, function (key, value) { target.data[key] = value; });
-			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement) {
+			if (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement || el.hasAttribute('data-ctrl')) {
 				cu.processElementValue(el, function (key, value) { target.query[key] = value; })
 				//target.query[el.name] = el.value;
 			}
@@ -674,7 +677,7 @@ window.ajaxUtils = function ($, cu) {
 
 			target.method = 'POST';
 			processElementDataOnEvent(el, target, function (key, value) { target.data[key] = value; });
-			if (!form && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement)) {
+			if (!form && (el instanceof HTMLInputElement || el instanceof HTMLSelectElement || el instanceof HTMLTextAreaElement || el.hasAttribute('data-ctrl'))) {
 				cu.processElementValue(el, function (key, value) { target.data[key] = value; })
 				//target.data[el.name] = el.value;
 			}

@@ -29,6 +29,7 @@ namespace Tango.UI.Std
 		Action<LayoutWriter, IEnumerable<TResult>> BeforeHeader { get; set; }
 		Action<TResult, RowInfo<TResult>> BeforeRowContent { get; set; }
 		Func<TResult, RowInfo<TResult>, IEnumerable<ListColumn<TResult>>> AfterRowContent { get; set; }
+		Action<LayoutWriter, IEnumerable<TResult>> Footer { get; set; }
 
 		IColumnHeader AddHeader(Action<ThTagAttributes> attrs, string title, Action<LayoutWriter> content);
 	}
@@ -125,6 +126,7 @@ namespace Tango.UI.Std
 		public Action<TResult, RowInfo<TResult>> BeforeRowContent { get; set; }
 		public Func<TResult, RowInfo<TResult>, IEnumerable<ListColumn<TResult>>> AfterRowContent { get; set; }
 		public Action<LayoutWriter, IEnumerable<TResult>> BeforeHeader { get; set; }
+		public Action<LayoutWriter, IEnumerable<TResult>> Footer { get; set; }
 
 		public IColumnHeader AddHeader(Action<ThTagAttributes> attrs, string title, Action<LayoutWriter> content)
 		{

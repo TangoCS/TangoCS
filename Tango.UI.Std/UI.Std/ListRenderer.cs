@@ -155,6 +155,7 @@ namespace Tango.UI.Std
 					w.InfoRow(fields.Cells.Count);
 
 				RenderRows(w, result, fields);
+				fields.Footer?.Invoke(w, result);
 			});
 
 			if (rendererIsControl) w.PopPrefix();
