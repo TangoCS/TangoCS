@@ -36,6 +36,8 @@ namespace Tango
 		public static readonly string ContainerType = "c-type";
 		public static readonly string ContainerNew = "c-new";
 		public static readonly string ContainerExternal = "c-external";
+		public static readonly string ContainerService = "c-service";
+		public static readonly string ContainerAction = "c-action";
 
 		public static readonly string IEFormFix = "__dontcare";
 
@@ -46,7 +48,7 @@ namespace Tango
 
 		public static readonly string[] InternalParms = new string[] { EventName, EventReceiverName,
 			RootReceiverName, FirstLoad, Sender, ResponseType, Container, ContainerPrefix, ContainerType, ContainerNew,
-			ContainerExternal, IEFormFix, MetaHome, MetaCurrent, ReturnState
+			ContainerExternal, IEFormFix, MetaHome, MetaCurrent, ReturnState, ContainerService, ContainerAction
 		};
 
 		public static readonly string OpList = "viewlist";

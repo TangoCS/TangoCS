@@ -236,6 +236,7 @@ div.calendar {
 
 .datelists select {
 	width: auto;
+	padding: 1px;
 }
 
 /* td drag'n'drop */
@@ -875,6 +876,10 @@ div.tabs2 + div.tabs2_pages {
 	width: 75px;
 	/*padding: 0 0 0 3px;*/
 }
+.periodpicker input[type=text].cal-date::placeholder, .datetimepicker input[type=text].cal-date::placeholder {
+	font-size: smaller;
+	text-align: center;
+}
 
 .periodpicker .datelists .hours, .periodpicker .datelists .minutes,
 .datetimepicker .datelists .hours, .datetimepicker .datelists .minutes {
@@ -1206,6 +1211,10 @@ div.tabs2 + div.tabs2_pages {
 	flex: 3;
 	overflow-y: auto;
 }
+.content.selectable .contentbody-selected tr .dropdownimage {
+	display: none !important;
+}
+
 .tree .childrencnt {
 	margin-left: 4px;
 	font-weight: bold;

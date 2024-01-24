@@ -255,35 +255,45 @@ namespace Tango.UI.Std
 			var data = Repository.List(expr.Expression);
 
 			var template = _templatesDict[templateID];
+			level--;
+
 			foreach (var row in data)
 			{
 				var t = template;
 				var lev = level;
 
 				var key = t.Template.GetDataRowID(lev, row);
+				var htmlKey = t.Template.GetHtmlRowID(lev, row);
 				_selectedValues.Add(key);
 
 				while (t.ParentTemplateItem != null)
 				{
-					var parentKey = t.ParentTemplateItem.Template.GetHtmlRowID(lev - 1, row);
-					var rowState = new State { Level = lev, TemplateItem = t };
+					var parentHtmlKey = t.ParentTemplateItem.Template.GetHtmlRowID(lev - 1, row);
+					var rowState = new State { Level = lev, TemplateItem = t, IsChecked = true };
 					var parentState = new State { Level = lev - 1, TemplateItem = t.ParentTemplateItem };
 
-					if (_selectedDataRows.TryGetValue(parentKey, out var parent))
+					if (_selectedDataRows.TryGetValue(parentHtmlKey, out var parent))
 					{
-						parent.AddChild((rowState, row));
+						if (!_selectedDataRows.TryGetValue(htmlKey, out var ch))
+							parent.AddChild((rowState, row));
+						else
+							ch.Data.state.IsChecked = true;
 						break;
 					}
 					else
 					{
 						parent = new TreeNode<(State state, TResult row)>((parentState, row));
-						parent.AddChild((rowState, row));
-						_selectedDataRows.Add(parentKey, parent);
+						if (_selectedDataRows.TryGetValue(htmlKey, out var ch))
+							parent.Children.Add(ch);
+						else
+							parent.AddChild((rowState, row));
+						_selectedDataRows.Add(parentHtmlKey, parent);
 						if (lev - 1 == 0)
 							_selectedDataRoot.Add(parent);
 					}
 					t = t.ParentTemplateItem;
 					lev--;
+					htmlKey = parentHtmlKey;
 				}
 			}
 
@@ -516,7 +526,7 @@ namespace Tango.UI.Std
 				if (nodeTemplate.EnableSelect || nodeTemplate.SetDataRowId)
 					a.Data("rowid", dataRowID);
 
-				if (nodeTemplate.EnableSelect && _renderSelectedBlockMode)
+				if (nodeTemplate.EnableSelect && _renderSelectedBlockMode && CurrentState.IsChecked)
 					a.Data("checked");
 			};
 
@@ -690,6 +700,7 @@ namespace Tango.UI.Std
 		{
 			public TreeLevelDescriptionItem<TResult> TemplateItem { get; set; }
 			public int Level { get; set; }
+			public bool IsChecked { get; set; }
 			public Dictionary<string, object> Parms { get; set; }
 
 			public Dictionary<string, State> Children { get; } = new Dictionary<string, State>();
