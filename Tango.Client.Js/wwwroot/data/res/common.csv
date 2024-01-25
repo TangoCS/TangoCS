@@ -38,6 +38,7 @@ Common.OK;OK;OK
 Common.Close;Закрыть;Close
 Common.Cancel;Отмена;Cancel
 Common.ChangeHistory;История изменений;Change history
+Common.ChangeRequestModeDisabledMessage;Режим запросов на изменение нормативно-справочной информации отключен;
 Common.Clear;Очистить;Clear
 Common.Condition;Условие;Condition
 Common.Continue;Продолжить;Continue

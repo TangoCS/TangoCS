@@ -265,7 +265,7 @@ namespace Tango.UI.Std
 
 		protected virtual T GetViewData()
 		{
-			if (ChangeRequestMode)
+			if (ChReqEnabled && ChangeRequestMode)
 				return GetChangeRequestData();
 			else if (CreateObjectMode || BulkMode)
 				return GetNewEntity();
@@ -277,6 +277,7 @@ namespace Tango.UI.Std
 		{
 			var ochid = Context.GetArg(Constants.ObjectChangeRequestId);
 			var data = ChReqView.Load<T>(ochid);
+			if (data == null) return null;
 			Tracker?.StartTracking(data.Object);
 			_changedFields = data.ChangedFields;
 			return data.Object;
@@ -301,7 +302,7 @@ namespace Tango.UI.Std
 				ChReqView.ID = "chreqview";
 				AddControl(ChReqView);
 			}
-			
+
 		}
 
 		protected override bool ObjectNotExists => ViewData == null;
@@ -417,7 +418,14 @@ namespace Tango.UI.Std
 			}
 			else
 			{
-				Form(w);
+				if (ChangeRequestMode)
+				{
+					w.Div(Resources.Get("Common.ChangeRequestModeDisabledMessage"));
+				}
+				else
+				{
+					Form(w);
+				}
 			}
 			w.FormValidationBlock();
 		}
@@ -446,7 +454,8 @@ namespace Tango.UI.Std
 
 			w.ButtonsBar(a => a.Class(width.ToString().ToLower()), () => {
 				w.ButtonsBarRight(() => {
-					if (!ReadonlyMode && !(ChangeRequestMode && ChReqView.Status.In(ObjectChangeRequestStatus.Approved, ObjectChangeRequestStatus.Rejected)))
+					if (!ReadonlyMode && !(!ChReqEnabled && ChangeRequestMode) && 
+						!(ChangeRequestMode && ChReqView.Status.In(ObjectChangeRequestStatus.Approved, ObjectChangeRequestStatus.Rejected)))
 					{
 						var res = "Common.OK";
 						if (CreateChangeRequestMode)
@@ -459,7 +468,7 @@ namespace Tango.UI.Std
 						if (!ChangeRequestMode || ChReqManager.IsCurrentUserModerator())
 							w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
 					}
-					if (!ReadonlyMode && ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New && ChReqView.CanReject())
+					if (!ReadonlyMode && ChReqEnabled && ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New && ChReqView.CanReject())
 						w.SubmitAndBackButton(a => a.DataEvent(RejectObjectChangeRequest), Resources.Get("Common.RejectObjectChangeRequest"));
 					w.BackButton(this);
 				});
