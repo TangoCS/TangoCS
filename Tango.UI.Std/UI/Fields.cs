@@ -109,13 +109,14 @@ namespace Tango.UI
 
 	public class FieldSnapshot
 	{
+		public string ID { get; set; }
 		public string Caption { get; set; }
 		public string StringValue { get; set; }
 		public string Value { get; set; }
 
 		public override string ToString()
 		{
-			return $"{Caption}: StringValue={StringValue} Value={Value}";
+			return $"{ID} {Caption}: StringValue={StringValue} Value={Value}";
 		}
 	}
 

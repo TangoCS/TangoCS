@@ -515,6 +515,7 @@ namespace Tango.UI.Std
 							f.ValueSource = ValueSource.Form;
 
 						_destFieldSnapshot.Add(new FieldSnapshot {
+							ID = f.ID,
 							Caption = f.Caption,
 							StringValue = f.StringValue,
 							Value = f.ToString()
@@ -536,6 +537,7 @@ namespace Tango.UI.Std
 						var vs = f.ValueSource;
 						f.ValueSource = ValueSource.Model;
 						_srcFieldSnapshot.Add(new FieldSnapshot {
+							ID = f.ID,
 							Caption = f.Caption,
 							StringValue = f.StringValue,
 							Value = f.ToString()
