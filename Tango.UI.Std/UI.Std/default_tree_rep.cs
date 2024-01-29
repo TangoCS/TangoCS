@@ -250,12 +250,16 @@ namespace Tango.UI.Std
 
 		public void SetSelectedItems(int templateID, int level, Expression<Func<TResult, bool>> predicate)
 		{
-			var expr = Enumerable.Empty<TResult>().AsQueryable().Where(predicate);
-
-			var data = Repository.List(expr.Expression);
+			var q = Enumerable.Empty<TResult>().AsQueryable().Where(predicate);
 
 			var template = _templatesDict[templateID];
 			level--;
+
+			var expr = template.Template.GroupBy != null ?
+					q.GroupBy(template.Template.GroupBy).Select(template.Template.GroupBySelector).Expression :
+					q.Expression;
+
+			var data = Repository.List(expr);
 
 			foreach (var row in data)
 			{
