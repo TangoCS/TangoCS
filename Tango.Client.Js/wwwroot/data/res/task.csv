@@ -76,6 +76,8 @@ tango.tasks.taskparameter.ParentClass;Класс;Class
 tango.tasks.taskparameter.ParentMethod;Метод;Method
 tango.tasks.taskparameter-info;Информация;Information
 tango.tasks.taskparameter-infotext;Параметры в ручную не создаются;Parameters are not created manually
+tango.tasks.taskparameter-true;Да;Yes
+tango.tasks.taskparameter-false;Нет;No
 
 tango.tasks.taskstarttype;Тип старта задач;Start type of tasks
 tango.tasks.taskstarttype-pl;Тип старта задач;Start type of tasks

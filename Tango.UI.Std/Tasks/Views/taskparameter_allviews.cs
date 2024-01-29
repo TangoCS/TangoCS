@@ -66,6 +66,16 @@ namespace Tango.Tasks
 					if (par.Value.ParameterInfo.ParameterType == typeof(DateTime) || par.Value.ParameterInfo.ParameterType == typeof(DateTime?))
 						w.FormFieldCalendar(par.Key, caption, par.Value.Value.ToDateTime());
 					else
+					if (par.Value.ParameterInfo.ParameterType == typeof(Boolean) || par.Value.ParameterInfo.ParameterType == typeof(Boolean?))
+					{
+						var list = new List<SelectListItem> {
+							new SelectListItem { Text = Resources.GetExt<TaskParameter>("true"), Value = "true" },
+							new SelectListItem { Text = Resources.GetExt<TaskParameter>("false"), Value = "false" } };
+						if (par.Value.ParameterInfo.ParameterType == typeof(Boolean?)) list.AddEmptyItem();
+
+						w.FormFieldDropDownList(par.Key, caption, par.Value.Value, list);
+					}
+					else
 						w.FormFieldTextBox(par.Key, caption, par.Value.Value);
 				}
 			});
@@ -143,10 +153,20 @@ namespace Tango.Tasks
                 {
                     w.TextBox(gr.Title);
                     w.TextBox(gr.SysName);
-                    if (parameter.ParameterType == typeof(DateTime) || parameter.ParameterType == typeof(DateTime?))
-                        w.FormFieldCalendar(gr.Value.ID, gr.Value.Caption, gr.Value.Value.ToDateTime());
-                    else
-                        w.TextBox(gr.Value);
+					if (parameter.ParameterType == typeof(DateTime) || parameter.ParameterType == typeof(DateTime?))
+						w.FormFieldCalendar(gr.Value.ID, gr.Value.Caption, gr.Value.Value.ToDateTime());
+					else
+					if (parameter.ParameterType == typeof(Boolean) || parameter.ParameterType == typeof(Boolean?))
+					{
+						var list = new List<SelectListItem> {
+							new SelectListItem { Text = Resources.GetExt<TaskParameter>("true"), Value = "true" },
+							new SelectListItem { Text = Resources.GetExt<TaskParameter>("false"), Value = "false" } };
+						if (parameter.ParameterType == typeof(Boolean?)) list.AddEmptyItem();
+
+						w.FormFieldDropDownList(gr.Value.ID, gr.Value.Caption, gr.Value.Value, list);
+					}
+					else
+						w.TextBox(gr.Value);
                 });
             }
             else
