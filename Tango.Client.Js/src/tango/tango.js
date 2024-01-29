@@ -703,6 +703,7 @@ window.ajaxUtils = function ($, cu) {
 		},
 		prepareTarget: function (target) {
 			var parms = {};
+			state.loc.next = {};
 
 			if (!target.currenturl)
 				target.currenturl = target.url;
@@ -743,7 +744,7 @@ window.ajaxUtils = function ($, cu) {
 			target.url = target.url.slice(0, -1);
 
 			if (target.changeloc) {
-				state.loc.url = target.url;
+				state.loc.next.url = target.url;
 			}
 
 			if (target.method == 'GET') {
@@ -758,7 +759,7 @@ window.ajaxUtils = function ($, cu) {
 			if (target.sender && target.sender.id) parms.sender = target.sender.id;
 			parms.e = target.e ? target.e : DEF_EVENT_NAME;
 
-			state.loc.parms = parms;
+			state.loc.next.parms = parms;
 
 			var curpath = target.currenturl;
 			sep = curpath.indexOf('?');
@@ -788,16 +789,19 @@ window.ajaxUtils = function ($, cu) {
 					target.data['returnstate'] = returnstate;
 			}
 
+			state.loc.next.arggroups = state.loc.arggroups;
+			state.loc.next.storage = state.loc.storage.slice();
+
 			if (targetpath.toLowerCase() != curpath.toLowerCase()) {
 				parms['c-new'] = 1;
-				state.loc.arggroups = undefined;
+				state.loc.next.arggroups = undefined;
 				if (target.changeloc) {
 					state.ctrl = {};
 					if (result == 0) {
-						state.loc.storage.pop();
-						if (state.loc.storage.length == 0)
-							state.loc.storage.push({});
-						const curStorage = state.loc.storage[state.loc.storage.length - 1];
+						state.loc.next.storage.pop();
+						if (state.loc.next.storage.length == 0)
+							state.loc.next.storage.push({});
+						const curStorage = state.loc.next.storage[state.loc.next.storage.length - 1];
 						for (var key in curStorage) {
 							target.data[key] = curStorage[key];
 						}
@@ -805,7 +809,7 @@ window.ajaxUtils = function ($, cu) {
 				}
 
 				if (!result && (target.changeloc || target.changeloc_modal)) {
-					state.loc.storage.push({});
+					state.loc.next.storage.push({});
 				}
 			}
 			else if (!parms['c-prefix'] && target.containerPrefix) {
@@ -816,9 +820,10 @@ window.ajaxUtils = function ($, cu) {
 			if (target.responsetype)
 				parms['responsetype'] = target.responsetype;
 
+			state.loc.next.changeloc = target.changeloc;
 			if (target.changeloc) {
-				if (target.onBack) state.loc.onBack = target.onBack;
-				window.history.pushState(state.loc, "", target.url);
+				if (target.onBack) state.loc.next.onBack = target.onBack;
+				//window.history.pushState(state.loc, "", target.url);
 			}
 
 			for (var key in parms) {
@@ -1246,6 +1251,20 @@ window.ajaxUtils = function ($, cu) {
 		if (apiResult.error) {
 			showError(localization.resources.title.systemError, apiResult.error, 'err');
 			return;
+		}
+
+		if (state.loc.next) {
+			state.loc.url = state.loc.next.url;
+			state.loc.parms = state.loc.next.parms;
+			if (state.loc.next.hasOwnProperty('arggroups')) state.loc.arggroups = state.loc.next.arggroups;
+			if (state.loc.next.hasOwnProperty('storage')) state.loc.storage = state.loc.next.storage;
+			if (state.loc.next.hasOwnProperty('onBack')) state.loc.onBack = state.loc.next.onBack;
+			if (state.loc.next.hasOwnProperty('onBackArgs')) state.loc.onBackArgs = state.loc.next.onBackArgs;
+
+			if (state.loc.next.changeloc && !apiResult.redirect && !apiResult.hardredirect) {
+				window.history.pushState(state.loc, "", state.loc.url);
+			}
+			state.loc.next = undefined;
 		}
 
 		const nodes = [];
