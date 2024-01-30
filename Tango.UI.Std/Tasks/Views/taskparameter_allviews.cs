@@ -69,8 +69,8 @@ namespace Tango.Tasks
 					if (par.Value.ParameterInfo.ParameterType == typeof(Boolean) || par.Value.ParameterInfo.ParameterType == typeof(Boolean?))
 					{
 						var list = new List<SelectListItem> {
-							new SelectListItem { Text = Resources.GetExt<TaskParameter>("true"), Value = "true" },
-							new SelectListItem { Text = Resources.GetExt<TaskParameter>("false"), Value = "false" } };
+							new SelectListItem { Text = Resources.GetExt<TaskParameter>("false"), Value = "false" },
+							new SelectListItem { Text = Resources.GetExt<TaskParameter>("true"), Value = "true" } };
 						if (par.Value.ParameterInfo.ParameterType == typeof(Boolean?)) list.AddEmptyItem();
 
 						w.FormFieldDropDownList(par.Key, caption, par.Value.Value, list);
@@ -159,8 +159,8 @@ namespace Tango.Tasks
 					if (parameter.ParameterType == typeof(Boolean) || parameter.ParameterType == typeof(Boolean?))
 					{
 						var list = new List<SelectListItem> {
-							new SelectListItem { Text = Resources.GetExt<TaskParameter>("true"), Value = "true" },
-							new SelectListItem { Text = Resources.GetExt<TaskParameter>("false"), Value = "false" } };
+							new SelectListItem { Text = Resources.GetExt<TaskParameter>("false"), Value = "false" },
+							new SelectListItem { Text = Resources.GetExt<TaskParameter>("true"), Value = "true" } };
 						if (parameter.ParameterType == typeof(Boolean?)) list.AddEmptyItem();
 
 						w.FormFieldDropDownList(gr.Value.ID, gr.Value.Caption, gr.Value.Value, list);
