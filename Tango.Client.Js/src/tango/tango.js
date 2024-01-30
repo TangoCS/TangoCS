@@ -1254,8 +1254,8 @@ window.ajaxUtils = function ($, cu) {
 		}
 
 		if (state.loc.next) {
-			state.loc.url = state.loc.next.url;
-			state.loc.parms = state.loc.next.parms;
+			if (state.loc.next.hasOwnProperty('url')) state.loc.url = state.loc.next.url;
+			if (state.loc.next.hasOwnProperty('parms')) state.loc.parms = state.loc.next.parms;
 			if (state.loc.next.hasOwnProperty('arggroups')) state.loc.arggroups = state.loc.next.arggroups;
 			if (state.loc.next.hasOwnProperty('storage')) state.loc.storage = state.loc.next.storage;
 			if (state.loc.next.hasOwnProperty('onBack')) state.loc.onBack = state.loc.next.onBack;
