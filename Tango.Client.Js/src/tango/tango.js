@@ -611,6 +611,13 @@ window.ajaxUtils = function ($, cu) {
 
 			intervals[args.id] = n;
 		},
+		clearRepeatedPostEvent: function (id) {
+			if (intervals[id])
+			{
+				window.clearInterval(intervals[id]);
+				delete intervals[id];
+			}
+		},
 		runEvent: function (target) {
 			const settings = {
 				url: instance.prepareUrl(target),
