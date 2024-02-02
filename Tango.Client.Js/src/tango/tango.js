@@ -171,6 +171,9 @@
 					}
 					val = result.join(',');
 				}
+				else if (el.name !== undefined && el.type == "file" && el.closest("form") !== undefined) {
+					val = new FormData(el.closest("form")).get(el.name);
+				}
 				else if (el.name !== undefined && el.value !== undefined && !el.hasAttribute('disabled')) {
 					val = el.value;
 				}
