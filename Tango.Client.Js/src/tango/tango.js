@@ -171,6 +171,9 @@
 					}
 					val = result.join(',');
 				}
+				else if (el.name !== undefined && el.type == "file" && el.closest("form") !== undefined) {
+					val = new FormData(el.closest("form")).get(el.name);
+				}
 				else if (el.name !== undefined && el.value !== undefined && !el.hasAttribute('disabled')) {
 					val = el.value;
 				}
@@ -610,6 +613,13 @@ window.ajaxUtils = function ($, cu) {
 			}, args.interval);
 
 			intervals[args.id] = n;
+		},
+		clearRepeatedPostEvent: function (id) {
+			if (intervals[id])
+			{
+				window.clearInterval(intervals[id]);
+				delete intervals[id];
+			}
 		},
 		runEvent: function (target) {
 			const settings = {

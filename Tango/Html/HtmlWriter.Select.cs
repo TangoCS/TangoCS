@@ -6,14 +6,14 @@ namespace Tango.Html
 {
 	public static class HtmlWriterSelectExtensions
 	{
-		public static void DropDownList(this HtmlWriter w, InputName name, string value, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null)
+		public static void DropDownList(this HtmlWriter w, InputName name, string value, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attributes = null, Func<SelectListItem, Action<OptionTagAttributes>> itemAttributes = null)
 		{
 			w.WriteTag<SelectTagAttributes>("select", a => a.Name(name.Name).ID(name.ID).Set(attributes), () => {
 				if (items == null) return;
 				foreach (var item in items)
 				{
 					w.WriteTag<OptionTagAttributes>("option", 
-						oa => oa.Value(item.Value).Selected(item.Selected || item.Value == value).Disabled(item.Disabled), 
+						oa => oa.Value(item.Value).Selected(item.Selected || item.Value == value).Disabled(item.Disabled).Set(itemAttributes?.Invoke(item)), 
 						() => w.Write(item.Text));
 				}
 			});

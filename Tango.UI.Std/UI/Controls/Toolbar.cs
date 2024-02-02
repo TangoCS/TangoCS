@@ -32,8 +32,8 @@ namespace Tango.UI.Controls
 		public void ItemHeader(string text) => Item(w => w.H3(text));
 		public void ItemBack() => Item(w => w.BackLink());
 
-		public void ItemActionText(Action<ActionLink> urlAttributes) => Item(w => w.ActionTextButton(urlAttributes));
-		public void ItemActionImage(Action<ActionLink> urlAttributes) => Item(w => w.ActionImageButton(urlAttributes));
+		public void ItemActionText(Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null) => Item(w => w.ActionTextButton(urlAttributes, attrs));
+		public void ItemActionImage(Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null) => Item(w => w.ActionImageButton(urlAttributes, attrs));
 		public void ItemActionImageText(Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null) => Item(w => w.ActionImageTextButton(urlAttributes, attrs));
 
 		public void ItemField(string caption, Action<LayoutWriter> content)

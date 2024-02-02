@@ -39,34 +39,34 @@ namespace Tango.Html
 		public T TabIndex(int value) { Writer.WriteAttr("tabindex", value.ToString()); return _this; }
 		public T Title(string value) { Writer.WriteAttr("title", value); return _this; }
 
-		public T OnLoad(string value) { Writer.WriteAttr("onload", value, false); return _this; }
-		public T OnResize(string value) { Writer.WriteAttr("onresize", value, false); return _this; }
-		public T OnUnload(string value) { Writer.WriteAttr("onunload", value, false); return _this; }
+		public T OnLoad(string value, bool replaceExisting = false) { Writer.WriteAttr("onload", value, replaceExisting); return _this; }
+		public T OnResize(string value, bool replaceExisting = false) { Writer.WriteAttr("onresize", value, replaceExisting); return _this; }
+		public T OnUnload(string value, bool replaceExisting = false) { Writer.WriteAttr("onunload", value, replaceExisting); return _this; }
 
-		public T OnBlur(string value) { Writer.WriteAttr("onblur", value, false); return _this; }
-		public T OnChange(string value) { Writer.WriteAttr("onchange", value, false); return _this; }
-		public T OnFocus(string value) { Writer.WriteAttr("onfocus", value, false); return _this; }
-		public T OnSelect(string value) { Writer.WriteAttr("onselect", value, false); return _this; }
-		public T OnSubmit(string value) { Writer.WriteAttr("onsubmit", value, false); return _this; }
+		public T OnBlur(string value, bool replaceExisting = false) { Writer.WriteAttr("onblur", value, replaceExisting); return _this; }
+		public T OnChange(string value, bool replaceExisting = false) { Writer.WriteAttr("onchange", value, replaceExisting); return _this; }
+		public T OnFocus(string value, bool replaceExisting = false) { Writer.WriteAttr("onfocus", value, replaceExisting); return _this; }
+		public T OnSelect(string value, bool replaceExisting = false) { Writer.WriteAttr("onselect", value, replaceExisting); return _this; }
+		public T OnSubmit(string value, bool replaceExisting = false) { Writer.WriteAttr("onsubmit", value, replaceExisting); return _this; }
 
-		public T OnKeyDown(string value) { Writer.WriteAttr("onkeydown", value, false); return _this; }
-		public T OnKeyPress(string value) { Writer.WriteAttr("onkeypress", value, false); return _this; }
-		public T OnKeyUp(string value) { Writer.WriteAttr("onkeyup", value, false); return _this; }
+		public T OnKeyDown(string value, bool replaceExisting = false) { Writer.WriteAttr("onkeydown", value, replaceExisting); return _this; }
+		public T OnKeyPress(string value, bool replaceExisting = false) { Writer.WriteAttr("onkeypress", value, replaceExisting); return _this; }
+		public T OnKeyUp(string value, bool replaceExisting = false) { Writer.WriteAttr("onkeyup", value, replaceExisting); return _this; }
 
-		public T OnClick(string value) { Writer.WriteAttr("onclick", value, false); return _this; }
-		public T OnDblClick(string value) { Writer.WriteAttr("ondblclick", value, false); return _this; }
-		public T OnDrag(string value) { Writer.WriteAttr("ondrag", value, false); return _this; }
-		public T OnDragEnd(string value) { Writer.WriteAttr("ondragend", value, false); return _this; }
-		public T OnDragEnter(string value) { Writer.WriteAttr("ondragenter", value, false); return _this; }
-		public T OnDragLeave(string value) { Writer.WriteAttr("ondragleave", value, false); return _this; }
-		public T OnDragOver(string value) { Writer.WriteAttr("ondragover", value, false); return _this; }
-		public T OnDragStart(string value) { Writer.WriteAttr("ondragstart", value, false); return _this; }
-		public T OnDrop(string value) { Writer.WriteAttr("ondrop", value, false); return _this; }
-		public T OnMouseDown(string value) { Writer.WriteAttr("onmousedown", value, false); return _this; }
-		public T OnMouseMove(string value) { Writer.WriteAttr("onmousemove", value, false); return _this; }
-		public T OnMouseOut(string value) { Writer.WriteAttr("onmouseout", value, false); return _this; }
-		public T OnMouseOver(string value) { Writer.WriteAttr("onmouseover", value, false); return _this; }
-		public T OnMouseUp(string value) { Writer.WriteAttr("onmouseup", value, false); return _this; }
+		public T OnClick(string value, bool replaceExisting = false) { Writer.WriteAttr("onclick", value, replaceExisting); return _this; }
+		public T OnDblClick(string value, bool replaceExisting = false) { Writer.WriteAttr("ondblclick", value, replaceExisting); return _this; }
+		public T OnDrag(string value, bool replaceExisting = false) { Writer.WriteAttr("ondrag", value, replaceExisting); return _this; }
+		public T OnDragEnd(string value, bool replaceExisting = false) { Writer.WriteAttr("ondragend", value, replaceExisting); return _this; }
+		public T OnDragEnter(string value, bool replaceExisting = false) { Writer.WriteAttr("ondragenter", value, replaceExisting); return _this; }
+		public T OnDragLeave(string value, bool replaceExisting = false) { Writer.WriteAttr("ondragleave", value, replaceExisting); return _this; }
+		public T OnDragOver(string value, bool replaceExisting = false) { Writer.WriteAttr("ondragover", value, replaceExisting); return _this; }
+		public T OnDragStart(string value, bool replaceExisting = false) { Writer.WriteAttr("ondragstart", value, replaceExisting); return _this; }
+		public T OnDrop(string value, bool replaceExisting = false) { Writer.WriteAttr("ondrop", value, replaceExisting); return _this; }
+		public T OnMouseDown(string value, bool replaceExisting = false) { Writer.WriteAttr("onmousedown", value, replaceExisting); return _this; }
+		public T OnMouseMove(string value, bool replaceExisting = false) { Writer.WriteAttr("onmousemove", value, replaceExisting); return _this; }
+		public T OnMouseOut(string value, bool replaceExisting = false) { Writer.WriteAttr("onmouseout", value, replaceExisting); return _this; }
+		public T OnMouseOver(string value, bool replaceExisting = false) { Writer.WriteAttr("onmouseover", value, replaceExisting); return _this; }
+		public T OnMouseUp(string value, bool replaceExisting = false) { Writer.WriteAttr("onmouseup", value, replaceExisting); return _this; }
 
 		public T Set(Action<T> attrs) { attrs?.Invoke(_this); return _this; }
 
