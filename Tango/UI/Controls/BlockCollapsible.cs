@@ -27,13 +27,19 @@ namespace Tango.UI.Controls
 
     public class BlockCollapsibleBuilder
     {
-        private readonly Lazy<string> _id = new Lazy<string>(() => Guid.NewGuid().ToString());
-        public string Id => _id.Value;
+        //private readonly Lazy<string> _id = new Lazy<string>(() => Guid.NewGuid().ToString());
+        public string ID { get; set; }
 
-        /// <summary>
-        /// Контент левого заголовока
-        /// </summary>
-        public ActionWrapper<LayoutWriter> LeftTitle { get; private set; }
+		public BlockCollapsibleBuilder WithID(string id)
+		{
+			ID = id;
+			return this;
+		}
+
+		/// <summary>
+		/// Контент левого заголовока
+		/// </summary>
+		public ActionWrapper<LayoutWriter> LeftTitle { get; private set; }
 
         /// <summary>
         /// Контент правого заголовока
@@ -50,10 +56,21 @@ namespace Tango.UI.Controls
         /// </summary>
         public bool IsCollapsed { get; set; }
         public Grid Grid { get; private set; } = Grid.OneWhole;
-        public Action<TagAttributes> BlockHeaderLeftAttributes { get; private set; }
+
+		public Action<TagAttributes> ContainerAttributes { get; private set; }
+		public Action<TagAttributes> BlockHeaderLeftAttributes { get; private set; }
         
-        public BlockCollapsibleBuilder WithBlockHeaderLeftAttributes(Action<TagAttributes> attr) { BlockHeaderLeftAttributes = attr; return this; }
-        public BlockCollapsibleBuilder WithGrid(Grid grid) { Grid = grid; return this; }
+        public BlockCollapsibleBuilder WithBlockHeaderLeftAttributes(Action<TagAttributes> attr) 
+        { 
+            BlockHeaderLeftAttributes = attr; 
+            return this; 
+        }
+		public BlockCollapsibleBuilder WithContainerAttributes(Action<TagAttributes> attr)
+		{
+			ContainerAttributes = attr;
+			return this;
+		}
+		public BlockCollapsibleBuilder WithGrid(Grid grid) { Grid = grid; return this; }
 		public BlockCollapsibleBuilder SetLeftTitle(Action inner) { LeftTitle += inner; return this; }
         public BlockCollapsibleBuilder SetRightTitle(Action inner) { RightTitle += inner; return this; }
         public BlockCollapsibleBuilder SetContent(Action inner) { Content += inner; return this; }
