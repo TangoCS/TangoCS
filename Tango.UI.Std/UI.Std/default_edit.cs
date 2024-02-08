@@ -185,6 +185,7 @@ namespace Tango.UI.Std
 
 			if (doSubmit)
 				Submit(response);
+
 			var doAfterSubmit = PostProcessObjectChangeRequest(response);
 			if (doAfterSubmit)
 				AfterSubmit(response);
@@ -595,6 +596,8 @@ namespace Tango.UI.Std
 		{
 			if (CreateChangeRequestMode && !(ChReqManager?.IsCurrentUserModerator() ?? false))
 			{
+				ChReqView.Save(_objectChangeRequestData, Context.GetArg("ocr_comments"));
+
 				groups.ForEach(g => {
 					g.SetViewData(ViewData);
 					g.Fields.ForEach(f => {
