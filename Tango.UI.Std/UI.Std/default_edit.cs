@@ -185,6 +185,7 @@ namespace Tango.UI.Std
 
 			if (doSubmit)
 				Submit(response);
+
 			var doAfterSubmit = PostProcessObjectChangeRequest(response);
 			if (doAfterSubmit)
 				AfterSubmit(response);
@@ -248,6 +249,7 @@ namespace Tango.UI.Std
 		List<string> _changedFields = null;
 		List<FieldSnapshot> _srcFieldSnapshot = null;
 		List<FieldSnapshot> _destFieldSnapshot = null;
+		ObjectChangeRequestData _objectChangeRequestData = null;
 
 		protected T ViewData
 		{
@@ -562,12 +564,12 @@ namespace Tango.UI.Std
 							.Where(x => x.Key.EndsWith("_check"))
 							.Select(x => x.Key.Replace("_check", ""))
 							.ToList();
-						var data = new ObjectChangeRequestData {
+						_objectChangeRequestData = new ObjectChangeRequestData {
 							Object = ViewData,
 							ChangedFields = changes
 						};
-						var comments = Context.GetArg("ocr_comments");
-						ChReqView.Save(data, comments, m);
+
+						ChReqView.Validate(_objectChangeRequestData, m);
 						if (m.Count > 0)
 							return false;
 
@@ -594,6 +596,8 @@ namespace Tango.UI.Std
 		{
 			if (CreateChangeRequestMode && !(ChReqManager?.IsCurrentUserModerator() ?? false))
 			{
+				ChReqView.Save(_objectChangeRequestData, Context.GetArg("ocr_comments"));
+
 				groups.ForEach(g => {
 					g.SetViewData(ViewData);
 					g.Fields.ForEach(f => {
@@ -660,8 +664,13 @@ namespace Tango.UI.Std
 		{
 			if (ChangeRequestMode)
 				ChReqView.Approve(ViewData, _srcFieldSnapshot, _destFieldSnapshot);
-			else if (ChReqEnabled && (ChReqManager?.IsCurrentUserModerator() ?? false))
-				ChReqView.CreateAndApprove(ViewData, _srcFieldSnapshot, _destFieldSnapshot);
+			else if (ChReqEnabled && !BulkMode && !DeleteMode)
+			{
+				ChReqView.Save(_objectChangeRequestData, Context.GetArg("ocr_comments"));
+
+				if (ChReqManager?.IsCurrentUserModerator() ?? false)
+					ChReqView.CreateAndApprove(ViewData, _srcFieldSnapshot, _destFieldSnapshot);
+			}
 		}
 	}
 
@@ -871,8 +880,9 @@ namespace Tango.UI.Std
 	public interface IObjectChangeRequestView : IViewElement
 	{
 		ObjectChangeRequestStatus Status { get; }
-		
-		void Save(ObjectChangeRequestData data, string comments, ValidationMessageCollection m);
+
+		void Validate(ObjectChangeRequestData data, ValidationMessageCollection m);
+		void Save(ObjectChangeRequestData data, string comments);
 		ObjectChangeRequestData<T> Load<T>(string ochid);
 
 		void RenderHeader(LayoutWriter w);
