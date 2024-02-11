@@ -136,6 +136,8 @@ namespace Tango.UI.Std
 
 
 		protected virtual void FilterInit(ListFilter<TEntity> f) { }
+		protected virtual void PagingInit(Paging p) { }
+		protected virtual void SorterInit(Sorter<TEntity> s) { }
 
 		public override void OnInit()
 		{
@@ -144,13 +146,11 @@ namespace Tango.UI.Std
 			Renderer = new ListRenderer<TResult>(ID);
 			
 			Paging = CreateControl<Paging>("page", p => {
-				p.PageIndex = Context.GetIntArg(p.ClientID, 1);
-				var size = Context.GetIntArg(GetClientID("psize"));
-				if (size != null)
-					p.PageSize = size.Value;
+				PagingInit(p);
 			});
 			Sorter = CreateControl<Sorter<TEntity>>("sort", s => {
 				s.OnSort = OnSetPage;
+				SorterInit(s);
 			});
 			Filter = CreateControl<ListFilter<TEntity>>("filter", f => {
 				f.FieldsInit = () => {

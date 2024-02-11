@@ -33,7 +33,8 @@ namespace Tango.UI.Controls
 
 		public override void OnInit()
 		{
-			ParameterName = ClientID;
+			if (ParameterName.IsEmpty()) ParameterName = ClientID;
+
 			var orderByColumns = GetArg(ParameterName)?.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
 			if (orderByColumns == null) return;
@@ -152,10 +153,9 @@ namespace Tango.UI.Controls
 		{
 			var (parm, sortState, n) = sorter.CreateParm(seqNo);
 			var icon = sortState.HasValue ? (sortState.Value ? "SortDesc" : "SortAsc") : "";
-			var pname = sorter.ParameterName.IsEmpty() ? sorter.ClientID : sorter.ParameterName;
 
 			w.ActionLink(a => a.ToCurrent()
-			                   .WithArg(pname, parm)
+			                   .WithArg(sorter.ParameterName, parm)
 			                   .RunEvent(sorter.OnSort)
 							   .WithData(sorter.DataCollection)
 							   .WithTitle(title));

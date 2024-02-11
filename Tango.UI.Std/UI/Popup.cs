@@ -21,7 +21,6 @@ namespace Tango.UI
 			if (options == null)
 			{
 				options = PopupOptions.ShowOnClick();
-				options.StoreParms = false;
 			}
 			w.AddClientAction(options.ProxyName, "init", f => new {
 				triggerid = f(elementid),
@@ -33,7 +32,8 @@ namespace Tango.UI
 				type = options.Type.ToString().ToLower(),
 				storeparms = options.StoreParms.ToString().ToLower(),
 				delay = options.Delay.ToString(),
-				showoverlay = options.ShowOverlay.ToString().ToLower()
+				showoverlay = options.ShowOverlay.ToString().ToLower(),
+				width = options.Width.ToString().ToLower()
 			});
 		}
 	}
@@ -52,6 +52,7 @@ namespace Tango.UI
 		public int Delay { get; set; } = 0;
 		public bool ShowOverlay { get; set; } = false;
 		public bool StoreParms { get; set; } = false;
+		public PopupWidth Width { get; set; } = PopupWidth.Default;
 	}
 
 	public enum PopupTriggersOn
@@ -65,5 +66,9 @@ namespace Tango.UI
 	public enum PopupType
 	{
 		Default, SliderMenuLeft, SliderMenuRight
+	}
+	public enum PopupWidth
+	{
+		Default, Trigger
 	}
 }

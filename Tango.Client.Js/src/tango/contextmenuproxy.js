@@ -43,7 +43,8 @@
 				onMouseLeave: onMouseLeave,
 				type: args.type,
 				delay: args.delay,
-				showOverlay: args.showoverlay && args.showoverlay == "true"
+				showOverlay: args.showoverlay && args.showoverlay == "true",
+				width: args.width
 			};
 		}
 	};

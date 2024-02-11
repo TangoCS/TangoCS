@@ -10,6 +10,7 @@ namespace Tango.UI.Controls
 		public int PageIndex { get; set; }
 		public int PageSize { get; set; }
 		public string ParameterName { get; set; }
+		public string PageSizeParameterName { get; set; }
 
 		public Paging()
 		{
@@ -18,8 +19,15 @@ namespace Tango.UI.Controls
 
 		public override void OnInit()
 		{
-			if (ParameterName.IsEmpty())
-				ParameterName = ClientID;
+			base.OnInit();
+
+			if (ParameterName.IsEmpty()) ParameterName = ClientID;
+			if (PageSizeParameterName.IsEmpty()) PageSizeParameterName = ParentElement.GetClientID("psize");
+
+			PageIndex = Context.GetIntArg(ParameterName, 1);
+			var size = Context.GetIntArg(PageSizeParameterName);
+			if (size != null)
+				PageSize = size.Value;
 		}
 	}
 
