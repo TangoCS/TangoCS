@@ -59,7 +59,31 @@ namespace Tango.UI.Controls
 
 		public Action<TagAttributes> ContainerAttributes { get; private set; }
 		public Action<TagAttributes> BlockHeaderLeftAttributes { get; private set; }
-        
+        public Action<TagAttributes> BlockBtnAttributes { get; private set; }
+        public Action<TagAttributes> BlockTitleLeftAttributes { get; private set; }
+        public Action<TagAttributes> BlockHeaderRightAttributes { get; private set; }
+        public Action<TagAttributes> BlockTitleRightAttributes { get; private set; }
+
+        public BlockCollapsibleBuilder WithBlockTitleRightAttributes(Action<TagAttributes> attr)
+        {
+            BlockTitleRightAttributes = attr;
+            return this;
+        }
+        public BlockCollapsibleBuilder WithBlockHeaderRightAttributes(Action<TagAttributes> attr)
+        {
+            BlockHeaderRightAttributes = attr;
+            return this;
+        }
+        public BlockCollapsibleBuilder WithBlockTitleLeftAttributes(Action<TagAttributes> attr)
+        {
+            BlockTitleLeftAttributes = attr;
+            return this;
+        }
+        public BlockCollapsibleBuilder WithBlockBtnAttributes(Action<TagAttributes> attr)
+        {
+            BlockBtnAttributes = attr;
+            return this;
+        }
         public BlockCollapsibleBuilder WithBlockHeaderLeftAttributes(Action<TagAttributes> attr) 
         { 
             BlockHeaderLeftAttributes = attr; 
