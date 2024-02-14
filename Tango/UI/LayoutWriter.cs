@@ -140,10 +140,10 @@ namespace Tango.UI
 
             int labelWidth = (int)Math.Round(100 / (60 / (double)grid.Caption), 0, MidpointRounding.AwayFromZero);
             int bodyWidth = 100 - labelWidth;
-            int checkBoxWidth = 10;
+            //int checkBoxWidth = 10;
 
-            if (withCheck)
-                bodyWidth = bodyWidth - checkBoxWidth;
+            //if (withCheck)
+            //   bodyWidth = bodyWidth - checkBoxWidth;
 
             w.Div(a => a.ID(name + "_field").Class("field").Class(vis).Style(style), () => {
                 w.Div(a => a.ID(name + "_fieldlabel").Class("field-label").Style($"width:{labelWidth}%"), () => {
@@ -152,13 +152,13 @@ namespace Tango.UI
                 });
 
                 w.Div(a => {
-                    a.ID(name + "_fieldbody").Class("field-body").Style($"width:{bodyWidth}%");
+                    a.ID(name + "_fieldbody").Class("field-body").Style($"width:{(withCheck ? $"calc({bodyWidth}% - 20px)" : $"{bodyWidth}%")}");
                     if (isDisabled)
                         a.Class("disabled");
                 }, content);
 
                 if (withCheck)
-                    w.Div(a => a.ID(name + "_field_check").Style($"width:{checkBoxWidth}%"), () => {
+                    w.Div(a => a.ID(name + "_field_check").Style($"width:20px"), () => {
                         w.CheckBox(name + "_check", isChecked: !isDisabled, attributes: a =>
                             a.ID(name + "_check")
                                 .Disabled(disableCheck)
