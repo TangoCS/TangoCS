@@ -271,7 +271,7 @@ namespace Tango.UI.Std
 				return GetChangeRequestData();
 			else if (CreateObjectMode || BulkMode)
 				return GetNewEntity();
-			else 
+			else
 				return GetExistingEntity();
 		}
 
@@ -439,7 +439,7 @@ namespace Tango.UI.Std
 		protected virtual string BulkModeFormTitle => Resources.Get("Common.BulkModeTitle");
 		protected virtual string CreateNewFormTitle => Resources.Get(ViewData.GetType().FullName);
 		protected virtual string EditFormTitle => ViewData is IWithTitle ? (ViewData as IWithTitle).Title : "";
-		bool ReadonlyMode = false;
+		protected virtual bool ReadonlyMode { get; set; }
 
 		bool ChReqEnabled => (ChReqManager?.IsEnabled() ?? false) && ChReqView != null;
 		protected bool ChangeRequestMode => Context.AllArgs.ContainsKey(Constants.ObjectChangeRequestId);
