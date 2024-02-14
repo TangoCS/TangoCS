@@ -246,8 +246,8 @@ namespace Tango.UI.Controls
 
 		public override void OnInit()
 		{
-			Mapping.Add("container", $"{ID}_tabpage");
-			Mapping.Add("content", $"{ID}_content");
+			Mapping["container"] = $"{ID}_tabpage";
+			Mapping["content"] = $"{ID}_content";
 			_underlying.ToRemove.Add("contentheader");
 		}
 
