@@ -250,6 +250,7 @@ namespace Tango.UI.Std
 		List<FieldSnapshot> _srcFieldSnapshot = null;
 		List<FieldSnapshot> _destFieldSnapshot = null;
 		ObjectChangeRequestData _objectChangeRequestData = null;
+		protected bool ForceCreateRequest;
 
 		protected T ViewData
 		{
@@ -444,6 +445,7 @@ namespace Tango.UI.Std
 		bool ChReqEnabled => (ChReqManager?.IsEnabled() ?? false) && ChReqView != null;
 		protected bool ChangeRequestMode => Context.AllArgs.ContainsKey(Constants.ObjectChangeRequestId);
 		protected bool CreateChangeRequestMode => ChReqEnabled && !DeleteMode && !BulkMode && !ChangeRequestMode;
+		protected bool RejectChangeRequestMode => Context.Event.ToLower() == "rejectobjectchangerequest";
 
 		protected abstract T GetNewEntity();
 		protected abstract T GetExistingEntity();
@@ -594,7 +596,7 @@ namespace Tango.UI.Std
 
 		protected override bool PostProcessObjectChangeRequest(ApiResponse response)
 		{
-			if (CreateChangeRequestMode && !(ChReqManager?.IsCurrentUserModerator() ?? false))
+			if (CreateChangeRequestMode && (ForceCreateRequest || !(ChReqManager?.IsCurrentUserModerator() ?? false)))
 			{
 				ChReqView.Save(_objectChangeRequestData, Context.GetArg("ocr_comments"));
 
