@@ -182,7 +182,7 @@ namespace Tango.UI.Std
 		public void SetExpandedItem(int templateID, int level, Dictionary<string, object> parms, bool highlight = true, bool expandNext = false)
 		{
 			var initialTemplate = _templatesDict[templateID];
-			var template = initialTemplate.ParentTemplateItem;
+            var template = level == 1 ? initialTemplate : initialTemplate.ParentTemplateItem;
 			var levelForExpandNext = level;
 
 			var sqlTemplate = PrepareQuery(template.Template, new List<Dictionary<string, object>> { parms });
