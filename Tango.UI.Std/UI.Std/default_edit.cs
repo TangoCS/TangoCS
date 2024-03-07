@@ -605,6 +605,7 @@ namespace Tango.UI.Std
 					g.Fields.ForEach(f => {
 						f.Disabled = true;
 						f.WithCheckBox = false;
+						f.ValueSource = ValueSource.Model;
 					});
 				});
 				ReadonlyMode = true;
