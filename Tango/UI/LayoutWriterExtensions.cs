@@ -105,14 +105,14 @@ namespace Tango.UI
 					var js = "domActions.toggleClass({id: '" + w.GetID(builder.ID) + "', clsName: 'collapsed' });";
 
 					w.Div(a => a.Class("block-header-left").OnClick(js).Set(builder.BlockHeaderLeftAttributes), () => {
-                        w.Div(a => a.Class("block-btn"), () => w.Icon("right"));
-                        w.Div(a => a.Class("block-title-left"), builder.LeftTitle?.GetAction(w));
+                        w.Div(a => a.Class("block-btn").Set(builder.BlockBtnAttributes), () => w.Icon("right"));
+                        w.Div(a => a.Class("block-title-left").Set(builder.BlockTitleLeftAttributes), builder.LeftTitle?.GetAction(w));
                     });
 
                     if (builder.RightTitle != null)
                     {
-                        w.Div(a => a.Class("block-header-right"), () => {
-                            w.Div(a => a.Class("block-title-right"), builder.RightTitle?.GetAction(w));
+                        w.Div(a => a.Class("block-header-right").Set(builder.BlockHeaderRightAttributes), () => {
+                            w.Div(a => a.Class("block-title-right").Set(builder.BlockTitleRightAttributes), builder.RightTitle?.GetAction(w));
                         });
                     }
                 });

@@ -60,11 +60,16 @@ namespace Tango.UI.Std
             left = CreateLeft();
             right = CreateRight("right");
 
-            left.Changed += response => RenderContainer(response, right);
-            left.Changed += right.OnChange;
-        }
+			OnLeftChanged();
+		}
 
-        protected virtual TLeft CreateLeft() => CreateControl<TLeft>("left", SetPropertiesLeft);
+		protected virtual void OnLeftChanged()
+		{
+			left.Changed += response => RenderContainer(response, right);
+			left.Changed += right.OnChange;
+		}
+
+		protected virtual TLeft CreateLeft() => CreateControl<TLeft>("left", SetPropertiesLeft);
         protected abstract IRigthViewPagePart CreateRight(string idControl);
         protected virtual void SetPropertiesLeft(TLeft c) { }
     }

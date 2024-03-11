@@ -39,6 +39,7 @@
 				const label = document.createElement('label');
 				label.classList.add('btn-switch');
 				label.htmlFor = id;
+				label.title = el.title;
 				div.appendChild(label);
 			}
 

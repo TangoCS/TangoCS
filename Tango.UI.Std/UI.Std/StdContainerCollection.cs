@@ -104,7 +104,7 @@ namespace Tango.UI.Std
 		protected void ResultBlock(LayoutWriter w)
 		{
 			if (ShowResultBlock)
-				w.Div(a => a.ID("result").Style(Height == ContainerHeight.Height100 ? "overflow-y: auto;" : null));
+				w.Div(a => a.ID("result").Style(Height == ContainerHeight.Height100 ? "overflow-y: auto; height: 100%;" : null));
 		}
 
 

@@ -250,6 +250,7 @@ namespace Tango.UI.Std
 		List<FieldSnapshot> _srcFieldSnapshot = null;
 		List<FieldSnapshot> _destFieldSnapshot = null;
 		ObjectChangeRequestData _objectChangeRequestData = null;
+		protected bool ForceCreateRequest;
 
 		protected T ViewData
 		{
@@ -271,7 +272,7 @@ namespace Tango.UI.Std
 				return GetChangeRequestData();
 			else if (CreateObjectMode || BulkMode)
 				return GetNewEntity();
-			else 
+			else
 				return GetExistingEntity();
 		}
 
@@ -439,11 +440,12 @@ namespace Tango.UI.Std
 		protected virtual string BulkModeFormTitle => Resources.Get("Common.BulkModeTitle");
 		protected virtual string CreateNewFormTitle => Resources.Get(ViewData.GetType().FullName);
 		protected virtual string EditFormTitle => ViewData is IWithTitle ? (ViewData as IWithTitle).Title : "";
-		bool ReadonlyMode = false;
+		protected virtual bool ReadonlyMode { get; set; }
 
 		bool ChReqEnabled => (ChReqManager?.IsEnabled() ?? false) && ChReqView != null;
 		protected bool ChangeRequestMode => Context.AllArgs.ContainsKey(Constants.ObjectChangeRequestId);
 		protected bool CreateChangeRequestMode => ChReqEnabled && !DeleteMode && !BulkMode && !ChangeRequestMode;
+		protected bool RejectChangeRequestMode => Context.Event.ToLower() == "rejectobjectchangerequest";
 
 		protected abstract T GetNewEntity();
 		protected abstract T GetExistingEntity();
@@ -594,7 +596,7 @@ namespace Tango.UI.Std
 
 		protected override bool PostProcessObjectChangeRequest(ApiResponse response)
 		{
-			if (CreateChangeRequestMode && !(ChReqManager?.IsCurrentUserModerator() ?? false))
+			if (CreateChangeRequestMode && (ForceCreateRequest || !(ChReqManager?.IsCurrentUserModerator() ?? false)))
 			{
 				ChReqView.Save(_objectChangeRequestData, Context.GetArg("ocr_comments"));
 
@@ -603,6 +605,7 @@ namespace Tango.UI.Std
 					g.Fields.ForEach(f => {
 						f.Disabled = true;
 						f.WithCheckBox = false;
+						f.ValueSource = ValueSource.Model;
 					});
 				});
 				ReadonlyMode = true;
