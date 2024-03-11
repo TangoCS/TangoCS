@@ -27,7 +27,7 @@ namespace Tango.UI.Navigation
 
 		public void Render(LayoutWriter w)
 		{
-			var (rootItems, removed) = MenuHelper.GetMenu(Cache, MenuLoader, AccessControl, "topmenu");
+			var (rootItems, removed) = MenuHelper.GetMenu(Cache, MenuLoader, AccessControl, "topmenu", Context.Lang);
 
 			foreach (var m in rootItems)
 			{
@@ -92,13 +92,13 @@ namespace Tango.UI.Navigation
 				w.Div(a => a.ID(ID + "_background").Class("sidebarmenu-background"));
 				w.Div(a => a.ID(ID + "_body").Class("sidebarmenu"), () => {
 					w.Ul(() => {
-						var (rootItems, removed) = MenuHelper.GetMenu(Cache, MenuLoader, AccessControl, "topmenu");
+						var (rootItems, removed) = MenuHelper.GetMenu(Cache, MenuLoader, AccessControl, "topmenu", Context.Lang);
 						subMenus = RenderFirstLevel(w, rootItems, removed);
 					});
 
 					w.Ul(a => a.Class("sidebarmenu-bottom"), () => {
 
-						var (rootItems, removed) = MenuHelper.GetMenu(Cache, MenuLoader, AccessControl, "adminmenu");
+						var (rootItems, removed) = MenuHelper.GetMenu(Cache, MenuLoader, AccessControl, "adminmenu", Context.Lang);
 
 						w.Li(a => a.ID("msidebar-adminmenu"), () => {
 							w.Span(a => a.Class("item"), () => {

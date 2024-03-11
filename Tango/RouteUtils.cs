@@ -26,6 +26,8 @@ namespace Tango
 				string val = g.Value;
 				bool isOptional = val.EndsWith("?");
 				if (isOptional) val = val.Substring(0, val.Length - 1);
+				int constraintPos = val.IndexOf(":");
+				if (constraintPos > 0) val = val.Substring(0, constraintPos);
 
 				if (parameters.TryGetValue(val, out string result)) //Cool, we found something
 				{

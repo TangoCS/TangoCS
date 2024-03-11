@@ -15,12 +15,17 @@ namespace Tango.AspNetCore
 {
     public class AspNetCoreActionContext : ActionContext
     {
-        RouteData RouteData { get; set; }
 		static string[] SkipCookies => new[] { ".AspNetCore.Cookies", "x-csrf-token" };
 
         public AspNetCoreActionContext(HttpContext ctx) : base(ctx.RequestServices)
 		{
-			RouteData = ctx.GetRouteData();
+			var routeData = ctx.GetRouteData();
+			var route = routeData.Routers.FirstOrDefault(x => x is Route) as Route;
+
+			CurrentRoute = new RouteInfo {
+				Name = route.Name,
+				Template = route.RouteTemplate
+			};
 
 			if (Guid.TryParse(ctx.Request.Headers["X-Request-Guid"], out Guid rid))
 				RequestID = rid;
@@ -80,7 +85,7 @@ namespace Tango.AspNetCore
 			}
 
 			var d = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-			foreach (var q in ctx.GetRouteData().Values)
+			foreach (var q in routeData.Values)
 				d[q.Key] = q.Value.ToString();
 
 			ParseRouteParms(d);
@@ -115,16 +120,6 @@ namespace Tango.AspNetCore
 			}
 			if (!returnUrl.StartsWith("/")) returnUrl = "/" + returnUrl;
 
-			var routes = RouteData.Routers.OfType<RouteCollection>().First();
-
-			for (int j = 0; j < routes.Count; j++)
-			{
-				var route = routes[j] as Route;
-				var matcher = new TemplateMatcher(route.ParsedTemplate, null);
-				if (matcher.TryMatch(returnUrl, values))
-					break;
-			}
-
 			var target = new ActionTarget();
 			if (values.TryGetValue(Constants.ServiceName, out var service))
 			{
@@ -155,7 +150,7 @@ namespace Tango.AspNetCore
 
 	public class ServiceScopeProxy : IServiceScope
 	{
-		Microsoft.Extensions.DependencyInjection.IServiceScope _scope;
+		readonly Microsoft.Extensions.DependencyInjection.IServiceScope _scope;
 
 		public ServiceScopeProxy(IServiceProvider provider)
 		{
@@ -167,6 +162,7 @@ namespace Tango.AspNetCore
 		public void Dispose()
 		{
 			_scope.Dispose();
+			GC.SuppressFinalize(this);
 		}
 	}
 

@@ -51,13 +51,16 @@ namespace Tango.UI
 
 			var templateValue = RouteTemplateName == null && Service == null ? 
 				"/" : 
-				context.Routes[RouteTemplateName ?? "default"];
+				context.Routes[RouteTemplateName ?? context.DefaultRouteTemplateName];
 
 			if (Service != null)
 			{
 				urlArgs.Add(Constants.ServiceName, Service);
 				urlArgs.Add(Constants.ActionName, Action);
 			}
+
+			if (!context.Lang.IsEmpty())
+				urlArgs.Add(Constants.Lang, context.Lang);
 
 			return (resolver ?? new RouteUrlResolver()).Resolve(templateValue, urlArgs, context.AllArgs);
 		}

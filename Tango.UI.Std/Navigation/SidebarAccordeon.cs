@@ -36,7 +36,7 @@ namespace Tango.UI.Navigation
 			{
 				var children = m.Children.Where(o => AccessControl.Check(o.SecurableObjectKey));
 				var url = children.Count() > 0 ? children.First().Url : m.Url;
-				var target = children.Count() > 0 ? children.First().Target : null;
+				//var target = children.Count() > 0 ? children.First().Target : null;
 				var isCurr = m == currentItem;
 				w.Div(a => a.Class("nav-button" + (isCurr ? " selected" : "")), () => {
 					w.A(a => a.Href(url).OnClickRunHref().Data(Constants.ContainerNew, 1), () => {

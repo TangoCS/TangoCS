@@ -41,6 +41,8 @@ namespace Tango
 
 		public static readonly string IEFormFix = "__dontcare";
 
+		public static readonly string Lang = "lang";
+
 		public static readonly string MetaHome = "_home";
 		public static readonly string MetaCurrent = "_current";
 

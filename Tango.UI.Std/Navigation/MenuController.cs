@@ -23,7 +23,7 @@ namespace Tango.UI.Navigation
 		public ActionResult AdminMenu()
 		{
 			return new ApiResult(response => response.AddWidget(Context.Sender, w => {
-				var (rootItems, removed) = MenuHelper.GetMenu(Cache, MenuLoader, AccessControl, "adminmenu");
+				var (rootItems, removed) = MenuHelper.GetMenu(Cache, MenuLoader, AccessControl, "adminmenu", Context.Lang);
 				w.RenderTwoLevelMenu(rootItems, removed);
 			}));
 		}

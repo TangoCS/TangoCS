@@ -1,211 +1,211 @@
-﻿name;ru;en
-Account.Password;Пароль;Password
-Account.Password.Placeholder;напр. ••••••••••;e.g. ••••••••••
-Account.UserName.Placeholder;User;Jonson
-Account.PasswordReset;Забыли пароль?;Forgot password?
-Account.Register;Зарегистрироваться;Sign up
-Account.RegisterTitle;Создание нового профиля;Create your account
-Account.Email;Email;Email
-Account.Email.Placeholder;напр. you@example.com;e.g. you@example.com
-Account.RememberMe;Запомнить меня;Remember me
-Account.SetPasswordTitle;Восстановление пароля;Password reset
-Account.NewPassword;Новый пароль;New password
-Account.SignIn;Войти;Continue
-Account.SignInTitle;Вход в систему;Sign in
-Account.SignOut;Выйти;Sign out
-Account.UserName;Имя пользователя;User name
-Account.DontHaveAccountQ;;Don't have an account?
-Account.AlreadyHaveAccountQ;;Already have an account?
-Account.OrSignUpWith;или;or
-Account.OrSignInWith;или;or
-Account.PasswordResetTitle;Восстановление пароля;Forgot Password
-Account.PasswordResetHint;Введите, пожалуйста, свой адрес электронной почты и мы отправим вам ссылку для восстановления пароля;Please enter your email address and we'll send you a link to reset your password.
-Account.SignIn.Google;Войти через Google;Sign in with Google
-Account.SignIn.Facebook;Войти через Facebook;Sign in with Facebook
-Account.SignUp.Google;Регистрация через Google;Sign up with Google
-Account.SignUp.Facebook;Регистрация через Facebook;Sign up with Facebook
+﻿name;ru;en;es
+Account.Password;Пароль;Password;Contraseña
+Account.Password.Placeholder;напр. ••••••••••;e.g. ••••••••••;por ejemplo, ••••••••••
+Account.UserName.Placeholder;User;Jonson;Usuario
+Account.PasswordReset;Забыли пароль?;Forgot password?;Has olvidado tu contraseña?
+Account.Register;Зарегистрироваться;Sign up;Registrarse
+Account.RegisterTitle;Создание нового профиля;Create your account;Crear su cuenta
+Account.Email;Email;Email;Correo electrónico
+Account.Email.Placeholder;напр. you@example.com;e.g. you@example.com;Por ejemplo, tu@ejemplo.com
+Account.RememberMe;Запомнить меня;Remember me;Recuérdame
+Account.SetPasswordTitle;Восстановление пароля;Password reset;Restablecer contraseña
+Account.NewPassword;Новый пароль;New password;Nueva contraseña
+Account.SignIn;Войти;Continue;Continuar
+Account.SignInTitle;Вход в систему;Sign in;Entrada en el sistema
+Account.SignOut;Выйти;Sign out;Cerrar sesión
+Account.UserName;Имя пользователя;User name;Nombre de usuario
+Account.DontHaveAccountQ;;Don't have an account?;¿No tienes cuenta?
+Account.AlreadyHaveAccountQ;;Already have an account?;¿Ya tienes cuenta?
+Account.OrSignUpWith;или;or;O regístrate con
+Account.OrSignInWith;или;or;O inicia sesión con
+Account.PasswordResetTitle;Восстановление пароля;Forgot Password;Restablecer contraseña
+Account.PasswordResetHint;Введите, пожалуйста, свой адрес электронной почты и мы отправим вам ссылку для восстановления пароля;Please enter your email address and we'll send you a link to reset your password.;Por favor, introduce tu correo electrónico
+Account.SignIn.Google;Войти через Google;Sign in with Google;Iniciar sesión con Google
+Account.SignIn.Facebook;Войти через Facebook;Sign in with Facebook;Iniciar sesión con Facebook
+Account.SignUp.Google;Регистрация через Google;Sign up with Google;Registrarse con Google
+Account.SignUp.Facebook;Регистрация через Facebook;Sign up with Facebook;Registrarse con Facebook
 
-Common.Actions;Действия;Actions
-Common.All;Все;All
-Common.AllExcept;Все, кроме;All except
-Common.AllItems;Все записи;All items
-Common.Back;Назад;Back
-Common.Buttons.AddDocument;Добавить документ;Add document
-Common.Buttons.CheckAll;выбрать все;check all
-Common.Buttons.Print;Печать...;Print...
-Common.Buttons.UnCheckAll;очистить все;clear all
-Common.OK;OK;OK
-Common.Close;Закрыть;Close
-Common.Cancel;Отмена;Cancel
-Common.ChangeHistory;История изменений;Change history
-Common.ChangeRequestModeDisabledMessage;Режим запросов на изменение нормативно-справочной информации отключен;
-Common.Clear;Очистить;Clear
-Common.Condition;Условие;Condition
-Common.Continue;Продолжить;Continue
-Common.Controls.FileList.AttachFile;Прикрепить файл;Attach file
-Common.Controls.FileList.AttachMore;Прикрепить ещё;Attach another
-Common.Controls.MultiObject.ChooseObjects;Выберите объекты;Choose objects
-Common.Controls.MultiObject.SelectObjects;Выбрать;Choose
-Common.Controls.SelectObject;Выберите объект;Select object
-Common.Controls.SelectObjectHierarchic.MustSelectAlert;Выберите объект!;Please select an object!
-Common.Controls.SelectObjectHierarchic.NotFoundMessage;В системе отсутствует информация по вашему запросу;The system is not relevant to your search
-Common.Controls.SelectObjectHierarchic.Search;Поиск;Search
-Common.CreateNew;Создать;New
-Common.CreateObjectChangeRequest;Создать запрос;Create change request
-Common.CreateAndApproveObjectChangeRequest;Создать и утвердить запрос;Create and approve change request
-Common.RejectObjectChangeRequest;Отклонить запрос;Reject change request
-Common.Delete;Удалить;Delete
-Common.Delete.Title;Удаление объекта;Delete object
-Common.Delete.Bulk.Title;Удаление объектов;Delete multiple objects
-Common.Delete.Confirm;Вы действительно хотите удалить выбранный объект?;Are you sure you want to delete this object?
-Common.Delete.Bulk.Confirm;Вы действительно хотите удалить выбранные объекты ({0})?;Are you sure you want to delete these {0} objects?
-Common.Delete.LinkedObjectWarning;Удаление невозможно, так как имеются связанные объекты;Deletion is impossible because of linked objects
-Common.Edit;Редактировать;Edit
-Common.Edit.MaxLength;При заполнении просим учесть: максимальное количество допустимых символов в одной строке - {0} знаков.;While filling in form consider please that maximum number of symbols {0} in the each row.
-Common.Empty;<отсутствует>;<empty>
-Common.ExceptSelected;Кроме выбранных;Except selected
-Common.Filter;Фильтр;Filter
-Common.Image;Изображение;Image
-Common.Label.Delegated;делегировано;delegated
-Common.Label.EmptyLink;Требуется перевод;Translation needed
-Common.Label.Info;Справка;Reference
-Common.Label.PageInfo;Информация к странице;Page information
-Common.Labels.DeletingDictElement;Удаление элемента справочника;Removing of dictionary item
-Common.LastModified;Последнее изменение;Last modified
-Common.Created;Создана;Created
-Common.ListTable.Actions;Действия;Actions
-Common.Messages.EmployeeMissingRole;Сотрудник не обладает правами на запрашиваемую роль;Employer has no authority for a inquired role
-Common.Messages.EmployeeNotFound;Сотрудник не обладает правами пользователя БД ОСУР БН РиД;Employer has no authority for EWRM database
-Common.NoGroup;Без группы;No group
-Common.NotAny;Никакие;Not any
-Common.ObjectChangeActions.Create;Создание;Create
-Common.ObjectChangeActions.Edit;Редактирование;Edit
-Common.ObjectNotExists;Объект не существует;Object not exists
-Common.OnlySelected;Только выбранные;Only selected
-Common.Paging.From;из;of
-Common.Paging.Page;Страница;Page
-Common.Paging.TotalRecords;Всего записей;Total records
-Common.Paging.First;В начало;First
-Common.Paging.Last;В конец;Last
-Common.Report.Generate;Сформировать;Generate
-Common.Save;Сохранить;Save
-Common.Search;Поиск;Search
-Common.SelectObject;Выбрать;Select object
-Common.SelectObjects;Выбрать;Select objects
-Common.SelectObject_Field;Выбрать;Select object
-Common.SelectObjects_Field;Выбрать;Select objects
-Common.Text;Текст;Text
-Common.Theme;Тема;Theme
-Common.Theme.Current;Текущая тема;Current theme
-Common.Theme.Default;По умолчанию;Default
-Common.Theme.Description;Эта страница служит для изменения шрифтов и цветовой схемы;On this page you can change application font and colors
-Common.Theme.Select;Выберите тему;Select theme
-Common.Undelete;Отменить удаление;Undelete
-Common.Undelete.Confirm;Вы уверены, что хотите отменить удаление;Are you sure you want to undelete the
-Common.Undelete.Undeletion;Отмена удаления;Undeletion
-Common.Utils;Утилиты;Utils
-Common.Wait;Подождите...;Loading...
-Common.ValidationError;Предупреждение;There were some problems with your input
-Common.ValidationWarning;Предупреждение;Warning
-Common.ValidationInfo;Предупреждение;Information
-Common.Warnings.SpecifyValues;Необходимо задать значения следующих полей;You must specify values for the following fields
-Common.View;Просмотр;View
-Common.Xml;Xml;Xml
+Common.Actions;Действия;Actions;Acciones
+Common.All;Все;All;Todos
+Common.AllExcept;Все, кроме;All except;Todos excepto
+Common.AllItems;Все записи;All items;Todos los elementos
+Common.Back;Назад;Back;Atrás
+Common.Buttons.AddDocument;Добавить документ;Add document;Añadir documento
+Common.Buttons.CheckAll;выбрать все;check all;Seleccionar todo
+Common.Buttons.Print;Печать...;Print...;Imprimir
+Common.Buttons.UnCheckAll;очистить все;clear all;desmarcar todo
+Common.OK;OK;OK;Aceptar
+Common.Close;Закрыть;Close;Cerrar
+Common.Cancel;Отмена;Cancel;Cancelar
+Common.ChangeHistory;История изменений;Change history;Historial de cambios
+Common.ChangeRequestModeDisabledMessage;Режим запросов на изменение нормативно-справочной информации отключен;The mode of requests for changes in regulatory and reference information is deactivated;El modo de solicitudes para cambiar la información normativa y de referencia está desactivado
+Common.Clear;Очистить;Clear;Limpiar
+Common.Condition;Условие;Condition;Condición
+Common.Continue;Продолжить;Continue;Continuar
+Common.Controls.FileList.AttachFile;Прикрепить файл;Attach file;Adjuntar archivo
+Common.Controls.FileList.AttachMore;Прикрепить ещё;Attach another;Adjuntar más
+Common.Controls.MultiObject.ChooseObjects;Выберите объекты;Choose objects;Elegir objetos
+Common.Controls.MultiObject.SelectObjects;Выбрать;Choose;Seleccionar
+Common.Controls.SelectObject;Выберите объект;Select object;Seleccionar objeto
+Common.Controls.SelectObjectHierarchic.MustSelectAlert;Выберите объект!;Please select an object!;¡Por favor, selecciona un objeto!
+Common.Controls.SelectObjectHierarchic.NotFoundMessage;В системе отсутствует информация по вашему запросу;The system is not relevant to your search;El sistema no tiene información relevante para tu búsqueda
+Common.Controls.SelectObjectHierarchic.Search;Поиск;Search;Buscar
+Common.CreateNew;Создать;New;Crear nuevo
+Common.CreateObjectChangeRequest;Создать запрос;Create change request;Crear una solicitud de cambio
+Common.CreateAndApproveObjectChangeRequest;Создать и утвердить запрос;Create and approve change request;Crear y aprobar una solicitud de cambio
+Common.RejectObjectChangeRequest;Отклонить запрос;Reject change request;Rechazar solicitud de cambio
+Common.Delete;Удалить;Delete;Eliminar
+Common.Delete.Title;Удаление объекта;Delete object;Eliminar objeto
+Common.Delete.Bulk.Title;Удаление объектов;Delete multiple objects;Eliminación masiva
+Common.Delete.Confirm;Вы действительно хотите удалить выбранный объект?;Are you sure you want to delete this object?;¿Está seguro de que desea eliminar?
+Common.Delete.Bulk.Confirm;Вы действительно хотите удалить выбранные объекты ({0})?;Are you sure you want to delete these {0} objects?;¿Está seguro de que desea eliminar los objetos seleccionados?
+Common.Delete.LinkedObjectWarning;Удаление невозможно, так как имеются связанные объекты;Deletion is impossible because of linked objects;La eliminación es imposible debido a objetos vinculados
+Common.Edit;Редактировать;Edit;Editar
+Common.Edit.MaxLength;При заполнении просим учесть: максимальное количество допустимых символов в одной строке - {0} знаков.;While filling in form consider please that maximum number of symbols {0} in the each row.;Al completar el formulario, considere el número máximo de símbolos {0} en cada fila.
+Common.Empty;<отсутствует>;<empty>;Vacío
+Common.ExceptSelected;Кроме выбранных;Except selected;Excepto los seleccionados
+Common.Filter;Фильтр;Filter;Filtro
+Common.Image;Изображение;Image;Imagen
+Common.Label.Delegated;делегировано;delegated;delegado
+Common.Label.EmptyLink;Требуется перевод;Translation needed;Traducción necesaria 
+Common.Label.Info;Справка;Reference;Referencia
+Common.Label.PageInfo;Информация к странице;Page information;Información de la página
+Common.Labels.DeletingDictElement;Удаление элемента справочника;Removing of dictionary item;Eliminación del elemento del diccionario
+Common.LastModified;Последнее изменение;Last modified;Última modificación
+Common.Created;Создана;Created;Creado
+Common.ListTable.Actions;Действия;Actions;Acciones
+Common.Messages.EmployeeMissingRole;Сотрудник не обладает правами на запрашиваемую роль;Employer has no authority for a inquired role;El empleado no tiene autorización para el rol solicitado
+Common.Messages.EmployeeNotFound;Сотрудник не обладает правами пользователя БД ОСУР БН РиД;Employer has no authority for EWRM database;El empleado no tiene autoridad para la base de datos EWRM
+Common.NoGroup;Без группы;No group;Sin grupo
+Common.NotAny;Никакие;Not any;Ninguno
+Common.ObjectChangeActions.Create;Создание;Create;Crear
+Common.ObjectChangeActions.Edit;Редактирование;Edit;Editar
+Common.ObjectNotExists;Объект не существует;Object not exists;El objeto no existe
+Common.OnlySelected;Только выбранные;Only selected;Solo seleccionados
+Common.Paging.From;из;of;de
+Common.Paging.Page;Страница;Page;Página
+Common.Paging.TotalRecords;Всего записей;Total records;Total de registros
+Common.Paging.First;В начало;First;Primero
+Common.Paging.Last;В конец;Last;Último
+Common.Report.Generate;Сформировать;Generate;Generar
+Common.Save;Сохранить;Save;Guardar
+Common.Search;Поиск;Search;Buscar
+Common.SelectObject;Выбрать;Select object;Seleccionar objeto
+Common.SelectObjects;Выбрать;Select objects;Seleccionar objetos
+Common.SelectObject_Field;Выбрать;Select object;Seleccionar objeto
+Common.SelectObjects_Field;Выбрать;Select objects;Seleccionar objetos
+Common.Text;Текст;Text;Texto
+Common.Theme;Тема;Theme;Tema
+Common.Theme.Current;Текущая тема;Current theme;Tema actual
+Common.Theme.Default;По умолчанию;Default;Por defecto
+Common.Theme.Description;Эта страница служит для изменения шрифтов и цветовой схемы;On this page you can change application font and colors;En esta página puedes cambiar la fuente y los colores de la aplicación.
+Common.Theme.Select;Выберите тему;Select theme;Selecciona tema
+Common.Undelete;Отменить удаление;Undelete;Deshacer borrador
+Common.Undelete.Confirm;Вы уверены, что хотите отменить удаление;Are you sure you want to undelete the;¿Estás seguro de que desea deshacer el borrador?
+Common.Undelete.Undeletion;Отмена удаления;Undeletion;Cancelación de borrador
+Common.Utils;Утилиты;Utils;Utilidades
+Common.Wait;Подождите...;Loading...;Cargando...
+Common.ValidationError;Предупреждение;There were some problems with your input;Han habido algunos problemas con tu entrada 
+Common.ValidationWarning;Предупреждение;Warning;Advertencia
+Common.ValidationInfo;Предупреждение;Information;Información
+Common.Warnings.SpecifyValues;Необходимо задать значения следующих полей;You must specify values for the following fields;Debes especificar valores para los siguientes campos
+Common.View;Просмотр;View;Vista
+Common.Xml;Xml;Xml;Xml
 
-Common.Title;Наименование;Name
-Common.Code;Код;Code
-Common.SysName;Системное имя;System name
-Common.SystemName;Системное имя;System name
-Common.Description;Описание;Description
-Common.birthdate;Дата рождения;
-Common.firstname;Имя
-Common.passportno;Номер паспорта
-Common.patronymic;Отчество
-Common.surname;Фамилия
-Common.Version;Версия;
-Common.lastmodifieddate;Дата последней модификации
-Common.lastmodifieddate-s;Дата мод.
+Common.Title;Наименование;Name;Nombre
+Common.Code;Код;Code;Código
+Common.SysName;Системное имя;System name;Nombre del sistema
+Common.SystemName;Системное имя;System name;Nombre del sistema
+Common.Description;Описание;Description;Descripción
+Common.birthdate;Дата рождения;Date of birth;Fecha de nacimiento
+Common.firstname;Имя;First name;Nombre
+Common.passportno;Номер паспорта;Passport number;Número de pasaporte
+Common.patronymic;Отчество;Patronymic;Patrónimo
+Common.surname;Фамилия;Surname;Apellido
+Common.Version;Версия;Version;Versión
+Common.lastmodifieddate;Дата последней модификации;Date of last modification;Fecha de última modificación
+Common.lastmodifieddate-s;Дата мод.;Date of modification;Fecha de modificación
 
-SaveFileResult.AntiViralFailure;Загружаемый файл не прошел проверку на наличие вирусов. Проведите антивирусную обработку файла и повторите загрузку или обратитесь к администратору системы;
-SaveFileResult.AntiViralSuspicion;Проверка на наличие вирусов не может быть выполнена. Загружаемый файл может содержать вирусы. Проведите антивирусную обработку файла и повторите загрузку или обратитесь к администратору системы;
+SaveFileResult.AntiViralFailure;Загружаемый файл не прошел проверку на наличие вирусов. Проведите антивирусную обработку файла и повторите загрузку или обратитесь к администратору системы;The uploaded file did not pass the virus check. Perform an antivirus scan of the file and retry the upload or contact your system administrator;El archivo cargado no pasó la verificación de virus. Realiza un escaneo antivirus del archivo y vuelve a intentar la carga o contacte al administrador del sistema
+SaveFileResult.AntiViralSuspicion;Проверка на наличие вирусов не может быть выполнена. Загружаемый файл может содержать вирусы. Проведите антивирусную обработку файла и повторите загрузку или обратитесь к администратору системы;Virus detection cannot be performed. The uploaded file may contain viruses. Perform an antivirus scan of the file and retry the upload or contact your system administrator;La detección de virus no se puede realizar. El archivo cargado puede contener virus. Realiza un escaneo antivirus del archivo y vuelve a intentar la carga o contacte al administrador del sistema
 
-System.Filter;Фильтр;Filter
-System.Filter.AddCriteria;Добавить;Add
-System.Filter.AddRow;Добавить строку;Add row
-System.Filter.AdvancedFilter;Расширенный фильтр;Advanced filter
-System.Filter.AND;И;AND
-System.Filter.Asc;по возрастанию;ascending
-System.Filter.ClearFilter;Очистить фильтр;Clear filter
-System.Filter.Column;Столбец;column
-System.Filter.ColumnsToDisplay;Отображаемые столбцы;Columns to display
-System.Filter.Condition;Условие;Condition
-System.Filter.Contains;содержит;contains
-System.Filter.Criterion;Критерий;Criterion
-System.Filter.Delete;Удалить;Delete
-System.Filter.Desc;по убыванию;descending
-System.Filter.Down;Вниз;Down
-System.Filter.Error.BracketsNotConsistent;Скобки не согласованы;Brackets are not consistent
-System.Filter.Error.UnsupportedTypeExpression;Неподдерживаемый тип Expression:;Unsupported type of expression:
-System.Filter.Field;Поле;Field
-System.Filter.Grouping.No;нет;no
-System.Filter.LastDays;последние &quot{0}&quot; days
-System.Filter.LastXDays;последние x дней;last x days
-System.Filter.Mode;Способ;mode
-System.Filter.No;Нет;No
-System.Filter.NOT;НЕ;NOT
-System.Filter.NotElements;Фильтр не содержит элементов;The filter does not contain any elements
-System.Filter.NumberRowsOnPage;Количество строк на странице;Row count per page
-System.Filter.Operator;Оператор;Operator
-System.Filter.OR;ИЛИ;OR
-System.Filter.Properties;Параметры фильтра;Filter Parameters
-System.Filter.PropertiesOfVisibility;Свойства видимости;Visibility
-System.Filter.SimpleFilter;Простой фильтр;Simple filter
-System.Filter.StartsWith;начинается с;starts with
-System.Filter.Tabs.Filter;Фильтр;Filter
-System.Filter.Tabs.Filter.Properties;Параметры фильтра;Filter parameters
-System.Filter.Tabs.Grouping;Группировка;Grouping
-System.Filter.Tabs.Grouping.DeleteCurrentView;удалить текущее представление;delete the current view
-System.Filter.Tabs.Grouping.MessageDelete;Вы действительно хотите удалить текущее представление?;Do you really want to delete the current view?
-System.Filter.Tabs.List;Список;List
-System.Filter.Tabs.Properties;Свойства;Properties
-System.Filter.Tabs.Properties.DefaultView;представление по умолчанию;default
-System.Filter.Tabs.Properties.Personal;личное;current user
-System.Filter.Tabs.Properties.Shared;общее;all users
-System.Filter.Tabs.Properties.TemplateParametersComment;Строка в формате параметр1=значение,параметр2=значение;String with the format: parameter1 = value, parameter2 = value
-System.Filter.Tabs.Properties.TemplateParametersOfList;Шаблон параметров списка;Template parameters of the list
-System.Filter.Tabs.Properties.ToolTip.DefaultView;Предустановленное представление при отображении списка;Default view for the current list
-System.Filter.Tabs.Properties.ToolTip.Personal;Представление видно только создавшему пользователю;The view is visible only for the owner
-System.Filter.Tabs.Properties.ToolTip.Shared;Представление видно всем пользователям;The view is visible to all users
-System.Filter.Tabs.Sorting;Сортировка;Sorting
-System.Filter.Custom;Без названия;Custom
-System.Filter.ViewSettings;Представление;View settings
-System.Filter.CreateView;Создать представление;Create view
-System.Filter.EditView;Изменить это представление;Edit current view
-System.Filter.ToolTip.ClosingBrackets;Закрывающие скобки;Closing brackets
-System.Filter.ToolTip.Delete;Удалить;Delete
-System.Filter.ToolTip.MoveDown;Переместить вниз;Move Down
-System.Filter.ToolTip.MoveUp;Переместить вверх;Move Up
-System.Filter.ToolTip.Negation;Отрицание;Negation
-System.Filter.ToolTip.OpeningBrackets;Открывающие скобки;Opening brackets
-System.Filter.ToolTip.SaveAs;Сохранить копию представления с новым именем;Save as
-System.Filter.ToolTip.UpdateView;Изменить параметры представления;Update view
-System.Filter.Up;Вверх;Up
-System.Filter.Value;Значение;Value
-System.Filter.Yes;Да;Yes
-System.Filter.SaveAs;Сохранить как...;Save as...
-System.Filter.UpdateView;Обновить;Update
-System.Filter.DeleteView;Удалить;Delete
+System.Filter;Фильтр;Filter;Filtro
+System.Filter.AddCriteria;Добавить;Add;Añadir
+System.Filter.AddRow;Добавить строку;Add row;Añadir fila
+System.Filter.AdvancedFilter;Расширенный фильтр;Advanced filter;Filtro avanzado
+System.Filter.AND;И;AND;Y
+System.Filter.Asc;по возрастанию;ascending;ascendente
+System.Filter.ClearFilter;Очистить фильтр;Clear filter;Limpiar filtro
+System.Filter.Column;Столбец;column;columna
+System.Filter.ColumnsToDisplay;Отображаемые столбцы;Columns to display;Columnas para mostrar
+System.Filter.Condition;Условие;Condition;Condición
+System.Filter.Contains;содержит;contains;contiene
+System.Filter.Criterion;Критерий;Criterion;Criterio
+System.Filter.Delete;Удалить;Delete;Eliminar
+System.Filter.Desc;по убыванию;descending;descendente
+System.Filter.Down;Вниз;Down;Abajo
+System.Filter.Error.BracketsNotConsistent;Скобки не согласованы;Brackets are not consistent;Los paréntesis no son coincidentes
+System.Filter.Error.UnsupportedTypeExpression;Неподдерживаемый тип Expression:;Unsupported type of expression:;Tipo de expresión no admitida:
+System.Filter.Field;Поле;Field;Campo
+System.Filter.Grouping.No;нет;no;no
+System.Filter.LastDays;последние &quot{0}&quot; days;últimos 0 días
+System.Filter.LastXDays;последние x дней;last x days;últimos x días
+System.Filter.Mode;Способ;mode;modo
+System.Filter.No;Нет;No;No
+System.Filter.NOT;НЕ;NOT;NO
+System.Filter.NotElements;Фильтр не содержит элементов;The filter does not contain any elements;El filtro no contiene ningún elemento
+System.Filter.NumberRowsOnPage;Количество строк на странице;Row count per page;Número de filas por página
+System.Filter.Operator;Оператор;Operator;Operador
+System.Filter.OR;ИЛИ;OR;O
+System.Filter.Properties;Параметры фильтра;Filter Parameters;Parámetros del filtro
+System.Filter.PropertiesOfVisibility;Свойства видимости;Visibility;Visibilidad
+System.Filter.SimpleFilter;Простой фильтр;Simple filter;Filtro simple
+System.Filter.StartsWith;начинается с;starts with;comienza con
+System.Filter.Tabs.Filter;Фильтр;Filter;Filtro
+System.Filter.Tabs.Filter.Properties;Параметры фильтра;Filter parameters;Parámetros del filtro
+System.Filter.Tabs.Grouping;Группировка;Grouping;Agrupación
+System.Filter.Tabs.Grouping.DeleteCurrentView;удалить текущее представление;delete the current view;eliminar la vista actual
+System.Filter.Tabs.Grouping.MessageDelete;Вы действительно хотите удалить текущее представление?;Do you really want to delete the current view?;¿Realmente deseas eliminar la vista actual?
+System.Filter.Tabs.List;Список;List;Lista
+System.Filter.Tabs.Properties;Свойства;Properties;Propiedades
+System.Filter.Tabs.Properties.DefaultView;представление по умолчанию;the default view;vista predeterminada
+System.Filter.Tabs.Properties.Personal;личное;current user;usuario actual
+System.Filter.Tabs.Properties.Shared;общее;all users;todos los usuarios
+System.Filter.Tabs.Properties.TemplateParametersComment;Строка в формате параметр1=значение,параметр2=значение;String with the format: parameter1 = value, parameter2 = value;Cadena con el formato: parámetro1 = valor, parámetro2 = valor
+System.Filter.Tabs.Properties.TemplateParametersOfList;Шаблон параметров списка;Template of parameters of the list;La plantilla de los parámetrros de la lista
+System.Filter.Tabs.Properties.ToolTip.DefaultView;Предустановленное представление при отображении списка;Default view for the current list;Vista predeterminada para la lista actual
+System.Filter.Tabs.Properties.ToolTip.Personal;Представление видно только создавшему пользователю;The view is visible only for the owner;La vista es visible solo para el propietario
+System.Filter.Tabs.Properties.ToolTip.Shared;Представление видно всем пользователям;The view is visible to all users;La vista es visible para todos los usuarios
+System.Filter.Tabs.Sorting;Сортировка;Sorting;Ordenamiento
+System.Filter.Custom;Без названия;Custom;Personalizado
+System.Filter.ViewSettings;Представление;View settings;Configuración de vista
+System.Filter.CreateView;Создать представление;Create view;Crear vista
+System.Filter.EditView;Изменить это представление;Edit current view;Editar vista actual
+System.Filter.ToolTip.ClosingBrackets;Закрывающие скобки;Closing brackets;Los paréntesis de cierre
+System.Filter.ToolTip.Delete;Удалить;Delete;Eliminar
+System.Filter.ToolTip.MoveDown;Переместить вниз;Move Down;Mover hacia abajo
+System.Filter.ToolTip.MoveUp;Переместить вверх;Move Up;Mover hacia arriba
+System.Filter.ToolTip.Negation;Отрицание;Negation;Negación
+System.Filter.ToolTip.OpeningBrackets;Открывающие скобки;Opening brackets;Los paréntesis de apertura
+System.Filter.ToolTip.SaveAs;Сохранить копию представления с новым именем;Save as;Guardar como
+System.Filter.ToolTip.UpdateView;Изменить параметры представления;Update view;Actualizar vista
+System.Filter.Up;Вверх;Up;Arriba
+System.Filter.Value;Значение;Value;Valor
+System.Filter.Yes;Да;Yes;Sí
+System.Filter.SaveAs;Сохранить как...;Save as...;Guardar como...
+System.Filter.UpdateView;Обновить;Update;Actualizar
+System.Filter.DeleteView;Удалить;Delete;Eliminar
 
-longoperation.updatequeue;Обновить очередь;Update
-longoperation.runtask;Запустить операцию;Start
-longoperation.monitor;Очередь;Queue
-tango.longoperation.longoperationticket.actionid;ID;ID
-tango.longoperation.longoperationticket.createdate;Дата добавления;Post date
-tango.longoperation.longoperationticket.rundate;Дата запуска;Start date
-tango.longoperation.longoperationticket.status;Статус;Status
-tango.longoperation.longoperationticket.type;Тип;Type
-tango.longoperation.longoperationticket.ismanualstart;Ручной;Manual
-tango.longoperation.longoperationticket.onethread;Последовательный запуск;One thread
-tango.longoperation.longoperationticket.priority;Приоритет;Priority
-tango.longoperation.longoperationticket.username;Пользователь;User
-tango.longoperation.longoperationticket-pl;Очередь длительных операций;Queue long operations
+longoperation.updatequeue;Обновить очередь;Update;Actualizar
+longoperation.runtask;Запустить операцию;Start;Iniciar
+longoperation.monitor;Очередь;Queue;Cola
+tango.longoperation.longoperationticket.actionid;ID;ID;ID
+tango.longoperation.longoperationticket.createdate;Дата добавления;Post date;Fecha de publicación
+tango.longoperation.longoperationticket.rundate;Дата запуска;Start date;Fecha de inicio
+tango.longoperation.longoperationticket.status;Статус;Status;Estado
+tango.longoperation.longoperationticket.type;Тип;Type;Tipo
+tango.longoperation.longoperationticket.ismanualstart;Ручной;Manual;Manual
+tango.longoperation.longoperationticket.onethread;Последовательный запуск;One thread;Modo monohilo
+tango.longoperation.longoperationticket.priority;Приоритет;Priority;Prioridad
+tango.longoperation.longoperationticket.username;Пользователь;User;Usuario
+tango.longoperation.longoperationticket-pl;Очередь длительных операций;Queue long operations;Cola de operaciones largas

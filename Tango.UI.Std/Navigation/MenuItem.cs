@@ -17,7 +17,7 @@ namespace Tango.UI.Navigation
 
 		public string MenuItemType { get; set; }
 
-		public ActionTarget Target { get; set; }
+		//public ActionTarget Target { get; set; }
 
 		public string Title { get; set; }
 		public string Url { get; set; }
@@ -70,7 +70,7 @@ namespace Tango.UI.Navigation
 			var loader = w.Context.RequestServices.GetService(typeof(IMenuDataLoader)) as IMenuDataLoader;
 			var ac = w.Context.RequestServices.GetService(typeof(IAccessControl)) as IAccessControl;
 
-			var (rootItems, removed) = GetMenu(cache, loader, ac, "adminmenu");
+			var (rootItems, removed) = GetMenu(cache, loader, ac, "adminmenu", w.Context.Lang);
 			if (rootItems.Count() == 0) return;
 
 			w.Li(a => a.ID("header-adminmenu").Class("headerimgbtn").Title("Администрирование"), () => {
@@ -155,9 +155,9 @@ namespace Tango.UI.Navigation
 			}));
 		}
 
-		public static (IEnumerable<MenuItem> rootItems, HashSet<Guid> removed) GetMenu(ICache cache, IMenuDataLoader loader, IAccessControl ac, string menuName)
+		public static (IEnumerable<MenuItem> rootItems, HashSet<Guid> removed) GetMenu(ICache cache, IMenuDataLoader loader, IAccessControl ac, string menuName, string lang = null)
 		{
-			var rootItems = cache.GetOrAdd(menuName, () => {
+			var rootItems = cache.GetOrAdd(lang.IsEmpty() ? menuName : (menuName + "-" + lang), () => {
 				return loader.Load(menuName);
 			});
 

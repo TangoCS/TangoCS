@@ -25,15 +25,21 @@ namespace Tango.UI
 			RequestServices = requestServices;
 			Resources = RequestServices.GetService(typeof(IResourceManager)) as IResourceManager;
 			Routes = RequestServices.GetService(typeof(NamedRouteCollection)) as NamedRouteCollection;
+			DefaultRouteResolver = RequestServices.GetService(typeof(IDefaultRouteResolver)) as IDefaultRouteResolver;
 		}
 
 		public IServiceProvider RequestServices { get; protected set; }
+		private IDefaultRouteResolver DefaultRouteResolver { get; }
 		public abstract IServiceScope CreateServiceScope();
 
 		public IResourceManager Resources { get; protected set; }
-		public NamedRouteCollection Routes { get; protected set; }
 		public IDictionary<string, string> PersistentArgs { get; }
 		public ICollection<IViewElement> EventReceivers { get; private set; }
+
+		// routes
+		public NamedRouteCollection Routes { get; protected set; }
+		public RouteInfo CurrentRoute { get; set; }
+		public string DefaultRouteTemplateName => DefaultRouteResolver?.Resolve(this) ?? "default";
 
 		// request
 		public Guid? RequestID { get; set; }
@@ -45,6 +51,7 @@ namespace Tango.UI
 		public string RootReceiver { get; set; }
 		public string Service { get; set; }
 		public string Action { get; set; }
+		public string Lang { get; set; }
 		public string Event { get; set; }
 		public string EventReceiver { get; set; }
 		public AbsoluteID Sender { get; set; }
@@ -142,6 +149,8 @@ namespace Tango.UI
 					ContainerPrefix = value.ToLower();
 				else if (key == Constants.ContainerNew)
 					AddContainer = AddContainer || value == "1";
+				else if (key == Constants.Lang)
+					Lang = value.ToLower();
 				else
 				{
 					addArg(key, value);
@@ -262,6 +271,17 @@ namespace Tango.UI
 	}
 
 	public class NamedRouteCollection : Dictionary<string, string> { }
+
+	public class RouteInfo
+	{
+		public string Name { get; set; }
+		public string Template { get; set; }
+	}
+
+	public interface IDefaultRouteResolver
+	{
+		string Resolve(ActionContext context);
+	}
 
 	public static class ActionContextExtensions
 	{
