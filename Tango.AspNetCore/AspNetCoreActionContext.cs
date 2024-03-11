@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Components.Routing;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Template;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,15 +18,25 @@ namespace Tango.AspNetCore
     {
 		static string[] SkipCookies => new[] { ".AspNetCore.Cookies", "x-csrf-token" };
 
+		readonly List<TemplateMatcher> _templateMatchers = new List<TemplateMatcher>();
+
         public AspNetCoreActionContext(HttpContext ctx) : base(ctx.RequestServices)
 		{
 			var routeData = ctx.GetRouteData();
 			var route = routeData.Routers.FirstOrDefault(x => x is Route) as Route;
+			var routeColection = routeData.Routers.OfType<RouteCollection>().First();
 
 			CurrentRoute = new RouteInfo {
 				Name = route.Name,
 				Template = route.RouteTemplate
 			};
+
+			for (int j = 0; j < routeColection.Count; j++)
+			{
+				var r = routeColection[j] as Route;
+				var matcher = new TemplateMatcher(r.ParsedTemplate, null);
+				_templateMatchers.Add(matcher);
+			}
 
 			if (Guid.TryParse(ctx.Request.Headers["X-Request-Guid"], out Guid rid))
 				RequestID = rid;
@@ -119,6 +130,10 @@ namespace Tango.AspNetCore
 				returnUrl = returnUrl.Substring(0, i);
 			}
 			if (!returnUrl.StartsWith("/")) returnUrl = "/" + returnUrl;
+
+			foreach (var matcher in _templateMatchers)
+				if (matcher.TryMatch(returnUrl, values))
+					break;
 
 			var target = new ActionTarget();
 			if (values.TryGetValue(Constants.ServiceName, out var service))

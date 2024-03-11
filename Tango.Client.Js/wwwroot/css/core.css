@@ -734,9 +734,10 @@ a.disabled > i.icon {
 	display: block;
 	background-color: #ebf3ff;
 	padding: 2px;
+	word-wrap: break-word;
 }
 
-.field-plaintext::before {
+.field-plaintext::after {
 	content: '\200B';
 }
 
