@@ -189,7 +189,18 @@ namespace Tango.UI.Std
 			ActionResult result;
 
 			if (!Context.Service.IsEmpty())
-				result = view.invoker?.Invoke(Context, view.type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
+			{
+				try
+				{
+					result = view.invoker?.Invoke(Context, view.type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
+				}
+				catch (Exception ex)
+				{
+					var res = new ApiResult();
+					result = res;
+					res.ApiResponse.ErrorMessage = ex.ToString().Replace(Environment.NewLine, "<br/>");
+				}
+			}
 			else
 			{
 				var res = new ApiResult();

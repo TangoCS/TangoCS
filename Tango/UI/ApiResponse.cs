@@ -466,9 +466,9 @@ namespace Tango.UI
 			catch (Exception ex)
 			{
 				var res = context.RequestServices.GetService(typeof(IErrorResult)) as IErrorResult;
-				var message = res?.OnError(ex) ?? ex.ToString();
+				var message = res?.OnError(ex) ?? ex.ToString().Replace(Environment.NewLine, "<br/>");
 				Data.Clear();
-				Data.Add("error", message);
+				ErrorMessage = message;
 			}
 
 			return JsonConvert.SerializeObject(Data, Json.StdSettings);
@@ -488,6 +488,21 @@ namespace Tango.UI
 			set
 			{
 				Data["success"] = value;
+			}
+		}
+
+		public string ErrorMessage
+		{
+			get
+			{
+				if (Data.TryGetValue("error", out var val))
+					return val.ToString();
+				else
+					return "";
+			}
+			set
+			{
+				Data["error"] = value;
 			}
 		}
 
