@@ -12,7 +12,7 @@ namespace Tango.UI.Std
 	{
 		IResourceManager Resources { get; }
 
-		RowSelectionOptions EnableSelect { get; }
+		RowSelectionOptions<TResult> EnableSelect { get; }
 		bool AllowSelectAllPages { get; }
 		bool EnableHeadersMenu { get; }
 		bool EnableFixedHeader { get; }
@@ -51,25 +51,26 @@ namespace Tango.UI.Std
 		public int? FilterSeqNo { get; set; }
 	}
 
-	public class RowSelectionOptions
+	public class RowSelectionOptions<TResult>
 	{
 		public bool Enabled { get; set; }
 		public int SeqNo { get; set; } = 0;
 
-		public CheckBoxCellSettings Settings { get; set; }
+		public CheckBoxCellSettings<TResult> Settings { get; set; }
 
-		public static implicit operator RowSelectionOptions(bool b) => new RowSelectionOptions { Enabled = b };
-		public static implicit operator bool(RowSelectionOptions opt) => opt?.Enabled ?? false;
+		public static implicit operator RowSelectionOptions<TResult>(bool b) => new RowSelectionOptions<TResult> { Enabled = b };
+		public static implicit operator bool(RowSelectionOptions<TResult> opt) => opt?.Enabled ?? false;
 	}
 
-	public class CheckBoxCellSettings: IWithTitle
+	public class CheckBoxCellSettings<TResult> : IWithTitle
 	{
 		public int HeaderRowNo { get; set; } = 0;
 		public int HeadColSeqNo { get; set; }
 		public int BodyColSeqNo { get; set; }
 		public int RowSpan { get; set; } = 0;
-		public string Title { get; set; } = String.Empty;
+		public string Title { get; set; } = string.Empty;
 		public Action<TagAttributes> Attributes { get; set; }
+		public Func<TResult, bool> Visible { get; set; }
 	}
 
 	public class RowSelectionOptionsDefaultFactory<TResult>
@@ -80,13 +81,13 @@ namespace Tango.UI.Std
 			_fields = fields;
 		}
 
-		public RowSelectionOptions GetInstance()
+		public RowSelectionOptions<TResult> GetInstance()
 		{
-			return new RowSelectionOptions
+			return new RowSelectionOptions<TResult>
             {
 				Enabled = true,
-				Settings = new CheckBoxCellSettings
-				{
+				Settings = new CheckBoxCellSettings<TResult>
+                {
 					HeaderRowNo = 1,
 					HeadColSeqNo = _fields.HeaderRows[1].Count,
 					BodyColSeqNo = _fields.Cells.Count,
@@ -120,7 +121,7 @@ namespace Tango.UI.Std
 		public bool EnableHeadersMenu { get; set; } = false;
 
 		public bool EnableFixedHeader { get; set; } = FieldCollectionOptions.DefaultFixedHeader;
-		public RowSelectionOptions EnableSelect { get; set; }
+		public RowSelectionOptions<TResult> EnableSelect { get; set; }
 		public bool AllowSelectAllPages { get; set; } = false;
 
 		public Action<TResult, RowInfo<TResult>> BeforeRowContent { get; set; }

@@ -5,15 +5,15 @@ namespace Tango.UI.Std.ListMassOperations
 {
 	public static class ListMassOperationsExtensions
 	{
-		public static void AddCheckBoxCell<TResult>(this IFieldCollection<TResult> f, int colSeqNo, CheckBoxCellSettings settings = null)
+		public static void AddCheckBoxCell<TResult>(this IFieldCollection<TResult> f, int colSeqNo, CheckBoxCellSettings<TResult> settings = null)
 		{
 			if(settings == null)
-				settings = new CheckBoxCellSettings() { HeadColSeqNo = colSeqNo, BodyColSeqNo = colSeqNo };
+				settings = new CheckBoxCellSettings<TResult>() { HeadColSeqNo = colSeqNo, BodyColSeqNo = colSeqNo };
 
 			f.AddCheckBoxCell(settings);
 		}
 
-		public static void AddCheckBoxCell<TResult>(this IFieldCollection<TResult> f, CheckBoxCellSettings settings)
+		public static void AddCheckBoxCell<TResult>(this IFieldCollection<TResult> f, CheckBoxCellSettings<TResult> settings)
 		{
 			f.HeaderRows[settings.HeaderRowNo].Insert(settings.HeadColSeqNo, new ColumnHeader(
 				a => a.ID("sel_header").Class("sel_header").RowSpan(settings.RowSpan == 0 ? f.HeaderRows.Count : settings.RowSpan), null,
@@ -26,8 +26,14 @@ namespace Tango.UI.Std.ListMassOperations
 
 			f.Cells.Insert(settings.BodyColSeqNo,
 				new ListColumn<TResult>(
-					(a, o, i) => a.Class("sel"),
-					(w, o, i) => w.IconCheckBox(settings.Attributes)
+					(a, o, i) => {
+						if (settings.Visible == null || (settings.Visible != null && settings.Visible.Invoke(o)))
+							a.Class("sel"); 
+					},
+					(w, o, i) => {
+                        if (settings.Visible == null || (settings.Visible != null && settings.Visible.Invoke(o)))
+                            w.IconCheckBox(settings.Attributes); 
+					}
 				)
 			);
 		}
