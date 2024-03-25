@@ -300,7 +300,10 @@ namespace Tango.UI.Std
 						if (!_selectedDataRows.TryGetValue(htmlKey, out var ch))
 							parent.AddChild((rowState, row));
 						else
+						{
 							ch.Data.state.IsChecked = true;
+							parent.Children.Add(ch);
+						}
 						break;
 					}
 					else
