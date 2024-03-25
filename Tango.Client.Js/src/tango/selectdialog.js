@@ -287,6 +287,12 @@ window.selectObjectDropDownField = function (au, cu, cbcell) {
 				if (empty) empty.classList.remove('hide');
 			}
 
+			if (!el.classList.contains('close')) {
+				const elclose = el.querySelector('.close');
+				if (elclose && elclose.hasAttribute('data-e'))
+					au.postEventFromElementWithApiResponse(elclose);
+			}
+			else
 			if (el.hasAttribute('data-e'))
 				au.postEventFromElementWithApiResponse(el);
 		},

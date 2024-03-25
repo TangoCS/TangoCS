@@ -35,6 +35,7 @@ namespace Tango.UI.Std
 		protected override bool EnableHover => false;
 		protected override bool EnableKeyboard => true;
 		protected virtual bool AutoExpandSingles => true;
+		public string ObjectSetSystemName { get; set; }
 
 		public default_tree_rep()
 		{
@@ -248,7 +249,25 @@ namespace Tango.UI.Std
 		List<TreeNode<(State state, TResult row)>> _selectedDataRoot = new List<TreeNode<(State state, TResult row)>>();
 		HashSet<string> _selectedValues = new HashSet<string>();
 
+		//TODO доработать, чтобы при необходимости поддерево достраивалось до новых листовых элементов
 		public void SetSelectedItems(int templateID, int level, Expression<Func<TResult, bool>> predicate)
+		{
+			SetSelectedItemsOne(templateID, level, predicate);
+
+			(Renderer as TreeListRenderer<TResult>).SetSelectedValues(_selectedValues);
+		}
+
+		public void SetSelectedItems(IEnumerable<(int templateID, int level, Expression<Func<TResult, bool>> predicate)> items)
+		{
+			_selectedValues.Clear();
+			foreach(var item in items.OrderByDescending(o => o.level))
+			{
+				SetSelectedItemsOne(item.templateID, item.level, item.predicate);
+			}
+			(Renderer as TreeListRenderer<TResult>).SetSelectedValues(_selectedValues);
+		}
+
+		private void SetSelectedItemsOne(int templateID, int level, Expression<Func<TResult, bool>> predicate)
 		{
 			var q = Enumerable.Empty<TResult>().AsQueryable().Where(predicate);
 
@@ -287,10 +306,11 @@ namespace Tango.UI.Std
 					else
 					{
 						parent = new TreeNode<(State state, TResult row)>((parentState, row));
-						if (_selectedDataRows.TryGetValue(htmlKey, out var ch))
-							parent.Children.Add(ch);
-						else
+						if (!_selectedDataRows.TryGetValue(htmlKey, out var ch))
 							parent.AddChild((rowState, row));
+						else
+							parent.Children.Add(ch);
+
 						_selectedDataRows.Add(parentHtmlKey, parent);
 						if (lev - 1 == 0)
 							_selectedDataRoot.Add(parent);
@@ -300,10 +320,7 @@ namespace Tango.UI.Std
 					htmlKey = parentHtmlKey;
 				}
 			}
-
-			(Renderer as TreeListRenderer<TResult>).SetSelectedValues(_selectedValues);
 		}
-
 
 		string PrepareQuery(TreeLevelDescription<TResult> template, List<Dictionary<string, object>> parms)
 		{

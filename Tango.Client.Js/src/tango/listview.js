@@ -484,6 +484,7 @@ window.listview = function (au, cu, cbcell, menu) {
 				seltr = seltr.previousElementSibling;
 			}
 			removeSelected(tocopy);
+			setObjectSetBackgroundColor();
 		},
 		initListSettings: function (root) {
 			const ctrl = au.state.ctrl[root.id];
@@ -644,6 +645,7 @@ window.listview = function (au, cu, cbcell, menu) {
 					updateSelected(e.currentTarget);
 				}
 				curRow.tr.focus();
+				setObjectSetBackgroundColor();
 			});
 			el.classList.add('initialized');
 		}
@@ -1007,6 +1009,26 @@ window.listview = function (au, cu, cbcell, menu) {
 
 			for (var i = toinitmenu.length - 1; i >= 0; i--) {
 				menu.contextMenu(toinitmenu[i].triggerid, toinitmenu[i].popupid, toinitmenu[i].parms);
+			}
+		}
+	}
+	function setObjectSetBackgroundColor() {
+		const el = document.querySelector('.objectsetmanager .objectset-select > div');
+		if (el && el.classList.contains('objectset-green')) {
+			el.classList.remove('objectset-green');
+			el.classList.add('objectset-yellow')
+		} 
+		const elsel = document.querySelector('.sidebar-panel .contentbody-selected > table');
+		const elsave = document.querySelector('.objectsetmanager .objectset-save > button');
+		const elsaveas = document.querySelector('.objectsetmanager .objectset-saveas > button');
+		if (elsel && elsave && elsaveas) {
+			if (elsel.firstChild?.childElementCount > 0) {
+				//elsave.classList.remove('disabled')
+				elsaveas.classList.remove('disabled')
+			}
+			else {
+				elsave.classList.add('disabled')
+				elsaveas.classList.add('disabled')
 			}
 		}
 	}
