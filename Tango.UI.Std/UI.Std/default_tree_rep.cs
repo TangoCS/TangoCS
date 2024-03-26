@@ -260,7 +260,7 @@ namespace Tango.UI.Std
 		public void SetSelectedItems(IEnumerable<(int templateID, int level, Expression<Func<TResult, bool>> predicate)> items)
 		{
 			_selectedValues.Clear();
-			foreach(var item in items.OrderByDescending(o => o.level).OrderByDescending(o => o.templateID))
+			foreach(var item in items)
 			{
 				SetSelectedItemsOne(item.templateID, item.level, item.predicate);
 			}
