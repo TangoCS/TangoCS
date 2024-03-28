@@ -1022,8 +1022,8 @@ window.listview = function (au, cu, cbcell, menu) {
 		const elsave = document.querySelector('.objectsetmanager .objectset-save > button');
 		const elsaveas = document.querySelector('.objectsetmanager .objectset-saveas > button');
 		if (elsel && elsave && elsaveas) {
-			if (elsel.firstChild?.childElementCount > 0) {
-				//elsave.classList.remove('disabled')
+			const elseltr = elsel.querySelector('tr');
+			if (elseltr) {
 				elsaveas.classList.remove('disabled')
 			}
 			else {
