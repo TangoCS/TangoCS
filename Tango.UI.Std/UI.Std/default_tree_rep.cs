@@ -249,7 +249,6 @@ namespace Tango.UI.Std
 		List<TreeNode<(State state, TResult row)>> _selectedDataRoot = new List<TreeNode<(State state, TResult row)>>();
 		HashSet<string> _selectedValues = new HashSet<string>();
 
-		//TODO доработать, чтобы при необходимости поддерево достраивалось до новых листовых элементов
 		public void SetSelectedItems(int templateID, int level, Expression<Func<TResult, bool>> predicate)
 		{
 			SetSelectedItemsOne(templateID, level, predicate);
@@ -278,7 +277,9 @@ namespace Tango.UI.Std
 					q.GroupBy(template.Template.GroupBy).Select(template.Template.GroupBySelector).Expression :
 					q.Expression;
 
-			var data = Repository.List(expr);
+			//TODO необходимо доработать метод т.к. вызов может быть в цикле по большому количеству данных (в случае применения хранимых наборов )
+			// так же необходимо что бы атрибут Table для TResult не содержал пакраметров
+			var data = Database.Repository<TResult>().List(expr);
 
 			foreach (var row in data)
 			{
