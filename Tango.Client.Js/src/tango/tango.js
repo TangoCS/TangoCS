@@ -58,7 +58,7 @@
 
 			return document.body;
 		},
-		/*scrollToView: function (element) {
+		scrollToView: function (element) {
 			if (!element || !element.getBoundingClientRect) return;
 			var r = element.getBoundingClientRect();
 			if (r.bottom > window.innerHeight) {
@@ -68,7 +68,7 @@
 				else
 					window.scrollBy(0, r.bottom - window.innerHeight + 16);
 			}
-		},*/
+		},
 		checkids: function () {
 			var elms = document.getElementsByTagName("*"), i, len, ids = {}, id;
 			for (i = 0, len = elms.length; i < len; i += 1) {
@@ -1323,8 +1323,8 @@ window.ajaxUtils = function ($, cu) {
 				el.insertAdjacentElement(obj.position, obj.content.childNodes[i]);
 			}
 			if (obj.position == 'afterEnd') {
-				el.nextSibling?.scrollIntoView(true);
-				//cu.scrollToView(el.nextSibling);
+				//el.nextSibling?.scrollIntoView(true);
+				cu.scrollToView(el.nextSibling);
 			}
 		};
 
