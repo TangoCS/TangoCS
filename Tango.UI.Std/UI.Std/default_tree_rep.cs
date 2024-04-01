@@ -11,6 +11,7 @@ using Tango.Data;
 using Dapper;
 using System.Reflection;
 using System.Data;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tango.UI.Std
 {
@@ -35,7 +36,7 @@ namespace Tango.UI.Std
 		protected override bool EnableHover => false;
 		protected override bool EnableKeyboard => true;
 		protected virtual bool AutoExpandSingles => true;
-		public string ObjectSetSystemName { get; set; }
+		public ObjectSetSettings ObjectSetSettings { get; set; } = null;
 
 		public default_tree_rep()
 		{
@@ -278,8 +279,15 @@ namespace Tango.UI.Std
 					q.Expression;
 
 			//TODO необходимо доработать метод т.к. вызов может быть в цикле по большому количеству данных (в случае применения хранимых наборов )
-			// так же необходимо что бы атрибут Table для TResult не содержал пакраметров
-			var data = Repository.List(expr); //Database.Repository<TResult>().List(expr);
+			// так же необходимо что бы был устанолвлен атрибут ObjectSetTable для TResult не содержащий параметров
+
+			IRepository<TResult> templateRepository;
+			if (ObjectSetSettings == null || ObjectSetSettings.TableName.IsEmpty())
+				templateRepository = Repository;
+			else
+				templateRepository = Database.Repository<TResult>().WithAllObjectsQuery(EmbeddedResourceManager.GetString(typeof(TResult), ObjectSetSettings.TableName));
+
+			var data = templateRepository.List(expr);
 
 			foreach (var row in data)
 			{
@@ -881,5 +889,11 @@ namespace Tango.UI.Std
 		{
 			return new TreeLevelDescriptionItem<TResult> { Template = template };
 		}
+	}
+
+	public class ObjectSetSettings
+	{
+		public string SystemName { get; set; } = null;
+		public string TableName { get; set; } = null;
 	}
 }
