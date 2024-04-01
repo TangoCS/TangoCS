@@ -1014,21 +1014,26 @@ window.listview = function (au, cu, cbcell, menu) {
 	}
 	function setObjectSetBackgroundColor() {
 		const el = document.querySelector('.objectsetmanager .objectset-select > div');
-		if (el && el.classList.contains('objectset-green')) {
-			el.classList.remove('objectset-green');
-			el.classList.add('objectset-yellow')
-		} 
-		const elsel = document.querySelector('.sidebar-panel .contentbody-selected > table');
-		const elsave = document.querySelector('.objectsetmanager .objectset-save > button');
-		const elsaveas = document.querySelector('.objectsetmanager .objectset-saveas > button');
-		if (elsel && elsave && elsaveas) {
-			const elseltr = elsel.querySelector('tr');
-			if (elseltr) {
-				elsaveas.classList.remove('disabled')
+		if (el) {
+			if (el.classList.contains('objectset-green')) {
+				el.classList.remove('objectset-green');
+				el.classList.add('objectset-yellow')
 			}
-			else {
-				elsave.classList.add('disabled')
-				elsaveas.classList.add('disabled')
+			const elsel = document.querySelector('.sidebar-panel .contentbody-selected > table');
+			const elsave = document.querySelector('.objectsetmanager .objectset-save > button');
+			const elsaveas = document.querySelector('.objectsetmanager .objectset-saveas > button');
+			if (elsel && elsave && elsaveas) {
+				const elseltr = elsel.querySelector('tr');
+				if (elseltr) {
+					elsaveas.classList.remove('disabled')
+					const elseldel = el.querySelector('div.object.hide');
+					if (!elseldel)
+						elsave.classList.remove('disabled')
+				}
+				else {
+					elsave.classList.add('disabled')
+					elsaveas.classList.add('disabled')
+				}
 			}
 		}
 	}
