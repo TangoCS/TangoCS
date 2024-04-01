@@ -63,8 +63,12 @@
 			var r = element.getBoundingClientRect();
 			if (r.bottom > window.innerHeight) {
 				var scrl = instance.getScrollParent(element);
-				if (scrl)
+				if (scrl) {
 					scrl.scrollTop += r.bottom - window.innerHeight + 16;
+					var dy = element.getBoundingClientRect().y - scrl.getClientRects()[0].y;
+					if (dy < 0)
+						scrl.scrollTop += dy;
+				}
 				else
 					window.scrollBy(0, r.bottom - window.innerHeight + 16);
 			}
@@ -1323,7 +1327,6 @@ window.ajaxUtils = function ($, cu) {
 				el.insertAdjacentElement(obj.position, obj.content.childNodes[i]);
 			}
 			if (obj.position == 'afterEnd') {
-				//el.nextSibling?.scrollIntoView(true);
 				cu.scrollToView(el.nextSibling);
 			}
 		};
