@@ -279,7 +279,7 @@ namespace Tango.UI.Std
 
 			//TODO необходимо доработать метод т.к. вызов может быть в цикле по большому количеству данных (в случае применения хранимых наборов )
 			// так же необходимо что бы атрибут Table для TResult не содержал пакраметров
-			var data = Database.Repository<TResult>().List(expr);
+			var data = Repository.List(expr); //Database.Repository<TResult>().List(expr);
 
 			foreach (var row in data)
 			{
