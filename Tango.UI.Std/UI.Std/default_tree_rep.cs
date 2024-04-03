@@ -260,7 +260,7 @@ namespace Tango.UI.Std
 		public void SetSelectedItems(IEnumerable<(int templateID, int level, Expression<Func<TResult, bool>> predicate)> items)
 		{
 			_selectedValues.Clear();
-			foreach(var item in items)
+			foreach (var item in items)
 			{
 				SetSelectedItemsOne(item.templateID, item.level, item.predicate);
 			}
@@ -282,7 +282,7 @@ namespace Tango.UI.Std
 			// так же необходимо что бы был устанолвлен атрибут ObjectSetTable для TResult не содержащий параметров
 
 			IRepository<TResult> templateRepository;
-			if (ObjectSetSettings == null || ObjectSetSettings.TableName.IsEmpty())
+			if (ObjectSetSettings?.TableName.IsEmpty() == true)
 				templateRepository = Repository;
 			else
 				templateRepository = Database.Repository<TResult>().WithAllObjectsQuery(EmbeddedResourceManager.GetString(typeof(TResult), ObjectSetSettings.TableName));
@@ -311,7 +311,8 @@ namespace Tango.UI.Std
 						else
 						{
 							ch.Data.state.IsChecked = true;
-							parent.Children.Add(ch);
+							if (!parent.Children.Contains(ch))
+								parent.Children.Add(ch);
 						}
 						break;
 					}
