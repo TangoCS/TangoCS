@@ -254,6 +254,17 @@ namespace Tango.UI
 			else
 				_ctrl.Add(clientid, new CtrlInfo { Instance = instance });
 		}
+		public void SetCtrlReplaceValues(string clientid, string stateVariable)
+		{
+			if (_ctrl.TryGetValue(clientid, out var ctrl))
+			{
+				if (ctrl.ReplaceValues == null)
+					ctrl.ReplaceValues = new List<string>();
+				ctrl.ReplaceValues.Add(stateVariable);
+			}
+			else
+				_ctrl.Add(clientid, new CtrlInfo { ReplaceValues = new List<string> { stateVariable } });
+		}
 
 		public void SetArgGroup(string groupName, List<string> elementArgNames)
 		{

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using Tango.Html;
 
@@ -94,6 +95,17 @@ namespace Tango.UI
 			else
 				w.Ctrl.Add(clientid, new CtrlInfo { Instance = instance });
 		}
+		public static void SetCtrlReplaceValues(this LayoutWriter w, string clientid, string stateVariable)
+		{
+			if (w.Ctrl.TryGetValue(clientid, out var ctrl))
+			{
+				if (ctrl.ReplaceValues == null)
+					ctrl.ReplaceValues = new List<string>();
+				ctrl.ReplaceValues.Add(stateVariable);
+			}
+			else
+				w.Ctrl.Add(clientid, new CtrlInfo { ReplaceValues = new List<string> { stateVariable } });
+		}
 
 		//static string GetClientId(LayoutWriter w, string name)
 		//{
@@ -106,5 +118,6 @@ namespace Tango.UI
 		public object Instance { get; set; }
 		public object State { get; set; }
 		public object Props { get; set; }
+		public List<string>	ReplaceValues { get; set; }
 	}
 }

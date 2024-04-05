@@ -1497,12 +1497,14 @@ window.ajaxUtils = function ($, cu) {
 			const st = getElementStateAttrs(node);
 			if (!st) continue;
 			const container = cu.getThisOrParent(node, function (n) { return n.hasAttribute && n.hasAttribute('data-c'); });
-			const isnewc = container && newcntnrs.indexOf(container.id) > 0;
+			const isnewc = container && newcntnrs.indexOf(container.id) >= 0;
 
 			if (!state.ctrl[st.owner]) state.ctrl[st.owner] = {};
 			const nodectrl = state.ctrl[st.owner];
+			const doReplace = ctrlCollection && ctrlCollection[st.owner] &&
+				ctrlCollection[st.owner].replaceValues && ctrlCollection[st.owner].replaceValues.indexOf(st.name) >= 0;
 			if (st.type == 'array') {
-				const ctrlvar = nodectrl[st.name] && !isnewc ? new ObservableArray(nodectrl[st.name]) : new ObservableArray();
+				const ctrlvar = nodectrl[st.name] && !isnewc && !doReplace ? new ObservableArray(nodectrl[st.name]) : new ObservableArray();
 				const values = node.value.split(',').filter(String);
 				for (var i = 0; i < values.length; i++) {
 					if (ctrlvar.indexOf(values[i]) == -1)
