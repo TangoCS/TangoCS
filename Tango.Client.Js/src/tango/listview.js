@@ -144,7 +144,7 @@ window.listview = function (au, cu, cbcell, menu) {
 			const state = el.getAttribute('data-state') || 'collapsed';
 			const isButton = el.classList.contains('rowexpandercell');
 			const expandedrows = document.getElementById(el.getAttribute('data-r') + "_expandedrows");
-            const expandedValue = tr.getAttribute('data-rowid') + ";";
+			const expandedValue = tr.getAttribute('data-rowid') + ";";
 
 			if (state == 'collapsed') {
 				el.setAttribute('data-state', 'expanded');
@@ -178,13 +178,13 @@ window.listview = function (au, cu, cbcell, menu) {
 				};
 
 				const e = el.getAttribute('data-e');
-                if (load && e)
-                    au.postEventFromElementWithApiResponse(el, { data: { rowid: tr.id, level: level, dataid: tr.getAttribute('data-rowid') } }).then(hideOthers);
+				if (load && e)
+					au.postEventFromElementWithApiResponse(el, { data: { rowid: tr.id, level: level, dataid: tr.getAttribute('data-rowid') } }).then(hideOthers);
 				else
 					hideOthers();
 
 				if (expandedrows != null && !expandedrows.value.includes(expandedValue))
-				    expandedrows.value += expandedValue;
+					expandedrows.value += expandedValue;
 			} else {
 				el.setAttribute('data-state', 'collapsed');
 				if (isButton) {
@@ -204,8 +204,8 @@ window.listview = function (au, cu, cbcell, menu) {
 
 				if (expandedrows != null && expandedrows.value.includes(expandedValue)) {
 					expandedrows.value = expandedrows.value.replace(expandedValue, '');
-                }
-            }
+				}
+			}
 
 			tr.querySelectorAll('.expandedcell').forEach(function (n) {
 				n.classList.remove('expandedcell');
@@ -213,7 +213,7 @@ window.listview = function (au, cu, cbcell, menu) {
 
 			if (elcellid != '' && state == 'collapsed') cu.getCell(el).classList.add('expandedcell');
 		},
-		togglelevel: function (el) {
+		togglelevel: function (el, afterLoad) {
 			const tr = cu.getRow(el);
 			const level = parseInt(tr.getAttribute('data-level'));
 			const isCollapsed = tr.classList.contains('collapsed');
@@ -237,6 +237,8 @@ window.listview = function (au, cu, cbcell, menu) {
 
 					row = row.nextElementSibling;
 				}
+
+				if (afterLoad) afterLoad();
 			}
 
 			if (tr.hasAttribute('data-e') && !tr.hasAttribute('data-loaded')) {
@@ -274,7 +276,7 @@ window.listview = function (au, cu, cbcell, menu) {
 				}
 			}
 
-			initCheckBoxes(cblist);
+			initCheckBoxes(ctrl, cblist);
 
 			if (cbhead) {
 				cbhead.addEventListener('click', function (e) { cbcell.cbheadclicked(e.currentTarget, onCheckChange); });
@@ -327,7 +329,7 @@ window.listview = function (au, cu, cbcell, menu) {
 		widgetContentChanged: function (state) {
 			const root = document.getElementById(state.root);
 			const cblist = root.querySelectorAll('.sel:not(.initialized)');
-			initCheckBoxes(cblist);
+			initCheckBoxes(state, cblist);
 			for (var i = 0; i < cblist.length; i++) {
 				const tr = cu.getRow(cblist[i]);
 				const index = state.selectedvalues.indexOf(tr.getAttribute('data-rowid'));
@@ -392,43 +394,43 @@ window.listview = function (au, cu, cbcell, menu) {
 			tr.parentNode.removeChild(tr);
 
 			au.postEventFromElementWithApiResponse(el, target);
-        },
-        openlevel: function (args, counter) {
+		},
+		openlevel: function (args, counter) {
 
-            if (!counter) counter = 0;
+			if (!counter) counter = 0;
 
-            if (args && args[counter]) {
+			if (args && args[counter]) {
 
-                var rowid = '[data-rowid="' + args[counter] + '"]';
-                var el = document.querySelector(rowid)
-                var level = parseInt(el.getAttribute('data-level'))
-                el.attributes['class'] = '';
-                //Если обновляем дерево, необходимо удалить страные элементы
-                var rows = el.parentNode.children;
-                var toremove = [];
+				var rowid = '[data-rowid="' + args[counter] + '"]';
+				var el = document.querySelector(rowid)
+				var level = parseInt(el.getAttribute('data-level'))
+				el.attributes['class'] = '';
+				//Если обновляем дерево, необходимо удалить страные элементы
+				var rows = el.parentNode.children;
+				var toremove = [];
 
-                for (var i = 0; i < rows.length; i++) {
-                    if (parseInt(rows[i].getAttribute('data-level')) > level) {
-                        toremove.push(rows[i]);
-                    }
-                }
+				for (var i = 0; i < rows.length; i++) {
+					if (parseInt(rows[i].getAttribute('data-level')) > level) {
+						toremove.push(rows[i]);
+					}
+				}
 
-                for (var i = 0; i < toremove.length; i++) {
-                    toremove[i].parentNode.removeChild(toremove[i]);
-                }
+				for (var i = 0; i < toremove.length; i++) {
+					toremove[i].parentNode.removeChild(toremove[i]);
+				}
 
 
-                ajaxUtils.postEventFromElementWithApiResponse(el, { data: { rowid: args[counter], level: level, selectedRow: args[args.length - 1] } }).done(function () {
+				ajaxUtils.postEventFromElementWithApiResponse(el, { data: { rowid: args[counter], level: level, selectedRow: args[args.length - 1] } }).done(function () {
 
-                    var rowid = '[data-rowid="' + args[counter] + '"]';
-                    var el = document.querySelector(rowid)
+					var rowid = '[data-rowid="' + args[counter] + '"]';
+					var el = document.querySelector(rowid)
 
-                    el.removeAttribute("class");
-                    el.setAttribute('data-loaded', '')
+					el.removeAttribute("class");
+					el.setAttribute('data-loaded', '')
 
-                    instance.openlevel(args, counter + 1)
-                });
-            }
+					instance.openlevel(args, counter + 1)
+				});
+			}
 		},
 		initFixedHeader: function (root) {
 			if (typeof root === 'string' || root instanceof String)
@@ -441,7 +443,7 @@ window.listview = function (au, cu, cbcell, menu) {
 			var seltr = cu.getRow(e.currentTarget);
 			const rootsel = au.findControl(seltr);
 			const state = au.state.ctrl[rootsel.id.replace('_selected', '')];
-			
+
 			function unSelect(el) {
 				const origel = document.getElementById(el.id.replace('_selected', ''));
 				if (origel) {
@@ -538,7 +540,7 @@ window.listview = function (au, cu, cbcell, menu) {
 							}
 						}
 						if (ctrl.props.formID)
-							sessionStorage.setItem(ctrl.props.formID + '.columns', columns.substring(0, columns.length-1))
+							sessionStorage.setItem(ctrl.props.formID + '.columns', columns.substring(0, columns.length - 1))
 
 						if (fh) {
 							setTimeout(function () {
@@ -614,7 +616,7 @@ window.listview = function (au, cu, cbcell, menu) {
 		}
 	}
 
-	function initCheckBoxes(cblist) {
+	function initCheckBoxes(state, cblist) {
 		for (var i = 0; i < cblist.length; i++) {
 			const el = cblist[i];
 			el.addEventListener('mousedown', function (e) {
@@ -641,8 +643,66 @@ window.listview = function (au, cu, cbcell, menu) {
 					}
 				}
 				else {
-					cbcell.setselected(e.currentTarget, onCheckChange);
-					updateSelected(e.currentTarget);
+					const curel = e.currentTarget;
+					cbcell.setselected(curel, onCheckChange);
+					updateSelected(curel);
+
+					const currow = cu.getRow(curel);
+					const level = parseInt(currow.getAttribute('data-level'));
+					var tr = currow.nextElementSibling;
+					const isChecked = currow.classList.contains('checked');
+
+					function setChildrenState() {
+						tr = currow.nextElementSibling;
+						while (tr && parseInt(tr.getAttribute('data-level')) == level + 1) {
+							var cb = tr.querySelector('.sel');
+							if (cb) {
+								if (isChecked)
+									cbcell.setRowChecked(tr, cb, state);
+								else
+									cbcell.setRowUnchecked(tr, cb, state);
+								updateSelected(cb);
+							}
+							tr = tr.nextElementSibling;
+						}
+					}
+
+					if (curel.hasAttribute('data-strategy') && curel.getAttribute('data-strategy') == 'WithChildren') {
+						if (!currow.hasAttribute('data-loaded')) {
+							instance.togglelevel(curel, setChildrenState);
+						}
+						else {
+							setChildrenState();
+						}
+					}
+
+					var allChildrenChecked = true;
+					tr = currow.previousElementSibling;
+					while (tr && parseInt(tr.getAttribute('data-level')) == level) {
+						if (isChecked) allChildrenChecked = allChildrenChecked && tr.classList.contains('checked');
+						tr = tr.previousElementSibling;
+					}
+
+					if (tr) {
+						var cb = tr.querySelector('.sel');
+						if (cb && cb.hasAttribute('data-strategy') && cb.getAttribute('data-strategy') == 'WithChildren') {
+							if (isChecked) {
+								var ntr = currow.nextElementSibling;
+								while (ntr && parseInt(ntr.getAttribute('data-level')) == level) {
+									allChildrenChecked = allChildrenChecked && ntr.classList.contains('checked');
+									ntr = ntr.nextElementSibling;
+								}
+								if (allChildrenChecked) {
+									cbcell.setRowChecked(tr, cb, state);
+									updateSelected(cb);
+								}
+							}
+							else {
+								cbcell.setRowUnchecked(tr, cb, state);
+								updateSelected(cb);
+							}
+						}
+					}
 				}
 				curRow.tr.focus();
 				setObjectSetBackgroundColor();
@@ -673,7 +733,7 @@ window.listview = function (au, cu, cbcell, menu) {
 				th.style.top = th.getBoundingClientRect().top - tableHeaderTop + "px";
 			}
 		}
-    }
+	}
 
 	function calculatePadding(node) {
 		node = getScrollParent(node);
@@ -983,6 +1043,10 @@ window.listview = function (au, cu, cbcell, menu) {
 					if (hide) {
 						tocopy[i].classList.add('hide');
 						tocopy[i].setAttribute('data-collapsedby', collapsedby);
+					}
+					const level = parseInt(tocopy[i].getAttribute('data-level'));
+					while (parent.nextElementSibling && parseInt(parent.nextElementSibling.getAttribute('data-level')) == level) {
+						parent = parent.nextElementSibling;
 					}
 					parent.insertAdjacentElement(pos, tocopy[i]);
 				}

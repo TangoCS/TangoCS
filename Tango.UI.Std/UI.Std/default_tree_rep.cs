@@ -566,7 +566,13 @@ namespace Tango.UI.Std
 
 			RenderRowCellDelegate<TResult> content = (w, o, i) => {
 				if (nodeTemplate.EnableSelect && !_renderSelectedBlockMode)
-					w.Span(a => a.Class("sel"), () => w.IconCheckBox());
+				{
+					Action<TagAttributes> attrs = a => a.Class("sel");
+					if (nodeTemplate.EnableSelect.Strategy != EnableSelectOption.EnableSelectStrategy.Default)
+						attrs += a => a.Data("strategy", nodeTemplate.EnableSelect.Strategy);
+
+					w.Span(attrs, () => w.IconCheckBox());
+				}
 
 				if (nodeTemplate.IconFlag != null)
 					foreach (var ic in nodeTemplate.IconFlag(o))
@@ -779,7 +785,7 @@ namespace Tango.UI.Std
 		public Func<TResult, FlagIconInfoCollection> IconFlag { get; set; }
 		public Func<TResult, List<string>> DataRef { get; set; }
 		public Expression<Func<TResult, object>> Key { get; set; }
-		public bool EnableSelect { get; set; }
+		public EnableSelectOption EnableSelect { get; set; }
 		public bool SetDataRowId { get; set; }
 		public bool AllowNulls { get; set; } = false;
 		public bool IsSticky { get; set; } = false;
@@ -826,6 +832,24 @@ namespace Tango.UI.Std
 					return (object)ctx.GetDateTimeArg(p.Name);
 				return (object)ctx.GetArg(p.Name);
 			});
+		}
+	}
+
+	public class EnableSelectOption
+	{
+		public EnableSelectStrategy Strategy { get; set; } = EnableSelectStrategy.Default;
+
+		public static implicit operator EnableSelectOption(bool enabled) =>
+			new EnableSelectOption { Strategy = enabled ? EnableSelectStrategy.Default : EnableSelectStrategy.None };
+
+		public static implicit operator bool(EnableSelectOption option) => 
+			option != null && option.Strategy != EnableSelectStrategy.None;
+
+		public enum EnableSelectStrategy
+		{
+			None,
+			Default,
+			WithChildren
 		}
 	}
 
