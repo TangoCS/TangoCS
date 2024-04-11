@@ -282,7 +282,7 @@ namespace Tango.UI.Std
 			// так же необходимо что бы был устанолвлен атрибут ObjectSetTable для TResult не содержащий параметров
 
 			IRepository<TResult> templateRepository;
-			if (ObjectSetSettings?.TableName.IsEmpty() == true)
+			if ((ObjectSetSettings?.TableName).IsEmpty())
 				templateRepository = Repository;
 			else
 				templateRepository = Database.Repository<TResult>().WithAllObjectsQuery(EmbeddedResourceManager.GetString(typeof(TResult), ObjectSetSettings.TableName));
