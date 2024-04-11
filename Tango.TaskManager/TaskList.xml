@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <TaskList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="tasklist.xsd">
-  <Task Name="Update" ThreadCount="1" StartType="Interval" Hours="0" Minutes="5" Type="Tango.TaskManager.WebClient" Method="Post">
-    <Argument Name="url" Value="http://localhost:53885/longoperation/updatequeue?conn=231" />
+  <Task Name="Update" ThreadCount="1" StartType="Interval" Hours="0" Minutes="0" Seconds="30" Type="Tango.TaskManager.WebClient" Method="Post">
+    <Argument Name="url" Value="http://localhost:53885/longoperation/updatequeue?conn=235" />
     <Argument Name="userName" Value="" />
     <Argument Name="password" Value="" />
     <Argument Name="timeOut" Value="600" />
@@ -9,8 +9,8 @@
 		  <Argument Name="system_id" Value="1,2" />
 	  </Dictionary>
   </Task>
-  <Task Name="Run" StartType="Interval" Hours="0" Minutes="5" Type="Tango.TaskManager.WebClient" Method="Post">
-    <Argument Name="url" Value="http://localhost:53885/longoperation/runtask?conn=231" />
+  <Task Name="Run" StartType="Interval" Hours="0" Minutes="0" Seconds="30" Type="Tango.TaskManager.WebClient" Method="Post">
+    <Argument Name="url" Value="http://localhost:53885/longoperation/runtask?conn=235" />
     <Argument Name="userName" Value="" />
     <Argument Name="password" Value="" />
     <Argument Name="timeOut" Value="600" />
