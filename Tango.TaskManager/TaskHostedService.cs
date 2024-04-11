@@ -82,13 +82,14 @@ namespace Tango.TaskManager
 
             foreach (var xe in doc.Root.Elements("Task"))
             {
-                if (xe.Attribute("ThreadCount") == null || !int.TryParse(xe.Attribute("ThreadCount").Value, out int threadCount))
-                    threadCount = 1;
+                var threadCount = int.Parse(xe.Attribute("ThreadCount")?.Value ?? "1");
 
                 var TaskName = xe.Attribute("Name").Value;
                 var MethodName = xe.Attribute("Method").Value;
                 var TypeName = xe.Attribute("Type").Value;
-                var Interval = new TimeSpan(int.Parse(xe.Attribute("Hours").Value), int.Parse(xe.Attribute("Minutes").Value), 0);
+                var seconds = int.Parse(xe.Attribute("Seconds")?.Value ?? "0");
+                var hours = int.Parse(xe.Attribute("Hours")?.Value ?? "0");
+				var Interval = new TimeSpan(hours, int.Parse(xe.Attribute("Minutes")?.Value ?? ((seconds == 0 && hours == 0) ? "1" : "0")), seconds);
                 var StartType = xe.Attribute("StartType").Value == "Interval" ? TaskStartType.Interval : TaskStartType.Schedule;
                 var MethodArgs = new Dictionary<string, object>();
                 foreach (var arg in xe.Elements())

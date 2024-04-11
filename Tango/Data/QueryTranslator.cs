@@ -668,7 +668,10 @@ namespace Tango.Data
 
 			if (value is float fnumber)
 				return fnumber.ToString(CultureInfo.InvariantCulture);
-			
+
+			if (value is double dnumber)
+				return dnumber.ToString(CultureInfo.InvariantCulture);
+
 			return value.ToString();
 		}
 
