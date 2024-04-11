@@ -279,7 +279,6 @@ namespace Tango.UI.Std
 					q.Expression;
 
 			//TODO необходимо доработать метод т.к. вызов может быть в цикле по большому количеству данных (в случае применения хранимых наборов )
-			// так же необходимо что бы был устанолвлен атрибут ObjectSetTable для TResult не содержащий параметров
 
 			IRepository<TResult> templateRepository;
 			if ((ObjectSetSettings?.TableName).IsEmpty())
