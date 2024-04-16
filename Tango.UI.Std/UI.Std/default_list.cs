@@ -354,7 +354,7 @@ namespace Tango.UI.Std
 			AfterRender(response);
 		}
 
-		public void OnQuickSearch(ApiResponse response)
+		public virtual void OnQuickSearch(ApiResponse response)
 		{
 			Render(response);
 			AfterRender(response);
