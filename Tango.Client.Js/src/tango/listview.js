@@ -1048,6 +1048,9 @@ window.listview = function (au, cu, cbcell, menu) {
 					while (parent.nextElementSibling && parseInt(parent.nextElementSibling.getAttribute('data-level')) == level) {
 						parent = parent.nextElementSibling;
 					}
+					while (parent.nextElementSibling && parseInt(parent.nextElementSibling.getAttribute('data-level')) > level) {
+						parent = parent.nextElementSibling;
+					}
 					parent.insertAdjacentElement(pos, tocopy[i]);
 				}
 				else {
