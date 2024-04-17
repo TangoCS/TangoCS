@@ -657,10 +657,11 @@ window.listview = function (au, cu, cbcell, menu) {
 						while (tr && parseInt(tr.getAttribute('data-level')) == level + 1) {
 							var cb = tr.querySelector('.sel');
 							if (cb) {
-								if (isChecked)
+								/*if (isChecked)
 									cbcell.setRowChecked(tr, cb, state);
 								else
-									cbcell.setRowUnchecked(tr, cb, state);
+									cbcell.setRowUnchecked(tr, cb, state);*/
+								cbcell.selSelectedRange([{ el: cb, tr: tr }]);
 								updateSelected(cb);
 							}
 							tr = tr.nextElementSibling;
@@ -693,12 +694,14 @@ window.listview = function (au, cu, cbcell, menu) {
 									ntr = ntr.nextElementSibling;
 								}
 								if (allChildrenChecked) {
-									cbcell.setRowChecked(tr, cb, state);
+									//cbcell.setRowChecked(tr, cb, state);
+									cbcell.selSelectedRange([{ el: cb, tr: tr }]);
 									updateSelected(cb);
 								}
 							}
 							else {
-								cbcell.setRowUnchecked(tr, cb, state);
+								//cbcell.setRowUnchecked(tr, cb, state);
+								cbcell.selSelectedRange([{ el: cb, tr: tr }]);
 								updateSelected(cb);
 							}
 						}
