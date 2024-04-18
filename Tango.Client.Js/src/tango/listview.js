@@ -20,25 +20,16 @@
 				const setUnchecked = 'newState' in rows[i] ?
 					rows[i].newState == 0 :
 					tr.classList.contains('checked') || tr.hasAttribute('data-checked');
-				const rowid = tr.getAttribute('data-rowid');
 
 				if (setUnchecked) {
 					if (cins.selectedvalues[0] == -1) {
 						cins.selectedvalues = [];
 						if (cbhead) instance.setPageChecked(c.root, cins, cbhead);
 					}
-					instance.setRowUnchecked(tr, el, cins);
-					rows[i].newState = 0;
-					const index = cins.selectedvalues.indexOf(rowid);
-					if (index > -1) {
-						cins.selectedvalues.splice(index, 1);
-					}
+					instance.setRowAndValueUnchecked(tr, el, cins);
 				}
 				else {
-					instance.setRowChecked(tr, el, cins);
-					rows[i].newState = 1;
-					if (cins.selectedvalues.indexOf(rowid) == -1)
-						cins.selectedvalues.push(rowid);
+					instance.setRowAndValueChecked(tr, el, cins);
 				}
 			}
 
@@ -90,6 +81,12 @@
 			if (state.onRowChecked)
 				state.onRowChecked.invoke(ctx);
 		},
+		setRowAndValueChecked: function (tr, el, state) {
+			instance.setRowChecked(tr, el, state);
+			const rowid = tr.getAttribute('data-rowid');
+			if (state.selectedvalues.indexOf(rowid) == -1)
+				state.selectedvalues.push(rowid);
+		},
 
 		setRowUnchecked: function (tr, el, state) {
 			const ctx = { tr: tr };
@@ -101,6 +98,14 @@
 			el.setAttribute('data-state', 0);
 			if (state.onRowUnchecked)
 				state.onRowUnchecked.invoke(ctx);
+		},
+		setRowAndValueUnchecked: function (tr, el, state) {
+			instance.setRowUnchecked(tr, el, state);
+			const rowid = tr.getAttribute('data-rowid');
+			const index = state.selectedvalues.indexOf(rowid);
+			if (index > -1) {
+				state.selectedvalues.splice(index, 1);
+			}
 		},
 
 		setPageChecked: function (root, state, cbhead) {
@@ -657,11 +662,10 @@ window.listview = function (au, cu, cbcell, menu) {
 						while (tr && parseInt(tr.getAttribute('data-level')) == level + 1) {
 							var cb = tr.querySelector('.sel');
 							if (cb) {
-								/*if (isChecked)
-									cbcell.setRowChecked(tr, cb, state);
+								if (isChecked)
+									cbcell.setRowAndValueChecked(tr, cb, state);
 								else
-									cbcell.setRowUnchecked(tr, cb, state);*/
-								cbcell.selSelectedRange([{ el: cb, tr: tr }]);
+									cbcell.setRowAndValueUnchecked(tr, cb, state);
 								updateSelected(cb);
 							}
 							tr = tr.nextElementSibling;
@@ -694,14 +698,13 @@ window.listview = function (au, cu, cbcell, menu) {
 									ntr = ntr.nextElementSibling;
 								}
 								if (allChildrenChecked) {
-									//cbcell.setRowChecked(tr, cb, state);
-									cbcell.selSelectedRange([{ el: cb, tr: tr }]);
+									cbcell.setRowAndValueChecked(tr, cb, state);
+									
 									updateSelected(cb);
 								}
 							}
 							else {
-								//cbcell.setRowUnchecked(tr, cb, state);
-								cbcell.selSelectedRange([{ el: cb, tr: tr }]);
+								cbcell.setRowAndValueUnchecked(tr, cb, state);
 								updateSelected(cb);
 							}
 						}
