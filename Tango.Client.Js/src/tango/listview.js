@@ -688,25 +688,11 @@ window.listview = function (au, cu, cbcell, menu) {
 						tr = tr.previousElementSibling;
 					}
 
-					if (tr) {
+					if (tr && !isChecked) {
 						var cb = tr.querySelector('.sel');
 						if (cb && cb.hasAttribute('data-strategy') && cb.getAttribute('data-strategy') == 'WithChildren') {
-							if (isChecked) {
-								var ntr = currow.nextElementSibling;
-								while (ntr && parseInt(ntr.getAttribute('data-level')) == level) {
-									allChildrenChecked = allChildrenChecked && ntr.classList.contains('checked');
-									ntr = ntr.nextElementSibling;
-								}
-								if (allChildrenChecked) {
-									cbcell.setRowAndValueChecked(tr, cb, state);
-									
-									updateSelected(cb);
-								}
-							}
-							else {
-								cbcell.setRowAndValueUnchecked(tr, cb, state);
-								updateSelected(cb);
-							}
+							cbcell.setRowAndValueUnchecked(tr, cb, state);
+							updateSelected(cb);
 						}
 					}
 				}
