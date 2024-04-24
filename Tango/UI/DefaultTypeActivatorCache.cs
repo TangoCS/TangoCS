@@ -16,7 +16,7 @@ namespace Tango.UI
 		{
 			typeInfos.Add(new InvokeableTypeInfo {
 				Filter = t => t.Name.EndsWith("Controller"),
-				Keys = t => {
+				Keys = (p, t) => {
 					var s = t.Name.Replace("Controller", "");
 					var methods = t.GetMethods(BindingFlags.Public | BindingFlags.Instance)
 						.Where(m => m.ReturnType == typeof(ActionResult) && !m.IsSpecialName && !Attribute.IsDefined(m, typeof(NonActionAttribute)))
@@ -36,7 +36,7 @@ namespace Tango.UI
 			});
 			typeInfos.Add(new InvokeableTypeInfo {
 				Filter = t => t.IsSubclassOf(typeof(ViewElement)) && !t.IsAbstract,
-				Keys = t => {
+				Keys = (p, t) => {
 					var parts = t.Name.Split('_');
 					var defService = parts.Length > 0 ? parts[0] : "";
 					var defAction = parts.Length > 1 ? parts[1] : "";
@@ -48,13 +48,13 @@ namespace Tango.UI
 			});
 		}
 
-		public void LookOver(Type t)
+		public void LookOver(IServiceProvider provider, Type t)
 		{
 			foreach (var info in typeInfos)
 			{
 				if (info.Filter(t))
 				{
-					var keys = info.Keys(t);
+					var keys = info.Keys(provider, t);
 					if (keys == null || keys.Count == 0) continue;
 					foreach (var key in keys)
 					{
@@ -82,7 +82,7 @@ namespace Tango.UI
 	public class InvokeableTypeInfo
 	{
 		public Func<Type, bool> Filter { get; set; }
-		public Func<Type, List<string>> Keys { get; set; }
+		public Func<IServiceProvider, Type, List<string>> Keys { get; set; }
 		public IActionInvoker Invoker { get; set; }
 	}
 }

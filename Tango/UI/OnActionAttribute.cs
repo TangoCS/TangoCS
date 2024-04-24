@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Tango.UI
 {
@@ -7,6 +8,11 @@ namespace Tango.UI
 	{
 		public string Service { get; }
 		public string Action { get; }
+
+		public int Func { get; set; }
+
+		public static Dictionary<int, Func<IServiceProvider, List<(string service, string action)>>> Funcs { get; set; } =
+			new Dictionary<int, Func<IServiceProvider, List<(string service, string action)>>>();
 
 		public OnActionAttribute() { }
 

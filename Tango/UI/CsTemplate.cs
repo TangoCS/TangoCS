@@ -253,7 +253,7 @@ namespace Tango.UI
 
 		protected List<InvokeableTypeInfo> typeInfos = new List<InvokeableTypeInfo>();
 
-		public void LookOver(Type t)
+		public void LookOver(IServiceProvider provider, Type t)
 		{
 			if (t.IsSubclassOf(typeof(ViewContainer)) && !t.IsAbstract)
 				_typeCache.Add(t.Name.Replace("Container", "").ToLower(), t);
