@@ -1168,6 +1168,7 @@ div.tabs2 + div.tabs2_pages {
 
 .treerow .leaf {
 	width: 16px;
+	min-width: 16px;
 	border-left: 1px dashed #ccc;
 }
 
