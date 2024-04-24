@@ -21,6 +21,27 @@ namespace Tango.UI.Std
 		readonly List<TreeLevelDescriptionItem<TResult>> _templateCollection = new List<TreeLevelDescriptionItem<TResult>>();
 		Dictionary<int, TreeLevelDescriptionItem<TResult>> _templatesDict = new Dictionary<int, TreeLevelDescriptionItem<TResult>>();
 		protected TreeLevelDescriptionItem<TResult> GetTemplateByID(int id) => _templatesDict[id];
+		protected IEnumerable<(int level, TreeLevelDescriptionItem<TResult> item)> GetTemplates()
+		{
+			var stack = new Stack<(int level, IEnumerator<TreeLevelDescriptionItem<TResult>> en)>();
+			stack.Push((0, _templateCollection.GetEnumerator()));
+
+			while (stack.Count > 0)
+			{
+				var obj = stack.Peek();
+				if (obj.en.MoveNext())
+				{
+					var t = obj.en.Current;
+					yield return (obj.level, t);
+
+					stack.Push((obj.level + 1, t.Children.GetEnumerator()));
+				}
+				else
+				{
+					stack.Pop().en.Dispose();
+				}
+			}
+		}
 
 		int _count = 0;
 
@@ -410,7 +431,7 @@ namespace Tango.UI.Std
 			return res;
 		}
 		
-		[Obsolete]
+		/*[Obsolete]
 		public void ExpandTree(ApiResponse response, string rowId, bool refreshtree)
 		{
 			if (_fields == null)
@@ -488,11 +509,12 @@ namespace Tango.UI.Std
 				rowsId.Reverse();
 				response.AddClientAction("listview", "openlevel", rowsId);
 			}
-		}
+		}*/
 
 		protected override IFieldCollection<TResult, TResult> FieldsConstructor()
 		{
 			var enableSelect = false;
+			var enableExtendedSearch = false;
 			TemplateInit(_templateCollection);
 
 			void buildTemplateDictionary(IEnumerable<TreeLevelDescriptionItem<TResult>> templateCollection)
@@ -500,6 +522,7 @@ namespace Tango.UI.Std
 				foreach (var t in templateCollection)
 				{
 					enableSelect = enableSelect || t.Template.EnableSelect;
+					enableExtendedSearch = enableExtendedSearch || t.EnableExtendedSearch;
 					if (!_templatesDict.ContainsKey(t.Template.ID))
 						_templatesDict.Add(t.Template.ID, t);
 					buildTemplateDictionary(t.Children);
@@ -556,7 +579,7 @@ namespace Tango.UI.Std
 					foreach (var _ref in nodeTemplate.DataRef(o))
 						a.DataRef("#"+_ref);
 
-				if (nodeTemplate.EnableSelect || nodeTemplate.SetDataRowId)
+				if (nodeTemplate.EnableSelect || nodeTemplate.SetDataRowId || enableExtendedSearch)
 					a.Data("rowid", dataRowID);
 
 				if (nodeTemplate.EnableSelect && _renderSelectedBlockMode && CurrentState.IsChecked)
@@ -773,6 +796,7 @@ namespace Tango.UI.Std
 	public class TreeLevelDescription<TResult>
 	{
 		public int ID { get; set; }
+		public string Title { get; set; }
 		public Expression<Func<TResult, object>> GroupBy { get; set; }
 		public Expression<Func<IGrouping<object, TResult>, object>> GroupBySelector { get; set; } = x => x.Key;
         public Func<IQueryable<TResult>, IQueryable<TResult>> OrderBy { get; set; } = data => data;
@@ -896,6 +920,8 @@ namespace Tango.UI.Std
 	public class TreeLevelDescriptionItem<TResult>
 	{
 		public TreeLevelDescription<TResult> Template { get; set; }
+
+		public bool EnableExtendedSearch { get; set; } = false;
 		public Expression<Func<TResult, bool>> Where { get; set; }
 
 		public TreeLevelDescriptionItem<TResult> ParentTemplateItem { get; set; }

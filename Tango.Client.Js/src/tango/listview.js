@@ -256,6 +256,33 @@ window.listview = function (au, cu, cbcell, menu) {
 				expand();
 			}
 		},
+		expandRow: function (tr) {
+			const level = parseInt(tr.getAttribute('data-level'));
+			var row = tr.nextElementSibling;
+
+			tr.classList.remove('collapsed');
+
+			while (row && parseInt(row.getAttribute('data-level')) > level) {
+				if (parseInt(row.getAttribute('data-collapsedby')) == level) {
+					row.classList.remove('hide');
+					row.setAttribute('data-collapsedby', '');
+				}
+				row = row.nextElementSibling;
+			}
+		},
+		collapseRow: function (tr) {
+			const level = parseInt(tr.getAttribute('data-level'));
+			var row = tr.nextElementSibling;
+
+			tr.classList.add('collapsed');
+
+			while (row && parseInt(row.getAttribute('data-level')) > level) {
+				row.setAttribute('data-collapsedby', level);
+				row.classList.add('hide');
+				row = row.nextElementSibling;
+			}
+		},
+
 		widgetWillMount: function (shadow, ctrl) {
 			const root = shadow.getElementById(ctrl.root);
 			//initHighlight(root);
@@ -401,41 +428,33 @@ window.listview = function (au, cu, cbcell, menu) {
 			au.postEventFromElementWithApiResponse(el, target);
 		},
 		openlevel: function (args, counter) {
-
 			if (!counter) counter = 0;
 
 			if (args && args[counter]) {
-
 				var rowid = '[data-rowid="' + args[counter] + '"]';
-				var el = document.querySelector(rowid)
-				var level = parseInt(el.getAttribute('data-level'))
-				el.attributes['class'] = '';
-				//Если обновляем дерево, необходимо удалить страные элементы
-				var rows = el.parentNode.children;
-				var toremove = [];
+				var el = document.querySelector(rowid);
 
-				for (var i = 0; i < rows.length; i++) {
-					if (parseInt(rows[i].getAttribute('data-level')) > level) {
-						toremove.push(rows[i]);
+				if (el.hasAttribute('data-loaded')) {
+					if (el.classList.contains('collapsed')) {
+						instance.expandRow(el);
 					}
+					instance.openlevel(args, counter + 1);
 				}
+				else if (counter < args.length - 1) {
+					var level = parseInt(el.getAttribute('data-level'));
+					ajaxUtils.postEventFromElementWithApiResponse(el, { data: { rowid: args[counter], level: level, selectedRow: args[args.length - 1] } }).done(function () {
+						var rowid = '[data-rowid="' + args[counter] + '"]';
+						var el = document.querySelector(rowid);
+						el.setAttribute('data-loaded', '');
+						instance.expandRow(el);
 
-				for (var i = 0; i < toremove.length; i++) {
-					toremove[i].parentNode.removeChild(toremove[i]);
+						instance.openlevel(args, counter + 1);
+					});
 				}
-
-
-				ajaxUtils.postEventFromElementWithApiResponse(el, { data: { rowid: args[counter], level: level, selectedRow: args[args.length - 1] } }).done(function () {
-
-					var rowid = '[data-rowid="' + args[counter] + '"]';
-					var el = document.querySelector(rowid)
-
-					el.removeAttribute("class");
-					el.setAttribute('data-loaded', '')
-
-					instance.openlevel(args, counter + 1)
-				});
 			}
+
+			if (counter == args.length - 1)
+				el.scrollIntoView();
 		},
 		initFixedHeader: function (root) {
 			if (typeof root === 'string' || root instanceof String)
