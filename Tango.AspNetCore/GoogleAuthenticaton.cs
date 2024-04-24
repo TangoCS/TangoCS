@@ -7,6 +7,7 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Tango.Identity;
+using Tango.Logger;
 using Tango.UI;
 
 namespace Tango.AspNetCore
@@ -35,39 +36,46 @@ namespace Tango.AspNetCore
 			});
 			app.Map(opt.CallbackUrl, b => {
 				b.Run(async context => {
-					var code = context.Request.Query["code"];
-					var state = context.Request.Query["state"];
-
-					GoogleToken token = null;
-					GoogleUserProfile profile = null;
-
-					using (var httpClient = new HttpClient { BaseAddress = new Uri("https://www.googleapis.com") })
-					{
-						var requestUrl = $"oauth2/v4/token?code={code}&client_id={clientID}&client_secret={secretKey}&redirect_uri=https:%2F%2F{context.Request.Host.Value}{callback}&grant_type=authorization_code";
-
-						var dict = new Dictionary<string, string> {
-							{ "Content-Type", "application/x-www-form-urlencoded" }
-						};
-						var req = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, requestUrl) { Content = new FormUrlEncodedContent(dict) };
-						var response = await httpClient.SendAsync(req);
-						var s = await response.Content.ReadAsStringAsync();
-						token = JsonConvert.DeserializeObject<GoogleToken>(s);
-					}
-
-					using (var httpClient = new HttpClient { BaseAddress = new Uri("https://www.googleapis.com") })
-					{
-						string url = $"oauth2/v1/userinfo?alt=json&access_token={token.AccessToken}";
-						var response = await httpClient.GetAsync(url);
-						var s = await response.Content.ReadAsStringAsync();
-						profile = JsonConvert.DeserializeObject<GoogleUserProfile>(s);
-					}
-
+					AspNetCoreActionContext ac = null;
 					ActionResult result = null;
 
 					try
 					{
+						ac = new AspNetCoreActionContext(context);
+
+						var code = context.Request.Query["code"];
+						var state = context.Request.Query["state"];
+
+						GoogleToken token = null;
+						GoogleUserProfile profile = null;
+
+						using (var httpClient = new HttpClient { BaseAddress = new Uri("https://www.googleapis.com") })
+						{
+							var requestUrl = $"oauth2/v4/token?code={code}&client_id={clientID}&client_secret={secretKey}&redirect_uri=https:%2F%2F{context.Request.Host.Value}{callback}&grant_type=authorization_code";
+
+							var dict = new Dictionary<string, string> {
+								{ "Content-Type", "application/x-www-form-urlencoded" }
+							};
+							var req = new HttpRequestMessage(System.Net.Http.HttpMethod.Post, requestUrl) { Content = new FormUrlEncodedContent(dict) };
+							var response = await httpClient.SendAsync(req);
+							var s = await response.Content.ReadAsStringAsync();
+							token = JsonConvert.DeserializeObject<GoogleToken>(s);
+						}
+
+						using (var httpClient = new HttpClient { BaseAddress = new Uri("https://www.googleapis.com") })
+						{
+							string url = $"oauth2/v1/userinfo?alt=json&access_token={token.AccessToken}";
+							var response = await httpClient.GetAsync(url);
+							var s = await response.Content.ReadAsStringAsync();
+							profile = JsonConvert.DeserializeObject<GoogleUserProfile>(s);
+
+							if (profile.Id == null)
+								throw new Exception("GoogleUserProfile Id is null\n\nData:\n\n" + s);
+						}
+
 						var helper = context.RequestServices.GetService<IGoogleAuthenticationHelper>();
 						helper.InjectProperties(context.RequestServices);
+
 						result = await helper.DoLogin(profile, state);
 					}
 					catch (Exception ex)
@@ -75,10 +83,13 @@ namespace Tango.AspNetCore
 						var res = context.RequestServices.GetService(typeof(IErrorResult)) as IErrorResult;
 						var message = res?.OnError(ex) ?? ex.ToString().Replace(Environment.NewLine, "<br/>");
 						result = new HtmlResult(message, "");
+
+						var err = context.RequestServices.GetService(typeof(IErrorLogger)) as IErrorLogger;
+						err.Log(ex);
 					}
 
-					var ac = new AspNetCoreActionContext(context);
-					await result.ExecuteResultAsync(ac);
+					if (ac != null)
+						await result.ExecuteResultAsync(ac);
 				});
 			});
 		}
