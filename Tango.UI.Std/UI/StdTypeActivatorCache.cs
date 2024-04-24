@@ -12,7 +12,7 @@ namespace Tango.UI.Std
 			typeInfos.Add(new InvokeableTypeInfo
 			{
 				Filter = t => t.IsSubclassOf(typeof(AbstractViewPage)) && !t.IsAbstract,
-				Keys = t => new List<string> { t.Name },
+				Keys = (p, t) => new List<string> { t.Name },
 				Invoker = new CsPageInvoker()
 			});
 		}

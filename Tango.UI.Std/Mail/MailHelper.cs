@@ -261,7 +261,7 @@ namespace Tango
                 return null;
         }
 
-        void ITypeObserver.LookOver(Type t)
+        void ITypeObserver.LookOver(IServiceProvider provider, Type t)
         {
             var attr = t.GetCustomAttribute<MailUserDataAttribute>();
             if (attr == null) return;

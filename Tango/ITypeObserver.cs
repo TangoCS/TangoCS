@@ -9,7 +9,7 @@ namespace Tango
 {
 	public interface ITypeObserver
 	{
-		void LookOver(Type t);
+		void LookOver(IServiceProvider provider, Type t);
 	}
 
 	public class TypeCacheAttribute : Attribute
@@ -34,7 +34,7 @@ namespace Tango
 				return null;
 		}
 
-		void ITypeObserver.LookOver(Type t)
+		void ITypeObserver.LookOver(IServiceProvider provider, Type t)
 		{
 			var attr = t.GetCustomAttribute<TypeCacheAttribute>();
 			if (attr == null) return;

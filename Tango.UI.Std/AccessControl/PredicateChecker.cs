@@ -23,7 +23,7 @@ namespace Tango.AccessControl.Std
 			return _predicates[key](predicateContext, _serviceProvider);
 		}
 
-		public void LookOver(Type t)
+		public void LookOver(IServiceProvider provider, Type t)
 		{
 			var attr = t.GetCustomAttribute<HasPredicatesAttribute>();
 			if (attr == null) return;
