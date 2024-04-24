@@ -260,6 +260,16 @@ namespace Tango.Data
 		
 		protected override Expression VisitBinary(BinaryExpression b)
 		{
+			if (b.NodeType == ExpressionType.Coalesce)
+			{
+				sb.Append("coalesce(");
+				Visit(b.Left);
+				sb.Append(",");
+				Visit(b.Right);
+				sb.Append(")");
+				return b;
+			}
+
 			sb.Append("(");
 			_hasvalueexpression = false;
 			Visit(b.Left);
