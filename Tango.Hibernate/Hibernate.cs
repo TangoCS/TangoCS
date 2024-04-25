@@ -479,7 +479,7 @@ namespace Tango.Hibernate
 
 		public IEnumerable<Type> GetTypes() => _mappings;
 
-		public void LookOver(Type t)
+		public void LookOver(IServiceProvider provider, Type t)
 		{
 			if (t.BaseType.IsGenericType)
 			{
