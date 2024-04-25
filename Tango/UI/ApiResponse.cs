@@ -170,10 +170,7 @@ namespace Tango.UI
 
 		void RunRedirect(ActionContext retctx)
 		{
-			var cache = retctx.GetService<ITypeActivatorCache>();
-			(var type, var invoker) = cache?.Get(retctx.Service + "." + retctx.Action) ?? (null, null);
-			var result = invoker?.Invoke(retctx, type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
-
+			var result = retctx.RunAction();
 			if (result is ApiResult ajax)
 			{
 				for (int i = ajax.ApiResponse._widgetsToRender.Count - 1; i >= 0; i--)

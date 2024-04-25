@@ -626,7 +626,7 @@ namespace Tango.UI.Std
 			t.ItemSeparator();
 			var key = typeof(T).GetResourceType().Name + "." + returnAction;
 			Action<ActionLink> attrs1 = null;
-			if (tac.Get(key).HasValue)
+			if (tac.Get(key) != null)
 			{
 				var retUrl1 = new ActionLink(t.Context).To<T>(returnAction).WithArg(Constants.Id, returnID).Url;
 				var retUrl0 = t.Context.CreateReturnUrl(1);

@@ -22,11 +22,11 @@ namespace Tango.UI.Std
 				.UseDefaultResolver()
 				.Url;
 						
-			(var type, var invoker) = Cache.Get(taskService + "." + taskAction) ?? (null, null);
-			if (type == null)
+			var view = Cache.Get(taskService + "." + taskAction);
+			if (view == null)
 				return;
 
-			var key = type.FullName + "." + taskAction;
+			var key = view.Type.FullName + "." + taskAction;
 			var prefix = (taskService + "_" + taskAction).ToLower();
 			var notificationContainer = prefix + "_link";
 			var title = Resources.Get(key);

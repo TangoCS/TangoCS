@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Components.Routing;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Template;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Net.Http.Headers;
 using Newtonsoft.Json;
 using System;
@@ -14,29 +14,29 @@ using Tango.UI;
 
 namespace Tango.AspNetCore
 {
-    public class AspNetCoreActionContext : ActionContext
+	public class AspNetCoreActionContext : ActionContext
     {
 		static string[] SkipCookies => new[] { ".AspNetCore.Cookies", "x-csrf-token" };
 
-		readonly List<TemplateMatcher> _templateMatchers = new List<TemplateMatcher>();
+		readonly RouteCollection _routeCollection;
+		readonly HttpContext _ctx;
 
-        public AspNetCoreActionContext(HttpContext ctx) : base(ctx.RequestServices)
+		public AspNetCoreActionContext(HttpContext ctx) : base(ctx.RequestServices)
 		{
+			_ctx = ctx;
+
 			var routeData = ctx.GetRouteData();
+
 			var route = routeData.Routers.FirstOrDefault(x => x is Route) as Route;
-			var routeColection = routeData.Routers.OfType<RouteCollection>().First();
-
-			CurrentRoute = new RouteInfo {
-				Name = route.Name,
-				Template = route.RouteTemplate
-			};
-
-			for (int j = 0; j < routeColection.Count; j++)
+			if (route != null)
 			{
-				var r = routeColection[j] as Route;
-				var matcher = new TemplateMatcher(r.ParsedTemplate, null);
-				_templateMatchers.Add(matcher);
+				CurrentRoute = new RouteInfo {
+					Name = route.Name,
+					Template = route.RouteTemplate
+				};
 			}
+
+			_routeCollection = routeData.Routers.OfType<RouteCollection>().FirstOrDefault();
 
 			if (Guid.TryParse(ctx.Request.Headers["X-Request-Guid"], out Guid rid))
 				RequestID = rid;
@@ -131,9 +131,18 @@ namespace Tango.AspNetCore
 			}
 			if (!returnUrl.StartsWith("/")) returnUrl = "/" + returnUrl;
 
-			foreach (var matcher in _templateMatchers)
+			for (int j = 0; j < _routeCollection.Count; j++)
+			{
+				var route = _routeCollection[j] as Route;
+				var matcher = new TemplateMatcher(route.ParsedTemplate, route.Defaults);
 				if (matcher.TryMatch(returnUrl, values))
-					break;
+				{
+					if (RouteConstraintMatcher.Match(route.Constraints, values, _ctx, route, RouteDirection.UrlGeneration, NullLogger.Instance))
+						break;
+					else
+						values = new RouteValueDictionary();
+				}
+			}
 
 			var target = new ActionTarget();
 			if (values.TryGetValue(Constants.ServiceName, out var service))

@@ -7,8 +7,8 @@ namespace Tango.UI
 {
 	public class DefaultTypeActivatorCache : ITypeActivatorCache, ITypeObserver
 	{
-		static readonly Dictionary<string, (Type Type, IActionInvoker Invoker)> _typeActivatorCache
-			= new Dictionary<string, (Type Type, IActionInvoker Invoker)>(StringComparer.OrdinalIgnoreCase);
+		static readonly Dictionary<string, TypeActivatorInfo> _typeActivatorCache
+			= new Dictionary<string, TypeActivatorInfo>(StringComparer.OrdinalIgnoreCase);
 
 		protected List<InvokeableTypeInfo> typeInfos = new List<InvokeableTypeInfo>();
 
@@ -21,14 +21,14 @@ namespace Tango.UI
 					var methods = t.GetMethods(BindingFlags.Public | BindingFlags.Instance)
 						.Where(m => m.ReturnType == typeof(ActionResult) && !m.IsSpecialName && !Attribute.IsDefined(m, typeof(NonActionAttribute)))
 						.Select(m => m).ToList();
-					var res = new List<string>();
+					var res = new List<ActionInfo>();
 					foreach (var m in methods)
 					{
 						var attrs = m.GetCustomAttributes<OnActionAttribute>();
 						if (attrs.Count() == 0)
-							res.Add(s + "." + m.Name);
+							res.Add(new ActionInfo { Service = s, Action = m.Name });
 						else
-							res.AddRange(attrs.Select(a => a.Service + "." + a.Action).ToList());
+							res.AddRange(attrs.Select(a => new ActionInfo { Service = a.Service, Action = a.Action }));
 					}
 					return res;
 				},
@@ -42,7 +42,16 @@ namespace Tango.UI
 					var defAction = parts.Length > 1 ? parts[1] : "";
 					var attrs = t.GetCustomAttributes<OnActionAttribute>();
 					if (attrs == null) return null;
-					return attrs.Select(a => (a.Service ?? defService) + "." + (a.Action ?? defAction)).ToList();
+
+					var res = new List<ActionInfo>();
+					foreach (var attr in attrs)
+					{
+						if (attr.Func > 0)
+							res.AddRange(OnActionAttribute.Funcs[attr.Func](p));
+						else
+							res.Add(new ActionInfo { Service = attr.Service ?? defService, Action = attr.Action ?? defAction });
+					}
+					return res;
 				},
 				Invoker = new CsFormInvoker()
 			});
@@ -58,22 +67,23 @@ namespace Tango.UI
 					if (keys == null || keys.Count == 0) continue;
 					foreach (var key in keys)
 					{
-						_typeActivatorCache[key] = (t, info.Invoker);
+						var k = key.Service + "." + key.Action;
+						_typeActivatorCache[k] = new TypeActivatorInfo { Type = t, Invoker = info.Invoker, Args = key.Args };
 					}
 					break;
 				}
 			}
 		}
 
-		public (Type Type, IActionInvoker Invoker)? Get(string key)
+		public TypeActivatorInfo Get(string key)
 		{
-			if (_typeActivatorCache.TryGetValue(key.ToLower(), out (Type Type, IActionInvoker Invoker) ret))
+			if (_typeActivatorCache.TryGetValue(key.ToLower(), out TypeActivatorInfo ret))
 				return ret;
 			else
 				return null;
 		}
 
-        public Dictionary<string, (Type Type, IActionInvoker Invoker)> GetAll()
+        public Dictionary<string, TypeActivatorInfo> GetAll()
         {
             return _typeActivatorCache;
         }
@@ -82,7 +92,14 @@ namespace Tango.UI
 	public class InvokeableTypeInfo
 	{
 		public Func<Type, bool> Filter { get; set; }
-		public Func<IServiceProvider, Type, List<string>> Keys { get; set; }
+		public Func<IServiceProvider, Type, List<ActionInfo>> Keys { get; set; }
 		public IActionInvoker Invoker { get; set; }
+	}
+
+	public class ActionInfo
+	{
+		public string Service { get; set; }
+		public string Action { get; set; }
+		public Dictionary<string, string> Args { get; set; }
 	}
 }

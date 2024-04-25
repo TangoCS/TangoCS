@@ -11,8 +11,8 @@ namespace Tango.UI
 
 		public int Func { get; set; }
 
-		public static Dictionary<int, Func<IServiceProvider, List<(string service, string action)>>> Funcs { get; set; } =
-			new Dictionary<int, Func<IServiceProvider, List<(string service, string action)>>>();
+		public static Dictionary<int, Func<IServiceProvider, IEnumerable<ActionInfo>>> Funcs { get; set; } =
+			new Dictionary<int, Func<IServiceProvider, IEnumerable<ActionInfo>>>();
 
 		public OnActionAttribute() { }
 

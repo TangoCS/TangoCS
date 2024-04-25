@@ -455,11 +455,15 @@ namespace Tango.UI
 			return res;
 		}
 
-		public static ActionResult RunAction(this ActionContext ctx)
+		public static ActionResult RunAction(this ActionContext ctx, ITypeActivatorCache cache = null, string key = null)
 		{
-			var cache = ctx.RequestServices.GetService(typeof(ITypeActivatorCache)) as ITypeActivatorCache;
-			(var type, var invoker) = cache.Get(ctx.Service + "." + ctx.Action) ?? (null, null);
-			return invoker?.Invoke(ctx, type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
+			cache = cache ?? ctx.RequestServices.GetService(typeof(ITypeActivatorCache)) as ITypeActivatorCache;
+			key = key ?? (ctx.Service + "." + ctx.Action);
+			var view = cache.Get(key);
+			if (view?.Args != null)
+				foreach (var kv in view.Args)
+					ctx.AllArgs.Add(kv.Key, kv.Value);
+			return view?.Invoker?.Invoke(ctx, view.Type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
 		}
 	}
 

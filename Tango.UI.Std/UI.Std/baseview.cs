@@ -181,18 +181,13 @@ namespace Tango.UI.Std
 				Context.Action = DefaultView.Action;
 			}
 
-			(Type type, IActionInvoker invoker) view = (null, null);
-
-			if (!Context.Service.IsEmpty())
-				view = Cache.Get(Context.Service + "." + Context.Action) ?? (null, null);
-
 			ActionResult result;
 
 			if (!Context.Service.IsEmpty())
 			{
 				try
 				{
-					result = view.invoker?.Invoke(Context, view.type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
+					result = Context.RunAction(Cache);
 				}
 				catch (Exception ex)
 				{

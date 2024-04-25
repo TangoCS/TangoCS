@@ -5,7 +5,14 @@ namespace Tango.UI
 {
 	public interface ITypeActivatorCache
 	{
-		(Type Type, IActionInvoker Invoker)? Get(string key);
-        Dictionary<string, (Type Type, IActionInvoker Invoker)> GetAll();
+		TypeActivatorInfo Get(string key);
+        Dictionary<string, TypeActivatorInfo> GetAll();
     }
+
+	public class TypeActivatorInfo
+	{
+		public Type Type { get; set; }
+		public IActionInvoker Invoker { get; set; }
+		public Dictionary<string, string> Args { get; set; }
+	}
 }

@@ -12,7 +12,7 @@ namespace Tango.UI.Std
 			typeInfos.Add(new InvokeableTypeInfo
 			{
 				Filter = t => t.IsSubclassOf(typeof(AbstractViewPage)) && !t.IsAbstract,
-				Keys = (p, t) => new List<string> { t.Name },
+				Keys = (p, t) => new List<ActionInfo> { new ActionInfo { Service = "_page", Action = t.Name } },
 				Invoker = new CsPageInvoker()
 			});
 		}
@@ -35,18 +35,18 @@ namespace Tango.UI.Std
 				ctx.Action = page.DefaultView.Action;
 			}
 
-			(Type type, IActionInvoker invoker) view = (null, null);
+			TypeActivatorInfo view = null;
 
 			if (!ctx.Service.IsEmpty())
-				view = cache.Get(ctx.Service + "." + ctx.Action) ?? (null, null);
+				view = cache.Get(ctx.Service + "." + ctx.Action);
 
-			if (ctx.RootReceiver != t.Name.ToLower() && !(view.type?.IsSubclassOf(typeof(Controller)) ?? false))
+			if (ctx.RootReceiver != t.Name.ToLower() && !(view?.Type?.IsSubclassOf(typeof(Controller)) ?? false))
 			{
 				if (ctx.RootReceiver != null)
 				{
 					ctx.IsFirstLoad = true;
-					var tOldPage = cache.Get(ctx.RootReceiver) ?? (null, null);
-					if (tOldPage.Type == null)
+					var tOldPage = cache.Get("_page." + ctx.RootReceiver);
+					if (tOldPage == null)
 						return new HttpResult { StatusCode = HttpStatusCode.NotFound };
 					oldPage = Activator.CreateInstance(tOldPage.Type) as AbstractViewPage;
 					oldPage.Context = ctx;
@@ -58,7 +58,12 @@ namespace Tango.UI.Std
 
 			ActionResult result;
 			if (!ctx.Service.IsEmpty())
-				result = view.invoker?.Invoke(ctx, view.type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
+			{
+				if (view?.Args != null)
+					foreach (var kv in view.Args)
+						ctx.AllArgs.Add(kv.Key, kv.Value);
+				result = view?.Invoker?.Invoke(ctx, view.Type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
+			}
 			else
 			{
 				var res = new ApiResult();

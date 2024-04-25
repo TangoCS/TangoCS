@@ -66,10 +66,7 @@ namespace Tango.UI
 		static ActionResult RunAjax<T>(ActionContext ctx)
 			where T : ViewRootElement, new()
 		{
-			var cache = ctx.RequestServices.GetService(typeof(ITypeActivatorCache)) as ITypeActivatorCache;
-			var key = typeof(T).Name.ToLower();
-			(var type, var invoker) = cache.Get(key) ?? (null, null);
-			return invoker?.Invoke(ctx, type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
+			return ctx.RunAction(key: "_page." + typeof(T).Name.ToLower());
 		}
 	}
 }
