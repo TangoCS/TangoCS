@@ -278,17 +278,17 @@ namespace Tango.UI.Std
 			(Renderer as TreeListRenderer<TResult>).SetSelectedValues(_selectedValues);
 		}
 
-		public void SetSelectedItems(IEnumerable<(int templateID, int level, Expression<Func<TResult, bool>> predicate)> items)
+		protected void SetSelectedItems(IEnumerable<(int templateID, int level, Expression<Func<TResult, bool>> predicate)> items)
 		{
 			_selectedValues.Clear();
 			foreach (var item in items)
 			{
-				SetSelectedItemsOne(item.templateID, item.level, item.predicate);
+				SetSelectedItemsOne(item.templateID, item.level, item.predicate, true);
 			}
 			(Renderer as TreeListRenderer<TResult>).SetSelectedValues(_selectedValues);
 		}
 
-		private void SetSelectedItemsOne(int templateID, int level, Expression<Func<TResult, bool>> predicate)
+		private void SetSelectedItemsOne(int templateID, int level, Expression<Func<TResult, bool>> predicate, bool isObjectSet = false)
 		{
 			var q = Enumerable.Empty<TResult>().AsQueryable().Where(predicate);
 
@@ -302,7 +302,7 @@ namespace Tango.UI.Std
 			//TODO необходимо доработать метод т.к. вызов может быть в цикле по большому количеству данных (в случае применения хранимых наборов )
 
 			IRepository<TResult> templateRepository;
-			if ((ObjectSetSettings?.TableName).IsEmpty())
+			if ((ObjectSetSettings?.TableName).IsEmpty() || !isObjectSet)
 				templateRepository = Repository;
 			else
 				templateRepository = Database.Repository<TResult>().WithAllObjectsQuery(EmbeddedResourceManager.GetString(typeof(TResult), ObjectSetSettings.TableName));
