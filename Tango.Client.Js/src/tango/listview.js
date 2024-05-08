@@ -958,6 +958,7 @@ window.listview = function (au, cu, cbcell, menu) {
 	function removeSelected(tocopy) {
 		for (var i = 0; i < tocopy.length; i++) {
 			const el = document.getElementById(tocopy[i].id);
+			if (!el) continue;
 			const isLastLeaf = !el.nextElementSibling || parseInt(el.nextElementSibling.getAttribute('data-level')) <= parseInt(el.getAttribute('data-level'));
 			const clickedEl = i == 0;
 			const unchecked = clickedEl || !el.hasAttribute('data-checked');
