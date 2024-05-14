@@ -281,6 +281,8 @@ namespace Tango.UI.Std
 		protected void SetSelectedItems(IEnumerable<(int templateID, int level, Expression<Func<TResult, bool>> predicate)> items)
 		{
 			_selectedValues.Clear();
+			_selectedDataRows.Clear();
+			_selectedDataRoot.Clear();
 			foreach (var item in items)
 			{
 				SetSelectedItemsOne(item.templateID, item.level, item.predicate, true);
