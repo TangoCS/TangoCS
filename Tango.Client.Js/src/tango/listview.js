@@ -510,7 +510,7 @@ window.listview = function (au, cu, cbcell, menu) {
 				seltr = seltr.previousElementSibling;
 			}
 			removeSelected(tocopy);
-			instance.setObjectSetBackgroundColor();
+			instance.setObjectSetBackgroundColor(true);
 		},
 		initListSettings: function (root) {
 			const ctrl = au.state.ctrl[root.id];
@@ -592,10 +592,10 @@ window.listview = function (au, cu, cbcell, menu) {
 			const node = root.querySelector('.selected');
 			if (node) node.scrollIntoView({ block: 'center' });
 		},
-		setObjectSetBackgroundColor: function () {
+		setObjectSetBackgroundColor: function (arg) {
 			const el = document.querySelector('.objectsetmanager .objectset-select > div');
 			if (el) {
-				if (el.classList.contains('objectset-green')) {
+				if (arg && el.classList.contains('objectset-green')) {
 					el.classList.remove('objectset-green');
 					el.classList.add('objectset-yellow')
 				}
@@ -741,7 +741,7 @@ window.listview = function (au, cu, cbcell, menu) {
 					}
 				}
 				curRow.tr.focus();
-				instance.setObjectSetBackgroundColor();
+				instance.setObjectSetBackgroundColor(true);
 			});
 			el.classList.add('initialized');
 		}
