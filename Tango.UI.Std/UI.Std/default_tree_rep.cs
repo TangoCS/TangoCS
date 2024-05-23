@@ -1,17 +1,15 @@
-﻿using System;
+﻿using Dapper;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using System.Linq.Expressions;
-using Tango;
+using System.Reflection;
+using Tango.Data;
+using Tango.Html;
 using Tango.UI;
 using Tango.UI.Controls;
 using Tango.UI.Std;
-using Tango.Html;
-using System.Linq;
-using System.Collections.Generic;
-using Tango.Data;
-using Dapper;
-using System.Reflection;
-using System.Data;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Tango.UI.Std
 {
@@ -204,6 +202,8 @@ namespace Tango.UI.Std
 		/// <param name="highlight">Нужно ли подсвечивать элемент, до которого раскрываем</param>
 		public void SetExpandedItem(int templateID, int level, Dictionary<string, object> parms, bool highlight = true, bool expandNext = false)
 		{
+			if (Context.Event == nameof(OnQuickSearch).ToLower() && !Context.GetArg(_qSearchParmName.Name).IsEmpty())
+				return;
 			var initialTemplate = _templatesDict[templateID];
             var template = level == 1 ? initialTemplate : initialTemplate.ParentTemplateItem;
 			var levelForExpandNext = level;
@@ -579,7 +579,7 @@ namespace Tango.UI.Std
 
 				if (nodeTemplate.DataRef != null)
 					foreach (var _ref in nodeTemplate.DataRef(o))
-						a.DataRef("#"+_ref);
+						a.DataRef("#" + _ref);
 
 				if (nodeTemplate.EnableSelect || nodeTemplate.SetDataRowId || enableExtendedSearch)
 					a.Data("rowid", dataRowID);
@@ -603,8 +603,7 @@ namespace Tango.UI.Std
 						w.I(a => a.Class("nodeicon").Set(ic.attributes).IconFlag(ic.iconName));
 
 				if (nodeTemplate.Icon != null)
-					foreach (var ic in nodeTemplate.Icon(o))
-						w.Icon(ic.iconName.Trim(), a => a.Class("nodeicon").Set(ic.attributes));
+					nodeTemplate.Icon(o).Render(w);
 
 				nodeTemplate.Cell(w, o, i);
 
@@ -888,6 +887,8 @@ namespace Tango.UI.Std
 			this.iconName = iconName;
 			this.attributes = attributes;
 		}
+
+		public static implicit operator Action<LayoutWriter>(IconInfo ic) => w => w.Icon(ic.iconName.Trim(), a => a.Class("nodeicon").Set(ic.attributes));
 	}
 	
 	public class FlagIconInfoCollection : List<IconInfo>
@@ -904,8 +905,10 @@ namespace Tango.UI.Std
 			new FlagIconInfoCollection(iconName.Split(",").Select(i => new IconInfo(i.Trim())));
 	}
 
-	public class IconInfoCollection : List<IconInfo>
+	public class IconInfoCollection : List<Action<LayoutWriter>>
 	{
+		public void Render(LayoutWriter w) => this.ForEach(ic => ic(w));
+		
 		public static implicit operator IconInfoCollection(string iconName)
 		{
 			return new IconInfoCollection
