@@ -24,6 +24,16 @@ namespace Tango.UI
 			w.DropDownForElement(id, popupAttrs, content, options);
 		}
 
+		public static void DropDownLink(this LayoutWriter w, string id, string title, Action content = null, 
+			Action<TagAttributes> linkAttrs = null, Action<TagAttributes> popupAttrs = null, PopupOptions options = null)
+		{
+			w.Div(a => a.ID(id).Class("dropdownlink").Set(linkAttrs), () => {
+				w.Write(title);
+				w.Icon("dropdownarrow");
+			});
+			w.DropDownForElement(id, popupAttrs, content, options);
+		}
+
 		public static void DropDownImage(this LayoutWriter w, string id, string icon, Action content = null, string comment = null,
 			Action<TagAttributes> btnAttrs = null, Action<TagAttributes> popupAttrs = null, PopupOptions options = null)
 		{
