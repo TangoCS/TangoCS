@@ -226,10 +226,12 @@ namespace Tango.UI
 	{
 		public abstract ActionResult Execute();
 
-		public static ActionResult Invoke<T>(ActionContext context)
+		public static ActionResult Invoke<T>(ActionContext context, Action<T> init = null)
 			where T: ViewRootElement, new()
 		{
-			return Invoke(new T(), context);
+			var el = new T();
+			if (init != null) init(el);
+			return Invoke(el, context);
 		}
 
 		public static ActionResult Invoke(ActionContext context, Type t)
