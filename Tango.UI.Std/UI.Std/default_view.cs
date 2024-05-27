@@ -109,10 +109,11 @@ namespace Tango.UI.Std
 			set
 			{
 				_viewData = value;
-				_viewDataLoaded = _viewData != null;
+				_viewDataLoaded = true;
 			}
 		}
 
+		protected virtual void ReloadViewData() => _viewDataLoaded = false;
 		protected virtual bool ObjectNotExists => ViewData == null;
 
 		protected List<IFieldGroup> groups = new List<IFieldGroup>();
