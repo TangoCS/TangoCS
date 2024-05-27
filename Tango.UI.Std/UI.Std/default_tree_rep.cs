@@ -55,6 +55,7 @@ namespace Tango.UI.Std
 		protected override bool EnableHover => false;
 		protected override bool EnableKeyboard => true;
 		protected virtual bool AutoExpandSingles => true;
+		protected virtual bool AutoExpandOnSearch => false;
 		public ObjectSetSettings ObjectSetSettings { get; set; } = null;
 
 		public default_tree_rep()
@@ -698,7 +699,7 @@ namespace Tango.UI.Std
 				var state = CurrentState;
 
 				TResult obj = default(TResult);
-				while (_count == 1 || (_count > 0 && !Context.GetArg(_qSearchParmName.Name).IsEmpty()))
+				while (_count == 1 || (AutoExpandOnSearch && _count > 0 && !Context.GetArg(_qSearchParmName.Name).IsEmpty()))
 				{
 					obj = _result.First();
 					var t = _templatesDict[obj.Template];
