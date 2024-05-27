@@ -214,8 +214,8 @@ namespace Tango.UI.Std
 		{
 			w.PushPrefix(ID);
 			w.Div(a => a.ID("container").DataIsContainer("default", w.IDPrefix), () => {
-				w.Div(a => a.ID(Sections.ContentTitle));
-				w.Div(a => a.ID(Sections.ContentToolbar));
+				if (Sections.RenderContentTitle) w.Div(a => a.ID(Sections.ContentTitle).Class("contentheader"));
+				if (Sections.RenderToolbar) w.Div(a => a.ID(Sections.ContentToolbar));
 				w.Div(a => a.ID(Sections.ContentBody));
 			});
 			w.PopPrefix();

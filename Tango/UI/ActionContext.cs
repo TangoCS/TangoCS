@@ -316,7 +316,7 @@ namespace Tango.UI
 			if (b) return res;
 			return null;
 		}
-		public static long GetLongArg(this ActionContext ctx, string name, int defaultValue)
+		public static long GetLongArg(this ActionContext ctx, string name, long defaultValue)
 		{
 			if (name == null) return defaultValue;
 			long res = 0;

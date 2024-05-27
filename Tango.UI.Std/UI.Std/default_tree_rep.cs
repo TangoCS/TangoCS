@@ -49,12 +49,13 @@ namespace Tango.UI.Std
 
 		State InitialState = new State { };
 		State CurrentState = null;
-		
+
 
 		protected override bool EnableViews => false;
 		protected override bool EnableHover => false;
 		protected override bool EnableKeyboard => true;
 		protected virtual bool AutoExpandSingles => true;
+		protected virtual bool AutoExpandOnSearch => false;
 		public ObjectSetSettings ObjectSetSettings { get; set; } = null;
 
 		public default_tree_rep()
@@ -205,7 +206,7 @@ namespace Tango.UI.Std
 			if (Context.Event == nameof(OnQuickSearch).ToLower() && !Context.GetArg(_qSearchParmName.Name).IsEmpty())
 				return;
 			var initialTemplate = _templatesDict[templateID];
-            var template = level == 1 ? initialTemplate : initialTemplate.ParentTemplateItem;
+			var template = level == 1 ? initialTemplate : initialTemplate.ParentTemplateItem;
 			var levelForExpandNext = level;
 
 			var sqlTemplate = PrepareQuery(template.Template, new List<Dictionary<string, object>> { parms });
@@ -227,8 +228,7 @@ namespace Tango.UI.Std
 
 				while (template != null)
 				{
-					states.Add(new State
-					{
+					states.Add(new State {
 						Level = level,
 						TemplateItem = template,
 						Parms = template.Template.GetKeyCollection(temp)
@@ -241,15 +241,14 @@ namespace Tango.UI.Std
 
 				if (expandNext)
 				{
-					
-					states.Insert(0,new State
-					{
+
+					states.Insert(0, new State {
 						Level = levelForExpandNext,
 						TemplateItem = initialTemplate,
 						Parms = initialTemplate.Template.GetKeyCollection(temp)
 					});
-					
-					senders.Insert(0,(initialTemplate.Template.GetHtmlRowID(levelForExpandNext - 1, temp)));
+
+					senders.Insert(0, (initialTemplate.Template.GetHtmlRowID(levelForExpandNext - 1, temp)));
 				}
 
 				senders.Reverse();
@@ -432,7 +431,7 @@ namespace Tango.UI.Std
 
 			return res;
 		}
-		
+
 		/*[Obsolete]
 		public void ExpandTree(ApiResponse response, string rowId, bool refreshtree)
 		{
@@ -667,8 +666,10 @@ namespace Tango.UI.Std
 
 		public override void OnEvent()
 		{
-			
+
 		}
+
+		protected virtual void OnAutoExpand(ApiResponse response, TResult obj) { }
 
 		protected override void AfterRender(ApiResponse response)
 		{
@@ -697,9 +698,10 @@ namespace Tango.UI.Std
 				var curCount = _count;
 				var state = CurrentState;
 
-				while (_count == 1)
+				TResult obj = default(TResult);
+				while (_count == 1 || (AutoExpandOnSearch && _count > 0 && !Context.GetArg(_qSearchParmName.Name).IsEmpty()))
 				{
-					var obj = _result.First();
+					obj = _result.First();
 					var t = _templatesDict[obj.Template];
 					if (t.Template.IsTerminal || t.Template.ToggleLevelAction != null) break;
 					var sender = t.Template.GetHtmlRowID(CurrentState.Level, obj);
@@ -715,6 +717,8 @@ namespace Tango.UI.Std
 					_result = null;
 					_result = GetPageData();
 				}
+				if (obj != null)
+					OnAutoExpand(response, obj);
 
 				_result = curResult;
 				_count = curCount;
@@ -800,7 +804,7 @@ namespace Tango.UI.Std
 		public string Title { get; set; }
 		public Expression<Func<TResult, object>> GroupBy { get; set; }
 		public Expression<Func<IGrouping<object, TResult>, object>> GroupBySelector { get; set; } = x => x.Key;
-        public Func<IQueryable<TResult>, IQueryable<TResult>> OrderBy { get; set; } = data => data;
+		public Func<IQueryable<TResult>, IQueryable<TResult>> OrderBy { get; set; } = data => data;
 		public RenderRowCellDelegate<TResult> Cell { get; set; }
 		public Func<TResult, string> TreeSearchResultHint { get; set; }
 		public Func<TResult, Action<TagAttributes>> ContentAttributes { get; set; }
@@ -831,7 +835,7 @@ namespace Tango.UI.Std
 		public string GetHtmlRowID(int level, TResult o) => $"r_{level}_{ID}_" + (keyProperties ?? InitKeyProperties()).Select(p => GetPropValue(p, o)).Join("_");
 
 		private string GetPropValue(PropertyInfo p, TResult o)
-        {
+		{
 			if (p.PropertyType == typeof(DateTime))
 				return ((DateTime)p.GetValue(o)).ToString("yyyyMMddHHmmss");
 
@@ -867,7 +871,7 @@ namespace Tango.UI.Std
 		public static implicit operator EnableSelectOption(bool enabled) =>
 			new EnableSelectOption { Strategy = enabled ? EnableSelectStrategy.Default : EnableSelectStrategy.None };
 
-		public static implicit operator bool(EnableSelectOption option) => 
+		public static implicit operator bool(EnableSelectOption option) =>
 			option != null && option.Strategy != EnableSelectStrategy.None;
 
 		public enum EnableSelectStrategy
@@ -884,7 +888,7 @@ namespace Tango.UI.Std
 		public string iconName;
 		public Action<TagAttributes> attributes;
 
-		public IconInfo(string iconName,Action<TagAttributes> attributes = null)
+		public IconInfo(string iconName, Action<TagAttributes> attributes = null)
 		{
 			this.iconName = iconName;
 			this.attributes = attributes;
@@ -892,7 +896,7 @@ namespace Tango.UI.Std
 
 		public static implicit operator Action<LayoutWriter>(IconInfo ic) => w => w.Icon(ic.iconName.Trim(), a => a.Class("nodeicon").Set(ic.attributes));
 	}
-	
+
 	public class FlagIconInfoCollection : List<IconInfo>
 	{
 		public FlagIconInfoCollection()
@@ -903,14 +907,14 @@ namespace Tango.UI.Std
 		{
 		}
 
-		public static implicit operator FlagIconInfoCollection(string iconName) => 
+		public static implicit operator FlagIconInfoCollection(string iconName) =>
 			new FlagIconInfoCollection(iconName.Split(",").Select(i => new IconInfo(i.Trim())));
 	}
 
 	public class IconInfoCollection : List<Action<LayoutWriter>>
 	{
 		public void Render(LayoutWriter w) => this.ForEach(ic => ic(w));
-		
+
 		public static implicit operator IconInfoCollection(string iconName)
 		{
 			return new IconInfoCollection
