@@ -113,7 +113,6 @@ namespace Tango.UI.Std
 			}
 		}
 
-		protected virtual void ReloadViewData() => _viewDataLoaded = false;
 		protected virtual bool ObjectNotExists => ViewData == null;
 
 		protected List<IFieldGroup> groups = new List<IFieldGroup>();
