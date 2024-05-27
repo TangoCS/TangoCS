@@ -802,7 +802,8 @@ namespace Tango.UI.Std
 		public Expression<Func<IGrouping<object, TResult>, object>> GroupBySelector { get; set; } = x => x.Key;
         public Func<IQueryable<TResult>, IQueryable<TResult>> OrderBy { get; set; } = data => data;
 		public RenderRowCellDelegate<TResult> Cell { get; set; }
-        public Func<TResult, Action<TagAttributes>> ContentAttributes { get; set; }
+		public Func<TResult, string> TreeSearchResultHint { get; set; }
+		public Func<TResult, Action<TagAttributes>> ContentAttributes { get; set; }
         public bool IsTerminal { get; set; } = false;
 		public Func<TResult, bool> HasChildren { get; set; } = o => true;
 		public Func<TResult, IconInfoCollection> Icon { get; set; }
@@ -873,7 +874,8 @@ namespace Tango.UI.Std
 		{
 			None,
 			Default,
-			WithChildren
+			WithChildren,
+			WithChildrenRecursive
 		}
 	}
 
