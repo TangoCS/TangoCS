@@ -218,7 +218,7 @@ window.listview = function (au, cu, cbcell, menu) {
 
 			if (elcellid != '' && state == 'collapsed') cu.getCell(el).classList.add('expandedcell');
 		},
-		togglelevel: function (el, afterLoad) {
+		togglelevel: function (el, afterLoad, recursive) {
 			const tr = cu.getRow(el);
 			const level = parseInt(tr.getAttribute('data-level'));
 			const isCollapsed = tr.classList.contains('collapsed');
@@ -240,10 +240,13 @@ window.listview = function (au, cu, cbcell, menu) {
 						row.classList.add('hide');
 					}
 
+					if (recursive)
+						instance.togglelevel(row, afterLoad, true);
+
 					row = row.nextElementSibling;
 				}
 
-				if (afterLoad) afterLoad();
+				if (afterLoad) afterLoad(tr, level);
 			}
 
 			if (tr.hasAttribute('data-e') && !tr.hasAttribute('data-loaded')) {
@@ -701,9 +704,13 @@ window.listview = function (au, cu, cbcell, menu) {
 					var tr = currow.nextElementSibling;
 					const isChecked = currow.classList.contains('checked');
 
-					function setChildrenState() {
-						tr = currow.nextElementSibling;
-						while (tr && parseInt(tr.getAttribute('data-level')) == level + 1) {
+					const hasStrategy = curel.hasAttribute('data-strategy');
+					const strategyName = hasStrategy ? curel.getAttribute('data-strategy') : undefined;
+
+					function setChildrenState(r, l, all) {
+						tr = r.nextElementSibling;
+						while (tr && ((!all && parseInt(tr.getAttribute('data-level')) == l + 1) ||
+							(all && parseInt(tr.getAttribute('data-level')) >= l + 1))) {
 							var cb = tr.querySelector('.sel');
 							if (cb) {
 								if (isChecked)
@@ -712,33 +719,40 @@ window.listview = function (au, cu, cbcell, menu) {
 									cbcell.setRowAndValueUnchecked(tr, cb, state);
 								updateSelected(cb);
 							}
+							if (all && !tr.hasAttribute('data-loaded')) {
+								instance.togglelevel(tr, setChildrenState, true);
+							}
 							tr = tr.nextElementSibling;
 						}
 					}
 
-					if (curel.hasAttribute('data-strategy') && curel.getAttribute('data-strategy') == 'WithChildren') {
+					function uncheckParent(r, l) {
+						tr = r.previousElementSibling;
+						while (tr && parseInt(tr.getAttribute('data-level')) == l) {
+							tr = tr.previousElementSibling;
+						}
+
+						if (tr && !isChecked) {
+							var cb = tr.querySelector('.sel');
+							if (cb && cb.hasAttribute('data-strategy') && (cb.getAttribute('data-strategy') == 'WithChildren' ||
+								cb.getAttribute('data-strategy') == 'WithChildrenRecursive')) {
+								cbcell.setRowAndValueUnchecked(tr, cb, state);
+								updateSelected(cb);
+								uncheckParent(tr, l - 1);
+							}
+						}
+					}
+
+					if (hasStrategy && (strategyName == 'WithChildren' || strategyName == 'WithChildrenRecursive')) {
 						if (!currow.hasAttribute('data-loaded')) {
-							instance.togglelevel(curel, setChildrenState);
+							instance.togglelevel(curel, setChildrenState, strategyName == 'WithChildrenRecursive');
 						}
 						else {
-							setChildrenState();
+							setChildrenState(currow, level, true);
 						}
 					}
 
-					var allChildrenChecked = true;
-					tr = currow.previousElementSibling;
-					while (tr && parseInt(tr.getAttribute('data-level')) == level) {
-						if (isChecked) allChildrenChecked = allChildrenChecked && tr.classList.contains('checked');
-						tr = tr.previousElementSibling;
-					}
-
-					if (tr && !isChecked) {
-						var cb = tr.querySelector('.sel');
-						if (cb && cb.hasAttribute('data-strategy') && cb.getAttribute('data-strategy') == 'WithChildren') {
-							cbcell.setRowAndValueUnchecked(tr, cb, state);
-							updateSelected(cb);
-						}
-					}
+					uncheckParent(currow, level);
 				}
 				curRow.tr.focus();
 				instance.setObjectSetBackgroundColor(true);
