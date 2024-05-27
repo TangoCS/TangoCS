@@ -109,7 +109,7 @@ namespace Tango.UI.Std
 			set
 			{
 				_viewData = value;
-				_viewDataLoaded = true;
+				_viewDataLoaded = _viewData != null;
 			}
 		}
 
