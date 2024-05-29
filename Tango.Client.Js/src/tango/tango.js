@@ -532,7 +532,7 @@ window.ajaxUtils = function ($, cu) {
 			//	target.containerType = container.getAttribute('data-c-type');
 			//}
 			//if (sender.hasAttribute('data-responsetype')) {
-			//	target.responsetype = sender.getAttribute('data-responsetype');
+			//	target.responseType = sender.getAttribute('data-responsetype');
 			//}
 			runOnAjaxSend(sender, target);
 			const r = instance.postEventWithApiResponse(target);
@@ -628,8 +628,8 @@ window.ajaxUtils = function ($, cu) {
 			const settings = {
 				url: instance.prepareUrl(target),
 				type: 'GET',
-				responseType: target.responsetype ? target.responsetype : "",
-				requestGroup: target.requestgroup ? target.requestgroup : null,
+				responseType: target.responseType ? target.responseType : "",
+				requestGroup: target.requestGroup ? target.requestGroup : null,
 				sender: target.sender
 			};
 			return ajax(settings).fail(instance.error).then(onRequestResult);
@@ -662,8 +662,8 @@ window.ajaxUtils = function ($, cu) {
 				processData: !isForm,
 				contentType: isForm ? false : "application/json; charset=utf-8",
 				data: isForm ? target.data : JSON.stringify(target.data),
-				requestGroup: target.requestgroup ? target.requestgroup : null,
-				responseType: target.responsetype,
+				requestGroup: target.requestGroup ? target.requestGroup : null,
+				responseType: target.responseType,
 				sender: target.sender,
 				headers: {}
 			};
@@ -830,8 +830,8 @@ window.ajaxUtils = function ($, cu) {
 				parms['c-type'] = target.containerType;
 			}
 
-			if (target.responsetype)
-				parms['responsetype'] = target.responsetype;
+			if (target.responseType)
+				parms['responsetype'] = target.responseType;
 
 			state.loc.next.changeloc = target.changeloc;
 			if (target.changeloc) {
@@ -1137,12 +1137,12 @@ window.ajaxUtils = function ($, cu) {
 				const ids = val.split(' ');
 				ids.forEach(id => setvalfunc(id, sessionStorage.getItem(id)));
 			} else if (attr.name == 'data-responsetype') {
-				target.responsetype = val;
+				target.responseType = val;
 			}
 		}
 
 		if (el.hasAttribute('data-requestgroup'))
-			target.requestgroup = el.getAttribute('data-requestgroup');
+			target.requestGroup = el.getAttribute('data-requestgroup');
 
 		// TODO: доработать
 		// - сделать универсальное определение модальных контейнеров

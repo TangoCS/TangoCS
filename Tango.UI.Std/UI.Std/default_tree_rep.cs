@@ -573,7 +573,7 @@ namespace Tango.UI.Std
 
 				a.ID(htmlRowID + (_renderSelectedBlockMode ? "_selected" : ""));
 
-				if (!_renderSelectedBlockMode)
+				if (!_renderSelectedBlockMode && !nodeTemplate.IsTerminal && nodeTemplate.HasChildren(o))
 					a.DataEvent(nodeTemplate.ToggleLevelAction ?? OnExpandRow);
 
 				if (nodeTemplate.DataRef != null)

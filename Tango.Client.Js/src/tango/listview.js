@@ -250,7 +250,7 @@ window.listview = function (au, cu, cbcell, menu) {
 			}
 
 			if (tr.hasAttribute('data-e') && !tr.hasAttribute('data-loaded')) {
-				au.postEventFromElementWithApiResponse(tr).then(function () {
+				au.postEventFromElementWithApiResponse(tr, { requestGroup: tr.id }).then(function () {
 					tr.setAttribute('data-loaded', '');
 					expand();
 				});
@@ -719,7 +719,7 @@ window.listview = function (au, cu, cbcell, menu) {
 									cbcell.setRowAndValueUnchecked(tr, cb, state);
 								updateSelected(cb);
 							}
-							if (all && !tr.hasAttribute('data-loaded')) {
+							if (all && tr.hasAttribute('data-e') && !tr.hasAttribute('data-loaded')) {
 								instance.togglelevel(tr, setChildrenState, true);
 							}
 							tr = tr.nextElementSibling;
@@ -744,7 +744,7 @@ window.listview = function (au, cu, cbcell, menu) {
 					}
 
 					if (hasStrategy && (strategyName == 'WithChildren' || strategyName == 'WithChildrenRecursive')) {
-						if (!currow.hasAttribute('data-loaded')) {
+						if (currow.hasAttribute('data-e') && !currow.hasAttribute('data-loaded')) {
 							instance.togglelevel(curel, setChildrenState, strategyName == 'WithChildrenRecursive');
 						}
 						else {
