@@ -64,9 +64,9 @@ namespace Tango.UI.Navigation
 				p.Add(pp.Key, pp.Value);
 
 			MenuItem m = new MenuItem {
-				ResourceKey = RouteUtils.Resolve(_resourceKeyTemplate, p, null, true).ToString(),
-				SecurableObjectKey = RouteUtils.Resolve(_securableObjectKeyTemplate, p, null, true).ToString(),
-				Url = RouteUtils.Resolve(_urlTemplate, p, null, true).ToString(),
+				ResourceKey = RouteUtils.Resolve(_resourceKeyTemplate, p, true).ToString(),
+				SecurableObjectKey = RouteUtils.Resolve(_securableObjectKeyTemplate, p, true).ToString(),
+				Url = RouteUtils.Resolve(_urlTemplate, p, true).ToString(),
 				//Target = target
 			};
 			res.Add(m);

@@ -6,7 +6,7 @@ namespace Tango.Html
 {
 	public interface IUrlResolver
 	{
-		UrlResolverResult Resolve(string template, IReadOnlyDictionary<string, string> parameters, DynamicDictionary globalParameters);
+		UrlResolverResult Resolve(string template, IReadOnlyDictionary<string, string> parameters);
 	}
 
 	public struct UrlResolverResult
@@ -17,11 +17,11 @@ namespace Tango.Html
 
 	public class RouteUrlResolver : IUrlResolver
 	{
-		public virtual UrlResolverResult Resolve(string template, IReadOnlyDictionary<string, string> parameters, DynamicDictionary globalParameters)
+		public virtual UrlResolverResult Resolve(string template, IReadOnlyDictionary<string, string> parameters)
 		{
 			return new UrlResolverResult { 
 				Resolved = true, 
-				Result = RouteUtils.Resolve(template, parameters, globalParameters) 
+				Result = RouteUtils.Resolve(template, parameters) 
 			};
 		}
 	}

@@ -29,7 +29,7 @@ namespace Tango.UI.Std
 			return this;
 		}
 
-		public override UrlResolverResult Resolve(string template, IReadOnlyDictionary<string, string> parameters, DynamicDictionary globalParameters)
+		public override UrlResolverResult Resolve(string template, IReadOnlyDictionary<string, string> parameters)
 		{
 			bool access = true;
 			if (!_securableObjectKey.IsEmpty())
@@ -39,7 +39,7 @@ namespace Tango.UI.Std
 					access = _accessControl.Check(_securableObjectKey);
 
 			if (access)
-				return base.Resolve(template, parameters, globalParameters);
+				return base.Resolve(template, parameters);
 			else
 				return new UrlResolverResult { Resolved = false };
 		}

@@ -18,13 +18,14 @@ namespace Tango.Localization
 		IReadOnlyList<LanguageObject> List { get; }
 		LanguageObject Current { get; }
 		LanguageObject Default { get; }
-		CultureInfo CurrentCulture { get; }
+		//CultureInfo CurrentCulture { get; }
 
 		void WithLang(string lang, Action action);
 	}
 
 	public class LanguageObject
 	{
+		public int LCID { get; set; }
 		public string Code { get; set; }
 		public string Title { get; set; }
 	}
