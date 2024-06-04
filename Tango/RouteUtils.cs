@@ -9,7 +9,6 @@ namespace Tango
 	{
 		public static StringBuilder Resolve(string template, 
 			IReadOnlyDictionary<string, string> parameters,
-			DynamicDictionary globalParameters,
 			bool ignoreNotMachedParms = false, string notMatchedParmsBeginWith = "?")
 		{
 			StringBuilder sb = new StringBuilder();
@@ -26,6 +25,8 @@ namespace Tango
 				string val = g.Value;
 				bool isOptional = val.EndsWith("?");
 				if (isOptional) val = val.Substring(0, val.Length - 1);
+				bool isCatchAll = val.StartsWith("*");
+				if (isCatchAll) val = val.Substring(1);
 				int constraintPos = val.IndexOf(":");
 				if (constraintPos > 0) val = val.Substring(0, constraintPos);
 
@@ -34,11 +35,7 @@ namespace Tango
 					sb.Append(result);
 					processedKeys.Add(val);
 				}
-				else if (globalParameters != null && globalParameters.TryGetValue(val, out object result2)) //Cool, we found something
-				{
-					sb.Append(result2);
-				}
-				else if (!isOptional) //didn't find a property with that name, so be gracious and put it back
+				else if (!isOptional && !isCatchAll) //didn't find a property with that name, so be gracious and put it back
 				{
 					sb.Append("{");
 					sb.Append(val);

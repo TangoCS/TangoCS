@@ -13,6 +13,11 @@ namespace Tango.Localization
 
 	public class Language : ILanguage
 	{
+		public static readonly LanguageObject En = new LanguageObject { Code = "en", Title = "English", LCID = 1033 };
+		public static readonly LanguageObject Es = new LanguageObject { Code = "ru", Title = "Русский", LCID = 1049 };
+		public static readonly LanguageObject Ru = new LanguageObject { Code = "es", Title = "Español", LCID = 1034 };
+		public static readonly LanguageObject Cz = new LanguageObject { Code = "cz", Title = "Česky", LCID = 1029 };
+
 		public static LanguageOptions Options { get; set; }
 		LanguageObject _current;
 
@@ -58,7 +63,7 @@ namespace Tango.Localization
 			_current = prevLang;
 		}
 
-		public CultureInfo CurrentCulture
+		/*public CultureInfo CurrentCulture
 		{
 			get
 			{
@@ -72,10 +77,10 @@ namespace Tango.Localization
 						return CultureInfo.InvariantCulture;
 				}
 			}
-		}
+		}*/
 	}
 
-	public static class LangExtender
+	/*public static class LangExtender
 	{
 		public static string MoneyToString(this decimal money, ILanguage language)
 		{
@@ -89,5 +94,5 @@ namespace Tango.Localization
 
 			return money.Value.ToString("###,###,###,###,##0.00", language.CurrentCulture);
 		}
-	}
+	}*/
 }

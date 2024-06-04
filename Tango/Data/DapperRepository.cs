@@ -239,6 +239,8 @@ namespace Tango.Data
 				foreach (var pair in a)
 					args.Add(pair.Key, pair.Value);
 			}
+			else
+				query = AllObjectsQuery;
 
 			query = QueryHelper.SetNewFieldExpression(query, "count(1)");
 

@@ -62,7 +62,11 @@ namespace Tango.UI
 			if (!context.Lang.IsEmpty())
 				urlArgs.Add(Constants.Lang, context.Lang);
 
-			return (resolver ?? new RouteUrlResolver()).Resolve(templateValue, urlArgs, context.AllArgs);
+			foreach (var arg in context.RouteArgs)
+				if (!urlArgs.ContainsKey(arg.Key))
+					urlArgs.Add(arg.Key, arg.Value?.ToString());
+
+			return (resolver ?? new RouteUrlResolver()).Resolve(templateValue, urlArgs);
 		}
 	}
 

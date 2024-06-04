@@ -97,7 +97,7 @@ namespace Tango.AspNetCore
 
 			var d = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 			foreach (var q in routeData.Values)
-				d[q.Key] = q.Value.ToString();
+				d[q.Key] = q.Value?.ToString();
 
 			ParseRouteParms(d);
 
@@ -156,7 +156,8 @@ namespace Tango.AspNetCore
 				values.Remove(Constants.ActionName);
 			}
 			foreach (var value in values)
-				target.Args.Add(value.Key, value.Value.ToString());
+				if (value.Value != null)
+					target.Args.Add(value.Key, value.Value.ToString());
 
 			var parsedParms = Url.ParseQuery(parms);
 			foreach (var parm in parsedParms)
