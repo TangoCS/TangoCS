@@ -222,17 +222,25 @@ window.listview = function (au, cu, cbcell, menu) {
 			const tr = cu.getRow(el);
 			const level = parseInt(tr.getAttribute('data-level'));
 			const isCollapsed = tr.classList.contains('collapsed');
+			const isHide = tr.classList.contains('hide');
+			const collapsedBy = tr.getAttribute('data-collapsedby');
 
 			const expand = function () {
 				var row = tr.nextElementSibling;
 
 				while (row && parseInt(row.getAttribute('data-level')) > level) {
-					if (isCollapsed) {
+					if (isCollapsed && !isHide) {
 						tr.classList.remove('collapsed');
 						if (parseInt(row.getAttribute('data-collapsedby')) == level) {
 							row.classList.remove('hide');
 							row.setAttribute('data-collapsedby', '');
 						}
+					}
+					else if (isHide)
+					{
+						tr.classList.remove('collapsed');
+						row.classList.add('hide');
+						row.setAttribute('data-collapsedby', collapsedBy);
 					}
 					else if (!row.classList.contains('hide')) {
 						tr.classList.add('collapsed');
