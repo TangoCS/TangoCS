@@ -1091,9 +1091,13 @@ window.listview = function (au, cu, cbcell, menu) {
 			for (var i = tocopy.length - 1; i >= 0; i--) {
 				const el = document.getElementById(tocopy[i].id);
 				if (!el) {
-					if (hide) {
+					/*if (hide) {
 						tocopy[i].classList.add('hide');
 						tocopy[i].setAttribute('data-collapsedby', collapsedby);
+					}*/
+					if (tocopy[i].classList.contains('hide')) {
+						tocopy[i].classList.remove('hide');
+						tocopy[i].removeAttribute('data-collapsedby');
 					}
 					const level = parseInt(tocopy[i].getAttribute('data-level'));
 					while (parent.nextElementSibling && parseInt(parent.nextElementSibling.getAttribute('data-level')) == level) {
@@ -1105,10 +1109,10 @@ window.listview = function (au, cu, cbcell, menu) {
 					parent.insertAdjacentElement(pos, tocopy[i]);
 				}
 				else {
-					if (el.classList.contains('hide')) {
+					/*if (el.classList.contains('hide')) {
 						hide = true;
 						collapsedby = el.getAttribute('data-collapsedby');
-					}
+					}*/
 					if (i == 0) {
 						el.setAttribute('data-checked', '');
 						//var content = el.querySelector('.treerow-content');
