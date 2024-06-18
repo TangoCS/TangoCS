@@ -322,8 +322,8 @@ namespace Tango.Tasks
             t.ItemActionImageText(x => x.ToDelete(AccessControl, ViewData, Context.ReturnUrl.Get(1)).WithArg(Constants.ReturnUrl + "_0", Context.CreateReturnUrl(1)).AsDialog());
 
 			var isLongRunning = LongOperationServer.Queue.Any(o => o.ActionID == ViewData.TaskID && o.Status == LongOperationStatus.Running);
-			var isProgress = ViewData.Status != (int)TaskStatusType.Progress || !BaseTaskController.Progress.ContainsKey(ViewData.TaskID);
-			if (AccessControl.Check("task.start") && isProgress && !isLongRunning)
+			var isProgress = ViewData.Status == (int)TaskStatusType.Progress && BaseTaskController.Progress.TryGetValue(ViewData.TaskID, out var progress) && progress.percent != 100;
+			if (AccessControl.Check("task.start") && !isProgress && !isLongRunning)
 			{
 				t.ItemSeparator();
 				if (isParam)
