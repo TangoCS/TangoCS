@@ -222,17 +222,25 @@ window.listview = function (au, cu, cbcell, menu) {
 			const tr = cu.getRow(el);
 			const level = parseInt(tr.getAttribute('data-level'));
 			const isCollapsed = tr.classList.contains('collapsed');
+			const isHide = tr.classList.contains('hide');
+			const collapsedBy = tr.getAttribute('data-collapsedby');
 
 			const expand = function () {
 				var row = tr.nextElementSibling;
 
 				while (row && parseInt(row.getAttribute('data-level')) > level) {
-					if (isCollapsed) {
+					if (isCollapsed && !isHide) {
 						tr.classList.remove('collapsed');
 						if (parseInt(row.getAttribute('data-collapsedby')) == level) {
 							row.classList.remove('hide');
 							row.setAttribute('data-collapsedby', '');
 						}
+					}
+					else if (isHide)
+					{
+						tr.classList.remove('collapsed');
+						row.classList.add('hide');
+						row.setAttribute('data-collapsedby', collapsedBy);
 					}
 					else if (!row.classList.contains('hide')) {
 						tr.classList.add('collapsed');
@@ -1091,9 +1099,13 @@ window.listview = function (au, cu, cbcell, menu) {
 			for (var i = tocopy.length - 1; i >= 0; i--) {
 				const el = document.getElementById(tocopy[i].id);
 				if (!el) {
-					if (hide) {
+					/*if (hide) {
 						tocopy[i].classList.add('hide');
 						tocopy[i].setAttribute('data-collapsedby', collapsedby);
+					}*/
+					if (tocopy[i].classList.contains('hide')) {
+						tocopy[i].classList.remove('hide');
+						tocopy[i].removeAttribute('data-collapsedby');
 					}
 					const level = parseInt(tocopy[i].getAttribute('data-level'));
 					while (parent.nextElementSibling && parseInt(parent.nextElementSibling.getAttribute('data-level')) == level) {
@@ -1105,10 +1117,10 @@ window.listview = function (au, cu, cbcell, menu) {
 					parent.insertAdjacentElement(pos, tocopy[i]);
 				}
 				else {
-					if (el.classList.contains('hide')) {
+					/*if (el.classList.contains('hide')) {
 						hide = true;
 						collapsedby = el.getAttribute('data-collapsedby');
-					}
+					}*/
 					if (i == 0) {
 						el.setAttribute('data-checked', '');
 						//var content = el.querySelector('.treerow-content');

@@ -127,6 +127,7 @@ namespace Tango.UI
 		public override bool IsRequired {
 			get {
 				if (!(IsVisible)) return false;
+				if (ReadOnly || Disabled) return false;
 				return base.IsRequired;
 			}
 			set { base.IsRequired = value; }
