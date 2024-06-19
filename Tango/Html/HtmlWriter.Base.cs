@@ -188,7 +188,7 @@ namespace Tango.Html
 	public partial class HtmlWriter : IContentWriter
 	{
 		public const string NEWLINE = "<br/>";
-		public const string SVGPATH = "/data/icons/svg";
+		public static string SVGPATH = "/data/icons/svg";
 		CultureInfo ru = new CultureInfo("ru-RU");
 		public bool AllowModify => true;
 

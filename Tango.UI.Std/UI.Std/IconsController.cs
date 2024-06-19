@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Tango;
@@ -49,18 +50,16 @@ namespace Tango.UI.Std
 				XNamespace xsvg = XNamespace.Get("http://www.w3.org/2000/svg");
 				XNamespace xlink = XNamespace.Get("http://www.w3.org/1999/xlink");
 
-				var defs = new XElement(xsvg + "defs");
-
-				XDocument doc = new XDocument(
-					new XElement(
-						xsvg + "svg",
-						new XAttribute("aria-hidden", "true"),
-						new XAttribute("style", "position: absolute; width: 0; height: 0; overflow: hidden;"),
-						new XAttribute("version", "1.1"),
-						new XAttribute(XNamespace.Xmlns + "xlink", xlink.NamespaceName),
-						defs
-					)
+				var svg = new XElement(
+					xsvg + "svg",
+					new XAttribute("id", "icons"),
+					new XAttribute("aria-hidden", "true"),
+					new XAttribute("style", "position: absolute; width: 0; height: 0; overflow: hidden;"),
+					new XAttribute("version", "1.1"),
+					new XAttribute(XNamespace.Xmlns + "xlink", xlink.NamespaceName)
 				);
+				//var defs = new XElement(xsvg + "defs");
+				//svg.Add(defs);
 
 				var theme = Context.PersistentArgs.Get("theme");
 				if (theme.IsEmpty()) theme = Settings.Get("theme");
@@ -88,18 +87,46 @@ namespace Tango.UI.Std
 					iconXml.Root.RemoveAttributes();
 					iconXml.Root.Add(new XAttribute("id", "icon-" + file.Key.ToLower()));
 					iconXml.Root.Add(viewBox);
-					var iconDefs = iconXml.Root.Descendants(xsvg + "defs");
+					/*var iconDefs = iconXml.Root.Descendants(xsvg + "defs");
 					if (iconDefs.Any())
 					{
 						foreach (var iconDef in iconDefs)
 							foreach (var el in iconDef.Elements())
-								defs.Add(el);
+								defs.AddFirst(el); 
 
 						iconDefs.Remove();
+					}*/
+					var iconStyle = iconXml.Root.Descendants(xsvg + "style")?.FirstOrDefault();
+					if (iconStyle != null)
+					{
+						var classStyles = new Dictionary<string, string>();
+						var cssContent = iconStyle.Value;
+
+						// Regular expression to match CSS classes and their styles
+						var pattern = @"\.(?<className>[a-zA-Z0-9_-]+)\s*\{\s*(?<style>[^}]+)\s*\}";
+						MatchCollection matches = Regex.Matches(cssContent, pattern);
+
+						foreach (Match match in matches)
+						{
+							var className = match.Groups["className"].Value.Trim();
+							var styleRules = match.Groups["style"].Value.Trim();
+							classStyles[className] = styleRules;
+						}
+
+						foreach (var el in iconXml.Root.Descendants())
+						{
+							var className = el.Attribute("class");
+							if (className != null && classStyles.ContainsKey(className.Value))
+							{
+								className.Remove();
+								el.Add(new XAttribute("style", classStyles[className.Value]));
+							}
+						}
+						iconStyle.Remove();
 					}
-					defs.Add(iconXml.Root);
+					svg.Add(iconXml.Root);
 				}
-				return doc.ToString();
+				return svg.ToString();
 			});
 
 			return new HttpResult { ContentType = "image/svg+xml", ContentFunc = ctx => Encoding.UTF8.GetBytes(s) };
