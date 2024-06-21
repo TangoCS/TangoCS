@@ -69,6 +69,7 @@ namespace Tango.UI.Std
 		protected virtual bool EnableHover => false;
 		protected virtual bool EnableKeyboard => false;
 
+		protected virtual ToolbarOptions ToolbarOptions => null;
 		protected virtual void Toolbar(LayoutWriter w)
 		{
 			PrepareResult();
@@ -76,13 +77,14 @@ namespace Tango.UI.Std
 			ToolbarTop(w);
 
 			w.Toolbar(t => ToolbarLeft(t), t => {
-				t.Item(tw => tw.Span(a => a.ID(Paging.ID)));
+				t.Item(PagingPlaceholder);
 				t.ItemSeparator();
 				ToolbarRight(t);
-			});
+			}, ToolbarOptions);
 
 			ToolbarBottom(w);
 		}
+		protected void PagingPlaceholder(LayoutWriter w) => w.Span(a => a.ID(Paging.ID));
 
 		protected virtual void ToolbarTop(LayoutWriter w) { }
 		protected virtual void ToolbarBottom(LayoutWriter w)

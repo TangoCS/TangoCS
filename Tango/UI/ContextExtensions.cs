@@ -8,9 +8,11 @@ namespace Tango.UI
 {
 	public static class ContextExtensions
 	{
-		public static ActionLink UseDefaultResolver(this ActionLink actionUrl)
+		public static ActionLink UseDefaultResolver(this ActionLink actionUrl, bool ignoreNotMachedParms = false)
 		{
-			return actionUrl.UseResolver(new RouteUrlResolver());
+			var resolver = new RouteUrlResolver();
+			resolver.IgnoreNotMachedParms = ignoreNotMachedParms;
+			return actionUrl.UseResolver(resolver);
 		}
 
 		public static ActionLink ToCurrent(this ActionLink a)

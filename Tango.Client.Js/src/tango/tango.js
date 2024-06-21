@@ -1763,7 +1763,7 @@ window.ajaxUtils = function ($, cu) {
 
 		if (!s.parms || Object.keys(s.parms).length == 0) {
 			s.parms = {};
-			s.parms['p'] = state.loc.parms['p'];
+			s.parms['p'] = document.head.getAttribute('data-page'); //state.loc.parms['p'];
 			s.url = window.location.pathname + window.location.search;
 		}
 

@@ -208,6 +208,96 @@ namespace Tango.UI.Controls
 		}
 	}
 
+	// для списков с несколькими страницами
+	public class PagingRenderer4 : IListPagingRenderer
+	{
+		public void Render(Paging paging, LayoutWriter w, PagingRenderOptions options)
+		{
+			var res = paging.Resources;
+			var pageCount = 1;
+			var pageIdx = paging.PageIndex;
+			var pname = paging.ParameterName;
+			var itemsCount = options.ItemsCount;
+			var pageActionAttributes = options.PageActionAttributes;
+			var objCountActionAttributes = options.ObjCountActionAttributes;
+
+			if (itemsCount > paging.PageSize) pageCount = (int)Math.Ceiling((float)itemsCount / (float)paging.PageSize);
+			if (itemsCount <= paging.PageSize) pageCount = 1;
+			if (pageIdx > pageCount) pageIdx = pageCount;
+			if (pageIdx == 0) pageIdx = 1;
+
+			w.Div(a => a.ID(paging.ID).Class("paging4"), () => {
+				if (itemsCount == 0) return;
+				
+
+				var dc = paging.ParentElement.DataCollection;
+
+				w.Div(() => {
+					w.DropDownList(new InputName { ID = "psize", Name = paging.ParentElement.GetClientID("psize") },
+						paging.PageSize.ToString(), new List<SelectListItem> {
+					new SelectListItem("10", "10"),
+					new SelectListItem("20", "20"),
+					new SelectListItem("50", "50"),
+					new SelectListItem("100", "100"),
+					new SelectListItem("200", "200"),
+					}, a => a.Set(options.SetPageSizeActionAttributes).Data(dc));
+
+					w.Span("/");
+					w.Span(a => a.ID(paging.ID + "_cnt"), itemsCount.ToString());
+				});
+
+				w.Div(() => {
+					if (pageCount == 1) return;
+
+					void btn(int destIdx)
+					{
+						w.ActionTextButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, destIdx)
+							.WithTitle(destIdx.ToString()), a => a.Data(dc).Class(destIdx == pageIdx ? "current" : null));
+					}
+						
+
+					if (pageIdx > 1)
+						w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx - 1).WithImage("left"), a => a.Data(dc));
+
+					if (pageIdx >= 4)
+						btn(1);
+					if (pageIdx > 4)
+						w.Span("...");
+
+					if (pageIdx > 4 && pageIdx + 2 >= pageCount)
+						btn(pageIdx - 4);
+					if (pageIdx > 3 && pageIdx + 1 >= pageCount)
+						btn(pageIdx - 3);
+					if (pageIdx > 2)
+						btn(pageIdx - 2);
+					if (pageIdx > 1)
+						btn(pageIdx - 1);
+
+					btn(pageIdx);
+					
+					if (pageCount > 1 && pageIdx + 1 <= pageCount)
+						btn(pageIdx + 1);
+					if (pageCount > 2 && pageIdx + 2 <= pageCount)
+						btn(pageIdx + 2);
+					if (pageCount > 3 && pageIdx <= 2)
+						btn(pageIdx + 3);
+					if (pageCount > 4 && pageIdx == 1)
+						btn(pageIdx + 4);
+
+					if (pageCount > 5 && pageCount > pageIdx + 3)
+						w.Span("...");
+					if (pageCount > 5 && pageCount >= pageIdx + 3)
+						btn(pageCount);
+
+					if (pageCount - pageIdx >= 1)
+						w.ActionImageButton(a => a.ToCurrent().Set(pageActionAttributes).WithArg(pname, pageIdx + 1).WithImage("right"), a => a.Data(dc));
+				});
+			});
+		}
+
+
+	}
+
 	public static class PagingExtensions
 	{
 		public static IQueryable<T> Apply<T>(this Paging paging, IQueryable<T> query, bool plusOneRow = false)

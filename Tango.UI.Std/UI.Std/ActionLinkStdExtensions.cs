@@ -44,9 +44,10 @@ namespace Tango.UI.Std
 				return title;
 			});
 
-			link.RunAction(serviceName, actionName);
-			if (!returnurl.IsEmpty())
-				link.WithArg("returnurl", returnurl == "this" ? link.Context.CreateReturnUrl(1) : returnurl);
+			if (returnurl == "this")
+				returnurl = link.Context.CreateReturnUrl(1);
+
+			link.RunAction(serviceName, actionName, returnurl);
 			return link;
 		}
 

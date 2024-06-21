@@ -32,6 +32,7 @@ namespace Tango.UI.Controls
 		public void ItemHeader(string text) => Item(w => w.H3(text));
 		public void ItemBack() => Item(w => w.BackLink());
 
+		public void ItemActionLink(Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null) => Item(w => w.ActionLink(urlAttributes, attrs));
 		public void ItemActionText(Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null) => Item(w => w.ActionTextButton(urlAttributes, attrs));
 		public void ItemActionImage(Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null) => Item(w => w.ActionImageButton(urlAttributes, attrs));
 		public void ItemActionImageText(Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null) => Item(w => w.ActionImageTextButton(urlAttributes, attrs));
@@ -73,10 +74,10 @@ namespace Tango.UI.Controls
 		}
 
 		public void ItemDropDownButton(string id, string title,
-			Action content = null, string icon = null,
+			Action<LayoutWriter> content, string icon = null,
 			Action<TagAttributes> btnAttrs = null, Action<TagAttributes> popupAttrs = null, PopupOptions options = null)
 		{
-			Item(w => w.DropDownButton(id, title, content, icon, btnAttrs, popupAttrs, options));
+			Item(w => w.DropDownButton(id, title, () => content(w), icon, btnAttrs, popupAttrs, options));
 		}
 
 		public void QuickSearch<T, K>(abstract_list<T, K> list, Paging paging, InputName qSearchParmName, string tooltip = null, HttpMethod method = HttpMethod.GET)
@@ -167,13 +168,38 @@ namespace Tango.UI.Controls
 		}
 
 
-		public void Render(LayoutWriter w)
+		
+	}
+
+	public interface IToolbarRenderer
+	{
+		void Render(LayoutWriter w, Action<TagAttributes> attrs, Action<MenuBuilder> leftPart, Action<MenuBuilder> rightPart = null);
+	}
+
+	public class DefaultToolbarRenderer : IToolbarRenderer
+	{
+		public void Render(LayoutWriter w, Action<TagAttributes> attrs, Action<MenuBuilder> leftPart, Action<MenuBuilder> rightPart = null)
+		{
+			w.Div(a => a.Class("menutoolbar").Set(attrs), () => {
+				var leftMenu = new MenuBuilder(w.Context);
+				leftPart(leftMenu);
+				w.Ul(a => a.Class("menutoolbar-left"), () => RenderItems(w, leftMenu));
+				if (rightPart != null)
+				{
+					var rightMenu = new MenuBuilder(w.Context);
+					rightPart(rightMenu);
+					w.Ul(a => a.Class("menutoolbar-right"), () => RenderItems(w, rightMenu));
+				}
+			});
+		}
+
+		void RenderItems(LayoutWriter w, MenuBuilder t)
 		{
 			bool separator = false;
 			bool allowSeparator = false;
-			foreach (var item in Menu.Children)
+			foreach (var item in t.Menu.Children)
 			{
-				if (item.Data is MenuItemSeparator)
+				if (item.Data is MenuBuilder.MenuItemSeparator)
 					separator = allowSeparator;
 				else
 				{
@@ -189,26 +215,17 @@ namespace Tango.UI.Controls
 		}
 	}
 
+	public class ToolbarOptions
+	{
+		public IToolbarRenderer Renderer { get; set; }
+		public Action<TagAttributes> Attributes { get; set; }
+	}
+
 	public static class ToolbarExtensions
 	{
-		public static void Toolbar(this LayoutWriter w, Action<TagAttributes> attrs, Action<MenuBuilder> leftPart, Action<MenuBuilder> rightPart = null)
+		public static void Toolbar(this LayoutWriter w, Action<MenuBuilder> leftPart, Action<MenuBuilder> rightPart = null, ToolbarOptions opt = null)
 		{
-			w.Div(a => a.Class("menutoolbar").Set(attrs), () => {
-				var leftMenu = new MenuBuilder(w.Context);
-				leftPart(leftMenu);
-				w.Ul(a => a.Class("menutoolbar-left"), () => leftMenu.Render(w));
-				if (rightPart != null)
-				{
-					var rightMenu = new MenuBuilder(w.Context);
-					rightPart(rightMenu);
-					w.Ul(a => a.Class("menutoolbar-right"), () => rightMenu.Render(w));
-				}
-			});
-		}
-
-		public static void Toolbar(this LayoutWriter w, Action<MenuBuilder> leftPart, Action<MenuBuilder> rightPart = null)
-		{
-			w.Toolbar(null, leftPart, rightPart);
+			(opt?.Renderer ?? new DefaultToolbarRenderer()).Render(w, opt?.Attributes, leftPart, rightPart);
 		}
 	}
 

@@ -17,11 +17,13 @@ namespace Tango.Html
 
 	public class RouteUrlResolver : IUrlResolver
 	{
+		public bool IgnoreNotMachedParms { get; set; } = false;
+
 		public virtual UrlResolverResult Resolve(string template, IReadOnlyDictionary<string, string> parameters)
 		{
 			return new UrlResolverResult { 
 				Resolved = true, 
-				Result = RouteUtils.Resolve(template, parameters) 
+				Result = RouteUtils.Resolve(template, parameters, IgnoreNotMachedParms) 
 			};
 		}
 	}

@@ -48,19 +48,21 @@ namespace Tango
 				sb.Append(template.Substring(startIndex));
 			}
 
-			if (ignoreNotMachedParms) return sb;
+			if (sb.Length > 1 && sb[sb.Length - 1] == '/')
+				sb.Length--;
 
-			if (parameters.Count > processedKeys.Count)
-			{
-				sb.Append(notMatchedParmsBeginWith);
-			}
+			if (ignoreNotMachedParms) return sb;
+			
 			bool first = true;
 			foreach (var parm in parameters)
 			{
 				if (processedKeys.Contains(parm.Key)) continue;
-				if (!first) sb.Append("&");
-				sb.Append(parm.Key);
-				if (parm.Value != null) sb.Append("=").Append(WebUtility.UrlEncode(parm.Value));
+				if (parm.Value.IsEmpty()) continue;
+				if (first)
+					sb.Append(notMatchedParmsBeginWith);
+				else
+					sb.Append("&");
+				sb.Append(parm.Key).Append("=").Append(WebUtility.UrlEncode(parm.Value));
 				first = false;
 			}
 

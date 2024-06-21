@@ -30,7 +30,7 @@ namespace Tango.FileStorage
             if (b.Length >= 4 && b[0] == 0x00 && b[1] == 0x00 && b[2] == 0xFE && b[3] == 0xFF) return Encoding.GetEncoding("utf-32BE").GetString(b, 4, b.Length - 4); // UTF-32, big-endian 
             if (b.Length >= 4 && b[0] == 0xFF && b[1] == 0xFE && b[2] == 0x00 && b[3] == 0x00) return Encoding.UTF32.GetString(b, 4, b.Length - 4); // UTF-32, little-endian
             if (b.Length >= 3 && b[0] == 0xEF && b[1] == 0xBB && b[2] == 0xBF) return Encoding.UTF8.GetString(b, 3, b.Length - 3); // UTF-8
-            if (b.Length >= 3 && b[0] == 0x2b && b[1] == 0x2f && b[2] == 0x76) return Encoding.UTF7.GetString(b, 3, b.Length - 3); // UTF-7
+            //if (b.Length >= 3 && b[0] == 0x2b && b[1] == 0x2f && b[2] == 0x76) return Encoding.UTF7.GetString(b, 3, b.Length - 3); // UTF-7
             if (b.Length >= 2 && b[0] == 0xFE && b[1] == 0xFF) return Encoding.BigEndianUnicode.GetString(b, 2, b.Length - 2); // UTF-16, big-endian
             if (b.Length >= 2 && b[0] == 0xFF && b[1] == 0xFE) return Encoding.Unicode.GetString(b, 2, b.Length - 2); // UTF-16, little-endian
 

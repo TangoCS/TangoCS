@@ -69,13 +69,18 @@ namespace Tango.UI.Std
 
 	public class DefaultNoHeaderContainer : AbstractDefaultContainer
 	{
+		public DefaultNoHeaderContainer()
+		{
+			BodyClass = string.Concat(BodyClass, "contentbodypadding");
+		}
+
 		public override void Render(ApiResponse response)
 		{
 			response.AddWidget(ContainerID, w => {
 				w.Div(a => a.ID("content").Class(ContainerClass).DataIsContainer(Type, w.IDPrefix), () => {
 					if (!ToRemove.Contains("contenttoolbar"))
 						w.Div(a => a.ID("contenttoolbar"));
-					w.Div(a => a.ID("contentbody").Class(BodyClass).Class("contentbodypadding"));
+					w.Div(a => a.ID("contentbody").Class(BodyClass));
 				});
 			});
 		}

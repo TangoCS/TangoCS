@@ -346,19 +346,23 @@ namespace Tango.UI
 			return target;
 		}
 
-		public static T RunAction<T>(this T target, string serviceName, string actionName)
+		public static T RunAction<T>(this T target, string serviceName, string actionName, string returnurl = null)
 			where T : IActionTarget
 		{
 			target.Service = serviceName;
 			target.Action = actionName;
+			if (!returnurl.IsEmpty())
+				target.WithArg("returnurl", returnurl);
 			return target;
 		}
 
-		public static IActionTarget RunAction<T>(this IActionTarget target, string actionName)
+		public static IActionTarget RunAction<T>(this IActionTarget target, string actionName, string returnurl = null)
 			where T : Controller
 		{
 			target.Service = typeof(T).Name.Replace("Controller", "");
 			target.Action = actionName;
+			if (!returnurl.IsEmpty())
+				target.WithArg("returnurl", returnurl);
 			return target;
 		}
 

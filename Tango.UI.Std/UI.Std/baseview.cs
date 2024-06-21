@@ -61,13 +61,13 @@ namespace Tango.UI.Std
 
 		public virtual bool CheckAccess(MethodInfo method)
 		{
-			var anon = method.DeclaringType.GetCustomAttribute<AllowAnonymousAttribute>();
+			var anon = method.ReflectedType.GetCustomAttribute<AllowAnonymousAttribute>();
 			if (anon != null) return true;
 
 			var ac = Context.RequestServices.GetService(typeof(IAccessControl)) as IAccessControl;
 			if (ac == null) return false;
 
-			var so = method.DeclaringType.GetCustomAttribute<SecurableObjectAttribute>();
+			var so = method.ReflectedType.GetCustomAttribute<SecurableObjectAttribute>();
 			var soname = so != null ? 
 				so.Name : 
 				(Context.Service + (!Context.Action.IsEmpty() ? "." + Context.Action : ""));

@@ -69,7 +69,8 @@ namespace Tango.UI.Controls
 			if (curpage != null)
 				RenderTabContent(response, curpage);
 
-			if (curpage != null && curpage.ID != GetArg(ID))
+			var curID = GetArg(ID);
+			if (curpage != null && curID != null && curpage.ID != curID)
 				response.ChangeUrl(new List<string> { ID }, new Dictionary<string, object> { { ID, curpage.ID } });
 		}
 
