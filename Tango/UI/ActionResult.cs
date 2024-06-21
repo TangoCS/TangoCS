@@ -59,9 +59,9 @@ namespace Tango.UI
 			ContentFunc = ctx => Encoding.UTF8.GetBytes(Html);
 		}
 	}
-    
 
-    public class MessageResult : HttpResult
+
+	public class MessageResult : HttpResult
 	{
 		public MessageResult(string title, string message)
 		{
@@ -90,17 +90,20 @@ namespace Tango.UI
 		}
 	}
 
-	public class ApiResult : AjaxResult<ApiResponse> {
+	public class ApiResult : AjaxResult<ApiResponse>
+	{
 		public ApiResult() { }
 		public ApiResult(Action<ApiResponse> responseAction) : base(responseAction) { }
 	}
 
-	public class ArrayResult : AjaxResult<ArrayResponse> {
+	public class ArrayResult : AjaxResult<ArrayResponse>
+	{
 		public ArrayResult() { }
 		public ArrayResult(Action<ArrayResponse> responseAction) : base(responseAction) { }
 	}
 
-	public class ObjectResult : AjaxResult<ObjectResponse> {
+	public class ObjectResult : AjaxResult<ObjectResponse>
+	{
 		public ObjectResult() { }
 		public ObjectResult(Action<ObjectResponse> responseAction) : base(responseAction) { }
 	}
@@ -134,13 +137,13 @@ namespace Tango.UI
 		}
 	}
 
-	public class RedirectBackResult : ActionResult
+	public class RedirectBackResult : HttpResult
 	{
 		int _code = 1;
 		string _url = null;
 
 		public RedirectBackResult(string returnurl) { _url = returnurl; }
-		public RedirectBackResult(int contextReturnTargetCode)	{ _code = contextReturnTargetCode; }
+		public RedirectBackResult(int contextReturnTargetCode) { _code = contextReturnTargetCode; }
 
 		public override Task ExecuteResultAsync(ActionContext context)
 		{
@@ -161,11 +164,13 @@ namespace Tango.UI
 			}
 
 			var result = new RedirectResult(_url, hard);
+			foreach (var cookie in Cookies)
+				result.Cookies.Add(cookie.Key, cookie.Value);
 			return result.ExecuteResultAsync(context);
 		}
 	}
 
-	
+
 
 	public class SignInResult : RedirectBackResult
 	{
@@ -192,10 +197,16 @@ namespace Tango.UI
 
 	public class ChallengeResult : ActionResult
 	{
+		string scheme;
+		public ChallengeResult(string scheme = null)
+		{
+			this.scheme = scheme;
+		}
+
 		public override Task ExecuteResultAsync(ActionContext context)
 		{
 			var executor = context.RequestServices.GetService(typeof(IAuthenticationManager)) as IAuthenticationManager;
-			return executor.Challenge();
+			return executor.Challenge(scheme);
 		}
 	}
 
@@ -233,7 +244,8 @@ namespace Tango.UI
 	{
 		Task SignIn(IIdentity user);
 		Task SignOut();
-		Task Challenge();
+		Task Challenge(string scheme);
+		Task<IPrincipal> Authenticate(string scheme);
 	}
 
 	public interface IHttpResultExecutor

@@ -1,14 +1,13 @@
-﻿using System.Security.Claims;
-using System.Security.Principal;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using Tango.UI;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using Microsoft.AspNetCore.DataProtection;
+using System.Security.Claims;
+using System.Security.Principal;
+using System.Threading.Tasks;
+using Tango.UI;
 
 namespace Tango.AspNetCore
 {
@@ -55,9 +54,15 @@ namespace Tango.AspNetCore
 			_context = context;
 		}
 
-		public async Task Challenge()
+		public async Task<IPrincipal> Authenticate(string scheme)
 		{
-			await _context.ChallengeAsync();
+			var res = await _context.AuthenticateAsync(scheme);
+			return res.Principal;
+		}
+
+		public async Task Challenge(string scheme)
+		{
+			await _context.ChallengeAsync(scheme);
 		}
 
 		public async Task SignIn(IIdentity user)
