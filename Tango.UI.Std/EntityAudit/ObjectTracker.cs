@@ -42,7 +42,7 @@ namespace Tango.UI.Std.EntityAudit
 						oldValue = objects[entity][prop] != null ? ((decimal)objects[entity][prop]).ToString("0.############") : null;
 						newValue = prop.GetValue(entity) != null ? ((decimal)prop.GetValue(entity)).ToString("0.############") : null;
 					}
-					if (includeEquals || (oldValue != null && !oldValue.Equals(newValue)))
+					if (includeEquals || (oldValue != null && !oldValue.Equals(newValue)) || (oldValue == null && newValue != null))
 						pc.Add(new PropertyChange { PropertyName = prop.Name, OldValue = oldValue, NewValue = newValue });
 				}
 			}
