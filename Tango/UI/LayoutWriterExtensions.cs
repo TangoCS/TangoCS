@@ -88,9 +88,10 @@ namespace Tango.UI
             w.Span(a => a.Class("label label-danger"), text);
         }
 
-        public static void BlockCollapsible(this LayoutWriter w, Action<BlockCollapsibleBuilder> inner)
+        public static void BlockCollapsible(this LayoutWriter w, Action<BlockCollapsibleBuilder> inner, Action<BlockCollapsibleBuilder> collapsed = null)
         {
             var builder = BlockCollapsibleBuilder.Make(inner);
+			collapsed?.Invoke(builder);
             var width = $"grid-column-end: span {(int)builder.Grid};";
 
             w.Div(a => {
