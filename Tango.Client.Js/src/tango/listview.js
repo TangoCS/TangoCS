@@ -236,8 +236,7 @@ window.listview = function (au, cu, cbcell, menu) {
 							row.setAttribute('data-collapsedby', '');
 						}
 					}
-					else if (isHide)
-					{
+					else if (isHide) {
 						tr.classList.remove('collapsed');
 						row.classList.add('hide');
 						row.setAttribute('data-collapsedby', collapsedBy);
@@ -331,6 +330,8 @@ window.listview = function (au, cu, cbcell, menu) {
 		},
 		widgetDidMount: function (ctrl) {
 			const root = document.getElementById(ctrl.root);
+			if (root == null)
+				return;
 
 			const highlight = root instanceof HTMLTableElement && root.classList.contains('highlight') ?
 				root : root.querySelector('.listviewtable.highlight');
