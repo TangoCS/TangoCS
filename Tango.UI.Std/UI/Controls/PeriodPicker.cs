@@ -277,8 +277,8 @@ namespace Tango.UI.Controls
 					w.Calendar(ID + "_dperiodfrom", value ?? DefaultValue, calendarOptions);
 					dFrom.Render(w, value ?? DefaultValue, options);
 				});
-				if (dateTimePickerOptions.Enabled == EnabledState.Enabled)
-					w.Span(a => a.ID(ID + "_btn").Class("cal-openbtn").Title("Календарь").Set(dateTimePickerOptions.CalendarAttributes), () => w.Icon("calendar"));
+				//if (dateTimePickerOptions.Enabled == EnabledState.Enabled)
+				w.Span(a => a.ID(ID + "_btn").Class("cal-openbtn").Title("Календарь").Set(dateTimePickerOptions.CalendarAttributes), () => w.Icon("calendar"));
 			});
 
 			if (dateTimePickerOptions.Enabled == EnabledState.Enabled)
