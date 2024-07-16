@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.Linq;
 using Tango.Html;
+using Tango.Localization;
 using Tango.UI.Controls;
 
 namespace Tango.UI.Std
@@ -21,13 +22,9 @@ namespace Tango.UI.Std
                 severity == ValidationMessageSeverity.Warning ? "yellow" :
                 "skyblue";
 
-            var resName = severity == ValidationMessageSeverity.Error ? "Common.ValidationError" :
-				severity == ValidationMessageSeverity.Warning ? "Common.ValidationWarning" :
-				"Common.ValidationInfo";
-
 			Action title = () => {
                 w.Icon("warning", a => a.Style("margin-right: 4px; color:" + color));
-                w.Write(w.Resources.Get(resName));
+                w.Write(w.Resources.Get(GetResName(severity)));
             };
 
             attributes += a => a.Class("validation-body").GridColumn(Grid.OneWhole);
@@ -39,6 +36,14 @@ namespace Tango.UI.Std
                     });
                 });
             }, collapsed);
+        }
+
+        internal static string GetResName(ValidationMessageSeverity severity)
+        {
+            var resName = severity == ValidationMessageSeverity.Error ? "Common.ValidationError" :
+                    severity == ValidationMessageSeverity.Warning ? "Common.ValidationWarning" :
+                    "Common.ValidationInfo";
+            return resName;
         }
 
         private static LayoutWriter ValidationBlockImpl(this LayoutWriter w, ValidationMessageCollection val, Action<TagAttributes> attributes = null, Action<BlockCollapsibleBuilder> collapsed = null)
