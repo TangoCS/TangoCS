@@ -484,8 +484,27 @@ window.listview = function (au, cu, cbcell, menu) {
 				const origel = document.getElementById(el.id.replace('_selected', ''));
 				if (origel) {
 					var origcb = origel.querySelector('.sel');
-					if (origcb && el.hasAttribute('data-checked'))
+					if (origcb && el.hasAttribute('data-checked')) {
 						cbcell.setselected(origcb, onCheckChange);
+						var level = parseInt(origel.getAttribute('data-level'));
+						var curel = origel.previousElementSibling;
+						while (curel) {
+							const curlevel = parseInt(curel.getAttribute('data-level'));
+							if (curlevel < level) {
+								var curcb = curel.querySelector('.sel');
+								if (!curcb) break;
+								const hasStrategy = curcb.hasAttribute('data-strategy');
+								if (!hasStrategy) break;
+								const strategyName = curcb.getAttribute('data-strategy');
+								const isChecked = curel.classList.contains('checked')
+								if (isChecked && (strategyName == 'WithChildren' || strategyName == 'WithChildrenRecursive')) {
+									cbcell.setselected(curcb, onCheckChange);
+								}
+								level = curlevel;
+							}
+							curel = curel.previousElementSibling;
+						}
+					}
 				}
 				else {
 					const rowid = el.getAttribute('data-rowid');
