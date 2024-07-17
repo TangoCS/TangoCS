@@ -54,7 +54,7 @@ namespace Tango.UI.Navigation
 						if (item.Children.All(o => removed.Contains(o.ID)))
 							removed.Add(item.ID);
 					}
-					else if (!ac.Check(item.SecurableObjectKey))
+					else if (!ac.CheckWithPredicate(item.SecurableObjectKey, item))
 						removed.Add(item.ID);
 				}
 			}
