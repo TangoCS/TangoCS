@@ -290,9 +290,11 @@ form .buttonsbar {
 
 .modal-footer .right, .buttonsbar .right {
 	margin-left: auto;
+	display: flex;
+	align-items: center;
 }
 
-.modal-footer .right *, .buttonsbar .right *, .buttonsbar .left * {
+.modal-footer .right > *, .buttonsbar .right > *, .buttonsbar .left > * {
 	margin-left: 4px;
 }
 

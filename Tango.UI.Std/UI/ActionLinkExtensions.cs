@@ -21,12 +21,17 @@ namespace Tango.UI
 			});
 		}
 
+		static string GetReturnUrl(ActionContext ctx)
+		{
+			return ctx.ReturnUrl.ContainsKey(0) ?
+				ctx.ReturnUrl[0] :
+				ctx.ReturnUrl.ContainsKey(1) ?
+				ctx.ReturnUrl[1] : null;
+		}
+
 		public static void BackButton(this LayoutWriter w, Action<ButtonTagAttributes> attrs = null, string title = null)
 		{
-			var url = w.Context.ReturnUrl.ContainsKey(0) ?
-				w.Context.ReturnUrl[0] :
-				w.Context.ReturnUrl.ContainsKey(1) ?
-				w.Context.ReturnUrl[1] : null;
+			var url = GetReturnUrl(w.Context);
 			if (url == null) return;
 
 			if (title.IsEmpty()) title = w.Resources.Get("Common.Back");
@@ -35,7 +40,17 @@ namespace Tango.UI
 
 		public static void BackButton(this LayoutWriter w, IViewElement form)
 		{
-			w.BackButton(title: w.Resources.Get(form.IsModal ? "Common.Close" : "Common.Back"));
+			var title = w.Resources.Get(form.IsModal ? "Common.Close" : "Common.Back");
+			string url = null;
+			if (!form.IsModal)
+			{
+				url = GetReturnUrl(w.Context);
+				if (url == null) return;
+			}
+			w.Button(a => {
+				a.Class("btn-primary").DataResult(0).OnClickRunHref().Data(Constants.ContainerNew, 1);
+				if (url != null) a.Data("href", url);
+			}, title);
 		}
 
 		static ATagAttributes SetTarget(this ATagAttributes a, ActionLink link)
