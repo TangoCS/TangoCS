@@ -499,6 +499,8 @@ window.listview = function (au, cu, cbcell, menu) {
 								const isChecked = curel.classList.contains('checked')
 								if (isChecked && (strategyName == 'WithChildren' || strategyName == 'WithChildrenRecursive')) {
 									cbcell.setselected(curcb, onCheckChange);
+									const selel = document.getElementById(curel.id + '_selected');
+									if (selel) selel.removeAttribute('data-checked');
 								}
 								level = curlevel;
 							}

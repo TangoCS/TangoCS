@@ -461,6 +461,19 @@ td.showDragHandle {
 	resize: both;
 }
 
+@media screen and (max-width: 1024px) {
+	.modal-dialog {
+		top: 0;
+		width: initial;
+		max-height: initial;
+		min-width: initial;
+		height: 100%;
+	}
+	.modal-dialog > *:first-child {
+		max-height: initial;
+	}
+}
+
 
 button.close {
 	-webkit-appearance: none;

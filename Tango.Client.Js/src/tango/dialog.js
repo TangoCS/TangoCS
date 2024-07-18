@@ -3,23 +3,32 @@
 		open: function (el, onSubmit) {
 			if (!el.nodeType) el = document.getElementById(el);
 
-			const parms = localStorage.getObject(location.pathname + '/' + el.id);
-			if (parms) {
-				if (parms.width) el.style.width = parms.width;
-				if (parms.height) el.style.height = parms.height;
-				if (parms.top) el.style.top = parms.top;
-				if (parms.left) {
-					el.style.left = parms.left;
-					el.style.right = 'inherit';
+			const isFullScreen = matchMedia('(max-width: 1024px)').matches;
+
+			if (!isFullScreen) {
+				const parms = localStorage.getObject(location.pathname + '/' + el.id);
+				if (parms) {
+					if (parms.width) el.style.width = parms.width;
+					if (parms.height) el.style.height = parms.height;
+					if (parms.top) el.style.top = parms.top;
+					if (parms.left) {
+						el.style.left = parms.left;
+						el.style.right = 'inherit';
+					}
 				}
+			}
+			else {
+				el.style.width = 'inherit';
 			}
 
 			el.classList.add('md-show');
 			el.style.zIndex = 101;
 
-			const header = el.getElementsByClassName("modal-header")[0];
-			dragElement(el, header);
-			_initResize(el);
+			if (!isFullScreen) {
+				const header = el.getElementsByClassName("modal-header")[0];
+				dragElement(el, header);
+				_initResize(el);
+			}
 
 			if (onSubmit) {
 				const btn = el.querySelector('.modal-footer button[type="submit"]');
@@ -59,9 +68,14 @@
 			}
 		},
 		onResult: function (res, state) {
-			instance.close(document.getElementById(state.root));
-			if (state.parent)
-				state.parent.style.zIndex = 101;
+			const el = document.getElementById(state.root);
+			instance.close(el);
+			if (state.parent) {
+				if (res == 1 && el.hasAttribute('data-onsubmitcloseparent'))
+					instance.close(state.parent);
+				else
+					state.parent.style.zIndex = 101;
+			}
 			if (res == 0) {
 				return false;
 			}

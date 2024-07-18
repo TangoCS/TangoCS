@@ -2011,6 +2011,13 @@ window.Tango = {
 		}
 	},
 
+	postComponentServerEvent: function (e) {
+		const target = this.serviceProvider.ajaxUtils.state.ctrl[e.ctrlName][e.eventName];
+		if (!target.url) target.url = window.location.pathname;
+		if (e.parms) target.parms = e.parms;
+		this.serviceProvider.ajaxUtils.postEventWithApiResponse(target);
+	},
+
 	serviceProvider: {
 		components: {},
 		containers: {},
