@@ -8,7 +8,7 @@ namespace Tango.Tasks
 {
     [BaseNamingConventions(Category = BaseNamingEntityCategory.Tasks)]
 	[Table("tm_taskparameter")]
-	public partial class TaskParameter : IEntity, IWithKey<TaskParameter, int>, IWithSeqNo, IWithTitle
+	public partial class TaskParameter : IEntity, IWithKey<TaskParameter, int>, IWithSeqNo, IWithTitle, IWithPropertyAudit
 	{
 		public virtual Expression<Func<TaskParameter, bool>> KeySelector(int id)
 		{

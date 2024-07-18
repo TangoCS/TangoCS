@@ -8,7 +8,7 @@ namespace Tango.Tasks
 {
     [BaseNamingConventions(Category = BaseNamingEntityCategory.Tasks)]
 	[Table("tm_task")]
-    public partial class Task : IEntity, IWithKey<Task, int>, IWithTitle, IWithTimeStamp, IScheduledTask
+    public partial class Task : IEntity, IWithKey<Task, int>, IWithTitle, IWithTimeStamp, IScheduledTask, IWithPropertyAudit
 	{
 		public virtual Expression<Func<Task, bool>> KeySelector(int id)
 		{
