@@ -56,7 +56,7 @@
 }
 
 .tgl-sw + .btn-switch:after {
-	left: 0;
+	left: 0px;
 }
 
 .tgl-sw + .btn-switch:before {
@@ -64,18 +64,18 @@
 }
 
 .tgl-sw-active + .btn-switch:after {
-	left: 50%;
+	left: 15px;
 }
 
 /* Light */
 .tgl-sw-light + .btn-switch {
 	background: #bdc1c2;
-	border-radius: 2em;
+	border-radius: 16px;
 	padding: 2px;
 	-webkit-transition: all .4s ease;
 	transition: all .4s ease;
-	width: 48px;
-	height: 20px;
+	width: 32px;
+	height: 16px;
 }
 
 .tgl-sw-light + .btn-switch:after {
@@ -83,8 +83,8 @@
 	background: #fff;
 	-webkit-transition: all .2s ease;
 	transition: all .2s ease;
-	width: 16px;
-	height: 16px;
+	width: 12px;
+	height: 12px;
 }
 
 .tgl-sw-light-checked + .btn-switch {
@@ -104,7 +104,7 @@
 }
 
 .tgl-sw-light.tgl-sw-active + .btn-switch:after {
-	left: 65%;
+	left: 15px;
 }
 
 /* iOS */
