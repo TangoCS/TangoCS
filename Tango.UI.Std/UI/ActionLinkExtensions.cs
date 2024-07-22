@@ -189,6 +189,15 @@ namespace Tango.UI
 				w.A(a => a.Class("actionimg").Set(attrs).SetTarget(link).Title(link.Title), () => w.Icon(link.ImageSrc, tip: link.ImageTip ?? link.Title, color: link.ImageColor));
 		}
 
+		public static void ActionButton(this LayoutWriter w, Action<ActionLink> urlAttributes, Action<LayoutWriter> content, Action<ATagAttributes> attrs = null)
+		{
+			if (urlAttributes == null) return;
+			var link = new ActionLink(w.Context);
+			urlAttributes(link);
+			if (link.Enabled)
+				w.A(a => a.Class("actionbtn").Set(attrs).SetTarget(link), () => content(w));
+		}
+
 		public static void ActionImageTextButton(this LayoutWriter w, Action<ActionLink> urlAttributes, Action<ATagAttributes> attrs = null)
 		{
 			if (urlAttributes == null) return;
