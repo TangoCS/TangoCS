@@ -67,12 +67,12 @@ namespace Tango.UI.Std
 			var ac = Context.RequestServices.GetService(typeof(IAccessControl)) as IAccessControl;
 			if (ac == null) return false;
 
-			var so = method.ReflectedType.GetCustomAttribute<SecurableObjectAttribute>();
-			var soname = so != null ? 
-				so.Name : 
-				(Context.Service + (!Context.Action.IsEmpty() ? "." + Context.Action : ""));
+			var so = method.ReflectedType.GetCustomAttributes<SecurableObjectAttribute>();
+			var sonames = so != null && so.Count() > 0 ? 
+				so.Select(x => x.Name) : 
+				new string[] { Context.Service + (!Context.Action.IsEmpty() ? "." + Context.Action : "") };
 
-			return ac.Check(soname);
+			return sonames.Any(s => ac.Check(s));
 		}
 
 		public ActionResult OnNoAccess()

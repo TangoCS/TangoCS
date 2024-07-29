@@ -2,7 +2,7 @@
 
 namespace Tango.AccessControl
 {
-	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = false, AllowMultiple = true)]
 	public sealed class SecurableObjectAttribute : Attribute
 	{
 		public string Name { get; }
