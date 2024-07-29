@@ -81,16 +81,19 @@ namespace Tango.UI.Std
 			_fields = fields;
 		}
 
-		public RowSelectionOptions<TResult> GetInstance()
+		public RowSelectionOptions<TResult> GetInstance(int? colHeadPosition = null, int ? colBodyPosition = null )
 		{
-			return new RowSelectionOptions<TResult>
+            var posHead = colHeadPosition.HasValue ? colHeadPosition.Value : _fields.HeaderRows[1].Count;
+            var posBody = colBodyPosition.HasValue ? colBodyPosition.Value : _fields.Cells.Count;
+
+            return new RowSelectionOptions<TResult>
             {
 				Enabled = true,
 				Settings = new CheckBoxCellSettings<TResult>
                 {
 					HeaderRowNo = 1,
-					HeadColSeqNo = _fields.HeaderRows[1].Count,
-					BodyColSeqNo = _fields.Cells.Count,
+					HeadColSeqNo = posHead,
+					BodyColSeqNo = posBody,
 					RowSpan = 1
 				}
 			};

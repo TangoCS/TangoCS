@@ -177,8 +177,28 @@ namespace Tango.Tasks
                 });
             }
         }
-    }
+
+		protected override void PreProcessFormData(ApiResponse response, ValidationMessageCollection val)
+		{
+			base.PreProcessFormData(response, val);
+
+			if (EntityAudit != null && ViewData != null)
+			{
+				EntityAudit.PrimaryObject.Title = () => $"{ObjectChange.GetTitle(ViewData)}, Задача ID={ViewData.ParentID}";
+			}
+		}
+	}
 
 	[OnAction(typeof(TaskParameter), "delete")]
-	public class tm_taskparameter_delete : default_delete<TaskParameter, int> { }
+	public class tm_taskparameter_delete : default_delete<TaskParameter, int> 
+	{
+		protected override void BeforeDeleteEntity(IEnumerable<int> ids)
+		{
+			if (EntityAudit != null)
+			{
+				var obj = Repository.GetById(ids.First());
+				EntityAudit.PrimaryObject.Title = () => $"{ObjectChange.GetTitle(obj)}, Задача ID={obj.ParentID}";
+			}
+		}
+	}
 }
