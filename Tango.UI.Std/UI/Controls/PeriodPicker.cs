@@ -216,6 +216,8 @@ namespace Tango.UI.Controls
 		public int MinYear { get; set; }
 
 		public DateTime DefaultValue { get; set; }
+		public int MinMinute { get; set; } = 0;
+		public int MaxMinute { get; set; } = 59;
 		public int MinutesStep { get; set; } = 30;
 
 		public override string ID
@@ -236,6 +238,8 @@ namespace Tango.UI.Controls
 				c.ShowDays = false;
 				c.ShowTime = true;
 				c.TimeOnly = true;
+				c.MinMinute = MinMinute;
+				c.MaxMinute = MaxMinute;
 				c.MinutesStep = MinutesStep;
 				c.DefaultValue = DefaultValue;
 			});

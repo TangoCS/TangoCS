@@ -12,6 +12,10 @@ namespace Tango.UI.Controls
 		public bool TimeOnly { get; set; } = false;
 		public int MinYear { get; set; }
 		public int MaxYear { get; set; }
+		public int MinHour { get; set; } = 0;
+		public int MaxHour { get; set; } = 23;
+		public int MinMinute { get; set; } = 0;
+		public int MaxMinute { get; set; } = 59;
 		public int MinutesStep { get; set; } = 5;
 
 		public bool IsDayRequired { get; set; } = false;
@@ -106,12 +110,12 @@ namespace Tango.UI.Controls
 			{
 				if (!IsHourRequired)
 					hourItems.Add(new SelectListItem("Час", "-1"));
-				for (int i = 0; i < 24; i++)
+				for (int i = MinHour; i <= MaxHour; i++)
 					hourItems.Add(new SelectListItem(i.ToString("00"), i.ToString()));
 
 				if (!IsMinuteRequired)
 					minuteItems.Add(new SelectListItem("Мин", "-1"));
-				for (int i = 0; i < 60; i += MinutesStep)
+				for (int i = MinMinute; i <= MaxMinute; i += MinutesStep)
 					minuteItems.Add(new SelectListItem(i.ToString("00"), i.ToString()));
 			}
 
