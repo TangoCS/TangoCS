@@ -989,6 +989,7 @@ div.tabs2 + div.tabs2_pages {
 	right: 1px;
 	margin-left: 0;
 	font-size: inherit;
+	min-width: inherit;
 	width: inherit;
 	height: inherit;
 	border: 0;
