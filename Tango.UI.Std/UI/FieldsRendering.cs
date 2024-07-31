@@ -174,7 +174,8 @@ namespace Tango.UI
 
             w.ToggleSwitch(field.ID, field.Value, attributes);
 		}
-		public static void DropDownList2<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attrs = null)
+
+        public static void DropDownList2<TValue>(this LayoutWriter w, IField<TValue> field, IEnumerable<SelectListItem> items, Action<SelectTagAttributes> attrs = null)
 		{
 			var value = typeof(TValue).IsEnum ?
 				field.Value == null ? "" : Convert.ChangeType(field.Value, Enum.GetUnderlyingType(typeof(TValue))).ToString() :
