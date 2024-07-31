@@ -27,7 +27,7 @@ namespace Tango.UI
 			string basePath = GlobalSettings.JSPath + "calendar/";
 
 			//c.Page.RegisterScript("calendar-setup", basePath + "calendar-setup_stripped.js");
-			if (value == DateTime.MinValue) value = null;
+			if (value?.Date == DateTime.MinValue) value = null;
 
 			w.TextBox(name, options.ShowTime ? value.DateTimeToString() : value.DateToString(), a => {
 				a.Data("format", "dd.MM.yyyy").Placeholder("ДД.ММ.ГГГГ").Class("cal-" + (options.ShowTime ? "datetime" : "date"))

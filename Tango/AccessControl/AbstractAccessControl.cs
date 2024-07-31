@@ -29,7 +29,7 @@ namespace Tango.AccessControl
 			return _predicateChecker.Check(securableObjectKey, predicateContext);
 		}
 
-		public CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool? defaultAccess = null)
+		public virtual CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool? defaultAccess = null)
 		{
 			if (!_options.Enabled()) return new CheckWithPredicateResult(true, CheckWithPredicateResultCode.AccessGranted);
 
