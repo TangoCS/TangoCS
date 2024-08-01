@@ -32,11 +32,12 @@ namespace Tango.UI.Std
 		public override UrlResolverResult Resolve(string template, IReadOnlyDictionary<string, string> parameters)
 		{
 			bool access = true;
+			var ac = _accessControl as IActionAccessControl;
 			if (!_securableObjectKey.IsEmpty())
 				if (_predicateContext != null || _checkPredicateIfContextIsEmpty)
-					access = _accessControl.CheckWithPredicate(_securableObjectKey, _predicateContext).Value;
+					access = ac.CheckWithPredicate(_securableObjectKey, _predicateContext).Value;
 				else
-					access = _accessControl.Check(_securableObjectKey);
+					access = ac.Check(_securableObjectKey);
 
 			if (access)
 				return base.Resolve(template, parameters);

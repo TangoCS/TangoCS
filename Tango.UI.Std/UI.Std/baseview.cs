@@ -64,7 +64,7 @@ namespace Tango.UI.Std
 			var anon = method.ReflectedType.GetCustomAttribute<AllowAnonymousAttribute>();
 			if (anon != null) return true;
 
-			var ac = Context.RequestServices.GetService(typeof(IAccessControl)) as IAccessControl;
+			var ac = Context.RequestServices.GetService(typeof(IAccessControl)) as IActionAccessControl;
 			if (ac == null) return false;
 
 			var so = method.ReflectedType.GetCustomAttributes<SecurableObjectAttribute>();

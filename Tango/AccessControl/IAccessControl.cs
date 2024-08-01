@@ -13,6 +13,13 @@ namespace Tango.AccessControl
 		bool HasRole(params string[] roleName);
 	}
 
+	public interface IActionAccessControl
+	{
+		bool Check(string securableObjectKey, bool? defaultAccess = null);
+		BoolResult CheckPredicate(string securableObjectKey, object predicateContext, bool? defaultAccess = null);
+		CheckWithPredicateResult CheckWithPredicate(string securableObjectKey, object predicateContext, bool? defaultAccess = null);
+	}
+
 	public class CheckWithPredicateResult : BoolResult
 	{
 		public CheckWithPredicateResultCode Code { get; private set; }

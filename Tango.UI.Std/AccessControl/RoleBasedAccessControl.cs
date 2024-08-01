@@ -132,9 +132,4 @@ namespace Tango.AccessControl.Std
 			_cache.Reset(_cacheName + "-newitems");
 		}
 	}
-
-	//public interface IRoleBasedAccessControl<TKey> : IRoleBasedAccessControl<IdentityRole<TKey>, TKey>
-	//	where TKey : IEquatable<TKey>
-	//{
-	//}
 }

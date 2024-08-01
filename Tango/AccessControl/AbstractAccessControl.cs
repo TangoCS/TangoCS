@@ -6,7 +6,7 @@ using Tango.Logger;
 
 namespace Tango.AccessControl
 {
-	public abstract class AbstractAccessControl<TKey> : IRoleBasedAccessControl<TKey>
+	public abstract class AbstractAccessControl<TKey> : IRoleBasedAccessControl<TKey>, IActionAccessControl
 		where TKey : IEquatable<TKey>
 	{
 		protected IPredicateChecker _predicateChecker;
