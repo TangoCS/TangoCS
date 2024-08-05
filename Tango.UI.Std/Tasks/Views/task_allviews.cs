@@ -496,17 +496,17 @@ namespace Tango.Tasks
 	[OnAction(typeof(Task), "deactivation")]
 	public class tm_task_deactivation : default_edit_rep<Task, int, ITaskRepository>
 	{
-		protected override string FormTitle => Resources.Get<Task>(BulkMode ? "Deactivation.Bulk.Title" : "Deactivation.Title");
-		protected override bool BulkMode => Context.GetListArg<int>(Constants.SelectedValues)?.Count > 1;
+		protected override string FormTitle => Resources.Get<Task>(count > 1 ? "Deactivation.Bulk.Title" : "Deactivation.Title");
 		protected override bool ObjectNotExists => false;
+		private int count => Context.GetListArg<int>(Constants.SelectedValues)?.Count ?? 0;
+
 		protected override Task GetNewEntity() { return null; }
 		protected override Task GetExistingEntity()	{ return null; }
 
-        protected override void Form(LayoutWriter w)
+		protected override void Form(LayoutWriter w)
         {
-			var cnt = Context.GetListArg<int>(Constants.SelectedValues)?.Count ?? 0;
-			var confirm = BulkMode ?
-				string.Format(Resources.Get<Task>("Deactivation.Bulk.Confirm"), cnt) : Resources.Get<Task>("Deactivation.Confirm");
+			var confirm = count > 1 ? string.Format(Resources.Get<Task>("Deactivation.Bulk.Confirm"), count) : 
+													Resources.Get<Task>("Deactivation.Confirm");
 
 			w.P(() => {
 				w.Write(confirm);
