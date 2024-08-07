@@ -863,6 +863,13 @@ div.tabs2 + div.tabs2_pages {
 }
 
 /* period picker*/
+.datetimepicker {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	white-space: nowrap;
+	align-items: center;
+}
 .periodpicker, .periodpicker-readonly {
 	position: relative;
 	display: flex;
