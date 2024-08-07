@@ -877,7 +877,9 @@ div.tabs2 + div.tabs2_pages {
 }
 
 .periodpicker div, .datetimepicker div, .periodpicker-readonly div {
-	display: inline;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
 	margin-right: 3px;
 }
 
