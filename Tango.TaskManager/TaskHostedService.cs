@@ -89,7 +89,8 @@ namespace Tango.TaskManager
                 var TypeName = xe.Attribute("Type").Value;
                 var seconds = int.Parse(xe.Attribute("Seconds")?.Value ?? "0");
                 var hours = int.Parse(xe.Attribute("Hours")?.Value ?? "0");
-				var Interval = new TimeSpan(hours, int.Parse(xe.Attribute("Minutes")?.Value ?? ((seconds == 0 && hours == 0) ? "1" : "0")), seconds);
+                var minutes = int.Parse(xe.Attribute("Minutes")?.Value ?? ((seconds == 0 && hours == 0) ? "1" : "0"));
+				var Interval = new TimeSpan(hours, minutes, seconds);
                 var StartType = xe.Attribute("StartType").Value == "Interval" ? TaskStartType.Interval : TaskStartType.Schedule;
                 var MethodArgs = new Dictionary<string, object>();
                 foreach (var arg in xe.Elements())
@@ -110,7 +111,7 @@ namespace Tango.TaskManager
                 }
                 for (int i = 0; i < threadCount; i++)
                 {
-                    Task t = new Task
+                    var t = new Task
                     {
                         TaskName = TaskName,
                         MethodName = MethodName,
