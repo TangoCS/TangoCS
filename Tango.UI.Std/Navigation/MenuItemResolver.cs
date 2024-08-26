@@ -63,10 +63,16 @@ namespace Tango.UI.Navigation
 			foreach (var pp in parms)
 				p.Add(pp.Key, pp.Value);
 
+			var url = RouteUtils.Resolve(_urlTemplate, p, true);
+			if (url.Length == 0)
+				url.Append('/');
+			else if (url[0] != '/')
+				url.Insert(0, '/');
+
 			MenuItem m = new MenuItem {
 				ResourceKey = RouteUtils.Resolve(_resourceKeyTemplate, p, true).ToString(),
 				SecurableObjectKey = RouteUtils.Resolve(_securableObjectKeyTemplate, p, true).ToString(),
-				Url = RouteUtils.Resolve(_urlTemplate, p, true).ToString(),
+				Url = url.ToString(),
 				//Target = target
 			};
 			res.Add(m);

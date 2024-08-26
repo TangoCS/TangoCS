@@ -159,6 +159,7 @@ namespace Tango.UI
 					{
 						hard = false;
 						_url = resolveRes.Result.ToString();
+						if (_url == "") _url = "/";
 					}
 				}
 			}

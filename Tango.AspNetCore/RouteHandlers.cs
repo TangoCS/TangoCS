@@ -26,17 +26,8 @@ namespace Tango.AspNetCore
 			where T : ViewRootElement, new()
 		{
 			var d = c.GetRouteData();
-
-			if (service != null)
-				d.Values.Add("service", service);
-			else if (!d.Values.ContainsKey("service"))
-				throw new Exception("Service not found");
-				
-			if (action != null)
-				d.Values.Add("action", action);
-			else if (!d.Values.ContainsKey("action"))
-				throw new Exception("Action not found");
-
+			if (service != null) d.DataTokens.Add("service", service);
+			if (action != null)	d.DataTokens.Add("action", action);
 			await c.PageHandler<T>();
 		}
 
@@ -63,8 +54,8 @@ namespace Tango.AspNetCore
 		public static async Task ActionHandler(this HttpContext c, string service, string action)
 		{
 			var d = c.GetRouteData();
-			d.Values.Add("service", service);
-			d.Values.Add("action", action);
+			d.DataTokens.Add("service", service);
+			d.DataTokens.Add("action", action);
 
 			await c.ActionHandler();
 		}

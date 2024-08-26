@@ -12,6 +12,11 @@ namespace Tango.Identity
 		Task<ActionResult> DoLogin(GoogleUserProfile profile, string redirectUrl);
 	}
 
+	public interface IFacebookAuthenticationHelper : IWithPropertyInjection
+	{
+		Task<ActionResult> DoLogin(FacebookUserProfile profile, string redirectUrl);
+	}
+
 	public partial class GoogleUserProfile
 	{
 		[JsonProperty("id")]
@@ -43,5 +48,17 @@ namespace Tango.Identity
 
 		[JsonProperty("locale")]
 		public string Locale { get; set; }
+	}
+
+	public class FacebookUserProfile
+	{
+		[JsonProperty("id")]
+		public string Id { get; set; }
+
+		[JsonProperty("name")]
+		public string Name { get; set; }
+
+		[JsonProperty("email")]
+		public string Email { get; set; }
 	}
 }

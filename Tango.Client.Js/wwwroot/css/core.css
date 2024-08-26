@@ -106,9 +106,9 @@ img {
 	}
 }
 
-img.loading {
+/*img.loading {
 	background: transparent url('/i/loading.gif') center no-repeat;
-}
+}*/
 
 .middle {
 	vertical-align: middle;

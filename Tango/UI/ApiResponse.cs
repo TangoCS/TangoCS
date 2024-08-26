@@ -170,7 +170,7 @@ namespace Tango.UI
 
 		void RunRedirect(ActionContext retctx)
 		{
-			var result = retctx.RunAction();
+			var result = retctx.RunAction(key: retctx.TypeActivatorKey);
 			if (result is ApiResult ajax)
 			{
 				for (int i = ajax.ApiResponse._widgetsToRender.Count - 1; i >= 0; i--)
@@ -200,9 +200,15 @@ namespace Tango.UI
 				}
 			}
 
-			RunRedirect(retctx);
-			if (retctx.AddContainer)
-				RedirectTo(retctx.BaseUrl().Url, retctx.AllArgs, changeLoc);
+			var url = retctx.BaseUrl().Url;
+			if (!retctx.HasValidHandler)
+				HardRedirectTo(url);
+			else
+			{
+				RunRedirect(retctx);
+				if (retctx.AddContainer)
+					RedirectTo(url, retctx.AllArgs, changeLoc);
+			}
 		}
 
 		public void RedirectTo(ActionContext context, Action<ActionLink> action)

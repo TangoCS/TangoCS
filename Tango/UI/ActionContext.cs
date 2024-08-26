@@ -73,6 +73,11 @@ namespace Tango.UI
 		// response
 		public string ResponseType { get; set; }
 
+		public bool HasValidHandler =>
+			(Service != null || CurrentRoute?.Service != null) && (Action != null || CurrentRoute?.Action != null);
+		public string TypeActivatorKey =>
+			(Service ?? CurrentRoute?.Service) + "." + (Action ?? CurrentRoute?.Action);
+
 		protected abstract ActionTarget ParseReturnUrl(string returnUrl);
 
 		protected void ParseRouteParms(IReadOnlyDictionary<string, string> d)
@@ -177,6 +182,9 @@ namespace Tango.UI
 			AllArgs.Clear();
 			FormData.Clear();
 
+			if (Routes.TryGetValue(target.RouteTemplateName, out var route))
+				CurrentRoute = route;
+
 			foreach (var p in target.Args)
 			{
 				if (p.Key == Constants.ReturnUrl)
@@ -211,55 +219,7 @@ namespace Tango.UI
 		public ActionContext TargetContext(ActionTarget target)
 		{
 			var ctx = MemberwiseClone() as ActionContext;
-
 			ctx.SwitchToReturnTarget(target);
-
-			//ctx.IsFirstLoad = false;
-			//ctx.Service = target.Service;
-			//ctx.Action = target.Action;
-			//ctx.Event = target.Event;
-			//ctx.EventReceiver = target.EventReceiver;
-			//ctx.RequestMethod = "GET";
-
-			//ctx.AddContainer = true;
-
-			//ctx.ReturnTarget = new Dictionary<int, ActionTarget>();
-			//ctx.ReturnUrl = new Dictionary<int, string>();
-
-			//ctx.AllArgs.Clear();
-			//ctx.FormData.Clear();
-
-			//foreach (var p in target.Args)
-			//{
-			//	if (p.Key == Constants.ReturnUrl)
-			//	{
-			//		ctx.ReturnUrl[1] = p.Value;
-			//		ctx.ReturnTarget[1] = ParseReturnUrl(p.Value);
-			//		if (ctx.ReturnTarget[1].Args.TryGetValue(Constants.ReturnUrl, out string value))
-			//			ctx.AllArgs.Add(p.Key, value);
-			//	}
-			//	else if (p.Key == Constants.EventName)
-			//		ctx.Event = p.Value.ToString().ToLower();
-			//	else if (p.Key == Constants.EventReceiverName)
-			//		ctx.EventReceiver = p.Value.ToString().ToLower();
-			//	else if (p.Key == Constants.ContainerNew)
-			//		ctx.AddContainer = p.Value == "1";
-			//	else if (p.Key.StartsWith("~"))
-			//	{
-			//		ctx.AllArgs.Add(p.Key.Substring(1), p.Value);
-			//		ctx.FormData.Add(p.Key.Substring(1), p.Value);
-			//	}
-			//	else
-			//	{
-			//		ctx.AllArgs.Add(p.Key, p.Value);
-			//	}
-			//}
-
-			//ctx.Sender = null;
-			//ctx.ContainerType = null;
-			//ctx.ContainerPrefix = null;
-			
-
 			return ctx;
 		}
 	}
@@ -270,12 +230,15 @@ namespace Tango.UI
 		public byte[] FileBytes { get; set; }
 	}
 
-	public class NamedRouteCollection : Dictionary<string, string> { }
+	public class NamedRouteCollection : Dictionary<string, RouteInfo> { }
 
 	public class RouteInfo
 	{
 		public string Name { get; set; }
 		public string Template { get; set; }
+		public IList<string> Parameters { get; set; }
+		public string Service { get; set; }
+		public string Action { get; set; }
 	}
 
 	public interface IDefaultRouteResolver

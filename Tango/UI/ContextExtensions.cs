@@ -17,8 +17,11 @@ namespace Tango.UI
 
 		public static ActionLink ToCurrent(this ActionLink a)
 		{
-			a = a.RunAction(a.Context.Service, a.Context.Action).UseDefaultResolver()
-				.WithArgs(a.Context.AllArgs.Where(arg => !a.Context.FormData.ContainsKey(arg.Key)));
+			var args = a.Context.AllArgs.Where(arg => !a.Context.FormData.ContainsKey(arg.Key));
+			a = a.RunAction(a.Context.Service, a.Context.Action)
+				.WithTemplate(a.Context.CurrentRoute.Name)
+				.UseDefaultResolver()
+				.WithArgs(args);
 			foreach(var r in a.Context.ReturnUrl)
 				a.WithArg(Constants.ReturnUrl + (r.Key == 1 ? "" : $"_{r.Key}"), r.Value);
 			return a;

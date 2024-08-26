@@ -48,24 +48,22 @@ namespace Tango.UI
 		public UrlResolverResult Resolve(ActionContext context, IUrlResolver resolver = null)
 		{
 			var urlArgs = new Dictionary<string, string>(Args);
+			var routeInfo = context.Routes[RouteTemplateName ?? context.DefaultRouteTemplateName];
+			var templateValue = RouteTemplateName == null && Service == null ? "" : routeInfo.Template;
 
-			var templateValue = RouteTemplateName == null && Service == null ? 
-				"/" : 
-				context.Routes[RouteTemplateName ?? context.DefaultRouteTemplateName];
+			if (routeInfo.Parameters.Contains(Constants.ServiceName))
+				urlArgs.AddIfNotExists(Constants.ServiceName, Service);
+			if (routeInfo.Parameters.Contains(Constants.ActionName))
+				urlArgs.AddIfNotExists(Constants.ActionName, Action);
+			if (routeInfo.Parameters.Contains(Constants.Lang))
+				urlArgs.AddIfNotExists(Constants.Lang, context.Lang);
 
-			if (Service != null)
+			if ((RouteTemplateName ?? context.DefaultRouteTemplateName) == context.CurrentRoute.Name)
 			{
-				urlArgs.Add(Constants.ServiceName, Service);
-				urlArgs.Add(Constants.ActionName, Action);
+				foreach (var arg in context.RouteArgs)
+					urlArgs.AddIfNotExists(arg.Key, arg.Value?.ToString());
 			}
-
-			if (!context.Lang.IsEmpty())
-				urlArgs.Add(Constants.Lang, context.Lang);
-
-			foreach (var arg in context.RouteArgs)
-				if (!urlArgs.ContainsKey(arg.Key))
-					urlArgs.Add(arg.Key, arg.Value?.ToString());
-
+			
 			return (resolver ?? new RouteUrlResolver()).Resolve(templateValue, urlArgs);
 		}
 	}
@@ -146,7 +144,13 @@ namespace Tango.UI
 
 				var r = Resolve(Context, _resolver);
 				if (r.Resolved)
+				{
+					if (r.Result.Length == 0)
+						r.Result.Append('/');
+					else if (r.Result[0] != '/')
+						r.Result.Insert(0, '/');
 					_url = r.Result.ToString();
+				}
 
 				_enabled = r.Resolved;
 			}

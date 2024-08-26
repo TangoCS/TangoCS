@@ -30,10 +30,13 @@ namespace Tango.AspNetCore
 			var route = routeData.Routers.FirstOrDefault(x => x is Route) as Route;
 			if (route != null)
 			{
-				CurrentRoute = new RouteInfo {
-					Name = route.Name,
-					Template = route.RouteTemplate
-				};
+				if (route.Name.IsEmpty())
+					CurrentRoute = new RouteInfo {
+						Name = route.Name,
+						Template = route.RouteTemplate
+					};
+				else
+					CurrentRoute = Routes[route.Name];
 			}
 
 			_routeCollection = routeData.Routers.OfType<RouteCollection>().FirstOrDefault();
@@ -68,8 +71,6 @@ namespace Tango.AspNetCore
 							FormData.Add(f.Key, true);
 						else if (f.Key == Constants.IEFormFix)
 							continue;
-						//else if (f.Key.StartsWith(Constants.PersistentArgsFormPrefix))
-						//	FormData.Add(f.Key.Replace(Constants.PersistentArgsFormPrefix, ""), f.Value.ToString());
 						else
 							FormData.Add(f.Key, f.Value.ToString());
 
@@ -101,6 +102,8 @@ namespace Tango.AspNetCore
 
 			ParseRouteParms(d);
 
+			foreach (var q in routeData.DataTokens)
+				d[q.Key] = q.Value?.ToString();
 			foreach (var q in ctx.Request.Query)
 				d[q.Key] = q.Value.ToString();
 
@@ -116,6 +119,14 @@ namespace Tango.AspNetCore
 
 			foreach(var ret in ReturnUrl)
 				ReturnTarget[ret.Key] = ParseReturnUrl(ret.Value);
+
+			if (CurrentRoute != null)
+			{
+				if (!routeData.Values.ContainsKey(Constants.ServiceName))
+					CurrentRoute.Service = Service;
+				if (!routeData.Values.ContainsKey(Constants.ActionName))
+					CurrentRoute.Action = Action;
+			}
 		}
 		
 		protected override ActionTarget ParseReturnUrl(string returnUrl)
@@ -131,6 +142,8 @@ namespace Tango.AspNetCore
 			}
 			if (!returnUrl.StartsWith("/")) returnUrl = "/" + returnUrl;
 
+			var target = new ActionTarget();
+
 			for (int j = 0; j < _routeCollection.Count; j++)
 			{
 				var route = _routeCollection[j] as Route;
@@ -138,13 +151,15 @@ namespace Tango.AspNetCore
 				if (matcher.TryMatch(returnUrl, values))
 				{
 					if (RouteConstraintMatcher.Match(route.Constraints, values, _ctx, route, RouteDirection.UrlGeneration, NullLogger.Instance))
+					{
+						target.RouteTemplateName = route.Name;
 						break;
+					}
 					else
 						values = new RouteValueDictionary();
 				}
 			}
 
-			var target = new ActionTarget();
 			if (values.TryGetValue(Constants.ServiceName, out var service))
 			{
 				target.Service = service.ToString();

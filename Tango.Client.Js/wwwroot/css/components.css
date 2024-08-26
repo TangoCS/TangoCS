@@ -241,9 +241,9 @@ div.calendar {
 
 /* td drag'n'drop */
 td.showDragHandle {
-	background-image: url(/i/dnd/updown2.gif);
+	/*background-image: url(/i/dnd/updown2.gif);
 	background-position: left;
-	background-repeat: no-repeat;
+	background-repeat: no-repeat;*/
 	cursor: move;
 }
 
