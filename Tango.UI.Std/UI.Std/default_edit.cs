@@ -470,7 +470,8 @@ namespace Tango.UI.Std
 								res = "Common.CreateObjectChangeRequest";
 						}
 						if (!ChangeRequestMode || ChReqManager.IsCurrentUserModerator())
-							w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
+							if(!ChReqView.IsDeleted)
+								w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
 					}
 					if (!ReadonlyMode && ChReqEnabled && ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New && ChReqView.CanReject())
 						w.SubmitAndBackButton(a => a.DataEvent(RejectObjectChangeRequest), Resources.Get("Common.RejectObjectChangeRequest"));
@@ -883,8 +884,9 @@ namespace Tango.UI.Std
 	public interface IObjectChangeRequestView : IViewElement
 	{
 		ObjectChangeRequestStatus Status { get; }
+        bool IsDeleted { get; }
 
-		void Validate(ObjectChangeRequestData data, ValidationMessageCollection m);
+        void Validate(ObjectChangeRequestData data, ValidationMessageCollection m);
 		void Save(ObjectChangeRequestData data, string comments);
 		ObjectChangeRequestData<T> Load<T>(string ochid);
 
