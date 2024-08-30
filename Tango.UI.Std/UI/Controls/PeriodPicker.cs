@@ -209,7 +209,9 @@ namespace Tango.UI.Controls
 		int Minute => Context.GetArg($"{ID}_dperiodfromtime_minute", DefaultValue.Minute);
 
 		public bool HasValue => Date > DateTime.MinValue && Hour >= 0 && Minute >= 0;
-		DateTime? IFieldValueProvider<DateTime?>.Value => HasValue ? new DateTime(Date.Year, Date.Month, Date.Day, Hour, Minute, 0) : (DateTime?)null;
+		DateTime? IFieldValueProvider<DateTime?>.Value => HasValue ? 
+			new DateTime(Date.Year, Date.Month, Date.Day, Hour, Minute, 0) :
+			DefaultValue > DateTime.MinValue ? DefaultValue : (DateTime?)null;
 
 		DateLists dFrom;
 
