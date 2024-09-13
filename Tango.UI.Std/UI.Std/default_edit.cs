@@ -356,7 +356,7 @@ namespace Tango.UI.Std
 					{
 						if (CreateObjectMode)
 						{
-							w.Div(a => a.Class("layout1 withwrap width100"), () => {
+							w.Div(a => a.Class("layout1 width100"), () => {
 								w.Div(a => a.Class("sidebar"), () => {
 									w.Div(a => a.Class("sidebar-panel"), () => {
 										w.Div(a => a.Class("sidebar-header"), () => {
@@ -397,7 +397,7 @@ namespace Tango.UI.Std
 
                             void RenderBlockValues(LayoutWriter ww)
 							{
-                                ww.Div(a => a.Class("layout1 withwrap size_5").GridColumn(Grid.OneWhole), () => {
+                                ww.Div(a => a.Class("layout1 size_5").GridColumn(Grid.OneWhole), () => {
                                     ww.CollapsibleSidebar("Исходные значения", () => {
                                         groups.ForEach(g => {
                                             g.SetViewData(GetExistingEntity());

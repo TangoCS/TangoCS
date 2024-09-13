@@ -468,24 +468,27 @@ form .buttonsbar {
 /* toolbar */
 .menutoolbar {
 	border-bottom: 1px solid #ccc;
-	height: 34px;
-	display: table;
 	width: 100%;
+	display: flex;
+	justify-content: space-between;
 }
 
 .menutoolbar ul {
 	margin: 0;
-	padding: 0px 8px;
+	padding: 0px 8px 4px 8px;
 	border: 0;
 	list-style-type: none;
-	height: 34px;
+	min-height: 42px;
+	display: flex;
+	align-content: center;
+	flex-direction: row;
+	align-items: center;
+	flex-wrap: wrap;
 }
 
 .menutoolbar li {
-	display: table-cell;
 	border: 0;
-	vertical-align: middle;
-	height: 34px;
+	padding-top: 4px;
 }
 
 .menutoolbar-left {
