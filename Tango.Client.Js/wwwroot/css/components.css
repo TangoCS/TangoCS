@@ -1254,8 +1254,8 @@ div.tabs2 + div.tabs2_pages {
 	height: 100%;
 	display: flex;
 	flex-direction: row;
-	container-name: sidebar;
-	container-type: inline-size;
+	/*container-name: sidebar;
+	container-type: normal;*/
 }
 
 .sidebar .sidebar-panel {
