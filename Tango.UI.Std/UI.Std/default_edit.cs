@@ -499,7 +499,7 @@ namespace Tango.UI.Std
 								res = "Common.CreateObjectChangeRequest";
 						}
 						if (!ChangeRequestMode || ChReqManager.IsCurrentUserModerator())
-							if(!ChReqView.IsObjectDeleted)
+							if(ChReqView?.IsObjectDeleted != true)
 								w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
 					}
 					if (!ReadonlyMode && ChReqEnabled && ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New && ChReqView.CanReject())
