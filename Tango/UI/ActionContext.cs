@@ -424,8 +424,16 @@ namespace Tango.UI
 			key = key ?? (ctx.Service + "." + ctx.Action);
 			var view = cache.Get(key);
 			if (view?.Args != null)
+			{
 				foreach (var kv in view.Args)
-					ctx.AllArgs.Add(kv.Key, kv.Value);
+				{
+					if (!ctx.AllArgs.ContainsKey(kv.Key))
+					{
+						ctx.AllArgs.Add(kv.Key, kv.Value);
+						ctx.FormData.Add(kv.Key, kv.Value);
+					}
+				}
+			}
 			return view?.Invoker?.Invoke(ctx, view.Type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
 		}
 	}

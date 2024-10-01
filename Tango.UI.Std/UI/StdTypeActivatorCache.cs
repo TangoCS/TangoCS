@@ -60,8 +60,16 @@ namespace Tango.UI.Std
 			if (!ctx.Service.IsEmpty())
 			{
 				if (view?.Args != null)
+				{
 					foreach (var kv in view.Args)
-						ctx.AllArgs.Add(kv.Key, kv.Value);
+					{
+						if (!ctx.AllArgs.ContainsKey(kv.Key))
+						{
+							ctx.AllArgs.Add(kv.Key, kv.Value);
+							ctx.FormData.Add(kv.Key, kv.Value);
+						}
+					}
+				}
 				result = view?.Invoker?.Invoke(ctx, view.Type) ?? new HttpResult { StatusCode = HttpStatusCode.NotFound };
 			}
 			else
