@@ -154,12 +154,15 @@ namespace Tango.UI
 				var returnTargetExists = context.ReturnTarget.TryGetValue(_code, out var ret);
 				if (returnTargetExists)
 				{
-					var resolveRes = ret.Resolve(context);
-					if (resolveRes.Resolved)
+					var r = ret.Resolve(context);
+					if (r.Resolved)
 					{
 						hard = false;
-						_url = resolveRes.Result.ToString();
-						if (_url == "") _url = "/";
+						if (r.Result.Length == 0)
+							r.Result.Append('/');
+						else if (r.Result[0] != '/')
+							r.Result.Insert(0, '/');
+						_url = r.Result.ToString();
 					}
 				}
 			}

@@ -1184,6 +1184,12 @@ window.sidebar = function () {
 				else {
 					root.classList.add('collapsed');
 					localStorage.setItem(key(root.id), '1');
+					if (root.nextElementSibling && root.nextElementSibling.classList.contains('collapsed')) {
+						root.nextElementSibling.classList.remove('collapsed');
+					}
+					if (root.previousElementSibling && root.previousElementSibling.classList.contains('collapsed')) {
+						root.previousElementSibling.classList.remove('collapsed');
+					}
 				}
 			};
 

@@ -37,7 +37,7 @@ namespace Tango.UI.Std
 		
 		protected override Action<LayoutWriter> RenderPlaceHolderRightSide => w => w.CollapsibleSidebar(RightSideTitle, () => w.Div(a => a.ID("container")));
 
-        protected override string ContentBodyClass => "layout1 withwrap" + (String.IsNullOrEmpty(ContentBodyPartsSizeClass) ? " size_3_7" : $" {ContentBodyPartsSizeClass}");
+        protected override string ContentBodyClass => "layout1" + (String.IsNullOrEmpty(ContentBodyPartsSizeClass) ? " size_3_7" : $" {ContentBodyPartsSizeClass}");
 		
 	}
 
@@ -53,7 +53,7 @@ namespace Tango.UI.Std
         protected virtual string RightSideTitle => "";
         protected override Action<LayoutWriter> RenderPlaceHolderLeftSide => w => w.CollapsibleSidebar(LeftSideTitle, () => w.Div(a => a.ID("container")));
         protected override Action<LayoutWriter> RenderPlaceHolderRightSide => w => w.CollapsibleSidebar(RightSideTitle, () => w.Div(a => a.ID("container")));
-        protected override string ContentBodyClass => "layout1 withwrap";
+        protected override string ContentBodyClass => "layout1";
 
         public override void OnInit()
         {

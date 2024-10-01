@@ -198,7 +198,8 @@
 		},
 		getParentOffset: function (element) {
 			var offset = { top: 0, left: 0 };
-			while (element && getComputedStyle(element).getPropertyValue('position') != 'fixed') {
+			while (element && getComputedStyle(element).getPropertyValue('position') != 'fixed'
+				&& getComputedStyle(element).getPropertyValue('container') == 'none') {
 				element = element.offsetParent;
 			}
 			if (element) {

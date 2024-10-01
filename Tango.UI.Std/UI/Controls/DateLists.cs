@@ -110,13 +110,15 @@ namespace Tango.UI.Controls
 			{
 				if (!IsHourRequired)
 					hourItems.Add(new SelectListItem("Час", "-1"));
+				var hour = value?.Hour ?? Hour;
 				for (int i = MinHour; i <= MaxHour; i++)
-					hourItems.Add(new SelectListItem(i.ToString("00"), i.ToString()));
+					hourItems.Add(new SelectListItem(i.ToString("00"), i.ToString(), IsHourRequired && i == hour));
 
 				if (!IsMinuteRequired)
 					minuteItems.Add(new SelectListItem("Мин", "-1"));
+				var minute = value?.Minute ?? Minute;
 				for (int i = MinMinute; i <= MaxMinute; i += MinutesStep)
-					minuteItems.Add(new SelectListItem(i.ToString("00"), i.ToString()));
+					minuteItems.Add(new SelectListItem(i.ToString("00"), i.ToString(), IsMinuteRequired && i == minute));
 			}
 
 			w.Div(a => a.Class("datelists").ID(ID), () => {

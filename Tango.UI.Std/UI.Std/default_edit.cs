@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Channels;
 using Tango.AccessControl;
 using Tango.Data;
 using Tango.Html;
@@ -108,6 +109,7 @@ namespace Tango.UI.Std
 
 				if (EnableToolbar)
 					response.AddWidget("contenttoolbar", w => Toolbar(w));
+				
 			}
 		}
 
@@ -336,7 +338,9 @@ namespace Tango.UI.Std
 		{
 			if (ChReqEnabled)
 			{
-				if (ChangeRequestMode)
+                
+
+                if (ChangeRequestMode)
 				{
 					ChReqView.RenderHeader(w);
 					if (ChReqView.Status != ObjectChangeRequestStatus.New)
@@ -352,7 +356,7 @@ namespace Tango.UI.Std
 					{
 						if (CreateObjectMode)
 						{
-							w.Div(a => a.Class("layout1 withwrap width100"), () => {
+							w.Div(a => a.Class("layout1 width100"), () => {
 								w.Div(a => a.Class("sidebar"), () => {
 									w.Div(a => a.Class("sidebar-panel"), () => {
 										w.Div(a => a.Class("sidebar-header"), () => {
@@ -371,38 +375,63 @@ namespace Tango.UI.Std
 							var fDisabled = new Dictionary<string, bool>();
 							var fWithCB = new Dictionary<string, bool>();
 
-							w.Div(a => a.Class("layout1 withwrap size_5"), () => {
-								w.CollapsibleSidebar("Исходные значения", () => {
-									groups.ForEach(g => {
-										g.SetViewData(GetExistingEntity());
-										g.Fields.ForEach(f => {
-											fDisabled.Add(f.ID, f.Disabled);
-											fWithCB.Add(f.ID, f.WithCheckBox);
-											f.Disabled = true;
-											f.WithCheckBox = false;
-										});
-									});
-									var id = ID;
-									ID += "_oldstate";
-									w.WithPrefix(this, () => {
-										w.Div(a => a.Class("contentbodypadding"), () => Form(w));
-									});
-									ID = id;
+
+							if (ChReqView.IsObjectDeleted || ChReqView.IsParentObjectDeleted)
+							{
+								var val = new ValidationMessageCollection();
+                                var obj = new ObjectChangeRequestData
+                                {
+                                    Object = ViewData,
+                                };
+								ChReqView.PreValidate(obj, val);
+								w.ValidationBlock(val);
+
+								w.BlockCollapsible(opt =>
+								{
+									opt.SetLeftTitle("Исходные значения").SetContentFieldsBlock(() => RenderBlockValues(w));
+									opt.IsCollapsed = true;
 								});
-								w.CollapsibleSidebar("Целевые значения", () => {
-									groups.ForEach(g => {
-										g.SetViewData(ViewData);
-										g.Fields.ForEach(f => {
-											if (_changedFields?.Contains(f.ID.ToLower()) ?? false)
-												f.Disabled = false;
-											else
-												f.Disabled = fDisabled[f.ID];
-											f.WithCheckBox = fWithCB[f.ID];
-										});
-									});
-									w.Div(a => a.Class("contentbodypadding"), () => Form(w));
-								});
-							});
+							}
+							else
+								RenderBlockValues(w);
+
+                            void RenderBlockValues(LayoutWriter ww)
+							{
+                                ww.Div(a => a.Class("layout1 size_5").GridColumn(Grid.OneWhole), () => {
+                                    ww.CollapsibleSidebar("Исходные значения", () => {
+                                        groups.ForEach(g => {
+                                            g.SetViewData(GetExistingEntity());
+                                            g.Fields.ForEach(f => {
+                                                fDisabled.Add(f.ID, f.Disabled);
+                                                fWithCB.Add(f.ID, f.WithCheckBox);
+                                                f.Disabled = true;
+                                                f.WithCheckBox = false;
+                                            });
+                                        });
+                                        var id = ID;
+                                        ID += "_oldstate";
+                                        w.WithPrefix(this, () => {
+                                            w.Div(a => a.Class("contentbodypadding"), () => Form(w));
+                                        });
+                                        ID = id;
+                                    });
+                                    ww.CollapsibleSidebar("Целевые значения", () => {
+                                        groups.ForEach(g => {
+                                            g.SetViewData(ViewData);
+                                            g.Fields.ForEach(f => {
+                                                if (_changedFields?.Contains(f.ID.ToLower()) ?? false)
+                                                    f.Disabled = false;
+                                                else
+                                                    f.Disabled = fDisabled[f.ID];
+                                                f.WithCheckBox = fWithCB[f.ID];
+                                            });
+                                        });
+                                        ww.Div(a => a.Class("contentbodypadding"), () => Form(ww));
+                                    });
+                                });
+                            }
+
+							
 						}
 					}
 					else
@@ -433,7 +462,7 @@ namespace Tango.UI.Std
 			w.FormValidationBlock();
 		}
 
-		protected virtual bool DeleteMode => Context.Action.ToLower() == "delete";
+        protected virtual bool DeleteMode => Context.Action.ToLower() == "delete";
 		protected virtual bool CreateObjectMode => !BulkMode && !Context.AllArgs.ContainsKey(Constants.Id);
 		protected virtual bool BulkMode => Context.AllArgs.ContainsKey(Constants.SelectedValues);
 		protected override string FormTitle => CreateObjectMode ? CreateNewFormTitle : EditFormTitle;
@@ -470,7 +499,8 @@ namespace Tango.UI.Std
 								res = "Common.CreateObjectChangeRequest";
 						}
 						if (!ChangeRequestMode || ChReqManager.IsCurrentUserModerator())
-							w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
+							if(ChReqView?.IsObjectDeleted != true)
+								w.SubmitAndBackButton(a => a.DataReceiver(this), Resources.Get(res));
 					}
 					if (!ReadonlyMode && ChReqEnabled && ChangeRequestMode && ChReqView.Status == ObjectChangeRequestStatus.New && ChReqView.CanReject())
 						w.SubmitAndBackButton(a => a.DataEvent(RejectObjectChangeRequest), Resources.Get("Common.RejectObjectChangeRequest"));
@@ -572,7 +602,8 @@ namespace Tango.UI.Std
 						};
 
 						ChReqView.Validate(_objectChangeRequestData, m);
-						if (m.Count > 0)
+
+                        if (m.Count > 0)
 							return false;
 
 						if (moderatorMode)
@@ -883,8 +914,10 @@ namespace Tango.UI.Std
 	public interface IObjectChangeRequestView : IViewElement
 	{
 		ObjectChangeRequestStatus Status { get; }
-
-		void Validate(ObjectChangeRequestData data, ValidationMessageCollection m);
+        bool IsObjectDeleted { get; }
+        bool IsParentObjectDeleted { get; }
+        void PreValidate(ObjectChangeRequestData data, ValidationMessageCollection m);
+        void Validate(ObjectChangeRequestData data, ValidationMessageCollection m);
 		void Save(ObjectChangeRequestData data, string comments);
 		ObjectChangeRequestData<T> Load<T>(string ochid);
 
@@ -897,7 +930,7 @@ namespace Tango.UI.Std
 		void Approve(object entity, List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
 		void CreateAndApprove(object entity, List<FieldSnapshot> srcFields, List<FieldSnapshot> destFields);
 		string RequestCreatedMessage();
-	}
+    }
 
 	public class ObjectChangeRequestData<T>
 	{
